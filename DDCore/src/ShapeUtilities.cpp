@@ -583,7 +583,7 @@ namespace dd4hep {
 
     pars[0] = pars[1];
     pars[1] = pars[2];
-    pars[2] = (pars[3]+pars[4])/2.0;
+    pars[2] = (-pars[3]+pars[4])/2.0;
     pars[3] = 0.0;
     pars[4] = pars[6];
     pars.resize(5);

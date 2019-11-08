@@ -18,15 +18,18 @@ def run():
   geo = None
   vis = False
   batch = False
-  #pdb.set_trace()
   for i in xrange(len(sys.argv)):
     c = sys.argv[i].upper()
-    if c.find('BATCH') < 2 and c.find('BATCH') >= 0: batch = True
-    if c[:4] == '-GEO': geo = sys.argv[i+1]
-    if c[:4] == '-VIS': vis = True
+    if c.find('BATCH') < 2 and c.find('BATCH') >= 0:
+      batch = True
+    if c[:4] == '-GEO':
+      geo = sys.argv[i+1]
+    if c[:4] == '-VIS':
+      vis = True
 
-  ui = geant4.setupCshUI(ui=None,vis=vis)
-  if batch: kernel.UI = ''
+  ui = geant4.setupCshUI(ui=None, vis=vis)
+  if batch:
+    kernel.UI = ''
   kernel.loadGeometry(geo)
   # Configure field
   geant4.setupTrackingField(prt=True)
@@ -47,6 +50,7 @@ def run():
   kernel.initialize()
   kernel.run()
   kernel.terminate()
+
 
 if __name__ == "__main__":
   run()

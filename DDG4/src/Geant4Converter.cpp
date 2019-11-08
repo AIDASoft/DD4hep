@@ -19,6 +19,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/PropertyTable.h"
+#include "DD4hep/detail/ShapesInterna.h"
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
 
@@ -543,7 +544,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
     if (0 != (solid = data().g4Solids[shape])) {
       return solid;
     }
-    TClass* isa = shape->IsA();
+    TClass*    isa = shape->IsA();
     PrintLevel lvl = debugShapes ? ALWAYS : outputLevel;
     if (isa == TGeoShapeAssembly::Class()) {
       // Assemblies have no corresponding 'shape' in Geant4. Ignore the shape translation.
@@ -561,6 +562,8 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       solid = convertShape<TGeoCtub>(shape);
     else if (isa == TGeoEltu::Class())
       solid = convertShape<TGeoEltu>(shape);
+    else if (isa == TwistedTubeObject::Class())
+      solid = convertShape<TwistedTubeObject>(shape);
     else if (isa == TGeoTrd1::Class())
       solid = convertShape<TGeoTrd1>(shape);
     else if (isa == TGeoTrd2::Class())
