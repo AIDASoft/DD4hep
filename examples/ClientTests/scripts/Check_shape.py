@@ -23,7 +23,7 @@ def run():
     if c.find('BATCH') < 2 and c.find('BATCH') >= 0:
       batch = True
     if c[:4] == '-GEO':
-      geo = sys.argv[i+1]
+      geo = sys.argv[i + 1]
     if c[:4] == '-VIS':
       vis = True
 
