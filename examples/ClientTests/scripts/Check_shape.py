@@ -35,7 +35,7 @@ def run():
 
   if not geo:
     help()
-    sys.exit(1);
+    sys.exit(1)
 
   import DDG4
   kernel = DDG4.Kernel()
@@ -44,7 +44,7 @@ def run():
   ui = geant4.setupCshUI(ui=None, vis=vis)
   if batch:
     kernel.UI = ''
-    
+
   kernel.loadGeometry(geo)
   # Configure field
   geant4.setupTrackingField(prt=True)
