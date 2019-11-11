@@ -13,7 +13,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4DetectorConstruction.h"
+#include <DDG4/Geant4DetectorConstruction.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -85,24 +85,25 @@ namespace dd4hep {
 // Framework include files
 #include <DD4hep/InstanceCount.h>
 #include <DD4hep/DetectorTools.h>
-#include "DD4hep/DD4hepUnits.h"
+#include <DD4hep/DD4hepUnits.h>
 #include <DD4hep/Printout.h>
 #include <DD4hep/Detector.h>
 
-#include "DDG4/Geant4HierarchyDump.h"
-#include "DDG4/Geant4UIMessenger.h"
-#include "DDG4/Geant4Converter.h"
-#include "DDG4/Geant4Kernel.h"
-#include "DDG4/Factories.h"
+#include <DDG4/Geant4HierarchyDump.h>
+#include <DDG4/Geant4UIMessenger.h>
+#include <DDG4/Geant4Converter.h>
+#include <DDG4/Geant4Kernel.h>
+#include <DDG4/Factories.h>
 
 // Geant4 include files
 #include <G4LogicalVolume.hh>
-#include "G4PVPlacement.hh"
+#include <G4PVPlacement.hh>
 #include <G4Material.hh>
+#include <G4Version.hh>
 #include <G4VSolid.hh>
 
 //#ifdef GEANT4_HAS_GDML
-#include "G4GDMLParser.hh"
+#include <G4GDMLParser.hh>
 //#endif
 
 using namespace std;
@@ -215,13 +216,15 @@ int Geant4DetectorGeometryConstruction::checkVolume()  {
         const G4LogicalVolume* vol = (*it).second;
         auto* g4_sol = vol->GetSolid();
         Box   rt_sol = pv.volume().solid();
+        printP2("Geant4 Shape: %s  cubic volume: %8.3g mm^3  area: %8.3g mm^2",
+                g4_sol->GetName().c_str(), g4_sol->GetCubicVolume(), g4_sol->GetSurfaceArea());
+#if G4VERSION_NUMBER>=1040
         G4ThreeVector pMin, pMax;
         double conv = (dd4hep::centimeter/CLHEP::centimeter)/2.0;
         g4_sol->BoundingLimits(pMin,pMax);
-        printP2("Geant4 Shape: %s  cubic volume: %8.3g mm^3  area: %8.3g mm^2",
-                g4_sol->GetName().c_str(), g4_sol->GetCubicVolume(), g4_sol->GetSurfaceArea());
         printP2("Geant4 Bounding box extends:    %8.3g  %8.3g %8.3g",
                 (pMax.x()-pMin.x())*conv, (pMax.y()-pMin.y())*conv, (pMax.z()-pMin.z())*conv);
+#endif
         printP2("ROOT   Bounding box dimensions: %8.3g  %8.3g %8.3g",
                 rt_sol->GetDX(), rt_sol->GetDY(), rt_sol->GetDZ());
         

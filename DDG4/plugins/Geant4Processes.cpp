@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 
 // Geant4 physics lists
-#include "G4Version.hh"
+#include <G4Version.hh>
 
 #if G4VERSION_NUMBER>=960
 #define GEANT4_9_6
