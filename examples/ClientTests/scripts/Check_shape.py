@@ -1,7 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-import sys
-import DDG4
-#
 """
    dd4hep example setup using the python configuration
 
@@ -9,12 +5,22 @@ import DDG4
    \version 1.0
 
 """
+from __future__ import absolute_import, unicode_literals
+import logging
+import sys
+
+
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+
+
+def help():
+  logging.info("Check_shape.py -option [-option]                           ")
+  logging.info("       -geometry   <geometry file>   Geometry file         ")
+  logging.info("       -vis                          Enable visualization  ")
+  logging.info("       -batch                        Batch execution       ")
 
 
 def run():
-  kernel = DDG4.Kernel()
-  # Configure UI
-  geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
   geo = None
   vis = False
   batch = False
@@ -27,9 +33,18 @@ def run():
     if c[:4] == '-VIS':
       vis = True
 
+  if not geo:
+    help()
+    sys.exit(1);
+
+  import DDG4
+  kernel = DDG4.Kernel()
+  # Configure UI
+  geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
   ui = geant4.setupCshUI(ui=None, vis=vis)
   if batch:
     kernel.UI = ''
+    
   kernel.loadGeometry(geo)
   # Configure field
   geant4.setupTrackingField(prt=True)
