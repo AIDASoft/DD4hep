@@ -174,13 +174,13 @@ DetectorImp::DetectorImp(const string& name)
   m_manager = new TGeoManager(name.c_str(), "Detector Geometry");
   {
     gGeoManager = m_manager;
-#if 0 //FIXME: eventually this should be set to 1 - needs fixes in examples ...
+#if 1 //FIXME: eventually this should be set to 1 - needs fixes in examples ...
     TGeoElementTable*	table = m_manager->GetElementTable();
     table->TGeoElementTable::~TGeoElementTable();
     new(table) TGeoElementTable();
     // This will initialize the table without filling:
-    table->AddElement("VACUUM","VACUUM", 0, 0, 0.0);
-    table->Print();
+    table->AddElement("VACUUM","VACUUM", 1, 1, 1e-15);
+    // table->Print();
 #endif
   }
   if ( 0 == gGeoIdentity )

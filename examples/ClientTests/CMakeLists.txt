@@ -124,7 +124,7 @@ dd4hep_add_test_reg( ClientTests_DumpElements
   EXEC_ARGS  geoPluginRun
   -input file:${ClientTestsEx_INSTALL}/compact/MiniTel.xml
   -volmgr -destroy -plugin DD4hep_ElementTable -type xml
-  REGEX_PASS "formula=\"UUB\" name=\"UUB\""
+  REGEX_PASS "formula=\"Zr\" name=\"Zr\""
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
