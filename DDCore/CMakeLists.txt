@@ -76,7 +76,7 @@ target_link_libraries(DDCore
   PUBLIC
   DD4hep::DDParsers
   ROOT::Core ROOT::Rint ROOT::Tree ROOT::Physics ROOT::Geom ROOT::GenVector
-  ${XML_LIBRARIES}
+  ${XML_LIBRARIES} ${CMAKE_DL_LIBS}
   )
 
 if(${CMAKE_VERSION} VERSION_GREATER 3.7.99)

@@ -193,20 +193,10 @@
     </ignore>
   </properties>
 
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+  </includes>
   <materials>
-    <element Z="1" formula="H" name="H" >
-      <atom type="A" unit="g/mol" value="1.00794" />
-    </element>
-    <element Z="8" formula="O" name="O" >
-      <atom type="A" unit="g/mol" value="15.9994" />
-    </element>
-    <element Z="7" formula="N" name="N" >
-      <atom type="A" unit="g/mol" value="14.0068" />
-    </element>
-    <element Z="18" formula="Ar" name="Ar" >
-      <atom type="A" unit="g/mol" value="39.9477" />
-    </element>
-
     <material name="Air">
       <D type="density" unit="g/cm3" value="0.0012"/>
       <fraction n="0.754" ref="N"/>
