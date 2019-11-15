@@ -401,15 +401,24 @@ template <> void Converter<elementaryelement>::operator()(xml_h element) const  
   TGeoElementTable* tab = mgr.GetElementTable();
   TGeoElement*      elt1 = tab->FindElement(xmat.nameStr().c_str());
   TGeoElement*      elt2 = tab->FindElement(nam.c_str());
-
+  static bool first = true;
+  if ( first && _ns.context->debug_materials )   {
+    first = false;
+    printout(ALWAYS, "DDCMS"," +++ Units: gram:   %7.3f ",dd4hep::g);
+    printout(ALWAYS, "DDCMS"," +++ Units: cm3:    %7.3f ",dd4hep::cm3);
+    printout(ALWAYS, "DDCMS"," +++ Units: cm:     %7.3f ",dd4hep::cm);
+    printout(ALWAYS, "DDCMS"," +++ Units: mole:   %7.3f ",dd4hep::mole);
+    printout(ALWAYS, "DDCMS"," +++ Units: g/cm3:  %7.3f ",dd4hep::g/dd4hep::cm3);
+    printout(ALWAYS, "DDCMS"," +++ Units: g/mole: %7.3f ",dd4hep::g/dd4hep::mole);    
+  }
   if ( !elt1 || !elt2 )  {
     double atomicNumber = xmat.attr<double>(_CMU(atomicNumber));
-    double atomicWeight = xmat.attr<double>(_CMU(atomicWeight));
+    double atomicWeight = xmat.attr<double>(_CMU(atomicWeight))/(dd4hep::g/dd4hep::mole);
     int n = int(atomicNumber);
     printout(_ns.context->debug_materials ? ALWAYS : DEBUG, "DDCMS",
-             "+++ Converting element %-24s  atomic number: %d",
-             ('"'+nam+'"').c_str(), n);
-    elt1 = new TGeoElement(nam.c_str(),"CMS element",n,atomicWeight);
+             "+++ Converting element  %-32s  atomic number: %3d  weight: %8.3f   [g/mol]",
+             ('"'+nam+'"').c_str(), n, atomicWeight);
+    elt1 = new TGeoElement(nam.c_str(),"CMS element", n, atomicWeight);
     tab->AddElement(elt1);
   }
 }
@@ -423,16 +432,16 @@ template <> void Converter<elementarymaterial>::operator()(xml_h element) const 
   TGeoMaterial* mat = mgr.GetMaterial(nam.c_str());
   if ( 0 == mat )   {
     const char* matname = nam.c_str();
-    double density      = xmat.density();
+    double density      = xmat.density() / (dd4hep::g/dd4hep::cm3);
     //double atomicWeight = xmat.attr<double>(_CMU(atomicWeight));
-    double atomicNumber = xmat.attr<double>(_CMU(atomicNumber));
+    //double atomicNumber = xmat.attr<double>(_CMU(atomicNumber));
     TGeoElementTable* tab = mgr.GetElementTable();
     TGeoMixture*      mix = new TGeoMixture(nam.c_str(), 1, density);
     TGeoElement*      elt = tab->FindElement(nam.c_str());
 
     printout(_ns.context->debug_materials ? ALWAYS : DEBUG, "DDCMS",
-             "+++ Converting material %-48s  Density: %.3f.",
-             ('"'+nam+'"').c_str(), density);
+             "+++ Converting material %-48s  Density: %8.3f [g/cm3] ROOT: %8.3f [g/cm3]",
+             ('"'+nam+'"').c_str(), density, mix->GetDensity());
 
     if ( !elt )  {
       printout(WARNING,"DDCMS",
@@ -452,11 +461,14 @@ template <> void Converter<elementarymaterial>::operator()(xml_h element) const 
     if ( elt->Z() == 0 )   {
       int n = int(atomicNumber/2e0);
       if ( n < 2 ) n = 2;
-      elt = new TGeoElement((xmat.nameStr()+"-CMS").c_str(),"CMS element",n,atomicNumber);
+      elt = new TGeoElement((xmat.nameStr()+"-CMS").c_str(),"CMS element", n, atomicNumber);
     }
 #endif
     mix->AddElement(elt, 1.0);
     mix->SetRadLen(0e0);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
+    mix->ComputeDerivedQuantities();
+#endif
     /// Create medium from the material
     TGeoMedium* medium = mgr.GetMedium(matname);
     if (0 == medium) {
@@ -481,10 +493,6 @@ template <> void Converter<compositematerial>::operator()(xml_h element) const  
     xml_coll_t   composites(xmat,_CMU(MaterialFraction));
     TGeoMixture* mix = new TGeoMixture(nam.c_str(), composites.size(), density);
 
-    printout(_ns.context->debug_materials ? ALWAYS : DEBUG, "DDCMS",
-             "++ Converting material %-48s  Density: %.3f.",
-             ('"'+nam+'"').c_str(), density);
-    
     for (composites.reset(); composites; ++composites)   {
       xml_dim_t xfrac(composites);
       xml_dim_t xfrac_mat(xfrac.child(_CMU(rMaterial)));
@@ -500,6 +508,13 @@ template <> void Converter<compositematerial>::operator()(xml_h element) const  
                fracname.c_str());
     }
     mix->SetRadLen(0e0);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
+    mix->ComputeDerivedQuantities();
+#endif
+    printout(_ns.context->debug_materials ? ALWAYS : DEBUG, "DDCMS",
+             "++  Converting material %-48s  Density: %8.3f [g/cm3] ROOT: %8.3f [g/cm3]",
+             ('"'+nam+'"').c_str(), density, mix->GetDensity());
+    
     /// Create medium from the material
     TGeoMedium* medium = mgr.GetMedium(matname);
     if (0 == medium) {
