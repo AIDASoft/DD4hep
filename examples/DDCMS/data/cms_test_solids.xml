@@ -3,13 +3,13 @@
   <debug>
     <debug_shapes/>
     <debug_includes/>
+    <debug_materials/>
+    <debug_namespaces/>
 <!-- 
     <debug_rotations/>
-    <debug_materials/>
 
     <debug_volumes/>
     <debug_constants/>
-    <debug_namespaces/>
     <debug_placements/>
     <debug_algorithms/>
     <debug_visattr/>

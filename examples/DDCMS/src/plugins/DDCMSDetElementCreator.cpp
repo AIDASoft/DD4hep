@@ -103,7 +103,7 @@ DDCMSDetElementCreator::DDCMSDetElementCreator(Detector& desc)
   : description(desc)
 {
   DetectorHelper helper(description);
-  silicon = helper.element("SI");
+  silicon = helper.element("materials:Silicon");
   if ( !silicon.isValid() )   {
     except("DDCMSDetElementCreator",
            "++ Failed to extract SILICON from the element table.");
