@@ -23,13 +23,25 @@ ENDIF()
 
 dd4hep_set_compiler_flags()
 #==========================================================================
+set (Geant4_builtin_clhep_FOUND ON)
+# Configure Geant4
+if(DD4HEP_USE_GEANT4)
+  find_package( Geant4 REQUIRED )
+  if(NOT Geant4_builtin_clhep_FOUND)
+    SET(DD4HEP_USE_CLHEP TRUE)
+  else()
+    include_directories(${Geant4_INCLUDE_DIRS})
+  endif()
+  dd4hep_print("|++> Setup Geant4 targets.")
+  DD4HEP_SETUP_GEANT4_TARGETS()
+endif()
 
 # CLHEP dependent stuff
 if(NOT TARGET CLHEP::CLHEP)
   # ensure we only look for CLHEP once
   find_package(CLHEP QUIET)
 endif()
-if (TARGET CLHEP::CLHEP)
+if (TARGET CLHEP::CLHEP OR Geant4_builtin_clhep_FOUND)
   dd4hep_print("|++> CLHEP PRESENT. Building DDCMS examples.")
 else()
   dd4hep_print("|++> CLHEP is not present. NOT building DDCMS examples.")
