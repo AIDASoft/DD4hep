@@ -489,7 +489,7 @@ template <> void Converter<compositematerial>::operator()(xml_h element) const  
   TGeoMaterial* mat = mgr.GetMaterial(nam.c_str());
   if ( 0 == mat )   {
     const char*  matname = nam.c_str();
-    double       density = xmat.density();
+    double       density = xmat.density() / (dd4hep::g/dd4hep::cm3);
     xml_coll_t   composites(xmat,_CMU(MaterialFraction));
     TGeoMixture* mix = new TGeoMixture(nam.c_str(), composites.size(), density);
 
