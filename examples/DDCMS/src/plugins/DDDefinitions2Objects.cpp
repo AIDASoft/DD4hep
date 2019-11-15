@@ -67,6 +67,7 @@ namespace dd4hep {
     };
 
     class materialsection;
+    class elementaryelement;
     class elementarymaterial;
     class compositematerial;
   
@@ -126,6 +127,7 @@ namespace dd4hep {
 
   /// Converter for <MaterialSection/> tags
   template <> void Converter<materialsection>::operator()(xml_h element) const;
+  template <> void Converter<elementaryelement>::operator()(xml_h element) const;
   template <> void Converter<elementarymaterial>::operator()(xml_h element) const;
   template <> void Converter<compositematerial>::operator()(xml_h element) const;
 
@@ -212,6 +214,7 @@ template <> void Converter<vissection>::operator()(xml_h element) const  {
 /// Converter for <MaterialSection/> tags
 template <> void Converter<materialsection>::operator()(xml_h element) const   {
   Namespace _ns(_param<ParsingContext>(), element);
+  xml_coll_t(element, _CMU(ElementaryMaterial)).for_each(Converter<elementaryelement>(description,_ns.context,optional));
   xml_coll_t(element, _CMU(ElementaryMaterial)).for_each(Converter<elementarymaterial>(description,_ns.context,optional));
   xml_coll_t(element, _CMU(CompositeMaterial)).for_each(Converter<compositematerial>(description,_ns.context,optional));
 }
@@ -390,6 +393,28 @@ template <> void Converter<vis>::operator()(xml_h e) const {
 }
 
 /// Converter for <ElementaryMaterial/> tags
+template <> void Converter<elementaryelement>::operator()(xml_h element) const   {
+  Namespace     _ns(_param<ParsingContext>());
+  xml_dim_t     xmat(element);
+  string        nam = _ns.prepend(xmat.nameStr());
+  TGeoManager&  mgr = description.manager();
+  TGeoElementTable* tab = mgr.GetElementTable();
+  TGeoElement*      elt1 = tab->FindElement(xmat.nameStr().c_str());
+  TGeoElement*      elt2 = tab->FindElement(nam.c_str());
+
+  if ( !elt1 || !elt2 )  {
+    double atomicNumber = xmat.attr<double>(_CMU(atomicNumber));
+    double atomicWeight = xmat.attr<double>(_CMU(atomicWeight));
+    int n = int(atomicNumber);
+    printout(_ns.context->debug_materials ? ALWAYS : DEBUG, "DDCMS",
+             "+++ Converting element %-24s  atomic number: %d",
+             ('"'+nam+'"').c_str(), n);
+    elt1 = new TGeoElement(nam.c_str(),"CMS element",n,atomicWeight);
+    tab->AddElement(elt1);
+  }
+}
+
+/// Converter for <ElementaryMaterial/> tags
 template <> void Converter<elementarymaterial>::operator()(xml_h element) const   {
   Namespace     _ns(_param<ParsingContext>());
   xml_dim_t     xmat(element);
@@ -403,12 +428,18 @@ template <> void Converter<elementarymaterial>::operator()(xml_h element) const 
     double atomicNumber = xmat.attr<double>(_CMU(atomicNumber));
     TGeoElementTable* tab = mgr.GetElementTable();
     TGeoMixture*      mix = new TGeoMixture(nam.c_str(), 1, density);
-    TGeoElement*      elt = tab->FindElement(xmat.nameStr().c_str());
+    TGeoElement*      elt = tab->FindElement(nam.c_str());
 
     printout(_ns.context->debug_materials ? ALWAYS : DEBUG, "DDCMS",
              "+++ Converting material %-48s  Density: %.3f.",
              ('"'+nam+'"').c_str(), density);
 
+    if ( !elt )  {
+      printout(WARNING,"DDCMS",
+               "+++ Converter<ElementaryMaterial> No element present with name:%s  [FAKE IT]",
+               matname);
+    }
+#if 0
     if ( !elt )  {
       printout(WARNING,"DDCMS",
                "+++ Converter<ElementaryMaterial> No element present with name:%s  [FAKE IT]",
@@ -423,6 +454,7 @@ template <> void Converter<elementarymaterial>::operator()(xml_h element) const 
       if ( n < 2 ) n = 2;
       elt = new TGeoElement((xmat.nameStr()+"-CMS").c_str(),"CMS element",n,atomicNumber);
     }
+#endif
     mix->AddElement(elt, 1.0);
     mix->SetRadLen(0e0);
     /// Create medium from the material
