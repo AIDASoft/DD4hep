@@ -45,8 +45,8 @@ else()
   set(CLHEP CLHEP::CLHEP)
 endif()
 #
-
 #
+#-------------------------------------------------------------------------------
 # we only create only library for DDCMS. The whole package is a single component
 # library. A priory there is no need to seperate the implementation from the
 # plugins....

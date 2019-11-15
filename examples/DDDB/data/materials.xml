@@ -1,0 +1,22 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  <info name="lhcb_full"
+        title="LHCb detector geometry"
+        author="Markus Frank"
+        url="http://lhcb.cern.ch"
+        status="development"
+        version="1.0">
+    <comment>The conversion of a detector to DD4hep</comment>        
+  </info>
+
+  <geometry open="false" close="false">
+  </geometry>
+  <debug>
+    <type name="materials" value="0"/>
+  </debug>
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+</lccdd>
