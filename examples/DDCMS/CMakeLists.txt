@@ -22,20 +22,17 @@ IF(NOT TARGET DD4hep::DDCore)
 ENDIF()
 
 dd4hep_set_compiler_flags()
+#
 #==========================================================================
-set (Geant4_builtin_clhep_FOUND ON)
-# Configure Geant4
+# Configure Geant4 to if we have a builtin CLHEP
 if(DD4HEP_USE_GEANT4)
   find_package( Geant4 REQUIRED )
-  if(NOT Geant4_builtin_clhep_FOUND)
-    SET(DD4HEP_USE_CLHEP TRUE)
-  else()
+  if(Geant4_builtin_clhep_FOUND)
     include_directories(${Geant4_INCLUDE_DIRS})
+    DD4HEP_SETUP_GEANT4_TARGETS()
   endif()
-  dd4hep_print("|++> Setup Geant4 targets.")
-  DD4HEP_SETUP_GEANT4_TARGETS()
 endif()
-
+#
 # CLHEP dependent stuff
 if(NOT TARGET CLHEP::CLHEP)
   # ensure we only look for CLHEP once
