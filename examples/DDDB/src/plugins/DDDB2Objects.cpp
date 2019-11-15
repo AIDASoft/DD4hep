@@ -202,6 +202,8 @@ namespace dd4hep {
   }
 
   namespace {
+    static UInt_t unique_mat_id = 0xAFFEFEED;
+
     template <> void* CNV<GeoCondition>::convert(GeoCondition *object) const;
     template <> void* CNV<DDDBIsotope>::convert(DDDBIsotope *object) const;
     template <> void* CNV<DDDBElement>::convert(DDDBElement *object) const;
@@ -285,7 +287,12 @@ namespace dd4hep {
       TGeoElementTable* t = TGeoElement::GetElementTable();
       TGeoElement* e = t->FindElement(nam);
       if ( !e )  {
-        e = new TGeoElement(nam,o->symbol.c_str(),o->atom.Zeff,o->atom.A,o->density);
+        size_t iso_count = 0;
+        for(auto i = o->isotopes.begin(); i != o->isotopes.end(); ++i) ++iso_count;
+        if ( 0 == iso_count )
+          e = new TGeoElement(nam,o->symbol.c_str(),o->atom.Zeff,o->atom.A,o->density);
+        else
+          e = new TGeoElement(nam,o->symbol.c_str(), iso_count);
         /// Add the isotopes to the element
         for(auto i = o->isotopes.begin(); i != o->isotopes.end(); ++i)  {
           auto iso = context->geo->isotopes.find((*i).first);
@@ -395,7 +402,6 @@ namespace dd4hep {
           }
         }
         // Now create the medium
-        static UInt_t unique_mat_id = 0xAFFEFEED;
         if (0 == medium) {
           --unique_mat_id;
           medium = new TGeoMedium(name, unique_mat_id, mat);
@@ -412,6 +418,20 @@ namespace dd4hep {
     template <> template <>
     Material CNV<DDDBMaterial>::get<Material>(const string& material_name)  const {
       Context* context = _param<Context>();
+      TGeoManager& mgr = description.manager();
+      TGeoMedium*   gmed = mgr.GetMedium(material_name.c_str());
+      if ( gmed )   {
+        return Material(gmed);
+      }
+      TGeoMaterial* gmat = mgr.GetMaterial(material_name.c_str());
+      if ( gmat )   {
+        --unique_mat_id;
+        gmed = new TGeoMedium(material_name.c_str(), unique_mat_id, gmat);
+        gmed->SetTitle("material");
+        gmed->SetUniqueID(unique_mat_id);
+        if ( context->print.materials ) dddb_print(gmed);
+        return Material(gmed);
+      }
       DDDBMaterial* mat = Context::find(context->geo->materials,material_name);
       if ( !mat )  {
         string mat_name = material_name; // HACK! for bad material names in IT
@@ -424,13 +444,13 @@ namespace dd4hep {
         mat = Context::find(context->geo->materials,mat_name);
       }
       if ( !mat )  {
-	if ( context->print.materials )   {
-	  printout(ERROR,"Cnv<Material>",
-		   "++  Failed to find component material: %s "
-		   "---> Material table dump.", material_name.c_str());
-	  for(auto im=context->geo->materials.begin(); im != context->geo->materials.end(); ++im)
-	    dddb_print((*im).second);
-	}
+        if ( context->print.materials )   {
+          printout(ERROR,"Cnv<Material>",
+                   "++  Failed to find component material: %s "
+                   "---> Material table dump.", material_name.c_str());
+          for(auto im=context->geo->materials.begin(); im != context->geo->materials.end(); ++im)
+            dddb_print((*im).second);
+        }
         except("Materials","++ Undefined material %s",material_name.c_str());
       }
       TGeoMedium* medium = (TGeoMedium*)CNV<DDDBMaterial>(context->description,context).convert(mat);

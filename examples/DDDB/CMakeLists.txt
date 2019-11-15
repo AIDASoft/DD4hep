@@ -51,26 +51,30 @@ target_include_directories(DDDB
 #---DDDB plugin library -------------------------------------------------------
 dd4hep_add_plugin(DDDBPlugins SOURCES src/plugins/*.cpp USES DDDB)
 install(TARGETS DDDB DDDBPlugins LIBRARY DESTINATION lib)
+set(DDDB_BIN  ${CMAKE_INSTALL_PREFIX}/bin)
+set(DDDB_DATA ${CMAKE_INSTALL_PREFIX}/examples/DDDB)
 
 #---Package installation procedure(s) -----------------------------------------
 install ( PROGRAMS scripts/run_dddb.sh DESTINATION bin)
 install ( PROGRAMS scripts/display_dddb.sh DESTINATION bin)
 install ( PROGRAMS scripts/extract_dddb.sh DESTINATION bin)
-install ( FILES    data/DDDB.tar.gz DESTINATION examples/DDDB)
+install ( FILES    data/DDDB.tar.gz    DESTINATION examples/DDDB)
+install ( FILES    data/materials.xml  DESTINATION examples/DDDB)
 #---Testing--------------------------------------------------------------------
 dd4hep_configure_scripts ( DDDB DEFAULT_SETUP WITH_TESTS )
 #
 #---Testing: Extract DDDB data from zip archive -------------------------------
 dd4hep_add_test_reg( DDDB_extract_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/extract_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/extract_dddb.sh
   REGEX_PASS "DDDB Database successfully installed."
   )
 #
 #---Testing: Load the geometry from archive -----------------------------------
 dd4hep_add_test_reg( DDDB_load_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config DD4hep_ConditionsManagerInstaller
   DEPENDS    DDDB_extract_LONGTEST
   REGEX_PASS "\\+ Converted    12852 placements"
@@ -79,8 +83,9 @@ dd4hep_add_test_reg( DDDB_load_LONGTEST
 #
 #---Testing: Load the geometry + conditions from archive ----------------------
 dd4hep_add_test_reg( DDDB_conditions_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   DEPENDS    DDDB_extract_LONGTEST
   REGEX_PASS "\\+ Converted     9353 conditions" 
@@ -89,8 +94,9 @@ dd4hep_add_test_reg( DDDB_conditions_LONGTEST
 #
 #---Testing: Load the geometry + conditions dump as view from DetElement ------
 dd4hep_add_test_reg( DDDB_conditions_dump_simple_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -exec      DDDB_ConditionsSummary
   DEPENDS    DDDB_extract_LONGTEST
@@ -100,8 +106,9 @@ dd4hep_add_test_reg( DDDB_conditions_dump_simple_LONGTEST
 #
 #---Testing: Load the geometry + dump detector elemets ------------------------
 dd4hep_add_test_reg( DDDB_det_elements_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller  -end-plugin
   -plugin    DDDB_DetectorDump -print DEBUG   -end-plugin
   DEPENDS    DDDB_extract_LONGTEST
@@ -111,8 +118,9 @@ dd4hep_add_test_reg( DDDB_det_elements_LONGTEST
 #
 #---Testing: Load the geometry + dump volumes ---------------------------------
 dd4hep_add_test_reg( DDDB_det_volumes_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DetectorVolumeDump -print DEBUG
   DEPENDS    DDDB_extract_LONGTEST
@@ -122,8 +130,9 @@ dd4hep_add_test_reg( DDDB_det_volumes_LONGTEST
 #
 #---Testing: Load the geometry + dump condition keys --------------------------
 dd4hep_add_test_reg( DDDB_det_conditions_keys_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DetectorConditionKeysDump -print DEBUG
   DEPENDS    DDDB_extract_LONGTEST
@@ -133,8 +142,9 @@ dd4hep_add_test_reg( DDDB_det_conditions_keys_LONGTEST
 #
 #---Testing: Load the geometry + dump condition keys --------------------------
 dd4hep_add_test_reg( DDDB_det_catalog_data_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DetectorConditionDump -print DEBUG
   DEPENDS    DDDB_extract_LONGTEST
@@ -144,8 +154,9 @@ dd4hep_add_test_reg( DDDB_det_catalog_data_LONGTEST
 #
 #---Testing: Load the geometry + dump condition keys --------------------------
 dd4hep_add_test_reg( DDDB_det_catalog_align_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DetectorAlignmentDump -print DEBUG
   DEPENDS    DDDB_extract_LONGTEST
@@ -155,8 +166,9 @@ dd4hep_add_test_reg( DDDB_det_catalog_align_LONGTEST
 #
 #---Testing: Load the geometry + conditions dump as view from DetElement ------
 dd4hep_add_test_reg( DDDB_detelement_conditions_dump_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DetElementConditionDump -print DEBUG
   DEPENDS    DDDB_extract_LONGTEST
@@ -165,8 +177,9 @@ dd4hep_add_test_reg( DDDB_detelement_conditions_dump_LONGTEST
 #
 #---Testing: Load the geometry + conditions + conditions derives
 dd4hep_add_test_reg( DDDB_derived_conditions_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DerivedCondTest -print DEBUG
   DEPENDS    DDDB_extract_LONGTEST
@@ -176,8 +189,9 @@ dd4hep_add_test_reg( DDDB_derived_conditions_LONGTEST
 #
 #---Testing: Load the geometry + conditions + run basic derived alignments test
 dd4hep_add_test_reg( DDDB_alignment_derived_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DerivedAlignmentsTest -print DEBUG -turns 1 -access 3
   DEPENDS    DDDB_extract_LONGTEST
@@ -187,8 +201,9 @@ dd4hep_add_test_reg( DDDB_alignment_derived_LONGTEST
 #
 #---Testing: Load the geometry + conditions + access derived alignments from DetElement structures
 dd4hep_add_test_reg( DDDB_alignment_access_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_AlignmentsAccessTest -print DEBUG
   DEPENDS    DDDB_extract_LONGTEST
@@ -198,9 +213,10 @@ dd4hep_add_test_reg( DDDB_alignment_access_LONGTEST
 #
 #---Testing: Load the geometry + conditions + create DeVelo detector elements
 dd4hep_add_test_reg( DDDB_DeVelo_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
   -iov_start 31-12-2000-00:00:00 -iov_end 31-12-2019-00:00:00
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config DD4hep_ConditionsManagerInstaller
   -plugin DDDB_DeVeloTest -print DEBUG
   DEPENDS    DDDB_extract_LONGTEST
@@ -210,9 +226,10 @@ dd4hep_add_test_reg( DDDB_DeVelo_LONGTEST
 #
 #---Testing: As above, but access conditions using Gaudi-like service
 dd4hep_add_test_reg( DDDB_DeVelo_Gaudi_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
   -iov_start 31-12-2000-00:00:00 -iov_end 31-12-2019-00:00:00
+  -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config DD4hep_ConditionsManagerInstaller
   -plugin DDDB_DeVeloServiceTest -print DEBUG
   DEPENDS    DDDB_extract_LONGTEST
@@ -222,8 +239,8 @@ dd4hep_add_test_reg( DDDB_DeVelo_Gaudi_LONGTEST
 #
 #---Testing: Extract DDDB data from zip archive -------------------------------
 dd4hep_add_test_reg( DDDB_clean_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
-  EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/extract_dddb.sh -clean
+  COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
+  EXEC_ARGS  ${DDDB_BIN}/extract_dddb.sh -clean
   DEPENDS    DDDB_extract_LONGTEST
   DDDB_alignment_access_LONGTEST
   DDDB_alignment_derived_LONGTEST
