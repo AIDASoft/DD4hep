@@ -64,7 +64,6 @@ void DigiSubdetectorSequence::initialize()   {
 void DigiSubdetectorSequence::scan_sensitive(PlacedVolume pv, VolumeID vid, VolumeID mask)   {
   Volume vol = pv.volume();
   if ( vol.isSensitive() )    {
-    VolumeID rid = detail::reverseBits<VolumeID>(vid);
     Solid sol = vol.solid();
     auto  key = make_pair(sol->IsA(), m_segmentation);
     auto  is  = m_scanners.find(key);
@@ -75,14 +74,13 @@ void DigiSubdetectorSequence::scan_sensitive(PlacedVolume pv, VolumeID vid, Volu
   for (int idau = 0, ndau = pv->GetNdaughters(); idau < ndau; ++idau) {
     PlacedVolume  p(pv->GetDaughter(idau));
     const VolIDs& new_ids = p.volIDs();
-    Volume        v       = p.volume();
-    VolumeID      new_vid = vid;
-    VolumeID      new_msk = mask;
     if ( !new_ids.empty() )   {
-      new_vid |= m_idDesc.encode(new_ids);
-      new_msk |= m_idDesc.get_mask(new_ids);
+      VolumeID new_vid = vid  | m_idDesc.encode(new_ids);
+      VolumeID new_msk = mask | m_idDesc.get_mask(new_ids);
+      scan_sensitive(p, new_vid, new_msk);
+      continue;
     }
-    scan_sensitive(p, new_vid, new_msk);
+    scan_sensitive(p, vid, mask);
   }
 }
 
@@ -93,14 +91,14 @@ void DigiSubdetectorSequence::scan_detector(DetElement de, VolumeID vid, VolumeI
   if ( !new_ids.empty() )   {
     new_vid |= m_idDesc.encode(new_ids);
     new_msk |= m_idDesc.get_mask(new_ids);
-  }
-  for (const auto& id : new_ids)   {
-    if ( id.first == m_segmentName )   {
-      VolumeID rid = detail::reverseBits<VolumeID>(new_vid);
-      m_parallelVid.emplace(make_pair(rid, Context(de, new_vid, rid, new_msk)));
-      m_parallelDet.emplace(make_pair(de, new_vid));
-      scan_sensitive(de.placement(), new_vid, new_msk);
-      return;
+    for (const auto& id : new_ids)   {
+      if ( id.first == m_segmentName )   {
+        VolumeID rid = detail::reverseBits<VolumeID>(new_vid);
+        m_parallelVid.emplace(make_pair(rid, Context(de, new_vid, rid, new_msk)));
+        m_parallelDet.emplace(make_pair(de, new_vid));
+        scan_sensitive(de.placement(), new_vid, new_msk);
+        return;
+      }
     }
   }
   for ( const auto& c : de.children() )

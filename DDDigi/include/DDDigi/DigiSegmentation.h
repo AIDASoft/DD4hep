@@ -29,14 +29,15 @@ namespace dd4hep {
 
     // Forward declarations
 
-    struct CellDataBase  {
+    class CellDataBase  {
+    public:
       CellID cell_id {0};
       PlacedVolume  placement;
       Volume        volume;
       Solid         solid;
     };
-    template <typename SEGMENTATION> struct cell_data;
-    template <typename SEGMENTATION> struct segmentation_data;
+    template <typename SEGMENTATION> class cell_data;
+    template <typename SEGMENTATION> class segmentation_data;
     
     template <typename SEGMENTATION> 
     void init_segmentation_data(segmentation_data<SEGMENTATION>& data, const Segmentation& seg);
@@ -48,7 +49,7 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    struct DigiCellScanner  {
+    class DigiCellScanner  {
     public:
       typedef std::function<void(const DigiCellScanner& env, const CellDataBase&)> cell_handler_t;
     public:
