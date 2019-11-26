@@ -22,16 +22,23 @@
 #include <sstream>
 
 #include "DDDigi/DigiInputAction.h"
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiInputAction)
-
-#include "DDDigi/DigiActionSequence.h"
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiActionSequence)
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiInputAction)
 
 #include "DDDigi/DigiSynchronize.h"
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSynchronize)
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSynchronize)
+
+#include "DDDigi/DigiActionSequence.h"
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiActionSequence)
+
+#include "DDDigi/DigiSubdetectorSequence.h"
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSubdetectorSequence)
 
 #include "DDDigi/DigiLockedAction.h"
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiLockedAction)
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiLockedAction)
+
+#include "DDDigi/DigiSignalProcessorSequence.h"
+DECLARE_DIGISIGNALPROCESSOR_NS(dd4hep::digi,DigiSignalProcessorSequence)
+
 
 using namespace std;
 using namespace dd4hep;

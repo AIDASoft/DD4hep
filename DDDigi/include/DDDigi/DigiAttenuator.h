@@ -10,11 +10,14 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIINPUTACTION_H
-#define DD4HEP_DDDIGI_DIGIINPUTACTION_H
+#ifndef DD4HEP_DDDIGI_DIGIATTENUATOR_H
+#define DD4HEP_DDDIGI_DIGIATTENUATOR_H
 
 /// Framework include files
-#include "DDDigi/DigiEventAction.h"
+#include "DDDigi/DigiSignalProcessor.h"
+
+/// C/C++ include files
+#include <functional>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -22,34 +25,30 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
-    // Forward declarations
-    class DigiAction;
-    class DigiInputAction;
-
-    /// Base class for input actions to the digitization
+    /// Base class for attenuator actions to the digitization
     /**
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiInputAction : public DigiEventAction {
-    protected:
-      /// Input data specification
-      std::vector<std::string> m_input;
+    class DigiAttenuator : public DigiSignalProcessor {
     protected:
       /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiInputAction);
-
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiAttenuator);
+      /// Function object to be executed
+      std::function<double(const DigiCellData&)> processor;
     public:
       /// Standard constructor
-      DigiInputAction(const DigiKernel& kernel, const std::string& nam);
+      DigiAttenuator(const DigiKernel& kernel, const std::string& nam);
       /// Default destructor
-      virtual ~DigiInputAction();
-      /// Callback to read event input
-      virtual void execute(DigiContext& context)  const override;
+      virtual ~DigiAttenuator();
+      /// Callback to read event attenuator
+      virtual double operator()(const DigiCellData& data)  const  override {
+        return processor(data);
+      }
     };
 
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGIINPUTACTION_H
+#endif // DD4HEP_DDDIGI_DIGIATTENUATOR_H

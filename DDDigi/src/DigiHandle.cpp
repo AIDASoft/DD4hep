@@ -18,7 +18,8 @@
 
 #include "DDDigi/DigiHandle.h"
 #include "DDDigi/DigiKernel.h"
-#include "DDDigi/DigiAction.h"
+#include "DDDigi/DigiEventAction.h"
+#include "DDDigi/DigiSignalProcessor.h"
 
 // C/C++ include files
 #include <stdexcept>
@@ -57,31 +58,36 @@ namespace dd4hep {
       handle.value = 0;
     }
 
+    template <typename T> T* _raw_create(const std::string& t, const DigiKernel& kernel, const std::string& n)    {
+      DigiEventAction* object = PluginService::Create<DigiEventAction*>(t, &kernel, n);
+      return object ? dynamic_cast<T*>(object) : nullptr;
+    }
+    template <> DigiAction* _raw_create<DigiAction>(const std::string& t, const DigiKernel& kernel, const std::string& n)    {
+      return PluginService::Create<DigiAction*>(t, &kernel, n);
+    }
+    template <> DigiSignalProcessor* _raw_create<DigiSignalProcessor>(const std::string& t, const DigiKernel& kernel, const std::string& n)    {
+      return PluginService::Create<DigiSignalProcessor*>(t, &kernel, n);
+    }
     template <typename TYPE> TYPE* _create_object(const DigiKernel& kernel, const TypeName& typ)    {
-      DigiAction* object = PluginService::Create<DigiAction*>(typ.first, &kernel, typ.second);
+      TYPE* object = _raw_create<TYPE>(typ.first, kernel, typ.second);
       if (!object && typ.first == typ.second) {
         string _t = typeName(typeid(TYPE));
         printout(DEBUG, "DigiHandle", "Object factory for %s not found. Try out %s",
                  typ.second.c_str(), _t.c_str());
-        object = PluginService::Create<DigiAction*>(_t, &kernel, typ.second);
+        object = _raw_create<TYPE>(_t, kernel, typ.second);
         if (!object) {
           size_t idx = _t.rfind(':');
           if (idx != string::npos)
             _t = string(_t.substr(idx + 1));
           printout(DEBUG, "DigiHandle", "Try out object factory for %s",_t.c_str());
-          object = PluginService::Create<DigiAction*>(_t, &kernel, typ.second);
+          object = _raw_create<TYPE>(_t, kernel, typ.second);
         }
       }
       if (object)  {
-        TYPE* ptr = dynamic_cast<TYPE*>(object);
-        if (ptr)  {
-          return ptr;
-        }
-        except("DigiHandle", "Failed to convert object of type %s to handle of type %s!",
-               typ.first.c_str(),typ.second.c_str());
+        return object;
       }
       except("DigiHandle", "Failed to create object of type %s!", typ.first.c_str());
-      return 0;
+      return nullptr;
     }
 
     template <typename TYPE> 
@@ -184,7 +190,9 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
     template class DigiHandle<DigiAction>;
+    template class DigiHandle<DigiEventAction>;
     template class DigiHandle<DigiSynchronize>;
     template class DigiHandle<DigiActionSequence>;
+    template class DigiHandle<DigiSignalProcessor>;
   }
 }

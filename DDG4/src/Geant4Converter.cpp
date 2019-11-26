@@ -347,56 +347,43 @@ Geant4Converter::Geant4Converter(const Detector& description_ref, PrintLevel lev
 Geant4Converter::~Geant4Converter() {
 }
 
-/// Dump element in GDML format to output stream
+/// Handle the conversion of isotopes
+void* Geant4Converter::handleIsotope(const string& /* name */, const TGeoIsotope* iso) const {
+  G4Isotope* g4i = data().g4Isotopes[iso];
+  if (!g4i) {
+    double a_conv = (CLHEP::g / CLHEP::mole);
+    g4i = new G4Isotope(iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA()*a_conv);
+    printout(debugElements ? ALWAYS : outputLevel,
+             "Geant4Converter", "++ Created G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
+             iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
+    data().g4Isotopes[iso] = g4i;
+  }
+  return g4i;
+}
+
+/// Handle the conversion of elements
 void* Geant4Converter::handleElement(const string& name, const Atom element) const {
   G4Element* g4e = data().g4Elements[element];
   if (!g4e) {
-    g4e = G4Element::GetElement(name, false);
-    if (!g4e) {
-      PrintLevel lvl = debugElements ? ALWAYS : outputLevel;
-      double a_conv = (CLHEP::g / CLHEP::mole);
-      if (element->GetNisotopes() > 0) {
-        g4e = new G4Element(name, element->GetTitle(), element->GetNisotopes());
-        for (int i = 0, n = element->GetNisotopes(); i < n; ++i) {
-          TGeoIsotope* iso = element->GetIsotope(i);
-          G4Isotope* g4iso = G4Isotope::GetIsotope(iso->GetName(), false);
-          if (!g4iso) {
-            g4iso = new G4Isotope(iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA()*a_conv);
-            printout(lvl, "Geant4Converter", "++ Created G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
-                     iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
-          }
-          else  {
-            printout(lvl, "Geant4Converter", "++ Re-used G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
-                     iso->GetName(), iso->GetZ(), iso->GetN(), iso->GetA());
-          }
-          g4e->AddIsotope(g4iso, element->GetRelativeAbundance(i));
-        }
+    PrintLevel lvl = debugElements ? ALWAYS : outputLevel;
+    if (element->GetNisotopes() > 0) {
+      g4e = new G4Element(name, element->GetTitle(), element->GetNisotopes());
+      for (int i = 0, n = element->GetNisotopes(); i < n; ++i) {
+        TGeoIsotope* iso = element->GetIsotope(i);
+        G4Isotope* g4iso = (G4Isotope*)handleIsotope(iso->GetName(), iso);
+        g4e->AddIsotope(g4iso, element->GetRelativeAbundance(i));
       }
-      else {
-        // This adds in Geant4 the natural isotopes, which we normally do not want. We want to steer it outselves.
-        g4e = new G4Element(element->GetTitle(), name, element->Z(), element->A()*a_conv);
-        printout(lvl, "Geant4Converter", "++ Created G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
-                 element->GetName(), element->Z(), element->N(), element->A());
-#if 0  // Disabled for now!
-        g4e = new G4Element(name, element->GetTitle(), 1);
-        G4Isotope* g4iso = G4Isotope::GetIsotope(name, false);
-        if (!g4iso) {
-          g4iso = new G4Isotope(name, element->Z(), element->N(), element->A()*a_conv);
-          printout(lvl, "Geant4Converter", "++ Created G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
-                   element->GetName(), element->Z(), element->N(), element->A());
-        }
-        else  {
-          printout(lvl, "Geant4Converter", "++ Re-used G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
-                   element->GetName(), element->Z(), element->N(), element->A());
-        }
-        g4e->AddIsotope(g4iso, 1.0);
-#endif
-      }
-      stringstream str;
-      str << (*g4e);
-      printout(lvl, "Geant4Converter", "++ Created G4 %s No.Isotopes:%d",
-               str.str().c_str(),element->GetNisotopes());
     }
+    else {
+      // This adds in Geant4 the natural isotopes, which we normally do not want. We want to steer it outselves.
+      double a_conv = (CLHEP::g / CLHEP::mole);
+      g4e = new G4Element(element->GetTitle(), name, element->Z(), element->A()*a_conv);
+      printout(lvl, "Geant4Converter", "++ Created G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
+               element->GetName(), element->Z(), element->N(), element->A());
+    }
+    stringstream str;
+    str << (*g4e) << endl;
+    printout(lvl, "Geant4Converter", "++ Created G4 element %s", str.str().c_str());
     data().g4Elements[element] = g4e;
   }
   return g4e;
@@ -405,133 +392,130 @@ void* Geant4Converter::handleElement(const string& name, const Atom element) con
 /// Dump material in GDML format to output stream
 void* Geant4Converter::handleMaterial(const string& name, Material medium) const {
   Geant4GeometryInfo& info = data();
-  G4Material* mat = info.g4Materials[medium];
-  if (!mat) {
+  G4Material*         mat  = info.g4Materials[medium];
+  if ( !mat )  {
     PrintLevel lvl = debugMaterials ? ALWAYS : outputLevel;
-    mat = G4Material::GetMaterial(name, false);
-    if (!mat) {
-      TGeoMaterial* material = medium->GetMaterial();
-      G4State state   = kStateUndefined;
-      double  density = material->GetDensity() * (CLHEP::gram / CLHEP::cm3);
-      if (density < 1e-25)
-        density = 1e-25;
-      switch (material->GetState()) {
-      case TGeoMaterial::kMatStateSolid:
-        state = kStateSolid;
-        break;
-      case TGeoMaterial::kMatStateLiquid:
-        state = kStateLiquid;
-        break;
-      case TGeoMaterial::kMatStateGas:
-        state = kStateGas;
-        break;
-      default:
-      case TGeoMaterial::kMatStateUndefined:
-        state = kStateUndefined;
-        break;
-      }
-      if (material->IsMixture()) {
-        double A_total = 0.0;
-        double W_total = 0.0;
-        TGeoMixture* mix = (TGeoMixture*) material;
-        int nElements = mix->GetNelements();
-        mat = new G4Material(name, density, nElements, state, 
-                             material->GetTemperature(), material->GetPressure());
-        for (int i = 0; i < nElements; ++i)  {
-          A_total += (mix->GetAmixt())[i];
-          W_total += (mix->GetWmixt())[i];
-        }
-        for (int i = 0; i < nElements; ++i) {
-          TGeoElement* e = mix->GetElement(i);
-          G4Element* g4e = (G4Element*) handleElement(e->GetName(), Atom(e));
-          if (!g4e) {
-            printout(ERROR, "Material", 
-                     "Missing component %s for material %s. A=%f W=%f", 
-                     e->GetName(), mix->GetName(), A_total, W_total);
-          }
-          //mat->AddElement(g4e, (mix->GetAmixt())[i] / A_total);
-          mat->AddElement(g4e, (mix->GetWmixt())[i] / W_total);
-        }
-      }
-      else {
-        double z = material->GetZ(), a = material->GetA();
-        if ( z < 1.0000001 ) z = 1.0;
-        if ( a < 0.5000001 ) a = 1.0;
-        mat = new G4Material(name, z, a, density, state, 
-                             material->GetTemperature(), material->GetPressure());
-      }
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
-      /// Attach the material properties if any
-      G4MaterialPropertiesTable* tab = 0;
-      TListIter propIt(&material->GetProperties());
-      for(TObject* obj=propIt.Next(); obj; obj = propIt.Next())  {
-        TNamed*      named  = (TNamed*)obj;
-        TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
-        Geant4GeometryInfo::PropertyVector* v =
-          (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
-        if ( 0 == v )   {
-          except("Geant4Converter", "++ FAILED to create G4 material %s [Cannot convert property:%s]",
-                 material->GetName(), named->GetName());
-        }
-        if ( 0 == tab )  {
-          tab = new G4MaterialPropertiesTable();
-          mat->SetMaterialPropertiesTable(tab);
-        }
-        int idx = tab->GetPropertyIndex(named->GetName(), false);
-        if ( idx < 0 )   {
-          printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 CONST Property: %-20s [IGNORED]", named->GetName());
-          continue;
-        }
-        // We need to convert the property from TGeo units to Geant4 units
-        auto conv = g4PropertyConversion(idx);
-        vector<double> bins(v->bins), vals(v->values);
-        for(size_t i=0, count=bins.size(); i<count; ++i)
-          bins[i] *= conv.first, vals[i] *= conv.second;
-
-        G4MaterialPropertyVector* vec = new G4MaterialPropertyVector(&bins[0], &vals[0], bins.size());
-        tab->AddProperty(named->GetName(), vec);
-        printout(lvl, "Geant4Converter", "++      Property: %-20s [%ld x %ld] -> %s ",
-                 named->GetName(), matrix->GetRows(), matrix->GetCols(), named->GetTitle());
-        for(size_t i=0, count=v->bins.size(); i<count; ++i)
-          printout(lvl,named->GetName(),"  Geant4: %8.3g [MeV]  TGeo: %8.3g [GeV] Conversion: %8.3g",
-                   bins[i], v->bins[i], conv.first);
-      }
-      /// Attach the material properties if any
-      TListIter cpropIt(&material->GetConstProperties());
-      for(TObject* obj=cpropIt.Next(); obj; obj = cpropIt.Next())  {
-        Bool_t     err = kFALSE;
-        TNamed*  named = (TNamed*)obj;
-        double       v = info.manager->GetProperty(named->GetTitle(),&err);
-        if ( err != kFALSE )   {
-          except("Geant4Converter",
-                 "++ FAILED to create G4 material %s "
-                 "[Cannot convert const property: %s]",
-                 material->GetName(), named->GetName());
-        }
-        if ( 0 == tab )  {
-          tab = new G4MaterialPropertiesTable();
-          mat->SetMaterialPropertiesTable(tab);
-        }
-        int idx = tab->GetConstPropertyIndex(named->GetName(), false);
-        if ( idx < 0 )   {
-          printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 CONST Property: %-20s [IGNORED]", named->GetName());
-          continue;
-        }
-        // We need to convert the property from TGeo units to Geant4 units
-        double conv = g4ConstPropertyConversion(idx);
-        printout(lvl, "Geant4Converter", "++      CONST Property: %-20s %g ", named->GetName(), v);
-        tab->AddConstProperty(named->GetName(), v * conv);
-      }
-#endif
-      auto* ionization = mat->GetIonisation();
-      stringstream str;
-      str << (*mat) << endl;
-      if ( ionization )
-        str << "              log(MEE): " << ionization->GetLogMeanExcEnergy();
-      else
-        str << "              log(MEE): UNKNOWN";
-      printout(lvl, "Geant4Converter", "++ Created G4 %s", str.str().c_str());
+    TGeoMaterial* material = medium->GetMaterial();
+    G4State state   = kStateUndefined;
+    double  density = material->GetDensity() * (CLHEP::gram / CLHEP::cm3);
+    if (density < 1e-25)
+      density = 1e-25;
+    switch (material->GetState()) {
+    case TGeoMaterial::kMatStateSolid:
+      state = kStateSolid;
+      break;
+    case TGeoMaterial::kMatStateLiquid:
+      state = kStateLiquid;
+      break;
+    case TGeoMaterial::kMatStateGas:
+      state = kStateGas;
+      break;
+    default:
+    case TGeoMaterial::kMatStateUndefined:
+      state = kStateUndefined;
+      break;
     }
+    if (material->IsMixture()) {
+      double A_total = 0.0;
+      double W_total = 0.0;
+      TGeoMixture* mix = (TGeoMixture*) material;
+      int    nElements = mix->GetNelements();
+      mat = new G4Material(name, density, nElements, state, 
+                           material->GetTemperature(), material->GetPressure());
+      for (int i = 0; i < nElements; ++i)  {
+        A_total += (mix->GetAmixt())[i];
+        W_total += (mix->GetWmixt())[i];
+      }
+      for (int i = 0; i < nElements; ++i) {
+        TGeoElement* e = mix->GetElement(i);
+        G4Element* g4e = (G4Element*) handleElement(e->GetName(), Atom(e));
+        if (!g4e) {
+          printout(ERROR, "Material", 
+                   "Missing component %s for material %s. A=%f W=%f", 
+                   e->GetName(), mix->GetName(), A_total, W_total);
+        }
+        //mat->AddElement(g4e, (mix->GetAmixt())[i] / A_total);
+        mat->AddElement(g4e, (mix->GetWmixt())[i] / W_total);
+      }
+    }
+    else {
+      double z = material->GetZ(), a = material->GetA();
+      if ( z < 1.0000001 ) z = 1.0;
+      if ( a < 0.5000001 ) a = 1.0;
+      mat = new G4Material(name, z, a, density, state, 
+                           material->GetTemperature(), material->GetPressure());
+    }
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+    /// Attach the material properties if any
+    G4MaterialPropertiesTable* tab = 0;
+    TListIter propIt(&material->GetProperties());
+    for(TObject* obj=propIt.Next(); obj; obj = propIt.Next())  {
+      TNamed*      named  = (TNamed*)obj;
+      TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
+      Geant4GeometryInfo::PropertyVector* v =
+        (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
+      if ( 0 == v )   {
+        except("Geant4Converter", "++ FAILED to create G4 material %s [Cannot convert property:%s]",
+               material->GetName(), named->GetName());
+      }
+      if ( 0 == tab )  {
+        tab = new G4MaterialPropertiesTable();
+        mat->SetMaterialPropertiesTable(tab);
+      }
+      int idx = tab->GetPropertyIndex(named->GetName(), false);
+      if ( idx < 0 )   {
+        printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 CONST Property: %-20s [IGNORED]", named->GetName());
+        continue;
+      }
+      // We need to convert the property from TGeo units to Geant4 units
+      auto conv = g4PropertyConversion(idx);
+      vector<double> bins(v->bins), vals(v->values);
+      for(size_t i=0, count=bins.size(); i<count; ++i)
+        bins[i] *= conv.first, vals[i] *= conv.second;
+
+      G4MaterialPropertyVector* vec = new G4MaterialPropertyVector(&bins[0], &vals[0], bins.size());
+      tab->AddProperty(named->GetName(), vec);
+      printout(lvl, "Geant4Converter", "++      Property: %-20s [%ld x %ld] -> %s ",
+               named->GetName(), matrix->GetRows(), matrix->GetCols(), named->GetTitle());
+      for(size_t i=0, count=v->bins.size(); i<count; ++i)
+        printout(lvl,named->GetName(),"  Geant4: %8.3g [MeV]  TGeo: %8.3g [GeV] Conversion: %8.3g",
+                 bins[i], v->bins[i], conv.first);
+    }
+    /// Attach the material properties if any
+    TListIter cpropIt(&material->GetConstProperties());
+    for(TObject* obj=cpropIt.Next(); obj; obj = cpropIt.Next())  {
+      Bool_t     err = kFALSE;
+      TNamed*  named = (TNamed*)obj;
+      double       v = info.manager->GetProperty(named->GetTitle(),&err);
+      if ( err != kFALSE )   {
+        except("Geant4Converter",
+               "++ FAILED to create G4 material %s "
+               "[Cannot convert const property: %s]",
+               material->GetName(), named->GetName());
+      }
+      if ( 0 == tab )  {
+        tab = new G4MaterialPropertiesTable();
+        mat->SetMaterialPropertiesTable(tab);
+      }
+      int idx = tab->GetConstPropertyIndex(named->GetName(), false);
+      if ( idx < 0 )   {
+        printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 CONST Property: %-20s [IGNORED]", named->GetName());
+        continue;
+      }
+      // We need to convert the property from TGeo units to Geant4 units
+      double conv = g4ConstPropertyConversion(idx);
+      printout(lvl, "Geant4Converter", "++      CONST Property: %-20s %g ", named->GetName(), v);
+      tab->AddConstProperty(named->GetName(), v * conv);
+    }
+#endif
+    auto* ionization = mat->GetIonisation();
+    stringstream str;
+    str << (*mat) << endl;
+    if ( ionization )
+      str << "              log(MEE): " << ionization->GetLogMeanExcEnergy();
+    else
+      str << "              log(MEE): UNKNOWN";
+    printout(lvl, "Geant4Converter", "++ Created G4 material %s", str.str().c_str());
     info.g4Materials[medium] = mat;
   }
   return mat;
@@ -1413,7 +1397,9 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
 
   //outputLevel = WARNING;
   //setPrintLevel(VERBOSE);
-
+  debugMaterials  = true;
+  debugElements   = true;
+  
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   handleArray(this, geo.manager->GetListOfGDMLMatrices(), &Geant4Converter::handleMaterialProperties);
   handleArray(this, geo.manager->GetListOfOpticalSurfaces(), &Geant4Converter::handleOpticalSurface);

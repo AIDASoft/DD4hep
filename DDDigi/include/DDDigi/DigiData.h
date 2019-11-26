@@ -15,14 +15,16 @@
 
 /// Framework include files
 #include "DD4hep/Any.h"
+#include "DD4hep/Objects.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/ObjectExtensions.h"
 
 /// C/C++ include files
-#include <memory>
+#include <functional>
 #include <stdexcept>
 #include <cstdint>
+#include <memory>
 #include <map>
 
 /// Namespace for the AIDA detector description toolkit
@@ -61,6 +63,50 @@ namespace dd4hep {
       DigiContainer& operator=(const DigiContainer& copy) = delete;      
     };
     
+    /// 
+    /*
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class EnergyDeposit   {
+    public:
+      class FunctionTable   {
+        friend class EnergyDeposit;
+      public:
+        std::function<long long int(const void*)> cellID;
+        std::function<long(const void*)>          flag;
+        FunctionTable() = default;
+        ~FunctionTable() = default;
+      };
+      template <typename Q, typename T> static const Q* vtable();
+      std::pair<const void*, const FunctionTable*> object;
+
+    public:
+      /// Initializing constructor
+      template <typename T> EnergyDeposit(const T* object);
+      /// Default constructor
+      EnergyDeposit() = delete;
+      /// Disable move constructor
+      EnergyDeposit(EnergyDeposit&& copy) = default;
+      /// Disable copy constructor
+      EnergyDeposit(const EnergyDeposit& copy) = default;      
+      /// Default destructor
+      virtual ~EnergyDeposit() = default;
+      /// Disable move assignment
+      EnergyDeposit& operator=(EnergyDeposit&& copy) = default;
+      /// Disable copy assignment
+      EnergyDeposit& operator=(const EnergyDeposit& copy) = default;      
+
+      long long int cellID()  const    {   return object.second->cellID(object.first);     }
+      long          flag()  const      {   return object.second->flag(object.first);       }
+    };
+
+    template <typename T> inline EnergyDeposit::EnergyDeposit(const T* ptr)
+      : object(ptr, vtable<EnergyDeposit::FunctionTable,T>())
+    {
+    }
 
     /// 
     /*
@@ -69,22 +115,120 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiDeposit   {
+    class TrackerDeposit : public EnergyDeposit   {
     public:
+      class FunctionTable : public  EnergyDeposit::FunctionTable  {
+        friend class TrackerDeposit;
+        friend class EnergyDeposit;
+      public:
+        std::function<const Position& (const void*)>  position;
+        std::function<const Direction& (const void*)> momentum;
+        std::function<double(const void*)>            deposit;
+        std::function<double(const void*)>            length;
+        FunctionTable() = default;
+        ~FunctionTable() = default;
+      };
+      std::pair<const void*, const FunctionTable*> object;
+
+    public:
+      /// Initializing constructor
+      template <typename T> TrackerDeposit(const T* object);
       /// Default constructor
-      DigiDeposit() = default;
+      TrackerDeposit() = delete;
       /// Disable move constructor
-      DigiDeposit(DigiDeposit&& copy) = delete;
+      TrackerDeposit(TrackerDeposit&& copy) = default;
       /// Disable copy constructor
-      DigiDeposit(const DigiDeposit& copy) = delete;      
+      TrackerDeposit(const TrackerDeposit& copy) = default;      
       /// Default destructor
-      virtual ~DigiDeposit() = default;
+      virtual ~TrackerDeposit() = default;
       /// Disable move assignment
-      DigiDeposit& operator=(DigiDeposit&& copy) = delete;
+      TrackerDeposit& operator=(TrackerDeposit&& copy) = default;
       /// Disable copy assignment
-      DigiDeposit& operator=(const DigiDeposit& copy) = delete;      
+      TrackerDeposit& operator=(const TrackerDeposit& copy) = default;      
+
+      const Position&  position()  const  {   return object.second->position(object.first);     }
+      const Direction& momentum()  const  {   return object.second->momentum(object.first);     }
+      double           deposit()  const   {   return object.second->deposit(object.first);      }
+      double           length()  const    {   return object.second->length(object.first);       }
     };
 
+    template <typename T> inline TrackerDeposit::TrackerDeposit(const T* ptr)
+      : object(ptr, vtable<TrackerDeposit::FunctionTable,T>())
+    {
+    }
+
+    /// 
+    /*
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class CaloDeposit : public EnergyDeposit   {
+    public:
+      class FunctionTable : public  EnergyDeposit::FunctionTable  {
+        friend class CaloDeposit;
+        friend class EnergyDeposit;
+      public:
+        std::function<const Position& (const void*)>  position;
+        std::function<double(const void*)>            deposit;
+        FunctionTable() = default;
+        ~FunctionTable() = default;
+      };
+      std::pair<const void*, const FunctionTable*> object;
+
+    public:
+      /// Initializing constructor
+      template <typename T> CaloDeposit(const T* object);
+      /// Default constructor
+      CaloDeposit() = delete;
+      /// Disable move constructor
+      CaloDeposit(CaloDeposit&& copy) = default;
+      /// Disable copy constructor
+      CaloDeposit(const CaloDeposit& copy) = default;      
+      /// Default destructor
+      virtual ~CaloDeposit() = default;
+      /// Disable move assignment
+      CaloDeposit& operator=(CaloDeposit&& copy) = default;
+      /// Disable copy assignment
+      CaloDeposit& operator=(const CaloDeposit& copy) = default;      
+
+      const Position& position()  const {   return object.second->position(object.first);    }
+      double          deposit()  const  {   return object.second->deposit(object.first);     }
+    };
+
+    template <typename T> inline CaloDeposit::CaloDeposit(const T* ptr)
+      : object(ptr, vtable<CaloDeposit::FunctionTable,T>())
+    {
+    }
+
+    /// 
+    /*
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class DigiCellData   {
+    public:
+      double raw_value  { 0.0 };
+      double delay      { 0.0 };
+      mutable bool kill { false };
+
+      /// Default constructor
+      DigiCellData() = default;
+      /// Default move constructor
+      DigiCellData(DigiCellData&& copy) = default;
+      /// Default copy constructor
+      DigiCellData(const DigiCellData& copy) = default;
+      /// Default destructor
+      virtual ~DigiCellData() = default;
+      /// Default move assignment
+      DigiCellData& operator=(DigiCellData&& copy) = delete;
+      /// Default copy assignment
+      DigiCellData& operator=(const DigiCellData& copy) = delete;      
+    };
+    
     /// 
     /*
      *
@@ -96,20 +240,20 @@ namespace dd4hep {
     public:
       /// Default constructor
       DigiCount() = default;
-      /// Disable move constructor
+      /// Default move constructor
       DigiCount(DigiCount&& copy) = default;
-      /// Disable copy constructor
+      /// Default copy constructor
       DigiCount(const DigiCount& copy) = default;
       /// Default destructor
       virtual ~DigiCount() = default;
-      /// Disable move assignment
+      /// Default move assignment
       DigiCount& operator=(DigiCount&& copy) = delete;
-      /// Disable copy assignment
+      /// Default copy assignment
       DigiCount& operator=(const DigiCount& copy) = delete;      
     };
 
-    typedef DigiContainer<DigiDeposit*> DigiEnergyDeposits;
-    typedef DigiContainer<DigiCount*>   DigiCounts;
+    typedef DigiContainer<EnergyDeposit*> DigiEnergyDeposits;
+    typedef DigiContainer<DigiCount*>     DigiCounts;
 
     ///  Key defintion to access the event data
     /**

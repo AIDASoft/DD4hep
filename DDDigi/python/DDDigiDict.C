@@ -37,6 +37,7 @@
 #include "DDDigi/DigiContext.h"
 #include "DDDigi/DigiSynchronize.h"
 #include "DDDigi/DigiActionSequence.h"
+#include "DDDigi/DigiSignalProcessor.h"
 
 struct DDDigiDict  {};
 
@@ -58,7 +59,9 @@ namespace dd4hep {
       Digi##x* get() const                             { return action;                 } \
     }
 
+    ACTIONHANDLE(SignalProcessor);
     ACTIONHANDLE(Action);
+    ACTIONHANDLE(EventAction);
     ACTIONHANDLE(ActionSequence);
     ACTIONHANDLE(Synchronize);
 
@@ -80,6 +83,8 @@ namespace dd4hep {
       }
       static ActionHandle createAction(KernelHandle& kernel, const std::string& name_type)   
       { return cr<ActionHandle,DigiHandle<DigiAction> >(kernel,name_type);                           }
+      static EventActionHandle createEventAction(KernelHandle& kernel, const std::string& name_type)   
+      { return cr<EventActionHandle,DigiHandle<DigiEventAction> >(kernel,name_type);                 }
       static ActionSequenceHandle createSequence(KernelHandle& kernel, const std::string& name_type)   
       { return cr<ActionSequenceHandle,DigiHandle<DigiActionSequence> >(kernel,name_type);           }
       static SynchronizeHandle createSync(KernelHandle& kernel, const std::string& name_type)
@@ -88,10 +93,12 @@ namespace dd4hep {
       static DigiAction* toAction(DigiAction* f)                   { return f;                       }
       static DigiAction* toAction(DigiActionSequence* f)           { return f;                       }
       static DigiAction* toAction(DigiSynchronize* f)              { return f;                       }
+      static DigiAction* toAction(DigiSignalProcessor* f)          { return f;                       }
 
       static DigiAction* toAction(ActionHandle f)                  { return f.action;                }
       static DigiAction* toAction(ActionSequenceHandle f)          { return f.action;                }
       static DigiAction* toAction(SynchronizeHandle f)             { return f.action;                }
+      static DigiAction* toAction(SignalProcessorHandle f)         { return f.action;                }
 
       static PropertyResult getProperty(DigiAction* action, const std::string& name)  {
         if ( action->hasProperty(name) )  {
@@ -136,12 +143,16 @@ using namespace std;
 #pragma link C++ namespace dd4hep::digi;
 
 #pragma link C++ class dd4hep::digi::DigiActionCreation;
-#pragma link C++ class dd4hep::digi::KernelHandle;
-#pragma link C++ class dd4hep::digi::DigiKernel;
 #pragma link C++ class dd4hep::digi::DigiContext;
+
+#pragma link C++ class dd4hep::digi::DigiKernel;
+#pragma link C++ class dd4hep::digi::KernelHandle;
 
 #pragma link C++ class dd4hep::digi::DigiAction;
 #pragma link C++ class dd4hep::digi::ActionHandle;
+
+#pragma link C++ class dd4hep::digi::DigiEventAction;
+#pragma link C++ class dd4hep::digi::EventActionHandle;
 
 #pragma link C++ class dd4hep::digi::DigiActionSequence;
 #pragma link C++ class dd4hep::digi::ActionSequenceHandle;
@@ -149,6 +160,10 @@ using namespace std;
 #pragma link C++ class dd4hep::digi::DigiSynchronize;
 #pragma link C++ class dd4hep::digi::SynchronizeHandle;
 
+#pragma link C++ class dd4hep::digi::DigiSignalProcessor;
+#pragma link C++ class dd4hep::digi::SignalProcessorHandle;
+
+/// Digi data item wrappers
 #pragma link C++ class dd4hep::digi::DigiEvent;
 #pragma link C++ class dd4hep::digi::DigiEnergyDeposits+;
 #pragma link C++ class dd4hep::digi::DigiCounts+;

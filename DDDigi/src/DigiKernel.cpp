@@ -88,8 +88,8 @@ public:
 class DigiKernel::Wrapper  {
 public:
   DigiContext& context;
-  DigiAction*  action = 0;
-  Wrapper(DigiContext& c, DigiAction* a)
+  DigiEventAction*  action = 0;
+  Wrapper(DigiContext& c, DigiEventAction* a)
     : context(c), action(a) {}
   Wrapper(Wrapper&& copy) = delete;
   Wrapper(const Wrapper& copy) = default;
@@ -266,19 +266,19 @@ DigiActionSequence& DigiKernel::outputAction() const    {
   return *internals->outputAction;
 }
 
-void DigiKernel::submit(const DigiAction::Actors<DigiAction>& actions, DigiContext& context)   const  {
+void DigiKernel::submit(const DigiAction::Actors<DigiEventAction>& actions, DigiContext& context)   const  {
   chrono::system_clock::time_point start = chrono::system_clock::now();
   bool parallel = 0 != internals->tbbInit && internals->numThreads>0;
 #ifdef DD4HEP_USE_TBB
   if ( parallel )   {
     tbb::task_group que;
-    for(auto i=actions.begin(); i!=actions.end(); ++i)
+    for ( auto* i : actions )
       que.run(Wrapper(context, *i));
     que.wait();
     goto print_stamp;
   }
 #endif
-  actions(&DigiAction::execute,context);
+  actions(&DigiEventAction::execute,context);
   goto print_stamp;
 
  print_stamp:
@@ -288,8 +288,8 @@ void DigiKernel::submit(const DigiAction::Actors<DigiAction>& actions, DigiConte
            secs.count());
 }
 
-void DigiKernel::execute(const DigiAction::Actors<DigiAction>& actions, DigiContext& context)   const  {
-  actions(&DigiAction::execute,context);
+void DigiKernel::execute(const DigiAction::Actors<DigiEventAction>& actions, DigiContext& context)   const  {
+  actions(&DigiEventAction::execute,context);
 }
 
 void DigiKernel::wait(DigiContext& context)   const  {

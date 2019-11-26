@@ -10,11 +10,11 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIRANDOMNOISE_H
-#define DD4HEP_DDDIGI_DIGIRANDOMNOISE_H
+#ifndef DD4HEP_DDDIGI_DIGITESTSIGNALPROCESSOR_H
+#define DD4HEP_DDDIGI_DIGITESTSIGNALPROCESSOR_H
 
 // Framework include files
-#include "DDDigi/DigiEventAction.h"
+#include "DDDigi/DigiSignalProcessor.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -23,8 +23,8 @@ namespace dd4hep {
   namespace digi {
 
     // Forward declarations
-    class DigiAction;
-    class DigiRandomNoise;
+    class DigiSignalProcessor;
+    class DigiTestSignalProcessor;
 
     /// Class which applies random noise hits of a given amplitude
     /**
@@ -35,31 +35,25 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiRandomNoise : public DigiEventAction {
+    class DigiTestSignalProcessor : public DigiSignalProcessor {
     protected:
-      double m_probability = 1.0;
-      double m_amplitude   = 1.0;
+      double m_attenuation = 1.0;
+    protected:
+      /// Define standard assignments and constructors
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiTestSignalProcessor);
       
-    protected:
-      /// Inhibit copy constructor
-      DigiRandomNoise() = delete;
-      /// Inhibit copy constructor
-      DigiRandomNoise(const DigiRandomNoise& copy) = delete;
-      /// Inhibit assignment operator
-      DigiRandomNoise& operator=(const DigiRandomNoise& copy) = delete;
-
     public:
       /// Standard constructor
-      DigiRandomNoise(const DigiKernel& kernel, const std::string& nam);
+      DigiTestSignalProcessor(const DigiKernel& kernel, const std::string& nam);
       /// Default destructor
-      virtual ~DigiRandomNoise();
-      /// Callback to read event input
-      virtual void execute(DigiContext& context)  const override;
+      virtual ~DigiTestSignalProcessor();
+      /// Process signal data
+      virtual double operator()(const DigiCellData& data)   const  override;
     };
 
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGIRANDOMNOISE_H
+#endif // DD4HEP_DDDIGI_DIGITESTSIGNALPROCESSOR_H
 
 //==========================================================================
 //  AIDA Detector description implementation 
@@ -78,30 +72,29 @@ namespace dd4hep {
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DDDigi/DigiFactories.h"
-//#include "DDDigi/DigiRandomNoise.h"
+//#include "DDDigi/DigiTestSignalProcessor.h"
 
 // C/C++ include files
 
 using namespace std;
 using namespace dd4hep::digi;
 
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiRandomNoise)
+DECLARE_DIGISIGNALPROCESSOR_NS(dd4hep::digi,DigiTestSignalProcessor)
 
 /// Standard constructor
-DigiRandomNoise::DigiRandomNoise(const DigiKernel& kernel, const string& nam)
-  : DigiEventAction(kernel, nam)
+DigiTestSignalProcessor::DigiTestSignalProcessor(const DigiKernel& kernel, const string& nam)
+  : DigiSignalProcessor(kernel, nam)
 {
-  declareProperty("Probability", m_probability);
-  declareProperty("Amplitude",   m_amplitude);
+  declareProperty("attenuation", m_attenuation = 1.0);
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-DigiRandomNoise::~DigiRandomNoise() {
+DigiTestSignalProcessor::~DigiTestSignalProcessor() {
   InstanceCount::decrement(this);
 }
 
-/// Pre-track action callback
-void DigiRandomNoise::execute(DigiContext& /* context */)  const   {
-  info("+++ Virtual method execute() MUST be overloaded!");
+/// Process signal data
+double DigiTestSignalProcessor::operator()(const DigiCellData& data)   const   {
+  return m_attenuation * data.raw_value;
 }

@@ -14,7 +14,7 @@
 #define DD4HEP_DDDIGI_DIGISYNCHRONIZE_H
 
 // Framework incloude files
-#include "DDDigi/DigiAction.h"
+#include "DDDigi/DigiEventAction.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -31,10 +31,10 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiSynchronize : public DigiAction {
+    class DigiSynchronize : public DigiEventAction {
     protected:
       /// The list of action objects to be called
-      Actors<DigiAction> m_actors;
+      Actors<DigiEventAction> m_actors;
 
     protected:
       /// Define standard assignments and constructors
@@ -46,13 +46,13 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiSynchronize();
       /// Get an action member by name
-      DigiAction* get(const std::string& name) const;
+      DigiEventAction* get(const std::string& name) const;
       /// Access the children
-      const Actors<DigiAction>& children()   const   {
+      const Actors<DigiEventAction>& children()   const   {
         return m_actors;
       }
       /// Adopt a new action as part of the sequence. Sequence takes ownership.
-      void adopt(DigiAction* action);
+      void adopt(DigiEventAction* action);
       /// Begin-of-event callback
       virtual void execute(DigiContext& context)  const override;
       ///

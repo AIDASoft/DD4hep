@@ -9,7 +9,8 @@
 #
 #==========================================================================
 SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDDigi)
-file(GLOB DDDigi_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+file(GLOB DDDigi_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+                         ${CMAKE_CURRENT_SOURCE_DIR}/src/segmentations/*.cpp)
 add_library(DDDigi ${DDDigi_SOURCES})
 add_library(DD4hep::DDDigi ALIAS DDDigi)
 

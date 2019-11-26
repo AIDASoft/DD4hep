@@ -169,9 +169,15 @@ def Action(kernel, nam, parallel=False):
   return obj
 # ---------------------------------------------------------------------------
 
+def EventAction(kernel, nam, parallel=False):
+  obj = Interface.createEventAction(kernel, str(nam))
+  obj.parallel = parallel
+  return obj
+# ---------------------------------------------------------------------------
+
 
 def TestAction(kernel, nam, sleep=0):
-  obj = Interface.createAction(kernel, str('DigiTestAction/' + nam))
+  obj = Interface.createEventAction(kernel, str('DigiTestAction/' + nam))
   if sleep != 0:
     obj.sleep = sleep
   return obj

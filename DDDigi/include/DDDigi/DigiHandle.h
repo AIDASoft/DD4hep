@@ -30,6 +30,8 @@ namespace dd4hep {
     /// Forward declarations
     class DigiKernel;
     class DigiAction;
+    class DigiEventAction;
+    class DigiSignalProcessor;
 
     /// Handle to Digi actions with built-in creation mechanism
     /**

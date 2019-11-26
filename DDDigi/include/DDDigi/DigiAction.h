@@ -110,10 +110,6 @@ namespace dd4hep {
       long               m_refCount    = 1;
       /// Default property: Output level
       int                m_outputLevel = 3;
-      ///
-      
-      /// Property: Support parallel execution
-      bool               m_parallel    = false;
 
     protected:
 
@@ -266,12 +262,6 @@ namespace dd4hep {
       }
       /// Set the output level; returns previous value
       PrintLevel setOutputLevel(PrintLevel new_level);
-      /// Access parallization flag
-      bool executeParallel()  const  {
-        return m_parallel;
-      }      
-      /// Set the parallization flag; returns previous value
-      bool setExecuteParallel(bool new_value);
       
       /// Declare property
       template <typename T> DigiAction& declareProperty(const std::string& nam, T& val);
@@ -307,8 +297,8 @@ namespace dd4hep {
       /// Support of exceptions: Print fatal message and throw runtime_error.
       void except(const char* fmt, ...) const;
 
-      /// Main functional callback
-      virtual void execute(DigiContext& context)   const = 0;
+      /// Optional action initialization if required
+      virtual void initialize();
     };
 
     /// Declare property

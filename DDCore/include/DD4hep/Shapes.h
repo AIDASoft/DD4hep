@@ -134,6 +134,9 @@ namespace dd4hep {
     /// Set new shape name
     Solid_type<T>& setName(const std::string& value);
 
+    /// Access to shape title (GetTitle accessor of the TGeoShape)
+    const char* title() const;
+
     /// Access to shape type (The TClass name of the ROOT implementation)
     const char* type() const;
     /// Auto conversion to underlying ROOT object

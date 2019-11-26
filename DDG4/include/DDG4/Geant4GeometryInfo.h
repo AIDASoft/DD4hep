@@ -32,6 +32,7 @@ class TGeoVolume;
 class TGeoShape;
 class TGeoNode;
 // Forward declarations (Geant4)
+class G4Isotope;
 class G4Element;
 class G4Material;
 class G4VSolid;
@@ -66,6 +67,7 @@ namespace dd4hep {
     namespace Geant4GeometryMaps  {
       //typedef std::vector<const G4VPhysicalVolume*>           Geant4PlacementPath;
       typedef std::map<Atom, G4Element*>                      ElementMap;
+      typedef std::map<const TGeoIsotope*, G4Isotope*>        IsotopeMap;
       typedef std::map<Material, G4Material*>                 MaterialMap;
       //typedef std::map<LimitSet, G4UserLimits*>               LimitMap;
       typedef std::map<PlacedVolume, G4VPhysicalVolume*>      PlacementMap;
@@ -92,6 +94,7 @@ namespace dd4hep {
     public:
       typedef std::vector<const G4VPhysicalVolume*>           Geant4PlacementPath;
       TGeoManager*                         manager = 0;
+      Geant4GeometryMaps::IsotopeMap       g4Isotopes;
       Geant4GeometryMaps::ElementMap       g4Elements;
       Geant4GeometryMaps::MaterialMap      g4Materials;
       Geant4GeometryMaps::SolidMap         g4Solids;

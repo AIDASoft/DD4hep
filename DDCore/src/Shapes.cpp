@@ -56,6 +56,11 @@ template <typename T> const char* Solid_type<T>::name() const {
   return this->ptr()->GetName();
 }
 
+/// Access to shape name
+template <typename T> const char* Solid_type<T>::title() const {
+  return this->ptr()->GetTitle();
+}
+
 /// Set new shape name
 template <typename T> Solid_type<T>& Solid_type<T>::setName(const char* value)    {
   this->access()->SetName(value);
