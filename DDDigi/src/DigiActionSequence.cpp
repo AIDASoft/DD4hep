@@ -36,7 +36,7 @@ DigiActionSequence::~DigiActionSequence() {
 }
 
 /// Adopt a new action as part of the sequence. Sequence takes ownership.
-void DigiActionSequence::adopt(DigiAction* action)    {
+void DigiActionSequence::adopt(DigiEventAction* action)    {
   this->DigiSynchronize::adopt(action);
 }
 

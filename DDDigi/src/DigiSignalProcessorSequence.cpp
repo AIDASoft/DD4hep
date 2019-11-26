@@ -13,32 +13,39 @@
 
 // Framework include files
 #include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiInputAction.h"
+#include "DDDigi/DigiSignalProcessorSequence.h"
 
 // C/C++ include files
 #include <stdexcept>
-#include <unistd.h>
 
-using namespace std;
 using namespace dd4hep::digi;
 
 /// Standard constructor
-DigiInputAction::DigiInputAction(const DigiKernel& kernel, const string& nam)
-  : DigiEventAction(kernel, nam)
+DigiSignalProcessorSequence::DigiSignalProcessorSequence(const DigiKernel& kernel, const std::string& nam)
+  : DigiSignalProcessor(kernel, nam)
 {
-  declareProperty("Input", m_input);
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-DigiInputAction::~DigiInputAction()   {
+DigiSignalProcessorSequence::~DigiSignalProcessorSequence() {
   InstanceCount::decrement(this);
 }
 
+/// Adopt a new action as part of the sequence. Sequence takes ownership.
+void DigiSignalProcessorSequence::adopt(DigiSignalProcessor* action)    {
+  if ( action )    {
+    action->addRef();
+    m_actors.add(action);
+    return;
+  }
+  except("DigiSignalProcessorSequence","++ Attempt to add invalid actor!");
+}
+
 /// Pre-track action callback
-void DigiInputAction::execute(DigiContext& /* context */)  const   {
-  ::sleep(1);
-  info("+++ Virtual method execute()");
-  return;
-  //except("DigiInputAction","+++ Virtual method execute() MUST be overloaded!");
+double DigiSignalProcessorSequence::operator()(const DigiCellData& data)  const   {
+  double result = data.raw_value;
+  for ( const auto* p : m_actors )
+    result += p->operator()(data);
+  return data.kill ? 0e0 : result;
 }

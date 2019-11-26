@@ -14,7 +14,7 @@
 #define DD4HEP_DDDIGI_DIGITESTACTION_H
 
 // Framework include files
-#include "DDDigi/DigiAction.h"
+#include "DDDigi/DigiEventAction.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -35,7 +35,7 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiTestAction : public DigiAction {
+    class DigiTestAction : public DigiEventAction {
     protected:
       /// Sleep period to fake execution [milliseconds]
       int m_sleep = 0;
@@ -85,11 +85,11 @@ static void noop(int) {}
 using namespace std;
 using namespace dd4hep::digi;
 
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiTestAction)
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiTestAction)
 
 /// Standard constructor
 DigiTestAction::DigiTestAction(const DigiKernel& kernel, const string& nam)
-  : DigiAction(kernel, nam)
+  : DigiEventAction(kernel, nam)
 {
   declareProperty("sleep", m_sleep = 0);
   InstanceCount::increment(this);

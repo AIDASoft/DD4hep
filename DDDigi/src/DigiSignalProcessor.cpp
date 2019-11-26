@@ -13,32 +13,17 @@
 
 // Framework include files
 #include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiInputAction.h"
-
-// C/C++ include files
-#include <stdexcept>
-#include <unistd.h>
-
-using namespace std;
-using namespace dd4hep::digi;
+#include "DDDigi/DigiSignalProcessor.h"
 
 /// Standard constructor
-DigiInputAction::DigiInputAction(const DigiKernel& kernel, const string& nam)
-  : DigiEventAction(kernel, nam)
+dd4hep::digi::DigiSignalProcessor::DigiSignalProcessor(const DigiKernel& krnl, const std::string& nam)
+  : DigiAction(krnl, nam)
 {
-  declareProperty("Input", m_input);
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-DigiInputAction::~DigiInputAction()   {
+dd4hep::digi::DigiSignalProcessor::~DigiSignalProcessor() {
   InstanceCount::decrement(this);
 }
 
-/// Pre-track action callback
-void DigiInputAction::execute(DigiContext& /* context */)  const   {
-  ::sleep(1);
-  info("+++ Virtual method execute()");
-  return;
-  //except("DigiInputAction","+++ Virtual method execute() MUST be overloaded!");
-}

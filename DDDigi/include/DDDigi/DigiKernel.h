@@ -14,13 +14,11 @@
 #define DD4HEP_DDDIGI_DIGIKERNEL_H
 
 // Framework include files
-#include "DDDigi/DigiAction.h"
+#include "DDDigi/DigiEventAction.h"
 
 // C/C++ include files
-#include <map>
 #include <mutex>
 #include <atomic>
-#include <typeinfo>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -135,9 +133,9 @@ namespace dd4hep {
       /// Access to the main output action sequence from the kernel object
       DigiActionSequence& outputAction() const;
       /// Submit a bunch of actions to be executed in parallel
-      virtual void submit (const DigiAction::Actors<DigiAction>& algorithms, DigiContext& context)  const;
+      virtual void submit (const DigiAction::Actors<DigiEventAction>& algorithms, DigiContext& context)  const;
       /// Submit a bunch of actions to be executed serially
-      virtual void execute(const DigiAction::Actors<DigiAction>& algorithms, DigiContext& context)  const;
+      virtual void execute(const DigiAction::Actors<DigiEventAction>& algorithms, DigiContext& context)  const;
       virtual void wait(DigiContext& context)   const;
     };
     /// Declare property

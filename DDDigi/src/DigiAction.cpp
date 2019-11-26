@@ -44,7 +44,6 @@ DigiAction::DigiAction(const DigiKernel& krnl, const string& nam)
   InstanceCount::increment(this);
   declareProperty("Name", m_name);
   declareProperty("name", m_name);
-  declareProperty("parallel", m_parallel);
   declareProperty("OutputLevel", m_outputLevel);
 }
 
@@ -74,13 +73,6 @@ PrintLevel DigiAction::setOutputLevel(PrintLevel new_level)  {
   int old = m_outputLevel;
   m_outputLevel = new_level;
   return (PrintLevel)old;
-}
-
-/// Set the parallization flag; returns previous value
-bool DigiAction::setExecuteParallel(bool new_value)    {
-  bool old = m_parallel;
-  m_parallel = new_value;
-  return old;
 }
 
 /// Check property for existence
@@ -206,3 +198,8 @@ void DigiAction::except(const char* fmt, ...) const {
   va_end(args);
   throw runtime_error(err);
 }
+
+/// Optional action initialization if required
+void DigiAction::initialize()   {
+}
+

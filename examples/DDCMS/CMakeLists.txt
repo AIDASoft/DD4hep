@@ -24,36 +24,19 @@ ENDIF()
 dd4hep_set_compiler_flags()
 #
 #==========================================================================
-# Configure Geant4 to if we have a builtin CLHEP
-if(DD4HEP_USE_GEANT4)
-  find_package( Geant4 REQUIRED )
-  if(Geant4_builtin_clhep_FOUND)
-    include_directories(${Geant4_INCLUDE_DIRS})
-    DD4HEP_SETUP_GEANT4_TARGETS()
-  endif()
-endif()
-#
 # CLHEP dependent stuff
 if(NOT TARGET CLHEP::CLHEP)
   # ensure we only look for CLHEP once
   find_package(CLHEP QUIET)
 endif()
-if (TARGET CLHEP::CLHEP OR Geant4_builtin_clhep_FOUND)
+if (TARGET CLHEP::CLHEP)
   dd4hep_print("|++> CLHEP PRESENT. Building DDCMS examples.")
 else()
   dd4hep_print("|++> CLHEP is not present. NOT building DDCMS examples.")
   return()
 endif()
-
+#
 dd4hep_configure_output ()
-#
-#---Trick to allow building with Geant4 internal CLHEP
-if ( DD4HEP_USE_GEANT4 AND Geant4_builtin_clhep_FOUND)
-  set(CLHEP "")
-else()
-  set(CLHEP CLHEP::CLHEP)
-endif()
-#
 #
 #-------------------------------------------------------------------------------
 # we only create only library for DDCMS. The whole package is a single component
@@ -64,8 +47,8 @@ endif()
 #
 #---DDCMS plugin library -------------------------------------------------------
 dd4hep_add_plugin ( DDCMS SOURCES src/*.cpp src/plugins/*.cpp
-  USES DD4hep::DDParsers DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond ROOT::Core ROOT::Geom ROOT::GenVector
-  )
+  USES DD4hep::DDParsers DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP
+)
 install(TARGETS DDCMS LIBRARY DESTINATION lib)
 target_include_directories(DDCMS PUBLIC include)
 install(DIRECTORY include/DDCMS DESTINATION include)

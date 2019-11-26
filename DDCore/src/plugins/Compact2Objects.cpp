@@ -392,13 +392,13 @@ template <> void Converter<Header>::operator()(xml_h e) const {
  */
 template <> void Converter<Material>::operator()(xml_h e) const {
   xml_ref_t         x_mat(e);
-  TGeoManager&      mgr = description.manager();
-  xml_tag_t         mname = x_mat.name();
+  TGeoManager&      mgr     = description.manager();
+  xml_tag_t         mname   = x_mat.name();
   const char*       matname = mname.c_str();
-  TGeoElementTable* table = mgr.GetElementTable();
-  TGeoMaterial*     mat = mgr.GetMaterial(matname);
-  TGeoMixture*      mix = dynamic_cast<TGeoMixture*>(mat);
-  xml_coll_t        fractions(x_mat, _U(fraction));
+  TGeoElementTable* table   = mgr.GetElementTable();
+  TGeoMaterial*     mat     = mgr.GetMaterial(matname);
+  TGeoMixture*      mix     = dynamic_cast<TGeoMixture*>(mat);
+  xml_coll_t        fractions (x_mat, _U(fraction));
   xml_coll_t        composites(x_mat, _U(composite));
 
   if (0 == mat) {
@@ -425,11 +425,11 @@ template <> void Converter<Material>::operator()(xml_h e) const {
              "++ Converting material %-16s  Density: %.3f.",matname, dens_val);
     //throw 1;
     mat = mix = new TGeoMixture(matname, composites.size(), dens_val);
-    size_t ifrac = 0;
+    size_t         ifrac = 0;
     vector<double> composite_fractions;
-    double composite_fractions_total = 0.0;
+    double         composite_fractions_total = 0.0;
     for (composites.reset(); composites; ++composites)   {
-      string nam = composites.attr<string>(_U(ref));
+      string nam      = composites.attr<string>(_U(ref));
       double fraction = composites.attr<double>(_U(n));
       if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
         fraction *= comp_mat->GetA();
@@ -441,7 +441,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       composite_fractions.emplace_back(fraction);
     }
     for (composites.reset(), ifrac=0; composites; ++composites, ++ifrac) {
-      string nam = composites.attr<string>(_U(ref));
+      string nam      = composites.attr<string>(_U(ref));
       double fraction = composite_fractions[ifrac]/composite_fractions_total;
       if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
         mix->AddElement(comp_mat, fraction);
@@ -449,7 +449,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
         mix->AddElement(comp_elt, fraction);
     }
     for (fractions.reset(); fractions; ++fractions) {
-      string nam = fractions.attr<string>(_U(ref));
+      string nam      = fractions.attr<string>(_U(ref));
       double fraction = fractions.attr<double>(_U(n));
       if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
         mix->AddElement(comp_mat, fraction);
@@ -467,7 +467,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     for(xml_coll_t properties(x_mat, _U(constant)); properties; ++properties) {
       xml_elt_t p = properties;
       if ( p.hasAttr(_U(ref)) )   {
-        bool err = kFALSE;
+        bool   err = kFALSE;
         string ref = p.attr<string>(_U(ref));
         mgr.GetProperty(ref.c_str(), &err); /// Check existence
         if ( err == kFALSE )  {
@@ -514,14 +514,14 @@ template <> void Converter<Material>::operator()(xml_h e) const {
 #endif
     xml_h temp = x_mat.child(_U(T), false);
     if ( temp.ptr() )   {
-      double temp_val    = temp.attr<double>(_U(value));
-      double temp_unit   = temp.attr<double>(_U(unit), 1.0 /* _toDouble("kelvin") */);
+      double temp_val  = temp.attr<double>(_U(value));
+      double temp_unit = temp.attr<double>(_U(unit), 1.0 /* _toDouble("kelvin") */);
       mat->SetTemperature(temp_val*temp_unit);
     }
     xml_h pressure = x_mat.child(_U(P), false);
     if ( pressure.ptr() )   {
-      double pressure_val    = pressure.attr<double>(_U(value));
-      double pressure_unit   = pressure.attr<double>(_U(unit),1.0 /* _toDouble("pascal") */);
+      double pressure_val  = pressure.attr<double>(_U(value));
+      double pressure_unit = pressure.attr<double>(_U(unit),1.0 /* _toDouble("pascal") */);
       mat->SetPressure(pressure_val*pressure_unit);
     }
   }
@@ -556,10 +556,10 @@ template <> void Converter<Material>::operator()(xml_h e) const {
  */
 template <> void Converter<Isotope>::operator()(xml_h e) const {
   xml_dim_t isotope(e);
-  TGeoManager&      mgr  = description.manager();
-  string            nam  = isotope.nameStr();
-  TGeoElementTable* tab  = mgr.GetElementTable();
-  TGeoIsotope*      iso  = tab->FindIsotope(nam.c_str());
+  TGeoManager&      mgr = description.manager();
+  string            nam = isotope.nameStr();
+  TGeoElementTable* tab = mgr.GetElementTable();
+  TGeoIsotope*      iso = tab->FindIsotope(nam.c_str());
 
   // Create the isotope object in the event it is not yet present from the XML data
   if ( !iso )   {

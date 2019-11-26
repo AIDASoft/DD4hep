@@ -45,7 +45,7 @@ namespace dd4hep {
     
       /// only c'tor with reference to bitfield and BitFieldElement
       BitFieldValue( long64& bitfield, const BitFieldElement& bv ) :
-	_value( bitfield ), _bv( bv) {}
+        _value( bitfield ), _bv( bv) {}
     
       /** Returns the current field value 
        */
@@ -56,8 +56,8 @@ namespace dd4hep {
 
       //// Assignment operator for user convenience 
       BitFieldValue& operator=(long64 in) {
-	_bv.set( _value, in ) ;
-	return *this ;
+        _bv.set( _value, in ) ;
+        return *this ;
       } 
     
       /** Conversion operator for long64 - allows to write:<br>
@@ -115,8 +115,8 @@ namespace dd4hep {
     public :
 
       virtual ~BitField64() {
-	if( _owner)
-	  delete _coder ;
+        if( _owner)
+          delete _coder ;
       } ; 
   
       /** No default c'tor */
@@ -138,7 +138,7 @@ namespace dd4hep {
        */
       BitField64( const std::string& initString ){
       
-	_coder = new BitFieldCoder( initString ) ;
+        _coder = new BitFieldCoder( initString ) ;
       }
 
       /// Initialize from existing BitFieldCoder
@@ -157,7 +157,7 @@ namespace dd4hep {
       /** Set a new 64bit value given as high and low 32bit words.
        */
       void  setValue(unsigned low_Word, unsigned high_Word ) {
-	setValue( ( low_Word & 0xffffffffULL ) |  ( ( high_Word & 0xffffffffULL ) << 32 ) ) ; 
+        setValue( ( low_Word & 0xffffffffULL ) |  ( ( high_Word & 0xffffffffULL ) << 32 ) ) ; 
       }
     
       /** Operator for setting a new value and accessing the BitField directly */
@@ -170,7 +170,7 @@ namespace dd4hep {
       /** Acces to field through index 
        */
       BitFieldValue operator[](size_t idx) {
-	return BitFieldValue( _value,  _coder->operator[]( idx  ) ) ; 
+        return BitFieldValue( _value,  _coder->operator[]( idx  ) ) ; 
       }
     
       // /** Const acces to field through index 
@@ -195,7 +195,7 @@ namespace dd4hep {
        */
       BitFieldValue operator[](const std::string& name) { 
 
-	return BitFieldValue( _value,  _coder->operator[]( name ) ) ; 
+        return BitFieldValue( _value,  _coder->operator[]( name ) ) ; 
       }
       // /** Const Access to field through name .
       //  */

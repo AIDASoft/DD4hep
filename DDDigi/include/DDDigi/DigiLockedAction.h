@@ -14,7 +14,7 @@
 #define DD4HEP_DDDIGI_DIGILOCKEDACTION_H
 
 /// Framework include files
-#include "DDDigi/DigiAction.h"
+#include "DDDigi/DigiEventAction.h"
 
 /// C/C++ include files
 #include <mutex>
@@ -36,12 +36,12 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiLockedAction : public DigiAction {
+    class DigiLockedAction : public DigiEventAction {
     protected:
       /// Action lock to inhibit calling the non-reentrant underlying
       std::mutex  m_lock;
       /// Reference to underlying action
-      DigiAction* m_action = 0;
+      DigiEventAction* m_action = 0;
 
     protected:
       /// Define standard assignments and constructors
@@ -53,7 +53,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiLockedAction();
       /// Underlying object to be used during the locked execution
-      void use(DigiAction* action);
+      void use(DigiEventAction* action);
       /// Callback to read event locked
       virtual void execute(DigiContext& context)  const override;
     };

@@ -25,20 +25,20 @@ using namespace dd4hep::digi;
 
 /// Standard constructor
 DigiSynchronize::DigiSynchronize(const DigiKernel& kernel, const string& nam)
-  : DigiAction(kernel, nam)
+  : DigiEventAction(kernel, nam)
 {
   InstanceCount::increment(this);
 }
 
 /// Default destructor
 DigiSynchronize::~DigiSynchronize() {
-  m_actors(&DigiAction::release);
+  m_actors(&DigiEventAction::release);
   m_actors.clear();
   InstanceCount::decrement(this);
 }
 
 /// Get an action sequence member by name
-DigiAction* DigiSynchronize::get(const string& nam) const   {
+DigiEventAction* DigiSynchronize::get(const string& nam) const   {
   return m_actors.get(FindByName(TypeName::split(nam).second));
 }
 
@@ -56,7 +56,7 @@ void DigiSynchronize::execute(DigiContext& context)  const   {
 }
 
 /// Add an actor responding to all callbacks. Sequence takes ownership.
-void DigiSynchronize::adopt(DigiAction* action) {
+void DigiSynchronize::adopt(DigiEventAction* action) {
   if (action)    {
     action->addRef();
     m_actors.add(action);

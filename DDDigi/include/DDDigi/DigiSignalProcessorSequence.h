@@ -10,11 +10,11 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIACTIONSEQUENCE_H
-#define DD4HEP_DDDIGI_DIGIACTIONSEQUENCE_H
+#ifndef DD4HEP_DDDIGI_DIGISIGNALPROCESSORSEQUENCE_H
+#define DD4HEP_DDDIGI_DIGISIGNALPROCESSORSEQUENCE_H
 
 // Framework include files
-#include "DDDigi/DigiSynchronize.h"
+#include "DDDigi/DigiSignalProcessor.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -23,8 +23,8 @@ namespace dd4hep {
   namespace digi {
 
     // Forward declarations
-    class DigiEventAction;
-    class DigiActionSequence;
+    class DigiSignalProcessor;
+    class DigiSignalProcessorSequence;
 
     /// Concrete implementation of the Digitization event action sequence
     /**
@@ -40,38 +40,26 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiActionSequence : public DigiSynchronize {
+    class DigiSignalProcessorSequence : public DigiSignalProcessor {
     protected:
-      /// Callback sequence before the digitization modules execute
-      CallbackSequence   m_begin;
-      /// Callback sequence after the digitization modules executed
-      CallbackSequence   m_end;
+      /// The list of action objects to be called
+      Actors<DigiSignalProcessor> m_actors;
 
     protected:
       /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiActionSequence);
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiSignalProcessorSequence);
 
     public:
       /// Standard constructor
-      DigiActionSequence(const DigiKernel& kernel, const std::string& nam);
+      DigiSignalProcessorSequence(const DigiKernel& kernel, const std::string& nam);
       /// Default destructor
-      virtual ~DigiActionSequence();
+      virtual ~DigiSignalProcessorSequence();
       /// Adopt a new action as part of the sequence. Sequence takes ownership.
-      void adopt(DigiEventAction* action);
-      /// Register external listener callbacks before starting the sequence
-      template <typename Q, typename T>
-      void begin(Q* p, void (T::*f)(DigiContext* context)) {
-        m_begin.add(p, f);
-      }
-      /// Register external listener callbacks after finishing the sequence
-      template <typename Q, typename T>
-      void end(Q* p, void (T::*f)(DigiContext* context))  {
-        m_end.add(p, f);
-      }
+      void adopt(DigiSignalProcessor* action);
       /// Begin-of-event callback
-      virtual void execute(DigiContext& context)  const override;
+      virtual double operator()(const DigiCellData& data)  const override;
     };
 
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGIACTIONSEQUENCE_H
+#endif // DD4HEP_DDDIGI_DIGISIGNALPROCESSORSEQUENCE_H

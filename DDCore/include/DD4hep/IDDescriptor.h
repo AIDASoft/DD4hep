@@ -63,6 +63,10 @@ namespace dd4hep {
 #ifndef __MAKECINT__
     /// Encode a set of volume identifiers (corresponding to this description of course!) to a volumeID.
     VolumeID encode(const std::vector<std::pair<std::string, int> >& ids) const;
+    /// Encode a set of volume identifiers to a volumeID with the system ID on the top bits
+    VolumeID encode_reverse(const std::vector<std::pair<std::string, int> >& id_vector) const;
+    /// Compute the submask for a given set of volume IDs
+    VolumeID get_mask(const std::vector<std::pair<std::string, int> >& id_vector) const;
 #endif
     /// Decode volume IDs and return filled descriptor with all fields
     void decodeFields(VolumeID vid, std::vector<std::pair<const BitFieldElement*, VolumeID> >& fields)  const;
@@ -73,7 +77,7 @@ namespace dd4hep {
     /// Access string representation
     std::string toString() const;
     /// Access the BitFieldCoder object
-    BitFieldCoder* decoder();
+    BitFieldCoder* decoder()  const;
     /// Re-build object in place
     void rebuild(const std::string& description);
   };

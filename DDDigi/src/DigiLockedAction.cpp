@@ -24,7 +24,7 @@ using namespace dd4hep::digi;
 
 /// Standard constructor
 DigiLockedAction::DigiLockedAction(const DigiKernel& kernel, const string& nam)
-  : DigiAction(kernel, nam)
+  : DigiEventAction(kernel, nam)
 {
   InstanceCount::increment(this);
 }
@@ -36,7 +36,7 @@ DigiLockedAction::~DigiLockedAction()   {
 }
 
 /// Underlying object to be used during the locked execution
-void DigiLockedAction::use(DigiAction* action)   {
+void DigiLockedAction::use(DigiEventAction* action)   {
   if (action) {
     action->addRef();
     m_properties.adopt(action->properties());

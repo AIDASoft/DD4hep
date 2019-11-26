@@ -10,11 +10,12 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIINPUTACTION_H
-#define DD4HEP_DDDIGI_DIGIINPUTACTION_H
+#ifndef DD4HEP_DDDIGI_DIGISIGNALPROCESSOR_H
+#define DD4HEP_DDDIGI_DIGISIGNALPROCESSOR_H
 
 /// Framework include files
-#include "DDDigi/DigiEventAction.h"
+#include "DDDigi/DigiAction.h"
+#include "DDDigi/DigiData.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -24,32 +25,32 @@ namespace dd4hep {
 
     // Forward declarations
     class DigiAction;
-    class DigiInputAction;
+    class DigiCellData;
+    class DigiSignalProcessor;
 
-    /// Base class for input actions to the digitization
+    /// Base class for signal processing actions to the digitization
     /**
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiInputAction : public DigiEventAction {
-    protected:
-      /// Input data specification
-      std::vector<std::string> m_input;
+    class DigiSignalProcessor : public DigiAction {
     protected:
       /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiInputAction);
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiSignalProcessor);
+
+      /// Main functional callback
+      virtual void execute(DigiContext&)   const {}
 
     public:
       /// Standard constructor
-      DigiInputAction(const DigiKernel& kernel, const std::string& nam);
+      DigiSignalProcessor(const DigiKernel& kernel, const std::string& nam);
       /// Default destructor
-      virtual ~DigiInputAction();
-      /// Callback to read event input
-      virtual void execute(DigiContext& context)  const override;
+      virtual ~DigiSignalProcessor();
+      /// Callback to read event signalprocessor
+      virtual double operator()(const DigiCellData& data)  const = 0;
     };
-
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGIINPUTACTION_H
+#endif // DD4HEP_DDDIGI_DIGISIGNALPROCESSOR_H

@@ -178,8 +178,21 @@ namespace dd4hep {
       hash ^= (hash >> 11); hash += (hash << 15);
       return hash;
     }
+
     inline unsigned int hash32(const std::string& key) {
       return hash32(key.c_str());
+    }
+
+    template <typename T> T reverseBits(T num)     {
+      static constexpr size_t NO_OF_BITS = sizeof(num) * 8 - 1; 
+      static constexpr T _zero = 0;
+      static constexpr T _one = 1;
+      T reverse_num = _zero; 
+      for (size_t i = 0; i <= NO_OF_BITS; i++)     { 
+        if( (num & (_one << i)) )
+          reverse_num |= (_one << (NO_OF_BITS - i));
+      }
+      return reverse_num; 
     }
 
     /// Convert date into epoch time (seconds since 1970)

@@ -84,6 +84,9 @@ namespace dd4hep {
       /// Convert the geometry type material into the corresponding Geant4 object(s).
       virtual void* handleMaterial(const std::string& name, Material medium) const;
 
+      /// Handle the conversion of isotopes
+      virtual void* handleIsotope(const std::string& name, const TGeoIsotope* iso) const;
+
       /// Convert the geometry type element into the corresponding Geant4 object(s).
       virtual void* handleElement(const std::string& name, Atom element) const;
 
