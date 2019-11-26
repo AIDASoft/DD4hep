@@ -24,13 +24,13 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
-    template <> struct cell_data<CartesianGridXY> : public CellDataBase {
+    template <> class cell_data<CartesianGridXY> : public CellDataBase {
     public:
       CellID x_cid {0}, y_cid {0};
       CellID x_bin {0}, y_bin {0};
     };
 
-    template <> struct segmentation_data<CartesianGridXY> {
+    template <> class segmentation_data<CartesianGridXY> {
     public:
       DDSegmentation::CartesianGridXY* segmentation_xy {0};
       double x_grid_size {0.0};

@@ -30,7 +30,7 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    template <typename SEGMENTATION, typename SOLID> struct CellScanner : public DigiCellScanner  {
+    template <typename SEGMENTATION, typename SOLID> class CellScanner : public DigiCellScanner  {
     public:
       typedef SOLID                                   solid_t;
       typedef SEGMENTATION                            segmentation_t;

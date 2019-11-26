@@ -23,6 +23,24 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
+    template <>
+    void init_segmentation_data<CartesianGridXY>(segmentation_data<CartesianGridXY>& data,
+                                                 const Segmentation& seg)
+    {
+      CartesianGridXYHandle xy_seg = seg;
+      const auto& x_f = (*seg.decoder())["x"];
+      const auto& y_f = (*seg.decoder())["y"];
+      data.segmentation_xy = xy_seg->implementation;
+      data.x_grid_size     = data.segmentation_xy->gridSizeX();
+      data.y_grid_size     = data.segmentation_xy->gridSizeY();
+      data.x_offset        = data.segmentation_xy->offsetX();
+      data.y_offset        = data.segmentation_xy->offsetY();
+      data.x_f_offset      = x_f.offset();
+      data.y_f_offset      = y_f.offset();
+      data.x_mask          = x_f.mask();
+      data.y_mask          = y_f.mask();
+    }
+    
     template <typename SEGMENTATION, typename SOLID> void
     CellScanner<SEGMENTATION,SOLID>::operator()(PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler) {
       typename self_t::cell_data_t e;
@@ -49,29 +67,12 @@ namespace dd4hep {
   }    // End namespace digi
 }      // End namespace dd4hep
 
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {  
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
-    template <>
-    void init_segmentation_data<CartesianGridXY>(segmentation_data<CartesianGridXY>& data,
-                                                 const Segmentation& seg)
-    {
-      CartesianGridXYHandle xy_seg = seg;
-      const auto& x_f = (*seg.decoder())["x"];
-      const auto& y_f = (*seg.decoder())["y"];
-      data.segmentation_xy = xy_seg->implementation;
-      data.x_grid_size     = data.segmentation_xy->gridSizeX();
-      data.y_grid_size     = data.segmentation_xy->gridSizeY();
-      data.x_offset        = data.segmentation_xy->offsetX();
-      data.y_offset        = data.segmentation_xy->offsetY();
-      data.x_f_offset      = x_f.offset();
-      data.y_f_offset      = y_f.offset();
-      data.x_mask          = x_f.mask();
-      data.y_mask          = y_f.mask();
-    }
-    
     template <> void
     CellScanner<CartesianGridXY,Box>::operator()(PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler)
     {

@@ -49,7 +49,8 @@ namespace dd4hep {
      */
     class DigiSubdetectorSequence : public DigiActionSequence {
     protected:
-      struct Context  {
+      class Context  {
+      public:
         DetElement detector;
         VolumeID   detector_id;
         VolumeID   reverse_id;
@@ -100,7 +101,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiSubdetectorSequence();
       /// Iniitalize subdetector sequencer
-      virtual void initialize();
+      virtual void initialize()  override;
       /// Begin-of-event callback
       virtual void execute(DigiContext& context)  const override;
     };
