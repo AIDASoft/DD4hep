@@ -14,10 +14,10 @@ import DDDigi
 
 
 def make_input(kernel):
-  input_1 = DDDigi.TestAction(kernel,'input_01', 100)
-  input_2 = DDDigi.TestAction(kernel,'input_02', 200)
-  input_3 = DDDigi.TestAction(kernel,'input_03', 150)
-  input_4 = DDDigi.TestAction(kernel,'input_04', 60)
+  input_1 = DDDigi.TestAction(kernel, 'input_01', 100)
+  input_2 = DDDigi.TestAction(kernel, 'input_02', 200)
+  input_3 = DDDigi.TestAction(kernel, 'input_03', 150)
+  input_4 = DDDigi.TestAction(kernel, 'input_04', 60)
   seq  = kernel.inputAction()
   seq.adopt(input_1)
   seq.adopt(input_2)
@@ -27,12 +27,12 @@ def make_input(kernel):
 
 
 def make_subdetector(kernel, name):
-  action_1 = DDDigi.TestAction(kernel,name+'_deposits',  150)
-  action_2 = DDDigi.TestAction(kernel,name+'_rndmNoise', 100)
-  action_3 = DDDigi.TestAction(kernel,name+'_deadChan',  100)
-  action_4 = DDDigi.TestAction(kernel,name+'_noiseChan',  50)
-  action_5 = DDDigi.TestAction(kernel,name+'_merge',     200)
-  seq = DDDigi.ActionSequence(kernel,'DigiActionSequence/'+name+'_sequence',True)
+  action_1 = DDDigi.TestAction(kernel, name+'_deposits',  150)
+  action_2 = DDDigi.TestAction(kernel, name+'_rndmNoise', 100)
+  action_3 = DDDigi.TestAction(kernel, name+'_deadChan',  100)
+  action_4 = DDDigi.TestAction(kernel, name+'_noiseChan',  50)
+  action_5 = DDDigi.TestAction(kernel, name+'_merge',     200)
+  seq = DDDigi.ActionSequence(kernel, 'DigiActionSequence/'+name+'_sequence', True)
   seq.adopt(action_1)
   seq.adopt(action_2)
   seq.adopt(action_3)
@@ -42,8 +42,8 @@ def make_subdetector(kernel, name):
 
 
 def run():
-  ##import pdb
-  ##pdb.set_trace()
+  # import pdb
+  # pdb.set_trace()
   DDDigi.setPrintFormat(str('%-32s %5s %s'))
   kernel = DDDigi.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
@@ -55,7 +55,6 @@ def run():
 
   event_processor = DDDigi.Synchronize(kernel, 'DigiSynchronize/MainDigitizer', True)
   event_processor.parallel = True
-  detectors = DDDigi
   # input
   make_input(kernel)
   # Subdetector digitization
@@ -78,5 +77,3 @@ def run():
 
 if __name__ == '__main__':
   run()
-  
-
