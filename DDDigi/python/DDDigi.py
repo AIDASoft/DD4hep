@@ -169,6 +169,7 @@ def Action(kernel, nam, parallel=False):
   return obj
 # ---------------------------------------------------------------------------
 
+
 def EventAction(kernel, nam, parallel=False):
   obj = Interface.createEventAction(kernel, str(nam))
   obj.parallel = parallel
@@ -215,9 +216,8 @@ _import_class('digi', 'DigiKernel')
 _import_class('digi', 'DigiContext')
 _import_class('digi', 'DigiAction')
 
+
 # ---------------------------------------------------------------------------
-
-
 def _get(self, name):
   # import traceback
   a = Interface.toAction(self)
