@@ -10,12 +10,11 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGISIGNALPROCESSOR_H
-#define DD4HEP_DDDIGI_DIGISIGNALPROCESSOR_H
+#ifndef DD4HEP_DDDIGI_DIGIGAUSSIANNOISE_H
+#define DD4HEP_DDDIGI_DIGIGAUSSIANNOISE_H
 
 /// Framework include files
-#include "DDDigi/DigiAction.h"
-#include "DDDigi/DigiData.h"
+#include "DDDigi/DigiSignalProcessor.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -24,35 +23,40 @@ namespace dd4hep {
   namespace digi {
 
     // Forward declarations
-    class DigiAction;
-    class DigiCellData;
-    class DigiSignalProcessor;
+    class DigiGaussianNoise;
 
-    /// Base class for signal processing actions to the digitization
+    /// Generic noise source with a gaussian distribution
     /**
+     *  Generate gaussian noise as it appears e.g. from electronic noise
+     *  with a given mean and a given sigma
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiSignalProcessor : public DigiAction {
+    class DigiGaussianNoise : public DigiSignalProcessor  {
     protected:
-      /// Flag to check if initialized was called
-      bool  m_initialized = false;
+      /// Property: Mean value of the 
+      double    m_mean    = 0.0;
+      /// Property: Variance of the energy distribution in electron Volt. MANDATORY!
+      double    m_sigma   = -1.0;
+      /// Property: Cut-off parameter. Do nothing if existing energy deposit is below threshold
+      double    m_cutoff  = -1.0;
 
+    protected:
       /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiSignalProcessor);
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiGaussianNoise);
 
     public:
       /// Standard constructor
-      DigiSignalProcessor(const DigiKernel& kernel, const std::string& nam);
+      DigiGaussianNoise(const DigiKernel& kernel, const std::string& nam);
       /// Default destructor
-      virtual ~DigiSignalProcessor();
+      virtual ~DigiGaussianNoise();
       /// Initialize the noise source
-      virtual void initialize();
-      /// Callback to read event signalprocessor
-      virtual double operator()(const DigiCellData& data)  const = 0;
+      virtual void initialize()  override;
+      /// Callback to read event gaussiannoise
+      virtual double operator()(const DigiCellData& data)  const  override;
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGISIGNALPROCESSOR_H
+#endif // DD4HEP_DDDIGI_DIGIGAUSSIANNOISE_H

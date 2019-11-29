@@ -14,14 +14,23 @@ file(GLOB DDDigi_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
 add_library(DDDigi ${DDDigi_SOURCES})
 add_library(DD4hep::DDDigi ALIAS DDDigi)
 
+## FIND_PACKAGE(GSL REQUIRED  QUIET)
+if(GSL_FOUND)
+  dd4hep_print( "|++> GSL_INCLUDE_DIR -->  ${GSL_INCLUDE_DIR}")
+  dd4hep_print( "|++> GSL_LIBRARY     -->  ${GSL_LIBRARY}")
+  dd4hep_print( "|++> GSL found. DDDigi will run multi threaded.")
+endif()
+
 target_link_libraries(DDDigi PUBLIC
-  DD4hep::DDCore Boost::boost ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO)
+  DD4hep::DDCore Boost::boost ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO ${GSL_LIBRARY})
 
 target_include_directories(DDDigi
   PUBLIC
+  ${GSL_INCLUDE_DIR}
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   )
+
 
 FIND_PACKAGE(TBB QUIET)
 if(TBB_FOUND)
