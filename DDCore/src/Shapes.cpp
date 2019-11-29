@@ -14,12 +14,12 @@
 #define _USE_MATH_DEFINES
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/MatrixHelpers.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/detail/ShapesInterna.h"
-#include "ShapeTags.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/MatrixHelpers.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/ShapeTags.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/detail/ShapesInterna.h>
 
 // C/C++ include files
 #include <stdexcept>
@@ -27,11 +27,11 @@
 #include <sstream>
 
 // ROOT includes
-#include "TClass.h"
-#include "TGeoMatrix.h"
-#include "TGeoBoolNode.h"
-#include "TGeoScaledShape.h"
-#include "TGeoCompositeShape.h"
+#include <TClass.h>
+#include <TGeoMatrix.h>
+#include <TGeoBoolNode.h>
+#include <TGeoScaledShape.h>
+#include <TGeoCompositeShape.h>
 
 using namespace std;
 using namespace dd4hep;

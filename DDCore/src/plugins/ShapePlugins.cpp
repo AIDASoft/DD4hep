@@ -12,13 +12,13 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/Printout.h"
-#include "XML/Utilities.h"
-#include "../ShapeTags.h"
-#include "TGeoShapeAssembly.h"
-#include "TSystem.h"
-#include "TClass.h"
+#include <DD4hep/DetFactoryHelper.h>
+#include <DD4hep/Printout.h>
+#include <XML/Utilities.h>
+#include <DD4hep/ShapeTags.h>
+#include <TGeoShapeAssembly.h>
+#include <TSystem.h>
+#include <TClass.h>
 
 // C/C++ include files
 #include <fstream>

@@ -44,7 +44,7 @@ DigiSubdetectorSequence::~DigiSubdetectorSequence() {
   InstanceCount::decrement(this);
 }
 
-/// Iniitalize subdetector sequencer
+/// Initialize subdetector sequencer
 void DigiSubdetectorSequence::initialize()   {
   info("Initializing detector sequencer for detector: %s",m_detectorName.c_str());
   m_detector     = subdetector(m_detectorName);
