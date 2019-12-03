@@ -42,7 +42,7 @@ namespace dd4hep {
     }
     
     template <typename SEGMENTATION, typename SOLID> void
-    CellScanner<SEGMENTATION,SOLID>::operator()(PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler) {
+    CellScanner<SEGMENTATION,SOLID>::operator()(DigiContext& context, PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler) {
       typename self_t::cell_data_t e;
       e.placement     = pv;
       e.volume        = pv.volume();
@@ -60,7 +60,7 @@ namespace dd4hep {
           if ( !sol->Contains(pos) ) continue;
           e.y_cid = (e.y_bin << segment.y_f_offset) & segment.y_mask;
           e.cell_id = vid | e.x_cid | e.y_cid;
-          cell_handler(*this, e);
+          cell_handler(context, *this, e);
         }
       }
     }
@@ -74,7 +74,7 @@ namespace dd4hep {
   namespace digi {
 
     template <> void
-    CellScanner<CartesianGridXY,Box>::operator()(PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler)
+    CellScanner<CartesianGridXY,Box>::operator()(DigiContext& context, PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler)
     {
       cell_data_t e;
       e.placement = pv;
@@ -88,7 +88,7 @@ namespace dd4hep {
         for ( e.y_bin = 0; e.y_bin < ny; ++e.y_bin )   {
           e.y_cid = (e.y_bin << segment.y_f_offset) & segment.y_mask;
           e.cell_id = vid | e.x_cid | e.y_cid;
-          cell_handler(*this, e);
+          cell_handler(context, *this, e);
         }
       }
     }
@@ -103,7 +103,12 @@ namespace dd4hep {
   namespace digi {
 
     template <typename self_t> void
-    scan_poly(PlacedVolume pv, VolumeID vid, const typename self_t::cell_handler_t& cell_handler, const self_t& scanner)   {
+    scan_poly(DigiContext& context,
+              PlacedVolume pv,
+              VolumeID vid,
+              const typename self_t::cell_handler_t& cell_handler,
+              const self_t& scanner)
+    {
       typename self_t::cell_data_t e;
       const auto& segment = scanner.segment;
       e.placement     = pv;
@@ -129,22 +134,25 @@ namespace dd4hep {
           if ( !h->Contains(pos)    ) continue;
           e.y_cid = (e.y_bin << segment.y_f_offset) & segment.y_mask;
           e.cell_id = vid | e.x_cid | e.y_cid;
-          cell_handler(scanner, e);
+          cell_handler(context, scanner, e);
         }
       }
     }
 
     template <> void
-    CellScanner<CartesianGridXY,PolyhedraRegular>::operator()(PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler) {
-      scan_poly<self_t>(pv, vid, cell_handler, *this);
+    CellScanner<CartesianGridXY,PolyhedraRegular>::operator()(DigiContext& ct, PlacedVolume pv,
+                                                              VolumeID vid, const cell_handler_t& cell_handler) {
+      scan_poly<self_t>(ct, pv, vid, cell_handler, *this);
     }
     template <> void
-    CellScanner<CartesianGridXY,Polyhedra>::operator()(PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler) {
-      scan_poly<self_t>(pv, vid, cell_handler, *this);
+    CellScanner<CartesianGridXY,Polyhedra>::operator()(DigiContext& ct, PlacedVolume pv, VolumeID vid,
+                                                       const cell_handler_t& cell_handler) {
+      scan_poly<self_t>(ct, pv, vid, cell_handler, *this);
     }
     template <> void
-    CellScanner<CartesianGridXY,Polycone>::operator()(PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler) {
-      scan_poly<self_t>(pv, vid, cell_handler, *this);
+    CellScanner<CartesianGridXY,Polycone>::operator()(DigiContext& ct, PlacedVolume pv, VolumeID vid,
+                                                      const cell_handler_t& cell_handler) {
+      scan_poly<self_t>(ct, pv, vid, cell_handler, *this);
     }
   }    // End namespace digi
 }      // End namespace dd4hep

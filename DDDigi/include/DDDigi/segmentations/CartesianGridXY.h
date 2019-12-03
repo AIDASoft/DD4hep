@@ -24,7 +24,7 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
-    template <> class cell_data<CartesianGridXY> : public CellDataBase {
+    template <> class cell_data<CartesianGridXY> : public DigiCellData {
     public:
       CellID x_cid {0}, y_cid {0};
       CellID x_bin {0}, y_bin {0};

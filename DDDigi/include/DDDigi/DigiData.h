@@ -201,33 +201,6 @@ namespace dd4hep {
       : object(ptr, vtable<CaloDeposit::FunctionTable,T>())
     {
     }
-
-    /// 
-    /*
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_DIGITIZATION
-     */
-    class DigiCellData   {
-    public:
-      double raw_value  { 0.0 };
-      double delay      { 0.0 };
-      mutable bool kill { false };
-
-      /// Default constructor
-      DigiCellData() = default;
-      /// Default move constructor
-      DigiCellData(DigiCellData&& copy) = default;
-      /// Default copy constructor
-      DigiCellData(const DigiCellData& copy) = default;
-      /// Default destructor
-      virtual ~DigiCellData() = default;
-      /// Default move assignment
-      DigiCellData& operator=(DigiCellData&& copy) = delete;
-      /// Default copy assignment
-      DigiCellData& operator=(const DigiCellData& copy) = delete;      
-    };
     
     /// 
     /*

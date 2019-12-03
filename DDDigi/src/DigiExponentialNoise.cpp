@@ -13,31 +13,26 @@
 
 // Framework include files
 #include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiRandomNoise.h"
+#include "DDDigi/DigiSegmentation.h"
+#include "DDDigi/DigiRandomGenerator.h"
+#include "DDDigi/DigiExponentialNoise.h"
 
 using namespace dd4hep::digi;
 
 /// Standard constructor
-DigiRandomNoise::DigiRandomNoise(const DigiKernel& krnl, const std::string& nam)
+DigiExponentialNoise::DigiExponentialNoise(const DigiKernel& krnl, const std::string& nam)
   : DigiSignalProcessor(krnl, nam)
 {
+  declareProperty("tau",     m_tau);
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-DigiRandomNoise::~DigiRandomNoise() {
+DigiExponentialNoise::~DigiExponentialNoise() {
   InstanceCount::decrement(this);
 }
 
-/// Initialize the noise source
-void DigiRandomNoise::initialize()   {
-  std::default_random_engine generator;
-  m_noise.init(m_poles, m_alpha, m_variance);
-  m_noise.normalize(generator, 5000);
-  DigiSignalProcessor::initialize();
-}
-
-/// Callback to read event randomnoise
-double DigiRandomNoise::operator()(DigiContext& /* context */, const DigiCellData& /* data */)  const {
-  return 0.0;
+/// Callback to read event exponentialnoise
+double DigiExponentialNoise::operator()(DigiContext& context, const DigiCellData&)  const  {
+  return context.randomGenerator().exponential(m_tau);
 }

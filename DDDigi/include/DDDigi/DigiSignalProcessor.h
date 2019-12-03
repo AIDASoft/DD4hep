@@ -25,6 +25,7 @@ namespace dd4hep {
 
     // Forward declarations
     class DigiAction;
+    class DigiContext;
     class DigiCellData;
     class DigiSignalProcessor;
 
@@ -51,7 +52,7 @@ namespace dd4hep {
       /// Initialize the noise source
       virtual void initialize();
       /// Callback to read event signalprocessor
-      virtual double operator()(const DigiCellData& data)  const = 0;
+      virtual double operator()(DigiContext& context, const DigiCellData& data)  const = 0;
     };
   }    // End namespace digi
 }      // End namespace dd4hep
