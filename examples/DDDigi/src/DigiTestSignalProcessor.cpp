@@ -48,7 +48,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiTestSignalProcessor();
       /// Process signal data
-      virtual double operator()(const DigiCellData& data)   const  override;
+      virtual double operator()(DigiContext& context, const DigiCellData& data)   const  override;
     };
 
   }    // End namespace digi
@@ -72,6 +72,7 @@ namespace dd4hep {
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DDDigi/DigiFactories.h"
+#include "DDDigi/DigiSegmentation.h"
 //#include "DDDigi/DigiTestSignalProcessor.h"
 
 // C/C++ include files
@@ -95,6 +96,6 @@ DigiTestSignalProcessor::~DigiTestSignalProcessor() {
 }
 
 /// Process signal data
-double DigiTestSignalProcessor::operator()(const DigiCellData& data)   const   {
-  return m_attenuation * data.raw_value;
+double DigiTestSignalProcessor::operator()(DigiContext&, const DigiCellData& data)   const   {
+  return m_attenuation * data.signal;
 }

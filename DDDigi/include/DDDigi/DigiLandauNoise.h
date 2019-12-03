@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIGAUSSIANNOISE_H
-#define DD4HEP_DDDIGI_DIGIGAUSSIANNOISE_H
+#ifndef DD4HEP_DDDIGI_DIGILANDAUNOISE_H
+#define DD4HEP_DDDIGI_DIGILANDAUNOISE_H
 
 /// Framework include files
 #include "DDDigi/DigiSignalProcessor.h"
@@ -22,16 +22,16 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
-    /// Generic noise source with a gaussian distribution
+    /// Generic noise source with a landau distribution
     /**
-     *  Generate gaussian noise as it appears e.g. from electronic noise
+     *  Generate landau noise as it appears e.g. from electronic noise
      *  with a given mean and a given sigma
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiGaussianNoise : public DigiSignalProcessor  {
+    class DigiLandauNoise : public DigiSignalProcessor  {
     protected:
       /// Property: Mean value of the 
       double    m_mean    = 0.0;
@@ -42,16 +42,16 @@ namespace dd4hep {
       
     protected:
       /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiGaussianNoise);
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiLandauNoise);
 
     public:
       /// Standard constructor
-      DigiGaussianNoise(const DigiKernel& kernel, const std::string& nam);
+      DigiLandauNoise(const DigiKernel& kernel, const std::string& nam);
       /// Default destructor
-      virtual ~DigiGaussianNoise();
-      /// Callback to read event gaussiannoise
+      virtual ~DigiLandauNoise();
+      /// Callback to read event landaunoise
       virtual double operator()(DigiContext& context, const DigiCellData& data)  const  override;
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGIGAUSSIANNOISE_H
+#endif // DD4HEP_DDDIGI_DIGILANDAUNOISE_H

@@ -35,8 +35,8 @@ namespace dd4hep {
   namespace digi {
 
     // Forward declarations
+    class DigiCellData;
     class DigiCellScanner;
-    class CellDataBase;
     class DigiEventAction;
     class DigiSubdetectorSequence;
 
@@ -76,7 +76,7 @@ namespace dd4hep {
       std::map<VolumeID, Context>    m_parallelVid;
       Scanners                       m_scanners;
 
-      std::function<void(const DigiCellScanner&, const CellDataBase&)> m_cellHandler;
+      std::function<void(DigiContext& context, const DigiCellScanner&, const DigiCellData&)> m_cellHandler;
 
     protected:
       /// Define standard assignments and constructors
@@ -90,10 +90,12 @@ namespace dd4hep {
 
       typedef PlacedVolume::VolIDs             VolIDs;
 
-      void process_cell(const DigiCellScanner& , const CellDataBase& data)  const;
+      void process_cell(DigiContext&           context,
+                        const DigiCellScanner& scanner,
+                        const DigiCellData&    data)  const;
       void scan_detector(DetElement de, VolumeID vid, VolumeID mask);
       void scan_sensitive(PlacedVolume pv, VolumeID vid, VolumeID mask);
-      void process_context(const Context& c, PlacedVolume pv, VolumeID vid, VolumeID mask)   const;
+      void process_context(DigiContext& context, const Context& c, PlacedVolume pv, VolumeID vid, VolumeID mask)   const;
       
     public:
       /// Standard constructor

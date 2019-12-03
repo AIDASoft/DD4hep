@@ -33,8 +33,8 @@ DigiSubdetectorSequence::DigiSubdetectorSequence(const DigiKernel& kernel, const
 {
   declareProperty("detector",m_detectorName);
   declareProperty("parallize_by",m_segmentName);
-  m_cellHandler = [this](const DigiCellScanner& scanner, const CellDataBase& data)  {
-    this->process_cell(scanner, data);
+  m_cellHandler = [this](DigiContext& context, const DigiCellScanner& scanner, const DigiCellData& data)  {
+    this->process_cell(context, scanner, data);
   };
   InstanceCount::increment(this);
 }
@@ -106,7 +106,7 @@ void DigiSubdetectorSequence::scan_detector(DetElement de, VolumeID vid, VolumeI
 }
 
 
-void DigiSubdetectorSequence::process_cell(const DigiCellScanner& , const CellDataBase& data)  const   {
+void DigiSubdetectorSequence::process_cell(DigiContext&, const DigiCellScanner& , const DigiCellData& data)  const   {
 #if 0
   Segmentation seg  = m_sensDet.readout().segmentation();
     string       desc = m_idDesc.str(data.cell_id);
@@ -120,7 +120,12 @@ void DigiSubdetectorSequence::process_cell(const DigiCellScanner& , const CellDa
   }
 }
 
-void DigiSubdetectorSequence::process_context(const Context& c, PlacedVolume pv, VolumeID vid, VolumeID mask)   const  {
+void DigiSubdetectorSequence::process_context(DigiContext& context,
+                                              const Context& c,
+                                              PlacedVolume pv,
+                                              VolumeID vid,
+                                              VolumeID mask)   const
+{
   Volume vol = pv.volume();
   if ( vol.isSensitive() )    {
     auto key = make_pair(vol->GetShape()->IsA(), m_segmentation);
@@ -128,38 +133,33 @@ void DigiSubdetectorSequence::process_context(const Context& c, PlacedVolume pv,
     if ( is == m_scanners.end() )   {
       except("Fatal error in process_context: Invalid cell scanner. vid: %016X",vid);
     }
-    (*(is->second))(pv, vid, m_cellHandler);
+    (*(is->second))(context, pv, vid, m_cellHandler);
     return;
   }
   for (int idau = 0, ndau = pv->GetNdaughters(); idau < ndau; ++idau) {
     PlacedVolume p(pv->GetDaughter(idau));
     const VolIDs& new_ids = p.volIDs();
     if ( !new_ids.empty() )
-      process_context(c, p, vid | m_idDesc.encode(new_ids), mask | m_idDesc.get_mask(new_ids));
+      process_context(context, c, p, vid | m_idDesc.encode(new_ids), mask | m_idDesc.get_mask(new_ids));
     else
-      process_context(c, p, vid, mask);
+      process_context(context, c, p, vid, mask);
   }
 }
 
 /// Pre-track action callback
 void DigiSubdetectorSequence::execute(DigiContext& context)  const   {
-  //static bool first = true;
-  //if ( first )    {
-    for( const auto& d : m_parallelVid )   {
-      const Context& c = d.second;
-      auto vid = c.detector_id;
-      auto det = c.detector;
-      string id_desc   = m_idDesc.str(vid);
-      info("  Order:%-64s    vid:%s %s %s",
-           det.path().c_str(), volumeID(d.first).c_str(), volumeID(vid).c_str(), id_desc.c_str());
-      process_context(c, c.detector.placement(), c.detector_id, c.detector_mask);
-    }
-    //}
-  
+  for( const auto& d : m_parallelVid )   {
+    const Context& c = d.second;
+    auto vid = c.detector_id;
+    auto det = c.detector;
+    string id_desc   = m_idDesc.str(vid);
+    info("  Order:%-64s    vid:%s %s %s",
+         det.path().c_str(), volumeID(d.first).c_str(), volumeID(vid).c_str(), id_desc.c_str());
+    process_context(context, c, c.detector.placement(), c.detector_id, c.detector_mask);
+  }
   this->DigiSynchronize::execute(context);
   debug("+++ Event: %8d (DigiSubdetectorSequence) Parallel: %s Done.",
         context.event().eventNumber, yes_no(m_parallel));
-  //m_end(&context);
 }
 
 /// Access subdetector from the detector description

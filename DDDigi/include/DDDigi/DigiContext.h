@@ -15,7 +15,11 @@
 
 // Framework incloude files
 #include "DD4hep/Primitives.h"
+#include "DDDigi/DigiRandomGenerator.h"
 #include "DDDigi/DigiData.h"
+
+/// C/C++ include files
+#include <memory>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -82,10 +86,11 @@ namespace dd4hep {
       typedef std::pair<void*, const std::type_info*>   UserFramework;
     protected:
       /// Transient context variable - depending on the thread context: event reference
-      const DigiKernel* m_kernel = 0;
+      const DigiKernel*                 m_kernel = 0;
       /// Reference to transient event
-      DigiEvent*        m_event  = 0;
-
+      DigiEvent*                        m_event  = 0;
+      /// Reference to the random engine for this event
+      std::shared_ptr<DigiRandomGenerator> m_random;
       /// Inhibit default constructor
       DigiContext() = delete;
       /// Inhibit move constructor
@@ -104,8 +109,9 @@ namespace dd4hep {
       /// Access the geant4 event -- valid only between BeginEvent() and EndEvent()!
       DigiEvent& event()  const;
       /// Access the geant4 event by ptr. Must be checked by clients!
-      DigiEvent* eventPtr()  const     { return m_event; }
-
+      DigiEvent* eventPtr()  const                   { return m_event;   }
+      /// Access to the random engine for this event
+      DigiRandomGenerator& randomGenerator()  const  { return *m_random; }
       /// Access to the user framework. Specialized function to be implemented by the client
       template <typename T> T& framework()  const;
       /// Generic framework access

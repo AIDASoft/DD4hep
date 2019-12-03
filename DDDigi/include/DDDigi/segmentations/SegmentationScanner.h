@@ -43,7 +43,7 @@ namespace dd4hep {
       CellScanner(segmentation_t seg)   {
         init_segmentation_data<segmentation_t>(segment, seg);
       }
-      virtual void operator()(PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler)  override;
+      virtual void operator()(DigiContext& context, PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler)  override;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

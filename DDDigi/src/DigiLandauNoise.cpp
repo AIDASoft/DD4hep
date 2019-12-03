@@ -13,31 +13,30 @@
 
 // Framework include files
 #include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiRandomNoise.h"
+#include "DDDigi/DigiLandauNoise.h"
+#include "DDDigi/DigiSegmentation.h"
+#include "DDDigi/DigiRandomGenerator.h"
 
 using namespace dd4hep::digi;
 
 /// Standard constructor
-DigiRandomNoise::DigiRandomNoise(const DigiKernel& krnl, const std::string& nam)
+DigiLandauNoise::DigiLandauNoise(const DigiKernel& krnl, const std::string& nam)
   : DigiSignalProcessor(krnl, nam)
 {
+  declareProperty("meam",    m_mean);
+  declareProperty("sigma",   m_sigma);
+  declareProperty("cutoff",  m_cutoff);
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-DigiRandomNoise::~DigiRandomNoise() {
+DigiLandauNoise::~DigiLandauNoise() {
   InstanceCount::decrement(this);
 }
 
-/// Initialize the noise source
-void DigiRandomNoise::initialize()   {
-  std::default_random_engine generator;
-  m_noise.init(m_poles, m_alpha, m_variance);
-  m_noise.normalize(generator, 5000);
-  DigiSignalProcessor::initialize();
-}
-
-/// Callback to read event randomnoise
-double DigiRandomNoise::operator()(DigiContext& /* context */, const DigiCellData& /* data */)  const {
-  return 0.0;
+/// Callback to read event landaunoise
+double DigiLandauNoise::operator()(DigiContext& context, const DigiCellData& data)  const  {
+  if ( data.signal < m_cutoff )
+    return 0;
+  return context.randomGenerator().landau(m_mean,m_sigma);
 }

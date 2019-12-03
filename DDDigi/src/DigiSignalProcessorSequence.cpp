@@ -13,6 +13,7 @@
 
 // Framework include files
 #include "DD4hep/InstanceCount.h"
+#include "DDDigi/DigiSegmentation.h"
 #include "DDDigi/DigiSignalProcessorSequence.h"
 
 // C/C++ include files
@@ -43,9 +44,9 @@ void DigiSignalProcessorSequence::adopt(DigiSignalProcessor* action)    {
 }
 
 /// Pre-track action callback
-double DigiSignalProcessorSequence::operator()(const DigiCellData& data)  const   {
-  double result = data.raw_value;
+double DigiSignalProcessorSequence::operator()(DigiContext& context, const DigiCellData& data)  const   {
+  double result = data.signal;
   for ( const auto* p : m_actors )
-    result += p->operator()(data);
+    result += p->operator()(context, data);
   return data.kill ? 0e0 : result;
 }

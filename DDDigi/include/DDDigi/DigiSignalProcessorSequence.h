@@ -57,7 +57,7 @@ namespace dd4hep {
       /// Adopt a new action as part of the sequence. Sequence takes ownership.
       void adopt(DigiSignalProcessor* action);
       /// Begin-of-event callback
-      virtual double operator()(const DigiCellData& data)  const override;
+      virtual double operator()(DigiContext& context, const DigiCellData& data)  const override;
     };
 
   }    // End namespace digi
