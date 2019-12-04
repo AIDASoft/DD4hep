@@ -76,10 +76,9 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 function(dd4hep_generate_rootmap library)
   if(APPLE)
-    dd4hep_generate_rootmap_apple( ${library} )
-  else()
-    dd4hep_generate_rootmap_notapple( ${library} )
+    SET(ENV{DYLD_LIBRARY_PATH} ${LIBRARY_OUTPUT_PATH}:$ENV{DYLD_LIBRARY_PATH}:$ENV{DD4HEP_LIBRARY_PATH} )
   endif()
+    dd4hep_generate_rootmap_notapple(${library} )
 endfunction()
 #---------------------------------------------------------------------------------------------------
 function(dd4hep_generate_rootmap_notapple library)
@@ -102,11 +101,4 @@ function(dd4hep_generate_rootmap_notapple library)
   install(FILES $<TARGET_FILE_DIR:${library}>/${rootmapfile}
     DESTINATION ${install_destination}
   )
-endfunction()
-#
-#
-#---------------------------------------------------------------------------------------------------
-function(dd4hep_generate_rootmap_apple library)
-  # for now do the same for apple that is done for the rest
-  dd4hep_generate_rootmap_notapple( ${library} )
 endfunction()
