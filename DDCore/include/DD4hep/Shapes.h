@@ -1020,7 +1020,7 @@ namespace dd4hep {
            STARTTHETA startTheta = 0.0,  ENDTHETA endTheta = M_PI,
            STARTPHI   startPhi   = 0.0,  ENDPHI   endPhi   = 2. * M_PI)  {
       this->make("",
-                 _toDOuble(rmin),       _toDouble(rmax),
+                 _toDouble(rmin),       _toDouble(rmax),
                  _toDouble(startTheta), _toDouble(endTheta),
                  _toDouble(startPhi),   _toDouble(endPhi));
     }
