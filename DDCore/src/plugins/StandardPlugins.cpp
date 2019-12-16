@@ -1163,17 +1163,17 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       if ( m_detector != "/world" )   {
         top = detail::tools::findElement(description,m_detector);
         if ( !top.isValid() )  {
-          except("DD4hep_GeometryDisplay","+++ Invalid DetElement path: %s",m_detector.c_str());
+          except("VolumeDump","+++ Invalid DetElement path: %s",m_detector.c_str());
         }
       }
       if ( !top.placement().isValid() )   {
-        except("DD4hep_GeometryDisplay","+++ Invalid DetElement placement: %s",m_detector.c_str());
+        except("VolumeDump","+++ Invalid DetElement placement: %s",m_detector.c_str());
       }
       string place = top.placementPath();
       detail::tools::placementPath(top, path);
       pv = detail::tools::findNode(description.world().placement(),place);
       if ( !pv.isValid() )   {
-        except("DD4hep_GeometryDisplay","+++ Invalid placement verification for placement:%s",place.c_str());
+        except("VolumeDump","+++ Invalid placement verification for placement:%s",place.c_str());
       }
       return this->dump("", top.placement().ptr(), pv.ptr(), 0, PlacedVolume::VolIDs());
     }

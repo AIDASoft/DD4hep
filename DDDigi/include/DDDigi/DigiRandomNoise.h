@@ -64,7 +64,7 @@ namespace dd4hep {
       /// Initialize the noise source
       virtual void initialize()  override;
       /// Callback to read event randomnoise
-      virtual double operator()(DigiContext& context, const DigiCellData& data)  const  override;
+      virtual double operator()(DigiCellContext& context)  const  override;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

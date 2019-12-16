@@ -91,6 +91,7 @@ class CLICSid:
     self.kernel.configure()
     if have_geo:
       self.kernel.initialize()
+    return self
 
   # Test runner
   def test_run(self, have_geo=True, have_physics=False):

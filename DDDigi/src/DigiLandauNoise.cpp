@@ -35,8 +35,8 @@ DigiLandauNoise::~DigiLandauNoise() {
 }
 
 /// Callback to read event landaunoise
-double DigiLandauNoise::operator()(DigiContext& context, const DigiCellData& data)  const  {
-  if ( data.signal < m_cutoff )
+double DigiLandauNoise::operator()(DigiCellContext& context)  const  {
+  if ( context.data.signal < m_cutoff )
     return 0;
-  return context.randomGenerator().landau(m_mean,m_sigma);
+  return context.context.randomGenerator().landau(m_mean,m_sigma);
 }

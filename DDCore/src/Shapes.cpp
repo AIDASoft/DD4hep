@@ -53,12 +53,18 @@ void Solid_type<T>::_assign(T* n, const string& nam, const string& tit, bool cbb
 
 /// Access to shape name
 template <typename T> const char* Solid_type<T>::name() const {
-  return this->ptr()->GetName();
+  if ( this->ptr() )  {
+    return this->ptr()->GetName();
+  }
+  return this->access()->GetName();   // Trigger an exception if object is invalid
 }
 
 /// Access to shape name
 template <typename T> const char* Solid_type<T>::title() const {
-  return this->ptr()->GetTitle();
+  if ( this->ptr() )  {
+    return this->ptr()->GetTitle();
+  }
+  return this->access()->GetTitle();   // Trigger an exception if object is invalid
 }
 
 /// Set new shape name
@@ -78,7 +84,7 @@ template <typename T> const char* Solid_type<T>::type() const  {
   if ( this->ptr() )  {
     return this->ptr()->IsA()->GetName();
   }
-  return "";
+  return this->access()->GetName();  // Trigger an exception on invalid handle
 }
 
 /// Access the dimensions of the shape: inverse of the setDimensions member function
@@ -258,21 +264,11 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
 }
 
 /// Constructor to be used when creating a new cone segment object
-ConeSegment::ConeSegment(double dz, 
-                         double rmin1,     double rmax1,
-                         double rmin2,     double rmax2,
-                         double startPhi,  double endPhi)
-{
-  _assign(new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2,
-                          startPhi/units::deg, endPhi/units::deg), "", CONESEGMENT_TAG, true);
-}
-
-/// Constructor to be used when creating a new cone segment object
-ConeSegment::ConeSegment(const string& nam,
-                         double dz, 
-                         double rmin1,     double rmax1,
-                         double rmin2,     double rmax2,
-                         double startPhi,  double endPhi)
+void ConeSegment::make(const string& nam,
+                       double dz, 
+                       double rmin1,     double rmax1,
+                       double rmin2,     double rmax2,
+                       double startPhi,  double endPhi)
 {
   _assign(new TGeoConeSeg(nam.c_str(), dz, rmin1, rmax1, rmin2, rmax2,
                           startPhi/units::deg, endPhi/units::deg), "", CONESEGMENT_TAG, true);

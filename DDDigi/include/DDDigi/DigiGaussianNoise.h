@@ -50,7 +50,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiGaussianNoise();
       /// Callback to read event gaussiannoise
-      virtual double operator()(DigiContext& context, const DigiCellData& data)  const  override;
+      virtual double operator()(DigiCellContext& context)  const  override;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

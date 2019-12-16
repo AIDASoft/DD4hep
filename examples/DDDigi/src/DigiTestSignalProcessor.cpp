@@ -48,7 +48,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiTestSignalProcessor();
       /// Process signal data
-      virtual double operator()(DigiContext& context, const DigiCellData& data)   const  override;
+      virtual double operator()(DigiCellContext& context)   const  override;
     };
 
   }    // End namespace digi
@@ -96,6 +96,6 @@ DigiTestSignalProcessor::~DigiTestSignalProcessor() {
 }
 
 /// Process signal data
-double DigiTestSignalProcessor::operator()(DigiContext&, const DigiCellData& data)   const   {
-  return m_attenuation * data.signal;
+double DigiTestSignalProcessor::operator()(DigiCellContext& context)   const   {
+  return m_attenuation * context.data.signal;
 }
