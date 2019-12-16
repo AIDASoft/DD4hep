@@ -44,9 +44,9 @@ void DigiSignalProcessorSequence::adopt(DigiSignalProcessor* action)    {
 }
 
 /// Pre-track action callback
-double DigiSignalProcessorSequence::operator()(DigiContext& context, const DigiCellData& data)  const   {
-  double result = data.signal;
+double DigiSignalProcessorSequence::operator()(DigiCellContext& context)  const   {
+  double result = context.data.signal;
   for ( const auto* p : m_actors )
-    result += p->operator()(context, data);
-  return data.kill ? 0e0 : result;
+    result += p->operator()(context);
+  return context.data.kill ? 0e0 : result;
 }

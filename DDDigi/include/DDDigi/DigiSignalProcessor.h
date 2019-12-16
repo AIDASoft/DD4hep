@@ -29,6 +29,21 @@ namespace dd4hep {
     class DigiCellData;
     class DigiSignalProcessor;
 
+    /// 
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class DigiCellContext  final  {
+    public:
+      DigiContext&  context;
+      DigiCellData& data;
+      DigiCellContext(DigiContext& c, DigiCellData& d) : context(c), data(d) {}
+      ~DigiCellContext() = default;
+    };
+
     /// Base class for signal processing actions to the digitization
     /**
      *
@@ -52,7 +67,7 @@ namespace dd4hep {
       /// Initialize the noise source
       virtual void initialize();
       /// Callback to read event signalprocessor
-      virtual double operator()(DigiContext& context, const DigiCellData& data)  const = 0;
+      virtual double operator()(DigiCellContext& context)  const = 0;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

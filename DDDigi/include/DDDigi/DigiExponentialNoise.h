@@ -43,7 +43,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiExponentialNoise();
       /// Callback to read event exponentialnoise
-      virtual double operator()(DigiContext& context, const DigiCellData& data)  const  override;
+      virtual double operator()(DigiCellContext& context)  const  override;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

@@ -409,6 +409,11 @@ namespace dd4hep {
    *   \ingroup DD4HEP_CORE
    */
   class ConeSegment : public Solid_type<TGeoConeSeg> {
+    void make(const std::string& name,
+              double dz, 
+              double rmin1,     double rmax1,
+              double rmin2,     double rmax2,
+              double startPhi,  double endPhi);
   public:
     /// Default constructor
     ConeSegment() = default;
@@ -423,11 +428,34 @@ namespace dd4hep {
 
     /// Constructor to create a new ConeSegment object
     ConeSegment(double dz, double rmin1, double rmax1,
-                double rmin2, double rmax2, double startPhi = 0.0, double endPhi = 2.0 * M_PI);
-
+                double rmin2, double rmax2, double startPhi = 0.0, double endPhi = 2.0 * M_PI)
+    {  make("", dz, rmin1, rmax1, rmin2, rmax2, startPhi, endPhi);   }
+    /// Constructor to create a new ConeSegment object
+    template <typename DZ,
+              typename RMIN1, typename RMAX1,
+              typename RMIN2, typename RMAX2,
+              typename STARTPHI, typename ENDPHI>
+    ConeSegment(DZ dz, RMIN1 rmin1, RMAX1 rmax1, RMIN2 rmin2, RMAX2 rmax2,
+                STARTPHI startPhi = 0.0, ENDPHI endPhi = 2.0 * M_PI)
+    {  make("", _toDouble(dz),
+            _toDouble(rmin1), _toDouble(rmax1),
+            _toDouble(rmin2), _toDouble(rmax2),
+            _toDouble(startPhi), _toDouble(endPhi));   }
     /// Constructor to create a new named ConeSegment object
-    ConeSegment(const std::string& name, double dz, double rmin1, double rmax1,
-                double rmin2, double rmax2, double startPhi = 0.0, double endPhi = 2.0 * M_PI);
+    ConeSegment(const std::string& nam, double dz, double rmin1, double rmax1,
+                double rmin2, double rmax2, double startPhi = 0.0, double endPhi = 2.0 * M_PI)
+    {  make(nam, dz, rmin1, rmax1, rmin2, rmax2, startPhi, endPhi);  }
+    /// Constructor to create a new named ConeSegment object
+    template <typename DZ,
+              typename RMIN1, typename RMAX1,
+              typename RMIN2, typename RMAX2,
+              typename STARTPHI, typename ENDPHI>
+    ConeSegment(const std::string& nam, DZ dz, RMIN1 rmin1, RMAX1 rmax1, RMIN2 rmin2, RMAX2 rmax2,
+                STARTPHI startPhi = 0.0, ENDPHI endPhi = 2.0 * M_PI)
+    {  make(nam, _toDouble(dz),
+            _toDouble(rmin1), _toDouble(rmax1),
+            _toDouble(rmin2), _toDouble(rmax2),
+            _toDouble(startPhi), _toDouble(endPhi));   }
 
     /// Move Assignment operator
     ConeSegment& operator=(ConeSegment&& copy) = default;
@@ -472,25 +500,44 @@ namespace dd4hep {
     Tube(double rmin, double rmax, double dz)
     {  this->make("", rmin, rmax, dz, 0, 2*M_PI);                   }
     /// Constructor to create a new anonymous tube object with attribute initialization
+    template <typename RMIN, typename RMAX, typename DZ> Tube(RMIN rmin, RMAX rmax, DZ dz)
+    {  this->make("", _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, 2*M_PI);            }
+    /// Constructor to create a new anonymous tube object with attribute initialization
     Tube(double rmin, double rmax, double dz, double endPhi)
     {  this->make("", rmin, rmax, dz, 0, endPhi);                   }
     /// Constructor to create a new anonymous tube object with attribute initialization
+    template <typename RMIN, typename RMAX, typename DZ, typename ENDPHI>
+    Tube(RMIN rmin, RMAX rmax, DZ dz, ENDPHI endPhi)
+    {  this->make("", _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, _toDouble(endPhi)); }
+    /// Constructor to create a new anonymous tube object with attribute initialization
     Tube(double rmin, double rmax, double dz, double startPhi, double endPhi)
     {  this->make("", rmin, rmax, dz, startPhi, endPhi);            }
+    /// Constructor to create a new anonymous tube object with attribute initialization
+    template <typename RMIN, typename RMAX, typename DZ, typename STARTPHI, typename ENDPHI>
+    Tube(RMIN rmin, RMAX rmax, DZ dz, STARTPHI startPhi, ENDPHI endPhi)
+    {  this->make("", _toDouble(rmin), _toDouble(rmax), _toDouble(dz), _toDouble(startPhi), _toDouble(endPhi)); }
 
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
     Tube(const std::string& nam, double rmin, double rmax, double dz)
     {  this->make(nam, rmin, rmax, dz, 0, 2*M_PI);                  }
+    /// Constructor to create a new anonymous tube object with attribute initialization
+    template <typename RMIN, typename RMAX, typename DZ>
+    Tube(const std::string& nam, RMIN rmin, RMAX rmax, DZ dz)
+    {  this->make(nam, _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, 2*M_PI);          }
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
     Tube(const std::string& nam, double rmin, double rmax, double dz, double endPhi)
     {  this->make(nam, rmin, rmax, dz, 0, endPhi);                   }
+    /// Constructor to create a new anonymous tube object with attribute initialization
+    template <typename RMIN, typename RMAX, typename DZ, typename ENDPHI>
+    Tube(const std::string& nam, RMIN rmin, RMAX rmax, DZ dz, ENDPHI endPhi)
+    {  this->make(nam, _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, _toDouble(endPhi)); }
     /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
     Tube(const std::string& nam, double rmin, double rmax, double dz, double startPhi, double endPhi)
     {  this->make(nam, rmin, rmax, dz, startPhi, endPhi);            }
     /// Constructor to create a new anonymous tube object with attribute initialization
-    template <typename RMIN, typename RMAX, typename Z, typename ENDPHI=double>
-    Tube(const RMIN& rmin, const RMAX& rmax, const Z& dz, const ENDPHI& endPhi = 2.0*M_PI)
-    {  this->make("", _toDouble(rmin), _toDouble(rmax), _toDouble(dz), 0, _toDouble(endPhi));   }
+    template <typename RMIN, typename RMAX, typename DZ, typename STARTPHI, typename ENDPHI>
+    Tube(const std::string& nam, RMIN rmin, RMAX rmax, DZ dz, STARTPHI startPhi, ENDPHI endPhi)
+    {  this->make(nam, _toDouble(rmin), _toDouble(rmax), _toDouble(dz), _toDouble(startPhi), _toDouble(endPhi)); }
 
     /// Move Assignment operator
     Tube& operator=(Tube&& copy) = default;
@@ -1016,11 +1063,11 @@ namespace dd4hep {
     template<typename RMIN,              typename RMAX,
              typename STARTTHETA=double, typename ENDTHETA=double,
              typename STARTPHI=double,   typename ENDPHI=double>
-    Sphere(RMIN  rmin,                   RMAX     rmax,
+    Sphere(RMIN       rmin,              RMAX     rmax,
            STARTTHETA startTheta = 0.0,  ENDTHETA endTheta = M_PI,
            STARTPHI   startPhi   = 0.0,  ENDPHI   endPhi   = 2. * M_PI)  {
       this->make("",
-                 _toDOuble(rmin),       _toDouble(rmax),
+                 _toDouble(rmin),       _toDouble(rmax),
                  _toDouble(startTheta), _toDouble(endTheta),
                  _toDouble(startPhi),   _toDouble(endPhi));
     }
@@ -1036,11 +1083,11 @@ namespace dd4hep {
              typename STARTTHETA=double, typename ENDTHETA=double,
              typename STARTPHI=double,   typename ENDPHI=double>
     Sphere(const std::string& nam,
-           RMIN  rmin,                   RMAX     rmax,
+           RMIN       rmin,              RMAX     rmax,
            STARTTHETA startTheta = 0.0,  ENDTHETA endTheta = M_PI,
            STARTPHI   startPhi   = 0.0,  ENDPHI   endPhi   = 2. * M_PI)  {
       this->make(nam,
-                 _toDOuble(rmin),       _toDouble(rmax),
+                 _toDouble(rmin),       _toDouble(rmax),
                  _toDouble(startTheta), _toDouble(endTheta),
                  _toDouble(startPhi),   _toDouble(endPhi));
     }
@@ -1181,9 +1228,27 @@ namespace dd4hep {
     /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
     PolyhedraRegular(int nsides, double rmin, double rmax, double zlen)
     { this->make("", nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 2.0*M_PI);           }
+    /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
+    template <typename NSIDES, typename RMIN, typename RMAX, typename ZLEN>
+    PolyhedraRegular(NSIDES nsides, RMIN rmin, RMAX rmax, ZLEN zlen)
+    {
+      this->make("", _toDouble(nsides),
+                 _toDouble(rmin), _toDouble(rmax),
+                 _toDouble(zlen) / 2, -_toDouble(zlen) / 2,
+                 0, 2.0*M_PI);
+    }
     /// Constructor to create a new object with phi_start, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
     PolyhedraRegular(int nsides, double phi_start, double rmin, double rmax, double zlen)
     { this->make("", nsides, rmin, rmax, zlen / 2, -zlen / 2, phi_start, 2.0*M_PI);   }
+    /// Constructor to create a new object with phi_start, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
+    template <typename NSIDES, typename PHI_START, typename RMIN, typename RMAX, typename ZLEN>
+    PolyhedraRegular(NSIDES nsides, PHI_START phi_start, RMIN rmin, RMAX rmax, ZLEN zlen)
+    {
+      this->make("", _toDouble(nsides),
+                 _toDouble(rmin), _toDouble(rmax),
+                 _toDouble(zlen) / 2, -_toDouble(zlen) / 2,
+                 _toDouble(phi_start), 2.0*M_PI);
+    }
     /// Constructor to create a new object. Phi(start)=0, deltaPhi=2PI, Z-planes a zplanes[0] and zplanes[1]
     PolyhedraRegular(int nsides, double rmin, double rmax, double zplanes[2])
     { this->make("", nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 2.0*M_PI);        }
