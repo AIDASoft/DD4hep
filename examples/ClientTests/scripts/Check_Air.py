@@ -24,8 +24,8 @@ def run():
   geo = None
   vis = False
   batch = False
-  for i in xrange(len(sys.argv)):
-    c = sys.argv[i].upper()
+  for i in sys.argv:
+    c = i.upper()
     if c.find('BATCH') < 2 and c.find('BATCH') >= 0:
       batch = True
     if c[:4] == '-GEO':
