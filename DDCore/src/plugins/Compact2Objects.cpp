@@ -72,7 +72,8 @@ namespace dd4hep {
   class PropertyConstant;
   class Parallelworld_Volume;
   class DetElementInclude;
-
+  class STD_Conditions;
+  
   /// Converter instances implemented in this compilation unit
   template <> void Converter<Debug>::operator()(xml_h element) const;
   template <> void Converter<World>::operator()(xml_h element) const;
@@ -95,6 +96,7 @@ namespace dd4hep {
   template <> void Converter<PropertyConstant>::operator()(xml_h element) const;
 #endif
   template <> void Converter<DetElement>::operator()(xml_h element) const;
+  template <> void Converter<STD_Conditions>::operator()(xml_h element) const;
   template <> void Converter<GdmlFile>::operator()(xml_h element) const;
   template <> void Converter<JsonFile>::operator()(xml_h element) const;
   template <> void Converter<XMLFile>::operator()(xml_h element) const;
@@ -416,14 +418,10 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       dens_unit = density.attr<double>(_U(unit))/xml::_toDouble(_Unicode(gram/cm3));
     }
     if ( dens_unit != 1.0 )  {
-      cout << matname << " Density unit:" << dens_unit;
-      if ( dens_unit != 1.0 ) cout << " " << density.attr<string>(_U(unit));
-      cout << " Density Value raw:" << dens_val << " normalized:" << (dens_val*dens_unit) << endl;
       dens_val *= dens_unit;
+      printout(s_debug.materials ? ALWAYS : DEBUG, "Compact","Density unit: %.3f [%s] raw: %.3f normalized: %.3f ",
+               dens_unit, density.attr<string>(_U(unit)).c_str(), dens_val, (dens_val*dens_unit));
     }
-    printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
-             "++ Converting material %-16s  Density: %.3f.",matname, dens_val);
-    //throw 1;
     mat = mix = new TGeoMixture(matname, composites.size(), dens_val);
     size_t         ifrac = 0;
     vector<double> composite_fractions;
@@ -458,6 +456,33 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       else
         throw_print("Compact2Objects[ERROR]: Converting material:" + mname + " Element missing: " + nam);
     }
+    xml_h  temperature = x_mat.child(_U(T), false);
+    double temp_val    = description.stdConditions().temperature;
+    if ( temperature.ptr() )   {
+      double temp_unit = _toDouble("kelvin");
+      if ( temperature.hasAttr(_U(unit)) )
+        temp_unit = temperature.attr<double>(_U(unit));
+      temp_val = temperature.attr<double>(_U(value)) * temp_unit;
+    }
+    xml_h pressure = x_mat.child(_U(P), false);
+    double pressure_val = description.stdConditions().pressure;
+    if ( pressure.ptr() )   {
+      double pressure_unit = _toDouble("pascal");
+      if ( pressure.hasAttr(_U(unit)) )
+        pressure_unit = pressure.attr<double>(_U(unit));
+      pressure_val = pressure.attr<double>(_U(value)) * pressure_unit;
+    }
+#if 0
+    printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
+             "++ ROOT raw temperature and pressure: %.3g %.3g",
+             mat->GetTemperature(),mat->GetPressure());
+#endif
+    mat->SetTemperature(temp_val);
+    mat->SetPressure(pressure_val);
+    printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
+             "++ Converting material %-16s  Density: %9.7g  Temperature:%9.7g Pressure:%9.7g.",
+             matname, dens_val, temp_val, pressure_val);
+
     mix->SetRadLen(0e0);
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
     mix->ComputeDerivedQuantities();
@@ -512,18 +537,6 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       }
     }
 #endif
-    xml_h temp = x_mat.child(_U(T), false);
-    if ( temp.ptr() )   {
-      double temp_val  = temp.attr<double>(_U(value));
-      double temp_unit = temp.attr<double>(_U(unit), 1.0 /* _toDouble("kelvin") */);
-      mat->SetTemperature(temp_val*temp_unit);
-    }
-    xml_h pressure = x_mat.child(_U(P), false);
-    if ( pressure.ptr() )   {
-      double pressure_val  = pressure.attr<double>(_U(value));
-      double pressure_unit = pressure.attr<double>(_U(unit),1.0 /* _toDouble("pascal") */);
-      mat->SetPressure(pressure_val*pressure_unit);
-    }
   }
   TGeoMedium* medium = mgr.GetMedium(matname);
   if (0 == medium) {
@@ -626,7 +639,7 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
         string ref  = i.attr<string>(_U(ref));
         TGeoIsotope* iso = tab->FindIsotope(ref.c_str());
         if ( !iso )  {
-          except("Compact","Element %s cannot be constructed. Isotope '%s' (fraction:%f) missing!",
+          except("Compact","Element %s cannot be constructed. Isotope '%s' (fraction: %.3f) missing!",
                  name.c_str(), ref.c_str(), frac);
         }
         printout(s_debug.elements ? ALWAYS : DEBUG, "Compact",
@@ -650,6 +663,43 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
   }
 }
 
+/** Convert compact isotope objects
+ *
+ *   <std_conditions type="STP or NTP"> // type optional
+ *     <item name="temperature" unit="kelvin" value="273.15"/>
+ *     <item name="pressure"    unit="kPa" value="100"/>
+ *   </std_conditions>
+ */
+template <> void Converter<STD_Conditions>::operator()(xml_h e) const {
+  xml_dim_t cond(e);
+  // Create the isotope object in the event it is not yet present from the XML data
+  if ( cond.ptr() )   {
+    if ( cond.hasAttr(_U(type)) )   {
+      description.setStdConditions(cond.typeStr());
+    }
+    xml_h  temperature = cond.child(_U(T), false);
+    double temp_val    = description.stdConditions().temperature;
+    if ( temperature.ptr() )   {
+      double temp_unit = _toDouble("kelvin");
+      if ( temperature.hasAttr(_U(unit)) )
+        temp_unit = temperature.attr<double>(_U(unit));
+      temp_val = temperature.attr<double>(_U(value)) * temp_unit;
+    }
+    xml_h pressure = cond.child(_U(P), false);
+    double pressure_val = description.stdConditions().pressure;
+    if ( pressure.ptr() )   {
+      double pressure_unit = _toDouble("pascal");
+      if ( pressure.hasAttr(_U(unit)) )
+        pressure_unit = pressure.attr<double>(_U(unit));
+      pressure_val = pressure.attr<double>(_U(value)) * pressure_unit;
+    }
+    description.setStdConditions(temp_val, pressure_val);
+    printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
+             "+++ Material standard conditions: Temperature: %.3f Kelvin Pressure: %.3f hPa",
+             temp_val/_toDouble("kelvin"), pressure_val/_toDouble("hPa"));
+  }
+}
+
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 /** Convert compact optical surface objects (defines)
  *
@@ -668,7 +718,7 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
   if ( e.hasAttr(_U(value))  ) value  = e.attr<double>(_U(value));
   OpticalSurface surf(description, e.attr<string>(_U(name)), model, finish, type, value);
   if ( s_debug.surface )    {
-    printout(ALWAYS,"Compact","+++ Reading optical surface %s Typ:%d model:%d finish:%d value:%f",
+    printout(ALWAYS,"Compact","+++ Reading optical surface %s Typ:%d model:%d finish:%d value: %.3f",
              e.attr<string>(_U(name)).c_str(), int(type), int(model), int(finish), value);
   }
   for (xml_coll_t props(e, _U(property)); props; ++props)  {
@@ -1142,7 +1192,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
     else if (ecut) {   // If no unit is given , we assume the correct Geant4 unit is used!
       sd.setEnergyCutoff(element.attr<double>(ecut));
     }
-    printout(DEBUG, "Compact", "SensitiveDetector-update: %-18s %-24s Hits:%-24s Cutoff:%f7.3f", sd.name(),
+    printout(DEBUG, "Compact", "SensitiveDetector-update: %-18s %-24s Hits:%-24s Cutoff:%7.3f", sd.name(),
              (" [" + sd.type() + "]").c_str(), sd.hitsCollection().c_str(), sd.energyCutoff());
     xml_attr_t sequence = element.attr_nothrow(_U(sequence));
     if (sequence) {
@@ -1457,6 +1507,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   
   xml_coll_t(compact, _U(define)).for_each(_U(include), Converter<DetElementInclude>(description));
   xml_coll_t(compact, _U(define)).for_each(_U(constant), Converter<Constant>(description));
+  xml_coll_t(compact, _U(std_conditions)).for_each(Converter<STD_Conditions>(description));
   xml_coll_t(compact, _U(includes)).for_each(_U(gdmlFile), Converter<GdmlFile>(description));
 
   if (element.hasChild(_U(info)))

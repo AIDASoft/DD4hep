@@ -500,10 +500,20 @@ static long root_materials(Detector& description, int argc, char** argv) {
     MaterialPrint(Detector& desc) : description(desc) {}
     virtual ~MaterialPrint() = default;
     virtual elt_h print(TGeoMaterial* mat)  {
-      ::printf("%-8s %-32s  Aeff=%7.3f Zeff=%7.4f rho=%8.3f [g/mole] radlen=%8.3g [cm] intlen=%8.3g [cm] index=%3d\n",
-               mat->IsMixture() ? "Mixture" : "Material",
-               mat->GetName(), mat->GetA(), mat->GetZ(), mat->GetDensity(),
+      const char* st = "Undefined";
+      switch(mat->GetState())  {
+      case TGeoMaterial::kMatStateSolid:  st = "solid"; break;
+      case TGeoMaterial::kMatStateLiquid: st = "liquid"; break;
+      case TGeoMaterial::kMatStateGas:    st = "gas"; break;
+      case TGeoMaterial::kMatStateUndefined: 
+      default: st = "Undefined"; break;
+      }
+      ::printf("%-32s %-8s\n", mat->GetName(), mat->IsMixture() ? "Mixture" : "Material");
+      ::printf("         Aeff=%7.3f Zeff=%7.4f rho=%8.3f [g/mole] radlen=%8.3g [cm] intlen=%8.3g [cm] index=%3d\n",
+               mat->GetA(), mat->GetZ(), mat->GetDensity(),
                mat->GetRadLen(), mat->GetIntLen(), mat->GetIndex());
+      ::printf("         Temp=%.3g [Kelvin] Pressure=%.5g [pascal] state=%s\n",
+               mat->GetTemperature(), mat->GetPressure(), st);
       return elt_h(0);
     }
     virtual void print(elt_h, TGeoElement* elt, double frac)   {
@@ -547,11 +557,34 @@ static long root_materials(Detector& description, int argc, char** argv) {
       }
       else if ( mat->GetNelements() == 1 )   {
         elt.setAttr(_U(formula),mat->GetElement(0)->GetName());
+#if 0
+        // We do not need this. It shall be computed by TGeo using the Geant4 formula.
+        elt_h RL = elt.addChild(_U(RL));
+        RL.setAttr(_U(type),  "X0");
+        RL.setAttr(_U(value), mat->GetRadLen());
+        RL.setAttr(_U(unit),  "cm");
+        elt_h NIL = elt.addChild(_U(NIL));
+        NIL.setAttr(_U(type),  "lambda");
+        NIL.setAttr(_U(value), mat->GetIntLen());
+        NIL.setAttr(_U(unit),  "cm");
+#endif
       }
       elt_h D = elt.addChild(_U(D));
-      D.setAttr(_U(type),"density");
-      D.setAttr(_U(value),mat->GetDensity());
-      D.setAttr(_U(unit),"g/cm3");
+      D.setAttr(_U(type),  "density");
+      D.setAttr(_U(value), mat->GetDensity());
+      D.setAttr(_U(unit),  "g/cm3");
+      if ( mat->GetTemperature() != description.stdConditions().temperature )  {
+        elt_h T = elt.addChild(_U(T));
+        T.setAttr(_U(type), "temperature");
+        T.setAttr(_U(value), mat->GetTemperature());
+        T.setAttr(_U(unit), "kelvin");
+      }
+      if ( mat->GetPressure() != description.stdConditions().pressure )  {
+        elt_h P = elt.addChild(_U(P));
+        P.setAttr(_U(type),  "pressure");
+        P.setAttr(_U(value), mat->GetPressure());
+        P.setAttr(_U(unit),  "pascal");
+      }
       return elt;
     }
     virtual void print(elt_h mat, TGeoElement* element, double frac)  {

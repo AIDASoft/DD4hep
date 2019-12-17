@@ -79,6 +79,8 @@ namespace dd4hep {
       Geant4UIManager(Geant4Context* context, const std::string& name);
       /// Default destructor
       virtual ~Geant4UIManager();
+      /// Install command control messenger to write GDML file from command prompt.
+      void installCommandMessenger();
       /// Start visualization
       G4VisManager* startVis();
       /// Start UI
@@ -87,7 +89,9 @@ namespace dd4hep {
       void start();
       /// Stop and release resources
       void stop();
-      /// Run UI
+      /// Force exiting this process without calling atexit handlers
+      void forceExit();
+     /// Run UI
       virtual void operator()(void* param);
     };
 

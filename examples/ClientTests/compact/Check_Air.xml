@@ -1,0 +1,66 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  
+  <info name=   "ShapeCheck"
+	title=  "Checking individual shapes in D4hep by comparing the mesh vertices"
+	author= "Markus Frank"
+	url=    "http://www.cern.ch/lhcb"
+	status= "development"
+	version="1.0">
+    <comment>Shape tester</comment>        
+  </info>
+  <steer open="false" close="false"/>
+
+  <debug>
+    <type name="materials" value="1"/>
+  </debug>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_side" value="300*cm"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="world_side"/>
+  </define>
+
+  <std_conditions type="STP">
+      <T unit="kelvin" value="333.33"/>
+      <P unit="atmosphere" value="2.22"/>
+  </std_conditions>
+
+  <display>
+    <vis name="Box_vis" alpha="1.0" r="1" g="0" b="0" showDaughters="true" visible="true"/>
+  </display>
+
+  <materials>
+    <material name="Air">
+      <D type="density" unit="g/cm3" value="0.001214"/>
+      <fraction n="0.7494" ref="N"/>
+      <fraction n="0.2369" ref="O"/>
+      <fraction n="0.0129" ref="Ar"/>
+      <fraction n="0.0008" ref="H"/>
+    </material>
+  
+    <!-- We model vakuum just as very thin air -->
+    <material name="Vacuum">  
+      <D type="density" unit="g/cm3" value="0.0000000001" />
+      <T unit="kelvin" value="111.11"/>
+      <P unit="pascal" value="1e-10"/>
+      <composite n="1" ref="Air"/>
+    </material>
+  </materials>
+
+  <detectors>
+    <detector id="3" name="B1" type="DD4hep_BoxSegment" vis="Box_vis">
+      <comment>Vertical box</comment>
+      <material name="Vacuum"/>
+      <box      x="10"  y="20"   z="30"/>
+      <position x="-10" y="30"   z="10"/>
+      <rotation x="0"   y="0"    z="0"/>
+    </detector>
+  </detectors>
+</lccdd>

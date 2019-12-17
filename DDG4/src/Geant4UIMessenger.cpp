@@ -59,10 +59,21 @@ Geant4UIMessenger::~Geant4UIMessenger() {
 }
 
 /// Add a new callback structure
-void Geant4UIMessenger::addCall(const std::string& name, const std::string& description, const Callback& cb) {
-  G4UIcommand* cmd = new G4UIcmdWithoutParameter((m_path + name).c_str(), this);
-  cmd->SetGuidance(description.c_str());
-  m_actionCmd[cmd] = cb;
+void Geant4UIMessenger::addCall(const std::string& name, const std::string& description, const Callback& cb, size_t npar) {
+  if ( 0 == npar )    {
+    G4UIcommand* cmd = new G4UIcmdWithoutParameter((m_path + name).c_str(), this);
+    cmd->SetGuidance(description.c_str());
+    m_actionCmd[cmd] = cb;
+  }
+  else if ( 1 == npar )    {
+    G4UIcmdWithAString* cmd = new G4UIcmdWithAString((m_path + name).c_str(), this);
+    cmd->SetParameterName("p1", true);
+    cmd->SetGuidance(description.c_str());
+    m_actionCmd[cmd] = cb;
+  }
+  else    {
+    except("Geant4UIMessenger","+++ Currently only callbacks with one argument are handled! [Contact developers if more are required]");
+  }
 }
 
 /// Export all properties to the Geant4 UI
@@ -120,7 +131,8 @@ void Geant4UIMessenger::SetNewValue(G4UIcommand *c, G4String v) {
     Actions::iterator j = m_actionCmd.find(c);
     if (j != m_actionCmd.end()) {
       try  {
-        (*j).second.execute(0);
+        const void* args[] = {v.c_str(), 0};
+        (*j).second.execute(args);
       }
       catch(const exception& e)   {
         printout(INFO, "Geant4UI", "+++ %s> Exception: Failed to exec action '%s' [%s].",

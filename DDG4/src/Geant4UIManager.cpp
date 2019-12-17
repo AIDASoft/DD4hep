@@ -14,6 +14,7 @@
 // Framework include files
 #include "DDG4/Geant4UIManager.h"
 #include "DDG4/Geant4Kernel.h"
+#include "DDG4/Geant4UIMessenger.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/Printout.h"
 
@@ -24,6 +25,8 @@
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
 #include "G4RunManager.hh"
+
+#include <cstdlib>
 
 using namespace dd4hep::sim;
 using namespace std;
@@ -47,10 +50,22 @@ Geant4UIManager::Geant4UIManager(Geant4Context* ctxt, const std::string& nam)
   declareProperty("HaveVIS",        m_haveVis=false);
   declareProperty("HaveUI",         m_haveUI=true);
   declareProperty("Prompt",         m_prompt);
+  enableUI();
 }
 
 /// Default destructor
 Geant4UIManager::~Geant4UIManager()   {
+}
+
+/// Install command control messenger to write GDML file from command prompt.
+void Geant4UIManager::installCommandMessenger()   {
+  m_control->addCall("exit", "Force exiting this process",
+                     Callback(this).make(&Geant4UIManager::forceExit),0);
+}
+
+/// Force exiting this process without calling atexit handlers
+void Geant4UIManager::forceExit()   {
+  std::_Exit(0);
 }
 
 /// Start visualization

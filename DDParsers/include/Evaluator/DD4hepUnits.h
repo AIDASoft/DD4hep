@@ -204,9 +204,9 @@ namespace dd4hep {
     //
     // Pressure [E][L^-3]
     //
-#define pascal hep_pascal                          // a trick to avoid warnings
+#define pascal hep_pascal                               // a trick to avoid warnings
     static constexpr double hep_pascal = newton / m2;   // pascal = 6.24150 e+3 * MeV/mm3
-    static constexpr double bar = 100000 * pascal;   // bar    = 6.24150 e+8 * MeV/mm3
+    static constexpr double bar = 100000 * pascal;      // bar    = 6.24150 e+8 * MeV/mm3
     static constexpr double atmosphere = 101325 * pascal;   // atm    = 6.32420 e+8 * MeV/mm3
 
     //
@@ -408,12 +408,16 @@ namespace dd4hep {
     static constexpr double k_Boltzmann = 8.617343e-11 * MeV / kelvin;
 
     //
-    //
-    //
+    // IUPAC standard temperature and pressure (STP)
+    // STP uses 273.15 K (0 °C, 32 °F) and (since 1982) 1 bar (100 kPa) and not 1 atm!
     static constexpr double STP_Temperature = 273.15 * kelvin;
-    static constexpr double STP_Pressure = 1. * atmosphere;
-    static constexpr double kGasThreshold = 10. * mg / cm3;
-
+    static constexpr double STP_Pressure    = 1. * bar;
+    //
+    // NTP uses the NIST convention: 20 °C (293.15 K, 68 °F), 1 atm (14.696 psi, 101.325 kPa)
+    static constexpr double NTP_Temperature = 293.15 * kelvin;
+    static constexpr double NTP_Pressure    = 1. * atmosphere;
+    //
+    static constexpr double kGasThreshold   = 10. * mg / cm3;
     //
     //
     //
