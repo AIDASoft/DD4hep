@@ -21,15 +21,17 @@ def help():
 
 
 def run():
+  cnt = 0
   geo = None
   vis = False
   batch = False
   for i in sys.argv:
+    cnt = cnt + 1
     c = i.upper()
     if c.find('BATCH') < 2 and c.find('BATCH') >= 0:
       batch = True
     if c[:4] == '-GEO':
-      geo = sys.argv[i + 1]
+      geo = sys.argv[cnt]
     if c[:4] == '-VIS':
       vis = True
 
