@@ -30,9 +30,9 @@ def run():
     c = i.upper()
     if c.find('BATCH') < 2 and c.find('BATCH') >= 0:
       batch = True
-    if c[:4] == '-GEO':
+    elif c[:4] == '-GEO':
       geo = sys.argv[cnt]
-    if c[:4] == '-VIS':
+    elif c[:4] == '-VIS':
       vis = True
 
   if not geo:
@@ -57,10 +57,10 @@ def run():
   DDG4.setPrintLevel(DDG4.OutputLevel.DEBUG)
   #
   ui.Commands = [
-    '/ddg4/ConstructGeometry/printVolume /world_volume_1',
-    '/ddg4/ConstructGeometry/printMaterial Air',
-    '/ddg4/ConstructGeometry/printMaterial Vacuum',
-    '/ddg4/UI/exit'
+      '/ddg4/ConstructGeometry/printVolume /world_volume_1',
+      '/ddg4/ConstructGeometry/printMaterial Air',
+      '/ddg4/ConstructGeometry/printMaterial Vacuum',
+      '/ddg4/UI/exit'
     ]
   kernel.NumEvents = 0
   kernel.configure()
