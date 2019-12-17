@@ -308,7 +308,7 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( ClientTests_sim_Check_Temp_Pressure_Air
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/Check_Air.py
-    -geometry  ${ClientTestsEx_INSTALL}/compact/Check_Air.xml
+    -geometry  ${ClientTestsEx_INSTALL}/compact/Check_Air.xml batch
     REQUIRES   DDG4 Geant4
     REGEX_PASS "Imean:  85.538 eV   temperature: 333.33 K  pressure:   2.22 atm"
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
