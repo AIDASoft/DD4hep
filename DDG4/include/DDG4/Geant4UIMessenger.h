@@ -38,17 +38,17 @@ namespace dd4hep {
       typedef std::map<G4UIcommand*, Callback> Actions;
     protected:
       /// The UI directory of this component
-      G4UIdirectory* m_directory;
+      G4UIdirectory*   m_directory;
       /// Reference to the property manager corresponding to the component
       PropertyManager* m_properties;
       /// Component name
-      std::string m_name;
+      std::string      m_name;
       /// Path in the UI hierarchy of this component
-      std::string m_path;
+      std::string      m_path;
       /// Property update command map
-      Commands m_propertyCmd;
+      Commands         m_propertyCmd;
       /// Action map
-      Actions m_actionCmd;
+      Actions          m_actionCmd;
 
     public:
       /// Initializing constructor
@@ -56,12 +56,18 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4UIMessenger();
       /// Add a new callback structure
-      void addCall(const std::string& name, const std::string& description, const Callback& cb);
-      /// Add any callback (without parameters to the messenger
+      void addCall(const std::string& name, const std::string& description, const Callback& cb, size_t npar=0);
+      /// Add any callback without parameters to the messenger
       template <typename Q, typename R, typename T>
       void addCall(const std::string& name, const std::string& description, Q* p, R (T::*f)()) {
         CallbackSequence::checkTypes(typeid(Q), typeid(T), dynamic_cast<T*>(p));
-        addCall(name, description, Callback(p).make(f));
+        addCall(name, description, Callback(p).make(f), 0);
+      }
+      /// Add any callback with ONE parameter to the messenger
+      template <typename Q, typename R, typename T, typename A1>
+      void addCall(const std::string& name, const std::string& description, Q* p, R (T::*f)(A1)) {
+        CallbackSequence::checkTypes(typeid(Q), typeid(T), dynamic_cast<T*>(p));
+        addCall(name, description, Callback(p).make(f), 1);
       }
       /// Export all properties to the Geant4 UI
       void exportProperties(PropertyManager& mgr);

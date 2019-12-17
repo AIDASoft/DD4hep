@@ -54,6 +54,25 @@ namespace dd4hep {
     class UriReader;
   }
 
+  /// Helper class to access default temperature and pressure
+  class STD_Conditions   {
+  public:
+    enum  Conventions {
+      STP           = 1<<0, // Standard temperature and pressure (273.15 Kelvin, 1 ATM)
+      NTP           = 1<<1, // Normal   temperature and pressure (293.15 Kelvin, 1 ATM)
+      USER          = 1<<2, // Explicitly set before materials are defined (recommended)
+      USER_SET      = 1<<3,
+      USER_NOTIFIED = 1<<4
+    };
+  public:
+    double pressure;
+    double temperature;
+    long   convention;
+    bool is_NTP()  const           {  return (convention&NTP)  != 0; }
+    bool is_STP()  const           {  return (convention&STP)  != 0; }
+    bool is_user_defined()  const  {  return (convention&USER) != 0; }
+  };
+  
   /// The main interface to the dd4hep detector description package
   /**
    *  Note: The usage of the factory method:
@@ -128,6 +147,14 @@ namespace dd4hep {
     /// Access the optical surface manager
     virtual OpticalSurfaceManager surfaceManager()  const = 0;
 
+    /// Access default conditions (temperature and pressure
+    virtual const STD_Conditions& stdConditions()  const = 0;
+    /// Set the STD temperature and pressure
+    virtual void setStdConditions(double temp, double pressure) = 0;
+    /// Set the STD conditions according to defined types (STP or NTP)
+    virtual void setStdConditions(const std::string& type) = 0;
+    
+    
     /// Accessor to the map of header entries
     virtual Header header() const = 0;
     /// Accessor to the header entry

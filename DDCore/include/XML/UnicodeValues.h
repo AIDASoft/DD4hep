@@ -454,6 +454,7 @@ UNICODE (starttheta);
 UNICODE (state);
 UNICODE (stave);
 UNICODE (staves);
+UNICODE (std_conditions);
 UNICODE (step);
 UNICODE (steps);
 UNICODE (step_x);

@@ -61,6 +61,9 @@ namespace dd4hep {
     /// Cached map with detector types:
     typedef std::map<std::string, std::vector<DetElement> > DetectorTypeMap;
 
+    /// Standard conditions
+    mutable STD_Conditions m_std_conditions;
+    
     /// Inventory of detector types
     DetectorTypeMap   m_detectorTypes;
 
@@ -207,6 +210,14 @@ namespace dd4hep {
     virtual OverlayedField field() const  override {
       return m_field;
     }
+
+    /// Access default conditions (temperature and pressure
+    virtual const STD_Conditions& stdConditions()  const  override;
+    /// Set the STD temperature and pressure
+    virtual void setStdConditions(double temp, double pressure) override;
+    /// Set the STD conditions according to defined types (STP or NTP)
+    virtual void setStdConditions(const std::string& type)  override;
+
     /// Accessor to the header entry
     virtual Header header() const  override {
       return m_header;

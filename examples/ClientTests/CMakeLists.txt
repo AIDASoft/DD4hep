@@ -208,6 +208,14 @@ dd4hep_add_test_reg( ClientTests_Check_VolumeDivisionTest
   -plugin DD4hep_VolumeDump
   REGEX_PASS "Checked 8 physical volume placements")
 #
+#  Test Setting temperature and pressure to material
+dd4hep_add_test_reg( ClientTests_Check_Temp_Pressure_Air
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -destroy -input file:${ClientTestsEx_INSTALL}/compact/Check_Air.xml
+  -plugin DD4hep_MaterialTable -name Vacuum
+  REGEX_PASS "Temp=111 \\[Kelvin\\] Pressure=6.2415e-07 \\[pascal\\] state=Undefined"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
 #
 # only if root version > 6.19: MaterialTester
 #
@@ -295,6 +303,15 @@ endforeach()
 #      EXEC_ARGS  test_with_root.sh ${script}
 #
 if (DD4HEP_USE_GEANT4)
+  #
+  #  Test Setting temperature and pressure to material
+  dd4hep_add_test_reg( ClientTests_sim_Check_Temp_Pressure_Air
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/Check_Air.py
+    -geometry  ${ClientTestsEx_INSTALL}/compact/Check_Air.xml
+    REQUIRES   DDG4 Geant4
+    REGEX_PASS "Imean:  85.538 eV   temperature: 333.33 K  pressure:   2.22 atm"
+    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
   #
   # Geant4 test if production cuts are processed
   dd4hep_add_test_reg( ClientTests_sim_MiniTel_prod_cuts
