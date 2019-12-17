@@ -42,8 +42,8 @@ def run():
   # Configure UI
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
   if batch:
-    kernel.UI = ''
-    ui = geant4.setupCshUI(ui=None, vis=vis)
+    ui = geant4.setupCshUI(ui=None, vis=None)
+    kernel.UI = 'UI'
   else:
     ui = geant4.setupCshUI(vis=vis)
   kernel.loadGeometry(geo)
