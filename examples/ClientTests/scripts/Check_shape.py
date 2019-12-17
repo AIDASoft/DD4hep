@@ -56,14 +56,15 @@ def run():
   #
   #      '/ddg4/ConstructGeometry/writeGDML   test.gdml',
   ui.Commands = [
-      ,'/ddg4/ConstructGeometry/printVolume /world_volume_1/Shape_Test_0/Shape_Test_vol_0_0'
-      ,'exit'
+      '/ddg4/ConstructGeometry/printVolume /world_volume_1/Shape_Test_0/Shape_Test_vol_0_0',
+      'exit'
       ]
   kernel.NumEvents = 0
   kernel.configure()
   kernel.initialize()
   kernel.run()
   kernel.terminate()
+
 
 if __name__ == "__main__":
   run()
