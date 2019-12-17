@@ -28,9 +28,9 @@ def run():
     c = sys.argv[i].upper()
     if c.find('BATCH') < 2 and c.find('BATCH') >= 0:
       batch = True
-    if c[:4] == '-GEO':
+    elif c[:4] == '-GEO':
       geo = sys.argv[i + 1]
-    if c[:4] == '-VIS':
+    elif c[:4] == '-VIS':
       vis = True
 
   if not geo:
@@ -42,8 +42,8 @@ def run():
   # Configure UI
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
   if batch:
-    kernel.UI = ''
-    ui = geant4.setupCshUI(ui=None, vis=vis)
+    ui = geant4.setupCshUI(ui=None, vis=None)
+    kernel.UI = 'UI'
   else:
     ui = geant4.setupCshUI(vis=vis)
   kernel.loadGeometry(geo)
@@ -57,7 +57,7 @@ def run():
   #      '/ddg4/ConstructGeometry/writeGDML   test.gdml',
   ui.Commands = [
       '/ddg4/ConstructGeometry/printVolume /world_volume_1/Shape_Test_0/Shape_Test_vol_0_0',
-      'exit'
+      '/ddg4/UI/exit'
       ]
   kernel.NumEvents = 0
   kernel.configure()
