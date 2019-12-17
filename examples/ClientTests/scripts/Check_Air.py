@@ -57,16 +57,17 @@ def run():
   DDG4.setPrintLevel(DDG4.OutputLevel.DEBUG)
   #
   ui.Commands = [
-    '/ddg4/ConstructGeometry/printVolume /world_volume_1'
-    ,'/ddg4/ConstructGeometry/printMaterial Air'
-    ,'/ddg4/ConstructGeometry/printMaterial Vacuum'
-    ,'/ddg4/UI/exit'
+    '/ddg4/ConstructGeometry/printVolume /world_volume_1',
+    '/ddg4/ConstructGeometry/printMaterial Air',
+    '/ddg4/ConstructGeometry/printMaterial Vacuum',
+    '/ddg4/UI/exit'
     ]
   kernel.NumEvents = 0
   kernel.configure()
   kernel.initialize()
   kernel.run()
   kernel.terminate()
+
 
 if __name__ == "__main__":
   run()
