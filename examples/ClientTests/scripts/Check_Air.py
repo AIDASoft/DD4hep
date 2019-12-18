@@ -61,7 +61,7 @@ def run():
       '/ddg4/ConstructGeometry/printMaterial Air',
       '/ddg4/ConstructGeometry/printMaterial Vacuum',
       '/ddg4/UI/exit'
-    ]
+      ]
   kernel.NumEvents = 0
   kernel.configure()
   kernel.initialize()
