@@ -118,7 +118,8 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   obj->children.clear();
   for (const auto& i : children )  {
     const DetElementObject& d = i.second._data();
-    DetElement c = d.clone(obj->id, DetElement::COPY_PLACEMENT);
+    int child_id = flg&DetElement::PROPAGATE_PARENT_ID ? obj->id : d.id;
+    DetElement c = d.clone(child_id, DetElement::COPY_PLACEMENT);
     c->SetName(d.GetName());
     c->SetTitle(d.GetTitle());
     bool r = obj->children.emplace(c.name(), c).second;

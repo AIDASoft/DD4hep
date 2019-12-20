@@ -197,20 +197,21 @@ namespace dd4hep {
     typedef std::map<std::string, DetElement> Children;
 
     enum CopyParameters {
-      COPY_NONE      = 0,
-      COPY_PLACEMENT = 1 << 0,
-      COPY_PARENT    = 1 << 1,
-      COPY_ALIGNMENT = 1 << 2,
+      COPY_NONE           = 0,
+      COPY_PLACEMENT      = 1 << 0,
+      COPY_PARENT         = 1 << 1,
+      COPY_ALIGNMENT      = 1 << 2,
+      PROPAGATE_PARENT_ID = 1 << 3,
       LAST
     };
 
     enum UpdateParam {
-      CONDITIONS_CHANGED = 1<<0,
-      PLACEMENT_CHANGED  = 1<<1,
-      SOMETHING_CHANGED  = 1<<2,
-      PLACEMENT_ELEMENT  = 1<<20,
-      PLACEMENT_HIGHEST  = 1<<21,
-      PLACEMENT_DETECTOR = 1<<22,
+      CONDITIONS_CHANGED  = 1<<0,
+      PLACEMENT_CHANGED   = 1<<1,
+      SOMETHING_CHANGED   = 1<<2,
+      PLACEMENT_ELEMENT   = 1<<20,
+      PLACEMENT_HIGHEST   = 1<<21,
+      PLACEMENT_DETECTOR  = 1<<22,
       PLACEMENT_NONE
     };
 
