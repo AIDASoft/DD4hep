@@ -51,8 +51,8 @@ Condition ConditionUpdate1::operator()(const ConditionKey& key, ConditionUpdateC
 void ConditionUpdate1::resolve(Condition target, ConditionUpdateContext& context)  {
   vector<int>& data  = target.get<vector<int> >();
   Condition    cond0 = context.condition(context.key(0));
-  data.push_back(cond0.get<int>());
-  data.push_back(cond0.get<int>()*2);
+  data.emplace_back(cond0.get<int>());
+  data.emplace_back(cond0.get<int>()*2);
 }
 
 /// Interface to client Callback in order to update the condition

@@ -58,6 +58,8 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::align;
 
+static long setup_Alignment(Detector& description, const xml_h& e);
+
 /** Convert to enable/disable debugging.
  *
  *  @author  M.Frank
@@ -196,6 +198,8 @@ template <> void Converter<include_file>::operator()(xml_h element) const {
   string tag = node.tag();
   if ( tag == "alignment" )
     Converter<alignment>(description,param,optional)(node);
+  else if ( tag == "global_alignment" )
+    setup_Alignment(description, node);
   else if ( tag == "detelement" )
     Converter<detelement>(description,param,optional)(node);
   else if ( tag == "subdetectors" || tag == "detelements" )

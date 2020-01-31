@@ -1,6 +1,4 @@
-<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
-       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+<lccdd>
   
   <info name=   "ShapeCheck"
 	title=  "Checking individual shapes in D4hep by comparing the mesh vertices"
@@ -10,7 +8,7 @@
 	version="1.0">
     <comment>Shape tester</comment>        
   </info>
-  <steer open="false" close="false"/>
+  <geometry open="false" close="false"/>
 
   <includes>
     <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
