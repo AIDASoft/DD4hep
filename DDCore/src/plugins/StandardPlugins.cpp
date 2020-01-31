@@ -512,8 +512,8 @@ static long root_materials(Detector& description, int argc, char** argv) {
       ::printf("         Aeff=%7.3f Zeff=%7.4f rho=%8.3f [g/mole] radlen=%8.3g [cm] intlen=%8.3g [cm] index=%3d\n",
                mat->GetA(), mat->GetZ(), mat->GetDensity(),
                mat->GetRadLen(), mat->GetIntLen(), mat->GetIndex());
-      ::printf("         Temp=%.3g [Kelvin] Pressure=%.5g [pascal] state=%s\n",
-               mat->GetTemperature(), mat->GetPressure(), st);
+      ::printf("         Temp=%.3g [Kelvin] Pressure=%.5g [hPa] state=%s\n",
+               mat->GetTemperature(), mat->GetPressure()/dd4hep::pascal/100.0, st);
       return elt_h(0);
     }
     virtual void print(elt_h, TGeoElement* elt, double frac)   {

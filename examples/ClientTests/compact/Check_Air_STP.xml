@@ -24,10 +24,7 @@
     <constant name="world_z" value="world_side"/>
   </define>
 
-  <std_conditions type="STP">
-      <T unit="kelvin" value="333.33"/>
-      <P unit="atmosphere" value="2.22"/>
-  </std_conditions>
+  <std_conditions type="STP"/>
 
   <display>
     <vis name="Box_vis" alpha="1.0" r="1" g="0" b="0" showDaughters="true" visible="true"/>
@@ -45,8 +42,6 @@
     <!-- We model vakuum just as very thin air -->
     <material name="Vacuum">  
       <D type="density" unit="g/cm3" value="0.0000000001" />
-      <T unit="kelvin" value="111.11"/>
-      <P unit="pascal" value="1e-10"/>
       <composite n="1" ref="Air"/>
     </material>
   </materials>

@@ -214,7 +214,25 @@ dd4hep_add_test_reg( ClientTests_Check_Temp_Pressure_Air
   EXEC_ARGS  geoPluginRun
   -destroy -input file:${ClientTestsEx_INSTALL}/compact/Check_Air.xml
   -plugin DD4hep_MaterialTable -name Vacuum
-  REGEX_PASS "Temp=111 \\[Kelvin\\] Pressure=6.2415e-07 \\[pascal\\] state=Undefined"
+  REGEX_PASS "Temp=111 \\[Kelvin\\] Pressure=1e-12 \\[hPa\\] state=Undefined"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
+#
+#  Test Setting temperature and pressure to material
+dd4hep_add_test_reg( ClientTests_Check_Temp_Pressure_Air_NTP
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -destroy -input file:${ClientTestsEx_INSTALL}/compact/Check_Air_NTP.xml
+  -plugin DD4hep_MaterialTable -name Vacuum
+  REGEX_PASS "Temp=293 \\[Kelvin\\] Pressure=1013.2 \\[hPa\\] state=Undefined"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
+#
+#  Test Setting temperature and pressure to material
+dd4hep_add_test_reg( ClientTests_Check_Temp_Pressure_Air_STP
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -destroy -input file:${ClientTestsEx_INSTALL}/compact/Check_Air_STP.xml
+  -plugin DD4hep_MaterialTable -name Vacuum
+  REGEX_PASS "Temp=273 \\[Kelvin\\] Pressure=1000 \\[hPa\\] state=Undefined"
   REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
 #
 # only if root version > 6.19: MaterialTester

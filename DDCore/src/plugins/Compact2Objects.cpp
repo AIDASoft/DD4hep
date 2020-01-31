@@ -480,8 +480,8 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     mat->SetTemperature(temp_val);
     mat->SetPressure(pressure_val);
     printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
-             "++ Converting material %-16s  Density: %9.7g  Temperature:%9.7g Pressure:%9.7g.",
-             matname, dens_val, temp_val, pressure_val);
+             "++ Converting material %-16s  Density: %9.7g  Temperature:%9.7g [K] Pressure:%9.7g [hPa].",
+             matname, dens_val, temp_val/dd4hep::kelvin, pressure_val/dd4hep::pascal/100.0);
 
     mix->SetRadLen(0e0);
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
