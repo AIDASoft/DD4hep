@@ -43,12 +43,6 @@
 #include "G4GenericTrap.hh"
 #include "G4ExtrudedSolid.hh"
 #include "G4EllipticalTube.hh"
-#include "G4TriangularFacet.hh"
-#include "G4QuadrangularFacet.hh"
-
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
-#include "G4TessellatedSolid.hh"
-#endif
 
 // C/C++ include files
 
@@ -233,8 +227,19 @@ namespace dd4hep {
         vertices.emplace_back(vtx_xy[0] * CM_2_MM, vtx_xy[1] * CM_2_MM);
       return new G4GenericTrap(sh->GetName(), sh->GetDz() * CM_2_MM, vertices);
     }
+  }    // End namespace sim
+}      // End namespace dd4hep
 
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#include "G4TessellatedSolid.hh"
+#include "G4TriangularFacet.hh"
+#include "G4QuadrangularFacet.hh"
+
+/// Namespace for the AIDA detector description toolkit
+namespace dd4hep {
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
+  namespace sim {
+
     template <> G4VSolid* convertShape<TGeoTessellated>(const TGeoShape* shape)  {
       TGeoTessellated*   sh  = (TGeoTessellated*) shape;
       G4TessellatedSolid* g4 = new G4TessellatedSolid(sh->GetName());
