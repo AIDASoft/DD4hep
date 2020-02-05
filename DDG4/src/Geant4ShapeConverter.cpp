@@ -43,9 +43,12 @@
 #include "G4GenericTrap.hh"
 #include "G4ExtrudedSolid.hh"
 #include "G4EllipticalTube.hh"
-#include "G4TessellatedSolid.hh"
 #include "G4TriangularFacet.hh"
 #include "G4QuadrangularFacet.hh"
+
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#include "G4TessellatedSolid.hh"
+#endif
 
 // C/C++ include files
 
@@ -222,6 +225,16 @@ namespace dd4hep {
                         sh->GetH2() * CM_2_MM, sh->GetBl2() * CM_2_MM, sh->GetTl2() * CM_2_MM, sh->GetAlpha2() * DEGREE_2_RAD);
     }
 
+    template <> G4VSolid* convertShape<G4GenericTrap>(const TGeoShape* shape)  {
+      vector<G4TwoVector> vertices;
+      TGeoTrap* sh = (TGeoTrap*) shape;
+      Double_t* vtx_xy = sh->GetVertices();
+      for ( size_t i=0; i<8; ++i, vtx_xy +=2 )
+        vertices.emplace_back(vtx_xy[0] * CM_2_MM, vtx_xy[1] * CM_2_MM);
+      return new G4GenericTrap(sh->GetName(), sh->GetDz() * CM_2_MM, vertices);
+    }
+
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
     template <> G4VSolid* convertShape<TGeoTessellated>(const TGeoShape* shape)  {
       TGeoTessellated*   sh  = (TGeoTessellated*) shape;
       G4TessellatedSolid* g4 = new G4TessellatedSolid(sh->GetName());
@@ -257,14 +270,7 @@ namespace dd4hep {
       }
       return g4;
     }
-
-    template <> G4VSolid* convertShape<G4GenericTrap>(const TGeoShape* shape)  {
-      vector<G4TwoVector> vertices;
-      TGeoTrap* sh = (TGeoTrap*) shape;
-      Double_t* vtx_xy = sh->GetVertices();
-      for ( size_t i=0; i<8; ++i, vtx_xy +=2 )
-        vertices.emplace_back(vtx_xy[0] * CM_2_MM, vtx_xy[1] * CM_2_MM);
-      return new G4GenericTrap(sh->GetName(), sh->GetDz() * CM_2_MM, vertices);
-    }
+#endif
+    
   }    // End namespace sim
 }      // End namespace dd4hep
