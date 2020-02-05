@@ -155,7 +155,8 @@ class DD4hepSimulation(object):
                         help="InputFiles for simulation %s files are supported" % ", ".join(POSSIBLEINPUTFILES))
 
     parser.add_argument("--outputFile", "-O", action="store", default=self.outputFile,
-                        help="Outputfile from the simulation,only lcio output is supported")
+                        help="Outputfile from the simulation: .slcio, edm4hep.root and .root"
+                        " output files are supported")
 
     parser.add_argument("-v", "--printLevel", action="store", default=self.printLevel, dest="printLevel",
                         choices=(1, 2, 3, 4, 5, 6, 7, 'VERBOSE', 'DEBUG',
@@ -346,6 +347,12 @@ class DD4hepSimulation(object):
       lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = eventPars
       lcOut.RunNumberOffset = self.meta.runNumberOffset if self.meta.runNumberOffset > 0 else 0
       lcOut.EventNumberOffset = self.meta.eventNumberOffset if self.meta.eventNumberOffset > 0 else 0
+    elif self.outputFile.endswith("edm4hep.root"):
+      e4Out = simple.setupEDM4hepOutput('EDM4hepOutput', self.outputFile)
+      eventPars = self.meta.parseEventParameters()
+      e4Out.EventParametersString, e4Out.EventParametersInt, e4Out.EventParametersFloat = eventPars
+      e4Out.RunNumberOffset = self.meta.runNumberOffset if self.meta.runNumberOffset > 0 else 0
+      e4Out.EventNumberOffset = self.meta.eventNumberOffset if self.meta.eventNumberOffset > 0 else 0
     elif self.outputFile.endswith(".root"):
       simple.setupROOTOutput('RootOutput', self.outputFile)
 
