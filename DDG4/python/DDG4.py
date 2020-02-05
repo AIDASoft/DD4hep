@@ -713,6 +713,19 @@ class Geant4:
     self.kernel().eventAction().add(evt_lcio)
     return evt_lcio
 
+  def setupEDM4hepOutput(self, name, output):
+    """
+       Configure EDM4hep root output for the simulated events
+
+       \author  F.Gaede
+    """
+    evt_edm4hep = EventAction(self.kernel(), 'Geant4Output2EDM4hep/' + name, True)
+    evt_edm4hep.Control = True
+    evt_edm4hep.Output = output
+    evt_edm4hep.enableUI()
+    self.kernel().eventAction().add(evt_edm4hep)
+    return evt_edm4hep
+
   def buildInputStage(self, generator_input_modules, output_level=None, have_mctruth=True):
     """
     Generic build of the input stage with multiple input modules.
