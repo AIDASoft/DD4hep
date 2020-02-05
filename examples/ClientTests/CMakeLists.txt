@@ -189,10 +189,15 @@ dd4hep_add_test_reg( ClientTests_Save_ROOT_MiniTel_LONGTEST
   REGEX_PASS "\\+\\+\\+ Successfully saved geometry data to file.")
 #
 #  Test basic shapes by comparing mesh vertices with reference file
-foreach (test Box Cone ConeSegment Tube ElTube
-    CutTube Hyperboloid Paraboloid EightPointSolid Eightpoint_Reflect_Volume Eightpoint_Reflect_DetElement
-    Polycone Polyhedra PseudoTrap PseudoTrap2 Sphere Torus Tesselated
-    Trap Trd1 Trd2 TruncatedTube ExtrudedPolygon)
+set(ClientTests_ShapeTests)
+list(APPEND ClientTests_ShapeTests Box Cone ConeSegment Tube ElTube CutTube Hyperboloid Paraboloid)
+list(APPEND ClientTests_ShapeTests EightPointSolid Eightpoint_Reflect_Volume Eightpoint_Reflect_DetElement)
+list(APPEND ClientTests_ShapeTests Polycone Polyhedra PseudoTrap PseudoTrap2 Sphere Torus Trap Trd1 Trd2)
+list(APPEND ClientTests_ShapeTests TruncatedTube ExtrudedPolygon)
+if(${ROOT_VERSION} VERSION_GREATER 6.19.00)
+list(APPEND ClientTests_ShapeTests Tesselated)
+endif()
+foreach (test ${ClientTests_ShapeTests})
   dd4hep_add_test_reg( ClientTests_Check_Shape_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoDisplay file:${ClientTestsEx_INSTALL}/compact/Check_Shape_${test}.xml -load -destroy
