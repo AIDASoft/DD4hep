@@ -711,9 +711,39 @@ void ExtrudedPolygon::make(const string& nam,
     solid->DefineSection(i, sec_z[i], sec_x[i], sec_y[i], sec_scale[i]);
 }
 
-/// Creator method
+/// Creator method for arbitrary eight point solids
 void EightPointSolid::make(const string& nam, double dz, const double* vtx)   {
   _assign(new TGeoArb8(nam.c_str(), dz, (double*)vtx), "", EIGHTPOINTSOLID_TAG, true);
+}
+
+/// Internal helper method to support object construction
+void TessellatedSolid::make(const std::string& nam, int num_facets)   {
+  _assign(new TGeoTessellated(nam.c_str(), num_facets), nam, TESSELLATEDSOLID_TAG, false);
+}
+
+/// Internal helper method to support object construction
+void TessellatedSolid::make(const std::string& nam, const std::vector<Object::Vertex_t>& vertices)   {
+  _assign(new TGeoTessellated(nam.c_str(), vertices), nam, TESSELLATEDSOLID_TAG, false);
+}
+
+/// Add new facet to the shape
+bool TessellatedSolid::addFacet(const Vertex_t& pt0, const Vertex_t& pt1, const Vertex_t& pt2)  const {
+  return access()->AddFacet(pt0, pt1, pt2);
+}
+
+/// Add new facet to the shape
+bool TessellatedSolid::addFacet(const Vertex_t& pt0, const Vertex_t& pt1, const Vertex_t& pt2, const Vertex_t& pt3)  const {
+  return access()->AddFacet(pt0, pt1, pt2, pt3);
+}
+
+/// Add new facet to the shape. Call only if the tessellated shape was constructed with vertices
+bool TessellatedSolid::addFacet(const int pt0, const int pt1, const int pt2)  const    {
+  return access()->AddFacet(pt0, pt1, pt2);
+}
+
+/// Add new facet to the shape. Call only if the tessellated shape was constructed with vertices
+bool TessellatedSolid::addFacet(const int pt0, const int pt1, const int pt2, const int pt3)  const   {
+  return access()->AddFacet(pt0, pt1, pt2, pt3);
 }
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is the identity rotation
@@ -918,4 +948,5 @@ INSTANTIATE(TGeoHype);
 INSTANTIATE(TGeoTrap);
 INSTANTIATE(TGeoTrd1);
 INSTANTIATE(TGeoTrd2);
+INSTANTIATE(TGeoTessellated);
 INSTANTIATE(TGeoCompositeShape);

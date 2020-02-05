@@ -191,7 +191,7 @@ dd4hep_add_test_reg( ClientTests_Save_ROOT_MiniTel_LONGTEST
 #  Test basic shapes by comparing mesh vertices with reference file
 foreach (test Box Cone ConeSegment Tube ElTube
     CutTube Hyperboloid Paraboloid EightPointSolid Eightpoint_Reflect_Volume Eightpoint_Reflect_DetElement
-    Polycone Polyhedra PseudoTrap PseudoTrap2 Sphere Torus
+    Polycone Polyhedra PseudoTrap PseudoTrap2 Sphere Torus Tesselated
     Trap Trd1 Trd2 TruncatedTube ExtrudedPolygon)
   dd4hep_add_test_reg( ClientTests_Check_Shape_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"

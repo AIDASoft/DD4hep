@@ -255,6 +255,7 @@ static Handle<TObject> create_PolyhedraRegular(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(PolyhedraRegular__shape_constructor,create_PolyhedraRegular)
 
+/// Plugin factory to created polyhedra shapes
 static Handle<TObject> create_Polyhedra(Detector&, xml_h element)   {
   xml_dim_t e(element);
   std::vector<double> z, rmin, rmax;
@@ -270,6 +271,7 @@ static Handle<TObject> create_Polyhedra(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(Polyhedra__shape_constructor,create_Polyhedra)
 
+/// Plugin factory to created extruded polygons
 static Handle<TObject> create_ExtrudedPolygon(Detector&, xml_h element)   {
   xml_dim_t e(element);
   std::vector<double> pt_x, pt_y, sec_z, sec_x, sec_y, sec_scale;
@@ -291,6 +293,7 @@ static Handle<TObject> create_ExtrudedPolygon(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(ExtrudedPolygon__shape_constructor,create_ExtrudedPolygon)
 
+/// Plugin factory to created arbitrary 8-point solids
 static Handle<TObject> create_EightPointSolid(Detector&, xml_h element)   {
   xml_dim_t e(element);
   double v[8][2];
@@ -307,6 +310,32 @@ static Handle<TObject> create_EightPointSolid(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(EightPointSolid__shape_constructor,create_EightPointSolid)
 
+/// Plugin factory to created tessellated shapes
+static Handle<TObject> create_TessellatedSolid(Detector&, xml_h element)   {
+  xml_dim_t e(element);
+  std::vector<TessellatedSolid::Vertex_t> vertices;
+  for ( xml_coll_t vtx(element, _U(vertex)); vtx; ++vtx )   {
+    xml_dim_t v(vtx);
+    vertices.emplace_back(v.x(), v.y(), v.z());
+  }
+  int num_facets = 0;
+  for ( xml_coll_t facet(element, _U(facet)); facet; ++facet ) ++num_facets;
+  TessellatedSolid solid = TessellatedSolid(num_facets);
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  for ( xml_coll_t facet(element, _U(facet)); facet; ++facet )   {
+    xml_dim_t f(facet);
+    int i0 = f.attr<int>(_U(v0)), i1 = f.attr<int>(_U(v1)), i2 = f.attr<int>(_U(v2));
+    if ( f.hasAttr(_U(v3)) )   {
+      int i3 = f.attr<int>(_U(v3));
+      solid.addFacet(vertices[i0], vertices[i1], vertices[i2], vertices[i3]);
+    }
+    else   {
+      solid.addFacet(vertices[i0], vertices[i1], vertices[i2]);
+    }
+  }
+  return solid;
+}
+DECLARE_XML_SHAPE(TessellatedSolid__shape_constructor,create_TessellatedSolid)
 
 /** Plugin function for creating a boolean solid from an xml element <shape type=\"BooleanShape\"/>. 
  *  Expects exactly two child elements <shape/> and a string attribute 'operation', which is one of
@@ -600,6 +629,8 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
       instance_test = isInstance<EllipticalTube>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),EXTRUDEDPOLYGON_TAG) )
       instance_test = isInstance<ExtrudedPolygon>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),TESSELLATEDSOLID_TAG) )
+      instance_test = isInstance<TessellatedSolid>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),POLYCONE_TAG) )
       instance_test = isInstance<Polycone>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),TWISTEDTUBE_TAG) )   {
@@ -804,6 +835,8 @@ void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
       os << toStringMesh(place, 2);
     }
     if ( ref_str != os.str() )  {
+      printout(DEBUG,"Mesh_Verifier","+++ REFERENCE shape mesh:\n%s",ref_str.c_str());
+      printout(DEBUG,"Mesh_Verifier","+++ REDIMENSIONED shape mesh:\n%s",os.str().c_str());
       printout(ERROR,"Mesh_Verifier","+++ Output and reference differ after re-dimension! Please check.");
       return Constant("FAILURE",os.str().c_str()).ptr();
     }

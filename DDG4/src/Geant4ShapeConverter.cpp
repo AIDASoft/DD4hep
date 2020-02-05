@@ -43,6 +43,9 @@
 #include "G4GenericTrap.hh"
 #include "G4ExtrudedSolid.hh"
 #include "G4EllipticalTube.hh"
+#include "G4TessellatedSolid.hh"
+#include "G4TriangularFacet.hh"
+#include "G4QuadrangularFacet.hh"
 
 // C/C++ include files
 
@@ -93,7 +96,8 @@ namespace dd4hep {
       const Double_t* hn = sh->GetNhigh();
       G4ThreeVector   lowNorm (ln[0], ln[1], ln[2]);
       G4ThreeVector   highNorm(hn[0], hn[1], hn[2]);
-      return new G4CutTubs(sh->GetName(), sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM, sh->GetDz() * CM_2_MM,
+      return new G4CutTubs(sh->GetName(),
+                           sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM, sh->GetDz() * CM_2_MM,
                            sh->GetPhi1() * DEGREE_2_RAD, (sh->GetPhi2()-sh->GetPhi1()) * DEGREE_2_RAD, lowNorm, highNorm);
     }
 
@@ -112,13 +116,17 @@ namespace dd4hep {
 
     template <> G4VSolid* convertShape<TGeoTrd1>(const TGeoShape* shape)  {
       const TGeoTrd1* sh = (const TGeoTrd1*) shape;
-      return new G4Trd(sh->GetName(), sh->GetDx1() * CM_2_MM, sh->GetDx2() * CM_2_MM, sh->GetDy() * CM_2_MM, sh->GetDy() * CM_2_MM,
+      return new G4Trd(sh->GetName(),
+                       sh->GetDx1() * CM_2_MM, sh->GetDx2() * CM_2_MM,
+                       sh->GetDy() * CM_2_MM, sh->GetDy() * CM_2_MM,
                        sh->GetDz() * CM_2_MM);
     }
 
     template <> G4VSolid* convertShape<TGeoTrd2>(const TGeoShape* shape)  {
       const TGeoTrd2* sh = (const TGeoTrd2*) shape;
-      return new G4Trd(sh->GetName(), sh->GetDx1() * CM_2_MM, sh->GetDx2() * CM_2_MM, sh->GetDy1() * CM_2_MM, sh->GetDy2() * CM_2_MM,
+      return new G4Trd(sh->GetName(),
+                       sh->GetDx1() * CM_2_MM, sh->GetDx2() * CM_2_MM,
+                       sh->GetDy1() * CM_2_MM, sh->GetDy2() * CM_2_MM,
                        sh->GetDz() * CM_2_MM);
     }
 
@@ -212,6 +220,42 @@ namespace dd4hep {
       return new G4Trap(sh->GetName(), sh->GetDz() * CM_2_MM, sh->GetTheta() * DEGREE_2_RAD, sh->GetPhi() * DEGREE_2_RAD,
                         sh->GetH1() * CM_2_MM, sh->GetBl1() * CM_2_MM, sh->GetTl1() * CM_2_MM, sh->GetAlpha1() * DEGREE_2_RAD,
                         sh->GetH2() * CM_2_MM, sh->GetBl2() * CM_2_MM, sh->GetTl2() * CM_2_MM, sh->GetAlpha2() * DEGREE_2_RAD);
+    }
+
+    template <> G4VSolid* convertShape<TGeoTessellated>(const TGeoShape* shape)  {
+      TGeoTessellated*   sh  = (TGeoTessellated*) shape;
+      G4TessellatedSolid* g4 = new G4TessellatedSolid(sh->GetName());
+      int num_facet = sh->GetNfacets();
+
+      printout(DEBUG,"TessellatedSolid","+++ %s> Converting %d facets", sh->GetName(), num_facet);
+      for(int i=0; i<num_facet; ++i)  {
+        const TGeoFacet& facet = sh->GetFacet(i);
+        int nv = facet.GetNvert();
+        const auto& v0 = sh->GetVertex(facet.GetVertexIndex(0));
+        const auto& v1 = sh->GetVertex(facet.GetVertexIndex(1));
+        const auto& v2 = sh->GetVertex(facet.GetVertexIndex(2));
+        G4VFacet* g4f = 0;
+        if ( nv == 3 )    {
+          g4f = new G4TriangularFacet(G4ThreeVector(v0.x() * CM_2_MM, v0.y() * CM_2_MM, v0.z() * CM_2_MM),
+                                      G4ThreeVector(v1.x() * CM_2_MM, v1.y() * CM_2_MM, v1.z() * CM_2_MM),
+                                      G4ThreeVector(v2.x() * CM_2_MM, v2.y() * CM_2_MM, v2.z() * CM_2_MM),
+                                      ABSOLUTE);
+        }
+        else if ( nv == 4 )    {
+          const auto& v3 = sh->GetVertex(facet.GetVertexIndex(3));
+          g4f = new G4QuadrangularFacet(G4ThreeVector(v0.x() * CM_2_MM, v0.y() * CM_2_MM, v0.z() * CM_2_MM),
+                                        G4ThreeVector(v1.x() * CM_2_MM, v1.y() * CM_2_MM, v1.z() * CM_2_MM),
+                                        G4ThreeVector(v2.x() * CM_2_MM, v2.y() * CM_2_MM, v2.z() * CM_2_MM),
+                                        G4ThreeVector(v3.x() * CM_2_MM, v3.y() * CM_2_MM, v3.z() * CM_2_MM),
+                                        ABSOLUTE);
+        }
+        else   {
+          except("TGeoTessellated", "Tessellated shape [%s] has facet with wrong number of vertices: %d",
+                 sh->GetName(), nv);
+        }
+        g4->AddFacet(g4f);
+      }
+      return g4;
     }
 
     template <> G4VSolid* convertShape<G4GenericTrap>(const TGeoShape* shape)  {

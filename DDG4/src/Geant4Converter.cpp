@@ -574,6 +574,8 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       solid = convertShape<TGeoTrap>(shape);
     else if (isa == TGeoArb8::Class()) 
       solid = convertShape<TGeoArb8>(shape);
+    else if (isa == TGeoTessellated::Class()) 
+      solid = convertShape<TGeoTessellated>(shape);
     else if (isa == TGeoScaledShape::Class())  {
       TGeoScaledShape* sh = (TGeoScaledShape*) shape;
       const double*    vals = sh->GetScale()->GetScale();

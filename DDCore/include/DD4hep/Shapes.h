@@ -25,6 +25,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated" // Code that causes warning goes here
 #endif
+
 // ROOT include files
 #include "TGeoCone.h"
 #include "TGeoPgon.h"
@@ -42,6 +43,10 @@
 #include "TGeoParaboloid.h"
 #include "TGeoCompositeShape.h"
 #include "TGeoShapeAssembly.h"
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#include "TGeoTessellated.h"
+#endif
+
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
@@ -1417,6 +1422,68 @@ namespace dd4hep {
     EightPointSolid& operator=(const EightPointSolid& copy) = default;
   };
 
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+  /// Class describing a tessellated shape
+  /**
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoTessellated.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class TessellatedSolid : public Solid_type<TGeoTessellated> {
+  private:
+    /// Internal helper method to support object construction
+    void make(const std::string& nam, int num_facets);
+    /// Internal helper method to support object construction
+    void make(const std::string& nam, const std::vector<Object::Vertex_t>& vertices);
+
+  public:
+    typedef Object::Vertex_t Vertex_t;
+    
+    /// Default constructor
+    TessellatedSolid() = default;
+    /// Move Constructor
+    TessellatedSolid(TessellatedSolid&& e) = default;
+    /// Copy Constructor
+    TessellatedSolid(const TessellatedSolid& e) = default;
+    /// Constructor to be used with an existing object
+    template <typename Q> TessellatedSolid(const Q* p) : Solid_type<Object>(p) { }
+    /// Constructor to be used when passing an already created object
+    template <typename Q> TessellatedSolid(const Handle<Q>& e) : Solid_type<Object>(e) { }
+
+    /// Constructor to create a new anonymous object with attribute initialization
+    TessellatedSolid(int num_facets)
+    { this->make("", num_facets);    }
+
+    /// Constructor to create a new identified object with attribute initialization
+    TessellatedSolid(const std::vector<Vertex_t>& vertices)
+    { this->make("", vertices);   }
+
+    /// Constructor to create a new anonymous object with attribute initialization
+    TessellatedSolid(const std::string& nam, int num_facets)
+    { this->make(nam, num_facets);    }
+
+    /// Constructor to create a new identified object with attribute initialization
+    TessellatedSolid(const std::string& nam, const std::vector<Vertex_t>& vertices)
+    { this->make(nam, vertices);   }
+
+    /// Move Assignment operator
+    TessellatedSolid& operator=(TessellatedSolid&& copy) = default;
+    /// Copy Assignment operator
+    TessellatedSolid& operator=(const TessellatedSolid& copy) = default;
+    /// Add new facet to the shape
+    bool addFacet(const Vertex_t& pt0, const Vertex_t& pt1, const Vertex_t& pt2)  const;
+    /// Add new facet to the shape
+    bool addFacet(const Vertex_t& pt0, const Vertex_t& pt1, const Vertex_t& pt2, const Vertex_t& pt3)  const;
+    /// Add new facet to the shape. Call only if the tessellated shape was constructed with vertices
+    bool addFacet(const int pt0, const int pt1, const int pt2)  const;
+    /// Add new facet to the shape. Call only if the tessellated shape was constructed with vertices
+    bool addFacet(const int pt0, const int pt1, const int pt2, const int pt3)  const;
+  };
+#endif
+  
   /// Base class describing boolean (=union,intersection,subtraction) solids
   /**
    *   For any further documentation please see the following ROOT documentation:

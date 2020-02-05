@@ -77,6 +77,7 @@ namespace dd4hep {
   template bool isInstance<PolyhedraRegular>  (const Handle<TGeoShape>& solid);
   template bool isInstance<Polyhedra>         (const Handle<TGeoShape>& solid);
   template bool isInstance<ExtrudedPolygon>   (const Handle<TGeoShape>& solid);
+  template bool isInstance<TessellatedSolid>   (const Handle<TGeoShape>& solid);
   template bool isInstance<BooleanSolid>      (const Handle<TGeoShape>& solid);
 
   template <> bool isInstance<Cone>(const Handle<TGeoShape>& solid)  {
@@ -148,6 +149,7 @@ namespace dd4hep {
   template bool isA<ExtrudedPolygon>(const Handle<TGeoShape>& solid);
   template bool isA<Polycone>(const Handle<TGeoShape>& solid);
   template bool isA<EightPointSolid>(const Handle<TGeoShape>& solid);
+  template bool isA<TessellatedSolid>(const Handle<TGeoShape>& solid);
 
   template <> bool isA<TwistedTube>(const Handle<TGeoShape>& solid)   {
     return check_shape_type<TwistedTubeObject>(solid)
@@ -332,6 +334,30 @@ namespace dd4hep {
     for(auto p : s_pars) pars.push_back(p);
     return pars;
   }
+  template <> vector<double> dimensions<TGeoTessellated>(const TGeoShape* shape)    {
+    TGeoTessellated* sh = get_ptr<TGeoTessellated>(shape);
+    int num_facet = sh->GetNfacets();
+    int num_vtx   = sh->GetNvertices();
+    vector<double> pars;
+
+    printout(DEBUG,"TessellatedSolid","+++ Saving %d vertices, %d facets",num_vtx, num_facet);
+    pars.reserve(num_facet*5+num_vtx*3+2);
+    pars.emplace_back(num_vtx);
+    pars.emplace_back(num_facet);
+    for(int i=0; i<num_vtx; ++i)  {
+      const auto& v = sh->GetVertex(i);
+      pars.emplace_back(v.x());
+      pars.emplace_back(v.y());
+      pars.emplace_back(v.z());
+    }
+    for(int i=0; i<num_facet; ++i)  {
+      const TGeoFacet& f = sh->GetFacet(i);
+      pars.emplace_back(double(f.GetNvert()));
+      for(int j=0, n=f.GetNvert(); j<n; ++j)
+        pars.emplace_back(double(f.GetVertexIndex(j)));
+    }
+    return pars;
+  }
   template <> vector<double> dimensions<TGeoCompositeShape>(const TGeoShape* shape)    {
     const TGeoCompositeShape* sh = get_ptr<TGeoCompositeShape>(shape);
     const TGeoBoolNode*  boolean = sh->GetBoolNode();
@@ -383,6 +409,7 @@ namespace dd4hep {
   template vector<double> dimensions<Polyhedra>        (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<ExtrudedPolygon>  (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<EightPointSolid>  (const Handle<TGeoShape>& shape); 
+  template vector<double> dimensions<TessellatedSolid>  (const Handle<TGeoShape>& shape); 
   template vector<double> dimensions<BooleanSolid>     (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<SubtractionSolid> (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<UnionSolid>       (const Handle<TGeoShape>& shape);
@@ -475,6 +502,8 @@ namespace dd4hep {
         return dimensions<TGeoXtru>(shape.ptr());
       else if (cl == TGeoScaledShape::Class())
         return dimensions<TGeoScaledShape>(shape.ptr());
+      else if (cl == TGeoTessellated::Class())
+        return dimensions<TGeoTessellated>(shape.ptr());
       else if (isA<TruncatedTube>(shape.ptr()))
         return dimensions<TruncatedTube>(shape);
       else if (isA<PseudoTrap>(shape.ptr()))
@@ -704,6 +733,39 @@ namespace dd4hep {
     auto pars = params;
     s_sh.access()->SetDimensions(&pars[3]);
   }
+  template <> void set_dimensions(TGeoTessellated* sh, const std::vector<double>& params)    {
+    int num_vtx   = params[0];
+    int num_facet = params[1];
+    std::vector<TessellatedSolid::Vertex_t> vertices;
+    size_t i_par = 1;
+    printout(DEBUG,"TessellatedSolid","+++ Loading %d vertices, %d facets",num_vtx, num_facet);
+    for (int i=0; i<num_vtx; ++i)   {
+      double x = params[++i_par];
+      double y = params[++i_par];
+      double z = params[++i_par];
+      vertices.emplace_back(x, y, z);
+    }
+    string nam = sh->GetName();
+    string tit = sh->GetTitle();
+    sh->~TGeoTessellated();
+    new(sh) TGeoTessellated(nam.c_str(), vertices);
+    sh->SetTitle(tit.c_str());
+    int nfacet = 0;
+    for (int i=0; i<num_facet; ++i)   {
+      int i0, i1, i2, i3;
+      int n_vtx = params[++i_par];
+      i0 = n_vtx>0 ? params[++i_par] : -1;
+      i1 = n_vtx>1 ? params[++i_par] : -1;
+      i2 = n_vtx>2 ? params[++i_par] : -1;
+      i3 = n_vtx>3 ? params[++i_par] : -1;
+      if ( n_vtx == 3 )
+        sh->AddFacet(i0,i1,i2);
+      else if ( n_vtx == 4 )
+        sh->AddFacet(i0,i1,i2,i3);
+    }
+    sh->CloseShape(true, true, false);
+  }
+
   template <> void set_dimensions(TGeoCompositeShape*, const std::vector<double>&)   {
     // In general TGeoCompositeShape instances have an empty SetDimension call
 #if 0
@@ -761,6 +823,8 @@ namespace dd4hep {
   template <> void set_dimensions(ExtrudedPolygon shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
   template <> void set_dimensions(EightPointSolid shape, const std::vector<double>& params)
+  {  set_dimensions(shape.ptr(), params);   }
+  template <> void set_dimensions(TessellatedSolid shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
   template <> void set_dimensions(BooleanSolid shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
@@ -962,6 +1026,8 @@ namespace dd4hep {
         set_dimensions(ExtrudedPolygon(shape), params);
       else if (cl == TGeoArb8::Class())
         set_dimensions(EightPointSolid(shape), params);
+      else if (cl == TGeoTessellated::Class())
+        set_dimensions(TessellatedSolid(shape), params);
       else if (cl == TGeoScaledShape::Class())  {
         TGeoScaledShape* sh = (TGeoScaledShape*) shape.ptr();
         set_dimensions(sh, params);
