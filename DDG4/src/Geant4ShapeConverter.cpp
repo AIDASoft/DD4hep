@@ -275,7 +275,7 @@ namespace dd4hep {
       }
       return g4;
     }
-#endif
     
   }    // End namespace sim
 }      // End namespace dd4hep
+#endif
