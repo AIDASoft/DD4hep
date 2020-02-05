@@ -224,6 +224,8 @@ function ( dd4hep_print_options )
   dd4hep_print ( "|  XERCESC_ROOT_DIR:   ${XERCESC_ROOT_DIR}                                      " )
   dd4hep_print ( "|  DD4HEP_USE_LCIO:    ${DD4HEP_USE_LCIO}                                       " )
   dd4hep_print ( "|  LCIO_DIR:           ${LCIO_DIR}                                              " )
+  dd4hep_print ( "|  DD4HEP_USE_EDM4hep:    ${DD4HEP_USE_EDM4hep}                                 " )
+  dd4hep_print ( "|  EDM4hep_DIR:           ${EDM4hep_DIR}                                        " )
   dd4hep_print ( "|  DD4HEP_USE_GEANT4:  ${DD4HEP_USE_GEANT4}                                     " )
   dd4hep_print ( "|  Geant4_DIR:         ${Geant4_DIR}                                            " )
   dd4hep_print ( "|  DD4HEP_USE_PYROOT:  ${DD4HEP_USE_PYROOT}                                     " )
@@ -258,6 +260,9 @@ function( dd4hep_print_cmake_options )
   dd4hep_print ( "|  DD4HEP_USE_LCIO    Build lcio extensions                         OFF     |")
   dd4hep_print ( "|                     Requires LCIO_DIR to be set                           |")
   dd4hep_print ( "|                     or LCIO in CMAKE_MODULE_PATH                          |")
+  dd4hep_print ( "|  DD4HEP_USE_EDM4hep    Build lcio extensions                      OFF     |")
+  dd4hep_print ( "|                     Requires EDM4hep_DIR to be set                        |")
+  dd4hep_print ( "|                     or EDM4hep in CMAKE_MODULE_PATH                       |")
   dd4hep_print ( "|  DD4HEP_USE_GEAR    Build gear wrapper for backward compatibility OFF     |")
   dd4hep_print ( "|  BUILD_TESTING      Enable and build tests                        ON      |")
   dd4hep_print ( "|  DD4HEP_USE_PYROOT  Enable 'Detector Builders' based on PyROOT    OFF     |")
@@ -477,6 +482,10 @@ function ( fill_dd4hep_library_path )
 
   if(${DD4HEP_USE_LCIO})
     SET( ENV{DD4HEP_LIBRARY_PATH} ${LCIO_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
+  endif()
+
+  if(${DD4HEP_USE_EDM4hep})
+    SET( ENV{DD4HEP_LIBRARY_PATH} ${EDM4hep_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
   endif()
 
   SET( ENV{DD4HEP_LIBRARY_PATH} ${CLHEP_ROOT_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
@@ -826,3 +835,21 @@ MACRO(DD4HEP_SETUP_LCIO_TARGETS)
       )
   ENDIF()
 ENDMACRO()
+
+
+#
+# Create Interface library for EDM4hep
+#
+MACRO(DD4HEP_SETUP_EDM4hep_TARGETS)
+  IF(NOT TARGET EDM4HEP::edm4hep)
+    ADD_LIBRARY(EDM4HEP::edm4hep INTERFACE IMPORTED GLOBAL)
+  ENDIF()
+#fg: shouldn't this all be set by podio and EDM4hep really ?
+  SET_TARGET_PROPERTIES(EDM4HEP::edm4hep
+    PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${EDM4HEP_INCLUDE_DIR}"
+    INTERFACE_INCLUDE_DIRECTORIES "${podio_INCLUDE_DIR}"
+    INTERFACE_LINK_LIBRARIES "podio::podio"
+    )
+ENDMACRO()
+

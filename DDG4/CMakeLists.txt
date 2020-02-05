@@ -100,6 +100,15 @@ IF(TARGET LCIO::LCIO)
   set_target_properties(DDG4LCIO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 ENDIF()
+#---------------------------  EDM4hep Plugins for new simulation framework  -----------
+IF(TARGET EDM4HEP::edm4hep)
+  dd4hep_add_plugin(DDG4EDM4hep
+    SOURCES edm4hep/*.cpp
+    USES    DD4hep::DDG4 EDM4HEP::edm4hep
+    )
+  install(TARGETS DDG4EDM4hep EXPORT DD4hep LIBRARY DESTINATION lib)
+  set_target_properties(DDG4EDM4hep PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+ENDIF()
 #
 #---------------------------  DDRec dependent Plugins  -----------------------------
 #This does not compile at the moment

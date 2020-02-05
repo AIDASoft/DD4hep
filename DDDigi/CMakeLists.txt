@@ -33,12 +33,12 @@ target_include_directories(DDDigi
 
 
 FIND_PACKAGE(TBB QUIET)
-if(TBB_FOUND)
-  dd4hep_print( "|++> TBB_INCLUDE_DIR -->  ${TBB_INCLUDE_DIR}")
-  dd4hep_print( "|++> TBB_LIBRARY     -->  ${TBB_LIBRARY}")
+if(TBB_FOUNDXX)
+  dd4hep_print( "|++> TBB_INCLUDE_DIRS -->  ${TBB_INCLUDE_DIRS}")
+  dd4hep_print( "|++> TBB_LIBRARIES     -->  ${TBB_LIBRARIES}")
   dd4hep_print( "|++> TBB found. DDDigi will run multi threaded.")
   target_compile_definitions(DDDigi PUBLIC DD4HEP_USE_TBB)
-  target_link_libraries(DDDigi ${TBB_LIBRARY})
+  target_link_libraries(DDDigi ${TBB_LIBRARIES})
   target_include_directories(DDDigi ${TBB_INCLUDE_DIRS})
 else()
   dd4hep_print( "|++> TBB not found. DDDigi will only work single threaded.")
