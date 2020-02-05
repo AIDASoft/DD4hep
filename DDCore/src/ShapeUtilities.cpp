@@ -763,7 +763,6 @@ namespace dd4hep {
     sh->~TGeoTessellated();
     new(sh) TGeoTessellated(nam.c_str(), vertices);
     sh->SetTitle(tit.c_str());
-    int nfacet = 0;
     for (int i=0; i<num_facet; ++i)   {
       int i0, i1, i2, i3;
       int n_vtx = params[++i_par];
