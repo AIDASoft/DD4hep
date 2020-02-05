@@ -174,6 +174,7 @@ Geant4Output2EDM4hep::Geant4Output2EDM4hep(Geant4Context* ctxt, const string& na
   declareProperty("EventParametersString", m_eventParametersString);
   declareProperty("RunNumberOffset", m_runNumberOffset);
   declareProperty("EventNumberOffset", m_eventNumberOffset);
+  printout( INFO, "Geant4Output2EDM4hep" ," instantiated ..." ) ;
   InstanceCount::increment(this);
 }
 
@@ -193,6 +194,7 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
     G4AutoLock protection_lock(&action_mutex);
     m_store = new podio::EventStore ;
     m_file = new podio::ROOTWriter(m_output, m_store);
+    printout( INFO, "Geant4Output2EDM4hep" ," opened %s for output", m_output.c_str() ) ;
   }
   
   saveRun(run);
