@@ -254,6 +254,55 @@ namespace dd4hep {
       /// Access attribute values: inner_r
       double inner_r() const;
 
+      /// Access parameters: v
+      double v() const;
+      /// Access parameters: v, if not present returns default
+      double v(double default_val) const;
+      /// Access parameters: V
+      double V() const;
+      /// Access parameters: V, if not present returns default
+      double V(double default_val) const;
+      /// Access parameters: dv
+      double dv() const;
+      /// Access parameters: dv, if not present returns default
+      double dv(double default_val) const;
+      /// Access parameters: v0
+      double v0() const;
+      /// Access parameters: v0, if not present returns default
+      double v0(double default_val) const;
+      /// Access parameters: v1
+      double v1() const;
+      /// Access parameters: v1, if not present returns default
+      double v1(double default_val) const;
+      /// Access parameters: v2
+      double v2() const;
+      /// Access parameters: v2, if not present returns default
+      double v2(double default_val) const;
+      /// Access parameters: v3
+      double v3() const;
+      /// Access parameters: v3, if not present returns default
+      double v3(double default_val) const;
+      /// Access parameters: v4
+      double v4() const;
+      /// Access parameters: v4, if not present returns default
+      double v4(double default_val) const;
+      /// Access parameters: vmin
+      double vmin() const;
+      /// Access parameters: vmin, if not present returns default
+      double vmin(double default_val) const;
+      /// Access parameters: vmax
+      double vmax() const;
+      /// Access parameters: vmax, if not present returns default
+      double vmax(double default_val) const;
+      /// Access parameters: v_offset
+      double v_offset() const;
+      /// Access parameters: v_offset, if not present returns default
+      double v_offset(double default_val) const;
+      /// Access parameters: dim_v
+      double dim_v() const;
+      /// Access parameters: dim_v, if not present returns default
+      double dim_v(double default_val) const;
+
       /// Access parameters: x
       double x() const;
       /// Access parameters: x, if not present returns default

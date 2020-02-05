@@ -368,6 +368,7 @@ DD4HEP_INSTANTIATE_HANDLE(TGeoNodeOffset);
 #include "TGeoParaboloid.h"
 #include "TGeoSphere.h"
 #include "TGeoTorus.h"
+#include "TGeoTessellated.h"
 #include "TGeoBoolNode.h"
 #include "TGeoVolume.h"
 #include "TGeoCompositeShape.h"
@@ -402,6 +403,7 @@ DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoTrd1);
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoTrd2);
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoSphere);
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoTorus);
+DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoTessellated);
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoHalfSpace);
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoShapeAssembly);
 DD4HEP_INSTANTIATE_SHAPE_HANDLE(TGeoCompositeShape);
