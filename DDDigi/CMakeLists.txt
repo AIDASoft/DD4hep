@@ -33,7 +33,7 @@ target_include_directories(DDDigi
 
 
 FIND_PACKAGE(TBB QUIET)
-if(TBB_FOUNDXX)
+if(TBB_FOUND)
   dd4hep_print( "|++> TBB_INCLUDE_DIRS -->  ${TBB_INCLUDE_DIRS}")
   dd4hep_print( "|++> TBB_LIBRARIES     -->  ${TBB_LIBRARIES}")
   dd4hep_print( "|++> TBB found. DDDigi will run multi threaded.")
