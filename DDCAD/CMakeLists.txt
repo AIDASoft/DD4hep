@@ -10,6 +10,10 @@
 #==========================================================================
 SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDCAD)
 
+if(${ROOT_VERSION} VERSION_LESS 6.19.01)
+  return()
+endif()
+
 # Open Asset Importer Library
 option(WITH_SYS_ASSIMP "WITH_SYS_ASSIMP" OFF)
 
