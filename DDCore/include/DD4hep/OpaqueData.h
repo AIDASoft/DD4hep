@@ -13,7 +13,10 @@
 #ifndef DD4HEP_OPAQUEDATA_H
 #define DD4HEP_OPAQUEDATA_H
 
+#include "DD4hep/detail/Grammar.h"
+
 // C/C++ include files
+#include <ostream>
 #include <typeinfo>
 #include <vector>
 #include <string>
@@ -104,7 +107,6 @@ namespace dd4hep {
     /// Data buffer type: Must be a bitmap of enum _DataTypes!
     unsigned int type;
 
-  public:
     /// Standard initializing constructor
     OpaqueDataBlock();
     /// Copy constructor
@@ -139,6 +141,50 @@ namespace dd4hep {
   /// print OpaqueData object
   std::ostream& operator<< (std::ostream& s, const OpaqueDataBlock& data);
 }      /* End namespace dd4hep */
+
+/// Generic getter. Specify the exact type, not a polymorph type
+template <typename T> T& dd4hep::OpaqueData::get() {
+  if (!grammar || !grammar->equals(typeid(T))) { throw std::bad_cast(); }
+  return *(T*)pointer;
+}
+
+/// Generic getter (const version). Specify the exact type, not a polymorph type
+template <typename T> const T& dd4hep::OpaqueData::get() const {
+  if (!grammar || !grammar->equals(typeid(T))) { throw std::bad_cast(); }
+  return *(T*)pointer;
+}
+
+/// Bind data value
+template <typename T> T& dd4hep::OpaqueDataBlock::bind()  {
+  this->bind(&BasicGrammar::instance<T>());
+  return *(new(this->pointer) T());
+}
+
+/// Bind data value
+template <typename T> T& dd4hep::OpaqueDataBlock::bind(void* ptr, size_t len)  {
+  this->bind(ptr,len,&BasicGrammar::instance<T>());
+  return *(new(this->pointer) T());
+}
+
+/// Bind grammar and assign value
+template <typename T> T& dd4hep::OpaqueDataBlock::bind(const std::string& value)   {
+  T& ret = this->bind<T>();
+  if ( !value.empty() && !this->fromString(value) )  {
+    throw std::runtime_error("OpaqueDataBlock::set> Failed to bind type "+
+                             typeName(typeid(T))+" to condition data block.");
+  }
+  return ret;
+}
+
+/// Bind grammar and assign value
+template <typename T> T& dd4hep::OpaqueDataBlock::bind(void* ptr, size_t len, const std::string& value)   {
+  T& ret = this->bind<T>(ptr, len);
+  if ( !value.empty() && !this->fromString(value) )  {
+    throw std::runtime_error("OpaqueDataBlock::set> Failed to bind type "+
+                             typeName(typeid(T))+" to condition data block.");
+  }
+  return ret;
+}
 
 #include "DD4hep/BasicGrammar.h"
 
