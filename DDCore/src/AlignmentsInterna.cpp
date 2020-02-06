@@ -81,5 +81,4 @@ namespace dd4hep {
   }
 }
 DD4HEP_DEFINE_PARSER_GRAMMAR(AlignmentObject,eval_none<AlignmentObject>)
-DD4HEP_DEFINE_CONDITIONS_TYPE(AlignmentObject)
 

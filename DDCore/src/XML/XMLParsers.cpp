@@ -16,6 +16,7 @@
 
 // Framework include files
 #include "DD4hep/Objects.h"
+#include "DD4hep/Conditions.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/OpaqueData.h"
 #include "DD4hep/OpaqueDataBinder.h"

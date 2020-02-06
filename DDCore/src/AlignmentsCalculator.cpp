@@ -331,4 +331,3 @@ DD4HEP_DEFINE_PARSER_DUMMY(OrderedMap)
 #include "DD4hep/detail/BasicGrammar_inl.h"
 #include "DD4hep/detail/ConditionsInterna.h"
 DD4HEP_DEFINE_PARSER_GRAMMAR(OrderedMap,eval_none<OrderedMap>)
-DD4HEP_DEFINE_CONDITIONS_TYPE(OrderedMap)
