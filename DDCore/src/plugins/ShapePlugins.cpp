@@ -565,11 +565,20 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     xml_dim_t  pos      (x_check.child(_U(position), false));
     xml_dim_t  rot      (x_check.child(_U(rotation), false));
     bool       reflect = x_check.hasChild(_U(reflect));
-    Solid      solid    (shape.createShape());
-    Volume     volume   (name+_toString(count,"_vol_%d"),solid, description.air());
+    Solid      solid;
+    Volume     volume;
+    string     shape_type = shape.typeStr();
 
+    if ( shape_type == "CAD_MultiShape" )   {
+      volume = xml::createVolume(description, shape_type, shape);
+      solid  = volume->GetShape();
+    }
+    else   {
+      solid  = xml::createShape(description, shape_type, shape);
+      volume = Volume(name+_toString(count,"_vol_%d"),solid, description.air());
+    }
     volume.setVisAttributes(description, x_check.visStr());
-    solid->SetName(shape.typeStr().c_str());
+    solid->SetName(shape_type.c_str());
 
     if ( pos.ptr() && rot.ptr() )  {
       Rotation3D  rot3D(RotationZYX(rot.z(0),rot.y(0),rot.x(0)));
@@ -597,7 +606,7 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     }
 
     printout(INFO,"TestShape","Created successfull shape of type: %s",
-             shape.typeStr().c_str());
+             shape_type.c_str());
     bool instance_test = false;
     if ( 0 == strcasecmp(solid->GetTitle(),BOX_TAG) )
       instance_test = isInstance<Box>(solid);
@@ -632,8 +641,10 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     else if ( 0 == strcasecmp(solid->GetTitle(),EXTRUDEDPOLYGON_TAG) )
       instance_test = isInstance<ExtrudedPolygon>(solid);
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
-    else if ( 0 == strcasecmp(solid->GetTitle(),TESSELLATEDSOLID_TAG) )
+    else if ( 0 == strcasecmp(solid->GetTitle(),TESSELLATEDSOLID_TAG) )  {
       instance_test = isInstance<TessellatedSolid>(solid);
+      shape_type = TESSELLATEDSOLID_TAG;
+    }
 #endif
     else if ( 0 == strcasecmp(solid->GetTitle(),POLYCONE_TAG) )
       instance_test = isInstance<Polycone>(solid);
@@ -698,14 +709,14 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
       instance_test &= !isA<SubtractionSolid>(solid);
     }
 
-    if ( !instance_test || ::strcasecmp(shape.typeStr().c_str(),solid->GetTitle()) != 0 )   {
+    if ( !instance_test || ::strcasecmp(shape_type.c_str(),solid->GetTitle()) != 0 )   {
       printout(ERROR,"TestShape","BAD shape type: %s <-> %s Instance test: %s",
-               shape.typeStr().c_str(), solid->GetTitle(),
+               shape_type.c_str(), solid->GetTitle(),
                instance_test ? "OK" : "FAILED");
     }
     else   {
       printout(INFO,"TestShape","Correct shape type: %s <-> %s Instance test: %s",
-               shape.typeStr().c_str(), solid->GetTitle(), "OK");
+               shape_type.c_str(), solid->GetTitle(), "OK");
     }
   }
   if ( x_reflect )   {

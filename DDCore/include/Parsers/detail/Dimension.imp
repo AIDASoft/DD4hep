@@ -168,6 +168,8 @@ XML_ATTR_ACCESSOR_DOUBLE(step_z)
 XML_ATTR_ACCESSOR(double, thickness)
 XML_ATTR_ACCESSOR(double, inner_stereo)
 XML_ATTR_ACCESSOR(double, outer_stereo)
+XML_ATTR_ACCESSOR(int, item)
+XML_ATTR_ACCESSOR(int, items)
 XML_ATTR_ACCESSOR(int, numsides)
 XML_ATTR_ACCESSOR(int, nsides)
 XML_ATTR_ACCESSOR(int, nsides_inner)
@@ -225,6 +227,8 @@ XML_CHILD_ACCESSOR_XML_DIM(tubs)
 XML_CHILD_ACCESSOR_XML_DIM(staves)
 XML_CHILD_ACCESSOR_XML_DIM(envelope)
 XML_CHILD_ACCESSOR_XML_DIM(beampipe)
+XML_CHILD_ACCESSOR_XML_DIM(shape)
+XML_CHILD_ACCESSOR_XML_DIM(solid)
 
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::padType() const {
   return m_element.attr < std::string > (_U(pads));

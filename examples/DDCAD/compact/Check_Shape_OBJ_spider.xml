@@ -1,0 +1,14 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="../../ClientTests/compact/CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_OBJ" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="CAD_MultiShape" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/OBJ/spider.obj" mesh="0"/>
+      </check>
+      <test1  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/ref/Ref_OBJ_spider.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>

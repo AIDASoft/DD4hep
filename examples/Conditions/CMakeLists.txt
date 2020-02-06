@@ -43,7 +43,7 @@ dd4hep_add_test_reg( Conditions_Telescope_cond_dump_by_pool
   -compact file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml 
   -plugin DD4hep_ConditionsXMLRepositoryParser file:${CMAKE_INSTALL_PREFIX}/examples/Conditions/data/repository.xml 
   -plugin DD4hep_ConditionsDump
-  REGEX_PASS "Data\\(Translation-Rotation-Pivot\\): \\[\\( 0 , 0 , 1 \\), \\{phi\\(Z angle\\): 3.14159   theta\\(Y angle\\): 0   psi\\(X angle\\): 0\\}, \\( 0 , 0 , 0 \\)\\]"
+  REGEX_PASS "Data\\(Translation-Rotation\\(Phi,Theta,Psi\\)-Pivot\\): \\[\\( 0 , 0 , 1 \\), \\( 3.14159265359 , 0 , 0 \\), \\( 0 , 0 , 0 \\)\\]"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #

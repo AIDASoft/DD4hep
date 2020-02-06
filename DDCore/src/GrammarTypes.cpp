@@ -12,7 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/detail/BasicGrammar_inl.h"
+#include "DD4hep/Objects.h"
+#include "DD4hep/detail/Grammar_parsed.h"
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::XYZPoint,eval_obj)

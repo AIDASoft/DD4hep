@@ -14,7 +14,7 @@
 // Framework include files
 #include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
-#include "DD4hep/BasicGrammar.h"
+#include "Parsers/Parsers.h"
 #include "DD4hep/ComponentProperties.h"
 
 // C/C++ include files
@@ -229,65 +229,22 @@ Property& PropertyConfigurable::property(const string& nam)   {
   return properties()[nam];
 }
 
+#include "DD4hep/detail/Grammar_parsed.h"
 namespace dd4hep { 
   namespace Parsers {
-    int parse(Property& result, const std::string& input) {
+    template <> int parse(Property& result, const std::string& input) {
       result.str(input); 
       return 1;
     }
-  }
-  namespace Utils {
-    std::ostream& toStream(const Property& result, std::ostream& os) {
+    template <> std::ostream& toStream(const Property& result, std::ostream& os) {
       return os << result.str();
     }
   }
+  template<> int Grammar<Property>::evaluate(void* _p, const std::string& _v) const {
+    return eval_obj ((Property*)_p,_v);
+  }
+  // Ensure the grammars are registered
+  template class Grammar<Property>;
+  static auto s_registry = GrammarRegistry::pre_note<Property>();
 }
 
-#include <vector>
-#include <list>
-#include <set>
-#include <map>
-
-#include "DD4hep/detail/BasicGrammar_inl.h"
-#include "DD4hep/detail/ComponentProperties_inl.h"
-DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(Property)
-
-namespace dd4hep {
-
-  template Property Property::value() const;
-  template void Property::value(Property& value) const;
-  template void Property::set(const Property& value);
-  template void Property::make(Property& value);
-}
-
-#if defined(DD4HEP_HAVE_ALL_PARSERS)
-DD4HEP_DEFINE_PROPERTY_U_CONT(char)
-DD4HEP_DEFINE_PROPERTY_U_CONT(short)
-DD4HEP_DEFINE_PROPERTY_U_CONT(long long)
-#endif   //  DD4HEP_HAVE_ALL_PARSERS
-
-DD4HEP_DEFINE_PROPERTY_CONT(bool)
-DD4HEP_DEFINE_PROPERTY_U_CONT(int)
-DD4HEP_DEFINE_PROPERTY_U_CONT(long)
-DD4HEP_DEFINE_PROPERTY_CONT(float)
-DD4HEP_DEFINE_PROPERTY_CONT(double)
-
-// STL objects
-DD4HEP_DEFINE_PROPERTY_CONT(string)
-
-typedef map<string, int> map_string_int;
-DD4HEP_DEFINE_PROPERTY_TYPE(map_string_int)
-
-typedef map<string, string> map_string_string;
-DD4HEP_DEFINE_PROPERTY_TYPE(map_string_string)
-
-#ifndef DD4HEP_PARSERS_NO_ROOT
-#include "Math/Point3D.h"
-#include "Math/Vector3D.h"
-#include "Math/Vector4D.h"
-
-// ROOT::Math Object instances
-DD4HEP_DEFINE_PROPERTY_TYPE(ROOT::Math::XYZPoint)
-DD4HEP_DEFINE_PROPERTY_TYPE(ROOT::Math::XYZVector)
-DD4HEP_DEFINE_PROPERTY_TYPE(ROOT::Math::PxPyPzEVector)
-#endif

@@ -21,6 +21,7 @@
 #include "DD4hep/Path.h"
 #include "DD4hep/Alignments.h"
 #include "DD4hep/OpaqueDataBinder.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 #include "DDDB/DDDBTags.h"
 #include "DDDB/DDDBHelper.h"
 #include "DDDB/DDDBReader.h"

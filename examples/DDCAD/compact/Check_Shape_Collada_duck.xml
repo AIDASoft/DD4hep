@@ -1,0 +1,14 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="../../ClientTests/compact/CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_Collada" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="CAD_Shape" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/Collada/duck.dae" mesh="0"/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/ref/Ref_Collada_duck.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>

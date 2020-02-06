@@ -11,25 +11,40 @@
 #include "Parsers/spirit/ParsersStandardMiscCommon.h"
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
-int dd4hep::Parsers::parse(std::map<unsigned int, std::string>& result, const std::string& input) {
-  return dd4hep::Parsers::parse_(result, input);
+/// Namespace for the AIDA detector description toolkit
+namespace dd4hep {
+  /// Namespace for the AIDA detector for utilities using boost::spirit parsers
+  namespace Parsers {
+
+    template <> int parse(std::map<unsigned int, std::string>& result, const std::string& input) {
+      return parse_(result, input);
+    }
+  }
 }
 #endif
+#if 0
+/// Namespace for the AIDA detector description toolkit
+namespace dd4hep {
+  /// Namespace for the AIDA detector for utilities using boost::spirit parsers
+  namespace Parsers {
 
-int dd4hep::Parsers::parse(std::string& name, std::string& value, const std::string& input ) {
-  Skipper skipper;
-  KeyValueGrammar<IteratorT, Skipper> g;
-  KeyValueGrammar<IteratorT, Skipper>::ResultT result;
-  std::string::const_iterator iter = input.begin();
-  bool parse_result = qi::phrase_parse(iter, input.end(), g, skipper,
-                                       result) && (iter==input.end());
-  if (parse_result) {
-    name = result.first;
-    value = result.second;
+    template <> int parse(std::string& name, std::string& value, const std::string& input ) {
+      Skipper skipper;
+      KeyValueGrammar<IteratorT, Skipper> g;
+      KeyValueGrammar<IteratorT, Skipper>::ResultT result;
+      std::string::const_iterator iter = input.begin();
+      bool parse_result = qi::phrase_parse(iter, input.end(), g, skipper,
+                                           result) && (iter==input.end());
+      if (parse_result) {
+        name = result.first;
+        value = result.second;
+      }
+      return parse_result;
+    }
+
+    template <> int parse(std::map<std::string, std::pair<double, double> >& result, const std::string& input) {
+      return parse_(result, input);
+    }
   }
-  return parse_result;
 }
-
-int dd4hep::Parsers::parse(std::map<std::string, std::pair<double, double> >& result, const std::string& input) {
-  return dd4hep::Parsers::parse_(result, input);
-}
+#endif

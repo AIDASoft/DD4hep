@@ -271,6 +271,7 @@ UNICODE (materials);
 UNICODE (matrices);
 UNICODE (matrix);
 UNICODE (member);
+UNICODE (mesh);
 UNICODE (MeV);
 UNICODE (mm);
 UNICODE (model);

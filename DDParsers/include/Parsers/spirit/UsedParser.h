@@ -21,8 +21,7 @@
 #else
 
 // Standard DD4hep parser handling
-#include "Parsers/spirit/Parsers.h"
-#include "Parsers/spirit/ToStream.h"
+#include "Parsers/Parsers.h"
 
 #endif
 

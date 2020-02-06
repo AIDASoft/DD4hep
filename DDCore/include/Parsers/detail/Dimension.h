@@ -505,9 +505,13 @@ namespace dd4hep {
       double offset() const;
       /// Access attribute values: offset
       double offset(double default_value) const;
+
+      /// Access attribute values: item
+      int item() const;
+      /// Access attribute values: items
+      int items() const;
       /// Access attribute values: number
       int number() const;
-
       /// Access attribute values: nmodules
       int nmodules() const;
       /// Access attribute values: nsegments
@@ -680,8 +684,12 @@ namespace dd4hep {
       Dimension staves(bool throw_if_not_present = true) const;
       /// Access child element with tag "beampipe" as Dimension object
       Dimension beampipe(bool throw_if_not_present = true) const;
-      /// Access child element with tag "beampipe" as Dimension object
+      /// Access child element with tag "envelope" as Dimension object
       Dimension envelope(bool throw_if_not_present = true) const;
+      /// Access child element with tag "shape" as Dimension object
+      Dimension shape(bool throw_if_not_present = true) const;
+      /// Access child element with tag "solid" as Dimension object
+      Dimension solid(bool throw_if_not_present = true) const;
 
       /// Access "name" attribute as STL string
       std::string nameStr() const;

@@ -20,9 +20,9 @@
 #define DD4HEP_DDDB_DDDBCONVERSION_H
 
 /// Framework include files
-#include "DD4hep/Objects.h"
-#include "DD4hep/ConditionsData.h"
-#include "DDDB/DDDBReaderContext.h"
+#include <DD4hep/Objects.h>
+#include <DD4hep/ConditionsData.h>
+#include <DDDB/DDDBReaderContext.h>
 
 /// C/C++ include files
 #include <string>

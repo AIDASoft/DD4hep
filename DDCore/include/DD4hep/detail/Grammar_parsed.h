@@ -18,16 +18,22 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_BASICGRAMMAR_INL_H
-#define DD4HEP_DDCORE_BASICGRAMMAR_INL_H
+#ifndef DD4HEP_DDCORE_DETAIL_GRAMMAR_PARSED_H
+#define DD4HEP_DDCORE_DETAIL_GRAMMAR_PARSED_H
 
-// Framework include files
-#include "DD4hep/config.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/detail/Grammar.h"
+/// Framework include files
+#include "DD4hep/Grammar.h"
 #include "Evaluator/Evaluator.h"
-#include "Parsers/spirit/Parsers.h"
-#include "Parsers/spirit/ToStream.h"
+#include "Parsers/Parsers.h"
+
+/// C/C++ include files
+#include <string>
+#include <sstream>
+#include <vector>
+#include <list>
+#include <set>
+#include <map>
+#include <deque>
 
 #if defined(DD4HEP_PARSER_HEADER)
 
@@ -40,50 +46,10 @@
 
 namespace dd4hep { dd4hep::tools::Evaluator& g4Evaluator();  }
 namespace {  static dd4hep::tools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
-
-// C/C++ include files
-#include <string>
-#include <vector>
-#include <list>
-#include <set>
-#include <map>
-#include <deque>
+// Forward declarations
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
-
-  /// Standarsd constructor
-  template <typename TYPE> Grammar<TYPE>::Grammar() : BasicGrammar(typeName(typeid(TYPE)))  {
-  }
-
-  /// Default destructor
-  template <typename TYPE> Grammar<TYPE>::~Grammar() {
-  }
-
-  /// PropertyGrammar overload: Access to the type information
-  template <typename TYPE> const std::type_info& Grammar<TYPE>::type() const {
-    return typeid(TYPE);
-  }
-
-  /// Access to the type information
-  template <typename TYPE> bool Grammar<TYPE>::equals(const std::type_info& other_type) const  {
-    return other_type == typeid(TYPE);
-  }
-  
-  /// Access the object size (sizeof operator)
-  template <typename TYPE> size_t Grammar<TYPE>::sizeOf() const   {
-    return sizeof(TYPE);
-  }
-
-  /// Bind opaque address to object
-  template <typename TYPE> void Grammar<TYPE>::bind(void* pointer)  const  {
-    new(pointer) TYPE();
-  }
-
-  /// Evaluate string value if possible before calling boost::spirit
-  template <typename TYPE> int Grammar<TYPE>::evaluate(void*, const std::string&) const {
-    return 0;
-  }
 
   /// PropertyGrammar overload: Retrieve value from string
   template <typename TYPE> bool Grammar<TYPE>::fromString(void* ptr, const std::string& string_val) const {
@@ -107,20 +73,8 @@ namespace dd4hep {
   /// Serialize a property to a string
   template <typename TYPE> std::string Grammar<TYPE>::str(const void* ptr) const {
     std::stringstream string_rep;
-    Utils::toStream(*(TYPE*)ptr,string_rep);
+    Parsers::toStream(*(TYPE*)ptr,string_rep);
     return string_rep.str();
-  }
-
-  /// Opaque object destructor
-  template <typename TYPE> void Grammar<TYPE>::destruct(void* pointer) const   {
-    TYPE* obj = (TYPE*)pointer;
-    obj->~TYPE();
-  }
-
-  /// Opaque object destructor
-  template <typename TYPE> void Grammar<TYPE>::copy(void* to, const void* from) const   {
-    const TYPE* from_obj = (const TYPE*)from;
-    new (to) TYPE(*from_obj);
   }
 
   /// Helper function to parse data type
@@ -268,43 +222,24 @@ namespace dd4hep {
     return BasicGrammar::instance<T>().fromString(ptr,pre_parse_obj(str));
   }
 
-  /// User object evaluator
-  /// Do NOTHING version! Function present to formally satisfy code. User implementation required
-  template<typename T> inline int eval_none(T*, const std::string&)  {
-    return 1;
+  /// Standarsd constructor
+  template <typename TYPE> const BasicGrammar& BasicGrammar::instance()  {
+    static Grammar<TYPE> s_gr;
+    return s_gr;
   }
-  template <typename T> inline int parse_none(T&, const std::string&) {
-    return 1;
-  }
-
-  // Containers of objects are not handled!
-  
 }      // End namespace dd4hep
+
 #define DD4HEP_PARSER_GRAMMAR_CNAME(serial,name)  namespace_dd4hep__grammar_##serial##_##name
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)                            \
-  namespace dd4hep {                                                    \
-    template<> const BasicGrammar& BasicGrammar::instance<x>()  { static Grammar<x> gr; return gr;}}
-
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)                       \
-  namespace dd4hep {                                                    \
-    template<> int Grammar<x >::evaluate(void* ptr, const std::string& val) const { return func ((x*)ptr,val); }}
+  namespace dd4hep { template<> int Grammar<x>::evaluate(void* _p, const std::string& _v) const { return func ((x*)_p,_v); }}
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_INSTANCE(serial,x) namespace DD4HEP_PARSER_GRAMMAR_CNAME(serial,0) { \
-    static const ::dd4hep::BasicGrammar& DD4HEP_PARSER_GRAMMAR_CNAME(serial,100) = ::dd4hep::BasicGrammar::instance<x>();  }
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_INSTANCE(serial,x)   namespace dd4hep { template class Grammar< x >; } \
+  namespace DD4HEP_PARSER_GRAMMAR_CNAME(serial,0) { static auto s_reg = ::dd4hep::GrammarRegistry::pre_note< x >(); }
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,ctxt,x,func)         \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)                                  \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)                             \
   DD4HEP_DEFINE_PARSER_GRAMMAR_INSTANCE(DD4HEP_PARSER_GRAMMAR_CNAME(serial,ctxt),x)
-
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_DUMMY_SERIAL(serial,x,func)  \
-  PARSERS_DECL_FOR_SINGLE(x)                                      \
-  namespace dd4hep   {   namespace Parsers   {                    \
-      int parse(x&, const std::string&)     {  return 1;  }    }} \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)                            \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)                       \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_INSTANCE(serial,x)
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_SERIAL(serial,x,eval_func)    \
@@ -313,10 +248,10 @@ namespace dd4hep {
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,3,std::list<x>,   eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,4,std::set<x>,    eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,5,std::deque<x>,  eval_container) \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,6,dd4hep::detail::Primitive<x>::int_map_t,     eval_container) \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,7,dd4hep::detail::Primitive<x>::ulong_map_t,   eval_container) \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,8,dd4hep::detail::Primitive<x>::string_map_t,  eval_container) \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,9,dd4hep::detail::Primitive<x>::int_pair_t,    eval_pair) \
+  DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,6,dd4hep::detail::Primitive<x>::int_map_t,      eval_container) \
+  DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,7,dd4hep::detail::Primitive<x>::ulong_map_t,    eval_container) \
+  DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,8,dd4hep::detail::Primitive<x>::string_map_t,   eval_container) \
+  DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,9,dd4hep::detail::Primitive<x>::int_pair_t,     eval_pair) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,10,dd4hep::detail::Primitive<x>::ulong_pair_t,  eval_pair) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,11,dd4hep::detail::Primitive<x>::string_pair_t, eval_pair) 
 
@@ -337,7 +272,7 @@ namespace dd4hep {
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,3,std::list<x>,   eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,4,std::set<x>,    eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,5,dd4hep::detail::Primitive<x>::int_map_t,     eval_container) \
-    DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,6,dd4hep::detail::Primitive<x>::string_map_t,  eval_container) \
+    DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,6,dd4hep::detail::Primitive<x>::string_map_t,eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,7,dd4hep::detail::Primitive<x>::int_pair_t,    eval_pair) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,8,dd4hep::detail::Primitive<x>::string_pair_t, eval_pair) 
 
@@ -357,4 +292,4 @@ namespace dd4hep {
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL(x,eval_func) DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL_SERIAL(__LINE__x,eval_func)
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_DUMMY(x,func)        DD4HEP_DEFINE_PARSER_GRAMMAR_DUMMY_SERIAL(__LINE__,x,func)
 
-#endif  /* DD4HEP_DDCORE_BASICGRAMMAR_INL_H */
+#endif  /* DD4HEP_DDCORE_DETAIL_GRAMMAR_PARSED_H */

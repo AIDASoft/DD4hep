@@ -20,7 +20,7 @@
 #include "Evaluator/Evaluator.h"
 #include "DD4hep/DD4hepRootPersistency.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/detail/Grammar.h"
+#include "DD4hep/Grammar.h"
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
 #include "DD4hep/detail/ConditionsInterna.h"

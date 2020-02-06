@@ -13,6 +13,9 @@
 #ifndef DD4HEP_OPAQUEDATA_H
 #define DD4HEP_OPAQUEDATA_H
 
+// Framework include files
+#include "DD4hep/Grammar.h"
+
 // C/C++ include files
 #include <typeinfo>
 #include <vector>
@@ -41,17 +44,17 @@ namespace dd4hep {
     /// Standard Destructor
     virtual ~OpaqueData() = default;
     /// Copy constructor
-    OpaqueData(const OpaqueData& c) = default;
+    OpaqueData(const OpaqueData& copy) = default;
     /// Assignment operator
-    OpaqueData& operator=(const OpaqueData& c) = default;
+    OpaqueData& operator=(const OpaqueData& copy) = default;
 
   public:
     /// Data type
-    const BasicGrammar* grammar = 0;  //!
+    const BasicGrammar* grammar = 0;  //! No ROOT persistency
 
   protected:
     /// Pointer to object data
-    void* pointer = 0;   //! No ROOT persistency
+    void* pointer = 0;                //! No ROOT persistency
 
   public:
     /// Create data block from string representation
@@ -72,7 +75,7 @@ namespace dd4hep {
     template <typename T> const T& get() const;
   };
 
-
+  
   /// Class describing an opaque conditions data block
   /**
    *  This class is used to handle the actual data IO.
@@ -107,24 +110,20 @@ namespace dd4hep {
   public:
     /// Standard initializing constructor
     OpaqueDataBlock();
-    /// Copy constructor
-    OpaqueDataBlock(const OpaqueDataBlock& data);
+    /// Copy constructor (Required by ROOT dictionaries)
+    OpaqueDataBlock(const OpaqueDataBlock& copy);
     /// Standard Destructor
     ~OpaqueDataBlock();
-    /// Assignment operator
-    OpaqueDataBlock& operator=(const OpaqueDataBlock& clone);
-    /// Move the data content: 'from' will be reset to NULL
-    bool move(OpaqueDataBlock& from);
+    /// Assignment operator (Required by ROOT dictionaries)
+    OpaqueDataBlock& operator=(const OpaqueDataBlock& copy);
     /// Write access to the data buffer. Is only valid after call to bind<T>()
     void* ptr()  const {  return pointer;      }
     /// Bind data value
     void* bind(const BasicGrammar* grammar);
     /// Bind data value in place
     void* bind(void* ptr, size_t len, const BasicGrammar* grammar);
-    /// Bind external data value to the pointer
-    void bindExtern(void* ptr, const BasicGrammar* grammar);
-    /// Bind external data value to the pointer
-    template <typename T> void bindExtern(T* ptr);
+    /// Construct conditions object and bind the data
+    template <typename T, typename... Args> T& construct(Args&&... args);
     /// Bind data value
     template <typename T> T& bind();
     /// Bind data value
@@ -133,18 +132,56 @@ namespace dd4hep {
     template <typename T> T& bind(const std::string& value);
     /// Bind data value
     template <typename T> T& bind(void* ptr, size_t len, const std::string& value);
-    /// Set data value
-    void assign(const void* ptr,const std::type_info& typ);
   };
-}      /* End namespace dd4hep */
 
-#include "DD4hep/BasicGrammar.h"
+  /// Generic getter. Specify the exact type, not a polymorph type
+  template <typename T> T& OpaqueData::get() {
+    if (!grammar || !grammar->equals(typeid(T))) { throw std::bad_cast(); }
+    return *(T*)pointer;
+  }
 
-/// Namespace for the AIDA detector description toolkit
-namespace dd4hep {
+  /// Generic getter (const version). Specify the exact type, not a polymorph type
+  template <typename T> const T& OpaqueData::get() const {
+    if (!grammar || !grammar->equals(typeid(T))) { throw std::bad_cast(); }
+    return *(T*)pointer;
+  }
 
-  template <typename T> inline void OpaqueDataBlock::bindExtern(T* ptr)   {
-    this->OpaqueDataBlock::bindExtern((void*)ptr, SimpleGrammar::instance<T>());
+  /// Construct conditions object and bind the data
+  template <typename T, typename... Args> T& OpaqueDataBlock::construct(Args&&... args)   {
+    this->bind(&BasicGrammar::instance<T>());
+    return *(new(this->pointer) T(std::forward<Args>(args)...));
+  }
+
+  /// Bind data value
+  template <typename T> T& OpaqueDataBlock::bind()  {
+    this->bind(&BasicGrammar::instance<T>());
+    return *(new(this->pointer) T());
+  }
+
+  /// Bind data value
+  template <typename T> T& OpaqueDataBlock::bind(void* ptr, size_t len)  {
+    this->bind(ptr,len,&BasicGrammar::instance<T>());
+    return *(new(this->pointer) T());
+  }
+
+  /// Bind grammar and assign value
+  template <typename T> T& OpaqueDataBlock::bind(const std::string& value)   {
+    T& ret = this->bind<T>();
+    if ( !value.empty() && !this->fromString(value) )  {
+      throw std::runtime_error("OpaqueDataBlock::set> Failed to bind type "+
+                               typeName(typeid(T))+" to condition data block.");
+    }
+    return ret;
+  }
+
+  /// Bind grammar and assign value
+  template <typename T> T& OpaqueDataBlock::bind(void* ptr, size_t len, const std::string& value)   {
+    T& ret = this->bind<T>(ptr, len);
+    if ( !value.empty() && !this->fromString(value) )  {
+      throw std::runtime_error("OpaqueDataBlock::set> Failed to bind type "+
+                               typeName(typeid(T))+" to condition data block.");
+    }
+    return ret;
   }
 }      /* End namespace dd4hep */
 #endif /* DD4HEP_OPAQUEDATA_H  */

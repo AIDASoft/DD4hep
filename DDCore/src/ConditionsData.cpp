@@ -15,7 +15,6 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/ConditionsData.h"
-#include <sstream>
 
 using namespace dd4hep::cond;
 
@@ -39,7 +38,7 @@ std::ostream& operator << (std::ostream& s, const AbstractMap& data)   {
     }
   };
   if ( !data.params.empty() )  {
-    for_each(data.params.begin(), data.params.end(),_Print());
+    for_each(data.params.begin(), data.params.end(), _Print());
   }
   return s;
 }
@@ -48,15 +47,15 @@ std::ostream& operator << (std::ostream& s, const AbstractMap& data)   {
 ClientData::~ClientData()  {
 }
 
+/// Default constructor
+AbstractMap::AbstractMap() : clientData(0), classID(0) {
+  InstanceCount::increment(this);
+}
+
 /// Copy constructor
 AbstractMap::AbstractMap(const AbstractMap& c)
   : clientData(c.clientData), params(c.params), classID(c.classID) 
 {
-  InstanceCount::increment(this);
-}
-
-/// Default constructor
-AbstractMap::AbstractMap() : clientData(0), classID(0) {
   InstanceCount::increment(this);
 }
 
@@ -77,9 +76,6 @@ AbstractMap& AbstractMap::operator=(const AbstractMap& c)  {
   return *this;
 }
 
-#include "Parsers/Parsers.h"
-DD4HEP_DEFINE_PARSER_DUMMY(AbstractMap)
-#include "DD4hep/detail/BasicGrammar_inl.h"
-#include "DD4hep/detail/ConditionsInterna.h"
-DD4HEP_DEFINE_PARSER_GRAMMAR(AbstractMap,eval_none<AbstractMap>)
-DD4HEP_DEFINE_CONDITIONS_TYPE(AbstractMap)
+#include "DD4hep/detail/Grammar_unparsed.h"
+// Ensure the grammars are registered and instantiated
+static auto s_registry = dd4hep::GrammarRegistry::pre_note<AbstractMap>();

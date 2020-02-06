@@ -200,13 +200,19 @@ namespace dd4hep {
 
     /** Conditions meta-data and handling of the data binding  */
     /// Access the opaque data block
-    OpaqueData& data()  const;
+    OpaqueDataBlock& data()  const;
     /// Access to the type information
     const std::type_info& typeInfo() const;
     /// Access to the grammar type
     const BasicGrammar& descriptor() const;
     /// Check if object is already bound....
     bool is_bound()  const  {  return isValid() ? data().is_bound() : false;  }
+    /** Construct conditions object and bind the data
+     *
+     *  Note: The type definition is possible exactly once.
+     *  Any further rebindings MUST match the identical type.
+     */
+    template <typename T, typename... Args> T& construct(Args&&... args);
     /** Bind the data of the conditions object to a given format.
      *
      *  Note: The type definition is possible exactly once.
@@ -223,8 +229,6 @@ namespace dd4hep {
     template <typename T> T& get();
     /// Generic getter (const version). Specify the exact type, not a polymorph type
     template <typename T> const T& get() const;
-    /// Re-evaluate the conditions data according to the previous bound type definition
-    Condition& rebind();
   };
 
   /// Initializing constructor
@@ -235,6 +239,26 @@ namespace dd4hep {
   template <typename Q> inline Condition::Condition(const Handle<Q>& e)
     : Handle<Condition::Object>(e) {}
 
+  /// Construct conditions object and bind the data
+  template <typename T, typename... Args> T& Condition::construct(Args&&... args)   {
+    return data().construct<T,Args...>(args...);
+  }
+  /// Bind the data of the conditions object to a given format.
+  template <typename T> T& Condition::bind()   {
+    return data().bind<T>();
+  }
+  /// Bind the data of the conditions object to a given format and fill data from string representation.
+  template <typename T> T& Condition::bind(const std::string& val)   {
+    return data().bind<T>(val);
+  }
+  /// Generic getter. Specify the exact type, not a polymorph type
+  template <typename T> T& Condition::get() {
+    return data().get<T>();
+  }
+  /// Generic getter (const version). Specify the exact type, not a polymorph type
+  template <typename T> const T& Condition::get() const {
+    return data().get<T>();
+  }
     
   /// Key definition to optimize ans simplyfy the access to conditions entities
   /**
