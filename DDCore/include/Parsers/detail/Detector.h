@@ -57,6 +57,9 @@ namespace dd4hep {
       
       /// Create a shape using the plugin mechanism from an XML element
       TObject* createShape() const;
+
+      /// Run a TObject constructor
+      TObject* runConstructor(const std::string& ctor_typ) const;
     };
 
     /// XML Handle_t class extending the XML handle Dimension

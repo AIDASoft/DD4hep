@@ -70,7 +70,7 @@ option(DD4HEP_USE_LCIO    "Build lcio extensions"     OFF)
 option(BUILD_TESTING      "Enable and build tests"    ON)
 option(BUILD_SHARED_LIBS  "If OFF build STATIC Libraries" ON)
 option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
-SET(DD4HEP_BUILD_PACKAGES "DDRec DDDetectors DDCond DDAlign DDDigi DDG4 DDEve UtilityApps"
+SET(DD4HEP_BUILD_PACKAGES "DDRec DDDetectors DDCond DDAlign DDCAD DDDigi DDG4 DDEve UtilityApps"
   CACHE STRING "List of DD4hep packages to build")
 SEPARATE_ARGUMENTS(DD4HEP_BUILD_PACKAGES)
 MESSAGE(STATUS "Will be building these packages: ${DD4HEP_BUILD_PACKAGES}")
@@ -176,7 +176,7 @@ FOREACH(DDPackage GaudiPluginService DDParsers DDCore)
   dd4hep_print("|> Building ${DDPackage}")
   add_subdirectory(${DDPackage})
 ENDFOREACH()
-
+message(STATUS "BUILD Packages: ${DD4HEP_BUILD_PACKAGES}")
 FOREACH(DDPackage IN LISTS DD4HEP_BUILD_PACKAGES)
   dd4hep_print("|> Building ${DDPackage}")
   add_subdirectory(${DDPackage})

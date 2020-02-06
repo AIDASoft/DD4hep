@@ -1,0 +1,16 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="../../ClientTests/compact/CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_COB_dwarf" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="CAD_Shape" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/COB/dwarf.cob" mesh="1"/>
+        <position x="0" y="0" z="0"/>
+        <rotation x="0" y="0" z="0"/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/ref/Ref_COB_dwarf.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>
