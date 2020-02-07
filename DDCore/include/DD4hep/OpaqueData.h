@@ -136,6 +136,8 @@ namespace dd4hep {
     /// Set data value
     void assign(const void* ptr,const std::type_info& typ);
   };
+  /// print OpaqueData object
+  std::ostream& operator<< (std::ostream& s, const OpaqueDataBlock& data);
 }      /* End namespace dd4hep */
 
 #include "DD4hep/BasicGrammar.h"
