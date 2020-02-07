@@ -84,7 +84,7 @@ void Delta::computeMatrix(TGeoHMatrix& tr_delta)  const   {
 }
 
 /// print alignment delta object
-ostream& operator << (ostream& s, const Delta& data)   {
+ostream& dd4hep::operator<< (ostream& s, const Delta& data)   {
   string res;
   stringstream str;
   str << "[" << data.translation << "," << data.rotation << "," << data.pivot << "]";
@@ -131,7 +131,7 @@ AlignmentData& AlignmentData::operator=(const AlignmentData& copy)  {
 }
 
 /// print Conditions object
-ostream& operator << (ostream& s, const AlignmentData& data)   {
+ostream& dd4hep::operator << (ostream& s, const AlignmentData& data)   {
   stringstream str;
   str << data.delta;
   return s << str.str();

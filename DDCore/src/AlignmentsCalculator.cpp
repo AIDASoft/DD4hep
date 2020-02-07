@@ -325,8 +325,6 @@ size_t AlignmentsCalculator::extract_deltas(DetElement start,
 
 // The map is used by the Alignments calculator
 typedef AlignmentsCalculator::OrderedDeltas OrderedMap;
-// Have only a weak reference here!
-inline std::ostream& operator << (std::ostream& s, const DetElement& )   { return s; }
 
 #include "Parsers/Parsers.h"
 DD4HEP_DEFINE_PARSER_DUMMY(OrderedMap)

@@ -195,6 +195,7 @@ namespace dd4hep {
     Position detectorToLocal(const Double_t det[3]) const
     {  return detectorToLocal(Position(det[0],det[1],det[2]));                        }
   };
+  std::ostream& operator << (std::ostream& s, const AlignmentData& data);
+  std::ostream& operator << (std::ostream& s, const Delta& data);
 }         /* End namespace dd4hep               */
-std::ostream& operator << (std::ostream& s, const dd4hep::AlignmentData& data);
 #endif    /* DD4HEP_ALIGMENTS_ALIGNMENTDATA_H   */
