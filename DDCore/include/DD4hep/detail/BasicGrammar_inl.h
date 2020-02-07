@@ -215,17 +215,12 @@ namespace dd4hep {
   namespace dd4hep {                                                    \
     template<> int Grammar<x >::evaluate(void* ptr, const std::string& val) const { return func ((x*)ptr,val); }}
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_INSTANCE(serial,x) namespace DD4HEP_PARSER_GRAMMAR_CNAME(serial,0) { \
-    static const ::dd4hep::BasicGrammar& DD4HEP_PARSER_GRAMMAR_CNAME(serial,100) = ::dd4hep::BasicGrammar::instance<x>();  }
-
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,ctxt,x,func)         \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)                             \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_INSTANCE(DD4HEP_PARSER_GRAMMAR_CNAME(serial,ctxt),x)
+  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_DUMMY_SERIAL(serial,x,func)  \
   PARSERS_DECL_FOR_SINGLE(x)                                      \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)                       \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_INSTANCE(serial,x)
+  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_SERIAL(serial,x,eval_func)    \
