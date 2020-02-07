@@ -13,9 +13,6 @@
 #ifndef DD4HEP_PARSERS_PRINTOUT_H
 #define DD4HEP_PARSERS_PRINTOUT_H
 
-// Framework include files
-#include "Parsers/config.h"
-
 // C/C++ include files
 #include <cstdio>
 #include <cstdlib>

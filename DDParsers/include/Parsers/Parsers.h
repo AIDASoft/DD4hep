@@ -17,7 +17,6 @@
 #ifndef DD4HEP_PARSERS_PARSERS_H
 #define DD4HEP_PARSERS_PARSERS_H
 
-#include "Parsers/config.h"
 #include "Parsers/spirit/Parsers.h"
 #include "Parsers/spirit/ToStream.h"
 

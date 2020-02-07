@@ -13,9 +13,6 @@
 #ifndef DD4HEP_PARSERS_PRIMITIVES_H
 #define DD4HEP_PARSERS_PRIMITIVES_H
 
-// Framework include files
-#include "Parsers/config.h"
-
 // C/C++ include files
 #include <map>
 #include <list>

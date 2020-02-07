@@ -11,8 +11,6 @@
 //
 //==========================================================================
 
-#include "Parsers/config.h"
-
 // Framework include files
 #if defined(DD4HEP_PARSER_HEADER)
 

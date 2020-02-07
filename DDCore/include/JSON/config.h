@@ -13,8 +13,6 @@
 #ifndef DD4HEP_DDCORE_JSON_CONFIG_H
 #define DD4HEP_DDCORE_JSON_CONFIG_H
 
-#include "Parsers/config.h"
-
 #define DD4HEP_USE_BOOST_JSON 1
 
 #include "boost/property_tree/ptree.hpp"

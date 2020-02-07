@@ -10,7 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#include "Parsers/config.h"
 #include "Evaluator/Evaluator.h"
 #include "Evaluator/DD4hepUnits.h"
 namespace units = dd4hep;

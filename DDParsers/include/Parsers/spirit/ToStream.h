@@ -13,9 +13,6 @@
 #ifndef DD4HEPPROPERTYPARSERS_PARSERVALUETOSTREAM_H
 #define DD4HEPPROPERTYPARSERS_PARSERVALUETOSTREAM_H 1
 // ============================================================================
-// Include files
-#include "Parsers/config.h"
-// ============================================================================
 // STD & STL
 // ============================================================================
 #include <iostream>

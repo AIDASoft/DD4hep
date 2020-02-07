@@ -11,8 +11,6 @@
 #ifndef DD4HEP_DDCORE_PARSERS_USEDPARSERS_H
 #define DD4HEP_DDCORE_PARSERS_USEDPARSERS_H
 
-#include "Parsers/config.h"
-
 #if defined(DD4HEP_PARSER_HEADER)
 // This is the case, if the parsers are externalized
 // and the DD4hep namespace is renamed!
