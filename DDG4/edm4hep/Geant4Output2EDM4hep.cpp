@@ -194,6 +194,10 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
     G4AutoLock protection_lock(&action_mutex);
     m_store = new podio::EventStore ;
     m_file = new podio::ROOTWriter(m_output, m_store);
+
+    auto& mcps  = m_store->create<edm4hep::MCParticleCollection>("MCParticles");
+    m_file->registerForWrite("MCParticles");
+
     printout( INFO, "Geant4Output2EDM4hep" ," opened %s for output", m_output.c_str() ) ;
   }
   
@@ -255,7 +259,7 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
     size_t cnt = 0;
     map<int,int> p_ids;
     vector<const Geant4Particle*> p_part(pm.size(),0);
-    vector<MCParticle> p_edm4hep(pm.size(),0);
+    vector<MCParticle> p_edm4hep(pm.size());
     // First create the particles
     for(ParticleMap::const_iterator i=pm.begin(); i!=pm.end();++i, ++cnt)   {
       int id = (*i).first;

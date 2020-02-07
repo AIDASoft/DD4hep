@@ -104,7 +104,7 @@ ENDIF()
 IF(TARGET EDM4HEP::edm4hep)
   dd4hep_add_plugin(DDG4EDM4hep
     SOURCES edm4hep/*.cpp
-    USES    DD4hep::DDG4 EDM4HEP::edm4hep
+    USES    DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict
     )
   install(TARGETS DDG4EDM4hep EXPORT DD4hep LIBRARY DESTINATION lib)
   set_target_properties(DDG4EDM4hep PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
