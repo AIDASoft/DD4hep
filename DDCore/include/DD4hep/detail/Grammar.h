@@ -26,6 +26,13 @@
 #include "Parsers/spirit/Parsers.h"
 #include "Parsers/spirit/ToStream.h"
 
+#include <string>
+#include <vector>
+#include <list>
+#include <set>
+#include <map>
+#include <deque>
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
@@ -209,12 +216,19 @@ namespace dd4hep {
     int evaluate(void*, const std::string&) const override { return 0; };
   };
 
-  /// specialization of Grammar for vectors
-  template <typename T> struct Grammar<std::vector<T>> : CommonGrammar<std::vector<T>> {
+  /// specialization of Grammar for containers
+  template <typename T> struct ContainerGrammar : CommonGrammar<T> {
     int evaluate(void* ptr, const std::string& val) const override {
-      return eval_container((std::vector<T>*)ptr,val);
+      return eval_container((T*)ptr,val);
     }
   };
+
+  /// specialization of Grammar for STL containers
+  template <typename T> struct Grammar<std::vector<T>> : ContainerGrammar<std::vector<T>> {};
+  template <typename T> struct Grammar<std::list<T>> : ContainerGrammar<std::list<T>> {};
+  template <typename T> struct Grammar<std::set<T>> : ContainerGrammar<std::set<T>> {};
+  template <typename T> struct Grammar<std::deque<T>> : ContainerGrammar<std::deque<T>> {};
+
 } // namespace dd4hep
 
 /// default empty parsing function for types not having a specialization
