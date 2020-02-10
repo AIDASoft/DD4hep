@@ -51,13 +51,4 @@ DD4HEP_DEFINE_PARSER_DUMMY(DeVPObject)
 DD4HEP_DEFINE_PARSER_DUMMY(DeVPSensorObject)
 DD4HEP_DEFINE_PARSER_DUMMY(DeVPGenericObject)
 
-#include "DD4hep/detail/BasicGrammar_inl.h"
-#include "DD4hep/detail/ConditionsInterna.h"
-DD4HEP_DEFINE_PARSER_GRAMMAR(DeVPStaticObject,eval_none<DeVPStaticObject>)
-DD4HEP_DEFINE_PARSER_GRAMMAR(DeVPSensorStaticObject,eval_none<DeVPSensorStaticObject>)
-DD4HEP_DEFINE_PARSER_GRAMMAR(DeVPGenericStaticObject,eval_none<DeVPGenericStaticObject>)
-DD4HEP_DEFINE_PARSER_GRAMMAR(DeVPObject,eval_none<DeVPObject>)
-DD4HEP_DEFINE_PARSER_GRAMMAR(DeVPSensorObject,eval_none<DeVPSensorObject>)
-DD4HEP_DEFINE_PARSER_GRAMMAR(DeVPGenericObject,eval_none<DeVPGenericObject>)
-
 #endif

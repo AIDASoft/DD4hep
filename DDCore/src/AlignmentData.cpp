@@ -239,10 +239,3 @@ inline ostream& operator << (ostream& s, const DetElement& )   { return s; }
 DD4HEP_DEFINE_PARSER_DUMMY(Delta)
 DD4HEP_DEFINE_PARSER_DUMMY(DeltaMap)
 DD4HEP_DEFINE_PARSER_DUMMY(AlignmentData)
-
-#include "DD4hep/detail/BasicGrammar_inl.h"
-#include "DD4hep/detail/ConditionsInterna.h"
-DD4HEP_DEFINE_PARSER_GRAMMAR(Delta,eval_none<Delta>)
-DD4HEP_DEFINE_PARSER_GRAMMAR(DeltaMap,eval_none<DeltaMap>)
-DD4HEP_DEFINE_PARSER_GRAMMAR(AlignmentData,eval_none<AlignmentData>)
-

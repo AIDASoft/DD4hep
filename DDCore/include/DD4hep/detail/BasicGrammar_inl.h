@@ -74,10 +74,6 @@ namespace dd4hep {
   }
 
   /// User object evaluator
-  /// Do NOTHING version! Function present to formally satisfy code. User implementation required
-  template<typename T> inline int eval_none(T*, const std::string&)  {
-    return 1;
-  }
   template <typename T> inline int parse_none(T&, const std::string&) {
     return 1;
   }

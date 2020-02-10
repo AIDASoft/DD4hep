@@ -213,7 +213,7 @@ namespace dd4hep {
   }
 
   template <typename TYPE> struct Grammar : CommonGrammar<TYPE> {
-    int evaluate(void*, const std::string&) const override { return 0; };
+    int evaluate(void*, const std::string&) const override { return 1; };
   };
 
   /// specialization of Grammar for containers

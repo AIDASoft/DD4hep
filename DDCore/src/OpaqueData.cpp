@@ -203,7 +203,3 @@ std::ostream& dd4hep::operator<< (std::ostream& s, const OpaqueDataBlock& data) 
 #include "Parsers/Parsers.h"
 DD4HEP_DEFINE_PARSER_DUMMY(OpaqueDataBlock)
 
-#include "DD4hep/detail/BasicGrammar_inl.h"
-#include "DD4hep/detail/ConditionsInterna.h"
-DD4HEP_DEFINE_PARSER_GRAMMAR(OpaqueDataBlock,eval_none<OpaqueDataBlock>)
-
