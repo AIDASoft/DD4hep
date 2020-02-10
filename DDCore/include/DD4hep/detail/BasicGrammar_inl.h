@@ -51,7 +51,7 @@ namespace dd4hep {
   
 }      // End namespace dd4hep
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)                       \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR(x,func)                            \
   namespace dd4hep {                                                    \
     template<> struct Grammar<x> : CommonGrammar<x> {                   \
       int evaluate(void* ptr, const std::string& val) const {           \
@@ -60,7 +60,5 @@ namespace dd4hep {
     };                                                                  \
   }
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR(x,func)              DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,func)         DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)
 
 #endif  /* DD4HEP_DDCORE_BASICGRAMMAR_INL_H */
