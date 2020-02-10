@@ -52,118 +52,6 @@ namespace {  static dd4hep::tools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
-  /// Helper function to parse data type
-  static inline std::string pre_parse_obj(const std::string& in)   {
-    std::string res = "";
-    res.reserve(1024);
-    for(const char* c = in.c_str(); *c; ++c)   {
-      switch(*c)  {
-      case '\'':
-        return "Bad object representation";
-      case ',':
-        res += "','";
-        break;
-      case '(':
-      case '[':
-        res += "['";
-        break;
-      case ')':
-      case ']':
-        res += "']";
-        break;
-      default:
-        res += *c;
-        break;
-      }
-    }
-    //cout << "Pre-parsed:" << res << endl;
-    return res;
-  }
-
-  /// Insertion function for std vectors
-  template <typename TYPE> static int fill_data(std::vector<TYPE>* p,const std::vector<std::string>& temp)  {
-    TYPE val;
-    const BasicGrammar& grammar = BasicGrammar::instance<TYPE>();
-    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
-      if ( !grammar.fromString(&val,*i) )
-        return 0;
-      p->emplace_back(val);
-    }
-    return 1;
-  }
-
-  /// Insertion function for std lists
-  template <typename TYPE> static int fill_data(std::list<TYPE>* p,const std::vector<std::string>& temp)  {
-    TYPE val;
-    const BasicGrammar& grammar = BasicGrammar::instance<TYPE>();
-    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
-      if ( !grammar.fromString(&val,*i) )
-        return 0;
-      p->emplace_back(val);
-    }
-    return 1;
-  }
-
-  /// Insertion function for std sets
-  template <typename TYPE> static int fill_data(std::set<TYPE>* p,const std::vector<std::string>& temp)  {
-    TYPE val;
-    const BasicGrammar& grammar = BasicGrammar::instance<TYPE>();
-    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
-      if ( !grammar.fromString(&val,*i) )
-        return 0;
-      p->emplace(val);
-    }
-    return 1;
-  }
-
-  /// Insertion function for std sets
-  template <typename TYPE> static int fill_data(std::deque<TYPE>* p,const std::vector<std::string>& temp)  {
-    TYPE val;
-    const BasicGrammar& grammar = BasicGrammar::instance<TYPE>();
-    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
-      if ( !grammar.fromString(&val,*i) )
-        return 0;
-      p->emplace_back(val);
-    }
-    return 1;
-  }
-
-  /// Insertion function for std sets
-  template <typename KEY, typename TYPE> static int fill_data(std::map<KEY,TYPE>* p,const std::vector<std::string>& temp)  {
-    std::pair<KEY,TYPE> val;
-    const BasicGrammar& grammar = BasicGrammar::instance<std::pair<KEY,TYPE> >();
-    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
-      if ( !grammar.fromString(&val,*i) )
-        return 0;
-      p->emplace(val);
-    }
-    return 1;
-  }
-
-  /// Container evaluator
-  template <typename TYPE> static int eval_container(TYPE* p, const std::string& str)  {
-    std::vector<std::string> buff;
-    int sc = Parsers::parse(buff,str);
-    if ( sc )  {
-      return fill_data(p,buff);
-    }
-    else   {
-      TYPE temp;
-      std::string temp_str = pre_parse_obj(str);
-      sc = ::dd4hep::Parsers::parse(temp,temp_str);
-      if ( sc )   {
-        *p = temp;
-        return 1;
-      }
-      buff.clear();
-      sc = Parsers::parse(buff,temp_str);
-      if ( sc )  {
-        return fill_data(p,buff);
-      }
-    }
-    return 0;
-  }
-
   /// Item evaluator
   template <typename T> inline int eval_item(T* ptr, std::string val)  {
     size_t idx = val.find("(int)");
@@ -212,12 +100,16 @@ namespace dd4hep {
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)                       \
   namespace dd4hep {                                                    \
-    template<> int Grammar<x >::evaluate(void* ptr, const std::string& val) const { return func ((x*)ptr,val); }}
+    template<> struct Grammar<x> : CommonGrammar<x> {                   \
+      int evaluate(void* ptr, const std::string& val) const {           \
+        return func ((x*)ptr,val);                                      \
+      }                                                                 \
+    };                                                                  \
+  }
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_SERIAL(serial,x,eval_func)    \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,eval_func)             \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(std::vector<x>, eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(std::list<x>,   eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(std::set<x>,    eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(std::deque<x>,  eval_container) \
@@ -230,7 +122,6 @@ namespace dd4hep {
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL_SERIAL(serial,x,eval_func) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,eval_func)            \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(std::vector<x>,eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(std::list<x>,eval_container)   
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT_SERIAL(serial,x)            \
@@ -241,7 +132,6 @@ namespace dd4hep {
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_SERIAL(serial,x,eval_func)    \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,eval_func)             \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(std::vector<x>, eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(std::list<x>,   eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(std::set<x>,    eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(dd4hep::detail::Primitive<x>::int_map_t,     eval_container) \
@@ -251,7 +141,6 @@ namespace dd4hep {
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL_SERIAL(serial,x,eval_func) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,eval_func)             \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(std::vector<x>,eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(std::list<x>,eval_container)   
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT_SERIAL(serial,x)    \

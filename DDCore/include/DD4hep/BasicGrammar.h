@@ -119,8 +119,6 @@ namespace dd4hep {
   class SimpleGrammar : public BasicGrammar {
   protected:
     
-    friend class BasicGrammar;
-
     size_t                object_size;
     /// Reference to type information
     const std::type_info& object_type;

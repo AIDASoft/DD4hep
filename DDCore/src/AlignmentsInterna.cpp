@@ -71,14 +71,13 @@ void AlignmentObject::clear()   {
 #include "Parsers/Parsers.h"
 DD4HEP_DEFINE_PARSER_DUMMY(AlignmentObject)
 
+#include "DD4hep/detail/Grammar.h"
 #include "DD4hep/detail/BasicGrammar_inl.h"
 #include "DD4hep/detail/ConditionsInterna.h"
+DD4HEP_DEFINE_PARSER_GRAMMAR(AlignmentObject,eval_none<AlignmentObject>)
 namespace dd4hep {
-  template <> bool Grammar<AlignmentObject>::fromString(void*, const std::string&) const {return true;}
-  template <> void Grammar<AlignmentObject>::copy(void*, const void*) const {}
   namespace Utils {
     template <> std::ostream& toStream(const AlignmentObject&, std::ostream& s) { return s; }
   }
 }
-DD4HEP_DEFINE_PARSER_GRAMMAR(AlignmentObject,eval_none<AlignmentObject>)
 
