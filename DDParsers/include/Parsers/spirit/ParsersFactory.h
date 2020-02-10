@@ -67,7 +67,7 @@ namespace dd4hep {
 
 // ============================================================================
 #define PARSERS_DEF_FOR_SINGLE(Type)                                  \
-  PARSERS_DECL_FOR_SINGLE(Type)                                       \
+  DD4HEP_PARSERS_DECL_FOR_SINGLE(Type)                                \
   int dd4hep::Parsers::parse(Type& result, const std::string& input)  \
   {  return dd4hep::Parsers::parse_(result, input);  }
 // ============================================================================

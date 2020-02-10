@@ -24,7 +24,7 @@
 #include <iostream>
 
 // ============================================================================
-#define PARSERS_DECL_FOR_SINGLE(Type)                                   \
+#define DD4HEP_PARSERS_DECL_FOR_SINGLE(Type)                                   \
   namespace dd4hep { namespace Parsers {                                \
       int parse(Type& result, const std::string& input);                \
     }}
@@ -36,17 +36,17 @@
   }
 
 #define DD4HEP_DEFINE_PARSER_DUMMY(Type)                                \
-  PARSERS_DECL_FOR_SINGLE(Type)                                         \
+  DD4HEP_PARSERS_DECL_FOR_SINGLE(Type)                                         \
   namespace dd4hep   {   namespace Parsers   {                          \
       int parse(Type&, const std::string&)     {  return 1;  }          \
     }}
 
-#define PARSERS_DECL_FOR_PAIR(FirstType, SecondType)                    \
+#define DD4HEP_PARSERS_DECL_FOR_PAIR(FirstType, SecondType)                    \
   namespace dd4hep { namespace Parsers {                                \
       int parse(std::pair<FirstType, SecondType >& result,const std::string& input); }}
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
-#define PARSERS_DECL_FOR_LIST(InnerType)                                \
+#define DD4HEP_PARSERS_DECL_FOR_LIST(InnerType)                                \
   namespace dd4hep { namespace Parsers {                                \
       int parse(std::vector<InnerType >& result,const std::string& input); \
       int parse(std::list<InnerType >& result,const std::string& input); \
@@ -61,7 +61,7 @@
     }}
 #else
 
-#define PARSERS_DECL_FOR_LIST(InnerType)                                \
+#define DD4HEP_PARSERS_DECL_FOR_LIST(InnerType)                                \
   namespace dd4hep { namespace Parsers {                                \
       int parse(std::vector<InnerType >& result,const std::string& input); \
       int parse(std::list<InnerType >& result,const std::string& input); \
@@ -119,7 +119,7 @@
  *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
  *  @date 2006-05-12
  */
-PARSERS_DECL_FOR_SINGLE(bool)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(bool)
 // ========================================================================
 /// parse the <c>char</c> value
 /**
@@ -133,11 +133,11 @@ PARSERS_DECL_FOR_SINGLE(bool)
  *  @date 2006-05-12
  */
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
-PARSERS_DECL_FOR_SINGLE(char)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(char)
 /// @see dd4hep::Parsers::parser(char&,std::string&)
-PARSERS_DECL_FOR_SINGLE(unsigned char)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(unsigned char)
 /// @see dd4hep::Parsers::parser(char&,std::string&)
-PARSERS_DECL_FOR_SINGLE(signed char)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(signed char)
 #endif
 // ========================================================================
 /// parse the <c>int</c> value
@@ -152,21 +152,21 @@ PARSERS_DECL_FOR_SINGLE(signed char)
  *  @date 2006-05-14
  */
 /// @see dd4hep::Parsers::parser( int&, const std::string& )
-PARSERS_DECL_FOR_SINGLE(int)
-PARSERS_DECL_FOR_SINGLE(long)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(int)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(long)
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
 /// @see dd4hep::Parsers::parser( int&, const std::string& )
-PARSERS_DECL_FOR_SINGLE(short)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(short)
 /// @see dd4hep::Parsers::parser( int&, const std::string& )
-PARSERS_DECL_FOR_SINGLE(unsigned short)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(unsigned short)
 /// @see dd4hep::Parsers::parser( int&, const std::string& )
-PARSERS_DECL_FOR_SINGLE(unsigned int)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(unsigned int)
 /// @see dd4hep::Parsers::parser( int&, const std::string& )
-PARSERS_DECL_FOR_SINGLE(unsigned long)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(unsigned long)
 /// @see dd4hep::Parsers::parser( int&, const std::string& )
-PARSERS_DECL_FOR_SINGLE(long long)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(long long)
 /// @see dd4hep::Parsers::parser( int&, const std::string& )
-  PARSERS_DECL_FOR_SINGLE(unsigned long long)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(unsigned long long)
 #endif
 // ========================================================================
 /// parse the <c>double</c> value
@@ -180,12 +180,12 @@ PARSERS_DECL_FOR_SINGLE(long long)
  *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
  *  @date 2006-05-14
  */
-PARSERS_DECL_FOR_SINGLE(double)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(double)
 /// @see dd4hep::Parsers::parser( double&, const std::string& )
-PARSERS_DECL_FOR_SINGLE(float)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(float)
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
 /// @see dd4hep::Parsers::parser( double&, const std::string& )
-PARSERS_DECL_FOR_SINGLE(long double)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(long double)
 #endif
 // ========================================================================
 /** parse the <c>std::string</c> value
@@ -199,27 +199,27 @@ PARSERS_DECL_FOR_SINGLE(long double)
  *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
  *  @date 2006-05-14
  */
-PARSERS_DECL_FOR_SINGLE(std::string)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(std::string)
 // ========================================================================
 
-PARSERS_DECL_FOR_LIST(int)
-PARSERS_DECL_FOR_LIST(long)
-PARSERS_DECL_FOR_LIST(bool)
-PARSERS_DECL_FOR_LIST(double)
-PARSERS_DECL_FOR_LIST(float)
-PARSERS_DECL_FOR_LIST(std::string)
+DD4HEP_PARSERS_DECL_FOR_LIST(int)
+DD4HEP_PARSERS_DECL_FOR_LIST(long)
+DD4HEP_PARSERS_DECL_FOR_LIST(bool)
+DD4HEP_PARSERS_DECL_FOR_LIST(double)
+DD4HEP_PARSERS_DECL_FOR_LIST(float)
+DD4HEP_PARSERS_DECL_FOR_LIST(std::string)
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
-PARSERS_DECL_FOR_LIST(char)
-PARSERS_DECL_FOR_LIST(unsigned char)
-PARSERS_DECL_FOR_LIST(signed char)
-PARSERS_DECL_FOR_LIST(short)
-PARSERS_DECL_FOR_LIST(unsigned short)
-PARSERS_DECL_FOR_LIST(unsigned int)
-PARSERS_DECL_FOR_LIST(unsigned long)
-PARSERS_DECL_FOR_LIST(long long)
-PARSERS_DECL_FOR_LIST(unsigned long long)
-PARSERS_DECL_FOR_LIST(long double)
+DD4HEP_PARSERS_DECL_FOR_LIST(char)
+DD4HEP_PARSERS_DECL_FOR_LIST(unsigned char)
+DD4HEP_PARSERS_DECL_FOR_LIST(signed char)
+DD4HEP_PARSERS_DECL_FOR_LIST(short)
+DD4HEP_PARSERS_DECL_FOR_LIST(unsigned short)
+DD4HEP_PARSERS_DECL_FOR_LIST(unsigned int)
+DD4HEP_PARSERS_DECL_FOR_LIST(unsigned long)
+DD4HEP_PARSERS_DECL_FOR_LIST(long long)
+DD4HEP_PARSERS_DECL_FOR_LIST(unsigned long long)
+DD4HEP_PARSERS_DECL_FOR_LIST(long double)
 #endif
 
 // ========================================================================
@@ -237,7 +237,7 @@ PARSERS_DECL_FOR_LIST(long double)
  *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
  *  @date 2006-05-14
  */
-PARSERS_DECL_FOR_PAIR(double, double)
+DD4HEP_PARSERS_DECL_FOR_PAIR(double, double)
 // ========================================================================
 /** parse the <c>std::pair\<int,int\></c> value
  *
@@ -251,7 +251,7 @@ PARSERS_DECL_FOR_PAIR(double, double)
  *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
  *  @date 2006-05-14
  */
-PARSERS_DECL_FOR_PAIR(int, int)
+DD4HEP_PARSERS_DECL_FOR_PAIR(int, int)
 // ========================================================================
 
 /// Namespace for the AIDA detector description toolkit
@@ -752,7 +752,7 @@ namespace dd4hep {
  *   @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *   @date 2009-09-05
  */
-PARSERS_DECL_FOR_LIST(ROOT::Math::XYZPoint)
+DD4HEP_PARSERS_DECL_FOR_LIST(ROOT::Math::XYZPoint)
 
 // ========================================================================
 /// parse the vector of vectors
@@ -761,7 +761,7 @@ PARSERS_DECL_FOR_LIST(ROOT::Math::XYZPoint)
  *   @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *   @date 2009-09-05
  */
-PARSERS_DECL_FOR_LIST(ROOT::Math::XYZVector)
+DD4HEP_PARSERS_DECL_FOR_LIST(ROOT::Math::XYZVector)
 
 // ========================================================================
 /// parse the vector of vectors
@@ -770,7 +770,7 @@ PARSERS_DECL_FOR_LIST(ROOT::Math::XYZVector)
  *   @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
  *   @date 2009-09-05
  */
-PARSERS_DECL_FOR_LIST(ROOT::Math::PxPyPzEVector)
+DD4HEP_PARSERS_DECL_FOR_LIST(ROOT::Math::PxPyPzEVector)
 
 #endif
 // ============================================================================
