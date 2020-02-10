@@ -37,28 +37,4 @@
 
 #endif
 
-
-// C/C++ include files
-#include <string>
-
-/// Namespace for the AIDA detector description toolkit
-namespace dd4hep {
-
-  /// Object evaluator
-  template<typename T> inline int eval_obj(T* ptr, const std::string& str)  {
-    return BasicGrammar::instance<T>().fromString(ptr,pre_parse_obj(str));
-  }
-  
-}      // End namespace dd4hep
-
-#define DD4HEP_DEFINE_PARSER_GRAMMAR(x,func)                            \
-  namespace dd4hep {                                                    \
-    template<> struct Grammar<x> : CommonGrammar<x> {                   \
-      int evaluate(void* ptr, const std::string& val) const {           \
-        return func ((x*)ptr,val);                                      \
-      }                                                                 \
-    };                                                                  \
-  }
-
-
 #endif  /* DD4HEP_DDCORE_BASICGRAMMAR_INL_H */

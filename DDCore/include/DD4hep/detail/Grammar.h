@@ -273,14 +273,14 @@ namespace dd4hep {
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
   /// specialization of Grammar for ROOT objects
-  template <typename T> struct RootGrammar<T> : CommonGrammar<T> {
+  template <typename T> struct RootGrammar : CommonGrammar<T> {
     int evaluate(void* ptr, const std::string& val) const override {
       return BasicGrammar::instance<T>().fromString((T*)ptr,pre_parse_obj(val));
     }
   };
-  template <typename T> struct Grammar<ROOT::Math::XYZPoint, false> : RootGrammar<ROOT::Math::XYZPoint> {};
-  template <typename T> struct Grammar<ROOT::Math::XYZVector, false> : RootGrammar<ROOT::Math::XYZVector> {};
-  template <typename T> struct Grammar<ROOT::Math::PxPyPzEVector, false> : RootGrammar<ROOT::Math::PxPyPzEVector> {};
+  template <> struct Grammar<ROOT::Math::XYZPoint, false> : RootGrammar<ROOT::Math::XYZPoint> {};
+  template <> struct Grammar<ROOT::Math::XYZVector, false> : RootGrammar<ROOT::Math::XYZVector> {};
+  template <> struct Grammar<ROOT::Math::PxPyPzEVector, false> : RootGrammar<ROOT::Math::PxPyPzEVector> {};
 #endif
 
 } // namespace dd4hep
