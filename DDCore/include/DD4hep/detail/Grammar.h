@@ -228,6 +228,16 @@ namespace dd4hep {
   template <typename T> struct Grammar<std::list<T>> : ContainerGrammar<std::list<T>> {};
   template <typename T> struct Grammar<std::set<T>> : ContainerGrammar<std::set<T>> {};
   template <typename T> struct Grammar<std::deque<T>> : ContainerGrammar<std::deque<T>> {};
+  template <typename T, typename V> struct Grammar<std::map<T,V>> : ContainerGrammar<std::map<T,V>> {};
+
+  /// specialization of Grammar for STL pairs
+  template <typename T1, typename T2> struct Grammar<std::pair<T1,T2>> : CommonGrammar<std::pair<T1,T2>> {
+    int evaluate(void* ptr, const std::string& val) const override {
+      const BasicGrammar& grammar = BasicGrammar::instance<std::pair<T1,T2> >();
+      if ( !grammar.fromString((std::pair<T1,T2>*)ptr, val) )  return 0;
+      return 1;
+    }
+  };
 
 } // namespace dd4hep
 

@@ -43,11 +43,6 @@ namespace {  static dd4hep::tools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
 
 // C/C++ include files
 #include <string>
-#include <vector>
-#include <list>
-#include <set>
-#include <map>
-#include <deque>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -70,13 +65,6 @@ namespace dd4hep {
   /// String evaluator
   template <> inline int eval_item<std::string>(std::string* ptr, std::string val)  {
     *ptr = val;
-    return 1;
-  }
-
-  /// Item evaluator
-  template <typename T,typename Q> inline int eval_pair(std::pair<T,Q>* ptr, std::string str)  {
-    const BasicGrammar& grammar = BasicGrammar::instance<std::pair<T,Q> >();
-    if ( !grammar.fromString(ptr,str) )  return 0;
     return 1;
   }
 
@@ -108,35 +96,20 @@ namespace dd4hep {
   }
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_SERIAL(serial,x,eval_func)    \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,eval_func)             \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(dd4hep::detail::Primitive<x>::int_map_t,     eval_container) \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(dd4hep::detail::Primitive<x>::ulong_map_t,   eval_container) \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(dd4hep::detail::Primitive<x>::string_map_t,  eval_container) \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(dd4hep::detail::Primitive<x>::int_pair_t,    eval_pair) \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(dd4hep::detail::Primitive<x>::ulong_pair_t,  eval_pair) \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(dd4hep::detail::Primitive<x>::string_pair_t, eval_pair) 
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT_SERIAL(serial,x)            \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_SERIAL(serial,x,eval_item)          \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_SERIAL(serial,unsigned x,eval_item)
+  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,eval_item)          \
+  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(unsigned x,eval_item)
 
 #else
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_SERIAL(serial,x,eval_func)    \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,eval_func)             \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(dd4hep::detail::Primitive<x>::int_map_t,     eval_container) \
-    DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(dd4hep::detail::Primitive<x>::string_map_t,  eval_container) \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(dd4hep::detail::Primitive<x>::int_pair_t,    eval_pair) \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(dd4hep::detail::Primitive<x>::string_pair_t, eval_pair) 
-
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT_SERIAL(serial,x)    \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_SERIAL(serial,x,eval_item)
+  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,eval_item)
 
 #endif
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR(x,func)              DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_func)    DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_SERIAL(__LINE__,x,eval_func)
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,func)         DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT(x)            DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT_SERIAL(__LINE__,x)
 
 #endif  /* DD4HEP_DDCORE_BASICGRAMMAR_INL_H */
