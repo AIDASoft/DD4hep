@@ -25,6 +25,7 @@
 #include "DD4hep/BasicGrammar.h"
 #include "Parsers/spirit/Parsers.h"
 #include "Parsers/spirit/ToStream.h"
+#include "Evaluator/Evaluator.h"
 
 #include <string>
 #include <vector>
@@ -212,8 +213,39 @@ namespace dd4hep {
     return 0;
   }
 
-  template <typename TYPE> struct Grammar : CommonGrammar<TYPE> {
-    int evaluate(void*, const std::string&) const override { return 1; };
+  /// Default grammar for type. Never used, as we specialize for all types
+  /// Note the bool template parameter is used to distinguish specializations for arithmetic and non arithmetic types
+  template <typename T, bool=std::is_arithmetic_v<T>>
+  struct Grammar : CommonGrammar<T> {
+    int evaluate(void*, const std::string&) const override { return 1; }
+  };
+
+  /// Grammar specialization for arithmetic types
+  tools::Evaluator& g4Evaluator();
+  namespace {
+    static tools::Evaluator& s__eval(g4Evaluator());
+  }
+  template <typename T>
+  struct Grammar<T, true> : CommonGrammar<T> {
+    int evaluate(void* ptr, const std::string& val) const override {
+      size_t start = 0;
+      if (val.find("(int)") != std::string_view::npos) start += 5;
+      while (val[start] == ' ') start++;
+      double result = s__eval.evaluate(val.c_str() + start);
+      if (s__eval.status() != tools::Evaluator::OK) {
+        return 0;
+      }
+      *((T*)ptr) = (T)result;
+      return 1;
+    }
+  };
+
+  /// specialization of Grammar for strings
+  template <> struct Grammar<std::string, false> : CommonGrammar<std::string> {
+    int evaluate(void* ptr, const std::string& val) const override {
+      *(std::string*)ptr = val;
+      return 1;
+    }
   };
 
   /// specialization of Grammar for containers
@@ -224,14 +256,14 @@ namespace dd4hep {
   };
 
   /// specialization of Grammar for STL containers
-  template <typename T> struct Grammar<std::vector<T>> : ContainerGrammar<std::vector<T>> {};
-  template <typename T> struct Grammar<std::list<T>> : ContainerGrammar<std::list<T>> {};
-  template <typename T> struct Grammar<std::set<T>> : ContainerGrammar<std::set<T>> {};
-  template <typename T> struct Grammar<std::deque<T>> : ContainerGrammar<std::deque<T>> {};
-  template <typename T, typename V> struct Grammar<std::map<T,V>> : ContainerGrammar<std::map<T,V>> {};
+  template <typename T> struct Grammar<std::vector<T>, false> : ContainerGrammar<std::vector<T>> {};
+  template <typename T> struct Grammar<std::list<T>, false> : ContainerGrammar<std::list<T>> {};
+  template <typename T> struct Grammar<std::set<T>, false> : ContainerGrammar<std::set<T>> {};
+  template <typename T> struct Grammar<std::deque<T>, false> : ContainerGrammar<std::deque<T>> {};
+  template <typename T, typename V> struct Grammar<std::map<T,V>, false> : ContainerGrammar<std::map<T,V>> {};
 
   /// specialization of Grammar for STL pairs
-  template <typename T1, typename T2> struct Grammar<std::pair<T1,T2>> : CommonGrammar<std::pair<T1,T2>> {
+  template <typename T1, typename T2> struct Grammar<std::pair<T1,T2>, false> : CommonGrammar<std::pair<T1,T2>> {
     int evaluate(void* ptr, const std::string& val) const override {
       const BasicGrammar& grammar = BasicGrammar::instance<std::pair<T1,T2> >();
       if ( !grammar.fromString((std::pair<T1,T2>*)ptr, val) )  return 0;
@@ -246,7 +278,7 @@ namespace dd4hep {
   namespace Parsers {
     template<typename TYPE>
     int parse(TYPE&, const std::string&) {
-      return 1;
+      return 0;
     }
   }
 }

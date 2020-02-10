@@ -48,13 +48,8 @@ DD4HEP_DEFINE_PARSER_GRAMMAR(map_map_t,eval_obj)
 DD4HEP_DEFINE_PROPERTY_TYPE(map_map_t)
 
 #if !defined(DD4HEP_HAVE_ALL_PARSERS)
-DD4HEP_DEFINE_PARSER_GRAMMAR(unsigned int,eval_item)
-DD4HEP_DEFINE_PARSER_GRAMMAR(unsigned long,eval_item)
 DD4HEP_DEFINE_PROPERTY_TYPE(unsigned int)
 DD4HEP_DEFINE_PROPERTY_TYPE(unsigned long)
-
-DD4HEP_DEFINE_PARSER_GRAMMAR(long long,eval_item)
-DD4HEP_DEFINE_PARSER_GRAMMAR(unsigned long long,eval_item)
 
 DD4HEP_DEFINE_PROPERTY_TYPE(long long)
 DD4HEP_DEFINE_PROPERTY_TYPE(unsigned long long)

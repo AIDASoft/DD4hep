@@ -25,7 +25,6 @@
 #include "DD4hep/config.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/detail/Grammar.h"
-#include "Evaluator/Evaluator.h"
 #include "Parsers/spirit/Parsers.h"
 #include "Parsers/spirit/ToStream.h"
 
@@ -38,35 +37,12 @@
 
 #endif
 
-namespace dd4hep { dd4hep::tools::Evaluator& g4Evaluator();  }
-namespace {  static dd4hep::tools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
 
 // C/C++ include files
 #include <string>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
-
-  /// Item evaluator
-  template <typename T> inline int eval_item(T* ptr, std::string val)  {
-    size_t idx = val.find("(int)");
-    if (idx != std::string::npos)
-      val.erase(idx, 5);
-    while (val[0] == ' ')
-      val.erase(0, 1);
-    double result = s__eval.evaluate(val.c_str());
-    if (s__eval.status() != tools::Evaluator::OK) {
-      return 0;
-    }
-    *ptr = (T)result;
-    return 1;
-  }
-
-  /// String evaluator
-  template <> inline int eval_item<std::string>(std::string* ptr, std::string val)  {
-    *ptr = val;
-    return 1;
-  }
 
   /// Object evaluator
   template<typename T> inline int eval_obj(T* ptr, const std::string& str)  {
@@ -84,21 +60,7 @@ namespace dd4hep {
     };                                                                  \
   }
 
-#if defined(DD4HEP_HAVE_ALL_PARSERS)
-
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT_SERIAL(serial,x)            \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,eval_item)          \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(unsigned x,eval_item)
-
-#else
-
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT_SERIAL(serial,x)    \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,eval_item)
-
-#endif
-
 #define DD4HEP_DEFINE_PARSER_GRAMMAR(x,func)              DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,func)         DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT(x)            DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT_SERIAL(__LINE__,x)
 
 #endif  /* DD4HEP_DDCORE_BASICGRAMMAR_INL_H */
