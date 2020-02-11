@@ -43,7 +43,7 @@
 #include "TGeoParaboloid.h"
 #include "TGeoCompositeShape.h"
 #include "TGeoShapeAssembly.h"
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
 #include "TGeoTessellated.h"
 #endif
 
@@ -1422,7 +1422,7 @@ namespace dd4hep {
     EightPointSolid& operator=(const EightPointSolid& copy) = default;
   };
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
   /// Class describing a tessellated shape
   /**
    *   For any further documentation please see the following ROOT documentation:

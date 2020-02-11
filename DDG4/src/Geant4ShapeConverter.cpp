@@ -230,7 +230,7 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
 #include "G4TessellatedSolid.hh"
 #include "G4TriangularFacet.hh"
 #include "G4QuadrangularFacet.hh"

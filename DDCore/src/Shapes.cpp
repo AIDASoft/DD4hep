@@ -716,7 +716,7 @@ void EightPointSolid::make(const string& nam, double dz, const double* vtx)   {
   _assign(new TGeoArb8(nam.c_str(), dz, (double*)vtx), "", EIGHTPOINTSOLID_TAG, true);
 }
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
 /// Internal helper method to support object construction
 void TessellatedSolid::make(const std::string& nam, int num_facets)   {
   _assign(new TGeoTessellated(nam.c_str(), num_facets), nam, TESSELLATEDSOLID_TAG, false);
@@ -952,6 +952,6 @@ INSTANTIATE(TGeoTrd1);
 INSTANTIATE(TGeoTrd2);
 INSTANTIATE(TGeoCompositeShape);
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
 INSTANTIATE(TGeoTessellated);
 #endif

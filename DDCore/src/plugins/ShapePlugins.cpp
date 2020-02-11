@@ -310,7 +310,7 @@ static Handle<TObject> create_EightPointSolid(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(EightPointSolid__shape_constructor,create_EightPointSolid)
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
 /// Plugin factory to created tessellated shapes
 static Handle<TObject> create_TessellatedSolid(Detector&, xml_h element)   {
   xml_dim_t e(element);
@@ -631,7 +631,7 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
       instance_test = isInstance<EllipticalTube>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),EXTRUDEDPOLYGON_TAG) )
       instance_test = isInstance<ExtrudedPolygon>(solid);
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
     else if ( 0 == strcasecmp(solid->GetTitle(),TESSELLATEDSOLID_TAG) )
       instance_test = isInstance<TessellatedSolid>(solid);
 #endif

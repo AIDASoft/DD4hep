@@ -77,7 +77,7 @@ namespace dd4hep {
   template bool isInstance<PolyhedraRegular>  (const Handle<TGeoShape>& solid);
   template bool isInstance<Polyhedra>         (const Handle<TGeoShape>& solid);
   template bool isInstance<ExtrudedPolygon>   (const Handle<TGeoShape>& solid);
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
   template bool isInstance<TessellatedSolid>   (const Handle<TGeoShape>& solid);
 #endif
   template bool isInstance<BooleanSolid>      (const Handle<TGeoShape>& solid);
@@ -151,7 +151,7 @@ namespace dd4hep {
   template bool isA<ExtrudedPolygon>(const Handle<TGeoShape>& solid);
   template bool isA<Polycone>(const Handle<TGeoShape>& solid);
   template bool isA<EightPointSolid>(const Handle<TGeoShape>& solid);
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
   template bool isA<TessellatedSolid>(const Handle<TGeoShape>& solid);
 #endif
   template <> bool isA<TwistedTube>(const Handle<TGeoShape>& solid)   {
@@ -338,7 +338,7 @@ namespace dd4hep {
     return pars;
   }
   
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
   template <> vector<double> dimensions<TGeoTessellated>(const TGeoShape* shape)    {
     TGeoTessellated* sh = get_ptr<TGeoTessellated>(shape);
     int num_facet = sh->GetNfacets();
@@ -416,7 +416,7 @@ namespace dd4hep {
   template vector<double> dimensions<Polyhedra>        (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<ExtrudedPolygon>  (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<EightPointSolid>  (const Handle<TGeoShape>& shape); 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
   template vector<double> dimensions<TessellatedSolid>  (const Handle<TGeoShape>& shape); 
 #endif
   template vector<double> dimensions<BooleanSolid>     (const Handle<TGeoShape>& shape);
@@ -511,7 +511,7 @@ namespace dd4hep {
         return dimensions<TGeoXtru>(shape.ptr());
       else if (cl == TGeoScaledShape::Class())
         return dimensions<TGeoScaledShape>(shape.ptr());
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
       else if (cl == TGeoTessellated::Class())
         return dimensions<TGeoTessellated>(shape.ptr());
 #endif
@@ -745,7 +745,7 @@ namespace dd4hep {
     s_sh.access()->SetDimensions(&pars[3]);
   }
   
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
   template <> void set_dimensions(TGeoTessellated* sh, const std::vector<double>& params)    {
     int num_vtx   = params[0];
     int num_facet = params[1];
@@ -837,7 +837,7 @@ namespace dd4hep {
   {  set_dimensions(shape.ptr(), params);   }
   template <> void set_dimensions(EightPointSolid shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
   template <> void set_dimensions(TessellatedSolid shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
 #endif
@@ -1041,7 +1041,7 @@ namespace dd4hep {
         set_dimensions(ExtrudedPolygon(shape), params);
       else if (cl == TGeoArb8::Class())
         set_dimensions(EightPointSolid(shape), params);
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,19,0)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
       else if (cl == TGeoTessellated::Class())
         set_dimensions(TessellatedSolid(shape), params);
 #endif
