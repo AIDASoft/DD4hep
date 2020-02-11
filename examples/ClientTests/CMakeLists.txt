@@ -194,7 +194,7 @@ list(APPEND ClientTests_ShapeTests Box Cone ConeSegment Tube ElTube CutTube Hype
 list(APPEND ClientTests_ShapeTests EightPointSolid Eightpoint_Reflect_Volume Eightpoint_Reflect_DetElement)
 list(APPEND ClientTests_ShapeTests Polycone Polyhedra PseudoTrap PseudoTrap2 Sphere Torus Trap Trd1 Trd2)
 list(APPEND ClientTests_ShapeTests TruncatedTube ExtrudedPolygon)
-if(${ROOT_VERSION} VERSION_GREATER 6.19.00)
+if(${ROOT_VERSION} VERSION_GREATER 6.21.00)
 list(APPEND ClientTests_ShapeTests Tesselated)
 endif()
 foreach (test ${ClientTests_ShapeTests})
