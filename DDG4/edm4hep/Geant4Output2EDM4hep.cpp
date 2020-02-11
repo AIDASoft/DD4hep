@@ -15,21 +15,23 @@
 #define DD4HEP_DDG4_GEANT4OUTPUT2EDM4hep_H
 
 //	Framework include files
+#include "DD4hep/Detector.h"
 #include "DD4hep/VolumeManager.h"
+#include "DDG4/Geant4HitCollection.h"
 #include "DDG4/Geant4OutputAction.h"
-//#include "EDM4hepEventParameters.h"
+#include "DDG4/Geant4SensDetAction.h"
 // Geant4 headers
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
-
-#include "DD4hep/Detector.h"
 #include <G4Version.hh>
+#include <G4SystemOfUnits.hh>
 
 // edm4hep include files
 #include "edm4hep/MCParticleCollection.h"
 #include "edm4hep/SimTrackerHitCollection.h"
 #include "edm4hep/CaloHitContributionCollection.h"
 #include "edm4hep/SimCalorimeterHitCollection.h"
+//#include "EDM4hepEventParameters.h"
 #include "podio/EventStore.h"
 #include "podio/ROOTWriter.h"
 
@@ -229,6 +231,8 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)  {
   printout( WARNING, "Geant4Output2EDM4hep" ,"saveRun(): RunHeader not implemented in EDM4hep, nothing written ..." ) ;
 
   // --- write an edm4hep::RunHeader ---------
+  //FIXME: need a suitable Runheader object in EDM4hep
+
 //  edm4hep::LCRunHeaderImpl* rh =  new edm4hep::LCRunHeaderImpl;
 //  for (std::map< std::string, std::string >::iterator it = m_runHeader.begin(); it != m_runHeader.end(); ++it) {
 //    rh->parameters().setValue( it->first, it->second );
@@ -242,9 +246,6 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)  {
 }
 
 void Geant4Output2EDM4hep::begin(const G4Event* /* event */)  {
-
-  // put the store into the event w/o ownership transversal
-  context()->event().addExtension<podio::EventStore>( m_store, false );
 }
 
 /// Data conversion interface for MC particles to EDM4hep format
@@ -380,14 +381,20 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
   runNumber = m_runNo + runNumberOffset;
   eventNumber = ctxt.context->GetEventID() + eventNumberOffset;
   // }
-  printout(INFO,"Geant4Output2EDM4hep","+++ Saving EDM4hep event %d run %d.", eventNumber, runNumber);
+  printout(INFO,"Geant4Output2EDM4hep","+++ Saving EDM4hep event %d run %d.",
+	   eventNumber, runNumber);
+
+  //FIXME: need a suitable EventHeader object in EDM4hep
+  //        and a way to store meta data parameters with this
+
   // // e->setRunNumber(runNumber);
   // // e->setEventNumber(eventNumber);
   // // e->setDetectorName(context()->detectorDescription().header().name());
+
   // saveEventParameters<int>(e, m_eventParametersInt);
   // saveEventParameters<float>(e, m_eventParametersFloat);
   // saveEventParameters<std::string>(e, m_eventParametersString);
-  podio::EventStore* evt = context()->event().extension<podio::EventStore>();
+
   Geant4ParticleMap* part_map = context()->event().extension<Geant4ParticleMap>(false);
   if ( part_map )   {
     print("+++ Saving %d EDM4hep particles....",int(part_map->particleMap.size()));
@@ -403,7 +410,7 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   size_t nhits = collection->GetSize();
   std::string colName = collection->GetName();
 
-  printout(DEBUG,"Geant4Output2EDM4hep","+++ Saving EDM4hep collection %s with %d entries.\n",
+  printout(DEBUG,"Geant4Output2EDM4hep","+++ Saving EDM4hep collection %s with %d entries.",
 	   colName.c_str(),int(nhits));
 
   Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(collection);
@@ -458,6 +465,9 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   }
   else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type ){
 
+    Geant4Sensitive*       sd      = coll->sensitive();
+    int hit_creation_mode = sd->hitCreationMode();
+
     edm4hep::SimCalorimeterHitCollection* schc =
       const_cast<edm4hep::SimCalorimeterHitCollection*>(
 	&m_store->get<edm4hep::SimCalorimeterHitCollection>(colName));
@@ -469,13 +479,44 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
 	&m_store->get<edm4hep::CaloHitContributionCollection>(colName));
 
 
+    for(unsigned i=0 ; i < nhits ; ++i){
+      auto sch = schc->create() ;
+
+      const Geant4Calorimeter::Hit* hit = coll->hit(i);
+
+      sch.setCellID( hit->cellID );
+      sch.setPosition({float(hit->position.x()/mm),
+		       float(hit->position.y()/mm),
+		       float(hit->position.z()/mm)});
+      sch.setEnergy( hit->energyDeposit );
+
+      // now add the individual step contributions
+      for(Geant4HitData::Contributions::const_iterator ci=hit->truth.begin();
+	  ci!=hit->truth.end(); ++ci){
+
+	auto schc = schcc->create();
+	sch.addContribution( schc );
+
+	const Geant4HitData::Contribution& c = *ci;
+	int trackID = pm->particleID(c.trackID);
+	auto mcp = mcpc->at(trackID);
+
+	schc.setEnergy( c.deposit/GeV );
+	schc.setTime( c.time/ns );
+	schc.setParticle( mcp );
+
+	if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )     {
+	  schc.setPDG( c.pdgID );
+	  schc.setStepPosition( edm4hep::Vector3f(c.x/mm,c.y/mm,c.z/mm) );
+	}
+      }
+    }
+  //-------------------------------------------------------------------
   } else {
 
     printout(ERROR, "Geant4Output2EDM4hep" , " unknown type in Geant4HitCollection  %s ",
 	     coll->type().type.name() );
   }
-
-
 }
 
 
@@ -516,8 +557,8 @@ void Geant4Output2EDM4hep::createCollections(OutputContext<G4Event>& ctxt){
 
     } else {
 
-      printout(WARNING, "Geant4Output2EDM4hep" , " unknown type in Geant4HitCollection  %s ",
-	       coll->type().type.name() );
+      printout(WARNING, "Geant4Output2EDM4hep" ,
+	       " unknown type in Geant4HitCollection  %s ", coll->type().type.name() );
     }
   }
 
