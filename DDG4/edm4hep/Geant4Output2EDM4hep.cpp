@@ -33,6 +33,8 @@
 #include "podio/EventStore.h"
 #include "podio/ROOTWriter.h"
 
+#include <typeinfo>
+#include <iostream>
 
 using namespace edm4hep ;
 
@@ -54,7 +56,7 @@ namespace dd4hep {
      */
     class Geant4Output2EDM4hep : public Geant4OutputAction  {
     protected:
-      podio::EventStore*  m_store ;
+      podio::EventStore*  m_store;
       podio::ROOTWriter*  m_file;
       int              m_runNo;
       int              m_runNumberOffset;
@@ -63,7 +65,10 @@ namespace dd4hep {
       std::map< std::string, std::string > m_eventParametersInt;
       std::map< std::string, std::string > m_eventParametersFloat;
       std::map< std::string, std::string > m_eventParametersString;
+      bool m_FirstEvent =  true  ;
 
+      /// create the podio collections for the particles and hits
+      void createCollections(OutputContext<G4Event>& ctxt) ;
       /// Data conversion interface for MC particles to EDM4hep format
       void saveParticles(Geant4ParticleMap* particles);
     public:
@@ -194,9 +199,6 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
     G4AutoLock protection_lock(&action_mutex);
     m_store = new podio::EventStore ;
     m_file = new podio::ROOTWriter(m_output, m_store);
-
-    auto& mcps  = m_store->create<edm4hep::MCParticleCollection>("MCParticles");
-    m_file->registerForWrite("MCParticles");
 
     printout( INFO, "Geant4Output2EDM4hep" ," opened %s for output", m_output.c_str() ) ;
   }
@@ -356,22 +358,28 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
 
 /// Callback to store the Geant4 event
 void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
+
+  if( m_FirstEvent ){
+    createCollections( ctxt ) ;
+    m_FirstEvent = false ;
+  }
+
 //  podio::EventStore* e = context()->event().extension<podio::EventStore>();
 //  EDM4hepEventParameters* parameters = context()->event().extension<EDM4hepEventParameters>(false);
   int runNumber(0), eventNumber(0);
   const int eventNumberOffset(m_eventNumberOffset > 0 ? m_eventNumberOffset : 0);
   const int runNumberOffset(m_runNumberOffset > 0 ? m_runNumberOffset : 0);
-  // Get event number, run number and parameters from extension ...
+  // // Get event number, run number and parameters from extension ...
   // if ( parameters ) {
   //   runNumber = parameters->runNumber() + runNumberOffset;
   //   eventNumber = parameters->eventNumber() + eventNumberOffset;
-  //   EDM4hepEventParameters::copyLCParameters(parameters->eventParameters(),e->parameters());
+  // //   EDM4hepEventParameters::copyLCParameters(parameters->eventParameters(),e->parameters());
   // }
-  // ... or from DD4hep framework 
-//  else {
-    runNumber = m_runNo + runNumberOffset;
-    eventNumber = ctxt.context->GetEventID() + eventNumberOffset;
-//  }
+  // // ... or from DD4hep framework
+  // else {
+  runNumber = m_runNo + runNumberOffset;
+  eventNumber = ctxt.context->GetEventID() + eventNumberOffset;
+  // }
   print("+++ Saving EDM4hep event %d run %d ....", eventNumber, runNumber);
   // // e->setRunNumber(runNumber);
   // // e->setEventNumber(eventNumber);
@@ -390,15 +398,127 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
 }
 
 /// Callback to store each Geant4 hit collection
-void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHitsCollection* collection)  {
-//do be done   size_t nhits = collection->GetSize();
-//do be done   std::string hc_nam = collection->GetName();
-//do be done   print("+++ Saving EDM4hep collection %s with %d entries....",hc_nam.c_str(),int(nhits));
-//do be done   typedef pair<const Geant4Context*,G4VHitsCollection*> _Args;
-//do be done   typedef Geant4Conversion<edm4hep::LCCollectionVec,_Args> _C;
-//do be done   const _C& cnv = _C::converter(typeid(Geant4HitCollection));
-//do be done   podio::EventStore* evt = context()->event().extension<podio::EventStore>();
-//do be done   edm4hep::LCCollectionVec* col = cnv(_Args(context(),collection));
-//do be done   evt->addCollection(col,hc_nam);
+void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VHitsCollection* collection)  {
+
+  size_t nhits = collection->GetSize();
+  std::string colName = collection->GetName();
+
+  printf("+++ Saving EDM4hep collection %s with %d entries....", colName.c_str(),int(nhits));
+
+  Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(collection);
+  if( coll == nullptr ){
+    printout(ERROR, "Geant4Output2EDM4hep" , " no Geant4HitCollection:  %s ", colName.c_str() );
+    return ;
+  }
+
+  Geant4ParticleMap* pm = context()->event().extension<Geant4ParticleMap>(false);
+
+  edm4hep::MCParticleCollection* mcpc =
+    const_cast<edm4hep::MCParticleCollection*>(
+      &m_store->get<edm4hep::MCParticleCollection>("MCParticles"));
+
+  //-------------------------------------------------------------------
+  if( typeid( Geant4Tracker::Hit ) == coll->type().type  ){
+
+    edm4hep::SimTrackerHitCollection* sthc =
+      const_cast<edm4hep::SimTrackerHitCollection*>(&m_store->get<edm4hep::SimTrackerHitCollection>(colName));
+
+    for(unsigned i=0 ; i < nhits ; ++i){
+      auto sth = sthc->create() ;
+
+      const Geant4Tracker::Hit* hit = coll->hit(i);
+      const Geant4Tracker::Hit::Contribution& t = hit->truth;
+      int trackID = pm->particleID(t.trackID);
+
+      auto mcp = mcpc->at(trackID);
+
+      sth.setCellID( hit->cellID ) ;
+      sth.setEDep(hit->energyDeposit/CLHEP::GeV);
+      sth.setPathLength(hit->length/CLHEP::mm);
+      sth.setTime(hit->truth.time/CLHEP::ns);
+      sth.setMCParticle(mcp);
+      sth.setPosition({hit->position.x()/CLHEP::mm,
+		       hit->position.y()/CLHEP::mm,
+		       hit->position.z()/CLHEP::mm});
+      sth.setMomentum(edm4hep::Vector3f(hit->momentum.x()/CLHEP::GeV,
+					hit->momentum.y()/CLHEP::GeV,
+					hit->momentum.z()/CLHEP::GeV ));
+
+      auto particleIt = pm->particles().find(trackID);
+      if( ( particleIt != pm->particles().end()) ){
+	// if the original track ID of the particle is not the same as the
+	// original track ID of the hit it was produced by an MCParticle that
+	// is no longer stored
+	sth.setProducedBySecondary( (particleIt->second->originalG4ID != t.trackID) );
+      }
+
+    }
+  //-------------------------------------------------------------------
+  }
+  else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type ){
+
+    edm4hep::SimCalorimeterHitCollection* schc =
+      const_cast<edm4hep::SimCalorimeterHitCollection*>(
+	&m_store->get<edm4hep::SimCalorimeterHitCollection>(colName));
+
+    colName += "Contributions"  ;
+
+    edm4hep::CaloHitContributionCollection* schcc =
+      const_cast<edm4hep::CaloHitContributionCollection*>(
+	&m_store->get<edm4hep::CaloHitContributionCollection>(colName));
+
+
+  } else {
+
+    printout(ERROR, "Geant4Output2EDM4hep" , " unknown type in Geant4HitCollection  %s ",
+	     coll->type().type.name() );
+  }
+
+
 }
 
+
+void Geant4Output2EDM4hep::createCollections(OutputContext<G4Event>& ctxt){
+
+  m_store->create<edm4hep::MCParticleCollection>("MCParticles");
+  m_file->registerForWrite("MCParticles");
+
+  const G4Event* evt = ctxt.context ;
+  G4HCofThisEvent* hce = evt->GetHCofThisEvent();
+  int nCol = hce->GetNumberOfCollections();
+
+  for (int i = 0; i < nCol; ++i) {
+    G4VHitsCollection* hc = hce->GetHC(i);
+    std::string colName =  hc->GetName() ;
+    Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(hc);
+    if( coll == nullptr ){
+      printout(WARNING, "Geant4Output2EDM4hep" , " no Geant4HitCollection:  %s ", colName.c_str() );
+      continue ;
+    }
+
+    if( typeid( Geant4Tracker::Hit ) == coll->type().type  ){
+
+      m_store->create<edm4hep::SimTrackerHitCollection>(colName);
+      m_file->registerForWrite(colName);
+      printf("+++ created collection %s \n",colName.c_str() );
+    }
+    else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type ){
+
+      m_store->create<edm4hep::SimCalorimeterHitCollection>(colName);
+      m_file->registerForWrite(colName);
+      printf("+++ created collection %s \n",colName.c_str() );
+
+      colName += "Contributions"  ;
+      m_store->create<edm4hep::CaloHitContributionCollection>(colName);
+      m_file->registerForWrite(colName);
+      printf("+++ created collection %s \n",colName.c_str() );
+
+    } else {
+
+      printout(WARNING, "Geant4Output2EDM4hep" , " unknown type in Geant4HitCollection  %s ",
+	       coll->type().type.name() );
+    }
+  }
+
+
+}
