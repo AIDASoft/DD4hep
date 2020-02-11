@@ -380,7 +380,7 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
   runNumber = m_runNo + runNumberOffset;
   eventNumber = ctxt.context->GetEventID() + eventNumberOffset;
   // }
-  print("+++ Saving EDM4hep event %d run %d ....", eventNumber, runNumber);
+  printout(INFO,"Geant4Output2EDM4hep","+++ Saving EDM4hep event %d run %d.", eventNumber, runNumber);
   // // e->setRunNumber(runNumber);
   // // e->setEventNumber(eventNumber);
   // // e->setDetectorName(context()->detectorDescription().header().name());
@@ -403,7 +403,8 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   size_t nhits = collection->GetSize();
   std::string colName = collection->GetName();
 
-  printf("+++ Saving EDM4hep collection %s with %d entries....", colName.c_str(),int(nhits));
+  printout(DEBUG,"Geant4Output2EDM4hep","+++ Saving EDM4hep collection %s with %d entries.\n",
+	   colName.c_str(),int(nhits));
 
   Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(collection);
   if( coll == nullptr ){
@@ -500,18 +501,18 @@ void Geant4Output2EDM4hep::createCollections(OutputContext<G4Event>& ctxt){
 
       m_store->create<edm4hep::SimTrackerHitCollection>(colName);
       m_file->registerForWrite(colName);
-      printf("+++ created collection %s \n",colName.c_str() );
+      printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
     }
     else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type ){
 
       m_store->create<edm4hep::SimCalorimeterHitCollection>(colName);
       m_file->registerForWrite(colName);
-      printf("+++ created collection %s \n",colName.c_str() );
+      printout(DEBUG,"Geant4Output2EDM4hep""+++ created collection %s",colName.c_str() );
 
       colName += "Contributions"  ;
       m_store->create<edm4hep::CaloHitContributionCollection>(colName);
       m_file->registerForWrite(colName);
-      printf("+++ created collection %s \n",colName.c_str() );
+      printout(DEBUG,"Geant4Output2EDM4hep""+++ created collection %s",colName.c_str() );
 
     } else {
 
