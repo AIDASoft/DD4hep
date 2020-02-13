@@ -70,6 +70,7 @@ void AlignmentObject::clear()   {
 
 #include "Parsers/Parsers.h"
 DD4HEP_DEFINE_PARSER_DUMMY(AlignmentObject)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(AlignmentData)
 
 #include "DD4hep/detail/Grammar.h"
 #include "DD4hep/detail/BasicGrammar_inl.h"

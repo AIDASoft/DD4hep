@@ -18,6 +18,10 @@
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/detail/DetectorInterna.h"
 
+#include "Parsers/Parsers.h"
+DD4HEP_PARSERS_DECL_FOR_SINGLE(OpaqueDataBlock)
+#include "DD4hep/detail/Grammar.h"
+
 // ROOT include files
 #include "TGeoManager.h"
 #include "TClassStreamer.h"
@@ -25,7 +29,6 @@
 #include "TDataType.h"
 #include "TClass.h"
 #include "TROOT.h"
-
 
 namespace dd4hep {  namespace detail {    class DetectorImp;  }}
 

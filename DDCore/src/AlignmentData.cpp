@@ -236,6 +236,7 @@ typedef std::map<DetElement, Delta> DeltaMap;
 inline ostream& operator << (ostream& s, const DetElement& )   { return s; }
 
 #include "Parsers/Parsers.h"
+#include "DD4hep/detail/Grammar.h"
 DD4HEP_DEFINE_PARSER_DUMMY(Delta)
 DD4HEP_DEFINE_PARSER_DUMMY(DeltaMap)
 DD4HEP_DEFINE_PARSER_DUMMY(AlignmentData)

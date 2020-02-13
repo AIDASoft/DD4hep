@@ -18,6 +18,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/detail/AlignmentsInterna.h"
+#include "DD4hep/detail/Grammar.h"
 
 using namespace std;
 using namespace dd4hep;

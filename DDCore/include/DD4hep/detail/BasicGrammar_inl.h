@@ -24,7 +24,6 @@
 // Framework include files
 #include "DD4hep/config.h"
 #include "DD4hep/Primitives.h"
-#include "DD4hep/detail/Grammar.h"
 #include "Parsers/spirit/Parsers.h"
 #include "Parsers/spirit/ToStream.h"
 

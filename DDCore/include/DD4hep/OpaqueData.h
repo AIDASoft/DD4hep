@@ -13,7 +13,7 @@
 #ifndef DD4HEP_OPAQUEDATA_H
 #define DD4HEP_OPAQUEDATA_H
 
-#include "DD4hep/detail/Grammar.h"
+#include "DD4hep/BasicGrammar.h"
 
 // C/C++ include files
 #include <ostream>
@@ -185,8 +185,6 @@ template <typename T> T& dd4hep::OpaqueDataBlock::bind(void* ptr, size_t len, co
   }
   return ret;
 }
-
-#include "DD4hep/BasicGrammar.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

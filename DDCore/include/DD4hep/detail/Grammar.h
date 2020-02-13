@@ -66,6 +66,16 @@ namespace dd4hep {
   };
 }
 
+/// default empty parsing function for types not having a specialization
+namespace dd4hep {
+  namespace Parsers {
+    template<typename TYPE>
+    int parse(TYPE&, const std::string&) {
+      return 0;
+    }
+  }
+}
+
 /// PropertyGrammar overload: Retrieve value from string
 template <typename TYPE> bool dd4hep::CommonGrammar<TYPE>::fromString(void* ptr, const std::string& string_val) const {
   int sc = 0;
@@ -284,16 +294,6 @@ namespace dd4hep {
 #endif
 
 } // namespace dd4hep
-
-/// default empty parsing function for types not having a specialization
-namespace dd4hep {
-  namespace Parsers {
-    template<typename TYPE>
-    int parse(TYPE&, const std::string&) {
-      return 0;
-    }
-  }
-}
 
 /// default intanciation of BasicGrammar, using Grammar concrete class
 template<typename TYPE> const dd4hep::BasicGrammar& dd4hep::BasicGrammar::instance() {

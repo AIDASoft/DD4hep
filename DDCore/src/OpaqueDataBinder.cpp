@@ -16,6 +16,7 @@
 #include "DD4hep/Conditions.h"
 #include "DD4hep/OpaqueData.h"
 #include "DD4hep/detail/ConditionsInterna.h"
+#include "DD4hep/detail/Grammar.h"
 
 // C/C++ include files
 #include <set>

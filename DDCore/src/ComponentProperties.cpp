@@ -248,6 +248,7 @@ namespace dd4hep {
 #include <set>
 #include <map>
 
+#include "DD4hep/detail/Grammar.h"
 #include "DD4hep/detail/BasicGrammar_inl.h"
 #include "DD4hep/detail/ComponentProperties_inl.h"
 

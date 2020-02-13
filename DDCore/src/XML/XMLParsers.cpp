@@ -24,6 +24,9 @@
 #include "XML/XMLDimension.h"
 #include "XML/DocumentHandler.h"
 
+#include "Parsers/Parsers.h"
+DD4HEP_PARSERS_DECL_FOR_SINGLE(Delta)
+#include "DD4hep/detail/Grammar.h"
 
 // C/C++ include files
 #include <stdexcept>
