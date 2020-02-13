@@ -221,6 +221,7 @@ if (DD4HEP_USE_GEANT4)
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
     EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/../CLICSiD/scripts/CLICSiD_LoadROOTGeo.py  batch
     REQUIRES   DDG4 Geant4
+    DEPENDS    Persist_CLICSiD_Save_LONGTEST
     REGEX_PASS "\\+\\+\\+ Finished run 0 after 10 events \\(10 events in total\\)"
     REGEX_FAIL "Exception;EXCEPTION;ERROR"
     )
