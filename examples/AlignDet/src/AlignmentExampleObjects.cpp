@@ -17,6 +17,11 @@
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Objects.h"
 
+// Define parser and Grammar for Delta objects
+#include "Parsers/Parsers.h"
+DD4HEP_PARSERS_DECL_FOR_SINGLE(Delta)
+#include "DD4hep/detail/Grammar.h"
+
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::AlignmentExamples;
@@ -51,6 +56,9 @@ int AlignmentDataAccess::operator()(DetElement de, int) const {
 
 /// Callback to process a single detector element
 int AlignmentCreator::operator()(DetElement de, int)  const  {
+  // instantiate the grammars we will need
+  dd4hep::BasicGrammar::instance<std::map<int, int>>();
+  dd4hep::BasicGrammar::instance<Delta>();
   if ( de.ptr() != de.world().ptr() )  {
     Condition cond(de.path()+"#"+align::Keys::deltaName,align::Keys::deltaName);
     Delta&    delta = cond.bind<Delta>();

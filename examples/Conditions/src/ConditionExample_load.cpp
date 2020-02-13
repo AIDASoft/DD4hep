@@ -30,6 +30,7 @@
 #include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsRootPersistency.h"
 #include "DD4hep/Factories.h"
+#include "DD4hep/detail/Grammar.h"
 
 using namespace std;
 using namespace dd4hep;
@@ -76,6 +77,11 @@ static int condition_example (Detector& description, int argc, char** argv)  {
 
   // First we load the geometry
   description.fromXML(input);
+
+  // instantiate the grammars we will need
+  dd4hep::BasicGrammar::instance<double>();
+  dd4hep::BasicGrammar::instance<std::vector<double>>();
+  dd4hep::BasicGrammar::instance<std::vector<int>>();
 
   /******************** Initialize the conditions manager *****************/
   ConditionsManager manager = installManager(description);

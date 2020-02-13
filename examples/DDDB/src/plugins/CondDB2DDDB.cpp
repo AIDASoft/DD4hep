@@ -21,6 +21,7 @@
 #include "DD4hep/Path.h"
 #include "DD4hep/Alignments.h"
 #include "DD4hep/OpaqueDataBinder.h"
+#include "DD4hep/detail/Grammar.h"
 #include "DDDB/DDDBTags.h"
 #include "DDDB/DDDBHelper.h"
 #include "DDDB/DDDBReader.h"
@@ -594,6 +595,7 @@ namespace dd4hep {
 
     /// Specialized conversion of <condition/> entities
     template <> void Conv<Condition>::convert(xml_h element) const {
+      dd4hep::BasicGrammar::instance<Delta>();
       DDDBContext*   context = _param<DDDBContext>();
       string     name    = element.attr<string>(_U(name));
       string     id      = object_href(element,name);

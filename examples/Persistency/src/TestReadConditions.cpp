@@ -28,6 +28,13 @@
 #include "PersistencySetup.h"
 #include "DD4hep/Factories.h"
 #include "TFile.h"
+#include "DD4hep/AlignmentData.h"
+
+// Define parser and Grammar for Delta and AlignmentData objects
+#include "Parsers/Parsers.h"
+DD4HEP_PARSERS_DECL_FOR_SINGLE(Delta)
+DD4HEP_PARSERS_DECL_FOR_SINGLE(AlignmentData)
+#include "DD4hep/detail/Grammar.h"
 
 using namespace std;
 using namespace dd4hep;
@@ -60,7 +67,24 @@ static int persistency_example (Detector& /* description */, int argc, char** ar
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
   }
+
+  // instantiate the grammars we will need
+  dd4hep::BasicGrammar::instance<int>();
+  dd4hep::BasicGrammar::instance<long>();
+  dd4hep::BasicGrammar::instance<double>();
+  dd4hep::BasicGrammar::instance<float>();
+  dd4hep::BasicGrammar::instance<std::string>();
+
+  dd4hep::BasicGrammar::instance<Delta>();
+  dd4hep::BasicGrammar::instance<AlignmentData>();
   
+  dd4hep::BasicGrammar::instance<std::vector<int>>();
+  dd4hep::BasicGrammar::instance<std::vector<long>>();
+  dd4hep::BasicGrammar::instance<std::vector<double>>();
+  dd4hep::BasicGrammar::instance<std::vector<float>>();
+  dd4hep::BasicGrammar::instance<std::vector<std::string>>();
+  dd4hep::BasicGrammar::instance<std::map<std::string, int>>();
+
   PersistencyIO io;
   TFile*f = TFile::Open(input.c_str());
   f->ls();

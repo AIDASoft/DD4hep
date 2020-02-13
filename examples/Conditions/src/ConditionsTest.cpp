@@ -20,6 +20,7 @@
 #include "DDCond/ConditionsDataLoader.h"
 #include "DD4hep/detail/DetectorInterna.h"
 #include "DD4hep/detail/ConditionsInterna.h"
+#include "DD4hep/detail/Grammar.h"
 
 // C/C++ include files
 #include <vector>
@@ -214,6 +215,8 @@ void TestEnv::add_xml_data_source(const string& file, const string& iov_str)   {
 /// Dump the conditions of one detectpr element
 void TestEnv::dump_detector_element(DetElement elt, ConditionsMap& map)
 {
+  // instantiate the grammars we will need
+  dd4hep::BasicGrammar::instance<std::map<int, int>>();
   vector<Condition> conditions;
   conditionsCollector(map,conditions)(elt);
   if ( conditions.empty() )  {

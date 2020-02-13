@@ -18,6 +18,7 @@
 #include "Detector/DetectorElement.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/DetectorProcessor.h"
+#include "DD4hep/detail/Grammar.h"
 #include "DD4hep/AlignmentsProcessor.h"
 #include "DD4hep/AlignmentsCalculator.h"
 #include "DDCond/ConditionsPool.h"
@@ -30,12 +31,13 @@ using namespace dd4hep::align;
 /// Interface to client Callback in order to update the condition
 Condition gaudi::DeAlignmentCall::operator()(const ConditionKey& /* key */,
                                              ConditionUpdateContext& ctxt)  {
-
   namespace tools = dd4hep::detail::tools;
   Condition       cond;
   UserPool* conditions = dynamic_cast<UserPool*>(&ctxt.resolver->conditionsMap());
   if ( conditions )    {
     typedef AlignmentsCalculator::OrderedDeltas Deltas;
+    // instantiate the grammars we will need
+    dd4hep::BasicGrammar::instance<Deltas>();
     ConditionsHashMap    slice;
     AlignmentsCalculator calc;
     const IOV&        iov = conditions->validity();
