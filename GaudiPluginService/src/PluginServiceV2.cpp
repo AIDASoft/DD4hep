@@ -14,6 +14,8 @@
 #define GAUDI_PLUGIN_SERVICE_V2
 #include <Gaudi/PluginService.h>
 
+#include <boost/algorithm/string.hpp>
+
 #include <dirent.h>
 #include <dlfcn.h>
 
@@ -22,6 +24,7 @@
 #include <iostream>
 #include <memory>
 #include <regex>
+#include <vector>
 
 #include <cxxabi.h>
 #include <sys/stat.h>
@@ -140,79 +143,69 @@ namespace Gaudi {
         void Registry::initialize() {
           REG_SCOPE_LOCK
 #if defined( _WIN32 )
-          const char* envVar = "PATH";
-          const char  sep    = ';';
+          const std::string envVar = "PATH";
+          const std::string sep    = ";";
 #elif defined( __APPLE__ )
-          const char* envVar = "DYLD_LIBRARY_PATH";
-          const char  sep    = ':';
+          const std::string envVar = "DYLD_LIBRARY_PATH";
+          const std::string sep    = ":";
 #else
-          const char* envVar = "LD_LIBRARY_PATH";
-          const char  sep    = ':';
+          const std::string envVar = "LD_LIBRARY_PATH";
+          const std::string sep    = ":";
 #endif
 
           std::regex  line_format{"^(?:[[:space:]]*(?:(v[0-9]+)::)?([^:]+):(.*[^[:space:]]))?[[:space:]]*(?:#.*)?$"};
-          std::smatch m;
+          std::smatch matches;
 
-          std::string search_path = std::getenv( envVar );
-          if ( !search_path.empty() ) {
-            logger().debug( std::string( "searching factories in " ) + envVar );
+          std::string search_path = std::getenv( envVar.c_str() );
+          if ( search_path.empty() ) {
+            return;
+          }
 
-            std::string::size_type start_pos = 0, end_pos = 0;
-            while ( start_pos != std::string::npos ) {
-              // correctly handle begin of string or path separator
-              if ( start_pos ) ++start_pos;
+          logger().debug("searching factories in " + envVar);
+          logger().debug("searching factories in " + search_path);
 
-              end_pos = search_path.find( sep, start_pos );
-              if ( end_pos == start_pos )   {
-                start_pos = std::string::npos;
-                continue;
-              }
-              fs::path dirName =
-#ifdef USE_BOOST_FILESYSTEM
-                  std::string{search_path.substr( start_pos, end_pos - start_pos )};
-#else
-                  search_path.substr( start_pos, end_pos - start_pos );
-#endif
-              start_pos = end_pos;
+          std::vector<std::string> directories;
+          boost::split(directories, search_path, boost::is_any_of(sep));
 
-              logger().debug( " looking into " + dirName.string() );
+          for(fs::path dirName: directories) {
+            if ( not is_directory( dirName ) ) {
+              continue;
+            }
+            logger().debug( " looking into " + dirName.string() );
+            for ( auto& p : fs::directory_iterator( dirName ) ) {
               // look for files called "*.components" in the directory
-              if ( is_directory( dirName ) ) {
-                for ( auto& p : fs::directory_iterator( dirName ) ) {
-                  if ( p.path().extension() == ".components" && is_regular_file( p.path() ) ) {
-                    // read the file
-                    const auto& fullPath = p.path().string();
-                    logger().debug( "  reading " + p.path().filename().string() );
-                    std::ifstream factories{fullPath};
-                    std::string   line;
-                    int           factoriesCount = 0;
-                    int           lineCount      = 0;
-                    while ( !factories.eof() ) {
-                      ++lineCount;
-                      std::getline( factories, line );
-                      if ( regex_match( line, m, line_format ) ) {
-                        if ( m[1] == "v2" ) { // ignore non "v2" and "empty" lines
-                          const std::string lib{m[2]};
-                          const std::string fact{m[3]};
-                          m_factories.emplace( fact, FactoryInfo{lib, {}, {{"ClassName", fact}}} );
+              if ( p.path().extension() == ".components" && is_regular_file( p.path() ) ) {
+                // read the file
+                const auto& fullPath = p.path().string();
+                logger().debug( "  reading " + p.path().filename().string() );
+                std::ifstream factories{fullPath};
+                std::string   line;
+                int           factoriesCount = 0;
+                int           lineCount      = 0;
+                while ( !factories.eof() ) {
+                  ++lineCount;
+                  std::getline( factories, line );
+                  if ( regex_match( line, matches, line_format ) ) {
+                    if ( matches[1] == "v2" ) { // ignore non "v2" and "empty" lines
+                      const std::string lib{matches[2]};
+                      const std::string fact{matches[3]};
+                      m_factories.emplace( fact, FactoryInfo{lib, {}, {{"ClassName", fact}}} );
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
-                          // add an alias for the factory using the Reflex convention
-                          std::string old_name = old_style_name( fact );
-                          if ( fact != old_name ) {
-                            m_factories.emplace( old_name,
-                                                 FactoryInfo{lib, {}, {{"ReflexName", "true"}, {"ClassName", fact}}} );
-                          }
-#endif
-                          ++factoriesCount;
-                        }
-                      } else {
-                        logger().warning( "failed to parse line " + fullPath + ':' + std::to_string( lineCount ) );
+                      // add an alias for the factory using the Reflex convention
+                      std::string old_name = old_style_name( fact );
+                      if ( fact != old_name ) {
+                        m_factories.emplace( old_name,
+                                             FactoryInfo{lib, {}, {{"ReflexName", "true"}, {"ClassName", fact}}} );
                       }
+#endif
+                      ++factoriesCount;
                     }
-                    if ( logger().level() <= Logger::Debug ) {
-                      logger().debug( "  found " + std::to_string( factoriesCount ) + " factories" );
-                    }
+                  } else {
+                    logger().debug( "failed to parse line " + fullPath + ':' + std::to_string( lineCount ) );
                   }
+                }
+                if ( logger().level() <= Logger::Debug ) {
+                  logger().debug( "  found " + std::to_string( factoriesCount ) + " factories" );
                 }
               }
             }
