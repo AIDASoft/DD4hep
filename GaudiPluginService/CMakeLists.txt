@@ -26,7 +26,7 @@ target_compile_options(DD4hepGaudiPluginMgr PRIVATE -Wno-shadow
   -Wno-return-type-c-linkage
   )
 
-target_link_libraries(DD4hepGaudiPluginMgr PUBLIC ${FS_LIBRARIES} ${CMAKE_DL_LIBS})
+target_link_libraries(DD4hepGaudiPluginMgr PUBLIC Boost::boost ${FS_LIBRARIES} ${CMAKE_DL_LIBS})
 SET_TARGET_PROPERTIES(DD4hepGaudiPluginMgr PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 add_executable(listcomponents src/listcomponents.cpp )
