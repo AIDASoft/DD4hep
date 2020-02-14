@@ -225,7 +225,7 @@ namespace dd4hep {
 
   /// Default grammar for type. Never used, as we specialize for all types
   /// Note the bool template parameter is used to distinguish specializations for arithmetic and non arithmetic types
-  template <typename T, bool=std::is_arithmetic_v<T>>
+  template <typename T, bool=std::is_arithmetic<T>::value>
   struct Grammar : CommonGrammar<T> {
     int evaluate(void*, const std::string&) const override { return 1; }
   };
@@ -239,7 +239,7 @@ namespace dd4hep {
   struct Grammar<T, true> : CommonGrammar<T> {
     int evaluate(void* ptr, const std::string& val) const override {
       size_t start = 0;
-      if (val.find("(int)") != std::string_view::npos) start += 5;
+      if (val.find("(int)") != std::string::npos) start += 5;
       while (val[start] == ' ') start++;
       double result = s__eval.evaluate(val.c_str() + start);
       if (s__eval.status() != tools::Evaluator::OK) {
