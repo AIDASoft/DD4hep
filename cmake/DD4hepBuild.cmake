@@ -557,16 +557,17 @@ function(dd4hep_add_dictionary dictionary )
     set ( output_dir ${ARG_OUTPUT} )
   endif()
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E make_directory ${output_dir})
-  SET(COMP_DEFS )
-  file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}_arguments
-    CONTENT "${ROOT_rootcling_CMD} -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader ${ARG_OPTIONS}  \
-   $<$<BOOL:${comp_defs}>:-D$<JOIN:${comp_defs}, -D>> \
-   $<$<BOOL:${inc_dirs}>:-I$<JOIN:${inc_dirs}, -I>> \
-   $<JOIN:${headers}, >  $<JOIN:${linkdefs}, >"
-    )
+
   add_custom_command(OUTPUT ${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
-    COMMAND bash ${dictionary}_arguments
-    DEPENDS ${headers} ${linkdefs}
+    COMMAND ${ROOT_rootcling_CMD}
+    ARGS -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader
+    ${ARG_OPTIONS} -std=c++${CMAKE_CXX_STANDARD}
+   "$<$<BOOL:$<JOIN:${comp_defs},>>:-D$<JOIN:${comp_defs},;-D>>"
+   "$<$<BOOL:$<JOIN:${inc_dirs},>>:-I$<JOIN:${inc_dirs},;-I>>"
+   "$<JOIN:${headers},;>" "$<JOIN:${linkdefs},;>"
+
+   DEPENDS ${headers} ${linkdefs}
+   COMMAND_EXPAND_LISTS
     )
   add_custom_target(${dictionary}
     DEPENDS ${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
