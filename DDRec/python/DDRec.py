@@ -98,5 +98,5 @@ def import_rec():
 
 # Now instantiate the entire thing
 import_rec()
-std_list_ISurface = core.std_list('ISurface*')
-std_list_VolSurface = core.std_list('VolSurface')
+std_list_ISurface = core.std_list(str('ISurface*'))
+std_list_VolSurface = core.std_list(str('VolSurface'))
