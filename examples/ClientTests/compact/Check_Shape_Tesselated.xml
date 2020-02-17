@@ -195,8 +195,8 @@
         <position x="0"  y="0" z="0"/>
         <rotation x="0"   y="0" z="0"/>
       </check>
-      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/ClientTests/ref/Ref_Tessellated.txt" create="CheckShape_create"/>
-      <test_writing_reference  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Tessellated.txt" create="1"/>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Tesselated.txt" create="CheckShape_create"/>
+      <test_writing_reference  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Tesselated.txt" create="1"/>
     </detector>
   </detectors>
 </lccdd>
