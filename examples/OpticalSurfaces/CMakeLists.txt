@@ -94,6 +94,7 @@ IF(TARGET ROOT::Gdml)
       -print INFO -destroy -volmgr
       -plugin DD4hep_ROOTGDMLParse -input OpNovice.gdml -path /world/BubbleDevice
       -plugin DD4hep_VolumeDump
+      DEPENDS    Surfaces_OpNovice_write_gdml
       REGEX_PASS "\\+\\+\\+ Checked 5 physical volume placements."
       REGEX_FAIL " ERROR ;EXCEPTION;Exception"
     )
