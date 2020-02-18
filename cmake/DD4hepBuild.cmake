@@ -643,6 +643,17 @@ endfunction(dd4hep_add_plugin)
 #
 macro(DD4HEP_SETUP_ROOT_TARGETS)
 
+  #Check if Python version detected matches the version used to build ROOT
+  IF(${ROOT_VERSION} VERSION_GREATER_EQUAL 6.19)
+    IF(${ROOT_PYTHON_VERSION} EQUAL ${Python_VERSION})
+      dd4hep_debug( "D++> Python version used for building ROOT ${ROOT_PYTHON_VERSION}" )
+    ELSE()
+      dd4hep_print( "Python version used to build ROOT = ${ROOT_PYTHON_VERSION}" )
+      dd4hep_print( "Python version detected by CMake to build DD4hep = ${Python_VERSION}" )
+      dd4hep_fatal( "Mismatch between Python version used for building ROOT and Python version detected by CMake" )
+    ENDIF()
+  ENDIF()
+
   #ROOT CXX Flags are a string with quotes, not a list, so we need to convert to a list...
   string(REPLACE " " ";" DD4HEP_ROOT_CXX_FLAGS ${ROOT_CXX_FLAGS})
 
