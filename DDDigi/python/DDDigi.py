@@ -21,10 +21,11 @@ def loadDDDigi():
 
   # Try to load libglapi to avoid issues with TLS Static
   # Turn off all errors from ROOT about the library missing
-  orgLevel = ROOT.gErrorIgnoreLevel
-  ROOT.gErrorIgnoreLevel = 6000
-  gSystem.Load("libglapi")
-  ROOT.gErrorIgnoreLevel = orgLevel
+  if('libglapi' not in gSystem.GetLibraries()):
+    orgLevel = ROOT.gErrorIgnoreLevel
+    ROOT.gErrorIgnoreLevel = 6000
+    gSystem.Load("libglapi")
+    ROOT.gErrorIgnoreLevel = orgLevel
 
   import platform
   import os
