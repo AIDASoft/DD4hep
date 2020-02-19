@@ -10,10 +10,10 @@ import pytest
 parametrize = pytest.mark.parametrize
 
 moduleNames = [
-    'DDDigi',
-    'DDG4',
     'dd4hep',
+    'DDG4',
     'DDRec',
+    'DDDigi',
     ]
 
 # List here the modules that are allowed to Fail.
