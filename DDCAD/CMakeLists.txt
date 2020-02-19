@@ -9,73 +9,88 @@
 #
 #==========================================================================
 SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDCAD)
-
-if(${ROOT_VERSION} VERSION_LESS 6.19.01)
+#
+if(${ROOT_VERSION} VERSION_LESS 6.21.01)
   return()
 endif()
-
+#
 # Open Asset Importer Library
-option(WITH_SYS_ASSIMP "WITH_SYS_ASSIMP" OFF)
-
-if(${WITH_SYS_ASSIMP} MATCHES "ON")
-    find_package(assimp)
+#
+find_package(assimp QUIET)
+if(TARGET assimp::assimp)
+    MESSAGE(STATUS "+++> Use existing assimp implementation")    
 else()
+    MESSAGE(STATUS "+++> Building assimp")    
     #
-    #  Download The Open-Asset-Importer-Lib	 from GITHUB
+    #  Download The Open-Asset-Importer-Lib from GITHUB
     #
     include(ExternalProject)
     find_package(Git REQUIRED)
-    set(ASSIMP_C_FLAGS "-Wno-incompatible-pointer-types -Wno-attributes")
-    set(ASSIMP_CXX_FLAGS "-Wno-deprecated -Wno-shadow -Wno-unused -Wno-address -Wno-nonnull-compare -Wno-sizeof-pointer-memaccess -Wno-attributes -Wno-catch-value -Wno-int-in-bool-context -Wno-misleading-indentation -Wno-address-of-packed-member -Wno-tautological-compare -Wno-class-memaccess -Wno-parentheses")
+    set(ASSIMP_C_FLAGS   "")
+    set(ASSIMP_CXX_FLAGS "-Wno-class-memaccess -Wno-tautological-compare -Wno-sizeof-pointer-memaccess")
     ExternalProject_Add(
-        assimp_external
+        assimp_project
         SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/assimp
+        INSTALL_DIR  ${CMAKE_INSTALL_PREFIX}
         GIT_REPOSITORY https://github.com/assimp/assimp.git
-        GIT_TAG v4.0.1
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS=${ASSIMP_CXX_FLAGS} -DCMAKE_C_FLAGS=${ASSIMP_C_FLAGS} -DCMAKE_THREAD_LIBS_INIT=${CMAKE_THREAD_LIBS_INIT} -DCMAKE_SHARED_LINKER_FLAGS=${CMAKE_SHARED_LINKER_FLAGS}
-        
+        GIT_TAG v5.0.1
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
+                   -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+                   -DCMAKE_CXX_FLAGS=${ASSIMP_CXX_FLAGS}
+                   -DCMAKE_C_FLAGS=${ASSIMP_C_FLAGS}
+                   -DCMAKE_SHARED_LINKER_FLAGS=${CMAKE_SHARED_LINKER_FLAGS}
+		   -DBUILD_SHARED_LIBS=1
+		   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        BUILD_COMMAND     ${CMAKE_BUILD_TOOL} install
+	INSTALL_COMMAND   ""
+
     )
-    find_package(assimp REQUIRED)
+    ExternalProject_Get_Property(assimp_project INSTALL_DIR)
+    set(ASSIMP_INCLUDE_DIRS "${INSTALL_DIR}/include")
+    EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E make_directory ${ASSIMP_INCLUDE_DIRS})
 
-    IF(NOT TARGET assimp OR NOT TARGET DD4hep::assimp)
-      add_library(assimp INTERFACE)
-      add_library(DD4hep::assimp ALIAS assimp)
-      target_compile_definitions(assimp INTERFACE DD4HEP_USE_ASSIMP)
-      target_include_directories(assimp SYSTEM INTERFACE ${ASSIMP_INCLUDE_DIRS})
-      target_link_libraries(assimp INTERFACE ${ASSIMP_LIBRARIES})
-      INSTALL(TARGETS assimp EXPORT DD4hep DESTINATION lib)
-    endif()
-    MESSAGE(STATUS "ASSIMP_ROOT_DIR:      ${ASSIMP_ROOT_DIR}")
-    MESSAGE(STATUS "ASSIMP_INCLUDE_DIRS:  ${ASSIMP_INCLUDE_DIRS}")
-    MESSAGE(STATUS "ASSIMP_CXX_FLAGS:     ${ASSIMP_CXX_FLAGS}")
-    MESSAGE(STATUS "ASSIMP_LIBRARIES:     ${ASSIMP_LIBRARIES}")
-    MESSAGE(STATUS "ASSIMP_LINK_FLAGS:    ${ASSIMP_LINK_FLAGS}")
-    MESSAGE(STATUS "ASSIMP_LDFLAGS_OTHER: ${ASSIMP_LDFLAGS_OTHER}")
-
+    add_library(assimp SHARED IMPORTED GLOBAL)
+    add_dependencies(assimp assimp_project)
+    add_library(assimp::assimp ALIAS assimp)
+    set_target_properties(assimp PROPERTIES IMPORTED_LOCATION ${INSTALL_DIR}/lib/libassimp.so)
+    target_include_directories(assimp INTERFACE ${ASSIMP_INCLUDE_DIRS})
 endif()
-
+#
+MESSAGE(STATUS "Open-Asset-Importer: ASSIMP_INCLUDE_DIRS:  ${ASSIMP_INCLUDE_DIRS}")
+MESSAGE(STATUS "Open-Asset-Importer: ASSIMP_LIBRARIES:     ${ASSIMP_LIBRARIES}")
+#
+#  For the rest: ensure assimp is built before starting to compile.....
+#
 dd4hep_add_dictionary(G__DDCAD
   SOURCES ../DDCore/include/ROOT/Warnings.h src/CADDictionary.h
   LINKDEF ../DDCore/include/ROOT/LinkDef.h
-  USES    DD4hep::DDCore DD4hep::DDParsers DD4hep::assimp
-  )
+  USES    DD4hep::DDCore DD4hep::DDParsers assimp::assimp
+)
 
 file(GLOB DDCAD_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-
 add_library(DDCAD ${DDCAD_SOURCES} G__DDCAD.cxx)
 add_library(DD4hep::DDCAD ALIAS DDCAD)
+# IF(TARGET assimp_project)
+#   MESSAGE(STATUS "have to build assimp first")
+#   add_dependencies(G__DDCAD assimp_project)
+#   add_dependencies(DDCAD assimp_project)
+# ENDIF()
+
+if(TARGET assimp::assimp)
+MESSAGE(STATUS "have target assimp::assimp")
+endif()
 
 target_include_directories(DDCAD
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
   $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(DDCAD PUBLIC DD4hep::DDCore DD4hep::assimp -L${CMAKE_INSTALL_PREFIX}/lib -lassimp)
+target_link_libraries(DDCAD PUBLIC DD4hep::DDCore assimp::assimp )
 
 dd4hep_add_plugin(DDCADPlugins
   SOURCES src/plugins/*.cpp
   USES    DD4hep::DDCore DD4hep::DDCAD
-  )
+)
 
 set_target_properties(DDCAD DDCADPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 

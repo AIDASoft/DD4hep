@@ -1356,34 +1356,36 @@ void* Geant4Converter::printPlacement(const string& name, const TGeoNode* node) 
   return g4;
 }
 
-template <typename O, typename C, typename F> void handleRefs(const O* o, const C& c, F pmf) {
-  for (typename C::const_iterator i = c.begin(); i != c.end(); ++i) {
-    //(o->*pmf)((*i)->GetName(), *i);
-    (o->*pmf)("", *i);
+namespace  {
+  template <typename O, typename C, typename F> void handleRefs(const O* o, const C& c, F pmf) {
+    for (typename C::const_iterator i = c.begin(); i != c.end(); ++i) {
+      //(o->*pmf)((*i)->GetName(), *i);
+      (o->*pmf)("", *i);
+    }
   }
-}
 
-template <typename O, typename C, typename F> void handle(const O* o, const C& c, F pmf) {
-  for (typename C::const_iterator i = c.begin(); i != c.end(); ++i) {
-    (o->*pmf)((*i)->GetName(), *i);
+  template <typename O, typename C, typename F> void handle(const O* o, const C& c, F pmf) {
+    for (typename C::const_iterator i = c.begin(); i != c.end(); ++i) {
+      (o->*pmf)((*i)->GetName(), *i);
+    }
   }
-}
 
-template <typename O, typename F> void handleArray(const O* o, const TObjArray* c, F pmf) {
-  TObjArrayIter arr(c);
-  for(TObject* i = arr.Next(); i; i=arr.Next())
-    (o->*pmf)(i);
-}
+  template <typename O, typename F> void handleArray(const O* o, const TObjArray* c, F pmf) {
+    TObjArrayIter arr(c);
+    for(TObject* i = arr.Next(); i; i=arr.Next())
+      (o->*pmf)(i);
+  }
 
-template <typename O, typename C, typename F> void handleMap(const O* o, const C& c, F pmf) {
-  for (typename C::const_iterator i = c.begin(); i != c.end(); ++i)
-    (o->*pmf)((*i).first, (*i).second);
-}
+  template <typename O, typename C, typename F> void handleMap(const O* o, const C& c, F pmf) {
+    for (typename C::const_iterator i = c.begin(); i != c.end(); ++i)
+      (o->*pmf)((*i).first, (*i).second);
+  }
 
-template <typename O, typename C, typename F> void handleRMap(const O* o, const C& c, F pmf) {
-  for (typename C::const_reverse_iterator i = c.rbegin(); i != c.rend(); ++i)  {
-    //cout << "Handle RMAP [ " << (*i).first << " ]" << endl;
-    handle(o, (*i).second, pmf);
+  template <typename O, typename C, typename F> void handleRMap(const O* o, const C& c, F pmf) {
+    for (typename C::const_reverse_iterator i = c.rbegin(); i != c.rend(); ++i)  {
+      //cout << "Handle RMAP [ " << (*i).first << " ]" << endl;
+      handle(o, (*i).second, pmf);
+    }
   }
 }
 

@@ -46,12 +46,17 @@ dd4hep_configure_output ()
 # If need arises, this can be changed easily.
 #
 #---DDCMS plugin library -------------------------------------------------------
-dd4hep_add_plugin ( DDCMS SOURCES src/*.cpp src/plugins/*.cpp
-  USES DD4hep::DDParsers DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP
+dd4hep_add_plugin ( DDCMS
+  SOURCES src/*.cpp src/plugins/*.cpp
+  USES    DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond
+          ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP
 )
-install(TARGETS DDCMS LIBRARY DESTINATION lib)
 target_include_directories(DDCMS PUBLIC include)
+#
+#
+install(TARGETS DDCMS LIBRARY DESTINATION lib)
 install(DIRECTORY include/DDCMS DESTINATION include)
+#
 #---Package installation procedure(s) -----------------------------------------
 install(DIRECTORY data eve scripts DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDCMS )
 #

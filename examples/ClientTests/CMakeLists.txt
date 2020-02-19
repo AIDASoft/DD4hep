@@ -29,13 +29,14 @@ if(TARGET Boost::boost)
   SET(CT_BOOST_SOURCES src_boost/*.cpp)
   set(CT_BOOST_LIB Boost::boost)
 endif()
-dd4hep_add_plugin(ClientTests SOURCES src/*.cpp ${CT_BOOST_SOURCES}
+#
+dd4hep_add_plugin(ClientTests
+  SOURCES src/*.cpp ${CT_BOOST_SOURCES}
   USES DD4hep::DDCore DD4hep::DDCond DD4hep::DDAlign
        ROOT::Core ROOT::Geom ROOT::GenVector
        ${OPT_XERCESC} ${CT_BOOST_LIB}
   )
 install(TARGETS ClientTests LIBRARY DESTINATION lib)
-
 #
 #-----------------------------------------------------------------------------------
 add_executable( multipleGeo   main/MultipleGeometries.cpp )

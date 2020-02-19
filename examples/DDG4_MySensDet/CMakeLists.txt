@@ -39,6 +39,7 @@ if (DD4HEP_USE_GEANT4)
     SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/MyTrackerHit.h
     LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
     OUTPUT  ${LIBRARY_OUTPUT_PATH}
+    USES    DD4hep::DDCore DD4hep::DDG4 Geant4::Interface
     )
 
   #----  Example of a client library with user defined plugins  --------------------
