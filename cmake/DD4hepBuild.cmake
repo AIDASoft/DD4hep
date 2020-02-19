@@ -449,7 +449,7 @@ function ( dd4hep_add_test_reg test_name )
     endif()
     # Set test dependencies if present
     foreach ( _dep ${ARG_DEPENDS} )
-      set_tests_properties( t_${test_name} PROPERTIES DEPENDS t_${_dep} )
+      set_property( TEST t_${test_name} APPEND PROPERTY DEPENDS t_${_dep} )
     endforeach()
   endif()
 endfunction()

@@ -256,7 +256,6 @@ dd4hep_add_test_reg( DDDB_clean_LONGTEST
   DDDB_load_LONGTEST
   DDDB_DeVelo_Gaudi_LONGTEST
   DDDB_DeVelo_LONGTEST
-  DDDB_extract_LONGTEST
   REGEX_PASS "DDDB Database successfully removed"
   )
 
