@@ -25,6 +25,7 @@
 #include "DD4hep/Factories.h"
 #include "DD4hep/Alignments.h"
 #include "DD4hep/ConditionDerived.h"
+#include "DD4hep/detail/Grammar.h"
 
 #include "DDCond/ConditionsSlice.h"
 #include "DDCond/ConditionsOperators.h"
@@ -337,6 +338,8 @@ namespace  {
   /// Plugin function
   /// Load, compute and access derived conditions
   long dddb_derived_alignments(Detector& description, int argc, char** argv) {
+    // instantiate the grammars we will need
+    dd4hep::BasicGrammar::instance<AlignmentData>();
     PrintLevel level = INFO;
     long time = detail::makeTime(2016,4,1,12);
     for(int i=0; i<argc; ++i)  {
