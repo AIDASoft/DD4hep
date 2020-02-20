@@ -41,28 +41,28 @@ DDPolycone::DDPolycone(const std::string& nam,
 }
 
 double DDPolycone::startPhi() const   {
-  return access()->GetPhi1()*units::deg;
+  return access()->GetPhi1()*units::deg/units::rad;
 }
 
 double DDPolycone::deltaPhi() const   {
-  return access()->GetDphi()*units::deg;
+  return access()->GetDphi()*units::deg/units::rad;
 }
 
 std::vector<double> DDPolycone::zVec() const   {
-  auto*   p = access();
-  double* v = p->GetZ();
+  const auto*   p = access();
+  const double* v = p->GetZ();
   return {v, v+p->GetNz()};
 }
 
 std::vector<double> DDPolycone::rMinVec() const   {
-  auto*   p = access();
-  double* v = p->GetRmin();
+  const auto*   p = access();
+  const double* v = p->GetRmin();
   return {v, v+p->GetNz()};
 }
 
 std::vector<double> DDPolycone::rMaxVec() const   {
-  auto*   p = access();
-  double* v = p->GetRmax();
+  const auto*   p = access();
+  const double* v = p->GetRmax();
   return {v, v+p->GetNz()};
 }
 
