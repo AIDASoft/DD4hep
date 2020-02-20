@@ -37,13 +37,7 @@ endif()
 
 function( add_dd4hep_plugin libraryName )
   ADD_LIBRARY ( ${libraryName}  ${ARGN} )
-
-  if(APPLE)
-    dd4hep_generate_rootmap_apple( ${libraryName} )
-  else()
-    dd4hep_generate_rootmap( ${libraryName} )
-  endif()
-
+  dd4hep_generate_rootmap( ${libraryName} )
   install( TARGETS ${libraryName} LIBRARY DESTINATION lib )
 endfunction()
 
@@ -78,10 +72,7 @@ function(dd4hep_generate_rootmap library)
   if(APPLE)
     SET(ENV{DYLD_LIBRARY_PATH} ${LIBRARY_OUTPUT_PATH}:$ENV{DYLD_LIBRARY_PATH}:$ENV{DD4HEP_LIBRARY_PATH} )
   endif()
-    dd4hep_generate_rootmap_notapple(${library} )
-endfunction()
-#---------------------------------------------------------------------------------------------------
-function(dd4hep_generate_rootmap_notapple library)
+
   if ( NOT DD4hep_DIR )
     SET ( DD4hep_DIR ${CMAKE_SOURCE_DIR} )
   endif()
@@ -89,6 +80,8 @@ function(dd4hep_generate_rootmap_notapple library)
 
   add_custom_command(OUTPUT ${rootmapfile}
                      DEPENDS ${library}
+                     COMMAND echo DYLD_LIBRARY_PATH: $ENV{DYLD_LIBRARY_PATH}
+                     COMMAND echo LD_LIBRARY_PATH: $ENV{LD_LIBRARY_PATH}
                      COMMAND DD4hep::listcomponents -o ${rootmapfile} $<TARGET_FILE:${library}>
                      WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH}
                      )
