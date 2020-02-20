@@ -86,17 +86,14 @@ function(dd4hep_generate_rootmap_notapple library)
   if ( NOT DD4hep_DIR )
     SET ( DD4hep_DIR ${CMAKE_SOURCE_DIR} )
   endif()
-  find_package(ROOT QUIET)
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.components)
-
-  set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
   add_custom_command(OUTPUT ${rootmapfile}
                      DEPENDS ${library}
                      POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
-                             -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
-                             -DROOT_VERSION=${ROOT_VERSION}
+                     COMMAND ${CMAKE_COMMAND} -Dlibname=$<TARGET_FILE_NAME:${library}> -Drootmapfile=${rootmapfile}
+                             -DDD4HEP_LISTCOMPONENTS_CMD=$<TARGET_FILE:DD4hep::listcomponents>
+                             -DLIBRARY_LOCATION=$<TARGET_FILE_DIR:${library}>
                              -DDD4hep_DIR=${DD4hep_DIR}
                              -P ${DD4hep_DIR}/cmake/MakeGaudiMap.cmake)
   add_custom_target(Components_${library} ALL DEPENDS ${rootmapfile})
@@ -104,8 +101,7 @@ function(dd4hep_generate_rootmap_notapple library)
   if( CMAKE_INSTALL_LIBDIR )
     SET( install_destination ${CMAKE_INSTALL_LIBDIR} )
   endif()
-
-  install(FILES ${LIBRARY_OUTPUT_PATH}/${rootmapfile}
+  install(FILES $<TARGET_FILE_DIR:${library}>/${rootmapfile}
     DESTINATION ${install_destination}
   )
 endfunction()
