@@ -123,7 +123,7 @@ namespace dd4hep {
         throw std::runtime_error("AbstractMap: Failed to access non-existing item:"+item);
       }
     };
-    std::ostream& operator << (std::ostream& s, const AbstractMap& data);
+
   } /* End namespace cond             */
 } /* End namespace dd4hep                   */
 #endif    /* DD4HEP_DDCORE_CONDITIONSDATA_H    */
