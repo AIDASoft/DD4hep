@@ -16,6 +16,7 @@
 #include "DD4hep/Primitives.h"
 #include "DD4hep/OpaqueData.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/detail/OpaqueData_inl.h"
 
 // C/C++ header files
 #include <cstring>
@@ -206,4 +207,5 @@ DD4HEP_DEFINE_PARSER_DUMMY(OpaqueDataBlock)
 #include "DD4hep/detail/BasicGrammar_inl.h"
 #include "DD4hep/detail/ConditionsInterna.h"
 DD4HEP_DEFINE_PARSER_GRAMMAR(OpaqueDataBlock,eval_none<OpaqueDataBlock>)
+DD4HEP_DEFINE_CONDITIONS_TYPE(OpaqueDataBlock)
 
