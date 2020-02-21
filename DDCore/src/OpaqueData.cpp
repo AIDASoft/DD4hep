@@ -196,7 +196,7 @@ void OpaqueDataBlock::assign(const void* ptr, const type_info& typ)  {
 }
 
 /// print Conditions object
-std::ostream& dd4hep::operator<< (std::ostream& s, const OpaqueDataBlock& data)   {
+std::ostream& operator << (std::ostream& s, const OpaqueDataBlock& data)   {
   s << data.str();
   return s;
 }

@@ -490,5 +490,3 @@ void* SensitiveDetector::extension(unsigned long long int k) const {
 void* SensitiveDetector::extension(unsigned long long int k, bool alert) const {
   return access()->extension(k, alert);
 }
-
-std::ostream& dd4hep::operator<< (std::ostream& s, const DetElement& )   { return s; }

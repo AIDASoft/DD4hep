@@ -20,7 +20,7 @@
 using namespace dd4hep::cond;
 
 /// print Conditions object
-std::ostream& dd4hep::cond::operator<< (std::ostream& s, const AbstractMap& data)   {
+std::ostream& operator << (std::ostream& s, const AbstractMap& data)   {
   struct _Print {
     void operator()(const AbstractMap::Params::value_type& obj)  const {
       if ( obj.second.typeInfo() == typeid(AbstractMap) )  {

@@ -447,7 +447,6 @@ namespace dd4hep {
     /// Access to the constant survey alignment information
     Alignment survey() const;
   };
-  std::ostream& operator << (std::ostream& s, const DetElement& data);
 } /* End namespace dd4hep        */
 
 #include "DD4hep/AlignmentData.h"
