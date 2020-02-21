@@ -654,6 +654,13 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
     ENDIF()
   ENDIF()
 
+  # root python changes target name in 6.22
+  IF(TARGET ROOT::PyROOT)
+    SET(DD4HEP_ROOT_PYTHON ROOT::PyROOT)
+  ELSEIF(TARGET ROOT::ROOTTPython)
+    # New "pyroot" in 6.22
+    SET(DD4HEP_ROOT_PYTHON ROOT::ROOTTPython)
+  ENDIF()
   #ROOT CXX Flags are a string with quotes, not a list, so we need to convert to a list...
   string(REPLACE " " ";" DD4HEP_ROOT_CXX_FLAGS ${ROOT_CXX_FLAGS})
 
