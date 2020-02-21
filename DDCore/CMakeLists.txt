@@ -104,15 +104,15 @@ ELSE()
 ENDIF()
     
 #---------------------------  Specialized PYTHON plugin ----------------------------
-IF(TARGET ROOT::PyROOT)
+IF(TARGET ${DD4HEP_ROOT_PYTHON})
   dd4hep_add_plugin(DDPythonPlugins
     SOURCES src/python/*.cpp
-    USES DDCore ROOT::Core ROOT::PyROOT
+    USES DDCore ROOT::Core ${DD4HEP_ROOT_PYTHON}
     )
   set_target_properties(DDPythonPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   LIST(APPEND OPTIONAL_TARGETS DDPythonPlugins)
 ELSE()
-  dd4hep_print("ROOT does not include PyRoot, not building DDCore DDPython Plugins")
+  dd4hep_print("ROOT does not include Python support, not building DDCore DDPython Plugins")
 ENDIF()
 
 # install python files
