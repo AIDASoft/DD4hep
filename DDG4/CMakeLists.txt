@@ -50,7 +50,7 @@ dd4hep_add_plugin(DDG4Plugins
 #---------------------------  Plugin library for the simulation framework  ---------
 
 
-if(TARGET Python::Python)
+if(TARGET Python::Python AND TARGET ROOT::PyROOT)
   dd4hep_print("|++> Python found, creating DDG4Python Dictionary")
   dd4hep_add_dictionary(G__DDG4Python
     SOURCES src/python/DDG4Python.C
@@ -60,33 +60,31 @@ if(TARGET Python::Python)
     SOURCES  tpython/DDPython.C
     USES     Python::Python
     )
-  if(TARGET ROOT::PyROOT)
-    #---------------------------  Specialized python plugins  --------------------------
-    dd4hep_print("|++> ROOT Has Python, creating DDPython library and plugins")
-    add_library(DDPython G__DDPython.cxx tpython/DDPython.cpp)
-    add_library(DD4hep::DDPython ALIAS DDPython)
-    target_link_libraries(DDPython DD4hep::DDG4 ROOT::Core Python::Python ROOT::PyROOT)
-    IF(${CMAKE_CXX_STANDARD} GREATER 16)
-      # python header not cxx17 compatible, gives error in clang
-      target_compile_options(DDPython PUBLIC -Wno-register)
-    ENDIF()
-    dd4hep_add_plugin(DDG4Python 
-      SOURCES   src/python/*.cpp
-      GENERATED G__DDG4Python.cxx
-      USES      DD4hep::DDG4 DD4hep::DDPython
-      )
-    #---Helper to overcome deficiency of the python executable concerning multi-threading
-    add_executable(pyddg4 pyddg4.cpp)
-    target_link_libraries(pyddg4 PUBLIC DD4hep::DDPython ROOT::Core ROOT::PyROOT)
+  #---------------------------  Specialized python plugins  --------------------------
+  dd4hep_print("|++> ROOT Has Python, creating DDPython library and plugins")
+  add_library(DDPython G__DDPython.cxx tpython/DDPython.cpp)
+  add_library(DD4hep::DDPython ALIAS DDPython)
+  target_link_libraries(DDPython DD4hep::DDG4 ROOT::Core Python::Python ROOT::PyROOT)
+  IF(${CMAKE_CXX_STANDARD} GREATER 16)
+    # python header not cxx17 compatible, gives error in clang
+    target_compile_options(DDPython PUBLIC -Wno-register)
+  ENDIF()
+  dd4hep_add_plugin(DDG4Python
+    SOURCES   src/python/*.cpp
+    GENERATED G__DDG4Python.cxx
+    USES      DD4hep::DDG4 DD4hep::DDPython
+    )
+  #---Helper to overcome deficiency of the python executable concerning multi-threading
+  add_executable(pyddg4 pyddg4.cpp)
+  target_link_libraries(pyddg4 PUBLIC DD4hep::DDPython ROOT::Core ROOT::PyROOT)
 
-    # install these libraries
-    set_target_properties(DDPython DDG4Python PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-    INSTALL(TARGETS DDPython pyddg4 DDG4Python EXPORT DD4hep
-      LIBRARY DESTINATION lib
-      RUNTIME DESTINATION bin)
-  endif()
+  # install these libraries
+  set_target_properties(DDPython DDG4Python PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+  INSTALL(TARGETS DDPython pyddg4 DDG4Python EXPORT DD4hep
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin)
 else()
-  dd4hep_print("|+++++> Python not found, not creating DDG4 Python Dictionaries")
+  dd4hep_print("|+++++> Python or PyROOT not found, not creating DDG4 Python Dictionaries")
 endif()
 
 #---------------------------  Plugin library for the simulation framework  ---------
