@@ -69,22 +69,18 @@ endfunction()
 # Create the .components file needed by the plug-in system.
 #---------------------------------------------------------------------------------------------------
 function(dd4hep_generate_rootmap library)
+
   if(APPLE)
-    SET(ENV{DYLD_LIBRARY_PATH} ${LIBRARY_OUTPUT_PATH}:$ENV{DYLD_LIBRARY_PATH}:$ENV{DD4HEP_LIBRARY_PATH} )
     set(ENV_VAR DYLD_LIBRARY_PATH)
   else()
     set(ENV_VAR LD_LIBRARY_PATH)
   endif()
+  SET(ENV{${ENV_VAR}} $<TARGET_FILE_DIR:${library}>:$ENV{${ENV_VAR}}:$ENV{DD4HEP_LIBRARY_PATH} )
 
-  if ( NOT DD4hep_DIR )
-    SET ( DD4hep_DIR ${CMAKE_SOURCE_DIR} )
-  endif()
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.components)
 
   add_custom_command(OUTPUT ${rootmapfile}
                      DEPENDS ${library}
-                     COMMAND ${ENV_VAR}=$ENV{${ENV_VAR}} echo DYLD_LIBRARY_PATH: $ENV{DYLD_LIBRARY_PATH}
-                     COMMAND ${ENV_VAR}=$ENV{${ENV_VAR}} echo LD_LIBRARY_PATH: $ENV{LD_LIBRARY_PATH}
                      COMMAND ${ENV_VAR}=$ENV{${ENV_VAR}} $<TARGET_FILE:DD4hep::listcomponents> -o ${rootmapfile} $<TARGET_FILE:${library}>
                      WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH}
                      )
