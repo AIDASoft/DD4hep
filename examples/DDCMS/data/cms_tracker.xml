@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <DDDefinition>
   <debug>
-    <debug_includes/>
-    <debug_constants/>
 <!-- 
     <debug_rotations/>
     <debug_materials/>

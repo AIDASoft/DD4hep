@@ -650,7 +650,7 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
     ELSE()
       dd4hep_print( "Python version used to build ROOT = ${ROOT_PYTHON_VERSION}" )
       dd4hep_print( "Python version detected by CMake to build DD4hep = ${Python_VERSION}" )
-      #      dd4hep_fatal( "Mismatch between Python version used for building ROOT and Python version detected by CMake" )
+      dd4hep_fatal( "Mismatch between Python version used for building ROOT and Python version detected by CMake" )
     ENDIF()
   ENDIF()
 
