@@ -43,7 +43,7 @@ Condition ConditionUpdate1::operator()(const ConditionKey& key, ConditionUpdateC
   printout(printLevel,"ConditionUpdate1","++ Building dependent condition: %016llX",key.hash);
   Condition    target(key.hash);
 #endif
-  target.bind<vector<int> >();
+  target.construct<vector<int> >();
   return target;
 }
 
@@ -64,7 +64,7 @@ Condition ConditionUpdate2::operator()(const ConditionKey& key, ConditionUpdateC
   printout(printLevel,"ConditionUpdate2","++ Building dependent condition: %016llX",key.hash);
   Condition    target(key.hash);
 #endif
-  target.bind<vector<int> >();
+  target.construct<vector<int> >();
   return target;
 }
 

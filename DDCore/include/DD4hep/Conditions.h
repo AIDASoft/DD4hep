@@ -207,6 +207,12 @@ namespace dd4hep {
     const BasicGrammar& descriptor() const;
     /// Check if object is already bound....
     bool is_bound()  const  {  return isValid() ? data().is_bound() : false;  }
+    /** Construct conditions object and bind the data
+     *
+     *  Note: The type definition is possible exactly once.
+     *  Any further rebindings MUST match the identical type.
+     */
+    template <typename T, typename... Args> T& construct(Args&&... args);
     /** Bind the data of the conditions object to a given format.
      *
      *  Note: The type definition is possible exactly once.

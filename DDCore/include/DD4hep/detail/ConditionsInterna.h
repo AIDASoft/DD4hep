@@ -119,7 +119,12 @@ namespace dd4hep {
 
   } /* End namespace detail    */
 
-    /// Bind the data of the conditions object to a given format.
+  /// Construct conditions object and bind the data
+  template <typename T, typename... Args> T& Condition::construct(Args&&... args)   {
+    Object* o = access();
+    return o->data.construct<T,Args...>(args...);
+  }
+  /// Bind the data of the conditions object to a given format.
   template <typename T> T& Condition::bind()   {
     Object* o = access();
     return o->data.bind<T>(o->value);

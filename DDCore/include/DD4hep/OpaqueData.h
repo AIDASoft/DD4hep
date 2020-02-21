@@ -125,6 +125,8 @@ namespace dd4hep {
     void bindExtern(void* ptr, const BasicGrammar* grammar);
     /// Bind external data value to the pointer
     template <typename T> void bindExtern(T* ptr);
+    /// Construct conditions object and bind the data
+    template <typename T, typename... Args> T& construct(Args&&... args);
     /// Bind data value
     template <typename T> T& bind();
     /// Bind data value

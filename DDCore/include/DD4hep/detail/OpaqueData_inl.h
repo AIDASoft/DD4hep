@@ -41,6 +41,12 @@ namespace dd4hep {
     return *(T*)pointer;
   }
 
+  /// Construct conditions object and bind the data
+  template <typename T, typename... Args> T& dd4hep::OpaqueDataBlock::construct(Args&&... args)   {
+    this->bind(&BasicGrammar::instance<T>());
+    return *(new(this->pointer) T(std::forward<Args>(args)...));
+  }
+
   /// Bind data value
   template <typename T> T& OpaqueDataBlock::bind()  {
     this->bind(&BasicGrammar::instance<T>());
