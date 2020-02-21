@@ -41,7 +41,6 @@ dd4hep_configure_output()
 SET(DD4HEP_EXAMPLES "AlignDet CLICSiD ClientTests Conditions DDCMS DDCodex DDDB DDDigi DDG4 DDG4_MySensDet LHeD OpticalSurfaces Persistency DDCAD SimpleDetector"
   CACHE STRING "List of DD4hep Examples to build")
 SEPARATE_ARGUMENTS(DD4HEP_EXAMPLES)
-MESSAGE(STATUS "Will be building these examples: ${DD4HEP_EXAMPLES}")
 
 FOREACH(DDExample IN LISTS DD4HEP_EXAMPLES)
   dd4hep_print("|> Building ${DDExample}")
