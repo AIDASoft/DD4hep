@@ -52,6 +52,77 @@ namespace {  static dd4hep::tools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
+  /// Standarsd constructor
+  template <typename TYPE> Grammar<TYPE>::Grammar() : BasicGrammar(typeName(typeid(TYPE)))  {
+  }
+
+  /// Default destructor
+  template <typename TYPE> Grammar<TYPE>::~Grammar() {
+  }
+
+  /// PropertyGrammar overload: Access to the type information
+  template <typename TYPE> const std::type_info& Grammar<TYPE>::type() const {
+    return typeid(TYPE);
+  }
+
+  /// Access to the type information
+  template <typename TYPE> bool Grammar<TYPE>::equals(const std::type_info& other_type) const  {
+    return other_type == typeid(TYPE);
+  }
+  
+  /// Access the object size (sizeof operator)
+  template <typename TYPE> size_t Grammar<TYPE>::sizeOf() const   {
+    return sizeof(TYPE);
+  }
+
+  /// Bind opaque address to object
+  template <typename TYPE> void Grammar<TYPE>::bind(void* pointer)  const  {
+    new(pointer) TYPE();
+  }
+
+  /// Evaluate string value if possible before calling boost::spirit
+  template <typename TYPE> int Grammar<TYPE>::evaluate(void*, const std::string&) const {
+    return 0;
+  }
+
+  /// PropertyGrammar overload: Retrieve value from string
+  template <typename TYPE> bool Grammar<TYPE>::fromString(void* ptr, const std::string& string_val) const {
+    int sc = 0;
+    TYPE temp;
+    sc = ::dd4hep::Parsers::parse(temp,string_val);
+    if ( !sc ) sc = evaluate(&temp,string_val);
+#if 0
+    std::cout << "Sc=" << sc << "  Converting value: " << string_val 
+              << " to type " << typeid(TYPE).name() 
+              << std::endl;
+#endif
+    if ( sc )   {
+      *(TYPE*)ptr = temp;
+      return true;
+    }
+    BasicGrammar::invalidConversion(string_val, typeid(TYPE));
+    return false;
+  }
+
+  /// Serialize a property to a string
+  template <typename TYPE> std::string Grammar<TYPE>::str(const void* ptr) const {
+    std::stringstream string_rep;
+    Utils::toStream(*(TYPE*)ptr,string_rep);
+    return string_rep.str();
+  }
+
+  /// Opaque object destructor
+  template <typename TYPE> void Grammar<TYPE>::destruct(void* pointer) const   {
+    TYPE* obj = (TYPE*)pointer;
+    obj->~TYPE();
+  }
+
+  /// Opaque object destructor
+  template <typename TYPE> void Grammar<TYPE>::copy(void* to, const void* from) const   {
+    const TYPE* from_obj = (const TYPE*)from;
+    new (to) TYPE(*from_obj);
+  }
+
   /// Helper function to parse data type
   static inline std::string pre_parse_obj(const std::string& in)   {
     std::string res = "";
