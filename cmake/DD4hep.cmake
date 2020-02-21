@@ -71,6 +71,9 @@ endfunction()
 function(dd4hep_generate_rootmap library)
   if(APPLE)
     SET(ENV{DYLD_LIBRARY_PATH} ${LIBRARY_OUTPUT_PATH}:$ENV{DYLD_LIBRARY_PATH}:$ENV{DD4HEP_LIBRARY_PATH} )
+    set(ENV_VAR DYLD_LIBRARY_PATH)
+  else()
+    set(ENV_VAR LD_LIBRARY_PATH)
   endif()
 
   if ( NOT DD4hep_DIR )
@@ -80,9 +83,9 @@ function(dd4hep_generate_rootmap library)
 
   add_custom_command(OUTPUT ${rootmapfile}
                      DEPENDS ${library}
-                     COMMAND echo DYLD_LIBRARY_PATH: $ENV{DYLD_LIBRARY_PATH}
-                     COMMAND echo LD_LIBRARY_PATH: $ENV{LD_LIBRARY_PATH}
-                     COMMAND DD4hep::listcomponents -o ${rootmapfile} $<TARGET_FILE:${library}>
+                     COMMAND ${ENV_VAR}=$ENV{${ENV_VAR}} echo DYLD_LIBRARY_PATH: $ENV{DYLD_LIBRARY_PATH}
+                     COMMAND ${ENV_VAR}=$ENV{${ENV_VAR}} echo LD_LIBRARY_PATH: $ENV{LD_LIBRARY_PATH}
+                     COMMAND ${ENV_VAR}=$ENV{${ENV_VAR}} $<TARGET_FILE:DD4hep::listcomponents> -o ${rootmapfile} $<TARGET_FILE:${library}>
                      WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH}
                      )
 
