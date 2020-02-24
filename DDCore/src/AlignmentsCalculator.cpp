@@ -324,9 +324,9 @@ size_t AlignmentsCalculator::extract_deltas(DetElement start,
 }
 
 #include "DD4hep/detail/Grammar_unparsed.h"
-// Apple wants this....
 namespace dd4hep {
+  // Apple wants this....
   template class Grammar<AlignmentsCalculator::OrderedDeltas>;
+  // Ensure the grammars are registered
+  static const auto& s_registry = GrammarRegistry().pre_note<AlignmentsCalculator::OrderedDeltas>();
 }
-// Ensure the grammars are registered
-static const auto& s_registry = GrammarRegistry().pre_note<AlignmentsCalculator::OrderedDeltas>();

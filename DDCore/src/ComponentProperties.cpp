@@ -244,5 +244,7 @@ namespace dd4hep {
     return eval_obj ((Property*)_p,_v);
   }
   template class Grammar<Property>;
-}
+  // Ensure the grammars are registered
+  static const auto& s_registry = GrammarRegistry().pre_note<Property>();
+ }
 

@@ -230,14 +230,14 @@ Alignment AlignmentData::nominal() const   {
 }
 
 #include "DD4hep/detail/Grammar_unparsed.h"
-// Apple wants this....
 namespace dd4hep {
+  // Apple wants this....
   template class Grammar<Delta>;
   template class Grammar<std::map<DetElement, Delta> >;
   template class Grammar<AlignmentData>;
+  // Ensure the grammars are registered
+  static const auto& s_registry = GrammarRegistry()
+    .pre_note<Delta>()
+    .pre_note<std::map<DetElement, Delta> >()
+    .pre_note<AlignmentData>();
 }
-// Ensure the grammars are registered
-static const auto& s_registry = GrammarRegistry()
-  .pre_note<Delta>()
-  .pre_note<std::map<DetElement, Delta> >()
-  .pre_note<AlignmentData>();
