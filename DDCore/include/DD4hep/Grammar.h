@@ -218,7 +218,8 @@ namespace dd4hep {
    *   \date    13.08.2013
    *   \ingroup DD4HEP
    */
-  struct GrammarRegistry {
+  class GrammarRegistry {
+  public:
     GrammarRegistry() = default;
     template <typename T> const GrammarRegistry& pre_note()  const   {
       BasicGrammar::pre_note(typeid(T),BasicGrammar::instance<T>);
