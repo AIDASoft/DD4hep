@@ -167,17 +167,17 @@ namespace dd4hep {
   };
 
   /// Standarsd constructor
-  template <typename TYPE> const BasicGrammar& BasicGrammar::instance()  {
-    static const BasicGrammar& s_gr = get(typeid(TYPE));
-    return s_gr;
-  }
-
-  /// Standarsd constructor
   template <typename TYPE> Grammar<TYPE>::Grammar() : BasicGrammar(typeName(typeid(TYPE)))  {
   }
 
   /// Default destructor
   template <typename TYPE> Grammar<TYPE>::~Grammar() {
+  }
+
+  /// Standarsd constructor
+  template <typename TYPE> const BasicGrammar& BasicGrammar::instance()  {
+    static Grammar<TYPE> s_gr;
+    return s_gr;
   }
 
   /// PropertyGrammar overload: Access to the type information
