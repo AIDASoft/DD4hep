@@ -14,12 +14,13 @@
 #define DD4HEP_DDG4_COMPONENTPROPERTIES_H
 
 // Framework include files
-#include "DD4hep/config.h"
+#include "DD4hep/Grammar.h"
 
 // C/C++ include files
 #include <algorithm>
 #include <stdexcept>
 #include <typeinfo>
+#include <sstream>
 #include <string>
 #include <map>
 
@@ -97,17 +98,13 @@ namespace dd4hep {
     /// Reference to the grammar of this property (extended type description)
     const PropertyGrammar* m_hdl = 0;
 
-    /// Setup property
-    template <typename TYPE> void make(TYPE& value);
   public:
     /// Default constructor
     Property() = default;
     /// Copy constructor
     Property(const Property& p) = default;
     /// User constructor
-    template <typename TYPE> Property(TYPE& val) : m_par(0), m_hdl(0) {
-      make(val);
-    }
+    template <typename TYPE> Property(TYPE& val);
     /// Property type name
     static std::string type(const Property& proptery);
     /// Property type name
@@ -139,6 +136,43 @@ namespace dd4hep {
     /// Set value of this property
     template <typename TYPE> void set(const TYPE& value);
   };
+
+  /// User constructor
+  template <typename TYPE> Property::Property(TYPE& val) : m_par(&val), m_hdl(0) {
+    static PropertyGrammar grammar(BasicGrammar::instance<TYPE>());
+    m_hdl = &grammar;
+  }
+
+  /// Set value of this property
+  template <typename TYPE> void Property::set(const TYPE& val) {
+    const PropertyGrammar& grm = grammar();
+    if (grm.type() == typeid(TYPE))
+      *(TYPE*) m_par = val;
+    else if (!grm.fromString(m_par, BasicGrammar::instance< TYPE >().str(&val)))
+      PropertyGrammar::invalidConversion(typeid(TYPE), grm.type());
+  }
+
+  /// Assignment operator / set new balue
+  template <typename TYPE> Property& Property::operator=(const TYPE& val) {
+    this->set(val);
+    return *this;
+  }
+
+  /// Retrieve value from stack (large values e.g. vectors etc.)
+  template <typename TYPE> void Property::value(TYPE& val) const {
+    const PropertyGrammar& grm = grammar();
+    if (grm.type() == typeid(TYPE))
+      val = *(TYPE*) m_par;
+    else if (!BasicGrammar::instance< TYPE >().fromString(&val, this->str()))
+      PropertyGrammar::invalidConversion(grm.type(), typeid(TYPE));
+  }
+
+  /// Retrieve value
+  template <typename TYPE> TYPE Property::value() const {
+    TYPE temp;
+    this->value(temp);
+    return temp;
+  }
 
   /// Concrete template instantiation of a combined property value pair.
   /**

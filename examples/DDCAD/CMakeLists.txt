@@ -37,7 +37,8 @@ include(CTest)
 #
 #  Test basic shapes by comparing mesh vertices with reference file
 set(DDCAD_Tests)
-list(APPEND DDCAD_Tests BHV_Boxing_Toes BLEND_HUMAN Collada_duck COB_dwarf PLY_Wuson )
+## Multi-shapes: BLEND_HUMAN COB_dwarf
+list(APPEND DDCAD_Tests BHV_Boxing_Toes Collada_duck PLY_Wuson )
 foreach (test ${DDCAD_Tests})
   dd4hep_add_test_reg( DDCAD_Check_Shape_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"

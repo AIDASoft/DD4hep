@@ -19,8 +19,8 @@ endif()
 find_package(assimp QUIET)
 if(TARGET assimp::assimp)
     MESSAGE(STATUS "+++> Use existing assimp implementation")    
-else()
-    MESSAGE(STATUS "+++> Building assimp")    
+elseif(DD4HEP_LOAD_ASSIMP)
+    MESSAGE(STATUS "+++> Download and build assimp from gitub")    
     #
     #  Download The Open-Asset-Importer-Lib from GITHUB
     #
@@ -54,6 +54,9 @@ else()
     add_library(assimp::assimp ALIAS assimp)
     set_target_properties(assimp PROPERTIES IMPORTED_LOCATION ${INSTALL_DIR}/lib/libassimp.so)
     target_include_directories(assimp INTERFACE ${ASSIMP_INCLUDE_DIRS})
+else()
+    MESSAGE(STATUS "+++> No ASSIMP implementation accessible. CAD reading will not be supported!")
+    return()
 endif()
 #
 MESSAGE(STATUS "Open-Asset-Importer: ASSIMP_INCLUDE_DIRS:  ${ASSIMP_INCLUDE_DIRS}")

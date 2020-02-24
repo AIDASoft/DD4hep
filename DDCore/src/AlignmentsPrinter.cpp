@@ -12,6 +12,7 @@
 //==========================================================================
 
 // Framework includes
+#include "Parsers/Parsers.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/AlignmentsPrinter.h"
 #include "DD4hep/AlignmentsProcessor.h"
@@ -20,7 +21,6 @@
 // C/C++ include files
 #include <sstream>
 #include "TClass.h"
-#include "Parsers/spirit/ToStream.h"
 
 using namespace std;
 using namespace dd4hep;
@@ -149,20 +149,20 @@ void dd4hep::align::printAlignment(PrintLevel lvl, const string& prefix,
   }
   if ( align_delta.hasTranslation() )  {
     stringstream str;
-    Utils::toStream(align_delta.translation, str);
+    Parsers::toStream(align_delta.translation, str);
     printout(lvl,tag,"++ %s DELTA Translation: %s",
              opt.c_str(), replace_all(str.str(),"\n","").c_str());
   }
   if ( align_delta.hasPivot() )  {
     stringstream str;
-    Utils::toStream(align_delta.pivot, str);
+    Parsers::toStream(align_delta.pivot, str);
     string res = replace_all(str.str(),"\n","");
     res = "( "+replace_all(res,"  "," , ")+" )";
     printout(lvl,tag,"++ %s DELTA Pivot:       %s", opt.c_str(), res.c_str());
   }
   if ( align_delta.hasRotation() )  {
     stringstream str;
-    Utils::toStream(align_delta.rotation, str);
+    Parsers::toStream(align_delta.rotation, str);
     printout(lvl,tag,"++ %s DELTA Rotation:    %s", opt.c_str(), replace_all(str.str(),"\n","").c_str());
   }
   if ( isActivePrintLevel(lvl) )  {

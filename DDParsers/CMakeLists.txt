@@ -26,7 +26,7 @@ target_include_directories(DDParsers
   $<INSTALL_INTERFACE:include>
   )
 
-target_link_libraries(DDParsers PUBLIC ROOT::Core Boost::boost ${XML_LIBRARIES})
+target_link_libraries(DDParsers PUBLIC ROOT::Core ROOT::GenVector Boost::boost ${XML_LIBRARIES})
 
 set_target_properties(DDParsers PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 install(DIRECTORY include/Parsers include/Evaluator DESTINATION include)

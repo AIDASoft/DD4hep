@@ -229,24 +229,8 @@ Alignment AlignmentData::nominal() const   {
   return detector.nominal();
 }
 
-// The map is used by the Alignments calculator
-typedef std::map<DetElement, Delta> DeltaMap;
-
-// Have only a weak reference here!
-inline ostream& operator << (ostream& s, const DetElement& )   { return s; }
-
-#include "Parsers/Parsers.h"
-DD4HEP_DEFINE_PARSER_DUMMY(Delta)
-DD4HEP_DEFINE_PARSER_DUMMY(DeltaMap)
-DD4HEP_DEFINE_PARSER_DUMMY(AlignmentData)
-
-#include "DD4hep/detail/BasicGrammar_inl.h"
-#include "DD4hep/detail/ConditionsInterna.h"
-DD4HEP_DEFINE_PARSER_GRAMMAR(Delta,eval_none<Delta>)
-DD4HEP_DEFINE_PARSER_GRAMMAR(DeltaMap,eval_none<DeltaMap>)
-DD4HEP_DEFINE_PARSER_GRAMMAR(AlignmentData,eval_none<AlignmentData>)
-
-DD4HEP_DEFINE_CONDITIONS_TYPE(Delta)
-DD4HEP_DEFINE_CONDITIONS_TYPE(DeltaMap)
-DD4HEP_DEFINE_CONDITIONS_TYPE(AlignmentData)
-
+#include "DD4hep/detail/Grammar_unparsed.h"
+static const auto& s_registry = GrammarRegistry()
+  .pre_note<Delta>()
+  .pre_note<std::map<DetElement, Delta> >()
+  .pre_note<AlignmentData>();

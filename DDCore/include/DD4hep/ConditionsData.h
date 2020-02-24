@@ -16,7 +16,6 @@
 // Framework include files
 #include "DD4hep/Objects.h"
 #include "DD4hep/Conditions.h"
-#include "DD4hep/detail/ConditionsInterna.h"
 
 // C/C++ include files
 #include <vector>

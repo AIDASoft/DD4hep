@@ -31,6 +31,7 @@
 #include "DD4hep/ConditionsData.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/detail/ConditionsInterna.h"
 
 #include "DDCond/ConditionsPool.h"
 

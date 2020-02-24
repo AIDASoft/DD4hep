@@ -15,46 +15,35 @@
 #include "Parsers/spirit/ParsersStandardListCommon.h"
 
 namespace ROOT {  namespace Math {
-    bool operator<(const XYZVector& a, const XYZVector& b)  {
-      if ( a.X() < b.X() ) return true;
-      if ( a.Y() < b.Y() ) return true;
-      if ( a.Z() < b.Z() ) return true;
+    bool operator<(const RotationZYX& a, const RotationZYX& b)  {
+      if ( a.Theta() < b.Theta() ) return true;
+      if ( a.Phi() < b.Phi() ) return true;
+      if ( a.Psi() < b.Psi() ) return true;
       return false;
     }
   }}
 
-template struct std::less<ROOT::Math::XYZVector>;
+template struct std::less<ROOT::Math::RotationZYX>;
 
 // ============================================================================
 namespace dd4hep {
   namespace Parsers {
 
     // ==========================================================================
-    /*  parse 3D-vector
-     *  @param result (output) the parsed vector
-     *  @param input  (input)  the input string
-     *  @return status code
-     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-     *  @date 2009-09-05
-     */
-    template <> int parse(ROOT::Math::XYZVector& result,const std::string& input) {
-      ROOT::Math::XYZPoint point;
-      int sc = parse(point,input);
-      if ( 0 == sc ){ return sc; }                               // RETURN
-      result = point;
-      return 1;
+    template <> int parse(ROOT::Math::RotationZYX& result,const std::string& input) {
+      return parse_(result, input);
     }
-
     // ==========================================================================
-    /*  parse the vector of vectors
+    /*  parse the vector of points
      *  @param resut (OUTPUT) the parser vector
      *  @param input (INPIUT) the string to be parsed
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-05
      */
     // ==========================================================================
-    IMPLEMENT_STL_PARSERS(ROOT::Math::XYZVector)
-    IMPLEMENT_MAPPED_PARSERS(pair,ROOT::Math::XYZVector)
+    IMPLEMENT_STL_PARSERS(ROOT::Math::RotationZYX)
+    IMPLEMENT_MAPPED_PARSERS(pair,ROOT::Math::RotationZYX)
   }
 }
 #endif
+

@@ -43,6 +43,9 @@ class TGeoIdentity;
 #include "Math/RotationZYX.h"
 #include "Math/EulerAngles.h"
 #include "Math/VectorUtil.h"
+#include <TGeoElement.h>
+#include <TGeoMaterial.h>
+#include <TGeoMedium.h>
 #include "TGeoPhysicalNode.h"
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 #include "TGDMLMatrix.h"
@@ -522,5 +525,4 @@ namespace ROOT {
     bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b);
   }
 }
-
 #endif    /* DD4HEP_DDCORE_OBJECTS_H        */

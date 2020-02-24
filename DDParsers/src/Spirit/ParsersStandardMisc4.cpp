@@ -1,4 +1,3 @@
-// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -11,10 +10,18 @@
 //==========================================================================
 #include "Parsers/spirit/ParsersStandardMiscCommon.h"
 
-int dd4hep::Parsers::parse(std::map<std::string, std::vector<int> >& result, const std::string& input) {
-  return dd4hep::Parsers::parse_(result, input);
+/// Namespace for the AIDA detector description toolkit
+namespace dd4hep {
+  /// Namespace for the AIDA detector for utilities using boost::spirit parsers
+  namespace Parsers {
+
+    template <> int parse(std::map<std::string, std::vector<int> >& result, const std::string& input) {
+      return parse_(result, input);
+    }
+
+    template <> int parse(std::map<std::string, std::vector<double> >& result, const std::string& input) {
+      return parse_(result, input);
+    }
+  }
 }
 
-int dd4hep::Parsers::parse(std::map<std::string, std::vector<double> >& result, const std::string& input) {
-  return dd4hep::Parsers::parse_(result, input);
-}

@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/BasicGrammar.h"
+#include "DD4hep/Grammar.h"
 #include "DD4hep/DetectorData.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/detail/ObjectsInterna.h"

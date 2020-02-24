@@ -15,6 +15,9 @@
 // ============================================================================
 // Include files
 #include "Parsers/config.h"
+
+//#pragma warning "DDParsers/spirit/Parsers.h should not be included by clients!"
+
 // ============================================================================
 // STD & STL
 // ============================================================================
@@ -26,6 +29,7 @@
 #include <deque>
 #include <iostream>
 
+#if 0
 // ============================================================================
 #define PARSERS_DECL_FOR_SINGLE(Type)                                   \
   namespace dd4hep { namespace Parsers {                                \
@@ -578,21 +582,6 @@ namespace dd4hep {
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
 
-#include "Math/Point3D.h"
-#include "Math/Vector3D.h"
-#include "Math/Vector4D.h"
-
-namespace ROOT {
-  namespace Math {
-    /// Allow point insertion of a point in maps
-    bool operator<(const XYZPoint& a, const XYZPoint& b);
-    /// Allow 3-vector insertion of a  in maps
-    bool operator<(const XYZVector& a, const XYZVector& b);
-    /// Allow 4-vector insertion of a  in maps
-    bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b);
-  }
-}
-
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
   /// Namespace for the AIDA detector for utilities using boost::spirit parsers
@@ -779,5 +768,23 @@ PARSERS_DECL_FOR_LIST(ROOT::Math::PxPyPzEVector)
 // ============================================================================
 // The END
 // ============================================================================
+#endif // 0
+#ifndef DD4HEP_PARSERS_NO_ROOT
+
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
+#include "Math/Vector4D.h"
+
+namespace ROOT {
+  namespace Math {
+    /// Allow point insertion of a point in maps
+    bool operator<(const XYZPoint& a, const XYZPoint& b);
+    /// Allow 3-vector insertion of a  in maps
+    bool operator<(const XYZVector& a, const XYZVector& b);
+    /// Allow 4-vector insertion of a  in maps
+    bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b);
+  }
+}
+#endif
 #endif // DD4HEP_PARSERS_H
 // ============================================================================

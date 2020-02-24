@@ -323,14 +323,6 @@ size_t AlignmentsCalculator::extract_deltas(DetElement start,
   return deltas.size();
 }
 
+#include "DD4hep/detail/Grammar_unparsed.h"
 // The map is used by the Alignments calculator
-typedef AlignmentsCalculator::OrderedDeltas OrderedMap;
-// Have only a weak reference here!
-inline std::ostream& operator << (std::ostream& s, const DetElement& )   { return s; }
-
-#include "Parsers/Parsers.h"
-DD4HEP_DEFINE_PARSER_DUMMY(OrderedMap)
-#include "DD4hep/detail/BasicGrammar_inl.h"
-#include "DD4hep/detail/ConditionsInterna.h"
-DD4HEP_DEFINE_PARSER_GRAMMAR(OrderedMap,eval_none<OrderedMap>)
-DD4HEP_DEFINE_CONDITIONS_TYPE(OrderedMap)
+static const auto& s_registry = GrammarRegistry().pre_note<AlignmentsCalculator::OrderedDeltas>();

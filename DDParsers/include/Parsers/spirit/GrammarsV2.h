@@ -379,6 +379,7 @@ namespace dd4hep {  namespace Parsers {
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
 #include "Math/Vector4D.h"
+#include "Math/RotationZYX.h"
 
 namespace dd4hep {  namespace Parsers {
 
@@ -495,6 +496,51 @@ namespace dd4hep {  namespace Parsers {
     struct Grammar_<Iterator, ROOT::Math::LorentzVector<T1>, Skipper >   {
       typedef Pnt4DGrammar<Iterator, ROOT::Math::LorentzVector<T1>, Skipper> Grammar;
     };
+    // ============================================================================
+    template< typename Iterator, typename PointT, typename Skipper>
+    struct Rot3DGrammar : qi::grammar<Iterator, PointT(), Skipper> {
+      typedef PointT ResultT;
+      typedef std::string Scalar;
+      // ----------------------------------------------------------------------------
+      struct Operations {
+        template <typename A, typename B = boost::fusion::unused_type,
+                  typename C = boost::fusion::unused_type,
+                  typename D = boost::fusion::unused_type>
+        struct result { typedef void type; };
+        void operator()(ResultT& res, const Scalar& value,const char xyz) const{
+          typename PointT::Scalar val = evaluate_string<typename PointT::Scalar>(value);
+          switch(xyz)  {
+          case 'x': res.SetPsi(val); break;
+          case 'y': res.SetPhi(val); break;
+          case 'z': res.SetTheta(val); break;
+          default: break;
+          }
+        }
+      }; //  Operations
+      // ----------------------------------------------------------------------------
+      Rot3DGrammar() : Rot3DGrammar::base_type(point) {
+        point = list | ('(' >> list >> ')') | ('[' >> list >> ']');
+        list = -(enc::no_case[qi::lit("x")]  >> ':')
+          >> scalar[op(qi::_val,qi::_1,'x')] >>
+          ',' >> -(enc::no_case[qi::lit("y")] >> ':')
+          >> scalar[op(qi::_val,qi::_1,'y')] >>
+          ',' >> -(enc::no_case[qi::lit("z")] >> ':')
+          >> scalar[op(qi::_val,qi::_1,'z')];
+      }
+      // ----------------------------------------------------------------------------
+      qi::rule<Iterator, ResultT(), Skipper> point, list;
+      typename Grammar_<Iterator, Scalar, Skipper>::Grammar scalar;
+      ph::function<Operations> op;
+      // ----------------------------------------------------------------------------
+    }; //   Rot3DGrammar
+    // ----------------------------------------------------------------------------
+    // Register Rot3DGrammar for ROOT::Math::PositionVector3D:
+    // ----------------------------------------------------------------------------
+    template <typename Iterator, typename Skipper>
+    struct Grammar_<Iterator, ROOT::Math::RotationZYX, Skipper>{
+      typedef Rot3DGrammar<Iterator, ROOT::Math::RotationZYX, Skipper> Grammar;
+    };
+ 
     // ============================================================================
   }} //   dd4hep::Parsers
 #endif
