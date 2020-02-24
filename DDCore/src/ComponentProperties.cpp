@@ -14,6 +14,7 @@
 // Framework include files
 #include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
+#include "Parsers/Parsers.h"
 #include "DD4hep/ComponentProperties.h"
 
 // C/C++ include files
@@ -228,6 +229,7 @@ Property& PropertyConfigurable::property(const string& nam)   {
   return properties()[nam];
 }
 
+#include "DD4hep/detail/Grammar_parsed.h"
 namespace dd4hep { 
   namespace Parsers {
     template <> int parse(Property& result, const std::string& input) {
@@ -237,6 +239,9 @@ namespace dd4hep {
     template <> std::ostream& toStream(const Property& result, std::ostream& os) {
       return os << result.str();
     }
+  }
+  template<> int Grammar<Property>::evaluate(void* _p, const std::string& _v) const {
+    return eval_obj ((Property*)_p,_v);
   }
   template class Grammar<Property>;
 }
