@@ -16,11 +16,18 @@ IF(NOT TARGET DD4hep::DDCore)
   include ( ${DD4hep_DIR}/cmake/DD4hepBuild.cmake )
   dd4hep_configure_output()
 ENDIF()
-
-if(${ROOT_VERSION} VERSION_LESS 6.19.01)
+#
+# Only newer versions of ROOT support tessellated shapes!
+if(${ROOT_VERSION} VERSION_LESS 6.21.01)
   return()
 endif()
-
+#
+# We need the DDCAD module to run these tests!
+if(NOT TARGET DD4hep::DDCAD)
+  MESSAGE(STATUS "+++> DDCAD examples shall not be built! [DDCAD not enabled]")
+  return()
+endif()
+#
 dd4hep_set_compiler_flags()
 #==========================================================================
 #
