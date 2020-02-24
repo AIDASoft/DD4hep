@@ -76,12 +76,12 @@ void* dd4hep::cms::ShapeDump::handleSolid(const std::string& name, const TGeoSha
                  name.c_str(), isa->GetName(), ddbox.ptr(), ddbox.halfX(), ddbox.halfY(), ddbox.halfZ());
       }
       else if (isa == TGeoPcon::Class()) {
-        cms::DDPolycone pc = box;
+        cms::DDPolycone pcon = box;
         printout(INFO, "ShapeDump","Got shape '%s' of type:%-16s", name.c_str(), isa->GetName());
         printout(INFO, "ShapeDump","          DDBox:     %p dx:%7.2f [cm] dy:%7.2f [cm] dz:%7.2f [cm]",
                  ddbox.ptr(), ddbox.halfX(), ddbox.halfY(), ddbox.halfZ());
         printout(INFO, "ShapeDump","          DDPolycone:%p phi-start: %7.2f [rad] delta:%7.2f [rad] zplanes: N_z:%ld N_rmin:%ld N_rmax:%ld",
-                 pc.ptr(), pc.startPhi(), pc.deltaPhi(), pc.zVec().size(), pc.rMinVec().size(), pc.rMaxVec().size());
+                 pcon.ptr(), pcon.startPhi(), pcon.deltaPhi(), pcon.zVec().size(), pcon.rMinVec().size(), pcon.rMaxVec().size());
       }
     }
   }

@@ -19,7 +19,7 @@
 #include "DD4hep/Path.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Detector.h"
-#include "DD4hep/BasicGrammar.h"
+#include "DD4hep/Grammar.h"
 #include "DDCMS/DDCMS.h"
 
 #include <TClass.h>

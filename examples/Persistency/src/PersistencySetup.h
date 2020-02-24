@@ -18,7 +18,7 @@
 #include "DD4hep/Primitives.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/Alignments.h"
-#include "DD4hep/BasicGrammar.h"
+#include "DD4hep/Grammar.h"
 #include "DD4hep/AlignmentData.h"
 #include "DD4hep/detail/AlignmentsInterna.h"
 #include "DD4hep/detail/ConditionsInterna.h"

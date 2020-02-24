@@ -81,8 +81,7 @@ namespace dd4hep {
 
     
     /// Instance factory
-    template <typename TYPE> static void pre_note();
-    static void pre_note(BasicGrammar* grammar);
+    static void pre_note(const std::type_info& info, const BasicGrammar& (*fcn)());
     static const BasicGrammar& get(const std::type_info& info);
     
   public:
@@ -173,12 +172,6 @@ namespace dd4hep {
     return s_gr;
   }
 
-  /// Instance factory
-  template <typename TYPE> void BasicGrammar::pre_note()    {
-    static Grammar<TYPE> s_gr;
-    BasicGrammar::pre_note(&s_gr);
-  }
-
   /// Standarsd constructor
   template <typename TYPE> Grammar<TYPE>::Grammar() : BasicGrammar(typeName(typeid(TYPE)))  {
   }
@@ -228,7 +221,7 @@ namespace dd4hep {
   struct GrammarRegistry {
     GrammarRegistry() = default;
     template <typename T> const GrammarRegistry& pre_note()  const   {
-      BasicGrammar::pre_note<T>();
+      BasicGrammar::pre_note(typeid(T),BasicGrammar::instance<T>);
       return *this;
     }
   };
