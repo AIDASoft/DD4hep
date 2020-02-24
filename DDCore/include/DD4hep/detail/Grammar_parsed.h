@@ -226,10 +226,10 @@ namespace dd4hep {
 #define DD4HEP_PARSER_GRAMMAR_CNAME(serial,name)  namespace_dd4hep__grammar_##serial##_##name
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)                       \
-  namespace dd4hep { template<> int Grammar<x >::evaluate(void* ptr, const std::string& val) const { return func ((x*)ptr,val); }}
+  namespace dd4hep { template<> int Grammar<x>::evaluate(void* _p, const std::string& _v) const { return func ((x*)_p,_v); }}
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_INSTANCE(serial,x) namespace DD4HEP_PARSER_GRAMMAR_CNAME(serial,0) { \
-    static const auto& s_registry = ::dd4hep::GrammarRegistry().pre_note< x >(); }
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_INSTANCE(serial,x)   namespace dd4hep { template class Grammar< x >; }  \
+namespace DD4HEP_PARSER_GRAMMAR_CNAME(serial,0) { static const auto& s_reg = ::dd4hep::GrammarRegistry().pre_note< x >(); }
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,ctxt,x,func)         \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)                             \

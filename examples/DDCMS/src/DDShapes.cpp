@@ -35,9 +35,9 @@ DDPolycone::DDPolycone(const std::string& nam,
                        const std::vector<double>& rmin,
                        const std::vector<double>& rmax)
 {
-  dd4hep::Polycone pc(nam, start_phi, delta_phi);
-  pc.addZPlanes(rmin, rmax, z);
-  m_element = pc.ptr();
+  dd4hep::Polycone pcone(nam, start_phi, delta_phi);
+  pcone.addZPlanes(rmin, rmax, z);
+  m_element = pcone.ptr();
 }
 
 double DDPolycone::startPhi() const   {
