@@ -230,14 +230,14 @@ Property& PropertyConfigurable::property(const string& nam)   {
 
 namespace dd4hep { 
   namespace Parsers {
-    int parse(Property& result, const std::string& input) {
+    template <> int parse(Property& result, const std::string& input) {
       result.str(input); 
       return 1;
     }
-  }
-  namespace Utils {
-    std::ostream& toStream(const Property& result, std::ostream& os) {
+    template <> std::ostream& toStream(const Property& result, std::ostream& os) {
       return os << result.str();
     }
   }
+  template class Grammar<Property>;
 }
+
