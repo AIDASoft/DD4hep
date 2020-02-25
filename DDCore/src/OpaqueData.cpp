@@ -159,7 +159,5 @@ void* OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g)   {
 }
 
 #include "DD4hep/detail/Grammar_unparsed.h"
-namespace dd4hep {
-  template class Grammar<OpaqueDataBlock>;
-  static const auto& s_registry = GrammarRegistry().pre_note<OpaqueDataBlock>();
-}
+// Ensure the grammars are registered and instantiated
+static auto s_registry = GrammarRegistry::pre_note<OpaqueDataBlock>();

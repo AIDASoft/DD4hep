@@ -243,8 +243,7 @@ namespace dd4hep {
   template<> int Grammar<Property>::evaluate(void* _p, const std::string& _v) const {
     return eval_obj ((Property*)_p,_v);
   }
-  template class Grammar<Property>;
   // Ensure the grammars are registered
-  static const auto& s_registry = GrammarRegistry().pre_note<Property>();
- }
+  static auto s_registry = GrammarRegistry::pre_note<Property>();
+}
 

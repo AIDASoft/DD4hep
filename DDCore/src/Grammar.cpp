@@ -137,3 +137,9 @@ void dd4hep::BasicGrammar::invalidConversion(const std::type_info& from, const s
                              "Data conversion from '" + from_name + 
                              "' to '" + to_name + "' is not implemented.");
 }
+
+/// Registry instance singleton
+const dd4hep::GrammarRegistry& dd4hep::GrammarRegistry::instance()   {
+  static GrammarRegistry s_reg;
+  return s_reg;
+}
