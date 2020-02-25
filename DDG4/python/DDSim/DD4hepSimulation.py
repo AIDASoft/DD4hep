@@ -34,7 +34,7 @@ try:
 except ImportError:
   ARGCOMPLETEENABLED = False
 
-POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".pairs")
+POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".pairs", ".hepmc3")
 
 
 def outputLevel(level):
@@ -397,6 +397,9 @@ class DD4hepSimulation(object):
       elif inputFile.endswith(".hepevt"):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepevt%d" % index)
         gen.Input = "Geant4EventReaderHepEvtLong|" + inputFile
+      elif inputFile.endswith(".hepmc3"):
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
+        gen.Input = "HEPMC3FileReader|" + inputFile
       elif inputFile.endswith(".hepmc"):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
         gen.Input = "Geant4EventReaderHepMC|" + inputFile
