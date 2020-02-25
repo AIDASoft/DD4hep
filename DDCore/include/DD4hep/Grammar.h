@@ -206,12 +206,6 @@ namespace dd4hep {
     new(pointer) TYPE();
   }
 
-  /// Standarsd constructor
-  template <typename TYPE> const BasicGrammar& BasicGrammar::instance()  {
-    static Grammar<TYPE> s_gr;
-    return s_gr;
-  }
-
   /// Grammar registry interface
   /**
    *   \author  M.Frank
@@ -225,13 +219,13 @@ namespace dd4hep {
     /// Registry instance singleton
     static const GrammarRegistry& instance();
     template <typename T> static const GrammarRegistry& pre_note()   {
-      BasicGrammar::pre_note(typeid(T),BasicGrammar::instance<T>);
       // Apple (or clang)  wants this....
       std::string (Grammar<T>::*str)(const void*) const = &Grammar<T>::str;
       bool        (Grammar<T>::*fromString)(void*, const std::string&) const = &Grammar<T>::fromString;
       int         (Grammar<T>::*evaluate)(void*, const std::string&) const = &Grammar<T>::evaluate;
       if (fromString && str && evaluate) {
       }
+      BasicGrammar::pre_note(typeid(T),BasicGrammar::instance<T>);
       return instance();
     }
   };

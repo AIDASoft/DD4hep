@@ -38,5 +38,10 @@ namespace dd4hep {
   template <typename TYPE> int Grammar<TYPE>::evaluate(void*, const std::string&) const {
     return 0;
   }
+  /// Standarsd constructor
+  template <typename TYPE> const BasicGrammar& BasicGrammar::instance()  {
+    static Grammar<TYPE> s_gr;
+    return s_gr;
+  }
 }
 #endif  /* DD4HEP_DDCORE_DETAIL_GRAMMAR_UNPARSED_H */

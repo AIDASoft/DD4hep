@@ -221,6 +221,12 @@ namespace dd4hep {
   template<typename T> inline int eval_obj(T* ptr, const std::string& str)  {
     return BasicGrammar::instance<T>().fromString(ptr,pre_parse_obj(str));
   }
+
+  /// Standarsd constructor
+  template <typename TYPE> const BasicGrammar& BasicGrammar::instance()  {
+    static Grammar<TYPE> s_gr;
+    return s_gr;
+  }
 }      // End namespace dd4hep
 
 #define DD4HEP_PARSER_GRAMMAR_CNAME(serial,name)  namespace_dd4hep__grammar_##serial##_##name
