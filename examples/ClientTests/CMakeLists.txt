@@ -196,7 +196,7 @@ list(APPEND ClientTests_ShapeTests EightPointSolid Eightpoint_Reflect_Volume Eig
 list(APPEND ClientTests_ShapeTests Polycone Polyhedra PseudoTrap PseudoTrap2 Sphere Torus Trap Trd1 Trd2)
 list(APPEND ClientTests_ShapeTests TruncatedTube ExtrudedPolygon)
 if(${ROOT_VERSION} VERSION_GREATER 6.21.00)
-list(APPEND ClientTests_ShapeTests Tesselated)
+list(APPEND ClientTests_ShapeTests Tessellated)
 endif()
 foreach (test ${ClientTests_ShapeTests})
   dd4hep_add_test_reg( ClientTests_Check_Shape_${test}

@@ -1,0 +1,202 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+  <define>
+    <constant name="sqrt5" value="sqrt(5.0)"/>
+  </define>
+
+  <detectors>
+    <detector id="1" name="Shape_Tessellated" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="TessellatedSolid">
+          <vertex x="0" y="0.5 * (1 + sqrt5)" z="-1"/>
+          <vertex x="0" y="0.5 * (-1 + sqrt5)" z="0.5 * (-1 - sqrt5)"/>
+          <vertex x="-1" y="0" z="0.5 * (-1 - sqrt5)"/>
+          <vertex x="-1" y="1" z="-1"/>
+
+          <vertex x="1" y="1" z="-1"/>
+          <vertex x="0" y="0.5 * (1 + sqrt5)" z="-1"/>
+          <vertex x="0" y="0.5 * (-1 + sqrt5)" z="0.5 * (-1 - sqrt5)"/>
+          <vertex x="1" y="0" z="0.5 * (-1 - sqrt5)"/>
+
+          <vertex x="1" y="1" z="-1"/>
+          <vertex x="0" y="0.5 * (1 + sqrt5)" z="-1"/>
+          <vertex x="0.5 * (-1 + sqrt5)" y="0.5 * (1 + sqrt5)" z="0"/>
+          <vertex x="0.5 * (1 + sqrt5)" y="1" z="0"/>
+
+          <vertex x="0.5 * (1 - sqrt5)" y="0.5 * (1 + sqrt5)" z="0"/>
+          <vertex x="0" y="0.5 * (1 + sqrt5)" z="-1"/>
+          <vertex x="0.5 * (-1 + sqrt5)" y="0.5 * (1 + sqrt5)" z="0"/>
+          <vertex x="0" y="0.5 * (1 + sqrt5)" z="1"/>
+
+          <vertex x="0.5 * (1 - sqrt5)" y="0.5 * (1 + sqrt5)" z="0"/>
+          <vertex x="0" y="0.5 * (1 + sqrt5)" z="-1"/>
+          <vertex x="-1" y="1" z="-1"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="1" z="0"/>
+
+          <vertex x="1" y="1" z="-1"/>
+          <vertex x="0.5 * (1 + sqrt5)" y="1" z="0"/>
+          <vertex x="0.5 * (1 + sqrt5)" y="0" z="0.5 * (1 - sqrt5)"/>
+          <vertex x="1" y="0" z="0.5 * (-1 - sqrt5)"/>
+
+          <vertex x="0.5 * (1 + sqrt5)" y="0" z="0.5 * (1 - sqrt5)"/>
+          <vertex x="0.5 * (1 + sqrt5)" y="-1" z="0"/>
+          <vertex x="1" y="-1" z="-1"/>
+          <vertex x="1" y="0" z="0.5 * (-1 - sqrt5)"/>
+
+          <vertex x="1" y="-1" z="-1"/>
+          <vertex x="0" y="0.5 * (-1 - sqrt5)" z="-1"/>
+          <vertex x="0" y="0.5 * (1 - sqrt5)" z="0.5 * (-1 - sqrt5)"/>
+          <vertex x="1" y="0" z="0.5 * (-1 - sqrt5)"/>
+
+          <vertex x="1" y="0" z="0.5 * (-1 - sqrt5)"/>
+          <vertex x="0" y="0.5 * (-1 + sqrt5)" z="0.5 * (-1 - sqrt5)"/>
+          <vertex x="-1" y="0" z="0.5 * (-1 - sqrt5)"/>
+          <vertex x="0" y="0.5 * (1 - sqrt5)" z="0.5 * (-1 - sqrt5)"/>
+
+          <vertex x="0.5 * (-1 + sqrt5)" y="0.5 * (1 + sqrt5)" z="0"/>
+          <vertex x="0.5 * (1 + sqrt5)" y="1" z="0"/>
+          <vertex x="1" y="1" z="1"/>
+          <vertex x="0" y="0.5 * (1 + sqrt5)" z="1"/>
+
+          <vertex x="0.5 * (1 + sqrt5)" y="1" z="0"/>
+          <vertex x="1" y="1" z="1"/>
+          <vertex x="1" y="0" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="0.5 * (1 + sqrt5)" y="0" z="0.5 * (-1 + sqrt5)"/>
+
+          <vertex x="0.5 * (1 + sqrt5)" y="0" z="0.5 * (1 - sqrt5)"/>
+          <vertex x="0.5 * (1 + sqrt5)" y="1" z="0"/>
+          <vertex x="0.5 * (1 + sqrt5)" y="0" z="0.5 * (-1 + sqrt5)"/>
+          <vertex x="0.5 * (1 + sqrt5)" y="-1" z="0"/>
+
+          <vertex x="0.5 * (1 - sqrt5)" y="0.5 * (1 + sqrt5)" z="0"/>
+          <vertex x="0" y="0.5 * (1 + sqrt5)" z="1"/>
+          <vertex x="-1" y="1" z="1"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="1" z="0"/>
+
+          <vertex x="0" y="0.5 * (1 + sqrt5)" z="1"/>
+          <vertex x="0" y="0.5 * (-1 + sqrt5)" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="-1" y="0" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="-1" y="1" z="1"/>
+
+          <vertex x="1" y="1" z="1"/>
+          <vertex x="0" y="0.5 * (1 + sqrt5)" z="1"/>
+          <vertex x="0" y="0.5 * (-1 + sqrt5)" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="1" y="0" z="0.5 * (1 + sqrt5)"/>
+
+          <vertex x="0" y="0.5 * (1 - sqrt5)" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="-1" y="0" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="0" y="0.5 * (-1 + sqrt5)" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="1" y="0" z="0.5 * (1 + sqrt5)"/>
+
+          <vertex x="0" y="0.5 * (1 - sqrt5)" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="1" y="0" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="1" y="-1" z="1"/>
+          <vertex x="0" y="0.5 * (-1 - sqrt5)" z="1"/>
+
+          <vertex x="0.5 * (1 + sqrt5)" y="0" z="0.5 * (-1 + sqrt5)"/>
+          <vertex x="0.5 * (1 + sqrt5)" y="-1" z="0"/>
+          <vertex x="1" y="-1" z="1"/>
+          <vertex x="1" y="0" z="0.5 * (1 + sqrt5)"/>
+
+          <vertex x="-1" y="0" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="-1" y="1" z="1"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="1" z="0"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="0" z="0.5 * (-1 + sqrt5)"/>
+
+          <vertex x="-1" y="-1" z="1"/>
+          <vertex x="-1" y="0" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="0" z="0.5 * (-1 + sqrt5)"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="-1" z="0"/>
+
+          <vertex x="0" y="0.5 * (1 - sqrt5)" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="-1" y="0" z="0.5 * (1 + sqrt5)"/>
+          <vertex x="-1" y="-1" z="1"/>
+          <vertex x="0" y="0.5 * (-1 - sqrt5)" z="1"/>
+
+          <vertex x="0.5 * (-1 - sqrt5)" y="-1" z="0"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="0" z="0.5 * (1 - sqrt5)"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="1" z="0"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="0" z="0.5 * (-1 + sqrt5)"/>
+
+          <vertex x="0.5 * (-1 - sqrt5)" y="-1" z="0"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="0" z="0.5 * (1 - sqrt5)"/>
+          <vertex x="-1" y="0" z="0.5 * (-1 - sqrt5)"/>
+          <vertex x="-1" y="-1" z="-1"/>
+
+          <vertex x="0" y="0.5 * (-1 - sqrt5)" z="-1"/>
+          <vertex x="0.5 * (1 - sqrt5)" y="0.5 * (-1 - sqrt5)" z="0"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="-1" z="0"/>
+          <vertex x="-1" y="-1" z="-1"/>
+
+          <vertex x="0.5 * (1 - sqrt5)" y="0.5 * (-1 - sqrt5)" z="0"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="-1" z="0"/>
+          <vertex x="-1" y="-1" z="1"/>
+          <vertex x="0" y="0.5 * (-1 - sqrt5)" z="1"/>
+
+          <vertex x="-1" y="1" z="-1"/>
+          <vertex x="-1" y="0" z="0.5 * (-1 - sqrt5)"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="0" z="0.5 * (1 - sqrt5)"/>
+          <vertex x="0.5 * (-1 - sqrt5)" y="1" z="0"/>
+
+          <vertex x="0" y="0.5 * (-1 - sqrt5)" z="-1"/>
+          <vertex x="0" y="0.5 * (1 - sqrt5)" z="0.5 * (-1 - sqrt5)"/>
+          <vertex x="-1" y="0" z="0.5 * (-1 - sqrt5)"/>
+          <vertex x="-1" y="-1" z="-1"/>
+
+          <vertex x="0" y="0.5 * (-1 - sqrt5)" z="-1"/>
+          <vertex x="0.5 * (1 - sqrt5)" y="0.5 * (-1 - sqrt5)" z="0"/>
+          <vertex x="0" y="0.5 * (-1 - sqrt5)" z="1"/>
+          <vertex x="0.5 * (-1 + sqrt5)" y="0.5 * (-1 - sqrt5)" z="0"/>
+
+          <vertex x="1" y="-1" z="-1"/>
+          <vertex x="0.5 * (1 + sqrt5)" y="-1" z="0"/>
+          <vertex x="0.5 * (-1 + sqrt5)" y="0.5 * (-1 - sqrt5)" z="0"/>
+          <vertex x="0" y="0.5 * (-1 - sqrt5)" z="-1"/>
+
+          <vertex x="0.5 * (1 + sqrt5)" y="-1" z="0"/>
+          <vertex x="1" y="-1" z="1"/>
+          <vertex x="0" y="0.5 * (-1 - sqrt5)" z="1"/>
+          <vertex x="0.5 * (-1 + sqrt5)" y="0.5 * (-1 - sqrt5)" z="0"/>
+
+          <facet v0="0"  v1="1"  v2="2"  v3="3"/>
+          <facet v0="4"  v1="7"  v2="6"  v3="5"/>
+          <facet v0="8"  v1="9"  v2="10" v3="11"/>
+          <facet v0="12" v1="15" v2="14" v3="13"/>
+          <facet v0="16" v1="17" v2="18" v3="19"/>
+          <facet v0="20" v1="21" v2="22" v3="23"/>
+          <facet v0="24" v1="25" v2="26" v3="27"/>
+          <facet v0="28" v1="29" v2="30" v3="31"/>
+          <facet v0="32" v1="35" v2="34" v3="33"/>
+          <facet v0="36" v1="39" v2="38" v3="37"/>
+          <facet v0="40" v1="41" v2="42" v3="43"/>
+          <facet v0="44" v1="45" v2="46" v3="47"/>
+          <facet v0="48" v1="51" v2="50" v3="49"/>
+          <facet v0="52" v1="55" v2="54" v3="53"/>
+          <facet v0="56" v1="57" v2="58" v3="59"/>
+          <facet v0="60" v1="63" v2="62" v3="61"/>
+          <facet v0="64" v1="67" v2="66" v3="65"/>
+          <facet v0="68" v1="71" v2="70" v3="69"/>
+          <facet v0="72" v1="73" v2="74" v3="75"/>
+          <facet v0="76" v1="77" v2="78" v3="79"/>
+          <facet v0="80" v1="81" v2="82" v3="83"/>
+          <facet v0="84" v1="87" v2="86" v3="85"/>
+          <facet v0="88" v1="89" v2="90" v3="91"/>
+          <facet v0="92" v1="93" v2="94" v3="95"/>
+          <facet v0="96" v1="99" v2="98" v3="97"/>
+          <facet v0="100" v1="101" v2="102" v3="103"/>
+          <facet v0="104" v1="107" v2="106" v3="105"/>
+          <facet v0="108" v1="111" v2="110" v3="109"/>
+          <facet v0="112" v1="113" v2="114" v3="115"/>
+          <facet v0="116" v1="117" v2="118" v3="119"/>
+
+        </shape>
+        <position x="0"  y="0" z="0"/>
+        <rotation x="0"   y="0" z="0"/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Tessellated.txt" create="CheckShape_create"/>
+      <test_writing_reference  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Tessellated.txt" create="1"/>
+    </detector>
+  </detectors>
+</lccdd>
