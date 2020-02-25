@@ -223,7 +223,8 @@ namespace dd4hep {
       std::string (Grammar<T>::*str)(const void*) const = &Grammar<T>::str;
       bool        (Grammar<T>::*fromString)(void*, const std::string&) const = &Grammar<T>::fromString;
       int         (Grammar<T>::*evaluate)(void*, const std::string&) const = &Grammar<T>::evaluate;
-      if (fromString && str && evaluate) {
+      if ( !(fromString && str && evaluate) ) {
+        BasicGrammar::invalidConversion("Grammar",typeid(T));
       }
       BasicGrammar::pre_note(typeid(T),BasicGrammar::instance<T>);
       return instance();
