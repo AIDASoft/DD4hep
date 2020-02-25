@@ -98,6 +98,19 @@ IF(TARGET LCIO::LCIO)
   set_target_properties(DDG4LCIO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 ENDIF()
+
+find_package(HepMC3)
+IF(HEPMC3_VERSION)
+  dd4hep_add_plugin(DDG4HepMC3
+    SOURCES hepmc/*.cpp
+    USES    DD4hep::DDG4
+    INCLUDES $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/hepmc> ${HEPMC3_INCLUDE_DIR}
+    USES ${HEPMC3_LIBRARIES}
+    )
+  install(TARGETS DDG4HepMC3 EXPORT DD4hep LIBRARY DESTINATION lib)
+  set_target_properties(DDG4HepMC3 PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+ENDIF()
+
 #
 #---------------------------  DDRec dependent Plugins  -----------------------------
 #This does not compile at the moment
