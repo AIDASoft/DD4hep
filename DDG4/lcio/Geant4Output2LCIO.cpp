@@ -17,7 +17,8 @@
 // Framework include files
 #include "DD4hep/VolumeManager.h"
 #include "DDG4/Geant4OutputAction.h"
-#include "LCIOEventParameters.h"
+
+#include "DDG4/EventParameters.h"
 // Geant4 headers
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
@@ -41,6 +42,21 @@ namespace dd4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim {
+    template <class T=lcio::LCEventImpl> void EventParameters::extractParameters(T& event){
+      auto& lcparameters = event.parameters();
+      event.setRunNumber(this->runNumber());
+      event.setEventNumber(this->eventNumber());
+      for(auto const& ival: this->intParameters()) {
+        lcparameters.setValues(ival.first, ival.second);
+      }
+      for(auto const& ival: this->fltParameters()) {
+        lcparameters.setValues(ival.first, ival.second);
+      }
+      for(auto const& ival: this->strParameters()) {
+        lcparameters.setValues(ival.first, ival.second);
+      }
+    }
+
 
     class Geant4ParticleMap;
 
@@ -351,18 +367,16 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
 /// Callback to store the Geant4 event
 void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
   lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
-  LCIOEventParameters* parameters = context()->event().extension<LCIOEventParameters>(false);
+  EventParameters* parameters = context()->event().extension<EventParameters>(false);
   int runNumber(0), eventNumber(0);
   const int eventNumberOffset(m_eventNumberOffset > 0 ? m_eventNumberOffset : 0);
   const int runNumberOffset(m_runNumberOffset > 0 ? m_runNumberOffset : 0);
   // Get event number, run number and parameters from extension ...
-  if ( parameters ) {
+  if (parameters) {
     runNumber = parameters->runNumber() + runNumberOffset;
     eventNumber = parameters->eventNumber() + eventNumberOffset;
-    LCIOEventParameters::copyLCParameters(parameters->eventParameters(),e->parameters());
-  }
-  // ... or from DD4hep framework 
-  else {
+    parameters->extractParameters(*e);
+  } else {  // ... or from DD4hep framework
     runNumber = m_runNo + runNumberOffset;
     eventNumber = ctxt.context->GetEventID() + eventNumberOffset;
   }

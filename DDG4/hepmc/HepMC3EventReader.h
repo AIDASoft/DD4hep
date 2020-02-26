@@ -15,7 +15,7 @@
 // Framework include files
 #include "DDG4/Geant4InputAction.h"
 
-namespace HepMC3{ struct GenEvent; }
+namespace HepMC3{ class GenEvent; }
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {
@@ -27,20 +27,27 @@ namespace dd4hep  {
     /**
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
+     * @property: Parameters.Flow1
+     * @property: Parameters.Flow2
      */
     class HEPMC3EventReader : public Geant4EventReader  {
     public:
       /// Initializing constructor
-      HEPMC3EventReader(const std::string& nam);
+      explicit HEPMC3EventReader(const std::string& fileName);
       /// Default destructor
-      virtual ~HEPMC3EventReader();
+      virtual ~HEPMC3EventReader() = default;
 
-      /// Read an event and fill a vector of MCParticles.
-      virtual EventReaderStatus readParticles(int event_number,
-                                              Vertices& vertices,
-                                              std::vector<Particle*>& particles);
-      /// Read an event and return a  MCParticles.
+      /// Read an event and fill a vector of Particles and vertices
+      virtual EventReaderStatus readParticles(int event_number, Vertices& vertices, Particles& particles);
+      /// Read an event
       virtual EventReaderStatus readGenEvent(int event_number, HepMC3::GenEvent& genEvent) = 0;
+
+    protected:
+      /// name of the GenEvent Attribute storing the color flow1
+      std::string m_flow1 = "flow1";
+      /// name of the GenEvent Attribute storing the color flow2
+      std::string m_flow2 = "flow2";
+
     };
 
   }     /* End namespace sim   */
