@@ -81,8 +81,8 @@ HEPMC3FileReader::moveToEvent(int event_number) {
   while( m_currEvent != event_number) {
     printout(INFO,"HEPMC3FileReader::moveToEvent","Event number before skipping: %d", m_currEvent );
     HepMC3::GenEvent genEvent;
-    m_reader->read_event(genEvent) ;
-    ++m_currEvent;
+    m_reader->skip(event_number);
+    m_currEvent = event_number;
     printout(INFO,"HEPMC3FileReader::moveToEvent","Event number after skipping: %d", m_currEvent );
   }
   return EVENT_READER_OK;
