@@ -14,7 +14,7 @@
  *
  @{
   \package HepMC3FileReader
- * \brief Plugin to read HepMC3 Ascii files
+ * \brief Plugin to read HepMC3 files
  *
  And here we can put a longer description, parameters, examples...
  *
@@ -23,6 +23,8 @@
 
 #include "HepMC3EventReader.h"
 
+#include "DDG4/EventParameters.h"
+
 #include <HepMC3/ReaderFactory.h>
 
 /// Namespace for the AIDA detector description toolkit
@@ -30,6 +32,29 @@ namespace dd4hep  {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim  {
+
+    template <class T=HepMC3::GenEvent> void EventParameters::ingestParameters(T const& genEvent) {
+      for(auto const& attr: genEvent.attributes()){
+        for(auto const& inAttr: attr.second){
+          std::stringstream strstr;
+          strstr << attr.first;
+          // if more than one entry for given key, or if counter not 0 append "_counterValue"
+          if(attr.second.size() > 1 or inAttr.first != 0){
+            strstr << "_" << inAttr.first;
+          }
+          auto attr_as_int = std::dynamic_pointer_cast<HepMC3::IntAttribute>(inAttr.second);
+          auto attr_as_flt = std::dynamic_pointer_cast<HepMC3::FloatAttribute>(inAttr.second);
+          if(attr_as_int) {
+            m_intValues[strstr.str()] = {attr_as_int->value()};
+          } else if(attr_as_flt) {
+            m_fltValues[strstr.str()] = {attr_as_flt->value()};
+          } else { // anything else
+            m_strValues[strstr.str()] = {inAttr.second->unparsed_string()};
+          }
+        }
+      }
+    }
+
 
     /// Base class to read hepmc3 event files
     /**
@@ -95,6 +120,17 @@ HEPMC3FileReader::readGenEvent(int /*event_number*/, HepMC3::GenEvent& genEvent)
   ++m_currEvent;
   if (genEvent.particles().size()) {
     printout(INFO,"HEPMC3FileReader","Read event from file");
+    // Create input event parameters context
+    try {
+      Geant4Context* ctx = context();
+      EventParameters *parameters = new EventParameters();
+      parameters->setEventNumber(genEvent.event_number());
+      parameters->ingestParameters(genEvent);
+      ctx->event().addExtension<EventParameters>(parameters);
+    }
+    catch(std::exception &)
+    {
+    }
     return EVENT_READER_OK;
   }
   return EVENT_READER_EOF;
