@@ -84,8 +84,8 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
     p->psx          = mom.get_component(0) * mom_unit;
     p->psy          = mom.get_component(1) * mom_unit;
     p->psz          = mom.get_component(2) * mom_unit;
-    p->time         = vsx.get_component(3) * CLHEP::ns; // FIXME
-    p->properTime   = vsx.get_component(3) * CLHEP::ns; // FIXME
+    p->time         = vsx.get_component(3) * len_unit / CLHEP::c_light; // FIXME
+    p->properTime   = vsx.get_component(3) * len_unit / CLHEP::c_light; // FIXME
     p->vsx          = vsx.get_component(0) * len_unit;
     p->vsy          = vsx.get_component(1) * len_unit;
     p->vsz          = vsx.get_component(2) * len_unit;
