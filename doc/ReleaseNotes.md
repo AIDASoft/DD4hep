@@ -1,3 +1,108 @@
+# v01-12
+
+* 2020-02-26 Andre Sailer ([PR#637](https://github.com/aidasoft/dd4hep/pull/637))
+  - LcioEventReader: fix setting of color flow, second coordinate was never set
+
+* 2020-02-25 Markus Frank ([PR#633](https://github.com/aidasoft/dd4hep/pull/633))
+  - Added basic implementation for CAD interface to load shapes from CAD files. There is an open issue how to best embed the volume/shape loading from CAD files into the existing infrastructure. See for [presentation](https://indico.cern.ch/event/885083/contributions/3758180/attachments/1990793/3318984/2020-02-20-DD4hep-Tessellated-Shapes.pdf). This feature is only available if build against ROOT 6.22 or higher. 
+  - DDCAD used the [assimp](https://github.com/assimp/assimp) librray to interprete the CAD files.
+  - Simplify grammar instantiation. 
+    - For grammars to be parsed with `boost::spirit` simply include
+      `#include "DD4hep/detail/Grammar_parsed.h"`
+    - For Grammars which should **not be parsed** with `boost::spirit` include
+      `#include "DD4hep/detail/Grammar_unparsed.h"`
+    - To instantiate the code and to register the instantiation call:
+       `template <> dd4hep::Grammar<my-class>;`
+    - If the Grammar is supposed to be registered call instead/in addition:
+      `static auto s_registry = GrammarRegistry::pre_note<my-class>();`
+     - All other macros are gone.
+
+* 2020-02-21 Andre Sailer ([PR#631](https://github.com/aidasoft/dd4hep/pull/631))
+  - Only build DDG4 Python dependent libraries and pcms if Python and PyROOT are found
+
+* 2020-02-21 Andre Sailer ([PR#627](https://github.com/aidasoft/dd4hep/pull/627))
+  - MakeGaudiMap: better inference of listcomponents and library location by using target properties
+  - MakeGauiMap: Detailed information about the command is not only printed when VERBOSE=1
+
+* 2020-02-19 Marko Petric ([PR#626](https://github.com/aidasoft/dd4hep/pull/626))
+  - Check in python modules that load `libglapi` is only called if the library is not already loaded.
+
+* 2020-02-19 Sebastien Ponce ([PR#624](https://github.com/aidasoft/dd4hep/pull/624))
+  - Fixed bug in the `dd4hep_add_test_reg` function which was only taking into account the last dependency of a test when several were present.
+
+* 2020-02-19 Marko Petric ([PR#622](https://github.com/aidasoft/dd4hep/pull/622))
+  - Add missing conversion from `unicode` to `str` for python 2 case in `DDrec.py`
+  - Add test to check dd4hep python module imports
+  - Fixes for tests from examples:
+     - typo in tessellated example
+     - make gdml read test dependent on the gdml write test
+  - Add check to test if the version of python used to build ROOT is the same to the version detected by CMake to build DD4hep (works only from ROOT 6.20)
+
+* 2020-02-17 Andre Sailer ([PR#621](https://github.com/aidasoft/dd4hep/pull/621))
+  - Cmake: dd4hep_add_dictionary: directly use command, no longer created bash script to be called. See details of call with `make VERBOSE=1`
+  - PluginServiceV2: use `boost::split` instead of walking of char arrays, fix bug when two colons are in the environment variable. Fixes #600
+
+* 2020-02-13 Sebastien Ponce ([PR#620](https://github.com/aidasoft/dd4hep/pull/620))
+  - added missing dependency of Persist_CLICSiD_Geant4 test on Persist_CLICSiD_Save_LONGTEST
+
+* 2020-02-11 Marko Petric ([PR#618](https://github.com/aidasoft/dd4hep/pull/618))
+  - Fix from which version of ROOT `TGeoTessellated` is supported (starting only in 6.22)
+  - Fix location of test file in tessellated example
+
+* 2020-02-06 Hadrien Grasland ([PR#613](https://github.com/aidasoft/dd4hep/pull/613))
+  - Use the official CMake configuration mechanism provided by TBB >= 2017 U7.
+  - Do not delete move constructors in DigiKernel as this breaks current versions of TBB.
+
+* 2020-02-05 Markus Frank ([PR#610](https://github.com/aidasoft/dd4hep/pull/610))
+  - Thanks to @agheata, ROOT now supports tessellated shapes. These new shapes are now supported by DD4hep including the automatic translation to Geant4. The tessellated shapes feature is only supported when compiling against ROOT 6.20.0 or higher.
+  - Added a basic shape test for the tessellated shape.
+
+* 2020-02-03 Markus Frank ([PR#608](https://github.com/aidasoft/dd4hep/pull/608))
+  - SInce we do not use DTD checking all DTD links from lcdd xml files have been removed in examples. 
+  - Add 2 examples to check the usage of NTP and STP temperature/pressure conditions
+
+* 2020-01-09 Markus Frank ([PR#606](https://github.com/aidasoft/dd4hep/pull/606))
+  - Resolves #605 
+  - There was an apparent bug when cloning `DetElement` trees. Not only for the top element, which should receive a new ID, this top ID was propagated to all children. This was clearly wrong. The correct solution is: 
+      - Top element gets a new ID
+      - Children keep their ID
+  - If a user wants to preserve the old functionality the flag `DetElement::PROPAGATE_PARENT_ID` must be set in the clone statement.
+
+* 2019-12-18 Markus Frank ([PR#604](https://github.com/aidasoft/dd4hep/pull/604))
+  - Allow to set ambient temperature and pressure for all materials. 
+      - predefined settings: STP, NTP
+      - Example:
+         - `examples/ClientTests/compact/Check_Air.xml`
+       - Apply global temperature and pressure for all materials and especially for one single material.
+       - Verification for Geant4: `examples/ClientTests/scripts/Check_Air.py`
+  - DDG4: allow Geant4 messengers to pass parameter string.
+
+* 2019-12-16 Markus Frank ([PR#603](https://github.com/aidasoft/dd4hep/pull/603))
+  - Resolves #599
+  - Resolves #601 
+  - Work on #595
+
+* 2019-11-27 Markus Frank ([PR#597](https://github.com/aidasoft/dd4hep/pull/597))
+  - Intermediate release to store improvements in the development of DDDigi:
+    Start implementing noise chains
+  - Fix cmake build if CLHEP is included in Geant4 and not external.
+
+* 2019-11-16 Markus Frank ([PR#596](https://github.com/aidasoft/dd4hep/pull/596))
+  - Requre that all materials must be entered explicitly.
+    - The default ROOT element table is disabled. 
+  - Fix examples, which relied on the default ROOT elements being present
+  - Fix #595 for DDCMS:
+    - The density was not re-normalized to the units TGeo was expecting. Same for atomic weights.
+    - Fill missing elements to `DDCMS/data/materials.xml` (Values to be cross-checked by CMS)
+
+* 2019-11-09 Markus Frank ([PR#593](https://github.com/aidasoft/dd4hep/pull/593))
+  -  Fix Geant4 conversion for Polyhedra and Polycone if start_phi != 0 (See issue https://github.com/AIDASoft/DD4hep/issues/578)
+  - Preparatory work to have placeholder volumes for twisted tubes (See issue https://github.com/AIDASoft/DD4hep/issues/588)
+
+* 2019-10-29 Andre Sailer ([PR#590](https://github.com/aidasoft/dd4hep/pull/590))
+  - DumpBField: correct the column unit printout and prepare for eventual change of default length unit
+  - MagneticFields example: correct the unit for the Z parameter of the MultiPole to tesla
+
 # v01-11
 
 * 2019-10-23 MarkusFrankATcernch ([PR#587](https://github.com/AidaSoft/DD4hep/pull/587))
