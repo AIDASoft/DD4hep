@@ -1,3 +1,9 @@
+# v01-11-01
+
+* 2020-02-28 Frank Gaede ([PR#639](https://github.com/AidaSoft/DD4hep/pull/639))
+  - fix color flow in LCIOEventReader (see #637)
+    - backport from v01-12
+
 # v01-11
 
 * 2019-10-23 MarkusFrankATcernch ([PR#587](https://github.com/AidaSoft/DD4hep/pull/587))
