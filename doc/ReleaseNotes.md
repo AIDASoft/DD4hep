@@ -103,6 +103,11 @@
   - DumpBField: correct the column unit printout and prepare for eventual change of default length unit
   - MagneticFields example: correct the unit for the Z parameter of the MultiPole to tesla
 
+# v01-11-01
+* patch release for v01-11 that adds this PR to v01-11:
+* 2020-02-26 Andre Sailer (PR#637)
+   - LcioEventReader: fix setting of color flow, second coordinate was never set
+
 # v01-11
 
 * 2019-10-23 MarkusFrankATcernch ([PR#587](https://github.com/AidaSoft/DD4hep/pull/587))
