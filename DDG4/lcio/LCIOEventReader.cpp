@@ -110,7 +110,7 @@ LCIOEventReader::readParticles(int event_number,
     p->spin[1]      = spin[1];
     p->spin[2]      = spin[2];
     p->colorFlow[0] = color[0];
-    p->colorFlow[0] = color[1];
+    p->colorFlow[1] = color[1];
     p->mass         = mcp->getMass()*CLHEP::GeV;
     const EVENT::MCParticleVec &par = mcp->getParents(), &dau=mcp->getDaughters();
     for(int num=dau.size(),k=0; k<num; ++k)
