@@ -73,7 +73,7 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
     for(auto const& inAttr: attr.second){
       if(attr.first == m_flow1){
         colorFlow[0][inAttr.first] = std::atoi(inAttr.second->unparsed_string().c_str());
-      } else if(attr.first == m_flow1){
+      } else if(attr.first == m_flow2){
         colorFlow[1][inAttr.first] = std::atoi(inAttr.second->unparsed_string().c_str());
       }
     }

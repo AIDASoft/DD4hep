@@ -67,6 +67,7 @@ option(DD4HEP_USE_GEANT4  "Enable the simulation part based on Geant4"    OFF)
 option(DD4HEP_IGNORE_GEANT4_TLS "Ignore the tls flag Geant4 was compiled with" OFF)
 option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO    "Build lcio extensions"                         OFF)
+option(DD4HEP_USE_HEPMC3  "Build hepmc3 extensions"                       OFF)
 option(DD4HEP_LOAD_ASSIMP "Download and build ASSIMP from github"         OFF)
 option(BUILD_TESTING      "Enable and build tests"                        ON)
 option(BUILD_SHARED_LIBS  "If OFF build STATIC Libraries"                 ON)
@@ -131,6 +132,10 @@ if(DD4HEP_USE_LCIO)
   find_package(LCIO REQUIRED)
   DD4HEP_SETUP_LCIO_TARGETS()
 endif()
+
+IF(DD4HEP_USE_HEPMC3)
+  find_package(HepMC3 REQUIRED)
+ENDIF()
 
 ######################
 # Set compiler flags #
