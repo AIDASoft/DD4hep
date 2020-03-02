@@ -714,11 +714,7 @@ class Geant4:
     return evt_lcio
 
   def setupEDM4hepOutput(self, name, output):
-    """
-       Configure EDM4hep root output for the simulated events
-
-       \author  F.Gaede
-    """
+    """Configure EDM4hep root output for the simulated events."""
     evt_edm4hep = EventAction(self.kernel(), 'Geant4Output2EDM4hep/' + name, True)
     evt_edm4hep.Control = True
     evt_edm4hep.Output = output
