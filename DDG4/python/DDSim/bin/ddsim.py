@@ -14,11 +14,11 @@ from DDSim.DD4hepSimulation import DD4hepSimulation
 
 
 if __name__ == "__main__":
-  RUNNER = DD4hepSimulation()
-  RUNNER.parseOptions()
-
   logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
   logger = logging.getLogger('DDSim')
+
+  RUNNER = DD4hepSimulation()
+  RUNNER.parseOptions()
 
   try:
     RUNNER.run()

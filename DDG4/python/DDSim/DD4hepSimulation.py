@@ -6,7 +6,7 @@ Based on M. Frank and F. Gaede runSim.py
    @version 0.1
 
 """
-from __future__ import absolute_import, unicode_literals, division
+from __future__ import absolute_import, unicode_literals, division, print_function
 __RCSID__ = "$Id$"
 import sys
 import os
@@ -628,7 +628,8 @@ SIM = DD4hepSimulation()
         else:
           steeringFileBase += "SIM.%s = %s" % (parName, str(parameter))
         steeringFileBase += "\n"
-    logger.info("%s", steeringFileBase)
+    for line in steeringFileBase.splitlines():
+      print(line)
 
   def _consistencyChecks(self):
     """Check if the requested setup makes sense, or if there is something preventing it from working correctly
