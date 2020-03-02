@@ -262,6 +262,7 @@ namespace dd4hep  {
       setVariable("micrometer", micro_ * m);
       setVariable("micron",     micro_ * m);
       setVariable("mum",        micro_ * m);
+      setVariable("um",         micro_ * m);
       setVariable("nanometer",  nano_  * m);
       setVariable("nm",         nano_  * m);
 
