@@ -53,10 +53,10 @@ class ConfigHelper(object):
     return self.printOptions()
 
   def printOptions(self):
-    """print all paramters"""
+    """print all parameters"""
     options = []
     for opt, val in six.iteritems(self.getOptions()):
-      options.append("\n\t'%s': '%s'" % (opt, val[0]))
+      options.append("\n\t'%s': '%s'" % (opt, val['default']))
     return "".join(options)
 
   def setOption(self, name, val):
