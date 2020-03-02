@@ -293,20 +293,37 @@ def _get(self, name):
   raise KeyError(msg)
 
 
-def _set(self, name, value):
-  a = Interface.toAction(self)
-  if isinstance(value, list):
-    value = [str(x) for x in value]
-  if isinstance(value, dict):
+def _deUnicode(value):
+  """Turn any unicode literal into str, needed when passing to c++.
+
+  Recursively transverses dicts, lists, sets, tuples
+
+  :return: always a str
+  """
+  if isinstance(value, (bool, float, six.integer_types)):
+    value = value
+  elif isinstance(value, six.string_types):
+    value = str(value)
+  elif isinstance(value, (list, set, tuple)):
+    value = [_deUnicode(x) for x in value]
+  elif isinstance(value, dict):
     tempDict = {}
     for key, val in value.items():
-      if isinstance(val, six.string_types):
-        val = str(val)
-      tempDict[str(key)] = val
+      key = _deUnicode(key)
+      val = _deUnicode(val)
+      tempDict[key] = val
     value = tempDict
-  if Interface.setProperty(a, str(name), str(value)):
+  return str(value)
+
+
+def _set(self, name, value):
+  """This function is called when properties are passed to the c++ objects."""
+  a = Interface.toAction(self)
+  name = _deUnicode(name)
+  value = _deUnicode(value)
+  if Interface.setProperty(a, name, value):
     return
-  msg = 'Geant4Action::SetProperty [Unhandled]: Cannot set ' + a.name() + '.' + name + ' = ' + str(value)
+  msg = 'Geant4Action::SetProperty [Unhandled]: Cannot set ' + a.name() + '.' + name + ' = ' + value
   raise KeyError(msg)
 
 
