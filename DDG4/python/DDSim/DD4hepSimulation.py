@@ -12,6 +12,7 @@ import sys
 import os
 from DDSim.Helper.Meta import Meta
 from DDSim.Helper.LCIO import LCIO
+from DDSim.Helper.HepMC3 import HepMC3
 from DDSim.Helper.GuineaPig import GuineaPig
 from DDSim.Helper.Physics import Physics
 from DDSim.Helper.Filter import Filter
@@ -34,7 +35,7 @@ try:
 except ImportError:
   ARGCOMPLETEENABLED = False
 
-POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".pairs", ".hepmc3")
+POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".pairs")
 
 
 def outputLevel(level):
@@ -94,6 +95,7 @@ class DD4hepSimulation(object):
     self.action = Action()
     self.guineapig = GuineaPig()
     self.lcio = LCIO()
+    self.hepmc3 = HepMC3()
     self.meta = Meta()
 
     self.filter = Filter()
@@ -397,12 +399,14 @@ class DD4hepSimulation(object):
       elif inputFile.endswith(".hepevt"):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepevt%d" % index)
         gen.Input = "Geant4EventReaderHepEvtLong|" + inputFile
-      elif inputFile.endswith(".hepmc3"):
-        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
-        gen.Input = "HEPMC3FileReader|" + inputFile
       elif inputFile.endswith(".hepmc"):
-        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
-        gen.Input = "Geant4EventReaderHepMC|" + inputFile
+        if self.hepmc3.useHepMC3:
+          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
+          gen.Parameters = self.hepmc3.getParameters()
+          gen.Input = "HEPMC3FileReader|" + inputFile
+        else:
+          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
+          gen.Input = "Geant4EventReaderHepMC|" + inputFile
       elif inputFile.endswith(".pairs"):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index)
         gen.Input = "Geant4EventReaderGuineaPig|" + inputFile

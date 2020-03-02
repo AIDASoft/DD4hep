@@ -99,16 +99,16 @@ IF(TARGET LCIO::LCIO)
 
 ENDIF()
 
-find_package(HepMC3)
-IF(HEPMC3_VERSION)
+IF(DD4HEP_USE_HEPMC3)
   dd4hep_add_plugin(DDG4HepMC3
     SOURCES hepmc/*.cpp
     USES    DD4hep::DDG4
-    INCLUDES $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/hepmc> ${HEPMC3_INCLUDE_DIR}
+    INCLUDES $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/hepmc> $<BUILD_INTERFACE:${HEPMC3_INCLUDE_DIR}>
     USES ${HEPMC3_LIBRARIES}
     )
   install(TARGETS DDG4HepMC3 EXPORT DD4hep LIBRARY DESTINATION lib)
   set_target_properties(DDG4HepMC3 PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+  SET(DD4HEP_USE_HEPMC3 ON)
 ENDIF()
 
 #
@@ -138,6 +138,16 @@ install(PROGRAMS python/DDSim/bin/ddsim.py DESTINATION bin RENAME ddsim)
 install(PROGRAMS python/bin/checkOverlaps.py DESTINATION bin RENAME checkOverlaps)
 install(PROGRAMS python/bin/checkGeometry.py DESTINATION bin RENAME checkGeometry)
 install(PROGRAMS python/bin/g4MaterialScan.py DESTINATION bin RENAME g4MaterialScan)
+
+# configure and install DD4hepSimulation files
+file(GLOB_RECURSE DDSIM_FILES RELATIVE ${CMAKE_CURRENT_LIST_DIR}/python/DDSim/ python/DDSim/*.py)
+execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/python/DDSim/Helper)
+FOREACH(ddsimFile ${DDSIM_FILES})
+  dd4hep_debug("Configuring ${ddsimFile}")
+  # we pass all DDSim files through configure, because it is easier then only configuring only one of them, because we
+  # need all of them to end up in the same directory to install them from there
+  configure_file(python/DDSim/${ddsimFile} ${CMAKE_BINARY_DIR}/python/DDSim/${ddsimFile} @ONLY)
+ENDFOREACH()
 
 install(DIRECTORY python/DDSim DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
 
