@@ -1,3 +1,11 @@
+# v01-11-02
+* 2020-03-03 M.Petric,A.Sailer ([PR#641](https://github.com/aidasoft/DD4hep/pull/641))
+  - DDSim: make the output of `ddsim --dumpSteeringFile` visible again
+  - DDSim: fix exception in ConfigHelper.printOptions, called by `--dumpParameters` option 
+  - DDSim: fix parsing of vector command line parameters, gun.position, gun.direction etc.
+  - DDSim: better testing of command line parameters
+     - backport from v01-12-01
+     
 # v01-11-01
 
 * 2020-02-28 Frank Gaede ([PR#639](https://github.com/AidaSoft/DD4hep/pull/639))
