@@ -16,7 +16,10 @@
   \package HepMC3FileReader
  * \brief Plugin to read HepMC3 files
  *
- And here we can put a longer description, parameters, examples...
+ * The HepMC3 File reader uses the HepMC3 Reader Factory to open any HepMC3 compatible file.
+ *
+ * However, it was only tested on HepMC3 ascii files produced by Whizard 2.8.2, so please use it carefully, and validate
+ * its conversion carefully before extensive usage.
  *
 @}
  */
