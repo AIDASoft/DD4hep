@@ -8,7 +8,7 @@
 from __future__ import absolute_import, unicode_literals
 import logging
 import sys
-
+from ddsix.moves import range
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
@@ -24,7 +24,7 @@ def run():
   geo = None
   vis = False
   batch = False
-  for i in xrange(len(sys.argv)):
+  for i in list(range(len(sys.argv))):
     c = sys.argv[i].upper()
     if c.find('BATCH') < 2 and c.find('BATCH') >= 0:
       batch = True
