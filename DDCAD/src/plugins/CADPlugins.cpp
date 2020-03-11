@@ -80,7 +80,14 @@ static Handle<TObject> create_CAD_MultiShape_Assembly(Detector&, xml_h e)   {
 DECLARE_XML_VOLUME(CAD_Assembly__volume_constructor,create_CAD_MultiShape_Assembly)
 
 
+/// CAD volume importer plugin
 /**
+ *
+ * The CAD volume plugin allows to embed valumes and shapes originating from
+ * Computer Aided Design drawings using multiple formats as they are supported
+ * by the open asset importer library (http://assimp.org ).
+ * The plugin can be used whenever the xmnl fragment matches the following pattern:
+ *
  *   <XXX ref="file-name"  material="material-name">   
  *     <material name="material-name"/>                        <!-- alternative: child or attr -->
  *
