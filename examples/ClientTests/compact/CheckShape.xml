@@ -26,14 +26,17 @@
   <display>
     <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
     <vis name="InvisibleWithDaughters"    showDaughters="true"  visible="false"/>
-    <vis name="Shape1_vis_20" alpha="0.2" r="0.9" g="0.8" b="0.8" showDaughters="true" visible="true"/>
+    <vis name="Shape1_vis_20"    alpha="0.2" r="0.9" g="0.8" b="0.8" showDaughters="true" visible="true"/>
     <vis name="ShapeGray_vis_50" alpha="0.5" r="0.9" g="0.8" b="0.8" showDaughters="true" visible="true"/>
-    <vis name="Shape1_vis"    alpha="1.0" r="1" g="0" b="0" showDaughters="true" visible="true"/>
-    <vis name="Shape2_vis"    alpha="1.0" r="0" g="1" b="0" showDaughters="true" visible="true"/>
-    <vis name="Shape3_vis"    alpha="1.0" r="0" g="0" b="1" showDaughters="true" visible="true"/>
-    <vis name="Shape4_vis"    alpha="1.0" r="1" g="1" b="0" showDaughters="true" visible="true"/>
-    <vis name="Shape5_vis"    alpha="1.0" r="1" g="0" b="1" showDaughters="true" visible="true"/>
-    <vis name="Shape6_vis"    alpha="1.0" r="0" g="1" b="1" showDaughters="true" visible="true"/>
-    <vis name="Shape_grey"    alpha="1.0" r="0.4" g="0.4" b="0.4" showDaughters="true" visible="true"/>
+    <vis name="Shape0_vis"       alpha="1.0" r="0"   g="1"   b="1"   showDaughters="true" visible="true"/>
+    <vis name="Shape1_vis"       alpha="1.0" r="1"   g="0"   b="0"   showDaughters="true" visible="true"/>
+    <vis name="Shape2_vis"       alpha="1.0" r="0"   g="1"   b="0"   showDaughters="true" visible="true"/>
+    <vis name="Shape3_vis"       alpha="1.0" r="0"   g="0"   b="1"   showDaughters="true" visible="true"/>
+    <vis name="Shape4_vis"       alpha="1.0" r="1"   g="1"   b="0"   showDaughters="true" visible="true"/>
+    <vis name="Shape5_vis"       alpha="1.0" r="1"   g="0"   b="1"   showDaughters="true" visible="true"/>
+    <vis name="Shape6_vis"       alpha="1.0" r="0.5" g="0.5" b="0"   showDaughters="true" visible="true"/>
+    <vis name="Shape7_vis"       alpha="1.0" r="0"   g="0.5" b="0.5" showDaughters="true" visible="true"/>
+    <vis name="Shape8_vis"       alpha="0.5" r="0.0" g="0.4" b="0.4" showDaughters="true" visible="true"/>
+    <vis name="Shape_grey"       alpha="0.5" r="0.0" g="0.4" b="0.4" showDaughters="true" visible="true"/>
   </display>
 </lccdd>
