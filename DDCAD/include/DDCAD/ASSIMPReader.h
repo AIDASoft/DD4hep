@@ -31,7 +31,7 @@ namespace dd4hep {
       virtual ~ASSIMPReader() = default;
       /// Read input file
       virtual std::vector<std::unique_ptr<TGeoTessellated> >
-        read(const std::string& source)  const  override;      
+      read(const std::string& source, double unit_Length)  const  override;      
     };
     
   }        /* End namespace cad                      */

@@ -541,6 +541,18 @@ static Handle<TObject> create_BooleanMulti(Detector& description, xml_h element)
 }
 DECLARE_XML_SHAPE(BooleanShape__shape_constructor,create_BooleanMulti)
 
+static Handle<TObject> create_std_volume(Detector& description, xml_h e)   {
+  return xml::createStdVolume(description, e);
+}
+DECLARE_XML_VOLUME(DD4hep_StdVolume,create_std_volume)
+
+static Handle<TObject> create_gen_volume(Detector& description, xml_h e)   {
+  xml_dim_t elt = e;
+  string    typ = elt.attr<string>(_U(type));
+  return xml::createVolume(description, typ, e);
+}
+DECLARE_XML_VOLUME(DD4hep_GenericVolume,create_gen_volume)
+
 TGeoCombiTrans* createPlacement(const Rotation3D& iRot, const Position& iTrans) {
   double elements[9];
   iRot.GetComponents(elements);
@@ -569,7 +581,7 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     Volume     volume;
     string     shape_type = shape.typeStr();
 
-    if ( shape_type == "CAD_MultiShape" )   {
+    if ( shape_type == "CAD_Assembly" || shape_type == "CAD_MultiVolume" )   {
       volume = xml::createVolume(description, shape_type, shape);
       solid  = volume->GetShape();
     }

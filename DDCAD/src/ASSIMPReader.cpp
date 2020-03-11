@@ -28,7 +28,7 @@ using namespace dd4hep::cad;
 
 /// Read input file
 vector<unique_ptr<TGeoTessellated> >
-ASSIMPReader::read(const string& source)  const  {
+ASSIMPReader::read(const string& source, double unit_length)  const  {
   vector<unique_ptr<TGeoTessellated> > result;
   unique_ptr<Assimp::Importer> importer = make_unique<Assimp::Importer>();
   int flags = aiProcess_Triangulate|aiProcess_JoinIdenticalVertices|aiProcess_CalcTangentSpace;
@@ -36,6 +36,7 @@ ASSIMPReader::read(const string& source)  const  {
   if ( !scene )  {
     except("ASSIMPReader","+++ FileNotFound: %s",source.c_str());
   }
+  double unit = unit_length;
   for (unsigned int index = 0; index < scene->mNumMeshes; index++)   {
     aiMesh* mesh = scene->mMeshes[index];
     if ( mesh->mNumFaces > 0 )   {
@@ -45,9 +46,9 @@ ASSIMPReader::read(const string& source)  const  {
       for(unsigned int i=0; i < mesh->mNumFaces; i++)  {
         const aiFace&     face = mesh->mFaces[i];
         const unsigned int* idx = face.mIndices;
-        Tessellated::Vertex_t a(v[idx[0]].x, v[idx[0]].y, v[idx[0]].z); 
-        Tessellated::Vertex_t b(v[idx[1]].x, v[idx[1]].y, v[idx[1]].z); 
-        Tessellated::Vertex_t c(v[idx[2]].x, v[idx[2]].y, v[idx[2]].z); 
+        Tessellated::Vertex_t a(v[idx[0]].x*unit, v[idx[0]].y*unit, v[idx[0]].z*unit); 
+        Tessellated::Vertex_t b(v[idx[1]].x*unit, v[idx[1]].y*unit, v[idx[1]].z*unit); 
+        Tessellated::Vertex_t c(v[idx[2]].x*unit, v[idx[2]].y*unit, v[idx[2]].z*unit); 
         shape->AddFacet(a,b,c);
 #if 0
         if ( scene->HasMaterials() )   {
@@ -65,4 +66,3 @@ ASSIMPReader::read(const string& source)  const  {
   }
   return result;
 }
-
