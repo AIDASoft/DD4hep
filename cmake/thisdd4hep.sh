@@ -10,21 +10,22 @@
 #
 #-----------------------------------------------------------------------------
 dd4hep_parse_this()   {
-    package=${2};
-    if [ "x${1}" = "x" ]; then
-	if [ ! -f bin/this${package}.sh ]; then
-            echo ERROR: must "cd where/${package}/is" before calling ". bin/this${package}.sh" for this version of bash!;
-            return 1;
-	fi
-	THIS="${PWD}";
+    SOURCE=${1}
+    if [ "x${SOURCE}" = "x" ]; then
+        if [ -f bin/thisdd4hep.sh ]; then
+            THIS="$PWD"; export THIS
+        elif [ -f ./thisdd4hep.sh ]; then
+            THIS=$(cd ..  > /dev/null; pwd); export THIS
+        else
+            echo ERROR: must "cd where/dd4hep/is" before calling ". bin/thisdd4hep.sh" for this version of bash!
+            THIS=; export THIS
+            return 1
+        fi
     else
-	# get param to "."
-	THIS=$(dirname $(dirname ${1}));
-	#if [ ! -f ${THIS}/bin/this${package}.sh ]; then
-	#    THIS=$(dirname ${package});
-	#fi;
-    fi;
-    THIS=$(cd ${THIS} > /dev/null; pwd);
+        # get param to "."
+        thisroot=$(dirname ${SOURCE})
+        THIS=$(cd ${thisroot}/.. > /dev/null;pwd); export THIS
+    fi
 }
 #-----------------------------------------------------------------------------
 dd4hep_add_path()   {
@@ -61,7 +62,12 @@ dd4hep_add_library_path()    {
 }
 #-----------------------------------------------------------------------------
 #
-dd4hep_parse_this ${BASH_ARGV[0]} DD4hep;
+SOURCE=${BASH_ARGV[0]}
+if [ "x$SOURCE" = "x" ]; then
+    SOURCE=${(%):-%N} # for zsh
+fi
+
+dd4hep_parse_this $SOURCE;
 #
 # These 3 are the main configuration variables: ROOT, Geant4 and XercesC
 # --> LCIO & Co. are handled elsewhere!
