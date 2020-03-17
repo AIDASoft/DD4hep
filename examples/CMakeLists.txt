@@ -33,8 +33,11 @@ SET( ENV{DD4hepExamplesINSTALL} ${CMAKE_INSTALL_PREFIX} )
 IF(NOT TARGET DD4hep::DDCore)
   find_package ( DD4hep REQUIRED )
 ENDIF()
+include(DD4hepMacros) 
 
+dd4hep_set_compiler_flags()
 dd4hep_configure_output()
+
 
 #==========================================================================
 
@@ -46,3 +49,19 @@ FOREACH(DDExample IN LISTS DD4HEP_EXAMPLES)
   dd4hep_print("|> Building ${DDExample}")
   add_subdirectory(${DDExample})
 ENDFOREACH()
+
+if(APPLE)
+  SET ( ENV{DD4HEP_LIBRARY_PATH} $ENV{DYLD_LIBRARY_PATH} )
+else()
+  SET ( ENV{DD4HEP_LIBRARY_PATH} ${LD_LIBRARY_PATH} )
+  SET ( DD4HEP_LIBRARY_PATH      ${LD_LIBRARY_PATH} )
+endif()
+
+#######################
+# Treatment for Apple #
+#######################
+
+if(APPLE)
+  fill_dd4hep_library_path()
+  message(STATUS "DD4HEP_LIBRARY_PATH= $ENV{DD4HEP_LIBRARY_PATH}")
+endif()

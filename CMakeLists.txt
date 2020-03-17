@@ -75,7 +75,8 @@ option(DD4HEP_USE_HEPMC3  "Build hepmc3 extensions"                       OFF)
 option(DD4HEP_LOAD_ASSIMP "Download and build ASSIMP from github"         OFF)
 option(BUILD_TESTING      "Enable and build tests"                        ON)
 option(BUILD_SHARED_LIBS  "If OFF build STATIC Libraries"                 ON)
-option(CMAKE_MACOSX_RPATH "Build with rpath on macos"                     ON)
+option(DD4HEP_SET_RPATH   "Link libraries with built-in RPATH (run-time search path)" ON)
+
 SET(DD4HEP_BUILD_PACKAGES "DDRec DDDetectors DDCond DDAlign DDCAD DDDigi DDG4 DDEve UtilityApps"
   CACHE STRING "List of DD4hep packages to build")
 SEPARATE_ARGUMENTS(DD4HEP_BUILD_PACKAGES)
@@ -206,14 +207,6 @@ endif()
 
 
 ENDIF(DD4HEP_USE_EXISTING_DD4HEP)
-#######################
-# Treatment for Apple #
-#######################
-
-if( APPLE )
-  set( USE_DYLD 1)
-  set(CMAKE_MACOSX_RPATH 1)
-endif()
 
 #########################
 # Configure and install #

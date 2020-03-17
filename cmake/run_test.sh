@@ -21,7 +21,9 @@ for i in "$@" ; do
     fi
 done
 
+export DYLD_LIBRARY_PATH=$DD4HEP_LIBRARY_PATH
 echo " #### LD_LIBRARY_PATH = :  ${LD_LIBRARY_PATH}"
+echo " #### DYLD_LIBRARY_PATH = :  ${DYLD_LIBRARY_PATH}"
 
 echo "---running test :  '" ${command} ${theargs} "'"
 eval ${command} ${theargs}
