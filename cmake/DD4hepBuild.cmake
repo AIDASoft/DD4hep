@@ -88,29 +88,29 @@ macro(dd4hep_set_compiler_flags)
     MESSAGE( WARNING "We do not test with the ${CMAKE_CXX_COMPILER_ID} compiler, use at your own discretion" )
   endif()
 
- #rpath treatment
- if (APPLE)
-   # use, i.e. don't skip the full RPATH for the build tree
-   SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+ #---RPATH options-------------------------------------------------------------------------------
+ #  When building, don't use the install RPATH already (but later on when installing)
+ set(CMAKE_SKIP_BUILD_RPATH FALSE)         # don't skip the full RPATH for the build tree
+ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) # use always the build RPATH for the build tree
+ set(CMAKE_MACOSX_RPATH TRUE)              # use RPATH for MacOSX
+ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE) # point to directories outside the build tree to the install RPATH
 
-   # when building, don't use the install RPATH already
-   # (but later on when installing)
-   SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-
-   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-
-   # add the automatically determined parts of the RPATH
-   # which point to directories outside the build tree to the install RPATH
-   SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
+ # Check whether to add RPATH to the installation (the build tree always has the RPATH enabled)
+ if(APPLE)
+   set(CMAKE_INSTALL_NAME_DIR "@rpath")
+   set(CMAKE_INSTALL_RPATH "@loader_path/../lib")    # self relative LIBDIR
+   set(CMAKE_SKIP_INSTALL_RPATH FALSE)          # don't skip the full RPATH for the install tree
+ elseif(DD4HEP_SET_RPATH)
+   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib") # install LIBDIR
    # the RPATH to be used when installing, but only if it's not a system directory
-   LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-   IF("${isSystemDir}" STREQUAL "-1")
-     SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-   ENDIF("${isSystemDir}" STREQUAL "-1")
+   list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+   if("${isSystemDir}" STREQUAL "-1")
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+   endif("${isSystemDir}" STREQUAL "-1")
+ else()
+   set(CMAKE_SKIP_INSTALL_RPATH TRUE)           # skip the full RPATH for the install tree
  endif()
 endmacro(dd4hep_set_compiler_flags)
-
 #---------------------------------------------------------------------------------------------------
 #  dd4hep_debug
 #
