@@ -121,15 +121,18 @@ centos7-clang8-Geant10.5-XERCESC:
     - ninja install
     - ctest --output-on-failure
 
-mac1014-clang100-Geant10.5:
+mac1015-clang110-Geant10.6:
   stage: build
   tags:
     - mac
   script:
-    - source .dd4hep-ci.d/init_mac.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97python3/x86_64-mac1015-clang110-opt/setup.sh
+    - export CXX=clang++
+    - export CC=clang
+    - export FC=""
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.5.1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.6.1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -142,15 +145,18 @@ mac1014-clang100-Geant10.5:
     - ninja install
     - ctest --output-on-failure
 
-mac1014-clang100-Geant10.5-XERCESC:
+mac1015-clang110-Geant10.6-XERCESC:
   stage: build
   tags:
     - mac
   script:
-    - source .dd4hep-ci.d/init_mac.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97python3/x86_64-mac1015-clang110-opt/setup.sh
+    - export CXX=clang++
+    - export CC=clang
+    - export FC=""
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON  -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.6.1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 -DDD4HEP_USE_XERCESC=ON ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
