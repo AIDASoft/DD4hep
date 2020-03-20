@@ -12,6 +12,10 @@
 
 dd4hep_print("|++> Will build DDParsers")
 
+
+# set the default job pool to use, is unset below, although this only applies for this directory
+SET(CMAKE_JOB_POOL_COMPILE HIGH_MEM_POOL)
+
 file(GLOB DDParsers_SOURCES src/Parsers/*.cpp src/Evaluator/*.cpp)
 file(GLOB DDParsers_SPIRIT_SOURCES src/Spirit/*.cpp)
 
@@ -33,3 +37,5 @@ install(DIRECTORY include/Parsers include/Evaluator DESTINATION include)
 install(TARGETS DDParsers ${OPTIONAL_TARGETS} EXPORT DD4hep
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)
+# Unset job pool
+SET(CMAKE_JOB_POOL_COMPILE)

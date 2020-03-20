@@ -61,6 +61,10 @@ ENDIF()
 ###############################
 # Define DD4hep build options #
 ###############################
+# NINJA ONLY
+# Limit number of parallel DDParser builds to number equal to 2 gigs per core
+cmake_host_system_information(RESULT HOST_RAM_MB QUERY TOTAL_PHYSICAL_MEMORY)
+math(EXPR DD4HEP_HIGH_MEM_POOL_DEPTH "${HOST_RAM_MB} / 2000" OUTPUT_FORMAT DECIMAL)
 
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC"   OFF)
 option(DD4HEP_USE_GEANT4  "Enable the simulation part based on Geant4"    OFF)
@@ -81,7 +85,10 @@ OPTION(DD4HEP_BUILD_EXAMPLES "Build all the examples" OFF)
 OPTION(DD4HEP_DEBUG_CMAKE "Print debugging information for DD4hep CMAKE" OFF)
 
 SET(DD4HEP_USE_EXISTING_DD4HEP "" CACHE STRING "Build some parts of DD4hep against an existing installation")
+SET(DD4HEP_HIGH_MEM_POOL_DEPTH "${DD4HEP_HIGH_MEM_POOL_DEPTH}" CACHE STRING "Number of build slots for high memory compile units (DDParsers), Ninja only")
 
+# create the job pool
+set_property(GLOBAL PROPERTY JOB_POOLS HIGH_MEM_POOL=${DD4HEP_HIGH_MEM_POOL_DEPTH})
 #####################
 # Configure version #
 #####################
