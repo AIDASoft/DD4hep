@@ -123,6 +123,7 @@ centos7-clang8-Geant10.5-XERCESC:
 
 mac1015-clang110-Geant10.6:
   stage: build
+  allow_failure: true
   tags:
     - mac
   script:
@@ -147,6 +148,7 @@ mac1015-clang110-Geant10.6:
 
 mac1015-clang110-Geant10.6-XERCESC:
   stage: build
+  allow_failure: true
   tags:
     - mac
   script:
