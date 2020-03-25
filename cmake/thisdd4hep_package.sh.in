@@ -1,4 +1,3 @@
-#!/bin/bash
 #################################################################################
 #
 #  Environment script for DD4hep examples - initializes DD4hep (and ROOT)
@@ -17,7 +16,12 @@ if [ @CLHEP_DIR@ ]; then
 fi;
 source ${DD4hep_DIR}/bin/thisdd4hep.sh;
 #
-dd4hep_parse_this ${BASH_ARGV[0]} @PackageName@;
+SOURCE=${BASH_ARGV[0]}
+if [ "x$SOURCE" = "x" ]; then
+    SOURCE=${(%):-%N} # for zsh
+fi
+
+dd4hep_parse_this $SOURCE;
 #
 #----PATH---------------------------------------------------------------------
 dd4hep_add_path    PATH ${THIS}/bin;
