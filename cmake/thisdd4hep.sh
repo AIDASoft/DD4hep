@@ -43,13 +43,15 @@ dd4hep_add_path()   {
 #-----------------------------------------------------------------------------
 dd4hep_add_library_path()    {
     path_prefix=${1};
-    if [ @USE_DYLD@ ];
+    if [ @APPLE@ ];
     then
         if [ ${DYLD_LIBRARY_PATH} ]; then
             export DYLD_LIBRARY_PATH=${path_prefix}:$DYLD_LIBRARY_PATH;
+            export LD_LIBRARY_PATH=${path_prefix}:$LD_LIBRARY_PATH;
             export DD4HEP_LIBRARY_PATH=${path_prefix}:$DD4HEP_LIBRARY_PATH;
         else
             export DYLD_LIBRARY_PATH=${path_prefix};
+            export LD_LIBRARY_PATH=${path_prefix};
             export DD4HEP_LIBRARY_PATH=${path_prefix};
         fi;
     else
