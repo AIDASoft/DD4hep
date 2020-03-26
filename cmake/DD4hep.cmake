@@ -82,7 +82,7 @@ function(dd4hep_generate_rootmap library)
 
   add_custom_command(OUTPUT ${rootmapfile}
                      DEPENDS ${library}
-                     COMMAND ${ENV_VAR}=${ENV_VAR}_VALUE $<TARGET_FILE:DD4hep::listcomponents> -o ${rootmapfile} $<TARGET_FILE_NAME:${library}>
+                     COMMAND ${ENV_VAR}=${${ENV_VAR}_VALUE} $<TARGET_FILE:DD4hep::listcomponents> -o ${rootmapfile} $<TARGET_FILE_NAME:${library}>
                      WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH}
                      )
 
