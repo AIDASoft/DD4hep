@@ -21,7 +21,7 @@ if [ "x$SOURCE" = "x" ]; then
     SOURCE=${(%):-%N} # for zsh
 fi
 
-dd4hep_parse_this $SOURCE;
+dd4hep_parse_this $SOURCE  @PackageName@;
 #
 #----PATH---------------------------------------------------------------------
 dd4hep_add_path    PATH ${THIS}/bin;
