@@ -11,13 +11,14 @@
 #-----------------------------------------------------------------------------
 dd4hep_parse_this()   {
     SOURCE=${1}
+    package=${2};
     if [ "x${SOURCE}" = "x" ]; then
-        if [ -f bin/thisdd4hep.sh ]; then
+        if [ -f bin/this${package}.sh ]; then
             THIS="$PWD"; export THIS
-        elif [ -f ./thisdd4hep.sh ]; then
+        elif [ -f ./this${package}.sh ]; then
             THIS=$(cd ..  > /dev/null; pwd); export THIS
         else
-            echo ERROR: must "cd where/dd4hep/is" before calling ". bin/thisdd4hep.sh" for this version of bash!
+            echo ERROR: must "cd where/${package}/is" before calling ". bin/this${package}.sh" for this version of bash!
             THIS=; export THIS
             return 1
         fi
@@ -69,7 +70,7 @@ if [ "x$SOURCE" = "x" ]; then
     SOURCE=${(%):-%N} # for zsh
 fi
 
-dd4hep_parse_this $SOURCE;
+dd4hep_parse_this $SOURCE  @PackageName@;
 #
 # These 3 are the main configuration variables: ROOT, Geant4 and XercesC
 # --> LCIO & Co. are handled elsewhere!
