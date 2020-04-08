@@ -16,6 +16,7 @@
 // Framework include files
 #include "DD4hep/DetectorData.h"
 
+
 /// Helper class to support ROOT persistency of Detector objects
 /**
  *  \author  M.Frank
@@ -34,9 +35,10 @@ public:
   std::map<dd4hep::DetElement,dd4hep::AlignmentCondition> nominals;
 
   /// Default constructor
-  DD4hepRootPersistency() : TNamed() {}
+  DD4hepRootPersistency();
+
   /// Default destructor
-  virtual ~DD4hepRootPersistency() {}
+  virtual ~DD4hepRootPersistency();
 
   /// Save an existing detector description in memory to a ROOT file
   static int save(dd4hep::Detector& description, const char* fname, const char* instance = "Geometry");
@@ -87,6 +89,7 @@ public:
   /// ROOT implementation macro
   ClassDef(DD4hepRootPersistency,1);
 };
+
 
 /// Helper class to check various ingredients of the Detector object after loaded from ROOT
 /**

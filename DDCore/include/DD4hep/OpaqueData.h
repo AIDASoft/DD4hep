@@ -123,7 +123,7 @@ namespace dd4hep {
     /// Bind data value in place
     void* bind(void* ptr, size_t len, const BasicGrammar* grammar);
     /// Construct conditions object and bind the data
-    template <typename T, typename... Args> T& construct(Args&&... args);
+    template <typename T, typename... Args> T& construct(Args... args);
     /// Bind data value
     template <typename T> T& bind();
     /// Bind data value
@@ -147,7 +147,7 @@ namespace dd4hep {
   }
 
   /// Construct conditions object and bind the data
-  template <typename T, typename... Args> T& OpaqueDataBlock::construct(Args&&... args)   {
+  template <typename T, typename... Args> T& OpaqueDataBlock::construct(Args... args)   {
     this->bind(&BasicGrammar::instance<T>());
     return *(new(this->pointer) T(std::forward<Args>(args)...));
   }

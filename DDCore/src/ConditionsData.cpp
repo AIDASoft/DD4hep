@@ -77,5 +77,4 @@ AbstractMap& AbstractMap::operator=(const AbstractMap& c)  {
 }
 
 #include "DD4hep/detail/Grammar_unparsed.h"
-// Ensure the grammars are registered and instantiated
-static auto s_registry = dd4hep::GrammarRegistry::pre_note<AbstractMap>();
+static auto s_registry = dd4hep::GrammarRegistry::pre_note<AbstractMap>(1);

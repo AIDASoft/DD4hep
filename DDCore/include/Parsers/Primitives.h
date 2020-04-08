@@ -311,6 +311,10 @@ namespace dd4hep {
       const T* src = (const T*)source;
       ::new(target) T(*src);
     }
+    /// Helper to copy objects.
+    template <typename T> inline void constructObject(void* target)  {
+      ::new(target) T();
+    }
     /// Helper to destruct objects. Note: The memory is NOT released!
     template <typename T> inline void destructObject(T* ptr) {
       ptr->~T();

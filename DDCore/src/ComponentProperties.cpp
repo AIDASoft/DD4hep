@@ -245,6 +245,6 @@ namespace dd4hep {
   }
   // Ensure the grammars are registered
   template class Grammar<Property>;
-  static auto s_registry = GrammarRegistry::pre_note<Property>();
+  static auto s_registry = GrammarRegistry::pre_note<Property>(1);
 }
 

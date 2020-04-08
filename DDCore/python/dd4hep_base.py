@@ -111,22 +111,26 @@ std_list = std.list
 std_map = std.map
 std_pair = std.pair
 # ---------------------------------------------------------------------------
-core = dd4hep
-cond = dd4hep.cond
-tools = dd4hep.tools
-align = dd4hep.align
+core   = dd4hep
+cond   = dd4hep.cond
+tools  = dd4hep.tools
+align  = dd4hep.align
 detail = dd4hep.detail
-units = imp.new_module('units')
+units  = imp.new_module('units')
 # ---------------------------------------------------------------------------
 import_namespace_item('tools', 'Evaluator')
 # ---------------------------------------------------------------------------
 import_namespace_item('core', 'NamedObject')
 import_namespace_item('core', 'run_interpreter')
-
+#
+import_namespace_item('detail', 'interp')
+import_namespace_item('detail', 'eval')
+#def run_interpreter(name):   detail.interp.run(name)
+#def evaluator():     return eval.instance()
+#def g4Evaluator():   return eval.g4instance()
 
 def import_detail():
   import_namespace_item('detail', 'DD4hepUI')
-
 
 def import_geometry():
   import_namespace_item('core', 'setPrintLevel')
@@ -197,7 +201,6 @@ def import_geometry():
   import_namespace_item('core', 'SubtractionSolid')
   import_namespace_item('core', 'UnionSolid')
   import_namespace_item('core', 'IntersectionSolid')
-
 
 def import_tgeo():
   import_root('TGeoManager')

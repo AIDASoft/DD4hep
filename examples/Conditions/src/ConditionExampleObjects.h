@@ -59,7 +59,55 @@ namespace dd4hep {
       /// Default destructor
       virtual ~OutputLevel() = default;
     };
+
+    /// Specialized condition only offering non-default ctor
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class NonDefaultCtorCond  {
+    private:
+      /// Inhibit default constructor
+      NonDefaultCtorCond() = delete;
+      /// Inhibit move constructor
+      NonDefaultCtorCond(NonDefaultCtorCond&& copy) = delete;
+      /// Inhibit copy constructor
+      NonDefaultCtorCond(const NonDefaultCtorCond& copy) = delete;
+      /// Inhibit move assignment
+      NonDefaultCtorCond& operator=(NonDefaultCtorCond&& copy) = delete;
+      /// Inhibit copy assignment
+      NonDefaultCtorCond& operator=(const NonDefaultCtorCond& copy) = delete;
+    public:
+      int a, b, c, d;
+      /// Initializing constructor only
+      NonDefaultCtorCond(int aa, int bb, int cc);
+      /// Default descructor
+      virtual ~NonDefaultCtorCond();
+      /// Set data member
+      void set(int val);
+    };
     
+    /// Specialized conditions update callback 
+    /**
+     *  Used by clients to update a condition.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class ConditionNonDefaultCtorUpdate1 : public ConditionUpdateCall, public OutputLevel  {
+    public:
+      /// Initializing constructor
+      ConditionNonDefaultCtorUpdate1(PrintLevel p) : OutputLevel(p) {    }
+      /// Default destructor
+      virtual ~ConditionNonDefaultCtorUpdate1() = default;
+      /// Interface to client Callback in order to update the condition
+      virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& context) override  final;
+      /// Interface to client Callback in order to update the condition
+      virtual void resolve(Condition condition, ConditionUpdateContext& context) override  final;
+    };
+
     /// Specialized conditions update callback 
     /**
      *  Used by clients to update a condition.
@@ -148,9 +196,11 @@ namespace dd4hep {
       /// Content object to be filled
       ConditionsContent&   content;
       /// Three different update call types
-      std::shared_ptr<ConditionUpdateCall> call1, call2, call3;
+      std::shared_ptr<ConditionUpdateCall> scall1, call1, call2, call3;
+      /// Flag for special setup for ROOT persistency
+      bool persist_conditions;
       /// Constructor
-      ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p);
+      ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p, bool persist=false);
       /// Destructor
       virtual ~ConditionsDependencyCreator();
       /// Callback to process a single detector element
@@ -177,9 +227,14 @@ namespace dd4hep {
       virtual ~ConditionsCreator() = default;
       /// Callback to process a single detector element
       virtual int operator()(DetElement de, int level)  const final;
-      template<typename T> Condition make_condition(DetElement de,
-                                                    const std::string& name,
-                                                    T val)  const;
+      template<typename T>
+      Condition make_condition(DetElement de,
+			       const std::string& name,
+			       const T& val)  const;
+      template<typename T, typename... Args>
+      Condition make_condition_args(DetElement de,
+				    const std::string& name,
+				    Args... args)  const;
     };
 
     /// Example how to access the conditions constants from a detector element

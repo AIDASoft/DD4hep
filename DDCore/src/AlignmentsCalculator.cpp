@@ -324,5 +324,4 @@ size_t AlignmentsCalculator::extract_deltas(DetElement start,
 }
 
 #include "DD4hep/detail/Grammar_unparsed.h"
-// Ensure the grammars are registered and instantiated
-static auto s_registry = GrammarRegistry::pre_note<AlignmentsCalculator::OrderedDeltas>();
+static auto s_registry = GrammarRegistry::pre_note<AlignmentsCalculator::OrderedDeltas>(1);

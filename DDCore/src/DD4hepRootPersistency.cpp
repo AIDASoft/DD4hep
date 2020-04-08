@@ -27,6 +27,14 @@ ClassImp(DD4hepRootPersistency)
 using namespace dd4hep;
 using namespace std;
 
+/// Default constructor
+DD4hepRootPersistency::DD4hepRootPersistency() : TNamed() {
+}
+
+/// Default destructor
+DD4hepRootPersistency::~DD4hepRootPersistency() {
+}
+
 int DD4hepRootPersistency::save(Detector& description, const char* fname, const char* instance)   {
   TFile* f = TFile::Open(fname,"RECREATE");
   if ( f && !f->IsZombie()) {

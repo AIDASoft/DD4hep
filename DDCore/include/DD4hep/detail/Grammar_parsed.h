@@ -224,8 +224,15 @@ namespace dd4hep {
 
   /// Standarsd constructor
   template <typename TYPE> const BasicGrammar& BasicGrammar::instance()  {
-    static Grammar<TYPE> s_gr;
-    return s_gr;
+    static Grammar<TYPE> *s_gr = 0;
+    if ( 0 != s_gr )  {
+      return *s_gr;
+    }
+    static Grammar<TYPE> gr;
+    if ( 0 == gr.specialization.bind ) gr.specialization.bind = detail::constructObject<TYPE>;
+    if ( 0 == gr.specialization.copy ) gr.specialization.copy = detail::copyObject<TYPE>;
+    s_gr = &gr;
+    return *s_gr;
   }
 }      // End namespace dd4hep
 
