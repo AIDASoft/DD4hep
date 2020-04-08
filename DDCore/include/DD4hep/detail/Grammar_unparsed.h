@@ -45,7 +45,7 @@ namespace dd4hep {
 
   /// Standarsd constructor
   template <typename TYPE> const BasicGrammar& BasicGrammar::instance()  {
-    static Grammar<TYPE> s_gr();
+    static Grammar<TYPE> s_gr;
     return s_gr;
   }
 }
