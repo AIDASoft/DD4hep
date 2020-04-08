@@ -35,6 +35,26 @@ ConditionsManager dd4hep::ConditionExamples::installManager(Detector& descriptio
 }
 
 /// Interface to client Callback in order to update the condition
+Condition ConditionNonDefaultCtorUpdate1::operator()(const ConditionKey& key, ConditionUpdateContext&)  {
+#ifdef DD4HEP_CONDITIONS_DEBUG
+  printout(printLevel,"ConditionNonDefaultCtor1","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
+  Condition    target(key.name,"derived");
+#else
+  printout(printLevel,"ConditionNonDefaultCtor1","++ Building dependent condition: %016llX",key.hash);
+  Condition    target(key.hash);
+#endif
+  target.construct<NonDefaultCtorCond>(1,2,3);
+  return target;
+}
+
+/// Interface to client Callback in order to update the condition
+void ConditionNonDefaultCtorUpdate1::resolve(Condition target, ConditionUpdateContext& context)  {
+  NonDefaultCtorCond& data  = target.get<NonDefaultCtorCond>();
+  Condition    cond0 = context.condition(context.key(0));
+  data.set(cond0.get<int>());
+}
+
+/// Interface to client Callback in order to update the condition
 Condition ConditionUpdate1::operator()(const ConditionKey& key, ConditionUpdateContext&)  {
 #ifdef DD4HEP_CONDITIONS_DEBUG
   printout(printLevel,"ConditionUpdate1","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
@@ -111,12 +131,13 @@ void ConditionUpdate3::resolve(Condition target, ConditionUpdateContext& context
 }
 
 /// Initializing constructor
-ConditionsDependencyCreator::ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p)
-  : OutputLevel(p), content(c)
+ConditionsDependencyCreator::ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p, bool persist)
+  : OutputLevel(p), content(c), persist_conditions(persist)
 {
-  call1 = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate1(printLevel));
-  call2 = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate2(printLevel));
-  call3 = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate3(printLevel));
+  scall1 = std::shared_ptr<ConditionUpdateCall>(new ConditionNonDefaultCtorUpdate1(printLevel));
+  call1  = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate1(printLevel));
+  call2  = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate2(printLevel));
+  call3  = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate3(printLevel));
 }
 
 /// Destructor
@@ -126,9 +147,11 @@ ConditionsDependencyCreator::~ConditionsDependencyCreator()  {
 /// Callback to process a single detector element
 int ConditionsDependencyCreator::operator()(DetElement de, int)  const  {
   ConditionKey      key(de,"derived_data");
+  ConditionKey      starget1(de,"derived_data/NonDefaultCtor_1");
   ConditionKey      target1(de,"derived_data/derived_1");
   ConditionKey      target2(de,"derived_data/derived_2");
   ConditionKey      target3(de,"derived_data/derived_3");
+  DependencyBuilder sbuild_1(de, starget1.item_key(), scall1);
   DependencyBuilder build_1(de, target1.item_key(), call1);
   DependencyBuilder build_2(de, target2.item_key(), call2);
   DependencyBuilder build_3(de, target3.item_key(), call3);
@@ -137,6 +160,7 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)  const  {
   //DependencyBuilder build_3(de, "derived_data/derived_3", call3);
 
   // Compute the derived stuff
+  sbuild_1.add(key);
   build_1.add(key);
 
   build_2.add(key);
@@ -145,7 +169,9 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)  const  {
   build_3.add(key);
   build_3.add(target1);
   build_3.add(target2);
-
+  if ( !persist_conditions )  {
+    content.addDependency(sbuild_1.release());
+  }
   content.addDependency(build_1.release());
   content.addDependency(build_2.release());
   content.addDependency(build_3.release());
@@ -167,6 +193,7 @@ int ConditionsDataAccess::accessConditions(DetElement de, const std::vector<Cond
   ConditionKey key_double_table(de,"double_table");
   ConditionKey key_int_table   (de,"int_table");
   ConditionKey key_derived_data(de,"derived_data");
+  ConditionKey key_noctor_1    (de,"derived_data/NonDefaultCtor_1");
   ConditionKey key_derived1    (de,"derived_data/derived_1");
   ConditionKey key_derived2    (de,"derived_data/derived_2");
   ConditionKey key_derived3    (de,"derived_data/derived_3");
@@ -198,6 +225,10 @@ int ConditionsDataAccess::accessConditions(DetElement de, const std::vector<Cond
     else if ( cond.item_key() == key_derived3.item_key() )  {
       result += int(cond.get<vector<int> >().size());
     }
+    else if ( cond.item_key() == key_noctor_1.item_key() )  {
+      const NonDefaultCtorCond& c = cond.get<NonDefaultCtorCond>(); 
+      result += c.a + c.b + c.b + c.d;
+    }
     if ( !IOV::key_is_contained(iov.key(),cond.iov().key()) )  {
       printout(ERROR,"CondAccess","++ IOV mismatch:%s <> %s",
                iov.str().c_str(), cond.iov().str().c_str());
@@ -218,10 +249,19 @@ int ConditionsKeys::operator()(DetElement de, int)  const   {
   return 1;
 }
 
-template<typename T> Condition ConditionsCreator::make_condition(DetElement de, const string& name, T val)  const {
+template<typename T>
+Condition ConditionsCreator::make_condition(DetElement de, const string& name, const T& val)  const {
   Condition cond(de.path()+"#"+name, name);
   T& value   = cond.bind<T>();
   value      = val;
+  cond->hash = ConditionKey::hashCode(de,name);
+  return cond;
+}
+
+template<typename T, typename... Args>
+Condition ConditionsCreator::make_condition_args(DetElement de, const string& name, Args... args)  const {
+  Condition cond(de.path()+"#"+name, name);
+  T& value   = cond.construct<T>(std::forward<Args>(args)...);
   cond->hash = ConditionKey::hashCode(de,name);
   return cond;
 }

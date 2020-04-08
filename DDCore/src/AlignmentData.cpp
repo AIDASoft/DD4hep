@@ -230,7 +230,6 @@ Alignment AlignmentData::nominal() const   {
 }
 
 #include "DD4hep/detail/Grammar_unparsed.h"
-// Ensure the grammars are registered and instantiated
-static auto s_registry = GrammarRegistry::pre_note<Delta>()
-              .pre_note<AlignmentData>()
-              .pre_note<std::map<DetElement, Delta> >();
+static auto s_registry = GrammarRegistry::pre_note<Delta>(1)
+              .pre_note<AlignmentData>(1)
+              .pre_note<std::map<DetElement, Delta> >(1);

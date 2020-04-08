@@ -68,7 +68,7 @@ namespace dd4hep  {
     /// Release python object
     static void assignObject(PyObject*& obj, PyObject* new_obj);
 
-    /// Start the interpreter in normal mode without hacks like 'pythopn.exe' does.
+    /// Start the interpreter in normal mode without hacks like 'python.exe' does.
     static int run_interpreter(int argc, char** argv);
 
     /// Copy constructor 

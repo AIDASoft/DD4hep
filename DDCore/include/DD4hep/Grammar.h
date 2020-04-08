@@ -66,6 +66,13 @@ namespace dd4hep {
     mutable int        root_data_type = -1;
     /// Initialization flag
     mutable bool       inited         = false;
+    /// Structure to be filled if automatic object parsing from string is supposed to be supported
+    struct specialization_t   {
+      /// Bind opaque address to object
+      void (*bind)(void* pointer) = 0;
+      /// Opaque copy constructor
+      void (*copy)(void* to, const void* from) = 0;
+     } specialization;
     
   protected:
     /// Default constructor
@@ -81,12 +88,13 @@ namespace dd4hep {
 
     
     /// Instance factory
-    static void pre_note(const std::type_info& info, const BasicGrammar& (*fcn)());
-    static const BasicGrammar& get(const std::type_info& info);
+    static void pre_note(const std::type_info& info, const BasicGrammar& (*fcn)(), specialization_t specs);
     
   public:
     /// Instance factory
     template <typename TYPE> static const BasicGrammar& instance();
+    /// Access grammar by type info
+    static const BasicGrammar& get(const std::type_info& info);
     /// Lookup existing grammar using the grammar's hash code/hash64(type-name) (used for reading objects)
     static const BasicGrammar& get(unsigned long long int hash_code);
     /// Error callback on invalid conversion
@@ -113,13 +121,8 @@ namespace dd4hep {
     virtual const std::type_info& type() const = 0;
     /// Access the object size (sizeof operator)
     virtual size_t sizeOf() const = 0;
-    /// Opaque copy constructor
-    virtual void copy(void* to, const void* from) const = 0;
     /// Opaque object destructor
     virtual void destruct(void* pointer) const = 0;
-
-    /// Bind opaque address to object
-    virtual void bind(void* pointer)  const = 0;
     /// Serialize an opaque value to a string
     virtual std::string str(const void* ptr) const = 0;
     /// Set value from serialized string. On successful data conversion TRUE is returned.
@@ -142,7 +145,8 @@ namespace dd4hep {
     Grammar();
 
   public:
-
+    typedef TYPE type_t;
+    
     /** Base class overrides   */
     /// PropertyGrammar overload: Access to the type information
     virtual const std::type_info& type() const  override;
@@ -150,12 +154,10 @@ namespace dd4hep {
     virtual bool equals(const std::type_info& other_type) const  override;
     /// Access the object size (sizeof operator)
     virtual size_t sizeOf() const  override;
-    /// Opaque copy constructor
-    virtual void copy(void* to, const void* from) const  override;
     /// Opaque object destructor
     virtual void destruct(void* pointer) const  override;
     /// Bind opaque address to object
-    virtual void bind(void* pointer)  const override;
+    template <typename... Args> void construct(void* pointer, Args... args)  const;
     /// PropertyGrammar overload: Serialize a property to a string
     virtual std::string str(const void* ptr) const  override;
     /// PropertyGrammar overload: Retrieve value from string
@@ -167,7 +169,9 @@ namespace dd4hep {
   };
 
   /// Standarsd constructor
-  template <typename TYPE> Grammar<TYPE>::Grammar() : BasicGrammar(typeName(typeid(TYPE)))  {
+  template <typename TYPE> Grammar<TYPE>::Grammar()
+    : BasicGrammar(typeName(typeid(TYPE)))
+  {
   }
 
   /// Default destructor
@@ -194,16 +198,10 @@ namespace dd4hep {
     TYPE* obj = (TYPE*)pointer;
     obj->~TYPE();
   }
-
-  /// Opaque copy constructor
-  template <typename TYPE> void Grammar<TYPE>::copy(void* to, const void* from) const   {
-    const TYPE* from_obj = (const TYPE*)from;
-    new (to) TYPE(*from_obj);
-  }
-  
   /// Bind opaque address to object
-  template <typename TYPE> void Grammar<TYPE>::bind(void* pointer)  const  {
-    new(pointer) TYPE();
+  template <typename TYPE> template <typename... Args>
+  void Grammar<TYPE>::construct(void* pointer, Args... args)  const  {
+    new(pointer) TYPE(std::forward<Args>(args)...);
   }
 
   /// Grammar registry interface
@@ -218,7 +216,8 @@ namespace dd4hep {
   public:
     /// Registry instance singleton
     static const GrammarRegistry& instance();
-    template <typename T> static const GrammarRegistry& pre_note()   {
+    
+    template <typename T> static const GrammarRegistry& pre_note_specs(BasicGrammar::specialization_t specs)   {
       // Apple (or clang)  wants this....
       std::string (Grammar<T>::*str)(const void*) const = &Grammar<T>::str;
       bool        (Grammar<T>::*fromString)(void*, const std::string&) const = &Grammar<T>::fromString;
@@ -226,10 +225,18 @@ namespace dd4hep {
       if ( !(fromString && str && evaluate) ) {
         BasicGrammar::invalidConversion("Grammar",typeid(T));
       }
-      BasicGrammar::pre_note(typeid(T),BasicGrammar::instance<T>);
+      BasicGrammar::pre_note(typeid(T), BasicGrammar::instance<T>, specs);
       return instance();
     }
+    template <typename T> static const GrammarRegistry& pre_note(int)   {
+      BasicGrammar::specialization_t spec;
+      spec.bind = detail::constructObject<T>;
+      spec.copy = detail::copyObject<T>;
+      return pre_note_specs<T>(spec);
+    }
+    template <typename T> static const GrammarRegistry& pre_note()   {
+      return pre_note_specs<T>({});
+    }
   };
-
 }
 #endif  /* DD4HEP_DDCORE_DETAIL_GRAMMAR_H */

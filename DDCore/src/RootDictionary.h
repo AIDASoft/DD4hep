@@ -41,9 +41,10 @@
 // C/C++ include files
 #include <vector>
 #include <map>
-#include <string>
+ #include <string>
 
 #include "TRint.h"
+
 namespace dd4hep {
   namespace cond {}
   namespace align {}
@@ -53,8 +54,35 @@ namespace dd4hep {
     TRint app(name.c_str(), &a.first, a.second);
     app.Run();
   }
+
   tools::Evaluator& evaluator();
   tools::Evaluator& g4Evaluator();
+
+  namespace detail {
+    /// Helper to invoke the ROOT interpreter
+    struct interp  {
+    public:
+      interp() = default;
+      virtual ~interp() = default;
+      static void run(const std::string& name)  {
+	pair<int, char**> a(0,0);
+	TRint app(name.c_str(), &a.first, a.second);
+	app.Run();
+      }
+    };
+    //// Helper to access the evaluator instances
+    struct eval  {
+    public:
+      eval() = default;
+      virtual ~eval() = default;
+      static dd4hep::tools::Evaluator& instance()     {
+	return dd4hep::evaluator();
+      }
+      static dd4hep::tools::Evaluator& g4instance()   {
+	return dd4hep::g4Evaluator();
+      }
+    };
+  }
 }
 
 namespace dd4hep   {   namespace Parsers   {
@@ -94,6 +122,9 @@ template class map< string, dd4hep::Handle<dd4hep::NamedObject> >;
 template class pair<dd4hep::Callback,unsigned long>;
 #endif
 
+#pragma link C++ class DD4hepRootPersistency+;
+#pragma link C++ class DD4hepRootCheck+;
+
 #pragma link C++ class pair<unsigned int,string>+;
 //#pragma link C++ class dd4hep::Callback+;
 #pragma link C++ class pair<dd4hep::Callback,unsigned long>+;
@@ -129,8 +160,6 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::DetectorData::ObjectHandleMap+;
 #pragma link C++ class dd4hep::Detector::PropertyValues+;
 #pragma link C++ class dd4hep::Detector::Properties+;
-#pragma link C++ class DD4hepRootPersistency+;
-#pragma link C++ class DD4hepRootCheck+;
 #pragma link C++ class pair<dd4hep::IDDescriptor,dd4hep::DDSegmentation::Segmentation*>+;
 #pragma link C++ class map<dd4hep::Readout,pair<dd4hep::IDDescriptor,dd4hep::DDSegmentation::Segmentation*> >+;
 
@@ -299,6 +328,9 @@ template class dd4hep::Handle<TNamed>;
 #endif
 
 #pragma link C++ class dd4hep::Detector+;
+
+#pragma link C++ class dd4hep::detail::interp;
+#pragma link C++ class dd4hep::detail::eval;
 
 #pragma link C++ function dd4hep::run_interpreter(const string& name);
 #pragma link C++ function dd4hep::_toDictionary(const string&, const string&);

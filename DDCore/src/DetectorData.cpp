@@ -114,8 +114,12 @@ namespace {
       //printout(INFO,"OpaqueData","   Data type:%s  [%016llX]",gr.name.c_str(),key);
       void* ptr = block->ptr();
       if ( !ptr )  { // Some blocks are already bound. Skip those.
+	if ( !gr.specialization.bind )   {
+	  except("stream_opaque_datablock","Object cannot be handled by ROOT persistency. "
+		 "Grammar %s does not allow for ROOT persistency.",gr.type_name().c_str());
+	}
         ptr = block->bind(&gr);
-        gr.bind(ptr);
+        gr.specialization.bind(ptr);
       }
       /// Now perform the I/O action
       if ( gr.type() == typeid(std::string) )

@@ -86,7 +86,8 @@ static int condition_example (Detector& description, int argc, char** argv)  {
   shared_ptr<ConditionsContent> content(new ConditionsContent());
   shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
   Scanner(ConditionsKeys(*content,INFO),description.world());
-  Scanner(ConditionsDependencyCreator(*content,DEBUG),description.world());
+  // Setup for persistency
+  Scanner(ConditionsDependencyCreator(*content,DEBUG,true),description.world());
 
   /******************** Save the conditions store *********************/
   // Have 10 run-slices [11,20] .... [91,100]

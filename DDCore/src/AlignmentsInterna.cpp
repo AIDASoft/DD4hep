@@ -68,6 +68,4 @@ void AlignmentObject::clear()   {
 }
 
 #include "DD4hep/detail/Grammar_unparsed.h"
-namespace dd4hep {
-  //template const BasicGrammar& BasicGrammar::instance<AlignmentObject>();
-}
+static auto s_registry = GrammarRegistry::pre_note<AlignmentObject>();

@@ -212,7 +212,7 @@ namespace dd4hep {
      *  Note: The type definition is possible exactly once.
      *  Any further rebindings MUST match the identical type.
      */
-    template <typename T, typename... Args> T& construct(Args&&... args);
+    template <typename T, typename... Args> T& construct(Args... args);
     /** Bind the data of the conditions object to a given format.
      *
      *  Note: The type definition is possible exactly once.
@@ -240,7 +240,7 @@ namespace dd4hep {
     : Handle<Condition::Object>(e) {}
 
   /// Construct conditions object and bind the data
-  template <typename T, typename... Args> T& Condition::construct(Args&&... args)   {
+  template <typename T, typename... Args> T& Condition::construct(Args... args)   {
     return data().construct<T,Args...>(args...);
   }
   /// Bind the data of the conditions object to a given format.
