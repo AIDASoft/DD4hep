@@ -122,6 +122,8 @@ namespace dd4hep {
     void* bind(const BasicGrammar* grammar);
     /// Bind data value in place
     void* bind(void* ptr, size_t len, const BasicGrammar* grammar);
+    /// Bind external data value to the pointer
+    void bindExtern(void* ptr, const BasicGrammar* grammar);
     /// Construct conditions object and bind the data
     template <typename T, typename... Args> T& construct(Args... args);
     /// Bind data value
@@ -132,6 +134,8 @@ namespace dd4hep {
     template <typename T> T& bind(const std::string& value);
     /// Bind data value
     template <typename T> T& bind(void* ptr, size_t len, const std::string& value);
+    /// Bind external data value to the pointer
+    template <typename T> void bindExtern(T* ptr);
   };
 
   /// Generic getter. Specify the exact type, not a polymorph type
@@ -183,5 +187,10 @@ namespace dd4hep {
     }
     return ret;
   }
+  /// Bind external data value to the pointer
+  template <typename T> void OpaqueDataBlock::bindExtern(T* ptr)    {
+    bindExtern(ptr, &BasicGrammar::instance<T>());
+  }
+
 }      /* End namespace dd4hep */
 #endif /* DD4HEP_OPAQUEDATA_H  */

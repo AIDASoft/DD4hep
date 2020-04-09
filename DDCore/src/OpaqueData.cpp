@@ -143,6 +143,18 @@ void* OpaqueDataBlock::bind(const BasicGrammar* g)   {
   return 0;
 }
 
+/// Bind external data value to the pointer
+void OpaqueDataBlock::bindExtern(void* ptr, const BasicGrammar* gr)    {
+  if ( grammar != 0 && type != EXTERN_DATA )  {
+    // We cannot ingore secondary requests for data bindings.
+    // This leads to memory leaks in the caller!
+    except("OpaqueData","You may not bind opaque data multiple times!");
+  }
+  pointer = ptr;
+  grammar = gr;
+  type    = EXTERN_DATA;
+}
+
 /// Set data value
 void* OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g)   {
   if ( (type&EXTERN_DATA) == EXTERN_DATA )  {
