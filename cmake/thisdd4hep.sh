@@ -70,7 +70,7 @@ if [ "x$SOURCE" = "x" ]; then
     SOURCE=${(%):-%N} # for zsh
 fi
 
-dd4hep_parse_this $SOURCE  @PackageName@;
+dd4hep_parse_this $SOURCE  dd4hep;
 #
 # These 3 are the main configuration variables: ROOT, Geant4 and XercesC
 # --> LCIO & Co. are handled elsewhere!
