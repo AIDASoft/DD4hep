@@ -214,6 +214,8 @@ namespace dd4hep {
   class GrammarRegistry {
     /// Default constructor
     GrammarRegistry() = default;
+    /// PropertyGrammar overload: Serialize a property to a string
+    template <typename T> static std::string str(const BasicGrammar&, const void*)  { return ""; }
   public:
     /// Registry instance singleton
     static const GrammarRegistry& instance();
@@ -230,6 +232,7 @@ namespace dd4hep {
       BasicGrammar::specialization_t spec;
       spec.bind = detail::constructObject<T>;
       spec.copy = detail::copyObject<T>;
+      spec.str  = GrammarRegistry::str<T>;
       return pre_note_specs<T>(spec);
     }
     template <typename T> static const GrammarRegistry& pre_note()   {

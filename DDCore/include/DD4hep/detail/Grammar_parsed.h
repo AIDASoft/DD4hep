@@ -237,9 +237,11 @@ namespace dd4hep {
     static Grammar<TYPE> gr;
     if ( 0 == gr.specialization.bind       ) gr.specialization.bind       = detail::constructObject<TYPE>;
     if ( 0 == gr.specialization.copy       ) gr.specialization.copy       = detail::copyObject<TYPE>;
-    if ( 0 == gr.specialization.fromString ) gr.specialization.fromString = detail::grammar_fromString<TYPE>;
-    if ( 0 == gr.specialization.eval       ) gr.specialization.eval       = detail::grammar_eval<TYPE>;
-    if ( 0 == gr.specialization.str        ) gr.specialization.str        = detail::grammar_str<TYPE>;
+    if ( 0 == gr.specialization.fromString )  {
+      gr.specialization.fromString = detail::grammar_fromString<TYPE>;
+      gr.specialization.eval       = detail::grammar_eval<TYPE>;
+      gr.specialization.str        = detail::grammar_str<TYPE>;
+    }
     s_gr = &gr;
     return *s_gr;
   }
