@@ -147,8 +147,33 @@ void dd4hep::BasicGrammar::invalidConversion(const std::type_info& from, const s
                              "' to '" + to_name + "' is not implemented.");
 }
 
+/// Serialize an opaque value to a string
+std::string dd4hep::BasicGrammar::str(const void* ptr) const    {
+  if ( specialization.str )
+    return specialization.str(*this,ptr);
+  except("Grammar","Cannot serialize object with incomplete grammar: %s",type_name().c_str());
+  return "";
+}
+
+/// Set value from serialized string. On successful data conversion TRUE is returned.
+bool dd4hep::BasicGrammar::fromString(void* ptr, const std::string& value) const    {
+  if ( specialization.fromString )
+    return specialization.fromString(*this,ptr, value);
+  except("Grammar","Cannot deserialize object with incomplete grammar: %s",type_name().c_str());
+  return false;
+}
+
+/// Evaluate string value if possible before calling boost::spirit
+int dd4hep::BasicGrammar::evaluate(void* ptr, const std::string& value) const    {
+  if ( specialization.eval )
+    return specialization.eval(*this,ptr, value);
+  except("Grammar","Cannot evaluate object with incomplete grammar: %s",type_name().c_str());
+  return 0;
+}
+
 /// Registry instance singleton
 const dd4hep::GrammarRegistry& dd4hep::GrammarRegistry::instance()   {
   static GrammarRegistry s_reg;
   return s_reg;
 }
+

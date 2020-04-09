@@ -27,21 +27,6 @@
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
-  /// PropertyGrammar overload: Retrieve value from string
-  template <typename TYPE> bool Grammar<TYPE>::fromString(void* /*ptr*/, const std::string& /*val*/) const {
-    return true;
-  }
-  
-  /// Serialize a property to a string
-  template <typename TYPE> std::string Grammar<TYPE>::str(const void* /*ptr*/) const {
-    return "";
-  }
-  
-  /// Evaluate string value if possible before calling boost::spirit
-  template <typename TYPE> int Grammar<TYPE>::evaluate(void*, const std::string&) const {
-    return 0;
-  }
-
   /// Standarsd constructor
   template <typename TYPE> const BasicGrammar& BasicGrammar::instance()  {
     static Grammar<TYPE> s_gr;
