@@ -72,7 +72,13 @@ namespace dd4hep {
       void (*bind)(void* pointer) = 0;
       /// Opaque copy constructor
       void (*copy)(void* to, const void* from) = 0;
-     } specialization;
+      /// PropertyGrammar overload: Serialize a property to a string
+      std::string (*str)(const BasicGrammar& gr, const void* ptr) = 0;
+      /// PropertyGrammar overload: Retrieve value from string
+      bool (*fromString)(const BasicGrammar& gr, void* ptr, const std::string& value) = 0;
+      /// Evaluate string value if possible before calling boost::spirit
+      int  (*eval)(const BasicGrammar& gr, void* ptr, const std::string& val) = 0;
+    } specialization;
     
   protected:
     /// Default constructor
@@ -124,9 +130,11 @@ namespace dd4hep {
     /// Opaque object destructor
     virtual void destruct(void* pointer) const = 0;
     /// Serialize an opaque value to a string
-    virtual std::string str(const void* ptr) const = 0;
+    virtual std::string str(const void* ptr) const;
     /// Set value from serialized string. On successful data conversion TRUE is returned.
-    virtual bool fromString(void* ptr, const std::string& value) const = 0;
+    virtual bool fromString(void* ptr, const std::string& value) const;
+    /// Evaluate string value if possible before calling boost::spirit
+    virtual int evaluate(void* ptr, const std::string& value) const;
   };
 
   /// Concrete type dependent grammar definition
@@ -158,14 +166,6 @@ namespace dd4hep {
     virtual void destruct(void* pointer) const  override;
     /// Bind opaque address to object
     template <typename... Args> void construct(void* pointer, Args... args)  const;
-    /// PropertyGrammar overload: Serialize a property to a string
-    virtual std::string str(const void* ptr) const  override;
-    /// PropertyGrammar overload: Retrieve value from string
-    virtual bool fromString(void* ptr, const std::string& value) const  override;
-
-    /** Class member function   */
-    /// Evaluate string value if possible before calling boost::spirit
-    virtual int evaluate(void* ptr, const std::string& value) const;
   };
 
   /// Standarsd constructor
@@ -198,6 +198,7 @@ namespace dd4hep {
     TYPE* obj = (TYPE*)pointer;
     obj->~TYPE();
   }
+
   /// Bind opaque address to object
   template <typename TYPE> template <typename... Args>
   void Grammar<TYPE>::construct(void* pointer, Args... args)  const  {
@@ -218,11 +219,8 @@ namespace dd4hep {
     static const GrammarRegistry& instance();
     
     template <typename T> static const GrammarRegistry& pre_note_specs(BasicGrammar::specialization_t specs)   {
-      // Apple (or clang)  wants this....
-      std::string (Grammar<T>::*str)(const void*) const = &Grammar<T>::str;
-      bool        (Grammar<T>::*fromString)(void*, const std::string&) const = &Grammar<T>::fromString;
-      int         (Grammar<T>::*evaluate)(void*, const std::string&) const = &Grammar<T>::evaluate;
-      if ( !(fromString && str && evaluate) ) {
+      void (Grammar<T>::*destruct)(void*) const = &Grammar<T>::destruct;
+      if ( !destruct ) {
         BasicGrammar::invalidConversion("Grammar",typeid(T));
       }
       BasicGrammar::pre_note(typeid(T), BasicGrammar::instance<T>, specs);

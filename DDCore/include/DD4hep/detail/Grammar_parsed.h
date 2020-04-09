@@ -23,6 +23,7 @@
 
 /// Framework include files
 #include "DD4hep/Grammar.h"
+#include "DD4hep/Printout.h"
 #include "Evaluator/Evaluator.h"
 #include "Parsers/Parsers.h"
 
@@ -51,177 +52,182 @@ namespace {  static dd4hep::tools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
-  /// PropertyGrammar overload: Retrieve value from string
-  template <typename TYPE> bool Grammar<TYPE>::fromString(void* ptr, const std::string& string_val) const {
-    int sc = 0;
-    TYPE temp;
-    sc = ::dd4hep::Parsers::parse(temp,string_val);
-    if ( !sc ) sc = evaluate(&temp,string_val);
-#if 0
-    std::cout << "Sc=" << sc << "  Converting value: " << string_val 
-              << " to type " << typeid(TYPE).name() 
-              << std::endl;
-#endif
-    if ( sc )   {
-      *(TYPE*)ptr = temp;
-      return true;
-    }
-    BasicGrammar::invalidConversion(string_val, typeid(TYPE));
-    return false;
-  }
-
-  /// Serialize a property to a string
-  template <typename TYPE> std::string Grammar<TYPE>::str(const void* ptr) const {
-    std::stringstream string_rep;
-    Parsers::toStream(*(TYPE*)ptr,string_rep);
-    return string_rep.str();
-  }
-
-  /// Helper function to parse data type
-  static inline std::string pre_parse_obj(const std::string& in)   {
-    std::string res = "";
-    res.reserve(1024);
-    for(const char* c = in.c_str(); *c; ++c)   {
-      switch(*c)  {
-      case '\'':
-        return "Bad object representation";
-      case ',':
-        res += "','";
-        break;
-      case '(':
-      case '[':
-        res += "['";
-        break;
-      case ')':
-      case ']':
-        res += "']";
-        break;
-      default:
-        res += *c;
-        break;
-      }
-    }
-    //cout << "Pre-parsed:" << res << endl;
-    return res;
-  }
-
-  /// Insertion function for std vectors
-  template <typename TYPE> static int fill_data(std::vector<TYPE>* p,const std::vector<std::string>& temp)  {
-    TYPE val;
-    const BasicGrammar& grammar = BasicGrammar::instance<TYPE>();
-    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
-      if ( !grammar.fromString(&val,*i) )
-        return 0;
-      p->emplace_back(val);
-    }
-    return 1;
-  }
-
-  /// Insertion function for std lists
-  template <typename TYPE> static int fill_data(std::list<TYPE>* p,const std::vector<std::string>& temp)  {
-    TYPE val;
-    const BasicGrammar& grammar = BasicGrammar::instance<TYPE>();
-    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
-      if ( !grammar.fromString(&val,*i) )
-        return 0;
-      p->emplace_back(val);
-    }
-    return 1;
-  }
-
-  /// Insertion function for std sets
-  template <typename TYPE> static int fill_data(std::set<TYPE>* p,const std::vector<std::string>& temp)  {
-    TYPE val;
-    const BasicGrammar& grammar = BasicGrammar::instance<TYPE>();
-    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
-      if ( !grammar.fromString(&val,*i) )
-        return 0;
-      p->emplace(val);
-    }
-    return 1;
-  }
-
-  /// Insertion function for std sets
-  template <typename TYPE> static int fill_data(std::deque<TYPE>* p,const std::vector<std::string>& temp)  {
-    TYPE val;
-    const BasicGrammar& grammar = BasicGrammar::instance<TYPE>();
-    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
-      if ( !grammar.fromString(&val,*i) )
-        return 0;
-      p->emplace_back(val);
-    }
-    return 1;
-  }
-
-  /// Insertion function for std sets
-  template <typename KEY, typename TYPE> static int fill_data(std::map<KEY,TYPE>* p,const std::vector<std::string>& temp)  {
-    std::pair<KEY,TYPE> val;
-    const BasicGrammar& grammar = BasicGrammar::instance<std::pair<KEY,TYPE> >();
-    for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
-      if ( !grammar.fromString(&val,*i) )
-        return 0;
-      p->emplace(val);
-    }
-    return 1;
-  }
-
-  /// Container evaluator
-  template <typename TYPE> static int eval_container(TYPE* p, const std::string& str)  {
-    std::vector<std::string> buff;
-    int sc = Parsers::parse(buff,str);
-    if ( sc )  {
-      return fill_data(p,buff);
-    }
-    else   {
+  namespace detail  {
+    /// PropertyGrammar overload: Retrieve value from string
+    template <typename TYPE> bool grammar_fromString(const BasicGrammar& gr, void* ptr, const std::string& string_val)   {
+      int sc = 0;
       TYPE temp;
-      std::string temp_str = pre_parse_obj(str);
-      sc = ::dd4hep::Parsers::parse(temp,temp_str);
+      sc = ::dd4hep::Parsers::parse(temp,string_val);
+      if ( !sc ) sc = gr.evaluate(&temp,string_val);
+#if 0
+      std::cout << "Sc=" << sc << "  Converting value: " << string_val 
+		<< " to type " << typeid(TYPE).name() 
+		<< std::endl;
+#endif
       if ( sc )   {
-        *p = temp;
-        return 1;
+	*(TYPE*)ptr = temp;
+	return true;
       }
-      buff.clear();
-      sc = Parsers::parse(buff,temp_str);
-      if ( sc )  {
-        return fill_data(p,buff);
-      }
+      BasicGrammar::invalidConversion(string_val, typeid(TYPE));
+      return false;
     }
-    return 0;
-  }
 
-  /// Item evaluator
-  template <typename T> inline int eval_item(T* ptr, std::string val)  {
-    size_t idx = val.find("(int)");
-    if (idx != std::string::npos)
-      val.erase(idx, 5);
-    while (val[0] == ' ')
-      val.erase(0, 1);
-    double result = s__eval.evaluate(val.c_str());
-    if (s__eval.status() != tools::Evaluator::OK) {
+    /// Serialize a property to a string
+    template <typename TYPE> std::string grammar_str(const BasicGrammar&, const void* ptr)  {
+      std::stringstream string_rep;
+      Parsers::toStream(*(TYPE*)ptr,string_rep);
+      return string_rep.str();
+    }
+
+
+    /// Helper function to parse data type
+    static inline std::string pre_parse_obj(const std::string& in)   {
+      std::string res = "";
+      res.reserve(1024);
+      for(const char* c = in.c_str(); *c; ++c)   {
+	switch(*c)  {
+	case '\'':
+	  return "Bad object representation";
+	case ',':
+	  res += "','";
+	  break;
+	case '(':
+	case '[':
+	  res += "['";
+	  break;
+	case ')':
+	case ']':
+	  res += "']";
+	  break;
+	default:
+	  res += *c;
+	  break;
+	}
+      }
+      //cout << "Pre-parsed:" << res << endl;
+      return res;
+    }
+
+    /// Insertion function for std vectors
+    template <typename TYPE> static int fill_data(std::vector<TYPE>* p,const std::vector<std::string>& temp)  {
+      TYPE val;
+      const BasicGrammar& grammar = BasicGrammar::instance<TYPE>();
+      for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
+	if ( !grammar.fromString(&val,*i) )
+	  return 0;
+	p->emplace_back(val);
+      }
+      return 1;
+    }
+
+    /// Insertion function for std lists
+    template <typename TYPE> static int fill_data(std::list<TYPE>* p,const std::vector<std::string>& temp)  {
+      TYPE val;
+      const BasicGrammar& grammar = BasicGrammar::instance<TYPE>();
+      for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
+	if ( !grammar.fromString(&val,*i) )
+	  return 0;
+	p->emplace_back(val);
+      }
+      return 1;
+    }
+
+    /// Insertion function for std sets
+    template <typename TYPE> static int fill_data(std::set<TYPE>* p,const std::vector<std::string>& temp)  {
+      TYPE val;
+      const BasicGrammar& grammar = BasicGrammar::instance<TYPE>();
+      for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
+	if ( !grammar.fromString(&val,*i) )
+	  return 0;
+	p->emplace(val);
+      }
+      return 1;
+    }
+
+    /// Insertion function for std sets
+    template <typename TYPE> static int fill_data(std::deque<TYPE>* p,const std::vector<std::string>& temp)  {
+      TYPE val;
+      const BasicGrammar& grammar = BasicGrammar::instance<TYPE>();
+      for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
+	if ( !grammar.fromString(&val,*i) )
+	  return 0;
+	p->emplace_back(val);
+      }
+      return 1;
+    }
+
+    /// Insertion function for std sets
+    template <typename KEY, typename TYPE> static int fill_data(std::map<KEY,TYPE>* p,const std::vector<std::string>& temp)  {
+      std::pair<KEY,TYPE> val;
+      const BasicGrammar& grammar = BasicGrammar::instance<std::pair<KEY,TYPE> >();
+      for(auto i=std::begin(temp); i != std::end(temp); ++i)  {
+	if ( !grammar.fromString(&val,*i) )
+	  return 0;
+	p->emplace(val);
+      }
+      return 1;
+    }
+
+    /// Container evaluator
+    template <typename TYPE> static int eval_container(TYPE* p, const std::string& str)  {
+      std::vector<std::string> buff;
+      int sc = Parsers::parse(buff,str);
+      if ( sc )  {
+	return fill_data(p,buff);
+      }
+      else   {
+	TYPE temp;
+	std::string temp_str = pre_parse_obj(str);
+	sc = ::dd4hep::Parsers::parse(temp,temp_str);
+	if ( sc )   {
+	  *p = temp;
+	  return 1;
+	}
+	buff.clear();
+	sc = Parsers::parse(buff,temp_str);
+	if ( sc )  {
+	  return fill_data(p,buff);
+	}
+      }
       return 0;
     }
-    *ptr = (T)result;
-    return 1;
-  }
 
-  /// String evaluator
-  template <> inline int eval_item<std::string>(std::string* ptr, std::string val)  {
-    *ptr = val;
-    return 1;
-  }
+    /// Item evaluator
+    template <typename T> inline int eval_item(T* ptr, std::string val)  {
+      size_t idx = val.find("(int)");
+      if (idx != std::string::npos)
+	val.erase(idx, 5);
+      while (val[0] == ' ')
+	val.erase(0, 1);
+      double result = s__eval.evaluate(val.c_str());
+      if (s__eval.status() != tools::Evaluator::OK) {
+	return 0;
+      }
+      *ptr = (T)result;
+      return 1;
+    }
 
-  /// Item evaluator
-  template <typename T,typename Q> inline int eval_pair(std::pair<T,Q>* ptr, std::string str)  {
-    const BasicGrammar& grammar = BasicGrammar::instance<std::pair<T,Q> >();
-    if ( !grammar.fromString(ptr,str) )  return 0;
-    return 1;
-  }
+    /// String evaluator
+    template <> inline int eval_item<std::string>(std::string* ptr, std::string val)  {
+      *ptr = val;
+      return 1;
+    }
 
-  /// Object evaluator
-  template<typename T> inline int eval_obj(T* ptr, const std::string& str)  {
-    return BasicGrammar::instance<T>().fromString(ptr,pre_parse_obj(str));
-  }
+    /// Item evaluator
+    template <typename T,typename Q> inline int eval_pair(std::pair<T,Q>* ptr, std::string str)  {
+      const BasicGrammar& grammar = BasicGrammar::instance<std::pair<T,Q> >();
+      if ( !grammar.fromString(ptr,str) )  return 0;
+      return 1;
+    }
 
+    /// Object evaluator
+    template<typename T> inline int eval_obj(T* ptr, const std::string& str)  {
+      return BasicGrammar::instance<T>().fromString(ptr,pre_parse_obj(str));
+    }
+
+    template<typename T> inline int grammar_eval(const BasicGrammar&, void*, const std::string&) { return 0; }
+  }
+  
   /// Standarsd constructor
   template <typename TYPE> const BasicGrammar& BasicGrammar::instance()  {
     static Grammar<TYPE> *s_gr = 0;
@@ -229,8 +235,11 @@ namespace dd4hep {
       return *s_gr;
     }
     static Grammar<TYPE> gr;
-    if ( 0 == gr.specialization.bind ) gr.specialization.bind = detail::constructObject<TYPE>;
-    if ( 0 == gr.specialization.copy ) gr.specialization.copy = detail::copyObject<TYPE>;
+    if ( 0 == gr.specialization.bind       ) gr.specialization.bind       = detail::constructObject<TYPE>;
+    if ( 0 == gr.specialization.copy       ) gr.specialization.copy       = detail::copyObject<TYPE>;
+    if ( 0 == gr.specialization.fromString ) gr.specialization.fromString = detail::grammar_fromString<TYPE>;
+    if ( 0 == gr.specialization.eval       ) gr.specialization.eval       = detail::grammar_eval<TYPE>;
+    if ( 0 == gr.specialization.str        ) gr.specialization.str        = detail::grammar_str<TYPE>;
     s_gr = &gr;
     return *s_gr;
   }
@@ -239,7 +248,8 @@ namespace dd4hep {
 #define DD4HEP_PARSER_GRAMMAR_CNAME(serial,name)  namespace_dd4hep__grammar_##serial##_##name
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)                       \
-  namespace dd4hep { template<> int Grammar<x>::evaluate(void* _p, const std::string& _v) const { return func ((x*)_p,_v); }}
+  namespace dd4hep { namespace detail {					\
+      template<> int grammar_eval<x>(const BasicGrammar&, void* _p, const std::string& _v) { return func ((x*)_p,_v); }}}
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_INSTANCE(serial,x)   namespace dd4hep { template class Grammar< x >; } \
   namespace DD4HEP_PARSER_GRAMMAR_CNAME(serial,0) { static auto s_reg = ::dd4hep::GrammarRegistry::pre_note< x >(); }
