@@ -205,7 +205,7 @@ ParticleRejectFilter::~ParticleRejectFilter() {
 
 /// Filter action. Return true if hits should be processed
 bool ParticleRejectFilter::operator()(const G4Step* step) const   {
-  return isSameType(step->GetTrack());
+  return !isSameType(step->GetTrack());
 }
 
 /// Constructor.
@@ -221,7 +221,7 @@ ParticleSelectFilter::~ParticleSelectFilter() {
 
 /// Filter action. Return true if hits should be processed
 bool ParticleSelectFilter::operator()(const G4Step* step) const   {
-  return !isSameType(step->GetTrack());
+  return isSameType(step->GetTrack());
 }
 
 /// Constructor.
