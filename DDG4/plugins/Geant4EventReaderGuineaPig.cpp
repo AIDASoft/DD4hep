@@ -11,6 +11,17 @@
 //
 //==========================================================================
 
+/** \addtogroup Geant4EventReader
+ *
+ @{
+  \package Geant4EventReaderGuineaPig
+ * \brief Reader for ascii files with e+e- pairs created from GuineaPig.
+ *
+ *
+@}
+ */
+
+
 // Framework include files
 #include "DDG4/Geant4InputAction.h"
 

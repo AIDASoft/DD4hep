@@ -10,6 +10,15 @@
 // Author     : M.Frank
 //
 //==========================================================================
+
+/** \addtogroup Geant4GeneratorAction
+ *
+ @{
+   \package Geant4InteractionMerger
+ * \brief Geant4Action to merge several independent interaction to one
+@}
+ */
+
 #ifndef DD4HEP_DDG4_GEANT4INTERACTIONMERGER_H
 #define DD4HEP_DDG4_GEANT4INTERACTIONMERGER_H
 

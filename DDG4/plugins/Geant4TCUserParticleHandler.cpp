@@ -10,6 +10,17 @@
 // Author     : M.Frank
 //
 //==========================================================================
+
+/** \addtogroup Geant4Action
+ *
+ @{
+   \package Geant4TCUserParticleHandler
+ * \brief Rejects to keep particles, which are created outside a tracking cylinder.
+ *
+ *
+@}
+ */
+
 #ifndef DD4HEP_DDG4_GEANT4TCUSERPARTICLEHANDLER_H
 #define DD4HEP_DDG4_GEANT4TCUSERPARTICLEHANDLER_H
 

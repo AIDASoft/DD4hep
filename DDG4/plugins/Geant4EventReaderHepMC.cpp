@@ -11,6 +11,17 @@
 //
 //==========================================================================
 
+/** \addtogroup Geant4EventReader
+ *
+ @{
+  \package Geant4EventReaderHepMC
+ * \brief Plugin to read HepMC2 ASCII files
+ *
+ *
+@}
+ */
+
+
 // Framework include files
 #include "DDG4/IoStreams.h"
 #include "DDG4/Geant4InputAction.h"
@@ -29,7 +40,7 @@ namespace dd4hep {
       class EventStream;
     }
 
-    /// Class to populate Geant4 primaries from StdHep files.
+    /// Class to populate Geant4 primaries from HepMC(2) files.
     /**
      *  Class to populate Geant4 primary particles and vertices from a
      *  file in HepMC format (ASCII)

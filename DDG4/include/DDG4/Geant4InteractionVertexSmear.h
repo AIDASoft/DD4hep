@@ -10,6 +10,17 @@
 // Author     : M.Frank
 //
 //==========================================================================
+
+/** \addtogroup Geant4GeneratorAction
+ *
+ @{
+   \package Geant4InteractionVertexSmear
+ * \brief Action class to smear the primary vertex (and all outgoing particles) of a single interaction
+ *
+ *
+@}
+ */
+
 #ifndef DD4HEP_DDG4_GEANT4INTERACTIONVERTEXSMEAR_H
 #define DD4HEP_DDG4_GEANT4INTERACTIONVERTEXSMEAR_H
 

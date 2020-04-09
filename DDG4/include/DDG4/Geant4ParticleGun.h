@@ -10,6 +10,15 @@
 // Author     : M.Frank
 //
 //==========================================================================
+/** \addtogroup Geant4GeneratorAction
+ *
+ @{
+   \package Geant4ParticleGun
+ * \brief Implementation of a particle gun using Geant4Particles.
+ *
+ *
+@}
+ */
 
 #ifndef DD4HEP_DDG4_GEANT4PARTICLEGUN_H
 #define DD4HEP_DDG4_GEANT4PARTICLEGUN_H

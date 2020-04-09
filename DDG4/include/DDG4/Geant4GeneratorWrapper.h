@@ -10,6 +10,17 @@
 // Author     : M.Frank
 //
 //==========================================================================
+
+/** \addtogroup Geant4GeneratorAction
+ *
+ @{
+   \package Geant4GeneratorWrapper
+ * \brief Wrap native G4 particle ganerators like the generic particle source etc.
+ *
+ *
+@}
+ */
+
 #ifndef DD4HEP_DDG4_GEANT4GENERATORWRAPPER_H
 #define DD4HEP_DDG4_GEANT4GENERATORWRAPPER_H
 

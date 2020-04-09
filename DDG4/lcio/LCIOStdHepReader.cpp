@@ -10,6 +10,17 @@
 // Author     : M.Frank
 //
 //==========================================================================
+
+/** \addtogroup Geant4EventReader
+ *
+ @{
+  \package LCIOStdHepReader
+ * \brief Base class to read StdHep files
+ *
+ *
+@}
+ */
+
 #ifndef DD4HEP_DDG4_LCIOSTDHEPREADER_H
 #define DD4HEP_DDG4_LCIOSTDHEPREADER_H
 

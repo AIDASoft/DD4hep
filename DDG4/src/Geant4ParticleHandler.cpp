@@ -330,7 +330,7 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     m_userHandler->end(track, m_currTrack);
   }
 
-  // These are candate tracks with a probability to be stored due to their properties:
+  // These are candidate tracks with a probability to be stored due to their properties:
   // - primary particle
   // - hits created
   // - secondaries

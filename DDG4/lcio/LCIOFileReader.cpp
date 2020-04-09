@@ -17,7 +17,6 @@
   \package LCIOFileReader
  * \brief Plugin to read lcio files
  *
- And here we can put a longer description, parameters, examples...
  *
 @}
  */
