@@ -196,5 +196,6 @@ namespace dd4hep {
     {  return detectorToLocal(Position(det[0],det[1],det[2]));                        }
   };
 }         /* End namespace dd4hep               */
+std::ostream& operator << (std::ostream& s, const dd4hep::Delta& data);
 std::ostream& operator << (std::ostream& s, const dd4hep::AlignmentData& data);
 #endif    /* DD4HEP_ALIGMENTS_ALIGNMENTDATA_H   */
