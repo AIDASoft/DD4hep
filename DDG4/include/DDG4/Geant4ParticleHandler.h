@@ -11,6 +11,16 @@
 //
 //==========================================================================
 
+ /** \addtogroup Geant4Action
+ *
+ @{
+   \package Geant4ParticleHandler
+ * \brief Geant4Action to collect the MC particle information.
+ *
+ *
+@}
+ */
+
 #ifndef DD4HEP_DDG4_GEANT4PARTICLEHANDLER_H
 #define DD4HEP_DDG4_GEANT4PARTICLEHANDLER_H
 

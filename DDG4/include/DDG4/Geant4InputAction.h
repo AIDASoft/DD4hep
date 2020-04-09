@@ -11,6 +11,16 @@
 //
 //==========================================================================
 
+/** \addtogroup Geant4GeneratorAction
+ *
+ @{
+   \package Geant4InputAction
+ * \brief Basic geant4 event reader class. This interface/base-class must be implemented by concrete readers.
+ *
+ *
+@}
+ */
+
 #ifndef DD4HEP_DDG4_GEANT4INPUTACTION_H
 #define DD4HEP_DDG4_GEANT4INPUTACTION_H
 

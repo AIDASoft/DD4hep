@@ -11,6 +11,17 @@
 //
 //==========================================================================
 
+/** \addtogroup Geant4EventReader
+ *
+ @{
+  \package Geant4EventReaderHepEvt
+ * \brief Plugin to read HepEvt ASCII files
+ *
+ *
+@}
+ */
+
+
 // Framework include files
 #include "DDG4/Geant4InputAction.h"
 

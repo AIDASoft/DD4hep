@@ -10,6 +10,18 @@
 // Author     : M.Frank
 //
 //==========================================================================
+
+/** \addtogroup Geant4Action
+ *
+ @{
+   \package Geant4UserParticleHandler
+ * \brief Geant4ParticleHandler user extension action called by the particle handler.
+ *
+ *
+@}
+ */
+
+
 #ifndef DD4HEP_DDG4_GEANT4USERPARTICLEHANDLER_H
 #define DD4HEP_DDG4_GEANT4USERPARTICLEHANDLER_H
 

@@ -10,6 +10,15 @@
 // Author     : M.Frank
 //
 //==========================================================================
+/** \addtogroup Geant4GeneratorAction
+ *
+ @{
+   \package Geant4InteractionVertexBoost
+ * \brief Action class to boost the primary vertex (and all outgoing particles) of a single interaction
+ *
+ *
+@}
+ */
 
 #ifndef DD4HEP_DDG4_GEANT4INTERACTIONVERTEXBOOST_H
 #define DD4HEP_DDG4_GEANT4INTERACTIONVERTEXBOOST_H
@@ -25,7 +34,7 @@ namespace dd4hep {
 
     /// Action class to boost the primary vertex (and all outgoing particles) of a single interaction
     /**
-     * The vertex smearing is steered by the Lorentz transformation angle.
+     * The vertex boost is steered by the Lorentz transformation angle.
      * The interaction to be modified is identified by the interaction's unique mask.
      *
      *  \author  M.Frank

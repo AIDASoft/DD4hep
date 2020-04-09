@@ -90,14 +90,14 @@ namespace UTIL {}
  *  \defgroup Plugins
  *  @{
 
- *  \defgroup Geant4ActionPlugin
+ *  \defgroup Geant4Action
  \brief Plugins that are a Geant4Actions
+
+ *  \defgroup Geant4GeneratorAction
+ \brief Plugins treating the generation of primary particles
 
  *  \defgroup Geant4RunActions
  \brief Plugins that are a Geant4RunActions
-
- *  \defgroup SurfacePlugin
- \brief Plugins to manipulate surfaces automatically
 
  *  \defgroup Geant4EventReader
  \brief InputFile Reader Plugins
@@ -107,5 +107,8 @@ namespace UTIL {}
 
  *  \defgroup Geant4PhysicsConstructor
  \brief Extensions for PhysicsLists
+
+ *  \defgroup SurfacePlugin
+ \brief Plugins to manipulate surfaces automatically
 
  @}*/

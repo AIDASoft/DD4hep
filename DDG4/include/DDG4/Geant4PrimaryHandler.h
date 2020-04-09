@@ -10,6 +10,17 @@
 // Author     : M.Frank
 //
 //==========================================================================
+
+/** \addtogroup Geant4GeneratorAction
+ *
+ @{
+  \package Geant4PrimaryHandler
+ * \brief Geant4Action to convert the particle information to Geant4
+ *
+ *
+@}
+ */
+
 #ifndef DD4HEP_DDG4_GEANT4PRIMARYHANDLER_H
 #define DD4HEP_DDG4_GEANT4PRIMARYHANDLER_H
 
