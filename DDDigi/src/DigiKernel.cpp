@@ -273,7 +273,7 @@ void DigiKernel::submit(const DigiAction::Actors<DigiEventAction>& actions, Digi
   if ( parallel )   {
     tbb::task_group que;
     for ( auto* i : actions )
-      que.run(Wrapper(context, *i));
+      que.run(Wrapper(context, i));
     que.wait();
     goto print_stamp;
   }
