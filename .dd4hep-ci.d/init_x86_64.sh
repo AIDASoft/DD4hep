@@ -30,10 +30,10 @@ if [ -z ${COMPILER_TYPE} ]; then
 fi
 if [ -z ${COMPILER_VERSION} ]; then
     if [ ${COMPILER_TYPE} == "gcc" ]; then
-        COMPILER_VERSION="gcc8"
+        COMPILER_VERSION="gcc9"
     fi
     if [[ ${COMPILER_TYPE} == "clang" ]]; then
-        COMPILER_VERSION="clang8"
+        COMPILER_VERSION="clang10"
     fi
 fi
 
@@ -45,7 +45,7 @@ fi
 
 # General variables
 if [ -z ${LCG_RELEASE} ]; then
-    LCG_RELEASE="LCG_96"
+    LCG_RELEASE="LCG_97"
 fi
 
 if [[ "${LCG_RELEASE}" =~ "dev" ]]; then
