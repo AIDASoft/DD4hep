@@ -3,14 +3,13 @@ stages:
     - documentation
     - deployment
 
-slc6-gcc8-Geant10.5:
+centos7-gcc8-Geant10.6:
   stage: build
   tags:
     - docker
-  image: clicdp/slc6-lcg
+  image: clicdp/cc7-lcg
   script:
-    - source .dd4hep-ci.d/init_x86_64.sh
-    - unset CPATH
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc8-opt/setup.sh
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
@@ -26,14 +25,13 @@ slc6-gcc8-Geant10.5:
     - ninja install
     - ctest --output-on-failure
 
-centos7-gcc8-Geant10.5:
+centos7-gcc9-Geant10.6:
   stage: build
   tags:
     - docker
   image: clicdp/cc7-lcg
   script:
-    - source .dd4hep-ci.d/init_x86_64.sh
-    - unset CPATH
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc9-opt/setup.sh
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
@@ -49,13 +47,13 @@ centos7-gcc8-Geant10.5:
     - ninja install
     - ctest --output-on-failure
 
-centos7-gcc8-Geant10.5-XERCESC:
+centos7-gcc9-Geant10.6-XERCESC:
   stage: build
   tags:
     - docker
   image: clicdp/cc7-lcg
   script:
-    - source .dd4hep-ci.d/init_x86_64.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc9-opt/setup.sh
     - unset CPATH
     - mkdir build
     - cd build
@@ -72,15 +70,13 @@ centos7-gcc8-Geant10.5-XERCESC:
     - ninja install
     - ctest --output-on-failure
 
-centos7-gcc8-Geant10.5-Python3:
+centos7-gcc9-Geant10.6-Python3:
   stage: build
   tags:
     - docker
   image: clicdp/cc7-lcg
   script:
-    - export LCG_RELEASE="LCG_96python3"
-    - source .dd4hep-ci.d/init_x86_64.sh
-    - unset CPATH
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97python3/x86_64-centos7-gcc9-opt/setup.sh
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
@@ -97,15 +93,13 @@ centos7-gcc8-Geant10.5-Python3:
     - ctest --output-on-failure
 
 
-centos7-clang8-Geant10.5-XERCESC:
+centos7-clang10-Geant10.6-XERCESC:
   stage: build
   tags:
     - docker
   image: clicdp/cc7-lcg
   script:
-    - export COMPILER_TYPE="clang"
-    - source .dd4hep-ci.d/init_x86_64.sh
-    - unset CPATH
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc9-opt/setup.sh
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
@@ -170,6 +164,18 @@ mac1015-clang110-Geant10.6-XERCESC:
     - ninja
     - ninja install
     - ctest --output-on-failure
+
+Python:
+  stage: build
+  tags:
+    - docker
+  image: clicdp/cc7-lcg
+  script:
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc9-opt/setup.sh
+    - echo "RUNNING PYLINT PY3K CHECK"
+    - find . -name "*.py" -and -not -name "ddsix.py" -exec pylint --rcfile=.dd4hep-ci.d/DD4hep.pylint.py3k.rc --py3k {} +
+    - echo "RUNNING FLAKE8 CHECK"
+    - find . -name "*.py" -and -not -name 'ddsix.py' -exec flake8 {} +
 
 
 
