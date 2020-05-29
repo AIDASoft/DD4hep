@@ -12,9 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#ifndef DD4HEP_DDG4_GEANT4SENSDETACTION_H
 #include "DDG4/Geant4SensDetAction.h"
-#endif
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/InstanceCount.h"
 
