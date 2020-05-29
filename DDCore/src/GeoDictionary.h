@@ -13,8 +13,8 @@
 //  M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_ROOTDICTIONARY_H
-#define DD4HEP_DDCORE_ROOTDICTIONARY_H
+#ifndef DD4HEP_DDCORE_GEODICTIONARY_H
+#define DD4HEP_DDCORE_GEODICTIONARY_H
 
 // Framework include files
 #include "DD4hep/Volumes.h"
@@ -138,4 +138,4 @@ template vector<pair<string, int> >::iterator;
 #pragma link C++ class dd4hep::TwistedTubeObject+;
 
 #endif  // __CINT__
-#endif  /* DD4HEP_DDCORE_ROOTDICTIONARY_H  */
+#endif  /* DD4HEP_DDCORE_GEODICTIONARY_H  */
