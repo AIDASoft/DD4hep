@@ -19,7 +19,6 @@
 #include "DD4hep/DDTest.h"
 
 #include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/BitField64.h"
 
 #include "lcio.h"
 #include "IO/LCReader.h"
@@ -35,7 +34,6 @@ using namespace std ;
 using namespace dd4hep ;
 using namespace dd4hep::detail;
 using namespace dd4hep::rec ;
-using namespace lcio;
 
 
 static DDTest test( "surfaces" ) ; 
@@ -91,10 +89,10 @@ int main_wrapper(int argc, char** argv ){
 
   std::string lcioFileName = argv[2] ;
 
-  LCReader* rdr = LCFactory::getInstance()->createLCReader() ;
+  IO::LCReader* rdr = IOIMPL::LCFactory::getInstance()->createLCReader() ;
   rdr->open( lcioFileName ) ;
 
-  LCEvent* evt = 0 ;
+  EVENT::LCEvent* evt = 0 ;
 
 
   while( ( evt = rdr->readNextEvent() ) != 0 ){
@@ -103,7 +101,7 @@ int main_wrapper(int argc, char** argv ){
 
     for(unsigned icol=0, ncol = colNames.size() ; icol < ncol ; ++icol ){
 
-      LCCollection* col =  evt->getCollection( colNames[ icol ] ) ;
+      EVENT::LCCollection* col =  evt->getCollection( colNames[ icol ] ) ;
 
       std::string typeName = col->getTypeName() ;
 
@@ -114,13 +112,13 @@ int main_wrapper(int argc, char** argv ){
 
       std::string cellIDEcoding = col->getParameters().getStringVal("CellIDEncoding") ;
       
-      BitField64 idDecoder( cellIDEcoding ) ;
+      lcio::BitField64 idDecoder( cellIDEcoding ) ;
 
       int nHit = col->getNumberOfElements() ;
       
       for(int i=0 ; i< nHit ; ++i){
 	
-        SimTrackerHit* sHit = (SimTrackerHit*) col->getElementAt(i) ;
+        EVENT::SimTrackerHit* sHit = (EVENT::SimTrackerHit*) col->getElementAt(i) ;
 	
         dd4hep::long64 id = sHit->getCellID0() ;
 	
