@@ -19,7 +19,7 @@
 #include <map>
 #include <sstream>
 
-#include "BitFieldCoder.h"
+#include "DDSegmentation/BitFieldCoder.h"
 
 namespace dd4hep {
   
