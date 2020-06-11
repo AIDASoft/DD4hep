@@ -26,6 +26,7 @@
 #include "TGeoManager.h"
 #include "TGeoShapeAssembly.h"
 
+#include "TEveGeoShape.h"
 #include "TEveGeoNode.h"
 #include "TEveElement.h"
 #include "TEveTrans.h"
