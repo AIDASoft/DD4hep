@@ -599,16 +599,16 @@ class Geant4:
         params = {}
         if isinstance(coll, tuple) or isinstance(coll, list):
           if len(coll) > 2:
-            coll_nam = coll[0]
+            coll_nam = str(coll[0])
             sensitive_type = coll[1]
-            params = coll[2]
+            params = str(coll[2])
           elif len(coll) > 1:
-            coll_nam = coll[0]
+            coll_nam = str(coll[0])
             sensitive_type = coll[1]
           else:
-            coll_nam = coll[0]
+            coll_nam = str(coll[0])
         else:
-          coll_nam = coll
+          coll_nam = str(coll)
         act = SensitiveAction(self.kernel(), sensitive_type + '/' + coll_nam + 'Handler', name)
         act.CollectionName = coll_nam
         for parameter, value in six.iteritems(params):
