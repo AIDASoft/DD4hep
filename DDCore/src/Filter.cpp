@@ -1,4 +1,4 @@
-#include "DetectorDescription/DDCMS/interface/Filter.h"
+#include "DD4hep/Filter.h"
 #include <functional>
 #include <regex>
 #include <iostream>
