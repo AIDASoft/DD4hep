@@ -54,13 +54,13 @@ namespace dd4hep {
       /* }); */
     }
 
-    void print(const std::unique_ptr<Filter>& filter) const {
+    //    void print(const std::unique_ptr<Filter>& filter) const {
       /* edm::LogVerbatim("Geometry").log([&](auto& log) { */
       /*   for (const auto& it : filter->skeys) { */
       /*     log << it << ", "; */
       /*   } */
       /* }); */
-    }
+    //}
 
     std::vector<std::string_view> skeys;
     std::vector<std::regex> keys;
