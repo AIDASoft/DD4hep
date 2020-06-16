@@ -9,7 +9,7 @@ namespace cms {
   namespace dd {
 
     bool isMatch(string_view node, string_view name) {
-      if (!isRegex(name)) {
+      if (!dd4hep::dd::isRegex(name)) {
         return (name == node);
       } else {
         regex pattern({name.data(), name.size()});
