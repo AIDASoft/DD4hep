@@ -18,6 +18,7 @@
 #include <limits>
 #include <algorithm>
 #include <utility>
+#include <cstdint>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -69,7 +70,7 @@ namespace dd4hep {
     explicit IOV() = delete;
   public:
     /// Key definition
-    using Key_value_type = long;
+    using Key_value_type = std::int64_t;
     using Key = std::pair<Key_value_type, Key_value_type>;
 
     static constexpr Key_value_type INVALID_KEY = 0;
