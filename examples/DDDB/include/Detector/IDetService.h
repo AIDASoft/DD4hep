@@ -43,7 +43,7 @@ namespace gaudi   {
     typedef dd4hep::cond::ConditionsCleanup           Cleanup;
     typedef dd4hep::DetElement                        DetElement;
     typedef dd4hep::Condition                         Condition;
-    typedef dd4hep::IOV::Key_first_type               EventStamp;
+    typedef dd4hep::IOV::Key_value_type               EventStamp;
     typedef dd4hep::IOVType                           IOVType;
     typedef std::shared_ptr<dd4hep::cond::ConditionsContent> Content;
     typedef std::shared_ptr<dd4hep::cond::ConditionsSlice>   Slice;
