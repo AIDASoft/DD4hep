@@ -69,14 +69,13 @@ namespace dd4hep {
     explicit IOV() = delete;
   public:
     /// Key definition
-    using Key_first_type = long;
-    using Key_second_type = long;
-    using Key = std::pair<Key_first_type,Key_second_type>;
+    using Key_value_type = long;
+    using Key = std::pair<Key_value_type, Key_value_type>;
 
-    static constexpr Key_first_type INVALID_KEY = 0;
-    static constexpr Key_first_type MIN_KEY = std::numeric_limits<long>::min();
-    static constexpr Key_first_type MAX_KEY = std::numeric_limits<long>::max();
-    
+    static constexpr Key_value_type INVALID_KEY = 0;
+    static constexpr Key_value_type MIN_KEY = std::numeric_limits<Key_value_type>::min();
+    static constexpr Key_value_type MAX_KEY = std::numeric_limits<Key_value_type>::max();
+
     /// Reference to IOV type
     const IOVType* iovType = 0;
     /// IOV key (if second==first, discrete, otherwise range)
@@ -91,7 +90,7 @@ namespace dd4hep {
     /// Specialized copy constructor for range IOVs
     explicit IOV(const IOVType* typ, const Key& key);
     /// Specialized copy constructor for discrete IOVs
-    explicit IOV(const IOVType* typ, Key_first_type iov_value);
+    explicit IOV(const IOVType* typ, Key_value_type iov_value);
     /// Copy constructor
     IOV(const IOV& copy) = default;
     /// Move constructor
@@ -117,9 +116,9 @@ namespace dd4hep {
     /// Set discrete IOV value
     void set(const Key& value);
     /// Set discrete IOV value
-    void set(Key_first_type value);
+    void set(Key_value_type value);
     /// Set range IOV value
-    void set(Key_first_type val_1, Key_second_type val_2);
+    void set(Key_value_type val_1, Key_value_type val_2);
     /// Set keys to unphysical values (LONG_MAX, LONG_MIN)
     IOV& reset();
     /// Invert the key values (first=second and second=first)

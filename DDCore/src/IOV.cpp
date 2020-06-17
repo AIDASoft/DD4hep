@@ -47,7 +47,7 @@ IOV::IOV(const IOVType* t) : iovType(t)  {
 }
 
 /// Specialized copy constructor for discrete IOVs
-IOV::IOV(const IOVType* t, Key_first_type iov_value)
+IOV::IOV(const IOVType* t, Key_value_type iov_value)
   : iovType(t), keyData(iov_value,iov_value)
 {
   if ( t ) type = t->type;
