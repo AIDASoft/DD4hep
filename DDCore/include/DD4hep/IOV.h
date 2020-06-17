@@ -73,14 +73,13 @@ namespace dd4hep {
     using Key_value_type = std::int64_t;
     using Key = std::pair<Key_value_type, Key_value_type>;
 
-    static constexpr Key_value_type INVALID_KEY = 0;
     static constexpr Key_value_type MIN_KEY = std::numeric_limits<Key_value_type>::min();
     static constexpr Key_value_type MAX_KEY = std::numeric_limits<Key_value_type>::max();
 
     /// Reference to IOV type
     const IOVType* iovType = 0;
     /// IOV key (if second==first, discrete, otherwise range)
-    Key            keyData{INVALID_KEY,INVALID_KEY};
+    Key            keyData{MIN_KEY,MIN_KEY};
     /// Optional user data
     int            optData = 0;
     /// IOV buffer type: Must be a bitmap!

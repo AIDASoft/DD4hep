@@ -141,9 +141,9 @@ string IOV::str()  const  {
 		 iovType->name.c_str(),int(iovType->type),keyData.first, keyData.second);
     }
     else if ( iovType->name == "epoch" )  {
-      static long int max_time = detail::makeTime(2099,12,31,24,59,59);
-      time_t since = std::min(std::max(long(0),keyData.first), max_time);
-      time_t until = std::min(std::max(long(0),keyData.second), max_time);
+      static const Key_value_type max_time = detail::makeTime(2099,12,31,24,59,59);
+      time_t since = std::min(keyData.first, max_time);
+      time_t until = std::min(keyData.second, max_time);
       char c_since[64], c_until[64];
       struct tm time_buff;
       ::strftime(c_since,sizeof(c_since),"%d-%m-%Y %H:%M:%S",::gmtime_r(&since,&time_buff));
