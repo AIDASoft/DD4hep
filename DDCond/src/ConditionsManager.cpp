@@ -98,7 +98,7 @@ const vector<const IOVType*> ConditionsManagerObject::iovTypesUsed() const   {
   vector<const IOVType*> result;
   const auto& types = this->iovTypes();
   for ( const auto& i : types )  {
-    if ( int(i.type) != IOVType::UNKNOWN_IOV ) result.emplace_back(&i);
+    if ( i.type != IOVType::UNKNOWN_IOV ) result.emplace_back(&i);
   }
   return result;
 }
@@ -210,7 +210,7 @@ const vector<const IOVType*> ConditionsManager::iovTypesUsed() const  {
   const auto& types = obj->iovTypes();
   result.reserve(types.size());
   for(const auto& i : types )
-    if ( int(i.type) != IOVType::UNKNOWN_IOV ) result.emplace_back(&i);
+    if ( i.type != IOVType::UNKNOWN_IOV ) result.emplace_back(&i);
   return result;
 }
 

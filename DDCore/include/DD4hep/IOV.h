@@ -34,8 +34,8 @@ namespace dd4hep {
    */
   class IOVType   {
   public:
-    enum _IOVTypes { UNKNOWN_IOV = ~0x0 };
-    /// integer identifier ised internally
+    static constexpr unsigned int UNKNOWN_IOV = ~0x0;
+    /// integer identifier used internally
     unsigned int type = UNKNOWN_IOV;
     /// String name
     std::string  name;
@@ -72,11 +72,9 @@ namespace dd4hep {
     using Key_second_type = long;
     using Key = std::pair<Key_first_type,Key_second_type>;
 
-    enum {
-      INVALID_KEY = 0,
-      MIN_KEY = std::numeric_limits<long>::min(),
-      MAX_KEY = std::numeric_limits<long>::max()
-    };
+    static constexpr Key_first_type INVALID_KEY = 0;
+    static constexpr Key_first_type MIN_KEY = std::numeric_limits<long>::min();
+    static constexpr Key_first_type MAX_KEY = std::numeric_limits<long>::max();
     
     /// Reference to IOV type
     const IOVType* iovType = 0;
