@@ -17,6 +17,7 @@
 #include <string>
 #include <limits>
 #include <algorithm>
+#include <utility>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
