@@ -68,9 +68,9 @@ namespace dd4hep {
     explicit IOV() = delete;
   public:
     /// Key definition
-    typedef long Key_first_type;
-    typedef long Key_second_type;
-    typedef std::pair<Key_first_type,Key_second_type> Key;
+    using Key_first_type = long;
+    using Key_second_type = long;
+    using Key = std::pair<Key_first_type,Key_second_type>;
 
     enum {
       INVALID_KEY = 0,
