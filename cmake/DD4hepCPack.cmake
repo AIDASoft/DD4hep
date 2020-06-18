@@ -5,7 +5,6 @@ set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/AIDASoft/dd4hep")
 set(CPACK_PACKAGE_DESCRIPTION "Detector Description Toolkit for HEP")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${CPACK_PACKAGE_DESCRIPTION})
 set(CPACK_PACKAGE_VENDOR "AIDASoft")
-set(CPACK_PACKAGE_VERSION ${dd4hep_VERSION})
 set(CPACK_PACKAGE_VERSION_MAJOR ${DD4hep_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${DD4hep_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${DD4hep_VERSION_PATCH})
@@ -28,19 +27,9 @@ set(CPACK_SOURCE_IGNORE_FILES
 )
 set(CPACK_SOURCE_STRIP_FILES "")
 
-#--- translate buildtype -------------------------------------------------------
-string( TOLOWER "${CMAKE_BUILD_TYPE}" buildtype_lower )
-if(buildtype_lower STREQUAL "release")
-  set(HSF_BUILDTYPE "opt")
-elseif(buildtype_lower STREQUAL "debug")
-  set(HSF_BUILDTYPE "dbg")
-elseif(buildtype_lower STREQUAL "relwithbebinfo")
-  set(HSF_BUILDTYPE "owd")
-endif()
-
 
 set(CPACK_PACKAGE_RELOCATABLE True)
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "")
-set(CPACK_PACKAGE_FILE_NAME "DD4hep_${DD4hep_VERSION_MAJOR}.${DD4hep_VERSION_MINOR}.${DD4hep_VERSION_PATCH}")
+set(CPACK_PACKAGE_FILE_NAME "DD4hep_v${DD4hep_VERSION_MAJOR}.${DD4hep_VERSION_MINOR}.${DD4hep_VERSION_PATCH}")
 
 include(CPack)
