@@ -225,6 +225,13 @@ install(DIRECTORY cmake
   PATTERN ".svn" EXCLUDE
   )
 
+#--- enable CPack --------------------------------------------
+
+option(ENABLE_CPACK "Whether or not to use cpack config" OFF)
+if(ENABLE_CPACK)
+  include(cmake/DD4hepCPack.cmake)
+endif()
+
 ###############################
 # Dispaly final configuration #
 ###############################
