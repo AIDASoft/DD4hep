@@ -30,7 +30,7 @@
 #include "DD4hep/DD4hepUnits.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
-static const double MM_2_CM = (CLHEP::millimeter/dd4hep::millimeter);
+static const double MM_2_CM = (dd4hep::millimeter/CLHEP::millimeter);
 
 #define DEBUG 0
 
