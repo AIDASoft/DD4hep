@@ -114,9 +114,9 @@ void ConditionsManagerObject::fromString(const std::string& data, IOV& iov)   {
   IOV::Key key;
   int nents = 0;
   if ( id1 != string::npos )
-    nents = ::sscanf(data.c_str(),"%lu,%lu#",&key.first,&key.second) == 2 ? 2 : 0;
+    nents = ::sscanf(data.c_str(),"%ld,%ld#",&key.first,&key.second) == 2 ? 2 : 0;
   else  {
-    nents = ::sscanf(data.c_str(),"%lu#",&key.first) == 1 ? 1 : 0;
+    nents = ::sscanf(data.c_str(),"%ld#",&key.first) == 1 ? 1 : 0;
     key.second = key.first;
   }
   if ( nents == 0 )   {

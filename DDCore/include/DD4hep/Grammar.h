@@ -78,6 +78,18 @@ namespace dd4hep {
       bool (*fromString)(const BasicGrammar& gr, void* ptr, const std::string& value) = 0;
       /// Evaluate string value if possible before calling boost::spirit
       int  (*eval)(const BasicGrammar& gr, void* ptr, const std::string& val) = 0;
+      /// Default constructor
+      specialization_t() = default;
+      /// Move constructor
+      specialization_t(specialization_t&& copy) = default;
+      /// Copy constructor
+      specialization_t(const specialization_t& copy) = default;
+      /// Move assignment
+      specialization_t& operator=(specialization_t&& copy) = default;
+      /// Copy assignment
+      specialization_t& operator=(const specialization_t& copy) = default;
+      /// Equality operator
+      bool operator==(const specialization_t& copy)  const;
     } specialization;
     
   protected:
