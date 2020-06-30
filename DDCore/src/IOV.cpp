@@ -13,6 +13,7 @@
 
 // Framework includes
 #include "DD4hep/IOV.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
 
 // C/C++ include files
@@ -137,28 +138,33 @@ string IOV::str()  const  {
   char text[256];
   if ( iovType )  {
     if ( iovType->name[0] != 'e' )   {
-      ::snprintf(text,sizeof(text),"%s(%d):[%ld-%ld]",
-		 iovType->name.c_str(),int(iovType->type),keyData.first, keyData.second);
+      ::snprintf(text,sizeof(text),"%s(%u):[%ld-%ld]",
+                 iovType->name.c_str(), iovType->type, keyData.first, keyData.second);
     }
     else if ( iovType->name == "epoch" )  {
-      static const Key_value_type max_time = detail::makeTime(2099,12,31,24,59,59);
-      time_t since = std::min(keyData.first, max_time);
-      time_t until = std::min(keyData.second, max_time);
+      struct tm  time_buff;
       char c_since[64], c_until[64];
-      struct tm time_buff;
-      ::strftime(c_since,sizeof(c_since),"%d-%m-%Y %H:%M:%S",::gmtime_r(&since,&time_buff));
-      ::strftime(c_until,sizeof(c_until),"%d-%m-%Y %H:%M:%S",::gmtime_r(&until,&time_buff));
+      static const Key_value_type max_time = detail::makeTime(2099,12,31,24,59,59);
+      time_t since = std::min(std::max(keyData.first,0L),  max_time);
+      time_t until = std::min(std::max(keyData.second,0L), max_time);
+      struct tm* tm_since = ::gmtime_r(&since,&time_buff);
+      struct tm* tm_until = ::gmtime_r(&until,&time_buff);
+      if ( nullptr == tm_since || nullptr == tm_until )    {
+        except("IOV::str"," Invalid epoch time stamp: %d:[%ld-%ld]", type, keyData.first, keyData.second);
+      }
+      ::strftime(c_since,sizeof(c_since),"%d-%m-%Y %H:%M:%S", tm_since);
+      ::strftime(c_until,sizeof(c_until),"%d-%m-%Y %H:%M:%S", tm_until);
       ::snprintf(text,sizeof(text),"%s(%d):[%s - %s]",
-		 iovType->name.c_str(),iovType->type,
+                 iovType->name.c_str(),iovType->type,
 		 c_since, c_until);
     }
     else   {
-      ::snprintf(text,sizeof(text),"%s(%d):[%ld-%ld]",
-		 iovType->name.c_str(),int(iovType->type),keyData.first, keyData.second);
+      ::snprintf(text,sizeof(text),"%s(%u):[%ld-%ld]",
+                 iovType->name.c_str(), iovType->type, keyData.first, keyData.second);
     }
   }
   else  {
-    ::snprintf(text,sizeof(text),"%d:[%ld-%ld]",type,keyData.first, keyData.second);
+    ::snprintf(text,sizeof(text),"%u:[%ld-%ld]", type, keyData.first, keyData.second);
   }
   return text;
 }

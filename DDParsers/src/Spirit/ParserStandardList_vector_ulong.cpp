@@ -11,5 +11,5 @@
 
 #include "Parsers/spirit/ParsersStandardListCommon.h"
 namespace dd4hep{ namespace Parsers{
-IMPLEMENT_STL_PARSER(std::set,std::string)
+IMPLEMENT_STL_PARSER(std::vector,unsigned long)
   }}

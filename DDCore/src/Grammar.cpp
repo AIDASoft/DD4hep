@@ -45,6 +45,13 @@ namespace {
   }
 }
 
+/// Equality operator
+bool dd4hep::BasicGrammar::specialization_t::operator==(const specialization_t& cp)  const  {
+  return this->bind  == cp.bind &&
+    this->copy       == cp.copy && this->str == cp.str &&
+    this->fromString == cp.fromString && this->eval == cp.eval;
+}
+
 /// Default constructor
 dd4hep::BasicGrammar::BasicGrammar(const std::string& typ)
   : name(typ), hash_value(dd4hep::detail::hash64(typ))
@@ -57,18 +64,24 @@ dd4hep::BasicGrammar::BasicGrammar(const std::string& typ)
   }
 }
 
+
 /// Default destructor
 dd4hep::BasicGrammar::~BasicGrammar()   {
 }
 
+/// Prenote loadable grammar
 void dd4hep::BasicGrammar::pre_note(const std::type_info& info,
 				    const BasicGrammar& (*fcn)(),
 				    specialization_t specs)   {
   key_type hash = dd4hep::detail::hash64(typeName(info));
   if ( !prenote_registry().emplace(hash,std::make_pair(fcn,specs)).second )  {
-    // Error: Already existing grammar.
-    dd4hep::except("BasicGrammar","FAILED to add existent registry: %s [%016llX]",
-                   typeName(info).c_str(), hash);    
+    auto j = prenote_registry().find(hash);
+    const auto& entry = (*j).second;
+    if ( !(entry.first == fcn && entry.second == specs) )   {
+      // Error: Already existing grammar.
+      dd4hep::except("BasicGrammar","FAILED to add existent registry: %s [%016llX]",
+                     typeName(info).c_str(), hash);
+    }
   }
 }
 
