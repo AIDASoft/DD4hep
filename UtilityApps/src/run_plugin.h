@@ -276,7 +276,15 @@ namespace dd4hep  {
       else {
         std::cout << "The geometry was loaded. Application now exiting." << std::endl;
       }
-      if ( args.destroy ) description.destroyInstance();
+      try   {
+        if ( args.destroy ) description.destroyInstance();
+      }
+      catch(const std::exception& e)  {
+        std::cout << "destroyInstance: Got uncaught exception: " << e.what() << std::endl;
+      }
+      catch (...)  {
+        std::cout << "destroyInstance: Got UNKNOWN uncaught exception." << std::endl;
+      }
       return 0;
     }
 
