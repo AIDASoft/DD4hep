@@ -206,7 +206,7 @@ namespace {
           for(size_t j = 1; j < plug.size(); ++j)   {
             if ( plug[j] ) std::cout << plug[j] << " ";
           }
-          std::cout << "]" << std::endl;
+          std::cout << "]" << std::endl << std::flush;
           usage_default(name);
         }
         std::cout << "run_plugin: " << text << " Executed dd4hep plugin: '" << plug[0]
@@ -274,16 +274,18 @@ namespace dd4hep  {
         if ( result == EINVAL ) usage_default(name);
       }
       else {
-        std::cout << "The geometry was loaded. Application now exiting." << std::endl;
+        dd4hep::printout(INFO,"Application","The geometry was loaded. Application now exiting.");
       }
       try   {
         if ( args.destroy ) description.destroyInstance();
       }
       catch(const std::exception& e)  {
-        std::cout << "ERROR(destroyInstance): Uncaught exception: " << e.what() << std::endl;
+        dd4hep::printout(ERROR,"Application","destroyInstance: Uncaught exception: %s",e.what());
+        throw;
       }
       catch (...)  {
-        std::cout << "ERROR(destroyInstance): UNKNOWN uncaught exception." << std::endl;
+        dd4hep::printout(ERROR,"Application","destroyInstance: UNKNOWN uncaught exception.");
+        throw;
       }
       return 0;
     }
@@ -329,7 +331,7 @@ namespace dd4hep  {
       }
       else  {
         std::cout << "geoPluginRun: No geometry input supplied. "
-                  << "No geometry will be loaded." << std::endl;
+                  << "No geometry will be loaded." << std::endl << std::flush;
       }
       // Attach UI instance if requested to ease interaction from the ROOT prompt
       if ( arguments.ui )  {
@@ -393,11 +395,11 @@ namespace dd4hep  {
         if ( arguments.destroy ) description.destroyInstance();
       }
       catch(const std::exception& e)  {
-        std::cout << "ERROR(destroyInstance): Uncaught exception: " << e.what() << std::endl;
+        dd4hep::printout(dd4hep::ERROR,"Application","destroyInstance: Uncaught exception: %s",e.what());
         throw;
       }
       catch (...)  {
-        std::cout << "ERROR(destroyInstance): UNKNOWN uncaught exception." << std::endl;
+        dd4hep::printout(dd4hep::ERROR,"Application","destroyInstance: UNKNOWN uncaught exception.");
         throw;
       }
       return 0;
@@ -409,10 +411,10 @@ namespace dd4hep  {
         return invoke_plugin_runner(name, argc, argv);
       }
       catch(const std::exception& e)  {
-        std::cout << "ERROR(geoPluginRun): Uncaught exception: " << e.what() << std::endl;
+        dd4hep::printout(dd4hep::ERROR,"Application","geoPluginRun: Uncaught exception: %s",e.what());
       }
       catch (...)  {
-        std::cout << "ERROR(geoPluginRun): UNKNOWN uncaught exception." << std::endl;
+        dd4hep::printout(dd4hep::ERROR,"Application","geoPluginRun: UNKNOWN uncaught exception.");
       }
       return EINVAL;    
     }
@@ -423,10 +425,10 @@ namespace dd4hep  {
         return main_wrapper(name,argc,argv);
       }
       catch(const std::exception& e)  {
-        std::cout << "ERROR: Got uncaught exception: " << e.what() << std::endl;
+        dd4hep::printout(dd4hep::ERROR,"Application","geoPluginRun: Uncaught exception: %s",e.what());
       }
       catch (...)  {
-        std::cout << "ERROR: Got UNKNOWN uncaught exception." << std::endl;
+        dd4hep::printout(dd4hep::ERROR,"Application","geoPluginRun: UNKNOWN uncaught exception.");
       }
       return EINVAL;    
     }
