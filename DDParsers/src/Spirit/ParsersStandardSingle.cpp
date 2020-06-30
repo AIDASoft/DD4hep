@@ -28,4 +28,6 @@ PARSERS_DEF_FOR_SINGLE(unsigned long)
 PARSERS_DEF_FOR_SINGLE(long long)
 PARSERS_DEF_FOR_SINGLE(unsigned long long)
 PARSERS_DEF_FOR_SINGLE(long double)
+#elif defined(__APPLE__)
+PARSERS_DEF_FOR_SINGLE(long long)
 #endif

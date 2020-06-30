@@ -116,7 +116,7 @@ static int condition_example (Detector& description, int argc, char** argv)  {
              r.total(), r.selected, r.loaded, r.computed, r.missing, req_iov.str().c_str());
     if ( output_userpool )  {
       /// Add the conditions UserPool to the persistent file
-      ::snprintf(text,sizeof(text),"User pool %s:[%ld]",iov_typ->name.c_str(),req_iov.key().first);
+      ::snprintf(text,sizeof(text),"User pool %s:[%ld]",iov_typ->name.c_str(),long(req_iov.key().first));
       count = persist->add(text,*slice->pool);
       total_count += count;
       printout(ALWAYS,"Example","+++ Added %ld conditions to persistent user pool.",count);
@@ -127,7 +127,7 @@ static int condition_example (Detector& description, int argc, char** argv)  {
     cond::ConditionsIOVPool* iov_pool = manager.iovPool(*iov_typ);
     for( const auto& p : iov_pool->elements )  {
       ::snprintf(text,sizeof(text),"Conditions pool %s:[%ld,%ld]",
-                 iov_typ->name.c_str(),p.second->iov->key().first,p.second->iov->key().second);
+                 iov_typ->name.c_str(),long(p.second->iov->key().first),long(p.second->iov->key().second));
       if ( (npool%2) == 0 )  { /// Check here saving ConditionsPool objects
         count = persist->add(text,*p.second);
         printout(ALWAYS,"Example",
