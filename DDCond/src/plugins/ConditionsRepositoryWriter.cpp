@@ -285,7 +285,7 @@ size_t ConditionsXMLRepositoryWriter::collect(xml::Element root, ConditionsSlice
   root.append(repo);
   repo.append(iov);
   ::snprintf(text,sizeof(text),"%ld,%ld#%s",
-             validity.keyData.first,validity.keyData.second,
+             long(validity.keyData.first), long(validity.keyData.second),
              validity.iovType->name.c_str());
   iov.setAttr(_UC(validity),text);
   return collect(iov,slice,slice.manager->detectorDescription().world());

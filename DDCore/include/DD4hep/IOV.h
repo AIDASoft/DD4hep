@@ -69,7 +69,7 @@ namespace dd4hep {
     /// Initializing constructor: Does not set reference to IOVType !
     explicit IOV() = delete;
   public:
-    /// Key definition
+    /// Key definition. Use fixed width type, though not portable!
     using Key_value_type = std::int64_t;
     using Key = std::pair<Key_value_type, Key_value_type>;
 

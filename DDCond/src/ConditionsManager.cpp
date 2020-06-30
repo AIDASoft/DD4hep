@@ -113,11 +113,16 @@ void ConditionsManagerObject::fromString(const std::string& data, IOV& iov)   {
   string iov_name = data.substr(id2+1);
   IOV::Key key;
   int nents = 0;
-  if ( id1 != string::npos )
-    nents = ::sscanf(data.c_str(),"%ld,%ld#",&key.first,&key.second) == 2 ? 2 : 0;
+  /// Need assignment from long (k1,k2) for compatibility with Apple MAC
+  long k1 = 0, k2 = 0;
+  if ( id1 != string::npos )   {
+    nents = ::sscanf(data.c_str(),"%ld,%ld#",&k1,&k2) == 2 ? 2 : 0;
+    key.second = k2;
+    key.first = k1;
+  }
   else  {
-    nents = ::sscanf(data.c_str(),"%ld#",&key.first) == 1 ? 1 : 0;
-    key.second = key.first;
+    nents = ::sscanf(data.c_str(),"%ld#",&k1) == 1 ? 1 : 0;
+    key.second = key.first = k1;
   }
   if ( nents == 0 )   {
     except("ConditionsManager",
