@@ -202,7 +202,7 @@ foreach (test ${ClientTests_ShapeTests})
   dd4hep_add_test_reg( ClientTests_Check_Shape_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoDisplay file:${ClientTestsEx_INSTALL}/compact/Check_Shape_${test}.xml -load -destroy
-      REGEX_PASS "Shape verification SUCCESSFUL."
+      REGEX_PASS "Shape verification SUCCESSFUL"
       REGEX_FAIL "ERROR;FAILED" )
 endforeach()
 #
