@@ -280,10 +280,10 @@ namespace dd4hep  {
         if ( args.destroy ) description.destroyInstance();
       }
       catch(const std::exception& e)  {
-        std::cout << "destroyInstance: Got uncaught exception: " << e.what() << std::endl;
+        std::cout << "ERROR(destroyInstance): Uncaught exception: " << e.what() << std::endl;
       }
       catch (...)  {
-        std::cout << "destroyInstance: Got UNKNOWN uncaught exception." << std::endl;
+        std::cout << "ERROR(destroyInstance): UNKNOWN uncaught exception." << std::endl;
       }
       return 0;
     }
@@ -389,7 +389,17 @@ namespace dd4hep  {
       if ( !arguments.dry_run && interpreter.get() )  {
         interpreter->Run();
       }
-      if ( arguments.destroy ) description.destroyInstance();
+      try   {
+        if ( arguments.destroy ) description.destroyInstance();
+      }
+      catch(const std::exception& e)  {
+        std::cout << "ERROR(destroyInstance): Uncaught exception: " << e.what() << std::endl;
+        throw;
+      }
+      catch (...)  {
+        std::cout << "ERROR(destroyInstance): UNKNOWN uncaught exception." << std::endl;
+        throw;
+      }
       return 0;
     }
 
@@ -399,10 +409,10 @@ namespace dd4hep  {
         return invoke_plugin_runner(name, argc, argv);
       }
       catch(const std::exception& e)  {
-        std::cout << "geoPluginRun: Got uncaught exception: " << e.what() << std::endl;
+        std::cout << "ERROR(geoPluginRun): Uncaught exception: " << e.what() << std::endl;
       }
       catch (...)  {
-        std::cout << "geoPluginRun: Got UNKNOWN uncaught exception." << std::endl;
+        std::cout << "ERROR(geoPluginRun): UNKNOWN uncaught exception." << std::endl;
       }
       return EINVAL;    
     }
@@ -413,10 +423,10 @@ namespace dd4hep  {
         return main_wrapper(name,argc,argv);
       }
       catch(const std::exception& e)  {
-        std::cout << "Got uncaught exception: " << e.what() << std::endl;
+        std::cout << "ERROR: Got uncaught exception: " << e.what() << std::endl;
       }
       catch (...)  {
-        std::cout << "Got UNKNOWN uncaught exception." << std::endl;
+        std::cout << "ERROR: Got UNKNOWN uncaught exception." << std::endl;
       }
       return EINVAL;    
     }
