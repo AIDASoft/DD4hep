@@ -13,6 +13,14 @@
 SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDCore)
 dd4hep_print("|++> Will be Building DDCore")
 
+file(GLOB DDCore_SOURCES src/*.cpp src/segmentations/*.cpp src/XML/*.cpp)
+
+if(NOT DD4HEP_USE_TBB OR ${CMAKE_CXX_STANDARD} LESS 17)
+  list(APPEND EXCLUDE_HEADER include/DD4hep/SpecParRegistry.h)
+  list(APPEND EXCLUDE_HEADER include/DD4hep/Filter.h)
+  list(FILTER DDCore_SOURCES EXCLUDE REGEX Filter\.cpp|SpecParRegistry\.cpp )
+endif()
+
 dd4hep_add_dictionary( G__DD4hep
   SOURCES include/ROOT/Warnings.h
   include/DD4hep/*.h
@@ -30,8 +38,9 @@ dd4hep_add_dictionary( G__DD4hep
   include/XML/UnicodeValues.h
   include/XML/tinyxml.h
   include/XML/tinystring.h
+  ${EXCLUDE_HEADER}
   LINKDEF include/ROOT/LinkDef.h
-  USES DDParsers ${XML_LIBRARIES}
+  USES DDParsers ${XML_LIBRARIES} ${TBB_IMPORTED_TARGETS}
   DEFINITIONS DD4HEP_MUST_USE_DETECTORIMP_H
   )
 
@@ -53,7 +62,6 @@ dd4hep_add_dictionary( G__DD4hepSegmentations
   USES DDParsers ${XML_LIBRARIES}
   )
 
-file(GLOB DDCore_SOURCES src/*.cpp src/segmentations/*.cpp src/XML/*.cpp)
 if(TARGET Boost::boost)
   dd4hep_print("|++> Boost available, building Json Parsers")
   file(GLOB DDCore_BOOST_SOURCES src/JSON/*.cpp)
@@ -66,6 +74,11 @@ add_library(DDCore ${DDCore_SOURCES} ${DDCore_BOOST_SOURCES}
   G__DD4hepGeo.cxx
   )
 add_library(DD4hep::DDCore ALIAS DDCore)
+
+if(DD4HEP_USE_TBB AND ${CMAKE_CXX_STANDARD} GREATER_EQUAL 17)
+  target_compile_definitions(DDCore PUBLIC DD4HEP_USE_TBB)
+  target_link_libraries(DDCore PUBLIC TBB::tbb)
+endif()
 
 target_include_directories(DDCore
   PUBLIC

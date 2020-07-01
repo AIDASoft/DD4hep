@@ -146,6 +146,11 @@ IF(DD4HEP_USE_HEPMC3)
   find_package(HepMC3 REQUIRED)
 ENDIF()
 
+if(DD4HEP_USE_TBB)
+  find_package(TBB REQUIRED)
+endif()
+
+
 ######################
 # Set compiler flags #
 ######################
