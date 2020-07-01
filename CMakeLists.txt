@@ -72,6 +72,7 @@ option(DD4HEP_IGNORE_GEANT4_TLS "Ignore the tls flag Geant4 was compiled with" O
 option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO    "Build lcio extensions"                         OFF)
 option(DD4HEP_USE_HEPMC3  "Build hepmc3 extensions"                       OFF)
+option(DD4HEP_USE_TBB     "Build features that require TBB"               OFF)
 option(DD4HEP_LOAD_ASSIMP "Download and build ASSIMP from github"         OFF)
 option(BUILD_TESTING      "Enable and build tests"                        ON)
 option(BUILD_SHARED_LIBS  "If OFF build STATIC Libraries"                 ON)

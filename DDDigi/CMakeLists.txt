@@ -31,15 +31,14 @@ target_include_directories(DDDigi
   $<INSTALL_INTERFACE:include>
   )
 
-
-FIND_PACKAGE(TBB QUIET)
-if(TBB_FOUND)
+if(DD4HEP_USE_TBB)
+  find_package(TBB REQUIRED)
   dd4hep_print( "|++> TBB_IMPORTED_TARGETS -->  ${TBB_IMPORTED_TARGETS}")
   dd4hep_print( "|++> TBB found. DDDigi will run multi threaded.")
   target_compile_definitions(DDDigi PUBLIC DD4HEP_USE_TBB)
   target_link_libraries(DDDigi PUBLIC ${TBB_IMPORTED_TARGETS})
 else()
-  dd4hep_print( "|++> TBB not found. DDDigi will only work single threaded.")
+  dd4hep_print( "|++> TBB not used. DDDigi will only work single threaded.")
 endif()
 
 #---------------------------  Legacy libraries -------------------------------------
