@@ -50,6 +50,7 @@ fi
 
 if [[ "${LCG_RELEASE}" =~ "dev" ]]; then
     LCGREPO=/cvmfs/sft-nightlies.cern.ch/lcg/views/${LCG_RELEASE}/latest
+    export DD4HEP_USE_TBB=ON
 else
     LCGREPO=/cvmfs/sft.cern.ch/lcg/views/${LCG_RELEASE}
 fi
