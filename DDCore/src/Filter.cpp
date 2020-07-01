@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace cms {
+namespace dd4hep {
   namespace dd {
 
     bool isMatch(string_view node, string_view name) {
@@ -63,4 +63,4 @@ namespace cms {
       return v;
     }
   }  // namespace dd
-}  // namespace cms
+}  // namespace dd4hep
