@@ -32,7 +32,6 @@ target_include_directories(DDDigi
   )
 
 if(DD4HEP_USE_TBB)
-  find_package(TBB REQUIRED)
   dd4hep_print( "|++> TBB_IMPORTED_TARGETS -->  ${TBB_IMPORTED_TARGETS}")
   dd4hep_print( "|++> TBB found. DDDigi will run multi threaded.")
   target_compile_definitions(DDDigi PUBLIC DD4HEP_USE_TBB)
