@@ -162,13 +162,13 @@ namespace dd4hep {
     /// Default constructor
     Header() = default;
     /// Constructorto be used for assignment from a handle
-    Header(const Header& e) = default;
+    Header(const Header& copy) = default;
     /// Constructor to be used when reading the already parsed DOM tree
     template <typename Q> Header(const Handle<Q>& e) : Handle<HeaderObject>(e) {  }
     /// Constructor to be used when creating a new DOM tree
     Header(const std::string& author, const std::string& url);
     /// Assignment operator
-    Header& operator=(const Header& e) = default;
+    Header& operator=(const Header& copy) = default;
     /// Accessor to object name
     const std::string name() const;
     /// Accessor: set object name
@@ -212,14 +212,20 @@ namespace dd4hep {
   public:
     /// Default constructor
     Constant() = default;
-    /// Constructorto be used for assignment from a handle
-    Constant(const Constant& e) = default;
+    /// Constructor to be used for assignment from a handle
+    Constant(const Constant& copy) = default;
     /// Constructor to be used when reading the already parsed DOM tree
     template <typename Q> Constant(const Handle<Q>& e) : Handle<ConstantObject> (e) {  }
     /// Constructor to be used when creating a new DOM tree
     Constant(const std::string& name);
     /// Constructor to be used when creating a new DOM tree
     Constant(const std::string& name, const std::string& val, const std::string& typ="number");
+    /// Copy assignment
+    Constant& operator=(const Constant& copy) = default;
+    /// Equality operator
+    bool operator==(const Constant& rhs) const   {
+      return m_element == rhs.m_element;
+    }
     /// Access the constant
     std::string dataType() const;
     /// String representation of this object
