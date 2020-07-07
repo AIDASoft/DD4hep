@@ -337,14 +337,14 @@ void VolumeBuilder::_placeSingleVolume(DetElement parent, Volume vol, xml_h c)  
            nam.c_str());      
   }
   else if ( attr )  {
-    int parent_id = parent.id();
+    int    elt_id = parent.id();
     string elt = c.attr<string>(attr);
     attr = c.attr_nothrow(_U(id));
     if ( attr )   {
-      id = c.attr<int>(attr);
+      elt_id = c.attr<int>(attr);
       elt += c.attr<string>(attr);
     }
-    DetElement de(parent,elt,parent_id);
+    DetElement de(parent, elt, elt_id);
     de.setPlacement(pv);
     placeDaughters(de, daughter, c);
   }
@@ -357,7 +357,7 @@ void VolumeBuilder::_placeSingleVolume(DetElement parent, Volume vol, xml_h c)  
 void VolumeBuilder::_placeParamVolumes(DetElement parent, Volume vol, xml_h c)   {
   xml_attr_t attr_tr, attr_elt, attr_nam;
   xml_h      x_phys = c.child(_U(physvol));
-  xml_attr_t attr = x_phys.attr_nothrow(_U(logvol));
+  xml_attr_t attr   = x_phys.attr_nothrow(_U(logvol));
   if ( !attr )   {
     attr = x_phys.attr_nothrow(_U(volume));
   }
@@ -398,14 +398,14 @@ void VolumeBuilder::_placeParamVolumes(DetElement parent, Volume vol, xml_h c)  
     tr = xml::createTransformation(c);
   }
   Transform3D transformation(Position(0,0,0));
-  int parent_id = -1;
+  int elt_id = -1;
   string elt, phys_nam;
   attr_nam = x_phys.attr_nothrow(_U(name));
   if ( attr_nam )  {
     phys_nam = x_phys.attr<string>(_U(name))+"_%d";
   }
   if ( attr_elt )  {
-    parent_id = parent.id();
+    elt_id = parent.id();
     elt = c.attr<string>(attr_elt);
   }
   int number = c.attr<int>(_U(number));
@@ -417,7 +417,7 @@ void VolumeBuilder::_placeParamVolumes(DetElement parent, Volume vol, xml_h c)  
       //pv->SetName(_toString(i,phys_nam.c_str()).c_str());
     }
     if ( attr_elt )  {
-      DetElement de(parent,elt,parent_id);
+      DetElement de(parent,elt,elt_id);
       de.setPlacement(pv);
       //placeDaughters(de, daughter, c);
     }
