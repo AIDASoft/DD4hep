@@ -20,6 +20,7 @@
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
+  
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
@@ -42,7 +43,11 @@ namespace dd4hep {
     }
     
     template <typename SEGMENTATION, typename SOLID> void
-    CellScanner<SEGMENTATION,SOLID>::operator()(DigiContext& context, PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler) {
+    CellScanner<SEGMENTATION,SOLID>::operator()(DigiContext& context,
+                                                PlacedVolume pv,
+                                                VolumeID vid,
+                                                const cell_handler_t& cell_handler)
+    {
       typename self_t::cell_data_t e;
       e.placement     = pv;
       e.volume        = pv.volume();
@@ -74,7 +79,10 @@ namespace dd4hep {
   namespace digi {
 
     template <> void
-    CellScanner<CartesianGridXY,Box>::operator()(DigiContext& context, PlacedVolume pv, VolumeID vid, const cell_handler_t& cell_handler)
+    CellScanner<CartesianGridXY,Box>::operator()(DigiContext& context,
+                                                 PlacedVolume pv,
+                                                 VolumeID vid,
+                                                 const cell_handler_t& cell_handler)
     {
       cell_data_t e;
       e.placement = pv;
@@ -116,12 +124,12 @@ namespace dd4hep {
       e.solid         = e.volume.solid();
       Box           b = e.solid;
       typename self_t::solid_t h = e.solid;
-      long nx = 2e0 * b->GetDX() / segment.x_grid_size;
-      long ny = 2e0 * b->GetDY() / segment.y_grid_size;
+      long   nx     = 2e0 * b->GetDX() / segment.x_grid_size;
+      long   ny     = 2e0 * b->GetDY() / segment.y_grid_size;
       double pos[3] = {0e0, 0e0, 0e0}, r;
-      double rmin = h->GetRmin(0) * h->GetRmin(0);
-      double rmax = h->GetRmax(0) * h->GetRmax(0);
-      
+      double rmin   = h->GetRmin(0) * h->GetRmin(0);
+      double rmax   = h->GetRmax(0) * h->GetRmax(0);
+
       for ( e.x_bin = 0; e.x_bin < nx; ++e.x_bin )   {
         pos[0] = (e.x_bin + 0.5) * segment.x_grid_size;
         pos[0] *= pos[0];
