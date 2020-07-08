@@ -1,3 +1,104 @@
+# v01-13
+
+* 2020-07-02 MarkusFrankATcernch ([PR#684](https://github.com/AIDASoft/DD4hep/pull/684))
+  - Fix compiler issue for clang 3.9 (resolves #683)
+
+* 2020-07-02 Andre Sailer ([PR#682](https://github.com/AIDASoft/DD4hep/pull/682))
+  - CMake: add option `DD4HEP_USE_TBB` to require TBB or not
+  - `Filter` and `SpecParRegistry` classes from CMSSW (see #675)
+
+* 2020-07-01 vvolkl ([PR#679](https://github.com/AIDASoft/DD4hep/pull/679))
+  - Add CPack Configuration
+
+* 2020-06-30 Markus Frank ([PR#680](https://github.com/AIDASoft/DD4hep/pull/680))
+  - adopt IOV changes from @pikacic to work on macOS (see #678).
+
+* 2020-06-30 Marco Clemencic ([PR#678](https://github.com/AIDASoft/DD4hep/pull/678))
+  - Modernization and clean up of `dd4hep::IOV` (`using` instead of `typedef`, `constexpr` instead of `enum`)
+  - Make `dd4hep::IOV::Key` uniform wrt first and second type
+  - Use `std::int64_t`instead of `long` for `dd4hep::IOV::Key` elements
+
+* 2020-06-18 lintao ([PR#677](https://github.com/AIDASoft/DD4hep/pull/677))
+  - Fixed the `CLHEP::mm` to `dd4hep::mm` conversion problem in `DDG4/src/Geant4SensitiveDetector.cpp`
+
+* 2020-06-11 Markus FRANK ([PR#676](https://github.com/AIDASoft/DD4hep/pull/676))
+  - Fix problem with missing header in DDEve appearing in ROOT head.
+
+* 2020-06-08 Marko Petric ([PR#673](https://github.com/AIDASoft/DD4hep/pull/673))
+  - Use unique include guard in `BitFieldCoder.h`
+    - fix ambiguity in test between `BitField64` in LCIO and DD4hep
+  - Cast to string `coll_nam` in `DDG4.py` before using further, otherwise string concatenation does not work
+
+* 2020-05-29 Andre Sailer ([PR#672](https://github.com/AIDASoft/DD4hep/pull/672))
+  - Use unique include guards
+
+* 2020-04-24 Frank Gaede ([PR#663](https://github.com/AIDASoft/DD4hep/pull/663))
+  - fix compilation of `DigiKernel.cpp` with TBB
+
+* 2020-04-09 Andre Sailer ([PR#660](https://github.com/AIDASoft/DD4hep/pull/660))
+  - DDG4: fix behaviour of ParticleRejectFilter and ParticleSelectFilter, They now properly select or reject the given particle type, instead of the opposite. Fixes #657
+
+* 2020-04-09 Markus FRANK ([PR#659](https://github.com/AIDASoft/DD4hep/pull/659))
+  - Allow condition objects, which do not provide a default constructor. If such objects should be managed, these cannot be saved with ROOT - these objects may only live in memory. ROOT requires a default constructor.
+
+* 2020-04-09 Marko Petric ([PR#654](https://github.com/AIDASoft/DD4hep/pull/654))
+  - Rewrite rpath usage on macOS and make it relocatable with help of `@rpath`
+    - itroduce new option `DD4HEP_SET_RPATH` default `ON`
+  - adopt `thisdd4hep.sh` and other `.sh` scripts to work with zsh (new default for macOS 10.15)
+  - Drop `MakeGaudiMap.cmake` and call directly `listcomponents`
+    - fix env settings for macOS
+  - Drop deprecated `-std=` flag in dictionary creation
+
+* 2020-03-23 Andre Sailer ([PR#652](https://github.com/AIDASoft/DD4hep/pull/652))
+  - Documentation: fix broken mathml, fixes #651
+
+* 2020-03-20 Andre Sailer ([PR#649](https://github.com/AIDASoft/DD4hep/pull/649))
+  - CMake: add `DD4HEP_HIGH_MEM_POOL_DEPTH` option. Allow setting of parallel builds of DDParser objects with the ninja generator. Defaults to "memory / 2000 cores (rounded down)"
+
+* 2020-03-20 Andre Sailer ([PR#632](https://github.com/AIDASoft/DD4hep/pull/632))
+  - CMake:  Adapt to ROOT 6.22 python library ROOTTPython
+
+* 2020-03-18 Andre Sailer ([PR#636](https://github.com/AIDASoft/DD4hep/pull/636))
+  - DDG4: add reader for HepMC3 files
+  - DDG4: add generic EventParameters class to pass event level parameters from different input sources to different output sources, supercedes the LCIOEventParameters class
+
+* 2020-03-11 Markus Frank ([PR#647](https://github.com/AIDASoft/DD4hep/pull/647))
+  - The CAD volume plugin allows to embed valumes and shapes originating from Computer Aided Design drawings using multiple formats as they are supported by the open asset importer library (http://assimp.org ). The plugin can be used whenever the `xml` fragment matches the following pattern:
+      ```xml
+      <XXX ref="file-name"  material="material-name">   
+        <material name="material-name"/>  <!-- alternative: child or attr -->
+   
+        Envelope:  Use special envelop shape (default: assembly)
+                   The envelope tag must match the expected pattern of the utility
+                   dd4hep::xml::createStdVolume(Detector& desc, xml::Element e)
+        <envelope name="volume-name" material="material-name">
+          <shape name="shape-name" type="shape-type" args....>
+          </shape>
+        </envelope>
+   
+        Option 1:  No additional children. use default material 
+                   and place all children in the origin of the envelope
+   
+        Option 2:  Volume with default material
+        <volume name="vol-name"/>
+   
+        Option 3:  Volume with non-default material
+        <volume name="vol-name" material="material-name"/>
+   
+        Option 4:  Volume with optional placement. No position = (0,0,0), No rotation = (0,0,0)
+        <volume name="vol-name" material="material-name"/>
+          <position x="0" y="0" z="5*cm"/>
+          <rotation x="0" y="0" z="0.5*pi*rad"/>
+        </volume>
+   
+        For sensitive volumes: add physical volume IDs:
+        <volume name="vol-name" material="material-name"/>
+          <physvolid name="layer" value="1"/>
+          <physvolid name="slice" value="10"/>
+        </volume>
+       </XXX>
+       ```
+
 # v01-12-01
 
 * 2020-03-03 Marko Petric ([PR#641](https://github.com/AIDASoft/DD4hep/pull/641))
