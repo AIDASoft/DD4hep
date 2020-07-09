@@ -178,9 +178,9 @@ namespace {
     }
   };
 
-  TGeoVolume *MakeReflection(TGeoVolume* v, const char *newname=0)  {
+  TGeoVolume* MakeReflection(TGeoVolume* v, const char *newname=0)  {
     static TMap map(100);
-    TGeoVolume *vol = (TGeoVolume*)map.GetValue(v);
+    TGeoVolume* vol = (TGeoVolume*)map.GetValue(v);
     if ( vol ) {
       return vol;
     }
