@@ -4,7 +4,7 @@
   </includes>
 
   <detectors>
-    <detector id="1" name="Shape_Trapezoid" type="DD4hep_TestShape_Creator">
+    <detector id="1" name="Shape_Arbitrary_Eightpoint" type="DD4hep_TestShape_Creator">
       <check vis="Shape1_vis">
         <shape type="EightPointSolid" dz="30*cm">
            <vertex x="-30*cm" y="-25*cm"/>

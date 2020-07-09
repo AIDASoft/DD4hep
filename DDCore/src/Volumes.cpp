@@ -178,7 +178,7 @@ namespace {
     }
   };
 
-  TGeoVolume* MakeReflection(TGeoVolume* v, const char *newname=0)  {
+  TGeoVolume* MakeReflection(TGeoVolume* v, const char* newname=0)  {
     static TMap map(100);
     TGeoVolume* vol = (TGeoVolume*)map.GetValue(v);
     if ( vol ) {
@@ -189,7 +189,7 @@ namespace {
       printout(ERROR,"MakeReflection", "Cannot clone volume %s\n", v->GetName());
       return nullptr;
     }
-    map.Add((TObject*)v, vol);
+    map.Add(v, vol);
     string nam;
     if (newname && newname[0])  {
       nam = newname;
@@ -207,24 +207,22 @@ namespace {
     // Reflect the shape (if any) and connect it.
     if (v->GetShape())   {
       TGeoScale* scale = new TGeoScale( 1., 1.,-1.);
-      TGeoShape *reflected_shape =
+      TGeoShape* reflected_shape =
         TGeoScaledShape::MakeScaledShape((nam+"_shape_refl").c_str(), v->GetShape(), scale);
       vol->SetShape(reflected_shape);
     }
     // Reflect the daughters.
     Int_t nd = vol->GetNdaughters();
-    if (!nd) return vol;
-    TGeoNodeMatrix *node;
-    TGeoMatrix *local, *local_cloned;
+    if ( !nd ) return vol;
     TGeoVolume *new_vol;
     if ( !vol->GetFinder() ) {
-      for (Int_t i=0; i<nd; i++) {
-        node = (TGeoNodeMatrix*)vol->GetNode(i);
-        local = node->GetMatrix();
+      for (Int_t i=0; i < nd; i++) {
+        TGeoNodeMatrix* node  = (TGeoNodeMatrix*)vol->GetNode(i);
+        TGeoMatrix*     local = node->GetMatrix();
         //         printf("%s before\n", node->GetName());
         //         local->Print();
-        Bool_t reflected = local->IsReflection();
-        local_cloned = new TGeoCombiTrans(*local);
+        Bool_t      reflected = local->IsReflection();
+        TGeoMatrix* local_cloned = new TGeoCombiTrans(*local);
         local_cloned->RegisterYourself();
         node->SetMatrix(local_cloned);
         if (!reflected) {
