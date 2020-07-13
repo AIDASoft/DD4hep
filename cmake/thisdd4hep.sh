@@ -33,13 +33,12 @@ dd4hep_add_path()   {
     path_name=${1};
     path_prefix=${2};
     eval path_value=\$$path_name;
-    if [ ${path_value} ]; then
-	path_value=${path_prefix}:${path_value};
+    if [ "${path_value}" ]; then
+	path_value=${path_prefix}:"${path_value}";
     else
 	path_value=${path_prefix};
     fi; 
-    eval export ${path_name}=${path_value};
-    ## echo "DD4hep_add_path: ${path_name}=${path_value}";
+    eval export ${path_name}="${path_value}";
 }
 #-----------------------------------------------------------------------------
 dd4hep_add_library_path()    {
@@ -99,22 +98,19 @@ if [ ${Geant4_DIR} ]; then
     test -r ${G4ENV_INIT} && { cd $(dirname ${G4ENV_INIT}) ; . ./$(basename ${G4ENV_INIT}) ; cd $OLDPWD ; }
     #---- if geant4 was built with external CLHEP we have to extend the dynamic search path
     if [ @GEANT4_USE_CLHEP@ ] ; then
-	dd4hep_add_library_path @CLHEP_LIBRARY_PATH@;
+        dd4hep_add_library_path @CLHEP_LIBRARY_PATH@;
     fi;
     export CLHEP_DIR=@CLHEP_INCLUDE_DIR@/../;
     export CLHEP_ROOT_DIR=@CLHEP_INCLUDE_DIR@/../;
     export CLHEP_INCLUDE_DIR=@CLHEP_INCLUDE_DIR@;
-    dd4hep_add_library_path ${G4LIB_DIR};
     unset G4ENV_INIT;
     unset G4LIB_DIR;
 fi;
 #
 #----XercesC LIBRARY_PATH-----------------------------------------------------
 if [ ${XERCESCINSTALL} ]; then
-    #dd4hep_add_path    PATH ${XERCESCINSTALL}/bin;
     dd4hep_add_library_path ${XERCESCINSTALL}/lib;
 fi;
-dd4hep_add_library_path @BOOST_DIR@
 #
 #----PATH---------------------------------------------------------------------
 dd4hep_add_path PATH       ${THIS}/bin;
