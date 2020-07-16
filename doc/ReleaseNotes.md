@@ -1,3 +1,8 @@
+# v01-13-01
+
+* 2020-07-10 Markus Frank ([PR#686](https://github.com/AIDASoft/DD4hep/pull/686))
+  - Fix bug in `VolumeBuilder` where `VolIDs` were not properly set to physical volumes if the `xml` supported an `id` tag.
+
 # v01-13
 
 * 2020-07-02 MarkusFrankATcernch ([PR#684](https://github.com/AIDASoft/DD4hep/pull/684))
