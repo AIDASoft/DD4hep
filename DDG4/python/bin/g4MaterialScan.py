@@ -42,7 +42,6 @@ def materialScan(opts):
       typ = sd.type()
       if typ in geant4.sensitive_types:
         geant4.setupDetector(o.name(), geant4.sensitive_types[typ])
-        sdtyp = geant4.sensitive_types[typ]
       else:
         logger.error('+++  %-32s type:%-12s  --> Unknown Sensitive type: %s', o.name(), typ, typ)
         sys.exit(errno.EINVAL)
