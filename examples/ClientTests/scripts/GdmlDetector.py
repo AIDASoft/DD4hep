@@ -3,10 +3,9 @@
 from __future__ import absolute_import, unicode_literals
 import os
 import sys
-import time
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import GeV, MeV, m
+from g4units import GeV
 #
 #
 """
@@ -40,10 +39,10 @@ def run():
 
   # Configure G4 geometry setup
   seq, act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
-  act.DebugVolumes    = True
-  act.DebugShapes     = True
+  act.DebugVolumes = True
+  act.DebugShapes = True
   act.DebugPlacements = True
-  act.DumpHierarchy   = True
+  act.DumpHierarchy = True
 
   # Setup particle gun
   gun = geant4.setupGun("Gun", particle='mu-', energy=20 * GeV, multiplicity=1)
