@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="10*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+  </display>
+
+  <detectors>
+    <detector id="1" name="FT_MT" type="DD4hep_GdmlDetector" vis="InvisibleWithChildren">
+<!--
+      <gdmlFile ref="MT.gdml"/>
+-->
+      <gdmlFile ref="GdmlDetector.gdml"/>
+      <parent name="/world"/>
+    </detector>
+  </detectors>
+  
+  <readouts>
+  </readouts>
+
+  <fields>
+  </fields>
+
+</lccdd>

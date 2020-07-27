@@ -21,7 +21,7 @@ dd4hep_set_compiler_flags()
 #==========================================================================
 
 set(CLICSiDEx_INSTALL         ${CMAKE_INSTALL_PREFIX}/examples/CLICSiD)
-dd4hep_install_dir( scripts sim DESTINATION ${CLICSiDEx_INSTALL} )
+dd4hep_install_dir( scripts sim compact DESTINATION ${CLICSiDEx_INSTALL} )
 #--------------------------------------------------------------------------
 if (DD4HEP_USE_GEANT4)
   add_executable(CLICSiDXML scripts/CLICSiDXML.C)
@@ -32,9 +32,9 @@ if (DD4HEP_USE_GEANT4)
   install(TARGETS CLICSiDXML CLICSiDAClick DESTINATION bin)
 endif()
 #
-
+#
 dd4hep_configure_scripts ( CLICSiD DEFAULT_SETUP WITH_TESTS )
-
+#
 enable_testing ()
 include(CTest)
 
@@ -72,8 +72,19 @@ dd4hep_add_test_reg( CLICSiD_check_overlaps_LONGTEST
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
 #
-
-##message (STATUS "ROOT_FIND_VERSION: ${ROOT_FIND_VERSION} ROOT_VERSION: ${ROOT_VERSION}")
+#
+# Load geometry from multiple input files
+dd4hep_add_test_reg( CLICSiD_multiple_inputs
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
+  EXEC_ARGS  geoDisplay -input file:${CLICSiDEx_INSTALL}/compact/SiD_multiple_inputs.xml
+             -input file:${CLICSiDEx_INSTALL}/compact/SiD_detectors_1.xml
+             -input file:${CLICSiDEx_INSTALL}/compact/SiD_detectors_2.xml
+             -input file:${CLICSiDEx_INSTALL}/compact/SiD_close.xml
+             -print INFO -destroy -volmgr -load
+  REGEX_PASS "VolumeManager    INFO   - populating volume ids - done. 29366 nodes."
+  REGEX_FAIL "Exception;EXCEPTION;ERROR" )
+#
+#
 ## Always false. Good for now!
 if( "${ROOT_FIND_VERSION}" VERSION_GREATER "6.13.0" )
 # ROOT Geometry export to GDML

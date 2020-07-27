@@ -137,6 +137,7 @@ install(PROGRAMS python/DDSim/bin/ddsim.py DESTINATION bin RENAME ddsim)
 install(PROGRAMS python/bin/checkOverlaps.py DESTINATION bin RENAME checkOverlaps)
 install(PROGRAMS python/bin/checkGeometry.py DESTINATION bin RENAME checkGeometry)
 install(PROGRAMS python/bin/g4MaterialScan.py DESTINATION bin RENAME g4MaterialScan)
+install(PROGRAMS python/bin/g4GeometryScan.py DESTINATION bin RENAME g4GeometryScan)
 
 # configure and install DD4hepSimulation files
 file(GLOB_RECURSE DDSIM_FILES RELATIVE ${CMAKE_CURRENT_LIST_DIR}/python/DDSim/ python/DDSim/*.py)
