@@ -32,18 +32,23 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4MaterialScanner : public Geant4SteppingAction  {
+    class Geant4GeometryScanner : public Geant4SteppingAction  {
     protected:
       /// Structure to hold the information of one simulation step.
       class StepInfo {
       public:
         /// Pre-step and Post-step position
         Position pre, post;
+        /// Path to this volume
+        std::string path;
         /// Reference to the logical volue
         const G4LogicalVolume* volume;
 
         /// Initializing constructor
-        StepInfo(const Position& pre, const Position& post, const G4LogicalVolume* volume);
+        StepInfo(const Position& pre,
+                 const Position& post,
+                 const G4LogicalVolume* volume,
+                 const std::string& path);
         /// Copy constructor
         StepInfo(const StepInfo& c);
         /// Default destructor
@@ -52,17 +57,13 @@ namespace dd4hep {
         StepInfo& operator=(const StepInfo& c);
       };
       typedef std::vector<StepInfo*> Steps;
-
-      double m_sumX0     = 0E0;
-      double m_sumLambda = 0E0;
-      double m_sumPath   = 0E0;
       Steps  m_steps;
-
+      double m_sumPath = 0;
     public:
       /// Standard constructor
-      Geant4MaterialScanner(Geant4Context* context, const std::string& name);
+      Geant4GeometryScanner(Geant4Context* context, const std::string& name);
       /// Default destructor
-      virtual ~Geant4MaterialScanner();
+      virtual ~Geant4GeometryScanner();
       /// User stepping callback
       virtual void operator()(const G4Step* step, G4SteppingManager* mgr);
       /// Begin-of-tracking callback
@@ -93,27 +94,31 @@ namespace dd4hep {
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "G4LogicalVolume.hh"
 #include "G4Material.hh"
+#include "G4VSolid.hh"
 
 using namespace std;
 using namespace dd4hep::sim;
 
 #include "DDG4/Factories.h"
-DECLARE_GEANT4ACTION(Geant4MaterialScanner)
+DECLARE_GEANT4ACTION(Geant4GeometryScanner)
 
 /// Initializing constructor
-Geant4MaterialScanner::StepInfo::StepInfo(const Position& prePos, const Position& postPos, const G4LogicalVolume* vol)
-: pre(prePos), post(postPos), volume(vol)
+Geant4GeometryScanner::StepInfo::StepInfo(const Position& prePos,
+                                          const Position& postPos,
+                                          const G4LogicalVolume* vol,
+                                          const string& p)
+: pre(prePos), post(postPos), path(p), volume(vol)
 {
 }
 
 /// Copy constructor
-Geant4MaterialScanner::StepInfo::StepInfo(const StepInfo& c)
-: pre(c.pre), post(c.post), volume(c.volume)
+Geant4GeometryScanner::StepInfo::StepInfo(const StepInfo& c)
+  : pre(c.pre), post(c.post), path(c.path), volume(c.volume)
 {
 }
 
 /// Assignment operator
-Geant4MaterialScanner::StepInfo& Geant4MaterialScanner::StepInfo::operator=(const StepInfo& c)  {
+Geant4GeometryScanner::StepInfo& Geant4GeometryScanner::StepInfo::operator=(const StepInfo& c)  {
   pre = c.pre;
   post = c.post;
   volume = c.volume;
@@ -121,98 +126,72 @@ Geant4MaterialScanner::StepInfo& Geant4MaterialScanner::StepInfo::operator=(cons
 }
 
 /// Standard constructor
-Geant4MaterialScanner::Geant4MaterialScanner(Geant4Context* ctxt, const string& nam)
+Geant4GeometryScanner::Geant4GeometryScanner(Geant4Context* ctxt, const string& nam)
   : Geant4SteppingAction(ctxt,nam)
 {
   m_needsControl = true;
-  eventAction().callAtBegin(this,&Geant4MaterialScanner::beginEvent);
-  trackingAction().callAtEnd(this,&Geant4MaterialScanner::end);
-  trackingAction().callAtBegin(this,&Geant4MaterialScanner::begin);
+  eventAction().callAtBegin(this,&Geant4GeometryScanner::beginEvent);
+  trackingAction().callAtEnd(this,&Geant4GeometryScanner::end);
+  trackingAction().callAtBegin(this,&Geant4GeometryScanner::begin);
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-Geant4MaterialScanner::~Geant4MaterialScanner() {
+Geant4GeometryScanner::~Geant4GeometryScanner() {
   InstanceCount::decrement(this);
 }
 
 /// User stepping callback
-void Geant4MaterialScanner::operator()(const G4Step* step, G4SteppingManager*) {
-  Geant4StepHandler h(step);
-#if 0
-  Geant4TouchableHandler pre_handler(step);
-  string prePath = pre_handler.path();
-  Geant4TouchableHandler post_handler(step);
-  string postPath = post_handler.path();
-#endif
-  G4LogicalVolume* logVol = h.logvol(h.pre);
-  m_steps.emplace_back(new StepInfo(h.prePos(), h.postPos(), logVol));
+void Geant4GeometryScanner::operator()(const G4Step* step, G4SteppingManager*) {
+  Geant4StepHandler      h(step);
+  Geant4TouchableHandler handler(step);
+  m_steps.emplace_back(new StepInfo(h.prePos(), h.postPos(), h.logvol(h.pre), handler.path()));
 }
 
 /// Registered callback on Begin-event
-void Geant4MaterialScanner::beginEvent(const G4Event* /* event */)   {
+void Geant4GeometryScanner::beginEvent(const G4Event* /* event */)   {
   for_each(m_steps.begin(),m_steps.end(),detail::DestroyObject<StepInfo*>());
   m_steps.clear();
-  m_sumX0 = 0;
-  m_sumLambda = 0;
   m_sumPath = 0;
 }
 
 /// Begin-of-tracking callback
-void Geant4MaterialScanner::begin(const G4Track* track) {
+void Geant4GeometryScanner::begin(const G4Track* track) {
   printP2("Starting tracking action for track ID=%d",track->GetTrackID());
   for_each(m_steps.begin(),m_steps.end(),detail::DestroyObject<StepInfo*>());
   m_steps.clear();
-  m_sumX0 = 0;
-  m_sumLambda = 0;
   m_sumPath = 0;
 }
 
 /// End-of-tracking callback
-void Geant4MaterialScanner::end(const G4Track* track) {
+void Geant4GeometryScanner::end(const G4Track* track) {
   using namespace CLHEP;
   if ( !m_steps.empty() )  {
     constexpr const char* line = " +--------------------------------------------------------------------------------------------------------------------------------------------------\n";
-    constexpr const char* fmt1 = " | %5d %-20s %3.0f %8.3f %8.4f %11.4f  %11.4f %10.3f %8.2f %11.6f %11.6f  (%7.2f,%7.2f,%7.2f)\n";
-    constexpr const char* fmt2 = " | %5d %-20s %3.0f %8.3f %8.4f %11.6g  %11.6g %10.3f %8.2f %11.6f %11.6f  (%7.2f,%7.2f,%7.2f)\n";
+    constexpr const char* fmt = " | %5d   %11.4f %10.3f     (%7.2f,%7.2f,%7.2f)  Path:\"/world%s\" Shape:%s  Mat:%s\n";
     const Position& pre = m_steps[0]->pre;
     const Position& post = m_steps[m_steps.size()-1]->post;
 
     ::printf("%s + Material scan between: x_0 = (%7.2f,%7.2f,%7.2f) [cm] and x_1 = (%7.2f,%7.2f,%7.2f) [cm]  TrackID:%d: \n%s",
              line,pre.X()/cm,pre.Y()/cm,pre.Z()/cm,post.X()/cm,post.Y()/cm,post.Z()/cm,track->GetTrackID(),line);
-    ::printf(" |     \\   %-11s        Atomic                 Radiation   Interaction               Path   Integrated  Integrated    Material\n","Material");
-    ::printf(" | Num. \\  %-11s   Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint  \n","Name");
-    ::printf(" | Layer \\ %-11s            [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm)\n","");
+    ::printf(" |     \\               Path                                        \n");
+    ::printf(" | Num. \\  Thickness   Length    Endpoint                    Volume , Shape, Material\n");
+    ::printf(" | Layer \\   [cm]       [cm]     (     cm,     cm,     cm)         \n");
     ::printf("%s",line);
     int count = 1;
     for(Steps::const_iterator i=m_steps.begin(); i!=m_steps.end(); ++i, ++count)  {
       const G4LogicalVolume* logVol = (*i)->volume;
       G4Material* material = logVol->GetMaterial();
+      G4VSolid*   solid    = logVol->GetSolid();
       const Position& prePos  = (*i)->pre;
       const Position& postPos = (*i)->post;
       Position direction = postPos - prePos;
       double length  = direction.R()/cm;
-      double intLen  = material->GetNuclearInterLength()/cm;
-      double radLen  = material->GetRadlen()/cm;
-      double density = material->GetDensity()/(gram/cm3);
-      double nLambda = length / intLen;
-      double nx0     = length / radLen;
-      double Aeff    = 0.0;
-      double Zeff    = 0.0;
-      const char* fmt = radLen >= 1e5 ? fmt2 : fmt1;
-      const double* fractions = material->GetFractionVector();
-      for(size_t j=0; j<material->GetNumberOfElements(); ++j)  {
-        Zeff += fractions[j]*(material->GetElement(j)->GetZ());
-        Aeff += fractions[j]*(material->GetElement(j)->GetA())/gram;
-      }
-      m_sumX0     += nx0;
-      m_sumLambda += nLambda;
-      m_sumPath   += length;
-      ::printf(fmt,count,material->GetName().c_str(),
-               Zeff, Aeff, density, radLen, intLen, length,
-               m_sumPath,m_sumX0,m_sumLambda,
-               postPos.X()/cm,postPos.Y()/cm,postPos.Z()/cm);
-      //cout << *m << endl;
+      m_sumPath += length;
+      ::printf(fmt,count,
+               length, m_sumPath,
+               postPos.X()/cm,postPos.Y()/cm,postPos.Z()/cm,
+               (*i)->path.c_str(), typeName(typeid(*solid)).c_str(), material->GetName().c_str());
     }
     for_each(m_steps.begin(),m_steps.end(),detail::DestroyObject<StepInfo*>());
     m_steps.clear();

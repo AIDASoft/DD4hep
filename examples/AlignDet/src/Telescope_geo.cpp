@@ -23,13 +23,16 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector sd
   Box         box;
   Volume      vol;
   PlacedVolume phv;
-  xml_det_t   x_det  = e;
-  double      small  = 1e-3*dd4hep::mm;
-  string      name   = x_det.nameStr();
-  Material    air    = description.material("Air");
+  xml_det_t   x_det   = e;
+  double      small   = 1e-3*dd4hep::mm;
+  string      name    = x_det.nameStr();
+  Material    air     = description.material("Air");
+  Material    mat_pcb     = description.material("Epoxy");
+  Material    mat_silicon = description.material("Si");
   DetElement  det    (name,x_det.id());
   Assembly    envVol (name+"_envelope");
 
+  sd.setType("tracker");
   for(xml_coll_t im(x_det,_U(module)); im; ++im)  {
     xml_dim_t mod    = im;
     xml_dim_t sens   = mod.child(_U(sensor));
@@ -48,7 +51,7 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector sd
 
     DetElement sens_det(mod_det,"sensor",x_det.id());
     box = Box(pitch*noPixX/2e0, pitch*noPixY/2e0, sens.thickness()/2e0);
-    vol = Volume(_toString(mod.id(),"sensor_%d"), box, air);
+    vol = Volume(_toString(mod.id(),"sensor_%d"), box, mat_silicon);
     vol.setSensitiveDetector(sd);
     vol.setVisAttributes(description.visAttributes(sens.visStr()));
     phv = modvol.placeVolume(vol, Position(0, 0, -mod_thick/2e0+sens.thickness()/2e0));
@@ -56,13 +59,13 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector sd
     sens_det.setPlacement(phv);
 
     box = Box(pitch*noPixX/2e0, pitch*noPixY/2e0, chip.thickness()/2e0);
-    vol = Volume(_toString(mod.id(),"chip_%d"), box, air);
+    vol = Volume(_toString(mod.id(),"chip_%d"), box, mat_silicon);
     vol.setVisAttributes(description.visAttributes(chip.visStr()));
     phv = modvol.placeVolume(vol, Position(0, 0, -mod_thick/2e0+sens.thickness()+chip.thickness()/2e0));
     phv.addPhysVolID("sensor",2);
 
     box = Box(pitch*noPixX/2e0, pitch*noPixY/2e0, pcb.thickness()/2e0);
-    vol = Volume(_toString(mod.id(),"PCB_%d"), box, air);
+    vol = Volume(_toString(mod.id(),"PCB_%d"), box, mat_pcb);
     vol.setVisAttributes(description.visAttributes(pcb.visStr()));
     phv = modvol.placeVolume(vol, Position(0, 0, -mod_thick/2e0+sens.thickness()+chip.thickness()+pcb.thickness()/2e0));
     phv.addPhysVolID("sensor",3);

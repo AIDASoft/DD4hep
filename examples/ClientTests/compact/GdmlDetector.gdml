@@ -1,0 +1,3094 @@
+<?xml version="1.0"?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+  <define>
+    <position name="lvUpstreamRegion_0inworld_volumepos" x="0" y="0" z="-1270" unit="cm"/>
+    <position name="lvBeforeVelo_0inlvBeforeMagnetRegionpos" x="0" y="0" z="-179.25" unit="cm"/>
+    <position name="lvBeforeMagnetRegion_1inworld_volumepos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvMagnetRegion_2inworld_volumepos" x="0" y="0" z="516" unit="cm"/>
+    <position name="pvCFramePairIBarLeftinlvCFramePairpos" x="-383" y="-16" z="0" unit="cm"/>
+    <position name="pvCFramePairIBarRightinlvCFramePairpos" x="383" y="-16" z="0" unit="cm"/>
+    <position name="pvCFramePairCarrierTopinlvCFramePairpos" x="0" y="290.25" z="0" unit="cm"/>
+    <position name="pvCFramePairCarrierBottominlvCFramePairpos" x="0" y="-293.60000000000002" z="0" unit="cm"/>
+    <position name="pvCFramePairModuleMountTopinlvCFramePairpos" x="0" y="252.59999999999999" z="0" unit="cm"/>
+    <position name="pvCFramePairModuleMountBottominlvCFramePairpos" x="0" y="-259.30000000000001" z="0" unit="cm"/>
+    <position name="pvCFramePairSupportCableCFCableinlvCFramePairSupportCablepos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="pvCFramePairSupportCableCFCableinlvCFramePairSupportCablerot" x="90" y="-0" z="0" unit="deg"/>
+    <position name="pvCFramePairSupportCableDowelUpperinlvCFramePairSupportCablepos" x="0" y="98.455000000000013" z="0" unit="cm"/>
+    <rotation name="pvCFramePairSupportCableDowelUpperinlvCFramePairSupportCablerot" x="90" y="-0" z="0" unit="deg"/>
+    <position name="pvCFramePairSupportCableDowelLowerinlvCFramePairSupportCablepos" x="0" y="-101.52" z="0" unit="cm"/>
+    <rotation name="pvCFramePairSupportCableDowelLowerinlvCFramePairSupportCablerot" x="90" y="-0" z="0" unit="deg"/>
+    <position name="pvCFramePairSupportCableAinlvCFramePairSupportCablepairpos" x="-1.25" y="0" z="0" unit="cm"/>
+    <position name="pvCFramePairSupportCableBinlvCFramePairSupportCablepairpos" x="1.25" y="0" z="0" unit="cm"/>
+    <position name="pvCFramePairSupportCablepairRightOuterinlvCFramePairpos" x="-264.94999999999999" y="-1.6050000000000002" z="0" unit="cm"/>
+    <position name="pvCFramePairSupportCablepairRightInnerinlvCFramePairpos" x="-52.450000000000003" y="-1.6050000000000002" z="0" unit="cm"/>
+    <position name="pvCFramePairSupportCablepairLeftInnerinlvCFramePairpos" x="52.450000000000003" y="-1.6050000000000002" z="0" unit="cm"/>
+    <position name="pvCFramePairSupportCablepairLeftOuterinlvCFramePairpos" x="264.94999999999999" y="-1.6050000000000002" z="0" unit="cm"/>
+    <position name="pvCFramePairSpacerBarLeftCFSkinFrontinlvCFramePairSpacerBarLeftpos" x="0" y="0" z="1.2825" unit="cm"/>
+    <position name="pvCFramePairSpacerBarLeftHoneycombFillinlvCFramePairSpacerBarLeftpos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="pvCFramePairSpacerBarLeftHoneycombFillinlvCFramePairSpacerBarLeftrot" x="90" y="-0" z="0" unit="deg"/>
+    <position name="pvCFramePairSpacerBarLeftCFSkinBackinlvCFramePairSpacerBarLeftpos" x="0" y="0" z="-1.2825" unit="cm"/>
+    <position name="pvCFramePairSpacerBarLowerLeftinlvCFramePairpos" x="165.44999999999999" y="-103.125" z="0" unit="cm"/>
+    <position name="pvCFramePairSpacerBarLowerRightinlvCFramePairpos" x="-165.44999999999999" y="-103.125" z="0" unit="cm"/>
+    <rotation name="pvCFramePairSpacerBarLowerRightinlvCFramePairrot" x="-180" y="-0" z="-180" unit="deg"/>
+    <position name="pvCFramePairSpacerBarUpperLeftinlvCFramePairpos" x="165.44999999999999" y="96.850000000000009" z="0" unit="cm"/>
+    <position name="pvCFramePairSpacerBarUpperRightinlvCFramePairpos" x="-165.44999999999999" y="96.850000000000009" z="0" unit="cm"/>
+    <rotation name="pvCFramePairSpacerBarUpperRightinlvCFramePairrot" x="-180" y="-0" z="-180" unit="deg"/>
+    <position name="lvCFramePair_0inlvStation5pos" x="0" y="3.3500000000000001" z="-7" unit="cm"/>
+    <position name="lvCFramePair_1inlvStation5pos" x="0" y="3.3500000000000001" z="7" unit="cm"/>
+    <position name="lvSkinHoleRightX_0inlvFTModuleHoleRightXpos" x="0" y="-4.7750000000000057" z="-2.0487500000000001" unit="cm"/>
+    <position name="lvEndplug_0inlvCoreHoleFrontRightXpos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="lvEndpiece3_1inlvCoreHoleFrontRightXpos" x="-6.5400000000000009" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvEndpiece1_2inlvCoreHoleFrontRightXpos" x="19.814999999999998" y="-106.84999999999999" z="0.877" unit="cm"/>
+    <position name="lvCoreHoleFrontRightX_1inlvFTModuleHoleRightXpos" x="0" y="-2.0250000000000057" z="-1.042" unit="cm"/>
+    <position name="lvFibreMat_2inlvFTModuleHoleRightXpos" x="-19.620000000000005" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_3inlvFTModuleHoleRightXpos" x="-6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_4inlvFTModuleHoleRightXpos" x="6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreShortMatRightX_5inlvFTModuleHoleRightXpos" x="19.620000000000005" y="5.8250000000000028" z="0" unit="cm"/>
+    <position name="lvEndplug_00x1inlvCoreHoleBackRightXpos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="lvEndpiece3_10x1inlvCoreHoleBackRightXpos" x="6.5400000000000009" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvEndpiece1_20x1inlvCoreHoleBackRightXpos" x="-19.814999999999998" y="-106.84999999999999" z="0.877" unit="cm"/>
+    <position name="lvCoreHoleBackRightX_6inlvFTModuleHoleRightXpos" x="0" y="-2.0250000000000057" z="1.042" unit="cm"/>
+    <rotation name="lvCoreHoleBackRightX_6inlvFTModuleHoleRightXrot" x="-180" y="-0" z="-180" unit="deg"/>
+    <position name="lvSkinHoleRightX_7inlvFTModuleHoleRightXpos" x="0" y="-4.7750000000000057" z="2.0487500000000001" unit="cm"/>
+    <position name="lvSideWall_8inlvFTModuleHoleRightXpos" x="-26.377500000000001" y="-4.7750000000000057" z="0" unit="cm"/>
+    <position name="lvSideWallRightX_9inlvFTModuleHoleRightXpos" x="26.377500000000001" y="0.99749999999999428" z="0" unit="cm"/>
+    <position name="lvHoleWallRightX_10inlvFTModuleHoleRightXpos" x="26.500000000000004" y="-121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleHoleRightX_0inlvQuarter5XNegpos" x="-26.500000000000004" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvSkin_0inlvFTModuleFullpos" x="0" y="-4.7750000000000057" z="-2.0487500000000001" unit="cm"/>
+    <position name="pvEndpluginlvCorepos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="pvEndpieceinlvCorepos" x="0" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvCore_1inlvFTModuleFullpos" x="0" y="-2.0250000000000057" z="-1.042" unit="cm"/>
+    <position name="lvFibreMat_20x1inlvFTModuleFullpos" x="-19.620000000000005" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_30x1inlvFTModuleFullpos" x="-6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_40x1inlvFTModuleFullpos" x="6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_5inlvFTModuleFullpos" x="19.620000000000005" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvCore_6inlvFTModuleFullpos" x="0" y="-2.0250000000000057" z="1.042" unit="cm"/>
+    <rotation name="lvCore_6inlvFTModuleFullrot" x="-180" y="-0" z="-180" unit="deg"/>
+    <position name="lvSkin_7inlvFTModuleFullpos" x="0" y="-4.7750000000000057" z="2.0487500000000001" unit="cm"/>
+    <rotation name="lvSkin_7inlvFTModuleFullrot" x="-180" y="-0" z="-180" unit="deg"/>
+    <position name="lvSideWall_80x1inlvFTModuleFullpos" x="-26.377500000000001" y="-4.7750000000000057" z="0" unit="cm"/>
+    <position name="lvSideWall_9inlvFTModuleFullpos" x="26.377500000000001" y="-4.7750000000000057" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_1inlvQuarter5XNegpos" x="-79.500000000000014" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_2inlvQuarter5XNegpos" x="-132.50000000000003" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_3inlvQuarter5XNegpos" x="-185.50000000000003" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_4inlvQuarter5XNegpos" x="-238.50000000000003" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvQuarter5XNeg_0inlvLayer5X1pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter5XNeg_0inlvLayer5X1rot" x="-0" y="-0" z="-180" unit="deg"/>
+    <position name="lvSkinHoleLeftX_0inlvFTModuleHoleLeftXpos" x="0" y="-4.7750000000000057" z="-2.0487500000000001" unit="cm"/>
+    <position name="lvEndplug_00x2inlvCoreHoleFrontLeftXpos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="lvEndpiece3_10x2inlvCoreHoleFrontLeftXpos" x="6.5400000000000009" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvEndpiece1_20x2inlvCoreHoleFrontLeftXpos" x="-19.814999999999998" y="-106.84999999999999" z="0.877" unit="cm"/>
+    <position name="lvCoreHoleFrontLeftX_1inlvFTModuleHoleLeftXpos" x="0" y="-2.0250000000000057" z="-1.042" unit="cm"/>
+    <position name="lvFibreShortMatLeftX_2inlvFTModuleHoleLeftXpos" x="-19.620000000000005" y="5.8250000000000028" z="0" unit="cm"/>
+    <position name="lvFibreMat_30x2inlvFTModuleHoleLeftXpos" x="-6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_40x2inlvFTModuleHoleLeftXpos" x="6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_50x1inlvFTModuleHoleLeftXpos" x="19.620000000000005" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvEndplug_00x3inlvCoreHoleBackLeftXpos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="lvEndpiece3_10x3inlvCoreHoleBackLeftXpos" x="-6.5400000000000009" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvEndpiece1_20x3inlvCoreHoleBackLeftXpos" x="19.814999999999998" y="-106.84999999999999" z="0.877" unit="cm"/>
+    <position name="lvCoreHoleBackLeftX_6inlvFTModuleHoleLeftXpos" x="0" y="-2.0250000000000057" z="1.042" unit="cm"/>
+    <rotation name="lvCoreHoleBackLeftX_6inlvFTModuleHoleLeftXrot" x="-180" y="-0" z="-180" unit="deg"/>
+    <position name="lvSkinHoleLeftX_7inlvFTModuleHoleLeftXpos" x="0" y="-4.7750000000000057" z="2.0487500000000001" unit="cm"/>
+    <position name="lvSideWall_80x2inlvFTModuleHoleLeftXpos" x="26.377500000000001" y="-4.7750000000000057" z="0" unit="cm"/>
+    <position name="lvSideWallLeftX_9inlvFTModuleHoleLeftXpos" x="-26.377500000000001" y="0.99749999999999428" z="0" unit="cm"/>
+    <position name="lvHoleWallLeftX_10inlvFTModuleHoleLeftXpos" x="-26.500000000000004" y="-121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleHoleLeftX_0inlvQuarter5XPospos" x="26.500000000000004" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_10x1inlvQuarter5XPospos" x="79.500000000000014" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_20x1inlvQuarter5XPospos" x="132.50000000000003" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_30x1inlvQuarter5XPospos" x="185.50000000000003" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_40x1inlvQuarter5XPospos" x="238.50000000000003" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvQuarter5XPos_1inlvLayer5X1pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter5XPos_1inlvLayer5X1rot" x="-0" y="-0" z="-180" unit="deg"/>
+    <position name="lvQuarter5XPos_2inlvLayer5X1pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter5XPos_2inlvLayer5X1rot" x="0" y="-0" z="1.4033418597069752e-14" unit="deg"/>
+    <position name="lvQuarter5XNeg_3inlvLayer5X1pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter5XNeg_3inlvLayer5X1rot" x="0" y="-0" z="1.4033418597069752e-14" unit="deg"/>
+    <position name="lvLayer5X1_2inlvStation5pos" x="0" y="0" z="-10.49" unit="cm"/>
+    <position name="lvSkinHoleLeftU_0inlvFTModuleHoleLeftUpos" x="0" y="-4.7750000000000057" z="-2.0487500000000001" unit="cm"/>
+    <position name="lvEndplug_00x4inlvCoreHoleFrontLeftUpos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="lvEndpiece3_10x4inlvCoreHoleFrontLeftUpos" x="6.5400000000000009" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvEndpiece1_20x4inlvCoreHoleFrontLeftUpos" x="-19.814999999999998" y="-109.14999999999999" z="0.877" unit="cm"/>
+    <position name="lvCoreHoleFrontLeftU_1inlvFTModuleHoleLeftUpos" x="0" y="-2.0250000000000057" z="-1.042" unit="cm"/>
+    <position name="lvFibreShortMatLeftU_2inlvFTModuleHoleLeftUpos" x="-19.620000000000005" y="4.6750000000000034" z="0" unit="cm"/>
+    <position name="lvFibreMat_30x3inlvFTModuleHoleLeftUpos" x="-6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_40x3inlvFTModuleHoleLeftUpos" x="6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_50x2inlvFTModuleHoleLeftUpos" x="19.620000000000005" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvEndplug_00x5inlvCoreHoleBackLeftUpos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="lvEndpiece3_10x5inlvCoreHoleBackLeftUpos" x="-6.5400000000000009" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvEndpiece1_20x5inlvCoreHoleBackLeftUpos" x="19.814999999999998" y="-109.14999999999999" z="0.877" unit="cm"/>
+    <position name="lvCoreHoleBackLeftU_6inlvFTModuleHoleLeftUpos" x="0" y="-2.0250000000000057" z="1.042" unit="cm"/>
+    <rotation name="lvCoreHoleBackLeftU_6inlvFTModuleHoleLeftUrot" x="-180" y="-0" z="-180" unit="deg"/>
+    <position name="lvSkinHoleLeftU_7inlvFTModuleHoleLeftUpos" x="0" y="-4.7750000000000057" z="2.0487500000000001" unit="cm"/>
+    <position name="lvSideWall_80x3inlvFTModuleHoleLeftUpos" x="26.377500000000001" y="-4.7750000000000057" z="0" unit="cm"/>
+    <position name="lvSideWallLeftU_9inlvFTModuleHoleLeftUpos" x="-26.377500000000001" y="-0.15250000000000516" z="0" unit="cm"/>
+    <position name="lvHoleWallLeftU_10inlvFTModuleHoleLeftUpos" x="-26.500000000000004" y="-123.575" z="0" unit="cm"/>
+    <position name="lvFTModuleHoleLeftU_0inlvQuarter5UPospos" x="37.171038396620958" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleHoleLeftU_0inlvQuarter5UPosrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_10x2inlvQuarter5UPospos" x="90.373489786418375" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_10x2inlvQuarter5UPosrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_20x2inlvQuarter5UPospos" x="143.57594117621579" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_20x2inlvQuarter5UPosrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_30x2inlvQuarter5UPospos" x="196.77839256601322" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_30x2inlvQuarter5UPosrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_40x2inlvQuarter5UPospos" x="249.98084395581066" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_40x2inlvQuarter5UPosrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvQuarter5UPos_0inlvLayer5Upos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter5UPos_0inlvLayer5Urot" x="0" y="-0" z="-180" unit="deg"/>
+    <position name="lvSkinHoleRightU_0inlvFTModuleHoleRightUpos" x="0" y="-4.7750000000000057" z="-2.0487500000000001" unit="cm"/>
+    <position name="lvEndplug_00x6inlvCoreHoleFrontRightUpos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="lvEndpiece3_10x6inlvCoreHoleFrontRightUpos" x="-6.5400000000000009" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvEndpiece1_20x6inlvCoreHoleFrontRightUpos" x="19.814999999999998" y="-104.55" z="0.877" unit="cm"/>
+    <position name="lvCoreHoleFrontRightU_1inlvFTModuleHoleRightUpos" x="0" y="-2.0250000000000057" z="-1.042" unit="cm"/>
+    <position name="lvFibreMat_20x2inlvFTModuleHoleRightUpos" x="-19.620000000000005" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_30x4inlvFTModuleHoleRightUpos" x="-6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_40x4inlvFTModuleHoleRightUpos" x="6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreShortMatRightU_5inlvFTModuleHoleRightUpos" x="19.620000000000005" y="6.9750000000000032" z="0" unit="cm"/>
+    <position name="lvEndplug_00x7inlvCoreHoleBackRightUpos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="lvEndpiece3_10x7inlvCoreHoleBackRightUpos" x="6.5400000000000009" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvEndpiece1_20x7inlvCoreHoleBackRightUpos" x="-19.814999999999998" y="-104.55" z="0.877" unit="cm"/>
+    <position name="lvCoreHoleBackRightU_6inlvFTModuleHoleRightUpos" x="0" y="-2.0250000000000057" z="1.042" unit="cm"/>
+    <rotation name="lvCoreHoleBackRightU_6inlvFTModuleHoleRightUrot" x="-180" y="-0" z="-180" unit="deg"/>
+    <position name="lvSkinHoleRightU_7inlvFTModuleHoleRightUpos" x="0" y="-4.7750000000000057" z="2.0487500000000001" unit="cm"/>
+    <position name="lvSideWall_80x4inlvFTModuleHoleRightUpos" x="-26.377500000000001" y="-4.7750000000000057" z="0" unit="cm"/>
+    <position name="lvSideWallRightU_9inlvFTModuleHoleRightUpos" x="26.377500000000001" y="2.1474999999999946" z="0" unit="cm"/>
+    <position name="lvHoleWallRightU_10inlvFTModuleHoleRightUpos" x="26.500000000000004" y="-118.97500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleHoleRightU_0inlvQuarter5UNegpos" x="-16.031412993176463" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleHoleRightU_0inlvQuarter5UNegrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_10x3inlvQuarter5UNegpos" x="-69.233864382973877" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_10x3inlvQuarter5UNegrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_20x3inlvQuarter5UNegpos" x="-122.43631577277129" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_20x3inlvQuarter5UNegrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_30x3inlvQuarter5UNegpos" x="-175.63876716256871" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_30x3inlvQuarter5UNegrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_40x3inlvQuarter5UNegpos" x="-228.84121855236612" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_40x3inlvQuarter5UNegrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvQuarter5UNeg_1inlvLayer5Upos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter5UNeg_1inlvLayer5Urot" x="0" y="-0" z="-180" unit="deg"/>
+    <position name="lvQuarter5UNeg_2inlvLayer5Upos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvQuarter5UPos_3inlvLayer5Upos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvLayer5U_3inlvStation5pos" x="0" y="0" z="-3.5099999999999998" unit="cm"/>
+    <position name="lvSkinHoleRightV_0inlvFTModuleHoleRightVpos" x="0" y="-4.7750000000000057" z="-2.0487500000000001" unit="cm"/>
+    <position name="lvEndplug_00x8inlvCoreHoleFrontRightVpos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="lvEndpiece3_10x8inlvCoreHoleFrontRightVpos" x="-6.5400000000000009" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvEndpiece1_20x8inlvCoreHoleFrontRightVpos" x="19.814999999999998" y="-109.14999999999999" z="0.877" unit="cm"/>
+    <position name="lvCoreHoleFrontRightV_1inlvFTModuleHoleRightVpos" x="0" y="-2.0250000000000057" z="-1.042" unit="cm"/>
+    <position name="lvFibreMat_20x3inlvFTModuleHoleRightVpos" x="-19.620000000000005" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_30x5inlvFTModuleHoleRightVpos" x="-6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_40x5inlvFTModuleHoleRightVpos" x="6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreShortMatRightV_5inlvFTModuleHoleRightVpos" x="19.620000000000005" y="4.6750000000000034" z="0" unit="cm"/>
+    <position name="lvEndplug_00x9inlvCoreHoleBackRightVpos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="lvEndpiece3_10x9inlvCoreHoleBackRightVpos" x="6.5400000000000009" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvEndpiece1_20x9inlvCoreHoleBackRightVpos" x="-19.814999999999998" y="-109.14999999999999" z="0.877" unit="cm"/>
+    <position name="lvCoreHoleBackRightV_6inlvFTModuleHoleRightVpos" x="0" y="-2.0250000000000057" z="1.042" unit="cm"/>
+    <rotation name="lvCoreHoleBackRightV_6inlvFTModuleHoleRightVrot" x="-180" y="-0" z="-180" unit="deg"/>
+    <position name="lvSkinHoleRightV_7inlvFTModuleHoleRightVpos" x="0" y="-4.7750000000000057" z="2.0487500000000001" unit="cm"/>
+    <position name="lvSideWall_80x5inlvFTModuleHoleRightVpos" x="-26.377500000000001" y="-4.7750000000000057" z="0" unit="cm"/>
+    <position name="lvSideWallRightV_9inlvFTModuleHoleRightVpos" x="26.377500000000001" y="-0.15250000000000516" z="0" unit="cm"/>
+    <position name="lvHoleWallRightV_10inlvFTModuleHoleRightVpos" x="26.500000000000004" y="-123.575" z="0" unit="cm"/>
+    <position name="lvFTModuleHoleRightV_0inlvQuarter5VNegpos" x="-37.171038396620958" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleHoleRightV_0inlvQuarter5VNegrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_10x4inlvQuarter5VNegpos" x="-90.373489786418375" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_10x4inlvQuarter5VNegrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_20x4inlvQuarter5VNegpos" x="-143.57594117621579" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_20x4inlvQuarter5VNegrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_30x4inlvQuarter5VNegpos" x="-196.77839256601322" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_30x4inlvQuarter5VNegrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_40x4inlvQuarter5VNegpos" x="-249.98084395581066" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_40x4inlvQuarter5VNegrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvQuarter5VNeg_0inlvLayer5Vpos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter5VNeg_0inlvLayer5Vrot" x="-0" y="-0" z="-180" unit="deg"/>
+    <position name="lvSkinHoleLeftV_0inlvFTModuleHoleLeftVpos" x="0" y="-4.7750000000000057" z="-2.0487500000000001" unit="cm"/>
+    <position name="lvEndplug_00x10inlvCoreHoleFrontLeftVpos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="lvEndpiece3_10x10inlvCoreHoleFrontLeftVpos" x="6.5400000000000009" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvEndpiece1_20x10inlvCoreHoleFrontLeftVpos" x="-19.814999999999998" y="-104.55" z="0.877" unit="cm"/>
+    <position name="lvCoreHoleFrontLeftV_1inlvFTModuleHoleLeftVpos" x="0" y="-2.0250000000000057" z="-1.042" unit="cm"/>
+    <position name="lvFibreShortMatLeftV_2inlvFTModuleHoleLeftVpos" x="-19.620000000000005" y="6.9750000000000032" z="0" unit="cm"/>
+    <position name="lvFibreMat_30x6inlvFTModuleHoleLeftVpos" x="-6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_40x6inlvFTModuleHoleLeftVpos" x="6.5400000000000009" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvFibreMat_50x3inlvFTModuleHoleLeftVpos" x="19.620000000000005" y="0.075000000000002842" z="0" unit="cm"/>
+    <position name="lvEndplug_00x11inlvCoreHoleBackLeftVpos" x="0" y="112.15000000000001" z="0" unit="cm"/>
+    <position name="lvEndpiece3_10x11inlvCoreHoleBackLeftVpos" x="-6.5400000000000009" y="-118.34999999999999" z="0.877" unit="cm"/>
+    <position name="lvEndpiece1_20x11inlvCoreHoleBackLeftVpos" x="19.814999999999998" y="-104.55" z="0.877" unit="cm"/>
+    <position name="lvCoreHoleBackLeftV_6inlvFTModuleHoleLeftVpos" x="0" y="-2.0250000000000057" z="1.042" unit="cm"/>
+    <rotation name="lvCoreHoleBackLeftV_6inlvFTModuleHoleLeftVrot" x="-180" y="-0" z="-180" unit="deg"/>
+    <position name="lvSkinHoleLeftV_7inlvFTModuleHoleLeftVpos" x="0" y="-4.7750000000000057" z="2.0487500000000001" unit="cm"/>
+    <position name="lvSideWall_80x6inlvFTModuleHoleLeftVpos" x="26.377500000000001" y="-4.7750000000000057" z="0" unit="cm"/>
+    <position name="lvSideWallLeftV_9inlvFTModuleHoleLeftVpos" x="-26.377500000000001" y="2.1474999999999946" z="0" unit="cm"/>
+    <position name="lvHoleWallLeftV_10inlvFTModuleHoleLeftVpos" x="-26.500000000000004" y="-118.97500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleHoleLeftV_0inlvQuarter5VPospos" x="16.031412993176463" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleHoleLeftV_0inlvQuarter5VPosrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_10x5inlvQuarter5VPospos" x="69.233864382973877" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_10x5inlvQuarter5VPosrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_20x5inlvQuarter5VPospos" x="122.43631577277129" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_20x5inlvQuarter5VPosrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_30x5inlvQuarter5VPospos" x="175.63876716256871" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_30x5inlvQuarter5VPosrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_40x5inlvQuarter5VPospos" x="228.84121855236612" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_40x5inlvQuarter5VPosrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvQuarter5VPos_1inlvLayer5Vpos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter5VPos_1inlvLayer5Vrot" x="-0" y="-0" z="-180" unit="deg"/>
+    <position name="lvQuarter5VPos_2inlvLayer5Vpos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter5VPos_2inlvLayer5Vrot" x="0" y="-0" z="1.4033418597069752e-14" unit="deg"/>
+    <position name="lvQuarter5VNeg_3inlvLayer5Vpos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter5VNeg_3inlvLayer5Vrot" x="0" y="-0" z="1.4033418597069752e-14" unit="deg"/>
+    <position name="lvLayer5V_4inlvStation5pos" x="0" y="0" z="3.5099999999999998" unit="cm"/>
+    <position name="lvQuarter5XPos_0inlvLayer5X2pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter5XPos_0inlvLayer5X2rot" x="0" y="-0" z="-180" unit="deg"/>
+    <position name="lvQuarter5XNeg_1inlvLayer5X2pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter5XNeg_1inlvLayer5X2rot" x="0" y="-0" z="-180" unit="deg"/>
+    <position name="lvQuarter5XNeg_2inlvLayer5X2pos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvQuarter5XPos_3inlvLayer5X2pos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvLayer5X2_5inlvStation5pos" x="0" y="0" z="10.49" unit="cm"/>
+    <position name="lvStation5_0inlvFTpos" x="0" y="0" z="-59.850000000000023" unit="cm"/>
+    <rotation name="lvStation5_0inlvFTrot" x="-0.20632210202660947" y="-0" z="-0" unit="deg"/>
+    <position name="lvStation5_1inlvFTpos" x="0" y="0" z="8.3500000000000227" unit="cm"/>
+    <rotation name="lvStation5_1inlvFTrot" x="-0.20632210202660947" y="-0" z="-0" unit="deg"/>
+    <position name="lvCFramePair_00x1inlvStation6pos" x="0" y="3.3500000000000001" z="-7" unit="cm"/>
+    <position name="lvCFramePair_10x1inlvStation6pos" x="0" y="3.3500000000000001" z="7" unit="cm"/>
+    <position name="lvFTModuleHoleRightX_00x1inlvQuarter6XNegpos" x="-26.500000000000004" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_10x6inlvQuarter6XNegpos" x="-79.500000000000014" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_20x6inlvQuarter6XNegpos" x="-132.50000000000003" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_30x6inlvQuarter6XNegpos" x="-185.50000000000003" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_40x6inlvQuarter6XNegpos" x="-238.50000000000003" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_5inlvQuarter6XNegpos" x="-291.50000000000006" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvQuarter6XNeg_0inlvLayer6X1pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter6XNeg_0inlvLayer6X1rot" x="-0" y="-0" z="-180" unit="deg"/>
+    <position name="lvFTModuleHoleLeftX_00x1inlvQuarter6XPospos" x="26.500000000000004" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_10x7inlvQuarter6XPospos" x="79.500000000000014" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_20x7inlvQuarter6XPospos" x="132.50000000000003" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_30x7inlvQuarter6XPospos" x="185.50000000000003" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_40x7inlvQuarter6XPospos" x="238.50000000000003" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvFTModuleFull_50x1inlvQuarter6XPospos" x="291.50000000000006" y="121.27500000000001" z="0" unit="cm"/>
+    <position name="lvQuarter6XPos_1inlvLayer6X1pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter6XPos_1inlvLayer6X1rot" x="-0" y="-0" z="-180" unit="deg"/>
+    <position name="lvQuarter6XPos_2inlvLayer6X1pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter6XPos_2inlvLayer6X1rot" x="0" y="-0" z="1.4033418597069752e-14" unit="deg"/>
+    <position name="lvQuarter6XNeg_3inlvLayer6X1pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter6XNeg_3inlvLayer6X1rot" x="0" y="-0" z="1.4033418597069752e-14" unit="deg"/>
+    <position name="lvLayer6X1_2inlvStation6pos" x="0" y="0" z="-10.49" unit="cm"/>
+    <position name="lvFTModuleHoleLeftU_00x1inlvQuarter6UPospos" x="37.171038396620958" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleHoleLeftU_00x1inlvQuarter6UPosrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_10x8inlvQuarter6UPospos" x="90.373489786418375" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_10x8inlvQuarter6UPosrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_20x8inlvQuarter6UPospos" x="143.57594117621579" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_20x8inlvQuarter6UPosrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_30x8inlvQuarter6UPospos" x="196.77839256601322" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_30x8inlvQuarter6UPosrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_40x8inlvQuarter6UPospos" x="249.98084395581066" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_40x8inlvQuarter6UPosrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_50x2inlvQuarter6UPospos" x="303.18329534560809" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_50x2inlvQuarter6UPosrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvQuarter6UPos_0inlvLayer6Upos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter6UPos_0inlvLayer6Urot" x="0" y="-0" z="-180" unit="deg"/>
+    <position name="lvFTModuleHoleRightU_00x1inlvQuarter6UNegpos" x="-16.031412993176463" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleHoleRightU_00x1inlvQuarter6UNegrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_10x9inlvQuarter6UNegpos" x="-69.233864382973877" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_10x9inlvQuarter6UNegrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_20x9inlvQuarter6UNegpos" x="-122.43631577277129" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_20x9inlvQuarter6UNegrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_30x9inlvQuarter6UNegpos" x="-175.63876716256871" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_30x9inlvQuarter6UNegrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_40x9inlvQuarter6UNegpos" x="-228.84121855236612" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_40x9inlvQuarter6UNegrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvFTModuleFull_50x3inlvQuarter6UNegpos" x="-282.04366994216355" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_50x3inlvQuarter6UNegrot" x="-0" y="-0" z="5" unit="deg"/>
+    <position name="lvQuarter6UNeg_1inlvLayer6Upos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter6UNeg_1inlvLayer6Urot" x="0" y="-0" z="-180" unit="deg"/>
+    <position name="lvQuarter6UNeg_2inlvLayer6Upos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvQuarter6UPos_3inlvLayer6Upos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvLayer6U_3inlvStation6pos" x="0" y="0" z="-3.5099999999999998" unit="cm"/>
+    <position name="lvFTModuleHoleRightV_00x1inlvQuarter6VNegpos" x="-37.171038396620958" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleHoleRightV_00x1inlvQuarter6VNegrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_10x10inlvQuarter6VNegpos" x="-90.373489786418375" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_10x10inlvQuarter6VNegrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_20x10inlvQuarter6VNegpos" x="-143.57594117621579" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_20x10inlvQuarter6VNegrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_30x10inlvQuarter6VNegpos" x="-196.77839256601322" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_30x10inlvQuarter6VNegrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_40x10inlvQuarter6VNegpos" x="-249.98084395581066" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_40x10inlvQuarter6VNegrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_50x4inlvQuarter6VNegpos" x="-303.18329534560809" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_50x4inlvQuarter6VNegrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvQuarter6VNeg_0inlvLayer6Vpos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter6VNeg_0inlvLayer6Vrot" x="-0" y="-0" z="-180" unit="deg"/>
+    <position name="lvFTModuleHoleLeftV_00x1inlvQuarter6VPospos" x="16.031412993176463" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleHoleLeftV_00x1inlvQuarter6VPosrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_10x11inlvQuarter6VPospos" x="69.233864382973877" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_10x11inlvQuarter6VPosrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_20x11inlvQuarter6VPospos" x="122.43631577277129" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_20x11inlvQuarter6VPosrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_30x11inlvQuarter6VPospos" x="175.63876716256871" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_30x11inlvQuarter6VPosrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_40x11inlvQuarter6VPospos" x="228.84121855236612" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_40x11inlvQuarter6VPosrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvFTModuleFull_50x5inlvQuarter6VPospos" x="282.04366994216355" y="120.81351201107644" z="0" unit="cm"/>
+    <rotation name="lvFTModuleFull_50x5inlvQuarter6VPosrot" x="-0" y="-0" z="-5" unit="deg"/>
+    <position name="lvQuarter6VPos_1inlvLayer6Vpos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter6VPos_1inlvLayer6Vrot" x="-0" y="-0" z="-180" unit="deg"/>
+    <position name="lvQuarter6VPos_2inlvLayer6Vpos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter6VPos_2inlvLayer6Vrot" x="0" y="-0" z="1.4033418597069752e-14" unit="deg"/>
+    <position name="lvQuarter6VNeg_3inlvLayer6Vpos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter6VNeg_3inlvLayer6Vrot" x="0" y="-0" z="1.4033418597069752e-14" unit="deg"/>
+    <position name="lvLayer6V_4inlvStation6pos" x="0" y="0" z="3.5099999999999998" unit="cm"/>
+    <position name="lvQuarter6XPos_0inlvLayer6X2pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter6XPos_0inlvLayer6X2rot" x="0" y="-0" z="-180" unit="deg"/>
+    <position name="lvQuarter6XNeg_1inlvLayer6X2pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvQuarter6XNeg_1inlvLayer6X2rot" x="0" y="-0" z="-180" unit="deg"/>
+    <position name="lvQuarter6XNeg_2inlvLayer6X2pos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvQuarter6XPos_3inlvLayer6X2pos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvLayer6X2_5inlvStation6pos" x="0" y="0" z="10.49" unit="cm"/>
+    <position name="lvStation6_2inlvFTpos" x="0" y="0" z="76.850000000000023" unit="cm"/>
+    <rotation name="lvStation6_2inlvFTrot" x="-0.20632210202660947" y="-0" z="-0" unit="deg"/>
+    <position name="lvFT_0inlvTpos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvSiShortMatRightX_0inlvMightyTModuleHoleRightXpos" x="-5.25" y="0" z="0" unit="cm"/>
+    <position name="lvSiMat_1inlvMightyTModuleHoleRightXpos" x="0" y="20.050000000000001" z="0" unit="cm"/>
+    <position name="lvSiMat_2inlvMightyTModuleHoleRightXpos" x="0" y="-20.050000000000001" z="0" unit="cm"/>
+    <position name="lvSiMatMT_3inlvMightyTModuleHoleRightXpos" x="0" y="40.100000000000001" z="0" unit="cm"/>
+    <position name="lvSiMatMT_4inlvMightyTModuleHoleRightXpos" x="0" y="-40.100000000000001" z="0" unit="cm"/>
+    <position name="lvMightyTModuleHoleRightX_0inlvHalf5XNegpos" x="-26.500000000000004" y="0" z="0" unit="cm"/>
+    <position name="lvSiMatMT_0inlvMightyTModuleFullpos" x="0" y="-30.075000000000003" z="0" unit="cm"/>
+    <position name="lvSiMatMT_1inlvMightyTModuleFullpos" x="0" y="-10.025000000000002" z="0" unit="cm"/>
+    <position name="lvSiMatMT_2inlvMightyTModuleFullpos" x="0" y="10.024999999999999" z="0" unit="cm"/>
+    <position name="lvSiMatMT_30x1inlvMightyTModuleFullpos" x="0" y="30.074999999999999" z="0" unit="cm"/>
+    <position name="lvMightyTModuleFull_1inlvHalf5XNegpos" x="-79.500000000000014" y="0" z="0" unit="cm"/>
+    <position name="lvSiMatMT_00x1inlvMightyTModuleColIIpos" x="0" y="-20.050000000000001" z="0" unit="cm"/>
+    <position name="lvSiMatMT_10x1inlvMightyTModuleColIIpos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvSiMatMT_20x1inlvMightyTModuleColIIpos" x="0" y="20.050000000000001" z="0" unit="cm"/>
+    <position name="lvMightyTModuleColII_2inlvHalf5XNegpos" x="-132.50000000000003" y="0" z="0" unit="cm"/>
+    <position name="lvSiMatMT_00x2inlvMightyTModuleColIIIpos" x="0" y="-10.025" z="0" unit="cm"/>
+    <position name="lvSiMatMT_10x2inlvMightyTModuleColIIIpos" x="0" y="10.025" z="0" unit="cm"/>
+    <position name="lvMightyTModuleColIII_3inlvHalf5XNegpos" x="-185.50000000000003" y="0" z="0" unit="cm"/>
+    <position name="lvHalf5XNeg_0inlvLayerX1pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvHalf5XNeg_0inlvLayerX1rot" x="0" y="-0" z="1.4033418597069752e-14" unit="deg"/>
+    <position name="lvSiShortMatLeftX_0inlvMightyTModuleHoleLeftXpos" x="5.25" y="0" z="0" unit="cm"/>
+    <position name="lvSiMat_10x1inlvMightyTModuleHoleLeftXpos" x="0" y="20.050000000000001" z="0" unit="cm"/>
+    <position name="lvSiMat_20x1inlvMightyTModuleHoleLeftXpos" x="0" y="-20.050000000000001" z="0" unit="cm"/>
+    <position name="lvSiMatMT_30x2inlvMightyTModuleHoleLeftXpos" x="0" y="40.100000000000001" z="0" unit="cm"/>
+    <position name="lvSiMatMT_40x1inlvMightyTModuleHoleLeftXpos" x="0" y="-40.100000000000001" z="0" unit="cm"/>
+    <position name="lvMightyTModuleHoleLeftX_0inlvHalf5XPospos" x="26.500000000000004" y="0" z="0" unit="cm"/>
+    <position name="lvMightyTModuleFull_10x1inlvHalf5XPospos" x="79.500000000000014" y="0" z="0" unit="cm"/>
+    <position name="lvMightyTModuleColII_20x1inlvHalf5XPospos" x="132.50000000000003" y="0" z="0" unit="cm"/>
+    <position name="lvMightyTModuleColIII_30x1inlvHalf5XPospos" x="185.50000000000003" y="0" z="0" unit="cm"/>
+    <position name="lvHalf5XPos_1inlvLayerX1pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvHalf5XPos_1inlvLayerX1rot" x="0" y="-0" z="1.4033418597069752e-14" unit="deg"/>
+    <position name="lvLayerX1_0inlvStationpos" x="0" y="0" z="-10.49" unit="cm"/>
+    <position name="lvHalf5XPos_0inlvLayerX2pos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvHalf5XNeg_1inlvLayerX2pos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvLayerX2_1inlvStationpos" x="0" y="0" z="10.49" unit="cm"/>
+    <position name="lvStation_0inlvMightyTpos" x="0" y="0" z="-59.850000000000023" unit="cm"/>
+    <rotation name="lvStation_0inlvMightyTrot" x="-0.20632210202660947" y="-0" z="-0" unit="deg"/>
+    <position name="lvStation_1inlvMightyTpos" x="0" y="0" z="8.3500000000000227" unit="cm"/>
+    <rotation name="lvStation_1inlvMightyTrot" x="-0.20632210202660947" y="-0" z="-0" unit="deg"/>
+    <position name="lvStation_2inlvMightyTpos" x="0" y="0" z="76.850000000000023" unit="cm"/>
+    <rotation name="lvStation_2inlvMightyTrot" x="-0.20632210202660947" y="-0" z="-0" unit="deg"/>
+    <position name="lvMightyT_1inlvTpos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvT_0inlvAfterMagnetRegionpos" x="0" y="0" z="-123.04999999999995" unit="cm"/>
+    <position name="lvAfterMagnetRegion_3inworld_volumepos" x="0" y="0" z="976" unit="cm"/>
+    <position name="lvAfterMuon_0inlvDownstreamRegionpos" x="0" y="0" z="533" unit="cm"/>
+    <position name="lvDownstreamRegion_4inworld_volumepos" x="0" y="0" z="1590" unit="cm"/>
+  </define>
+  <materials>
+    <element name="Ac_elm" formula="Ac" Z="89">
+      <atom unit="g/mole" value="227.02799999999999"/>
+    </element>
+    <material name="Actinium">
+      <D unit="g/cm3" value="10.07"/>
+      <fraction n="1" ref="Ac_elm"/>
+    </material>
+    <element name="Ag_elm" formula="Ag" Z="47">
+      <atom unit="g/mole" value="107.86799999999999"/>
+    </element>
+    <material name="Silver">
+      <D unit="g/cm3" value="10.5"/>
+      <fraction n="1" ref="Ag_elm"/>
+    </material>
+    <element name="Al_elm" formula="Al" Z="13">
+      <atom unit="g/mole" value="26.9815"/>
+    </element>
+    <material name="Aluminum">
+      <D unit="g/cm3" value="2.6989999999999998"/>
+      <fraction n="1" ref="Al_elm"/>
+    </material>
+    <element name="Am_elm" formula="Am" Z="95">
+      <atom unit="g/mole" value="243.06100000000001"/>
+    </element>
+    <material name="Americium">
+      <D unit="g/cm3" value="13.67"/>
+      <fraction n="1" ref="Am_elm"/>
+    </material>
+    <element name="Ar_elm" formula="Ar" Z="18">
+      <atom unit="g/mole" value="39.947699999999998"/>
+    </element>
+    <material name="Argon">
+      <D unit="g/cm3" value="0.00166201"/>
+      <fraction n="1" ref="Ar_elm"/>
+    </material>
+    <element name="As_elm" formula="As" Z="33">
+      <atom unit="g/mole" value="74.921599999999998"/>
+    </element>
+    <material name="Arsenic">
+      <D unit="g/cm3" value="5.7300000000000004"/>
+      <fraction n="1" ref="As_elm"/>
+    </material>
+    <element name="At_elm" formula="At" Z="85">
+      <atom unit="g/mole" value="209.98699999999999"/>
+    </element>
+    <material name="Astatine">
+      <D unit="g/cm3" value="9.3200000000000003"/>
+      <fraction n="1" ref="At_elm"/>
+    </material>
+    <element name="Au_elm" formula="Au" Z="79">
+      <atom unit="g/mole" value="196.96700000000001"/>
+    </element>
+    <material name="Gold">
+      <D unit="g/cm3" value="19.32"/>
+      <fraction n="1" ref="Au_elm"/>
+    </material>
+    <element name="B_elm" formula="B" Z="5">
+      <atom unit="g/mole" value="10.811"/>
+    </element>
+    <material name="Boron">
+      <D unit="g/cm3" value="2.3700000000000001"/>
+      <fraction n="1" ref="B_elm"/>
+    </material>
+    <element name="Ba_elm" formula="Ba" Z="56">
+      <atom unit="g/mole" value="137.327"/>
+    </element>
+    <material name="Barium">
+      <D unit="g/cm3" value="3.5"/>
+      <fraction n="1" ref="Ba_elm"/>
+    </material>
+    <element name="Be_elm" formula="Be" Z="4">
+      <atom unit="g/mole" value="9.0121800000000007"/>
+    </element>
+    <material name="Beryllium">
+      <D unit="g/cm3" value="1.8480000000000001"/>
+      <fraction n="1" ref="Be_elm"/>
+    </material>
+    <element name="Bi_elm" formula="Bi" Z="83">
+      <atom unit="g/mole" value="208.97999999999999"/>
+    </element>
+    <material name="Bismuth">
+      <D unit="g/cm3" value="9.7469999999999999"/>
+      <fraction n="1" ref="Bi_elm"/>
+    </material>
+    <element name="Bk_elm" formula="Bk" Z="97">
+      <atom unit="g/mole" value="247.06999999999999"/>
+    </element>
+    <material name="Berkelium">
+      <D unit="g/cm3" value="14"/>
+      <fraction n="1" ref="Bk_elm"/>
+    </material>
+    <element name="Br_elm" formula="Br" Z="35">
+      <atom unit="g/mole" value="79.903499999999994"/>
+    </element>
+    <material name="Bromine">
+      <D unit="g/cm3" value="0.0070720999999999996"/>
+      <fraction n="1" ref="Br_elm"/>
+    </material>
+    <element name="C_elm" formula="C" Z="6">
+      <atom unit="g/mole" value="12.0107"/>
+    </element>
+    <material name="Carbon">
+      <D unit="g/cm3" value="2"/>
+      <fraction n="1" ref="C_elm"/>
+    </material>
+    <element name="Ca_elm" formula="Ca" Z="20">
+      <atom unit="g/mole" value="40.078000000000003"/>
+    </element>
+    <material name="Calcium">
+      <D unit="g/cm3" value="1.55"/>
+      <fraction n="1" ref="Ca_elm"/>
+    </material>
+    <element name="Cd_elm" formula="Cd" Z="48">
+      <atom unit="g/mole" value="112.411"/>
+    </element>
+    <material name="Cadmium">
+      <D unit="g/cm3" value="8.6500000000000004"/>
+      <fraction n="1" ref="Cd_elm"/>
+    </material>
+    <element name="Ce_elm" formula="Ce" Z="58">
+      <atom unit="g/mole" value="140.11500000000001"/>
+    </element>
+    <material name="Cerium">
+      <D unit="g/cm3" value="6.657"/>
+      <fraction n="1" ref="Ce_elm"/>
+    </material>
+    <element name="Cf_elm" formula="Cf" Z="98">
+      <atom unit="g/mole" value="251.08000000000001"/>
+    </element>
+    <material name="Californium">
+      <D unit="g/cm3" value="10"/>
+      <fraction n="1" ref="Cf_elm"/>
+    </material>
+    <element name="Cl_elm" formula="Cl" Z="17">
+      <atom unit="g/mole" value="35.452599999999997"/>
+    </element>
+    <material name="Chlorine">
+      <D unit="g/cm3" value="0.0029947300000000001"/>
+      <fraction n="1" ref="Cl_elm"/>
+    </material>
+    <element name="Cm_elm" formula="Cm" Z="96">
+      <atom unit="g/mole" value="247.06999999999999"/>
+    </element>
+    <material name="Curium">
+      <D unit="g/cm3" value="13.51"/>
+      <fraction n="1" ref="Cm_elm"/>
+    </material>
+    <element name="Co_elm" formula="Co" Z="27">
+      <atom unit="g/mole" value="58.933199999999999"/>
+    </element>
+    <material name="Cobalt">
+      <D unit="g/cm3" value="8.9000000000000004"/>
+      <fraction n="1" ref="Co_elm"/>
+    </material>
+    <element name="Cr_elm" formula="Cr" Z="24">
+      <atom unit="g/mole" value="51.996099999999998"/>
+    </element>
+    <material name="Chromium">
+      <D unit="g/cm3" value="7.1799999999999997"/>
+      <fraction n="1" ref="Cr_elm"/>
+    </material>
+    <element name="Cs_elm" formula="Cs" Z="55">
+      <atom unit="g/mole" value="132.905"/>
+    </element>
+    <material name="Cesium">
+      <D unit="g/cm3" value="1.873"/>
+      <fraction n="1" ref="Cs_elm"/>
+    </material>
+    <element name="Cu_elm" formula="Cu" Z="29">
+      <atom unit="g/mole" value="63.5456"/>
+    </element>
+    <material name="Copper">
+      <D unit="g/cm3" value="8.9600000000000009"/>
+      <fraction n="1" ref="Cu_elm"/>
+    </material>
+    <element name="Dy_elm" formula="Dy" Z="66">
+      <atom unit="g/mole" value="162.49700000000001"/>
+    </element>
+    <material name="Dysprosium">
+      <D unit="g/cm3" value="8.5500000000000007"/>
+      <fraction n="1" ref="Dy_elm"/>
+    </material>
+    <element name="Er_elm" formula="Er" Z="68">
+      <atom unit="g/mole" value="167.256"/>
+    </element>
+    <material name="Erbium">
+      <D unit="g/cm3" value="9.0660000000000007"/>
+      <fraction n="1" ref="Er_elm"/>
+    </material>
+    <element name="Eu_elm" formula="Eu" Z="63">
+      <atom unit="g/mole" value="151.964"/>
+    </element>
+    <material name="Europium">
+      <D unit="g/cm3" value="5.2430000000000003"/>
+      <fraction n="1" ref="Eu_elm"/>
+    </material>
+    <element name="F_elm" formula="F" Z="9">
+      <atom unit="g/mole" value="18.9984"/>
+    </element>
+    <material name="Fluorine">
+      <D unit="g/cm3" value="0.00158029"/>
+      <fraction n="1" ref="F_elm"/>
+    </material>
+    <element name="Fe_elm" formula="Fe" Z="26">
+      <atom unit="g/mole" value="55.845100000000002"/>
+    </element>
+    <material name="Iron">
+      <D unit="g/cm3" value="7.8739999999999997"/>
+      <fraction n="1" ref="Fe_elm"/>
+    </material>
+    <element name="Fr_elm" formula="Fr" Z="87">
+      <atom unit="g/mole" value="223.02000000000001"/>
+    </element>
+    <material name="Francium">
+      <D unit="g/cm3" value="1"/>
+      <fraction n="1" ref="Fr_elm"/>
+    </material>
+    <element name="Ga_elm" formula="Ga" Z="31">
+      <atom unit="g/mole" value="69.723100000000002"/>
+    </element>
+    <material name="Gallium">
+      <D unit="g/cm3" value="5.9039999999999999"/>
+      <fraction n="1" ref="Ga_elm"/>
+    </material>
+    <element name="Gd_elm" formula="Gd" Z="64">
+      <atom unit="g/mole" value="157.25200000000001"/>
+    </element>
+    <material name="Gadolinium">
+      <D unit="g/cm3" value="7.9004000000000003"/>
+      <fraction n="1" ref="Gd_elm"/>
+    </material>
+    <element name="Ge_elm" formula="Ge" Z="32">
+      <atom unit="g/mole" value="72.612799999999993"/>
+    </element>
+    <material name="Germanium">
+      <D unit="g/cm3" value="5.3230000000000004"/>
+      <fraction n="1" ref="Ge_elm"/>
+    </material>
+    <element name="H_elm" formula="H" Z="1">
+      <atom unit="g/mole" value="1.0079400000000001"/>
+    </element>
+    <material name="Hydrogen">
+      <D unit="g/cm3" value="8.3747999999999998e-05"/>
+      <fraction n="1" ref="H_elm"/>
+    </material>
+    <element name="He_elm" formula="He" Z="2">
+      <atom unit="g/mole" value="4.0026400000000004"/>
+    </element>
+    <material name="Helium">
+      <D unit="g/cm3" value="0.000166322"/>
+      <fraction n="1" ref="He_elm"/>
+    </material>
+    <element name="Hf_elm" formula="Hf" Z="72">
+      <atom unit="g/mole" value="178.48500000000001"/>
+    </element>
+    <material name="Hafnium">
+      <D unit="g/cm3" value="13.31"/>
+      <fraction n="1" ref="Hf_elm"/>
+    </material>
+    <element name="Hg_elm" formula="Hg" Z="80">
+      <atom unit="g/mole" value="200.59899999999999"/>
+    </element>
+    <material name="Mercury">
+      <D unit="g/cm3" value="13.545999999999999"/>
+      <fraction n="1" ref="Hg_elm"/>
+    </material>
+    <element name="Ho_elm" formula="Ho" Z="67">
+      <atom unit="g/mole" value="164.93000000000001"/>
+    </element>
+    <material name="Holmium">
+      <D unit="g/cm3" value="8.7949999999999999"/>
+      <fraction n="1" ref="Ho_elm"/>
+    </material>
+    <element name="I_elm" formula="I" Z="53">
+      <atom unit="g/mole" value="126.904"/>
+    </element>
+    <material name="Iodine">
+      <D unit="g/cm3" value="4.9299999999999997"/>
+      <fraction n="1" ref="I_elm"/>
+    </material>
+    <element name="In_elm" formula="In" Z="49">
+      <atom unit="g/mole" value="114.818"/>
+    </element>
+    <material name="Indium">
+      <D unit="g/cm3" value="7.3099999999999996"/>
+      <fraction n="1" ref="In_elm"/>
+    </material>
+    <element name="Ir_elm" formula="Ir" Z="77">
+      <atom unit="g/mole" value="192.21600000000001"/>
+    </element>
+    <material name="Iridium">
+      <D unit="g/cm3" value="22.420000000000002"/>
+      <fraction n="1" ref="Ir_elm"/>
+    </material>
+    <element name="K_elm" formula="K" Z="19">
+      <atom unit="g/mole" value="39.098300000000002"/>
+    </element>
+    <material name="Potassium">
+      <D unit="g/cm3" value="0.86199999999999999"/>
+      <fraction n="1" ref="K_elm"/>
+    </material>
+    <element name="Kr_elm" formula="Kr" Z="36">
+      <atom unit="g/mole" value="83.799300000000002"/>
+    </element>
+    <material name="Krypton">
+      <D unit="g/cm3" value="0.00347832"/>
+      <fraction n="1" ref="Kr_elm"/>
+    </material>
+    <element name="La_elm" formula="La" Z="57">
+      <atom unit="g/mole" value="138.905"/>
+    </element>
+    <material name="Lanthanum">
+      <D unit="g/cm3" value="6.1539999999999999"/>
+      <fraction n="1" ref="La_elm"/>
+    </material>
+    <element name="Li_elm" formula="Li" Z="3">
+      <atom unit="g/mole" value="6.9400300000000001"/>
+    </element>
+    <material name="Lithium">
+      <D unit="g/cm3" value="0.53400000000000003"/>
+      <fraction n="1" ref="Li_elm"/>
+    </material>
+    <element name="Lu_elm" formula="Lu" Z="71">
+      <atom unit="g/mole" value="174.96700000000001"/>
+    </element>
+    <material name="Lutetium">
+      <D unit="g/cm3" value="9.8399999999999999"/>
+      <fraction n="1" ref="Lu_elm"/>
+    </material>
+    <element name="Mg_elm" formula="Mg" Z="12">
+      <atom unit="g/mole" value="24.305"/>
+    </element>
+    <material name="Magnesium">
+      <D unit="g/cm3" value="1.74"/>
+      <fraction n="1" ref="Mg_elm"/>
+    </material>
+    <element name="Mn_elm" formula="Mn" Z="25">
+      <atom unit="g/mole" value="54.938000000000002"/>
+    </element>
+    <material name="Manganese">
+      <D unit="g/cm3" value="7.4400000000000004"/>
+      <fraction n="1" ref="Mn_elm"/>
+    </material>
+    <element name="Mo_elm" formula="Mo" Z="42">
+      <atom unit="g/mole" value="95.931299999999993"/>
+    </element>
+    <material name="Molybdenum">
+      <D unit="g/cm3" value="10.220000000000001"/>
+      <fraction n="1" ref="Mo_elm"/>
+    </material>
+    <element name="N_elm" formula="N" Z="7">
+      <atom unit="g/mole" value="14.0068"/>
+    </element>
+    <material name="Nitrogen">
+      <D unit="g/cm3" value="0.0011651999999999999"/>
+      <fraction n="1" ref="N_elm"/>
+    </material>
+    <element name="Na_elm" formula="Na" Z="11">
+      <atom unit="g/mole" value="22.989799999999999"/>
+    </element>
+    <material name="Sodium">
+      <D unit="g/cm3" value="0.97099999999999997"/>
+      <fraction n="1" ref="Na_elm"/>
+    </material>
+    <element name="Nb_elm" formula="Nb" Z="41">
+      <atom unit="g/mole" value="92.906400000000005"/>
+    </element>
+    <material name="Niobium">
+      <D unit="g/cm3" value="8.5700000000000003"/>
+      <fraction n="1" ref="Nb_elm"/>
+    </material>
+    <element name="Nd_elm" formula="Nd" Z="60">
+      <atom unit="g/mole" value="144.23599999999999"/>
+    </element>
+    <material name="Neodymium">
+      <D unit="g/cm3" value="6.9000000000000004"/>
+      <fraction n="1" ref="Nd_elm"/>
+    </material>
+    <element name="Ne_elm" formula="Ne" Z="10">
+      <atom unit="g/mole" value="20.18"/>
+    </element>
+    <material name="Neon">
+      <D unit="g/cm3" value="0.00083850500000000002"/>
+      <fraction n="1" ref="Ne_elm"/>
+    </material>
+    <element name="Ni_elm" formula="Ni" Z="28">
+      <atom unit="g/mole" value="58.693300000000001"/>
+    </element>
+    <material name="Nickel">
+      <D unit="g/cm3" value="8.9019999999999992"/>
+      <fraction n="1" ref="Ni_elm"/>
+    </material>
+    <element name="Np_elm" formula="Np" Z="93">
+      <atom unit="g/mole" value="237.048"/>
+    </element>
+    <material name="Neptunium">
+      <D unit="g/cm3" value="20.25"/>
+      <fraction n="1" ref="Np_elm"/>
+    </material>
+    <element name="O_elm" formula="O" Z="8">
+      <atom unit="g/mole" value="15.9994"/>
+    </element>
+    <material name="Oxygen">
+      <D unit="g/cm3" value="0.0013315099999999999"/>
+      <fraction n="1" ref="O_elm"/>
+    </material>
+    <element name="Os_elm" formula="Os" Z="76">
+      <atom unit="g/mole" value="190.22499999999999"/>
+    </element>
+    <material name="Osmium">
+      <D unit="g/cm3" value="22.57"/>
+      <fraction n="1" ref="Os_elm"/>
+    </material>
+    <element name="P_elm" formula="P" Z="15">
+      <atom unit="g/mole" value="30.973800000000001"/>
+    </element>
+    <material name="Phosphorus">
+      <D unit="g/cm3" value="2.2000000000000002"/>
+      <fraction n="1" ref="P_elm"/>
+    </material>
+    <element name="Pa_elm" formula="Pa" Z="91">
+      <atom unit="g/mole" value="231.036"/>
+    </element>
+    <material name="Protactinium">
+      <D unit="g/cm3" value="15.369999999999999"/>
+      <fraction n="1" ref="Pa_elm"/>
+    </material>
+    <element name="Pb_elm" formula="Pb" Z="82">
+      <atom unit="g/mole" value="207.21700000000001"/>
+    </element>
+    <material name="Lead">
+      <D unit="g/cm3" value="11.35"/>
+      <fraction n="1" ref="Pb_elm"/>
+    </material>
+    <element name="Pd_elm" formula="Pd" Z="46">
+      <atom unit="g/mole" value="106.41500000000001"/>
+    </element>
+    <material name="Palladium">
+      <D unit="g/cm3" value="12.02"/>
+      <fraction n="1" ref="Pd_elm"/>
+    </material>
+    <element name="Pm_elm" formula="Pm" Z="61">
+      <atom unit="g/mole" value="144.91300000000001"/>
+    </element>
+    <material name="Promethium">
+      <D unit="g/cm3" value="7.2199999999999998"/>
+      <fraction n="1" ref="Pm_elm"/>
+    </material>
+    <element name="Po_elm" formula="Po" Z="84">
+      <atom unit="g/mole" value="208.982"/>
+    </element>
+    <material name="Polonium">
+      <D unit="g/cm3" value="9.3200000000000003"/>
+      <fraction n="1" ref="Po_elm"/>
+    </material>
+    <element name="Pr_elm" formula="Pr" Z="59">
+      <atom unit="g/mole" value="140.90799999999999"/>
+    </element>
+    <material name="Praseodymium">
+      <D unit="g/cm3" value="6.71"/>
+      <fraction n="1" ref="Pr_elm"/>
+    </material>
+    <element name="Pt_elm" formula="Pt" Z="78">
+      <atom unit="g/mole" value="195.078"/>
+    </element>
+    <material name="Platinum">
+      <D unit="g/cm3" value="21.449999999999999"/>
+      <fraction n="1" ref="Pt_elm"/>
+    </material>
+    <element name="Pu_elm" formula="Pu" Z="94">
+      <atom unit="g/mole" value="244.06399999999999"/>
+    </element>
+    <material name="Plutonium">
+      <D unit="g/cm3" value="19.84"/>
+      <fraction n="1" ref="Pu_elm"/>
+    </material>
+    <element name="Ra_elm" formula="Ra" Z="88">
+      <atom unit="g/mole" value="226.02500000000001"/>
+    </element>
+    <material name="Radium">
+      <D unit="g/cm3" value="5"/>
+      <fraction n="1" ref="Ra_elm"/>
+    </material>
+    <element name="Rb_elm" formula="Rb" Z="37">
+      <atom unit="g/mole" value="85.467699999999994"/>
+    </element>
+    <material name="Rubidium">
+      <D unit="g/cm3" value="1.532"/>
+      <fraction n="1" ref="Rb_elm"/>
+    </material>
+    <element name="Re_elm" formula="Re" Z="75">
+      <atom unit="g/mole" value="186.20699999999999"/>
+    </element>
+    <material name="Rhenium">
+      <D unit="g/cm3" value="21.02"/>
+      <fraction n="1" ref="Re_elm"/>
+    </material>
+    <element name="Rh_elm" formula="Rh" Z="45">
+      <atom unit="g/mole" value="102.90600000000001"/>
+    </element>
+    <material name="Rhodium">
+      <D unit="g/cm3" value="12.41"/>
+      <fraction n="1" ref="Rh_elm"/>
+    </material>
+    <element name="Rn_elm" formula="Rn" Z="86">
+      <atom unit="g/mole" value="222.018"/>
+    </element>
+    <material name="Radon">
+      <D unit="g/cm3" value="0.0090066199999999999"/>
+      <fraction n="1" ref="Rn_elm"/>
+    </material>
+    <element name="Ru_elm" formula="Ru" Z="44">
+      <atom unit="g/mole" value="101.065"/>
+    </element>
+    <material name="Ruthenium">
+      <D unit="g/cm3" value="12.41"/>
+      <fraction n="1" ref="Ru_elm"/>
+    </material>
+    <element name="S_elm" formula="S" Z="16">
+      <atom unit="g/mole" value="32.066099999999999"/>
+    </element>
+    <material name="Sulfur">
+      <D unit="g/cm3" value="2"/>
+      <fraction n="1" ref="S_elm"/>
+    </material>
+    <element name="Sb_elm" formula="Sb" Z="51">
+      <atom unit="g/mole" value="121.76000000000001"/>
+    </element>
+    <material name="Antimony">
+      <D unit="g/cm3" value="6.6909999999999998"/>
+      <fraction n="1" ref="Sb_elm"/>
+    </material>
+    <element name="Sc_elm" formula="Sc" Z="21">
+      <atom unit="g/mole" value="44.9559"/>
+    </element>
+    <material name="Scandium">
+      <D unit="g/cm3" value="2.9889999999999999"/>
+      <fraction n="1" ref="Sc_elm"/>
+    </material>
+    <element name="Se_elm" formula="Se" Z="34">
+      <atom unit="g/mole" value="78.959400000000002"/>
+    </element>
+    <material name="Selenium">
+      <D unit="g/cm3" value="4.5"/>
+      <fraction n="1" ref="Se_elm"/>
+    </material>
+    <element name="Si_elm" formula="Si" Z="14">
+      <atom unit="g/mole" value="28.0854"/>
+    </element>
+    <material name="Silicon">
+      <D unit="g/cm3" value="2.3300000000000001"/>
+      <fraction n="1" ref="Si_elm"/>
+    </material>
+    <element name="Sm_elm" formula="Sm" Z="62">
+      <atom unit="g/mole" value="150.36600000000001"/>
+    </element>
+    <material name="Samarium">
+      <D unit="g/cm3" value="7.46"/>
+      <fraction n="1" ref="Sm_elm"/>
+    </material>
+    <element name="Sn_elm" formula="Sn" Z="50">
+      <atom unit="g/mole" value="118.70999999999999"/>
+    </element>
+    <material name="Tin">
+      <D unit="g/cm3" value="7.3099999999999996"/>
+      <fraction n="1" ref="Sn_elm"/>
+    </material>
+    <element name="Sr_elm" formula="Sr" Z="38">
+      <atom unit="g/mole" value="87.616600000000005"/>
+    </element>
+    <material name="Strontium">
+      <D unit="g/cm3" value="2.54"/>
+      <fraction n="1" ref="Sr_elm"/>
+    </material>
+    <element name="Ta_elm" formula="Ta" Z="73">
+      <atom unit="g/mole" value="180.94800000000001"/>
+    </element>
+    <material name="Tantalum">
+      <D unit="g/cm3" value="16.654"/>
+      <fraction n="1" ref="Ta_elm"/>
+    </material>
+    <element name="Tb_elm" formula="Tb" Z="65">
+      <atom unit="g/mole" value="158.92500000000001"/>
+    </element>
+    <material name="Terbium">
+      <D unit="g/cm3" value="8.2289999999999992"/>
+      <fraction n="1" ref="Tb_elm"/>
+    </material>
+    <element name="Tc_elm" formula="Tc" Z="43">
+      <atom unit="g/mole" value="97.907200000000003"/>
+    </element>
+    <material name="Technetium">
+      <D unit="g/cm3" value="11.5"/>
+      <fraction n="1" ref="Tc_elm"/>
+    </material>
+    <element name="Te_elm" formula="Te" Z="52">
+      <atom unit="g/mole" value="127.60299999999999"/>
+    </element>
+    <material name="Tellurium">
+      <D unit="g/cm3" value="6.2400000000000002"/>
+      <fraction n="1" ref="Te_elm"/>
+    </material>
+    <element name="Th_elm" formula="Th" Z="90">
+      <atom unit="g/mole" value="232.03800000000001"/>
+    </element>
+    <material name="Thorium">
+      <D unit="g/cm3" value="11.720000000000001"/>
+      <fraction n="1" ref="Th_elm"/>
+    </material>
+    <element name="Ti_elm" formula="Ti" Z="22">
+      <atom unit="g/mole" value="47.866700000000002"/>
+    </element>
+    <material name="Titanium">
+      <D unit="g/cm3" value="4.54"/>
+      <fraction n="1" ref="Ti_elm"/>
+    </material>
+    <element name="Tl_elm" formula="Tl" Z="81">
+      <atom unit="g/mole" value="204.38300000000001"/>
+    </element>
+    <material name="Thallium">
+      <D unit="g/cm3" value="11.720000000000001"/>
+      <fraction n="1" ref="Tl_elm"/>
+    </material>
+    <element name="Tm_elm" formula="Tm" Z="69">
+      <atom unit="g/mole" value="168.934"/>
+    </element>
+    <material name="Thulium">
+      <D unit="g/cm3" value="9.3209999999999997"/>
+      <fraction n="1" ref="Tm_elm"/>
+    </material>
+    <element name="U_elm" formula="U" Z="92">
+      <atom unit="g/mole" value="238.029"/>
+    </element>
+    <material name="Uranium">
+      <D unit="g/cm3" value="18.949999999999999"/>
+      <fraction n="1" ref="U_elm"/>
+    </material>
+    <element name="V_elm" formula="V" Z="23">
+      <atom unit="g/mole" value="50.941499999999998"/>
+    </element>
+    <material name="Vanadium">
+      <D unit="g/cm3" value="6.1100000000000003"/>
+      <fraction n="1" ref="V_elm"/>
+    </material>
+    <element name="W_elm" formula="W" Z="74">
+      <atom unit="g/mole" value="183.84200000000001"/>
+    </element>
+    <material name="Tungsten">
+      <D unit="g/cm3" value="19.300000000000001"/>
+      <fraction n="1" ref="W_elm"/>
+    </material>
+    <element name="Xe_elm" formula="Xe" Z="54">
+      <atom unit="g/mole" value="131.292"/>
+    </element>
+    <material name="Xenon">
+      <D unit="g/cm3" value="0.0054853599999999999"/>
+      <fraction n="1" ref="Xe_elm"/>
+    </material>
+    <element name="Y_elm" formula="Y" Z="39">
+      <atom unit="g/mole" value="88.905799999999999"/>
+    </element>
+    <material name="Yttrium">
+      <D unit="g/cm3" value="4.4690000000000003"/>
+      <fraction n="1" ref="Y_elm"/>
+    </material>
+    <element name="Yb_elm" formula="Yb" Z="70">
+      <atom unit="g/mole" value="173.03800000000001"/>
+    </element>
+    <material name="Ytterbium">
+      <D unit="g/cm3" value="6.7300000000000004"/>
+      <fraction n="1" ref="Yb_elm"/>
+    </material>
+    <element name="Zn_elm" formula="Zn" Z="30">
+      <atom unit="g/mole" value="65.395499999999998"/>
+    </element>
+    <material name="Zinc">
+      <D unit="g/cm3" value="7.133"/>
+      <fraction n="1" ref="Zn_elm"/>
+    </material>
+    <element name="Zr_elm" formula="Zr" Z="40">
+      <atom unit="g/mole" value="91.223600000000005"/>
+    </element>
+    <material name="Zirconium">
+      <D unit="g/cm3" value="6.5060000000000002"/>
+      <fraction n="1" ref="Zr_elm"/>
+    </material>
+    <material name="Air">
+      <D unit="g/cm3" value="0.0011999999999999999"/>
+      <fraction n="0.012000000104308128" ref="Ar_elm"/>
+      <fraction n="0.75400000810623169" ref="N_elm"/>
+      <fraction n="0.23399999737739563" ref="O_elm"/>
+    </material>
+    <material name="Vacuum">
+      <D unit="g/cm3" value="1e-10"/>
+      <fraction n="0.012000000104308128" ref="Ar_elm"/>
+      <fraction n="0.75400000810623169" ref="N_elm"/>
+      <fraction n="0.23399999737739563" ref="O_elm"/>
+    </material>
+    <material name="Water">
+      <D unit="g/cm3" value="1"/>
+      <fraction n="0.11189834773540497" ref="H_elm"/>
+      <fraction n="0.88810163736343384" ref="O_elm"/>
+    </material>
+    <material name="FTPerforatedAluminium">
+      <D unit="g/cm3" value="1.5049999999999999"/>
+      <fraction n="1" ref="Al_elm"/>
+    </material>
+    <material name="FTPolycarbonate">
+      <D unit="g/cm3" value="1.2"/>
+      <fraction n="0.75574475526809692" ref="C_elm"/>
+      <fraction n="0.055494450032711029" ref="H_elm"/>
+      <fraction n="0.18876078724861145" ref="O_elm"/>
+    </material>
+    <material name="FTHoneycomb">
+      <D unit="g/cm3" value="0.032000000000000001"/>
+      <fraction n="0.69825726747512817" ref="C_elm"/>
+      <fraction n="0.0585978664457798" ref="H_elm"/>
+      <fraction n="0.074027545750141144" ref="N_elm"/>
+      <fraction n="0.16911734640598297" ref="O_elm"/>
+    </material>
+    <material name="FTEpoxy">
+      <D unit="g/cm3" value="1.2"/>
+      <fraction n="0.7229648232460022" ref="C_elm"/>
+      <fraction n="0.071906767785549164" ref="H_elm"/>
+      <fraction n="0.062453102320432663" ref="N_elm"/>
+      <fraction n="0.14267529547214508" ref="O_elm"/>
+    </material>
+    <material name="FTCFRP-Fibre">
+      <D unit="g/cm3" value="1.77"/>
+      <fraction n="0.75574475526809692" ref="C_elm"/>
+      <fraction n="0.055494450032711029" ref="H_elm"/>
+      <fraction n="0.18876078724861145" ref="O_elm"/>
+    </material>
+    <material name="FTCFRP">
+      <D unit="g/cm3" value="1.54"/>
+      <fraction n="0.74550104141235352" ref="C_elm"/>
+      <fraction n="0.060623299330472946" ref="H_elm"/>
+      <fraction n="0.019516594707965851" ref="N_elm"/>
+      <fraction n="0.17435906827449799" ref="O_elm"/>
+    </material>
+    <material name="FTSkin">
+      <D unit="g/cm3" value="1.3580000000000001"/>
+      <fraction n="0.73716264963150024" ref="C_elm"/>
+      <fraction n="0.064798183739185333" ref="H_elm"/>
+      <fraction n="0.03540310263633728" ref="N_elm"/>
+      <fraction n="0.16263607144355774" ref="O_elm"/>
+    </material>
+    <material name="FTCore">
+      <D unit="g/cm3" value="1.05"/>
+      <fraction n="0.92299997806549072" ref="C_elm"/>
+      <fraction n="0.076999999582767487" ref="H_elm"/>
+    </material>
+    <material name="FTInnerClad">
+      <D unit="g/cm3" value="1.05"/>
+      <fraction n="0.3142000138759613" ref="C_elm"/>
+      <fraction n="0.079899996519088745" ref="H_elm"/>
+      <fraction n="0.60589998960494995" ref="O_elm"/>
+    </material>
+    <material name="FTOuterClad">
+      <D unit="g/cm3" value="1.4299999999999999"/>
+      <fraction n="0.27910000085830688" ref="Cl_elm"/>
+      <fraction n="0.66280001401901245" ref="F_elm"/>
+      <fraction n="0.058100000023841858" ref="H_elm"/>
+    </material>
+    <material name="FTSciFibre">
+      <D unit="g/cm3" value="1.1799999999999999"/>
+      <fraction n="0.74908185005187988" ref="C_elm"/>
+      <fraction n="0.032487239688634872" ref="Cl_elm"/>
+      <fraction n="0.077149920165538788" ref="F_elm"/>
+      <fraction n="0.075116716325283051" ref="H_elm"/>
+      <fraction n="0.066164277493953705" ref="O_elm"/>
+    </material>
+    <material name="MightyTSiliconTracker">
+      <D unit="g/cm3" value="2.3300000000000001"/>
+      <fraction n="1" ref="Si_elm"/>
+    </material>
+  </materials>
+  <solids>
+    <box name="world_volume_shape_0x368e510" x="10000" y="10000" z="10000" lunit="cm"/>
+    <box name="lvUpstreamRegion_shape_0x36056a0" x="2000" y="2000" z="2000" lunit="cm"/>
+    <box name="shape-BeforeMagnetRegion_shape_0x36f4e00" x="2000" y="2000" z="540" lunit="cm"/>
+    <box name="lvBeforeVelo_shape_0x33c6780" x="310" y="310" z="181.5" lunit="cm"/>
+    <box name="lvMagnetRegion_shape_0x36f56f0" x="2000" y="2000" z="492" lunit="cm"/>
+    <box name="lvAfterMagnetRegion_shape_0x33d8f20" x="2000" y="2000" z="428" lunit="cm"/>
+    <box name="TShave" x="832.5" y="628.5" z="181.90000000000009" lunit="cm"/>
+    <box name="TShave0x1" x="832.50000023841858" y="628.50000023841858" z="2" lunit="cm"/>
+    <subtraction name="Tsolid_shape_0x365fd20">
+      <first ref="TShave"/>
+      <second ref="TShave0x1"/>
+      <position name="Tsolid_shape_0x365fd20TShave0x1pos" x="0" y="-10.5" z="91.950000000000045" unit="cm"/>
+      <rotation name="Tsolid_shape_0x365fd20TShave0x1rot" x="0.2063221020266095" y="-0" z="0" unit="deg"/>
+    </subtraction>
+    <box name="TGeoBBox" x="832.5" y="628.5" z="181.90000000000009" lunit="cm"/>
+    <tube name="TGeoTubeSeg" rmin="0" rmax="10.5" z="181.90000011920938" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="lvFT_shape_0x3608920_left">
+      <first ref="TGeoBBox"/>
+      <second ref="TGeoTubeSeg"/>
+    </subtraction>
+    <box name="lvFT_shape_0x3608920_right" x="832.50000011920929" y="628.50000011920929" z="2" lunit="cm"/>
+    <subtraction name="lvFT_shape_0x3608920">
+      <first ref="lvFT_shape_0x3608920_left"/>
+      <second ref="lvFT_shape_0x3608920_right"/>
+      <position name="lvFT_shape_0x3608920lvFT_shape_0x3608920_rightpos" x="0" y="-10.5" z="91.950000000000045" unit="cm"/>
+      <rotation name="lvFT_shape_0x3608920lvFT_shape_0x3608920_rightrot" x="0.2063221020266095" y="-0" z="0" unit="deg"/>
+    </subtraction>
+    <box name="lvStation5_shape_0x381bf00_left" x="830.00000011920929" y="619.20000011920934" z="25.400000000000002" lunit="cm"/>
+    <tube name="lvStation5_shape_0x381bf00_right" rmin="0" rmax="10.5" z="25.400000238418581" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="lvStation5_shape_0x381bf00">
+      <first ref="lvStation5_shape_0x381bf00_left"/>
+      <second ref="lvStation5_shape_0x381bf00_right"/>
+    </subtraction>
+    <box name="BeamHole" x="830" y="612.5" z="2.6000002384185792" lunit="cm"/>
+    <tube name="BeamHole0x1" rmin="0" rmax="10.5" z="2.6000002384185792" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="CFramePairVolumeWithHole_shape_0x3736eb0">
+      <first ref="BeamHole"/>
+      <second ref="BeamHole0x1"/>
+      <position name="CFramePairVolumeWithHole_shape_0x3736eb0BeamHole0x1pos" x="0" y="-3.3499999999999943" z="0" unit="cm"/>
+    </subtraction>
+    <box name="CFramePairIBar_shape_0x37b1a20" x="64" y="580.5" z="1.0958000000000001" lunit="cm"/>
+    <box name="CFramePairCarrierTop_shape_0x37b1aa0" x="830" y="32" z="1.2209000000000001" lunit="cm"/>
+    <box name="CFramePairCarrierBottom_shape_0x37bb080" x="702" y="25.300000000000001" z="1.3579000000000001" lunit="cm"/>
+    <box name="CFramePairModuleMountTop_shape_0x37bb570" x="702" y="43.300000000000004" z="1.9898" lunit="cm"/>
+    <box name="CFramePairModuleMountBottom_shape_0x37bb5f0" x="702" y="43.300000000000004" z="1.9675000000000002" lunit="cm"/>
+    <box name="FramePairSupportCablepair_shape_0x3734040" x="4.5" y="447.28999999999996" z="2" lunit="cm"/>
+    <box name="CFramePairSupportCable_shape_0x33dcf40" x="2" y="447.28999999999996" z="2" lunit="cm"/>
+    <tube name="CFramePairSupportCableCFCable_shape_0x37bbe10" rmin="0" rmax="0.20000000000000001" z="447.28999999999996" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="CFramePairSupportCableDowelCutout" rmin="0.20499999999999999" rmax="1" z="3.5" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="CFramePairSupportCableDowelCutout0x1" rmin="0.70000000000000007" rmax="1.0000001192092896" z="2.7000001192092897" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="CFramePairSupportCableDowel_shape_0x3733040">
+      <first ref="CFramePairSupportCableDowelCutout"/>
+      <second ref="CFramePairSupportCableDowelCutout0x1"/>
+    </subtraction>
+    <box name="CFramePairSpacerBarLeft_shape_0x3735550" x="330" y="2.6000000000000001" z="2.6000000000000001" lunit="cm"/>
+    <box name="CFramePairSpacerBarCFSkin_shape_0x37354d0" x="330" y="2.6000000000000001" z="0.034999999999999996" lunit="cm"/>
+    <tube name="CFramePairSpacerBarLeftHoneycombFillDowelholeInnerB" rmin="0" rmax="0.70000000000000007" z="2.6000002384185792" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <tube name="CFramePairSpacerBarLeftHoneycombFillDowelholeInnerB0x1" rmin="0" rmax="0.70000000000000007" z="2.6000002384185792" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <union name="CFramePairSpacerBarLeftHoneycombFillDowelholeOuterA0x1">
+      <first ref="CFramePairSpacerBarLeftHoneycombFillDowelholeInnerB"/>
+      <second ref="CFramePairSpacerBarLeftHoneycombFillDowelholeInnerB0x1"/>
+      <position name="CFramePairSpacerBarLeftHoneycombFillDowelholeOuterA0x1CFramePairSpacerBarLeftHoneycombFillDowelholeInnerB0x1pos" x="2.5" y="0" z="0" unit="cm"/>
+    </union>
+    <tube name="CFramePairSpacerBarLeftHoneycombFillDowelholeOuterA0x2" rmin="0" rmax="0.70000000000000007" z="2.6000002384185792" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <union name="CFramePairSpacerBarLeftHoneycombFillDowelholeOuterA">
+      <first ref="CFramePairSpacerBarLeftHoneycombFillDowelholeOuterA0x1"/>
+      <second ref="CFramePairSpacerBarLeftHoneycombFillDowelholeOuterA0x2"/>
+      <position name="CFramePairSpacerBarLeftHoneycombFillDowelholeOuterACFramePairSpacerBarLeftHoneycombFillDowelholeOuterA0x2pos" x="212.5" y="0" z="0" unit="cm"/>
+    </union>
+    <tube name="CFramePairSpacerBarLeftHoneycombFillDowelholeOuterA0x3" rmin="0" rmax="0.70000000000000007" z="2.6000002384185792" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <box name="CFramePairSpacerBarLeftHoneycombFillDowelholes" x="330" y="2.5300000000000002" z="2.6000000000000001" lunit="cm"/>
+    <union name="CFramePairSpacerBarLeftHoneycombFillDowelholes0x1">
+      <first ref="CFramePairSpacerBarLeftHoneycombFillDowelholeOuterA"/>
+      <second ref="CFramePairSpacerBarLeftHoneycombFillDowelholeOuterA0x3"/>
+      <position name="CFramePairSpacerBarLeftHoneycombFillDowelholes0x1CFramePairSpacerBarLeftHoneycombFillDowelholeOuterA0x3pos" x="215" y="0" z="0" unit="cm"/>
+    </union>
+    <subtraction name="CFramePairSpacerBarLeftHoneycombFillNoHoles_shape_0x3735a20">
+      <first ref="CFramePairSpacerBarLeftHoneycombFillDowelholes"/>
+      <second ref="CFramePairSpacerBarLeftHoneycombFillDowelholes0x1"/>
+      <position name="CFramePairSpacerBarLeftHoneycombFillNoHoles_shape_0x3735a20CFramePairSpacerBarLeftHoneycombFillDowelholes0x1pos" x="-114.25" y="0" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvLayer5X1_shape_0x381bc80_left" x="830.00000011920929" y="619.20000011920934" z="4.1570002384185791" lunit="cm"/>
+    <tube name="lvLayer5X1_shape_0x381bc80_right" rmin="0" rmax="10.5" z="8.3140002384185792" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="lvLayer5X1_shape_0x381bc80">
+      <first ref="lvLayer5X1_shape_0x381bc80_left"/>
+      <second ref="lvLayer5X1_shape_0x381bc80_right"/>
+    </subtraction>
+    <box name="lvFTModuleHoleLeftU_shape_0x37c53a0_left" x="52.800000000000004" y="242.55000000000001" z="4.157" lunit="cm"/>
+    <tube name="lvFTModuleHoleLeftU_shape_0x37c53a0_right" rmin="0" rmax="11.5" z="4.1570001192092896" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="lvFTModuleHoleRightX_shape_0x37d32a0">
+      <first ref="lvFTModuleHoleLeftU_shape_0x37c53a0_left"/>
+      <second ref="lvFTModuleHoleLeftU_shape_0x37c53a0_right"/>
+      <position name="lvFTModuleHoleRightX_shape_0x37d32a0lvFTModuleHoleLeftU_shape_0x37c53a0_rightpos" x="26.500000000000004" y="-121.27500000000001" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvSkinHoleLeftU_shape_0x37c58a0_left" x="52.710000000000001" y="233" z="0.059499999999999997" lunit="cm"/>
+    <tube name="lvSkinHoleLeftU_shape_0x37c58a0_right" rmin="0" rmax="11.545" z="0.059500238418579099" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="lvSkinHoleRightX_shape_0x37d3860">
+      <first ref="lvSkinHoleLeftU_shape_0x37c58a0_left"/>
+      <second ref="lvSkinHoleLeftU_shape_0x37c58a0_right"/>
+      <position name="lvSkinHoleRightX_shape_0x37d3860lvSkinHoleLeftU_shape_0x37c58a0_rightpos" x="26.500000000000004" y="-116.5" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvCoreHoleFrontLeftU_shape_0x37c5d70_left" x="52.710000000000001" y="238.5" z="1.954" lunit="cm"/>
+    <tube name="lvCoreHoleFrontLeftU_shape_0x37c5d70_right" rmin="0" rmax="11.545" z="1.9540001192092895" startphi="0" deltaphi="360" aunit="deg" lunit="cm"/>
+    <subtraction name="lvCoreHoleFrontRightX_shape_0x37d3df0">
+      <first ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_left"/>
+      <second ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_right"/>
+      <position name="lvCoreHoleFrontRightX_shape_0x37d3df0lvCoreHoleFrontLeftU_shape_0x37c5d70_rightpos" x="26.500000000000004" y="-119.25" z="0" unit="cm"/>
+    </subtraction>
+    <box name="EndplugBox_shape_0x3609950" x="52.710000000000001" y="14.200000000000001" z="1.954" lunit="cm"/>
+    <box name="EndpieceBox3_shape_0x372f9f0" x="39.240000000000009" y="1.5" z="0.20000000000000001" lunit="cm"/>
+    <box name="EndpieceBox1_shape_0x36087a0" x="13.080000000000002" y="1.5" z="0.20000000000000001" lunit="cm"/>
+    <box name="FibreBox_shape_0x37b0530" x="13.040000000000001" y="242.40000000000001" z="0.13" lunit="cm"/>
+    <box name="lvFibreShortMatRightX_shape_0x37d5b60" x="13.040000000000001" y="230.90000000000001" z="0.13" lunit="cm"/>
+    <subtraction name="CoreHoleBackRightX_shape">
+      <first ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_left"/>
+      <second ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_right"/>
+      <position name="CoreHoleBackRightX_shapelvCoreHoleFrontLeftU_shape_0x37c5d70_rightpos" x="-26.500000000000004" y="-119.25" z="0" unit="cm"/>
+    </subtraction>
+    <box name="SideWallBox_shape_0x37b0dc0" x="0.045000000000000005" y="233" z="4.157" lunit="cm"/>
+    <box name="lvSideWallRightX_shape_0x37d5160" x="0.045000000000000005" y="221.45500000000001" z="4.157" lunit="cm"/>
+    <tube name="lvHoleWallRightX_shape_0x37d56b0" rmin="11.5" rmax="11.545" z="4.157" startphi="90.498249288367987" deltaphi="89.501750711632013" aunit="deg" lunit="cm"/>
+    <box name="SkinBox_shape_0x37b0960" x="52.710000000000001" y="233" z="0.059499999999999997" lunit="cm"/>
+    <box name="CoreBox_shape_0x37b1220" x="52.710000000000001" y="238.5" z="1.954" lunit="cm"/>
+    <box name="EndpieceBox_shape_0x36091b0" x="52.320000000000007" y="1.5" z="0.20000000000000001" lunit="cm"/>
+    <subtraction name="lvFTModuleHoleLeftX_shape_0x37cabd0">
+      <first ref="lvFTModuleHoleLeftU_shape_0x37c53a0_left"/>
+      <second ref="lvFTModuleHoleLeftU_shape_0x37c53a0_right"/>
+      <position name="lvFTModuleHoleLeftX_shape_0x37cabd0lvFTModuleHoleLeftU_shape_0x37c53a0_rightpos" x="-26.500000000000004" y="-121.27500000000001" z="0" unit="cm"/>
+    </subtraction>
+    <subtraction name="lvSkinHoleLeftX_shape_0x37cb190">
+      <first ref="lvSkinHoleLeftU_shape_0x37c58a0_left"/>
+      <second ref="lvSkinHoleLeftU_shape_0x37c58a0_right"/>
+      <position name="lvSkinHoleLeftX_shape_0x37cb190lvSkinHoleLeftU_shape_0x37c58a0_rightpos" x="-26.500000000000004" y="-116.5" z="0" unit="cm"/>
+    </subtraction>
+    <subtraction name="lvCoreHoleFrontLeftX_shape_0x37cb650">
+      <first ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_left"/>
+      <second ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_right"/>
+      <position name="lvCoreHoleFrontLeftX_shape_0x37cb650lvCoreHoleFrontLeftU_shape_0x37c5d70_rightpos" x="-26.500000000000004" y="-119.25" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvFibreShortMatLeftX_shape_0x37cd360" x="13.040000000000001" y="230.90000000000001" z="0.13" lunit="cm"/>
+    <subtraction name="CoreHoleBackLeftX_shape">
+      <first ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_left"/>
+      <second ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_right"/>
+      <position name="CoreHoleBackLeftX_shapelvCoreHoleFrontLeftU_shape_0x37c5d70_rightpos" x="26.500000000000004" y="-119.25" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvSideWallLeftX_shape_0x37cc9f0" x="0.045000000000000005" y="221.45500000000001" z="4.157" lunit="cm"/>
+    <tube name="lvHoleWallLeftX_shape_0x37ccee0" rmin="11.5" rmax="11.545" z="4.157" startphi="0" deltaphi="89.501750711632013" aunit="deg" lunit="cm"/>
+    <subtraction name="lvFTModuleHoleLeftU_shape_0x37c53a0">
+      <first ref="lvFTModuleHoleLeftU_shape_0x37c53a0_left"/>
+      <second ref="lvFTModuleHoleLeftU_shape_0x37c53a0_right"/>
+      <position name="lvFTModuleHoleLeftU_shape_0x37c53a0lvFTModuleHoleLeftU_shape_0x37c53a0_rightpos" x="-26.500000000000004" y="-123.575" z="0" unit="cm"/>
+    </subtraction>
+    <subtraction name="lvSkinHoleLeftU_shape_0x37c58a0">
+      <first ref="lvSkinHoleLeftU_shape_0x37c58a0_left"/>
+      <second ref="lvSkinHoleLeftU_shape_0x37c58a0_right"/>
+      <position name="lvSkinHoleLeftU_shape_0x37c58a0lvSkinHoleLeftU_shape_0x37c58a0_rightpos" x="-26.500000000000004" y="-118.8" z="0" unit="cm"/>
+    </subtraction>
+    <subtraction name="lvCoreHoleFrontLeftU_shape_0x37c5d70">
+      <first ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_left"/>
+      <second ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_right"/>
+      <position name="lvCoreHoleFrontLeftU_shape_0x37c5d70lvCoreHoleFrontLeftU_shape_0x37c5d70_rightpos" x="-26.500000000000004" y="-121.55" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvFibreShortMatLeftU_shape_0x37c79d0" x="13.040000000000001" y="233.20000000000002" z="0.13" lunit="cm"/>
+    <subtraction name="CoreHoleBackLeftU_shape">
+      <first ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_left"/>
+      <second ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_right"/>
+      <position name="CoreHoleBackLeftU_shapelvCoreHoleFrontLeftU_shape_0x37c5d70_rightpos" x="26.500000000000004" y="-121.55" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvSideWallLeftU_shape_0x37c7060" x="0.045000000000000005" y="223.75500000000002" z="4.157" lunit="cm"/>
+    <tube name="lvHoleWallLeftU_shape_0x37c7550" rmin="11.5" rmax="11.545" z="4.157" startphi="11.536959032815481" deltaphi="77.964791678816539" aunit="deg" lunit="cm"/>
+    <subtraction name="lvFTModuleHoleRightU_shape_0x37cd8d0">
+      <first ref="lvFTModuleHoleLeftU_shape_0x37c53a0_left"/>
+      <second ref="lvFTModuleHoleLeftU_shape_0x37c53a0_right"/>
+      <position name="lvFTModuleHoleRightU_shape_0x37cd8d0lvFTModuleHoleLeftU_shape_0x37c53a0_rightpos" x="26.500000000000004" y="-118.97500000000001" z="0" unit="cm"/>
+    </subtraction>
+    <subtraction name="lvSkinHoleRightU_shape_0x37cde90">
+      <first ref="lvSkinHoleLeftU_shape_0x37c58a0_left"/>
+      <second ref="lvSkinHoleLeftU_shape_0x37c58a0_right"/>
+      <position name="lvSkinHoleRightU_shape_0x37cde90lvSkinHoleLeftU_shape_0x37c58a0_rightpos" x="26.500000000000004" y="-114.2" z="0" unit="cm"/>
+    </subtraction>
+    <subtraction name="lvCoreHoleFrontRightU_shape_0x37ce420">
+      <first ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_left"/>
+      <second ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_right"/>
+      <position name="lvCoreHoleFrontRightU_shape_0x37ce420lvCoreHoleFrontLeftU_shape_0x37c5d70_rightpos" x="26.500000000000004" y="-116.95" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvFibreShortMatRightU_shape_0x37d00b0" x="13.040000000000001" y="228.59999999999999" z="0.13" lunit="cm"/>
+    <subtraction name="CoreHoleBackRightU_shape">
+      <first ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_left"/>
+      <second ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_right"/>
+      <position name="CoreHoleBackRightU_shapelvCoreHoleFrontLeftU_shape_0x37c5d70_rightpos" x="-26.500000000000004" y="-116.95" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvSideWallRightU_shape_0x37cf790" x="0.045000000000000005" y="219.155" z="4.157" lunit="cm"/>
+    <tube name="lvHoleWallRightU_shape_0x37cfc70" rmin="11.5" rmax="11.545" z="4.157" startphi="90.498249288367987" deltaphi="100.9888848156107" aunit="deg" lunit="cm"/>
+    <subtraction name="lvFTModuleHoleRightV_shape_0x37d05f0">
+      <first ref="lvFTModuleHoleLeftU_shape_0x37c53a0_left"/>
+      <second ref="lvFTModuleHoleLeftU_shape_0x37c53a0_right"/>
+      <position name="lvFTModuleHoleRightV_shape_0x37d05f0lvFTModuleHoleLeftU_shape_0x37c53a0_rightpos" x="26.500000000000004" y="-123.575" z="0" unit="cm"/>
+    </subtraction>
+    <subtraction name="lvSkinHoleRightV_shape_0x37d0bb0">
+      <first ref="lvSkinHoleLeftU_shape_0x37c58a0_left"/>
+      <second ref="lvSkinHoleLeftU_shape_0x37c58a0_right"/>
+      <position name="lvSkinHoleRightV_shape_0x37d0bb0lvSkinHoleLeftU_shape_0x37c58a0_rightpos" x="26.500000000000004" y="-118.8" z="0" unit="cm"/>
+    </subtraction>
+    <subtraction name="lvCoreHoleFrontRightV_shape_0x37d1140">
+      <first ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_left"/>
+      <second ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_right"/>
+      <position name="lvCoreHoleFrontRightV_shape_0x37d1140lvCoreHoleFrontLeftU_shape_0x37c5d70_rightpos" x="26.500000000000004" y="-121.55" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvFibreShortMatRightV_shape_0x37d2dd0" x="13.040000000000001" y="233.20000000000002" z="0.13" lunit="cm"/>
+    <subtraction name="CoreHoleBackRightV_shape">
+      <first ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_left"/>
+      <second ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_right"/>
+      <position name="CoreHoleBackRightV_shapelvCoreHoleFrontLeftU_shape_0x37c5d70_rightpos" x="-26.500000000000004" y="-121.55" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvSideWallRightV_shape_0x37d24b0" x="0.045000000000000005" y="223.75500000000002" z="4.157" lunit="cm"/>
+    <tube name="lvHoleWallRightV_shape_0x37d2990" rmin="11.5" rmax="11.545" z="4.157" startphi="90.498249288367987" deltaphi="77.964791678816511" aunit="deg" lunit="cm"/>
+    <subtraction name="lvFTModuleHoleLeftV_shape_0x37c7f40">
+      <first ref="lvFTModuleHoleLeftU_shape_0x37c53a0_left"/>
+      <second ref="lvFTModuleHoleLeftU_shape_0x37c53a0_right"/>
+      <position name="lvFTModuleHoleLeftV_shape_0x37c7f40lvFTModuleHoleLeftU_shape_0x37c53a0_rightpos" x="-26.500000000000004" y="-118.97500000000001" z="0" unit="cm"/>
+    </subtraction>
+    <subtraction name="lvSkinHoleLeftV_shape_0x37c8500">
+      <first ref="lvSkinHoleLeftU_shape_0x37c58a0_left"/>
+      <second ref="lvSkinHoleLeftU_shape_0x37c58a0_right"/>
+      <position name="lvSkinHoleLeftV_shape_0x37c8500lvSkinHoleLeftU_shape_0x37c58a0_rightpos" x="-26.500000000000004" y="-114.2" z="0" unit="cm"/>
+    </subtraction>
+    <subtraction name="lvCoreHoleFrontLeftV_shape_0x37c89c0">
+      <first ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_left"/>
+      <second ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_right"/>
+      <position name="lvCoreHoleFrontLeftV_shape_0x37c89c0lvCoreHoleFrontLeftU_shape_0x37c5d70_rightpos" x="-26.500000000000004" y="-116.95" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvFibreShortMatLeftV_shape_0x37ca6d0" x="13.040000000000001" y="228.59999999999999" z="0.13" lunit="cm"/>
+    <subtraction name="CoreHoleBackLeftV_shape">
+      <first ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_left"/>
+      <second ref="lvCoreHoleFrontLeftU_shape_0x37c5d70_right"/>
+      <position name="CoreHoleBackLeftV_shapelvCoreHoleFrontLeftU_shape_0x37c5d70_rightpos" x="26.500000000000004" y="-116.95" z="0" unit="cm"/>
+    </subtraction>
+    <box name="lvSideWallLeftV_shape_0x37c9d60" x="0.045000000000000005" y="219.155" z="4.157" lunit="cm"/>
+    <tube name="lvHoleWallLeftV_shape_0x37ca250" rmin="11.5" rmax="11.545" z="4.157" startphi="348.51286589602131" deltaphi="100.98888481561067" aunit="deg" lunit="cm"/>
+    <box name="lvSiShortMatRightX_shape_0x380de50" x="42.400000000000006" y="20" z="0.13" lunit="cm"/>
+    <box name="SiMatBox_shape_0x3804b50" x="52.800000000000004" y="20" z="0.13" lunit="cm"/>
+    <box name="SiMatMTBox_shape_0x38787a0" x="52.800000000000004" y="20" z="0.13" lunit="cm"/>
+    <box name="lvSiShortMatLeftX_shape_0x380d220" x="42.400000000000006" y="20" z="0.13" lunit="cm"/>
+    <box name="shape-DownstreamRegion_shape_0x36626a0" x="2000" y="2000" z="800" lunit="cm"/>
+    <box name="shape-AfterMuonBox2" x="200" y="200" z="200" lunit="cm"/>
+    <box name="shape-AfterMuonBox20x1" x="49.900000000000006" y="55" z="100" lunit="cm"/>
+    <union name="shape-AfterMuon_shape_0x3662200">
+      <first ref="shape-AfterMuonBox2"/>
+      <second ref="shape-AfterMuonBox20x1"/>
+      <position name="shape-AfterMuon_shape_0x3662200shape-AfterMuonBox20x1pos" x="0" y="0" z="-100" unit="cm"/>
+    </union>
+  </solids>
+  <structure>
+    <volume name="lvUpstreamRegion">
+      <materialref ref="Air"/>
+      <solidref ref="lvUpstreamRegion_shape_0x36056a0"/>
+    </volume>
+    <volume name="lvBeforeVelo">
+      <materialref ref="Air"/>
+      <solidref ref="lvBeforeVelo_shape_0x33c6780"/>
+    </volume>
+    <volume name="lvBeforeMagnetRegion">
+      <materialref ref="Air"/>
+      <solidref ref="shape-BeforeMagnetRegion_shape_0x36f4e00"/>
+      <physvol name="lvBeforeVelo_0" copynumber="0">
+        <volumeref ref="lvBeforeVelo"/>
+        <positionref ref="lvBeforeVelo_0inlvBeforeMagnetRegionpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvMagnetRegion">
+      <materialref ref="Air"/>
+      <solidref ref="lvMagnetRegion_shape_0x36f56f0"/>
+    </volume>
+    <volume name="lvCFramePairIBar">
+      <materialref ref="Iron"/>
+      <solidref ref="CFramePairIBar_shape_0x37b1a20"/>
+    </volume>
+    <volume name="lvCFramePairCarrierTop">
+      <materialref ref="Iron"/>
+      <solidref ref="CFramePairCarrierTop_shape_0x37b1aa0"/>
+    </volume>
+    <volume name="lvCFramePairCarrierBottom">
+      <materialref ref="Iron"/>
+      <solidref ref="CFramePairCarrierBottom_shape_0x37bb080"/>
+    </volume>
+    <volume name="lvCFramePairModuleMountTop">
+      <materialref ref="Iron"/>
+      <solidref ref="CFramePairModuleMountTop_shape_0x37bb570"/>
+    </volume>
+    <volume name="lvCFramePairModuleMountBottom">
+      <materialref ref="Iron"/>
+      <solidref ref="CFramePairModuleMountBottom_shape_0x37bb5f0"/>
+    </volume>
+    <volume name="lvCFramePairSupportCableCFCable">
+      <materialref ref="FTCFRP"/>
+      <solidref ref="CFramePairSupportCableCFCable_shape_0x37bbe10"/>
+    </volume>
+    <volume name="lvCFramePairSupportCableDowel">
+      <materialref ref="FTPolycarbonate"/>
+      <solidref ref="CFramePairSupportCableDowel_shape_0x3733040"/>
+    </volume>
+    <volume name="lvCFramePairSupportCable">
+      <materialref ref="Air"/>
+      <solidref ref="CFramePairSupportCable_shape_0x33dcf40"/>
+      <physvol name="pvCFramePairSupportCableCFCable" copynumber="0">
+        <volumeref ref="lvCFramePairSupportCableCFCable"/>
+        <positionref ref="pvCFramePairSupportCableCFCableinlvCFramePairSupportCablepos"/>
+        <rotationref ref="pvCFramePairSupportCableCFCableinlvCFramePairSupportCablerot"/>
+      </physvol>
+      <physvol name="pvCFramePairSupportCableDowelUpper" copynumber="1">
+        <volumeref ref="lvCFramePairSupportCableDowel"/>
+        <positionref ref="pvCFramePairSupportCableDowelUpperinlvCFramePairSupportCablepos"/>
+        <rotationref ref="pvCFramePairSupportCableDowelUpperinlvCFramePairSupportCablerot"/>
+      </physvol>
+      <physvol name="pvCFramePairSupportCableDowelLower" copynumber="2">
+        <volumeref ref="lvCFramePairSupportCableDowel"/>
+        <positionref ref="pvCFramePairSupportCableDowelLowerinlvCFramePairSupportCablepos"/>
+        <rotationref ref="pvCFramePairSupportCableDowelLowerinlvCFramePairSupportCablerot"/>
+      </physvol>
+    </volume>
+    <volume name="lvCFramePairSupportCablepair">
+      <materialref ref="Air"/>
+      <solidref ref="FramePairSupportCablepair_shape_0x3734040"/>
+      <physvol name="pvCFramePairSupportCableA" copynumber="0">
+        <volumeref ref="lvCFramePairSupportCable"/>
+        <positionref ref="pvCFramePairSupportCableAinlvCFramePairSupportCablepairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairSupportCableB" copynumber="1">
+        <volumeref ref="lvCFramePairSupportCable"/>
+        <positionref ref="pvCFramePairSupportCableBinlvCFramePairSupportCablepairpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvCFramePairSpacerBarCFSkin">
+      <materialref ref="FTCFRP"/>
+      <solidref ref="CFramePairSpacerBarCFSkin_shape_0x37354d0"/>
+    </volume>
+    <volume name="lvCFramePairSpacerBarLeftHoneycombFill">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="CFramePairSpacerBarLeftHoneycombFillNoHoles_shape_0x3735a20"/>
+    </volume>
+    <volume name="lvCFramePairSpacerBarLeft">
+      <materialref ref="Air"/>
+      <solidref ref="CFramePairSpacerBarLeft_shape_0x3735550"/>
+      <physvol name="pvCFramePairSpacerBarLeftCFSkinFront" copynumber="0">
+        <volumeref ref="lvCFramePairSpacerBarCFSkin"/>
+        <positionref ref="pvCFramePairSpacerBarLeftCFSkinFrontinlvCFramePairSpacerBarLeftpos"/>
+      </physvol>
+      <physvol name="pvCFramePairSpacerBarLeftHoneycombFill" copynumber="1">
+        <volumeref ref="lvCFramePairSpacerBarLeftHoneycombFill"/>
+        <positionref ref="pvCFramePairSpacerBarLeftHoneycombFillinlvCFramePairSpacerBarLeftpos"/>
+        <rotationref ref="pvCFramePairSpacerBarLeftHoneycombFillinlvCFramePairSpacerBarLeftrot"/>
+      </physvol>
+      <physvol name="pvCFramePairSpacerBarLeftCFSkinBack" copynumber="2">
+        <volumeref ref="lvCFramePairSpacerBarCFSkin"/>
+        <positionref ref="pvCFramePairSpacerBarLeftCFSkinBackinlvCFramePairSpacerBarLeftpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvCFramePair">
+      <materialref ref="Air"/>
+      <solidref ref="CFramePairVolumeWithHole_shape_0x3736eb0"/>
+      <physvol name="pvCFramePairIBarLeft" copynumber="0">
+        <volumeref ref="lvCFramePairIBar"/>
+        <positionref ref="pvCFramePairIBarLeftinlvCFramePairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairIBarRight" copynumber="1">
+        <volumeref ref="lvCFramePairIBar"/>
+        <positionref ref="pvCFramePairIBarRightinlvCFramePairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairCarrierTop" copynumber="2">
+        <volumeref ref="lvCFramePairCarrierTop"/>
+        <positionref ref="pvCFramePairCarrierTopinlvCFramePairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairCarrierBottom" copynumber="3">
+        <volumeref ref="lvCFramePairCarrierBottom"/>
+        <positionref ref="pvCFramePairCarrierBottominlvCFramePairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairModuleMountTop" copynumber="4">
+        <volumeref ref="lvCFramePairModuleMountTop"/>
+        <positionref ref="pvCFramePairModuleMountTopinlvCFramePairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairModuleMountBottom" copynumber="5">
+        <volumeref ref="lvCFramePairModuleMountBottom"/>
+        <positionref ref="pvCFramePairModuleMountBottominlvCFramePairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairSupportCablepairRightOuter" copynumber="6">
+        <volumeref ref="lvCFramePairSupportCablepair"/>
+        <positionref ref="pvCFramePairSupportCablepairRightOuterinlvCFramePairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairSupportCablepairRightInner" copynumber="7">
+        <volumeref ref="lvCFramePairSupportCablepair"/>
+        <positionref ref="pvCFramePairSupportCablepairRightInnerinlvCFramePairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairSupportCablepairLeftInner" copynumber="8">
+        <volumeref ref="lvCFramePairSupportCablepair"/>
+        <positionref ref="pvCFramePairSupportCablepairLeftInnerinlvCFramePairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairSupportCablepairLeftOuter" copynumber="9">
+        <volumeref ref="lvCFramePairSupportCablepair"/>
+        <positionref ref="pvCFramePairSupportCablepairLeftOuterinlvCFramePairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairSpacerBarLowerLeft" copynumber="10">
+        <volumeref ref="lvCFramePairSpacerBarLeft"/>
+        <positionref ref="pvCFramePairSpacerBarLowerLeftinlvCFramePairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairSpacerBarLowerRight" copynumber="11">
+        <volumeref ref="lvCFramePairSpacerBarLeft"/>
+        <positionref ref="pvCFramePairSpacerBarLowerRightinlvCFramePairpos"/>
+        <rotationref ref="pvCFramePairSpacerBarLowerRightinlvCFramePairrot"/>
+      </physvol>
+      <physvol name="pvCFramePairSpacerBarUpperLeft" copynumber="12">
+        <volumeref ref="lvCFramePairSpacerBarLeft"/>
+        <positionref ref="pvCFramePairSpacerBarUpperLeftinlvCFramePairpos"/>
+      </physvol>
+      <physvol name="pvCFramePairSpacerBarUpperRight" copynumber="13">
+        <volumeref ref="lvCFramePairSpacerBarLeft"/>
+        <positionref ref="pvCFramePairSpacerBarUpperRightinlvCFramePairpos"/>
+        <rotationref ref="pvCFramePairSpacerBarUpperRightinlvCFramePairrot"/>
+      </physvol>
+    </volume>
+    <volume name="lvSkinHoleRightX">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvSkinHoleRightX_shape_0x37d3860"/>
+    </volume>
+    <volume name="lvEndplug">
+      <materialref ref="FTPerforatedAluminium"/>
+      <solidref ref="EndplugBox_shape_0x3609950"/>
+    </volume>
+    <volume name="lvEndpiece3">
+      <materialref ref="FTPolycarbonate"/>
+      <solidref ref="EndpieceBox3_shape_0x372f9f0"/>
+    </volume>
+    <volume name="lvEndpiece1">
+      <materialref ref="FTPolycarbonate"/>
+      <solidref ref="EndpieceBox1_shape_0x36087a0"/>
+    </volume>
+    <volume name="lvCoreHoleFrontRightX">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="lvCoreHoleFrontRightX_shape_0x37d3df0"/>
+      <physvol name="lvEndplug_0" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="lvEndplug_0inlvCoreHoleFrontRightXpos"/>
+      </physvol>
+      <physvol name="lvEndpiece3_1" copynumber="1">
+        <volumeref ref="lvEndpiece3"/>
+        <positionref ref="lvEndpiece3_1inlvCoreHoleFrontRightXpos"/>
+      </physvol>
+      <physvol name="lvEndpiece1_2" copynumber="2">
+        <volumeref ref="lvEndpiece1"/>
+        <positionref ref="lvEndpiece1_2inlvCoreHoleFrontRightXpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvFibreMat">
+      <materialref ref="FTSciFibre"/>
+      <solidref ref="FibreBox_shape_0x37b0530"/>
+    </volume>
+    <volume name="lvFibreShortMatRightX">
+      <materialref ref="FTSciFibre"/>
+      <solidref ref="lvFibreShortMatRightX_shape_0x37d5b60"/>
+    </volume>
+    <volume name="lvCoreHoleBackRightX">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="CoreHoleBackRightX_shape"/>
+      <physvol name="lvEndplug_0" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="lvEndplug_00x1inlvCoreHoleBackRightXpos"/>
+      </physvol>
+      <physvol name="lvEndpiece3_1" copynumber="1">
+        <volumeref ref="lvEndpiece3"/>
+        <positionref ref="lvEndpiece3_10x1inlvCoreHoleBackRightXpos"/>
+      </physvol>
+      <physvol name="lvEndpiece1_2" copynumber="2">
+        <volumeref ref="lvEndpiece1"/>
+        <positionref ref="lvEndpiece1_20x1inlvCoreHoleBackRightXpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvSideWall">
+      <materialref ref="FTSkin"/>
+      <solidref ref="SideWallBox_shape_0x37b0dc0"/>
+    </volume>
+    <volume name="lvSideWallRightX">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvSideWallRightX_shape_0x37d5160"/>
+    </volume>
+    <volume name="lvHoleWallRightX">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvHoleWallRightX_shape_0x37d56b0"/>
+    </volume>
+    <volume name="lvFTModuleHoleRightX">
+      <materialref ref="Air"/>
+      <solidref ref="lvFTModuleHoleRightX_shape_0x37d32a0"/>
+      <physvol name="lvSkinHoleRightX_0" copynumber="0">
+        <volumeref ref="lvSkinHoleRightX"/>
+        <positionref ref="lvSkinHoleRightX_0inlvFTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvCoreHoleFrontRightX_1" copynumber="1">
+        <volumeref ref="lvCoreHoleFrontRightX"/>
+        <positionref ref="lvCoreHoleFrontRightX_1inlvFTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_2" copynumber="2">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_2inlvFTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_3" copynumber="3">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_3inlvFTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_4" copynumber="4">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_4inlvFTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvFibreShortMatRightX_5" copynumber="5">
+        <volumeref ref="lvFibreShortMatRightX"/>
+        <positionref ref="lvFibreShortMatRightX_5inlvFTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvCoreHoleBackRightX_6" copynumber="6">
+        <volumeref ref="lvCoreHoleBackRightX"/>
+        <positionref ref="lvCoreHoleBackRightX_6inlvFTModuleHoleRightXpos"/>
+        <rotationref ref="lvCoreHoleBackRightX_6inlvFTModuleHoleRightXrot"/>
+      </physvol>
+      <physvol name="lvSkinHoleRightX_7" copynumber="7">
+        <volumeref ref="lvSkinHoleRightX"/>
+        <positionref ref="lvSkinHoleRightX_7inlvFTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvSideWall_8" copynumber="8">
+        <volumeref ref="lvSideWall"/>
+        <positionref ref="lvSideWall_8inlvFTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvSideWallRightX_9" copynumber="9">
+        <volumeref ref="lvSideWallRightX"/>
+        <positionref ref="lvSideWallRightX_9inlvFTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvHoleWallRightX_10" copynumber="10">
+        <volumeref ref="lvHoleWallRightX"/>
+        <positionref ref="lvHoleWallRightX_10inlvFTModuleHoleRightXpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvSkin">
+      <materialref ref="FTSkin"/>
+      <solidref ref="SkinBox_shape_0x37b0960"/>
+    </volume>
+    <volume name="lvEndpiece">
+      <materialref ref="FTPolycarbonate"/>
+      <solidref ref="EndpieceBox_shape_0x36091b0"/>
+    </volume>
+    <volume name="lvCore">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="CoreBox_shape_0x37b1220"/>
+      <physvol name="pvEndplug" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="pvEndpluginlvCorepos"/>
+      </physvol>
+      <physvol name="pvEndpiece" copynumber="1">
+        <volumeref ref="lvEndpiece"/>
+        <positionref ref="pvEndpieceinlvCorepos"/>
+      </physvol>
+    </volume>
+    <volume name="lvFTModuleFull">
+      <materialref ref="Air"/>
+      <solidref ref="lvFTModuleHoleLeftU_shape_0x37c53a0_left"/>
+      <physvol name="lvSkin_0" copynumber="0">
+        <volumeref ref="lvSkin"/>
+        <positionref ref="lvSkin_0inlvFTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvCore_1" copynumber="1">
+        <volumeref ref="lvCore"/>
+        <positionref ref="lvCore_1inlvFTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_2" copynumber="2">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_20x1inlvFTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_3" copynumber="3">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_30x1inlvFTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_4" copynumber="4">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_40x1inlvFTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_5" copynumber="5">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_5inlvFTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvCore_6" copynumber="6">
+        <volumeref ref="lvCore"/>
+        <positionref ref="lvCore_6inlvFTModuleFullpos"/>
+        <rotationref ref="lvCore_6inlvFTModuleFullrot"/>
+      </physvol>
+      <physvol name="lvSkin_7" copynumber="7">
+        <volumeref ref="lvSkin"/>
+        <positionref ref="lvSkin_7inlvFTModuleFullpos"/>
+        <rotationref ref="lvSkin_7inlvFTModuleFullrot"/>
+      </physvol>
+      <physvol name="lvSideWall_8" copynumber="8">
+        <volumeref ref="lvSideWall"/>
+        <positionref ref="lvSideWall_80x1inlvFTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvSideWall_9" copynumber="9">
+        <volumeref ref="lvSideWall"/>
+        <positionref ref="lvSideWall_9inlvFTModuleFullpos"/>
+      </physvol>
+    </volume>
+    <assembly name="lvQuarter5XNeg">
+      <physvol name="lvFTModuleHoleRightX_0" copynumber="0">
+        <volumeref ref="lvFTModuleHoleRightX"/>
+        <positionref ref="lvFTModuleHoleRightX_0inlvQuarter5XNegpos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_1" copynumber="1">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_1inlvQuarter5XNegpos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_2" copynumber="2">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_2inlvQuarter5XNegpos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_3" copynumber="3">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_3inlvQuarter5XNegpos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_4" copynumber="4">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_4inlvQuarter5XNegpos"/>
+      </physvol>
+    </assembly>
+    <volume name="lvSkinHoleLeftX">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvSkinHoleLeftX_shape_0x37cb190"/>
+    </volume>
+    <volume name="lvCoreHoleFrontLeftX">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="lvCoreHoleFrontLeftX_shape_0x37cb650"/>
+      <physvol name="lvEndplug_0" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="lvEndplug_00x2inlvCoreHoleFrontLeftXpos"/>
+      </physvol>
+      <physvol name="lvEndpiece3_1" copynumber="1">
+        <volumeref ref="lvEndpiece3"/>
+        <positionref ref="lvEndpiece3_10x2inlvCoreHoleFrontLeftXpos"/>
+      </physvol>
+      <physvol name="lvEndpiece1_2" copynumber="2">
+        <volumeref ref="lvEndpiece1"/>
+        <positionref ref="lvEndpiece1_20x2inlvCoreHoleFrontLeftXpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvFibreShortMatLeftX">
+      <materialref ref="FTSciFibre"/>
+      <solidref ref="lvFibreShortMatLeftX_shape_0x37cd360"/>
+    </volume>
+    <volume name="lvCoreHoleBackLeftX">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="CoreHoleBackLeftX_shape"/>
+      <physvol name="lvEndplug_0" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="lvEndplug_00x3inlvCoreHoleBackLeftXpos"/>
+      </physvol>
+      <physvol name="lvEndpiece3_1" copynumber="1">
+        <volumeref ref="lvEndpiece3"/>
+        <positionref ref="lvEndpiece3_10x3inlvCoreHoleBackLeftXpos"/>
+      </physvol>
+      <physvol name="lvEndpiece1_2" copynumber="2">
+        <volumeref ref="lvEndpiece1"/>
+        <positionref ref="lvEndpiece1_20x3inlvCoreHoleBackLeftXpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvSideWallLeftX">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvSideWallLeftX_shape_0x37cc9f0"/>
+    </volume>
+    <volume name="lvHoleWallLeftX">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvHoleWallLeftX_shape_0x37ccee0"/>
+    </volume>
+    <volume name="lvFTModuleHoleLeftX">
+      <materialref ref="Air"/>
+      <solidref ref="lvFTModuleHoleLeftX_shape_0x37cabd0"/>
+      <physvol name="lvSkinHoleLeftX_0" copynumber="0">
+        <volumeref ref="lvSkinHoleLeftX"/>
+        <positionref ref="lvSkinHoleLeftX_0inlvFTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvCoreHoleFrontLeftX_1" copynumber="1">
+        <volumeref ref="lvCoreHoleFrontLeftX"/>
+        <positionref ref="lvCoreHoleFrontLeftX_1inlvFTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvFibreShortMatLeftX_2" copynumber="2">
+        <volumeref ref="lvFibreShortMatLeftX"/>
+        <positionref ref="lvFibreShortMatLeftX_2inlvFTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_3" copynumber="3">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_30x2inlvFTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_4" copynumber="4">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_40x2inlvFTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_5" copynumber="5">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_50x1inlvFTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvCoreHoleBackLeftX_6" copynumber="6">
+        <volumeref ref="lvCoreHoleBackLeftX"/>
+        <positionref ref="lvCoreHoleBackLeftX_6inlvFTModuleHoleLeftXpos"/>
+        <rotationref ref="lvCoreHoleBackLeftX_6inlvFTModuleHoleLeftXrot"/>
+      </physvol>
+      <physvol name="lvSkinHoleLeftX_7" copynumber="7">
+        <volumeref ref="lvSkinHoleLeftX"/>
+        <positionref ref="lvSkinHoleLeftX_7inlvFTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvSideWall_8" copynumber="8">
+        <volumeref ref="lvSideWall"/>
+        <positionref ref="lvSideWall_80x2inlvFTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvSideWallLeftX_9" copynumber="9">
+        <volumeref ref="lvSideWallLeftX"/>
+        <positionref ref="lvSideWallLeftX_9inlvFTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvHoleWallLeftX_10" copynumber="10">
+        <volumeref ref="lvHoleWallLeftX"/>
+        <positionref ref="lvHoleWallLeftX_10inlvFTModuleHoleLeftXpos"/>
+      </physvol>
+    </volume>
+    <assembly name="lvQuarter5XPos">
+      <physvol name="lvFTModuleHoleLeftX_0" copynumber="0">
+        <volumeref ref="lvFTModuleHoleLeftX"/>
+        <positionref ref="lvFTModuleHoleLeftX_0inlvQuarter5XPospos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_1" copynumber="1">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_10x1inlvQuarter5XPospos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_2" copynumber="2">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_20x1inlvQuarter5XPospos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_3" copynumber="3">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_30x1inlvQuarter5XPospos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_4" copynumber="4">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_40x1inlvQuarter5XPospos"/>
+      </physvol>
+    </assembly>
+    <volume name="lvLayer5X1">
+      <materialref ref="Air"/>
+      <solidref ref="lvLayer5X1_shape_0x381bc80"/>
+      <physvol name="lvQuarter5XNeg_0" copynumber="0">
+        <volumeref ref="lvQuarter5XNeg"/>
+        <positionref ref="lvQuarter5XNeg_0inlvLayer5X1pos"/>
+        <rotationref ref="lvQuarter5XNeg_0inlvLayer5X1rot"/>
+      </physvol>
+      <physvol name="lvQuarter5XPos_1" copynumber="1">
+        <volumeref ref="lvQuarter5XPos"/>
+        <positionref ref="lvQuarter5XPos_1inlvLayer5X1pos"/>
+        <rotationref ref="lvQuarter5XPos_1inlvLayer5X1rot"/>
+      </physvol>
+      <physvol name="lvQuarter5XPos_2" copynumber="2">
+        <volumeref ref="lvQuarter5XPos"/>
+        <positionref ref="lvQuarter5XPos_2inlvLayer5X1pos"/>
+        <rotationref ref="lvQuarter5XPos_2inlvLayer5X1rot"/>
+      </physvol>
+      <physvol name="lvQuarter5XNeg_3" copynumber="3">
+        <volumeref ref="lvQuarter5XNeg"/>
+        <positionref ref="lvQuarter5XNeg_3inlvLayer5X1pos"/>
+        <rotationref ref="lvQuarter5XNeg_3inlvLayer5X1rot"/>
+      </physvol>
+    </volume>
+    <volume name="lvSkinHoleLeftU">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvSkinHoleLeftU_shape_0x37c58a0"/>
+    </volume>
+    <volume name="lvCoreHoleFrontLeftU">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="lvCoreHoleFrontLeftU_shape_0x37c5d70"/>
+      <physvol name="lvEndplug_0" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="lvEndplug_00x4inlvCoreHoleFrontLeftUpos"/>
+      </physvol>
+      <physvol name="lvEndpiece3_1" copynumber="1">
+        <volumeref ref="lvEndpiece3"/>
+        <positionref ref="lvEndpiece3_10x4inlvCoreHoleFrontLeftUpos"/>
+      </physvol>
+      <physvol name="lvEndpiece1_2" copynumber="2">
+        <volumeref ref="lvEndpiece1"/>
+        <positionref ref="lvEndpiece1_20x4inlvCoreHoleFrontLeftUpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvFibreShortMatLeftU">
+      <materialref ref="FTSciFibre"/>
+      <solidref ref="lvFibreShortMatLeftU_shape_0x37c79d0"/>
+    </volume>
+    <volume name="lvCoreHoleBackLeftU">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="CoreHoleBackLeftU_shape"/>
+      <physvol name="lvEndplug_0" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="lvEndplug_00x5inlvCoreHoleBackLeftUpos"/>
+      </physvol>
+      <physvol name="lvEndpiece3_1" copynumber="1">
+        <volumeref ref="lvEndpiece3"/>
+        <positionref ref="lvEndpiece3_10x5inlvCoreHoleBackLeftUpos"/>
+      </physvol>
+      <physvol name="lvEndpiece1_2" copynumber="2">
+        <volumeref ref="lvEndpiece1"/>
+        <positionref ref="lvEndpiece1_20x5inlvCoreHoleBackLeftUpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvSideWallLeftU">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvSideWallLeftU_shape_0x37c7060"/>
+    </volume>
+    <volume name="lvHoleWallLeftU">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvHoleWallLeftU_shape_0x37c7550"/>
+    </volume>
+    <volume name="lvFTModuleHoleLeftU">
+      <materialref ref="Air"/>
+      <solidref ref="lvFTModuleHoleLeftU_shape_0x37c53a0"/>
+      <physvol name="lvSkinHoleLeftU_0" copynumber="0">
+        <volumeref ref="lvSkinHoleLeftU"/>
+        <positionref ref="lvSkinHoleLeftU_0inlvFTModuleHoleLeftUpos"/>
+      </physvol>
+      <physvol name="lvCoreHoleFrontLeftU_1" copynumber="1">
+        <volumeref ref="lvCoreHoleFrontLeftU"/>
+        <positionref ref="lvCoreHoleFrontLeftU_1inlvFTModuleHoleLeftUpos"/>
+      </physvol>
+      <physvol name="lvFibreShortMatLeftU_2" copynumber="2">
+        <volumeref ref="lvFibreShortMatLeftU"/>
+        <positionref ref="lvFibreShortMatLeftU_2inlvFTModuleHoleLeftUpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_3" copynumber="3">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_30x3inlvFTModuleHoleLeftUpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_4" copynumber="4">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_40x3inlvFTModuleHoleLeftUpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_5" copynumber="5">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_50x2inlvFTModuleHoleLeftUpos"/>
+      </physvol>
+      <physvol name="lvCoreHoleBackLeftU_6" copynumber="6">
+        <volumeref ref="lvCoreHoleBackLeftU"/>
+        <positionref ref="lvCoreHoleBackLeftU_6inlvFTModuleHoleLeftUpos"/>
+        <rotationref ref="lvCoreHoleBackLeftU_6inlvFTModuleHoleLeftUrot"/>
+      </physvol>
+      <physvol name="lvSkinHoleLeftU_7" copynumber="7">
+        <volumeref ref="lvSkinHoleLeftU"/>
+        <positionref ref="lvSkinHoleLeftU_7inlvFTModuleHoleLeftUpos"/>
+      </physvol>
+      <physvol name="lvSideWall_8" copynumber="8">
+        <volumeref ref="lvSideWall"/>
+        <positionref ref="lvSideWall_80x3inlvFTModuleHoleLeftUpos"/>
+      </physvol>
+      <physvol name="lvSideWallLeftU_9" copynumber="9">
+        <volumeref ref="lvSideWallLeftU"/>
+        <positionref ref="lvSideWallLeftU_9inlvFTModuleHoleLeftUpos"/>
+      </physvol>
+      <physvol name="lvHoleWallLeftU_10" copynumber="10">
+        <volumeref ref="lvHoleWallLeftU"/>
+        <positionref ref="lvHoleWallLeftU_10inlvFTModuleHoleLeftUpos"/>
+      </physvol>
+    </volume>
+    <assembly name="lvQuarter5UPos">
+      <physvol name="lvFTModuleHoleLeftU_0" copynumber="0">
+        <volumeref ref="lvFTModuleHoleLeftU"/>
+        <positionref ref="lvFTModuleHoleLeftU_0inlvQuarter5UPospos"/>
+        <rotationref ref="lvFTModuleHoleLeftU_0inlvQuarter5UPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_1" copynumber="1">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_10x2inlvQuarter5UPospos"/>
+        <rotationref ref="lvFTModuleFull_10x2inlvQuarter5UPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_2" copynumber="2">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_20x2inlvQuarter5UPospos"/>
+        <rotationref ref="lvFTModuleFull_20x2inlvQuarter5UPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_3" copynumber="3">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_30x2inlvQuarter5UPospos"/>
+        <rotationref ref="lvFTModuleFull_30x2inlvQuarter5UPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_4" copynumber="4">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_40x2inlvQuarter5UPospos"/>
+        <rotationref ref="lvFTModuleFull_40x2inlvQuarter5UPosrot"/>
+      </physvol>
+    </assembly>
+    <volume name="lvSkinHoleRightU">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvSkinHoleRightU_shape_0x37cde90"/>
+    </volume>
+    <volume name="lvCoreHoleFrontRightU">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="lvCoreHoleFrontRightU_shape_0x37ce420"/>
+      <physvol name="lvEndplug_0" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="lvEndplug_00x6inlvCoreHoleFrontRightUpos"/>
+      </physvol>
+      <physvol name="lvEndpiece3_1" copynumber="1">
+        <volumeref ref="lvEndpiece3"/>
+        <positionref ref="lvEndpiece3_10x6inlvCoreHoleFrontRightUpos"/>
+      </physvol>
+      <physvol name="lvEndpiece1_2" copynumber="2">
+        <volumeref ref="lvEndpiece1"/>
+        <positionref ref="lvEndpiece1_20x6inlvCoreHoleFrontRightUpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvFibreShortMatRightU">
+      <materialref ref="FTSciFibre"/>
+      <solidref ref="lvFibreShortMatRightU_shape_0x37d00b0"/>
+    </volume>
+    <volume name="lvCoreHoleBackRightU">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="CoreHoleBackRightU_shape"/>
+      <physvol name="lvEndplug_0" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="lvEndplug_00x7inlvCoreHoleBackRightUpos"/>
+      </physvol>
+      <physvol name="lvEndpiece3_1" copynumber="1">
+        <volumeref ref="lvEndpiece3"/>
+        <positionref ref="lvEndpiece3_10x7inlvCoreHoleBackRightUpos"/>
+      </physvol>
+      <physvol name="lvEndpiece1_2" copynumber="2">
+        <volumeref ref="lvEndpiece1"/>
+        <positionref ref="lvEndpiece1_20x7inlvCoreHoleBackRightUpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvSideWallRightU">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvSideWallRightU_shape_0x37cf790"/>
+    </volume>
+    <volume name="lvHoleWallRightU">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvHoleWallRightU_shape_0x37cfc70"/>
+    </volume>
+    <volume name="lvFTModuleHoleRightU">
+      <materialref ref="Air"/>
+      <solidref ref="lvFTModuleHoleRightU_shape_0x37cd8d0"/>
+      <physvol name="lvSkinHoleRightU_0" copynumber="0">
+        <volumeref ref="lvSkinHoleRightU"/>
+        <positionref ref="lvSkinHoleRightU_0inlvFTModuleHoleRightUpos"/>
+      </physvol>
+      <physvol name="lvCoreHoleFrontRightU_1" copynumber="1">
+        <volumeref ref="lvCoreHoleFrontRightU"/>
+        <positionref ref="lvCoreHoleFrontRightU_1inlvFTModuleHoleRightUpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_2" copynumber="2">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_20x2inlvFTModuleHoleRightUpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_3" copynumber="3">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_30x4inlvFTModuleHoleRightUpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_4" copynumber="4">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_40x4inlvFTModuleHoleRightUpos"/>
+      </physvol>
+      <physvol name="lvFibreShortMatRightU_5" copynumber="5">
+        <volumeref ref="lvFibreShortMatRightU"/>
+        <positionref ref="lvFibreShortMatRightU_5inlvFTModuleHoleRightUpos"/>
+      </physvol>
+      <physvol name="lvCoreHoleBackRightU_6" copynumber="6">
+        <volumeref ref="lvCoreHoleBackRightU"/>
+        <positionref ref="lvCoreHoleBackRightU_6inlvFTModuleHoleRightUpos"/>
+        <rotationref ref="lvCoreHoleBackRightU_6inlvFTModuleHoleRightUrot"/>
+      </physvol>
+      <physvol name="lvSkinHoleRightU_7" copynumber="7">
+        <volumeref ref="lvSkinHoleRightU"/>
+        <positionref ref="lvSkinHoleRightU_7inlvFTModuleHoleRightUpos"/>
+      </physvol>
+      <physvol name="lvSideWall_8" copynumber="8">
+        <volumeref ref="lvSideWall"/>
+        <positionref ref="lvSideWall_80x4inlvFTModuleHoleRightUpos"/>
+      </physvol>
+      <physvol name="lvSideWallRightU_9" copynumber="9">
+        <volumeref ref="lvSideWallRightU"/>
+        <positionref ref="lvSideWallRightU_9inlvFTModuleHoleRightUpos"/>
+      </physvol>
+      <physvol name="lvHoleWallRightU_10" copynumber="10">
+        <volumeref ref="lvHoleWallRightU"/>
+        <positionref ref="lvHoleWallRightU_10inlvFTModuleHoleRightUpos"/>
+      </physvol>
+    </volume>
+    <assembly name="lvQuarter5UNeg">
+      <physvol name="lvFTModuleHoleRightU_0" copynumber="0">
+        <volumeref ref="lvFTModuleHoleRightU"/>
+        <positionref ref="lvFTModuleHoleRightU_0inlvQuarter5UNegpos"/>
+        <rotationref ref="lvFTModuleHoleRightU_0inlvQuarter5UNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_1" copynumber="1">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_10x3inlvQuarter5UNegpos"/>
+        <rotationref ref="lvFTModuleFull_10x3inlvQuarter5UNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_2" copynumber="2">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_20x3inlvQuarter5UNegpos"/>
+        <rotationref ref="lvFTModuleFull_20x3inlvQuarter5UNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_3" copynumber="3">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_30x3inlvQuarter5UNegpos"/>
+        <rotationref ref="lvFTModuleFull_30x3inlvQuarter5UNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_4" copynumber="4">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_40x3inlvQuarter5UNegpos"/>
+        <rotationref ref="lvFTModuleFull_40x3inlvQuarter5UNegrot"/>
+      </physvol>
+    </assembly>
+    <volume name="lvLayer5U">
+      <materialref ref="Air"/>
+      <solidref ref="lvLayer5X1_shape_0x381bc80"/>
+      <physvol name="lvQuarter5UPos_0" copynumber="0">
+        <volumeref ref="lvQuarter5UPos"/>
+        <positionref ref="lvQuarter5UPos_0inlvLayer5Upos"/>
+        <rotationref ref="lvQuarter5UPos_0inlvLayer5Urot"/>
+      </physvol>
+      <physvol name="lvQuarter5UNeg_1" copynumber="1">
+        <volumeref ref="lvQuarter5UNeg"/>
+        <positionref ref="lvQuarter5UNeg_1inlvLayer5Upos"/>
+        <rotationref ref="lvQuarter5UNeg_1inlvLayer5Urot"/>
+      </physvol>
+      <physvol name="lvQuarter5UNeg_2" copynumber="2">
+        <volumeref ref="lvQuarter5UNeg"/>
+        <positionref ref="lvQuarter5UNeg_2inlvLayer5Upos"/>
+      </physvol>
+      <physvol name="lvQuarter5UPos_3" copynumber="3">
+        <volumeref ref="lvQuarter5UPos"/>
+        <positionref ref="lvQuarter5UPos_3inlvLayer5Upos"/>
+      </physvol>
+    </volume>
+    <volume name="lvSkinHoleRightV">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvSkinHoleRightV_shape_0x37d0bb0"/>
+    </volume>
+    <volume name="lvCoreHoleFrontRightV">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="lvCoreHoleFrontRightV_shape_0x37d1140"/>
+      <physvol name="lvEndplug_0" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="lvEndplug_00x8inlvCoreHoleFrontRightVpos"/>
+      </physvol>
+      <physvol name="lvEndpiece3_1" copynumber="1">
+        <volumeref ref="lvEndpiece3"/>
+        <positionref ref="lvEndpiece3_10x8inlvCoreHoleFrontRightVpos"/>
+      </physvol>
+      <physvol name="lvEndpiece1_2" copynumber="2">
+        <volumeref ref="lvEndpiece1"/>
+        <positionref ref="lvEndpiece1_20x8inlvCoreHoleFrontRightVpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvFibreShortMatRightV">
+      <materialref ref="FTSciFibre"/>
+      <solidref ref="lvFibreShortMatRightV_shape_0x37d2dd0"/>
+    </volume>
+    <volume name="lvCoreHoleBackRightV">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="CoreHoleBackRightV_shape"/>
+      <physvol name="lvEndplug_0" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="lvEndplug_00x9inlvCoreHoleBackRightVpos"/>
+      </physvol>
+      <physvol name="lvEndpiece3_1" copynumber="1">
+        <volumeref ref="lvEndpiece3"/>
+        <positionref ref="lvEndpiece3_10x9inlvCoreHoleBackRightVpos"/>
+      </physvol>
+      <physvol name="lvEndpiece1_2" copynumber="2">
+        <volumeref ref="lvEndpiece1"/>
+        <positionref ref="lvEndpiece1_20x9inlvCoreHoleBackRightVpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvSideWallRightV">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvSideWallRightV_shape_0x37d24b0"/>
+    </volume>
+    <volume name="lvHoleWallRightV">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvHoleWallRightV_shape_0x37d2990"/>
+    </volume>
+    <volume name="lvFTModuleHoleRightV">
+      <materialref ref="Air"/>
+      <solidref ref="lvFTModuleHoleRightV_shape_0x37d05f0"/>
+      <physvol name="lvSkinHoleRightV_0" copynumber="0">
+        <volumeref ref="lvSkinHoleRightV"/>
+        <positionref ref="lvSkinHoleRightV_0inlvFTModuleHoleRightVpos"/>
+      </physvol>
+      <physvol name="lvCoreHoleFrontRightV_1" copynumber="1">
+        <volumeref ref="lvCoreHoleFrontRightV"/>
+        <positionref ref="lvCoreHoleFrontRightV_1inlvFTModuleHoleRightVpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_2" copynumber="2">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_20x3inlvFTModuleHoleRightVpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_3" copynumber="3">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_30x5inlvFTModuleHoleRightVpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_4" copynumber="4">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_40x5inlvFTModuleHoleRightVpos"/>
+      </physvol>
+      <physvol name="lvFibreShortMatRightV_5" copynumber="5">
+        <volumeref ref="lvFibreShortMatRightV"/>
+        <positionref ref="lvFibreShortMatRightV_5inlvFTModuleHoleRightVpos"/>
+      </physvol>
+      <physvol name="lvCoreHoleBackRightV_6" copynumber="6">
+        <volumeref ref="lvCoreHoleBackRightV"/>
+        <positionref ref="lvCoreHoleBackRightV_6inlvFTModuleHoleRightVpos"/>
+        <rotationref ref="lvCoreHoleBackRightV_6inlvFTModuleHoleRightVrot"/>
+      </physvol>
+      <physvol name="lvSkinHoleRightV_7" copynumber="7">
+        <volumeref ref="lvSkinHoleRightV"/>
+        <positionref ref="lvSkinHoleRightV_7inlvFTModuleHoleRightVpos"/>
+      </physvol>
+      <physvol name="lvSideWall_8" copynumber="8">
+        <volumeref ref="lvSideWall"/>
+        <positionref ref="lvSideWall_80x5inlvFTModuleHoleRightVpos"/>
+      </physvol>
+      <physvol name="lvSideWallRightV_9" copynumber="9">
+        <volumeref ref="lvSideWallRightV"/>
+        <positionref ref="lvSideWallRightV_9inlvFTModuleHoleRightVpos"/>
+      </physvol>
+      <physvol name="lvHoleWallRightV_10" copynumber="10">
+        <volumeref ref="lvHoleWallRightV"/>
+        <positionref ref="lvHoleWallRightV_10inlvFTModuleHoleRightVpos"/>
+      </physvol>
+    </volume>
+    <assembly name="lvQuarter5VNeg">
+      <physvol name="lvFTModuleHoleRightV_0" copynumber="0">
+        <volumeref ref="lvFTModuleHoleRightV"/>
+        <positionref ref="lvFTModuleHoleRightV_0inlvQuarter5VNegpos"/>
+        <rotationref ref="lvFTModuleHoleRightV_0inlvQuarter5VNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_1" copynumber="1">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_10x4inlvQuarter5VNegpos"/>
+        <rotationref ref="lvFTModuleFull_10x4inlvQuarter5VNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_2" copynumber="2">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_20x4inlvQuarter5VNegpos"/>
+        <rotationref ref="lvFTModuleFull_20x4inlvQuarter5VNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_3" copynumber="3">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_30x4inlvQuarter5VNegpos"/>
+        <rotationref ref="lvFTModuleFull_30x4inlvQuarter5VNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_4" copynumber="4">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_40x4inlvQuarter5VNegpos"/>
+        <rotationref ref="lvFTModuleFull_40x4inlvQuarter5VNegrot"/>
+      </physvol>
+    </assembly>
+    <volume name="lvSkinHoleLeftV">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvSkinHoleLeftV_shape_0x37c8500"/>
+    </volume>
+    <volume name="lvCoreHoleFrontLeftV">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="lvCoreHoleFrontLeftV_shape_0x37c89c0"/>
+      <physvol name="lvEndplug_0" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="lvEndplug_00x10inlvCoreHoleFrontLeftVpos"/>
+      </physvol>
+      <physvol name="lvEndpiece3_1" copynumber="1">
+        <volumeref ref="lvEndpiece3"/>
+        <positionref ref="lvEndpiece3_10x10inlvCoreHoleFrontLeftVpos"/>
+      </physvol>
+      <physvol name="lvEndpiece1_2" copynumber="2">
+        <volumeref ref="lvEndpiece1"/>
+        <positionref ref="lvEndpiece1_20x10inlvCoreHoleFrontLeftVpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvFibreShortMatLeftV">
+      <materialref ref="FTSciFibre"/>
+      <solidref ref="lvFibreShortMatLeftV_shape_0x37ca6d0"/>
+    </volume>
+    <volume name="lvCoreHoleBackLeftV">
+      <materialref ref="FTHoneycomb"/>
+      <solidref ref="CoreHoleBackLeftV_shape"/>
+      <physvol name="lvEndplug_0" copynumber="0">
+        <volumeref ref="lvEndplug"/>
+        <positionref ref="lvEndplug_00x11inlvCoreHoleBackLeftVpos"/>
+      </physvol>
+      <physvol name="lvEndpiece3_1" copynumber="1">
+        <volumeref ref="lvEndpiece3"/>
+        <positionref ref="lvEndpiece3_10x11inlvCoreHoleBackLeftVpos"/>
+      </physvol>
+      <physvol name="lvEndpiece1_2" copynumber="2">
+        <volumeref ref="lvEndpiece1"/>
+        <positionref ref="lvEndpiece1_20x11inlvCoreHoleBackLeftVpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvSideWallLeftV">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvSideWallLeftV_shape_0x37c9d60"/>
+    </volume>
+    <volume name="lvHoleWallLeftV">
+      <materialref ref="FTSkin"/>
+      <solidref ref="lvHoleWallLeftV_shape_0x37ca250"/>
+    </volume>
+    <volume name="lvFTModuleHoleLeftV">
+      <materialref ref="Air"/>
+      <solidref ref="lvFTModuleHoleLeftV_shape_0x37c7f40"/>
+      <physvol name="lvSkinHoleLeftV_0" copynumber="0">
+        <volumeref ref="lvSkinHoleLeftV"/>
+        <positionref ref="lvSkinHoleLeftV_0inlvFTModuleHoleLeftVpos"/>
+      </physvol>
+      <physvol name="lvCoreHoleFrontLeftV_1" copynumber="1">
+        <volumeref ref="lvCoreHoleFrontLeftV"/>
+        <positionref ref="lvCoreHoleFrontLeftV_1inlvFTModuleHoleLeftVpos"/>
+      </physvol>
+      <physvol name="lvFibreShortMatLeftV_2" copynumber="2">
+        <volumeref ref="lvFibreShortMatLeftV"/>
+        <positionref ref="lvFibreShortMatLeftV_2inlvFTModuleHoleLeftVpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_3" copynumber="3">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_30x6inlvFTModuleHoleLeftVpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_4" copynumber="4">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_40x6inlvFTModuleHoleLeftVpos"/>
+      </physvol>
+      <physvol name="lvFibreMat_5" copynumber="5">
+        <volumeref ref="lvFibreMat"/>
+        <positionref ref="lvFibreMat_50x3inlvFTModuleHoleLeftVpos"/>
+      </physvol>
+      <physvol name="lvCoreHoleBackLeftV_6" copynumber="6">
+        <volumeref ref="lvCoreHoleBackLeftV"/>
+        <positionref ref="lvCoreHoleBackLeftV_6inlvFTModuleHoleLeftVpos"/>
+        <rotationref ref="lvCoreHoleBackLeftV_6inlvFTModuleHoleLeftVrot"/>
+      </physvol>
+      <physvol name="lvSkinHoleLeftV_7" copynumber="7">
+        <volumeref ref="lvSkinHoleLeftV"/>
+        <positionref ref="lvSkinHoleLeftV_7inlvFTModuleHoleLeftVpos"/>
+      </physvol>
+      <physvol name="lvSideWall_8" copynumber="8">
+        <volumeref ref="lvSideWall"/>
+        <positionref ref="lvSideWall_80x6inlvFTModuleHoleLeftVpos"/>
+      </physvol>
+      <physvol name="lvSideWallLeftV_9" copynumber="9">
+        <volumeref ref="lvSideWallLeftV"/>
+        <positionref ref="lvSideWallLeftV_9inlvFTModuleHoleLeftVpos"/>
+      </physvol>
+      <physvol name="lvHoleWallLeftV_10" copynumber="10">
+        <volumeref ref="lvHoleWallLeftV"/>
+        <positionref ref="lvHoleWallLeftV_10inlvFTModuleHoleLeftVpos"/>
+      </physvol>
+    </volume>
+    <assembly name="lvQuarter5VPos">
+      <physvol name="lvFTModuleHoleLeftV_0" copynumber="0">
+        <volumeref ref="lvFTModuleHoleLeftV"/>
+        <positionref ref="lvFTModuleHoleLeftV_0inlvQuarter5VPospos"/>
+        <rotationref ref="lvFTModuleHoleLeftV_0inlvQuarter5VPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_1" copynumber="1">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_10x5inlvQuarter5VPospos"/>
+        <rotationref ref="lvFTModuleFull_10x5inlvQuarter5VPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_2" copynumber="2">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_20x5inlvQuarter5VPospos"/>
+        <rotationref ref="lvFTModuleFull_20x5inlvQuarter5VPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_3" copynumber="3">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_30x5inlvQuarter5VPospos"/>
+        <rotationref ref="lvFTModuleFull_30x5inlvQuarter5VPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_4" copynumber="4">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_40x5inlvQuarter5VPospos"/>
+        <rotationref ref="lvFTModuleFull_40x5inlvQuarter5VPosrot"/>
+      </physvol>
+    </assembly>
+    <volume name="lvLayer5V">
+      <materialref ref="Air"/>
+      <solidref ref="lvLayer5X1_shape_0x381bc80"/>
+      <physvol name="lvQuarter5VNeg_0" copynumber="0">
+        <volumeref ref="lvQuarter5VNeg"/>
+        <positionref ref="lvQuarter5VNeg_0inlvLayer5Vpos"/>
+        <rotationref ref="lvQuarter5VNeg_0inlvLayer5Vrot"/>
+      </physvol>
+      <physvol name="lvQuarter5VPos_1" copynumber="1">
+        <volumeref ref="lvQuarter5VPos"/>
+        <positionref ref="lvQuarter5VPos_1inlvLayer5Vpos"/>
+        <rotationref ref="lvQuarter5VPos_1inlvLayer5Vrot"/>
+      </physvol>
+      <physvol name="lvQuarter5VPos_2" copynumber="2">
+        <volumeref ref="lvQuarter5VPos"/>
+        <positionref ref="lvQuarter5VPos_2inlvLayer5Vpos"/>
+        <rotationref ref="lvQuarter5VPos_2inlvLayer5Vrot"/>
+      </physvol>
+      <physvol name="lvQuarter5VNeg_3" copynumber="3">
+        <volumeref ref="lvQuarter5VNeg"/>
+        <positionref ref="lvQuarter5VNeg_3inlvLayer5Vpos"/>
+        <rotationref ref="lvQuarter5VNeg_3inlvLayer5Vrot"/>
+      </physvol>
+    </volume>
+    <volume name="lvLayer5X2">
+      <materialref ref="Air"/>
+      <solidref ref="lvLayer5X1_shape_0x381bc80"/>
+      <physvol name="lvQuarter5XPos_0" copynumber="0">
+        <volumeref ref="lvQuarter5XPos"/>
+        <positionref ref="lvQuarter5XPos_0inlvLayer5X2pos"/>
+        <rotationref ref="lvQuarter5XPos_0inlvLayer5X2rot"/>
+      </physvol>
+      <physvol name="lvQuarter5XNeg_1" copynumber="1">
+        <volumeref ref="lvQuarter5XNeg"/>
+        <positionref ref="lvQuarter5XNeg_1inlvLayer5X2pos"/>
+        <rotationref ref="lvQuarter5XNeg_1inlvLayer5X2rot"/>
+      </physvol>
+      <physvol name="lvQuarter5XNeg_2" copynumber="2">
+        <volumeref ref="lvQuarter5XNeg"/>
+        <positionref ref="lvQuarter5XNeg_2inlvLayer5X2pos"/>
+      </physvol>
+      <physvol name="lvQuarter5XPos_3" copynumber="3">
+        <volumeref ref="lvQuarter5XPos"/>
+        <positionref ref="lvQuarter5XPos_3inlvLayer5X2pos"/>
+      </physvol>
+    </volume>
+    <volume name="lvStation5">
+      <materialref ref="Air"/>
+      <solidref ref="lvStation5_shape_0x381bf00"/>
+      <physvol name="lvCFramePair_0" copynumber="0">
+        <volumeref ref="lvCFramePair"/>
+        <positionref ref="lvCFramePair_0inlvStation5pos"/>
+      </physvol>
+      <physvol name="lvCFramePair_1" copynumber="1">
+        <volumeref ref="lvCFramePair"/>
+        <positionref ref="lvCFramePair_1inlvStation5pos"/>
+      </physvol>
+      <physvol name="lvLayer5X1_2" copynumber="2">
+        <volumeref ref="lvLayer5X1"/>
+        <positionref ref="lvLayer5X1_2inlvStation5pos"/>
+      </physvol>
+      <physvol name="lvLayer5U_3" copynumber="3">
+        <volumeref ref="lvLayer5U"/>
+        <positionref ref="lvLayer5U_3inlvStation5pos"/>
+      </physvol>
+      <physvol name="lvLayer5V_4" copynumber="4">
+        <volumeref ref="lvLayer5V"/>
+        <positionref ref="lvLayer5V_4inlvStation5pos"/>
+      </physvol>
+      <physvol name="lvLayer5X2_5" copynumber="5">
+        <volumeref ref="lvLayer5X2"/>
+        <positionref ref="lvLayer5X2_5inlvStation5pos"/>
+      </physvol>
+    </volume>
+    <assembly name="lvQuarter6XNeg">
+      <physvol name="lvFTModuleHoleRightX_0" copynumber="0">
+        <volumeref ref="lvFTModuleHoleRightX"/>
+        <positionref ref="lvFTModuleHoleRightX_00x1inlvQuarter6XNegpos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_1" copynumber="1">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_10x6inlvQuarter6XNegpos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_2" copynumber="2">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_20x6inlvQuarter6XNegpos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_3" copynumber="3">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_30x6inlvQuarter6XNegpos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_4" copynumber="4">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_40x6inlvQuarter6XNegpos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_5" copynumber="5">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_5inlvQuarter6XNegpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvQuarter6XPos">
+      <physvol name="lvFTModuleHoleLeftX_0" copynumber="0">
+        <volumeref ref="lvFTModuleHoleLeftX"/>
+        <positionref ref="lvFTModuleHoleLeftX_00x1inlvQuarter6XPospos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_1" copynumber="1">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_10x7inlvQuarter6XPospos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_2" copynumber="2">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_20x7inlvQuarter6XPospos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_3" copynumber="3">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_30x7inlvQuarter6XPospos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_4" copynumber="4">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_40x7inlvQuarter6XPospos"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_5" copynumber="5">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_50x1inlvQuarter6XPospos"/>
+      </physvol>
+    </assembly>
+    <volume name="lvLayer6X1">
+      <materialref ref="Air"/>
+      <solidref ref="lvLayer5X1_shape_0x381bc80"/>
+      <physvol name="lvQuarter6XNeg_0" copynumber="0">
+        <volumeref ref="lvQuarter6XNeg"/>
+        <positionref ref="lvQuarter6XNeg_0inlvLayer6X1pos"/>
+        <rotationref ref="lvQuarter6XNeg_0inlvLayer6X1rot"/>
+      </physvol>
+      <physvol name="lvQuarter6XPos_1" copynumber="1">
+        <volumeref ref="lvQuarter6XPos"/>
+        <positionref ref="lvQuarter6XPos_1inlvLayer6X1pos"/>
+        <rotationref ref="lvQuarter6XPos_1inlvLayer6X1rot"/>
+      </physvol>
+      <physvol name="lvQuarter6XPos_2" copynumber="2">
+        <volumeref ref="lvQuarter6XPos"/>
+        <positionref ref="lvQuarter6XPos_2inlvLayer6X1pos"/>
+        <rotationref ref="lvQuarter6XPos_2inlvLayer6X1rot"/>
+      </physvol>
+      <physvol name="lvQuarter6XNeg_3" copynumber="3">
+        <volumeref ref="lvQuarter6XNeg"/>
+        <positionref ref="lvQuarter6XNeg_3inlvLayer6X1pos"/>
+        <rotationref ref="lvQuarter6XNeg_3inlvLayer6X1rot"/>
+      </physvol>
+    </volume>
+    <assembly name="lvQuarter6UPos">
+      <physvol name="lvFTModuleHoleLeftU_0" copynumber="0">
+        <volumeref ref="lvFTModuleHoleLeftU"/>
+        <positionref ref="lvFTModuleHoleLeftU_00x1inlvQuarter6UPospos"/>
+        <rotationref ref="lvFTModuleHoleLeftU_00x1inlvQuarter6UPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_1" copynumber="1">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_10x8inlvQuarter6UPospos"/>
+        <rotationref ref="lvFTModuleFull_10x8inlvQuarter6UPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_2" copynumber="2">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_20x8inlvQuarter6UPospos"/>
+        <rotationref ref="lvFTModuleFull_20x8inlvQuarter6UPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_3" copynumber="3">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_30x8inlvQuarter6UPospos"/>
+        <rotationref ref="lvFTModuleFull_30x8inlvQuarter6UPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_4" copynumber="4">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_40x8inlvQuarter6UPospos"/>
+        <rotationref ref="lvFTModuleFull_40x8inlvQuarter6UPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_5" copynumber="5">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_50x2inlvQuarter6UPospos"/>
+        <rotationref ref="lvFTModuleFull_50x2inlvQuarter6UPosrot"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvQuarter6UNeg">
+      <physvol name="lvFTModuleHoleRightU_0" copynumber="0">
+        <volumeref ref="lvFTModuleHoleRightU"/>
+        <positionref ref="lvFTModuleHoleRightU_00x1inlvQuarter6UNegpos"/>
+        <rotationref ref="lvFTModuleHoleRightU_00x1inlvQuarter6UNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_1" copynumber="1">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_10x9inlvQuarter6UNegpos"/>
+        <rotationref ref="lvFTModuleFull_10x9inlvQuarter6UNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_2" copynumber="2">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_20x9inlvQuarter6UNegpos"/>
+        <rotationref ref="lvFTModuleFull_20x9inlvQuarter6UNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_3" copynumber="3">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_30x9inlvQuarter6UNegpos"/>
+        <rotationref ref="lvFTModuleFull_30x9inlvQuarter6UNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_4" copynumber="4">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_40x9inlvQuarter6UNegpos"/>
+        <rotationref ref="lvFTModuleFull_40x9inlvQuarter6UNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_5" copynumber="5">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_50x3inlvQuarter6UNegpos"/>
+        <rotationref ref="lvFTModuleFull_50x3inlvQuarter6UNegrot"/>
+      </physvol>
+    </assembly>
+    <volume name="lvLayer6U">
+      <materialref ref="Air"/>
+      <solidref ref="lvLayer5X1_shape_0x381bc80"/>
+      <physvol name="lvQuarter6UPos_0" copynumber="0">
+        <volumeref ref="lvQuarter6UPos"/>
+        <positionref ref="lvQuarter6UPos_0inlvLayer6Upos"/>
+        <rotationref ref="lvQuarter6UPos_0inlvLayer6Urot"/>
+      </physvol>
+      <physvol name="lvQuarter6UNeg_1" copynumber="1">
+        <volumeref ref="lvQuarter6UNeg"/>
+        <positionref ref="lvQuarter6UNeg_1inlvLayer6Upos"/>
+        <rotationref ref="lvQuarter6UNeg_1inlvLayer6Urot"/>
+      </physvol>
+      <physvol name="lvQuarter6UNeg_2" copynumber="2">
+        <volumeref ref="lvQuarter6UNeg"/>
+        <positionref ref="lvQuarter6UNeg_2inlvLayer6Upos"/>
+      </physvol>
+      <physvol name="lvQuarter6UPos_3" copynumber="3">
+        <volumeref ref="lvQuarter6UPos"/>
+        <positionref ref="lvQuarter6UPos_3inlvLayer6Upos"/>
+      </physvol>
+    </volume>
+    <assembly name="lvQuarter6VNeg">
+      <physvol name="lvFTModuleHoleRightV_0" copynumber="0">
+        <volumeref ref="lvFTModuleHoleRightV"/>
+        <positionref ref="lvFTModuleHoleRightV_00x1inlvQuarter6VNegpos"/>
+        <rotationref ref="lvFTModuleHoleRightV_00x1inlvQuarter6VNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_1" copynumber="1">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_10x10inlvQuarter6VNegpos"/>
+        <rotationref ref="lvFTModuleFull_10x10inlvQuarter6VNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_2" copynumber="2">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_20x10inlvQuarter6VNegpos"/>
+        <rotationref ref="lvFTModuleFull_20x10inlvQuarter6VNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_3" copynumber="3">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_30x10inlvQuarter6VNegpos"/>
+        <rotationref ref="lvFTModuleFull_30x10inlvQuarter6VNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_4" copynumber="4">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_40x10inlvQuarter6VNegpos"/>
+        <rotationref ref="lvFTModuleFull_40x10inlvQuarter6VNegrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_5" copynumber="5">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_50x4inlvQuarter6VNegpos"/>
+        <rotationref ref="lvFTModuleFull_50x4inlvQuarter6VNegrot"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvQuarter6VPos">
+      <physvol name="lvFTModuleHoleLeftV_0" copynumber="0">
+        <volumeref ref="lvFTModuleHoleLeftV"/>
+        <positionref ref="lvFTModuleHoleLeftV_00x1inlvQuarter6VPospos"/>
+        <rotationref ref="lvFTModuleHoleLeftV_00x1inlvQuarter6VPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_1" copynumber="1">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_10x11inlvQuarter6VPospos"/>
+        <rotationref ref="lvFTModuleFull_10x11inlvQuarter6VPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_2" copynumber="2">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_20x11inlvQuarter6VPospos"/>
+        <rotationref ref="lvFTModuleFull_20x11inlvQuarter6VPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_3" copynumber="3">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_30x11inlvQuarter6VPospos"/>
+        <rotationref ref="lvFTModuleFull_30x11inlvQuarter6VPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_4" copynumber="4">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_40x11inlvQuarter6VPospos"/>
+        <rotationref ref="lvFTModuleFull_40x11inlvQuarter6VPosrot"/>
+      </physvol>
+      <physvol name="lvFTModuleFull_5" copynumber="5">
+        <volumeref ref="lvFTModuleFull"/>
+        <positionref ref="lvFTModuleFull_50x5inlvQuarter6VPospos"/>
+        <rotationref ref="lvFTModuleFull_50x5inlvQuarter6VPosrot"/>
+      </physvol>
+    </assembly>
+    <volume name="lvLayer6V">
+      <materialref ref="Air"/>
+      <solidref ref="lvLayer5X1_shape_0x381bc80"/>
+      <physvol name="lvQuarter6VNeg_0" copynumber="0">
+        <volumeref ref="lvQuarter6VNeg"/>
+        <positionref ref="lvQuarter6VNeg_0inlvLayer6Vpos"/>
+        <rotationref ref="lvQuarter6VNeg_0inlvLayer6Vrot"/>
+      </physvol>
+      <physvol name="lvQuarter6VPos_1" copynumber="1">
+        <volumeref ref="lvQuarter6VPos"/>
+        <positionref ref="lvQuarter6VPos_1inlvLayer6Vpos"/>
+        <rotationref ref="lvQuarter6VPos_1inlvLayer6Vrot"/>
+      </physvol>
+      <physvol name="lvQuarter6VPos_2" copynumber="2">
+        <volumeref ref="lvQuarter6VPos"/>
+        <positionref ref="lvQuarter6VPos_2inlvLayer6Vpos"/>
+        <rotationref ref="lvQuarter6VPos_2inlvLayer6Vrot"/>
+      </physvol>
+      <physvol name="lvQuarter6VNeg_3" copynumber="3">
+        <volumeref ref="lvQuarter6VNeg"/>
+        <positionref ref="lvQuarter6VNeg_3inlvLayer6Vpos"/>
+        <rotationref ref="lvQuarter6VNeg_3inlvLayer6Vrot"/>
+      </physvol>
+    </volume>
+    <volume name="lvLayer6X2">
+      <materialref ref="Air"/>
+      <solidref ref="lvLayer5X1_shape_0x381bc80"/>
+      <physvol name="lvQuarter6XPos_0" copynumber="0">
+        <volumeref ref="lvQuarter6XPos"/>
+        <positionref ref="lvQuarter6XPos_0inlvLayer6X2pos"/>
+        <rotationref ref="lvQuarter6XPos_0inlvLayer6X2rot"/>
+      </physvol>
+      <physvol name="lvQuarter6XNeg_1" copynumber="1">
+        <volumeref ref="lvQuarter6XNeg"/>
+        <positionref ref="lvQuarter6XNeg_1inlvLayer6X2pos"/>
+        <rotationref ref="lvQuarter6XNeg_1inlvLayer6X2rot"/>
+      </physvol>
+      <physvol name="lvQuarter6XNeg_2" copynumber="2">
+        <volumeref ref="lvQuarter6XNeg"/>
+        <positionref ref="lvQuarter6XNeg_2inlvLayer6X2pos"/>
+      </physvol>
+      <physvol name="lvQuarter6XPos_3" copynumber="3">
+        <volumeref ref="lvQuarter6XPos"/>
+        <positionref ref="lvQuarter6XPos_3inlvLayer6X2pos"/>
+      </physvol>
+    </volume>
+    <volume name="lvStation6">
+      <materialref ref="Air"/>
+      <solidref ref="lvStation5_shape_0x381bf00"/>
+      <physvol name="lvCFramePair_0" copynumber="0">
+        <volumeref ref="lvCFramePair"/>
+        <positionref ref="lvCFramePair_00x1inlvStation6pos"/>
+      </physvol>
+      <physvol name="lvCFramePair_1" copynumber="1">
+        <volumeref ref="lvCFramePair"/>
+        <positionref ref="lvCFramePair_10x1inlvStation6pos"/>
+      </physvol>
+      <physvol name="lvLayer6X1_2" copynumber="2">
+        <volumeref ref="lvLayer6X1"/>
+        <positionref ref="lvLayer6X1_2inlvStation6pos"/>
+      </physvol>
+      <physvol name="lvLayer6U_3" copynumber="3">
+        <volumeref ref="lvLayer6U"/>
+        <positionref ref="lvLayer6U_3inlvStation6pos"/>
+      </physvol>
+      <physvol name="lvLayer6V_4" copynumber="4">
+        <volumeref ref="lvLayer6V"/>
+        <positionref ref="lvLayer6V_4inlvStation6pos"/>
+      </physvol>
+      <physvol name="lvLayer6X2_5" copynumber="5">
+        <volumeref ref="lvLayer6X2"/>
+        <positionref ref="lvLayer6X2_5inlvStation6pos"/>
+      </physvol>
+    </volume>
+    <volume name="lvFT">
+      <materialref ref="Air"/>
+      <solidref ref="lvFT_shape_0x3608920"/>
+      <physvol name="lvStation5_0" copynumber="0">
+        <volumeref ref="lvStation5"/>
+        <positionref ref="lvStation5_0inlvFTpos"/>
+        <rotationref ref="lvStation5_0inlvFTrot"/>
+      </physvol>
+      <physvol name="lvStation5_1" copynumber="1">
+        <volumeref ref="lvStation5"/>
+        <positionref ref="lvStation5_1inlvFTpos"/>
+        <rotationref ref="lvStation5_1inlvFTrot"/>
+      </physvol>
+      <physvol name="lvStation6_2" copynumber="2">
+        <volumeref ref="lvStation6"/>
+        <positionref ref="lvStation6_2inlvFTpos"/>
+        <rotationref ref="lvStation6_2inlvFTrot"/>
+      </physvol>
+    </volume>
+    <volume name="lvSiShortMatRightX">
+      <materialref ref="MightyTSiliconTracker"/>
+      <solidref ref="lvSiShortMatRightX_shape_0x380de50"/>
+    </volume>
+    <volume name="lvSiMat">
+      <materialref ref="MightyTSiliconTracker"/>
+      <solidref ref="SiMatBox_shape_0x3804b50"/>
+    </volume>
+    <volume name="lvSiMatMT">
+      <materialref ref="MightyTSiliconTracker"/>
+      <solidref ref="SiMatMTBox_shape_0x38787a0"/>
+    </volume>
+    <assembly name="lvMightyTModuleHoleRightX">
+      <physvol name="lvSiShortMatRightX_0" copynumber="0">
+        <volumeref ref="lvSiShortMatRightX"/>
+        <positionref ref="lvSiShortMatRightX_0inlvMightyTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvSiMat_1" copynumber="1">
+        <volumeref ref="lvSiMat"/>
+        <positionref ref="lvSiMat_1inlvMightyTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvSiMat_2" copynumber="2">
+        <volumeref ref="lvSiMat"/>
+        <positionref ref="lvSiMat_2inlvMightyTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_3" copynumber="3">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_3inlvMightyTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_4" copynumber="4">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_4inlvMightyTModuleHoleRightXpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvMightyTModuleFull">
+      <physvol name="lvSiMatMT_0" copynumber="0">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_0inlvMightyTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_1" copynumber="1">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_1inlvMightyTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_2" copynumber="2">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_2inlvMightyTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_3" copynumber="3">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_30x1inlvMightyTModuleFullpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvMightyTModuleColII">
+      <physvol name="lvSiMatMT_0" copynumber="0">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_00x1inlvMightyTModuleColIIpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_1" copynumber="1">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_10x1inlvMightyTModuleColIIpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_2" copynumber="2">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_20x1inlvMightyTModuleColIIpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvMightyTModuleColIII">
+      <physvol name="lvSiMatMT_0" copynumber="0">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_00x2inlvMightyTModuleColIIIpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_1" copynumber="1">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_10x2inlvMightyTModuleColIIIpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvHalf5XNeg">
+      <physvol name="lvMightyTModuleHoleRightX_0" copynumber="0">
+        <volumeref ref="lvMightyTModuleHoleRightX"/>
+        <positionref ref="lvMightyTModuleHoleRightX_0inlvHalf5XNegpos"/>
+      </physvol>
+      <physvol name="lvMightyTModuleFull_1" copynumber="1">
+        <volumeref ref="lvMightyTModuleFull"/>
+        <positionref ref="lvMightyTModuleFull_1inlvHalf5XNegpos"/>
+      </physvol>
+      <physvol name="lvMightyTModuleColII_2" copynumber="2">
+        <volumeref ref="lvMightyTModuleColII"/>
+        <positionref ref="lvMightyTModuleColII_2inlvHalf5XNegpos"/>
+      </physvol>
+      <physvol name="lvMightyTModuleColIII_3" copynumber="3">
+        <volumeref ref="lvMightyTModuleColIII"/>
+        <positionref ref="lvMightyTModuleColIII_3inlvHalf5XNegpos"/>
+      </physvol>
+    </assembly>
+    <volume name="lvSiShortMatLeftX">
+      <materialref ref="MightyTSiliconTracker"/>
+      <solidref ref="lvSiShortMatLeftX_shape_0x380d220"/>
+    </volume>
+    <assembly name="lvMightyTModuleHoleLeftX">
+      <physvol name="lvSiShortMatLeftX_0" copynumber="0">
+        <volumeref ref="lvSiShortMatLeftX"/>
+        <positionref ref="lvSiShortMatLeftX_0inlvMightyTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvSiMat_1" copynumber="1">
+        <volumeref ref="lvSiMat"/>
+        <positionref ref="lvSiMat_10x1inlvMightyTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvSiMat_2" copynumber="2">
+        <volumeref ref="lvSiMat"/>
+        <positionref ref="lvSiMat_20x1inlvMightyTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_3" copynumber="3">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_30x2inlvMightyTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_4" copynumber="4">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_40x1inlvMightyTModuleHoleLeftXpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvHalf5XPos">
+      <physvol name="lvMightyTModuleHoleLeftX_0" copynumber="0">
+        <volumeref ref="lvMightyTModuleHoleLeftX"/>
+        <positionref ref="lvMightyTModuleHoleLeftX_0inlvHalf5XPospos"/>
+      </physvol>
+      <physvol name="lvMightyTModuleFull_1" copynumber="1">
+        <volumeref ref="lvMightyTModuleFull"/>
+        <positionref ref="lvMightyTModuleFull_10x1inlvHalf5XPospos"/>
+      </physvol>
+      <physvol name="lvMightyTModuleColII_2" copynumber="2">
+        <volumeref ref="lvMightyTModuleColII"/>
+        <positionref ref="lvMightyTModuleColII_20x1inlvHalf5XPospos"/>
+      </physvol>
+      <physvol name="lvMightyTModuleColIII_3" copynumber="3">
+        <volumeref ref="lvMightyTModuleColIII"/>
+        <positionref ref="lvMightyTModuleColIII_30x1inlvHalf5XPospos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvLayerX1">
+      <physvol name="lvHalf5XNeg_0" copynumber="0">
+        <volumeref ref="lvHalf5XNeg"/>
+        <positionref ref="lvHalf5XNeg_0inlvLayerX1pos"/>
+        <rotationref ref="lvHalf5XNeg_0inlvLayerX1rot"/>
+      </physvol>
+      <physvol name="lvHalf5XPos_1" copynumber="1">
+        <volumeref ref="lvHalf5XPos"/>
+        <positionref ref="lvHalf5XPos_1inlvLayerX1pos"/>
+        <rotationref ref="lvHalf5XPos_1inlvLayerX1rot"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvLayerX2">
+      <physvol name="lvHalf5XPos_0" copynumber="0">
+        <volumeref ref="lvHalf5XPos"/>
+        <positionref ref="lvHalf5XPos_0inlvLayerX2pos"/>
+      </physvol>
+      <physvol name="lvHalf5XNeg_1" copynumber="1">
+        <volumeref ref="lvHalf5XNeg"/>
+        <positionref ref="lvHalf5XNeg_1inlvLayerX2pos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvStation">
+      <physvol name="lvLayerX1_0" copynumber="0">
+        <volumeref ref="lvLayerX1"/>
+        <positionref ref="lvLayerX1_0inlvStationpos"/>
+      </physvol>
+      <physvol name="lvLayerX2_1" copynumber="1">
+        <volumeref ref="lvLayerX2"/>
+        <positionref ref="lvLayerX2_1inlvStationpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvMightyT">
+      <physvol name="lvStation_0" copynumber="0">
+        <volumeref ref="lvStation"/>
+        <positionref ref="lvStation_0inlvMightyTpos"/>
+        <rotationref ref="lvStation_0inlvMightyTrot"/>
+      </physvol>
+      <physvol name="lvStation_1" copynumber="1">
+        <volumeref ref="lvStation"/>
+        <positionref ref="lvStation_1inlvMightyTpos"/>
+        <rotationref ref="lvStation_1inlvMightyTrot"/>
+      </physvol>
+      <physvol name="lvStation_2" copynumber="2">
+        <volumeref ref="lvStation"/>
+        <positionref ref="lvStation_2inlvMightyTpos"/>
+        <rotationref ref="lvStation_2inlvMightyTrot"/>
+      </physvol>
+    </assembly>
+    <volume name="lvT">
+      <materialref ref="Air"/>
+      <solidref ref="Tsolid_shape_0x365fd20"/>
+      <physvol name="lvFT_0" copynumber="0">
+        <volumeref ref="lvFT"/>
+        <positionref ref="lvFT_0inlvTpos"/>
+      </physvol>
+      <physvol name="lvMightyT_1" copynumber="1">
+        <volumeref ref="lvMightyT"/>
+        <positionref ref="lvMightyT_1inlvTpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvAfterMagnetRegion">
+      <materialref ref="Air"/>
+      <solidref ref="lvAfterMagnetRegion_shape_0x33d8f20"/>
+      <physvol name="lvT_0" copynumber="0">
+        <volumeref ref="lvT"/>
+        <positionref ref="lvT_0inlvAfterMagnetRegionpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvAfterMuon">
+      <materialref ref="Air"/>
+      <solidref ref="shape-AfterMuon_shape_0x3662200"/>
+    </volume>
+    <volume name="lvDownstreamRegion">
+      <materialref ref="Air"/>
+      <solidref ref="shape-DownstreamRegion_shape_0x36626a0"/>
+      <physvol name="lvAfterMuon_0" copynumber="0">
+        <volumeref ref="lvAfterMuon"/>
+        <positionref ref="lvAfterMuon_0inlvDownstreamRegionpos"/>
+      </physvol>
+    </volume>
+    <volume name="world_volume">
+      <materialref ref="Air"/>
+      <solidref ref="world_volume_shape_0x368e510"/>
+      <physvol name="lvUpstreamRegion_0" copynumber="0">
+        <volumeref ref="lvUpstreamRegion"/>
+        <positionref ref="lvUpstreamRegion_0inworld_volumepos"/>
+      </physvol>
+      <physvol name="lvBeforeMagnetRegion_1" copynumber="1">
+        <volumeref ref="lvBeforeMagnetRegion"/>
+        <positionref ref="lvBeforeMagnetRegion_1inworld_volumepos"/>
+      </physvol>
+      <physvol name="lvMagnetRegion_2" copynumber="2">
+        <volumeref ref="lvMagnetRegion"/>
+        <positionref ref="lvMagnetRegion_2inworld_volumepos"/>
+      </physvol>
+      <physvol name="lvAfterMagnetRegion_3" copynumber="3">
+        <volumeref ref="lvAfterMagnetRegion"/>
+        <positionref ref="lvAfterMagnetRegion_3inworld_volumepos"/>
+      </physvol>
+      <physvol name="lvDownstreamRegion_4" copynumber="4">
+        <volumeref ref="lvDownstreamRegion"/>
+        <positionref ref="lvDownstreamRegion_4inworld_volumepos"/>
+      </physvol>
+    </volume>
+  </structure>
+  <setup name="default" version="1.0">
+    <world ref="world_volume"/>
+  </setup>
+</gdml>

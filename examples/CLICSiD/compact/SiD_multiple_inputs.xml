@@ -19,6 +19,8 @@
 
 <lccdd>
 
+  <geometry open="true" close="false"/>
+
   <info name="clic_sid_cdr"
         title="CLIC Silicon Detector CDR"
         author="Christian Grefe"
@@ -29,12 +31,12 @@
   </info>
 
   <includes>
-    <gdmlFile  ref="elements.xml"/>
-    <gdmlFile  ref="materials.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
   </includes>
   
   <define>
-    <include ref="SiDConstants.xml"/>
+    <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiDConstants.xml"/>
   </define>
 
 
@@ -67,28 +69,6 @@
   </display>
 
   <comment>Additional design specific material definitions</comment>
-  <include ref="SiD/SiD_Materials.xml"/>
-
-  <comment>Tracking detectors</comment>
-  <include ref="SiD/SiD_Vertex.xml"/>
-  <include ref="SiD/SiD_Tracker.xml"/>
-
-  <comment>Calorimeters</comment>
-  <include ref="SiD/SiD_Ecal.xml"/>
-  <include ref="SiD/SiD_Hcal.xml"/>
-  <include ref="SiD/SiD_HcalPlug.xml"/>
-  <include ref="SiD/SiD_Muon.xml"/>
-  <include ref="SiD/SiD_Lumical.xml"/>
-  <include ref="SiD/SiD_Beamcal.xml"/>
-
-  <comment>Beampipe</comment>
-  <include ref="SiD/SiD_Beampipe.xml"/>
-  
-  <comment>Dead material, supports and magnet</comment>
-  <include ref="SiD/SiD_Shields.xml"/>
-  <include ref="SiD/SiD_Solenoid.xml"/>
-
-  <comment>Magnetic field</comment>
-  <include ref="SiD/SiD_Field.xml"/>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_Materials.xml"/>
 
 </lccdd>

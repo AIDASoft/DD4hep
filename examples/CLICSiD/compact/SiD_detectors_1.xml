@@ -1,0 +1,36 @@
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!--    XML description of the complete SiD tracker detector                -->
+<!--    of the SiD linear collider detector design.                         -->
+<!--                                                                        -->
+<!--    Contained are the required                                          -->
+<!--      ++ global constants used uniquely by this module                  -->
+<!--      ++ visualization attributes                                       -->
+<!--      ++ the definition of the readout structure and the                -->
+<!--         readout segmentation (if necessary)                            -->
+<!--      ++ the include statements for the sensitive detectors and         -->
+<!--         the corresponding support structure(s)                         -->
+<!--                                                                        -->
+<!--                                                                        -->
+<!--   @author  M.Frank                                                     -->
+<!--   @date    14/11/2014                                                  -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+
+<lccdd>
+
+  <geometry open="false" close="false"/>
+
+  <comment>Tracking detectors</comment>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_Vertex.xml"/>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_Tracker.xml"/>
+
+  <comment>Calorimeters</comment>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_Ecal.xml"/>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_Hcal.xml"/>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_HcalPlug.xml"/>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_Muon.xml"/>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_Lumical.xml"/>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_Beamcal.xml"/>
+
+</lccdd>
