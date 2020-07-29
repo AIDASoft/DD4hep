@@ -28,6 +28,30 @@ TGeoIdentity* dd4hep::detail::matrix::_identity() {
   return gGeoIdentity;
 }
 
+ROOT::Math::XYZVector dd4hep::detail::matrix::_scale(const TGeoMatrix* matrix) {
+  if ( matrix->IsScale() )   {
+    const Double_t* s = matrix->GetScale();
+    return ROOT::Math::XYZVector(s[0],s[1],s[2]);
+  }
+  return ROOT::Math::XYZVector(1e0,1e0,1e0);
+}
+
+ROOT::Math::XYZVector dd4hep::detail::matrix::_scale(const TGeoMatrix& matrix) {
+  return _scale(&matrix);
+}
+
+dd4hep::Position dd4hep::detail::matrix::_translation(const TGeoMatrix* matrix) {
+  if ( matrix->IsTranslation() )   {
+    const Double_t* t = matrix->GetTranslation();
+    return Position(t[0]*MM_2_CM,t[1]*MM_2_CM,t[2]*MM_2_CM);
+  }
+  return Position(0e0,0e0,0e0);
+}
+
+dd4hep::Position dd4hep::detail::matrix::_translation(const TGeoMatrix& matrix) {
+  return _translation(&matrix);
+}
+
 TGeoTranslation* dd4hep::detail::matrix::_translation(const Position& pos) {
   return new TGeoTranslation("", pos.X(), pos.Y(), pos.Z());
 }
@@ -39,6 +63,24 @@ TGeoRotation* dd4hep::detail::matrix::_rotationZYX(const RotationZYX& rot) {
 TGeoRotation* dd4hep::detail::matrix::_rotation3D(const Rotation3D& rot3D) {
   EulerAngles rot(rot3D);
   return new TGeoRotation("", rot.Phi() * RAD_2_DEGREE, rot.Theta() * RAD_2_DEGREE, rot.Psi() * RAD_2_DEGREE);
+}
+
+/// Extract the rotational part of a TGeoMatrix as a Rotation3D                           \ingroup DD4HEP \ingroup DD4HEP_CORE
+dd4hep::Rotation3D dd4hep::detail::matrix::_rotation3D(const TGeoMatrix* matrix)   {
+  if ( matrix->IsRotation() )  {
+    const Double_t* r = matrix->GetRotationMatrix();
+    return Rotation3D(r[0],r[1],r[2],
+                      r[3],r[4],r[5],
+                      r[6],r[7],r[8]);
+  }
+  return Rotation3D(0e0,0e0,0e0,
+                    0e0,0e0,0e0,
+                    0e0,0e0,0e0);
+}
+
+/// Extract the rotational part of a TGeoMatrix as a Rotation3D                           \ingroup DD4HEP \ingroup DD4HEP_CORE
+dd4hep::Rotation3D dd4hep::detail::matrix::_rotation3D(const TGeoMatrix& matrix)   {
+  return _rotation3D(&matrix);
 }
 
 /// Set a RotationZYX object to a TGeoHMatrix            \ingroup DD4HEP \ingroup DD4HEP_CORE
