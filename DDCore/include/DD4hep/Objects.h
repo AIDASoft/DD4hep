@@ -80,7 +80,6 @@ namespace dd4hep {
   typedef ROOT::Math::RhoZPhiVector PositionRhoZPhi;
   typedef ROOT::Math::Polar3DVector PositionPolar;
   typedef ROOT::Math::XYZVector     Position;
-  typedef ROOT::Math::XYZVector     Position;
   typedef ROOT::Math::XYZVector     Direction;
   typedef ROOT::Math::XYZVector     XYZAngles;
   

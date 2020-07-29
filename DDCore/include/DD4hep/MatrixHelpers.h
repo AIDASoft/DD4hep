@@ -33,21 +33,36 @@ namespace dd4hep {
 
       /// Access the TGeo identity transformation                                               \ingroup DD4HEP \ingroup DD4HEP_CORE
       TGeoIdentity*    _identity();
+      /// Extract the scale part of a TGeoMatrix                                                \ingroup DD4HEP \ingroup DD4HEP_CORE
+      ROOT::Math::XYZVector _scale(const TGeoMatrix* matrix);
+      /// Extract the scale part of a TGeoMatrix                                                \ingroup DD4HEP \ingroup DD4HEP_CORE
+      ROOT::Math::XYZVector _scale(const TGeoMatrix& matrix);
+
       /// Convert a Position object to a TGeoTranslation                                        \ingroup DD4HEP \ingroup DD4HEP_CORE
       TGeoTranslation* _translation(const Position& pos);
-      /// Convert a RotationZYX object to a TGeoRotation                                        \ingroup DD4HEP \ingroup DD4HEP_CORE
+      /// Extract the translational component of a TGeoMatrix as a Position                     \ingroup DD4HEP \ingroup DD4HEP_CORE
+      Position         _translation(const TGeoMatrix* matrix);
+      /// Extract the translational component of a TGeoMatrix as a Position                     \ingroup DD4HEP \ingroup DD4HEP_CORE
+      Position         _translation(const TGeoMatrix& matrix);
+
+      /// Convert a RotationZYX object to a newly created TGeoRotation                          \ingroup DD4HEP \ingroup DD4HEP_CORE
       TGeoRotation*    _rotationZYX(const RotationZYX& rot);
-      /// Convert a Rotation3D object to a TGeoRotation                                         \ingroup DD4HEP \ingroup DD4HEP_CORE
+      /// Convert a Rotation3D object to a  newly createdTGeoRotation                           \ingroup DD4HEP \ingroup DD4HEP_CORE
       TGeoRotation*    _rotation3D(const Rotation3D& rot);
-      /// Convert a Transform3D object to a TGeoHMatrix                                         \ingroup DD4HEP \ingroup DD4HEP_CORE
+      /// Extract the rotational part of a TGeoMatrix as a Rotation3D                           \ingroup DD4HEP \ingroup DD4HEP_CORE
+      Rotation3D       _rotation3D(const TGeoMatrix* matrix);
+      /// Extract the rotational part of a TGeoMatrix as a Rotation3D                           \ingroup DD4HEP \ingroup DD4HEP_CORE
+      Rotation3D       _rotation3D(const TGeoMatrix& matrix);
+      
+      /// Convert a Transform3D object to a newly created TGeoHMatrix                           \ingroup DD4HEP \ingroup DD4HEP_CORE
       TGeoHMatrix*     _transform(const Transform3D& trans);
-      /// Convert a Position object to a TGeoHMatrix                                            \ingroup DD4HEP \ingroup DD4HEP_CORE
+      /// Convert a Position object to a newly created TGeoHMatrix                              \ingroup DD4HEP \ingroup DD4HEP_CORE
       TGeoHMatrix*     _transform(const Position& pos);
-      /// Convert a RotationZYX object to a TGeoHMatrix                                         \ingroup DD4HEP \ingroup DD4HEP_CORE
+      /// Convert a RotationZYX object to a newly created TGeoHMatrix                           \ingroup DD4HEP \ingroup DD4HEP_CORE
       TGeoHMatrix*     _transform(const RotationZYX& rot);
-      /// Convert a Rotation3D object to a TGeoHMatrix                                          \ingroup DD4HEP \ingroup DD4HEP_CORE
+      /// Convert a Rotation3D object to a newly created TGeoHMatrix                            \ingroup DD4HEP \ingroup DD4HEP_CORE
       TGeoHMatrix*     _transform(const Rotation3D& rot3D);
-      /// Convert a Position followed by a RotationZYX to a TGeoHMatrix                         \ingroup DD4HEP \ingroup DD4HEP_CORE
+      /// Convert a Position followed by a RotationZYX to a newly created TGeoHMatrix           \ingroup DD4HEP \ingroup DD4HEP_CORE
       TGeoHMatrix*     _transform(const Position& pos, const RotationZYX& rot);
 
       /// Set a Transform3D object to a TGeoHMatrix                                             \ingroup DD4HEP \ingroup DD4HEP_CORE
