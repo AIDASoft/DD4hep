@@ -20,7 +20,7 @@
 
   <detectors>
     <detector id="1" name="FT_MT" type="DD4hep_GdmlDetector" vis="InvisibleWithChildren">
-      <gdmlFile ref="GdmlDetector.gdml"/>
+      <gdmlFile ref="MT.gdml"/>
       <parent name="/world"/>
     </detector>
   </detectors>

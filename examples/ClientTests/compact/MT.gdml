@@ -1,0 +1,1056 @@
+<?xml version="1.0"?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+  <define>
+    <position name="lvUpstreamRegion_0inworld_volumepos" x="0" y="0" z="-1270" unit="cm"/>
+    <position name="lvBeforeVelo_0inlvBeforeMagnetRegionpos" x="0" y="0" z="-179.25" unit="cm"/>
+    <position name="lvBeforeMagnetRegion_1inworld_volumepos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvMagnetRegion_2inworld_volumepos" x="0" y="0" z="516" unit="cm"/>
+    <position name="lvSiShortMatRightX_0inlvMightyTModuleHoleRightXpos" x="-5.25" y="0" z="0" unit="cm"/>
+    <position name="lvSiMat_1inlvMightyTModuleHoleRightXpos" x="0" y="20.050000000000001" z="0" unit="cm"/>
+    <position name="lvSiMat_2inlvMightyTModuleHoleRightXpos" x="0" y="-20.050000000000001" z="0" unit="cm"/>
+    <position name="lvSiMatMT_3inlvMightyTModuleHoleRightXpos" x="0" y="40.100000000000001" z="0" unit="cm"/>
+    <position name="lvSiMatMT_4inlvMightyTModuleHoleRightXpos" x="0" y="-40.100000000000001" z="0" unit="cm"/>
+    <position name="lvMightyTModuleHoleRightX_0inlvHalf5XNegpos" x="-26.500000000000004" y="0" z="0" unit="cm"/>
+    <position name="lvSiMatMT_0inlvMightyTModuleFullpos" x="0" y="-30.075000000000003" z="0" unit="cm"/>
+    <position name="lvSiMatMT_1inlvMightyTModuleFullpos" x="0" y="-10.025000000000002" z="0" unit="cm"/>
+    <position name="lvSiMatMT_2inlvMightyTModuleFullpos" x="0" y="10.024999999999999" z="0" unit="cm"/>
+    <position name="lvSiMatMT_30x1inlvMightyTModuleFullpos" x="0" y="30.074999999999999" z="0" unit="cm"/>
+    <position name="lvMightyTModuleFull_1inlvHalf5XNegpos" x="-79.500000000000014" y="0" z="0" unit="cm"/>
+    <position name="lvSiMatMT_00x1inlvMightyTModuleColIIpos" x="0" y="-20.050000000000001" z="0" unit="cm"/>
+    <position name="lvSiMatMT_10x1inlvMightyTModuleColIIpos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvSiMatMT_20x1inlvMightyTModuleColIIpos" x="0" y="20.050000000000001" z="0" unit="cm"/>
+    <position name="lvMightyTModuleColII_2inlvHalf5XNegpos" x="-132.50000000000003" y="0" z="0" unit="cm"/>
+    <position name="lvSiMatMT_00x2inlvMightyTModuleColIIIpos" x="0" y="-10.025" z="0" unit="cm"/>
+    <position name="lvSiMatMT_10x2inlvMightyTModuleColIIIpos" x="0" y="10.025" z="0" unit="cm"/>
+    <position name="lvMightyTModuleColIII_3inlvHalf5XNegpos" x="-185.50000000000003" y="0" z="0" unit="cm"/>
+    <position name="lvHalf5XNeg_0inlvLayerX1pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvHalf5XNeg_0inlvLayerX1rot" x="0" y="-0" z="1.4033418597069752e-14" unit="deg"/>
+    <position name="lvSiShortMatLeftX_0inlvMightyTModuleHoleLeftXpos" x="5.25" y="0" z="0" unit="cm"/>
+    <position name="lvSiMat_10x1inlvMightyTModuleHoleLeftXpos" x="0" y="20.050000000000001" z="0" unit="cm"/>
+    <position name="lvSiMat_20x1inlvMightyTModuleHoleLeftXpos" x="0" y="-20.050000000000001" z="0" unit="cm"/>
+    <position name="lvSiMatMT_30x2inlvMightyTModuleHoleLeftXpos" x="0" y="40.100000000000001" z="0" unit="cm"/>
+    <position name="lvSiMatMT_40x1inlvMightyTModuleHoleLeftXpos" x="0" y="-40.100000000000001" z="0" unit="cm"/>
+    <position name="lvMightyTModuleHoleLeftX_0inlvHalf5XPospos" x="26.500000000000004" y="0" z="0" unit="cm"/>
+    <position name="lvMightyTModuleFull_10x1inlvHalf5XPospos" x="79.500000000000014" y="0" z="0" unit="cm"/>
+    <position name="lvMightyTModuleColII_20x1inlvHalf5XPospos" x="132.50000000000003" y="0" z="0" unit="cm"/>
+    <position name="lvMightyTModuleColIII_30x1inlvHalf5XPospos" x="185.50000000000003" y="0" z="0" unit="cm"/>
+    <position name="lvHalf5XPos_1inlvLayerX1pos" x="0" y="0" z="0" unit="cm"/>
+    <rotation name="lvHalf5XPos_1inlvLayerX1rot" x="0" y="-0" z="1.4033418597069752e-14" unit="deg"/>
+    <position name="lvLayerX1_0inlvStationpos" x="0" y="0" z="-10.49" unit="cm"/>
+    <position name="lvHalf5XPos_0inlvLayerX2pos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvHalf5XNeg_1inlvLayerX2pos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvLayerX2_1inlvStationpos" x="0" y="0" z="10.49" unit="cm"/>
+    <position name="lvStation_0inlvMightyTpos" x="0" y="0" z="-59.850000000000023" unit="cm"/>
+    <rotation name="lvStation_0inlvMightyTrot" x="-0.20632210202660947" y="-0" z="-0" unit="deg"/>
+    <position name="lvStation_1inlvMightyTpos" x="0" y="0" z="8.3500000000000227" unit="cm"/>
+    <rotation name="lvStation_1inlvMightyTrot" x="-0.20632210202660947" y="-0" z="-0" unit="deg"/>
+    <position name="lvStation_2inlvMightyTpos" x="0" y="0" z="76.850000000000023" unit="cm"/>
+    <rotation name="lvStation_2inlvMightyTrot" x="-0.20632210202660947" y="-0" z="-0" unit="deg"/>
+    <position name="lvMightyT_0inlvTpos" x="0" y="0" z="0" unit="cm"/>
+    <position name="lvT_0inlvAfterMagnetRegionpos" x="0" y="0" z="-123.04999999999995" unit="cm"/>
+    <position name="lvAfterMagnetRegion_3inworld_volumepos" x="0" y="0" z="976" unit="cm"/>
+    <position name="lvAfterMuon_0inlvDownstreamRegionpos" x="0" y="0" z="533" unit="cm"/>
+    <position name="lvDownstreamRegion_4inworld_volumepos" x="0" y="0" z="1590" unit="cm"/>
+  </define>
+  <materials>
+    <element name="Ac_elm" formula="Ac" Z="89">
+      <atom unit="g/mole" value="227.02799999999999"/>
+    </element>
+    <material name="Actinium">
+      <D unit="g/cm3" value="10.07"/>
+      <fraction n="1" ref="Ac_elm"/>
+    </material>
+    <element name="Ag_elm" formula="Ag" Z="47">
+      <atom unit="g/mole" value="107.86799999999999"/>
+    </element>
+    <material name="Silver">
+      <D unit="g/cm3" value="10.5"/>
+      <fraction n="1" ref="Ag_elm"/>
+    </material>
+    <element name="Al_elm" formula="Al" Z="13">
+      <atom unit="g/mole" value="26.9815"/>
+    </element>
+    <material name="Aluminum">
+      <D unit="g/cm3" value="2.6989999999999998"/>
+      <fraction n="1" ref="Al_elm"/>
+    </material>
+    <element name="Am_elm" formula="Am" Z="95">
+      <atom unit="g/mole" value="243.06100000000001"/>
+    </element>
+    <material name="Americium">
+      <D unit="g/cm3" value="13.67"/>
+      <fraction n="1" ref="Am_elm"/>
+    </material>
+    <element name="Ar_elm" formula="Ar" Z="18">
+      <atom unit="g/mole" value="39.947699999999998"/>
+    </element>
+    <material name="Argon">
+      <D unit="g/cm3" value="0.00166201"/>
+      <fraction n="1" ref="Ar_elm"/>
+    </material>
+    <element name="As_elm" formula="As" Z="33">
+      <atom unit="g/mole" value="74.921599999999998"/>
+    </element>
+    <material name="Arsenic">
+      <D unit="g/cm3" value="5.7300000000000004"/>
+      <fraction n="1" ref="As_elm"/>
+    </material>
+    <element name="At_elm" formula="At" Z="85">
+      <atom unit="g/mole" value="209.98699999999999"/>
+    </element>
+    <material name="Astatine">
+      <D unit="g/cm3" value="9.3200000000000003"/>
+      <fraction n="1" ref="At_elm"/>
+    </material>
+    <element name="Au_elm" formula="Au" Z="79">
+      <atom unit="g/mole" value="196.96700000000001"/>
+    </element>
+    <material name="Gold">
+      <D unit="g/cm3" value="19.32"/>
+      <fraction n="1" ref="Au_elm"/>
+    </material>
+    <element name="B_elm" formula="B" Z="5">
+      <atom unit="g/mole" value="10.811"/>
+    </element>
+    <material name="Boron">
+      <D unit="g/cm3" value="2.3700000000000001"/>
+      <fraction n="1" ref="B_elm"/>
+    </material>
+    <element name="Ba_elm" formula="Ba" Z="56">
+      <atom unit="g/mole" value="137.327"/>
+    </element>
+    <material name="Barium">
+      <D unit="g/cm3" value="3.5"/>
+      <fraction n="1" ref="Ba_elm"/>
+    </material>
+    <element name="Be_elm" formula="Be" Z="4">
+      <atom unit="g/mole" value="9.0121800000000007"/>
+    </element>
+    <material name="Beryllium">
+      <D unit="g/cm3" value="1.8480000000000001"/>
+      <fraction n="1" ref="Be_elm"/>
+    </material>
+    <element name="Bi_elm" formula="Bi" Z="83">
+      <atom unit="g/mole" value="208.97999999999999"/>
+    </element>
+    <material name="Bismuth">
+      <D unit="g/cm3" value="9.7469999999999999"/>
+      <fraction n="1" ref="Bi_elm"/>
+    </material>
+    <element name="Bk_elm" formula="Bk" Z="97">
+      <atom unit="g/mole" value="247.06999999999999"/>
+    </element>
+    <material name="Berkelium">
+      <D unit="g/cm3" value="14"/>
+      <fraction n="1" ref="Bk_elm"/>
+    </material>
+    <element name="Br_elm" formula="Br" Z="35">
+      <atom unit="g/mole" value="79.903499999999994"/>
+    </element>
+    <material name="Bromine">
+      <D unit="g/cm3" value="0.0070720999999999996"/>
+      <fraction n="1" ref="Br_elm"/>
+    </material>
+    <element name="C_elm" formula="C" Z="6">
+      <atom unit="g/mole" value="12.0107"/>
+    </element>
+    <material name="Carbon">
+      <D unit="g/cm3" value="2"/>
+      <fraction n="1" ref="C_elm"/>
+    </material>
+    <element name="Ca_elm" formula="Ca" Z="20">
+      <atom unit="g/mole" value="40.078000000000003"/>
+    </element>
+    <material name="Calcium">
+      <D unit="g/cm3" value="1.55"/>
+      <fraction n="1" ref="Ca_elm"/>
+    </material>
+    <element name="Cd_elm" formula="Cd" Z="48">
+      <atom unit="g/mole" value="112.411"/>
+    </element>
+    <material name="Cadmium">
+      <D unit="g/cm3" value="8.6500000000000004"/>
+      <fraction n="1" ref="Cd_elm"/>
+    </material>
+    <element name="Ce_elm" formula="Ce" Z="58">
+      <atom unit="g/mole" value="140.11500000000001"/>
+    </element>
+    <material name="Cerium">
+      <D unit="g/cm3" value="6.657"/>
+      <fraction n="1" ref="Ce_elm"/>
+    </material>
+    <element name="Cf_elm" formula="Cf" Z="98">
+      <atom unit="g/mole" value="251.08000000000001"/>
+    </element>
+    <material name="Californium">
+      <D unit="g/cm3" value="10"/>
+      <fraction n="1" ref="Cf_elm"/>
+    </material>
+    <element name="Cl_elm" formula="Cl" Z="17">
+      <atom unit="g/mole" value="35.452599999999997"/>
+    </element>
+    <material name="Chlorine">
+      <D unit="g/cm3" value="0.0029947300000000001"/>
+      <fraction n="1" ref="Cl_elm"/>
+    </material>
+    <element name="Cm_elm" formula="Cm" Z="96">
+      <atom unit="g/mole" value="247.06999999999999"/>
+    </element>
+    <material name="Curium">
+      <D unit="g/cm3" value="13.51"/>
+      <fraction n="1" ref="Cm_elm"/>
+    </material>
+    <element name="Co_elm" formula="Co" Z="27">
+      <atom unit="g/mole" value="58.933199999999999"/>
+    </element>
+    <material name="Cobalt">
+      <D unit="g/cm3" value="8.9000000000000004"/>
+      <fraction n="1" ref="Co_elm"/>
+    </material>
+    <element name="Cr_elm" formula="Cr" Z="24">
+      <atom unit="g/mole" value="51.996099999999998"/>
+    </element>
+    <material name="Chromium">
+      <D unit="g/cm3" value="7.1799999999999997"/>
+      <fraction n="1" ref="Cr_elm"/>
+    </material>
+    <element name="Cs_elm" formula="Cs" Z="55">
+      <atom unit="g/mole" value="132.905"/>
+    </element>
+    <material name="Cesium">
+      <D unit="g/cm3" value="1.873"/>
+      <fraction n="1" ref="Cs_elm"/>
+    </material>
+    <element name="Cu_elm" formula="Cu" Z="29">
+      <atom unit="g/mole" value="63.5456"/>
+    </element>
+    <material name="Copper">
+      <D unit="g/cm3" value="8.9600000000000009"/>
+      <fraction n="1" ref="Cu_elm"/>
+    </material>
+    <element name="Dy_elm" formula="Dy" Z="66">
+      <atom unit="g/mole" value="162.49700000000001"/>
+    </element>
+    <material name="Dysprosium">
+      <D unit="g/cm3" value="8.5500000000000007"/>
+      <fraction n="1" ref="Dy_elm"/>
+    </material>
+    <element name="Er_elm" formula="Er" Z="68">
+      <atom unit="g/mole" value="167.256"/>
+    </element>
+    <material name="Erbium">
+      <D unit="g/cm3" value="9.0660000000000007"/>
+      <fraction n="1" ref="Er_elm"/>
+    </material>
+    <element name="Eu_elm" formula="Eu" Z="63">
+      <atom unit="g/mole" value="151.964"/>
+    </element>
+    <material name="Europium">
+      <D unit="g/cm3" value="5.2430000000000003"/>
+      <fraction n="1" ref="Eu_elm"/>
+    </material>
+    <element name="F_elm" formula="F" Z="9">
+      <atom unit="g/mole" value="18.9984"/>
+    </element>
+    <material name="Fluorine">
+      <D unit="g/cm3" value="0.00158029"/>
+      <fraction n="1" ref="F_elm"/>
+    </material>
+    <element name="Fe_elm" formula="Fe" Z="26">
+      <atom unit="g/mole" value="55.845100000000002"/>
+    </element>
+    <material name="Iron">
+      <D unit="g/cm3" value="7.8739999999999997"/>
+      <fraction n="1" ref="Fe_elm"/>
+    </material>
+    <element name="Fr_elm" formula="Fr" Z="87">
+      <atom unit="g/mole" value="223.02000000000001"/>
+    </element>
+    <material name="Francium">
+      <D unit="g/cm3" value="1"/>
+      <fraction n="1" ref="Fr_elm"/>
+    </material>
+    <element name="Ga_elm" formula="Ga" Z="31">
+      <atom unit="g/mole" value="69.723100000000002"/>
+    </element>
+    <material name="Gallium">
+      <D unit="g/cm3" value="5.9039999999999999"/>
+      <fraction n="1" ref="Ga_elm"/>
+    </material>
+    <element name="Gd_elm" formula="Gd" Z="64">
+      <atom unit="g/mole" value="157.25200000000001"/>
+    </element>
+    <material name="Gadolinium">
+      <D unit="g/cm3" value="7.9004000000000003"/>
+      <fraction n="1" ref="Gd_elm"/>
+    </material>
+    <element name="Ge_elm" formula="Ge" Z="32">
+      <atom unit="g/mole" value="72.612799999999993"/>
+    </element>
+    <material name="Germanium">
+      <D unit="g/cm3" value="5.3230000000000004"/>
+      <fraction n="1" ref="Ge_elm"/>
+    </material>
+    <element name="H_elm" formula="H" Z="1">
+      <atom unit="g/mole" value="1.0079400000000001"/>
+    </element>
+    <material name="Hydrogen">
+      <D unit="g/cm3" value="8.3747999999999998e-05"/>
+      <fraction n="1" ref="H_elm"/>
+    </material>
+    <element name="He_elm" formula="He" Z="2">
+      <atom unit="g/mole" value="4.0026400000000004"/>
+    </element>
+    <material name="Helium">
+      <D unit="g/cm3" value="0.000166322"/>
+      <fraction n="1" ref="He_elm"/>
+    </material>
+    <element name="Hf_elm" formula="Hf" Z="72">
+      <atom unit="g/mole" value="178.48500000000001"/>
+    </element>
+    <material name="Hafnium">
+      <D unit="g/cm3" value="13.31"/>
+      <fraction n="1" ref="Hf_elm"/>
+    </material>
+    <element name="Hg_elm" formula="Hg" Z="80">
+      <atom unit="g/mole" value="200.59899999999999"/>
+    </element>
+    <material name="Mercury">
+      <D unit="g/cm3" value="13.545999999999999"/>
+      <fraction n="1" ref="Hg_elm"/>
+    </material>
+    <element name="Ho_elm" formula="Ho" Z="67">
+      <atom unit="g/mole" value="164.93000000000001"/>
+    </element>
+    <material name="Holmium">
+      <D unit="g/cm3" value="8.7949999999999999"/>
+      <fraction n="1" ref="Ho_elm"/>
+    </material>
+    <element name="I_elm" formula="I" Z="53">
+      <atom unit="g/mole" value="126.904"/>
+    </element>
+    <material name="Iodine">
+      <D unit="g/cm3" value="4.9299999999999997"/>
+      <fraction n="1" ref="I_elm"/>
+    </material>
+    <element name="In_elm" formula="In" Z="49">
+      <atom unit="g/mole" value="114.818"/>
+    </element>
+    <material name="Indium">
+      <D unit="g/cm3" value="7.3099999999999996"/>
+      <fraction n="1" ref="In_elm"/>
+    </material>
+    <element name="Ir_elm" formula="Ir" Z="77">
+      <atom unit="g/mole" value="192.21600000000001"/>
+    </element>
+    <material name="Iridium">
+      <D unit="g/cm3" value="22.420000000000002"/>
+      <fraction n="1" ref="Ir_elm"/>
+    </material>
+    <element name="K_elm" formula="K" Z="19">
+      <atom unit="g/mole" value="39.098300000000002"/>
+    </element>
+    <material name="Potassium">
+      <D unit="g/cm3" value="0.86199999999999999"/>
+      <fraction n="1" ref="K_elm"/>
+    </material>
+    <element name="Kr_elm" formula="Kr" Z="36">
+      <atom unit="g/mole" value="83.799300000000002"/>
+    </element>
+    <material name="Krypton">
+      <D unit="g/cm3" value="0.00347832"/>
+      <fraction n="1" ref="Kr_elm"/>
+    </material>
+    <element name="La_elm" formula="La" Z="57">
+      <atom unit="g/mole" value="138.905"/>
+    </element>
+    <material name="Lanthanum">
+      <D unit="g/cm3" value="6.1539999999999999"/>
+      <fraction n="1" ref="La_elm"/>
+    </material>
+    <element name="Li_elm" formula="Li" Z="3">
+      <atom unit="g/mole" value="6.9400300000000001"/>
+    </element>
+    <material name="Lithium">
+      <D unit="g/cm3" value="0.53400000000000003"/>
+      <fraction n="1" ref="Li_elm"/>
+    </material>
+    <element name="Lu_elm" formula="Lu" Z="71">
+      <atom unit="g/mole" value="174.96700000000001"/>
+    </element>
+    <material name="Lutetium">
+      <D unit="g/cm3" value="9.8399999999999999"/>
+      <fraction n="1" ref="Lu_elm"/>
+    </material>
+    <element name="Mg_elm" formula="Mg" Z="12">
+      <atom unit="g/mole" value="24.305"/>
+    </element>
+    <material name="Magnesium">
+      <D unit="g/cm3" value="1.74"/>
+      <fraction n="1" ref="Mg_elm"/>
+    </material>
+    <element name="Mn_elm" formula="Mn" Z="25">
+      <atom unit="g/mole" value="54.938000000000002"/>
+    </element>
+    <material name="Manganese">
+      <D unit="g/cm3" value="7.4400000000000004"/>
+      <fraction n="1" ref="Mn_elm"/>
+    </material>
+    <element name="Mo_elm" formula="Mo" Z="42">
+      <atom unit="g/mole" value="95.931299999999993"/>
+    </element>
+    <material name="Molybdenum">
+      <D unit="g/cm3" value="10.220000000000001"/>
+      <fraction n="1" ref="Mo_elm"/>
+    </material>
+    <element name="N_elm" formula="N" Z="7">
+      <atom unit="g/mole" value="14.0068"/>
+    </element>
+    <material name="Nitrogen">
+      <D unit="g/cm3" value="0.0011651999999999999"/>
+      <fraction n="1" ref="N_elm"/>
+    </material>
+    <element name="Na_elm" formula="Na" Z="11">
+      <atom unit="g/mole" value="22.989799999999999"/>
+    </element>
+    <material name="Sodium">
+      <D unit="g/cm3" value="0.97099999999999997"/>
+      <fraction n="1" ref="Na_elm"/>
+    </material>
+    <element name="Nb_elm" formula="Nb" Z="41">
+      <atom unit="g/mole" value="92.906400000000005"/>
+    </element>
+    <material name="Niobium">
+      <D unit="g/cm3" value="8.5700000000000003"/>
+      <fraction n="1" ref="Nb_elm"/>
+    </material>
+    <element name="Nd_elm" formula="Nd" Z="60">
+      <atom unit="g/mole" value="144.23599999999999"/>
+    </element>
+    <material name="Neodymium">
+      <D unit="g/cm3" value="6.9000000000000004"/>
+      <fraction n="1" ref="Nd_elm"/>
+    </material>
+    <element name="Ne_elm" formula="Ne" Z="10">
+      <atom unit="g/mole" value="20.18"/>
+    </element>
+    <material name="Neon">
+      <D unit="g/cm3" value="0.00083850500000000002"/>
+      <fraction n="1" ref="Ne_elm"/>
+    </material>
+    <element name="Ni_elm" formula="Ni" Z="28">
+      <atom unit="g/mole" value="58.693300000000001"/>
+    </element>
+    <material name="Nickel">
+      <D unit="g/cm3" value="8.9019999999999992"/>
+      <fraction n="1" ref="Ni_elm"/>
+    </material>
+    <element name="Np_elm" formula="Np" Z="93">
+      <atom unit="g/mole" value="237.048"/>
+    </element>
+    <material name="Neptunium">
+      <D unit="g/cm3" value="20.25"/>
+      <fraction n="1" ref="Np_elm"/>
+    </material>
+    <element name="O_elm" formula="O" Z="8">
+      <atom unit="g/mole" value="15.9994"/>
+    </element>
+    <material name="Oxygen">
+      <D unit="g/cm3" value="0.0013315099999999999"/>
+      <fraction n="1" ref="O_elm"/>
+    </material>
+    <element name="Os_elm" formula="Os" Z="76">
+      <atom unit="g/mole" value="190.22499999999999"/>
+    </element>
+    <material name="Osmium">
+      <D unit="g/cm3" value="22.57"/>
+      <fraction n="1" ref="Os_elm"/>
+    </material>
+    <element name="P_elm" formula="P" Z="15">
+      <atom unit="g/mole" value="30.973800000000001"/>
+    </element>
+    <material name="Phosphorus">
+      <D unit="g/cm3" value="2.2000000000000002"/>
+      <fraction n="1" ref="P_elm"/>
+    </material>
+    <element name="Pa_elm" formula="Pa" Z="91">
+      <atom unit="g/mole" value="231.036"/>
+    </element>
+    <material name="Protactinium">
+      <D unit="g/cm3" value="15.369999999999999"/>
+      <fraction n="1" ref="Pa_elm"/>
+    </material>
+    <element name="Pb_elm" formula="Pb" Z="82">
+      <atom unit="g/mole" value="207.21700000000001"/>
+    </element>
+    <material name="Lead">
+      <D unit="g/cm3" value="11.35"/>
+      <fraction n="1" ref="Pb_elm"/>
+    </material>
+    <element name="Pd_elm" formula="Pd" Z="46">
+      <atom unit="g/mole" value="106.41500000000001"/>
+    </element>
+    <material name="Palladium">
+      <D unit="g/cm3" value="12.02"/>
+      <fraction n="1" ref="Pd_elm"/>
+    </material>
+    <element name="Pm_elm" formula="Pm" Z="61">
+      <atom unit="g/mole" value="144.91300000000001"/>
+    </element>
+    <material name="Promethium">
+      <D unit="g/cm3" value="7.2199999999999998"/>
+      <fraction n="1" ref="Pm_elm"/>
+    </material>
+    <element name="Po_elm" formula="Po" Z="84">
+      <atom unit="g/mole" value="208.982"/>
+    </element>
+    <material name="Polonium">
+      <D unit="g/cm3" value="9.3200000000000003"/>
+      <fraction n="1" ref="Po_elm"/>
+    </material>
+    <element name="Pr_elm" formula="Pr" Z="59">
+      <atom unit="g/mole" value="140.90799999999999"/>
+    </element>
+    <material name="Praseodymium">
+      <D unit="g/cm3" value="6.71"/>
+      <fraction n="1" ref="Pr_elm"/>
+    </material>
+    <element name="Pt_elm" formula="Pt" Z="78">
+      <atom unit="g/mole" value="195.078"/>
+    </element>
+    <material name="Platinum">
+      <D unit="g/cm3" value="21.449999999999999"/>
+      <fraction n="1" ref="Pt_elm"/>
+    </material>
+    <element name="Pu_elm" formula="Pu" Z="94">
+      <atom unit="g/mole" value="244.06399999999999"/>
+    </element>
+    <material name="Plutonium">
+      <D unit="g/cm3" value="19.84"/>
+      <fraction n="1" ref="Pu_elm"/>
+    </material>
+    <element name="Ra_elm" formula="Ra" Z="88">
+      <atom unit="g/mole" value="226.02500000000001"/>
+    </element>
+    <material name="Radium">
+      <D unit="g/cm3" value="5"/>
+      <fraction n="1" ref="Ra_elm"/>
+    </material>
+    <element name="Rb_elm" formula="Rb" Z="37">
+      <atom unit="g/mole" value="85.467699999999994"/>
+    </element>
+    <material name="Rubidium">
+      <D unit="g/cm3" value="1.532"/>
+      <fraction n="1" ref="Rb_elm"/>
+    </material>
+    <element name="Re_elm" formula="Re" Z="75">
+      <atom unit="g/mole" value="186.20699999999999"/>
+    </element>
+    <material name="Rhenium">
+      <D unit="g/cm3" value="21.02"/>
+      <fraction n="1" ref="Re_elm"/>
+    </material>
+    <element name="Rh_elm" formula="Rh" Z="45">
+      <atom unit="g/mole" value="102.90600000000001"/>
+    </element>
+    <material name="Rhodium">
+      <D unit="g/cm3" value="12.41"/>
+      <fraction n="1" ref="Rh_elm"/>
+    </material>
+    <element name="Rn_elm" formula="Rn" Z="86">
+      <atom unit="g/mole" value="222.018"/>
+    </element>
+    <material name="Radon">
+      <D unit="g/cm3" value="0.0090066199999999999"/>
+      <fraction n="1" ref="Rn_elm"/>
+    </material>
+    <element name="Ru_elm" formula="Ru" Z="44">
+      <atom unit="g/mole" value="101.065"/>
+    </element>
+    <material name="Ruthenium">
+      <D unit="g/cm3" value="12.41"/>
+      <fraction n="1" ref="Ru_elm"/>
+    </material>
+    <element name="S_elm" formula="S" Z="16">
+      <atom unit="g/mole" value="32.066099999999999"/>
+    </element>
+    <material name="Sulfur">
+      <D unit="g/cm3" value="2"/>
+      <fraction n="1" ref="S_elm"/>
+    </material>
+    <element name="Sb_elm" formula="Sb" Z="51">
+      <atom unit="g/mole" value="121.76000000000001"/>
+    </element>
+    <material name="Antimony">
+      <D unit="g/cm3" value="6.6909999999999998"/>
+      <fraction n="1" ref="Sb_elm"/>
+    </material>
+    <element name="Sc_elm" formula="Sc" Z="21">
+      <atom unit="g/mole" value="44.9559"/>
+    </element>
+    <material name="Scandium">
+      <D unit="g/cm3" value="2.9889999999999999"/>
+      <fraction n="1" ref="Sc_elm"/>
+    </material>
+    <element name="Se_elm" formula="Se" Z="34">
+      <atom unit="g/mole" value="78.959400000000002"/>
+    </element>
+    <material name="Selenium">
+      <D unit="g/cm3" value="4.5"/>
+      <fraction n="1" ref="Se_elm"/>
+    </material>
+    <element name="Si_elm" formula="Si" Z="14">
+      <atom unit="g/mole" value="28.0854"/>
+    </element>
+    <material name="Silicon">
+      <D unit="g/cm3" value="2.3300000000000001"/>
+      <fraction n="1" ref="Si_elm"/>
+    </material>
+    <element name="Sm_elm" formula="Sm" Z="62">
+      <atom unit="g/mole" value="150.36600000000001"/>
+    </element>
+    <material name="Samarium">
+      <D unit="g/cm3" value="7.46"/>
+      <fraction n="1" ref="Sm_elm"/>
+    </material>
+    <element name="Sn_elm" formula="Sn" Z="50">
+      <atom unit="g/mole" value="118.70999999999999"/>
+    </element>
+    <material name="Tin">
+      <D unit="g/cm3" value="7.3099999999999996"/>
+      <fraction n="1" ref="Sn_elm"/>
+    </material>
+    <element name="Sr_elm" formula="Sr" Z="38">
+      <atom unit="g/mole" value="87.616600000000005"/>
+    </element>
+    <material name="Strontium">
+      <D unit="g/cm3" value="2.54"/>
+      <fraction n="1" ref="Sr_elm"/>
+    </material>
+    <element name="Ta_elm" formula="Ta" Z="73">
+      <atom unit="g/mole" value="180.94800000000001"/>
+    </element>
+    <material name="Tantalum">
+      <D unit="g/cm3" value="16.654"/>
+      <fraction n="1" ref="Ta_elm"/>
+    </material>
+    <element name="Tb_elm" formula="Tb" Z="65">
+      <atom unit="g/mole" value="158.92500000000001"/>
+    </element>
+    <material name="Terbium">
+      <D unit="g/cm3" value="8.2289999999999992"/>
+      <fraction n="1" ref="Tb_elm"/>
+    </material>
+    <element name="Tc_elm" formula="Tc" Z="43">
+      <atom unit="g/mole" value="97.907200000000003"/>
+    </element>
+    <material name="Technetium">
+      <D unit="g/cm3" value="11.5"/>
+      <fraction n="1" ref="Tc_elm"/>
+    </material>
+    <element name="Te_elm" formula="Te" Z="52">
+      <atom unit="g/mole" value="127.60299999999999"/>
+    </element>
+    <material name="Tellurium">
+      <D unit="g/cm3" value="6.2400000000000002"/>
+      <fraction n="1" ref="Te_elm"/>
+    </material>
+    <element name="Th_elm" formula="Th" Z="90">
+      <atom unit="g/mole" value="232.03800000000001"/>
+    </element>
+    <material name="Thorium">
+      <D unit="g/cm3" value="11.720000000000001"/>
+      <fraction n="1" ref="Th_elm"/>
+    </material>
+    <element name="Ti_elm" formula="Ti" Z="22">
+      <atom unit="g/mole" value="47.866700000000002"/>
+    </element>
+    <material name="Titanium">
+      <D unit="g/cm3" value="4.54"/>
+      <fraction n="1" ref="Ti_elm"/>
+    </material>
+    <element name="Tl_elm" formula="Tl" Z="81">
+      <atom unit="g/mole" value="204.38300000000001"/>
+    </element>
+    <material name="Thallium">
+      <D unit="g/cm3" value="11.720000000000001"/>
+      <fraction n="1" ref="Tl_elm"/>
+    </material>
+    <element name="Tm_elm" formula="Tm" Z="69">
+      <atom unit="g/mole" value="168.934"/>
+    </element>
+    <material name="Thulium">
+      <D unit="g/cm3" value="9.3209999999999997"/>
+      <fraction n="1" ref="Tm_elm"/>
+    </material>
+    <element name="U_elm" formula="U" Z="92">
+      <atom unit="g/mole" value="238.029"/>
+    </element>
+    <material name="Uranium">
+      <D unit="g/cm3" value="18.949999999999999"/>
+      <fraction n="1" ref="U_elm"/>
+    </material>
+    <element name="V_elm" formula="V" Z="23">
+      <atom unit="g/mole" value="50.941499999999998"/>
+    </element>
+    <material name="Vanadium">
+      <D unit="g/cm3" value="6.1100000000000003"/>
+      <fraction n="1" ref="V_elm"/>
+    </material>
+    <element name="W_elm" formula="W" Z="74">
+      <atom unit="g/mole" value="183.84200000000001"/>
+    </element>
+    <material name="Tungsten">
+      <D unit="g/cm3" value="19.300000000000001"/>
+      <fraction n="1" ref="W_elm"/>
+    </material>
+    <element name="Xe_elm" formula="Xe" Z="54">
+      <atom unit="g/mole" value="131.292"/>
+    </element>
+    <material name="Xenon">
+      <D unit="g/cm3" value="0.0054853599999999999"/>
+      <fraction n="1" ref="Xe_elm"/>
+    </material>
+    <element name="Y_elm" formula="Y" Z="39">
+      <atom unit="g/mole" value="88.905799999999999"/>
+    </element>
+    <material name="Yttrium">
+      <D unit="g/cm3" value="4.4690000000000003"/>
+      <fraction n="1" ref="Y_elm"/>
+    </material>
+    <element name="Yb_elm" formula="Yb" Z="70">
+      <atom unit="g/mole" value="173.03800000000001"/>
+    </element>
+    <material name="Ytterbium">
+      <D unit="g/cm3" value="6.7300000000000004"/>
+      <fraction n="1" ref="Yb_elm"/>
+    </material>
+    <element name="Zn_elm" formula="Zn" Z="30">
+      <atom unit="g/mole" value="65.395499999999998"/>
+    </element>
+    <material name="Zinc">
+      <D unit="g/cm3" value="7.133"/>
+      <fraction n="1" ref="Zn_elm"/>
+    </material>
+    <element name="Zr_elm" formula="Zr" Z="40">
+      <atom unit="g/mole" value="91.223600000000005"/>
+    </element>
+    <material name="Zirconium">
+      <D unit="g/cm3" value="6.5060000000000002"/>
+      <fraction n="1" ref="Zr_elm"/>
+    </material>
+    <material name="Air">
+      <D unit="g/cm3" value="0.0011999999999999999"/>
+      <fraction n="0.012000000104308128" ref="Ar_elm"/>
+      <fraction n="0.75400000810623169" ref="N_elm"/>
+      <fraction n="0.23399999737739563" ref="O_elm"/>
+    </material>
+    <material name="Vacuum">
+      <D unit="g/cm3" value="1e-10"/>
+      <fraction n="0.012000000104308128" ref="Ar_elm"/>
+      <fraction n="0.75400000810623169" ref="N_elm"/>
+      <fraction n="0.23399999737739563" ref="O_elm"/>
+    </material>
+    <material name="Water">
+      <D unit="g/cm3" value="1"/>
+      <fraction n="0.11189834773540497" ref="H_elm"/>
+      <fraction n="0.88810163736343384" ref="O_elm"/>
+    </material>
+    <material name="MightyTSiliconTracker">
+      <D unit="g/cm3" value="2.3300000000000001"/>
+      <fraction n="1" ref="Si_elm"/>
+    </material>
+  </materials>
+  <solids>
+    <box name="world_volume_shape_0x318c510" x="10000" y="10000" z="10000" lunit="cm"/>
+    <box name="lvUpstreamRegion_shape_0x31036a0" x="2000" y="2000" z="2000" lunit="cm"/>
+    <box name="shape-BeforeMagnetRegion_shape_0x31f2e00" x="2000" y="2000" z="540" lunit="cm"/>
+    <box name="lvBeforeVelo_shape_0x2ec4780" x="310" y="310" z="181.5" lunit="cm"/>
+    <box name="lvMagnetRegion_shape_0x31f36f0" x="2000" y="2000" z="492" lunit="cm"/>
+    <box name="lvAfterMagnetRegion_shape_0x2ed6f20" x="2000" y="2000" z="428" lunit="cm"/>
+    <box name="TShave" x="832.5" y="628.5" z="181.90000000000009" lunit="cm"/>
+    <box name="TShave0x1" x="832.50000023841858" y="628.50000023841858" z="2" lunit="cm"/>
+    <subtraction name="Tsolid_shape_0x315dd20">
+      <first ref="TShave"/>
+      <second ref="TShave0x1"/>
+      <position name="Tsolid_shape_0x315dd20TShave0x1pos" x="0" y="-10.5" z="91.950000000000045" unit="cm"/>
+      <rotation name="Tsolid_shape_0x315dd20TShave0x1rot" x="0.2063221020266095" y="-0" z="0" unit="deg"/>
+    </subtraction>
+    <box name="lvSiShortMatRightX_shape_0x326ab60" x="42.400000000000006" y="20" z="0.13" lunit="cm"/>
+    <box name="SiMatBox_shape_0x2eb1b10" x="52.800000000000004" y="20" z="0.13" lunit="cm"/>
+    <box name="SiMatMTBox_shape_0x3265c30" x="52.800000000000004" y="20" z="0.13" lunit="cm"/>
+    <box name="lvSiShortMatLeftX_shape_0x326a370" x="42.400000000000006" y="20" z="0.13" lunit="cm"/>
+    <box name="shape-DownstreamRegion_shape_0x31606a0" x="2000" y="2000" z="800" lunit="cm"/>
+    <box name="shape-AfterMuonBox2" x="200" y="200" z="200" lunit="cm"/>
+    <box name="shape-AfterMuonBox20x1" x="49.900000000000006" y="55" z="100" lunit="cm"/>
+    <union name="shape-AfterMuon_shape_0x3160200">
+      <first ref="shape-AfterMuonBox2"/>
+      <second ref="shape-AfterMuonBox20x1"/>
+      <position name="shape-AfterMuon_shape_0x3160200shape-AfterMuonBox20x1pos" x="0" y="0" z="-100" unit="cm"/>
+    </union>
+  </solids>
+  <structure>
+    <volume name="lvUpstreamRegion">
+      <materialref ref="Air"/>
+      <solidref ref="lvUpstreamRegion_shape_0x31036a0"/>
+    </volume>
+    <volume name="lvBeforeVelo">
+      <materialref ref="Air"/>
+      <solidref ref="lvBeforeVelo_shape_0x2ec4780"/>
+    </volume>
+    <volume name="lvBeforeMagnetRegion">
+      <materialref ref="Air"/>
+      <solidref ref="shape-BeforeMagnetRegion_shape_0x31f2e00"/>
+      <physvol name="lvBeforeVelo_0" copynumber="0">
+        <volumeref ref="lvBeforeVelo"/>
+        <positionref ref="lvBeforeVelo_0inlvBeforeMagnetRegionpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvMagnetRegion">
+      <materialref ref="Air"/>
+      <solidref ref="lvMagnetRegion_shape_0x31f36f0"/>
+    </volume>
+    <volume name="lvSiShortMatRightX">
+      <materialref ref="MightyTSiliconTracker"/>
+      <solidref ref="lvSiShortMatRightX_shape_0x326ab60"/>
+    </volume>
+    <volume name="lvSiMat">
+      <materialref ref="MightyTSiliconTracker"/>
+      <solidref ref="SiMatBox_shape_0x2eb1b10"/>
+    </volume>
+    <volume name="lvSiMatMT">
+      <materialref ref="MightyTSiliconTracker"/>
+      <solidref ref="SiMatMTBox_shape_0x3265c30"/>
+    </volume>
+    <assembly name="lvMightyTModuleHoleRightX">
+      <physvol name="lvSiShortMatRightX_0" copynumber="0">
+        <volumeref ref="lvSiShortMatRightX"/>
+        <positionref ref="lvSiShortMatRightX_0inlvMightyTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvSiMat_1" copynumber="1">
+        <volumeref ref="lvSiMat"/>
+        <positionref ref="lvSiMat_1inlvMightyTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvSiMat_2" copynumber="2">
+        <volumeref ref="lvSiMat"/>
+        <positionref ref="lvSiMat_2inlvMightyTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_3" copynumber="3">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_3inlvMightyTModuleHoleRightXpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_4" copynumber="4">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_4inlvMightyTModuleHoleRightXpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvMightyTModuleFull">
+      <physvol name="lvSiMatMT_0" copynumber="0">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_0inlvMightyTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_1" copynumber="1">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_1inlvMightyTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_2" copynumber="2">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_2inlvMightyTModuleFullpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_3" copynumber="3">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_30x1inlvMightyTModuleFullpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvMightyTModuleColII">
+      <physvol name="lvSiMatMT_0" copynumber="0">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_00x1inlvMightyTModuleColIIpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_1" copynumber="1">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_10x1inlvMightyTModuleColIIpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_2" copynumber="2">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_20x1inlvMightyTModuleColIIpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvMightyTModuleColIII">
+      <physvol name="lvSiMatMT_0" copynumber="0">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_00x2inlvMightyTModuleColIIIpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_1" copynumber="1">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_10x2inlvMightyTModuleColIIIpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvHalf5XNeg">
+      <physvol name="lvMightyTModuleHoleRightX_0" copynumber="0">
+        <volumeref ref="lvMightyTModuleHoleRightX"/>
+        <positionref ref="lvMightyTModuleHoleRightX_0inlvHalf5XNegpos"/>
+      </physvol>
+      <physvol name="lvMightyTModuleFull_1" copynumber="1">
+        <volumeref ref="lvMightyTModuleFull"/>
+        <positionref ref="lvMightyTModuleFull_1inlvHalf5XNegpos"/>
+      </physvol>
+      <physvol name="lvMightyTModuleColII_2" copynumber="2">
+        <volumeref ref="lvMightyTModuleColII"/>
+        <positionref ref="lvMightyTModuleColII_2inlvHalf5XNegpos"/>
+      </physvol>
+      <physvol name="lvMightyTModuleColIII_3" copynumber="3">
+        <volumeref ref="lvMightyTModuleColIII"/>
+        <positionref ref="lvMightyTModuleColIII_3inlvHalf5XNegpos"/>
+      </physvol>
+    </assembly>
+    <volume name="lvSiShortMatLeftX">
+      <materialref ref="MightyTSiliconTracker"/>
+      <solidref ref="lvSiShortMatLeftX_shape_0x326a370"/>
+    </volume>
+    <assembly name="lvMightyTModuleHoleLeftX">
+      <physvol name="lvSiShortMatLeftX_0" copynumber="0">
+        <volumeref ref="lvSiShortMatLeftX"/>
+        <positionref ref="lvSiShortMatLeftX_0inlvMightyTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvSiMat_1" copynumber="1">
+        <volumeref ref="lvSiMat"/>
+        <positionref ref="lvSiMat_10x1inlvMightyTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvSiMat_2" copynumber="2">
+        <volumeref ref="lvSiMat"/>
+        <positionref ref="lvSiMat_20x1inlvMightyTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_3" copynumber="3">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_30x2inlvMightyTModuleHoleLeftXpos"/>
+      </physvol>
+      <physvol name="lvSiMatMT_4" copynumber="4">
+        <volumeref ref="lvSiMatMT"/>
+        <positionref ref="lvSiMatMT_40x1inlvMightyTModuleHoleLeftXpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvHalf5XPos">
+      <physvol name="lvMightyTModuleHoleLeftX_0" copynumber="0">
+        <volumeref ref="lvMightyTModuleHoleLeftX"/>
+        <positionref ref="lvMightyTModuleHoleLeftX_0inlvHalf5XPospos"/>
+      </physvol>
+      <physvol name="lvMightyTModuleFull_1" copynumber="1">
+        <volumeref ref="lvMightyTModuleFull"/>
+        <positionref ref="lvMightyTModuleFull_10x1inlvHalf5XPospos"/>
+      </physvol>
+      <physvol name="lvMightyTModuleColII_2" copynumber="2">
+        <volumeref ref="lvMightyTModuleColII"/>
+        <positionref ref="lvMightyTModuleColII_20x1inlvHalf5XPospos"/>
+      </physvol>
+      <physvol name="lvMightyTModuleColIII_3" copynumber="3">
+        <volumeref ref="lvMightyTModuleColIII"/>
+        <positionref ref="lvMightyTModuleColIII_30x1inlvHalf5XPospos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvLayerX1">
+      <physvol name="lvHalf5XNeg_0" copynumber="0">
+        <volumeref ref="lvHalf5XNeg"/>
+        <positionref ref="lvHalf5XNeg_0inlvLayerX1pos"/>
+        <rotationref ref="lvHalf5XNeg_0inlvLayerX1rot"/>
+      </physvol>
+      <physvol name="lvHalf5XPos_1" copynumber="1">
+        <volumeref ref="lvHalf5XPos"/>
+        <positionref ref="lvHalf5XPos_1inlvLayerX1pos"/>
+        <rotationref ref="lvHalf5XPos_1inlvLayerX1rot"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvLayerX2">
+      <physvol name="lvHalf5XPos_0" copynumber="0">
+        <volumeref ref="lvHalf5XPos"/>
+        <positionref ref="lvHalf5XPos_0inlvLayerX2pos"/>
+      </physvol>
+      <physvol name="lvHalf5XNeg_1" copynumber="1">
+        <volumeref ref="lvHalf5XNeg"/>
+        <positionref ref="lvHalf5XNeg_1inlvLayerX2pos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvStation">
+      <physvol name="lvLayerX1_0" copynumber="0">
+        <volumeref ref="lvLayerX1"/>
+        <positionref ref="lvLayerX1_0inlvStationpos"/>
+      </physvol>
+      <physvol name="lvLayerX2_1" copynumber="1">
+        <volumeref ref="lvLayerX2"/>
+        <positionref ref="lvLayerX2_1inlvStationpos"/>
+      </physvol>
+    </assembly>
+    <assembly name="lvMightyT">
+      <physvol name="lvStation_0" copynumber="0">
+        <volumeref ref="lvStation"/>
+        <positionref ref="lvStation_0inlvMightyTpos"/>
+        <rotationref ref="lvStation_0inlvMightyTrot"/>
+      </physvol>
+      <physvol name="lvStation_1" copynumber="1">
+        <volumeref ref="lvStation"/>
+        <positionref ref="lvStation_1inlvMightyTpos"/>
+        <rotationref ref="lvStation_1inlvMightyTrot"/>
+      </physvol>
+      <physvol name="lvStation_2" copynumber="2">
+        <volumeref ref="lvStation"/>
+        <positionref ref="lvStation_2inlvMightyTpos"/>
+        <rotationref ref="lvStation_2inlvMightyTrot"/>
+      </physvol>
+    </assembly>
+    <volume name="lvT">
+      <materialref ref="Air"/>
+      <solidref ref="Tsolid_shape_0x315dd20"/>
+      <physvol name="lvMightyT_0" copynumber="0">
+        <volumeref ref="lvMightyT"/>
+        <positionref ref="lvMightyT_0inlvTpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvAfterMagnetRegion">
+      <materialref ref="Air"/>
+      <solidref ref="lvAfterMagnetRegion_shape_0x2ed6f20"/>
+      <physvol name="lvT_0" copynumber="0">
+        <volumeref ref="lvT"/>
+        <positionref ref="lvT_0inlvAfterMagnetRegionpos"/>
+      </physvol>
+    </volume>
+    <volume name="lvAfterMuon">
+      <materialref ref="Air"/>
+      <solidref ref="shape-AfterMuon_shape_0x3160200"/>
+    </volume>
+    <volume name="lvDownstreamRegion">
+      <materialref ref="Air"/>
+      <solidref ref="shape-DownstreamRegion_shape_0x31606a0"/>
+      <physvol name="lvAfterMuon_0" copynumber="0">
+        <volumeref ref="lvAfterMuon"/>
+        <positionref ref="lvAfterMuon_0inlvDownstreamRegionpos"/>
+      </physvol>
+    </volume>
+    <volume name="world_volume">
+      <materialref ref="Air"/>
+      <solidref ref="world_volume_shape_0x318c510"/>
+      <physvol name="lvUpstreamRegion_0" copynumber="0">
+        <volumeref ref="lvUpstreamRegion"/>
+        <positionref ref="lvUpstreamRegion_0inworld_volumepos"/>
+      </physvol>
+      <physvol name="lvBeforeMagnetRegion_1" copynumber="1">
+        <volumeref ref="lvBeforeMagnetRegion"/>
+        <positionref ref="lvBeforeMagnetRegion_1inworld_volumepos"/>
+      </physvol>
+      <physvol name="lvMagnetRegion_2" copynumber="2">
+        <volumeref ref="lvMagnetRegion"/>
+        <positionref ref="lvMagnetRegion_2inworld_volumepos"/>
+      </physvol>
+      <physvol name="lvAfterMagnetRegion_3" copynumber="3">
+        <volumeref ref="lvAfterMagnetRegion"/>
+        <positionref ref="lvAfterMagnetRegion_3inworld_volumepos"/>
+      </physvol>
+      <physvol name="lvDownstreamRegion_4" copynumber="4">
+        <volumeref ref="lvDownstreamRegion"/>
+        <positionref ref="lvDownstreamRegion_4inworld_volumepos"/>
+      </physvol>
+    </volume>
+  </structure>
+  <setup name="default" version="1.0">
+    <world ref="world_volume"/>
+  </setup>
+</gdml>

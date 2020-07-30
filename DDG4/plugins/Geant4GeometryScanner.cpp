@@ -169,11 +169,11 @@ void Geant4GeometryScanner::end(const G4Track* track) {
   if ( !m_steps.empty() )  {
     constexpr const char* line = " +--------------------------------------------------------------------------------------------------------------------------------------------------\n";
     constexpr const char* fmt = " | %5d %11.4f %9.3f   (%7.2f,%7.2f,%7.2f)  Path:\"/world%s\" Shape:%s  Mat:%s\n";
-    const Position& pre = m_steps[0]->pre;
-    const Position& post = m_steps[m_steps.size()-1]->post;
+    const Position& start = m_steps[0]->pre;
+    const Position& stop = m_steps[m_steps.size()-1]->post;
 
-    ::printf("%s + Material scan between: x_0 = (%7.2f,%7.2f,%7.2f) [cm] and x_1 = (%7.2f,%7.2f,%7.2f) [cm]  TrackID:%d: \n%s",
-             line,pre.X()/cm,pre.Y()/cm,pre.Z()/cm,post.X()/cm,post.Y()/cm,post.Z()/cm,track->GetTrackID(),line);
+    ::printf("%s + Geometry scan between: x_0 = (%7.2f,%7.2f,%7.2f) [cm] and x_1 = (%7.2f,%7.2f,%7.2f) [cm]  TrackID:%d: \n%s",
+             line,start.X()/cm,start.Y()/cm,start.Z()/cm,stop.X()/cm,stop.Y()/cm,stop.Z()/cm,track->GetTrackID(),line);
     ::printf(" |     \\                Path                                        \n");
     ::printf(" | Num. \\  Thickness    Length   Endpoint                   Volume , Shape , Material\n");
     ::printf(" | Layer \\   [cm]        [cm]    (     cm,     cm,     cm)         \n");
@@ -181,12 +181,12 @@ void Geant4GeometryScanner::end(const G4Track* track) {
     int count = 1;
     for(Steps::const_iterator i=m_steps.begin(); i!=m_steps.end(); ++i, ++count)  {
       const G4LogicalVolume* logVol = (*i)->volume;
-      G4Material* material = logVol->GetMaterial();
-      G4VSolid*   solid    = logVol->GetSolid();
-      const Position& prePos  = (*i)->pre;
-      const Position& postPos = (*i)->post;
-      Position direction = postPos - prePos;
-      double length  = direction.R()/cm;
+      G4Material*     material  = logVol->GetMaterial();
+      G4VSolid*       solid     = logVol->GetSolid();
+      const Position& prePos    = (*i)->pre;
+      const Position& postPos   = (*i)->post;
+      Position        direction = postPos - prePos;
+      double          length    = direction.R()/cm;
       m_sumPath += length;
       ::printf(fmt,count,
                length, m_sumPath,

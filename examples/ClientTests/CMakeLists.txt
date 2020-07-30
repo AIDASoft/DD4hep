@@ -337,6 +337,22 @@ if (DD4HEP_USE_GEANT4)
     REGEX_PASS "Imean:  85.538 eV   temperature: 333.33 K  pressure:   2.22 atm"
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
   #
+  # Geant4 test with gdml input file (LHCb:FT)
+  dd4hep_add_test_reg( ClientTests_g4_gdml_detector
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  python ${DD4hep_ROOT}/bin/g4GeometryScan --compact=${ClientTestsEx_INSTALL}/compact/GdmlDetector.xml
+                      --position=200,200,-2000 --direction=0,0,1
+    REGEX_PASS "   122   2777.0000  5200.000  "
+    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
+  #
+  # Geant4 test with gdml input file (LHCb:MT)
+  dd4hep_add_test_reg( ClientTests_g4_gdml_MT
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  python ${DD4hep_ROOT}/bin/g4GeometryScan --compact=${ClientTestsEx_INSTALL}/compact/MT.xml
+                      --position=200,200,7900 --direction=0,0,1
+    REGEX_PASS "    15   2777.0000  4210.000   "
+    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
+  #
   # Geant4 test if production cuts are processed
   dd4hep_add_test_reg( ClientTests_sim_MiniTel_prod_cuts
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
@@ -370,7 +386,7 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   #
   # Geant4 full simulation checks of simple detectors
-  foreach(script Assemblies LheD_tracker MiniTel NestedDetectors )
+  foreach(script Assemblies LheD_tracker MiniTel MiniTel_hepmc NestedDetectors )
     dd4hep_add_test_reg( ClientTests_sim_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/${script}.py batch
