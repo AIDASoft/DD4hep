@@ -43,6 +43,13 @@ class Setup:
     # Setup particle gun
     return self.geant4.setupGun(name, particle=particle, energy=energy, multiplicity=multiplicity)
 
+  def setupInput(self, spec, mask=1):
+    input = DDG4.GeneratorAction(self.kernel, "Geant4InputAction/Input")
+    input.Input = spec
+    input.MomentumScale = 1.0
+    input.Mask = mask
+    self.geant4.buildInputStage([input])
+
   def setupGenerator(self):
     # And handle the simulation particles.
     part = DDG4.GeneratorAction(self.kernel, "Geant4ParticleHandler/ParticleHandler")
@@ -60,9 +67,9 @@ class Setup:
     self.phys.enableUI()
     return self
 
-  def run(self):
+  def run(self, num_events=None):
     # and run
-    self.geant4.execute()
+    self.geant4.execute(num_events)
     return self
 
   # Stop the entire excercise

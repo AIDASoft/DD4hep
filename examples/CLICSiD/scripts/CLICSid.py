@@ -8,12 +8,13 @@ logger = logging.getLogger(__name__)
 
 
 class CLICSid:
-  def __init__(self, tracker='Geant4TrackerCombineAction'):
+  def __init__(self, tracker='Geant4TrackerCombineAction', no_physics=True):
     self.kernel = DDG4.Kernel()
     self.description = self.kernel.detectorDescription()
     self.geant4 = DDG4.Geant4(self.kernel, tracker=tracker)
     self.kernel.UI = ""
-    self.noPhysics()
+    if no_physics:
+      self.noPhysics()
 
   def loadGeometry(self, file=None):
     import os
@@ -94,10 +95,10 @@ class CLICSid:
     return self
 
   # Test runner
-  def test_run(self, have_geo=True, have_physics=False):
+  def test_run(self, have_geo=True, have_physics=False, num_events=0):
     self.test_config(have_geo)
     if have_geo:
-      self.kernel.NumEvents = 0
+      self.kernel.NumEvents = num_events
       self.kernel.run()
     self.kernel.terminate()
     logger.info('+++++ All Done....\n\nTEST_PASSED')

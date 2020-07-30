@@ -546,7 +546,7 @@ class Geant4:
     """
     return self.addPhaseAction('stop', factory_specification)
 
-  def execute(self):
+  def execute(self, num_events=None):
     """
     Execute the Geant 4 program with all steps.
 
@@ -554,6 +554,8 @@ class Geant4:
     """
     self.kernel().configure()
     self.kernel().initialize()
+    if num_events:
+      self.kernel().NumEvents = num_events
     self.kernel().run()
     self.kernel().terminate()
     return self
