@@ -21,7 +21,7 @@ def run():
     m.kernel.UI = ''
   m.configure()
   m.defineOutput()
-  fname = os.environ['DD4hepExamplesINSTALL']+'/examples/DDG4/data/hepmc_geant4.dat'
+  fname = os.environ['DD4hepExamplesINSTALL'] + '/examples/DDG4/data/hepmc_geant4.dat'
   m.setupInput("Geant4EventReaderHepMC|" + fname)
   m.setupGenerator()
   m.setupPhysics()

@@ -25,7 +25,10 @@ def run():
   kernel = sid.kernel
   sid.loadGeometry()
   geant4.printDetectors()
-  #kernel.UI = "UI"
+  kernel.UI = 'UI'
+  if len(sys.argv) >= 2 and sys.argv[1] == "batch":
+    DDG4.setPrintLevel(DDG4.OutputLevel.WARNING)
+    kernel.UI = ''
   geant4.setupCshUI()
   sid.setupField(quiet=False)
   DDG4.importConstants(kernel.detectorDescription(), debug=False)
@@ -39,7 +42,7 @@ def run():
   gen = DDG4.GeneratorAction(kernel, "Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
   input = DDG4.GeneratorAction(kernel, "Geant4InputAction/Input")
-  fname = os.environ['DD4hepExamplesINSTALL']+'/examples/DDG4/data/hepmc_geant4.dat'
+  fname = os.environ['DD4hepExamplesINSTALL'] + '/examples/DDG4/data/hepmc_geant4.dat'
   input.Input = "Geant4EventReaderHepMC|" + fname
   input.MomentumScale = 1.0
   input.Mask = 1
