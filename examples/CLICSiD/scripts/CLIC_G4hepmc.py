@@ -18,6 +18,7 @@ def run():
   import CLICSid
   import DDG4
   import os
+  import sys
   from DDG4 import OutputLevel as Output
 
   sid = CLICSid.CLICSid(no_physics=False)
