@@ -30,8 +30,8 @@ TGeoIdentity* dd4hep::detail::matrix::_identity() {
 
 ROOT::Math::XYZVector dd4hep::detail::matrix::_scale(const TGeoMatrix* matrix) {
   if ( matrix->IsScale() )   {
-    const Double_t* s = matrix->GetScale();
-    return ROOT::Math::XYZVector(s[0],s[1],s[2]);
+    const Double_t* mat_scale = matrix->GetScale();
+    return ROOT::Math::XYZVector(mat_scale[0],mat_scale[1],mat_scale[2]);
   }
   return ROOT::Math::XYZVector(1e0,1e0,1e0);
 }
@@ -42,8 +42,8 @@ ROOT::Math::XYZVector dd4hep::detail::matrix::_scale(const TGeoMatrix& matrix) {
 
 dd4hep::Position dd4hep::detail::matrix::_translation(const TGeoMatrix* matrix) {
   if ( matrix->IsTranslation() )   {
-    const Double_t* t = matrix->GetTranslation();
-    return Position(t[0]*MM_2_CM,t[1]*MM_2_CM,t[2]*MM_2_CM);
+    const Double_t* trans = matrix->GetTranslation();
+    return Position(trans[0]*MM_2_CM,trans[1]*MM_2_CM,trans[2]*MM_2_CM);
   }
   return Position(0e0,0e0,0e0);
 }
@@ -68,10 +68,10 @@ TGeoRotation* dd4hep::detail::matrix::_rotation3D(const Rotation3D& rot3D) {
 /// Extract the rotational part of a TGeoMatrix as a Rotation3D                           \ingroup DD4HEP \ingroup DD4HEP_CORE
 dd4hep::Rotation3D dd4hep::detail::matrix::_rotation3D(const TGeoMatrix* matrix)   {
   if ( matrix->IsRotation() )  {
-    const Double_t* r = matrix->GetRotationMatrix();
-    return Rotation3D(r[0],r[1],r[2],
-                      r[3],r[4],r[5],
-                      r[6],r[7],r[8]);
+    const Double_t* rot = matrix->GetRotationMatrix();
+    return Rotation3D(rot[0],rot[1],rot[2],
+                      rot[3],rot[4],rot[5],
+                      rot[6],rot[7],rot[8]);
   }
   return Rotation3D(0e0,0e0,0e0,
                     0e0,0e0,0e0,
@@ -150,10 +150,10 @@ TGeoHMatrix* dd4hep::detail::matrix::_transform(const Position& pos, const Rotat
 dd4hep::Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix* matrix)    {
   const Double_t* t = matrix->GetTranslation();
   if ( matrix->IsRotation() )  {
-    const Double_t* r = matrix->GetRotationMatrix();
-    return Transform3D(r[0],r[1],r[2],t[0]*MM_2_CM,
-                       r[3],r[4],r[5],t[1]*MM_2_CM,
-                       r[6],r[7],r[8],t[2]*MM_2_CM);
+    const Double_t* rot = matrix->GetRotationMatrix();
+    return Transform3D(rot[0],rot[1],rot[2],t[0]*MM_2_CM,
+                       rot[3],rot[4],rot[5],t[1]*MM_2_CM,
+                       rot[6],rot[7],rot[8],t[2]*MM_2_CM);
   }
   return Transform3D(0e0,0e0,0e0,t[0]*MM_2_CM,
                      0e0,0e0,0e0,t[1]*MM_2_CM,
@@ -164,10 +164,10 @@ dd4hep::Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix* matrix)
 dd4hep::Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix& matrix)    {
   const Double_t* t = matrix.GetTranslation();
   if ( matrix.IsRotation() )  {
-    const Double_t* r = matrix.GetRotationMatrix();
-    return Transform3D(r[0],r[1],r[2],t[0]*MM_2_CM,
-                       r[3],r[4],r[5],t[1]*MM_2_CM,
-                       r[6],r[7],r[8],t[2]*MM_2_CM);
+    const Double_t* rot = matrix.GetRotationMatrix();
+    return Transform3D(rot[0],rot[1],rot[2],t[0]*MM_2_CM,
+                       rot[3],rot[4],rot[5],t[1]*MM_2_CM,
+                       rot[6],rot[7],rot[8],t[2]*MM_2_CM);
   }
   return Transform3D(0e0,0e0,0e0,t[0]*MM_2_CM,
                      0e0,0e0,0e0,t[1]*MM_2_CM,
@@ -178,12 +178,12 @@ dd4hep::XYZAngles dd4hep::detail::matrix::_xyzAngles(const TGeoMatrix* matrix) {
   return matrix->IsRotation() ? _xyzAngles(matrix->GetRotationMatrix()) : XYZAngles(0,0,0);
 }
 
-dd4hep::XYZAngles dd4hep::detail::matrix::_xyzAngles(const double* r) {
-  Double_t cosb = std::sqrt(r[0]*r[0] + r[1]*r[1]);
+dd4hep::XYZAngles dd4hep::detail::matrix::_xyzAngles(const double* rot) {
+  Double_t cosb = std::sqrt(rot[0]*rot[0] + rot[1]*rot[1]);
   if (cosb > 0.00001) {
-    return XYZAngles(atan2(r[5], r[8]), atan2(-r[2], cosb), atan2(r[1], r[0]));
+    return XYZAngles(atan2(rot[5], rot[8]), atan2(-rot[2], cosb), atan2(rot[1], rot[0]));
   }
-  return XYZAngles(atan2(-r[7], r[4]),atan2(-r[2], cosb),0);
+  return XYZAngles(atan2(-rot[7], rot[4]),atan2(-rot[2], cosb),0);
 }
 
 void dd4hep::detail::matrix::_decompose(const TGeoMatrix& trafo, Position& pos, Rotation3D& rot)  {
