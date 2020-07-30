@@ -1132,93 +1132,97 @@ template <> void Converter<print_xml_doc>::operator()(xml_h element) const {
 
 /// Converter for <DDDefinition/> tags
 static long load_dddefinition(Detector& det, xml_h element) {
-  static ParsingContext ctxt(&det);
-  Namespace _ns(ctxt);
   xml_elt_t dddef(element);
-  string fname = xml::DocumentHandler::system_path(element);
-  bool open_geometry  = dddef.hasChild(_CMU(open_geometry));
-  bool close_geometry = dddef.hasChild(_CMU(close_geometry));
+  if ( dddef )    {
+    static ParsingContext ctxt(&det);
+    Namespace _ns(ctxt);
+    string fname = xml::DocumentHandler::system_path(element);
+    bool open_geometry  = dddef.hasChild(_CMU(open_geometry));
+    bool close_geometry = dddef.hasChild(_CMU(close_geometry));
 
-  xml_coll_t(dddef, _U(debug)).for_each(Converter<debug>(det,&ctxt));
+    xml_coll_t(dddef, _U(debug)).for_each(Converter<debug>(det,&ctxt));
 
-  // Here we define the order how XML elements are processed.
-  // Be aware of dependencies. This can only defined once.
-  // At the end it is a limitation of DOM....
-  printout(INFO,"DDCMS","+++ Processing the CMS detector description %s",fname.c_str());
+    // Here we define the order how XML elements are processed.
+    // Be aware of dependencies. This can only defined once.
+    // At the end it is a limitation of DOM....
+    printout(INFO,"DDCMS","+++ Processing the CMS detector description %s",fname.c_str());
 
-  xml::Document doc;
-  Converter<print_xml_doc> print_doc(det,&ctxt);
-  try  {
-    resolve res;
-    print_doc((doc=dddef.document()).root());
-    xml_coll_t(dddef, _CMU(DisabledAlgo)).for_each(Converter<disabled_algo>(det,&ctxt,&res));
-    xml_coll_t(dddef, _CMU(ConstantsSection)).for_each(Converter<constantssection>(det,&ctxt,&res));
-    xml_coll_t(dddef, _CMU(VisSection)).for_each(Converter<vissection>(det,&ctxt));
-    xml_coll_t(dddef, _CMU(RotationSection)).for_each(Converter<rotationsection>(det,&ctxt));
-    xml_coll_t(dddef, _CMU(MaterialSection)).for_each(Converter<materialsection>(det,&ctxt));
+    xml::Document doc;
+    Converter<print_xml_doc> print_doc(det,&ctxt);
+    try  {
+      resolve res;
+      print_doc((doc=dddef.document()).root());
+      xml_coll_t(dddef, _CMU(DisabledAlgo)).for_each(Converter<disabled_algo>(det,&ctxt,&res));
+      xml_coll_t(dddef, _CMU(ConstantsSection)).for_each(Converter<constantssection>(det,&ctxt,&res));
+      xml_coll_t(dddef, _CMU(VisSection)).for_each(Converter<vissection>(det,&ctxt));
+      xml_coll_t(dddef, _CMU(RotationSection)).for_each(Converter<rotationsection>(det,&ctxt));
+      xml_coll_t(dddef, _CMU(MaterialSection)).for_each(Converter<materialsection>(det,&ctxt));
 
-    xml_coll_t(dddef, _CMU(IncludeSection)).for_each(_CMU(Include), Converter<include_load>(det,&ctxt,&res));
+      xml_coll_t(dddef, _CMU(IncludeSection)).for_each(_CMU(Include), Converter<include_load>(det,&ctxt,&res));
 
-    for(xml::Document d : res.includes )   {
-      print_doc((doc=d).root());
-      Converter<include_constants>(det,&ctxt,&res)((doc=d).root());
+      for(xml::Document d : res.includes )   {
+        print_doc((doc=d).root());
+        Converter<include_constants>(det,&ctxt,&res)((doc=d).root());
+      }
+      // Before we continue, we have to resolve all constants NOW!
+      Converter<resolve>(det,&ctxt,&res)(dddef);
+      // Now we can process the include files one by one.....
+      for(xml::Document d : res.includes )   {
+        print_doc((doc=d).root());
+        xml_coll_t(d.root(),_CMU(MaterialSection)).for_each(Converter<materialsection>(det,&ctxt));
+      }
+      if ( open_geometry )  {
+        ctxt.geo_inited = true;
+        det.init();
+        _ns.addVolume(det.worldVolume());
+      }
+      for(xml::Document d : res.includes )  {
+        print_doc((doc=d).root());
+        xml_coll_t(d.root(),_CMU(RotationSection)).for_each(Converter<rotationsection>(det,&ctxt));
+      }
+      for(xml::Document d : res.includes )  {
+        print_doc((doc=d).root());
+        xml_coll_t(d.root(), _CMU(SolidSection)).for_each(Converter<solidsection>(det,&ctxt));
+      }
+      for(xml::Document d : res.includes )  {
+        print_doc((doc=d).root());
+        xml_coll_t(d.root(), _CMU(LogicalPartSection)).for_each(Converter<logicalpartsection>(det,&ctxt));
+      }
+      for(xml::Document d : res.includes )  {
+        print_doc((doc=d).root());
+        xml_coll_t(d.root(), _CMU(Algorithm)).for_each(Converter<algorithm>(det,&ctxt));
+      }
+      for(xml::Document d : res.includes )  {
+        print_doc((doc=d).root());
+        xml_coll_t(d.root(), _CMU(PosPartSection)).for_each(Converter<pospartsection>(det,&ctxt));
+      }
+
+      /// Unload all XML files after processing
+      for(xml::Document d : res.includes ) Converter<include_unload>(det,&ctxt,&res)(d.root());
+
+      print_doc((doc=dddef.document()).root());
+      // Now process the actual geometry items
+      xml_coll_t(dddef, _CMU(SolidSection)).for_each(Converter<solidsection>(det,&ctxt));
+      xml_coll_t(dddef, _CMU(LogicalPartSection)).for_each(Converter<logicalpartsection>(det,&ctxt));
+      xml_coll_t(dddef, _CMU(Algorithm)).for_each(Converter<algorithm>(det,&ctxt));
+      xml_coll_t(dddef, _CMU(PosPartSection)).for_each(Converter<pospartsection>(det,&ctxt));
+
     }
-    // Before we continue, we have to resolve all constants NOW!
-    Converter<resolve>(det,&ctxt,&res)(dddef);
-    // Now we can process the include files one by one.....
-    for(xml::Document d : res.includes )   {
-      print_doc((doc=d).root());
-      xml_coll_t(d.root(),_CMU(MaterialSection)).for_each(Converter<materialsection>(det,&ctxt));
-    }
-    if ( open_geometry )  {
-      ctxt.geo_inited = true;
-      det.init();
-      _ns.addVolume(det.worldVolume());
-    }
-    for(xml::Document d : res.includes )  {
-      print_doc((doc=d).root());
-      xml_coll_t(d.root(),_CMU(RotationSection)).for_each(Converter<rotationsection>(det,&ctxt));
-    }
-    for(xml::Document d : res.includes )  {
-      print_doc((doc=d).root());
-      xml_coll_t(d.root(), _CMU(SolidSection)).for_each(Converter<solidsection>(det,&ctxt));
-    }
-    for(xml::Document d : res.includes )  {
-      print_doc((doc=d).root());
-      xml_coll_t(d.root(), _CMU(LogicalPartSection)).for_each(Converter<logicalpartsection>(det,&ctxt));
-    }
-    for(xml::Document d : res.includes )  {
-      print_doc((doc=d).root());
-      xml_coll_t(d.root(), _CMU(Algorithm)).for_each(Converter<algorithm>(det,&ctxt));
-    }
-    for(xml::Document d : res.includes )  {
-      print_doc((doc=d).root());
-      xml_coll_t(d.root(), _CMU(PosPartSection)).for_each(Converter<pospartsection>(det,&ctxt));
+    catch(const exception& e)   {
+      printout(ERROR,"DDCMS","Exception while processing xml source:%s",doc.uri().c_str());
+      printout(ERROR,"DDCMS","----> %s", e.what());
+      throw;
     }
 
-    /// Unload all XML files after processing
-    for(xml::Document d : res.includes ) Converter<include_unload>(det,&ctxt,&res)(d.root());
-
-    print_doc((doc=dddef.document()).root());
-    // Now process the actual geometry items
-    xml_coll_t(dddef, _CMU(SolidSection)).for_each(Converter<solidsection>(det,&ctxt));
-    xml_coll_t(dddef, _CMU(LogicalPartSection)).for_each(Converter<logicalpartsection>(det,&ctxt));
-    xml_coll_t(dddef, _CMU(Algorithm)).for_each(Converter<algorithm>(det,&ctxt));
-    xml_coll_t(dddef, _CMU(PosPartSection)).for_each(Converter<pospartsection>(det,&ctxt));
-
+    /// This should be the end of all processing....close the geometry
+    if ( close_geometry )  {
+      det.endDocument();
+    }
+    printout(INFO,"DDDefinition","+++ Finished processing %s",fname.c_str());
+    return 1;
   }
-  catch(const exception& e)   {
-    printout(ERROR,"DDCMS","Exception while processing xml source:%s",doc.uri().c_str());
-    printout(ERROR,"DDCMS","----> %s", e.what());
-    throw;
-  }
-
-  /// This should be the end of all processing....close the geometry
-  if ( close_geometry )  {
-    det.endDocument();
-  }
-  printout(INFO,"DDDefinition","+++ Finished processing %s",fname.c_str());
-  return 1;
+  except("DDDefinition","+++ FAILED to process unknown DOM tree [Invalid Handle]");
+  return 0;
 }
 
 // Now declare the factory entry for the plugin mechanism
