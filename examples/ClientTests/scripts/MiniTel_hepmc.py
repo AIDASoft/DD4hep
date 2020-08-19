@@ -21,12 +21,12 @@ def run():
     m.kernel.UI = ''
   m.configure()
   m.defineOutput()
-  fname = os.environ['DD4hepExamplesINSTALL'] + '/examples/DDG4/data/hepmc_geant4.dat'
-  m.setupInput("Geant4EventReaderHepMC|" + fname)
+  fname = os.environ['DD4hepExamplesINSTALL'] + '/examples/DDG4/data/Muons10GeV.HEPEvt'
+  m.setupInput("Geant4EventReaderHepEvtLong|" + fname)
   m.setupGenerator()
-  m.setupPhysics()
+  m.setupPhysics(model='FTFP_BERT')
+  m.phys.decays = True
   m.run(num_events=1)
-
 
 if __name__ == "__main__":
   run()

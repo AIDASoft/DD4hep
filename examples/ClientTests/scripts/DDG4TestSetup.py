@@ -60,10 +60,10 @@ class Setup:
     part.enableUI()
     return part
 
-  def setupPhysics(self):
+  def setupPhysics(self, model='QGSP_BERT'):
     # Now build the physics list:
     self.phys = self.kernel.physicsList()
-    self.phys.extends = 'QGSP_BERT'
+    self.phys.extends = model
     self.phys.enableUI()
     return self
 
