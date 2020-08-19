@@ -24,8 +24,6 @@
 #include "TInterpreter.h"
 #include "TGeoElement.h"
 #include "TGeoManager.h"
-#include "TGDMLParse.h"
-#include "TGDMLWrite.h"
 #include "TFile.h"
 #include "TUri.h"
 
@@ -147,13 +145,13 @@ static long plain_root_dump(Detector& description, int argc, char** argv) {
     Error:
       cout <<
         "Usage: -plugin <name> -arg [-arg]                                            \n"
-        "     name:   factory name     DD4hep_ROOTGDMLParse                           \n"
+        "     name:   factory name     DD4hep_PlainROOT                               \n"
         "     -input  <string>         Input file name.                               \n"
         "     -object <string>         Name of geometry object in file. Default: \"Geometry\"\n"
         "\tArguments given: " << arguments(argc,argv) << endl << flush;
       ::exit(EINVAL);
     }
-    printout(INFO,"ROOTGDMLParse","+++ Read geometry from GDML file file:%s",input.c_str());
+    printout(INFO,"ImportROOT","+++ Read geometry from GDML file file:%s",input.c_str());
     DetectorData::unpatchRootStreamer(TGeoVolume::Class());
     DetectorData::unpatchRootStreamer(TGeoNode::Class());
     TFile* f = TFile::Open(input.c_str());
@@ -183,7 +181,7 @@ static long plain_root_dump(Detector& description, int argc, char** argv) {
   }
   DetectorData::patchRootStreamer(TGeoVolume::Class());
   DetectorData::patchRootStreamer(TGeoNode::Class());
-  except("ROOTGDMLParse","+++ No input file name given.");
+  except("ImportROOT","+++ No input file name given.");
   return 0;
 }
 DECLARE_APPLY(DD4hep_PlainROOT,plain_root_dump)

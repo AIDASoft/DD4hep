@@ -164,8 +164,7 @@ void Geant4GeometryScanner::begin(const G4Track* track) {
 }
 
 /// End-of-tracking callback
-void Geant4GeometryScanner::end(const G4Track* track) {
-  using namespace CLHEP;
+void Geant4GeometryScanner::end(const G4Track* track)  {
   if ( !m_steps.empty() )  {
     constexpr const char* line = " +--------------------------------------------------------------------------------------------------------------------------------------------------\n";
     constexpr const char* fmt = " | %5d %11.4f %9.3f   (%7.2f,%7.2f,%7.2f)  Path:\"/world%s\" Shape:%s  Mat:%s\n";
@@ -173,7 +172,9 @@ void Geant4GeometryScanner::end(const G4Track* track) {
     const Position& stop = m_steps[m_steps.size()-1]->post;
 
     ::printf("%s + Geometry scan between: x_0 = (%7.2f,%7.2f,%7.2f) [cm] and x_1 = (%7.2f,%7.2f,%7.2f) [cm]  TrackID:%d: \n%s",
-             line,start.X()/cm,start.Y()/cm,start.Z()/cm,stop.X()/cm,stop.Y()/cm,stop.Z()/cm,track->GetTrackID(),line);
+             line,start.X()/CLHEP::cm,start.Y()/CLHEP::cm,start.Z()/CLHEP::cm,
+             stop.X()/CLHEP::cm,stop.Y()/CLHEP::cm,stop.Z()/CLHEP::cm,
+             track->GetTrackID(),line);
     ::printf(" |     \\                Path                                        \n");
     ::printf(" | Num. \\  Thickness    Length   Endpoint                   Volume , Shape , Material\n");
     ::printf(" | Layer \\   [cm]        [cm]    (     cm,     cm,     cm)         \n");
@@ -186,11 +187,11 @@ void Geant4GeometryScanner::end(const G4Track* track) {
       const Position& prePos    = (*i)->pre;
       const Position& postPos   = (*i)->post;
       Position        direction = postPos - prePos;
-      double          length    = direction.R()/cm;
+      double          length    = direction.R()/CLHEP::cm;
       m_sumPath += length;
       ::printf(fmt,count,
                length, m_sumPath,
-               postPos.X()/cm,postPos.Y()/cm,postPos.Z()/cm,
+               postPos.X()/CLHEP::cm,postPos.Y()/CLHEP::cm,postPos.Z()/CLHEP::cm,
                (*i)->path.c_str(), typeName(typeid(*solid)).c_str(), material->GetName().c_str());
     }
     for_each(m_steps.begin(),m_steps.end(),detail::DestroyObject<StepInfo*>());
