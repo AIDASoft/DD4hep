@@ -307,7 +307,9 @@ try:
         'e_squared', 'electron_mass_c2', 'proton_mass_c2', 'neutron_mass_c2', 'amu_c2', 'amu', 'mu0', 'epsilon0',
         #
         'elm_coupling', 'fine_structure_const', 'classic_electr_radius', 'electron_Compton_length', 'Bohr_radius',
-        'alpha_rcl2', 'twopi_mc2_rcl2', 'k_Boltzmann', 'STP_Temperature', 'STP_Pressure',
+        'alpha_rcl2', 'twopi_mc2_rcl2', 'k_Boltzmann',
+        'Temperature_STP', 'Pressure_STP',
+        'Temperature_NTP', 'Pressure_NTP',
         'kGasThreshold', 'universe_mean_density'
         ]
     if ns is None:

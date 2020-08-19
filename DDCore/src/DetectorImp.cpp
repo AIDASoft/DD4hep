@@ -190,8 +190,8 @@ DetectorImp::DetectorImp(const string& name)
   }
   m_surfaceManager = new detail::OpticalSurfaceManagerObject(*this);
   m_std_conditions.convention  = STD_Conditions::NTP;
-  m_std_conditions.pressure    = NTP_Pressure;
-  m_std_conditions.temperature = NTP_Temperature;  
+  m_std_conditions.pressure    = Pressure_NTP;
+  m_std_conditions.temperature = Temperature_NTP;
   
   VisAttr attr("invisible");
   attr.setColor(0.5, 0.5, 0.5);
@@ -335,9 +335,9 @@ void DetectorImp::setStdConditions(double temp, double pressure)  {
   m_std_conditions.temperature = temp;
   m_std_conditions.pressure = pressure;
   m_std_conditions.convention = STD_Conditions::USER_SET;
-  if      ( std::abs(temp-NTP_Temperature) < 1e-10 && std::abs(pressure-NTP_Pressure) < 1e-10 )
+  if      ( std::abs(temp-Temperature_NTP) < 1e-10 && std::abs(pressure-Pressure_NTP) < 1e-10 )
     m_std_conditions.convention |= STD_Conditions::NTP;
-  else if ( std::abs(temp-STP_Temperature) < 1e-10 && std::abs(pressure-STP_Pressure) < 1e-10 )
+  else if ( std::abs(temp-Temperature_STP) < 1e-10 && std::abs(pressure-Pressure_STP) < 1e-10 )
     m_std_conditions.convention |= STD_Conditions::STP;
   else
     m_std_conditions.convention |= STD_Conditions::USER;
@@ -346,13 +346,13 @@ void DetectorImp::setStdConditions(double temp, double pressure)  {
 /// Set the STD conditions according to defined types (STP or NTP)
 void DetectorImp::setStdConditions(const std::string& type)   {
   if ( type == "STP" )   {
-    m_std_conditions.temperature = STP_Temperature;
-    m_std_conditions.pressure    = STP_Pressure;
+    m_std_conditions.temperature = Temperature_STP;
+    m_std_conditions.pressure    = Pressure_STP;
     m_std_conditions.convention  = STD_Conditions::STP|STD_Conditions::USER_SET;
   }
   else if ( type == "NTP" )   {
-    m_std_conditions.temperature = NTP_Temperature;
-    m_std_conditions.pressure    = NTP_Pressure;
+    m_std_conditions.temperature = Temperature_NTP;
+    m_std_conditions.pressure    = Pressure_NTP;
     m_std_conditions.convention  = STD_Conditions::NTP|STD_Conditions::USER_SET;
   }
   else   {

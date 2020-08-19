@@ -17,6 +17,7 @@
 // Framework include files
 #include "DD4hep/Handle.h"
 #include "DD4hep/Objects.h"
+#include <DD4hep/DD4hepUnits.h>
 
 // C/C++ include files
 #include <vector>
@@ -78,7 +79,33 @@ namespace dd4hep {
   /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
   template <typename SOLID> void set_dimensions(SOLID solid, const std::vector<double>& params);
 
+  namespace detail   {
+    inline std::vector<double> _make_vector(const double* values, size_t length)   {
+      return {values, values+length};
+    }
+    template <typename SOLID> std::vector<double> _extract_vector(const SOLID* solid,
+                                                                  double (SOLID::*extract)(Int_t) const,
+                                                                  Int_t (SOLID::*len)() const)   {
+      std::vector<double> result;
+      Int_t count = (solid->*len)();
+      for(Int_t i=0; i<count; ++i) result.emplace_back((solid->*extract)(i));
+      return result;
+    }
+    template <typename SOLID> std::vector<double> zPlaneZ(const SOLID* solid)   {
+      const auto* shape = solid->access();
+      return _make_vector(shape->GetZ(), shape->GetNz());
+    }
+    template <typename SOLID> std::vector<double> zPlaneRmin(const SOLID* solid)   {
+      const auto* shape = solid->access();
+      return _make_vector(shape->GetRmin(), shape->GetNz());
+    }
+    template <typename SOLID> std::vector<double> zPlaneRmax(const SOLID* solid)   {
+      const auto* shape = solid->access();
+      return _make_vector(shape->GetRmax(), shape->GetNz());
+    }
 
+  }
+  
   ///  Base class for Solid (shape) objects
   /**
    *   Generic handle holding an object of base TGeoShape.
@@ -292,7 +319,18 @@ namespace dd4hep {
     HalfSpace& operator=(HalfSpace&& copy) = default;
     /// Copy Assignment operator
     HalfSpace& operator=(const HalfSpace& copy) = default;
- };
+
+    /// Accessor: positioning point
+    Position position()  const   {
+      const double* pos = access()->GetPoint();
+      return {pos[0], pos[1], pos[2]};
+    }
+    /// Accessor: normal vector spanning plane at positioning point
+    Direction normal()  const   {
+      const double* n = access()->GetNorm();
+      return {n[0], n[1], n[2]};
+    }
+  };
 
   /// Class describing a cone shape
   /**
@@ -341,6 +379,17 @@ namespace dd4hep {
     Cone& operator=(const Cone& copy) = default;
     /// Set the box dimensions
     Cone& setDimensions(double z, double rmin1, double rmax1, double rmin2, double rmax2);
+
+    /// Accessor: delta-z value
+    double dZ() const                      { return access()->GetDz();               }
+    /// Accessor: r-min-1 value
+    double rMin1() const                   { return access()->GetRmin1();            }
+    /// Accessor: r-min-2 value
+    double rMin2() const                   { return access()->GetRmin2();            }
+    /// Accessor: r-max-1 value
+    double rMax1() const                   { return access()->GetRmax1();            }
+    /// Accessor: r-max-2 value
+    double rMax2() const                   { return access()->GetRmax2();            }
   };
 
   /// Class describing a Polycone shape
@@ -399,6 +448,25 @@ namespace dd4hep {
 
     /// Add Z-planes to the Polycone
     void addZPlanes(const std::vector<double>& rmin, const std::vector<double>& rmax, const std::vector<double>& z);
+
+    /// Accessor: start-phi value
+    double startPhi() const                { return access()->GetPhi1()*dd4hep::deg; }
+    /// Accessor: delta-phi value
+    double deltaPhi() const                { return access()->GetDphi()*dd4hep::deg; }
+
+    /// Accessor: r-min value
+    double z(size_t which) const           { return access()->GetZ(which);           }
+    /// Accessor: r-min value
+    double rMin(size_t which) const        { return access()->GetRmin(which);        }
+    /// Accessor: r-max value
+    double rMax(size_t which) const        { return access()->GetRmax(which);        }
+
+    /// Accessor: vector of z-values for Z-planes value
+    std::vector<double> zPlaneZ() const    { return detail::zPlaneZ(this);           }
+    /// Accessor: vector of rMin-values for Z-planes value
+    std::vector<double> zPlaneRmin() const { return detail::zPlaneRmin(this);        }
+    /// Accessor: vector of rMax-values for Z-planes value
+    std::vector<double> zPlaneRmax() const { return detail::zPlaneRmax(this);        }
   };
 
   /// Class describing a cone segment shape
@@ -470,6 +538,21 @@ namespace dd4hep {
     ConeSegment& setDimensions(double dz, double rmin1, double rmax1,
                                double rmin2, double rmax2,
                                double startPhi = 0.0, double endPhi = 2.0 * M_PI);
+
+    /// Accessor: start-phi value
+    double startPhi() const                { return access()->GetPhi1()*dd4hep::deg; }
+    /// Accessor: end-phi value
+    double endPhi() const                  { return access()->GetPhi2()*dd4hep::deg; }
+    /// Accessor: delta-z value
+    double dZ() const                      { return access()->GetDz();               }
+    /// Accessor: r-min-1 value
+    double rMin1() const                   { return access()->GetRmin1();            }
+    /// Accessor: r-min-2 value
+    double rMin2() const                   { return access()->GetRmin2();            }
+    /// Accessor: r-max-1 value
+    double rMax1() const                   { return access()->GetRmax1();            }
+    /// Accessor: r-max-2 value
+    double rMax2() const                   { return access()->GetRmax2();            }
   };
 
   /// Class describing a tube shape of a section of a tube
@@ -550,6 +633,17 @@ namespace dd4hep {
     Tube& operator=(const Tube& copy) = default;
     /// Set the tube dimensions
     Tube& setDimensions(double rmin, double rmax, double dz, double startPhi=0.0, double endPhi=2*M_PI);
+
+    /// Accessor: start-phi value
+    double startPhi() const                { return access()->GetPhi1()*dd4hep::deg; }
+    /// Accessor: end-phi value
+    double endPhi() const                  { return access()->GetPhi2()*dd4hep::deg; }
+    /// Accessor: delta-z value
+    double dZ() const                      { return access()->GetDz();               }
+    /// Accessor: r-min value
+    double rMin() const                    { return access()->GetRmin();             }
+    /// Accessor: r-max value
+    double rMax() const                    { return access()->GetRmax();             }
   };
 
   /// Class describing a tube shape of a section of a cut tube segment
@@ -593,6 +687,21 @@ namespace dd4hep {
     CutTube& operator=(CutTube&& copy) = default;
     /// Copy Assignment operator
     CutTube& operator=(const CutTube& copy) = default;
+
+    /// Accessor: start-phi value
+    double startPhi() const                { return access()->GetPhi1()*dd4hep::deg; }
+    /// Accessor: end-phi value
+    double endPhi() const                  { return access()->GetPhi2()*dd4hep::deg; }
+    /// Accessor: delta-z value
+    double dZ() const                      { return access()->GetDz();               }
+    /// Accessor: r-min value
+    double rMin() const                    { return access()->GetRmin();             }
+    /// Accessor: r-max value
+    double rMax() const                    { return access()->GetRmax();             }
+    /// Accessor: lower normal vector of cut plane
+    std::vector<double> lowNormal()  const { return detail::_make_vector(access()->GetNlow(), 3);  }
+    /// Accessor: upper normal vector of cut plane
+    std::vector<double> highNormal() const { return detail::_make_vector(access()->GetNhigh(), 3);  }
   };
 
   
@@ -693,6 +802,13 @@ namespace dd4hep {
     EllipticalTube& operator=(const EllipticalTube& copy) = default;
     /// Set the tube dimensions
     EllipticalTube& setDimensions(double a, double b, double dz);
+
+    /// Accessor: delta-z value
+    double dZ() const                      { return access()->GetDz();               }
+    /// Accessor: r-min value
+    double a() const                       { return access()->GetA();                }
+    /// Accessor: r-max value  
+    double b() const                       { return access()->GetB();                }
   };
 
   /// Class describing a elliptical tube shape
@@ -829,6 +945,27 @@ namespace dd4hep {
     Trap& setDimensions(double z, double theta, double phi,
                         double h1, double bl1, double tl1, double alpha1,
                         double h2, double bl2, double tl2, double alpha2);
+
+    /// Accessor: phi value
+    double phi() const                     { return access()->GetPhi()*dd4hep::deg;    }
+    /// Accessor: theta value
+    double theta() const                   { return access()->GetTheta()*dd4hep::deg;  }
+    /// Angle between centers of x edges an y axis at low z
+    double alpha1()  const                 { return access()->GetAlpha1()*dd4hep::deg; }
+    /// Angle between centers of x edges an y axis at low z
+    double alpha2()  const                 { return access()->GetAlpha2()*dd4hep::deg; }
+    /// Half length in x at low z and y low edge
+    double bottomLow1()  const             { return access()->GetBl1();                }
+    /// Half length in x at high z and y low edge
+    double bottomLow2()  const             { return access()->GetBl2();                }
+    /// Half length in x at low z and y high edge
+    double topLow1()  const                { return access()->GetTl1();                }
+    /// Half length in x at high z and y high edge
+    double topLow2()  const                { return access()->GetTl2();                }
+    /// Half length in y at low z
+    double high1()  const                  { return access()->GetH1();                 }
+    /// Half length in y at high z
+    double high2()  const                  { return access()->GetH2();                 }
   };
 
   /// Class describing a pseudo trap shape (CMS'ism)
@@ -926,6 +1063,15 @@ namespace dd4hep {
     Trd1& operator=(const Trd1& copy) = default;
     /// Set the Trd1 dimensions
     Trd1& setDimensions(double x1, double x2, double y, double z);
+
+    /// Accessor: delta-x1 value
+    double dX1() const                     { return access()->GetDx1();              }
+    /// Accessor: delta-x2 value
+    double dX2() const                     { return access()->GetDx2();              }
+    /// Accessor: delta-y value
+    double dY() const                      { return access()->GetDy();               }
+    /// Accessor: delta-z value
+    double dZ() const                      { return access()->GetDz();               }
   };
   
   /// Class describing a Trd2 shape
@@ -977,6 +1123,17 @@ namespace dd4hep {
     Trd2& operator=(const Trd2& copy) = default;
     /// Set the Trd2 dimensions
     Trd2& setDimensions(double x1, double x2, double y1, double y2, double z);
+
+    /// Accessor: delta-x1 value
+    double dX1() const                     { return access()->GetDx1();              }
+    /// Accessor: delta-x2 value
+    double dX2() const                     { return access()->GetDx2();              }
+    /// Accessor: delta-y1 value
+    double dY1() const                     { return access()->GetDy1();              }
+    /// Accessor: delta-y2 value
+    double dY2() const                     { return access()->GetDy2();              }
+    /// Accessor: delta-z value
+    double dZ() const                      { return access()->GetDz();               }
   };
   /// Shortcut name definition
   typedef Trd2 Trapezoid;
@@ -1028,6 +1185,18 @@ namespace dd4hep {
     Torus& operator=(const Torus& copy) = default;
     /// Set the Torus dimensions
     Torus& setDimensions(double r, double rmin, double rmax, double startPhi, double deltaPhi);
+
+    /// Accessor: start-phi value
+    double startPhi() const                { return access()->GetPhi1()*dd4hep::deg; }
+    /// Accessor: delta-phi value
+    double deltaPhi() const                { return access()->GetDphi()*dd4hep::deg; }
+
+    /// Accessor: r-min value
+    double r() const                       { return access()->GetR();                }
+    /// Accessor: r-min value
+    double rMin() const                    { return access()->GetRmin();             }
+    /// Accessor: r-max value
+    double rMax() const                    { return access()->GetRmax();             }
   };
 
   /// Class describing a sphere shape
@@ -1105,6 +1274,19 @@ namespace dd4hep {
     Sphere& setDimensions(double rmin,       double rmax,
                           double startTheta, double endTheta,
                           double startPhi,   double endPhi);
+
+    /// Accessor: start-phi value
+    double startPhi() const                { return access()->GetPhi1()*dd4hep::deg;   }
+    /// Accessor: end-phi value 
+    double endPhi() const                  { return access()->GetPhi2()*dd4hep::deg;   }
+    /// Accessor: start-theta value
+    double startTheta() const              { return access()->GetTheta1()*dd4hep::deg; }
+    /// Accessor: end-theta value
+    double endTheta() const                { return access()->GetTheta2()*dd4hep::deg; }
+    /// Accessor: r-min value
+    double rMin() const                    { return access()->GetRmin();               }
+    /// Accessor: r-max value
+    double rMax() const                    { return access()->GetRmax();               }
   };
 
   /// Class describing a Paraboloid shape
@@ -1154,6 +1336,13 @@ namespace dd4hep {
     Paraboloid& operator=(const Paraboloid& copy) = default;
     /// Set the Paraboloid dimensions
     Paraboloid& setDimensions(double r_low, double r_high, double delta_z);
+
+    /// Accessor: delta-z value
+    double dZ() const                      { return access()->GetDz();               }
+    /// Accessor: r-min value
+    double rLow() const                    { return access()->GetRlo();              }
+    /// Accessor: r-max value
+    double rHigh() const                   { return access()->GetRhi();              }
   };
 
   /// Class describing a Hyperboloid shape
@@ -1203,6 +1392,17 @@ namespace dd4hep {
     Hyperboloid& operator=(const Hyperboloid& copy) = default;
     /// Set the Hyperboloid dimensions
     Hyperboloid& setDimensions(double rin, double stin, double rout, double stout, double dz);
+
+    /// Accessor: delta-z value
+    double dZ() const                      { return access()->GetDz();               }
+    /// Accessor: r-min value
+    double rMin() const                    { return access()->GetRmin();             }
+    /// Accessor: r-max value
+    double rMax() const                    { return access()->GetRmax();             }
+    /// Stereo angle for inner surface
+    double stereoInner()  const            { return access()->GetStIn();             }
+    /// Stereo angle for outer surface
+    double stereoOuter()  const            { return access()->GetStOut();            }
   };
 
   /// Class describing a regular polyhedron shape
@@ -1271,6 +1471,27 @@ namespace dd4hep {
     PolyhedraRegular& operator=(PolyhedraRegular&& copy) = default;
     /// Copy Assignment operator
     PolyhedraRegular& operator=(const PolyhedraRegular& copy) = default;
+
+    /// Accessor: Number of edges
+    size_t numEdge()  const                { return access()->GetNedges();           }
+    /// Accessor: start-phi value
+    double startPhi() const                { return access()->GetPhi1()*dd4hep::deg; }
+    /// Accessor: delta-phi value
+    double deltaPhi() const                { return access()->GetDphi()*dd4hep::deg; }
+
+    /// Accessor: r-min value
+    double z(size_t which) const           { return access()->GetZ(which);           }
+    /// Accessor: r-min value
+    double rMin(size_t which) const        { return access()->GetRmin(which);        }
+    /// Accessor: r-max value
+    double rMax(size_t which) const        { return access()->GetRmax(which);        }
+
+    /// Accessor: vector of z-values for Z-planes value
+    std::vector<double> zPlaneZ() const    { return detail::zPlaneZ(this);           }
+    /// Accessor: vector of rMin-values for Z-planes value
+    std::vector<double> zPlaneRmin() const { return detail::zPlaneRmin(this);        }
+    /// Accessor: vector of rMax-values for Z-planes value
+    std::vector<double> zPlaneRmax() const { return detail::zPlaneRmax(this);        }
   };
 
   /// Class describing a regular polyhedron shape
@@ -1326,6 +1547,27 @@ namespace dd4hep {
     Polyhedra& operator=(Polyhedra&& copy) = default;
     /// Copy Assignment operator
     Polyhedra& operator=(const Polyhedra& copy) = default;
+
+    /// Accessor: Number of edges
+    size_t numEdge()  const                { return access()->GetNedges();           }
+    /// Accessor: start-phi value
+    double startPhi() const                { return access()->GetPhi1()*dd4hep::deg; }
+    /// Accessor: delta-phi value
+    double deltaPhi() const                { return access()->GetDphi()*dd4hep::deg; }
+
+    /// Accessor: r-min value
+    double z(size_t which) const           { return access()->GetZ(which);           }
+    /// Accessor: r-min value
+    double rMin(size_t which) const        { return access()->GetRmin(which);        }
+    /// Accessor: r-max value
+    double rMax(size_t which) const        { return access()->GetRmax(which);        }
+
+    /// Accessor: vector of z-values for Z-planes value
+    std::vector<double> zPlaneZ() const    { return detail::zPlaneZ(this);           }
+    /// Accessor: vector of rMin-values for Z-planes value
+    std::vector<double> zPlaneRmin() const { return detail::zPlaneRmin(this);        }
+    /// Accessor: vector of rMax-values for Z-planes value
+    std::vector<double> zPlaneRmax() const { return detail::zPlaneRmax(this);        }
   };
 
   /// Class describing a extruded polygon shape
@@ -1381,6 +1623,13 @@ namespace dd4hep {
     ExtrudedPolygon& operator=(ExtrudedPolygon&& copy) = default;
     /// Copy Assignment operator
     ExtrudedPolygon& operator=(const ExtrudedPolygon& copy) = default;
+
+    std::vector<double> x() const   {  return detail::_extract_vector(this->access(), &TGeoXtru::GetX, &TGeoXtru::GetNvert); }
+    std::vector<double> y() const   {  return detail::_extract_vector(this->access(), &TGeoXtru::GetY, &TGeoXtru::GetNvert); }
+    std::vector<double> z() const   {  return detail::zPlaneZ(this); }
+    std::vector<double> zx() const  {  return detail::_extract_vector(this->access(), &TGeoXtru::GetXOffset, &TGeoXtru::GetNz); }
+    std::vector<double> zy() const  {  return detail::_extract_vector(this->access(), &TGeoXtru::GetYOffset, &TGeoXtru::GetNz); }
+    std::vector<double> zscale() const { return detail::_extract_vector(this->access(), &TGeoXtru::GetScale, &TGeoXtru::GetNz); }
   };
 
   /// Class describing an arbitray solid defined by 8 vertices.
@@ -1420,6 +1669,19 @@ namespace dd4hep {
     EightPointSolid& operator=(EightPointSolid&& copy) = default;
     /// Copy Assignment operator
     EightPointSolid& operator=(const EightPointSolid& copy) = default;
+
+    /// Accessor: delta-z value
+    double dZ() const                      { return access()->GetDz();               }
+    /// Accessor: vertices
+    std::vector<double> vertices() const   {
+      const double* values = access()->GetVertices();
+      return detail::_make_vector(values, 8*2);
+    }
+    /// Accessor: singlke vertex
+    std::pair<double, double> vertex(size_t which) const   {
+      const double* values = access()->GetVertices();
+      return std::make_pair(values[2*which], values[2*which+1]);
+    }
   };
 
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
