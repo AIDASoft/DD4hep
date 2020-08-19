@@ -410,12 +410,12 @@ namespace dd4hep {
     //
     // IUPAC standard temperature and pressure (STP)
     // STP uses 273.15 K (0 °C, 32 °F) and (since 1982) 1 bar (100 kPa) and not 1 atm!
-    static constexpr double STP_Temperature = 273.15 * kelvin;
-    static constexpr double STP_Pressure    = 1. * bar;
+    static constexpr double Temperature_STP = 273.15 * kelvin;
+    static constexpr double Pressure_STP    = 1. * bar;
     //
     // NTP uses the NIST convention: 20 °C (293.15 K, 68 °F), 1 atm (14.696 psi, 101.325 kPa)
-    static constexpr double NTP_Temperature = 293.15 * kelvin;
-    static constexpr double NTP_Pressure    = 1. * atmosphere;
+    static constexpr double Temperature_NTP = 293.15 * kelvin;
+    static constexpr double Pressure_NTP    = 1. * atmosphere;
     //
     static constexpr double kGasThreshold   = 10. * mg / cm3;
     //
