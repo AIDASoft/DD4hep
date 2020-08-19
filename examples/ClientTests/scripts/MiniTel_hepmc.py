@@ -6,6 +6,7 @@ import DDG4
 """
 
    dd4hep example setup using the python configuration
+   and reading a HepEvt event
 
    \author  M.Frank
    \version 1.0
@@ -27,6 +28,7 @@ def run():
   m.setupPhysics(model='FTFP_BERT')
   m.phys.decays = True
   m.run(num_events=1)
+
 
 if __name__ == "__main__":
   run()
