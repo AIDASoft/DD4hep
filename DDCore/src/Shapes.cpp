@@ -748,6 +748,26 @@ bool TessellatedSolid::addFacet(const int pt0, const int pt1, const int pt2, con
 }
 #endif
 
+/// Access right solid of the boolean
+Solid BooleanSolid::rightShape()  const    {
+  return access()->GetBoolNode()->GetRightShape();
+}
+
+/// Access left solid of the boolean
+Solid BooleanSolid::leftShape()  const   {
+  return access()->GetBoolNode()->GetLeftShape();
+}
+
+/// Access right positioning matrix of the boolean
+const TGeoMatrix* BooleanSolid::rightMatrix()  const   {
+  return access()->GetBoolNode()->GetRightMatrix();
+}
+
+/// Access left positioning matrix of the boolean
+const TGeoMatrix* BooleanSolid::leftMatrix()  const   {
+  return access()->GetBoolNode()->GetLeftMatrix();
+}
+
 /// Constructor to be used when creating a new object. Position is identity, Rotation is the identity rotation
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2) {
   TGeoSubtraction* sub = new TGeoSubtraction(shape1, shape2, detail::matrix::_identity(), detail::matrix::_identity());

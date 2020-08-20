@@ -455,11 +455,11 @@ namespace dd4hep {
     double deltaPhi() const                { return access()->GetDphi()*dd4hep::deg; }
 
     /// Accessor: r-min value
-    double z(size_t which) const           { return access()->GetZ(which);           }
-    /// Accessor: r-min value
-    double rMin(size_t which) const        { return access()->GetRmin(which);        }
+    double z(int which) const              { return access()->GetZ(which);           }
+    /// Accessor: r-min value  
+    double rMin(int which) const           { return access()->GetRmin(which);        }
     /// Accessor: r-max value
-    double rMax(size_t which) const        { return access()->GetRmax(which);        }
+    double rMax(int which) const           { return access()->GetRmax(which);        }
 
     /// Accessor: vector of z-values for Z-planes value
     std::vector<double> zPlaneZ() const    { return detail::zPlaneZ(this);           }
@@ -701,7 +701,7 @@ namespace dd4hep {
     /// Accessor: lower normal vector of cut plane
     std::vector<double> lowNormal()  const { return detail::_make_vector(access()->GetNlow(), 3);  }
     /// Accessor: upper normal vector of cut plane
-    std::vector<double> highNormal() const { return detail::_make_vector(access()->GetNhigh(), 3);  }
+    std::vector<double> highNormal() const { return detail::_make_vector(access()->GetNhigh(), 3); }
   };
 
   
@@ -1473,18 +1473,18 @@ namespace dd4hep {
     PolyhedraRegular& operator=(const PolyhedraRegular& copy) = default;
 
     /// Accessor: Number of edges
-    size_t numEdge()  const                { return access()->GetNedges();           }
+    int numEdges()  const                  { return access()->GetNedges();           }
     /// Accessor: start-phi value
     double startPhi() const                { return access()->GetPhi1()*dd4hep::deg; }
     /// Accessor: delta-phi value
     double deltaPhi() const                { return access()->GetDphi()*dd4hep::deg; }
 
     /// Accessor: r-min value
-    double z(size_t which) const           { return access()->GetZ(which);           }
+    double z(int which) const              { return access()->GetZ(which);           }
     /// Accessor: r-min value
-    double rMin(size_t which) const        { return access()->GetRmin(which);        }
+    double rMin(int which) const           { return access()->GetRmin(which);        }
     /// Accessor: r-max value
-    double rMax(size_t which) const        { return access()->GetRmax(which);        }
+    double rMax(int which) const           { return access()->GetRmax(which);        }
 
     /// Accessor: vector of z-values for Z-planes value
     std::vector<double> zPlaneZ() const    { return detail::zPlaneZ(this);           }
@@ -1549,18 +1549,18 @@ namespace dd4hep {
     Polyhedra& operator=(const Polyhedra& copy) = default;
 
     /// Accessor: Number of edges
-    size_t numEdge()  const                { return access()->GetNedges();           }
+    int numEdges()  const                  { return access()->GetNedges();           }
     /// Accessor: start-phi value
     double startPhi() const                { return access()->GetPhi1()*dd4hep::deg; }
     /// Accessor: delta-phi value
     double deltaPhi() const                { return access()->GetDphi()*dd4hep::deg; }
 
     /// Accessor: r-min value
-    double z(size_t which) const           { return access()->GetZ(which);           }
+    double z(int which) const              { return access()->GetZ(which);           }
     /// Accessor: r-min value
-    double rMin(size_t which) const        { return access()->GetRmin(which);        }
+    double rMin(int which) const           { return access()->GetRmin(which);        }
     /// Accessor: r-max value
-    double rMax(size_t which) const        { return access()->GetRmax(which);        }
+    double rMax(int which) const           { return access()->GetRmax(which);        }
 
     /// Accessor: vector of z-values for Z-planes value
     std::vector<double> zPlaneZ() const    { return detail::zPlaneZ(this);           }
@@ -1678,7 +1678,7 @@ namespace dd4hep {
       return detail::_make_vector(values, 8*2);
     }
     /// Accessor: singlke vertex
-    std::pair<double, double> vertex(size_t which) const   {
+    std::pair<double, double> vertex(int which) const   {
       const double* values = access()->GetVertices();
       return std::make_pair(values[2*which], values[2*which+1]);
     }
@@ -1770,6 +1770,14 @@ namespace dd4hep {
     BooleanSolid& operator=(BooleanSolid&& copy) = default;
     /// Copy Assignment operator
     BooleanSolid& operator=(const BooleanSolid& copy) = default;
+    /// Access right solid of the boolean
+    Solid rightShape()  const;
+    /// Access left solid of the boolean
+    Solid leftShape()  const;
+    /// Access right positioning matrix of the boolean
+    const TGeoMatrix* rightMatrix()  const;
+    /// Access left positioning matrix of the boolean
+    const TGeoMatrix* leftMatrix()  const;
   };
 
   /// Class describing boolean subtraction solid

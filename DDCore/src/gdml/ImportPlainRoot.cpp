@@ -88,11 +88,11 @@ static long plain_root_dump(Detector& description, int argc, char** argv) {
       ++num_nodes;
       if ( lvl <= max_level )  {
         if ( !import || (import && npatch > 0) )  {
-          snprintf(fmt,sizeof(fmt),"%-5d %%-%ds  %%s  NDau:%%d Ext:%%p  Vol:%%s Mother:%%s Ext:%%p Mat:%%s",lvl,lvl);
-          TGeoVolume* m = n->GetMotherVolume();
+          ::snprintf(fmt,sizeof(fmt),"%-5d %%-%ds  %%s  NDau:%%d Ext:%%p  Vol:%%s Mother:%%s Ext:%%p Mat:%%s",lvl,lvl);
+          TGeoVolume* mother = n->GetMotherVolume();
           printout(printLevel,"PlainROOTDump",fmt,"",
                    n->GetName(), n->GetNdaughters(), n->GetUserExtension(),
-                   v->GetName(), m ? m->GetName() : "-----",
+                   v->GetName(), mother ? mother->GetName() : "-----",
                    v->GetUserExtension(), v->GetMedium()->GetName());
           if ( import )  {
             if ( v_ext )   {
