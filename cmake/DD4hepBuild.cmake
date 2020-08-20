@@ -36,7 +36,7 @@ endmacro(dd4hep_to_parent_scope)
 macro(dd4hep_set_compiler_flags)
   include(CheckCXXCompilerFlag)
 
-  SET(COMPILER_FLAGS -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated -fdiagnostics-color=auto)
+  SET(COMPILER_FLAGS -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated -Wshadow -fdiagnostics-color=auto)
 
   # AppleClang/Clang specific warning flags
   if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")

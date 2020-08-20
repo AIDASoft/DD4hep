@@ -27,8 +27,8 @@ using namespace dd4hep;
 using namespace dd4hep::align;
 
 /// Initializing constructor
-AlignmentsPrinter::AlignmentsPrinter(ConditionsMap* m, const string& pref, int flg)
-  : mapping(m), name("Alignment"), prefix(pref), printLevel(INFO), m_flag(flg)
+AlignmentsPrinter::AlignmentsPrinter(ConditionsMap* cond_map, const string& pref, int flg)
+  : mapping(cond_map), name("Alignment"), prefix(pref), printLevel(INFO), m_flag(flg)
 {
 }
 
@@ -55,8 +55,8 @@ int AlignmentsPrinter::operator()(DetElement de, int level)  const   {
 }
 
 /// Initializing constructor
-AlignedVolumePrinter::AlignedVolumePrinter(ConditionsMap* m, const string& pref,int flg)
-  : AlignmentsPrinter(m, pref, flg)
+AlignedVolumePrinter::AlignedVolumePrinter(ConditionsMap* cond_map, const string& pref,int flg)
+  : AlignmentsPrinter(cond_map, pref, flg)
 {
   name = "Alignment";
 }
