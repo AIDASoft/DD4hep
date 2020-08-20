@@ -84,14 +84,14 @@ void Delta::computeMatrix(TGeoHMatrix& tr_delta)  const   {
 }
 
 /// print alignment delta object
-ostream& operator << (ostream& s, const Delta& data)   {
+ostream& operator << (ostream& ostr, const Delta& data)   {
   string res;
   stringstream str;
   str << "[" << data.translation << "," << data.rotation << "," << data.pivot << "]";
   res = str.str();
   for(size_t i=0; i<res.length(); ++i)
     if ( res[i]=='\n' ) res[i] = ' ';
-  return s << res;
+  return ostr << res;
 }
 
 /// Standard constructor
@@ -131,10 +131,10 @@ AlignmentData& AlignmentData::operator=(const AlignmentData& copy)  {
 }
 
 /// print Conditions object
-ostream& operator << (ostream& s, const AlignmentData& data)   {
+ostream& operator << (ostream& ostr, const AlignmentData& data)   {
   stringstream str;
   str << data.delta;
-  return s << str.str();
+  return ostr << str.str();
 }
 
 /// Transform a point from local coordinates of a given level to global coordinates
