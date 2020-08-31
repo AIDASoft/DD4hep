@@ -433,6 +433,46 @@ void TruncatedTube::make(const string& nam,
 #endif
 }
 
+/// Accessor: z-half value
+double TruncatedTube::zHalf() const    {
+  return dd4hep::dimensions<TruncatedTube>(*this)[0];
+}
+
+/// Accessor: r-min value
+double TruncatedTube::rMin() const   {
+  return dd4hep::dimensions<TruncatedTube>(*this)[1];
+}
+
+/// Accessor: r-max value
+double TruncatedTube::rMax() const   {
+  return dd4hep::dimensions<TruncatedTube>(*this)[2];
+}
+
+/// Accessor: start-phi value
+double TruncatedTube::startPhi() const    {
+  return dd4hep::dimensions<TruncatedTube>(*this)[3];
+}
+
+/// Accessor: delta-phi value
+double TruncatedTube::deltaPhi() const    {
+  return dd4hep::dimensions<TruncatedTube>(*this)[4];
+}
+
+/// Accessor: cut at start value
+double TruncatedTube::cutAtStart() const   {
+  return dd4hep::dimensions<TruncatedTube>(*this)[5];
+}
+
+/// Accessor: cut at delta value
+double TruncatedTube::cutAtDelta() const   {
+  return dd4hep::dimensions<TruncatedTube>(*this)[6];
+}
+
+/// Accessor: cut-inside value
+bool TruncatedTube::cutInside() const   {
+  return std::abs(dd4hep::dimensions<TruncatedTube>(*this)[7]) > std::numeric_limits<double>::epsilon();
+}
+
 /// Constructor to be used when creating a new object with attribute initialization
 void EllipticalTube::make(const string& nam, double a, double b, double dz) {
   _assign(new TGeoEltu(nam.c_str(), a, b, dz), "", ELLIPTICALTUBE_TAG, true);
