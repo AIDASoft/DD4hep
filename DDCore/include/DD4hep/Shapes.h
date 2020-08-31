@@ -454,7 +454,7 @@ namespace dd4hep {
     /// Accessor: delta-phi value
     double deltaPhi() const                { return access()->GetDphi()*dd4hep::deg; }
 
-    /// Accessor: r-min value
+    /// Accessor: z value
     double z(int which) const              { return access()->GetZ(which);           }
     /// Accessor: r-min value  
     double rMin(int which) const           { return access()->GetRmin(which);        }
@@ -750,6 +750,22 @@ namespace dd4hep {
     TruncatedTube& operator=(TruncatedTube&& copy) = default;
     /// Copy Assignment operator
     TruncatedTube& operator=(const TruncatedTube& copy) = default;
+    /// Accessor: z-half value
+    double zHalf() const;
+    /// Accessor: r-min value
+    double rMin() const;
+    /// Accessor: r-max value
+    double rMax() const;
+    /// Accessor: start-phi value
+    double startPhi() const;
+    /// Accessor: delta-phi value
+    double deltaPhi() const;
+    /// Accessor: cut at start value
+    double cutAtStart() const;
+    /// Accessor: cut at delta value
+    double cutAtDelta() const;
+    /// Accessor: cut-inside value
+    bool cutInside() const;
   };
   
   /// Class describing a twisted tube shape
@@ -805,9 +821,9 @@ namespace dd4hep {
 
     /// Accessor: delta-z value
     double dZ() const                      { return access()->GetDz();               }
-    /// Accessor: r-min value
+    /// Accessor: a value (semi axis along x)
     double a() const                       { return access()->GetA();                }
-    /// Accessor: r-max value  
+    /// Accessor: b value (semi axis along y)
     double b() const                       { return access()->GetB();                }
   };
 
@@ -950,9 +966,9 @@ namespace dd4hep {
     double phi() const                     { return access()->GetPhi()*dd4hep::deg;    }
     /// Accessor: theta value
     double theta() const                   { return access()->GetTheta()*dd4hep::deg;  }
-    /// Angle between centers of x edges an y axis at low z
+    /// Angle between centers of x edges and y axis at low z
     double alpha1()  const                 { return access()->GetAlpha1()*dd4hep::deg; }
-    /// Angle between centers of x edges an y axis at low z
+    /// Angle between centers of x edges and y axis at low z
     double alpha2()  const                 { return access()->GetAlpha2()*dd4hep::deg; }
     /// Half length in x at low z and y low edge
     double bottomLow1()  const             { return access()->GetBl1();                }
@@ -1191,11 +1207,11 @@ namespace dd4hep {
     /// Accessor: delta-phi value
     double deltaPhi() const                { return access()->GetDphi()*dd4hep::deg; }
 
-    /// Accessor: r-min value
+    /// Accessor: r value (torus axial radius)
     double r() const                       { return access()->GetR();                }
-    /// Accessor: r-min value
+    /// Accessor: r-min value (inner radius)
     double rMin() const                    { return access()->GetRmin();             }
-    /// Accessor: r-max value
+    /// Accessor: r-max value (outer radius)
     double rMax() const                    { return access()->GetRmax();             }
   };
 
@@ -1555,7 +1571,7 @@ namespace dd4hep {
     /// Accessor: delta-phi value
     double deltaPhi() const                { return access()->GetDphi()*dd4hep::deg; }
 
-    /// Accessor: r-min value
+    /// Accessor: z value
     double z(int which) const              { return access()->GetZ(which);           }
     /// Accessor: r-min value
     double rMin(int which) const           { return access()->GetRmin(which);        }
@@ -1672,12 +1688,12 @@ namespace dd4hep {
 
     /// Accessor: delta-z value
     double dZ() const                      { return access()->GetDz();               }
-    /// Accessor: vertices
+    /// Accessor: all vertices as STL vector
     std::vector<double> vertices() const   {
       const double* values = access()->GetVertices();
       return detail::_make_vector(values, 8*2);
     }
-    /// Accessor: singlke vertex
+    /// Accessor: single vertex
     std::pair<double, double> vertex(int which) const   {
       const double* values = access()->GetVertices();
       return std::make_pair(values[2*which], values[2*which+1]);
