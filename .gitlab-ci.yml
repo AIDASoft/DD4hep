@@ -3,17 +3,17 @@ stages:
     - documentation
     - deployment
 
-centos7-gcc8-Geant10.6:
+centos7-gcc10-Geant10.6:
   stage: build
   tags:
     - docker
   image: clicdp/cc7-lcg
   script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc8-opt/setup.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98/x86_64-centos7-gcc10-opt/setup.sh
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
-    - ninja
+    - ninja -k 0
     - ninja install
     - . ../bin/thisdd4hep.sh
     - ctest --output-on-failure -j4
@@ -21,7 +21,7 @@ centos7-gcc8-Geant10.6:
     - mkdir build
     - cd build
     - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17 ..
-    - ninja
+    - ninja -k 0
     - ninja install
     - ctest --output-on-failure
 
@@ -31,11 +31,11 @@ centos7-gcc9-Geant10.6:
     - docker
   image: clicdp/cc7-lcg
   script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc9-opt/setup.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98/x86_64-centos7-gcc9-opt/setup.sh
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
-    - ninja
+    - ninja -k 0
     - ninja install
     - . ../bin/thisdd4hep.sh
     - ctest --output-on-failure -j4
@@ -43,22 +43,22 @@ centos7-gcc9-Geant10.6:
     - mkdir build
     - cd build
     - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17  ..
-    - ninja
+    - ninja -k 0
     - ninja install
     - ctest --output-on-failure
 
-centos7-gcc9-Geant10.6-XERCESC:
+centos7-gcc10-Geant10.6-XERCESC:
   stage: build
   tags:
     - docker
   image: clicdp/cc7-lcg
   script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc9-opt/setup.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98/x86_64-centos7-gcc10-opt/setup.sh
     - unset CPATH
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
-    - ninja
+    - ninja -k 0
     - ninja install
     - . ../bin/thisdd4hep.sh
     - ctest --output-on-failure -j4
@@ -66,21 +66,21 @@ centos7-gcc9-Geant10.6-XERCESC:
     - mkdir build
     - cd build
     - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
-    - ninja
+    - ninja -k 0
     - ninja install
     - ctest --output-on-failure
 
-centos7-gcc9-Geant10.6-Python3:
+centos7-gcc10-Geant10.6-Python3:
   stage: build
   tags:
     - docker
   image: clicdp/cc7-lcg
   script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97python3/x86_64-centos7-gcc9-opt/setup.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-centos7-gcc10-opt/setup.sh
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
-    - ninja
+    - ninja -k 0
     - ninja install
     - . ../bin/thisdd4hep.sh
     - ctest --output-on-failure -j4
@@ -88,7 +88,7 @@ centos7-gcc9-Geant10.6-Python3:
     - mkdir build
     - cd build
     - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17  ..
-    - ninja
+    - ninja -k 0
     - ninja install
     - ctest --output-on-failure
 
@@ -99,11 +99,11 @@ centos7-clang10-Geant10.6-XERCESC:
     - docker
   image: clicdp/cc7-lcg
   script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc9-opt/setup.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98/x86_64-centos7-clang10-opt/setup.sh
     - mkdir build
     - cd build
     - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
-    - ninja
+    - ninja -k 0
     - ninja install
     - . ../bin/thisdd4hep.sh
     - ctest --output-on-failure -j4
@@ -111,7 +111,7 @@ centos7-clang10-Geant10.6-XERCESC:
     - mkdir build
     - cd build
     - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
-    - ninja
+    - ninja -k 0
     - ninja install
     - ctest --output-on-failure
 
