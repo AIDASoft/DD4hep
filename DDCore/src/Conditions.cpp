@@ -174,14 +174,14 @@ bool Condition::testFlag(mask_type option) const {
 
 /// Access to the grammar type
 const dd4hep::BasicGrammar& Condition::descriptor() const   {
-  const BasicGrammar* g = access()->data.grammar;
-  if ( !g ) {
+  const BasicGrammar* grammar = access()->data.grammar;
+  if ( !grammar ) {
     invalidHandleError<Condition>();
     // This code is never reached, since function above throws exception!
     // Needed to satisfay CppCheck
     throw runtime_error("Null pointer in Grammar object");
   }
-  return *g;
+  return *grammar;
 }
 
 /// Default destructor. 
@@ -190,20 +190,17 @@ ConditionsSelect::~ConditionsSelect()   {
 
 /// Constructor from string
 ConditionKey::KeyMaker::KeyMaker(DetElement detector, const std::string& value)   {
-  KeyMaker m(detector.key(), detail::hash32(value));
-  hash = m.hash;
+  hash = KeyMaker(detector.key(), detail::hash32(value)).hash;
 }
 
 /// Constructor from detector element and item sub-key
 ConditionKey::KeyMaker::KeyMaker(DetElement detector, Condition::itemkey_type item_key)  {
-  KeyMaker m(detector.key(), item_key);
-  hash = m.hash;
+  hash = KeyMaker(detector.key(), item_key).hash;
 }
 
 /// Constructor from string
 ConditionKey::KeyMaker::KeyMaker(Condition::detkey_type det, const std::string& value)   {
-  KeyMaker m(det, detail::hash32(value));
-  hash = m.hash;
+  hash = KeyMaker(det, detail::hash32(value)).hash;
 }
 
 /// Constructor from string
