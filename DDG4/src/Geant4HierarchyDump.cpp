@@ -63,10 +63,9 @@ using namespace dd4hep::sim;
 using namespace dd4hep;
 using namespace std;
 
-static const char* _T(const std::string& s) {
-  return s.c_str();
+static const char* _T(const std::string& str) {
+  return str.c_str();
 }
-//static const char* _T(const char* s)  {  return s; }
 
 enum {
   G4DUMP_ALL = 0xFFFFFFFF,

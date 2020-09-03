@@ -48,11 +48,11 @@ Geant4ReadoutVolumeFilter::~Geant4ReadoutVolumeFilter() {
 }
 
 /// Filter action. Return true if hits should be processed
-bool Geant4ReadoutVolumeFilter::operator()(const G4Step* s) const    {
-  Geant4StepHandler step(s);
+bool Geant4ReadoutVolumeFilter::operator()(const G4Step* step) const    {
+  Geant4StepHandler stepH(step);
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
-  VolumeID id = volMgr.volumeID(step.preTouchable());
-  long64 key = m_key->value(id);
+  VolumeID id  = volMgr.volumeID(stepH.preTouchable());
+  long64   key = m_key->value(id);
   if ( m_collection->key_min <= key && m_collection->key_max >= key )
     return true;
   return false;

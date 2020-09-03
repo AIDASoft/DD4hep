@@ -54,31 +54,31 @@ DD4hepMenu::~DD4hepMenu()  {
 }
 
 /// Add the menu to the menu bar
-void DD4hepMenu::Build(TGMenuBar* bar, int hints)    {
+void DD4hepMenu::Build(TGMenuBar* menubar, int hints)    {
   int id;
-  PopupMenu& m = *this;
-  m.AddEntry("&Load XML",          this, &DD4hepMenu::OnLoadXML);
-  //Not for now: m.AddEntry("&Load ROOT Geometry",this, &DD4hepMenu::OnLoadRootGeometry);
-  id = m.AddEntry("&Show Event I/O",    this, &DD4hepMenu::OnCreateEventIO);
-  m.menu().DisableEntry(id);
-  id = m.AddEntry("&Open Event Data",   this, &DD4hepMenu::OnOpenEventData);
-  m.menu().DisableEntry(id);
-  id = m.AddEntry("&Next Event",        this, &DD4hepMenu::OnNextEvent);
-  m.menu().DisableEntry(id);
-  id = m.AddEntry("&Previous Event",    this, &DD4hepMenu::OnPreviousEvent);
-  m.menu().DisableEntry(id);
-  m.AddEntry("&Exit",              this, &DD4hepMenu::OnExit);
-  bar->AddPopup("&dd4hep",*this, new TGLayoutHints(hints, 0, 4, 0, 0));
+  PopupMenu& pm = *this;
+  pm.AddEntry("&Load XML",          this, &DD4hepMenu::OnLoadXML);
+  //Not for now: pm.AddEntry("&Load ROOT Geometry",this, &DD4hepMenu::OnLoadRootGeometry);
+  id = pm.AddEntry("&Show Event I/O",    this, &DD4hepMenu::OnCreateEventIO);
+  pm.menu().DisableEntry(id);
+  id = pm.AddEntry("&Open Event Data",   this, &DD4hepMenu::OnOpenEventData);
+  pm.menu().DisableEntry(id);
+  id = pm.AddEntry("&Next Event",        this, &DD4hepMenu::OnNextEvent);
+  pm.menu().DisableEntry(id);
+  id = pm.AddEntry("&Previous Event",    this, &DD4hepMenu::OnPreviousEvent);
+  pm.menu().DisableEntry(id);
+  pm.AddEntry("&Exit",              this, &DD4hepMenu::OnExit);
+  menubar->AddPopup("&dd4hep",*this, new TGLayoutHints(hints, 0, 4, 0, 0));
 }
 
 /// Callback when the geometry was loaded
 void DD4hepMenu::OnGeometryLoaded()   {
-  TGPopupMenu& m = menu();
-  m.DisableEntry(m.GetEntry("Load XML")->GetEntryId());
-  m.EnableEntry(m.GetEntry("Show Event I/O")->GetEntryId());
-  m.EnableEntry(m.GetEntry("Open Event Data")->GetEntryId());
-  m.DisableEntry(m.GetEntry("Next Event")->GetEntryId());
-  m.DisableEntry(m.GetEntry("Previous Event")->GetEntryId());
+  TGPopupMenu& pm = menu();
+  pm.DisableEntry(pm.GetEntry("Load XML")->GetEntryId());
+  pm.EnableEntry(pm.GetEntry("Show Event I/O")->GetEntryId());
+  pm.EnableEntry(pm.GetEntry("Open Event Data")->GetEntryId());
+  pm.DisableEntry(pm.GetEntry("Next Event")->GetEntryId());
+  pm.DisableEntry(pm.GetEntry("Previous Event")->GetEntryId());
 }
 
 /// Callback when loading the configuration
@@ -117,10 +117,10 @@ void DD4hepMenu::OnOpenEventData(TGMenuEntry* /* entry */, void* /* ptr */)  {
     OnCreateEventIO(0,0);
   }
   if ( m_evtCtrl->Open() )   {
-    TGPopupMenu& m = menu();
-    m.EnableEntry(m.GetEntry("Open Event Data")->GetEntryId());
-    m.EnableEntry(m.GetEntry("Next Event")->GetEntryId());
-    m.EnableEntry(m.GetEntry("Previous Event")->GetEntryId());
+    TGPopupMenu& pm = menu();
+    pm.EnableEntry(pm.GetEntry("Open Event Data")->GetEntryId());
+    pm.EnableEntry(pm.GetEntry("Next Event")->GetEntryId());
+    pm.EnableEntry(pm.GetEntry("Previous Event")->GetEntryId());
   }
 }
 

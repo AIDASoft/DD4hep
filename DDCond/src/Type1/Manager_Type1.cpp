@@ -290,7 +290,6 @@ size_t Manager_Type1::blockRegister(ConditionsPool& pool, const vector<Condition
 Condition Manager_Type1::__queue_update(cond::Entry* e)   {
   if ( e )  {
     ConditionsPool*  p = this->ConditionsManagerObject::registerIOV(e->validity);
-    ConditionKey::KeyMaker m(e->detector,e->name);
     Condition condition(e->name,e->type);
     Condition::Object* c = condition.ptr();
     c->value = e->value;
@@ -300,7 +299,7 @@ Condition Manager_Type1::__queue_update(cond::Entry* e)   {
     c->validity = e->validity;
 #endif
     c->iov  = p->iov;
-    c->hash = m.hash;
+    c->hash = ConditionKey::KeyMaker(e->detector,e->name).hash;
     p->insert(c);
     if ( s_debug > INFO )  {
 #if defined(DD4HEP_MINIMAL_CONDITIONS)

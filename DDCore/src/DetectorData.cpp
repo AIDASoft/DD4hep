@@ -114,10 +114,10 @@ namespace {
       //printout(INFO,"OpaqueData","   Data type:%s  [%016llX]",gr.name.c_str(),key);
       void* ptr = block->ptr();
       if ( !ptr )  { // Some blocks are already bound. Skip those.
-	if ( !gr.specialization.bind )   {
-	  except("stream_opaque_datablock","Object cannot be handled by ROOT persistency. "
-		 "Grammar %s does not allow for ROOT persistency.",gr.type_name().c_str());
-	}
+        if ( !gr.specialization.bind )   {
+          except("stream_opaque_datablock","Object cannot be handled by ROOT persistency. "
+                 "Grammar %s does not allow for ROOT persistency.",gr.type_name().c_str());
+        }
         ptr = block->bind(&gr);
         gr.specialization.bind(ptr);
       }
@@ -183,24 +183,24 @@ DetectorData::~DetectorData() {
 
 /// Patch the ROOT streamers to adapt for DD4hep
 void DetectorData::patchRootStreamer(TClass* cl)   {
-  TDataMember* m = 0;
+  TDataMember* dm = 0;
   printout(INFO,"PersistencyIO",
            "+++ Set data member %s.fUserExtension as PERSISTENT.",
            cl->GetName());
-  m = cl->GetDataMember("fUserExtension");
-  m->SetTitle(m->GetTitle()+2);
-  m->SetBit(BIT(2));
+  dm = cl->GetDataMember("fUserExtension");
+  dm->SetTitle(dm->GetTitle()+2);
+  dm->SetBit(BIT(2));
 }
 
 /// UNPatch the ROOT streamers to adapt for DD4hep
 void DetectorData::unpatchRootStreamer(TClass* cl)   {
-  TDataMember* m = 0;
+  TDataMember* dm = 0;
   printout(INFO,"PersistencyIO",
            "+++ Set data member %s.fUserExtension as TRANSIENT.",
            cl->GetName());
-  m = cl->GetDataMember("fUserExtension");
-  m->SetTitle((std::string("! ")+m->GetTitle()).c_str());
-  m->ResetBit(BIT(2));
+  dm = cl->GetDataMember("fUserExtension");
+  dm->SetTitle((std::string("! ")+dm->GetTitle()).c_str());
+  dm->ResetBit(BIT(2));
 }
 
 /// Clear data content: releases all allocated resources
@@ -220,11 +220,11 @@ void DetectorData::destroyData(bool destroy_mgr)   {
   destroyHandles(m_fields);
   destroyHandles(m_define);
 #if 0
-  for(const auto& d : m_define)   {
-    auto c = d;
-    std::cout << "Delete " << d.first << std::endl;
-    //if ( d.first == "world_side" ) continue;
-    delete d.second.ptr();
+  for(const auto& def : m_define)   {
+    auto c = def;
+    std::cout << "Delete " << def.first << std::endl;
+    //if ( def.first == "world_side" ) continue;
+    delete def.second.ptr();
   }
 #endif  
   destroyHandle(m_volManager);

@@ -118,13 +118,15 @@ void DD4hepUI::redraw() const   {
 
 /// Detector interface: Draw detector sub-tree the scene on a OpenGL pane
 void DD4hepUI::drawSubtree(const char* path) const    {
-  const void* av[] = {"-detector", path, "-option", "ogl", "-level", _visLevel(visLevel).c_str(), 0};
+  string vis = _visLevel(visLevel);
+  const void* av[] = {"-detector", path, "-option", "ogl", "-level", vis.c_str(), 0};
   m_detDesc.apply("DD4hep_GeometryDisplay", 2, (char**)av);
 }
 
 /// Detector interface: Re-draw the entire sub-tree scene
 void DD4hepUI::redrawSubtree(const char* path) const    {
-  const void* av[] = {"-detector", path, "-option", "oglsame", "-level", _visLevel(visLevel).c_str(), 0};
+  string vis = _visLevel(visLevel);
+  const void* av[] = {"-detector", path, "-option", "oglsame", "-level", vis.c_str(), 0};
   m_detDesc.apply("DD4hep_GeometryDisplay", 4, (char**)av);
 }
 

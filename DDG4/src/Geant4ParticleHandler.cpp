@@ -204,11 +204,11 @@ void Geant4ParticleHandler::step(const G4Step* step_value, G4SteppingManager* mg
 
 /// Pre-track action callback
 void Geant4ParticleHandler::begin(const G4Track* track)   {
-  Geant4TrackHandler h(track);
-  double kine = h.kineticEnergy();
-  G4ThreeVector m = h.momentum();
+  Geant4TrackHandler   h(track);
+  double               kine = h.kineticEnergy();
+  G4ThreeVector        mom = h.momentum();
   const G4ThreeVector& v = h.vertex();
-  int reason = (kine > m_kinEnergyCut) ? G4PARTICLE_ABOVE_ENERGY_THRESHOLD : 0;
+  int                  reason = (kine > m_kinEnergyCut) ? G4PARTICLE_ABOVE_ENERGY_THRESHOLD : 0;
   const G4PrimaryParticle* prim = h.primary();
   Particle* prim_part = 0;
 
@@ -266,9 +266,9 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   m_currTrack.vex         = 0.0;
   m_currTrack.vey         = 0.0;
   m_currTrack.vez         = 0.0;
-  m_currTrack.psx         = m.x();
-  m_currTrack.psy         = m.y();
-  m_currTrack.psz         = m.z();
+  m_currTrack.psx         = mom.x();
+  m_currTrack.psy         = mom.y();
+  m_currTrack.psz         = mom.z();
   m_currTrack.pex         = 0.0;
   m_currTrack.pey         = 0.0;
   m_currTrack.pez         = 0.0;
@@ -297,14 +297,14 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   int track_reason = m_currTrack.reason;
   PropertyMask mask(m_currTrack.reason);
   // Update vertex end point and final momentum
-  G4ThreeVector m = track->GetMomentum();
-  const G4ThreeVector& p = track->GetPosition();
-  ph->pex = m.x();
-  ph->pey = m.y();
-  ph->pez = m.z();
-  ph->vex = p.x();
-  ph->vey = p.y();
-  ph->vez = p.z();
+  G4ThreeVector mom = track->GetMomentum();
+  const G4ThreeVector& pos = track->GetPosition();
+  ph->pex = mom.x();
+  ph->pey = mom.y();
+  ph->pez = mom.z();
+  ph->vex = pos.x();
+  ph->vey = pos.y();
+  ph->vez = pos.z();
 
   // Set the simulator status bits
   PropertyMask simStatus(m_currTrack.status);

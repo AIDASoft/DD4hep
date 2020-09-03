@@ -41,9 +41,8 @@ OpticalSurface::OpticalSurface(Detector& detector,
                                EType   type,
                                double  value)
 {
-  unique_ptr<Object> s(new Object(full_name.c_str(), model, finish, type, value));
-  //detector.surfaceManager().addOpticalSurface(m_element=s.release());
-  detector.manager().AddOpticalSurface(m_element=s.release());
+  unique_ptr<Object> obj(new Object(full_name.c_str(), model, finish, type, value));
+  detector.manager().AddOpticalSurface(m_element=obj.release());
 }
 
 /// Access to tabular properties of the surface
@@ -62,8 +61,8 @@ SkinSurface::SkinSurface(Detector& detector, DetElement de, const string& nam, O
   if ( de.isValid() )  {
     if ( vol.isValid() )  {
       if ( surf.isValid() )  {
-        unique_ptr<Object> s(new Object(nam.c_str(), surf->GetName(), surf.ptr(), vol.ptr()));
-        detector.surfaceManager().addSkinSurface(de, m_element=s.release());
+        unique_ptr<Object> obj(new Object(nam.c_str(), surf->GetName(), surf.ptr(), vol.ptr()));
+        detector.surfaceManager().addSkinSurface(de, m_element=obj.release());
         return;
       }
       except("SkinSurface","++ Cannot create SkinSurface %s without valid optical surface!",nam.c_str());

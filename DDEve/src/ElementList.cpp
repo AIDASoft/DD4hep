@@ -55,8 +55,8 @@ TEveElementList* ElementList::CloneElement() const  {
 }
 
 /// Instantiator
-ElementListContextMenu& ElementListContextMenu::install(Display* m)   {
-  static ElementListContextMenu s(m);
+ElementListContextMenu& ElementListContextMenu::install(Display* disp)   {
+  static ElementListContextMenu s(disp);
   return s;
 }
 

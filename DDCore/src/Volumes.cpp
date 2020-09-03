@@ -405,15 +405,15 @@ Position PlacedVolume::position()  const    {
 
 /// String dump
 string PlacedVolume::toString() const {
-  stringstream s;
+  stringstream str;
   Object* obj = _data(*this);
-  s << m_element->GetName() << ":  vol='" << m_element->GetVolume()->GetName()
-    << "' mat:'" << m_element->GetMatrix()->GetName()
-    << "' volID[" << obj->volIDs.size() << "] ";
+  str << m_element->GetName() << ":  vol='" << m_element->GetVolume()->GetName()
+      << "' mat:'" << m_element->GetMatrix()->GetName()
+      << "' volID[" << obj->volIDs.size() << "] ";
   for (VolIDs::const_iterator i = obj->volIDs.begin(); i != obj->volIDs.end(); ++i)
-    s << (*i).first << "=" << (*i).second << "  ";
-  s << ends;
-  return s.str();
+    str << (*i).first << "=" << (*i).second << "  ";
+  str << ends;
+  return str.str();
 }
 
 /// Enable ROOT persistency
@@ -476,13 +476,13 @@ Volume::Volume(const string& nam, const string& title) {
 }
 
 /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
-Volume::Volume(const string& nam, const Solid& s, const Material& m) {
-  m_element = _createTGeoVolume(nam,s.ptr(),m.ptr());
+Volume::Volume(const string& nam, const Solid& sol, const Material& mat) {
+  m_element = _createTGeoVolume(nam, sol.ptr(), mat.ptr());
 }
 
 /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
-Volume::Volume(const string& nam, const string& title, const Solid& s, const Material& m) {
-  m_element = _createTGeoVolume(nam,s.ptr(),m.ptr());
+Volume::Volume(const string& nam, const string& title, const Solid& sol, const Material& mat) {
+  m_element = _createTGeoVolume(nam, sol.ptr(), mat.ptr());
   m_element->SetTitle(title.c_str());
 }
 
@@ -627,8 +627,8 @@ PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Rotat
   double elements[9];
   rot3D.GetComponents(elements);
   r.SetMatrix(elements);
-  auto m = make_unique<TGeoCombiTrans>(TGeoTranslation(0,0,0),r);
-  return _addNode(par, daughter, copy_nr, m.release());
+  auto matrix = make_unique<TGeoCombiTrans>(TGeoTranslation(0,0,0),r);
+  return _addNode(par, daughter, copy_nr, matrix.release());
 }
 
 PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Transform3D& tr)   {
@@ -649,8 +649,8 @@ PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Trans
   double elements[9];
   rot3D.GetComponents(elements);
   r.SetMatrix(elements);
-  auto m = make_unique<TGeoCombiTrans>(TGeoTranslation(pos3D.x(), pos3D.y(), pos3D.z()),r);
-  return _addNode(par, daughter, copy_nr, m.release());
+  auto matrix = make_unique<TGeoCombiTrans>(TGeoTranslation(pos3D.x(), pos3D.y(), pos3D.z()),r);
+  return _addNode(par, daughter, copy_nr, matrix.release());
 }
 
 /// Place daughter volume according to generic Transform3D
@@ -742,14 +742,14 @@ string Volume::option() const {
 }
 
 /// Set the volume's material
-const Volume& Volume::setMaterial(const Material& m) const {
-  if (m.isValid()) {
-    TGeoMedium* medium = m._ptr<TGeoMedium>();
+const Volume& Volume::setMaterial(const Material& mat) const {
+  if (mat.isValid()) {
+    TGeoMedium* medium = mat._ptr<TGeoMedium>();
     if (medium) {
       m_element->SetMedium(medium);
       return *this;
     }
-    throw runtime_error("dd4hep: Volume: Medium " + string(m.name()) + " is not registered with geometry manager.");
+    throw runtime_error("dd4hep: Volume: Medium " + string(mat.name()) + " is not registered with geometry manager.");
   }
   throw runtime_error("dd4hep: Volume: Attempt to assign invalid material.");
 }
@@ -884,8 +884,8 @@ VisAttr Volume::visAttributes() const {
 }
 
 /// Set the volume's solid shape
-const Volume& Volume::setSolid(const Solid& s) const {
-  m_element->SetShape(s);
+const Volume& Volume::setSolid(const Solid& sol) const {
+  m_element->SetShape(sol);
   return *this;
 }
 
@@ -978,14 +978,14 @@ VolumeMulti::VolumeMulti(const string& nam, Material mat) {
 void VolumeMulti::verifyVolumeMulti()   {
   if ( m_element )  {
     // This will lead to an exception if the type is not TGeoVolumeMulti
-    TGeoVolumeMulti* m = detail::safe_cast<TGeoVolumeMulti>::cast(m_element);
-    if ( m )  {
+    TGeoVolumeMulti* multi = detail::safe_cast<TGeoVolumeMulti>::cast(m_element);
+    if ( multi )  {
       import();
       return;
     }
     // Force a bad cast exception
-    Handle<TGeoVolumeMulti> h(m_element);
-    if ( h.isValid() )  {}
+    Handle<TGeoVolumeMulti> handle(m_element);
+    if ( handle.isValid() )  {}
   }
 }
 

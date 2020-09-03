@@ -46,7 +46,8 @@ public:
 };
  
 /// Initializing constructor
-AlignmentsCalib::AlignmentsCalib(Detector& l, ConditionsMap& m) : description(l), slice(m)
+AlignmentsCalib::AlignmentsCalib(Detector& det, ConditionsMap& cond_map)
+  : description(det), slice(cond_map)
 {
 }
 

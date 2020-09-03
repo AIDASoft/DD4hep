@@ -56,25 +56,31 @@ void Utilities::SetRnrAll(TEveElementList* l, bool b)  {
 
 /// Make a set of nodes starting from a top element (in-)visible with a given depth
 void Utilities::MakeNodesVisible(TEveElement* e, bool visible, int level)   {
-  TEveElementList* s = dynamic_cast<TEveElementList*>(e);
-  if ( !s )  {
+  TEveElementList* lst = dynamic_cast<TEveElementList*>(e);
+  if ( !lst )  {
     return;
   }
   else if ( level == 1 )  {
-    SetRnrChildren(s, visible);
-    s->SetRnrSelf(true);
+    SetRnrChildren(lst, visible);
+    lst->SetRnrSelf(true);
   }
   else if ( level == 0 )  {
-    s->SetRnrSelf(visible);
+    lst->SetRnrSelf(visible);
   }
   else   {
-    SetRnrAll(s, visible);
-    s->SetRnrSelf(visible);
+    SetRnrAll(lst, visible);
+    lst->SetRnrSelf(visible);
   }
 }
 
 std::pair<bool,TEveElement*> 
-Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n, const TGeoHMatrix& mat, const std::string& nam)  {
+Utilities::createEveShape(int level,
+                          int max_level,
+                          TEveElement* p,
+                          TGeoNode* n,
+                          const TGeoHMatrix& mat,
+                          const std::string& nam)
+{
   TGeoVolume* vol = n ? n->GetVolume() : 0;
   bool created = false;
 
@@ -106,9 +112,9 @@ Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n,
     shape->SetMainAlpha(0.2);
     shape->SetPickable(kTRUE);
     if ( vis.isValid() )  {
-      float r,g,b;
-      vis.rgb(r,g,b);
-      shape->SetMainColorRGB(r,g,b);
+      float red, green, blue;
+      vis.rgb(red, green, blue);
+      shape->SetMainColorRGB(red, green, blue);
     }
     element = shape;
     created = true;
@@ -120,9 +126,9 @@ Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n,
     //n->GetName(),geoShape->IsA()->GetName(),n);
     created = true;
     if ( vis.isValid() )  {
-      float r,g,b;
-      vis.rgb(r,g,b);
-      shape->SetMainColorRGB(r,g,b);
+      float red, green, blue;
+      vis.rgb(red, green, blue);
+      shape->SetMainColorRGB(red, green, blue);
     }
     shape->SetMainTransparency(true);
     shape->SetMainAlpha(0.2);

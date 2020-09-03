@@ -51,7 +51,7 @@ ViewMenu::~ViewMenu()  {
 }
 
 /// Add the menu to the menu bar
-void ViewMenu::Build(TGMenuBar* bar, int hints)    {
+void ViewMenu::Build(TGMenuBar* menubar, int hints)    {
   pair<string,string>* p = 0;
   PopupMenu* view_menu = this;
   view_menu->AddEntry("3&D View", this, &ViewMenu::CreateView, p=new pair<string,string>("DD4hep_DDEve_View3D","3D"));
@@ -62,7 +62,7 @@ void ViewMenu::Build(TGMenuBar* bar, int hints)    {
     const Display::ViewConfig& v = (*i).second;
     view_menu->AddEntry(v.name.c_str(), this, &ViewMenu::CreateView,p=new pair<string,string>("DD4hep_DDEve_"+v.type,v.name));
   }
-  bar->AddPopup(m_title.c_str(),*view_menu, new TGLayoutHints(hints, 0, 4, 0, 0));
+  menubar->AddPopup(m_title.c_str(),*view_menu, new TGLayoutHints(hints, 0, 4, 0, 0));
 }
 
 /// Create a new generic view
@@ -95,8 +95,8 @@ View* ViewMenu::CreateRhoPhiProjection(const std::string& title )  {
 
 /// Import Geometry data
 void ViewMenu::BuildView(View* v)  const  {
-  TEveManager& m = m_display->manager();
-  TEveBrowser    *browser = m.GetBrowser();
+  TEveManager& mgr = m_display->manager();
+  TEveBrowser    *browser = mgr.GetBrowser();
   TGTab          *right = browser->GetTabRight();
   TEveWindowSlot *slot = TEveWindow::CreateWindowInTab(right);
   v->Build(slot);

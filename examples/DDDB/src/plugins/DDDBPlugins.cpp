@@ -62,7 +62,7 @@ DECLARE_APPLY(DDDB_ConditionsSummary,dddb_dump_conditions_summary)
 /// Plugin function
 static void* create_dddb_loader(Detector& description, int argc, char** argv)   {
   const char* name = argc>0 ? argv[0] : "DDDBLoader";
-  cond::ConditionsManagerObject* m = (cond::ConditionsManagerObject*)(argc>0 ? argv[1] : 0);
-  return new DDDB::DDDBConditionsLoader(description,m,name);
+  cond::ConditionsManagerObject* mgr = (cond::ConditionsManagerObject*)(argc>0 ? argv[1] : 0);
+  return new DDDB::DDDBConditionsLoader(description,mgr,name);
 }
 DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_Conditions_dddb_Loader,create_dddb_loader)

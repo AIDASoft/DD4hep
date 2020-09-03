@@ -89,15 +89,15 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
     for (const TGeoNode* n : mapped )  {
       TGeoVolume* v = n->GetVolume();
       if (v) {
-        Material m(v->GetMedium());
+        Material mat(v->GetMedium());
         Volume   vol(v);
         // Note : assemblies and the world do not have a real volume nor a material
         if (info.volumeSet.find(vol) == info.volumeSet.end()) {
           info.volumeSet.emplace(vol);
           info.volumes.emplace_back(vol);
         }
-        if (m.isValid())
-          info.materials.emplace(m);
+        if ( mat.isValid() )
+          info.materials.emplace(mat);
         if (dynamic_cast<Volume::Object*>(v)) {
           VisAttr vis = vol.visAttributes();
           //Region      reg = vol.region();
