@@ -69,8 +69,8 @@ public:
 
 
 /// Initializing constructor
-ConditionsPrinter::ParamPrinter::ParamPrinter(ConditionsPrinter* p, PrintLevel lvl)
-  : m_parent(p), printLevel(lvl)
+ConditionsPrinter::ParamPrinter::ParamPrinter(ConditionsPrinter* printer, PrintLevel lvl)
+  : m_parent(printer), printLevel(lvl)
 {
 }
 
@@ -115,8 +115,8 @@ void ConditionsPrinter::ParamPrinter::operator()(const AbstractMap::Params::valu
 }
 
 /// Initializing constructor
-ConditionsPrinter::ConditionsPrinter(ConditionsMap* m, const string& pref, int flg)
-  : mapping(m), m_flag(flg), name("Condition"), prefix(pref)
+ConditionsPrinter::ConditionsPrinter(ConditionsMap* cond_map, const string& pref, int flg)
+  : mapping(cond_map), m_flag(flg), name("Condition"), prefix(pref)
 {
   m_print = new ParamPrinter(this, printLevel);
 }

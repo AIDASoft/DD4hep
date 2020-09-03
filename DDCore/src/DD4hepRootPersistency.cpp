@@ -45,8 +45,8 @@ int DD4hepRootPersistency::save(Detector& description, const char* fname, const 
       DD4hepRootPersistency* persist = new DD4hepRootPersistency();
       persist->m_data = new dd4hep::DetectorData();
       persist->m_data->adoptData(dynamic_cast<DetectorData&>(description),false);
-      for( const auto& s : persist->m_data->m_sensitive )  {
-        dd4hep::SensitiveDetector sd = s.second;
+      for( const auto& sens : persist->m_data->m_sensitive )  {
+        dd4hep::SensitiveDetector sd = sens.second;
         dd4hep::Readout ro = sd.readout();
         if ( ro.isValid() && ro.segmentation().isValid() )  {
           persist->m_segments[ro].first  = ro.idSpec();
@@ -55,8 +55,8 @@ int DD4hepRootPersistency::save(Detector& description, const char* fname, const 
       }
       if ( persist->volumeManager().isValid() )   {
         for( const auto& mgr : persist->m_data->m_volManager->managers )  {
-          for( const auto& v : mgr.second->volumes )  {
-            persist->nominals[v.second->element] = v.second->element.nominal();
+          for( const auto& vol : mgr.second->volumes )  {
+            persist->nominals[vol.second->element] = vol.second->element.nominal();
           }
         }
         printout(ALWAYS,"DD4hepRootPersistency","+++ Saving %ld nominals....",persist->nominals.size());
@@ -112,17 +112,17 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
         DetectorData* source = persist->m_data;
 #if 0
         const auto& iddesc = persist->idSpecifications();
-        for( const auto& s : iddesc )  {
-          IDDescriptor id = s.second;
+        for( const auto& idd : iddesc )  {
+          IDDescriptor id = idd.second;
           id.rebuild(id->description);
         }
         printout(ALWAYS,"DD4hepRootPersistency",
                  "+++ Fixed %ld IDDescriptor objects.",iddesc.size());
 #endif
-        for( const auto& s : persist->m_segments )  {
-          Readout ro = s.first;
-          IDDescriptor id = s.second.first;
-          DDSegmentation::Segmentation* seg = s.second.second;
+        for( const auto& sg : persist->m_segments )  {
+          Readout ro = sg.first;
+          IDDescriptor id = sg.second.first;
+          DDSegmentation::Segmentation* seg = sg.second.second;
           ro.setSegmentation(Segmentation(seg->type(),seg->name(),id.decoder()));
           delete seg;
         }
@@ -325,10 +325,10 @@ namespace {
         printout(INFO,"chkSegment","+++ Checking Segmentation: %-24s [%s] DDSegmentation:%p  Decoder:%p",
                  sg.name(), seg->type().c_str(),(void*)seg, seg->decoder());
         const auto& pars = seg->parameters();
-        for ( const auto& p : pars )   {
+        for ( const auto& par : pars )   {
           printout(INFO,"chkSegment","+++             Param:%-24s  -> %-16s  [%s] opt:%s",
-                   p->name().c_str(), p->value().c_str(), p->type().c_str(),
-                   yes_no(p->isOptional()));
+                   par->name().c_str(), par->value().c_str(), par->type().c_str(),
+                   yes_no(par->isOptional()));
             
         }
         if ( pars.empty() )   {
@@ -357,10 +357,10 @@ namespace {
       printout(INFO,"chkIDDescript","+++ Checking IDDesc:  %s decoder:%p",
                id->GetName(), (void*)id.decoder());
       printout(INFO,"chkIDDescript","+++             Specs:%s",id.fieldDescription().c_str());
-      for( const auto& f : fields )
+      for( const auto& fld : fields )
         printout(INFO,"chkIDDescript","+++             Field:%-24s  -> %016llX  %3d %3d [%d,%d]",
-                 f.first.c_str(), f.second->mask(), f.second->offset(), f.second->width(),
-                 f.second->minValue(), f.second->maxValue());
+                 fld.first.c_str(), fld.second->mask(), fld.second->offset(), fld.second->width(),
+                 fld.second->minValue(), fld.second->maxValue());
       if ( fields.empty() )   {
         printout(ERROR,"chkIDDescript",
                  "+++ FAILED   IDDescriptor: %s Found invalid [EMPTY] ID descriptor!",
@@ -433,8 +433,8 @@ namespace {
       if ( v.isSensitive() )   {
         count += checkAlignment(d);
       }
-      for( const auto& c : d.children() )
-        count += checkDetectorNominals(c.second);
+      for( const auto& child : d.children() )
+        count += checkDetectorNominals(child.second);
       return count;
     }
   };
