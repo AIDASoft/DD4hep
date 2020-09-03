@@ -90,8 +90,8 @@ const IDDescriptor::FieldMap& IDDescriptor::fields() const {
 
 /// Get the field descriptor of one field by name
 const BitFieldElement* IDDescriptor::field(const string& field_name) const {
-  const FieldMap& m = fields();   // This already checks the object validity
-  for (const auto& i : m )
+  const FieldMap& fm = fields();   // This already checks the object validity
+  for (const auto& i : fm )
     if (i.first == field_name)
       return i.second;
   except("IDDescriptor","dd4hep: %s: This ID descriptor has no field with the name: %s",
@@ -101,14 +101,14 @@ const BitFieldElement* IDDescriptor::field(const string& field_name) const {
 
 /// Get the field descriptor of one field by its identifier
 const BitFieldElement* IDDescriptor::field(size_t identifier) const {
-  const FieldMap& m = fields();   // This already checks the object validity
-  return m[identifier].second;
+  const FieldMap& fm = fields();   // This already checks the object validity
+  return fm[identifier].second;
 }
 
 /// Get the field identifier of one field by name
 size_t IDDescriptor::fieldID(const string& field_name) const {
-  const FieldIDs& m = ids();   // This already checks the object validity
-  for (const auto& i : m )
+  const FieldIDs& fm = ids();   // This already checks the object validity
+  for (const auto& i : fm )
     if (i.second == field_name)
       return i.first;
   except("IDDescriptor","dd4hep: %s: This ID descriptor has no field with the name: %s",

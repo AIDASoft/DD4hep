@@ -30,7 +30,7 @@ using namespace dd4hep;
 ClassImp(EveUserContextMenu)
 
 /// Initializing constructor
-EveUserContextMenu::EveUserContextMenu(Display* m) : m_display(m)  {
+EveUserContextMenu::EveUserContextMenu(Display* disp) : m_display(disp)  {
 }
 
 /// Default destructor
@@ -104,16 +104,16 @@ void EveUserContextMenu::DeepLoadChildren(TObject* target, void* /* user_param *
 
 /// Install the geometry context menu
 void EveUserContextMenu::InstallGeometryContextMenu(TClass* cl)   {
-  ContextMenu& m = ContextMenu::instance(cl);
-  m.Clear();
-  m.Add("Show Children Recursive",this,&EveUserContextMenu::ShowAll);
-  m.Add("Hide Children Recursive",this,&EveUserContextMenu::HideAll);
-  m.AddSeparator();
-  m.Add("Show Children",this,&EveUserContextMenu::ShowChildren);
-  m.Add("Hide Children",this,&EveUserContextMenu::HideChildren);
-  m.Add("Show Self",this,&EveUserContextMenu::ShowSelf);
-  m.Add("Hide Self",this,&EveUserContextMenu::HideSelf);
-  m.AddSeparator();
-  m.Add("Load Children",this,&EveUserContextMenu::LoadChildren);
-  m.Add("Deep Load",this,&EveUserContextMenu::DeepLoadChildren);
+  ContextMenu& menu = ContextMenu::instance(cl);
+  menu.Clear();
+  menu.Add("Show Children Recursive",this,&EveUserContextMenu::ShowAll);
+  menu.Add("Hide Children Recursive",this,&EveUserContextMenu::HideAll);
+  menu.AddSeparator();
+  menu.Add("Show Children",this,&EveUserContextMenu::ShowChildren);
+  menu.Add("Hide Children",this,&EveUserContextMenu::HideChildren);
+  menu.Add("Show Self",this,&EveUserContextMenu::ShowSelf);
+  menu.Add("Hide Self",this,&EveUserContextMenu::HideSelf);
+  menu.AddSeparator();
+  menu.Add("Load Children",this,&EveUserContextMenu::LoadChildren);
+  menu.Add("Deep Load",this,&EveUserContextMenu::DeepLoadChildren);
 }

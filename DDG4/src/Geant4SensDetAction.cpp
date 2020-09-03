@@ -220,16 +220,16 @@ void Geant4Sensitive::mark(const G4Step* step) const  {
 }
 
 /// Returns the volumeID of the sensitive volume corresponding to the step
-long long int Geant4Sensitive::volumeID(const G4Step* s) {
-  Geant4StepHandler step(s);
+long long int Geant4Sensitive::volumeID(const G4Step* step) {
+  Geant4StepHandler stepH(step);
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
-  VolumeID id = volMgr.volumeID(step.preTouchable());
+  VolumeID id = volMgr.volumeID(stepH.preTouchable());
   return id;
 }
 
 /// Returns the cellID(volumeID+local coordinate encoding) of the sensitive volume corresponding to the step
-long long int Geant4Sensitive::cellID(const G4Step* s) {
-  Geant4StepHandler h(s);
+long long int Geant4Sensitive::cellID(const G4Step* step) {
+  Geant4StepHandler h(step);
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
   VolumeID volID = volMgr.volumeID(h.preTouchable());
   if ( m_segmentation.isValid() )  {

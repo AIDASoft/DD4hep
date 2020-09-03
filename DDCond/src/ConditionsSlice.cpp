@@ -22,14 +22,15 @@ using namespace dd4hep;
 using namespace dd4hep::cond;
 
 /// Initializing constructor
-ConditionsSlice::ConditionsSlice(ConditionsManager m) : manager(m)
+ConditionsSlice::ConditionsSlice(ConditionsManager mgr) : manager(mgr)
 {
   InstanceCount::increment(this);  
 }
 
 /// Initializing constructor
-ConditionsSlice::ConditionsSlice(ConditionsManager m, const shared_ptr<ConditionsContent>& c)
-  : manager(m), content(c)
+ConditionsSlice::ConditionsSlice(ConditionsManager mgr,
+                                 const shared_ptr<ConditionsContent>& cont)
+  : manager(mgr), content(cont)
 {
   InstanceCount::increment(this);  
 }

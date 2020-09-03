@@ -59,7 +59,7 @@ static int multiply_constants (Detector& detector, int argc, char** argv)  {
   }
   int num_test = 0;
   const auto& constants = detector.constants();
-  for(const auto e : constants)  {
+  for(const auto& e : constants)  {
     Constant c = e.second;
     if ( c.dataType() == "number" )   {
       try {

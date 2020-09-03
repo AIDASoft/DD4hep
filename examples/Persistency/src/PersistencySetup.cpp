@@ -62,9 +62,9 @@ int dd4hep::PersistencyExamples::printCondition(Condition cond)   {
     result += int(cond.get<vector<string> >().size());
 
   else if ( gr->type() == typeid(map<string,int>) )  {
-    const map<string,int>& m = cond.get<map<string,int> >();
-    result += int(m.size());
-    for(const auto& i : m )   {
+    const map<string,int>& mapping = cond.get<map<string,int> >();
+    result += int(mapping.size());
+    for(const auto& i : mapping )   {
       result += i.second;
       printout(INFO,"Data","\t\tMap: %s [%s] -> %d",cond.name(), i.first.c_str(),i.second);
     }

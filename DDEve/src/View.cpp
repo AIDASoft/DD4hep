@@ -30,10 +30,10 @@ using namespace std;
 using namespace dd4hep;
 
 template <typename T>
-static inline typename T::const_iterator find(const T& c,const string& s)  {
-  for(typename T::const_iterator i=c.begin(); i!=c.end(); ++i)  
-    if ( (*i).name == s ) return i;
-  return c.end();
+static inline typename T::const_iterator find(const T& cont,const string& str)  {
+  for(typename T::const_iterator i=cont.begin(); i!=cont.end(); ++i)  
+    if ( (*i).name == str ) return i;
+  return cont.end();
 }
 
 /// Initializing constructor

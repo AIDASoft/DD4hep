@@ -165,7 +165,7 @@ string Constant::toString() const {
 /// Constructor to be used when creating a new DOM tree
 Atom::Atom(const string& nam, const string& formula, int Z, int N, double density) {
   TGeoElementTable* t = TGeoElement::GetElementTable();
-  TGeoElement* e = t->FindElement(nam.c_str());
+  TGeoElement*      e = t->FindElement(nam.c_str());
   if (!e) {
     t->AddElement(nam.c_str(), formula.c_str(), Z, N, density);
     e = t->FindElement(nam.c_str());
@@ -177,9 +177,9 @@ Atom::Atom(const string& nam, const string& formula, int Z, int N, double densit
 double  Material::Z() const {
   Handle < TGeoMedium > val(*this);
   if (val.isValid()) {
-    TGeoMaterial* m = val->GetMaterial();
-    if (m)
-      return m->GetZ();
+    TGeoMaterial* mat = val->GetMaterial();
+    if ( mat )
+      return mat->GetZ();
     throw runtime_error("dd4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
   }
   throw runtime_error("dd4hep: Attempt to access proton number from invalid material handle!");
@@ -188,9 +188,9 @@ double  Material::Z() const {
 /// atomic number of the underlying material
 double  Material::A() const {
   if ( isValid() ) {
-    TGeoMaterial* m = ptr()->GetMaterial();
-    if (m)
-      return m->GetA();
+    TGeoMaterial* mat = ptr()->GetMaterial();
+    if ( mat )
+      return mat->GetA();
     throw runtime_error("dd4hep: The medium " + string(ptr()->GetName()) + " has an invalid material reference!");
   }
   throw runtime_error("dd4hep: Attempt to access atomic number from invalid material handle!");
@@ -199,9 +199,9 @@ double  Material::A() const {
 /// density of the underlying material
 double  Material::density() const {
   if ( isValid() )  {
-    TGeoMaterial* m = ptr()->GetMaterial();
-    if (m)
-      return m->GetDensity();
+    TGeoMaterial* mat = ptr()->GetMaterial();
+    if ( mat )
+      return mat->GetDensity();
     throw runtime_error("dd4hep: The medium " + string(ptr()->GetName()) + " has an invalid material reference!");
   }
   throw runtime_error("dd4hep: Attempt to access density from invalid material handle!");
@@ -210,9 +210,9 @@ double  Material::density() const {
 /// Access the radiation length of the underlying material
 double Material::radLength() const {
   if ( isValid() ) {
-    TGeoMaterial* m = ptr()->GetMaterial();
-    if (m)
-      return m->GetRadLen();
+    TGeoMaterial* mat = ptr()->GetMaterial();
+    if ( mat )
+      return mat->GetRadLen();
     throw runtime_error("dd4hep: The medium " + string(ptr()->GetName()) + " has an invalid material reference!");
   }
   throw runtime_error("dd4hep: Attempt to access radiation length from invalid material handle!");
@@ -221,9 +221,9 @@ double Material::radLength() const {
 /// Access the radiation length of the underlying material
 double Material::intLength() const {
   if ( isValid() ) {
-    TGeoMaterial* m = ptr()->GetMaterial();
-    if (m)
-      return m->GetIntLen();
+    TGeoMaterial* mat = ptr()->GetMaterial();
+    if ( mat )
+      return mat->GetIntLen();
     throw runtime_error("The medium " + string(ptr()->GetName()) + " has an invalid material reference!");
   }
   throw runtime_error("Attempt to access interaction length from invalid material handle!");
@@ -232,20 +232,20 @@ double Material::intLength() const {
 /// Access the fraction of an element within the material
 double Material::fraction(Atom atom) const    {
   double frac = 0e0, tot = 0e0;
-  TGeoElement* elt = atom.access();
-  TGeoMaterial* m = access()->GetMaterial();
-  for ( int i=0, n=m->GetNelements(); i<n; ++i )  {
-    TGeoElement* e = m->GetElement(i);
-    if ( m->IsMixture() )  {
-      TGeoMixture* mix = (TGeoMixture*)m;
+  TGeoElement*  elt = atom.access();
+  TGeoMaterial* mat = access()->GetMaterial();
+  for ( int i=0, n=mat->GetNelements(); i<n; ++i )  {
+    TGeoElement* e = mat->GetElement(i);
+    if ( mat->IsMixture() )  {
+      TGeoMixture* mix = (TGeoMixture*)mat;
       tot  += mix->GetWmixt()[i];
     }
     else {
       tot = 1e0;
     }
     if ( e == elt )   {
-      if ( m->IsMixture() )  {
-        TGeoMixture* mix = (TGeoMixture*)m;
+      if ( mat->IsMixture() )  {
+        TGeoMixture* mix = (TGeoMixture*)mat;
         frac += mix->GetWmixt()[i];
       }
       else  {

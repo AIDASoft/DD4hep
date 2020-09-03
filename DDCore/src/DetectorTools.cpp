@@ -178,30 +178,30 @@ void detail::tools::elementPath(DetElement element, PlacementPath& det_nodes) {
 
 /// Assemble the path of the PlacedVolume selection
 string detail::tools::elementPath(const PlacementPath& nodes, bool reverse)   {
-  string s = "";
+  string path = "";
   if ( reverse )  {
     for(auto i=nodes.rbegin(); i != nodes.rend(); ++i)
-      s += "/" + string((*i).name());
+      path += "/" + string((*i).name());
   }
   else  {
     for(auto i=begin(nodes); i != end(nodes); ++i)
-      s += "/" + string((*i)->GetName());
+      path += "/" + string((*i)->GetName());
   }
-  return s;
+  return path;
 }
 
 /// Assemble the path of the PlacedVolume selection
 string detail::tools::elementPath(const ElementPath& nodes, bool reverse)  {
-  string s = "";
+  string path = "";
   if ( reverse )  {
     for(ElementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
-      s += "/" + string((*i)->GetName());
+      path += "/" + string((*i)->GetName());
   }
   else  {
     for(ElementPath::const_iterator i=nodes.begin();i!=nodes.end();++i)
-      s += "/" + string((*i)->GetName());
+      path += "/" + string((*i)->GetName());
   }
-  return s;
+  return path;
 }
 
 /// Assemble the path of a particular detector element
@@ -282,30 +282,30 @@ string detail::tools::placementPath(DetElement element)  {
 
 /// Assemble the path of the PlacedVolume selection
 string detail::tools::placementPath(const PlacementPath& nodes, bool reverse)  {
-  string s="";
+  string path = "";
   if ( reverse )  {
     for(PlacementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
-      s += "/" + string((*i)->GetName());
+      path += "/" + string((*i)->GetName());
   }
   else  {
     for(PlacementPath::const_iterator i=nodes.begin();i!=nodes.end();++i)
-      s += "/" + string((*i)->GetName());
+      path += "/" + string((*i)->GetName());
   }
-  return s;
+  return path;
 }
 
 /// Assemble the path of the PlacedVolume selection
 string detail::tools::placementPath(const vector<const TGeoNode*>& nodes, bool reverse)   {
-  string s="";
+  string path = "";
   if ( reverse )  {
     for(vector<const TGeoNode*>::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
-      s += "/" + string((*i)->GetName());
+      path += "/" + string((*i)->GetName());
   }
   else  {
     for(vector<const TGeoNode*>::const_iterator i=nodes.begin();i!=nodes.end();++i)
-      s += "/" + string((*i)->GetName());
+      path += "/" + string((*i)->GetName());
   }
-  return s;
+  return path;
 }
 
 /// Update cached matrix to transform to positions to an upper level Placement
@@ -411,5 +411,3 @@ vector<string> detail::tools::pathElements(const string& path)   {
   }
   return result;
 }
-
-

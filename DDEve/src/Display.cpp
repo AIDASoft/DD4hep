@@ -89,7 +89,7 @@ Display::Display(TEveManager* eve)
     m_viewMenu(0), m_dd4Menu(0), m_visLevel(7), m_loadLevel(1)
 {
   TEveBrowser* br = m_eve->GetBrowser();
-  TGMenuBar* bar = br->GetMenuBar();
+  TGMenuBar*   menu = br->GetMenuBar();
   EveShapeContextMenu::install(this);
   EvePgonSetProjectedContextMenu::install(this);
   ElementListContextMenu::install(this);
@@ -100,7 +100,7 @@ Display::Display(TEveManager* eve)
   br->ShowCloseTab(kFALSE);
   m_eve->GetViewers()->SwitchColorSet();
   TFile::SetCacheFileDir(".");
-  BuildMenus(bar);
+  BuildMenus(menu);
   br->SetTabTitle("Global Scene",TRootBrowser::kRight,0);
 }
 
@@ -170,9 +170,9 @@ GenericEventHandler& Display::eventHandler() const   {
 }
 
 /// Add new menu to the main menu bar
-void Display::AddMenu(TGMenuBar* bar, PopupMenu* menu, int hints)  {
+void Display::AddMenu(TGMenuBar* menubar, PopupMenu* menu, int hints)  {
   m_menus.insert(menu);
-  menu->Build(bar, hints);
+  menu->Build(menubar, hints);
   m_eve->FullRedraw3D(kTRUE); // Reset camera and redraw
 }
 
@@ -327,17 +327,17 @@ string Display::OpenEventFileDialog(const string& default_dir)   const {
 }
 
 /// Build the DDEve specific menues
-void Display::BuildMenus(TGMenuBar* bar)   {
-  if ( 0 == bar ) {
-    bar = m_eve->GetBrowser()->GetMenuBar();
+void Display::BuildMenus(TGMenuBar* menubar)   {
+  if ( 0 == menubar ) {
+    menubar = m_eve->GetBrowser()->GetMenuBar();
   }
   if ( 0 == m_dd4Menu )  {
     m_dd4Menu = new DD4hepMenu(this);
-    AddMenu(bar, m_dd4Menu);
+    AddMenu(menubar, m_dd4Menu);
   }
   if ( 0 == m_viewMenu && !m_viewConfigs.empty() )  {
     m_viewMenu = new ViewMenu(this,"&Views");
-    AddMenu(bar, m_viewMenu, kLHintsRight);
+    AddMenu(menubar, m_viewMenu, kLHintsRight);
   }
 }
 

@@ -95,9 +95,9 @@ Geant4Kernel::Geant4Kernel(Detector& description_ref)
 }
 
 /// Standard constructor
-Geant4Kernel::Geant4Kernel(Geant4Kernel* m, unsigned long ident)
+Geant4Kernel::Geant4Kernel(Geant4Kernel* krnl, unsigned long ident)
   : Geant4ActionContainer(), m_runManager(0), m_control(0), m_trackMgr(0), m_detDesc(0),
-    m_numThreads(1), m_id(ident), m_master(m), m_shared(0),
+    m_numThreads(1), m_id(ident), m_master(krnl), m_shared(0),
     m_threadContext(0), phase(this)
 {
   char text[64];

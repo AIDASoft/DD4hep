@@ -27,9 +27,9 @@ static dd4hep_ptr<GlobalAlignmentStack>& _stack()  {
   return s;
 }
 static dd4hep_ptr<GlobalAlignmentStack>& _stack(GlobalAlignmentStack* obj)  {
-  dd4hep_ptr<GlobalAlignmentStack>& s = _stack();
-  s.adopt(obj);
-  return s;
+  dd4hep_ptr<GlobalAlignmentStack>& stk = _stack();
+  stk.adopt(obj);
+  return stk;
 }
 
 /// Constructor with partial initialization

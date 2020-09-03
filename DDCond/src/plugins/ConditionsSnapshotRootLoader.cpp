@@ -109,8 +109,8 @@ size_t ConditionsSnapshotRootLoader::load_single(key_type   /* key */,
                                                  RangeConditions& conditions)
 {
   size_t len = conditions.size();
-  for(const auto& s : m_sources )
-    load_source(s.first);
+  for(const auto& src : m_sources )
+    load_source(src.first);
 
   m_sources.clear();
   return conditions.size()-len;
@@ -121,8 +121,8 @@ size_t ConditionsSnapshotRootLoader::load_range(key_type   /* key */,
                                                 RangeConditions& conditions)
 {
   size_t len = conditions.size();
-  for(const auto& s : m_sources )
-    load_source(s.first);
+  for(const auto& src : m_sources )
+    load_source(src.first);
   m_sources.clear();
   return conditions.size()-len;
 }

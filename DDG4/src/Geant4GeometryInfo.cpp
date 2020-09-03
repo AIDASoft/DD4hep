@@ -25,18 +25,18 @@ using namespace dd4hep::sim;
 
 
 string Geant4GeometryInfo::placementPath(const Geant4PlacementPath& path, bool reverse)   {
-  string s;
+  string path_name;
   if ( reverse )  {
     for (Geant4PlacementPath::const_reverse_iterator pIt = path.rbegin(); pIt != path.rend(); ++pIt) {
-      s += "/"; s += (*pIt)->GetName();
+      path_name += "/"; path_name += (*pIt)->GetName();
     }
   }
   else  {
     for (Geant4PlacementPath::const_iterator pIt = path.begin(); pIt != path.end(); ++pIt) {
-      s += "/"; s += (*pIt)->GetName();
+      path_name += "/"; path_name += (*pIt)->GetName();
     }
   }
-  return s;
+  return path_name;
 }
 
 /// Default constructor

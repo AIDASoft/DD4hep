@@ -50,8 +50,8 @@ static int alignment_example (Detector& description, int argc, char** argv)  {
   public:
     map<DetElement, Delta>& deltas;
     ConditionsMap&          mapping;
-    Collector(map<DetElement, Delta>& d, ConditionsMap& m)
-      : deltas(d), mapping(m) {}
+    Collector(map<DetElement, Delta>& del, ConditionsMap& cm)
+      : deltas(del), mapping(cm) {}
     // Here we test the ConditionsMap interface of the AlignmentsNominalMap
     int operator()(DetElement de, int )  const    {
       Alignment a = mapping.get(de, align::Keys::alignmentKey);

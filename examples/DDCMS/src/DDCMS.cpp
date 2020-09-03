@@ -213,27 +213,27 @@ const Rotation3D& Namespace::rotation(const string& nam)  const   {
 
 /// Add rotation matrix to current namespace
 Volume Namespace::addVolumeNS(Volume vol)  const  {
-  string   n = vol.name();
-  Solid    s = vol.solid();
-  Material m = vol.material();
-  vol->SetName(n.c_str());
-  context->volumes[n] = vol;
+  string   nam = vol.name();
+  Solid    sol = vol.solid();
+  Material mat = vol.material();
+  vol->SetName(nam.c_str());
+  context->volumes[nam] = vol;
   printout(context->debug_volumes ? ALWAYS : DEBUG, "DDCMS",
            "+++ Add volume:%-38s Solid:%-26s[%-16s] Material:%s",
-           vol.name(), s.name(), s.type(), m.name());
+           vol.name(), sol.name(), sol.type(), mat.name());
   return vol;
 }
 
 /// Add rotation matrix to current namespace
 Volume Namespace::addVolume(Volume vol)  const  {
-  string   n = prepend(vol.name());
-  Solid    s = vol.solid();
-  Material m = vol.material();
-  vol->SetName(n.c_str());
-  context->volumes[n] = vol;
+  string   nam = prepend(vol.name());
+  Solid    sol = vol.solid();
+  Material mat = vol.material();
+  vol->SetName(nam.c_str());
+  context->volumes[nam] = vol;
   printout(context->debug_volumes ? ALWAYS : DEBUG, "DDCMS",
            "+++ Add volume:%-38s Solid:%-26s[%-16s] Material:%s",
-           vol.name(), s.name(), s.type(), m.name());
+           vol.name(), sol.name(), sol.type(), mat.name());
   return vol;
 }
 
@@ -344,14 +344,14 @@ namespace {
   vector<string> raw_vector(const AlgoArguments* a, xml_h arg)   {
     xml_dim_t xp(arg);
     vector<string> data;
-    Namespace ns(a->context);
+    Namespace name_space(a->context);
     string val = xp.text();
     string nam = xp.nameStr();
     string typ = xp.typeStr();
     int    num = xp.attr<int>(_CMU(nEntries));
     const BasicGrammar& gr = BasicGrammar::instance<vector<string> >();
 
-    val = '['+ns.real_name(val)+']';
+    val = '['+name_space.real_name(val)+']';
     val = remove_whitespace(val);
     int res = gr.fromString(&data,val);
     if ( !res )  {

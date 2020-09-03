@@ -37,8 +37,8 @@ PropertyTable::PropertyTable(Detector&     description,
                              size_t        num_rows,
                              size_t        num_cols)
 {
-  unique_ptr<Object> s(new Object(table_name.c_str(), num_rows, num_cols));
-  s->SetTitle(property_name.c_str());
-  description.manager().AddGDMLMatrix(m_element=s.release());
+  unique_ptr<Object> table(new Object(table_name.c_str(), num_rows, num_cols));
+  table->SetTitle(property_name.c_str());
+  description.manager().AddGDMLMatrix(m_element=table.release());
 }
 #endif

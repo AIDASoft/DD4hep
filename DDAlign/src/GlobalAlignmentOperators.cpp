@@ -79,18 +79,18 @@ template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_reset>::
   if ( p->IsAligned() )   {
     for (Int_t i=0, nLvl=p->GetLevel(); i<=nLvl; i++) {
       TGeoNode* node = p->GetNode(i);
-      TGeoMatrix* mm = node->GetMatrix();  // Node's relative matrix
+      TGeoMatrix* mat = node->GetMatrix();  // Node's relative matrix
       np += string("/")+node->GetName();
-      if ( !mm->IsIdentity() && i > 0 )  {    // Ignore the 'world', is identity anyhow
+      if ( !mat->IsIdentity() && i > 0 )  {    // Ignore the 'world', is identity anyhow
         GlobalAlignment a = cache.get(np);
         if ( a.isValid() )  {
           printout(ALWAYS,"GlobalAlignmentActor<reset>","Correct path:%s leaf:%s",p->GetName(),np.c_str());
           TGeoHMatrix* glob = p->GetMatrix(i-1);
           if ( a.isValid() && i!=nLvl )   {
-            *mm = *(a->GetOriginalMatrix());
+            *mat = *(a->GetOriginalMatrix());
           }
           else if ( i==nLvl ) {
-            TGeoHMatrix* hm = dynamic_cast<TGeoHMatrix*>(mm);
+            TGeoHMatrix* hm = dynamic_cast<TGeoHMatrix*>(mat);
             TGeoMatrix*  org = p->GetOriginalMatrix();
             if ( hm && org )  {
               hm->SetTranslation(org->GetTranslation());
@@ -101,7 +101,7 @@ template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_reset>::
                        "Invalid operation: %p %p", (void*)hm, (void*)org);
             }
           }
-          *glob *= *mm;
+          *glob *= *mat;
         }
       }
     }
@@ -165,38 +165,38 @@ void alignment_reset_dbg(const string& path, const GlobalAlignment& a)   {
   string np;
   if ( n->IsAligned() ) {
     for (Int_t i=0; i<=n->GetLevel(); i++) {
-      TGeoMatrix* mm = n->GetNode(i)->GetMatrix();
+      TGeoMatrix* mat = n->GetNode(i)->GetMatrix();
       np += "/";
       np += n->GetNode(i)->GetName();
-      if ( mm->IsIdentity() ) continue;
+      if ( mat->IsIdentity() ) continue;
       if ( i == 0 ) continue;
 
       TGeoHMatrix* glob = n->GetMatrix(i-1);
       NodeMap::const_iterator j=original_matrices.find(np);
       if ( j != original_matrices.end() && i!=n->GetLevel() )   {
         cout << "      +++++ Patch Level: " << i << np << endl;
-        *mm = *((*j).second);
+        *mat = *((*j).second);
       }
       else  {
         if ( i==n->GetLevel() ) {
           cout << "      +++++ Level: " << i << np << " --- Original matrix: " << endl;
           n->GetOriginalMatrix()->Print();
           cout << "      +++++ Level: " << i << np << " --- Local matrix: " << endl;
-          mm->Print();
-          TGeoHMatrix* hm = dynamic_cast<TGeoHMatrix*>(mm);
+          mat->Print();
+          TGeoHMatrix* hm = dynamic_cast<TGeoHMatrix*>(mat);
           hm->SetTranslation(n->GetOriginalMatrix()->GetTranslation());
           hm->SetRotation(n->GetOriginalMatrix()->GetRotationMatrix());
           cout << "      +++++ Level: " << i << np << " --- New local matrix" << endl;
-          mm->Print();
+          mat->Print();
         }
         else          {
           cout << "      +++++ Level: " << i << np << " --- Keep matrix " << endl;
-          mm->Print();
+          mat->Print();
         }
       }
       cout << "      +++++ Level: " << i << np << " --- Global matrix: " << endl;
       glob->Print();
-      *glob *= *mm;
+      *glob *= *mat;
       cout << "      +++++ Level: " << i << np << " --- New global matrix: " << endl;
       glob->Print();
     }

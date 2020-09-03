@@ -73,7 +73,6 @@ void Geant4Mapping::attach(Geant4GeometryInfo* data_ptr) {
 Geant4VolumeManager Geant4Mapping::volumeManager() const {
   if ( m_dataPtr ) {
     if ( m_dataPtr->g4Paths.empty() ) {
-      //VolumeManager::getVolumeManager(m_detDesc);
       return Geant4VolumeManager(m_detDesc, m_dataPtr);
     }
     return Geant4VolumeManager(Handle < Geant4GeometryInfo > (m_dataPtr));
@@ -84,8 +83,8 @@ Geant4VolumeManager Geant4Mapping::volumeManager() const {
 /// Accessor to resolve geometry placements
 PlacedVolume Geant4Mapping::placement(const G4VPhysicalVolume* node) const {
   checkValidity();
-  const Geant4GeometryMaps::PlacementMap& m = m_dataPtr->g4Placements;
-  for (Geant4GeometryMaps::PlacementMap::const_iterator i = m.begin(); i != m.end(); ++i)
+  const Geant4GeometryMaps::PlacementMap& pm = m_dataPtr->g4Placements;
+  for (Geant4GeometryMaps::PlacementMap::const_iterator i = pm.begin(); i != pm.end(); ++i)
     if ((*i).second == node)
       return PlacedVolume((*i).first);
   return PlacedVolume(0);

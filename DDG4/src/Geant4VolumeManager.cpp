@@ -220,9 +220,9 @@ bool Geant4VolumeManager::checkValidity() const {
 /// Access CELLID by placement path
 VolumeID Geant4VolumeManager::volumeID(const vector<const G4VPhysicalVolume*>& path) const {
   if (!path.empty() && checkValidity()) {
-    const auto& m = ptr()->g4Paths;
-    auto i = m.find(path);
-    if (i != m.end())
+    const auto& mapping = ptr()->g4Paths;
+    auto i = mapping.find(path);
+    if (i != mapping.end())
       return (*i).second;
     if (!path[0])
       return InvalidPath;
@@ -247,9 +247,9 @@ void Geant4VolumeManager::volumeDescriptor(const vector<const G4VPhysicalVolume*
   vol_desc.second.clear();
   vol_desc.first = NonExisting;
   if (!path.empty() && checkValidity()) {
-    const auto& m = ptr()->g4Paths;
-    auto i = m.find(path);
-    if (i != m.end()) {
+    const auto& mapping = ptr()->g4Paths;
+    auto i = mapping.find(path);
+    if (i != mapping.end()) {
       VolumeID vid = (*i).second;
       G4LogicalVolume* lvol = path[0]->GetLogicalVolume();
       if (lvol->GetSensitiveDetector()) {
@@ -280,7 +280,7 @@ void Geant4VolumeManager::volumeDescriptor(const vector<const G4VPhysicalVolume*
 
 /// Access fully decoded volume fields by Geant4 touchable object
 void Geant4VolumeManager::volumeDescriptor(const G4VTouchable* touchable,
-                                           VolIDDescriptor& vol_desc) const {
+                                           VolIDDescriptor&    vol_desc) const {
   volumeDescriptor(placementPath(touchable), vol_desc);
 }
 
