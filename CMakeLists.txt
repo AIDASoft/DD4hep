@@ -113,6 +113,7 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 ########################
 
 # Configure Python
+set(Python_FIND_FRAMEWORK LAST)
 find_package(Python COMPONENTS Development)
 set(DD4HEP_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
 
