@@ -91,9 +91,9 @@ TEveElementList* View::AddToGlobalItems(const string& nam)   {
 
 /// Call an element to a event element list
 TEveElement* View::ImportGeoElement(TEveElement* el, TEveElementList* list)  { 
-  TEveScene* s = dynamic_cast<TEveScene*>(el);
-  if ( s )   {
-    printf("ERROR: Adding a Scene [%s] to a list. This is BAD and causes crashes!\n",s->GetName());
+  TEveScene* scene = dynamic_cast<TEveScene*>(el);
+  if ( scene )   {
+    printf("ERROR: Adding a Scene [%s] to a list. This is BAD and causes crashes!\n",scene->GetName());
   }
   if ( el ) list->AddElement(el);
   return el;
@@ -106,13 +106,13 @@ TEveElement* View::ImportGeoTopic(TEveElement* element, TEveElementList* list)  
 
 /// Call an element to a event element list
 TEveElement* View::ImportEventElement(TEveElement* el, TEveElementList* list)  { 
-  TEveScene* s = dynamic_cast<TEveScene*>(el);
-  if ( s )   {
-    printf("ERROR: Adding a Scene [%s] to a list. This is BAD and causes crashes!\n",s->GetName());
+  TEveScene* scene = dynamic_cast<TEveScene*>(el);
+  if ( scene )   {
+    printf("ERROR: Adding a Scene [%s] to a list. This is BAD and causes crashes!\n",scene->GetName());
   }
   if ( el )   {
     printout(INFO,"View","ImportElement %s [%s] into list: %s",
-             Utilities::GetName(el),el->IsA()->GetName(),list->GetName());
+             Utilities::GetName(el), el->IsA()->GetName(), list->GetName());
     list->AddElement(el);
   }
   return el;

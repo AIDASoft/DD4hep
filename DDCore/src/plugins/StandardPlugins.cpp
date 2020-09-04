@@ -1489,30 +1489,6 @@ static long exec_GeometryTreeDump(Detector& description, int, char** ) {
 }
 DECLARE_APPLY(DD4hep_GeometryTreeDump,exec_GeometryTreeDump)
 
-/// Basic entry point to dump the geometry in GDML format
-/**
- *  Factory: dd4hepSimpleGDMLWriter
- *
- *  \author  M.Frank
- *  \version 1.0
- *  \date    01/04/2014
- */
-#include "../SimpleGDMLWriter.h"
-static long exec_SimpleGDMLWriter(Detector& description, int argc, char** argv) {
-  if ( argc > 1 )   {
-    string output = argv[1];
-    ofstream out(output.c_str()+1,ios_base::out);
-    SimpleGDMLWriter dmp(out);
-    dmp.create(description.world());
-  }
-  else   {
-    SimpleGDMLWriter dmp(cout);
-    dmp.create(description.world());
-  }
-  return 1;
-}
-DECLARE_APPLY(DD4hep_SimpleGDMLWriter,exec_SimpleGDMLWriter)
-
 /// Basic entry point to print out detector type map
 /**
  *  Factory: DD4hep_DetectorTypes

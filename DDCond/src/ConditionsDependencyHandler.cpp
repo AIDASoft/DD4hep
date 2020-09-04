@@ -176,8 +176,8 @@ std::vector<Condition> ConditionsDependencyHandler::getByItem(Condition::itemkey
       Condition::itemkey_type key;
       item_selector(Condition::itemkey_type k) : key(k) {}
       int operator()(Condition cond)   {
-        ConditionKey::KeyMaker km(cond->hash);
-        if ( km.values.item_key == key ) conditions.emplace_back(cond);
+        ConditionKey::KeyMaker maker(cond->hash);
+        if ( maker.values.item_key == key ) conditions.emplace_back(cond);
         return 1;
       }
     };

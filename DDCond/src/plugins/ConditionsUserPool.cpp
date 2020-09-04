@@ -588,8 +588,8 @@ ConditionsMappedUserPool<MAPPING>::prepare(const IOV&                  required,
     }
     else if ( do_output_miss )  {
       copy(begin(cond_missing), last_cond, inserter(slice_miss_cond, slice_miss_cond.begin()));
-      for ( const auto& m : slice_miss_cond )   {
-        printout (ERROR, "TEST", "Unloaded: %s",m.second->toString().c_str());
+      for ( const auto& missing : slice_miss_cond )   {
+        printout (ERROR, "TEST", "Unloaded: %s",missing.second->toString().c_str());
       }
     }
   }

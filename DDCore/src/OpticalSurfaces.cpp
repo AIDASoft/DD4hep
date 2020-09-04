@@ -106,8 +106,8 @@ BorderSurface::BorderSurface(Detector&      detector,
   if ( de.isValid() )  {
     if ( lft.isValid() && rht.isValid() )  {
       if ( surf.isValid() )   {
-        unique_ptr<Object> s(new Object(nam.c_str(), surf->GetName(), surf.ptr(), lft.ptr(), rht.ptr()));
-        detector.surfaceManager().addBorderSurface(de, m_element=s.release());
+        unique_ptr<Object> obj(new Object(nam.c_str(), surf->GetName(), surf.ptr(), lft.ptr(), rht.ptr()));
+        detector.surfaceManager().addBorderSurface(de, m_element=obj.release());
         return;
       }
       except("BorderSurface","++ Cannot create BorderSurface %s without valid optical surface!",nam.c_str());
