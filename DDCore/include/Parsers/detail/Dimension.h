@@ -115,6 +115,14 @@ namespace dd4hep {
       double deltatheta() const;
       /// Access rotation constants: deltatheta
       double deltatheta(double default_value) const;
+      /// Access rotation constants: starttheta
+      double starttheta() const;
+      /// Access rotation constants: starttheta
+      double starttheta(double default_value) const;
+      /// Access rotation constants: endtheta
+      double endtheta() const;
+      /// Access rotation constants: endtheta
+      double endtheta(double default_value) const;
       /// Access rotation constants: thetaBins
       int thetaBins() const;
 
@@ -155,6 +163,10 @@ namespace dd4hep {
       double startphi() const;
       /// Access rotation constants: startphi
       double startphi(double default_value) const;
+      /// Access rotation constants: endphi
+      double endphi() const;
+      /// Access rotation constants: endphi
+      double endphi(double default_value) const;
       /// Access rotation constants: twist
       double twist() const;
       /// Access rotation constants: twist

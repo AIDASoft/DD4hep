@@ -223,9 +223,47 @@ static Handle<TObject> create_Torus(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(Torus__shape_constructor,create_Torus)
 
+/// Sphere creation
+/** Allow for xml fragments of the form
+ *  <sphere rmin="..." rmax="..."/>
+ *  <sphere rmin="..." rmax="..." starttheta="..." endtheta="..."   startphi="..." endphi="..."/>
+ *  <sphere rmin="..." rmax="..." starttheta="..." deltatheta="..." startphi="..." deltaphi="..."/>
+ *
+ *  Defaults:
+ *  starttheta = 0e0
+ *  endtheta   = starttheta + pi
+ *  startphi   = 0e0
+ *  endphi     = startphi + 2*pi
+ * 
+ *  \date   04/09/2020
+ *  \author M.Frank
+ */
 static Handle<TObject> create_Sphere(Detector&, xml_h element)   {
   xml_dim_t e(element);
-  Solid solid = Sphere(e.rmin(),e.rmax(),e.theta(0e0),e.deltatheta(M_PI),e.phi(0e0),e.deltaphi(2.*M_PI));
+  double startphi   = e.phi(0e0);
+  double endphi     = startphi + 2.*M_PI;
+  double starttheta = e.theta(0e0);
+  double endtheta   = starttheta + M_PI;
+
+  if ( e.hasAttr(_U(startphi)) )  {
+    startphi = e.startphi();
+    endphi   = startphi + 2.*M_PI;
+  }
+  if ( e.hasAttr(_U(endphi))   )
+    endphi = e.endphi();
+  else if ( e.hasAttr(_U(deltaphi)) )
+    endphi = startphi + e.deltaphi();
+
+  if ( e.hasAttr(_U(starttheta)) )   {
+    starttheta = e.starttheta();
+    endtheta = starttheta + M_PI;
+  }
+  if ( e.hasAttr(_U(endtheta))   )
+    endtheta = e.endtheta();
+  else if ( e.hasAttr(_U(deltatheta)) )
+    endtheta = starttheta + e.deltatheta();
+
+  Solid solid = Sphere(e.rmin(), e.rmax(), starttheta, endtheta, startphi, endphi);
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;
 }

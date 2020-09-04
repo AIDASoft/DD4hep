@@ -137,6 +137,7 @@ UNICODE (end_module);
 UNICODE (end_modules);
 UNICODE (endcap);
 UNICODE (endphi);
+UNICODE (endtheta);
 UNICODE (envelope);
 UNICODE (epsilon);
 UNICODE (eunit);
