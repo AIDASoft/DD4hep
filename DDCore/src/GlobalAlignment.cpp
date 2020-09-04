@@ -83,8 +83,8 @@ Transform3D GlobalAlignment::toGlobal(int level) const   {
 Position GlobalAlignment::toGlobal(const Position& localPoint, int level) const   {
   CheckHandle verify_handle(*this);
   Position result;
-  TGeoHMatrix* m = ptr()->GetMatrix(level);
-  m->LocalToMaster((Double_t*)&localPoint,(Double_t*)&result);
+  TGeoHMatrix* matrix = ptr()->GetMatrix(level);
+  matrix->LocalToMaster((Double_t*)&localPoint,(Double_t*)&result);
   return result;
 }
 

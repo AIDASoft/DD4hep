@@ -332,10 +332,10 @@ xml_h AlgoArguments::raw_arg(const string& nam)  const   {
 
 /// Access namespace resolved argument as a string by name
 string AlgoArguments::resolved_scalar_arg(const string& nam)  const   {
-  Namespace ns(context);
+  Namespace name_space(context);
   xml_h  arg = raw_arg(nam);
   string val = arg.attr<string>(_U(value));
-  return ns.real_name(val);
+  return name_space.real_name(val);
 }
 
 namespace {

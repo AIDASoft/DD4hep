@@ -389,19 +389,19 @@ VolumeManager VolumeManager::addSubdetector(DetElement det, Readout ro) {
 
       i = o.subdetectors.emplace(det, VolumeManager(det,ro)).first;
       const auto& id = (*vit);
-      VolumeManager m = (*i).second;
+      VolumeManager mgr = (*i).second;
       const BitFieldElement* field = ro.idSpec().field(id.first);
       if (!field) {
         throw runtime_error("dd4hep: VolumeManager::addSubdetector: IdDescriptor of " + 
                             string(det.name()) + " has no field " + id.first);
       }
-      Object& mo = m._data();
+      Object& mo = mgr._data();
       mo.top     = o.top;
       mo.flags   = o.flags;
       mo.system  = field;
       mo.sysID   = id.second;
       mo.detMask = mo.sysID;
-      o.managers[mo.sysID] = m;
+      o.managers[mo.sysID] = mgr;
       det.callAtUpdate(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_DETECTOR,
                        &mo,&Object::update);
     }
@@ -521,8 +521,8 @@ bool VolumeManager::adoptPlacement(VolumeManagerContext* context) {
           return top.adoptPlacement(context);
         }
         for( auto& j : o.managers )  {
-          Object& m = j.second._data();
-          VolumeID sid = m.system->value(context->identifier);
+          Object& mgr = j.second._data();
+          VolumeID sid = mgr.system->value(context->identifier);
           if ( j.first == sid ) {
             return j.second.adoptPlacement(sid, context);
           }
@@ -621,8 +621,8 @@ VolumeManager::worldTransformation(const ConditionsMap& mapping,
 }
 
 /// Enable printouts for debugging
-std::ostream& dd4hep::operator<<(std::ostream& os, const VolumeManager& m) {
-  const VolumeManager::Object& o = *m.data<VolumeManager::Object>();
+std::ostream& dd4hep::operator<<(std::ostream& os, const VolumeManager& mgr) {
+  const VolumeManager::Object& o = *mgr.data<VolumeManager::Object>();
   VolumeManager::Object* top = dynamic_cast<VolumeManager::Object*>(o.top);
   bool isTop = top == &o;
   //bool hasTop = (o.flags & VolumeManager::ONE) == VolumeManager::ONE;

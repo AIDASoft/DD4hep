@@ -358,9 +358,9 @@ bool Geant4SensDetActionSequence::accept(const G4Step* step) const {
 bool Geant4SensDetActionSequence::process(G4Step* step, G4TouchableHistory* hist) {
   bool result = false;
   for (vector<Geant4Sensitive*>::iterator i = m_actors->begin(); i != m_actors->end(); ++i) {
-    Geant4Sensitive* s = *i;
-    if (s->accept(step))
-      result |= s->process(step, hist);
+    Geant4Sensitive* sensitive = *i;
+    if (sensitive->accept(step))
+      result |= sensitive->process(step, hist);
   }
   m_process(step, hist);
   return result;
@@ -374,9 +374,9 @@ void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
   m_hce = hce;
   for (size_t count = 0; count < m_collections.size(); ++count) {
     const HitCollection& cr = m_collections[count];
-    Geant4HitCollection* c = (*cr.second.second)(name(), cr.first, cr.second.first);
+    Geant4HitCollection* col = (*cr.second.second)(name(), cr.first, cr.second.first);
     int id = m_detector->GetCollectionID(count);
-    m_hce->AddHitsCollection(id, c);
+    m_hce->AddHitsCollection(id, col);
   }
   m_actors(&Geant4Sensitive::begin, m_hce);
   m_begin (m_hce);
