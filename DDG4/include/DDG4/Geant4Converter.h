@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEANT4CONVERTER_H
-#define DD4HEP_GEANT4CONVERTER_H
+#ifndef DDG4_GEANT4CONVERTER_H
+#define DDG4_GEANT4CONVERTER_H
 
 // Framework include files
 #include "DD4hep/Printout.h"
@@ -125,4 +125,4 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#endif // DD4HEP_GEANT4CONVERTER_H
+#endif // DDG4_GEANT4CONVERTER_H

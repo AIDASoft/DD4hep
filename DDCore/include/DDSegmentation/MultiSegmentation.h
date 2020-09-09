@@ -11,8 +11,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDSegmentation_MULITSEGMENTATION_H_
-#define DDSegmentation_MULITSEGMENTATION_H_
+#ifndef DDSEGMENTATION_MULTISEGMENTATION_H
+#define DDSEGMENTATION_MULTISEGMENTATION_H
 
 #include "DDSegmentation/Segmentation.h"
 
@@ -96,4 +96,4 @@ namespace dd4hep {
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
 
-#endif /* DDSegmentation_MULITSEGMENTATION_H_ */
+#endif // DDSEGMENTATION_MULTISEGMENTATION_H

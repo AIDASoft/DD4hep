@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_JSON_TAGS_H
-#define DD4HEP_JSON_TAGS_H
+#ifndef JSON_TAGS_H
+#define JSON_TAGS_H
 
 #define DECLARE_UNICODE_TAG(x)  
 
@@ -23,4 +23,4 @@
 #define _U(a) #a
 #define _Unicode(a) #a
 
-#endif // DD4HEP_JSON_TAGS_H
+#endif // JSON_TAGS_H

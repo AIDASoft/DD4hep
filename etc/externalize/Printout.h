@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_XML_PRINTOUT_H
-#define DD4HEP_DDCORE_XML_PRINTOUT_H
+#ifndef ETC_EXTERNALIZE_PRINTOUT_H
+#define ETC_EXTERNALIZE_PRINTOUT_H
 
 // C/C++ include files
 #include <cstdarg>
@@ -61,4 +61,4 @@ namespace dd4hep {
   int except(const char* src, const char* fmt, ...);
 }
 
-#endif   /* DD4HEP_DDCORE_XML_PRINTOUT_H  */
+#endif // ETC_EXTERNALIZE_PRINTOUT_H

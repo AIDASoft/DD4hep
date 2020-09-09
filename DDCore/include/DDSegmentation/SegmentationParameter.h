@@ -18,8 +18,8 @@
  *      Author: Christian Grefe, CERN
  */
 
-#ifndef DDSegmentation_SEGMENTATIONPARAMETER_H_
-#define DDSegmentation_SEGMENTATIONPARAMETER_H_
+#ifndef DDSEGMENTATION_SEGMENTATIONPARAMETER_H
+#define DDSEGMENTATION_SEGMENTATIONPARAMETER_H
 
 #include <sstream>
 #include <string>
@@ -311,4 +311,4 @@ namespace dd4hep {
 
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
-#endif /* DDSegmentation_SEGMENTATIONPARAMETER_H_ */
+#endif // DDSEGMENTATION_SEGMENTATIONPARAMETER_H

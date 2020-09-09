@@ -14,8 +14,8 @@
 // DDCMS is a detector description convention developed by the CMS experiment.
 //
 //==========================================================================
-#ifndef DD4HEP_DDCMS_DDCMSPLUGINS_H
-#define DD4HEP_DDCMS_DDCMSPLUGINS_H
+#ifndef DDCMS_DDCMSPLUGINS_H
+#define DDCMS_DDCMSPLUGINS_H
 
 // Framework includes
 #include "DDCMS/DDCMS.h"
@@ -65,4 +65,4 @@ namespace {
                              long(dd4hep::Detector*,dd4hep::cms::ParsingContext*, \
                                   ns::xml_h*,dd4hep::SensitiveDetector*),__LINE__)  }
 
-#endif /* DD4HEP_DDCMS_DDCMSPLUGINS_H  */
+#endif // DDCMS_DDCMSPLUGINS_H

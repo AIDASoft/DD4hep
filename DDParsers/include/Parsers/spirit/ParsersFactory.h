@@ -8,8 +8,8 @@
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 //==========================================================================
-#ifndef DD4HEPPROPERTYPARSERS_PARSERSGENERATOR_H
-#define DD4HEPPROPERTYPARSERS_PARSERSGENERATOR_H 1
+#ifndef PARSERS_SPIRIT_PARSERSFACTORY_H
+#define PARSERS_SPIRIT_PARSERSFACTORY_H 1
 // ============================================================================
 // Include files
 // ============================================================================
@@ -83,5 +83,5 @@ namespace dd4hep {
     {  return toStream_(obj, s); }}}
 // ============================================================================
 
-#endif // DD4HEPPROPERTYPARSERS_PARSERSGENERATOR_H
+#endif // PARSERS_SPIRIT_PARSERSFACTORY_H
 

@@ -10,8 +10,8 @@
 // Author     : F.Gaede
 //
 //==========================================================================
-#ifndef DDRec_ISurface_H
-#define DDRec_ISurface_H
+#ifndef DDREC_ISURFACE_H
+#define DDREC_ISURFACE_H
 
 
 #include "DDRec/IMaterial.h"
@@ -335,4 +335,4 @@ namespace dd4hep { namespace rec {
 
 
 
-#endif /* DDRec_ISurface_H */
+#endif // DDREC_ISURFACE_H

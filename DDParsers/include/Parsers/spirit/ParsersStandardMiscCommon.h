@@ -8,11 +8,11 @@
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 //==========================================================================
-#ifndef PARSERS_STANDARD_MISC_COMMON_H
-#define PARSERS_STANDARD_MISC_COMMON_H 1
+#ifndef PARSERS_SPIRIT_PARSERSSTANDARDMISCCOMMON_H
+#define PARSERS_SPIRIT_PARSERSSTANDARDMISCCOMMON_H 1
 // ============================================================================
 // Include files
 // ============================================================================
 #include "Parsers/spirit/ParsersFactory.h"
 // ============================================================================
-#endif /* PARSERS_STANDARD_MISC_COMMON_H */
+#endif // PARSERS_SPIRIT_PARSERSSTANDARDMISCCOMMON_H

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_XML_VOLUMEBUILDER_H
-#define DD4HEP_XML_VOLUMEBUILDER_H
+#ifndef XML_VOLUMEBUILDER_H
+#define XML_VOLUMEBUILDER_H
 
 // Framework include files
 #include "XML/XMLElements.h"
@@ -216,4 +216,4 @@ namespace dd4hep {
     }     /* End namespace tools            */    
   }       /* End namespace xml              */
 }         /* End namespace dd4hep           */
-#endif    /* dd4hep_XML_VOLUMEBUILDER_H     */
+#endif // XML_VOLUMEBUILDER_H

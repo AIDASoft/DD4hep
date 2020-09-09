@@ -1,3 +1,6 @@
+#ifndef EXAMPLES_DDG4_SRC_DICTIONARY_H
+#define EXAMPLES_DDG4_SRC_DICTIONARY_H
+
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -34,3 +37,5 @@ struct Disctionary {};
 
 
 #endif   // DD4HEP_DICTIONARY_MODE
+
+#endif

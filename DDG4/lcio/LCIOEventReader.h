@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_LCIOEVENTREADER_H
-#define DD4HEP_DDG4_LCIOEVENTREADER_H
+#ifndef DDG4_LCIO_LCIOEVENTREADER_H
+#define DDG4_LCIO_LCIOEVENTREADER_H
 
 // Framework include files
 #include "DDG4/Geant4InputAction.h"
@@ -49,4 +49,4 @@ namespace dd4hep  {
 
   }     /* End namespace sim   */
 }       /* End namespace dd4hep */
-#endif  /* DD4HEP_DDG4_LCIOEVENTREADER_H  */
+#endif // DDG4_LCIO_LCIOEVENTREADER_H

@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_Geant4GDMLDetector_H
-#define DD4HEP_Geant4GDMLDetector_H
+#ifndef DDG4_GEANT4GDMLDETECTOR_H
+#define DDG4_GEANT4GDMLDETECTOR_H
 
 #include "G4VUserDetectorConstruction.hh"
 #include <string>

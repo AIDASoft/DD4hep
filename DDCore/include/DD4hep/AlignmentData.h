@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGMENTS_ALIGNMENTDATA_H
-#define DD4HEP_ALIGMENTS_ALIGNMENTDATA_H
+#ifndef DD4HEP_ALIGNMENTDATA_H
+#define DD4HEP_ALIGNMENTDATA_H
 
 // Framework include files
 #include "DD4hep/NamedObject.h"
@@ -198,4 +198,4 @@ namespace dd4hep {
 }         /* End namespace dd4hep               */
 std::ostream& operator << (std::ostream& s, const dd4hep::Delta& data);
 std::ostream& operator << (std::ostream& s, const dd4hep::AlignmentData& data);
-#endif    /* DD4HEP_ALIGMENTS_ALIGNMENTDATA_H   */
+#endif // DD4HEP_ALIGNMENTDATA_H

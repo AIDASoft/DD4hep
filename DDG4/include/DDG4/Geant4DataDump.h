@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDG4_GEANT4DATADUMP_H
-#define DD4HEP_DDG4_GEANT4DATADUMP_H
+#ifndef DDG4_GEANT4DATADUMP_H
+#define DDG4_GEANT4DATADUMP_H
 
 // Framework include files
 #include "DD4hep/Printout.h"
@@ -80,4 +80,4 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#endif /* DD4HEP_DDG4_GEANT4DATADUMP_H */
+#endif // DDG4_GEANT4DATADUMP_H

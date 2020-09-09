@@ -10,10 +10,11 @@
 // Author     : F.Gaede
 //
 //==========================================================================
-#ifndef DDRec_Vector2D_h
-#define DDRec_Vector2D_h 1
+#ifndef DDREC_VECTOR2D_H
+#define DDREC_VECTOR2D_H 1
 
-namespace dd4hep { namespace rec {
+namespace dd4hep {
+  namespace rec {
   
   /** Simple 2D vector helper class; moved out of ISurface definition.
    *

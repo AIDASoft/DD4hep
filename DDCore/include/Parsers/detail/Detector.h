@@ -1,3 +1,6 @@
+#ifndef PARSERS_DETAIL_DETECTOR_H
+#define PARSERS_DETAIL_DETECTOR_H
+
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -103,3 +106,5 @@ namespace dd4hep {
 
   }       /* End namespace DD4HEP_DIMENSION_NS       */
 }         /* End namespace dd4hep                    */
+
+#endif

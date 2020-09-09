@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_GEANT4DETECTORCONSTRUCTION_H
-#define DD4HEP_GEANT4DETECTORCONSTRUCTION_H
+#ifndef DDG4_GEANT4DETECTORCONSTRUCTION_H
+#define DDG4_GEANT4DETECTORCONSTRUCTION_H
 
 // Framework include files
 #include "DD4hep/DetElement.h"
@@ -180,4 +180,4 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDG4_GEANT4DETECTORCONSTRUCTION_H
+#endif // DDG4_GEANT4DETECTORCONSTRUCTION_H

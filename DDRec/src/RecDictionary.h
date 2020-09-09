@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_REC_RECDICTIONARY_H
-#define DD4HEP_REC_RECDICTIONARY_H
+#ifndef DDREC_SRC_RECDICTIONARY_H
+#define DDREC_SRC_RECDICTIONARY_H
 
 // Framework include files
 #include "DDRec/Material.h"
@@ -107,4 +107,4 @@ using namespace dd4hep::rec;
 
 #endif
 
-#endif /* DD4HEP_REC_RECDICTIONARY_H  */
+#endif // DDREC_SRC_RECDICTIONARY_H

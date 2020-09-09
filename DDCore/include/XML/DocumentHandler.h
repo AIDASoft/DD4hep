@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_XML_DOCUMENTHANDLER_H
-#define DD4HEP_XML_DOCUMENTHANDLER_H
+#ifndef XML_DOCUMENTHANDLER_H
+#define XML_DOCUMENTHANDLER_H
 
 // Framework include files
 #include "XML/XMLElements.h"
@@ -79,4 +79,4 @@ namespace dd4hep {
     };
   }
 } /* End namespace dd4hep            */
-#endif    /* DD4HEP_XML_DOCUMENTHANDLER_H    */
+#endif // XML_DOCUMENTHANDLER_H

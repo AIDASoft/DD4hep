@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGISUBDETECTORSEQUENCE_H
-#define DD4HEP_DDDIGI_DIGISUBDETECTORSEQUENCE_H
+#ifndef DDDIGI_DIGISUBDETECTORSEQUENCE_H
+#define DDDIGI_DIGISUBDETECTORSEQUENCE_H
 
 // Framework include files
 #include <DDDigi/DigiActionSequence.h>
@@ -110,4 +110,4 @@ namespace dd4hep {
 
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGISUBDETECTORSEQUENCE_H
+#endif // DDDIGI_DIGISUBDETECTORSEQUENCE_H

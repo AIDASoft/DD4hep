@@ -1,5 +1,5 @@
-#ifndef _GAUDI_PLUGIN_SERVICE_DETAILS_V2_H_
-#define _GAUDI_PLUGIN_SERVICE_DETAILS_V2_H_
+#ifndef GAUDIPLUGINSERVICE_GAUDI_DETAILS_PLUGINSERVICEDETAILSV2_H
+#define GAUDIPLUGINSERVICE_GAUDI_DETAILS_PLUGINSERVICEDETAILSV2_H
 /*****************************************************************************\
 * (c) Copyright 2013 CERN                                                     *
 *                                                                             *
@@ -224,4 +224,4 @@ namespace Gaudi {
   _PS_V2_INTERNAL_FACTORY_MAKE_REGISTER_CNAME_TOKEN( serial )
 #define _PS_V2_INTERNAL_FACTORY_REGISTER_CNAME _PS_V2_INTERNAL_FACTORY_MAKE_REGISTER_CNAME( __LINE__ )
 
-#endif //_GAUDI_PLUGIN_SERVICE_DETAILS_H_
+#endif // GAUDIPLUGINSERVICE_GAUDI_DETAILS_PLUGINSERVICEDETAILSV2_H

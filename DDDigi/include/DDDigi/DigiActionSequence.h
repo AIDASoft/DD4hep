@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIACTIONSEQUENCE_H
-#define DD4HEP_DDDIGI_DIGIACTIONSEQUENCE_H
+#ifndef DDDIGI_DIGIACTIONSEQUENCE_H
+#define DDDIGI_DIGIACTIONSEQUENCE_H
 
 // Framework include files
 #include "DDDigi/DigiSynchronize.h"
@@ -74,4 +74,4 @@ namespace dd4hep {
 
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGIACTIONSEQUENCE_H
+#endif // DDDIGI_DIGIACTIONSEQUENCE_H

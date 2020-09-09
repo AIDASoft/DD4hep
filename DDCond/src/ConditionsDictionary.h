@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_CONDITIONSDICTIONARY_H
-#define DD4HEP_CONDITIONS_CONDITIONSDICTIONARY_H
+#ifndef DDCOND_SRC_CONDITIONSDICTIONARY_H
+#define DDCOND_SRC_CONDITIONSDICTIONARY_H
 
 // Framework include files
 #include "DDCond/ConditionsPool.h"
@@ -73,4 +73,4 @@ template class std::list< std::pair< std::pair< std::string, std::pair< std::pai
 
 #endif
 
-#endif /* DD4HEP_CONDITIONS_CONDITIONSDICTIONARY_H  */
+#endif // DDCOND_SRC_CONDITIONSDICTIONARY_H

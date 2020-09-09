@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_CONDITIONSROOTPERSISTENCY_H
-#define DD4HEP_CONDITIONS_CONDITIONSROOTPERSISTENCY_H
+#ifndef DDCOND_CONDITIONSROOTPERSISTENCY_H
+#define DDCOND_CONDITIONSROOTPERSISTENCY_H
 
 // Framework/ROOT include files
 #include "DDCond/ConditionsPool.h"
@@ -139,4 +139,4 @@ namespace dd4hep {
     
   }        /* End namespace cond                            */
 }          /* End namespace dd4hep                          */
-#endif     /* DD4HEP_CONDITIONS_CONDITIONSROOTPERSISTENCY_H */
+#endif // DDCOND_CONDITIONSROOTPERSISTENCY_H

@@ -16,8 +16,8 @@
  *      Author: S. Lu, DESY
  */
 
-#ifndef DDSegmentation_MEGATILELAYERGRIDXY_H_
-#define DDSegmentation_MEGATILELAYERGRIDXY_H_
+#ifndef DDSEGMENTATION_MEGATILELAYERGRIDXY_H
+#define DDSEGMENTATION_MEGATILELAYERGRIDXY_H
 
 #include "DDSegmentation/CartesianGrid.h"
 
@@ -170,4 +170,4 @@ namespace dd4hep {
 
   }    /* namespace DDSegmentation              */
 }      /* namespace dd4hep                      */
-#endif /* DDSegmentation_MEGATILELAYERGRIDXY_H_ */
+#endif // DDSEGMENTATION_MEGATILELAYERGRIDXY_H

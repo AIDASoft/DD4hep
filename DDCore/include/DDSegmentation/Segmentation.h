@@ -16,8 +16,8 @@
  *      Author: Christian Grefe, CERN
  */
 
-#ifndef DDSegmentation_SEGMENTATION_H_
-#define DDSegmentation_SEGMENTATION_H_
+#ifndef DDSEGMENTATION_SEGMENTATION_H
+#define DDSEGMENTATION_SEGMENTATION_H
 
 #include "DDSegmentation/BitFieldCoder.h"
 #include "DDSegmentation/SegmentationFactory.h"
@@ -183,4 +183,4 @@ namespace dd4hep {
 
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
-#endif /* DDSegmentation_SEGMENTATION_H_ */
+#endif // DDSEGMENTATION_SEGMENTATION_H

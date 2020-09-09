@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_VIEW_H
-#define DD4HEP_DDEVE_VIEW_H
+#ifndef DDEVE_VIEW_H
+#define DDEVE_VIEW_H
 
 // Framework include files
 #include "DD4hep/Detector.h"
@@ -153,4 +153,4 @@ namespace dd4hep {
     ClassDef(View,0);
   };
 }      /* End namespace dd4hep   */
-#endif /* DD4HEP_DDEVE_VIEW_H    */
+#endif // DDEVE_VIEW_H

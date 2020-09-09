@@ -16,8 +16,8 @@
 // http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/DetDesc/Documents/lhcbDtd.pdf
 //
 //==========================================================================
-#ifndef DD4HEP_DDDB_DDDBHELPER_H
-#define DD4HEP_DDDB_DDDBHELPER_H
+#ifndef DDDB_DDDBHELPER_H
+#define DDDB_DDDBHELPER_H
 
 // Framework includes
 #include "DD4hep/ComponentProperties.h"
@@ -98,4 +98,4 @@ namespace dd4hep {
 
   }    /* End namespace DDDB        */
 }      /* End namespace dd4hep      */
-#endif /* DD4HEP_DDDB_DDDBHELPER_H  */
+#endif // DDDB_DDDBHELPER_H

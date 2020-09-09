@@ -14,8 +14,8 @@
 // DDCMS is a detector description convention developed by the CMS experiment.
 //
 //==========================================================================
-#ifndef DD4HEP_DDCMS_DDCMS_H
-#define DD4HEP_DDCMS_DDCMS_H
+#ifndef DDCMS_DDCMS_H
+#define DDCMS_DDCMS_H
 
 // Framework includes
 #include "XML/XML.h"
@@ -249,4 +249,4 @@ namespace dd4hep {
 
 #define NAMESPACE_SEP ':'
 
-#endif /* DD4HEP_DDCMS_DDCMS_H  */
+#endif // DDCMS_DDCMS_H

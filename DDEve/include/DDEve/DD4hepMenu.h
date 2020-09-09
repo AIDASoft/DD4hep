@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_DD4HEPMENU_H
-#define DD4HEP_DDEVE_DD4HEPMENU_H
+#ifndef DDEVE_DD4HEPMENU_H
+#define DDEVE_DD4HEPMENU_H
 
 // Framework include files
 #include "DDEve/Display.h"
@@ -71,5 +71,5 @@ namespace dd4hep {
   };
 
 }      /* End namespace dd4hep      */
-#endif /* DD4HEP_DDEVE_DD4HEPMENU_H */
+#endif // DDEVE_DD4HEPMENU_H
 

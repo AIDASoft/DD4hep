@@ -14,8 +14,8 @@
 // DDCMS is a detector description convention developed by the CMS experiment.
 //
 //==========================================================================
-#ifndef DD4HEP_DDCMS_DDSHAPES_H
-#define DD4HEP_DDCMS_DDSHAPES_H
+#ifndef DDCMS_DDSHAPES_H
+#define DDCMS_DDSHAPES_H
 
 // Framework includes
 #include <DD4hep/Shapes.h>
@@ -103,4 +103,4 @@ namespace dd4hep {
 
   }    /* End namespace cms          */
 }      /* End namespace dd4hep       */
-#endif /* DD4HEP_DDCMS_DDSHAPES_H    */
+#endif // DDCMS_DDSHAPES_H

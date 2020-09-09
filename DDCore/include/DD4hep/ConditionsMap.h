@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_CONDITIONSMAP_H
-#define DD4HEP_DDCORE_CONDITIONSMAP_H
+#ifndef DD4HEP_CONDITIONSMAP_H
+#define DD4HEP_CONDITIONSMAP_H
 
 // Framework include files
 #include "DD4hep/Conditions.h"
@@ -161,4 +161,4 @@ namespace dd4hep {
   typedef ConditionsMapping<std::unordered_map<Condition::key_type,Condition> > ConditionsHashMap;
     
 }         /* End namespace dd4hep                   */
-#endif    /* DD4HEP_DDCORE_CONDITIONSMAP_H        */
+#endif // DD4HEP_CONDITIONSMAP_H

@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDCORE_CORETREEDUMP_H
-#define DD4HEP_DDCORE_CORETREEDUMP_H
+#ifndef DDCORE_SRC_GEOMETRYTREEDUMP_H
+#define DDCORE_SRC_GEOMETRYTREEDUMP_H
 
 #include "DD4hep/Detector.h"
 #include "DD4hep/GeoHandler.h"
@@ -62,4 +62,4 @@ namespace dd4hep {
     };
   }    // End namespace detail
 }      // End namespace dd4hep
-#endif /* DD4HEP_DDCORE_GEOMETRYTREEDUMP_H  */
+#endif // DDCORE_SRC_GEOMETRYTREEDUMP_H

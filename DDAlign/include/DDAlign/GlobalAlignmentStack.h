@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGNMENT_GLOBALALIGNMENTSTACK_H
-#define DD4HEP_ALIGNMENT_GLOBALALIGNMENTSTACK_H
+#ifndef DDALIGN_GLOBALALIGNMENTSTACK_H
+#define DDALIGN_GLOBALALIGNMENTSTACK_H
 
 // Framework include files
 #include "DD4hep/Alignments.h"
@@ -149,4 +149,4 @@ namespace dd4hep {
 
   }       /* End namespace detail                        */
 }         /* End namespace dd4hep                          */
-#endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENTSTACK_H       */
+#endif // DDALIGN_GLOBALALIGNMENTSTACK_H

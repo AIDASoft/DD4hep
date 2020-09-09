@@ -1,3 +1,6 @@
+#ifndef GAUDIPLUGINSERVICE_GAUDI_DETAILS_PLUGINSERVICECOMMON_H
+#define GAUDIPLUGINSERVICE_GAUDI_DETAILS_PLUGINSERVICECOMMON_H
+
 #ifndef _GAUDI_PLUGIN_SERVICE_COMMON_H_
 /*****************************************************************************\
 * (c) Copyright 2013 CERN                                                     *
@@ -43,5 +46,7 @@
 #  else
 #    define GAUDIPS_API GAUDIPS_IMPORT
 #  endif
+
+#endif
 
 #endif

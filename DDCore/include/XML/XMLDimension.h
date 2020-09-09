@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_XML_XMLDIMENSION_H
-#define DD4HEP_XML_XMLDIMENSION_H
+#ifndef XML_XMLDIMENSION_H
+#define XML_XMLDIMENSION_H
 
 // Framework include files
 #include "XML/XMLElements.h"
@@ -21,4 +21,4 @@
 #include "Parsers/detail/Dimension.h"
 #undef  DD4HEP_DIMENSION_NS
 
-#endif    /* DD4HEP_XML_XMLDIMENSION_H   */
+#endif // XML_XMLDIMENSION_H

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDCOND_CONDITIONSTEST_H
-#define DDCOND_CONDITIONSTEST_H
+#ifndef EXAMPLES_CONDITIONS_SRC_CONDITIONSTEST_H
+#define EXAMPLES_CONDITIONS_SRC_CONDITIONSTEST_H
 
 // Framework include files
 #include "DD4hep/Detector.h"
@@ -64,4 +64,4 @@ namespace dd4hep {
     }
   }
 }
-#endif // DDCOND_CONDITIONSTEST_H
+#endif // EXAMPLES_CONDITIONS_SRC_CONDITIONSTEST_H

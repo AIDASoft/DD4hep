@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_GEANT4SENSITIVEDETECTOR_INLINE_H
-#define DD4HEP_GEANT4SENSITIVEDETECTOR_INLINE_H
+#ifndef DDG4_GEANT4SENSITIVEDETECTOR_INLINE_H
+#define DDG4_GEANT4SENSITIVEDETECTOR_INLINE_H
 
 // Framework include files
 #include "DDG4/Geant4SensitiveDetector.h"
@@ -56,4 +56,4 @@ template <class SD> bool dd4hep::sim::Geant4GenericSD<SD>::buildHits(G4Step*, G4
   return true;
 }
 
-#endif // DD4HEP_GEANT4SENSITIVEDETECTOR_INLINE_H
+#endif // DDG4_GEANT4SENSITIVEDETECTOR_INLINE_H

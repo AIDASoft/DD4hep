@@ -16,8 +16,8 @@
 // http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/DetDesc/Documents/lhcbDtd.pdf
 //
 //==========================================================================
-#ifndef DD4HEP_DDDB_DDDBCONFIG_H
-#define DD4HEP_DDDB_DDDBCONFIG_H
+#ifndef EXAMPLES_DDDB_SRC_PLUGINS_DDDBCONFIG_H
+#define EXAMPLES_DDDB_SRC_PLUGINS_DDDBCONFIG_H
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -72,5 +72,5 @@ namespace dd4hep {
     };
   }
 }
-#endif /*  DD4HEP_DDDB_DDDBCONFIG_H  */
+#endif // EXAMPLES_DDDB_SRC_PLUGINS_DDDBCONFIG_H
   

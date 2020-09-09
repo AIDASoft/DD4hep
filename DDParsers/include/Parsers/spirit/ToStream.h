@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEPPROPERTYPARSERS_PARSERVALUETOSTREAM_H
-#define DD4HEPPROPERTYPARSERS_PARSERVALUETOSTREAM_H 1
+#ifndef PARSERS_SPIRIT_TOSTREAM_H
+#define PARSERS_SPIRIT_TOSTREAM_H 1
 // ============================================================================
 // Include files
 #include "Parsers/config.h"

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_SHAPETAGS_H
-#define DD4HEP_DDCORE_SHAPETAGS_H
+#ifndef DD4HEP_SHAPETAGS_H
+#define DD4HEP_SHAPETAGS_H
 
 #define SHAPELESS_TAG           "Assembly"
 #define BOX_TAG                 "Box"
@@ -42,5 +42,5 @@
 #define INTERSECTION_TAG        "Intersection"
 
 
-#endif // DD4HEP_DDCORE_SHAPETAGS_H
+#endif // DD4HEP_SHAPETAGS_H
 

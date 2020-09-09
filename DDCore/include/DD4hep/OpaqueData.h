@@ -193,4 +193,4 @@ namespace dd4hep {
   }
 
 }      /* End namespace dd4hep */
-#endif /* DD4HEP_OPAQUEDATA_H  */
+#endif // DD4HEP_OPAQUEDATA_H

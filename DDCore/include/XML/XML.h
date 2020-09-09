@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDCORE_XML_XML_H
-#define DD4HEP_DDCORE_XML_XML_H
+#ifndef XML_XML_H
+#define XML_XML_H
 
 #include "XML/XMLTags.h"
 #include "XML/XMLDimension.h"
@@ -36,4 +36,4 @@ typedef dd4hep::xml::Document        xml_doc_t;
 typedef dd4hep::xml::DocumentHolder  xml_doc_holder_t;
 typedef dd4hep::xml::DocumentHandler xml_handler_t;
 
-#endif // DD4HEP_DDCORE_XML_XML_H
+#endif // XML_XML_H

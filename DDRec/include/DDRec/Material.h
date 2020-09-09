@@ -10,8 +10,8 @@
 // Author     : F.Gaede
 //
 //==========================================================================
-#ifndef rec_Material_H
-#define rec_Material_H
+#ifndef DDREC_MATERIAL_H
+#define DDREC_MATERIAL_H
 
 #include "DD4hep/Detector.h"
 #include "DDRec/IMaterial.h"
@@ -180,4 +180,4 @@ namespace dd4hep {
 
 
 
-#endif /* rec_Material_H */
+#endif // DDREC_MATERIAL_H

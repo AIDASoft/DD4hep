@@ -10,11 +10,11 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_JSON_CONVERSIONS_H
-#define DD4HEP_JSON_CONVERSIONS_H
+#ifndef JSON_CONVERSIONS_H
+#define JSON_CONVERSIONS_H
 
 #define DD4HEP_CONVERSION_NS json
 #include "Parsers/detail/Conversions.h"
 #undef  DD4HEP_CONVERSION_NS
 
-#endif /* DD4HEP_JSON_CONVERSIONS_H  */
+#endif // JSON_CONVERSIONS_H

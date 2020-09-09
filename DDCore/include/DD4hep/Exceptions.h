@@ -12,13 +12,13 @@
 //  \version  1.0
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_EXCEPTIONS_H
-#define DD4HEP_DDCORE_EXCEPTIONS_H
+#ifndef DD4HEP_EXCEPTIONS_H
+#define DD4HEP_EXCEPTIONS_H
 
 // Forward declaring header for package configuration
 
 #include "DD4hep/config.h"
 #include "Parsers/Exceptions.h"
 
-#endif // DD4HEP_DDCORE_EXCEPTIONS_H
+#endif // DD4HEP_EXCEPTIONS_H
 

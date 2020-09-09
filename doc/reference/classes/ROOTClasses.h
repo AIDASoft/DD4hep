@@ -1,3 +1,6 @@
+#ifndef DOC_REFERENCE_CLASSES_ROOTCLASSES_H
+#define DOC_REFERENCE_CLASSES_ROOTCLASSES_H
+
 
 /// ROOT stuff
 /**
@@ -44,3 +47,5 @@ namespace ROOT {
   namespace Math {
   }
 }
+
+#endif

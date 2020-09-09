@@ -18,8 +18,8 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_OPTICALSURFACEMANAGERINTERNA_H
-#define DD4HEP_DDCORE_OPTICALSURFACEMANAGERINTERNA_H
+#ifndef DD4HEP_DETAIL_OPTICALSURFACEMANAGERINTERNA_H
+#define DD4HEP_DETAIL_OPTICALSURFACEMANAGERINTERNA_H
 
 /// Framework include files
 #include "DD4hep/Detector.h"
@@ -71,4 +71,4 @@ namespace dd4hep {
 
   }       /* End namespace detail                          */
 }         /* End namespace dd4hep                          */
-#endif    /* DD4HEP_DDCORE_OPTICALSURFACEMANAGERINTERNA_H  */
+#endif // DD4HEP_DETAIL_OPTICALSURFACEMANAGERINTERNA_H

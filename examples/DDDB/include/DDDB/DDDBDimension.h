@@ -17,8 +17,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDDB_DIMENSION_H
-#define DD4HEP_DDDB_DIMENSION_H
+#ifndef DDDB_DDDBDIMENSION_H
+#define DDDB_DDDBDIMENSION_H
 
 // Framework include files
 #include "XML/XMLTags.h"
@@ -152,4 +152,4 @@ namespace dd4hep {
     };
   } /* End namespace DDDB    */
 } /* End namespace dd4hep    */
-#endif    /* DD4HEP_DDDB_XMLDIMENSION_H   */
+#endif // DDDB_DDDBDIMENSION_H

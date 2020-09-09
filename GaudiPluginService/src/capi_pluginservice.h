@@ -1,5 +1,5 @@
-#ifndef _GAUDI_C_PLUGIN_SERVICE_H_
-#define _GAUDI_C_PLUGIN_SERVICE_H_ 1
+#ifndef GAUDIPLUGINSERVICE_SRC_CAPI_PLUGINSERVICE_H
+#define GAUDIPLUGINSERVICE_SRC_CAPI_PLUGINSERVICE_H 1
 /*****************************************************************************\
 * (c) Copyright 2013 CERN                                                     *
 *                                                                             *
@@ -84,4 +84,4 @@ const char* cgaudi_property_get_value( cgaudi_property_t self );
 } /* extern "C" */
 #endif
 
-#endif /* !_GAUDI_C_PLUGIN_SERVICE_H_ */
+#endif // GAUDIPLUGINSERVICE_SRC_CAPI_PLUGINSERVICE_H

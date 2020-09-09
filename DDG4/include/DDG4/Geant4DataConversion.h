@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDG4_GEANT4CONVERSION_H
-#define DD4HEP_DDG4_GEANT4CONVERSION_H
+#ifndef DDG4_GEANT4DATACONVERSION_H
+#define DDG4_GEANT4DATACONVERSION_H
 
 // Framework include files
 #include "DD4hep/VolumeManager.h"
@@ -146,4 +146,4 @@ namespace dd4hep {
 
 #endif
 
-#endif // DD4HEP_DDG4_GEANT4CONVERSION_H
+#endif // DDG4_GEANT4DATACONVERSION_H

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDREC_MATERIALSCAN_H
-#define DD4HEP_DDREC_MATERIALSCAN_H
+#ifndef DDREC_MATERIALSCAN_H
+#define DDREC_MATERIALSCAN_H
 
 // Framework include files
 #include "DDRec/MaterialManager.h"
@@ -97,4 +97,4 @@ namespace dd4hep {
     };
   }    // End namespace rec
 }      // End namespace dd4hep
-#endif // DD4HEP_DDREC_MATERIALSCAN_H
+#endif // DDREC_MATERIALSCAN_H

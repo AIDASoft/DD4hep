@@ -12,8 +12,8 @@
 //  \version  1.0
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_CARTESIANSTRIPX_H
-#define DD4HEP_DDCORE_CARTESIANSTRIPX_H 1
+#ifndef DD4HEP_CARTESIANSTRIPX_H
+#define DD4HEP_CARTESIANSTRIPX_H 1
 
 // Framework include files
 #include "DD4hep/Segmentations.h"
@@ -92,4 +92,4 @@ class CartesianStripX : public CartesianStripXHandle {
     std::vector<double> cellDimensions(const CellID& cellID) const;
 };
 } /* End namespace dd4hep                */
-#endif  // DD4HEP_DDCORE_CARTESIANSTRIPX_H
+#endif // DD4HEP_CARTESIANSTRIPX_H

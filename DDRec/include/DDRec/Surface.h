@@ -10,8 +10,8 @@
 // Author     : F.Gaede
 //
 //==========================================================================
-#ifndef rec_Surface_H
-#define rec_Surface_H
+#ifndef DDREC_SURFACE_H
+#define DDREC_SURFACE_H
 
 #include "DD4hep/Objects.h"
 #include "DD4hep/Volumes.h"
@@ -708,4 +708,4 @@ namespace dd4hep {
 
 
 
-#endif /* Surface */
+#endif // DDREC_SURFACE_H

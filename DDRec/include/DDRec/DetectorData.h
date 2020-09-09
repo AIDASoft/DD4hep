@@ -10,8 +10,8 @@
 // Author     : F.Gaede
 //
 //==========================================================================
-#ifndef rec_DetectorData_H_
-#define rec_DetectorData_H_
+#ifndef DDREC_DETECTORDATA_H
+#define DDREC_DETECTORDATA_H
 
 #include <map>
 #include <bitset>
@@ -507,4 +507,4 @@ namespace dd4hep {
   } /* namespace rec */
 } /* namespace dd4hep */
 
-#endif // rec_DetectorData_H_
+#endif // DDREC_DETECTORDATA_H

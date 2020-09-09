@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIHANDLE_H
-#define DD4HEP_DDDIGI_DIGIHANDLE_H
+#ifndef DDDIGI_DIGIHANDLE_H
+#define DDDIGI_DIGIHANDLE_H
 
 // Framework include files
 #include "DD4hep/ComponentProperties.h"
@@ -119,4 +119,4 @@ namespace dd4hep {
   }    // End namespace digi
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDDIGI_DIGIHANDLE_H
+#endif // DDDIGI_DIGIHANDLE_H

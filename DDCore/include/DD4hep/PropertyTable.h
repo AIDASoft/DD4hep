@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_PROPERTYTABLE_H
-#define DD4HEP_DDCORE_PROPERTYTABLE_H
+#ifndef DD4HEP_PROPERTYTABLE_H
+#define DD4HEP_PROPERTYTABLE_H
 
 #include "RVersion.h"
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
@@ -61,4 +61,4 @@ namespace dd4hep {
 
 }         /* End namespace dd4hep              */
 #endif    /* ROOT_VERSION                      */
-#endif    /* DD4HEP_DDCORE_PROPERTYTABLE_H     */
+#endif // DD4HEP_PROPERTYTABLE_H

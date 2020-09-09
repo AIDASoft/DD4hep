@@ -12,8 +12,8 @@
 //  Original Author: Matevz Tadel 2009 (MultiView.C)
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_VIEW3D_H
-#define DD4HEP_DDEVE_VIEW3D_H
+#ifndef DDEVE_VIEW3D_H
+#define DDEVE_VIEW3D_H
 
 // Framework include files
 #include "DDEve/View.h"
@@ -42,4 +42,4 @@ namespace dd4hep {
     ClassDefOverride(View3D,0);
   };
 }      /* End namespace dd4hep   */
-#endif /* DD4HEP_DDEVE_VIEW3D_H  */
+#endif // DDEVE_VIEW3D_H

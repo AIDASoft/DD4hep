@@ -9,8 +9,8 @@
 //
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_HEPMC3EVENTREADER_H
-#define DD4HEP_DDG4_HEPMC3EVENTREADER_H
+#ifndef DDG4_HEPMC_HEPMC3EVENTREADER_H
+#define DDG4_HEPMC_HEPMC3EVENTREADER_H
 
 // Framework include files
 #include "DDG4/Geant4InputAction.h"
@@ -52,4 +52,4 @@ namespace dd4hep  {
 
   }     /* End namespace sim   */
 }       /* End namespace dd4hep */
-#endif  /* DD4HEP_DDG4_HEPMC3EVENTREADER_H  */
+#endif // DDG4_HEPMC_HEPMC3EVENTREADER_H

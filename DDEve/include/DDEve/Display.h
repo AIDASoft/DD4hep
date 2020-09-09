@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_DISPLAY_H
-#define DD4HEP_DDEVE_DISPLAY_H
+#ifndef DDEVE_DISPLAY_H
+#define DDEVE_DISPLAY_H
 
 // Framework include files
 #include "DD4hep/Detector.h"
@@ -219,5 +219,5 @@ namespace dd4hep {
     ClassDefOverride(Display,0);
   };
 }      /* End namespace dd4hep   */
-#endif /* DD4HEP_DDEVE_DISPLAY_H */
+#endif // DDEVE_DISPLAY_H
 

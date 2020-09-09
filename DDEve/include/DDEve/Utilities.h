@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_UTILITIES_H
-#define DD4HEP_DDEVE_UTILITIES_H
+#ifndef DDEVE_UTILITIES_H
+#define DDEVE_UTILITIES_H
 
 // Framework include files
 #include "DD4hep/Detector.h"
@@ -48,5 +48,5 @@ namespace dd4hep {
     }
   }
 }      /* End namespace dd4hep     */
-#endif /* DD4HEP_DDEVE_UTILITIES_H */
+#endif // DDEVE_UTILITIES_H
 

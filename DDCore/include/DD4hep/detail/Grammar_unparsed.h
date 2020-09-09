@@ -18,8 +18,8 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_DETAIL_GRAMMAR_UNPARSED_H
-#define DD4HEP_DDCORE_DETAIL_GRAMMAR_UNPARSED_H
+#ifndef DD4HEP_DETAIL_GRAMMAR_UNPARSED_H
+#define DD4HEP_DETAIL_GRAMMAR_UNPARSED_H
 
 // Framework include files
 #include "DD4hep/Grammar.h"
@@ -33,4 +33,4 @@ namespace dd4hep {
     return s_gr;
   }
 }
-#endif  /* DD4HEP_DDCORE_DETAIL_GRAMMAR_UNPARSED_H */
+#endif // DD4HEP_DETAIL_GRAMMAR_UNPARSED_H

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIEVENTACTION_H
-#define DD4HEP_DDDIGI_DIGIEVENTACTION_H
+#ifndef DDDIGI_DIGIEVENTACTION_H
+#define DDDIGI_DIGIEVENTACTION_H
 
 // Framework include files
 #include "DDDigi/DigiAction.h"
@@ -60,4 +60,4 @@ namespace dd4hep {
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGIEVENTACTION_H
+#endif // DDDIGI_DIGIEVENTACTION_H

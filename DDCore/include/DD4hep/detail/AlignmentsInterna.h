@@ -18,8 +18,8 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGNMENTS_ALIGNMENTSINTERNA_H
-#define DD4HEP_ALIGNMENTS_ALIGNMENTSINTERNA_H
+#ifndef DD4HEP_DETAIL_ALIGNMENTSINTERNA_H
+#define DD4HEP_DETAIL_ALIGNMENTSINTERNA_H
 
 // Framework include files
 #include "DD4hep/IOV.h"
@@ -76,4 +76,4 @@ namespace dd4hep {
     };
   }       /* End namespace detail                     */
 }         /* End namespace dd4hep                      */
-#endif    /* DD4HEP_ALIGNMENTS_ALIGNMENTSINTERNA_H     */
+#endif // DD4HEP_DETAIL_ALIGNMENTSINTERNA_H

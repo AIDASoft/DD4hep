@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_GEANT4READOUTVOLUMEFILTER_H
-#define DD4HEP_DDG4_GEANT4READOUTVOLUMEFILTER_H
+#ifndef DDG4_GEANT4READOUTVOLUMEFILTER_H
+#define DDG4_GEANT4READOUTVOLUMEFILTER_H
 
 // Framework include files
 #include "DD4hep/Readout.h"
@@ -53,4 +53,4 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDG4_GEANT4READOUTVOLUMEFILTER_H
+#endif // DDG4_GEANT4READOUTVOLUMEFILTER_H

@@ -20,7 +20,7 @@
 #endif
 
 /// Namespace for the AIDA detector description toolkit
-namespace dd4hep  {
+namespace dd4hep {
 #if __cplusplus >= 201103L
   typedef std::recursive_mutex            dd4hep_mutex_t;
   typedef std::lock_guard<dd4hep_mutex_t> dd4hep_lock_t;

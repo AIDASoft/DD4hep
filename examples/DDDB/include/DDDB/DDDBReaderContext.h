@@ -16,8 +16,8 @@
 // http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/DetDesc/Documents/lhcbDtd.pdf
 //
 //==========================================================================
-#ifndef DD4HEP_DDDB_DDDBREADERCONTEXT_H
-#define DD4HEP_DDDB_DDDBREADERCONTEXT_H
+#ifndef DDDB_DDDBREADERCONTEXT_H
+#define DDDB_DDDBREADERCONTEXT_H
 
 // Framework includes
 #include "XML/UriReader.h"
@@ -58,4 +58,4 @@ namespace dd4hep {
     };
   }    /* End namespace DDDB              */
 }      /* End namespace dd4hep            */
-#endif /* DD4HEP_DDDB_DDDBREADERCONTEXT_H */
+#endif // DDDB_DDDBREADERCONTEXT_H

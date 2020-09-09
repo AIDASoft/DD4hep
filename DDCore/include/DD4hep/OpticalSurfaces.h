@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_OPTICALSURFACES_H
-#define DD4HEP_DDCORE_OPTICALSURFACES_H
+#ifndef DD4HEP_OPTICALSURFACES_H
+#define DD4HEP_OPTICALSURFACES_H
 
 // Framework include files
 #include "DD4hep/Volumes.h"
@@ -196,4 +196,4 @@ namespace dd4hep {
 
 }         /* End namespace dd4hep              */
 #endif    /* ROOT_VERSION                      */
-#endif    /* DD4HEP_DDCORE_OPTICALSURFACES_H   */
+#endif // DD4HEP_OPTICALSURFACES_H

@@ -1,3 +1,6 @@
+#ifndef DDCORE_SRC_XML_TINYXMLPARSER_INL_H
+#define DDCORE_SRC_XML_TINYXMLPARSER_INL_H
+
 /*
   www.sourceforge.net/projects/tinyxml
   Original code (2.0 and earlier )copyright (c) 2000-2002 Lee Thomason (www.grinninglizard.com)
@@ -1630,3 +1633,5 @@ bool TiXmlText::Blank() const
   return true;
 }
 
+
+#endif

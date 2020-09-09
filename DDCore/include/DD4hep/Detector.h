@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DETECTOR_DETECTOR_H
-#define DD4HEP_DETECTOR_DETECTOR_H
+#ifndef DD4HEP_DETECTOR_H
+#define DD4HEP_DETECTOR_H
 
 #include "DD4hep/Version.h"
 
@@ -402,4 +402,4 @@ namespace dd4hep {
   }
 #endif
 }         /* End namespace dd4hep           */
-#endif    /* DD4HEP_DETECTOR_DETECTOR_H     */
+#endif // DD4HEP_DETECTOR_H

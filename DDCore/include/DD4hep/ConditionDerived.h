@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_CONDITIONDERIVED_H
-#define DD4HEP_DDCORE_CONDITIONDERIVED_H
+#ifndef DD4HEP_CONDITIONDERIVED_H
+#define DD4HEP_CONDITIONDERIVED_H
 
 // Framework include files
 #include "DD4hep/Memory.h"
@@ -434,4 +434,4 @@ namespace dd4hep {
 
   }       /* End namespace cond               */
 }         /* End namespace dd4hep                   */
-#endif    /* DD4HEP_DDCORE_CONDITIONDERIVED_H     */
+#endif // DD4HEP_CONDITIONDERIVED_H

@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_GEANT4DATA_H
-#define DD4HEP_GEANT4DATA_H
+#ifndef DDG4_GEANT4DATA_H
+#define DDG4_GEANT4DATA_H
 
 // Framework include files
 #include "DD4hep/Memory.h"
@@ -294,4 +294,4 @@ namespace dd4hep {
 
   }    // End namespace sim
 }      // End namespace dd4hep
-#endif // DD4HEP_GEANT4DATA_H
+#endif // DDG4_GEANT4DATA_H

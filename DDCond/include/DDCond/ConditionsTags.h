@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_CONDITIONSTAGS_H
-#define DD4HEP_CONDITIONS_CONDITIONSTAGS_H
+#ifndef DDCOND_CONDITIONSTAGS_H
+#define DDCOND_CONDITIONSTAGS_H
 
 // Framework include files
 #include "XML/XMLElements.h"
@@ -61,4 +61,4 @@ namespace dd4hep {
 #include "XML/XMLTags.h"
 #define _UC(x) ::dd4hep::xml::cond::Unicode_##x
 
-#endif /* DD4HEP_CONDITIONS_CONDITIONSTAGS_H  */
+#endif // DDCOND_CONDITIONSTAGS_H

@@ -1,3 +1,6 @@
+#ifndef DDG4_PLUGINS_GEANT4_9_PHYSICSCONSTRUCTORS_H
+#define DDG4_PLUGINS_GEANT4_9_PHYSICSCONSTRUCTORS_H
+
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -151,3 +154,5 @@ DECLARE_GEANT4_PHYSICS(HadronPhysicsQGSP_BIC_HP)
 DECLARE_GEANT4_PHYSICS(HadronPhysicsQGSP_FTFP_BERT)
 #include "HadronPhysicsQGSP.hh"
 DECLARE_GEANT4_PHYSICS(HadronPhysicsQGSP)
+
+#endif

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_PERSISTENCYEXAMPLE_PERSISTENCYSETUP_H
-#define DD4HEP_PERSISTENCYEXAMPLE_PERSISTENCYSETUP_H
+#ifndef EXAMPLES_PERSISTENCY_SRC_PERSISTENCYSETUP_H
+#define EXAMPLES_PERSISTENCY_SRC_PERSISTENCYSETUP_H
 
 #include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
@@ -59,4 +59,4 @@ namespace dd4hep {
   }       /* End namespace persistencyexamples            */
 }         /* End namespace dd4hep                         */
 
-#endif  // DD4HEP_PERSISTENCYEXAMPLE_PERSISTENCYSETUP_H
+#endif // EXAMPLES_PERSISTENCY_SRC_PERSISTENCYSETUP_H

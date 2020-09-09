@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIACTION_H
-#define DD4HEP_DDDIGI_DIGIACTION_H
+#ifndef DDDIGI_DIGIACTION_H
+#define DDDIGI_DIGIACTION_H
 
 // Framework include files
 #include "DD4hep/Printout.h"
@@ -315,4 +315,4 @@ namespace dd4hep {
   }    // End namespace digi
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDDIGI_DIGIACTION_H
+#endif // DDDIGI_DIGIACTION_H

@@ -1,3 +1,6 @@
+#ifndef ROOT_LINKDEF_H
+#define ROOT_LINKDEF_H
+
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -37,5 +40,7 @@
 #pragma clang diagnostic ignored "-Wdeprecated"
 #pragma clang diagnostic ignored "-Wunused"
 #pragma clang diagnostic ignored "-Woverlength-strings"
+
+#endif
 
 #endif

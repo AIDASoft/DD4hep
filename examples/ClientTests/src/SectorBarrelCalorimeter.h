@@ -5,8 +5,8 @@
  *      Author: Nikiforos Nikiforou, CERN
  */
 
-#ifndef SECTORBARRELCALORIMETER_H_
-#define SECTORBARRELCALORIMETER_H_
+#ifndef EXAMPLES_CLIENTTESTS_SRC_SECTORBARRELCALORIMETER_H
+#define EXAMPLES_CLIENTTESTS_SRC_SECTORBARRELCALORIMETER_H
 
 #include "BarrelDetector.h"
 #include "PolyhedralCalorimeter.h"
@@ -22,4 +22,4 @@ public:
 
 } /* namespace detail */
 } /* namespace dd4hep */
-#endif /* SECTORBARRELCALORIMETER_H_ */
+#endif // EXAMPLES_CLIENTTESTS_SRC_SECTORBARRELCALORIMETER_H

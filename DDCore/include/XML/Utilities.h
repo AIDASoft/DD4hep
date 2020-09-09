@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_XML_XMLUTILITIES_H
-#define DD4HEP_XML_XMLUTILITIES_H
+#ifndef XML_UTILITIES_H
+#define XML_UTILITIES_H
 
 // Framework include files
 #include "XML/Conversions.h"
@@ -86,4 +86,4 @@ namespace dd4hep {
     void setDetectorTypeFlag( dd4hep::xml::Handle_t e, dd4hep::DetElement sdet ) ; 
   }       /* End namespace xml              */
 }         /* End namespace dd4hep           */
-#endif    /* dd4hep_XML_XMLUTILITIES_H */
+#endif // XML_UTILITIES_H

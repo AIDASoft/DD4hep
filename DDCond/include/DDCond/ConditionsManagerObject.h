@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDCOND_CONDITIONS_CONDITIONSMANAGEROBJECT_H
-#define DDCOND_CONDITIONS_CONDITIONSMANAGEROBJECT_H
+#ifndef DDCOND_CONDITIONSMANAGEROBJECT_H
+#define DDCOND_CONDITIONSMANAGEROBJECT_H
 
 // Framework include files
 #include "DD4hep/Conditions.h"
@@ -198,4 +198,4 @@ namespace dd4hep {
     };
   }    /* End namespace detail                       */
 }      /* End namespace dd4hep                         */
-#endif /* DDCOND_CONDITIONS_CONDITIONSMANAGEROBJECT_H  */
+#endif // DDCOND_CONDITIONSMANAGEROBJECT_H

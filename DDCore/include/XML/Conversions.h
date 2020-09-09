@@ -10,11 +10,11 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_COMPACT_CONVERSION_H
-#define DD4HEP_COMPACT_CONVERSION_H
+#ifndef XML_CONVERSIONS_H
+#define XML_CONVERSIONS_H
 
 #define DD4HEP_CONVERSION_NS xml
 #include "Parsers/detail/Conversions.h"
 #undef  DD4HEP_CONVERSION_NS
 
-#endif    /* DD4HEP_COMPACT_CONVERSION_H    */
+#endif // XML_CONVERSIONS_H

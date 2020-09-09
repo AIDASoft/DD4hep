@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_CALLBACK_H
-#define DD4HEP_DDCORE_CALLBACK_H
+#ifndef DD4HEP_CALLBACK_H
+#define DD4HEP_CALLBACK_H
 
 // C/C++ include files
 #include <algorithm>
@@ -493,4 +493,4 @@ namespace dd4hep {
   }
 
 }       // End namespace dd4hep
-#endif  // DD4HEP_DDCORE_CALLBACK_H
+#endif // DD4HEP_CALLBACK_H

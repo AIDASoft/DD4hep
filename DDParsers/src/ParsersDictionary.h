@@ -12,8 +12,8 @@
 //  \version  1.0
 //
 //==========================================================================
-#ifndef PARSERDICTIONARY_H 
-#define PARSERDICTIONARY_H 1
+#ifndef DDPARSERS_SRC_PARSERSDICTIONARY_H
+#define DDPARSERS_SRC_PARSERSDICTIONARY_H 1
 
 
-#endif  // PARSERDICTIONARY_H 
+#endif // DDPARSERS_SRC_PARSERSDICTIONARY_H

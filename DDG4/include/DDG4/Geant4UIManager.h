@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_GEANT4UIMANAGER_H
-#define DD4HEP_DDG4_GEANT4UIMANAGER_H
+#ifndef DDG4_GEANT4UIMANAGER_H
+#define DDG4_GEANT4UIMANAGER_H
 
 // Framework include files
 #include "DDG4/Geant4Call.h"
@@ -97,4 +97,4 @@ namespace dd4hep {
 
   }    // End namespace sim
 }      // End namespace dd4hep
-#endif // DD4HEP_DDG4_GEANT4UIMANAGER_H
+#endif // DDG4_GEANT4UIMANAGER_H

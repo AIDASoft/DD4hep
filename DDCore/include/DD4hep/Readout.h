@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_READOUT_H
-#define DD4HEP_DDCORE_READOUT_H
+#ifndef DD4HEP_READOUT_H
+#define DD4HEP_READOUT_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
@@ -88,4 +88,4 @@ namespace dd4hep {
     Segmentation segmentation() const;
   };
 }         /* End namespace dd4hep         */
-#endif    /* DD4HEP_DDCORE_READOUT_H      */
+#endif // DD4HEP_READOUT_H

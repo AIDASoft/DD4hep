@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_XML_URIREADER_H
-#define DD4HEP_XML_URIREADER_H
+#ifndef XML_URIREADER_H
+#define XML_URIREADER_H
 
 // C/C++ include files
 #include <string>
@@ -112,4 +112,4 @@ namespace dd4hep {
 
   }       /* End namespace xml               */
 }         /* End namespace dd4hep            */
-#endif    /* DD4HEP_XML_URIREADER_H          */
+#endif // XML_URIREADER_H

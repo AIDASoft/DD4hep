@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DD4HEP_OPERATORS_H
-#define DD4HEP_DD4HEP_OPERATORS_H
+#ifndef DD4HEP_OPERATORS_H
+#define DD4HEP_OPERATORS_H
 
 // C/C++ include files
 #include <string>
@@ -64,4 +64,4 @@ namespace dd4hep {
   template <typename T> ByNameAttr<T> byNameAttr(const T& o) { return ByNameAttr<T>(o.name);  }
 
 }      // End namespace dd4hep
-#endif // DD4HEP_DD4HEP_OPERATORS_H
+#endif // DD4HEP_OPERATORS_H

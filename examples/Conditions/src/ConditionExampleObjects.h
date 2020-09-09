@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_CONDITIONSEXAMPLEOBJECTS_H
-#define DD4HEP_CONDITIONS_CONDITIONSEXAMPLEOBJECTS_H
+#ifndef EXAMPLES_CONDITIONS_SRC_CONDITIONEXAMPLEOBJECTS_H
+#define EXAMPLES_CONDITIONS_SRC_CONDITIONEXAMPLEOBJECTS_H
 
 // Framework include files
 #include "DD4hep/Detector.h"
@@ -267,4 +267,4 @@ namespace dd4hep {
     ConditionsManager installManager(Detector& description);
   }       /* End namespace condExamples             */
 }         /* End namespace dd4hep                         */
-#endif    /* DD4HEP_CONDITIONS_CONDITIONSEXAMPLEOBJECTS_H */
+#endif // EXAMPLES_CONDITIONS_SRC_CONDITIONEXAMPLEOBJECTS_H

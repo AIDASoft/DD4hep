@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCAD_CADDICTIONARY_H
-#define DD4HEP_DDCAD_CADDICTIONARY_H
+#ifndef DDCAD_SRC_CADDICTIONARY_H
+#define DDCAD_SRC_CADDICTIONARY_H
 
 // Framework include files
 #include "DDCAD/InputReader.h"
@@ -38,4 +38,4 @@ using namespace dd4hep::cad;
 
 #endif
 
-#endif // DD4HEP_DDCAD_CADDICTIONARY_H
+#endif // DDCAD_SRC_CADDICTIONARY_H

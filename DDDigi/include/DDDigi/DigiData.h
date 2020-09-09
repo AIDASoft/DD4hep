@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIDATA_H
-#define DD4HEP_DDDIGI_DIGIDATA_H
+#ifndef DDDIGI_DIGIDATA_H
+#define DDDIGI_DIGIDATA_H
 
 /// Framework include files
 #include "DD4hep/Any.h"
@@ -336,4 +336,4 @@ namespace dd4hep {
   }    // End namespace digi
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDDIGI_DIGIDATA_H
+#endif // DDDIGI_DIGIDATA_H

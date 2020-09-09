@@ -12,12 +12,12 @@
 //  \version  1.0
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_PRINTOUT_H
-#define DD4HEP_DDCORE_PRINTOUT_H
+#ifndef DD4HEP_PRINTOUT_H
+#define DD4HEP_PRINTOUT_H
 
 // Forward declaring header for package configuration
 
 #include "DD4hep/config.h"
 #include "Parsers/Printout.h"
 
-#endif // DD4HEP_DDCORE_PRINTOUT_H
+#endif // DD4HEP_PRINTOUT_H

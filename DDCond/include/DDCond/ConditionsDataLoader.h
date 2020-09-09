@@ -102,4 +102,4 @@ namespace dd4hep {
     };
   }        /* End namespace cond         */
 }          /* End namespace dd4hep             */
-#endif     /* DDCOND_CONDITIONSDATALOADER_H    */
+#endif // DDCOND_CONDITIONSDATALOADER_H

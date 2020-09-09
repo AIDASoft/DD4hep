@@ -1,3 +1,6 @@
+#ifndef UTILITYAPPS_SRC_RUN_PLUGIN_H
+#define UTILITYAPPS_SRC_RUN_PLUGIN_H
+
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -434,3 +437,5 @@ namespace dd4hep  {
     }
   }
 }
+
+#endif

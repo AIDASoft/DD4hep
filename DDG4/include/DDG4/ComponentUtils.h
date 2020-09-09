@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDG4_COMPONENTTUILS_H
-#define DD4HEP_DDG4_COMPONENTTUILS_H
+#ifndef DDG4_COMPONENTUTILS_H
+#define DDG4_COMPONENTUTILS_H
 
 // Framework include files
 #include "DD4hep/Primitives.h"
@@ -24,4 +24,4 @@ namespace dd4hep {
 
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDG4_COMPONENTTUILS_H
+#endif // DDG4_COMPONENTUTILS_H

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_BITFIELDCODER_H
-#define DD4HEP_DDCORE_BITFIELDCODER_H
+#ifndef DD4HEP_BITFIELDCODER_H
+#define DD4HEP_BITFIELDCODER_H
 
 // Framework include files
 #include "DDSegmentation/BitFieldCoder.h"
@@ -27,4 +27,4 @@ namespace dd4hep {
 
   }       /* End namespace detail           */
 }         /* End namespace dd4hep             */
-#endif    /* DD4HEP_DDCORE_BITFIELDCODER_H     */
+#endif // DD4HEP_BITFIELDCODER_H

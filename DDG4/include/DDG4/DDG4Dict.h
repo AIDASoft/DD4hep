@@ -15,8 +15,8 @@
 //  which are created by the DDG4 examples.
 //
 //====================================================================
-#ifndef DD4HEP_DDG4_DDG4DICT_H
-#define DD4HEP_DDG4_DDG4DICT_H
+#ifndef DDG4_DDG4DICT_H
+#define DDG4_DDG4DICT_H
 
 #if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -163,4 +163,4 @@ namespace dd4hep {
 
 #endif // __DDG4_STANDALONE_DICTIONARIES__
 
-#endif /* DD4HEP_DDG4_DDG4DICT_H */
+#endif // DDG4_DDG4DICT_H

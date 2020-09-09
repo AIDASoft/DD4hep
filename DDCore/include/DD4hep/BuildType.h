@@ -12,8 +12,8 @@
 //  \version  1.0
 //
 //==========================================================================
-#ifndef DD4HEP_BUILDTYPES_H 
-#define DD4HEP_BUILDTYPES_H 1
+#ifndef DD4HEP_BUILDTYPE_H
+#define DD4HEP_BUILDTYPE_H 1
 
 // C/C++ include files
 #include <string>
@@ -47,4 +47,4 @@ namespace dd4hep {
   bool buildMatch(const std::string& value, DetectorBuildType match);
 
 } /* End namespace dd4hep             */
-#endif  // DD4HEP_BUILDTYPES_H
+#endif // DD4HEP_BUILDTYPE_H

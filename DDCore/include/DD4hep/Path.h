@@ -12,8 +12,8 @@
 //  \version 1.0
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_PATH_H
-#define DD4HEP_DDCORE_PATH_H
+#ifndef DD4HEP_PATH_H
+#define DD4HEP_PATH_H
 
 // Framework include files
 
@@ -114,4 +114,4 @@ namespace dd4hep {
     };
   };
 }         /* End namespace dd4hep           */
-#endif    /* DD4HEP_DDCORE_PATH_H           */
+#endif // DD4HEP_PATH_H

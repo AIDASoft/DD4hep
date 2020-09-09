@@ -16,8 +16,8 @@
 //==========================================================================
 
 // Framework includes
-#ifndef DD4HEP_DDCMS_DDCMSTAGS_H
-#define DD4HEP_DDCMS_DDCMSTAGS_H
+#ifndef DDCMS_DDCMSTAGS_H
+#define DDCMS_DDCMSTAGS_H
 
 // Framework include files
 #include "XML/XMLElements.h"
@@ -193,4 +193,4 @@ namespace dd4hep {
 
 #define _CMU(a) ::dd4hep::DDCMS::Unicode_##a
 
-#endif /* DD4HEP_DDCMS_DDCMSTAGS_H  */
+#endif // DDCMS_DDCMSTAGS_H

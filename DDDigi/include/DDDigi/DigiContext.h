@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGICONTEXT_H
-#define DD4HEP_DDDIGI_DIGICONTEXT_H
+#ifndef DDDIGI_DIGICONTEXT_H
+#define DDDIGI_DIGICONTEXT_H
 
 // Framework incloude files
 #include "DD4hep/Primitives.h"
@@ -129,4 +129,4 @@ namespace dd4hep {
   }    // End namespace digi
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDDIGI_DIGICONTEXT_H
+#endif // DDDIGI_DIGICONTEXT_H

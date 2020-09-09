@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_XML_TAGS_H
-#define DD4HEP_XML_TAGS_H
+#ifndef XML_XMLTAGS_H
+#define XML_XMLTAGS_H
 
 #define DECLARE_UNICODE_TAG(x)  namespace dd4hep { namespace xml { extern const Tag_t Unicode_##x (#x); }}
 
@@ -36,4 +36,4 @@ namespace dd4hep {
 #define _U(a)              ::dd4hep::xml::Unicode_##a
 #define _Unicode(a)        ::dd4hep::xml::Strng_t(#a)
 
-#endif // DD4HEP_XML_TAGS_H
+#endif // XML_XMLTAGS_H

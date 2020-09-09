@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_HITHANDLERS_H
-#define DD4HEP_DDEVE_HITHANDLERS_H
+#ifndef DDEVE_HITACTORS_H
+#define DDEVE_HITACTORS_H
 
 // Framework include files
 #include "DDEve/EventHandler.h"
@@ -106,5 +106,5 @@ namespace dd4hep {
 } /* End namespace dd4hep   */
 
 
-#endif /* DD4HEP_DDEVE_HITHANDLERS_H */
+#endif // DDEVE_HITACTORS_H
 

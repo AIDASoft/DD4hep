@@ -210,4 +210,4 @@ namespace dd4hep {
     template <typename P> inline R Factory<P,R(A0,A1,A2,A3,A4)>::call(A0 a0, A1 a1, A2 a2, A3 a3, A4 a4)
   
 #endif    /* __CINT__          */
-#endif    /* DD4HEP_PLUGINS_H  */
+#endif // DD4HEP_PLUGINS_H

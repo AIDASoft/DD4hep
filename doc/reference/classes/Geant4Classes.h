@@ -1,3 +1,6 @@
+#ifndef DOC_REFERENCE_CLASSES_GEANT4CLASSES_H
+#define DOC_REFERENCE_CLASSES_GEANT4CLASSES_H
+
 
 /// Class of the Geant4 toolkit. See http://www-geant4.kek.jp/Reference
 /** Class of the Geant4 toolkit. \see http://www-geant4.kek.jp/Reference  */
@@ -70,3 +73,5 @@ class G4VUserPrimaryGeneratorAction	{};
 /// Class of the Geant4 toolkit. See http://www-geant4.kek.jp/Reference
 /** Class of the Geant4 toolkit. \see http://www-geant4.kek.jp/Reference  */
 class G4VUserTrackInformation		{};
+
+#endif

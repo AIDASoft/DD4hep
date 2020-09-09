@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_ANNOTATION_H
-#define DD4HEP_DDEVE_ANNOTATION_H
+#ifndef DDEVE_ANNOTATION_H
+#define DDEVE_ANNOTATION_H
 
 // Framework include files
 #include "TGLAnnotation.h"
@@ -45,5 +45,5 @@ namespace dd4hep {
     static float DefaultMargin();
   };
 }      /* End namespace dd4hep      */
-#endif /* DD4HEP_DDEVE_ANNOTATION_H */
+#endif // DDEVE_ANNOTATION_H
 

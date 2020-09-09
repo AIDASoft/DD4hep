@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_CONDITIONSLISTENER_H
-#define DD4HEP_DDCORE_CONDITIONSLISTENER_H
+#ifndef DD4HEP_CONDITIONSLISTENER_H
+#define DD4HEP_CONDITIONSLISTENER_H
 
 // Framework include files
 #include "DD4hep/Conditions.h"
@@ -60,4 +60,4 @@ namespace dd4hep {
   } /* End namespace detail               */
 } /* End namespace dd4hep                   */
 
-#endif /* DD4HEP_DDCORE_CONDITIONSLISTENER_H  */
+#endif // DD4HEP_CONDITIONSLISTENER_H

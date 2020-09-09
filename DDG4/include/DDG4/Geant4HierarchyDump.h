@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_GEANT4HIERARCHYDUMP_H
-#define DD4HEP_DDG4_GEANT4HIERARCHYDUMP_H
+#ifndef DDG4_GEANT4HIERARCHYDUMP_H
+#define DDG4_GEANT4HIERARCHYDUMP_H
 
 // Geant 4 include files
 #include "G4VPhysicalVolume.hh"
@@ -46,4 +46,4 @@ namespace dd4hep {
   }
 }
 
-#endif  // DD4HEP_DDG4_GEANT4HIERARCHYDUMP_H
+#endif // DDG4_GEANT4HIERARCHYDUMP_H

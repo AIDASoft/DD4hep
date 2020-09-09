@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEPKERNEL_GRAMMARSV2_H
-#define DD4HEPKERNEL_GRAMMARSV2_H 1
+#ifndef PARSERS_SPIRIT_GRAMMARSV2_H
+#define PARSERS_SPIRIT_GRAMMARSV2_H 1
 #ifdef __GNUC__
 #pragma GCC system_header
 #endif

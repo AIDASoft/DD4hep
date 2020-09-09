@@ -16,8 +16,8 @@
  *      Author: Whitney Armstrong, ANL
  */
 
-#ifndef DDSegmentation_NoSegmentation_H_
-#define DDSegmentation_NoSegmentation_H_
+#ifndef DDSEGMENTATION_NOSEGMENTATION_H
+#define DDSEGMENTATION_NOSEGMENTATION_H
 
 #include "DDSegmentation/Segmentation.h"
 
@@ -41,4 +41,4 @@ namespace dd4hep {
 
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
-#endif /* DDSegmentation_NoSegmentation */
+#endif // DDSEGMENTATION_NOSEGMENTATION_H

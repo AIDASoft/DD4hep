@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIATTENUATOR_H
-#define DD4HEP_DDDIGI_DIGIATTENUATOR_H
+#ifndef DDDIGI_DIGIATTENUATOR_H
+#define DDDIGI_DIGIATTENUATOR_H
 
 /// Framework include files
 #include "DDDigi/DigiSignalProcessor.h"
@@ -51,4 +51,4 @@ namespace dd4hep {
 
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGIATTENUATOR_H
+#endif // DDDIGI_DIGIATTENUATOR_H

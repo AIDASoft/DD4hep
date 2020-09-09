@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_JSON_CONFIG_H
-#define DD4HEP_DDCORE_JSON_CONFIG_H
+#ifndef JSON_CONFIG_H
+#define JSON_CONFIG_H
 
 #include "Parsers/config.h"
 
@@ -33,4 +33,4 @@ namespace dd4hep {
 
   }       /* End namespace json              */
 }         /* End namespace dd4hep            */
-#endif    /* DD4HEP_DDCORE_JSON_CONFIG_H  */
+#endif // JSON_CONFIG_H

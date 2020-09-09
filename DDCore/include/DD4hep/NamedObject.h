@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_NAMEDOBJECT_H
-#define DD4HEP_DDCORE_NAMEDOBJECT_H
+#ifndef DD4HEP_NAMEDOBJECT_H
+#define DD4HEP_NAMEDOBJECT_H
 
 // C/C++ include files
 #include <string>
@@ -69,4 +69,4 @@ namespace dd4hep {
   };
 
 }         /* End namespace dd4hep          */
-#endif    /* DD4HEP_DDCORE_NAMEDOBJECT_H   */
+#endif // DD4HEP_NAMEDOBJECT_H

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_PARSERS_PRINTOUT_H
-#define DD4HEP_PARSERS_PRINTOUT_H
+#ifndef PARSERS_PRINTOUT_H
+#define PARSERS_PRINTOUT_H
 
 // Framework include files
 #include "Parsers/config.h"
@@ -323,4 +323,4 @@ namespace dd4hep {
   }
 
 }         /* End namespace dd4hep              */
-#endif    /* DD4HEP_PARSERS_PRINTOUT_H         */
+#endif // PARSERS_PRINTOUT_H

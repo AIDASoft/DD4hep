@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDG4_GEANT4ISOTROPEGENERATOR_H
-#define DD4HEP_DDG4_GEANT4ISOTROPEGENERATOR_H
+#ifndef DDG4_GEANT4ISOTROPEGENERATOR_H
+#define DDG4_GEANT4ISOTROPEGENERATOR_H
 
 // Framework include files
 #include "DDG4/Geant4ParticleGenerator.h"
@@ -67,4 +67,4 @@ namespace dd4hep {
     };
   }    // End namespace sim
 }      // End namespace dd4hep
-#endif /* DD4HEP_DDG4_GEANT4ISOTROPEGENERATOR_H  */
+#endif // DDG4_GEANT4ISOTROPEGENERATOR_H

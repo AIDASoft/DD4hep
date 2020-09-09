@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCAD_INPUTREADER_H
-#define DD4HEP_DDCAD_INPUTREADER_H
+#ifndef DDCAD_INPUTREADER_H
+#define DDCAD_INPUTREADER_H
 
 // Framework include files
 #include <DD4hep/config.h>
@@ -42,4 +42,4 @@ namespace dd4hep {
     
   }        /* End namespace cad                      */
 }          /* End namespace dd4hep                   */
-#endif // DD4HEP_DDCAD_INPUTREADER_H
+#endif // DDCAD_INPUTREADER_H

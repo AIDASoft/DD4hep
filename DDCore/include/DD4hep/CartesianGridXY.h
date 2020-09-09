@@ -12,8 +12,8 @@
 //  \version  1.0
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_CARTESIANGRIDXY_H 
-#define DD4HEP_DDCORE_CARTESIANGRIDXY_H 1
+#ifndef DD4HEP_CARTESIANGRIDXY_H
+#define DD4HEP_CARTESIANGRIDXY_H 1
 
 // Framework include files
 #include "DD4hep/Segmentations.h"
@@ -104,4 +104,4 @@ namespace dd4hep {
   };
 
 } /* End namespace dd4hep                */
-#endif // DD4HEP_DDCORE_CARTESIANGRIDXY_H
+#endif // DD4HEP_CARTESIANGRIDXY_H

@@ -11,8 +11,8 @@
 //  \date   2015-11-07
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_DDPYTHON_H 
-#define DD4HEP_DDG4_DDPYTHON_H 1
+#ifndef DDG4_PYTHON_DDPYTHON_H
+#define DDG4_PYTHON_DDPYTHON_H 1
 
 // C/C++ include files
 #include <string>
@@ -114,4 +114,4 @@ namespace dd4hep  {
   };
 }
 
-#endif // DD4HEP_DDG4_DDPYTHON_H
+#endif // DDG4_PYTHON_DDPYTHON_H

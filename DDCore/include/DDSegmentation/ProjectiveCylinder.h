@@ -16,8 +16,8 @@
  *      Author: Christian Grefe, CERN
  */
 
-#ifndef PROJECTIVECYLINDER_H_
-#define PROJECTIVECYLINDER_H_
+#ifndef DDSEGMENTATION_PROJECTIVECYLINDER_H
+#define DDSEGMENTATION_PROJECTIVECYLINDER_H
 
 #include "CylindricalSegmentation.h"
 
@@ -109,4 +109,4 @@ namespace dd4hep {
 
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
-#endif /* PROJECTIVECYLINDER_H_ */
+#endif // DDSEGMENTATION_PROJECTIVECYLINDER_H

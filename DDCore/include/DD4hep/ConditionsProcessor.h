@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_CONDITIONSPROCESSOR_H
-#define DD4HEP_DDCORE_CONDITIONSPROCESSOR_H
+#ifndef DD4HEP_CONDITIONSPROCESSOR_H
+#define DD4HEP_CONDITIONSPROCESSOR_H
 
 // Framework include files
 #include "DD4hep/DetElement.h"
@@ -153,4 +153,4 @@ namespace dd4hep {
 
   }       /* End namespace cond               */
 }         /* End namespace dd4hep                   */
-#endif    /* DD4HEP_DDCORE_CONDITIONSPROCESSOR_H  */
+#endif // DD4HEP_CONDITIONSPROCESSOR_H

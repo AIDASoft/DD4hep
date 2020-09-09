@@ -1,3 +1,6 @@
+#ifndef XML_UNICODEVALUES_H
+#define XML_UNICODEVALUES_H
+
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -610,3 +613,5 @@ UNICODE (zpos);
 UNICODE (zmax);
 UNICODE (zplane);
 UNICODE (zstart);
+
+#endif

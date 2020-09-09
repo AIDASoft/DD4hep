@@ -9,8 +9,8 @@
 //
 //==========================================================================
 
-#ifndef MultiView_h
-#define MultiView_h
+#ifndef UTILITYAPPS_SRC_MULTIVIEW_H
+#define UTILITYAPPS_SRC_MULTIVIEW_H
 
 #include <TEveManager.h>
 #include <TEveViewer.h>

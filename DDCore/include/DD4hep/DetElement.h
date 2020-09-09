@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DETECTOR_H
-#define DD4HEP_DETECTOR_H
+#ifndef DD4HEP_DETELEMENT_H
+#define DD4HEP_DETELEMENT_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
@@ -451,4 +451,4 @@ namespace dd4hep {
 
 #include "DD4hep/AlignmentData.h"
 
-#endif    /* DD4HEP_DETECTOR_H      */
+#endif // DD4HEP_DETELEMENT_H

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DD4HEP_IOSTREAMS_H
-#define DD4HEP_DD4HEP_IOSTREAMS_H
+#ifndef DDG4_IOSTREAMS_H
+#define DDG4_IOSTREAMS_H
 
 // C/C++ include files
 #include <string>
@@ -260,4 +260,4 @@ namespace dd4hep {
 #pragma GCC diagnostic pop
 #endif
 
-#endif // DD4HEP_DD4HEP_IOSTREAMs_H
+#endif // DDG4_IOSTREAMS_H

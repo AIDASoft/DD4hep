@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_XMLDETECTOR_H
-#define DD4HEP_XMLDETECTOR_H
+#ifndef XML_XMLDETECTOR_H
+#define XML_XMLDETECTOR_H
 
 // Framework include files
 #include "XML/XMLDimension.h"
@@ -20,4 +20,4 @@
 #include "Parsers/detail/Detector.h"
 #undef  DD4HEP_DIMENSION_NS
 
-#endif    /* DD4HEP_XMLDETECTOR_H    */
+#endif // XML_XMLDETECTOR_H

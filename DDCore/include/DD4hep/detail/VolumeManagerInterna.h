@@ -18,8 +18,8 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_VOLUMEMANAGERINTERNA_H
-#define DD4HEP_DDCORE_VOLUMEMANAGERINTERNA_H
+#ifndef DD4HEP_DETAIL_VOLUMEMANAGERINTERNA_H
+#define DD4HEP_DETAIL_VOLUMEMANAGERINTERNA_H
 
 // Framework include files
 #include "DD4hep/Volumes.h"
@@ -105,4 +105,4 @@ namespace dd4hep {
 
   }       /* End namespace detail                  */
 }         /* End namespace dd4hep                  */
-#endif    /* DD4HEP_DDCORE_VOLUMEMANAGERINTERNA_H  */
+#endif // DD4HEP_DETAIL_VOLUMEMANAGERINTERNA_H

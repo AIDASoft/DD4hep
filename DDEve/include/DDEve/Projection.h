@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_PROJECTION_H
-#define DD4HEP_DDEVE_PROJECTION_H
+#ifndef DDEVE_PROJECTION_H
+#define DDEVE_PROJECTION_H
 
 // Framework include files
 #include "DDEve/View.h"
@@ -65,4 +65,4 @@ namespace dd4hep {
     ClassDefOverride(Projection,0);
   };
 }      /* End namespace dd4hep      */
-#endif /* DD4HEP_DDEVE_PROJECTION_H */
+#endif // DDEVE_PROJECTION_H

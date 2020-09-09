@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGISIGNALPROCESSOR_H
-#define DD4HEP_DDDIGI_DIGISIGNALPROCESSOR_H
+#ifndef DDDIGI_DIGISIGNALPROCESSOR_H
+#define DDDIGI_DIGISIGNALPROCESSOR_H
 
 /// Framework include files
 #include "DDDigi/DigiAction.h"
@@ -71,4 +71,4 @@ namespace dd4hep {
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGISIGNALPROCESSOR_H
+#endif // DDDIGI_DIGISIGNALPROCESSOR_H

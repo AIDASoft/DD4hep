@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGNMENT_ALIGNMENT_TAGS_H
-#define DD4HEP_ALIGNMENT_ALIGNMENT_TAGS_H
+#ifndef DDALIGN_ALIGNMENTTAGS_H
+#define DDALIGN_ALIGNMENTTAGS_H
 
 // Framework include files
 #include "XML/XMLElements.h"
@@ -49,4 +49,4 @@ namespace dd4hep {
 
 #define _ALU(a) ::dd4hep::DDAlign::Unicode_##a
 
-#endif /* DD4HEP_ALIGNMENT_ALIGNMENT_TAGS_H  */
+#endif // DDALIGN_ALIGNMENTTAGS_H

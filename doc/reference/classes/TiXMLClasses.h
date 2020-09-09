@@ -1,3 +1,6 @@
+#ifndef DOC_REFERENCE_CLASSES_TIXMLCLASSES_H
+#define DOC_REFERENCE_CLASSES_TIXMLCLASSES_H
+
 
 /// TinyXML class. See http://www.grinninglizard.com/tinyxml
 /** See \see http://www.grinninglizard.com/tinyxml   */
@@ -78,3 +81,5 @@ class TiXmlUnknown			{};
 /// TinyXML class. See http://www.grinninglizard.com/tinyxml
 /** See \see http://www.grinninglizard.com/tinyxml   */
 class TiXmlVisitor		{};
+
+#endif

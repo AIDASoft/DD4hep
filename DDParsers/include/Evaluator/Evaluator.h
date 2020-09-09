@@ -11,8 +11,8 @@
 // -*- C++ -*-
 // ---------------------------------------------------------------------------
 
-#ifndef XMLTOOLS_EVALUATOR_H
-#define XMLTOOLS_EVALUATOR_H
+#ifndef EVALUATOR_EVALUATOR_H
+#define EVALUATOR_EVALUATOR_H
 
 #include <ostream>
 
@@ -284,4 +284,4 @@ namespace dd4hep  {
   }   // namespace tools
 }  // namespace dd4hep
 
-#endif /* XMLTOOLS_EVALUATOR_H */
+#endif // EVALUATOR_EVALUATOR_H

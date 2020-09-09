@@ -18,8 +18,8 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_CONDITIONINTERNA_H
-#define DD4HEP_DDCORE_CONDITIONINTERNA_H
+#ifndef DD4HEP_DETAIL_CONDITIONSINTERNA_H
+#define DD4HEP_DETAIL_CONDITIONSINTERNA_H
 
 // Framework include files
 #include "DD4hep/DetElement.h"
@@ -118,4 +118,4 @@ namespace dd4hep {
 
   }       /* End namespace detail                   */
 }         /* End namespace dd4hep                   */
-#endif    /* DD4HEP_DDCORE_CONDITIONINTERNA_H       */
+#endif // DD4HEP_DETAIL_CONDITIONSINTERNA_H

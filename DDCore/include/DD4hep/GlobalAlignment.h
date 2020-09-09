@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_GLOBALALIGNMENT_H
-#define DD4HEP_DDCORE_GLOBALALIGNMENT_H
+#ifndef DD4HEP_GLOBALALIGNMENT_H
+#define DD4HEP_GLOBALALIGNMENT_H
 
 // Framework include files
 #include "DD4hep/Objects.h"
@@ -84,5 +84,5 @@ namespace dd4hep {
 
   }       /* End namespace align                */
 }         /* End namespace dd4hep                    */
-#endif    /* DD4HEP_DDCORE_GLOBALALIGNMENT_H      */
+#endif // DD4HEP_GLOBALALIGNMENT_H
       

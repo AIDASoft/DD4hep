@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDG4_GEANT4SENSDETACTION_H
-#define DD4HEP_DDG4_GEANT4SENSDETACTION_H
+#ifndef DDG4_GEANT4SENSDETACTION_H
+#define DDG4_GEANT4SENSDETACTION_H
 
 // Framework include files
 #include "DD4hep/Detector.h"
@@ -533,4 +533,4 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDG4_GEANT4RUNACTION_H
+#endif // DDG4_GEANT4SENSDETACTION_H

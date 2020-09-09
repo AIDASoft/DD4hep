@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_SEGMENTATIONSCANNER_H
-#define DD4HEP_DDDIGI_SEGMENTATIONSCANNER_H
+#ifndef DDDIGI_SEGMENTATIONS_SEGMENTATIONSCANNER_H
+#define DDDIGI_SEGMENTATIONS_SEGMENTATIONSCANNER_H
 
 /// Framework include files
 #include <DDDigi/DigiSegmentation.h>
@@ -47,4 +47,4 @@ namespace dd4hep {
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_SEGMENTATIONSCANNER_H
+#endif // DDDIGI_SEGMENTATIONS_SEGMENTATIONSCANNER_H

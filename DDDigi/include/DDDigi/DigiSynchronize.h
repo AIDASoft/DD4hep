@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGISYNCHRONIZE_H
-#define DD4HEP_DDDIGI_DIGISYNCHRONIZE_H
+#ifndef DDDIGI_DIGISYNCHRONIZE_H
+#define DDDIGI_DIGISYNCHRONIZE_H
 
 // Framework incloude files
 #include "DDDigi/DigiEventAction.h"
@@ -62,4 +62,4 @@ namespace dd4hep {
   }    // End namespace digi
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDDIGI_DIGISYNCHRONIZE_H
+#endif // DDDIGI_DIGISYNCHRONIZE_H

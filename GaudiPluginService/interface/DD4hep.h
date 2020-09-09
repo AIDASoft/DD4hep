@@ -1,3 +1,6 @@
+#ifndef GAUDIPLUGINSERVICE_INTERFACE_DD4HEP_H
+#define GAUDIPLUGINSERVICE_INTERFACE_DD4HEP_H
+
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -86,3 +89,5 @@ extern "C"  {
   }
 #endif
 }
+
+#endif

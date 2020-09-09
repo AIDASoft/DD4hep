@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_DD4HEPUI_H
-#define DD4HEP_DDCORE_DD4HEPUI_H
+#ifndef DD4HEP_DD4HEPUI_H
+#define DD4HEP_DD4HEPUI_H
 
 // Framework includes
 #include "DD4hep/Detector.h"
@@ -99,4 +99,4 @@ namespace dd4hep {
     
   }  
 } /* End namespace dd4hep        */
-#endif // DD4HEP_DDCORE_DD4HEPUI_H
+#endif // DD4HEP_DD4HEPUI_H

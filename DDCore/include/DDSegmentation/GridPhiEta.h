@@ -9,8 +9,8 @@
 //
 //==========================================================================
 
-#ifndef DETSEGMENTATION_GRIDPHIETA_H
-#define DETSEGMENTATION_GRIDPHIETA_H
+#ifndef DDSEGMENTATION_GRIDPHIETA_H
+#define DDSEGMENTATION_GRIDPHIETA_H
 
 #include "DDSegmentation/Segmentation.h"
 
@@ -157,4 +157,4 @@ namespace dd4hep {
     };
   }
 }
-#endif /* DETSEGMENTATION_GRIDPHIETA_H */
+#endif // DDSEGMENTATION_GRIDPHIETA_H

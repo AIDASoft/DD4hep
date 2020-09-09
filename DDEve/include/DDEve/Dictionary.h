@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_DICTIONARY_H
-#define DD4HEP_DDEVE_DICTIONARY_H
+#ifndef DDEVE_DICTIONARY_H
+#define DDEVE_DICTIONARY_H
 
 // Framework include files
 #include "DDEve/Display.h"
@@ -116,4 +116,4 @@ using namespace dd4hep;
 
 #endif
 
-#endif /* DD4HEP_DDEVE_DICTIONARY_H */
+#endif // DDEVE_DICTIONARY_H

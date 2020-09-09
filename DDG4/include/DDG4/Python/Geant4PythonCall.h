@@ -11,8 +11,8 @@
 //  \date   2015-11-03
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_GEANT4PYTHONCALL_H
-#define DD4HEP_DDG4_GEANT4PYTHONCALL_H
+#ifndef DDG4_PYTHON_GEANT4PYTHONCALL_H
+#define DDG4_PYTHON_GEANT4PYTHONCALL_H
 
 // ROOT include files
 #include "TPyReturn.h"
@@ -60,4 +60,4 @@ namespace dd4hep {
     };
   }    // End namespace sim
 }      // End namespace dd4hep
-#endif // DD4HEP_DDG4_GEANT4PYTHONCALL_H
+#endif // DDG4_PYTHON_GEANT4PYTHONCALL_H

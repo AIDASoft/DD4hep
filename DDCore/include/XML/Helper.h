@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_XML_HELPER_H
-#define DD4HEP_XML_HELPER_H
+#ifndef XML_HELPER_H
+#define XML_HELPER_H
 
 // Framework include files
 #include "XML/XML.h"
@@ -47,4 +47,4 @@ namespace dd4hep {
   }
 }
 
-#endif // DD4HEP_XML_HELPER_H
+#endif // XML_HELPER_H

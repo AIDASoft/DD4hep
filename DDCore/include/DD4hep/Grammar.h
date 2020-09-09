@@ -18,8 +18,8 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_DETAIL_GRAMMAR_H
-#define DD4HEP_DDCORE_DETAIL_GRAMMAR_H
+#ifndef DD4HEP_GRAMMAR_H
+#define DD4HEP_GRAMMAR_H
 
 // Framework include files
 #include "DD4hep/config.h"
@@ -252,4 +252,4 @@ namespace dd4hep {
     }
   };
 }
-#endif  /* DD4HEP_DDCORE_DETAIL_GRAMMAR_H */
+#endif // DD4HEP_GRAMMAR_H

@@ -24,8 +24,8 @@
 // radian             rad=1                 rad = 1  //NB: different from TGeo
 //
 //
-#ifndef DD4HEP_TGEOUNITS_H
-#define DD4HEP_TGEOUNITS_H
+#ifndef EVALUATOR_DD4HEPUNITS_H
+#define EVALUATOR_DD4HEPUNITS_H
 
 #include "RVersion.h"
 
@@ -426,4 +426,4 @@ namespace dd4hep {
 }
 #endif
 
-#endif /* DD4HEP_TGEOUNITS_H */
+#endif // EVALUATOR_DD4HEPUNITS_H

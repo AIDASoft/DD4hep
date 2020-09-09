@@ -12,8 +12,8 @@
 //  \version  1.0
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_NoSegmentation_H 
-#define DD4HEP_DDCORE_NoSegmentation_H 1
+#ifndef DD4HEP_NOSEGMENTATION_H
+#define DD4HEP_NOSEGMENTATION_H 1
 
 // Framework include files
 #include "DD4hep/Segmentations.h"
@@ -51,4 +51,4 @@ namespace dd4hep {
     CellID cellID(const Position& local, const Position& global, const VolumeID& volID) const;
   };
 }       /* End namespace dd4hep                */
-#endif  // DD4HEP_DDCORE_NoSegmentation_H
+#endif // DD4HEP_NOSEGMENTATION_H

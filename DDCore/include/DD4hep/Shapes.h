@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDCORE_SOLIDS_H
-#define DD4HEP_DDCORE_SOLIDS_H
+#ifndef DD4HEP_SHAPES_H
+#define DD4HEP_SHAPES_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
@@ -1941,4 +1941,4 @@ namespace dd4hep {
   };
 
 }         /* End namespace dd4hep             */
-#endif    /* DD4HEP_DDCORE_SOLIDS_H         */
+#endif // DD4HEP_SHAPES_H

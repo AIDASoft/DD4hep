@@ -1,5 +1,5 @@
-#ifndef _GAUDI_PLUGIN_SERVICE_V2_H_
-#define _GAUDI_PLUGIN_SERVICE_V2_H_
+#ifndef GAUDIPLUGINSERVICE_GAUDI_PLUGINSERVICEV2_H
+#define GAUDIPLUGINSERVICE_GAUDI_PLUGINSERVICEV2_H
 /*****************************************************************************\
 * (c) Copyright 2013 CERN                                                     *
 *                                                                             *
@@ -137,4 +137,4 @@ namespace Gaudi {
 #  define DECLARE_FACTORY_WITH_ID( type, id, factory ) _PS_V2_DECLARE_FACTORY_WITH_ID( type, id, factory )
 #endif
 
-#endif //_GAUDI_PLUGIN_SERVICE_H_
+#endif // GAUDIPLUGINSERVICE_GAUDI_PLUGINSERVICEV2_H

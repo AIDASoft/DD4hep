@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_IMP_MATRIXHELPERS_H
-#define DD4HEP_IMP_MATRIXHELPERS_H
+#ifndef DD4HEP_MATRIXHELPERS_H
+#define DD4HEP_MATRIXHELPERS_H
 
 // Framework include files
 #include "DD4hep/Objects.h"
@@ -119,4 +119,4 @@ namespace dd4hep {
   }
 }       /* End namespace dd4hep            */
 
-#endif  /* DD4HEP_IMP_MATRIXHELPERS_H      */
+#endif // DD4HEP_MATRIXHELPERS_H

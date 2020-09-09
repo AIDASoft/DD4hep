@@ -11,8 +11,8 @@
 // Original Author: Matevz Tadel 2009 (MultiView.C)
 //
 //====================================================================
-#ifndef DD4HEP_DDEVE_CALO3DPROJECTION_H
-#define DD4HEP_DDEVE_CALO3DPROJECTION_H
+#ifndef DDEVE_CALO3DPROJECTION_H
+#define DDEVE_CALO3DPROJECTION_H
 
 // Framework include files
 #include "DDEve/View.h"
@@ -46,5 +46,5 @@ namespace dd4hep {
   };
 
 }      /* End namespace dd4hep            */
-#endif /* DD4HEP_DDEVE_CALO3DPROJECTION_H */
+#endif // DDEVE_CALO3DPROJECTION_H
 
