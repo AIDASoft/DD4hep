@@ -11,8 +11,8 @@
 // Original Author: Matevz Tadel 2009 (MultiView.C)
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_CALO2DPROJECTION_H
-#define DD4HEP_DDEVE_CALO2DPROJECTION_H
+#ifndef DDEVE_CALO2DPROJECTION_H
+#define DDEVE_CALO2DPROJECTION_H
 
 // Framework include files
 #include "DDEve/Projection.h"
@@ -52,4 +52,4 @@ namespace dd4hep {
   };
 
 }      /* End namespace dd4hep   */
-#endif /* DD4HEP_DDEVE_CALO2DPROJECTION_H */
+#endif // DDEVE_CALO2DPROJECTION_H

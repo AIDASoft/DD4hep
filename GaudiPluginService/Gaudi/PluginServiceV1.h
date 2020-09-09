@@ -1,5 +1,5 @@
-#ifndef _GAUDI_PLUGIN_SERVICE_V1_H_
-#define _GAUDI_PLUGIN_SERVICE_V1_H_
+#ifndef GAUDIPLUGINSERVICE_GAUDI_PLUGINSERVICEV1_H
+#define GAUDIPLUGINSERVICE_GAUDI_PLUGINSERVICEV1_H
 /*****************************************************************************\
 * (c) Copyright 2013 CERN                                                     *
 *                                                                             *
@@ -83,4 +83,4 @@ namespace Gaudi {
   } // namespace PluginService
 } // namespace Gaudi
 
-#endif //_GAUDI_PLUGIN_SERVICE_H_
+#endif // GAUDIPLUGINSERVICE_GAUDI_PLUGINSERVICEV1_H

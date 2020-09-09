@@ -1,3 +1,6 @@
+#ifndef UTILITYAPPS_SRC_MAIN_H
+#define UTILITYAPPS_SRC_MAIN_H
+
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -28,3 +31,5 @@ int main(int argc, char** argv)  {
   }
   return EINVAL;    
 }
+
+#endif

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_JSON_EVALUATOR_H
-#define DD4HEP_DDCORE_JSON_EVALUATOR_H
+#ifndef JSON_EVALUATOR_H
+#define JSON_EVALUATOR_H
 
 // Forwarding printout functionality to dd4hep
 /** Note: This is necessary to use the JSON functionality as a standalone 
@@ -21,4 +21,4 @@
  */
 #include "Evaluator/Evaluator.h"
 
-#endif   /* DD4HEP_DDCORE_JSON_EVALUATOR_H  */
+#endif // JSON_EVALUATOR_H

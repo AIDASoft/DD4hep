@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_FACTORIES_H
-#define DD4HEP_DDEVE_FACTORIES_H
+#ifndef DDEVE_FACTORIES_H
+#define DDEVE_FACTORIES_H
 
 #ifndef __CINT__
 #include "DD4hep/Plugins.h"
@@ -30,4 +30,4 @@ namespace {
 #define DECLARE_VIEW_FACTORY(x) \
 DD4HEP_PLUGINSVC_FACTORY(x,dd4hep_DDEve_##x,dd4hep::View*(dd4hep::Display*, const char*),__LINE__)
 
-#endif // DD4HEP_DDEVE_FACTORIES_H
+#endif // DDEVE_FACTORIES_H

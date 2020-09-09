@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDCORE_DD4HEP_JSON_ELEMENTS_H
-#define DDCORE_DD4HEP_JSON_ELEMENTS_H
+#ifndef JSON_ELEMENTS_H
+#define JSON_ELEMENTS_H
 
 // C/C++ include files
 #include <cmath>
@@ -431,4 +431,4 @@ namespace dd4hep {
 
   }       /* End namespace json              */
 }         /* End namespace dd4hep            */
-#endif    /* DDCORE_DD4HEP_JSON_ELEMENTS_H   */
+#endif // JSON_ELEMENTS_H

@@ -12,8 +12,8 @@
 //
 //==========================================================================
 // $Id$
-#ifndef STR_H 
-#define STR_H 1
+#ifndef DDTEST_SRC_STR_H
+#define DDTEST_SRC_STR_H 1
 
 #include <sstream>
 #include <string>
@@ -53,4 +53,4 @@ namespace  {
   } 
 }
 
-#endif // STR_H
+#endif // DDTEST_SRC_STR_H

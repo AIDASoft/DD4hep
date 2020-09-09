@@ -11,8 +11,8 @@
 //  \date   2015-11-03
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_PYDDG4_H
-#define DD4HEP_DDG4_PYDDG4_H
+#ifndef DDG4_PYTHON_PYDDG4_H
+#define DDG4_PYTHON_PYDDG4_H
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -38,4 +38,4 @@ struct PyDDG4  {
   static int run(Kernel& kernel);
   static int run(const char* fname);
 };
-#endif // DD4HEP_DDG4_PYDDG4_H
+#endif // DDG4_PYTHON_PYDDG4_H

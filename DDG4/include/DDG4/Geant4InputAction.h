@@ -21,8 +21,8 @@
 @}
  */
 
-#ifndef DD4HEP_DDG4_GEANT4INPUTACTION_H
-#define DD4HEP_DDG4_GEANT4INPUTACTION_H
+#ifndef DDG4_GEANT4INPUTACTION_H
+#define DDG4_GEANT4INPUTACTION_H
 
 // Framework include files
 #include "DDG4/Geant4Vertex.h"
@@ -193,4 +193,4 @@ namespace dd4hep  {
     };
   }     /* End namespace sim   */
 }       /* End namespace dd4hep */
-#endif  /* DD4HEP_DDG4_GEANT4INPUTACTION_H  */
+#endif // DDG4_GEANT4INPUTACTION_H

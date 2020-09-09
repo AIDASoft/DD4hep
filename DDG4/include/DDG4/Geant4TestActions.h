@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_GEANT4TESTACTIONS_H
-#define DD4HEP_DDG4_GEANT4TESTACTIONS_H
+#ifndef DDG4_GEANT4TESTACTIONS_H
+#define DDG4_GEANT4TESTACTIONS_H
 
 // Framework include files
 #include "DDG4/Geant4Handle.h"
@@ -173,4 +173,4 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDG4_GEANT4TESTACTIONS_H
+#endif // DDG4_GEANT4TESTACTIONS_H

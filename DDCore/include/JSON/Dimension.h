@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_JSON_DIMENSION_H
-#define DD4HEP_JSON_DIMENSION_H
+#ifndef JSON_DIMENSION_H
+#define JSON_DIMENSION_H
 
 // Framework include files
 #include "JSON/Elements.h"
@@ -21,4 +21,4 @@
 #include "Parsers/detail/Dimension.h"
 #undef DD4HEP_DIMENSION_NS
 
-#endif    /* DD4HEP_JSON_DIMENSION_H   */
+#endif // JSON_DIMENSION_H

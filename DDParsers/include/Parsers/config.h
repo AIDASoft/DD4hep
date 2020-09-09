@@ -14,9 +14,9 @@
 // Setup XML parsing for the use of Apache Xerces-C and TiXml
 //
 //==========================================================================
-#ifndef DD4HEP_PARSERS_CONFIG_H
-#define DD4HEP_PARSERS_CONFIG_H
+#ifndef PARSERS_CONFIG_H
+#define PARSERS_CONFIG_H
 
 //#define dd4hep Online
 
-#endif // DD4HEP_PARSERS_CONFIG_H
+#endif // PARSERS_CONFIG_H

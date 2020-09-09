@@ -216,4 +216,4 @@ namespace dd4hep {
     }
   }       /* End namespace cond        */
 }         /* End namespace dd4hep            */
-#endif    /* DDCOND_CONDITIONSMANAGER_H      */
+#endif // DDCOND_CONDITIONSMANAGER_H

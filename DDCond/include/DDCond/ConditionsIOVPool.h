@@ -83,4 +83,4 @@ namespace dd4hep {
   } /* End namespace cond             */
 } /* End namespace dd4hep                   */
 
-#endif     /*  DDCOND_CONDITIONSIOVPOOL_H   */
+#endif // DDCOND_CONDITIONSIOVPOOL_H

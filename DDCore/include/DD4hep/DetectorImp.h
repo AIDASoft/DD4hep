@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DetectorGEOIMP_H
-#define DD4HEP_DetectorGEOIMP_H
+#ifndef DD4HEP_DETECTORIMP_H
+#define DD4HEP_DETECTORIMP_H
 
 //==========================================================================
 //
@@ -432,4 +432,4 @@ namespace dd4hep {
 #if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
 #pragma link C++ class dd4hep::DetectorImp+;
 #endif
-#endif    /* dd4hep_DetectorGEOIMP_H    */
+#endif // DD4HEP_DETECTORIMP_H

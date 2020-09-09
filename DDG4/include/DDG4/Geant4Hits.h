@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_GEANT4HITS_H
-#define DD4HEP_GEANT4HITS_H
+#ifndef DDG4_GEANT4HITS_H
+#define DDG4_GEANT4HITS_H
 
 // Framework include files
 #include "DD4hep/Objects.h"
@@ -198,4 +198,4 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#endif // DD4HEP_GEANT4HITS_H
+#endif // DDG4_GEANT4HITS_H

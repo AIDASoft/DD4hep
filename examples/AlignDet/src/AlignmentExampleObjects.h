@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGNDET_ALIGNMENTEXAMPLEOBJECTS_H
-#define DD4HEP_ALIGNDET_ALIGNMENTEXAMPLEOBJECTS_H
+#ifndef EXAMPLES_ALIGNDET_SRC_ALIGNMENTEXAMPLEOBJECTS_H
+#define EXAMPLES_ALIGNDET_SRC_ALIGNMENTEXAMPLEOBJECTS_H
 
 // Framework include files
 #include "DD4hep/Detector.h"
@@ -92,4 +92,4 @@ namespace dd4hep {
     ConditionsManager installManager(Detector& description);
   }       /* End namespace AlignmentExamples           */
 }         /* End namespace dd4hep                      */
-#endif    /* DD4HEP_ALIGNDET_ALIGNMENTEXAMPLEOBJECTS_H */
+#endif // EXAMPLES_ALIGNDET_SRC_ALIGNMENTEXAMPLEOBJECTS_H

@@ -10,8 +10,8 @@
 // Author     : F.Gaede
 //
 //==========================================================================
-#ifndef rec_SurfaceManager_H_
-#define rec_SurfaceManager_H_
+#ifndef DDREC_SURFACEMANAGER_H
+#define DDREC_SURFACEMANAGER_H
 
 #include "DDRec/ISurface.h"
 #include "DD4hep/Detector.h"
@@ -79,4 +79,4 @@ namespace dd4hep {
 
 
 
-#endif // rec_SurfaceManager_H_
+#endif // DDREC_SURFACEMANAGER_H

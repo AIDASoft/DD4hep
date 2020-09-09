@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_COMPONENTPROPERTIES_H
-#define DD4HEP_DDG4_COMPONENTPROPERTIES_H
+#ifndef DD4HEP_COMPONENTPROPERTIES_H
+#define DD4HEP_COMPONENTPROPERTIES_H
 
 // Framework include files
 #include "DD4hep/Grammar.h"
@@ -343,4 +343,4 @@ namespace dd4hep {
   }
 
 }      // End namespace dd4hep
-#endif // DD4HEP_DDG4_COMPONENTPROPERTIES_H
+#endif // DD4HEP_COMPONENTPROPERTIES_H

@@ -1,5 +1,5 @@
-#ifndef _GAUDI_PLUGIN_SERVICE_DETAILS_V1_H_
-#define _GAUDI_PLUGIN_SERVICE_DETAILS_V1_H_
+#ifndef GAUDIPLUGINSERVICE_GAUDI_DETAILS_PLUGINSERVICEDETAILSV1_H
+#define GAUDIPLUGINSERVICE_GAUDI_DETAILS_PLUGINSERVICEDETAILSV1_H
 /*****************************************************************************\
 * (c) Copyright 2013 CERN                                                     *
 *                                                                             *
@@ -235,4 +235,4 @@ namespace Gaudi {
   _PS_V1_INTERNAL_DECLARE_FACTORY_WITH_CREATOR( type, ::Gaudi::PluginService::v1::Details::Factory<type>, id, factory, \
                                                 serial )
 
-#endif //_GAUDI_PLUGIN_SERVICE_DETAILS_H_
+#endif // GAUDIPLUGINSERVICE_GAUDI_DETAILS_PLUGINSERVICEDETAILSV1_H

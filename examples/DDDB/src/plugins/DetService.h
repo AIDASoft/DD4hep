@@ -16,8 +16,8 @@
 // http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/DetDesc/Documents/lhcbDtd.pdf
 //
 //==========================================================================
-#ifndef DD4HEP_DETSERVICE_H
-#define DD4HEP_DETSERVICE_H
+#ifndef EXAMPLES_DDDB_SRC_PLUGINS_DETSERVICE_H
+#define EXAMPLES_DDDB_SRC_PLUGINS_DETSERVICE_H
 
 // Framework includes
 #include "Detector/IDetService.h"
@@ -158,4 +158,4 @@ namespace gaudi  {
     virtual void cleanup(const Cleanup &cleaner)  override;
   };
 }
-#endif // DD4HEP_DETSERVICE_H
+#endif // EXAMPLES_DDDB_SRC_PLUGINS_DETSERVICE_H

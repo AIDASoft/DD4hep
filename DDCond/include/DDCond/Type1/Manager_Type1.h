@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDCOND_CONDITIONSMANAGEROBJECT_TYPE1_H
-#define DDCOND_CONDITIONSMANAGEROBJECT_TYPE1_H
+#ifndef DDCOND_TYPE1_MANAGER_TYPE1_H
+#define DDCOND_TYPE1_MANAGER_TYPE1_H
 
 // Framework include files%
 #include "DD4hep/Mutex.h"
@@ -194,4 +194,4 @@ namespace dd4hep {
     };
   }        /* End namespace cond               */
 }          /* End namespace dd4hep                   */
-#endif     /* DDCOND_CONDITIONSMANAGEROBJECT_TYPE1_H */
+#endif // DDCOND_TYPE1_MANAGER_TYPE1_H

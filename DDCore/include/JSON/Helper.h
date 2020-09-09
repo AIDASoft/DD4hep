@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_JSON_HELPER_H
-#define DD4HEP_JSON_HELPER_H
+#ifndef JSON_HELPER_H
+#define JSON_HELPER_H
 
 // Framework include files
 #include "JSON/Detector.h"
@@ -52,4 +52,4 @@ namespace dd4hep {
   }
 }
 
-#endif // DD4HEP_JSON_HELPER_H
+#endif // JSON_HELPER_H

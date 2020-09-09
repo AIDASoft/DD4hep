@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGMENTS_ALIGNMENTTOOLS_H
-#define DD4HEP_ALIGMENTS_ALIGNMENTTOOLS_H
+#ifndef DD4HEP_ALIGNMENTTOOLS_H
+#define DD4HEP_ALIGNMENTTOOLS_H
 
 // Framework include files
 #include "DD4hep/Alignments.h"
@@ -53,4 +53,4 @@ namespace dd4hep {
 
   } /* End namespace Aligments               */
 } /* End namespace dd4hep                    */
-#endif    /* DD4HEP_ALIGMENTS_ALIGNMENTTOOLS_H   */
+#endif // DD4HEP_ALIGNMENTTOOLS_H

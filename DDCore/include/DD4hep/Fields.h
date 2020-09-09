@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_FIELDS_H
-#define DD4HEP_DDCORE_FIELDS_H
+#ifndef DD4HEP_FIELDS_H
+#define DD4HEP_FIELDS_H
 
 // Framework include files
 #include "DD4hep/NamedObject.h"
@@ -262,4 +262,4 @@ namespace dd4hep {
     Properties& properties() const;
   };
 }         /* End namespace dd4hep             */
-#endif    /* DD4HEP_DDCORE_FIELDS_H         */
+#endif // DD4HEP_FIELDS_H

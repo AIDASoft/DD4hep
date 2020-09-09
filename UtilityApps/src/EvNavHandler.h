@@ -9,8 +9,8 @@
 //
 //==========================================================================
 
-#ifndef EvNavHandler_h
-#define EvNavHandler_h
+#ifndef UTILITYAPPS_SRC_EVNAVHANDLER_H
+#define UTILITYAPPS_SRC_EVNAVHANDLER_H
 
 
 void next_event() ;

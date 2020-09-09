@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDG4_GEANT4GENERATORACTIONINIT_H
-#define DD4HEP_DDG4_GEANT4GENERATORACTIONINIT_H
+#ifndef DDG4_GEANT4GENERATORACTIONINIT_H
+#define DDG4_GEANT4GENERATORACTIONINIT_H
 
 // Framework include files
 #include "DDG4/Geant4GeneratorAction.h"
@@ -75,4 +75,4 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDG4_GEANT4GENERATORACTIONINIT_H
+#endif // DDG4_GEANT4GENERATORACTIONINIT_H

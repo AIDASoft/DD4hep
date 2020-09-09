@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDG4_DIGI_DIGIFACTORIES_H
-#define DDG4_DIGI_DIGIFACTORIES_H
+#ifndef DDDIGI_DIGIFACTORIES_H
+#define DDDIGI_DIGIFACTORIES_H
 
 // Framework include files
 #include "DD4hep/Plugins.h"
@@ -75,4 +75,4 @@ typedef name_space :: CellScanner<dd4hep:: seg , dd4hep:: sol > Scanner_##typ##_
 /// Plugin defintion to create DigiCellscanner objects
 #define DECLARE_DIGICELLSCANNER(typ,seg,sol) DECLARE_DIGICELLSCANNER_NS(dd4hep::digi,typ,seg,sol)
 
-#endif // DDG4_DIGI_DIGIFACTORIES_H
+#endif // DDDIGI_DIGIFACTORIES_H

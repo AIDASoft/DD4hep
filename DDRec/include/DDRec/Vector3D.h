@@ -10,8 +10,8 @@
 // Author     : F.Gaede
 //
 //==========================================================================
-#ifndef DDRec_Vector3D_h
-#define DDRec_Vector3D_h 1
+#ifndef DDREC_VECTOR3D_H
+#define DDREC_VECTOR3D_H 1
 
 #include <cmath>
 #include <iostream> 

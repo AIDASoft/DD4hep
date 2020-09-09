@@ -442,5 +442,5 @@ namespace dd4hep {
   // Forward declarations
   class Detector;
 }         /* End namespace dd4hep    */
-#endif    /* DD4HEP_HANDLE_H         */
+#endif // DD4HEP_HANDLE_H
 

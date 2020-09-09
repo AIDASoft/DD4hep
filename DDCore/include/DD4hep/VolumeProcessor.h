@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_VOLUMEPROCESSOR_H
-#define DD4HEP_DDCORE_VOLUMEPROCESSOR_H
+#ifndef DD4HEP_VOLUMEPROCESSOR_H
+#define DD4HEP_VOLUMEPROCESSOR_H
 
 // Framework includes
 #include "DD4hep/DetElement.h"
@@ -179,4 +179,4 @@ namespace dd4hep {
     }
   };
 }      /* End namespace dd4hep               */
-#endif /* DD4HEP_DDCORE_VOLUMEPROCESSOR_H    */
+#endif // DD4HEP_VOLUMEPROCESSOR_H

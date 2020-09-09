@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_POPUPMENU_H
-#define DD4HEP_DDEVE_POPUPMENU_H
+#ifndef DDEVE_POPUPMENU_H
+#define DDEVE_POPUPMENU_H
 
 // Framework include files
 #include "DD4hep/Callback.h"
@@ -83,5 +83,5 @@ namespace dd4hep {
     ClassDef(PopupMenu,0);
   };
 }      /* End namespace dd4hep     */
-#endif /* DD4HEP_DDEVE_POPUPMENU_H */
+#endif // DDEVE_POPUPMENU_H
 

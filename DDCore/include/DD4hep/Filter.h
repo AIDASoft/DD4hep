@@ -10,8 +10,8 @@
 // Author     : Ianna Osborne
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_FILTER_H
-#define DD4HEP_DDCORE_FILTER_H
+#ifndef DD4HEP_FILTER_H
+#define DD4HEP_FILTER_H
 
 // -*- C++ -*-
 //

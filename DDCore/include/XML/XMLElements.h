@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_XMLELEMENTS_H
-#define DD4HEP_XMLELEMENTS_H
+#ifndef XML_XMLELEMENTS_H
+#define XML_XMLELEMENTS_H
 
 // C/C++ include files
 #include <cmath>
@@ -976,4 +976,4 @@ namespace dd4hep {
 
   }
 } /* End namespace dd4hep   */
-#endif    /* DD4HEP_XMLELEMENTS_H   */
+#endif // XML_XMLELEMENTS_H

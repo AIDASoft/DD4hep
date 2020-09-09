@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_SHAPESINTERNA_H
-#define DD4HEP_DDCORE_SHAPESINTERNA_H
+#ifndef DD4HEP_DETAIL_SHAPESINTERNA_H
+#define DD4HEP_DETAIL_SHAPESINTERNA_H
 
 // Framework include files
 #include "DD4hep/Shapes.h"
@@ -73,4 +73,4 @@ namespace dd4hep {
     ClassDefOverride(TwistedTubeObject,0);
   };
 }      /* End namespace dd4hep           */
-#endif /* DD4HEP_DDCORE_SHAPESINTERNA_H  */
+#endif // DD4HEP_DETAIL_SHAPESINTERNA_H

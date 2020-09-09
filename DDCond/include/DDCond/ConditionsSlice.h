@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCOND_CONDITIONSSLICE_H
-#define DD4HEP_DDCOND_CONDITIONSSLICE_H
+#ifndef DDCOND_CONDITIONSSLICE_H
+#define DDCOND_CONDITIONSSLICE_H
 
 // Framework include files
 #include "DD4hep/Conditions.h"
@@ -201,4 +201,4 @@ namespace dd4hep {
 
   }        /* End namespace cond               */
 }          /* End namespace dd4hep                   */
-#endif     /* DD4HEP_DDCOND_CONDITIONSSLICE_H        */
+#endif // DDCOND_CONDITIONSSLICE_H

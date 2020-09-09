@@ -17,8 +17,8 @@
  *              David Blyth, ANL
  */
 
-#ifndef DDSegmentation_CARTESIANSTRIPX_H_
-#define DDSegmentation_CARTESIANSTRIPX_H_
+#ifndef DDSEGMENTATION_CARTESIANSTRIPX_H
+#define DDSEGMENTATION_CARTESIANSTRIPX_H
 
 #include "DDSegmentation/CartesianStrip.h"
 
@@ -72,4 +72,4 @@ class CartesianStripX : public DDSegmentation::CartesianStrip {
 };
 }  // namespace DDSegmentation
 } /* namespace dd4hep */
-#endif  // DDSegmentation_CARTESIANSTRIPX_H_
+#endif // DDSEGMENTATION_CARTESIANSTRIPX_H

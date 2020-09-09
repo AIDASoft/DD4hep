@@ -11,8 +11,8 @@
 //  \date   2015-11-03
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_GEANT4PYTHONINITIALIZATION_H
-#define DD4HEP_DDG4_GEANT4PYTHONINITIALIZATION_H
+#ifndef DDG4_PYTHON_GEANT4PYTHONINITIALIZATION_H
+#define DDG4_PYTHON_GEANT4PYTHONINITIALIZATION_H
 
 // Framework include files
 #include "DDG4/Geant4UserInitialization.h"
@@ -83,4 +83,4 @@ namespace dd4hep {
     };
   }    // End namespace sim
 }      // End namespace dd4hep
-#endif // DD4HEP_DDG4_GEANT4PYTHONINITIALIZATION_H
+#endif // DDG4_PYTHON_GEANT4PYTHONINITIALIZATION_H

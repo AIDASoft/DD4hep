@@ -12,8 +12,8 @@
 //  \version  1.0
 //
 //==========================================================================
-#ifndef DDCORE_XML_XMLPARSERS_H
-#define DDCORE_XML_XMLPARSERS_H
+#ifndef XML_XMLPARSERS_H
+#define XML_XMLPARSERS_H
 
 // Framework include files
 #include "DD4hep/AlignmentData.h"
@@ -126,4 +126,4 @@ namespace dd4hep {
     
   }    /*   End namespace xml            */
 }      /*   End namespace dd4hep         */
-#endif /*   End DDCORE_XML_XMLPARSERS_H  */
+#endif // XML_XMLPARSERS_H

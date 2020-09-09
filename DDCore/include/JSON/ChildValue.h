@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_JSON_CHILDVALUE_H
-#define DD4HEP_JSON_CHILDVALUE_H
+#ifndef JSON_CHILDVALUE_H
+#define JSON_CHILDVALUE_H
 
 // Framework include files
 #include "JSON/Dimension.h"
@@ -21,4 +21,4 @@
 #undef  DD4HEP_DIMENSION_NS
 
 
-#endif    /* DD4HEP_JSON_CHILDVALUE_H   */
+#endif // JSON_CHILDVALUE_H

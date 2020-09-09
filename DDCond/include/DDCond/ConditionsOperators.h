@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_CONDITIONSOPERATORS_H
-#define DD4HEP_CONDITIONS_CONDITIONSOPERATORS_H
+#ifndef DDCOND_CONDITIONSOPERATORS_H
+#define DDCOND_CONDITIONSOPERATORS_H
 
 // Framework include files
 #include "DDCond/ConditionsManager.h"
@@ -42,4 +42,4 @@ namespace dd4hep {
   } /* End namespace cond             */
 } /* End namespace dd4hep                   */
 
-#endif /* DD4HEP_CONDITIONS_CONDITIONSOPERATORS_H  */
+#endif // DDCOND_CONDITIONSOPERATORS_H

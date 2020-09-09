@@ -17,8 +17,8 @@
  *              David Blyth, ANL
  */
 
-#ifndef DDSegmentation_CARTESIANSTRIP_H_
-#define DDSegmentation_CARTESIANSTRIP_H_
+#ifndef DDSEGMENTATION_CARTESIANSTRIP_H
+#define DDSEGMENTATION_CARTESIANSTRIP_H
 
 #include "DDSegmentation/Segmentation.h"
 
@@ -39,4 +39,4 @@ namespace dd4hep {
     };
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
-#endif  // DDSegmentation_CARTESIANSTRIP_H_
+#endif // DDSEGMENTATION_CARTESIANSTRIP_H

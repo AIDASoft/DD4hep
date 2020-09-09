@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_GEANT4GENERATORACTION_H
-#define DD4HEP_DDG4_GEANT4GENERATORACTION_H
+#ifndef DDG4_GEANT4GENERATORACTION_H
+#define DDG4_GEANT4GENERATORACTION_H
 
 // Framework include files
 #include "DDG4/Geant4Action.h"
@@ -146,4 +146,4 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDG4_GEANT4GENERATORACTION_H
+#endif // DDG4_GEANT4GENERATORACTION_H

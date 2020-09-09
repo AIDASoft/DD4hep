@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDALIGN_GLOBALALIGNMENTWRITER_H
-#define DD4HEP_DDALIGN_GLOBALALIGNMENTWRITER_H
+#ifndef DDALIGN_GLOBALALIGNMENTWRITER_H
+#define DDALIGN_GLOBALALIGNMENTWRITER_H
 
 // Framework include files
 #include "XML/XMLElements.h"
@@ -60,5 +60,5 @@ namespace dd4hep {
     };
   }    // End namespace xml
 }      // End namespace dd4hep
-#endif // DD4HEP_DDALIGN_GLOBALALIGNMENTWRITER_H
+#endif // DDALIGN_GLOBALALIGNMENTWRITER_H
 

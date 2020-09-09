@@ -1,3 +1,6 @@
+#ifndef UTILITYAPPS_SRC_LINKDEF_H
+#define UTILITYAPPS_SRC_LINKDEF_H
+
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -17,5 +20,7 @@
 
 
 #pragma link C++ class EvNavHandler ;
+
+#endif
 
 #endif

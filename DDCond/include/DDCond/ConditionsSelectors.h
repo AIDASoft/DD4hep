@@ -286,4 +286,4 @@ namespace dd4hep {
     }        /* End namespace Operators            */
   }          /* End namespace cond           */
 }            /* End namespace dd4hep               */
-#endif       /* DDCOND_CONDITIONSSELECTORS_H       */
+#endif // DDCOND_CONDITIONSSELECTORS_H

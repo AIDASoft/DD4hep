@@ -172,4 +172,4 @@ namespace gaudi   {
   typedef  DetectorElement<DeVPSensorElement>  DeVPSensor;
 
 }      // End namespace gaudi
-#endif // DETECTOR_DEVPSENSORIOV_H
+#endif // DETECTOR_DEVPSENSOR_H

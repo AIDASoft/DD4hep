@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DD4HEP_CONTAINERHELPERS_H
-#define DD4HEP_DD4HEP_CONTAINERHELPERS_H
+#ifndef DD4HEP_DETAIL_CONTAINERHELPERS_H
+#define DD4HEP_DETAIL_CONTAINERHELPERS_H
 
 // Framework include files
 #include "DD4hep/Primitives.h"
@@ -109,4 +109,4 @@ namespace dd4hep {
     c.emplace(de.path(),d);
   }
 }      // End namespace dd4hep
-#endif // DD4HEP_DD4HEP_CONTAINERHELPERS_H
+#endif // DD4HEP_DETAIL_CONTAINERHELPERS_H

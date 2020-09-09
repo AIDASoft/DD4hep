@@ -16,8 +16,8 @@
 // http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/DetDesc/Documents/lhcbDtd.pdf
 //
 //==========================================================================
-#ifndef DD4HEP_DDDB_DDDBTAGS_H
-#define DD4HEP_DDDB_DDDBTAGS_H
+#ifndef DDDB_DDDBTAGS_H
+#define DDDB_DDDBTAGS_H
 
 // Framework include files
 #include "XML/XMLElements.h"
@@ -159,4 +159,4 @@ namespace dd4hep {
 
 #define _LBU(a) ::dd4hep::DDDB::Unicode_##a
 
-#endif /* DD4HEP_DDDB_DDDBTAGS_H  */
+#endif // DDDB_DDDBTAGS_H

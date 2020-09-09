@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCAD_ASSIMPREADER_H
-#define DD4HEP_DDCAD_ASSIMPREADER_H
+#ifndef DDCAD_ASSIMPREADER_H
+#define DDCAD_ASSIMPREADER_H
 
 /// Framework include files
 #include <DDCAD/InputReader.h>
@@ -36,4 +36,4 @@ namespace dd4hep {
     
   }        /* End namespace cad                      */
 }          /* End namespace dd4hep                   */
-#endif // DD4HEP_DDCAD_ASSIMPREADER_H
+#endif // DDCAD_ASSIMPREADER_H

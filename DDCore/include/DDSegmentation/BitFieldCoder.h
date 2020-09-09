@@ -9,8 +9,8 @@
 //
 //==========================================================================
 
-#ifndef DDSegmentation_BitFieldCoder_H
-#define DDSegmentation_BitFieldCoder_H 1
+#ifndef DDSEGMENTATION_BITFIELDCODER_H
+#define DDSEGMENTATION_BITFIELDCODER_H 1
 
 
 #include <string>

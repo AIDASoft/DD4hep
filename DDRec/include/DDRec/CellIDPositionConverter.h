@@ -10,8 +10,8 @@
 // Author     : F.Gaede
 //
 //==========================================================================
-#ifndef CellIDPositionConverter_H_
-#define CellIDPositionConverter_H_
+#ifndef DDREC_CELLIDPOSITIONCONVERTER_H
+#define DDREC_CELLIDPOSITIONCONVERTER_H
 
 #include "DD4hep/Detector.h"
 #include "DD4hep/Readout.h"
@@ -131,4 +131,4 @@ namespace dd4hep {
 
 
 
-#endif /* CellIDPositionConverter_H_ */
+#endif // DDREC_CELLIDPOSITIONCONVERTER_H

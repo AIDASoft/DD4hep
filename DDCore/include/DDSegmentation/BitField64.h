@@ -9,8 +9,8 @@
 //
 //==========================================================================
 
-#ifndef DDSegmentation_BitField64_H
-#define DDSegmentation_BitField64_H 1
+#ifndef DDSEGMENTATION_BITFIELD64_H
+#define DDSEGMENTATION_BITFIELD64_H 1
 
 #include <iostream>
 

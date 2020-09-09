@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIINPUTACTION_H
-#define DD4HEP_DDDIGI_DIGIINPUTACTION_H
+#ifndef DDDIGI_DIGIINPUTACTION_H
+#define DDDIGI_DIGIINPUTACTION_H
 
 /// Framework include files
 #include "DDDigi/DigiEventAction.h"
@@ -52,4 +52,4 @@ namespace dd4hep {
 
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGIINPUTACTION_H
+#endif // DDDIGI_DIGIINPUTACTION_H

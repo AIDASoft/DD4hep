@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEANT4STEPHANDLER_H
-#define DD4HEP_GEANT4STEPHANDLER_H
+#ifndef DDG4_GEANT4STEPHANDLER_H
+#define DDG4_GEANT4STEPHANDLER_H
 
 // Framework include files
 #include "DDG4/Defs.h"
@@ -257,4 +257,4 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#endif // DD4HEP_GEANT4STEPHANDLER_H
+#endif // DDG4_GEANT4STEPHANDLER_H

@@ -1,3 +1,6 @@
+#ifndef DOC_REFERENCE_CLASSES_DD4HEPGROUPS_H
+#define DOC_REFERENCE_CLASSES_DD4HEPGROUPS_H
+
 
 /// Generic shared objects and functions for all dd4hep areas
 /**
@@ -112,3 +115,5 @@ namespace UTIL {}
  \brief Plugins to manipulate surfaces automatically
 
  @}*/
+
+#endif

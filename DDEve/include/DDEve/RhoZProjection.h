@@ -11,8 +11,8 @@
 //  Original Author: Matevz Tadel 2009 (MultiView.C)
 //
 //====================================================================
-#ifndef DD4HEP_DDEVE_RHOZPROJECTION_H
-#define DD4HEP_DDEVE_RHOZPROJECTION_H
+#ifndef DDEVE_RHOZPROJECTION_H
+#define DDEVE_RHOZPROJECTION_H
 
 // Framework include files
 #include "DDEve/Projection.h"
@@ -38,5 +38,5 @@ namespace dd4hep {
     ClassDefOverride(RhoZProjection,0);
   };
 }      /* End namespace dd4hep          */
-#endif /* DD4HEP_DDEVE_RHOZPROJECTION_H */
+#endif // DDEVE_RHOZPROJECTION_H
 

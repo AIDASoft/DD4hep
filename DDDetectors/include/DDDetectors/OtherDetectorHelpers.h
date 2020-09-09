@@ -8,8 +8,8 @@
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 //==========================================================================
-#ifndef Other_Helpers_hh
-#define Other_Helpers_hh 1
+#ifndef DDDETECTORS_OTHERDETECTORHELPERS_H
+#define DDDETECTORS_OTHERDETECTORHELPERS_H 1
 
 #include "DD4hep/Printout.h"
 
@@ -111,4 +111,4 @@ namespace ODH {//OtherDetectorHelpers
 
 }//namespace
 
-#endif // Other_Helpers_hh
+#endif // DDDETECTORS_OTHERDETECTORHELPERS_H

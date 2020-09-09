@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_OBJECTEXTENSIONS_H
-#define DD4HEP_DDCORE_OBJECTEXTENSIONS_H
+#ifndef DD4HEP_OBJECTEXTENSIONS_H
+#define DD4HEP_OBJECTEXTENSIONS_H
 
 // Framework include files
 #include "DD4hep/ExtensionEntry.h"
@@ -63,4 +63,4 @@ namespace dd4hep {
   };
 
 } /* End namespace dd4hep        */
-#endif    /* DD4HEP_DDCORE_OBJECTEXTENSIONS_H */
+#endif // DD4HEP_OBJECTEXTENSIONS_H

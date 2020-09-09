@@ -1,3 +1,6 @@
+#ifndef PARSERS_DETAIL_CONVERSIONS_H
+#define PARSERS_DETAIL_CONVERSIONS_H
+
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -72,3 +75,5 @@ namespace dd4hep {
     template <typename TYPE> TYPE* _option() const {    return (TYPE*) optional;  }
   };
 } /* End namespace dd4hep           */
+
+#endif

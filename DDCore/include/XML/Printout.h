@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_XML_PRINTOUT_H
-#define DD4HEP_XML_PRINTOUT_H
+#ifndef XML_PRINTOUT_H
+#define XML_PRINTOUT_H
 
 // Forwarding printout functionality to dd4hep
 /** Note: This is necessary to use the JSON functionality as a standalone 
@@ -21,4 +21,4 @@
  */
 #include "Parsers/Printout.h"
 
-#endif   /* DD4HEP_XML_PRINTOUT_H  */
+#endif // XML_PRINTOUT_H

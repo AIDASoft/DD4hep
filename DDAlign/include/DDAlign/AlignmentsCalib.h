@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDALIGN_ALIGNMENTCALIB_H
-#define DD4HEP_DDALIGN_ALIGNMENTCALIB_H
+#ifndef DDALIGN_ALIGNMENTSCALIB_H
+#define DDALIGN_ALIGNMENTSCALIB_H
 
 // Framework includes
 #include "DD4hep/DetElement.h"
@@ -126,4 +126,4 @@ namespace dd4hep {
     };    
   }       /* End namespace align              */
 }         /* End namespace dd4hep                  */
-#endif    /* DD4HEP_DDALIGN_ALIGNMENTCALIB_H       */
+#endif // DDALIGN_ALIGNMENTSCALIB_H

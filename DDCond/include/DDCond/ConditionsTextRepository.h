@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_CONDITIONSTEXTREPOSITORY_H
-#define DD4HEP_CONDITIONS_CONDITIONSTEXTREPOSITORY_H
+#ifndef DDCOND_CONDITIONSTEXTREPOSITORY_H
+#define DDCOND_CONDITIONSTEXTREPOSITORY_H
 
 // Framework include files
 #include "DDCond/ConditionsManager.h"
@@ -72,4 +72,4 @@ namespace dd4hep {
   } /* End namespace detail               */
 } /* End namespace dd4hep                   */
 
-#endif /* DD4HEP_CONDITIONS_CONDITIONSTEXTREPOSITORY_H  */
+#endif // DDCOND_CONDITIONSTEXTREPOSITORY_H

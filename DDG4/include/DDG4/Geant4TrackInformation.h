@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDG4_GEANT4TRACKINFORMATION_H
-#define DD4HEP_DDG4_GEANT4TRACKINFORMATION_H
+#ifndef DDG4_GEANT4TRACKINFORMATION_H
+#define DDG4_GEANT4TRACKINFORMATION_H
 
 // Framework include files
 #include "G4VUserTrackInformation.hh"
@@ -54,4 +54,4 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#endif // DD4HEP_DDG4_GEANT4TRACKINFORMATION_H
+#endif // DDG4_GEANT4TRACKINFORMATION_H

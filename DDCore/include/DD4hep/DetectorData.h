@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDCORE_DETECTORDATA_H
-#define DD4HEP_DDCORE_DETECTORDATA_H
+#ifndef DD4HEP_DETECTORDATA_H
+#define DD4HEP_DETECTORDATA_H
 
 // Framework includes
 #include "DD4hep/Printout.h"
@@ -205,4 +205,4 @@ namespace dd4hep {
   };
 
 }         /* End namespace dd4hep         */
-#endif    /* DD4HEP_DDCORE_DETECTORDATA_H */
+#endif // DD4HEP_DETECTORDATA_H

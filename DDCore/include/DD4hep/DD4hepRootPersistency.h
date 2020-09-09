@@ -141,4 +141,4 @@ public:
   size_t checkAll()   const;
 };
 
-#endif    /* DD4HEP_DD4HEPROOTPERSISTENCY_H         */
+#endif // DD4HEP_DD4HEPROOTPERSISTENCY_H

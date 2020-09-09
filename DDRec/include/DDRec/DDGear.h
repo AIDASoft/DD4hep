@@ -10,8 +10,8 @@
 // Author     : F.Gaede
 //
 //==========================================================================
-#ifndef DDGear_H
-#define DDGear_H
+#ifndef DDREC_DDGEAR_H
+#define DDREC_DDGEAR_H
 
 #include "DD4hep/Detector.h"
 #include "DD4hep/DetElement.h"

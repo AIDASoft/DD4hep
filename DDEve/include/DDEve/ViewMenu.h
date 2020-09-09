@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_VIEWMENU_H
-#define DD4HEP_DDEVE_VIEWMENU_H
+#ifndef DDEVE_VIEWMENU_H
+#define DDEVE_VIEWMENU_H
 
 // Framework include files
 #include "DDEve/Display.h"
@@ -68,5 +68,5 @@ namespace dd4hep {
     ClassDefOverride(ViewMenu,0);
   };
 }      /* End namespace dd4hep    */
-#endif /* DD4HEP_DDEVE_VIEWMENU_H */
+#endif // DDEVE_VIEWMENU_H
 

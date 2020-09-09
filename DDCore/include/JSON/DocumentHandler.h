@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_JSON_DOCUMENTHANDLER_H
-#define DD4HEP_DDCORE_JSON_DOCUMENTHANDLER_H
+#ifndef JSON_DOCUMENTHANDLER_H
+#define JSON_DOCUMENTHANDLER_H
 
 /// Framework include files
 #include "JSON/Elements.h"
@@ -44,4 +44,4 @@ namespace dd4hep {
 
   }       /* End namespace json                    */
 }         /* End namespace dd4hep                  */
-#endif    /* DD4HEP_DDCORE_JSON_DOCUMENTHANDLER_H  */
+#endif // JSON_DOCUMENTHANDLER_H

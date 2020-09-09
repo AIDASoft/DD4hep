@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGMENTS_ALIGNMENTS_H
-#define DD4HEP_ALIGMENTS_ALIGNMENTS_H
+#ifndef DD4HEP_ALIGNMENTS_H
+#define DD4HEP_ALIGNMENTS_H
 
 // Framework include files
 #include "DD4hep/IOV.h"
@@ -197,4 +197,4 @@ namespace dd4hep {
     {  return detectorToLocal({det[0],det[1],det[2]});                              }
   };
 }         /* End namespace dd4hep                    */
-#endif    /* DD4HEP_ALIGMENTS_ALIGNMENTS_H           */
+#endif // DD4HEP_ALIGNMENTS_H

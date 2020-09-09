@@ -1,3 +1,6 @@
+#ifndef DDG4_GEANT4ASSEMBLYVOLUME_H
+#define DDG4_GEANT4ASSEMBLYVOLUME_H
+
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -78,3 +81,5 @@ namespace dd4hep {
     };
   }
 }
+
+#endif

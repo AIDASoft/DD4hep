@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_JSON_DETECTOR_H
-#define DD4HEP_JSON_DETECTOR_H
+#ifndef JSON_DETECTOR_H
+#define JSON_DETECTOR_H
 
 // Framework include files
 #include "JSON/Dimension.h"
@@ -21,4 +21,4 @@
 #include "Parsers/detail/Detector.h"
 #undef DD4HEP_DIMENSION_NS
 
-#endif    /* DD4HEP_JSON_DETECTOR_H   */
+#endif // JSON_DETECTOR_H

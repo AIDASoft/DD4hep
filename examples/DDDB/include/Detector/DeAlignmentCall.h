@@ -12,8 +12,8 @@
 //  \version  1.0
 //
 //==============================================================================
-#ifndef DETECTOR_DEALIGNMENTCALLS_H 
-#define DETECTOR_DEALIGNMENTCALLS_H 1
+#ifndef DETECTOR_DEALIGNMENTCALL_H
+#define DETECTOR_DEALIGNMENTCALL_H 1
 
 // Framework include files
 #include "DD4hep/Conditions.h"
@@ -42,4 +42,4 @@ namespace gaudi   {
   };
   
 }      // End namespace gaudi
-#endif // DETECTOR_DEALIGNMENTCALLS_H
+#endif // DETECTOR_DEALIGNMENTCALL_H

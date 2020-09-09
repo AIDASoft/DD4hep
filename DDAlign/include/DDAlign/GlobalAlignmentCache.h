@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGNMENT_GLOBALALIGNMENTCACHE_H
-#define DD4HEP_ALIGNMENT_GLOBALALIGNMENTCACHE_H
+#ifndef DDALIGN_GLOBALALIGNMENTCACHE_H
+#define DDALIGN_GLOBALALIGNMENTCACHE_H
 
 // Framework include files
 #include "DD4hep/ExtensionEntry.h"
@@ -104,4 +104,4 @@ namespace dd4hep {
 
   } /* End namespace align                            */
 } /* End namespace dd4hep                                  */
-#endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENTCACHE_H       */
+#endif // DDALIGN_GLOBALALIGNMENTCACHE_H

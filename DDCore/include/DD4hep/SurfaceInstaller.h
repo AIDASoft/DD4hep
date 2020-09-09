@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDREC_SURFACEINSTALLER_H
-#define DD4HEP_DDREC_SURFACEINSTALLER_H 1
+#ifndef DD4HEP_SURFACEINSTALLER_H
+#define DD4HEP_SURFACEINSTALLER_H 1
 
 // Framework include files
 #include "DD4hep/Detector.h"
@@ -215,4 +215,4 @@ typedef Installer<SURFACEINSTALLER_DATA> InstallerClass;
 DECLARE_SURFACE_INSTALLER(DD4HEP_USE_SURFACEINSTALL_HELPER,InstallerClass)
 
 #endif /* defined(DD4HEP_USE_SURFACEINSTALL_HELPER) */
-#endif /* DD4HEP_DDREC_SURFACEINSTALLER_H           */
+#endif // DD4HEP_SURFACEINSTALLER_H

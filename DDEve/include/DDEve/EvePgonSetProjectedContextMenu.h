@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_EVEPGONSETPROJECTEDCONTEXTMENU_H
-#define DD4HEP_DDEVE_EVEPGONSETPROJECTEDCONTEXTMENU_H
+#ifndef DDEVE_EVEPGONSETPROJECTEDCONTEXTMENU_H
+#define DDEVE_EVEPGONSETPROJECTEDCONTEXTMENU_H
 
 // Framework include files
 #include "DDEve/EveUserContextMenu.h"
@@ -38,4 +38,4 @@ namespace dd4hep {
     ClassDefOverride(EvePgonSetProjectedContextMenu,0);
   };
 }      /* End namespace dd4hep                          */
-#endif /* DD4HEP_DDEVE_EVEPGONSETPROJECTEDCONTEXTMENU_H */
+#endif // DDEVE_EVEPGONSETPROJECTEDCONTEXTMENU_H

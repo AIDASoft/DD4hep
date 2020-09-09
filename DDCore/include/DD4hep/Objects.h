@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_OBJECTS_H
-#define DD4HEP_DDCORE_OBJECTS_H
+#ifndef DD4HEP_OBJECTS_H
+#define DD4HEP_OBJECTS_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
@@ -530,4 +530,4 @@ namespace ROOT {
     bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b);
   }
 }
-#endif    /* DD4HEP_DDCORE_OBJECTS_H        */
+#endif // DD4HEP_OBJECTS_H

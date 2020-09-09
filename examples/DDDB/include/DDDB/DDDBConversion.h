@@ -16,8 +16,8 @@
 // http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/DetDesc/Documents/lhcbDtd.pdf
 //
 //==========================================================================
-#ifndef DD4HEP_DDDB_DDDBCONVERSION_H
-#define DD4HEP_DDDB_DDDBCONVERSION_H
+#ifndef DDDB_DDDBCONVERSION_H
+#define DDDB_DDDBCONVERSION_H
 
 /// Framework include files
 #include <DD4hep/Objects.h>
@@ -631,4 +631,4 @@ namespace dd4hep {
 
 } /* End namespace dd4hep    */
 
-#endif /* DD4HEP_DDDB_DDDBCONVERSION_H  */
+#endif // DDDB_DDDBCONVERSION_H

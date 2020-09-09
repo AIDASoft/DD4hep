@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_ALIGNMENTSPRINTER_H
-#define DD4HEP_DDCORE_ALIGNMENTSPRINTER_H
+#ifndef DD4HEP_ALIGNMENTSPRINTER_H
+#define DD4HEP_ALIGNMENTSPRINTER_H
 
 // Framework includes
 #include "DD4hep/Printout.h"
@@ -108,4 +108,4 @@ namespace dd4hep {
 
   }    /* End namespace align           */
 }      /* End namespace dd4hep               */
-#endif /* DD4HEP_DDCORE_ALIGNMENTSPRINTER_H  */
+#endif // DD4HEP_ALIGNMENTSPRINTER_H

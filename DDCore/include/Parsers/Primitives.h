@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_PARSERS_PRIMITIVES_H
-#define DD4HEP_PARSERS_PRIMITIVES_H
+#ifndef PARSERS_PRIMITIVES_H
+#define PARSERS_PRIMITIVES_H
 
 // Framework include files
 #include "Parsers/config.h"
@@ -678,4 +678,4 @@ namespace dd4hep {
 
   }    // End namespace detail
 }      // End namespace dd4hep
-#endif // DD4HEP_PARSERS_PRIMITIVES_H
+#endif // PARSERS_PRIMITIVES_H

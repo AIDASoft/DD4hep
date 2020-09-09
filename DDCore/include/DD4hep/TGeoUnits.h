@@ -17,4 +17,4 @@ namesapce tgeo{
 
 #endif
 
-#endif /*DD4HEP_TGEOUNITS_H */
+#endif // DD4HEP_TGEOUNITS_H

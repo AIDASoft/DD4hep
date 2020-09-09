@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCOND_CONDITIONSCONTENT_H
-#define DD4HEP_DDCOND_CONDITIONSCONTENT_H
+#ifndef DDCOND_CONDITIONSCONTENT_H
+#define DDCOND_CONDITIONSCONTENT_H
 
 // Framework include files
 #include "DD4hep/Memory.h"
@@ -164,4 +164,4 @@ namespace dd4hep {
 
   }        /* End namespace cond               */
 }          /* End namespace dd4hep                   */
-#endif     /* DD4HEP_DDCOND_CONDITIONSCONTENT_H      */
+#endif // DDCOND_CONDITIONSCONTENT_H

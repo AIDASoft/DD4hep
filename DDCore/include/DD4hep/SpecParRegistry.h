@@ -10,8 +10,8 @@
 // Author     : Ianna Osborne
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_SPECPAR_REGISTRY_H
-#define DD4HEP_DDCORE_SPECPAR_REGISTRY_H
+#ifndef DD4HEP_SPECPARREGISTRY_H
+#define DD4HEP_SPECPARREGISTRY_H
 
 #include <string>
 #include <string_view>

@@ -19,8 +19,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDDB_DDDBCONDITONSLOADER_H
-#define DD4HEP_DDDB_DDDBCONDITONSLOADER_H
+#ifndef DDDB_DDDBCONDITIONSLOADER_H
+#define DDDB_DDDBCONDITIONSLOADER_H
 
 // Framework include files
 #include "DDCond/ConditionsDataLoader.h"
@@ -89,4 +89,4 @@ namespace dd4hep {
   } /* End namespace DDDB                    */
 } /* End namespace dd4hep                    */
 
-#endif /* DD4HEP_DDDB_DDDBCONDITONSLOADER_H  */
+#endif // DDDB_DDDBCONDITIONSLOADER_H

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_PARTICLEHANDLERS_H
-#define DD4HEP_DDEVE_PARTICLEHANDLERS_H
+#ifndef DDEVE_PARTICLEACTORS_H
+#define DDEVE_PARTICLEACTORS_H
 
 // Framework include files
 #include "DDEve/EventHandler.h"
@@ -57,5 +57,5 @@ namespace dd4hep {
 } /* End namespace dd4hep   */
 
 
-#endif /* DD4HEP_DDEVE_PARTICLEHANDLERS_H */
+#endif // DDEVE_PARTICLEACTORS_H
 

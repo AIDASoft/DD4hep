@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIRANDOMENGINE_H
-#define DD4HEP_DDDIGI_DIGIRANDOMENGINE_H
+#ifndef DDDIGI_DIGIRANDOMENGINE_H
+#define DDDIGI_DIGIRANDOMENGINE_H
 #if 0
 /// Framework include files
 
@@ -61,4 +61,4 @@ namespace dd4hep {
   }    // End namespace digi
 }      // End namespace dd4hep
 #endif
-#endif // DD4HEP_DDDIGI_DIGIRANDOMENGINE_H
+#endif // DDDIGI_DIGIRANDOMENGINE_H

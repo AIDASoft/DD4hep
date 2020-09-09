@@ -16,8 +16,8 @@
 // http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/DetDesc/Documents/lhcbDtd.pdf
 //
 //==========================================================================
-#ifndef DD4HEP_IDETSERVICE_H
-#define DD4HEP_IDETSERVICE_H
+#ifndef DETECTOR_IDETSERVICE_H
+#define DETECTOR_IDETSERVICE_H
 
 // Framework includes
 #include "DDCond/ConditionsSlice.h"
@@ -107,4 +107,4 @@ namespace gaudi   {
     virtual void cleanup(const Cleanup& cleaner) = 0;
   };
 }      // End namespace gaudi
-#endif // DD4HEP_IDETSERVICE_H
+#endif // DETECTOR_IDETSERVICE_H

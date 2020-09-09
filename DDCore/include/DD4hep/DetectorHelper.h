@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDCORE_DETECTORHELPER_H
-#define DD4HEP_DDCORE_DETECTORHELPER_H
+#ifndef DD4HEP_DETECTORHELPER_H
+#define DD4HEP_DETECTORHELPER_H
 
 #include "DD4hep/Detector.h"
 
@@ -58,4 +58,4 @@ namespace dd4hep {
   };
 
 }       /* End namespace dd4hep               */
-#endif  /* DD4HEP_DDCORE_DETECTORHELPER_H     */
+#endif // DD4HEP_DETECTORHELPER_H

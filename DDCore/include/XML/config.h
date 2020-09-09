@@ -14,8 +14,8 @@
 // Setup XML parsing for the use of Apache Xerces-C and TiXml
 //
 //==========================================================================
-#ifndef DD4HEP_XML_CONFIG_H
-#define DD4HEP_XML_CONFIG_H
+#ifndef XML_CONFIG_H
+#define XML_CONFIG_H
 
 #include "Parsers/config.h"
 
@@ -63,4 +63,4 @@ namespace dd4hep {
 #else   // Xerces-C
 #define XML_IMPLEMENTATION_TYPE " Apache Xerces-C DOM Parser"
 #endif  // __TIXML__
-#endif  // DD4HEP_XML_CONFIG_H
+#endif // XML_CONFIG_H

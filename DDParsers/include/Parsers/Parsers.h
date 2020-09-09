@@ -14,8 +14,8 @@
 // Setup XML parsing for the use of Apache Xerces-C and TiXml
 //
 //==========================================================================
-#ifndef DD4HEP_PARSERS_PARSERS_H
-#define DD4HEP_PARSERS_PARSERS_H
+#ifndef PARSERS_PARSERS_H
+#define PARSERS_PARSERS_H
 
 #include "Parsers/config.h"
 #include <iostream>
@@ -31,4 +31,4 @@ namespace dd4hep {
     template <typename TYPE> std::ostream& toStream(const TYPE& obj, std::ostream& s);
   }    // End namespace Parsers
 }      // End namespace dd4hep
-#endif // DD4HEP_PARSERS_PARSERS_H
+#endif // PARSERS_PARSERS_H

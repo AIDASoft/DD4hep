@@ -16,8 +16,8 @@
  *      Author: Shaojun Lu, DESY
  */
 
-#ifndef DDSegmentation_TILEDLAYERGRIDXY_H_
-#define DDSegmentation_TILEDLAYERGRIDXY_H_
+#ifndef DDSEGMENTATION_TILEDLAYERGRIDXY_H
+#define DDSEGMENTATION_TILEDLAYERGRIDXY_H
 
 #include "DDSegmentation/CartesianGrid.h"
 
@@ -170,4 +170,4 @@ namespace dd4hep {
 
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
-#endif /* DDSegmentation_TILEDLAYERGRIDXY_H_ */
+#endif // DDSEGMENTATION_TILEDLAYERGRIDXY_H

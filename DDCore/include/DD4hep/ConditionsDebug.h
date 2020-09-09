@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDCORE_CONDITIONSDEBUG_H
-#define DDCORE_CONDITIONSDEBUG_H
+#ifndef DD4HEP_CONDITIONSDEBUG_H
+#define DD4HEP_CONDITIONSDEBUG_H
 
 // Framework include files
 #include "DD4hep/Conditions.h"
@@ -27,4 +27,4 @@ namespace dd4hep {
     
   } /* End namespace cond                 */
 } /* End namespace dd4hep                 */
-#endif     /* DDCORE_CONDITIONSDEBUG_H    */
+#endif // DD4HEP_CONDITIONSDEBUG_H

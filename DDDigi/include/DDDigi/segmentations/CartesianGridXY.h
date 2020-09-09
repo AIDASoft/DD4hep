@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_SEGMENTATION_CARTESIANGRIDXY_H
-#define DD4HEP_DDDIGI_SEGMENTATION_CARTESIANGRIDXY_H
+#ifndef DDDIGI_SEGMENTATIONS_CARTESIANGRIDXY_H
+#define DDDIGI_SEGMENTATIONS_CARTESIANGRIDXY_H
 
 /// Framework include files
 #include <DDDigi/DigiSegmentation.h>
@@ -45,4 +45,4 @@ namespace dd4hep {
 
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_SEGMENTATION_CARTESIANGRIDXY_H
+#endif // DDDIGI_SEGMENTATIONS_CARTESIANGRIDXY_H

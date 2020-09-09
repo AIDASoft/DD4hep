@@ -1,5 +1,5 @@
-#ifndef _GAUDI_PLUGIN_SERVICE_H_
-#define _GAUDI_PLUGIN_SERVICE_H_
+#ifndef GAUDIPLUGINSERVICE_GAUDI_PLUGINSERVICE_H
+#define GAUDIPLUGINSERVICE_GAUDI_PLUGINSERVICE_H
 /*****************************************************************************\
 * (c) Copyright 2013 CERN                                                     *
 *                                                                             *

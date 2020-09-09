@@ -48,4 +48,4 @@ namespace dd4hep {
 #endif
   };
 } /* End namespace dd4hep            */
-#endif    /* DD4HEP_WORLD_H          */
+#endif // DD4HEP_WORLD_H

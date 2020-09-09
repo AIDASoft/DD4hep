@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_DDEVEHIT_H
-#define DD4HEP_DDEVE_DDEVEHIT_H
+#ifndef DDEVE_DDEVEEVENTDATA_H
+#define DDEVE_DDEVEEVENTDATA_H
 
 // C/C++ include files
 #include <vector>
@@ -71,5 +71,5 @@ namespace dd4hep {
   };
   typedef std::vector<DDEveParticle> DDEveParticles;
 }      /* End namespace dd4hep     */
-#endif /* DD4HEP_DDEVE_DDEVEHIT_H  */
+#endif // DDEVE_DDEVEEVENTDATA_H
 

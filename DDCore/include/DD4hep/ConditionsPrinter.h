@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_CONDITIONSPRINTER_H
-#define DD4HEP_DDCORE_CONDITIONSPRINTER_H
+#ifndef DD4HEP_CONDITIONSPRINTER_H
+#define DD4HEP_CONDITIONSPRINTER_H
 
 // Framework includes
 #include "DD4hep/Printout.h"
@@ -87,4 +87,4 @@ namespace dd4hep {
     
   }    /* End namespace cond           */
 }      /* End namespace dd4hep               */
-#endif /* DD4HEP_DDCORE_CONDITIONSPRINTER_H  */
+#endif // DD4HEP_CONDITIONSPRINTER_H

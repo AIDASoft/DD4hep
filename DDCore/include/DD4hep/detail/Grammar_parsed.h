@@ -18,8 +18,8 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_DETAIL_GRAMMAR_PARSED_H
-#define DD4HEP_DDCORE_DETAIL_GRAMMAR_PARSED_H
+#ifndef DD4HEP_DETAIL_GRAMMAR_PARSED_H
+#define DD4HEP_DETAIL_GRAMMAR_PARSED_H
 
 /// Framework include files
 #include "DD4hep/Grammar.h"
@@ -311,4 +311,4 @@ namespace dd4hep {
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL(x,eval_func) DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL_SERIAL(__LINE__,x,eval_func)
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_DUMMY(x,func)        DD4HEP_DEFINE_PARSER_GRAMMAR_DUMMY_SERIAL(__LINE__,x,func)
 
-#endif  /* DD4HEP_DDCORE_DETAIL_GRAMMAR_PARSED_H */
+#endif // DD4HEP_DETAIL_GRAMMAR_PARSED_H

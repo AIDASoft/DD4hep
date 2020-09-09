@@ -13,8 +13,8 @@
 //  M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_SEGMENTATIONDICTIONARY_H
-#define DD4HEP_DDCORE_SEGMENTATIONDICTIONARY_H
+#ifndef DDCORE_SRC_SEGMENTATIONDICTIONARY_H
+#define DDCORE_SRC_SEGMENTATIONDICTIONARY_H
 
 // Framework include files
 #define __HAVE_DDSEGMENTATION__
@@ -96,4 +96,4 @@ typedef dd4hep::DDSegmentation::CellID CellID;
 #endif  // __CINT__
 #endif  // __HAVE_DDSEGMENTATION__
 
-#endif  /* DD4HEP_DDCORE_SEGMENTATIONDICTIONARY_H  */
+#endif // DDCORE_SRC_SEGMENTATIONDICTIONARY_H

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_LCIOEVENTHANDLER_H
-#define DD4HEP_DDEVE_LCIOEVENTHANDLER_H
+#ifndef DDEVE_LCIO_LCIOEVENTHANDLER_H
+#define DDEVE_LCIO_LCIOEVENTHANDLER_H
 
 // Framework include files
 #include "DDEve/EventHandler.h"
@@ -80,5 +80,5 @@ namespace dd4hep {
 
 } /* End namespace dd4hep   */
 
-#endif /* DD4HEP_DDEVE_LCIOEVENTHANDLER_H */
+#endif // DDEVE_LCIO_LCIOEVENTHANDLER_H
 

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_DETECTORPROCESSOR_H
-#define DD4HEP_DDCORE_DETECTORPROCESSOR_H
+#ifndef DD4HEP_DETECTORPROCESSOR_H
+#define DD4HEP_DETECTORPROCESSOR_H
 
 // Framework includes
 #include "DD4hep/DetElement.h"
@@ -204,4 +204,4 @@ namespace dd4hep {
     }
   };
 }      /* End namespace dd4hep               */
-#endif /* DD4HEP_DDCORE_DETECTORPROCESSOR_H  */
+#endif // DD4HEP_DETECTORPROCESSOR_H

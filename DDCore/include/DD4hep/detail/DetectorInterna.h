@@ -18,8 +18,8 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_DETECTORINTERNA_H
-#define DD4HEP_DDCORE_DETECTORINTERNA_H
+#ifndef DD4HEP_DETAIL_DETECTORINTERNA_H
+#define DD4HEP_DETAIL_DETECTORINTERNA_H
 
 // Framework include files
 #include "DD4hep/Callback.h"
@@ -212,4 +212,4 @@ namespace dd4hep {
   }
 
 }         /* End namespace dd4hep                   */
-#endif    /* DD4HEP_DDCORE_DETECTORINTERNA_H      */
+#endif // DD4HEP_DETAIL_DETECTORINTERNA_H

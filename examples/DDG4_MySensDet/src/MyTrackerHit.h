@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef SOMEEXPERIMENT_MYTRACKERHIT_H
-#define SOMEEXPERIMENT_MYTRACKERHIT_H
+#ifndef EXAMPLES_DDG4_MYSENSDET_SRC_MYTRACKERHIT_H
+#define EXAMPLES_DDG4_MYSENSDET_SRC_MYTRACKERHIT_H
 
 /// Framework include files
 #include "DDG4/Geant4Data.h"
@@ -88,4 +88,4 @@ namespace SomeExperiment {
 #pragma link C++ class     SomeExperiment::MyTrackerHit+;
 #endif
 
-#endif /* SOMEEXPERIMENT_MYTRACKERHIT_H */
+#endif // EXAMPLES_DDG4_MYSENSDET_SRC_MYTRACKERHIT_H

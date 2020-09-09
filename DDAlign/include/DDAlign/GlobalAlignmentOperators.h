@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_ALIGNMENT_GLOBALALIGNMENTOPERATORS_H
-#define DD4HEP_ALIGNMENT_GLOBALALIGNMENTOPERATORS_H
+#ifndef DDALIGN_GLOBALALIGNMENTOPERATORS_H
+#define DDALIGN_GLOBALALIGNMENTOPERATORS_H
 
 // Framework include files
 #include "DD4hep/Alignments.h"
@@ -106,4 +106,4 @@ namespace dd4hep {
     template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_align>::operator() (Nodes::value_type& n)  const;
   }       /* End namespace align                    */
 }         /* End namespace dd4hep                        */
-#endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENTOPERATORS_H */
+#endif // DDALIGN_GLOBALALIGNMENTOPERATORS_H

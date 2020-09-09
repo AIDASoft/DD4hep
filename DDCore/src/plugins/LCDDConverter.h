@@ -11,8 +11,8 @@
 //
 //==========================================================================
 
-#ifndef DD4HEP_DDCORE_DetectorCONVERTER_H
-#define DD4HEP_DDCORE_DetectorCONVERTER_H
+#ifndef DDCORE_SRC_PLUGINS_LCDDCONVERTER_H
+#define DDCORE_SRC_PLUGINS_LCDDCONVERTER_H
 
 // Framework include files
 #include "DD4hep/Detector.h"
@@ -199,4 +199,4 @@ namespace dd4hep {
     };
   }    // End namespace xml
 }      // End namespace dd4hep
-#endif /* DD4HEP_DDCORE_DetectorCONVERTER_H   */
+#endif // DDCORE_SRC_PLUGINS_LCDDCONVERTER_H

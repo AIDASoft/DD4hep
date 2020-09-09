@@ -8,8 +8,8 @@
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 //==========================================================================
-#ifndef PARSERS_STANDARD_LIST_COMMON_H
-#define PARSERS_STANDARD_LIST_COMMON_H 1
+#ifndef PARSERS_SPIRIT_PARSERSSTANDARDLISTCOMMON_H
+#define PARSERS_SPIRIT_PARSERSSTANDARDLISTCOMMON_H 1
 // ============================================================================
 // Include files
 // ============================================================================
@@ -89,4 +89,4 @@ namespace dd4hep {
       IMPLEMENT_MAPPED_PARSERS(pair,InnerType)            }}
 
 // ============================================================================
-#endif /* PARSERS_STANDARD_LIST_COMMON_H */
+#endif // PARSERS_SPIRIT_PARSERSSTANDARDLISTCOMMON_H

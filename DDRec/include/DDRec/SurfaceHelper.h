@@ -10,8 +10,8 @@
 // Author     : F.Gaede
 //
 //==========================================================================
-#ifndef rec_SurfaceHelper_H_
-#define rec_SurfaceHelper_H_
+#ifndef DDREC_SURFACEHELPER_H
+#define DDREC_SURFACEHELPER_H
 
 #include "DDRec/Surface.h"
 
@@ -53,4 +53,4 @@ namespace dd4hep {
 
 
 
-#endif // rec_SurfaceHelper_H_
+#endif // DDREC_SURFACEHELPER_H

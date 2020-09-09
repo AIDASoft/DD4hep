@@ -38,4 +38,4 @@ gaudi::DeHelpers::getChildConditions(ConditionsMap& m, DetElement de, itemkey_ty
   return cache;
 }
 
-#endif // #ifndef DETECTOR_DETECTORELEMENT_INL_H
+#endif // DETECTOR_DETECTORELEMENT_INL_H

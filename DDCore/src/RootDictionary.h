@@ -13,8 +13,8 @@
 //  M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_ROOTDICTIONARY_H
-#define DD4HEP_DDCORE_ROOTDICTIONARY_H
+#ifndef DDCORE_SRC_ROOTDICTIONARY_H
+#define DDCORE_SRC_ROOTDICTIONARY_H
 
 // Framework include files
 #include "Evaluator/Evaluator.h"
@@ -344,4 +344,4 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::cond::AbstractMap::Params+;
 
 #endif  // __CINT__
-#endif  /* DD4HEP_DDCORE_ROOTDICTIONARY_H  */
+#endif // DDCORE_SRC_ROOTDICTIONARY_H

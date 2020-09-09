@@ -51,4 +51,4 @@ namespace dd4hep {
     }     /* End namespace matrix    */
   }       /* End namespace detail    */
 }         /* End namespace dd4hep    */
-#endif    /* DD4HEP_CONFIG_H         */
+#endif // DD4HEP_CONFIG_H

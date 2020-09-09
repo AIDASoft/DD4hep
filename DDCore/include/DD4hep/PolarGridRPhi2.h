@@ -12,8 +12,8 @@
 //  \version  1.0
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_POLARGRIDRPHI2_H 
-#define DD4HEP_DDCORE_POLARGRIDRPHI2_H 1
+#ifndef DD4HEP_POLARGRIDRPHI2_H
+#define DD4HEP_POLARGRIDRPHI2_H 1
 
 // Framework include files
 #include "DD4hep/Segmentations.h"
@@ -118,4 +118,4 @@ namespace dd4hep {
     std::vector<double> cellDimensions(const CellID& cellID) const;
   };
 }      /* End namespace dd4hep                */
-#endif // DD4HEP_DDCORE_POLARGRIDRPHI2_H
+#endif // DD4HEP_POLARGRIDRPHI2_H

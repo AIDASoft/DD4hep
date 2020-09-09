@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDDIGI_DIGIKERNEL_H
-#define DD4HEP_DDDIGI_DIGIKERNEL_H
+#ifndef DDDIGI_DIGIKERNEL_H
+#define DDDIGI_DIGIKERNEL_H
 
 // Framework include files
 #include "DDDigi/DigiEventAction.h"
@@ -151,4 +151,4 @@ namespace dd4hep {
     }
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DD4HEP_DDDIGI_DIGIKERNEL_H
+#endif // DDDIGI_DIGIKERNEL_H

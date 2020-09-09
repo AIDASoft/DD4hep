@@ -12,12 +12,12 @@
 //  \version  1.0
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_PRIMITIVES_H
-#define DD4HEP_DDCORE_PRIMITIVES_H
+#ifndef DD4HEP_PRIMITIVES_H
+#define DD4HEP_PRIMITIVES_H
 
 // Forward declaring header for package configuration
 
 #include "DD4hep/config.h"
 #include "Parsers/Primitives.h"
 
-#endif // DD4HEP_DDCORE_PRIMITIVES_H
+#endif // DD4HEP_PRIMITIVES_H

@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_VOLUMES_H
-#define DD4HEP_DDCORE_VOLUMES_H
+#ifndef DD4HEP_VOLUMES_H
+#define DD4HEP_VOLUMES_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
@@ -509,4 +509,4 @@ namespace dd4hep {
   /// Output mesh vertices to string
   std::string toStringMesh(PlacedVolume solid, int precision=2);
 }         /* End namespace dd4hep          */
-#endif    /* DD4HEP_DDCORE_VOLUMES_H       */
+#endif // DD4HEP_VOLUMES_H

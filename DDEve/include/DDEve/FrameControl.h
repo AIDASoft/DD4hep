@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_FRAMECONTROL_H
-#define DD4HEP_DDEVE_FRAMECONTROL_H
+#ifndef DDEVE_FRAMECONTROL_H
+#define DDEVE_FRAMECONTROL_H
 
 // ROOT include files
 #include "TGFrame.h"
@@ -66,5 +66,5 @@ namespace dd4hep {
     ClassDefOverride(FrameControl,0)  // Top level window frame
   };
 }      /* End namespace dd4hep        */
-#endif /* DD4HEP_DDEVE_FRAMECONTROL_H */
+#endif // DDEVE_FRAMECONTROL_H
 

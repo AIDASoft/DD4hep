@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_EVENTCONTROL_H
-#define DD4HEP_DDEVE_EVENTCONTROL_H
+#ifndef DDEVE_EVENTCONTROL_H
+#define DDEVE_EVENTCONTROL_H
 
 // Framework include files
 #include "DDEve/FrameControl.h"
@@ -82,5 +82,5 @@ namespace dd4hep {
     ClassDefOverride(EventControl,0)  // Top level window frame
   };
 }      /* End namespace dd4hep        */
-#endif /* DD4HEP_DDEVE_EVENTCONTROL_H */
+#endif // DDEVE_EVENTCONTROL_H
 

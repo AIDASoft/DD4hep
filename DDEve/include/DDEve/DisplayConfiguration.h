@@ -11,8 +11,8 @@
 //  Original Author: Matevz Tadel 2009 (MultiView.C)
 //
 //==========================================================================
-#ifndef DD4HEP_DDEVE_DISPLAYCONFIGURATION_H
-#define DD4HEP_DDEVE_DISPLAYCONFIGURATION_H
+#ifndef DDEVE_DISPLAYCONFIGURATION_H
+#define DDEVE_DISPLAYCONFIGURATION_H
 
 // Framework include files
 #include "TClass.h"
@@ -148,5 +148,5 @@ namespace dd4hep {
     ClassDef(DisplayConfiguration,0);
   };
 }        /* End namespace dd4hep                */
-#endif   /* DD4HEP_DDEVE_DISPLAYCONFIGURATION_H */
+#endif // DDEVE_DISPLAYCONFIGURATION_H
 

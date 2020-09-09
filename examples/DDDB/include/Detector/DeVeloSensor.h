@@ -486,4 +486,4 @@ namespace gaudi   {
   };
   
 }      // End namespace gaudi
-#endif // DETECTOR_DEVELOSENSORIOV_H
+#endif // DETECTOR_DEVELOSENSOR_H
