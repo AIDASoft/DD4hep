@@ -32,6 +32,8 @@ class Action(ConfigHelper):
     self._tracker = ('Geant4TrackerWeightedAction', {'HitPositionCombination': 2, 'CollectSingleDeposits': False})
     self._calo = 'Geant4ScintillatorCalorimeterAction'
     self._mapActions = dict()
+    self._trackerSDTypes = ['tracker']
+    self._calorimeterSDTypes = ['calorimeter']
 
   @property
   def tracker(self):
@@ -78,3 +80,21 @@ class Action(ConfigHelper):
   def clearMapActions(self):
     """empty the mapActions dictionary"""
     self._mapActions = dict()
+
+  @property
+  def trackerSDTypes(self):
+    """List of patterns matching sensitive detectors of type Tracker."""
+    return self._trackerSDTypes
+
+  @trackerSDTypes.setter
+  def trackerSDTypes(self, val):
+    self._trackerSDTypes = ConfigHelper.makeList(val)
+
+  @property
+  def calorimeterSDTypes(self):
+    """List of patterns matching sensitive detectors of type Calorimeter."""
+    return self._calorimeterSDTypes
+
+  @calorimeterSDTypes.setter
+  def calorimeterSDTypes(self, val):
+    self._calorimeterSDTypes = ConfigHelper.makeList(val)
