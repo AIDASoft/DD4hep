@@ -170,11 +170,13 @@ def run():
 
   logger.info("#  Now build the physics list:")
   phys = geant4.setupPhysics('QGSP_BERT')
-  geant4.addPhysics(str('Geant4PhysicsList/Myphysics'))
+  ph = geant4.addPhysics(str('Geant4PhysicsList/Myphysics'))
+  ph.addPhysicsConstructor(str('G4StepLimiterPhysics'))
+  phys.add(ph)
 
   # Add special particle types from specialized physics constructor
   part = geant4.addPhysics('Geant4ExtraParticles/ExtraParticles')
-  part.pdgfile = 'checkout/DDG4/examples/particle.tbl'
+  part.pdgfile = os.path.join(install_dir, 'examples/DDG4/examples/particle.tbl')
 
   # Add global range cut
   rg = geant4.addPhysics('Geant4DefaultRangeCut/GlobalRangeCut')
