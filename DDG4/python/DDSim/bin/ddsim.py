@@ -9,12 +9,13 @@ Based on M. Frank and F. Gaede runSim.py
 """
 from __future__ import absolute_import, unicode_literals
 import logging
+import sys
 
 from DDSim.DD4hepSimulation import DD4hepSimulation
 
 
 if __name__ == "__main__":
-  logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+  logging.basicConfig(format='%(name)-16s %(levelname)s %(message)s', level=logging.INFO, stream=sys.stdout)
   logger = logging.getLogger('DDSim')
 
   RUNNER = DD4hepSimulation()
