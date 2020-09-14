@@ -263,8 +263,7 @@ class DD4hepSimulation(object):
       self.__printSteeringFile(parser)
       exit(1)
 
-  @staticmethod
-  def getDetectorLists(detectorDescription):
+  def getDetectorLists(self, detectorDescription):
     ''' get lists of trackers and calorimeters that are defined in detectorDescription (the compact xml file)'''
     import DDG4
     trackers, calos = [], []
@@ -274,13 +273,13 @@ class DD4hepSimulation(object):
       sd = detectorDescription.sensitiveDetector(name)
       if sd.isValid():
         detType = sd.type()
-  #      if len(detectorList) and not(name in detectorList):
-  #        continue
-        logger.info('getDetectorLists - found active detctor %s type: %s', name, detType)
-        if detType == "tracker":
+        logger.info('getDetectorLists - found active detector %s type: %s', name, detType)
+        if any(pat in detType.lower() for pat in self.action.trackerSDTypes):
           trackers.append(det.name())
-        if detType == "calorimeter":
+        elif any(pat in detType.lower() for pat in self.action.calorimeterSDTypes):
           calos.append(det.name())
+        else:
+          logger.warn('Unknown sensitive detector type: %s', detType)
 
     return trackers, calos
 
