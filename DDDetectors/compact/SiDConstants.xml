@@ -18,6 +18,9 @@
     <!-- Correction from going from inner circle to outer circle -->
     <constant name="EcalEndcap_rmax" value="(EcalBarrel_rmin - 1.5*cm) / (cos(pi/CaloSides))"/> 
     <constant name="EcalEndcap_zmin" value="165.70*cm"/>
+
+    <constant name="tracker_region_zmax" value="EcalEndcap_zmin"/>
+    <constant name="tracker_region_rmax" value="EcalEndcap_rmin"/>
     
     <constant name="HcalBarrel_ID" value="8"/>
     <constant name="HcalBarrel_rmin" value="141.90*cm"/>
