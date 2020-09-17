@@ -191,16 +191,6 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     return EVENT_READER_EOF; 
   }
 
-  
-  //fg: for now we create exactly one event vertex here ( as before )
-  Geant4Vertex* vtx = new Geant4Vertex ;
-  vertices.emplace_back( vtx );
-  vtx->x = 0;
-  vtx->y = 0;
-  vtx->z = 0;
-  vtx->time = 0;
-  //  bool haveVertex = false ;
-
   //
   //  Loop over particles
   int ISTHEP(0);   // status code
@@ -238,6 +228,9 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     if(m_input.eof())
       return EVENT_READER_EOF;
 
+    if(! m_input.good())
+      return EVENT_READER_IO_ERROR;
+
     //
     //  create a MCParticle and fill it from stdhep info
     Particle* p = new Particle(IHEP);
@@ -247,25 +240,25 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     p->pdgID = IDHEP;
     //
     //  Momentum vector
-    p->pex = p->psx = PHEP1*GeV;
-    p->pey = p->psy = PHEP2*GeV;
-    p->pez = p->psz = PHEP3*GeV;
+    p->pex = p->psx = PHEP1*CLHEP::GeV;
+    p->pey = p->psy = PHEP2*CLHEP::GeV;
+    p->pez = p->psz = PHEP3*CLHEP::GeV;
     //
     //  Mass
-    p->mass = PHEP5*GeV;
+    p->mass = PHEP5*CLHEP::GeV;
     //
     //  Vertex
-    p->vsx = VHEP1*mm;
-    p->vsy = VHEP2*mm;
-    p->vsz = VHEP3*mm;
+    p->vsx = VHEP1*CLHEP::mm;
+    p->vsy = VHEP2*CLHEP::mm;
+    p->vsz = VHEP3*CLHEP::mm;
     // endpoint (missing information in HEPEvt files)
     p->vex = 0.0;
     p->vey = 0.0;
     p->vez = 0.0;
     //
     //  Creation time (note the units [1/c_light])
-    p->time       = VHEP4*ns;
-    p->properTime = VHEP4*ns;
+    p->time       = VHEP4*CLHEP::ns;
+    p->properTime = VHEP4*CLHEP::ns;
     //
     //  Generator status
     //  Simulator status 0 until simulator acts on it
@@ -277,17 +270,6 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     else                    status.set(G4PARTICLE_GEN_DOCUMENTATION);
     //  RAW Generator status
     p->genStatus = ISTHEP&G4PARTICLE_GEN_STATUS_MASK;
-
-    //fixme: need to define the correct logic for selecting the particle to use
-    //       for the _one_ event vertex 
-    // fill vertex information from first stable particle
-    // if( !haveVertex &&  ISTHEP == 1 ){
-    //   vtx->x = p->vsx ;
-    //   vtx->y = p->vsy ;
-    //   vtx->z = p->vsz ;
-    //   vtx->time = p->time ;
-    //   haveVertex = true ;
-    // }
 
     //
     // Keep daughters information for later
@@ -312,6 +294,11 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
       void addParent(const Particle* p)  {
         m_part->parents.insert(p->id);
       }
+      void addDaughter(const Particle* p)  {
+        if(m_part->daughters.find(p->id) == m_part->daughters.end()) {
+          m_part->daughters.insert(p->id);
+        }
+      }
       Particle* findParent(const Particle* p)  {
         return m_part->parents.find(p->id)==m_part->parents.end() ? 0 : m_part;
       }
@@ -321,6 +308,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     //  Get the MCParticle
     //
     Particle* mcp = particles[IHEP];
+    ParticleHandler theParticle(mcp);
     //
     //  Get the daughter information, discarding extra information
     //  sometimes stored in daughter variables.
@@ -340,14 +328,17 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
           //
           ParticleHandler part(particles[id]);
           if ( !part.findParent(mcp) ) part.addParent(mcp);
+          theParticle.addDaughter(particles[id]);
         }
       }
       else  {   //  Same logic, discrete cases
         ParticleHandler part_fd(particles[fd]);
         if ( !part_fd.findParent(mcp) ) part_fd.addParent(mcp);
+        theParticle.addDaughter(particles[fd]);
 
         ParticleHandler part_ld(particles[ld]);
         if ( !part_ld.findParent(mcp) ) part_ld.addParent(mcp);
+        theParticle.addDaughter(particles[ld]);
       }
     }
     else if(fd > -1)      {
@@ -361,15 +352,25 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
   }  // End second loop over particles
 
 
-  //---  need a third loop to add particles to the vertex
+  //fg: we simply add all particles without parents as with their own vertex.
+  //    This might include the incoming beam particles, e.g. in
+  //    the case of lcio files written with Whizard2, which is slightly odd,
+  //    however should be treated correctly in Geant4InputHandling.cpp.
+  //    We no longer make an attempt to identify the incoming particles
+  //    based on the generator status, as this varies widely with different
+  //    generators.
+
   for(size_t i=0; i<particles.size(); ++i )   {
     Geant4ParticleHandle p(particles[i]);
     if ( p->parents.size() == 0 )  {
-      PropertyMask status(p->status);
-      if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
-	vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
-      else
-	vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
+      Geant4Vertex* vtx = new Geant4Vertex ;
+      vertices.emplace_back( vtx );
+      vtx->x = p->vsx;
+      vtx->y = p->vsy;
+      vtx->z = p->vsz;
+      vtx->time = p->time;
+
+      vtx->out.insert(p->id) ;
     }
   }
 
