@@ -257,8 +257,8 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     p->vez = 0.0;
     //
     //  Creation time (note the units [1/c_light])
-    p->time       = VHEP4*CLHEP::ns;
-    p->properTime = VHEP4*CLHEP::ns;
+    p->time       = VHEP4 * CLHEP::mm / CLHEP::c_light;
+    p->properTime = VHEP4 * CLHEP::mm / CLHEP::c_light;
     //
     //  Generator status
     //  Simulator status 0 until simulator acts on it
