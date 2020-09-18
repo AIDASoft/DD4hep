@@ -89,7 +89,7 @@ target_include_directories(DDCore
 target_link_libraries(DDCore
   PUBLIC
   DD4hep::DDParsers
-  ROOT::Core ROOT::Rint ROOT::Tree ROOT::Physics ROOT::Geom ROOT::GenVector
+  ROOT::Core ROOT::Rint ROOT::Tree ROOT::Physics ROOT::Geom ROOT::GenVector ROOT::ROOTEve
   ${XML_LIBRARIES} ${CMAKE_DL_LIBS}
   )
 
