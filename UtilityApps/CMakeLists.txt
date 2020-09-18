@@ -13,6 +13,9 @@ SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME UtilityApps)
 add_executable(geoDisplay src/display.cpp)
 target_link_libraries(geoDisplay DD4hep::DDCore)
 #-----------------------------------------------------------------------------------
+add_executable(geoWebDisplay src/webdisplay.cpp)
+target_link_libraries(geoWebDisplay DD4hep::DDCore)
+#-----------------------------------------------------------------------------------
 add_executable(geoConverter src/converter.cpp)
 target_link_libraries(geoConverter DD4hep::DDCore)
 #-----------------------------------------------------------------------------------
@@ -78,6 +81,7 @@ add_executable(teveDisplay src/teve_display.cpp src/next_event_dummy.cpp G__eve.
 target_link_libraries(teveDisplay DD4hep::DDRec ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL )
 
 INSTALL(TARGETS geoDisplay
+  geoWebDisplay
   geoConverter
   geoPluginRun
   dumpBfield
