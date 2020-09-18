@@ -176,7 +176,7 @@ static long webdisplay(Detector& description, int argc, char** argv) {
   TGeoManager& mgr = description.manager();
   int vislevel = 6, visopt = 1;
   string detector = "/world";
-  const char* opt = "ogl";
+  const char* opt = "";
   for(int i = 0; i < argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-option",argv[i],4) )
       opt = argv[++i];
