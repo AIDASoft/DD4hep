@@ -17,7 +17,7 @@ target_include_directories(DDEve_Interface
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(DDEve_Interface INTERFACE ROOT::Core ROOT::Rint ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL ROOT::EG ROOT::ROOTEve)
+target_link_libraries(DDEve_Interface INTERFACE ROOT::Core ROOT::Rint ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL ROOT::EG)
 
 dd4hep_add_dictionary(G__DDEve
   SOURCES ../DDCore/include/ROOT/Warnings.h include/DDEve/*.h
@@ -29,14 +29,20 @@ dd4hep_add_dictionary(G__DDEve
   USES DD4hep::DDCore
   )
 
+if(TARGET ROOT::ROOTEve)
+  dd4hep_print("Building the web display using ROOT7")
+  SET(DDEVE_ROOT7_SOURCES root7/WebDisplay.cpp)
+  SET(DDEVE_ROOT7_LINK ROOT::ROOTEve)
+endif()
+
 if(TARGET LCIO::LCIO)
   SET(DDEVE_LCIO_SOURCES lcio/LCIOEventHandler.cpp)
   SET(DDEVE_LCIO_LINK LCIO::LCIO)
 endif()
 
-dd4hep_add_plugin(DDEvePlugins SOURCES src/*.cpp ${DDEVE_LCIO_SOURCES}
+dd4hep_add_plugin(DDEvePlugins SOURCES src/*.cpp ${DDEVE_LCIO_SOURCES} ${DDEVE_ROOT7_SOURCES}
   GENERATED G__DDEve.cxx
-  USES      DD4hep::DDCore DD4hep::DDEve_Interface ${DDEVE_LCIO_LINK}
+  USES      DD4hep::DDCore DD4hep::DDEve_Interface ${DDEVE_LCIO_LINK} ${DDEVE_ROOT7_LINK}
   )
 
 if(DD4HEP_USE_GEANT4)
