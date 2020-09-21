@@ -13,9 +13,6 @@ SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME UtilityApps)
 add_executable(geoDisplay src/display.cpp)
 target_link_libraries(geoDisplay DD4hep::DDCore)
 #-----------------------------------------------------------------------------------
-add_executable(geoWebDisplay src/webdisplay.cpp)
-target_link_libraries(geoWebDisplay DD4hep::DDCore)
-#-----------------------------------------------------------------------------------
 add_executable(geoConverter src/converter.cpp)
 target_link_libraries(geoConverter DD4hep::DDCore)
 #-----------------------------------------------------------------------------------
@@ -42,6 +39,12 @@ if(TARGET Geant4::Interface)
   add_executable(dumpdetector src/dumpdetector.cpp)
   target_link_libraries(dumpdetector DD4hep::DDCore DD4hep::DDRec Geant4::Interface)
   LIST(APPEND OPTIONAL_EXECUTABLES dumpdetector)
+endif()
+
+# the web display tool depends on the ROOT7 version of DDEve
+if(TARGET ROOT::ROOTEve)
+  add_executable(geoWebDisplay src/webdisplay.cpp)
+  target_link_libraries(geoWebDisplay DD4hep::DDCore)
 endif()
 
 # #-----------------------------------------------------------------------------------
