@@ -45,6 +45,7 @@ endif()
 if(TARGET ROOT::ROOTEve)
   add_executable(geoWebDisplay src/webdisplay.cpp)
   target_link_libraries(geoWebDisplay DD4hep::DDCore)
+  LIST(APPEND OPTIONAL_EXECUTABLES geoWebDisplay)
 endif()
 
 # #-----------------------------------------------------------------------------------
