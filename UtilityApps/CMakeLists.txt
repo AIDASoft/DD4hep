@@ -85,7 +85,6 @@ add_executable(teveDisplay src/teve_display.cpp src/next_event_dummy.cpp G__eve.
 target_link_libraries(teveDisplay DD4hep::DDRec ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL )
 
 INSTALL(TARGETS geoDisplay
-  geoWebDisplay
   geoConverter
   geoPluginRun
   dumpBfield
