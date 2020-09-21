@@ -89,7 +89,7 @@ target_include_directories(DDCore
 target_link_libraries(DDCore
   PUBLIC
   DD4hep::DDParsers
-  ROOT::Core ROOT::Rint ROOT::Tree ROOT::Physics ROOT::Geom ROOT::GenVector ROOT::ROOTEve
+  ROOT::Core ROOT::Rint ROOT::Tree ROOT::Physics ROOT::Geom ROOT::GenVector
   ${XML_LIBRARIES} ${CMAKE_DL_LIBS}
   )
 
@@ -115,7 +115,7 @@ IF(TARGET ROOT::Gdml)
 ELSE()
   dd4hep_print("ROOT does not include GDML, not building DDCore GDML Plugins")
 ENDIF()
-    
+
 #---------------------------  Specialized PYTHON plugin ----------------------------
 IF(TARGET ${DD4HEP_ROOT_PYTHON})
   dd4hep_add_plugin(DDPythonPlugins
