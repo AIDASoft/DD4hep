@@ -1,6 +1,7 @@
 # DD4hep (Detector Description for High Energy Physics)
-[![Build Status](https://travis-ci.com/AIDASoft/DD4hep.svg?branch=master)](https://travis-ci.com/AIDASoft/DD4hep)
-[![pipeline status](https://gitlab.cern.ch/CLICdp/DetectorSoftware/DD4hep/badges/master/pipeline.svg)](https://gitlab.cern.ch/CLICdp/DetectorSoftware/DD4hep/commits/master)
+![linux](https://github.com/AIDASoft/DD4hep/workflows/linux/badge.svg)
+![macOS](https://github.com/AIDASoft/DD4hep/workflows/macOS/badge.svg)
+![python](https://github.com/AIDASoft/DD4hep/workflows/python/badge.svg)
 [![Coverity Status](https://scan.coverity.com/projects/10713/badge.svg)](https://scan.coverity.com/projects/DD4hep)
 [![DOI](https://zenodo.org/badge/60682190.svg)](https://zenodo.org/badge/latestdoi/60682190)
 
