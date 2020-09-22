@@ -126,9 +126,9 @@ namespace dd4hep  {
     { return __func(PluginService::Create<R,A0,A1,A2,A3,A4,A5>).ptr; }
 
     namespace  {
-      template <typename SIGNATURE> static void reflex_plugin(const std::string& name, typename dd4hep::PluginRegistry<SIGNATURE>::stub_t stub)  {
+      template <typename DD4HEP_SIGNATURE> static void reflex_plugin(const std::string& name, typename dd4hep::PluginRegistry<DD4HEP_SIGNATURE>::stub_t stub)  {
         ROOT::Reflex::Type typ = ROOT::Reflex::TypeBuilder(name.c_str(),ROOT::Reflex::PUBLIC);
-        ROOT::Reflex::Type sig = ROOT::Reflex::FunctionDistiller < SIGNATURE > ::Get();
+        ROOT::Reflex::Type sig = ROOT::Reflex::FunctionDistiller < DD4HEP_SIGNATURE > ::Get();
         std::string fname = (std::string(PLUGINSVC_FACTORY_NS "::") + ROOT::Reflex::PluginService::FactoryName(name));
         ROOT::Reflex::FunctionBuilder func(sig, fname.c_str(), stub, 0, "", ROOT::Reflex::PUBLIC);
         func.AddProperty("name", name).AddProperty("id", name);

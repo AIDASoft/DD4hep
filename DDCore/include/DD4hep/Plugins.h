@@ -127,10 +127,10 @@ namespace dd4hep {
   };
 
   /// Factory template for the plugin mechanism
-  template <typename SIGNATURE> class PluginRegistry {
+  template <typename DD4HEP_SIGNATURE> class PluginRegistry {
   public:
     typedef PluginService svc_t;
-    typedef SIGNATURE signature_t;
+    typedef DD4HEP_SIGNATURE signature_t;
     template <typename R, typename... Args>  static void add(const std::string& id, R(*func)(Args...))  {
       svc_t::addFactory(id,svc_t::function(func),typeid(R(Args...)),typeid(R));
     }
