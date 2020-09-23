@@ -27,10 +27,15 @@ jobs:
           ls /cvmfs/geant4.cern.ch
       - name: Start container
         run: |
-          docker run -it --name CI_container -v /home/runner/work/DD4hep/DD4hep:/home/runner/work/DD4hep/DD4hep -e VIEW="LCG_98/x86_64-ubuntu1804-gcc8-opt" -v /cvmfs/sft.cern.ch:/cvmfs/sft.cern.ch -v /cvmfs/geant4.cern.ch:/cvmfs/geant4.cern.ch -v /cvmfs/sft-nightlies.cern.ch:/cvmfs/sft-nightlies.cern.ch -d ghcr.io/aidasoft/ubuntu18:latest /bin/bash
+          docker run --priveleged -it --name CI_container -v /home/runner/work/DD4hep/DD4hep:/home/runner/work/DD4hep/DD4hep -e VIEW="LCG_98/x86_64-ubuntu1804-gcc8-opt" -v /cvmfs/sft.cern.ch:/cvmfs/sft.cern.ch -v /cvmfs/geant4.cern.ch:/cvmfs/geant4.cern.ch -v /cvmfs/sft-nightlies.cern.ch:/cvmfs/sft-nightlies.cern.ch -d ghcr.io/aidasoft/ubuntu18:latest /bin/bash
       - name: Run build-wrapper
         run: |
           docker exec CI_container /bin/bash -c "./home/runner/work/DD4hep/DD4hep/.github/scripts/run_build-wrapper.sh"
+      - name: Check results
+        run: |
+          ls
+          cat bw-output/build-wrapper-dump.json
+          cat bw-output/build-wrapper.log
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
