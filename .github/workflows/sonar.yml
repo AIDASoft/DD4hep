@@ -1,0 +1,48 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Install CVMFS
+        run: |
+          wget --no-check-certificate https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb
+          sudo dpkg -i cvmfs-release-latest_all.deb
+          sudo apt-get update
+          sudo apt-get install cvmfs cvmfs-config-default
+          wget --no-check-certificate https://lcd-data.web.cern.ch/lcd-data/CernVM/default.local
+          sudo mkdir -p /etc/cvmfs
+          sudo mv default.local /etc/cvmfs/default.local
+          sudo cvmfs_config setup
+          ls /cvmfs/sft.cern.ch
+          ls /cvmfs/geant4.cern.ch
+      - name: Start container
+        run: |
+          docker run -it --name CI_container -v /home/runner/work/DD4hep/DD4hep:/home/runner/work/DD4hep/DD4hep -e VIEW="LCG_98/x86_64-ubuntu1804-gcc8-opt" -v /cvmfs/sft.cern.ch:/cvmfs/sft.cern.ch -v /cvmfs/geant4.cern.ch:/cvmfs/geant4.cern.ch -v /cvmfs/sft-nightlies.cern.ch:/cvmfs/sft-nightlies.cern.ch -d ghcr.io/aidasoft/ubuntu18:latest /bin/bash
+      - name: Run build-wrapper
+        run: |
+          docker exec CI_container /bin/bash -c "./home/runner/work/DD4hep/DD4hep/.github/scripts/run_build-wrapper.sh"
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.cfamily.threads=4
+            -Dsonar.projectName=DD4hep
+            -Dsonar.organization=aidasoft
+            -Dsonar.projectKey=AIDASoft_DD4hep
+            -Dsonar.sources=.
+            -Dsonar.cfamily.build-wrapper-output=bw-output
+            -Dsonar.host.url=https://sonarcloud.io
