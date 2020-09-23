@@ -89,6 +89,12 @@ OPTION(DD4HEP_DEBUG_CMAKE "Print debugging information for DD4hep CMAKE" OFF)
 SET(DD4HEP_USE_EXISTING_DD4HEP "" CACHE STRING "Build some parts of DD4hep against an existing installation")
 SET(DD4HEP_HIGH_MEM_POOL_DEPTH "${DD4HEP_HIGH_MEM_POOL_DEPTH}" CACHE STRING "Number of build slots for high memory compile units (DDParsers), Ninja only")
 
+SET(DD4HEP_BUILD_DEBUG "" CACHE STRING "Enable some DEBUG features in DD4hep. Set to 'ON' or 'OFF' to override default handling")
+
+IF(DD4HEP_BUILD_DEBUG AND NOT DD4HEP_BUILD_DEBUG MATCHES "ON|OFF")
+  MESSAGE(FATAL_ERROR "Invalid value for DD4HEP_BUILD_DEBUG, ${DD4HEP_BUILD_DEBUG}, use '', 'ON', 'OFF'")
+ENDIF()
+
 # create the job pool
 set_property(GLOBAL PROPERTY JOB_POOLS HIGH_MEM_POOL=${DD4HEP_HIGH_MEM_POOL_DEPTH})
 #####################
@@ -197,6 +203,9 @@ ELSE()
     dd4hep_print("|> Building ${DDPackage}")
     add_subdirectory(${DDPackage})
   ENDFOREACH()
+  IF(DD4HEP_BUILD_DEBUG MATCHES "ON" OR (CMAKE_BUILD_TYPE MATCHES "DEBUG|Debug" AND NOT DD4HEP_BUILD_DEBUG MATCHES "OFF"))
+    target_compile_definitions(DDCore PUBLIC DD4HEP_DEBUG)
+  ENDIF()
 
   message(STATUS "BUILD Packages: ${DD4HEP_BUILD_PACKAGES}")
   FOREACH(DDPackage IN LISTS DD4HEP_BUILD_PACKAGES)
