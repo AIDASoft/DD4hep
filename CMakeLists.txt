@@ -189,28 +189,29 @@ IF(DD4HEP_USE_EXISTING_DD4HEP)
   LIST(GET DD4HEP_BUILD_PACKAGES 0 DD4HEP_SELECTED_PACKAGE)
 ELSE()
 
-include(DD4hep_XML_setup)
+  include(DD4hep_XML_setup)
 
-#These pacakges are mandatory
-SET(DD4HEP_SELECTED_PACKAGE DDCore)
-FOREACH(DDPackage GaudiPluginService DDParsers DDCore)
-  dd4hep_print("|> Building ${DDPackage}")
-  add_subdirectory(${DDPackage})
-ENDFOREACH()
-message(STATUS "BUILD Packages: ${DD4HEP_BUILD_PACKAGES}")
-FOREACH(DDPackage IN LISTS DD4HEP_BUILD_PACKAGES)
-  dd4hep_print("|> Building ${DDPackage}")
-  add_subdirectory(${DDPackage})
-ENDFOREACH()
+  #These packages are mandatory
+  SET(DD4HEP_SELECTED_PACKAGE DDCore)
+  FOREACH(DDPackage GaudiPluginService DDParsers DDCore)
+    dd4hep_print("|> Building ${DDPackage}")
+    add_subdirectory(${DDPackage})
+  ENDFOREACH()
 
-if(BUILD_TESTING)
-  dd4hep_enable_tests()
-  add_subdirectory(DDTest)
-endif()
+  message(STATUS "BUILD Packages: ${DD4HEP_BUILD_PACKAGES}")
+  FOREACH(DDPackage IN LISTS DD4HEP_BUILD_PACKAGES)
+    dd4hep_print("|> Building ${DDPackage}")
+    add_subdirectory(${DDPackage})
+  ENDFOREACH()
 
-if(DD4HEP_BUILD_EXAMPLES)
-  add_subdirectory(examples)
-endif()
+  if(BUILD_TESTING)
+    dd4hep_enable_tests()
+    add_subdirectory(DDTest)
+  endif()
+
+  if(DD4HEP_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+  endif()
 
 
 ENDIF(DD4HEP_USE_EXISTING_DD4HEP)
