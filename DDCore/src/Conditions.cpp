@@ -206,7 +206,7 @@ ConditionKey::KeyMaker::KeyMaker(Condition::detkey_type det, const std::string& 
 /// Constructor from string
 ConditionKey::ConditionKey(DetElement detector, const string& value)  {
   hash = KeyMaker(detector,value).hash;
-#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+#if defined(DD4HEP_CONDITIONS_DEBUG) || defined(DD4HEP_CONDITIONKEY_HAVE_NAME)
   name = detector.path()+"#"+value;
 #endif
 }
@@ -214,7 +214,7 @@ ConditionKey::ConditionKey(DetElement detector, const string& value)  {
 /// Constructor from detector element key and item sub-key
 ConditionKey::ConditionKey(Condition::detkey_type det_key, const string& value)    {
   hash = KeyMaker(det_key,value).hash;
-#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+#if defined(DD4HEP_CONDITIONS_DEBUG) || defined(DD4HEP_CONDITIONKEY_HAVE_NAME)
   char text[32];
   ::snprintf(text,sizeof(text),"%08X#",det_key);
   name = text+value;
@@ -224,7 +224,7 @@ ConditionKey::ConditionKey(Condition::detkey_type det_key, const string& value) 
 /// Constructor from detector element key and item sub-key
 ConditionKey::ConditionKey(DetElement detector, Condition::itemkey_type item_key)  {
   hash = KeyMaker(detector.key(),item_key).hash;
-#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+#if defined(DD4HEP_CONDITIONS_DEBUG) || defined(DD4HEP_CONDITIONKEY_HAVE_NAME)
   char text[32];
   ::snprintf(text,sizeof(text),"#%08X",item_key);
   name = detector.path()+text;

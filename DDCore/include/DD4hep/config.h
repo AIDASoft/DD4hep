@@ -16,15 +16,18 @@
 #define DD4HEP_INSTANCE_COUNTS 1
 #define DD4HEP_USE_SAFE_CAST   1
 
-/// Enable to have more debugging information for conditions and keys
-/// If enabled it overrides DD4HEP_MINIMAL_CONDITIONS and sets it to true
-/// If enabled it overrides DD4HEP_CONDITIONKEY_HAVE_NAME and sets it to true
-#define DD4HEP_CONDITIONS_DEBUG  1
+#ifdef DD4HEP_DEBUG
+  /// Enable to have more debugging information for conditions and keys
+  /// If enabled it overrides DD4HEP_MINIMAL_CONDITIONS and sets it to true
+  /// If enabled it overrides DD4HEP_CONDITIONKEY_HAVE_NAME and sets it to true
+  #define DD4HEP_CONDITIONS_DEBUG  1
 
-/// Enable this if you want to minimize the footprint of conditions
-//#define DD4HEP_MINIMAL_CONDITIONS 1
-/// Enable flag to store conditions names to keys (needs some support from user code!)
-//#define DD4HEP_CONDITIONKEY_HAVE_NAME 1
+  /// Enable flag to store conditions names to keys (needs some support from user code!)
+  #define DD4HEP_CONDITIONKEY_HAVE_NAME 1
+#else
+  /// Enable this if you want to minimize the footprint of conditions
+  #define DD4HEP_MINIMAL_CONDITIONS 1
+#endif
 
 /// Valid implementations of the Gaudi plugin service are 1 and 2
 #define DD4HEP_PLUGINSVC_VERSION 2
