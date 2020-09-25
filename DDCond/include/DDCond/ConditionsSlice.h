@@ -81,8 +81,8 @@ namespace dd4hep {
           iov_pool = s.manager.registerIOV(*iov.iovType,iov.key());
         }
         template <typename T> Inserter(ConditionsSlice& s, const T& data) : slice(s) {
-          const IOV& iov = s.pool->validity();
-          iov_pool = s.manager.registerIOV(*iov.iovType,iov.key());
+          const IOV& iov = slice.pool->validity();
+          iov_pool = slice.manager.registerIOV(*iov.iovType,iov.key());
           std::for_each(std::begin(data), std::end(data), *this);
         }
         void operator()(Condition c) const  {

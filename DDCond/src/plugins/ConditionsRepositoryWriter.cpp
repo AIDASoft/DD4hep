@@ -146,7 +146,7 @@ namespace {
   };
   
   template <typename T> xml::Element _convert(xml::Element par, Condition c);
-
+  
   xml::Element make(xml::Element e, Condition c)  {
     char hash[64];
     std::string nam = c.name();
@@ -200,7 +200,7 @@ namespace {
     return temp;
   }
   template <> xml::Element _convert<Delta>(xml::Element par, Condition c)  {
-    xml::Element       align = make(xml::Element(par.document(),_UC(alignment)),c);
+    xml::Element       align = make(xml::Element(par.document(),_UC(alignment_delta)),c);
     const Delta&       delta = c.get<Delta>();
     if ( delta.flags&Delta::HAVE_TRANSLATION )
       align.append(_convert(align,delta.translation));
@@ -211,9 +211,16 @@ namespace {
     return align;
   }
   template <> xml::Element _convert<Alignment>(xml::Element par, Condition c)  {
-    xml::Element       align = make(xml::Element(par.document(),_UC(alignment)),c);
-    AlignmentCondition acond = c;
-    const Delta&       delta = acond.data().delta;
+    char hash[64];
+    typedef ConditionKey::KeyMaker KM;
+    AlignmentCondition  acond = c;
+    KM                  km(c.key());
+    const Delta&        delta = acond.data().delta;
+    xml::Element        align(xml::Element(par.document(),_UC(alignment_delta)));
+    Condition::key_type key = KM(km.values.det_key,align::Keys::deltaKey).hash;
+    ::snprintf(hash,sizeof(hash),"%llX",key);
+    align.setAttr(_U(name),align::Keys::deltaName);
+    align.setAttr(_U(key),hash);
     if ( delta.flags&Delta::HAVE_TRANSLATION )
       align.append(_convert(align,delta.translation));
     if ( delta.flags&Delta::HAVE_ROTATION )
@@ -409,8 +416,8 @@ size_t ConditionsXMLRepositoryWriter::collect(xml::Element root,
         ++m_numConverted;
       }
       else if ( cond_delta.isValid() )   {
-        conditions.append(_convert<Delta>(conditions,cond_delta));
-        ++m_numConverted;
+        //conditions.append(_convert<Delta>(conditions,cond_delta));
+        //++m_numConverted;
       }
     }
     for (const auto& i : detector.children())
