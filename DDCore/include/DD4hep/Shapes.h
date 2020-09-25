@@ -712,7 +712,7 @@ namespace dd4hep {
    *
    *   The Solid::dimension() and Solid::setDimension() calls for the TruncatedTube
    *   deliver/expect the parameters in the same order as the constructor:
-   *   (zhalf, rmin, rmax, startPhi, deltaPhi, cutAtStart, cutAtDelta, cutInside)
+   *   (dz, rmin, rmax, startPhi, deltaPhi, cutAtStart, cutAtDelta, cutInside)
    *
    *   \author  M.Frank
    *   \version 1.0
@@ -722,7 +722,7 @@ namespace dd4hep {
   protected:
     /// Internal helper method to support object construction
     void make(const std::string& name,
-              double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
+              double dz, double rmin, double rmax, double startPhi, double deltaPhi,
               double cutAtStart, double cutAtDelta, bool cutInside);
 
   public:
@@ -738,12 +738,12 @@ namespace dd4hep {
     template <typename Q> TruncatedTube(const Handle<Q>& e) : Solid_type<Object>(e) {  }
 
     /// Constructor to create a truncated tube object with attribute initialization
-    TruncatedTube(double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
+    TruncatedTube(double dz, double rmin, double rmax, double startPhi, double deltaPhi,
                   double cutAtStart, double cutAtDelta, bool cutInside);
 
     /// Constructor to create a truncated tube object with attribute initialization
     TruncatedTube(const std::string& name,
-                  double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
+                  double dz, double rmin, double rmax, double startPhi, double deltaPhi,
                   double cutAtStart, double cutAtDelta, bool cutInside);
 
     /// Move Assignment operator
@@ -962,6 +962,8 @@ namespace dd4hep {
                         double h1, double bl1, double tl1, double alpha1,
                         double h2, double bl2, double tl2, double alpha2);
 
+    /// Accessor: z-half value
+    double dZ() const                      { return access()->GetDz();                 }
     /// Accessor: phi value
     double phi() const                     { return access()->GetPhi()*dd4hep::deg;    }
     /// Accessor: theta value

@@ -268,7 +268,7 @@ namespace {
           ::sprintf(fmt,"%03d %%-%ds Key: %%16llX -> %%s # %%s",level+1,2*level+3);
           for(const auto cond : conditions )  {
             if ( with_keys )   {
-              printout(s_PrintLevel,m_detElementPrinter.name,fmt,"",cond->hash, de.path().c_str(), cond->name.c_str());
+              printout(s_PrintLevel,m_detElementPrinter.name,fmt,"",cond.key(), de.path().c_str(), cond.name());
             }
             if ( with_values )   {
               m_detElementPrinter(cond);

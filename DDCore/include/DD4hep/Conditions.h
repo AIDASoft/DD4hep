@@ -268,7 +268,7 @@ namespace dd4hep {
    */
   class ConditionKey  {
   public:
-#if defined(DD4HEP_CONDITIONS_DEBUG) || defined(DD4HEP_CONDITIONKEY_HAVE_NAME)
+#if defined(DD4HEP_CONDITIONS_HAVE_NAME)
     /// Optional string identifier. Helps debugging a lot!
     std::string  name;
 #endif

@@ -82,12 +82,12 @@ namespace {
           if ( i != rc.end() ) {
             (*i) = cond;
             printout(DEBUG,"DDDB","++ Got  MATCH: %-40s [%16llX] --> %s.",
-                     c->name.c_str(), c->hash, c->address.c_str());
+                     cond.name(), cond.key(), c->address.c_str());
             iov.iov_intersection(*c->iov);
             return;
           }
           printout(INFO,"DDDB","++ Got update: %-40s [%16llX] --> %s.",
-                   c->name.c_str(), c->hash, c->address.c_str());
+                   cond.name(), cond.key(), c->address.c_str());
         }
         else if (  cmd == INSERT )  {
           iov.iov_intersection(*c->iov);
