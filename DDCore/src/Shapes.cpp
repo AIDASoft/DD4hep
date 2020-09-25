@@ -328,19 +328,19 @@ void CutTube::make(const string& nam, double rmin, double rmax, double dz, doubl
 }
 
 /// Constructor to create a truncated tube object with attribute initialization
-TruncatedTube::TruncatedTube(double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
+TruncatedTube::TruncatedTube(double dZ, double rmin, double rmax, double startPhi, double deltaPhi,
                              double cutAtStart, double cutAtDelta, bool cutInside)
-{  make("", zhalf, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg, cutAtStart, cutAtDelta, cutInside);    }
+{  make("", dZ, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg, cutAtStart, cutAtDelta, cutInside);    }
 
 /// Constructor to create a truncated tube object with attribute initialization
 TruncatedTube::TruncatedTube(const string& nam,
-                             double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
+                             double dZ, double rmin, double rmax, double startPhi, double deltaPhi,
                              double cutAtStart, double cutAtDelta, bool cutInside)
-{  make(nam, zhalf, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg, cutAtStart, cutAtDelta, cutInside);    }
+{  make(nam, dZ, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg, cutAtStart, cutAtDelta, cutInside);    }
 
 /// Internal helper method to support object construction
 void TruncatedTube::make(const string& nam,
-                         double zhalf, double rmin, double rmax, double startPhi, double deltaPhi,
+                         double dZ, double rmin, double rmax, double startPhi, double deltaPhi,
                          double cutAtStart, double cutAtDelta, bool cutInside)   {
   // check the parameters
   if( rmin <= 0 || rmax <= 0 || cutAtStart <= 0 || cutAtDelta <= 0 )
@@ -365,7 +365,7 @@ void TruncatedTube::make(const string& nam,
   double boxX      = 1.1*rmax + rmax/sin_alpha; // Need to adjust for move!
   double boxY      = rmax;
   // width of the box > width of the tubs
-  double boxZ      = 1.1 * zhalf;
+  double boxZ      = 1.1 * dZ;
   double xBox;      // center point of the box
   if( cutInside )
     xBox = r - boxY / sin_alpha;
@@ -377,12 +377,12 @@ void TruncatedTube::make(const string& nam,
   rot.RotateZ( -alpha/dd4hep::deg );
   TGeoTranslation trans(xBox, 0., 0.);  
   TGeoBBox* box  = new TGeoBBox((nam+"Box").c_str(), boxX, boxY, boxZ);
-  TGeoTubeSeg* tubs = new TGeoTubeSeg((nam+"Tubs").c_str(), rmin, rmax, zhalf, startPhi, deltaPhi);
+  TGeoTubeSeg* tubs = new TGeoTubeSeg((nam+"Tubs").c_str(), rmin, rmax, dZ, startPhi, deltaPhi);
   TGeoCombiTrans* combi = new TGeoCombiTrans(trans, rot);
   TGeoSubtraction* sub  = new TGeoSubtraction(tubs, box, nullptr, combi);
   _assign(new TGeoCompositeShape(nam.c_str(), sub),"",TRUNCATEDTUBE_TAG,true);
   stringstream params;
-  params << zhalf               << " " << endl
+  params << dZ               << " " << endl
          << rmin                << " " << endl
          << rmax                << " " << endl
          << startPhi*units::deg << " " << endl
@@ -394,7 +394,7 @@ void TruncatedTube::make(const string& nam,
   //cout << "Params: " << params.str() << endl;
 #if 0
   params << TRUNCATEDTUBE_TAG << ":" << endl
-         << "\t zhalf:       " << zhalf << " " << endl
+         << "\t dZ:       " << dZ << " " << endl
          << "\t rmin:        " << rmin << " " << endl
          << "\t rmax:        " << rmax << " " << endl
          << "\t startPhi:    " << startPhi << " " << endl
@@ -410,7 +410,7 @@ void TruncatedTube::make(const string& nam,
 #if 0
   cout << "Trans:";  trans.Print(); cout << endl;
   cout << "Rot:  ";  rot.Print();   cout << endl;
-  cout << " Zhalf:        " << zhalf
+  cout << " dZ:           " << dZ
        << " rmin:         " << rmin
        << " rmax:         " << rmax
        << " r/cutAtStart: " << r
@@ -428,13 +428,13 @@ void TruncatedTube::make(const string& nam,
        << " xBox:      " << xBox
        << endl;
   cout << "Box:" << "x:" << box->GetDX() << " y:" << box->GetDY() << " z:" << box->GetDZ() << endl;
-  cout << "Tubs:" << " rmin:" << rmin << " rmax" << rmax << "zhalf" << zhalf
+  cout << "Tubs:" << " rmin:" << rmin << " rmax" << rmax << "dZ" << dZ
        << " startPhi:" <<  startPhi << " deltaPhi:" << deltaPhi << endl;
 #endif
 }
 
-/// Accessor: z-half value
-double TruncatedTube::zHalf() const    {
+/// Accessor: dZ value
+double TruncatedTube::dZ() const    {
   return dd4hep::dimensions<TruncatedTube>(*this)[0];
 }
 

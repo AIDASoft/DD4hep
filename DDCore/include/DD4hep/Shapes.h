@@ -751,7 +751,7 @@ namespace dd4hep {
     /// Copy Assignment operator
     TruncatedTube& operator=(const TruncatedTube& copy) = default;
     /// Accessor: z-half value
-    double zHalf() const;
+    double dZ() const;
     /// Accessor: r-min value
     double rMin() const;
     /// Accessor: r-max value
