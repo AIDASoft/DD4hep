@@ -99,7 +99,7 @@ static int alignment_example (Detector& description, int argc, char** argv)  {
   printout(INFO,"Example",
            "%ld conditions in slice. (T:%ld,S:%ld,L:%ld,C:%ld,M:%ld) "
            "Alignments accessed: %ld (A:%ld,M:%ld) for IOV:%-12s",
-           slice->conditions().size(),
+           slice->pool->size(),
            cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing, 
            total_accessed, ares.computed, ares.missing, iov_typ->str().c_str());
 

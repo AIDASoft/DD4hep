@@ -20,13 +20,13 @@
 /// If enabled it overrides DD4HEP_MINIMAL_CONDITIONS and sets it to true
 /// If enabled it overrides DD4HEP_CONDITIONS_HAVE_NAME and sets it to true
 #if defined(DD4HEP_DEBUG)
-#define DD4HEP_CONDITIONS_DEBUG  1
+#define DD4HEP_CONDITIONS_DEBUG     1
 #endif
 
-#if defined(DD4HEP_CONDITIONS_DEBUG)
 /// Enable flag to store conditions names to keys (needs some support from user code!)
 #define DD4HEP_CONDITIONS_HAVE_NAME 1
-#else
+
+#if !defined(DD4HEP_CONDITIONS_DEBUG)
 /// Enable this if you want to minimize the footprint of conditions
 #define DD4HEP_MINIMAL_CONDITIONS   1
 #endif

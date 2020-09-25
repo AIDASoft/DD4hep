@@ -50,6 +50,7 @@ namespace dd4hep {
       UNICODE(mapping);
       UNICODE(sequence);
       UNICODE(alignment);
+      UNICODE(alignment_delta);
       UNICODE(repository);
     }
     // User must ensure there are no clashes. If yes, then the clashing entry is unnecessary.

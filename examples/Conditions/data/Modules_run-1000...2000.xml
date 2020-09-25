@@ -4,10 +4,10 @@
 <conditions>
 
   <detelement path="/world/Telescope">
-    <alignment>
+    <alignment_delta>
       <position x="0" y="0" z="5*cm"/>
       <rotation x="0" y="0" z="0"/>     
-    </alignment>
+    </alignment_delta>
   </detelement>
 
   <detelement path="/world/Telescope/module_1">
@@ -26,35 +26,35 @@
   </detelement>
 
   <detelement path="/world/Telescope/module_6">
-    <alignment>
+    <alignment_delta>
       <position x="0" y="0"    z="290.0*mm"/>
       <rotation x="0" y="pi/2" z="0"/>     
-    </alignment>
+    </alignment_delta>
   </detelement>
 
   <detelement path="/world/Telescope/module_7">
-    <alignment>
+    <alignment_delta>
       <position x="0" y="0"    z="290.0*mm"/>
       <rotation x="0" y="pi/2" z="0"/>     
-    </alignment>
+    </alignment_delta>
   </detelement>
 
   <detelement path="/world/Telescope/module_8">
-    <alignment>
+    <alignment_delta>
       <position x="0" y="0"    z="290.0*mm"/>
       <rotation x="0" y="pi/2" z="0"/>     
-    </alignment>
+    </alignment_delta>
   </detelement>
 <!--
 -->
   <detelement path="/world/Telescope/module_9" ref="default_module.xml">
-    <alignment>
+    <alignment_delta>
       <position x="0" y="0" z="10.0*mm"/>
       <rotation x="0" y="0" z="0"/>     
       <pivot    x="0" y="0" z="0"/>     
-    </alignment>
+    </alignment_delta>
     <detelement path="/world/Telescope/module_9/sensor">
-      <alignment>
+      <alignment_delta>
         <position x="0" y="0" z="10.0*mm"/>
         <!-- This is a point symmetry of 180 degree. 
              Can be checked with the printer. 
@@ -62,7 +62,7 @@
          -->
         <rotation x="0" y="0" z="pi"/>     
         <pivot    x="0" y="0" z="0"/>     
-      </alignment>
+      </alignment_delta>
     </detelement>
 <!--
 -->

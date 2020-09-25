@@ -130,7 +130,7 @@ Result Calculator::compute(Context& context, Entry& e)   const  {
     return result;
   }
   AlignmentCondition c = context.mapping.get(det, Keys::alignmentKey);
-  AlignmentCondition cond = c.isValid() ? c : AlignmentCondition("alignment");
+  AlignmentCondition cond = c.isValid() ? c : AlignmentCondition(det.path()+"#alignment");
   AlignmentData&     align = cond.data();
   const Delta*       delta = e.delta ? e.delta : &identity_delta;
   TGeoHMatrix        transform_for_delta;
@@ -165,6 +165,7 @@ Result Calculator::compute(Context& context, Entry& e)   const  {
   // Update mapping if the condition is freshly created
   if ( !c.isValid() )  {
     e.created = 1;
+    cond->flags |= Condition::ALIGNMENT_DERIVED;
     cond->hash = ConditionKey(e.det,Keys::alignmentKey).hash;
     context.mapping.insert(e.det, Keys::alignmentKey, cond);
   }

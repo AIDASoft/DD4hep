@@ -244,12 +244,12 @@ template<typename MAPPING> inline bool
 ConditionsMappedUserPool<MAPPING>::i_insert(Condition::Object* o)   {
   int ret = m_conditions.emplace(o->hash,o).second;
   if ( flags&PRINT_INSERT )  {
-    printout(INFO,"UserPool","++ %s condition [%016llX]: %s.",
+    printout(INFO,"UserPool","++ %s condition [%016llX]: %s [%s].",
              ret ? "Successfully inserted" : "FAILED to insert", o->hash,
-#if defined(DD4HEP_MINIMAL_CONDITIONS)
-             "");
+#if defined(DD4HEP_CONDITIONS_HAVE_NAME)
+             o->GetName(), o->GetTitle());
 #else
-             o->name.c_str());
+             "");
 #endif
   }
   return ret;

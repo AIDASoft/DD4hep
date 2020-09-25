@@ -189,4 +189,3 @@ void dd4hep::cond::fill_content(ConditionsManager mgr,
   ConditionsIOVPool::Elements& pools = iovPool->elements;
   for_each(begin(pools),end(pools),SliceOper(content));
 }
-

@@ -150,10 +150,10 @@ namespace {
     string add = xml::DocumentHandler::system_path(e);
     string cond_nam = det.path()+"#"+nam;
     Condition cond(cond_nam, typ);
-    printout(s_parseLevel,"XMLConditions","++ Processing condition tag:%s name:%s type:%s [%s]",
-             tag.c_str(), nam.c_str(), typ.c_str(),
-             Path(add).filename().c_str());
-    cond->hash     = ConditionKey::hashCode(det,cond_nam);
+    cond->hash = ConditionKey::hashCode(det, nam);
+    printout(s_parseLevel,"XMLConditions","++ Processing condition tag:%s name:%s type:%s [%s] hash:%016X det:%p",
+             tag.c_str(), cond.name(), typ.c_str(),
+             Path(add).filename().c_str(), cond.key(), det.ptr());
 #if !defined(DD4HEP_MINIMAL_CONDITIONS)
     cond->address  = add;
     cond->value    = "";
@@ -370,7 +370,7 @@ namespace dd4hep {
     xml_coll_t(e,_UC(mapping)).for_each(Converter<mapping>(description,param,optional));
     xml_coll_t(e,_UC(sequence)).for_each(Converter<sequence>(description,param,optional));
     xml_coll_t(e,_UC(pressure)).for_each(Converter<pressure>(description,param,optional));
-    xml_coll_t(e,_UC(alignment)).for_each(Converter<alignment>(description,param,optional));
+    xml_coll_t(e,_UC(alignment_delta)).for_each(Converter<alignment>(description,param,optional));
     xml_coll_t(e,_UC(temperature)).for_each(Converter<temperature>(description,param,optional));
     xml_coll_t(e,_UC(detelement)).for_each(Converter<detelement>(description,param,optional));
   }

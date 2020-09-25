@@ -55,7 +55,7 @@ dd4hep_add_test_reg( AlignDet_Telescope_read_xml
   EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_read_xml 
      -input  file:${AlignDet_INSTALL}/compact/Telescope.xml 
      -deltas file:${CMAKE_INSTALL_PREFIX}/examples/Conditions/data/repository.xml 
-  REGEX_PASS "20 conditions in slice. \\(T:20,S:20,L:0,C:0,M:0\\) Alignments accessed: 20 \\(A:19,M:0\\) for IOV:run\\(1\\)"
+  REGEX_PASS "39 conditions in slice. \\(T:20,S:20,L:0,C:0,M:0\\) Alignments accessed: 20 \\(A:19,M:0\\) for IOV:run\\(1\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
@@ -115,7 +115,7 @@ dd4hep_add_test_reg( AlignDet_Telescope_readback_xml
   EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_read_xml
   -input  file:${AlignDet_INSTALL}/compact/Telescope.xml
   -deltas file:./new_cond.xml
-  REGEX_PASS "33 conditions in slice. \\(T:33,S:33,L:0,C:0,M:0\\) Alignments accessed: 20 \\(A:19,M:0\\) for IOV:run\\(1\\)"
+  REGEX_PASS "52 conditions in slice. \\(T:33,S:33,L:0,C:0,M:0\\) Alignments accessed: 20 \\(A:19,M:0\\) for IOV:run\\(1\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
