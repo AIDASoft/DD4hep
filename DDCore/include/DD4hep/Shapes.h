@@ -962,8 +962,6 @@ namespace dd4hep {
                         double h1, double bl1, double tl1, double alpha1,
                         double h2, double bl2, double tl2, double alpha2);
 
-    /// Accessor: z-half value
-    double dZ() const                      { return access()->GetDz();                 }
     /// Accessor: phi value
     double phi() const                     { return access()->GetPhi()*dd4hep::deg;    }
     /// Accessor: theta value
