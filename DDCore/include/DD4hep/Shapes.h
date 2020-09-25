@@ -982,6 +982,8 @@ namespace dd4hep {
     double high1()  const                  { return access()->GetH1();                 }
     /// Half length in y at high z
     double high2()  const                  { return access()->GetH2();                 }
+    /// Half length in dZ
+    double dZ()  const                     { return access()->GetDz();                 }
   };
 
   /// Class describing a pseudo trap shape (CMS'ism)
