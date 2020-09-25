@@ -246,12 +246,15 @@ bool Manager_Type1::registerUnlocked(ConditionsPool& pool, Condition cond)   {
     cond->iov  = pool.iov;
     cond->setFlag(Condition::ACTIVE);
     pool.insert(cond);
-#if !defined(DD4HEP_MINIMAL_CONDITIONS)
+#if !defined(DD4HEP_MINIMAL_CONDITIONS) && defined(DD4HEP_CONDITIONS_HAVE_NAME)
     printout(DEBUG,"ConditionsMgr","Register condition %016lX %s [%s] IOV:%s",
              cond.key(), cond.name(), cond->address.c_str(), pool.iov->str().c_str());
-#else
+#elif defined(DD4HEP_CONDITIONS_HAVE_NAME)
     printout(DEBUG,"ConditionsMgr","Register condition %016lX %s IOV:%s",
              cond.key(), cond.name(), pool.iov->str().c_str());
+#else
+    printout(DEBUG,"ConditionsMgr","Register condition %016lX IOV:%s",
+             cond.key(), pool.iov->str().c_str());
 #endif
     if ( !m_onRegister.empty() )   {
       __callListeners(m_onRegister, &ConditionsListener::onRegisterCondition, cond);

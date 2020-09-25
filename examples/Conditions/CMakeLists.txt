@@ -54,7 +54,7 @@ dd4hep_add_test_reg( Conditions_Telescope_cond_dump_by_detelement
   -compact file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml 
   -plugin DD4hep_ConditionsXMLRepositoryParser file:${CMAKE_INSTALL_PREFIX}/examples/Conditions/data/repository.xml 
   -plugin DD4hep_DetElementConditionsDump
-  REGEX_PASS "Key\\:FA708B8A8CDE3019 Type\\:dd4hep\\:\\:Delta"
+  REGEX_PASS "Key\\:FA708B8A6E87AB8E Type\\:dd4hep\\:\\:Delta"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #

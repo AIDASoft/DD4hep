@@ -249,7 +249,7 @@ ConditionsMappedUserPool<MAPPING>::i_insert(Condition::Object* o)   {
 #if defined(DD4HEP_CONDITIONS_HAVE_NAME)
              o->GetName(), o->GetTitle());
 #else
-             "");
+    "", "");
 #endif
   }
   return ret;
