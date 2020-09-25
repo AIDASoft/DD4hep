@@ -416,8 +416,8 @@ size_t ConditionsXMLRepositoryWriter::collect(xml::Element root,
         ++m_numConverted;
       }
       else if ( cond_delta.isValid() )   {
-        //conditions.append(_convert<Delta>(conditions,cond_delta));
-        //++m_numConverted;
+        conditions.append(_convert<Delta>(conditions,cond_delta));
+        ++m_numConverted;
       }
     }
     for (const auto& i : detector.children())
