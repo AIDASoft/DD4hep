@@ -32,7 +32,7 @@
 #define DD4HEP_CONDITIONS_HAVE_NAME 1
 
 /// Valid implementations of the Gaudi plugin service are 1 and 2
-#define DD4HEP_PLUGINSVC_VERSION 2
+#define DD4HEP_PLUGINSVC_VERSION    2
 
 #ifdef DD4HEP_INSTANCE_COUNTS
 #define INCREMENT_COUNTER InstanceCount::increment(this)
