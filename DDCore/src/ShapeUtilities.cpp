@@ -858,7 +858,7 @@ namespace dd4hep {
     TGeoShape*  right_solid   = boolean->GetRightShape();
     TGeoTubeSeg* tubs = (TGeoTubeSeg*)left_solid;
     TGeoBBox*    box  = (TGeoBBox*)right_solid;
-    double zhalf = params[0];
+    double dz    = params[0];
     double rmin  = params[1];
     double rmax  = params[2];
     double startPhi = params[3]/units::deg;
@@ -893,7 +893,7 @@ namespace dd4hep {
     double boxX      = 1.1*rmax + rmax/sin_alpha; // Need to adjust for move!
     double boxY      = rmax;
     // width of the box > width of the tubs
-    double boxZ      = 1.1 * zhalf;
+    double boxZ      = 1.1 * dz;
     double xBox;      // center point of the box
     if( cutInside )
       xBox = r - boxY / sin_alpha;
@@ -904,7 +904,7 @@ namespace dd4hep {
     TGeoRotation rot;
     rot.RotateZ( -alpha/units::deg );
     double box_dim[] = {boxX, boxY, boxZ};
-    double tub_dim[] = {rmin, rmax, zhalf, startPhi, deltaPhi};
+    double tub_dim[] = {rmin, rmax, dz, startPhi, deltaPhi};
     box->SetDimensions(box_dim);
     tubs->SetDimensions(tub_dim);
     TGeoCombiTrans* combi = (TGeoCombiTrans*)right_matrix;

@@ -56,7 +56,7 @@ namespace dd4hep {
      *  \ingroup DD4HEP_CONDITIONS
      */
     class ConditionObject
-#if defined(DD4HEP_CONDITIONS_DEBUG) || !defined(DD4HEP_MINIMAL_CONDITIONS)
+#if defined(DD4HEP_CONDITIONS_HAVE_NAME)
       : public NamedObject
 #endif
     {

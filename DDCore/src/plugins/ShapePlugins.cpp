@@ -151,7 +151,7 @@ DECLARE_XML_SHAPE(EllipticalTube__shape_constructor,create_EllipticalTube)
 static Handle<TObject> create_TruncatedTube(Detector&, xml_h element)   {
   xml_dim_t e(element);
   double sp = e.startphi(0.0), dp = e.deltaphi(2*M_PI);
-  Solid solid = TruncatedTube(e.zhalf(), e.rmin(0.0), e.rmax(), sp, dp,
+  Solid solid = TruncatedTube(e.dz(), e.rmin(0.0), e.rmax(), sp, dp,
                               e.attr<double>(xml_tag_t("cutAtStart")),
                               e.attr<double>(xml_tag_t("cutAtDelta")),
                               e.attr<bool>(xml_tag_t("cutInside")));

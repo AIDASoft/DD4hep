@@ -348,7 +348,7 @@ namespace dd4hep {
       ConditionDependency();
       /// Access the dependency key
       Condition::key_type key()  const    {  return target.hash;                   }
-#if defined(DD4HEP_CONDITIONS_DEBUG) || defined(DD4HEP_CONDITIONKEY_HAVE_NAME)
+#if defined(DD4HEP_CONDITIONS_HAVE_NAME)
       /// Access the dependency key
       const char* name()  const           {  return target.name.c_str();           }
 #endif

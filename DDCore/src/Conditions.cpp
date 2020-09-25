@@ -23,14 +23,6 @@
 using namespace std;
 using namespace dd4hep;
 
-#if defined(DD4HEP_CONDITIONS_DEBUG) && !defined(DD4HEP_CONDITIONKEY_HAVE_NAME)
-#define DD4HEP_CONDITIONKEY_HAVE_NAME 1
-#endif
-
-#if defined(DD4HEP_CONDITIONS_DEBUG) && defined(DD4HEP_MINIMAL_CONDITIONS)
-#undef DD4HEP_MINIMAL_CONDITIONS
-#endif
-
 /// Initializing constructor for a pure, undecorated conditions object
 Condition::Condition(key_type hash_key) : Handle<Object>()
 {
@@ -65,7 +57,7 @@ Condition::Condition(const string& nam,const string& typ, size_t memory)
 string Condition::str(int flags)  const   {
   stringstream output;
   Object* o = access(); 
-#if !defined(DD4HEP_MINIMAL_CONDITIONS)
+#if defined(DD4HEP_CONDITIONS_HAVE_NAME)
   if ( 0 == (flags&NO_NAME) )
     output << setw(16) << left << o->name;
 #endif
@@ -206,7 +198,7 @@ ConditionKey::KeyMaker::KeyMaker(Condition::detkey_type det, const std::string& 
 /// Constructor from string
 ConditionKey::ConditionKey(DetElement detector, const string& value)  {
   hash = KeyMaker(detector,value).hash;
-#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+#ifdef DD4HEP_CONDITIONS_HAVE_NAME
   name = detector.path()+"#"+value;
 #endif
 }
@@ -214,7 +206,7 @@ ConditionKey::ConditionKey(DetElement detector, const string& value)  {
 /// Constructor from detector element key and item sub-key
 ConditionKey::ConditionKey(Condition::detkey_type det_key, const string& value)    {
   hash = KeyMaker(det_key,value).hash;
-#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+#ifdef DD4HEP_CONDITIONS_HAVE_NAME
   char text[32];
   ::snprintf(text,sizeof(text),"%08X#",det_key);
   name = text+value;
@@ -224,7 +216,7 @@ ConditionKey::ConditionKey(Condition::detkey_type det_key, const string& value) 
 /// Constructor from detector element key and item sub-key
 ConditionKey::ConditionKey(DetElement detector, Condition::itemkey_type item_key)  {
   hash = KeyMaker(detector.key(),item_key).hash;
-#ifdef DD4HEP_CONDITIONKEY_HAVE_NAME
+#ifdef DD4HEP_CONDITIONS_HAVE_NAME
   char text[32];
   ::snprintf(text,sizeof(text),"#%08X",item_key);
   name = detector.path()+text;
@@ -256,7 +248,7 @@ string ConditionKey::toString()  const    {
   dd4hep::ConditionKey::KeyMaker key(hash);
   char text[64];
   ::snprintf(text,sizeof(text),"%08X-%08X",key.values.det_key, key.values.item_key);
-#if defined(DD4HEP_CONDITIONS_DEBUG) || defined(DD4HEP_CONDITIONKEY_HAVE_NAME)
+#if defined(DD4HEP_CONDITIONS_HAVE_NAME)
   if ( !name.empty() )   {
     stringstream str;
     str << "(" << name << ") " << text;
