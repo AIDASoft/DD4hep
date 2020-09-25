@@ -23,12 +23,12 @@
 #define DD4HEP_CONDITIONS_DEBUG     1
 #endif
 
-/// Enable flag to store conditions names to keys (needs some support from user code!)
-#define DD4HEP_CONDITIONS_HAVE_NAME 1
-
 #if !defined(DD4HEP_CONDITIONS_DEBUG)
 /// Enable this if you want to minimize the footprint of conditions
 #define DD4HEP_MINIMAL_CONDITIONS   1
+#else
+/// Enable flag to store conditions names to keys (needs some support from user code!)
+#define DD4HEP_CONDITIONS_HAVE_NAME 1
 #endif
 
 /// Valid implementations of the Gaudi plugin service are 1 and 2
