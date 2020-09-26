@@ -6,6 +6,7 @@ jobs:
   centos7:
     runs-on: ubuntu-18.04
     strategy:
+      fail-fast: false
       matrix:
         LCG: ["LCG_97apython3/x86_64-centos7-gcc8-opt",
               "LCG_97/x86_64-centos7-gcc9-opt"]
@@ -39,6 +40,7 @@ jobs:
   centos7-tbb:
     runs-on: ubuntu-18.04
     strategy:
+      fail-fast: false
       matrix:
         LCG: ["LCG_98/x86_64-centos7-gcc9-opt",
               "LCG_98python3/x86_64-centos7-gcc10-opt",
@@ -107,6 +109,7 @@ jobs:
   ubuntu18:
     runs-on: ubuntu-18.04
     strategy:
+      fail-fast: false
       matrix:
         LCG: ["LCG_98/x86_64-ubuntu1804-gcc8-opt",
               "LCG_98python3/x86_64-ubuntu1804-gcc7-opt"]
