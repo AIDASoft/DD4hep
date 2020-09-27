@@ -1,3 +1,98 @@
+# v01-14
+
+* 2020-09-26 Markus Frank ([PR#717](https://github.com/aidasoft/dd4hep/pull/717))
+  - Propagate condition names for printouts. Names are enabled by default. The feature can be disabled
+    to minimize conditions memory footprint. Comment `DD4HEP_CONDITIONS_HAVE_NAME` in `DD4hep/config.h`
+  
+  - If the debug flag `DD4HEP_CONDITIONS_DEBUG` is set (enabled by the compile definition `DD4HEP_DEBUG`, which in turn is enabled by the cmake flag `DD4HEP_BUILD_DEBUG`, which is turned on in debug builds automatically), then condition objects offer optional storage e.g. to store the object address or an xml-string etc.
+  
+  - Update and fix some tests, which were assuming names
+
+* 2020-09-25 Marko Petric ([PR#715](https://github.com/aidasoft/dd4hep/pull/715))
+  - Rename `TruncatedTube` `zHalf` accessor with `dZ` resolves #714 
+  - Add to `Trap` missing `dZ` accessor resolves #713
+
+* 2020-09-23 Andre Sailer ([PR#712](https://github.com/aidasoft/dd4hep/pull/712))
+  - Cmake: add configuration option DD4HEP_BUILD_DEBUG, if ON or OFF enable or disable the DD4HEP_DEBUG definition
+  if not set, enable if BuildType is Debug, fixes #708
+
+* 2020-09-23 bcouturi ([PR#709](https://github.com/aidasoft/dd4hep/pull/709))
+  - Added geoWebDisplay command that uses jsroot to render the Geometry, requires ROOT7 ROOTEve
+
+* 2020-09-23 Andre Sailer ([PR#707](https://github.com/aidasoft/dd4hep/pull/707))
+  - DDG4.HepEvtReader: fix reading of input particles, fixes #706 
+  - DDG4.HepEvtReader: fix the units, expecting GeV, mm as units of input files.
+  - DDG4.HepEvtReader: add abort if the file cannot be read, e.g., when the content doesn't match what is expected
+
+* 2020-09-22 Marko Petric ([PR#710](https://github.com/aidasoft/dd4hep/pull/710))
+  -  Fix variable name`SIGNATURE` in `Plugins.h` and `Plugins.inl` that conflicts with `#define` from `utmpx.h` in macOS libc implementation. Resolves #700
+  - Migrate CI from Travis-CI to GitHub Actions and include macOS and ubuntu18 tests
+
+* 2020-09-17 Marko Petric ([PR#704](https://github.com/aidasoft/dd4hep/pull/704))
+  - Apply `clang-tidy` `llvm-header-guard` fixer
+
+* 2020-09-16 Andre Sailer ([PR#705](https://github.com/aidasoft/dd4hep/pull/705))
+  - DDSim: add options to select which sensitive detectors are trackers and calorimeters, defaults unchanged
+  - DDSim: tweak log output formatting, logging goes now to stdout instead of stderr
+  - SiD example: remove `track_length_max` and `time_max` from silicon limits (fixes part of #703 )
+
+* 2020-09-07 Markus Frank ([PR#702](https://github.com/aidasoft/dd4hep/pull/702))
+  - Add `starttheta`, `endtheta`, `endphi` xml accessors. 
+  - Fix sphere shape creator and update shape example.
+
+* 2020-09-04 Markus Frank ([PR#697](https://github.com/aidasoft/dd4hep/pull/697))
+  - Implement data member accessors for construction parameters in `Shapes.h`. As discussed in the thread cms-sw/cmssw#30931 it was felt that read-only access to the basic construction parameters of a shape would be highly useful.
+
+* 2020-09-03 Marko Petric ([PR#699](https://github.com/aidasoft/dd4hep/pull/699))
+  - Set search order for python on macOS to search for system/framework python last (change in behavior of cmake 3.14->3.15)
+
+* 2020-07-31 Markus Frank ([PR#692](https://github.com/aidasoft/dd4hep/pull/692))
+  - Protect XML file handling against non-existing files.
+
+* 2020-07-30 Markus Frank ([PR#691](https://github.com/aidasoft/dd4hep/pull/691))
+  - Improve matrix helpers: Add extractors for scale and translation as `XYZVector` from `TGeoMatrix`.
+  - Add example to simulate the MiniTel with DDG4 using a HepMC input file
+  - Add example to load a sub-detector geometry from gdml.
+
+* 2020-07-27 Markus Frank ([PR#690](https://github.com/aidasoft/dd4hep/pull/690))
+  1) New example to show the usage of multiple compact input files being processed from the command line.
+      The example illustrates how to maniplulate the opening and the closing of the geometry using the compact notation.
+      ```
+       geoDisplay  -input file:SiD_multiple_inputs.xml \
+                           -input file:SiD_detectors_1.xml \
+                           -input file:SiD_detectors_2.xml \
+                           -input file:SiD_close.xml \
+                           -print INFO -destroy -volmgr -load```
+  2) New example to scan the geometry starting from a given position in a certain direction. Command line like for g4MaterialScan.
+      The output shows then the pathes to the volumes traversed, the shape and the material of these volumes.
+  
+      `g4GeometryScan --compact=DDDetectors/compact/SiD.xml --position=0,0,0 --direction=0,1,0`
+  
+     Resulting output:
+     ```
+      GeometryScan                      WARN  Starting tracking action for track ID=1
+      +--------------------------------------------------------------------------------------------------------------------------------------------------
+      | Material scan between: x_0 = (   0.00,   0.00,   0.00) [cm] and x_1 = (   0.00,3000.00,   0.00) [cm]  TrackID:1: 
+      +--------------------------------------------------------------------------------------------------------------------------------------------------
+      |     \                Path                                        
+      | Num. \  Thickness    Length   Endpoint                   Volume , Shape , Material
+      | Layer \   [cm]        [cm]    (     cm,     cm,     cm)         
+      +--------------------------------------------------------------------------------------------------------------------------------------------------
+      |     1      2.4500     2.450   (   0.00,   2.45,   0.00)  Path:"/world/BeamPipeVacuum_62" Shape:G4Polycone  Mat:Vacuum
+      |     2      0.0500     2.500   (   0.00,   2.50,   0.00)  Path:"/world/Beampipe_53" Shape:G4Polycone  Mat:Beryllium
+      |     3      0.1802     2.680   (   0.00,   2.68,   0.00)  Path:"/world/av_3_impr_1_layer1_pv_0" Shape:G4Tubs  Mat:Air
+      |     4      0.0115     2.692   (   0.00,   2.69,   0.00)  Path:"/world/av_3_impr_1_layer1_pv_0/VtxBarrelModuleInner_4" Shape:G4Box  Mat:Air
+      |     5      0.0130     2.705   (   0.00,   2.70,   0.00)  Path:"/world/av_3_impr_1_layer1_pv_0/VtxBarrelModuleInner_4/component0_0" Shape:G4Box  Mat:Carbon
+      |     6      0.0256     2.730   (   0.00,   2.73,   0.00)  Path:"/world/av_3_impr_1_layer1_pv_0/VtxBarrelModuleInner_4" Shape:G4Box  Mat:Air
+      |     7      0.0050     2.735   (   0.00,   2.74,   0.00)  Path:"/world/av_3_impr_1_layer1_pv_0/VtxBarrelModuleInner_4/component1_1" Shape:G4Box  Mat:Silicon
+      |     8      0.0050     2.740   (   0.00,   2.74,   0.00)  Path:"/world/av_3_impr_1_layer1_pv_0/VtxBarrelModuleInner_4" Shape:G4Box  Mat:Air
+      |     9      0.1596     2.900   (   0.00,   2.90,   0.00)  Path:"/world/av_3_impr_1_layer1_pv_0" Shape:G4Tubs  Mat:Air
+      |    10      0.7000     3.600   (   0.00,   3.60,   0.00)  Path:"/world" Shape:G4Box  Mat:Air
+      |    11      0.1844     3.784   (   0.00,   3.78,   0.00)  Path:"/world/av_3_impr_1_layer2_pv_1" Shape:G4Tubs  Mat:Air
+      |    12      0.0115     3.796   (   0.00,   3.80,   0.00)  Path:"/world/av_3_impr_1_layer2_pv_1/VtxBarrelModuleOuter_4" Shape:G4Box  Mat:Air
+      ....
+     ```
+
 # v01-13-01
 
 * 2020-07-10 Markus Frank ([PR#686](https://github.com/AIDASoft/DD4hep/pull/686))
