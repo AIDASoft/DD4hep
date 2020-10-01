@@ -1517,11 +1517,13 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   /// These two must be parsed early, because they are needed by the detector constructors
   xml_coll_t(compact, _U(properties)).for_each(_U(constant), Converter<PropertyConstant>(description));
-  xml_coll_t(compact, _U(properties)).for_each(_U(matrix), Converter<PropertyTable>(description));
+  xml_coll_t(compact, _U(properties)).for_each(_U(matrix),   Converter<PropertyTable>(description));
+  xml_coll_t(compact, _U(properties)).for_each(_U(plugin),   Converter<Plugin> (description));
   xml_coll_t(compact, _U(surfaces)).for_each(_U(opticalsurface), Converter<OpticalSurface>(description));
 #endif
-  xml_coll_t(compact, _U(materials)).for_each(_U(element), Converter<Atom>(description));
+  xml_coll_t(compact, _U(materials)).for_each(_U(element),  Converter<Atom>(description));
   xml_coll_t(compact, _U(materials)).for_each(_U(material), Converter<Material>(description));
+  xml_coll_t(compact, _U(materials)).for_each(_U(plugin),   Converter<Plugin> (description));
   
   xml_coll_t(compact, _U(display)).for_each(_U(include), Converter<DetElementInclude>(description));
   xml_coll_t(compact, _U(display)).for_each(_U(vis), Converter<VisAttr>(description));

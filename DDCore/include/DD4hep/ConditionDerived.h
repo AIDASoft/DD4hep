@@ -316,10 +316,8 @@ namespace dd4hep {
       int                                  m_refCount {0};
 
     public:
-#ifdef DD4HEP_CONDITIONS_DEBUG
       /// Reference to the target's detector element
       DetElement                           detector;
-#endif
       /// Key to the condition to be updated
       ConditionKey                         target {0};
       /// Dependency keys this condition depends on
@@ -337,13 +335,9 @@ namespace dd4hep {
 
     public:
       /// Initializing constructor used by builder
-      ConditionDependency(Condition::key_type key, std::shared_ptr<ConditionUpdateCall> call);
-      /// Initializing constructor used by builder
       ConditionDependency(DetElement de, const std::string& item, std::shared_ptr<ConditionUpdateCall> call);
       /// Initializing constructor used by builder
       ConditionDependency(DetElement de, Condition::itemkey_type item_key, std::shared_ptr<ConditionUpdateCall> call);
-      /// Initializing constructor used by builder
-      ConditionDependency(Condition::detkey_type det_key, Condition::itemkey_type item_key, std::shared_ptr<ConditionUpdateCall> call);
       /// Default constructor
       ConditionDependency();
       /// Access the dependency key
