@@ -155,9 +155,6 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)  const  {
   DependencyBuilder build_1(de, target1.item_key(), call1);
   DependencyBuilder build_2(de, target2.item_key(), call2);
   DependencyBuilder build_3(de, target3.item_key(), call3);
-  //DependencyBuilder build_1(de, "derived_data/derived_1", call1);
-  //DependencyBuilder build_2(de, "derived_data/derived_2", call2);
-  //DependencyBuilder build_3(de, "derived_data/derived_3", call3);
 
   // Compute the derived stuff
   sbuild_1.add(key);
