@@ -132,31 +132,10 @@ void ConditionUpdateContext::accessFailure(const ConditionKey& key_value)  const
 }
 
 /// Initializing constructor
-ConditionDependency::ConditionDependency(Condition::key_type  key,
-                                         std::shared_ptr<ConditionUpdateCall> call)
-  : m_refCount(0), target(key), callback(std::move(call))
-{
-  InstanceCount::increment(this);
-}
-
-/// Initializing constructor
-ConditionDependency::ConditionDependency(Condition::detkey_type det_key,
-                                         Condition::itemkey_type item_key,
-                                         std::shared_ptr<ConditionUpdateCall> call)
-  : m_refCount(0), target(det_key, item_key), callback(std::move(call))
-{
-  InstanceCount::increment(this);
-}
-
-/// Initializing constructor
 ConditionDependency::ConditionDependency(DetElement              de,
                                          Condition::itemkey_type item_key,
                                          std::shared_ptr<ConditionUpdateCall> call)
-  : m_refCount(0), 
-#ifdef DD4HEP_CONDITIONS_DEBUG
-  detector(de),
-#endif
-  target(de, item_key), callback(std::move(call))
+  : m_refCount(0), detector(de), target(de, item_key), callback(std::move(call))
 {
   InstanceCount::increment(this);
 }
@@ -166,10 +145,7 @@ ConditionDependency::ConditionDependency(DetElement de,
                                          const std::string&   item, 
                                          std::shared_ptr<ConditionUpdateCall> call)
   : 
-#ifdef DD4HEP_CONDITIONS_DEBUG
-  detector(de),
-#endif
-  target(de, item), callback(std::move(call))
+  detector(de), target(de, item), callback(std::move(call))
 {
   InstanceCount::increment(this);
 }
