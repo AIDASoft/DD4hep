@@ -1,3 +1,14 @@
+# v01-14-01
+
+* 2020-10-02 Markus Frank ([PR#720](https://github.com/AIDASoft/DD4hep/pull/720))
+  - Add the ability to access the `DetElement` in a derived condition. Access to it is enabled now for all
+  compilations (Debug + Release).
+  - When parsing compact, it is possible to inject plugins to create tables with tabulated properties in C++
+  - When parsing compact, it is possible to inject plugins to assign property tables to materials.
+
+* 2020-09-28 Marko Petric ([PR#718](https://github.com/AIDASoft/DD4hep/pull/718))
+  - Replace deprecated `PyOS_AfterFork` with `PyOS_AfterFork_Child` for python 3.7 and above
+
 # v01-14
 
 * 2020-09-26 Markus Frank ([PR#717](https://github.com/aidasoft/dd4hep/pull/717))
