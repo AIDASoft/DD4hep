@@ -117,17 +117,16 @@ centos7-clang10-Geant10.6-XERCESC:
 
 mac1015-clang110-Geant10.6:
   stage: build
-  allow_failure: true
   tags:
     - mac
   script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97python3/x86_64-mac1015-clang110-opt/setup.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-mac1015-clang110-opt/setup.sh
     - export CXX=clang++
     - export CC=clang
     - export FC=""
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.6.1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -138,21 +137,20 @@ mac1015-clang110-Geant10.6:
     - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
-    - ctest --output-on-failure
+    - ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement
 
 mac1015-clang110-Geant10.6-XERCESC:
   stage: build
-  allow_failure: true
   tags:
     - mac
   script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97python3/x86_64-mac1015-clang110-opt/setup.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-mac1015-clang110-opt/setup.sh
     - export CXX=clang++
     - export CC=clang
     - export FC=""
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON  -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.6.1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 -DDD4HEP_USE_XERCESC=ON ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 -DDD4HEP_USE_XERCESC=ON ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -163,7 +161,7 @@ mac1015-clang110-Geant10.6-XERCESC:
     - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
-    - ctest --output-on-failure
+    - ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement
 
 Python:
   stage: build
@@ -171,9 +169,9 @@ Python:
     - docker
   image: clicdp/cc7-lcg
   script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_97/x86_64-centos7-gcc9-opt/setup.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98/x86_64-centos7-gcc10-opt/setup.sh
     - echo "RUNNING PYLINT PY3K CHECK"
-    - find . -name "*.py" -and -not -name "ddsix.py" -exec pylint --rcfile=.dd4hep-ci.d/DD4hep.pylint.py3k.rc --py3k {} +
+    - find . -name "*.py" -and -not -name "ddsix.py" -exec pylint --rcfile=.github/scripts/DD4hep.pylint.py3k.rc --py3k {} +
     - echo "RUNNING FLAKE8 CHECK"
     - find . -name "*.py" -and -not -name 'ddsix.py' -exec flake8 {} +
 
@@ -191,7 +189,7 @@ doxygen:
         - docker
     image: clicdp/cc7-lcg
     script:
-        - source .dd4hep-ci.d/init_x86_64.sh
+        - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-centos7-gcc10-opt/setup.sh
         - mkdir -p public
         - mkdir build
         - cd build
@@ -211,7 +209,7 @@ usermanuals:
     image: clicdp/cc7-lcg
     script:
         - yum install -y ghostscript poppler-utils perl
-        - source .dd4hep-ci.d/init_x86_64.sh
+        - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-centos7-gcc10-opt/setup.sh
         - export PATH=/cvmfs/sft.cern.ch/lcg/external/texlive/2017/bin/x86_64-linux:$PATH
         - export max_print_line=200
         - mkdir -p public/usermanuals
