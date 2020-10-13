@@ -15,18 +15,18 @@
 
 #include <string>
 #include <string_view>
-#include "tbb/concurrent_unordered_map.h"
-#include "tbb/concurrent_vector.h"
+#include <unordered_map>
+#include <vector>
 
 namespace dd4hep {
-  using Paths = tbb::concurrent_vector<std::string>;
-  using PartSelectionMap = tbb::concurrent_unordered_map<std::string, tbb::concurrent_vector<std::string>>;
-  using VectorsMap = tbb::concurrent_unordered_map<std::string, tbb::concurrent_vector<double>>;
+  using Paths = std::vector<std::string>;
+  using PartSelectionMap = std::unordered_map<std::string, std::vector<std::string>>;
+  using VectorsMap = std::unordered_map<std::string, std::vector<double>>;
 
   struct SpecPar {
     std::string_view strValue(const std::string&) const;
-    bool hasValue(const std::string& key) const;
-    bool hasPath(const std::string& path) const;
+    bool hasValue(const std::string&) const;
+    bool hasPath(const std::string&) const;
     double dblValue(const std::string&) const;
 
     template <typename T>
@@ -35,11 +35,10 @@ namespace dd4hep {
     Paths paths;
     PartSelectionMap spars;
     VectorsMap numpars;
-    std::string_view name;
   };
 
-  using SpecParMap = tbb::concurrent_unordered_map<std::string, SpecPar>;
-  using SpecParRefs = std::vector<const SpecPar*>;
+  using SpecParMap = std::unordered_map<std::string, SpecPar>;
+  using SpecParRefs = std::vector<std::pair<std::string_view, const SpecPar*>>;
 
   struct SpecParRegistry {
     void filter(SpecParRefs&, const std::string&, const std::string& = "") const;

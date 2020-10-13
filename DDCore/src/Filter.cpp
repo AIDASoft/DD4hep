@@ -32,6 +32,10 @@ namespace dd4hep {
       return (input.find(".") != std::string_view::npos) || (input.find("*") != std::string_view::npos);
     }
 
+    bool hasNamespace(std::string_view input) {
+      return (input.find(":") != std::string_view::npos);
+    }
+    
     string_view realTopName(string_view input) {
       string_view v = input;
       auto first = v.find_first_of("//");
