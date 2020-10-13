@@ -110,8 +110,7 @@ void SpecParRegistry::filter(SpecParRefs& refs, const std::string& attribute, co
       }
     });
     if (found) {
-      k.second.name = k.first;
-      refs.emplace_back(&k.second);
+      refs.emplace_back(std::make_pair(k.first, &k.second));
     }
   });
 }

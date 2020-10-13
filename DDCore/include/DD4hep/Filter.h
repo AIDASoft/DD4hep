@@ -29,39 +29,18 @@
 //         Created:  Tue, 12 Mar 2019 09:51:33 CET
 //
 //
-
 #include <memory>
 #include <vector>
 #include <regex>
+#include <unordered_map>
 
 namespace dd4hep {
   struct SpecPar;
 
   struct Filter {
-    void print() const {
-      /* edm::LogVerbatim("Geometry").log([&](auto& log) { */
-      /*   for (const auto& it : skeys) { */
-      /*     log << it << ", "; */
-      /*   } */
-      /*   if (next) { */
-      /*     log << "Next:\n"; */
-      /*     print(next); */
-      /*   } */
-      /*   if (up) { */
-      /*     log << "Up:\n"; */
-      /*     up->print(); */
-      /*   } */
-      /* }); */
-    }
-
-    //    void print(const std::unique_ptr<Filter>& filter) const {
-      /* edm::LogVerbatim("Geometry").log([&](auto& log) { */
-      /*   for (const auto& it : filter->skeys) { */
-      /*     log << it << ", "; */
-      /*   } */
-      /* }); */
-    //}
-
+    std::vector<bool> isRegex;
+    std::vector<bool> hasNamaspace;
+    std::vector<int> index;
     std::vector<std::string_view> skeys;
     std::vector<std::regex> keys;
     std::unique_ptr<Filter> next;
@@ -72,6 +51,7 @@ namespace dd4hep {
   namespace dd {
     bool accepted(std::vector<std::regex> const&, std::string_view);
     bool isRegex(std::string_view);
+    bool hasNamespace(std::string_view);
     bool isMatch(std::string_view, std::string_view);
     bool compareEqual(std::string_view, std::string_view);
     bool compareEqual(std::string_view, std::regex);
