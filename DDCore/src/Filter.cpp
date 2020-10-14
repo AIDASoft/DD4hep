@@ -23,9 +23,40 @@ namespace dd4hep {
       return regex_match(std::string(node.data(), node.size()), pattern);
     }
 
+    bool compareEqualName(const std::string_view selection, const std::string_view name) {
+      return (!(dd4hep::dd::isRegex(selection)) ? dd4hep::dd::compareEqual(name, selection)
+	      : regex_match(name.begin(), name.end(), regex(std::string(selection))));
+    }
+
+    bool compareEqualCopyNumber(std::string_view name, int copy) {
+      auto pos = name.rfind('[');
+      if (pos != name.npos) {
+	if (std::stoi(std::string(name.substr(pos + 1, name.rfind(']')))) == copy) {
+	  return true;
+	}
+      }
+      
+      return false;
+    }
+
     bool accepted(vector<std::regex> const& keys, string_view node) {
       return (find_if(begin(keys), end(keys), [&](const auto& n) -> bool { return compareEqual(node, n); }) !=
               end(keys));
+    }
+
+    bool accepted(const Filter* filter, std::string_view name) {
+      for(unsigned int i = 0; i < filter->isRegex.size(); i++ ) {
+	if(!filter->isRegex[i]) {
+	  if(compareEqual(filter->skeys[i], name)) {
+	    return true;
+	  }
+	} else {
+	  if(compareEqual(name, filter->keys[filter->index[i]])) {
+	    return true;
+	  }
+	}
+      }
+      return false;
     }
 
     bool isRegex(string_view input) {
