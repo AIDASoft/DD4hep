@@ -110,10 +110,19 @@ void SpecParRegistry::filter(SpecParRefs& refs, const std::string& attribute, co
       }
     });
     if (found) {
-      refs.emplace_back(std::make_pair(k.first, &k.second));
+      refs.emplace_back(std::string(k.first.data(), k.first.size()), &k.second);
     }
   });
 }
+
+void SpecParRegistry::filter(SpecParRefs& refs, const std::string& key) const {
+  for (auto const& it : specpars) {
+    if (it.second.hasValue(key) || (it.second.spars.find(key) != end(it.second.spars))) {
+      refs.emplace_back(it.first, &it.second);
+    }
+  }
+}
+
 
 std::vector<std::string_view> SpecParRegistry::names(const std::string& path) const {
   std::vector<std::string_view> result;

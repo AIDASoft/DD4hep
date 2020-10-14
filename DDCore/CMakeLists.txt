@@ -15,7 +15,7 @@ dd4hep_print("|++> Will be Building DDCore")
 
 file(GLOB DDCore_SOURCES src/*.cpp src/segmentations/*.cpp src/XML/*.cpp)
 
-if(NOT DD4HEP_USE_TBB OR ${CMAKE_CXX_STANDARD} LESS 17)
+if(${CMAKE_CXX_STANDARD} LESS 17)
   list(APPEND EXCLUDE_HEADER include/DD4hep/SpecParRegistry.h)
   list(APPEND EXCLUDE_HEADER include/DD4hep/Filter.h)
   list(FILTER DDCore_SOURCES EXCLUDE REGEX Filter\.cpp|SpecParRegistry\.cpp )

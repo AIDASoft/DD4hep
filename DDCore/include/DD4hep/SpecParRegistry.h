@@ -38,10 +38,11 @@ namespace dd4hep {
   };
 
   using SpecParMap = std::unordered_map<std::string, SpecPar>;
-  using SpecParRefs = std::vector<std::pair<std::string_view, const SpecPar*>>;
+  using SpecParRefs = std::vector<std::pair<std::string, const SpecPar*>>;
 
   struct SpecParRegistry {
-    void filter(SpecParRefs&, const std::string&, const std::string& = "") const;
+    void filter(SpecParRefs&, const std::string&, const std::string&) const;
+    void filter(SpecParRefs&, const std::string&) const;
     std::vector<std::string_view> names() const;
     std::vector<std::string_view> names(const std::string& path) const;
     bool hasSpecPar(std::string_view) const;

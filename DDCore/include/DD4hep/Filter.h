@@ -39,7 +39,7 @@ namespace dd4hep {
 
   struct Filter {
     std::vector<bool> isRegex;
-    std::vector<bool> hasNamaspace;
+    std::vector<bool> hasNamespace;
     std::vector<int> index;
     std::vector<std::string_view> skeys;
     std::vector<std::regex> keys;
@@ -50,11 +50,14 @@ namespace dd4hep {
 
   namespace dd {
     bool accepted(std::vector<std::regex> const&, std::string_view);
+    bool accepted(const Filter*, std::string_view);
     bool isRegex(std::string_view);
     bool hasNamespace(std::string_view);
     bool isMatch(std::string_view, std::string_view);
     bool compareEqual(std::string_view, std::string_view);
     bool compareEqual(std::string_view, std::regex);
+    bool compareEqualName(std::string_view, std::string_view);
+    bool compareEqualCopyNumber(std::string_view, int);
     std::string_view realTopName(std::string_view);
     std::vector<std::string_view> split(std::string_view, const char*);
     std::string_view noNamespace(std::string_view);
