@@ -649,15 +649,15 @@ endfunction(dd4hep_add_plugin)
 macro(DD4HEP_SETUP_ROOT_TARGETS)
 
   #Check if Python version detected matches the version used to build ROOT
-  IF(${ROOT_VERSION} VERSION_GREATER_EQUAL 6.19)
-    IF(${ROOT_PYTHON_VERSION} EQUAL ${Python_VERSION})
-      dd4hep_debug( "D++> Python version used for building ROOT ${ROOT_PYTHON_VERSION}" )
-    ELSE()
-      dd4hep_print( "Python version used to build ROOT = ${ROOT_PYTHON_VERSION}" )
-      dd4hep_print( "Python version detected by CMake to build DD4hep = ${Python_VERSION}" )
-      #dd4hep_fatal( "Mismatch between Python version used for building ROOT and Python version detected by CMake" )
-    ENDIF()
+  SET(Python_FIND_FRAMEWORK LAST)
+  IF((TARGET ROOT::PyROOT OR TARGET ROOT::ROOTTPython) AND ${ROOT_VERSION} VERSION_GREATER_EQUAL 6.19)
+    dd4hep_debug( "D++> Python version used for building ROOT ${ROOT_PYTHON_VERSION}" )
+    FIND_PACKAGE(Python ${ROOT_PYTHON_VERSION} EXACT REQUIRED COMPONENTS Development)
+  ELSE()
+    FIND_PACKAGE(Python COMPONENTS Development)
   ENDIF()
+
+  SET(DD4HEP_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
 
   # root python changes target name in 6.22
   IF(TARGET ROOT::PyROOT)
