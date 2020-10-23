@@ -16,7 +16,7 @@
   </includes>
 
   <define>
-    <constant name="world_side" value="3000*cm"/>
+    <constant name="world_side" value="300*cm"/>
     <constant name="world_x" value="world_side"/>
     <constant name="world_y" value="world_side"/>
     <constant name="world_z" value="world_side"/>

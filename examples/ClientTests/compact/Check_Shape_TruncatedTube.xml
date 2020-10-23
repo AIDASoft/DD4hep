@@ -6,11 +6,6 @@
   <detectors>
     <detector id="1" name="Shape_TruncatedTube" type="DD4hep_TestShape_Creator">
       <check vis="Shape1_vis">
-        <shape type="Box" dx="30*cm" dy="20*cm" dz="10*cm"/>
-        <position x="30"  y="30"   z="30"/>
-        <rotation x="0"   y="0"    z="0"/>
-      </check>
-      <check vis="Shape1_vis">
         <shape type="TruncatedTube" dz="50*cm" rmin="20*cm" rmax="40*cm" 
                startphi="0*deg"   deltaphi="90*deg" 
                cutAtStart="25*cm" cutAtDelta="35*cm"
@@ -43,8 +38,8 @@
       </check>
 -->
 
-      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_TruncatedTube.txt" create="CheckShape_create"/>
-      <ntest type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_TruncatedTube.txt" create="1"/>
+      <ntest  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_TruncatedTube.txt" create="CheckShape_create"/>
+      <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_TruncatedTube.txt" create="1"/>
     </detector>
   </detectors>
 </lccdd>
