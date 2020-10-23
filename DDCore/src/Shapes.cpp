@@ -297,64 +297,64 @@ Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, do
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-void Tube::make(const string& nam, double rmin, double rmax, double z, double startPhi, double endPhi) {
-  _assign(new TGeoTubeSeg(nam.c_str(), rmin, rmax, z, startPhi/units::deg, endPhi/units::deg),nam,TUBE_TAG,true);
+void Tube::make(const string& nam, double rmin, double rmax, double z, double start_phi, double end_phi) {
+  _assign(new TGeoTubeSeg(nam.c_str(), rmin, rmax, z, start_phi/units::deg, end_phi/units::deg),nam,TUBE_TAG,true);
 }
 
 /// Set the tube dimensions
-Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double endPhi) {
-  double params[] = {rmin,rmax,z,startPhi/units::deg,endPhi/units::deg};
+Tube& Tube::setDimensions(double rmin, double rmax, double z, double start_phi, double end_phi) {
+  double params[] = {rmin,rmax,z,start_phi/units::deg,end_phi/units::deg};
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-CutTube::CutTube(double rmin, double rmax, double dz, double startPhi, double endPhi,
+CutTube::CutTube(double rmin, double rmax, double dz, double start_phi, double end_phi,
                  double lx, double ly, double lz, double tx, double ty, double tz)  {
-  make("", rmin,rmax,dz,startPhi/units::deg,endPhi/units::deg,lx,ly,lz,tx,ty,tz);
+  make("", rmin,rmax,dz,start_phi/units::deg,end_phi/units::deg,lx,ly,lz,tx,ty,tz);
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 CutTube::CutTube(const string& nam,
-                 double rmin, double rmax, double dz, double startPhi, double endPhi,
+                 double rmin, double rmax, double dz, double start_phi, double end_phi,
                  double lx, double ly, double lz, double tx, double ty, double tz)  {
-  make(nam, rmin,rmax,dz,startPhi/units::deg,endPhi/units::deg,lx,ly,lz,tx,ty,tz);
+  make(nam, rmin,rmax,dz,start_phi/units::deg,end_phi/units::deg,lx,ly,lz,tx,ty,tz);
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-void CutTube::make(const string& nam, double rmin, double rmax, double dz, double startPhi, double endPhi,
+void CutTube::make(const string& nam, double rmin, double rmax, double dz, double start_phi, double end_phi,
                    double lx, double ly, double lz, double tx, double ty, double tz)  {
-  _assign(new TGeoCtub(nam.c_str(), rmin,rmax,dz,startPhi,endPhi,lx,ly,lz,tx,ty,tz),"",CUTTUBE_TAG,true);
+  _assign(new TGeoCtub(nam.c_str(), rmin,rmax,dz,start_phi,end_phi,lx,ly,lz,tx,ty,tz),"",CUTTUBE_TAG,true);
 }
 
 /// Constructor to create a truncated tube object with attribute initialization
-TruncatedTube::TruncatedTube(double dz, double rmin, double rmax, double startPhi, double deltaPhi,
-                             double cutAtStart, double cutAtDelta, bool cutInside)
-{  make("", dz, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg, cutAtStart, cutAtDelta, cutInside);    }
+TruncatedTube::TruncatedTube(double dz, double rmin, double rmax, double start_phi, double delta_phi,
+                             double cut_atStart, double cut_atDelta, bool cut_inside)
+{  make("", dz, rmin, rmax, start_phi/units::deg, delta_phi/units::deg, cut_atStart, cut_atDelta, cut_inside);    }
 
 /// Constructor to create a truncated tube object with attribute initialization
 TruncatedTube::TruncatedTube(const string& nam,
-                             double dz, double rmin, double rmax, double startPhi, double deltaPhi,
-                             double cutAtStart, double cutAtDelta, bool cutInside)
-{  make(nam, dz, rmin, rmax, startPhi/units::deg, deltaPhi/units::deg, cutAtStart, cutAtDelta, cutInside);    }
+                             double dz, double rmin, double rmax, double start_phi, double delta_phi,
+                             double cut_atStart, double cut_atDelta, bool cut_inside)
+{  make(nam, dz, rmin, rmax, start_phi/units::deg, delta_phi/units::deg, cut_atStart, cut_atDelta, cut_inside);    }
 
 /// Internal helper method to support object construction
 void TruncatedTube::make(const string& nam,
-                         double dz, double rmin, double rmax, double startPhi, double deltaPhi,
-                         double cutAtStart, double cutAtDelta, bool cutInside)   {
+                         double dz, double rmin, double rmax, double start_phi, double delta_phi,
+                         double cut_atStart, double cut_atDelta, bool cut_inside)   {
   // check the parameters
-  if( rmin <= 0 || rmax <= 0 || cutAtStart <= 0 || cutAtDelta <= 0 )
-    except(TRUNCATEDTUBE_TAG,"++ 0 <= rIn,cutAtStart,rOut,cutAtDelta,rOut violated!");
+  if( rmin <= 0 || rmax <= 0 || cut_atStart <= 0 || cut_atDelta <= 0 )
+    except(TRUNCATEDTUBE_TAG,"++ 0 <= rIn,cut_atStart,rOut,cut_atDelta,rOut violated!");
   else if( rmin >= rmax )
     except(TRUNCATEDTUBE_TAG,"++ rIn<rOut violated!");
-  else if( startPhi != 0. )
-    except(TRUNCATEDTUBE_TAG,"++ startPhi != 0 not supported!");
+  else if( start_phi != 0. )
+    except(TRUNCATEDTUBE_TAG,"++ start_phi != 0 not supported!");
 
-  double r         = cutAtStart;
-  double R         = cutAtDelta;
+  double r         = cut_atStart;
+  double R         = cut_atDelta;
   // angle of the box w.r.t. tubs
-  double cath      = r - R * std::cos( deltaPhi*units::deg );
-  double hypo      = std::sqrt( r*r + R*R - 2.*r*R * std::cos( deltaPhi*units::deg ));
+  double cath      = r - R * std::cos( delta_phi*units::deg );
+  double hypo      = std::sqrt( r*r + R*R - 2.*r*R * std::cos( delta_phi*units::deg ));
   double cos_alpha = cath / hypo;
   double alpha     = std::acos( cos_alpha );
   double sin_alpha = std::sin( std::fabs(alpha) );
@@ -367,7 +367,7 @@ void TruncatedTube::make(const string& nam,
   // width of the box > width of the tubs
   double boxZ      = 1.1 * dz;
   double xBox;      // center point of the box
-  if( cutInside )
+  if( cut_inside )
     xBox = r - boxY / sin_alpha;
   else
     xBox = r + boxY / sin_alpha;
@@ -376,20 +376,20 @@ void TruncatedTube::make(const string& nam,
   TGeoRotation rot;
   rot.RotateZ( -alpha/dd4hep::deg );
   TGeoTranslation trans(xBox, 0., 0.);  
-  TGeoBBox* box  = new TGeoBBox((nam+"Box").c_str(), boxX, boxY, boxZ);
-  TGeoTubeSeg* tubs = new TGeoTubeSeg((nam+"Tubs").c_str(), rmin, rmax, dz, startPhi, deltaPhi);
-  TGeoCombiTrans* combi = new TGeoCombiTrans(trans, rot);
-  TGeoSubtraction* sub  = new TGeoSubtraction(tubs, box, nullptr, combi);
+  TGeoBBox*        box   = new TGeoBBox((nam+"Box").c_str(), boxX, boxY, boxZ);
+  TGeoTubeSeg*     tubs  = new TGeoTubeSeg((nam+"Tubs").c_str(), rmin, rmax, dz, start_phi, delta_phi);
+  TGeoCombiTrans*  combi = new TGeoCombiTrans(trans, rot);
+  TGeoSubtraction* sub   = new TGeoSubtraction(tubs, box, nullptr, combi);
   _assign(new TGeoCompositeShape(nam.c_str(), sub),"",TRUNCATEDTUBE_TAG,true);
   stringstream params;
   params << dz                  << " " << endl
          << rmin                << " " << endl
          << rmax                << " " << endl
-         << startPhi*units::deg << " " << endl
-         << deltaPhi*units::deg << " " << endl
-         << cutAtStart          << " " << endl
-         << cutAtDelta          << " " << endl
-         << char(cutInside ? '1' : '0') << endl;
+         << start_phi*units::deg << " " << endl
+         << delta_phi*units::deg << " " << endl
+         << cut_atStart          << " " << endl
+         << cut_atDelta          << " " << endl
+         << char(cut_inside ? '1' : '0') << endl;
   combi->SetTitle(params.str().c_str());
   //cout << "Params: " << params.str() << endl;
 #if 0
@@ -397,11 +397,11 @@ void TruncatedTube::make(const string& nam,
          << "\t dz:          " << dz << " " << endl
          << "\t rmin:        " << rmin << " " << endl
          << "\t rmax:        " << rmax << " " << endl
-         << "\t startPhi:    " << startPhi << " " << endl
-         << "\t deltaPhi:    " << deltaPhi << " " << endl
-         << "\t r/cutAtStart:" << cutAtStart << " " << endl
-         << "\t R/cutAtDelta:" << cutAtDelta << " " << endl
-         << "\t cutInside:   " << char(cutInside ? '1' : '0') << endl
+         << "\t startPhi:    " << start_phi << " " << endl
+         << "\t deltaPhi:    " << delta_phi << " " << endl
+         << "\t r/cutAtStart:" << cut_atStart << " " << endl
+         << "\t R/cutAtDelta:" << cut_atDelta << " " << endl
+         << "\t cutInside:   " << char(cut_inside ? '1' : '0') << endl
          << "\t\t alpha:     " << alpha << endl
          << "\t\t sin_alpha: " << sin_alpha << endl
          << "\t\t boxY:      " << boxY << endl
@@ -415,7 +415,7 @@ void TruncatedTube::make(const string& nam,
        << " rmax:         " << rmax
        << " r/cutAtStart: " << r
        << " R/cutAtDelta: " << R
-       << " cutInside:    " << (cutInside ? "YES" : "NO ")
+       << " cutInside:    " << (cut_inside ? "YES" : "NO ")
        << endl;
   cout << " cath:      " << cath
        << " hypo:      " << hypo
@@ -429,7 +429,7 @@ void TruncatedTube::make(const string& nam,
        << endl;
   cout << "Box:" << "x:" << box->GetDX() << " y:" << box->GetDY() << " z:" << box->GetDZ() << endl;
   cout << "Tubs:" << " rmin:" << rmin << " rmax" << rmax << "dZ" << dZ
-       << " startPhi:" <<  startPhi << " deltaPhi:" << deltaPhi << endl;
+       << " startPhi:" <<  start_phi << " deltaPhi:" << delta_phi << endl;
 #endif
 }
 
