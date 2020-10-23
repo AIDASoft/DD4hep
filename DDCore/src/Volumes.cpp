@@ -61,6 +61,9 @@ template <typename T> static typename T::Object* _userExtension(const T& v)  {
 
 ClassImp(PlacedVolumeExtension)
 namespace {
+
+  static bool s_verifyCopyNumbers = true;
+
   TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m)  {
     geo_volume_t* e = new geo_volume_t(name.c_str(),s,m);
     e->SetUserExtension(new Volume::Object());
@@ -263,7 +266,6 @@ namespace {
     }
     return vol;
   }
-
 }
 
 /// Default constructor
@@ -486,6 +488,11 @@ Volume::Volume(const string& nam, const string& title, const Solid& sol, const M
   m_element->SetTitle(title.c_str());
 }
 
+/// Set flag to enable copy number checks when inserting new nodes
+void Volume::enableCopyNumberCheck(bool value)    {
+  s_verifyCopyNumbers = value;
+}
+
 /// Check if placement is properly instrumented
 Volume::Object* Volume::data() const   {
   Volume::Object* o = _userExtension(*this);
@@ -598,31 +605,44 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
       as->ComputeBBox();
     }
   }
-  geo_node_t* n;
-  TString nam_id = TString::Format("%s_%d", daughter->GetName(), id);
-  n = static_cast<geo_node_t*>(parent->GetNode(nam_id));
-  if ( n != 0 )  {
-    printout(ERROR,"PlacedVolume","++ Attempt to add already exiting node %s",(const char*)nam_id);
+  if ( transform->IsRotation() )   {
+    TGeoRotation* rot = (TGeoRotation*)transform;
+    Double_t      det = rot->Determinant();
+    const Double_t* r = rot->GetRotationMatrix();
+    Double_t dd = r[0] + r[4] + r[8] - 3.0;
+
+    if ( TMath::Abs(dd) < 1E-12) transform->ResetBit(TGeoMatrix::kGeoRotation);
+    else transform->SetBit(TGeoMatrix::kGeoRotation);
+    /// We have a left handed matrix (determinant < 0). This is a reflection!
+    if ( det < 0e0 )   {
+      transform->SetBit(TGeoMatrix::kGeoReflection);
+      printout(INFO, "PlacedVolume",
+               "REFLECTION: (x.Cross(y)).Dot(z): %8.3g Parent: %s [%s] Daughter: %s [%s]",
+               det, par->GetName(), par->IsA()->GetName(),
+               daughter->GetName(), daughter->IsA()->GetName());
+    }
   }
-  parent->AddNode(daughter, id, transform);
+  if ( s_verifyCopyNumbers )   {
+    TObjArray* a = parent->GetNodes();
+    for (Int_t i=0, m=parent->GetNdaughters(); i < m; i++)   {
+      TGeoNode *n = (TGeoNode*)a->UncheckedAt(i);
+      if ( n->GetNumber() == id )   {
+        printout(ERROR,"PlacedVolume",
+                 "++ Severe error: Attempt to add already exiting copy number %d %s",
+                 n->GetNumber(), n->GetName());
+      }
+    }
+  }
+  geo_node_t* n {nullptr};
+  /* n = */ parent->AddNode(daughter, id, transform);
   //n = static_cast<geo_node_t*>(parent->GetNode(id));
-  n = static_cast<geo_node_t*>(parent->GetNode(nam_id));
+  //n = static_cast<geo_node_t*>(parent->GetNode(nam_id));
+  n = static_cast<geo_node_t*>(parent->GetNodes()->Last());
   n->geo_node_t::SetUserExtension(new PlacedVolume::Object());
   return PlacedVolume(n);
 }
 
 PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Rotation3D& rot3D)   {
-  Position   x,y,z;
-  Rotation3D rot = rot3D;
-  rot.GetComponents(x,y,z);
-  bool left_handed = (x.Cross(y)).Dot(z) < 0;
-  if ( left_handed )    {
-    // The reflected volume already scales Z with -1 to be left-handed
-    // We have to accomplish for and undo this when placing the volume
-    rot *= Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.);
-    daughter = daughter.reflect();
-    //cout << "REFLECTION: (x.Cross(y)).Dot(z) " << (x.Cross(y)).Dot(z) << endl;
-  }
   TGeoRotation r;
   double elements[9];
   rot3D.GetComponents(elements);
@@ -632,21 +652,12 @@ PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Rotat
 }
 
 PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Transform3D& tr)   {
-  Position   x, y, z, pos3D;
+  TGeoRotation r;
+  double elements[9];
+  Position   pos3D;
   Rotation3D rot3D;
   tr.GetRotation(rot3D);
   tr.GetTranslation(pos3D);
-  rot3D.GetComponents(x,y,z);
-  bool left_handed = (x.Cross(y)).Dot(z) < 0;
-  if ( left_handed )    {
-    // The reflected volume already scales Z with -1 to be left-handed
-    // We have to accomplish for and undo this when placing the volume
-    rot3D *= Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.);
-    daughter = daughter.reflect();
-    //cout << "REFLECTION: (x.Cross(y)).Dot(z) " << (x.Cross(y)).Dot(z) << endl;
-  }
-  TGeoRotation r;
-  double elements[9];
   rot3D.GetComponents(elements);
   r.SetMatrix(elements);
   auto matrix = make_unique<TGeoCombiTrans>(TGeoTranslation(pos3D.x(), pos3D.y(), pos3D.z()),r);

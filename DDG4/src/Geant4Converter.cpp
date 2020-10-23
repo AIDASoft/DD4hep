@@ -214,18 +214,8 @@ namespace {
     MyTransform3D(const double* t, const double* r = s_identity_rot)
       : G4Transform3D(r[0],r[1],r[2],t[0]*CM_2_MM,r[3],r[4],r[5],t[1]*CM_2_MM,r[6],r[7],r[8],t[2]*CM_2_MM)  {
     }
+    MyTransform3D(Transform3D&& copy) : Transform3D(copy) {}
   };
-
-#if 0  // warning: unused function 'handleName' [-Wunused-function]
-  void handleName(const TGeoNode* n) {
-    TGeoVolume* v = n->GetVolume();
-    TGeoMedium* m = v->GetMedium();
-    TGeoShape* s = v->GetShape();
-    string nam;
-    printout(DEBUG, "G4", "TGeoNode:'%s' Vol:'%s' Shape:'%s' Medium:'%s'", n->GetName(), v->GetName(), s->GetName(),
-             m->GetName());
-  }
-#endif
 
   class G4UserRegionInformation : public G4VUserRegionInformation {
   public:
@@ -525,7 +515,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
 void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) const {
   G4VSolid* solid = 0;
   if ( shape ) {
-    if (0 != (solid = data().g4Solids[shape])) {
+    if ( 0 != (solid = data().g4Solids[shape]) )   {
       return solid;
     }
     TClass*    isa = shape->IsA();
@@ -775,10 +765,20 @@ void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) 
   if ( !g4 )  {
     g4 = new Geant4AssemblyVolume();
     for(Int_t i=0; i < mot_vol->GetNdaughters(); ++i)   {
-      TGeoNode*   d = mot_vol->GetNode(i);
-      TGeoVolume* dau_vol = d->GetVolume();
-      TGeoMatrix* tr = d->GetMatrix();
+      TGeoNode*     d = mot_vol->GetNode(i);
+      TGeoVolume*   dau_vol = d->GetVolume();
+      TGeoMatrix*   tr      = d->GetMatrix();
+      TGeoRotation* rot     = tr->IsRotation() ? (TGeoRotation*)tr : 0;
       MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
+
+      if ( rot && rot->Determinant() < 0e0 )   {
+        transform = transform * G4ReflectZ3D();
+        printout(ALWAYS, "Geant4Converter", "+++ Assembly: **** : Placing reflected volume. dau:%s "
+                 "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
+                 dau_vol->GetName(), mot_vol->GetName(),
+                 transform.dx(), transform.dy(), transform.dz());
+      }
+
       if ( dau_vol->IsA() == TGeoVolumeAssembly::Class() )  {
         Geant4GeometryMaps::AssemblyMap::iterator assIt = info.g4AssemblyVolumes.find(d);
         if ( assIt == info.g4AssemblyVolumes.end() )  {
@@ -836,12 +836,20 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
              node->IsA()->GetName(), vol);
     }
     else {
-      int copy = node->GetNumber();
-      bool node_is_assembly = vol->IsA() == TGeoVolumeAssembly::Class();
-      bool mother_is_assembly = mot_vol ? mot_vol->IsA() == TGeoVolumeAssembly::Class() : false;
+      G4Transform3D Ta;
+      int           copy               = node->GetNumber();
+      TGeoRotation* rot                = tr->IsRotation() ? (TGeoRotation*)tr : 0;
+      bool          node_is_assembly   = vol->IsA() == TGeoVolumeAssembly::Class();
+      bool          mother_is_assembly = mot_vol ? mot_vol->IsA() == TGeoVolumeAssembly::Class() : false;
       MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
       Geant4GeometryMaps::VolumeMap::const_iterator volIt = info.g4Volumes.find(mot_vol);
 
+      if ( rot && rot->Determinant() < 0e0 )   {
+        printout(ALWAYS, "Geant4Converter", "+++ Placement: **** : Placing reflected volume. dau:%s "
+                 "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
+                 vol->GetName(), mot_vol->GetName(),
+                 transform.dx(), transform.dy(), transform.dz());
+      }
       if ( mother_is_assembly )   {
         //
         // Mother is an assembly:
@@ -875,13 +883,15 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
       }
       G4LogicalVolume* g4vol = info.g4Volumes[vol];
       G4LogicalVolume* g4mot = info.g4Volumes[mot_vol];
-      g4 = new G4PVPlacement(transform,   // no rotation
-                             g4vol,     // its logical volume
-                             name,      // its name
-                             g4mot,     // its mother (logical) volume
-                             false,     // no boolean operations
-                             copy,      // its copy number
-                             checkOverlaps);
+      G4PhysicalVolumesPair pvPlaced =
+        G4ReflectionFactory::Instance()->Place(transform, // no rotation
+                                               name,      // its name
+                                               g4vol,     // its logical volume
+                                               g4mot,     // its mother (logical) volume
+                                               false,     // no boolean operations
+                                               copy,      // its copy number
+                                               checkOverlaps);
+      g4 = pvPlaced.second ? pvPlaced.second : pvPlaced.first;
     }
     info.g4Placements[node] = g4;
   }
