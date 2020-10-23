@@ -605,31 +605,38 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
       as->ComputeBBox();
     }
   }
-  if ( transform->IsRotation() )   {
-    TGeoRotation* rot = (TGeoRotation*)transform;
-    Double_t      det = rot->Determinant();
-    const Double_t* r = rot->GetRotationMatrix();
-    Double_t dd = r[0] + r[4] + r[8] - 3.0;
+  const Double_t* r = transform->GetRotationMatrix();
+  if ( r )   {
+    Double_t test_rot = r[0] + r[4] + r[8] - 3.0;
+    if ( TMath::Abs(test_rot) < 1E-12)
+      transform->ResetBit(TGeoMatrix::kGeoRotation);
+    else
+      transform->SetBit(TGeoMatrix::kGeoRotation);
 
-    if ( TMath::Abs(dd) < 1E-12) transform->ResetBit(TGeoMatrix::kGeoRotation);
-    else transform->SetBit(TGeoMatrix::kGeoRotation);
-    /// We have a left handed matrix (determinant < 0). This is a reflection!
-    if ( det < 0e0 )   {
-      transform->SetBit(TGeoMatrix::kGeoReflection);
-      printout(INFO, "PlacedVolume",
-               "REFLECTION: (x.Cross(y)).Dot(z): %8.3g Parent: %s [%s] Daughter: %s [%s]",
-               det, par->GetName(), par->IsA()->GetName(),
-               daughter->GetName(), daughter->IsA()->GetName());
+    if ( transform->IsRotation() )   {
+      TGeoRotation* rot = static_cast<TGeoRotation*>(transform);
+      Double_t      det =
+        r[0]*r[4]*r[8] + r[3]*r[7]*r[2] + r[6]*r[1]*r[5] -
+        r[2]*r[4]*r[6] - r[5]*r[7]*r[0] - r[8]*r[1]*r[3];
+
+      /// We have a left handed matrix (determinant < 0). This is a reflection!
+      if ( det < 0e0 )   {
+        transform->SetBit(TGeoMatrix::kGeoReflection);
+        printout(INFO, "PlacedVolume",
+                 "REFLECTION: (x.Cross(y)).Dot(z): %8.3g Parent: %s [%s] Daughter: %s [%s]",
+                 det, par->GetName(), par->IsA()->GetName(),
+                 daughter->GetName(), daughter->IsA()->GetName());
+      }
     }
   }
   if ( s_verifyCopyNumbers )   {
-    TObjArray* a = parent->GetNodes();
     for (Int_t i=0, m=parent->GetNdaughters(); i < m; i++)   {
-      TGeoNode *n = (TGeoNode*)a->UncheckedAt(i);
+      TGeoNode *n = (TGeoNode*)parent->GetNode(i);
       if ( n->GetNumber() == id )   {
         printout(ERROR,"PlacedVolume",
-                 "++ Severe error: Attempt to add already exiting copy number %d %s",
-                 n->GetNumber(), n->GetName());
+                 "++ Severe error: %s Attempt to add already exiting copy number %d %s",
+                 parent->GetName(), n->GetNumber(), n->GetName());
+        break;
       }
     }
   }
