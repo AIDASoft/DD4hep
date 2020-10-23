@@ -61,12 +61,13 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
     matrix::_decompose(ref_pv.matrix(), tr3D, rot3D);
     tr3D = tr3D * (-1.0 / dd4hep::mm);
   }
-  if ( x_refl && ::toupper(x_refl.attr<string>(_U(type))[0]) == 'Z' )
-    transform3D = Transform3D(Rotation3D( 1., 0., 0., 0.,  1., 0., 0., 0., -1.) * rot3D, tr3D);
-  else if ( x_refl && ::toupper(x_refl.attr<string>(_U(type))[0]) == 'Y' )
-    transform3D = Transform3D(Rotation3D( 1., 0., 0., 0., -1., 0., 0., 0.,  1.) * rot3D, tr3D);
-  else if ( x_refl && ::toupper(x_refl.attr<string>(_U(type))[0]) == 'X' )
+  char refl_type = ::toupper(x_refl.attr<string>(_U(type))[0]);
+  if (      x_refl && refl_type == 'X' )
     transform3D = Transform3D(Rotation3D(-1., 0., 0., 0.,  1., 0., 0., 0.,  1.) * rot3D, tr3D);
+  else if ( x_refl && refl_type == 'Y' )
+    transform3D = Transform3D(Rotation3D( 1., 0., 0., 0., -1., 0., 0., 0.,  1.) * rot3D, tr3D);
+  else if ( x_refl && refl_type == 'Z' )
+    transform3D = Transform3D(Rotation3D( 1., 0., 0., 0.,  1., 0., 0., 0., -1.) * rot3D, tr3D);
   else  // Z is default
     transform3D = Transform3D(Rotation3D( 1., 0., 0., 0.,  1., 0., 0., 0., -1.) * rot3D, tr3D);
   pv = mother.placeVolume(vol, transform3D);

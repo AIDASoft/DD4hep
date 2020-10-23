@@ -1,0 +1,42 @@
+<lccdd>
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_Eightpoint" type="DD4hep_TestShape_Creator">
+
+      <check vis="Shape1_vis">
+        <shape type="EightPointSolid" dz="30*cm">
+           <vertex x="-30*cm" y="-25*cm"/>
+           <vertex x="-25*cm" y=" 25*cm"/>
+           <vertex x="  5*cm" y=" 25*cm"/>
+           <vertex x=" 25*cm" y="-25*cm"/>
+           <vertex x="-28*cm" y="-23*cm"/>
+           <vertex x="-23*cm" y=" 27*cm"/>
+           <vertex x="-23*cm" y=" 27*cm"/>
+           <vertex x=" 13*cm" y="-27*cm"/>
+        </shape>
+        <position x="0"  y="0" z="100"/>
+        <rotation x="0"  y="0" z="0"/>
+      </check>
+
+      <check vis="Shape2_vis">
+        <shape type="EightPointSolid" dz="30*cm">
+           <vertex x="-30*cm" y="-25*cm"/>
+           <vertex x="-25*cm" y=" 25*cm"/>
+           <vertex x="  5*cm" y=" 25*cm"/>
+           <vertex x=" 25*cm" y="-25*cm"/>
+           <vertex x="-28*cm" y="-23*cm"/>
+           <vertex x="-23*cm" y=" 27*cm"/>
+           <vertex x="-23*cm" y=" 27*cm"/>
+           <vertex x=" 13*cm" y="-27*cm"/>
+        </shape>
+        <position x="0"  y="0" z="-100"/>
+        <rotation x="0"  y="0" z="0"/>
+        <reflect_z/>
+      </check>
+      <testnot  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Eightpoint_Reflect_Z.txt" create="1" a="CheckShape_create"/>
+    </detector>
+  </detectors>
+</lccdd>

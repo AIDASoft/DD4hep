@@ -317,6 +317,10 @@ namespace dd4hep {
     /// Assignment operator (must match copy constructor)
     Volume& operator=(const Volume& a)  = default;
 
+    /// Set flag to enable copy number checks when inserting new nodes
+    /** By default checks are enabled. If you want to disable, call this function */
+    static void enableCopyNumberCheck(bool value);
+    
     /// Check if placement is properly instrumented
     Object* data() const;
 

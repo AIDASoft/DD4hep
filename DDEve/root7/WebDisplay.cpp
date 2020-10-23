@@ -54,7 +54,7 @@ static long webdisplay(Detector& description, int argc, char** argv) {
       cout <<
         "Usage: -plugin <name> -arg [-arg]                                                   \n"
         "     -detector <string> Top level DetElement path. Default: '/world'                \n"
-        "     -option   <string> ROOT Draw option.    Default: 'ogl'                         \n"
+        "     -option   <string> ROOT Draw option.    Default: ''                            \n"
         "     -level    <number> Visualization level  [TGeoManager::SetVisLevel]  Default: 4 \n"
         "     -visopt   <number> Visualization option [TGeoManager::SetVisOption] Default: 1 \n"       
         "\tArguments given: " << arguments(argc,argv) << endl << flush;
