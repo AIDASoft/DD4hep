@@ -61,7 +61,8 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
     matrix::_decompose(ref_pv.matrix(), tr3D, rot3D);
     tr3D = tr3D * (-1.0 / dd4hep::mm);
   }
-  char refl_type = ::toupper(x_refl.attr<string>(_U(type))[0]);
+  char refl_type = 'Z';
+  if ( x_refl.hasAttr(_U(type)) ) refl_type = ::toupper(x_refl.attr<string>(_U(type))[0]);
   if (      x_refl && refl_type == 'X' )
     transform3D = Transform3D(Rotation3D(-1., 0., 0., 0.,  1., 0., 0., 0.,  1.) * rot3D, tr3D);
   else if ( x_refl && refl_type == 'Y' )
