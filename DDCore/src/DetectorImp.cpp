@@ -668,6 +668,7 @@ void DetectorImp::endDocument(bool close_geometry)    {
     m_trackingVol.setVisAttributes(trackingVis);
     add(trackingVis);
 #endif
+    m_worldVol.solid()->ComputeBBox();
     /// Since we allow now for anonymous shapes,
     /// we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();

@@ -633,39 +633,34 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     volume.setVisAttributes(description, x_check.visStr());
     solid->SetName(shape_type.c_str());
 
+    Transform3D tr;
     if ( pos.ptr() && rot.ptr() )  {
       Rotation3D  rot3D(RotationZYX(rot.z(0),rot.y(0),rot.x(0)));
       Position    pos3D(pos.x(0),pos.y(0),pos.z(0));
-      Transform3D tr(rot3D, pos3D);
-      if ( reflect )  {
-        rot3D = Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.) * rot3D;
-        tr = Transform3D(rot3D, pos3D);
-      }
-      else if ( reflectX )   {
-        tr = Transform3D(rot3D, pos3D) * Rotation3D(-1.,0.,0.,0.,1.,0.,0.,0.,1.);
-      }
-      else if ( reflectY )   {
-        tr = Transform3D(rot3D, pos3D) * Rotation3D(1.,0.,0.,0.,-1.,0.,0.,0.,1.);
-      }
-      else if ( reflectZ )   {
-        tr = Transform3D(rot3D, pos3D) * Rotation3D(1.,0.,0.,0.,1.,0.,0.,0.,-1.);
-      }
-      pv = assembly.placeVolume(volume,tr);
+      tr = Transform3D(rot3D, pos3D);
     }
-#if 0
     else if ( pos.ptr() )  {
-      pv = assembly.placeVolume(volume,Position(pos.x(0),pos.y(0),pos.z(0)));
+      tr = Transform3D(Rotation3D(),Position(pos.x(0),pos.y(0),pos.z(0)));
     }
     else if ( rot.ptr() )  {
       Rotation3D rot3D(RotationZYX(rot.z(0),rot.y(0),rot.x(0)));
-      if ( reflect )
-        rot3D = Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.) * rot3D;
-      pv = assembly.placeVolume(volume,rot3D);
+      tr = Transform3D(rot3D,Position());
     }
-    else {
-      pv = assembly.placeVolume(volume);
+
+    if ( reflect )  {
+      tr = tr * Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.);
     }
-#endif
+    if ( reflectX )   {
+      tr = tr * Rotation3D(-1.,0.,0.,0.,1.,0.,0.,0.,1.);
+    }
+    if ( reflectY )   {
+      tr = tr * Rotation3D(1.,0.,0.,0.,-1.,0.,0.,0.,1.);
+    }
+    if ( reflectZ )   {
+      tr = tr * Rotation3D(1.,0.,0.,0.,1.,0.,0.,0.,-1.);
+    }
+    pv = assembly.placeVolume(volume,tr);
+
     if ( x_check.hasAttr(_U(id)) )  {
       pv.addPhysVolID("check",x_check.id());
     }

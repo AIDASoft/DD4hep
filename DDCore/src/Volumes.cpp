@@ -579,31 +579,22 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
   if ( !parent )   {
     except("dd4hep","Volume: Attempt to assign daughters to an invalid physical parent volume.");
   }
-  if ( !daughter )   {
+  else if ( !daughter )   {
     except("dd4hep","Volume: Attempt to assign an invalid physical daughter volume.");
   }
-  if ( !transform )   {
+  else if ( !transform )   {
     except("dd4hep","Volume: Attempt to place volume without placement matrix.");
   }
   if ( transform != detail::matrix::_identity() ) {
     string nam = string(daughter->GetName()) + "_placement";
     transform->SetName(nam.c_str());
   }
-#if 0
-  if ( transform->IsTranslation() ) {
-    cout << daughter->GetName() << ": Translation: " << transform->GetTranslation()[2] << endl;
-  }
-#endif
   TGeoShape* shape = daughter->GetShape();
   // Need to fix the daughter's BBox of assemblies, if the BBox was not calculated....
   if ( shape->IsA() == TGeoShapeAssembly::Class() )  {
     TGeoShapeAssembly* as = (TGeoShapeAssembly*)shape;
-    if ( std::fabs(as->GetDX()) < numeric_limits<double>::epsilon() &&
-         std::fabs(as->GetDY()) < numeric_limits<double>::epsilon() &&
-         std::fabs(as->GetDZ()) < numeric_limits<double>::epsilon() )  {
-      as->NeedsBBoxRecompute();
-      as->ComputeBBox();
-    }
+    as->NeedsBBoxRecompute();
+    as->ComputeBBox();
   }
   const Double_t* r = transform->GetRotationMatrix();
   if ( r )   {
@@ -614,8 +605,7 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
       transform->SetBit(TGeoMatrix::kGeoRotation);
 
     if ( transform->IsRotation() )   {
-      TGeoRotation* rot = static_cast<TGeoRotation*>(transform);
-      Double_t      det =
+      Double_t det =
         r[0]*r[4]*r[8] + r[3]*r[7]*r[2] + r[6]*r[1]*r[5] -
         r[2]*r[4]*r[6] - r[5]*r[7]*r[0] - r[8]*r[1]*r[3];
 
