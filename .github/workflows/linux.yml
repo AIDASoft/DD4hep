@@ -139,3 +139,38 @@ jobs:
     - name: Compile and test
       run: |
         docker exec CI_container /bin/bash -c "./Package/.github/scripts/compile_and_test.sh"
+
+
+  dev:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        LCG: ["dev3/latest/x86_64-centos7-gcc9-opt",
+              "dev4/latest/x86_64-centos7-gcc9-opt"]
+    env:
+      SHARED: ON
+      STANDARD: 17
+      TBB: OFF
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install CVMFS
+      run: |
+        wget --no-check-certificate https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb
+        sudo dpkg -i cvmfs-release-latest_all.deb
+        sudo apt-get update
+        sudo apt-get install cvmfs cvmfs-config-default
+        wget --no-check-certificate https://lcd-data.web.cern.ch/lcd-data/CernVM/default.local
+        sudo mkdir -p /etc/cvmfs
+        sudo mv default.local /etc/cvmfs/default.local
+        sudo cvmfs_config setup
+        ls /cvmfs/sft.cern.ch
+        ls /cvmfs/geant4.cern.ch
+        ls /cvmfs/sft-nightlies.cern.ch
+    - name: Start container
+      run: |
+        ls
+        docker run -it --name CI_container -v /home/runner/work/DD4hep/DD4hep:/Package -e VIEW=${{ matrix.LCG }} -e SHARED=${SHARED} -e STANDARD=${STANDARD} -e TBB=${TBB} -v /cvmfs/sft.cern.ch:/cvmfs/sft.cern.ch -v /cvmfs/geant4.cern.ch:/cvmfs/geant4.cern.ch -v /cvmfs/sft-nightlies.cern.ch:/cvmfs/sft-nightlies.cern.ch -d ghcr.io/aidasoft/centos7:latest /bin/bash
+    - name: Compile and test
+      run: |
+        docker exec CI_container /bin/bash -c "./Package/.github/scripts/compile_and_test.sh"

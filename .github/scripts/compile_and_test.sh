@@ -1,6 +1,10 @@
 #!/bin/bash
 
-source /cvmfs/sft.cern.ch/lcg/views/${VIEW}/setup.sh
+if [[ "${VIEW}" =~ "dev" ]]; then
+    source /cvmfs/sft-nightlies.cern.ch/lcg/views/${VIEW}/setup.sh
+else
+    source /cvmfs/sft.cern.ch/lcg/views/${VIEW}/setup.sh
+fi
 
 cd /Package
 mkdir build
