@@ -42,10 +42,10 @@ def run():
   # Configure UI
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
   if batch:
-    ui = geant4.setupCshUI(ui=None, vis=None)
+    geant4.setupCshUI(ui=None, vis=None)
     kernel.UI = 'UI'
   else:
-    ui = geant4.setupCshUI(vis=vis)
+    geant4.setupCshUI(vis=vis)
   Output = DDG4.OutputLevel
   seq, act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
   act.DebugMaterials = False
