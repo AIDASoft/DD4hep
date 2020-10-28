@@ -54,11 +54,10 @@ def run():
   kernel.physicsList().enableUI()
   DDG4.setPrintLevel(DDG4.OutputLevel.DEBUG)
   #
-  #      '/ddg4/ConstructGeometry/writeGDML   test.gdml',
-  ui.Commands = [
-    '/ddg4/ConstructGeometry/printVolume /world_volume_1/Shape_Test_0/Shape_Test_vol_0_0',
-    '/ddg4/UI/exit'
-    ]
+  cmds = []
+  cmds.append('/ddg4/ConstructGeometry/printVolume /world_volume_1/Shape_Test_0/Shape_Test_vol_0_0')
+  cmds.append('/ddg4/UI/exit')
+  ui.Commands = cmds
   kernel.NumEvents = 0
   kernel.configure()
   kernel.initialize()
