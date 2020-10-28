@@ -360,6 +360,10 @@ namespace dd4hep {
     PlacedVolume placeVolume(const Volume& volume, int copy_no, const RotationZYX& rot) const;
     /// Place rotated daughter volume. The position is automatically the identity position
     PlacedVolume placeVolume(const Volume& volume, int copy_no, const Rotation3D& rot) const;
+    /// Place daughter volume with generic TGeo matrix
+    PlacedVolume placeVolume(const Volume& volume, TGeoMatrix* tr) const;
+    /// Place daughter volume with generic TGeo matrix
+    PlacedVolume placeVolume(const Volume& volume, int copy_nr, TGeoMatrix* tr) const;
     /// Parametrized volume implementation
     /** Embedding parametrized daughter placements in a mother volume
      *  @param start  start transormation for the first placement

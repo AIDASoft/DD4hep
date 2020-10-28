@@ -839,12 +839,13 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
       G4Transform3D Ta;
       int           copy               = node->GetNumber();
       TGeoRotation* rot                = tr->IsRotation() ? (TGeoRotation*)tr : 0;
+      bool          node_is_reflected  = rot && rot->Determinant() < 0e0;
       bool          node_is_assembly   = vol->IsA() == TGeoVolumeAssembly::Class();
       bool          mother_is_assembly = mot_vol ? mot_vol->IsA() == TGeoVolumeAssembly::Class() : false;
       MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
       Geant4GeometryMaps::VolumeMap::const_iterator volIt = info.g4Volumes.find(mot_vol);
 
-      if ( rot && rot->Determinant() < 0e0 )   {
+      if ( node_is_reflected )   {
         printout(ALWAYS, "Geant4Converter", "+++ Placement: **** : Placing reflected volume. dau:%s "
                  "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
                  vol->GetName(), mot_vol->GetName(),
@@ -891,9 +892,22 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
                                                false,     // no boolean operations
                                                copy,      // its copy number
                                                checkOverlaps);
+      // First 2 cases can be combined.
+      // Leave them separated for debugging G4ReflectionFactory for now...
+      if ( node_is_reflected  && !pvPlaced.second )
+	return info.g4Placements[node] = pvPlaced.first;
+      else if ( !node_is_reflected && !pvPlaced.second )
+	return info.g4Placements[node] = pvPlaced.first;
+      G4LogicalVolume* g4refMoth = G4ReflectionFactory::Instance()->GetReflectedLV(g4mot);
+      // Now deal with valid pvPlaced.second ...
+      if ( node_is_reflected )
+	return info.g4Placements[node] = pvPlaced.first;
+      else if ( !node_is_reflected )
+	return info.g4Placements[node] = pvPlaced.first;
       g4 = pvPlaced.second ? pvPlaced.second : pvPlaced.first;
     }
     info.g4Placements[node] = g4;
+    printout(ERROR, "Geant4Converter", "++ DEAD code. Should not end up here!");
   }
   else {
     printout(ERROR, "Geant4Converter", "++ Attempt to DOUBLE-place physical volume: %s No:%d", name.c_str(), node->GetNumber());

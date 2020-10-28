@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE lccdd[
+ <!ENTITY  STEEL  "Steel235">
+ <!ENTITY  TYPE   "DD4hep_BoxSegment">
+]>
+<lccdd>
+  
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+
+  <info name="alignment_boxes"
+	title="Alignment test with 2 simple boxes"
+	author="Markus Frank"
+	url="http://www.cern.ch/lhcb"
+	status="development"
+	version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $">
+    <comment>Alignment test with 2 simple boxes</comment>        
+  </info>
+  
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+  
+  <define>
+    <constant name="world_side" value="30000"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="world_side"/>
+  </define>
+
+  <display>
+    <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
+    <vis name="B1_vis" alpha="1.0" r="1" g="0" b="0" showDaughters="true" visible="true"/>
+    <vis name="B2_vis" alpha="1.0" r="0" g="1" b="0" showDaughters="true" visible="true"/>
+  </display>
+
+  <detectors>
+    <comment>Boxes</comment>
+    <detector id="3" name="B3" type="&TYPE;" vis="B2_vis">
+      <comment>Vertical box</comment>
+      <material name="&STEEL;"/>
+      <box      x="10"  y="20"   z="30"/>
+      <position x="-10" y="30"   z="10"/>
+      <rotation x="0"   y="0"    z="0"/>
+    </detector>
+    <detector id="3" name="B4" type="&TYPE;" vis="B1_vis">
+      <comment>Vertical box</comment>
+      <material name="&STEEL;"/>
+      <box      x="10"  y="20"   z="30"/>
+      <position x="0"   y="0"    z="0"/>
+      <rotation x="0"   y="0"    z="0"/>
+    </detector>
+  </detectors>
+</lccdd>

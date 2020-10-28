@@ -112,9 +112,10 @@ namespace {
       IDDescriptor iddesc = ro.idSpec();
       VolumeID code = iddesc.encode(ids);
       Registries::const_iterator i = m_entries.find(code);
-      PrintLevel print_action = m_geo.printLevel;
-      PrintLevel print_chain = m_geo.printLevel;
-      PrintLevel print_res = m_geo.printLevel;
+      PrintLevel print_level  = m_geo.printLevel;
+      PrintLevel print_action = print_level;
+      PrintLevel print_chain  = print_level;
+      PrintLevel print_res    = print_level;
 
       printout(print_action,"Geant4VolumeManager","+++ Add path:%s vid:%016X",
                detail::tools::placementPath(nodes,false).c_str(),code);
