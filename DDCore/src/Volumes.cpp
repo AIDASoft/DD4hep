@@ -501,7 +501,7 @@ Volume::Object* Volume::data() const   {
 
 /// Create a reflected volume tree. The reflected volume has left-handed coordinates
 Volume Volume::reflect()  const   {
-  return reflect(SensitiveDetector(0));
+  return this->reflect(this->sensitiveDetector());
 }
     
 /// Create a reflected volume tree. The reflected volume has left-handed coordinates
@@ -659,6 +659,16 @@ PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Trans
   r.SetMatrix(elements);
   auto matrix = make_unique<TGeoCombiTrans>(TGeoTranslation(pos3D.x(), pos3D.y(), pos3D.z()),r);
   return _addNode(par, daughter, copy_nr, matrix.release());
+}
+
+/// Place daughter volume with generic TGeo matrix
+PlacedVolume Volume::placeVolume(const Volume& volume, TGeoMatrix* tr) const    {
+  return _addNode(m_element, volume, get_copy_number(m_element), tr);
+}
+
+/// Place daughter volume with generic TGeo matrix
+PlacedVolume Volume::placeVolume(const Volume& volume, int copy_nr, TGeoMatrix* tr) const    {
+  return _addNode(m_element, volume, copy_nr, tr);
 }
 
 /// Place daughter volume according to generic Transform3D
