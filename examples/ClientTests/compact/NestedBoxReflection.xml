@@ -36,6 +36,7 @@
   <detectors>
     <detector id="1" name="NestedBox" type="NestedBoxReflection" readout="NestedBoxHits" vis="VisibleGreen" limits="cal_limits">
       <comment>A box with 3 boxes inside spanning a coordinate system</comment>
+      <assembly/>
       <dimensions x="50*cm" y="70*cm" z="90*cm"/>
       <xxxreflect_z/>
       <no-reflect name="ReflectionY">
