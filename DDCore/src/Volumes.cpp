@@ -619,22 +619,20 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
       }
     }
   }
+  geo_node_t* n {nullptr};
+  TString nam_id = TString::Format("%s_%d", daughter->GetName(), id);
   if ( s_verifyCopyNumbers )   {
-    for (Int_t i=0, m=parent->GetNdaughters(); i < m; i++)   {
-      TGeoNode *n = (TGeoNode*)parent->GetNode(i);
-      if ( n->GetNumber() == id )   {
-        printout(ERROR,"PlacedVolume",
-                 "++ Severe error: %s Attempt to add already exiting copy number %d %s",
-                 parent->GetName(), n->GetNumber(), n->GetName());
-        break;
-      }
+    n = static_cast<geo_node_t*>(parent->GetNode(nam_id));
+    if ( n != 0 )  {
+      printout(ERROR,"PlacedVolume","++ Attempt to place already exiting node %s",(const char*)nam_id);
     }
   }
-  geo_node_t* n {nullptr};
   /* n = */ parent->AddNode(daughter, id, transform);
-  //n = static_cast<geo_node_t*>(parent->GetNode(id));
   //n = static_cast<geo_node_t*>(parent->GetNode(nam_id));
   n = static_cast<geo_node_t*>(parent->GetNodes()->Last());
+  if ( nam_id != n->GetName() )   {
+    printout(ERROR,"PlacedVolume","++ FAILED to place node %s",(const char*)nam_id);
+  }
   n->geo_node_t::SetUserExtension(new PlacedVolume::Object());
   return PlacedVolume(n);
 }

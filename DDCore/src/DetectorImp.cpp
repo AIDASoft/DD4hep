@@ -648,7 +648,25 @@ namespace {
       }
     }
   };
-
+  void build_reflections(TGeoManager* mgr)    {
+    TGeoIterator next(mgr->GetTopVolume());
+    TGeoNode *node;
+    while ((node=next())) {
+      TGeoMatrix* m = node->GetMatrix();
+      if (m->IsReflection()) {
+        Volume vol(node->GetVolume());
+        TGeoMatrix* mclone = new TGeoCombiTrans(*m);
+        mclone->RegisterYourself();
+        // Reflect just the rotation component
+        mclone->ReflectZ(kFALSE, kTRUE);
+        TGeoNodeMatrix* nodematrix = (TGeoNodeMatrix*)node;
+        nodematrix->SetMatrix(mclone);
+        printout(INFO,"Detector","Reflecting volume: %s ",vol.name());
+        Volume refl = vol.reflect(vol.sensitiveDetector());
+        node->SetVolume(refl.ptr());
+      }
+    }
+  }
 }
 
 /// Finalize/close the geometry
@@ -672,6 +690,7 @@ void DetectorImp::endDocument(bool close_geometry)    {
     /// Since we allow now for anonymous shapes,
     /// we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();
+    build_reflections(mgr);
   }
   ShapePatcher patcher(m_volManager, m_world);
   patcher.patchShapes();

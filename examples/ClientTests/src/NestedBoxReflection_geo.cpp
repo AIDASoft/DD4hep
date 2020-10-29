@@ -162,7 +162,7 @@ namespace   {
       sensitive.setType("tracker");
       box_vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),"VisibleGrey");
 
-      if ( x_box.typeStr() == "assembly" )
+      if ( x_det.hasChild(_U(assembly)) )
         v_det = Assembly(x_det.nameStr()+"_det");
       else
         v_det = Volume(x_det.nameStr()+"_det",Box(2.5*bx,2.5*by,2.5*bz),description.air());
