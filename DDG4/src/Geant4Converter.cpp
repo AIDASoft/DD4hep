@@ -99,19 +99,18 @@ using namespace std;
 
 static const double CM_2_MM = (CLHEP::centimeter/dd4hep::centimeter);
 
-void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
-                                   const TGeoNode*   parent,
-                                   Chain chain,
+void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
+                                   const TGeoNode*       parent,
+                                   Chain                 chain,
                                    Geant4AssemblyVolume* pAssembly,
-                                   G4LogicalVolume*  pMotherLV,
-                                   G4Transform3D&    transformation,
-                                   G4int copyNumBase,
-                                   G4bool surfCheck )
+                                   G4LogicalVolume*      pMotherLV,
+                                   G4Transform3D&        transformation,
+                                   G4int                 copyNumBase,
+                                   G4bool                surfCheck)
 {
   static int level=0;
   TGeoVolume* vol = parent->GetVolume();
-  unsigned int  numberOfDaughters = 
-    (copyNumBase == 0) ? pMotherLV->GetNoDaughters() : copyNumBase;
+  unsigned int numberOfDaughters = (copyNumBase == 0) ? pMotherLV->GetNoDaughters() : copyNumBase;
 
   ++level;
 
@@ -190,7 +189,8 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
     }
     else if ( triplets[i].GetAssembly() )  {
       // Place volumes in this assembly with composed transformation
-      imprint(info, parent, new_chain, (Geant4AssemblyVolume*)triplets[i].GetAssembly(), pMotherLV, Tfinal, i*100+copyNumBase, surfCheck );
+      imprint(info, parent, new_chain, (Geant4AssemblyVolume*)triplets[i].GetAssembly(),
+              pMotherLV, Tfinal, i*100+copyNumBase, surfCheck );
     }
     else   {
       --level;
@@ -216,6 +216,17 @@ namespace {
     }
     MyTransform3D(Transform3D&& copy) : Transform3D(copy) {}
   };
+
+  bool is_left_handed(const TGeoMatrix* m)   {
+    const Double_t* r = m->GetRotationMatrix();
+    if ( r )    {
+      Double_t det =
+        r[0]*r[4]*r[8] + r[3]*r[7]*r[2] + r[6]*r[1]*r[5] -
+        r[2]*r[4]*r[6] - r[5]*r[7]*r[0] - r[8]*r[1]*r[3];
+      return det < 0e0;
+    }
+    return false;
+  }
 
   class G4UserRegionInformation : public G4VUserRegionInformation {
   public:
@@ -665,12 +676,12 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
   }
   else if (volIt == info.g4Volumes.end() ) {
     const TGeoVolume* v = volume;
-    string      n   = v->GetName();
-    TGeoMedium* med = v->GetMedium();
-    TGeoShape* sh   = v->GetShape();
-    G4VSolid* solid = (G4VSolid*) handleSolid(sh->GetName(), sh);
-    G4Material* medium = 0;
-    bool assembly = sh->IsA() == TGeoShapeAssembly::Class() || v->IsA() == TGeoVolumeAssembly::Class();
+    string      n       = v->GetName();
+    TGeoMedium* med     = v->GetMedium();
+    TGeoShape*  sh      = v->GetShape();
+    G4VSolid*   solid   = (G4VSolid*) handleSolid(sh->GetName(), sh);
+    G4Material* medium  = 0;
+    bool        is_assembly = sh->IsA() == TGeoShapeAssembly::Class() || v->IsA() == TGeoVolumeAssembly::Class();
 
     LimitSet lim = _v.limitSet();
     G4UserLimits* user_limits = 0;
@@ -696,9 +707,9 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       }
     }
     printout(lvl, "Geant4Converter", "++ Convert Volume %-32s: %p %s/%s assembly:%s",
-             n.c_str(), v, sh->IsA()->GetName(), v->IsA()->GetName(), yes_no(assembly));
+             n.c_str(), v, sh->IsA()->GetName(), v->IsA()->GetName(), yes_no(is_assembly));
 
-    if (assembly) {
+    if (is_assembly) {
       //info.g4AssemblyVolumes[v] = new Geant4AssemblyVolume();
       return 0;
     }
@@ -760,20 +771,19 @@ void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) 
     return 0;
   }
   Geant4GeometryInfo& info = data();
-  Geant4AssemblyVolume* g4 = info.g4AssemblyVolumes[node];
-
+  Geant4AssemblyVolume* g4 = nullptr; // info.g4AssemblyVolumes[node];
+  
   if ( !g4 )  {
     g4 = new Geant4AssemblyVolume();
     for(Int_t i=0; i < mot_vol->GetNdaughters(); ++i)   {
       TGeoNode*     d = mot_vol->GetNode(i);
       TGeoVolume*   dau_vol = d->GetVolume();
       TGeoMatrix*   tr      = d->GetMatrix();
-      TGeoRotation* rot     = tr->IsRotation() ? (TGeoRotation*)tr : 0;
       MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
 
-      if ( rot && rot->Determinant() < 0e0 )   {
-        transform = transform * G4ReflectZ3D();
-        printout(ALWAYS, "Geant4Converter", "+++ Assembly: **** : Placing reflected volume. dau:%s "
+      if ( is_left_handed(tr) )   {
+        //transform = transform * G4ReflectZ3D();
+        printout(ALWAYS, "Geant4Converter", "+++ Assembly: **** : Placing reflected assembly. dau:%s "
                  "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
                  dau_vol->GetName(), mot_vol->GetName(),
                  transform.dx(), transform.dy(), transform.dz());
@@ -820,10 +830,23 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
   G4VPhysicalVolume* g4 = (g4it == info.g4Placements.end()) ? 0 : (*g4it).second;
   TGeoVolume* vol = node->GetVolume();
   Volume _v(vol);
+
   if ( _v.testFlagBit(Volume::VETO_SIMU) )  {
     printout(lvl, "Geant4Converter", "++ Placement %s not converted [Veto'ed for simulation]",node->GetName());
     return 0;
   }
+  if ( g4 )    {
+    const TGeoNode*   old_node = (*g4it).first.ptr();
+    const TGeoNode*   new_node = node;
+    TGeoVolume* old_vol  = old_node->GetVolume();
+    TGeoVolume* new_vol  = new_node->GetVolume();
+    TGeoMatrix* old_tr   = old_node->GetMatrix();
+    TGeoMatrix* new_tr   = new_node->GetMatrix();
+    printout(ALWAYS, "Geant4Converter", "+++ Placement: **** OLD: %s vol: %s %s   NEW: %s vol: %s %s",
+             old_node->GetName(), old_vol->GetName(), is_left_handed(old_tr) ? "    REFLECTED" : "NOT REFLECTED", 
+             new_node->GetName(), new_vol->GetName(), is_left_handed(new_tr) ? "    REFLECTED" : "NOT REFLECTED");
+  }
+  g4 = nullptr;
   if (!g4) {
     TGeoVolume* mot_vol = node->GetMotherVolume();
     TGeoMatrix* tr = node->GetMatrix();
@@ -838,8 +861,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
     else {
       G4Transform3D Ta;
       int           copy               = node->GetNumber();
-      TGeoRotation* rot                = tr->IsRotation() ? (TGeoRotation*)tr : 0;
-      bool          node_is_reflected  = rot && rot->Determinant() < 0e0;
+      bool          node_is_reflected  = is_left_handed(tr);
       bool          node_is_assembly   = vol->IsA() == TGeoVolumeAssembly::Class();
       bool          mother_is_assembly = mot_vol ? mot_vol->IsA() == TGeoVolumeAssembly::Class() : false;
       MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
@@ -1427,8 +1449,8 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
 
   //outputLevel = WARNING;
   //setPrintLevel(VERBOSE);
-  debugMaterials  = true;
-  debugElements   = true;
+  //debugMaterials  = true;
+  //debugElements   = true;
   
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   handleArray(this, geo.manager->GetListOfGDMLMatrices(), &Geant4Converter::handleMaterialProperties);

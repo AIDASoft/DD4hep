@@ -37,7 +37,7 @@ namespace   {
       constexpr double tol = 1.0e-3;       // Geant4 compatible
       double check = (x.Cross(y)).Dot(z);  // in case of a LEFT-handed orthogonal system this must be -1
       if (abs(1. + check) > tol) {
-	except("NestedBoxReflection", "+++ FAILED to construct Rotation is not LEFT-handed!");
+        except("NestedBoxReflection", "+++ FAILED to construct Rotation is not LEFT-handed!");
       }
       printout(INFO, "NestedBoxReflection", "+++ Constructed LEFT-handed reflection rotation.");
       Rotation3D rotation(x.x(), y.x(), z.x(), x.y(), y.y(), z.y(), x.z(), y.z(), z.z());
@@ -63,9 +63,9 @@ namespace   {
       double thetaZ = xrot.attr<double>(Unicode("thetaZ"));
       double phiZ   = xrot.attr<double>(Unicode("phiZ"));
       printout(INFO, "NestedBoxReflection",
-	       "+++ Adding reflection rotation \"%s\": "
-	       "(theta/phi)[rad] X: %6.3f %6.3f Y: %6.3f %6.3f Z: %6.3f %6.3f",
-	       element.attr<string>(_U(name)).c_str(), thetaX, phiX, thetaY, phiY, thetaZ, phiZ);
+               "+++ Adding reflection rotation \"%s\": "
+               "(theta/phi)[rad] X: %6.3f %6.3f Y: %6.3f %6.3f Z: %6.3f %6.3f",
+               element.attr<string>(_U(name)).c_str(), thetaX, phiX, thetaY, phiY, thetaZ, phiZ);
       Rotation3D rot = makeRotReflect(thetaX, phiX, thetaY, phiY, thetaZ, phiZ);
       Position   pos = Position(xpos.x(),xpos.y(),xpos.z());
       //  return Transform3D(rot, pos);
@@ -74,75 +74,76 @@ namespace   {
 
     void place_boxes(int level, Volume vol)    {
       if ( level >= 0 )   {
-	Box          box = vol.solid();
-	double       bx  = box.x();
-	double       by  = box.y();
-	double       bz  = box.z();
-	Material     mat = vol.material();
-	Box          small_box(bx*0.2, by*0.2, bz*0.2);
-	const char*  cols[4] = {"VisibleRed","VisibleBlue","VisibleGreen","VisibleYellow"};
-	const char*  c;
-	PlacedVolume pv;
-	Volume       v;
+        Box          box = vol.solid();
+        double       line= 0.015;
+        double       bx  = box.x();
+        double       by  = box.y();
+        double       bz  = box.z();
+        Material     mat = vol.material();
+        Box          small_box(bx*0.2, by*0.2, bz*0.2);
+        const char*  cols[4] = {"VisibleRed","VisibleBlue","VisibleGreen","VisibleYellow"};
+        const char*  c;
+        PlacedVolume pv;
+        Volume       v;
 
-	c = cols[(0+level)%4];
-	v = Volume(_toString(1,"box%d"), small_box, mat);
-	v.setRegion(vol.region());
-	v.setSensitiveDetector(sensitive);
-	v.setLimitSet(vol.limitSet());
-	v.setVisAttributes(description, c);
-	pv = vol.placeVolume(v, Position(0,0,0));
-	pv.addPhysVolID(_toString(level,"lvl%d"), 1);
-	printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
-	place_boxes(level-1, v);
+        c = cols[(0+level)%4];
+        v = Volume(_toString(1,"box%d"), small_box, mat);
+        v.setRegion(vol.region());
+        v.setSensitiveDetector(sensitive);
+        v.setLimitSet(vol.limitSet());
+        v.setVisAttributes(description, c);
+        pv = vol.placeVolume(v, Position(0,0,0));
+        pv.addPhysVolID(_toString(level,"lvl%d"), 1);
+        printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
+        place_boxes(level-1, v);
 
-	c = cols[(1+level)%4];
-	v = Volume(_toString(2,"box%d"), small_box, mat);
-	v.setRegion(vol.region());
-	v.setSensitiveDetector(sensitive);
-	v.setLimitSet(vol.limitSet());
-	v.setVisAttributes(description, c);
-	pv = vol.placeVolume(v, Position(0.95*bx,0,0));
-	pv.addPhysVolID(_toString(level,"lvl%d"), 2);
-	printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
-	place_boxes(level-1, v);
+        c = cols[(1+level)%4];
+        v = Volume(_toString(2,"box%d"), small_box, mat);
+        v.setRegion(vol.region());
+        v.setSensitiveDetector(sensitive);
+        v.setLimitSet(vol.limitSet());
+        v.setVisAttributes(description, c);
+        pv = vol.placeVolume(v, Position(0.8*bx,0,0));
+        pv.addPhysVolID(_toString(level,"lvl%d"), 2);
+        printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
+        place_boxes(level-1, v);
     
-	v = Volume(_toString(1,"axis_x"), Box(bx*0.25, by*0.03, bz*0.03), mat);
-	v.setVisAttributes(description, c);
-	pv = vol.placeVolume(v, Position(0.5*bx,0,0));
-	printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
+        v = Volume(_toString(1,"axis_x"), Box(bx*0.2, by*line, bz*line), mat);
+        v.setVisAttributes(description, c);
+        pv = vol.placeVolume(v, Position(0.4*bx,0,0));
+        printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
 
-	c = cols[(2+level)%4];
-	v = Volume(_toString(3,"box%d"), small_box, mat);
-	v.setRegion(vol.region());
-	v.setSensitiveDetector(sensitive);
-	v.setLimitSet(vol.limitSet());
-	v.setVisAttributes(description, c);
-	pv = vol.placeVolume(v, Position(0,0.95*by,0));
-	pv.addPhysVolID(_toString(level,"lvl%d"), 3);
-	printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
-	place_boxes(level-1, v);
+        c = cols[(2+level)%4];
+        v = Volume(_toString(3,"box%d"), small_box, mat);
+        v.setRegion(vol.region());
+        v.setSensitiveDetector(sensitive);
+        v.setLimitSet(vol.limitSet());
+        v.setVisAttributes(description, c);
+        pv = vol.placeVolume(v, Position(0,0.8*by,0));
+        pv.addPhysVolID(_toString(level,"lvl%d"), 3);
+        printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
+        place_boxes(level-1, v);
 
-	v = Volume(_toString(1,"axis_y"), Box(bx*0.03, by*0.25, bz*0.03), mat);
-	v.setVisAttributes(description, c);
-	pv = vol.placeVolume(v, Position(0,0.5*by,0));
-	printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
+        v = Volume(_toString(1,"axis_y"), Box(bx*line, by*0.2, bz*line), mat);
+        v.setVisAttributes(description, c);
+        pv = vol.placeVolume(v, Position(0,0.4*by,0));
+        printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
 
-	c = cols[(3+level)%4];
-	v = Volume(_toString(4,"box%d"), small_box, mat);
-	v.setRegion(vol.region());
-	v.setSensitiveDetector(sensitive);
-	v.setLimitSet(vol.limitSet());
-	v.setVisAttributes(description, c);
-	pv = vol.placeVolume(v, Position(0,0,0.95*bz));
-	pv.addPhysVolID(_toString(level,"lvl%d"), 4);
-	printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
-	place_boxes(level-1, v);
+        c = cols[(3+level)%4];
+        v = Volume(_toString(4,"box%d"), small_box, mat);
+        v.setRegion(vol.region());
+        v.setSensitiveDetector(sensitive);
+        v.setLimitSet(vol.limitSet());
+        v.setVisAttributes(description, c);
+        pv = vol.placeVolume(v, Position(0,0,0.8*bz));
+        pv.addPhysVolID(_toString(level,"lvl%d"), 4);
+        printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
+        place_boxes(level-1, v);
 
-	v = Volume(_toString(1,"axis_z"), Box(bx*0.03, by*0.03, bz*0.25), mat);
-	v.setVisAttributes(description, c);
-	pv = vol.placeVolume(v, Position(0,0,0.5*bz));
-	printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
+        v = Volume(_toString(1,"axis_z"), Box(bx*line, by*line, bz*0.2), mat);
+        v.setVisAttributes(description, c);
+        pv = vol.placeVolume(v, Position(0,0,0.4*bz));
+        printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
       }
     }
 
@@ -152,46 +153,50 @@ namespace   {
       double     bx = x_box.x();
       double     by = x_box.y();
       double     bz = x_box.z();
-      //Volume     v_det(x_det.nameStr()+"_det",Box(5*bx,5*by,5*bz),description.air());  
-      Assembly   v_det(x_det.nameStr()+"_det");
-      Box        box(bx,by,bz);
-      Volume     vol(x_det.nameStr()+"_box",box,description.air());  
+      Volume     v_det;
+      Box        box_solid(bx,by,bz);
+      Volume     box_vol(x_det.nameStr()+"_box",box_solid,description.air());  
       PlacedVolume pv;
       int cnt = 1;
-      
-      sensitive.setType("tracker");
-      vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),"VisibleGrey");
 
-      place_boxes(max_level-1, vol);
-      pv = v_det.placeVolume(vol, Position(0,0,1.1*bz));
+      sensitive.setType("tracker");
+      box_vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),"VisibleGrey");
+
+      if ( x_box.typeStr() == "assembly" )
+        v_det = Assembly(x_det.nameStr()+"_det");
+      else
+        v_det = Volume(x_det.nameStr()+"_det",Box(2.5*bx,2.5*by,2.5*bz),description.air());
+
+      place_boxes(max_level-1, box_vol);
+      pv = v_det.placeVolume(box_vol, Position(0,0,1.1*bz));
       pv.addPhysVolID(_toString(max_level,"lvl%d"), ++cnt);
       pv = nullptr;
       if ( x_det.hasChild(_U(reflect_x)) )   {
-	Volume   reflect_vol = vol.reflect(sensitive);
-	Position reflect_pos = Position(-1.1*bx,0,0);
-	pv = v_det.placeVolume(reflect_vol, reflect_pos);
+        Volume   reflect_vol = box_vol.reflect(sensitive);
+        Position reflect_pos = Position(-1.1*bx,0,0);
+        pv = v_det.placeVolume(reflect_vol, reflect_pos);
       }
       else if ( x_det.hasChild(_U(reflect_y)) )   {
-	Volume   reflect_vol = vol.reflect(sensitive);
-	Position reflect_pos = Position(0,-1.1*by,0);
-	pv = v_det.placeVolume(reflect_vol, reflect_pos);
+        Volume   reflect_vol = box_vol.reflect(sensitive);
+        Position reflect_pos = Position(0,-1.1*by,0);
+        pv = v_det.placeVolume(reflect_vol, reflect_pos);
       }
       else if ( x_det.hasChild(_U(reflect_z)) )   {
-	Volume   reflect_vol = vol.reflect(sensitive);
-	Position reflect_pos = Position(0,0,-1.1*bz);
-	pv = v_det.placeVolume(reflect_vol, reflect_pos);
+        Volume   reflect_vol = box_vol.reflect(sensitive);
+        Position reflect_pos = Position(0,0,-1.1*bz);
+        pv = v_det.placeVolume(reflect_vol, reflect_pos);
       }
       if ( pv.ptr() )   {
-	pv.addPhysVolID(_toString(max_level,"lvl%d"), ++cnt);
+        pv.addPhysVolID(_toString(max_level,"lvl%d"), ++cnt);
       }
       
       if ( x_det.hasChild(_U(reflect)) )   {
-	Volume reflect_vol = vol;
-	for(xml_coll_t c(x_det,_U(reflect)); c; ++c)   {
-	  TGeoCombiTrans* reflect_tr  = transform_reflect(c);
-	  pv = v_det.placeVolume(reflect_vol.ptr(), reflect_tr);
-	  pv.addPhysVolID(_toString(max_level,"lvl%d"), ++cnt);
-	}
+        Volume reflect_vol = box_vol;
+        for(xml_coll_t c(x_det,_U(reflect)); c; ++c)   {
+          TGeoCombiTrans* reflect_tr  = transform_reflect(c);
+          pv = v_det.placeVolume(reflect_vol.ptr(), reflect_tr);
+          pv.addPhysVolID(_toString(max_level,"lvl%d"), ++cnt);
+        }
       }
   
       // Place the calo inside the world
@@ -207,6 +212,5 @@ static Ref_t create_detector(Detector& description, xml_dim_t x_det, SensitiveDe
   NestedBoxReflection builder(description, x_det, sens);
   return builder.create();
 }
-
 
 DECLARE_DETELEMENT(NestedBoxReflection,create_detector)

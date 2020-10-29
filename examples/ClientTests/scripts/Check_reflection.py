@@ -50,17 +50,17 @@ def run():
   seq, act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
   act.DebugMaterials = False
   act.DebugElements = False
-  act.DebugVolumes = True
-  act.DebugShapes = True
+  act.DebugVolumes = False
+  act.DebugShapes = False
 
-  kernel.setOutputLevel(str('Geant4Converter'), Output.DEBUG)
+  kernel.setOutputLevel(str('Geant4Converter'), Output.WARNING)
   kernel.loadGeometry(geo)
   # Configure field
   geant4.setupTrackingField(prt=True)
   # Now build the physics list:
   geant4.setupPhysics('')
   kernel.physicsList().enableUI()
-  DDG4.setPrintLevel(DDG4.OutputLevel.DEBUG)
+  DDG4.setPrintLevel(DDG4.OutputLevel.INFO)
   kernel.NumEvents = 0
   kernel.configure()
   kernel.initialize()
