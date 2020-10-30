@@ -467,6 +467,10 @@ namespace dd4hep {
 
       /// Access attribute values: length
       double length() const;
+      /// Access attribute values: level
+      int    level() const;
+      /// Access attribute values: level
+      int    level(int default_value) const;
       /// Access attribute values: width
       double width() const;
       /// Access attribute values: height

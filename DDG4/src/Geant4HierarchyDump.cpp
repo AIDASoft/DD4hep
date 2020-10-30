@@ -67,19 +67,11 @@ static const char* _T(const std::string& str) {
   return str.c_str();
 }
 
-enum {
-  G4DUMP_ALL = 0xFFFFFFFF,
-  G4DUMP_LOGVOL = 1 << 0,
-  G4DUMP_SOLID = 1 << 1,
-  G4DUMP_SENSDET = 1 << 2,
-  G4DUMP_LIMITS = 1 << 3,
-  G4DUMP_REGION = 1 << 4,
-  G4DUMP_LAST
-};
-static unsigned long m_flags = ~0x0UL;
-
 /// Initializing Constructor
-Geant4HierarchyDump::Geant4HierarchyDump(Detector& description) : m_detDesc(description) {
+Geant4HierarchyDump::Geant4HierarchyDump(Detector& description, unsigned long flags)
+  : m_detDesc(description), m_flags(flags)
+{
+  m_flags &= ~G4DUMP_SOLID;
 }
 
 /// Standard destructor
@@ -87,24 +79,25 @@ Geant4HierarchyDump::~Geant4HierarchyDump() {
 }
 
 void Geant4HierarchyDump::dump(const string& indent, const G4VPhysicalVolume* v) const {
-  G4LogicalVolume* lv = v->GetLogicalVolume();
-  G4VSensitiveDetector* sd = lv->GetSensitiveDetector();
-  G4Material* mat = lv->GetMaterial();
-  G4VSolid* sol = lv->GetSolid();
-  G4Region* rg = lv->GetRegion();
-  G4UserLimits* ul = lv->GetUserLimits();
-  G4int ndau = lv->GetNoDaughters();
-  char text[32];
+  G4LogicalVolume*      lv   = v->GetLogicalVolume();
+  G4VSensitiveDetector* sd   = lv->GetSensitiveDetector();
+  G4RotationMatrix*     rot  = v->GetObjectRotation();
+  G4Material*           mat  = lv->GetMaterial();
+  G4VSolid*             sol  = lv->GetSolid();
+  G4Region*             rg   = lv->GetRegion();
+  G4UserLimits*         ul   = lv->GetUserLimits();
+  G4int                 ndau = lv->GetNoDaughters();
   stringstream str;
+  char text[32];
 
-  m_flags &= ~G4DUMP_SOLID;
-  printout(INFO, "Geant4Hierarchy", "%s -> Placement:%s LV:%s Material:%s Solid:%s # of Daughters:%d", indent.c_str(),
-           _T(v->GetName()), _T(lv->GetName()), _T(mat->GetName()), _T(sol->GetName()), ndau);
+  printout(INFO, "Geant4Hierarchy", "%s -> Placement:%s LV:%s Material:%s Solid:%s # of Daughters:%d CopyNo:%d",
+	   _T(indent), _T(v->GetName()), _T(lv->GetName()), _T(mat->GetName()),
+	   _T(sol->GetName()), ndau, v->GetCopyNo());
 
   if (sd && (m_flags & G4DUMP_SOLID)) {
     str.str("");
     sol->StreamInfo(str);
-    printout(INFO, "Geant4Hierarchy", "%s    Solid:%s", indent.c_str(), str.str().c_str());
+    printout(INFO, "Geant4Hierarchy", "%s    Solid:%s", _T(indent), str.str().c_str());
   }
   if (rg && (m_flags & G4DUMP_LIMITS)) {
     G4UserLimits* rg_limits = rg->GetUserLimits();
@@ -116,11 +109,20 @@ void Geant4HierarchyDump::dump(const string& indent, const G4VPhysicalVolume* v)
     printout(INFO, "Geant4Hierarchy", str.str().c_str());
   }
   if (sd && (m_flags & G4DUMP_SENSDET)) {
-    printout(INFO, "Geant4Hierarchy", "%s    Sens.det:%p %s path:%s Active:%-3s #Coll:%d", indent.c_str(), sd,
+    printout(INFO, "Geant4Hierarchy", "%s    Sens.det:%p %s path:%s Active:%-3s #Coll:%d", _T(indent), sd,
              _T(sd->GetName()), _T(sd->GetFullPathName()), yes_no(sd->isActive()), sd->GetNumberOfCollections());
   }
   if (ul && (m_flags & G4DUMP_LIMITS)) {
-    printout(INFO, "Geant4Hierarchy", "%s    Limits:%s ", indent.c_str(), _T(ul->GetType()));
+    printout(INFO, "Geant4Hierarchy", "%s    Limits:%s ", _T(indent), _T(ul->GetType()));
+  }
+  if (rot && (m_flags & G4DUMP_MATRIX)) {
+    const G4ThreeVector     t = v->GetTranslation();
+    const G4RotationMatrix& r = *rot;
+    double det =
+      r.xx()*r.yy()*r.zz() + r.xy()*r.yz()*r.zx() + r.xz()*r.yx()*r.zy() -
+      r.zx()*r.yy()*r.xz() - r.zy()*r.yz()*r.xx() - r.zz()*r.yx()*r.xy();
+    printout(INFO, "Geant4Hierarchy", "%s    Matrix: %sREFLECTED Tr: %8.3g %8.3g %8.3g [mm]",
+	     _T(indent), det > 0e0 ? "NOT " : "", t.x(), t.y(), t.z());
   }
   for (G4int idau = 0; idau < ndau; ++idau) {
     ::snprintf(text, sizeof(text), "  %-3d", idau);

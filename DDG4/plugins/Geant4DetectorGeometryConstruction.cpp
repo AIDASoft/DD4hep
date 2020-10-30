@@ -32,27 +32,29 @@ namespace dd4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4DetectorGeometryConstruction : public Geant4DetectorConstruction   {
-      /// Property: Dump geometry hierarchy
-      bool m_dumpHierarchy   = false;
+      /// Property: Dump geometry hierarchy if not NULL. Flags can steer actions. 
+      unsigned long m_dumpHierarchy = 0;
       /// Property: Flag to debug materials during conversion mechanism
-      bool m_debugMaterials  = false;
+      bool m_debugMaterials         = false;
       /// Property: Flag to debug elements during conversion mechanism
-      bool m_debugElements   = false;
+      bool m_debugElements          = false;
       /// Property: Flag to debug shapes during conversion mechanism
-      bool m_debugShapes     = false;
+      bool m_debugShapes            = false;
       /// Property: Flag to debug volumes during conversion mechanism
-      bool m_debugVolumes    = false;
+      bool m_debugVolumes           = false;
       /// Property: Flag to debug placements during conversion mechanism
-      bool m_debugPlacements = false;
+      bool m_debugPlacements        = false;
+      /// Property: Flag to debug reflections during conversion mechanism
+      bool m_debugReflections       = false;
       /// Property: Flag to debug regions during conversion mechanism
-      bool m_debugRegions    = false;
+      bool m_debugRegions           = false;
       /// Property: Flag to debug regions during conversion mechanism
-      bool m_debugSurfaces   = false;
+      bool m_debugSurfaces          = false;
 
       /// Property: Flag to dump all placements after the conversion procedure
-      bool m_printPlacements = false;
+      bool m_printPlacements        = false;
       /// Property: Flag to dump all sensitives after the conversion procedure
-      bool m_printSensitives = false;
+      bool m_printSensitives        = false;
 
       /// Property: Printout level of info object
       int  m_geoInfoPrintLevel;
@@ -129,6 +131,7 @@ Geant4DetectorGeometryConstruction::Geant4DetectorGeometryConstruction(Geant4Con
   declareProperty("DebugShapes",       m_debugShapes);
   declareProperty("DebugVolumes",      m_debugVolumes);
   declareProperty("DebugPlacements",   m_debugPlacements);
+  declareProperty("DebugReflections",  m_debugReflections);
   declareProperty("DebugRegions",      m_debugRegions);
   declareProperty("DebugSurfaces",     m_debugSurfaces);
 
@@ -151,13 +154,14 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   Geant4Mapping&  g4map = Geant4Mapping::instance();
   DetElement      world = ctxt->description.world();
   Geant4Converter conv(ctxt->description, outputLevel());
-  conv.debugMaterials  = m_debugMaterials;
-  conv.debugElements   = m_debugElements;
-  conv.debugShapes     = m_debugShapes;
-  conv.debugVolumes    = m_debugVolumes;
-  conv.debugPlacements = m_debugPlacements;
-  conv.debugRegions    = m_debugRegions;
-  conv.debugSurfaces   = m_debugSurfaces;
+  conv.debugMaterials   = m_debugMaterials;
+  conv.debugElements    = m_debugElements;
+  conv.debugShapes      = m_debugShapes;
+  conv.debugVolumes     = m_debugVolumes;
+  conv.debugRegions     = m_debugRegions;
+  conv.debugSurfaces    = m_debugSurfaces;
+  conv.debugPlacements  = m_debugPlacements;
+  conv.debugReflections = m_debugReflections;
 
   ctxt->geometry       = conv.create(world).detach();
   ctxt->geometry->printLevel = outputLevel();
@@ -167,8 +171,8 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   context()->kernel().setWorld(w);
   // Create Geant4 volume manager only if not yet available
   g4map.volumeManager();
-  if ( m_dumpHierarchy )   {
-    Geant4HierarchyDump dmp(ctxt->description);
+  if ( m_dumpHierarchy != 0 )   {
+    Geant4HierarchyDump dmp(ctxt->description, m_dumpHierarchy);
     dmp.dump("",w);
   }
   ctxt->world = w;

@@ -254,6 +254,7 @@ UNICODE (layers);
 UNICODE (description);
 UNICODE (lccdd);
 UNICODE (length);
+UNICODE (level);
 UNICODE (limit);
 UNICODE (limits);
 UNICODE (limitset);

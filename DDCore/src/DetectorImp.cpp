@@ -174,6 +174,8 @@ DetectorImp::DetectorImp(const string& name)
   //if ( gGeoManager ) delete gGeoManager;
   m_manager = new TGeoManager(name.c_str(), "Detector Geometry");
   {
+    m_manager->AddNavigator();
+    m_manager->SetCurrentNavigator(0);
     gGeoManager = m_manager;
 #if 1 //FIXME: eventually this should be set to 1 - needs fixes in examples ...
     TGeoElementTable*	table = m_manager->GetElementTable();
@@ -648,23 +650,25 @@ namespace {
       }
     }
   };
-  void build_reflections(TGeoManager* mgr)    {
-    TGeoIterator next(mgr->GetTopVolume());
-    TGeoNode *node;
-    while ((node=next())) {
-      TGeoMatrix* m = node->GetMatrix();
-      if (m->IsReflection()) {
-        Volume vol(node->GetVolume());
-        TGeoMatrix* mclone = new TGeoCombiTrans(*m);
-        mclone->RegisterYourself();
-        // Reflect just the rotation component
-        mclone->ReflectZ(kFALSE, kTRUE);
-        TGeoNodeMatrix* nodematrix = (TGeoNodeMatrix*)node;
-        nodematrix->SetMatrix(mclone);
-        printout(INFO,"Detector","Reflecting volume: %s ",vol.name());
-        Volume refl = vol.reflect(vol.sensitiveDetector());
-        node->SetVolume(refl.ptr());
-      }
+}
+
+/// Build reflections the ROOT way. To be called once the geometry is closed
+void DetectorImp::buildReflections()    {
+  TGeoIterator next(manager().GetTopVolume());
+  TGeoNode *node;
+  while ((node=next())) {
+    TGeoMatrix* m = node->GetMatrix();
+    if (m->IsReflection()) {
+      Volume vol(node->GetVolume());
+      TGeoMatrix* mclone = new TGeoCombiTrans(*m);
+      mclone->RegisterYourself();
+      // Reflect just the rotation component
+      mclone->ReflectZ(kFALSE, kTRUE);
+      TGeoNodeMatrix* nodematrix = (TGeoNodeMatrix*)node;
+      nodematrix->SetMatrix(mclone);
+      printout(INFO,"Detector","Reflecting volume: %s ",vol.name());
+      Volume refl = vol.reflect(vol.sensitiveDetector());
+      node->SetVolume(refl.ptr());
     }
   }
 }
@@ -690,7 +694,6 @@ void DetectorImp::endDocument(bool close_geometry)    {
     /// Since we allow now for anonymous shapes,
     /// we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();
-    build_reflections(mgr);
   }
   ShapePatcher patcher(m_volManager, m_world);
   patcher.patchShapes();

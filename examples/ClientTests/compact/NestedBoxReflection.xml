@@ -7,20 +7,17 @@
   </includes>
 
   <define>
-    <constant name="world_size" value="30*m"/>
+    <constant name="world_size" value="6*m"/>
     <constant name="world_x" value="world_size"/>
     <constant name="world_y" value="world_size"/>
     <constant name="world_z" value="world_size"/>
-    <constant name="HcalBarrel_rmin" value="300*cm"/>
-    <constant name="HcalBarrel_rmax" value="500*cm"/>
-    <constant name="HcalBarrel_zmax" value="600*cm"/>
   </define>
 
   <display>
     <vis name="Invisible" showDaughters="false" visible="false"/>
     <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
-    <vis name="LightGrey"     alpha="0.3" r="0.7" g="0.7" b="0.7" showDaughters="true" visible="true"/>
-    <vis name="DarkGrey"      alpha="0.3" r="0.3" g="0.3" b="0.3" showDaughters="true" visible="true"/>
+    <vis name="VisibleGrey"   alpha="0.4" r="0.7" g="0.7" b="0.7" showDaughters="true" visible="true"/>
+    <vis name="DarkGrey"      alpha="0.4" r="0.3" g="0.3" b="0.3" showDaughters="true" visible="true"/>
     <vis name="VisibleRed"    alpha="0.6" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
     <vis name="VisibleBlue"   alpha="0.6" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
     <vis name="VisibleYellow" alpha="0.6" r="1.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
@@ -37,24 +34,53 @@
     <detector id="1" name="NestedBox" type="NestedBoxReflection" readout="NestedBoxHits" vis="VisibleGreen" limits="cal_limits">
       <comment>A box with 3 boxes inside spanning a coordinate system</comment>
       <assembly/>
-      <dimensions x="50*cm" y="70*cm" z="90*cm"/>
-      <xxxreflect_z/>
-      <no-reflect name="ReflectionY">
-	<rotation phiY="270.*deg" thetaY="90.*deg" phiX=" 0.*deg" thetaX="90.*deg" phiZ="0.*deg" thetaZ="0.*deg"/>
-	<position x="0" y="0" z="-130*cm"/>
-      </no-reflect>
+      <dimensions x="50*cm"   y="70*cm"   z="90*cm" level="2">
+	<position x="400*cm" y="0*cm" z="0*cm"/>
+      </dimensions>
       <reflect name="ReflectionX">
 	<rotation phiX="180.*deg" thetaX="90.*deg" phiY="90.*deg" thetaY="90.*deg" phiZ="0.*deg" thetaZ="0.*deg"/>
-	<position x="0" y="0" z="-130*cm"/>
+	<position x="200*cm" y="0*cm" z="0*cm"/>
       </reflect>
+      <reflect_x  x="-200*cm" y="0*cm"    z="0*cm"/>
 
+      <reflect name="ReflectionY">
+	<rotation phiY="270.*deg" thetaY="90.*deg" phiX=" 0.*deg" thetaX="90.*deg" phiZ="0.*deg" thetaZ="0.*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+      <reflect_y  x="0*cm"    y="-200*cm" z="0*cm"/>
+
+      <reflect_z  x="0*cm"    y="0*cm"    z="200*cm"/>
+      <reflect_z  x="0*cm"    y="0*cm"    z="-200*cm"/>
+<!--
+      <reflect_x  x="-200*cm" y="200*cm"    z="0*cm"/>
+      <reflect_x  x="-200*cm" y="200*cm"    z="200*cm"/>
+      <reflect_x  x="-200*cm" y="200*cm"    z="-200*cm"/>
+      <reflect_x  x="-200*cm" y="-200*cm"   z="200*cm"/>
+      <reflect_x  x="-200*cm" y="-200*cm"   z="-200*cm"/>
+      <reflect_x  x="-200*cm" y="-200*cm"   z="0*cm"/>
+
+      <reflect_y  x="0*cm"    y="200*cm"  z="200*cm"/>
+      <reflect_y  x="0*cm"    y="200*cm"  z="-200*cm"/>
+      <reflect_y  x="0*cm"    y="-200*cm" z="200*cm"/>
+      <reflect_y  x="0*cm"    y="-200*cm" z="-200*cm"/>
+      <reflect_y  x="200*cm"  y="0*cm"    z="200*cm"/>
+      <reflect_y  x="-200*cm" y="0*cm"    z="200*cm"/>
+      <reflect_y  x="200*cm"  y="0*cm"    z="-200*cm"/>
+      <reflect_y  x="-200*cm" y="0*cm"    z="-200*cm"/>
+      
+      <reflect_z  x="200*cm"  y="200*cm"  z="0*cm"/>
+      <reflect_z  x="200*cm"  y="200*cm"  z="200*cm"/>
+      <reflect_z  x="200*cm"  y="200*cm"  z="-200*cm"/>
+      <reflect_z  x="200*cm"  y="-200*cm" z="200*cm"/>
+      <reflect_z  x="200*cm"  y="-200*cm" z="-200*cm"/>
+      <reflect_z  x="200*cm"  y="-200*cm" z="0*cm"/>
+-->
     </detector>
-
   </detectors>
   
   <readouts>
     <readout name="NestedBoxHits">
-      <id>system:8,lvl4:4,lvl3:4,lvl2:4,lvl1:4,lvl0:4</id> 
+      <id>system:8,lvl4:5,lvl3:5,lvl2:5,lvl1:5,lvl0:5</id> 
     </readout>
   </readouts>
 

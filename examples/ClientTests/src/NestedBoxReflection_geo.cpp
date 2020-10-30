@@ -13,8 +13,10 @@
 
 // Framework includes
 #include "DD4hep/Printout.h"
+#include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/DetFactoryHelper.h"
 #include "XML/VolumeBuilder.h"
+#include "XML/Utilities.h"
 #include <cmath>
 
 using namespace std;
@@ -74,12 +76,12 @@ namespace   {
 
     void place_boxes(int level, Volume vol)    {
       if ( level >= 0 )   {
-        Box          box = vol.solid();
-        double       line= 0.015;
-        double       bx  = box.x();
-        double       by  = box.y();
-        double       bz  = box.z();
-        Material     mat = vol.material();
+        Box          box  = vol.solid();
+        double       line = 0.015;
+        double       bx   = box.x();
+        double       by   = box.y();
+        double       bz   = box.z();
+        Material     mat  = description.material("Si");
         Box          small_box(bx*0.2, by*0.2, bz*0.2);
         const char*  cols[4] = {"VisibleRed","VisibleBlue","VisibleGreen","VisibleYellow"};
         const char*  c;
@@ -146,63 +148,84 @@ namespace   {
         printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
       }
     }
+    
+    PlacedVolume place(Volume mother, Volume vol, xml_elt_t e, int level, int copyNo, char reflection)   {
+      Position    pos;
+      RotationZYX rot;
+      xml_dim_t   xpos = xml_dim_t(e).child(_U(position), false);
+      xml_dim_t   xrot = xml_dim_t(e).child(_U(rotation), false);
+      if ( !xpos.ptr() ) xpos = e;
+      if ( xpos.ptr()  ) pos = Position(xpos.x(0),xpos.y(0),xpos.z(0));
+      if ( xrot.ptr()  ) rot = RotationZYX(xrot.x(0),xrot.y(0),xrot.z(0));
+
+      TGeoHMatrix* mat = detail::matrix::_transform(pos, rot);
+      switch(reflection)  {
+      case 'X':
+	mat->ReflectX(kTRUE, kTRUE);
+	break;
+      case 'Y':
+	mat->ReflectY(kTRUE, kTRUE);
+	break;
+      case 'Z':
+      default:
+	mat->ReflectZ(kTRUE, kTRUE);
+	break;
+      }
+      PlacedVolume pv = mother.placeVolume(vol, mat);
+      pv.addPhysVolID(_toString(level,"lvl%d"), copyNo);
+      return pv;
+    }
 
     Ref_t create()    {
-      xml_dim_t  x_box(x_det.dimensions()); 
-      int        max_level = 3;
-      double     bx = x_box.x();
-      double     by = x_box.y();
-      double     bz = x_box.z();
-      Volume     v_det;
-      Box        box_solid(bx,by,bz);
-      Volume     box_vol(x_det.nameStr()+"_box",box_solid,description.air());  
+      xml_dim_t    x_box(x_det.dimensions()); 
+      int          levels = x_box.level(2);
+      double       bx = x_box.x();
+      double       by = x_box.y();
+      double       bz = x_box.z();
+      Volume       v_det;
+      Box          box_solid(bx,by,bz);
+      Volume       box_vol("nested_box",box_solid,description.air());  
       PlacedVolume pv;
-      int cnt = 1;
 
       sensitive.setType("tracker");
-      box_vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),"VisibleGrey");
-
-      if ( x_det.hasChild(_U(assembly)) )
-        v_det = Assembly(x_det.nameStr()+"_det");
+      if ( levels != 0 && x_det.hasChild(_U(assembly)) )
+        v_det = Assembly("envelope");
       else
-        v_det = Volume(x_det.nameStr()+"_det",Box(2.5*bx,2.5*by,2.5*bz),description.air());
+        v_det = Volume("envelope",Box(4.5*bx,4.5*by,4.5*bz),description.air());
 
-      place_boxes(max_level-1, box_vol);
-      pv = v_det.placeVolume(box_vol, Position(0,0,1.1*bz));
-      pv.addPhysVolID(_toString(max_level,"lvl%d"), ++cnt);
-      pv = nullptr;
-      if ( x_det.hasChild(_U(reflect_x)) )   {
-        Volume   reflect_vol = box_vol.reflect(sensitive);
-        Position reflect_pos = Position(-1.1*bx,0,0);
-        pv = v_det.placeVolume(reflect_vol, reflect_pos);
+      if ( levels == 0 )   {
+	v_det.setSensitiveDetector(sensitive);
       }
-      else if ( x_det.hasChild(_U(reflect_y)) )   {
-        Volume   reflect_vol = box_vol.reflect(sensitive);
-        Position reflect_pos = Position(0,-1.1*by,0);
-        pv = v_det.placeVolume(reflect_vol, reflect_pos);
+      else if ( levels == 1 )   {
+	box_vol.setSensitiveDetector(sensitive);
+	box_vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),"VisibleGrey");
       }
-      else if ( x_det.hasChild(_U(reflect_z)) )   {
-        Volume   reflect_vol = box_vol.reflect(sensitive);
-        Position reflect_pos = Position(0,0,-1.1*bz);
-        pv = v_det.placeVolume(reflect_vol, reflect_pos);
+      else  {
+	int cnt = 1;
+	Transform3D tr = xml::createTransformation(x_box);
+	box_vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),"VisibleGrey");
+	place_boxes(levels-1, box_vol);
+	pv = v_det.placeVolume(box_vol, tr);
+	pv.addPhysVolID(_toString(levels,"lvl%d"), ++cnt);
+	
+	for(xml_coll_t c(x_det,_U(reflect_x)); c; ++c)
+	  place(v_det, box_vol, c, levels, ++cnt, 'X');
+	for(xml_coll_t c(x_det,_U(reflect_y)); c; ++c)
+	  place(v_det, box_vol, c, levels, ++cnt, 'Y');
+	for(xml_coll_t c(x_det,_U(reflect_z)); c; ++c)
+	  place(v_det, box_vol, c, levels, ++cnt, 'Z');
+
+	if ( x_det.hasChild(_U(reflect)) )   {
+	  Volume reflect_vol = box_vol;
+	  for(xml_coll_t c(x_det,_U(reflect)); c; ++c)   {
+	    TGeoCombiTrans* reflect_tr = transform_reflect(c);
+	    pv = v_det.placeVolume(reflect_vol.ptr(), reflect_tr);
+	    pv.addPhysVolID(_toString(levels,"lvl%d"), ++cnt);
+	  }
+	}
       }
-      if ( pv.ptr() )   {
-        pv.addPhysVolID(_toString(max_level,"lvl%d"), ++cnt);
-      }
-      
-      if ( x_det.hasChild(_U(reflect)) )   {
-        Volume reflect_vol = box_vol;
-        for(xml_coll_t c(x_det,_U(reflect)); c; ++c)   {
-          TGeoCombiTrans* reflect_tr  = transform_reflect(c);
-          pv = v_det.placeVolume(reflect_vol.ptr(), reflect_tr);
-          pv.addPhysVolID(_toString(max_level,"lvl%d"), ++cnt);
-        }
-      }
-  
       // Place the calo inside the world
-      pv = description.pickMotherVolume(detector).placeVolume(v_det);
-      pv.addPhysVolID("system",x_det.id());
-      detector.setPlacement(pv);
+      placeDetector(v_det, x_det).addPhysVolID("system",x_det.id());
       return detector;
     }
   };

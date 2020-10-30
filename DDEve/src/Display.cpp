@@ -46,6 +46,7 @@
 #include "TEveCompound.h"
 #include "TEveBoxSet.h"
 #include "TEvePointSet.h"
+#include "TEveGeoShape.h"
 #include "TEveTrackPropagator.h"
 #include "TGeoManager.h"
 
@@ -94,6 +95,8 @@ Display::Display(TEveManager* eve)
   EvePgonSetProjectedContextMenu::install(this);
   ElementListContextMenu::install(this);
   m_detDesc = &Detector::getInstance();
+  TEveGeoShape::GetGeoMangeur()->AddNavigator();
+  TEveGeoShape::GetGeoMangeur()->SetCurrentNavigator(0);
   m_evtHandler = new GenericEventHandler();
   m_evtHandler->Subscribe(this);
   m_detDesc->addExtension<Display>(this);

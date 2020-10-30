@@ -75,9 +75,9 @@ def run():
 
   # Now build the physics list:
   phys = geant4.setupPhysics('QGSP_BERT')
-  ph = DDG4.PhysicsList(kernel, 'Geant4PhysicsList/Myphysics')
-  ph.addParticleConstructor('G4Geantino')
-  ph.addParticleConstructor('G4BosonConstructor')
+  ph = DDG4.PhysicsList(kernel, str('Geant4PhysicsList/Myphysics'))
+  ph.addParticleConstructor(str('G4Geantino'))
+  ph.addParticleConstructor(str('G4BosonConstructor'))
   ph.enableUI()
   phys.adopt(ph)
   phys.dump()

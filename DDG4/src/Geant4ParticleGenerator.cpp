@@ -130,16 +130,16 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
     Particle* p = new Particle();
     direction = m_direction;
     getParticleDirection(i, direction, momentum);
-    unit_direction = direction.unit();
-    p->id         = inter->nextPID();
-    p->status    |= G4PARTICLE_GEN_STABLE;
-    p->mask       = m_mask;
-    p->pdgID      = m_particle->GetPDGEncoding();
+    unit_direction  = direction.unit();
+    p->id           = inter->nextPID();
+    p->status      |= G4PARTICLE_GEN_STABLE;
+    p->mask         = m_mask;
+    p->pdgID        = m_particle->GetPDGEncoding();
 
-    p->psx        = unit_direction.X()*momentum;
-    p->psy        = unit_direction.Y()*momentum;
-    p->psz        = unit_direction.Z()*momentum;
-    p->mass       = m_particle->GetPDGMass();
+    p->psx          = unit_direction.X()*momentum;
+    p->psy          = unit_direction.Y()*momentum;
+    p->psz          = unit_direction.Z()*momentum;
+    p->mass         = m_particle->GetPDGMass();
     p->charge       = m_particle->GetPDGCharge();
     p->spin[0]      = 0;
     p->spin[1]      = 0;
