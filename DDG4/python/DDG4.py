@@ -688,9 +688,9 @@ class Geant4:
     phys.adopt(opt)
     return opt
 
-  def setupGun(self, name, particle, energy, isotrop=True,
+  def setupGun(self, name, particle, energy, typ="Geant4ParticleGun", isotrop=True,
                multiplicity=1, position=(0.0, 0.0, 0.0), register=True, **args):
-    gun = GeneratorAction(self.kernel(), "Geant4ParticleGun/" + name, True)
+    gun = GeneratorAction(self.kernel(), typ + "/" + name, True)
     for i in args.items():
       setattr(gun, i[0], i[1])
     gun.energy = energy

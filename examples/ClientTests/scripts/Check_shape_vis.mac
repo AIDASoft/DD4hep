@@ -4,6 +4,8 @@
 /vis/verbose errors
 /vis/drawVolume
 /vis/viewer/set/viewpointThetaPhi 55. 45.
-/vis/scene/add/axes 0 0 0 1 m
+/vis/scene/add/axes 0 0 0 3 m
+
+
 /vis/viewer/zoom  2
 /vis/viewer/refresh

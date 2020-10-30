@@ -21,6 +21,8 @@
 
 XML_ATTR_ACCESSOR(int, id)
 XML_ATTR_ACCESSOR_INT(id)
+XML_ATTR_ACCESSOR(int, level)
+XML_ATTR_ACCESSOR_INT(level)
 XML_ATTR_ACCESSOR(bool, combineHits)
 XML_ATTR_ACCESSOR(int, station)
 

@@ -46,7 +46,7 @@ install(TARGETS multipleGeo RUNTIME DESTINATION bin)
 #
 #
 set(ClientTestsEx_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
-dd4hep_install_dir( compact scripts ref DESTINATION ${ClientTestsEx_INSTALL} )
+dd4hep_install_dir( compact scripts ref eve DESTINATION ${ClientTestsEx_INSTALL} )
 #--------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------

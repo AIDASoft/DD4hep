@@ -33,11 +33,23 @@ namespace dd4hep {
      */
     class Geant4HierarchyDump {
     public:
-      Detector& m_detDesc;
+      enum {
+	G4DUMP_ALL     = 0xFFFFFFFF,
+	G4DUMP_LOGVOL  = 1 << 0,
+	G4DUMP_SOLID   = 1 << 1,
+	G4DUMP_SENSDET = 1 << 2,
+	G4DUMP_LIMITS  = 1 << 3,
+	G4DUMP_REGION  = 1 << 4,
+	G4DUMP_MATRIX  = 1 << 5,
+	G4DUMP_LAST
+      };
+
+      Detector&     m_detDesc;
+      unsigned long m_flags = G4DUMP_ALL;
 
     public:
       /// Initializing Constructor
-      Geant4HierarchyDump(Detector& description);
+      Geant4HierarchyDump(Detector& description, unsigned long flags = G4DUMP_ALL);
       /// Standard destructor
       virtual ~Geant4HierarchyDump();
       /// Dump the volume hierarchy as it is known to geant 4

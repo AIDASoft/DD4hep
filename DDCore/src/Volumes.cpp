@@ -266,6 +266,13 @@ namespace {
     }
     return vol;
   }
+
+  int get_copy_number(TGeoVolume* par)    {
+    TObjArray* a = par ? par->GetNodes() : 0;
+    int copy_nr = (a ? a->GetEntries() : 0);
+    return copy_nr;
+  }
+
 }
 
 /// Default constructor
@@ -568,12 +575,6 @@ Volume Volume::divide(const std::string& divname, int iaxis, int ndiv,
   return nullptr;
 }
 
-Int_t get_copy_number(TGeoVolume* par)    {
-  TObjArray* a = par ? par->GetNodes() : 0;
-  Int_t copy_nr = (a ? a->GetEntries() : 0);
-  return copy_nr;
-}
-
 PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix* transform) {
   TGeoVolume* parent = par;
   if ( !parent )   {
@@ -608,7 +609,6 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
       Double_t det =
         r[0]*r[4]*r[8] + r[3]*r[7]*r[2] + r[6]*r[1]*r[5] -
         r[2]*r[4]*r[6] - r[5]*r[7]*r[0] - r[8]*r[1]*r[3];
-
       /// We have a left handed matrix (determinant < 0). This is a reflection!
       if ( det < 0e0 )   {
         transform->SetBit(TGeoMatrix::kGeoReflection);
@@ -1014,14 +1014,14 @@ std::string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
 
 
   if ( vol->IsA() == TGeoVolumeAssembly::Class() )    {
-    for(Int_t i=0; i<vol->GetNdaughters(); ++i)  {
+    for(int i=0; i<vol->GetNdaughters(); ++i)  {
       os << toStringMesh(vol->GetNode(i), prec) << endl;
     }
     return os.str();
   }
 
   // Prints shape parameters
-  Int_t nvert = 0, nsegs = 0, npols = 0;
+  int nvert = 0, nsegs = 0, npols = 0;
   sol->GetMeshNumbers(nvert, nsegs, npols);
   Double_t* points = new Double_t[3*nvert];
   sol->SetPoints(points);
@@ -1032,7 +1032,7 @@ std::string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
      << " N(mesh)=" << sol->GetNmeshVertices()
      << "  N(vert)=" << nvert << "  N(seg)=" << nsegs << "  N(pols)=" << npols << endl;
     
-  for(Int_t i=0; i<nvert; ++i)   {
+  for(int i=0; i<nvert; ++i)   {
     Double_t* p = points + 3*i;
     Double_t global[3], local[3] = {p[0], p[1], p[2]};
     mat->LocalToMaster(local, global);

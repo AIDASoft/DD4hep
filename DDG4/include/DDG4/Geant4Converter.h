@@ -32,24 +32,26 @@ namespace dd4hep {
     class Geant4Converter : public detail::GeoHandler, public Geant4Mapping {
     public:
       /// Property: Flag to debug materials during conversion mechanism
-      bool debugMaterials  = false;
+      bool debugMaterials   = false;
       /// Property: Flag to debug elements during conversion mechanism
-      bool debugElements   = false;
+      bool debugElements    = false;
       /// Property: Flag to debug shapes during conversion mechanism
-      bool debugShapes     = false;
+      bool debugShapes      = false;
       /// Property: Flag to debug volumes during conversion mechanism
-      bool debugVolumes    = false;
+      bool debugVolumes     = false;
       /// Property: Flag to debug placements during conversion mechanism
-      bool debugPlacements = false;
+      bool debugPlacements  = false;
+      /// Property: Flag to debug reflections during conversion mechanism
+      bool debugReflections = false;
       /// Property: Flag to debug regions during conversion mechanism
-      bool debugRegions    = false;
+      bool debugRegions     = false;
       /// Property: Flag to debug surfaces during conversion mechanism
-      bool debugSurfaces   = false;
+      bool debugSurfaces    = false;
 
       /// Property: Flag to dump all placements after the conversion procedure
-      bool printPlacements = false;
+      bool printPlacements  = false;
       /// Property: Flag to dump all sensitives after the conversion procedure
-      bool printSensitives = false;
+      bool printSensitives  = false;
 
       /// Property: Check geometrical overlaps for volume placements and G4 imprints 
       bool       checkOverlaps;
