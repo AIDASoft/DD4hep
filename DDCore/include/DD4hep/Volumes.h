@@ -44,6 +44,28 @@ namespace dd4hep {
   class  Volume;
   class  PlacedVolume;
 
+  /// Scan geometry and create reflected volumes
+  /**
+   *   Build reflections the ROOT way. To be called once the geometry is closed.
+   *
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoManager.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class  ReflectionBuilder   {
+    Detector& detector;
+  public:
+    /// Initializing constructor
+    ReflectionBuilder(Detector& desc) : detector(desc) {}
+    /// Default descructor
+    ~ReflectionBuilder() = default;
+    /// Perform scan
+    void execute()  const;
+  };
+    
   /// Implementation class extending the ROOT placed volume
   /**
    *   For any further documentation please see the following ROOT documentation:

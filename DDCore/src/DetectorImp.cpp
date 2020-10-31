@@ -652,27 +652,6 @@ namespace {
   };
 }
 
-/// Build reflections the ROOT way. To be called once the geometry is closed
-void DetectorImp::buildReflections()    {
-  TGeoIterator next(manager().GetTopVolume());
-  TGeoNode *node;
-  while ((node=next())) {
-    TGeoMatrix* m = node->GetMatrix();
-    if (m->IsReflection()) {
-      Volume vol(node->GetVolume());
-      TGeoMatrix* mclone = new TGeoCombiTrans(*m);
-      mclone->RegisterYourself();
-      // Reflect just the rotation component
-      mclone->ReflectZ(kFALSE, kTRUE);
-      TGeoNodeMatrix* nodematrix = (TGeoNodeMatrix*)node;
-      nodematrix->SetMatrix(mclone);
-      printout(INFO,"Detector","Reflecting volume: %s ",vol.name());
-      Volume refl = vol.reflect(vol.sensitiveDetector());
-      node->SetVolume(refl.ptr());
-    }
-  }
-}
-
 /// Finalize/close the geometry
 void DetectorImp::endDocument(bool close_geometry)    {
   TGeoManager* mgr = m_manager;

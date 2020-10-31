@@ -1463,6 +1463,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   bool open_geometry  = true;
   bool close_document = true;
   bool close_geometry = true;
+  bool build_reflections = false;
 
   if (element.hasChild(_U(debug)))
     (Converter<Debug>(description))(xml_h(compact.child(_U(debug))));
@@ -1554,10 +1555,20 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
     description.addConstant(Constant("compact_checksum", text));
     description.endDocument(close_geometry);
   }
+  if ( build_reflections )   {
+    ReflectionBuilder rb(description);
+    rb.execute();
+  }
   xml_coll_t(compact, _U(plugins)).for_each(_U(plugin), Converter<Plugin> (description));
 }
 
 #ifdef _WIN32
+    void buildReflections();
+
+/// Build reflections the ROOT way. To be called once the geometry is closed
+void DetectorImp::buildReflections()    {
+}
+
   template Converter<Plugin>;
   template Converter<Constant>;
   template Converter<Material>;
