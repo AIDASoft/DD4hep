@@ -92,9 +92,6 @@ namespace dd4hep {
 
     /// Local method (no interface): Load volume manager.
     void imp_loadVolumeManager();
-
-    /// Build reflections the ROOT way. To be called once the geometry is closed
-    void buildReflections();
     
     /// Default constructor used by ROOT I/O
     DetectorImp();

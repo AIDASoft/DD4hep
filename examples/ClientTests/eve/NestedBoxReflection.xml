@@ -1,0 +1,19 @@
+<ddeve>
+  <display visLevel="7" loadLevel="3"/>
+  <collection name="NestedBoxHits" hits="PointSet" color="kMagenta" size="0.3" type="20"/>
+  <collection name="MCParticles"  hits="Particles" size="0.2" width="1" type="kCircle"/>
+<!--
+  <view name="3D Trackers R-Phi (Global)" type="RhoPhiProjection">
+    <detelement name="NestedBox"    load_geo="-1" alpha="0.5"/>
+  </view>
+
+  <view name="3D Trackers R-Phi (Local)" type="RhoPhiProjection">
+    <detelement name="NestedBox"   load_geo="3" alpha="0.5"/>
+  </view>
+
+  <view name="3D Trackers" type="View3D">
+    <detelement name="NestedBox"    load_geo="-1" alpha="0.5"/>
+  </view>
+-->
+  <include ref="${DD4hepExamplesINSTALL}/examples/ClientTests/compact/NestedBoxReflection.xml"/>
+</ddeve>
