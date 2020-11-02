@@ -46,7 +46,9 @@ namespace dd4hep {
 
   /// Scan geometry and create reflected volumes
   /**
-   *   Build reflections the ROOT way. To be called once the geometry is closed.
+   *   Build reflections the ROOT way. 
+   *   To be called once the geometry is closed.
+   *   This entity can only be invoked once.
    *
    *   For any further documentation please see the following ROOT documentation:
    *   \see http://root.cern.ch/root/html/TGeoManager.html

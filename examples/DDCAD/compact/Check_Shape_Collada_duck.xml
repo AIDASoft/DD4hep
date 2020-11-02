@@ -8,7 +8,7 @@
       <check vis="Shape1_vis">
         <shape type="CAD_Shape" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/Collada/duck.dae" mesh="0"/>
       </check>
-      <btest  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/ref/Ref_Collada_duck.txt" create="CheckShape_create"/>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/ref/Ref_Collada_duck.txt" create="CheckShape_create"/>
     </detector>
   </detectors>
 </lccdd>
