@@ -29,6 +29,8 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_dictionary(G__DDG4UserDict
   SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/Dictionary.h
   LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
+  DEFINITIONS DD4HEP_DICTIONARY_MODE
+  OPTIONS -rmf=${LIBRARY_OUTPUT_PATH}/G__DDG4UserDict.rootmap -rml=libDDG4UserLib.so
   OUTPUT ${LIBRARY_OUTPUT_PATH}
   )
   #----  Example of a client library with user defined plugins  --------------------
@@ -38,6 +40,7 @@ if (DD4HEP_USE_GEANT4)
     USES      DD4hep::DDCore DD4hep::DDG4 Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO
     )
   install(TARGETS DDG4UserLib LIBRARY DESTINATION lib)
+  install(FILES ${LIBRARY_OUTPUT_PATH}/G__DDG4UserDict.rootmap DESTINATION lib)
   #
   #
   dd4hep_install_dir(data DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDG4 )
