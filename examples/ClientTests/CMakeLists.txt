@@ -356,7 +356,6 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( ClientTests_sim_MiniTel_prod_cuts
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/MiniTelRegions.py batch
-    REQUIRES   DDG4 Geant4
     REGEX_PASS "minitel_region_1: Set cut  \\[gamma/0\\] = 5.000"
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   #
@@ -364,7 +363,6 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( ClientTests_sim_MiniTel_limitset
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/MiniTelRegions.py batch
-    REQUIRES   DDG4 Geant4
     REGEX_PASS "LimitSet:    Particle type: mu-                PDG: 13     : 3.000000"
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   #
@@ -372,7 +370,6 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( ClientTests_sim_UserAnalysis
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/MiniTelEnergyDeposits.py batch
-    REQUIRES   DDG4 Geant4
     REGEX_PASS "Entries :      200 "
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   #
@@ -380,7 +377,6 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( ClientTests_sim_TrackingRegion
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/TrackingRegion.py batch
-    REQUIRES   DDG4 Geant4
     REGEX_PASS "Placement tracking_volume_1 not converted \\[Veto'ed for simulation\\]"
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   #
@@ -389,7 +385,6 @@ if (DD4HEP_USE_GEANT4)
     dd4hep_add_test_reg( ClientTests_sim_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/${script}.py batch
-      REQUIRES   DDG4 Geant4
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   endforeach(script)
@@ -400,7 +395,6 @@ if (DD4HEP_USE_GEANT4)
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/MultiCollections.py 
                         -compact ${ClientTestsEx_INSTALL}/compact/${script}.xml -batch
-      REQUIRES   DDG4 Geant4
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   endforeach(script)
