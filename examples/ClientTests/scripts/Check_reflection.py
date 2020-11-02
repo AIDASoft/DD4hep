@@ -10,7 +10,7 @@ import logging
 import time
 import sys
 import os
-from g4units import TeV, GeV, MeV, mm, cm, m
+from g4units import rad, GeV, MeV, mm, m
 from ddsix.moves import range
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
@@ -89,13 +89,13 @@ def run():
   geant4.setupROOTOutput('RootOutput', 'Reflections_' + time.strftime('%Y-%m-%d_%H-%M'), mc_truth=True)
   #
   # Setup particle gun
-  geant4.setupGun(name="Gun",
-                  particle='e-',
-                  energy=1000 * GeV,
-                  multiplicity=2,
-                  position=(0*m,0*m,0*m),
-                  PhiMin=0.0, PhiMax=3.141*2.0,
-                  ThetaMin=0.0, ThetaMax=3.141)
+  geant4.setupGun(name = "Gun",
+                  particle = 'e-',
+                  energy = 1000 * GeV,
+                  multiplicity = 1,
+                  position = (0*m, 0*m, 0*m),
+                  PhiMin = 0.0*rad, PhiMax = 3.141*2.0*rad,
+                  ThetaMin = 0.0*rad, ThetaMax = 3.141*rad)
 
   logger.info("#  ....and handle the simulation particles.")
   part = DDG4.GeneratorAction(kernel, str('Geant4ParticleHandler/ParticleHandler'))
