@@ -214,6 +214,7 @@ ELSE()
   endif()
 
   if(DD4HEP_BUILD_EXAMPLES)
+    set(DD4hep_DIR ${CMAKE_INSTALL_PREFIX})
     add_subdirectory(examples)
   endif()
 
