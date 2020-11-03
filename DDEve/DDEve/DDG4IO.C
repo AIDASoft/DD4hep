@@ -83,16 +83,16 @@ namespace {
   void* _convertParticleFunc(void* source, dd4hep::DDEveParticle* p)  {
     if (source )  {
       dd4hep::sim::Geant4Particle* s = (dd4hep::sim::Geant4Particle*)source;
-      p->id = s->id;
-      p->vsx = s->vsx;
-      p->vsy = s->vsy;
-      p->vsz = s->vsz;
-      p->vex = s->vex;
-      p->vey = s->vey;
-      p->vez = s->vez;
-      p->psx = s->psx;
-      p->psy = s->psy;
-      p->psz = s->psz;
+      p->id        = s->id;
+      p->vsx       = s->vsx;
+      p->vsy       = s->vsy;
+      p->vsz       = s->vsz;
+      p->vex       = s->vex;
+      p->vey       = s->vey;
+      p->vez       = s->vez;
+      p->psx       = s->psx;
+      p->psy       = s->psy;
+      p->psz       = s->psz;
       p->pdgID     = s->pdgID;
       p->parent    = s->parents.empty() ? -1 : *(s->parents.begin());
       p->energy    = std::sqrt(s->vsx*s->vsx + s->vsy*s->vsy + s->vsz*s->vsz + s->mass*s->mass);

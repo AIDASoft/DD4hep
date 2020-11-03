@@ -368,34 +368,37 @@ void Display::OnNewEvent(EventHandler& handler )   {
     const Collections& colls = (*ityp).second;
     for(Collections::const_iterator j=colls.begin(); j!=colls.end(); ++j)   {
       size_t len = (*j).second;
-      const char* nam = (*j).first;
       if ( len > 0 )   {
+	const char* nam = (*j).first;
+	DataConfigurations::const_iterator icfg = m_collectionsConfigs.find(nam);
+	DataConfigurations::const_iterator cfgend = m_collectionsConfigs.end();
         EventHandler::CollectionType typ = handler.collectionType(nam);
         if ( typ == EventHandler::CALO_HIT_COLLECTION ||
              typ == EventHandler::TRACKER_HIT_COLLECTION )  {
-          const DataConfigurations::const_iterator i=m_collectionsConfigs.find(nam);
-          if ( i != m_collectionsConfigs.end() )  {
-            const DataConfig& cfg = (*i).second;
-            if ( cfg.hits == "PointSet" )  {
-              PointsetCreator cr(nam,len,cfg);
-              handler.collectionLoop((*j).first, cr);
-              ImportEvent(cr.element());
-            }
-            else if ( cfg.hits == "BoxSet" )  {
-              BoxsetCreator cr(nam,len,cfg);
-              handler.collectionLoop((*j).first, cr);
-              ImportEvent(cr.element());
-            }
-            else if ( cfg.hits == "TowerSet" )  {
-              TowersetCreator cr(nam,len,cfg);
-              handler.collectionLoop((*j).first, cr);
-              ImportEvent(cr.element());
-            }
-            else {  // Default is point set
-              PointsetCreator cr(nam,len);
-              handler.collectionLoop((*j).first, cr);
-              ImportEvent(cr.element());
-            }
+          if ( icfg != cfgend )  {
+            const DataConfig& cfg = (*icfg).second;
+	    if ( ::toupper(cfg.use[0]) == 'T' || ::toupper(cfg.use[0]) == 'Y' )  {
+	      if ( cfg.hits == "PointSet" )  {
+		PointsetCreator cr(nam,len,cfg);
+		handler.collectionLoop((*j).first, cr);
+		ImportEvent(cr.element());
+	      }
+	      else if ( cfg.hits == "BoxSet" )  {
+		BoxsetCreator cr(nam,len,cfg);
+		handler.collectionLoop((*j).first, cr);
+		ImportEvent(cr.element());
+	      }
+	      else if ( cfg.hits == "TowerSet" )  {
+		TowersetCreator cr(nam,len,cfg);
+		handler.collectionLoop((*j).first, cr);
+		ImportEvent(cr.element());
+	      }
+	      else {  // Default is point set
+		PointsetCreator cr(nam,len);
+		handler.collectionLoop((*j).first, cr);
+		ImportEvent(cr.element());
+	      }
+	    }
           }
           else  {
             PointsetCreator cr(nam,len);
@@ -409,13 +412,21 @@ void Display::OnNewEvent(EventHandler& handler )   {
           // last track is gone ie. when we re-initialize the event scene
 
           // $$$ Do not know exactly what the field parameters mean
-          const DataConfigurations::const_iterator i=m_collectionsConfigs.find(nam);
-          const DataConfig* cfg = (i==m_collectionsConfigs.end()) ? 0 : &((*i).second);
-          MCParticleCreator cr(new TEveTrackPropagator("","",new TEveMagFieldDuo(350, -3.5, 2.0)),
-                               new TEveCompound("MC_Particles","MC_Particles"),cfg);
-          handler.collectionLoop((*j).first, cr);
-          cr.close();
-          particles = cr.particles;
+	  if ( (icfg=m_collectionsConfigs.find("StartVertexPoints")) != cfgend )   {
+	    StartVertexCreator cr("StartVertexPoints", len, (*icfg).second);
+	    handler.collectionLoop((*j).first, cr);
+	    printout(INFO,"Display","+++ StartVertexPoints: Filled %d start vertex points.....",cr.count);
+	    ImportEvent(cr.element());
+	  }
+	  if ( (icfg=m_collectionsConfigs.find("MCParticles")) != cfgend )   {
+	    MCParticleCreator cr(new TEveTrackPropagator("","",new TEveMagFieldDuo(350, -3.5, 2.0)),
+				 new TEveCompound("MC_Particles","MC_Particles"),
+				 icfg == cfgend ? 0 : &((*icfg).second));
+	    handler.collectionLoop((*j).first, cr);
+	    printout(INFO,"Display","+++ StartVertexPoints: Filled %d patricle tracks.....",cr.count);
+	    cr.close();
+	    particles = cr.particles;
+	  }
         }
       }
     }

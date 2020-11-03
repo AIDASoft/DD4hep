@@ -42,8 +42,8 @@ Geant4ParticleGenerator::Geant4ParticleGenerator(Geant4Context* ctxt, const stri
   declareProperty("Energy",        m_energy = 50 * CLHEP::MeV);
   declareProperty("Multiplicity",  m_multiplicity = 1);
   declareProperty("Mask",          m_mask = 0);
-  declareProperty("Position",      m_position);
-  declareProperty("Direction",     m_direction);
+  declareProperty("Position",      m_position = ROOT::Math::XYZVector(0.,0.,0.));
+  declareProperty("Direction",     m_direction = ROOT::Math::XYZVector(1.,1.,1.));
 }
 
 /// Default destructor
@@ -117,7 +117,7 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
 
   Geant4Vertex* vtx = new Geant4Vertex();
   int multiplicity = m_multiplicity;
-  ROOT::Math::XYZVector unit_direction, direction, position = m_position;
+  ROOT::Math::XYZVector unit_direction, position = m_position;
   getVertexPosition(position);
   getParticleMultiplicity(multiplicity);
   vtx->mask = m_mask;
@@ -127,8 +127,8 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
   inter->vertices[m_mask].emplace_back( vtx );
   for(int i=0; i<m_multiplicity; ++i)   {
     double momentum = m_energy;
+    ROOT::Math::XYZVector direction = m_direction;
     Particle* p = new Particle();
-    direction = m_direction;
     getParticleDirection(i, direction, momentum);
     unit_direction  = direction.unit();
     p->id           = inter->nextPID();
@@ -155,8 +155,9 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
     // p->vez        = vtx->z;
     inter->particles.emplace(p->id,p);
     vtx->out.insert(p->id);
-    printout(INFO,name(),"Particle [%d] %s %.3f GeV direction:(%6.3f %6.3f %6.3f)",
-             p->id, m_particleName.c_str(), momentum/CLHEP::GeV, 
+    printout(INFO,name(),"Particle [%d] %-12s Mom:%.3f GeV vertex:(%6.3f %6.3f %6.3f)[mm] direction:(%6.3f %6.3f %6.3f)",
+             p->id, m_particleName.c_str(), momentum/CLHEP::GeV,
+	     vtx->x/CLHEP::mm, vtx->y/CLHEP::mm, vtx->z/CLHEP::mm,
 	     direction.X(), direction.Y(), direction.Z());
 
   }

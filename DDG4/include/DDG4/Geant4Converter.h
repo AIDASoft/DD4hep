@@ -101,6 +101,7 @@ namespace dd4hep {
 
       /// Convert the geometry type volume placement into the corresponding Geant4 object(s).
       virtual void* handlePlacement(const std::string& name, const TGeoNode* node) const;
+      virtual void* handlePlacement2(const std::pair<const TGeoNode*,const TGeoNode*>& node) const;
       virtual void* handleAssembly(const std::string& name, const TGeoNode* node) const;
 
       /// Convert the geometry type field into the corresponding Geant4 object(s).
