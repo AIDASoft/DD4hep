@@ -22,6 +22,7 @@
     <vis name="VisibleBlue"   alpha="0.6" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
     <vis name="VisibleYellow" alpha="0.6" r="1.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
     <vis name="VisibleGreen"  alpha="0.6" r="0.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="VisibleCyan"   alpha="0.6" r="0.0" g="1.0" b="1.0" showDaughters="true" visible="true"/>
   </display>
 
   <limits>
@@ -30,6 +31,7 @@
     </limitset>
   </limits>
 
+  <geometry reflect="true"/>
   <detectors>
     <detector id="1" name="NestedBox" type="NestedBoxReflection" readout="NestedBoxHits" vis="VisibleGreen" limits="cal_limits">
       <comment>A box with 3 boxes inside spanning a coordinate system</comment>

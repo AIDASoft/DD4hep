@@ -64,10 +64,7 @@ namespace dd4hep {
       /// Shot number in sequence
       int m_shotNo;
       /// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = m_energy)
-      virtual void getParticleDirection(int, ROOT::Math::XYZVector& direction, double& momentum) const  {
-        direction = m_direction;
-        momentum = m_energy;
-      }
+      virtual void getParticleDirection(int, ROOT::Math::XYZVector& direction, double& momentum) const;
     public:
       /// Standard constructor
       Geant4ParticleGun(Geant4Context* context, const std::string& name);

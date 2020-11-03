@@ -82,28 +82,31 @@ namespace   {
         double       by   = box.y();
         double       bz   = box.z();
         Material     mat  = description.material("Si");
-        Box          small_box(bx*0.2, by*0.2, bz*0.2);
-        const char*  cols[4] = {"VisibleRed","VisibleBlue","VisibleGreen","VisibleYellow"};
+	bool         sens = level == 2 || level == 0;
+        Box          long_box(bx*0.2, by*0.2, bz*0.4);
+        Box          flat_box(bx*1.0, by*1.0, bz*0.1);
+        Box          mini_box(bx*0.2, by*0.2, bz*0.2);
+        const char*  cols[5] = {"VisibleRed","VisibleBlue","VisibleGreen","VisibleYellow","VisibleCyan"};
         const char*  c;
         PlacedVolume pv;
         Volume       v;
 
-        c = cols[(0+level)%4];
-        v = Volume(_toString(1,"box%d"), small_box, mat);
+        c = cols[(0+level)%5];
+        v = Volume(_toString(1,"box%d"), mini_box, mat);
         v.setRegion(vol.region());
-        v.setSensitiveDetector(sensitive);
         v.setLimitSet(vol.limitSet());
+        if ( !sens ) v.setSensitiveDetector(sensitive);
         v.setVisAttributes(description, c);
         pv = vol.placeVolume(v, Position(0,0,0));
         pv.addPhysVolID(_toString(level,"lvl%d"), 1);
         printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
         place_boxes(level-1, v);
 
-        c = cols[(1+level)%4];
-        v = Volume(_toString(2,"box%d"), small_box, mat);
+        c = cols[(1+level)%5];
+        v = Volume(_toString(2,"box%d"), long_box, mat);
         v.setRegion(vol.region());
-        v.setSensitiveDetector(sensitive);
         v.setLimitSet(vol.limitSet());
+        if ( !sens ) v.setSensitiveDetector(sensitive);
         v.setVisAttributes(description, c);
         pv = vol.placeVolume(v, Position(0.8*bx,0,0));
         pv.addPhysVolID(_toString(level,"lvl%d"), 2);
@@ -115,11 +118,11 @@ namespace   {
         pv = vol.placeVolume(v, Position(0.4*bx,0,0));
         printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
 
-        c = cols[(2+level)%4];
-        v = Volume(_toString(3,"box%d"), small_box, mat);
+        c = cols[(2+level)%5];
+        v = Volume(_toString(3,"box%d"), mini_box, mat);
         v.setRegion(vol.region());
-        v.setSensitiveDetector(sensitive);
         v.setLimitSet(vol.limitSet());
+        if ( !sens ) v.setSensitiveDetector(sensitive);
         v.setVisAttributes(description, c);
         pv = vol.placeVolume(v, Position(0,0.8*by,0));
         pv.addPhysVolID(_toString(level,"lvl%d"), 3);
@@ -131,11 +134,11 @@ namespace   {
         pv = vol.placeVolume(v, Position(0,0.4*by,0));
         printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
 
-        c = cols[(3+level)%4];
-        v = Volume(_toString(4,"box%d"), small_box, mat);
+        c = cols[(3+level)%5];
+        v = Volume(_toString(4,"box%d"), mini_box, mat);
         v.setRegion(vol.region());
-        v.setSensitiveDetector(sensitive);
         v.setLimitSet(vol.limitSet());
+        if ( !sens ) v.setSensitiveDetector(sensitive);
         v.setVisAttributes(description, c);
         pv = vol.placeVolume(v, Position(0,0,0.8*bz));
         pv.addPhysVolID(_toString(level,"lvl%d"), 4);
@@ -146,6 +149,19 @@ namespace   {
         v.setVisAttributes(description, c);
         pv = vol.placeVolume(v, Position(0,0,0.4*bz));
         printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
+
+        c = cols[(4+level)%5];
+        v = Volume(_toString(5,"box%d"), flat_box, mat);
+        v.setRegion(vol.region());
+        v.setLimitSet(vol.limitSet());
+        v.setVisAttributes(description, c);
+        if ( !sens ) v.setSensitiveDetector(sensitive);
+	TGeoHMatrix* mtx = detail::matrix::_transform(Position(0,0,0.9*bz));
+	mtx->ReflectZ(kTRUE, kFALSE);
+        pv = vol.placeVolume(v, mtx);
+        pv.addPhysVolID(_toString(level,"lvl%d"), 5);
+        printout(INFO,"NestedBoxReflection","++ Volume: %s  Color: %s", v.name(), c);
+        place_boxes(level-1, v);
       }
     }
     

@@ -1,7 +1,8 @@
 <ddeve>
   <display visLevel="7" loadLevel="3"/>
-  <collection name="NestedBoxHits" hits="PointSet" color="kMagenta" size="0.3" type="20"/>
-  <collection name="MCParticles"  hits="Particles" size="0.2" width="1" type="kCircle"/>
+  <collection name="NestedBoxHits"     hits="PointSet"  color="kMagenta" size="0.3"  type="20"      threshold="1000*eV"/>
+  <collectiona name="StartVertexPoints" hits="ParticleOrigin" color="kCyan"    size="2.3"  type="20"/>
+  <collectiona name="MCParticles"       hits="Particles" width="0.01"     size="0.01" type="kCircle" threshold="1.5*GeV" use="false"/>
 <!--
   <view name="3D Trackers R-Phi (Global)" type="RhoPhiProjection">
     <detelement name="NestedBox"    load_geo="-1" alpha="0.5"/>

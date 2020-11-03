@@ -208,12 +208,14 @@ namespace {
     v->CloneNodesAndConnect(vol);
     // The volume is now properly cloned, but with the same shape.
     // Reflect the shape (if any) and connect it.
+#if 0
     if (v->GetShape())   {
       TGeoScale* scale = new TGeoScale( 1., 1.,-1.);
       TGeoShape* reflected_shape =
         TGeoScaledShape::MakeScaledShape((nam+"_shape_refl").c_str(), v->GetShape(), scale);
       vol->SetShape(reflected_shape);
     }
+#endif
     // Reflect the daughters.
     Int_t nd = vol->GetNdaughters();
     if ( !nd ) return vol;

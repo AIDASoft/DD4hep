@@ -128,10 +128,10 @@ template <> void Converter<collection_configs>::operator()(xml_h e)  const  {
   DisplayConfiguration::Config c;
   c.name = e.attr<string>(_U(name));
   c.type = DisplayConfiguration::COLLECTION;
-  c.data.hits.color     = e.hasAttr(_U(color)) ? e.attr<int>(_U(color)) : 0xBBBBBB;
+  c.data.hits.color     = e.hasAttr(_U(color)) ? e.attr<int>(_U(color))   : 0xBBBBBB;
   c.data.hits.alpha     = e.hasAttr(_U(alpha)) ? e.attr<float>(_U(alpha)) : -1.0;
-  c.data.hits.emax      = e.hasAttr(u_emax) ? e.attr<float>(u_emax) : 25.0;
-  c.data.hits.towerH    = e.hasAttr(u_towerH) ? e.attr<float>(u_towerH) : 25.0;
+  c.data.hits.emax      = e.hasAttr(u_emax)    ? e.attr<float>(u_emax)    : 25.0;
+  c.data.hits.towerH    = e.hasAttr(u_towerH)  ? e.attr<float>(u_towerH)  : 25.0;
   c.data.hits.threshold = e.hasAttr(_U(threshold)) ? e.attr<float>(_U(threshold)) : 0.0;
   if ( e.hasAttr(u_hits)   ) c.hits = e.attr<string>(u_hits);
   if ( e.hasAttr(u_use)    ) c.use = e.attr<string>(u_use);
@@ -153,10 +153,10 @@ template <> void Converter<view>::operator()(xml_h e)  const  {
   ViewConfigurations* configs = (ViewConfigurations*)param;
   DisplayConfiguration::ViewConfig c;
   extract(c,e,DisplayConfiguration::VIEW);
+  c.name  = e.attr<string>(_U(name));
   c.type  = e.attr<string>(_U(type));
   c.show_structure = e.hasAttr(_U(structure)) ? e.attr<bool>(_U(structure)) : true;
   c.show_sensitive = e.hasAttr(_U(sensitive)) ? e.attr<bool>(_U(sensitive)) : true;
-  c.name  = e.attr<string>(_U(name));
   printout(INFO,"DisplayConfiguration","+++ View: %s sensitive:%d structure:%d.",
            c.name.c_str(), c.show_sensitive, c.show_structure);
   xml_coll_t(e,_Unicode(panel)).for_each(Converter<panel>(description,&c.subdetectors));
@@ -180,10 +180,10 @@ template <> void Converter<view>::operator()(xml_h e)  const  {
 template <> void Converter<calodata>::operator()(xml_h e)  const  {
   Configurations* configs = (Configurations*)param;
   DisplayConfiguration::Config c;
-  c.name    = e.attr<string>(_U(name));
-  c.type    = DisplayConfiguration::CALODATA;
+  c.name = e.attr<string>(_U(name));
+  c.type = DisplayConfiguration::CALODATA;
   if ( e.hasAttr(u_use)    )   {
-    c.use = e.attr<string>(u_use);
+    c.use  = e.attr<string>(u_use);
     c.hits = e.attr<string>(u_hits);
   }
   else  {
@@ -220,8 +220,9 @@ template <> void Converter<collection>::operator()(xml_h e)  const  {
   Configurations* configs = (Configurations*)param;
   DisplayConfiguration::Config c;
   c.name = e.attr<string>(_U(name));
-  c.type = DisplayConfiguration::COLLECTION;
   c.hits = e.attr<string>(u_hits);
+  c.type = DisplayConfiguration::COLLECTION;
+  c.use  = e.hasAttr(u_use) ? e.attr<string>(u_use) : string("true");
   c.data.hits.size  = e.attr<float>(_U(size));
   c.data.hits.type  = e.attr<float>(_U(type));
   c.data.hits.color = e.hasAttr(_U(color))  ? e.attr<int>(_U(color)) : kRed;
@@ -269,9 +270,9 @@ template <> void Converter<include>::operator()(xml_h e)  const  {
  */
 template <> void Converter<display>::operator()(xml_h e)  const  {
   Display* d = (Display*)param;
-  if ( e.hasAttr(_Unicode(visLevel)) ) d->setVisLevel(e.attr<int>(_Unicode(visLevel)));
+  if ( e.hasAttr(_Unicode(visLevel))     ) d->setVisLevel(e.attr<int>(_Unicode(visLevel)));
   if ( e.hasAttr(_Unicode(eventHandler)) ) d->setEventHandlerName(e.attr<std::string>(_Unicode(eventHandler)));
-  if ( e.hasAttr(_Unicode(loadLevel)) ) d->setLoadLevel(e.attr<int>(_Unicode(loadLevel)));
+  if ( e.hasAttr(_Unicode(loadLevel))    ) d->setLoadLevel(e.attr<int>(_Unicode(loadLevel)));
 }
 
 /** Convert display configuration elements of tag type ddeve

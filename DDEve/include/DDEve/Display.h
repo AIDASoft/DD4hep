@@ -55,11 +55,11 @@ namespace dd4hep {
    */
   class Display : public EventConsumer {
   public:
-    typedef DisplayConfiguration::ViewConfig ViewConfig;
-    typedef DisplayConfiguration::Config DataConfig;
-    typedef std::set<View*> Views;
-    typedef std::set<DisplayConfiguration*> Configurations;
-    typedef std::set<PopupMenu*> Menus;
+    typedef DisplayConfiguration::ViewConfig         ViewConfig;
+    typedef DisplayConfiguration::Config             DataConfig;
+    typedef std::set<View*>                          Views;
+    typedef std::set<DisplayConfiguration*>          Configurations;
+    typedef std::set<PopupMenu*>                     Menus;
     typedef std::map<std::string, TEveElementList*>  Topics;
     typedef std::map<std::string, ViewConfig>        ViewConfigurations;
     typedef std::map<std::string, DataConfig>        DataConfigurations;

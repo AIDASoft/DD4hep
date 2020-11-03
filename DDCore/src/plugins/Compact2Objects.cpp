@@ -1474,8 +1474,8 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
       open_geometry  = steer.attr<bool>(_U(open));
     if ( steer.hasAttr(_U(close)) )
       close_document = steer.attr<bool>(_U(close));
-    if ( steer.hasAttr(_U(close_geometry)) )
-      close_geometry = steer.attr<bool>(_U(close_geometry));
+    if ( steer.hasAttr(_U(reflect)) )
+      build_reflections = steer.attr<bool>(_U(reflect));
     for (xml_coll_t clr(steer, _U(clear)); clr; ++clr) {
       string nam = clr.hasAttr(_U(name)) ? clr.attr<string>(_U(name)) : string();
       if ( nam.substr(0,6) == "elemen" )   {
@@ -1563,12 +1563,6 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
 }
 
 #ifdef _WIN32
-    void buildReflections();
-
-/// Build reflections the ROOT way. To be called once the geometry is closed
-void DetectorImp::buildReflections()    {
-}
-
   template Converter<Plugin>;
   template Converter<Constant>;
   template Converter<Material>;

@@ -670,12 +670,17 @@ void DetectorImp::endDocument(bool close_geometry)    {
     add(trackingVis);
 #endif
     m_worldVol.solid()->ComputeBBox();
-    /// Since we allow now for anonymous shapes,
-    /// we will rename them to use the name of the volume they are assigned to
+    // Since we allow now for anonymous shapes,
+    // we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();
   }
+  // Patching shape names of anaonymous shapes
   ShapePatcher patcher(m_volManager, m_world);
   patcher.patchShapes();
+  // Propagating reflections
+  ReflectionBuilder rb(description);
+  rb.execute();
+
   mapDetectorTypes();
   m_state = READY;
 }

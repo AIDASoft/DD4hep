@@ -29,11 +29,11 @@ namespace dd4hep {
   class DDEveHit   {
   public:
     /// Track/Particle, which produced this hit
-    int particle;
+    int particle {0};
     /// Hit position
-    float x,y,z; 
+    float x = 0e0, y = 0e0, z = 0e0; 
     /// Energy deposit
-    float deposit;
+    float deposit {0};
     /// Default constructor
     DDEveHit();
     /// Initializing constructor

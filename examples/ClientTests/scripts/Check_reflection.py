@@ -7,12 +7,13 @@
 """
 from __future__ import absolute_import, unicode_literals
 import logging
+import math
 import time
 import sys
 import os
 from g4units import rad, GeV, MeV, mm, m
 from ddsix.moves import range
-from math import pi
+
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -92,13 +93,14 @@ def run():
   # Setup particle gun
   geant4.setupGun(name="Gun",
                   particle='e-',
-                  energy=1000*GeV,
+                  energy=1000 * GeV,
+                  isotrop=True,
                   multiplicity=1,
-                  position=(0*m, 0*m, 0*m),
-                  PhiMin=0.0*rad,
-                  PhiMax=math.pi*2.0*rad,
-                  ThetaMin=0.0*rad,
-                  ThetaMax=math.pi*rad)
+                  position=(0 * m, 0 * m, 0 * m),
+                  PhiMin=0.0 * rad,
+                  PhiMax=math.pi * 2.0 * rad,
+                  ThetaMin=0.0 * rad,
+                  ThetaMax=math.pi * rad)
 
   logger.info("#  ....and handle the simulation particles.")
   part = DDG4.GeneratorAction(kernel, str('Geant4ParticleHandler/ParticleHandler'))
