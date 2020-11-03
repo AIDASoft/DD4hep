@@ -651,8 +651,8 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
   #Check if Python version detected matches the version used to build ROOT
   SET(Python_FIND_FRAMEWORK LAST)
   IF((TARGET ROOT::PyROOT OR TARGET ROOT::ROOTTPython) AND ${ROOT_VERSION} VERSION_GREATER_EQUAL 6.19)
-    # cmake 3.17.1 doesn't include python patch level in PYTHON_VERSION
-    IF(CMAKE_VERSION VERSION_EQUAL 3.17.1)
+    # cmake 3.17.1 and 3.17.2 don't include python patch level in PYTHON_VERSION
+    IF(CMAKE_VERSION VERSION_EQUAL 3.17.1 OR CMAKE_VERSION VERSION_EQUAL 3.17.2)
       string(REGEX MATCH [23]\.[0-9]+ REQUIRE_PYTHON_VERSION ${ROOT_PYTHON_VERSION})
     ELSE()
       SET(REQUIRE_PYTHON_VERSION ${ROOT_PYTHON_VERSION})
