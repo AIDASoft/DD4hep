@@ -108,6 +108,7 @@ if (DD4HEP_USE_GEANT4)
       EXEC_ARGS  root.exe -b -x -n -q -l "${LHeDEx_INSTALL}/scripts/run.C(\"${LHeDEx_INSTALL}/scripts/${script}\")"
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=9"
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+    set_property(TEST t_LHeD_DDG4_${script}_as_ACLick_LONGTEST PROPERTY RESOURCE_LOCK "INIT_ACLICK")
     #
     # Execute identical source linked executable 
     dd4hep_add_test_reg( LHeD_DDG4_${script}_as_exe_LONGTEST
