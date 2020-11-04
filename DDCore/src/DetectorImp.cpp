@@ -678,7 +678,7 @@ void DetectorImp::endDocument(bool close_geometry)    {
   ShapePatcher patcher(m_volManager, m_world);
   patcher.patchShapes();
   // Propagating reflections
-  ReflectionBuilder rb(description);
+  ReflectionBuilder rb(*this);
   rb.execute();
 
   mapDetectorTypes();
