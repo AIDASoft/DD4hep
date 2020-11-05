@@ -402,10 +402,10 @@ namespace {
   }
 }  // namespace
 
-static long algorithm(dd4hep::Detector& /* description */, ParsingContext& ctxt, xml_h e,
+ static long algorithm(dd4hep::Detector& /* description */, dd4hep::cms::ParsingContext& ctxt, xml_h e,
                       SensitiveDetector& /* sens */) {
-  Namespace ns(ctxt, e, true);
-  AlgoArguments args(ctxt, e);
+  dd4hep::cms::Namespace ns(ctxt, e, true);
+  dd4hep::cms::AlgoArguments args(ctxt, e);
 
   // TRICK!
   string myns{mynamespace(args.parentName()).data(), mynamespace(args.parentName()).size()};
@@ -520,8 +520,8 @@ static long algorithm(dd4hep::Detector& /* description */, ParsingContext& ctxt,
     const double eFront(0.5 * ee.sCEFront);
     const double eRear(0.5 * ee.sCERear);
     const double eAng(atan((ee.sCERear - ee.sCEFront) / (sqrt(2.) * ee.sCELength)));
-    const double ffived(45_deg);
-    const double zerod(0_deg);
+    const double ffived(45._deg);
+    const double zerod(0._deg);
     string eeSCEnvName(1 == iSCType ? ee.envName + std::to_string(iSCType)
                                     : (ee.envName + std::to_string(iSCType) + "Tmp"));
     Solid eeSCEnv = ns.addSolidNS(
