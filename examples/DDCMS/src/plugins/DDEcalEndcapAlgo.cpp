@@ -468,7 +468,7 @@ static long algorithm(dd4hep::Detector& /* description */, ParsingContext& ctxt,
   Solid eeCutBox = Box(ee.cutBoxName, ee.cutParms[0], ee.cutParms[1], ee.cutParms[2]);
   //**************************************************************
 
-  const double zFix(ee.zFront - 3172_mm);  // fix for changing z offset
+  const double zFix(ee.zFront - 3172.0_mm);  // fix for changing z offset
 
   //** fill supercrystal front and rear center positions from xml input
   for (unsigned int iC(0); iC != (unsigned int)ee.nSCquad; ++iC) {
@@ -575,7 +575,7 @@ static long algorithm(dd4hep::Detector& /* description */, ParsingContext& ctxt,
       const double fifth(ee.cutParms[0] + ee.pFFifth * ee.crysRear);
       const double fac(ee.pF45);
 
-      const double zmm(0_mm);
+      const double zmm(0.0_mm);
 
       DDTranslation cutTra(
           2 == iSCType ? DDTranslation(zmm, half, zmm)
@@ -613,7 +613,7 @@ static long algorithm(dd4hep::Detector& /* description */, ParsingContext& ctxt,
 
       const double mySign(iSCType < 4 ? +1. : -1.);
 
-      const DDTranslation extraI(xyIOff + mySign * 2_mm, xyIOff + mySign * 2_mm, zIOff);
+      const DDTranslation extraI(xyIOff + mySign * 2.0_mm, xyIOff + mySign * 2.0_mm, zIOff);
 
       Solid eeCutInt = SubtractionSolid(ee.intName + std::to_string(iSCType),
                                         ns.solid(ee.intName + std::to_string(iSCType) + "Tmp"),
