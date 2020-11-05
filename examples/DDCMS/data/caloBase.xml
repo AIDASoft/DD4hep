@@ -1,0 +1,22 @@
+<DDDefinition>
+  <SolidSection label="caloBase.xml">
+    <Polycone name="CALO" startPhi="0*deg" deltaPhi="360*deg">
+      <ZSection z=" -554.10000*cm" rMin="  8.93000*cm" rMax="295.00000*cm"/>
+      <ZSection z=" -355.15000*cm" rMin="  7.76330*cm" rMax="295.00000*cm"/>
+      <ZSection z=" -355.15000*cm" rMin=" 22.70000*cm" rMax="295.00000*cm"/>
+      <ZSection z=" -293.20000*cm" rMin=" 22.70000*cm" rMax="295.00000*cm"/>
+      <ZSection z=" -293.20000*cm" rMin="123.30000*cm" rMax="295.00000*cm"/>
+      <ZSection z="  293.20000*cm" rMin="123.30000*cm" rMax="295.00000*cm"/>
+      <ZSection z="  293.20000*cm" rMin=" 22.70000*cm" rMax="295.00000*cm"/>
+      <ZSection z="  355.15000*cm" rMin=" 22.70000*cm" rMax="295.00000*cm"/>
+      <ZSection z="  355.15000*cm" rMin="  7.76330*cm" rMax="295.00000*cm"/>
+      <ZSection z="  554.10000*cm" rMin="  8.93000*cm" rMax="295.00000*cm"/>
+    </Polycone>
+  </SolidSection>
+  <LogicalPartSection label="caloBase.xml">
+    <LogicalPart name="CALO" category="unspecified">
+      <rSolid name="CALO"/>
+      <rMaterial name="materials:Air"/>
+    </LogicalPart>
+  </LogicalPartSection>
+</DDDefinition>

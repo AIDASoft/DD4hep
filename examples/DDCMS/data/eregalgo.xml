@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<DDDefinition>
+  <SolidSection label="eregalgo.xml">
+    <Polycone name="ECAL" startPhi="0*deg" deltaPhi="360*deg">
+     <ZSection z="-398.00000*cm" rMin=" 22.70000*cm" rMax="169.00000*cm"/>
+     <ZSection z="-389.55000*cm" rMin=" 22.70000*cm" rMax="169.00000*cm"/>
+     <ZSection z="-389.55000*cm" rMin=" 22.70000*cm" rMax="177.50000*cm"/>
+     <ZSection z="-317.70000*cm" rMin=" 22.70000*cm" rMax="177.50000*cm"/>
+     <ZSection z="-296.10000*cm" rMin=" 22.70000*cm" rMax="177.50000*cm"/>
+     <ZSection z="-296.10000*cm" rMin="123.80000*cm" rMax="177.50000*cm"/>
+     <ZSection z=" 296.10000*cm" rMin="123.80000*cm" rMax="177.50000*cm"/>
+     <ZSection z=" 296.10000*cm" rMin=" 22.70000*cm" rMax="177.50000*cm"/>
+     <ZSection z=" 317.70000*cm" rMin=" 22.70000*cm" rMax="177.50000*cm"/>
+     <ZSection z=" 389.55000*cm" rMin=" 22.70000*cm" rMax="177.50000*cm"/>
+     <ZSection z=" 389.55000*cm" rMin=" 22.70000*cm" rMax="169.00000*cm"/>
+     <ZSection z=" 398.00000*cm" rMin=" 22.70000*cm" rMax="169.00000*cm"/>
+    </Polycone>
+    <Polycone name="EREG" startPhi="0*deg" deltaPhi="360*deg">
+     <ZSection z="297.70000*cm" rMin="22.70000*cm" rMax="131.00000*cm"/>
+     <ZSection z="309.26000*cm" rMin="22.70000*cm" rMax="140.00000*cm"/>
+     <ZSection z="317.22000*cm" rMin="22.70000*cm" rMax="140.00000*cm"/>
+     <ZSection z="317.70000*cm" rMin="22.70000*cm" rMax="140.00000*cm"/>
+     <ZSection z="317.70000*cm" rMin="22.70000*cm" rMax="156.19000*cm"/>
+     <ZSection z="359.50000*cm" rMin="22.70000*cm" rMax="171.50000*cm"/>
+     <ZSection z="359.50000*cm" rMin="22.70000*cm" rMax="177.50000*cm"/>
+     <ZSection z="391.15000*cm" rMin="22.70000*cm" rMax="177.50000*cm"/>
+     <ZSection z="391.15000*cm" rMin="22.70000*cm" rMax="169.00000*cm"/>
+     <ZSection z="399.60000*cm" rMin="22.70000*cm" rMax="169.00000*cm"/>
+    </Polycone>
+  </SolidSection>
+  <LogicalPartSection label="eregalgo.xml">
+    <LogicalPart name="ECAL" category="unspecified">
+      <rSolid name="ECAL"/>
+      <rMaterial name="materials:Air"/>
+    </LogicalPart>
+    <LogicalPart name="EREG" category="unspecified">
+      <rSolid name="EREG"/>
+      <rMaterial name="materials:E_Air"/>
+    </LogicalPart>
+  </LogicalPartSection>
+  <PosPartSection label="eregalgo.xml">
+    <PosPart copyNumber="1">
+      <rParent name="caloBase:CALO"/>
+      <rChild name="eregalgo:ECAL"/>
+      <rRotation name="rotations:000D"/>
+    </PosPart>
+  </PosPartSection>
+</DDDefinition>
