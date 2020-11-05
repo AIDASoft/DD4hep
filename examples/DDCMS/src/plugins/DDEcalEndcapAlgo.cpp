@@ -384,7 +384,7 @@ namespace {
     double zFront;
   };
 
-  const Rotation3D& myrot(cms::DDNamespace& ns, const string& nam, const Rotation3D& r) {
+  const Rotation3D& myrot(Namespace& ns, const string& nam, const Rotation3D& r) {
     ns.addRotation(nam, r);
     return ns.rotation(ns.prepend(nam));
   }
@@ -400,9 +400,8 @@ namespace {
 
 static long algorithm(dd4hep::Detector& /* description */, ParsingContext& ctxt, xml_h e,
                       SensitiveDetector& /* sens */) {
-  BenchmarkGrd counter("DDEcalEndcapAlgo");
-  cms::DDNamespace ns(ctxt, e, true);
-  cms::DDAlgoArguments args(ctxt, e);
+  Namespace ns(ctxt, e, true);
+  AlgoArguments args(ctxt, e);
 
   // TRICK!
   string myns{mynamespace(args.parentName()).data(), mynamespace(args.parentName()).size()};
