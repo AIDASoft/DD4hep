@@ -25,7 +25,7 @@ using DDRotation = ROOT::Math::Rotation3D;
 using DDRotationMatrix = ROOT::Math::Rotation3D;
 using DDAxisAngle = ROOT::Math::AxisAngle;
 
-constexpr long double piRadians(M_PIl);              // M_PIl is long double version of pi
+constexpr long double piRadians(M_PI);
 constexpr long double degPerRad = 180. / piRadians;  // Degrees per radian
 constexpr double operator"" _mm(long double length) { return length * 0.1; }
 constexpr long double operator"" _deg(long double deg) { return deg / degPerRad; }
@@ -388,7 +388,7 @@ namespace {
     double zFront;
   };
 
-  const Rotation3D& myrot(Namespace& ns, const string& nam, const Rotation3D& r) {
+  const Rotation3D& myrot(dd4hep::cms::Namespace& ns, const string& nam, const Rotation3D& r) {
     ns.addRotation(nam, r);
     return ns.rotation(ns.prepend(nam));
   }
