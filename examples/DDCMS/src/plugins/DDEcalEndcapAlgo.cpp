@@ -13,6 +13,13 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+using namespace cms;
+using namespace dd4hep;
+
+using DDTranslation = ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<double> >;
+using DDRotation = ROOT::Math::Rotation3D;
+
 // Define Endcap Supercrystal class
 
 class DDEcalEndcapTrap {
@@ -310,14 +317,6 @@ void DDEcalEndcapTrap::print() {
     DDTranslation cc = cornerPos(ic);
   }
 }
-
-using namespace std;
-using namespace cms;
-using namespace dd4hep;
-using namespace cms_units::operators;
-
-using DDTranslation = ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<double> >;
-using DDRotation = ROOT::Math::Rotation3D;
 
 namespace {
   struct Endcap {
