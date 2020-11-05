@@ -13,6 +13,7 @@
 #include <CLHEP/Geometry/Transform3D.h>
 #include <CLHEP/Vector/EulerAngles.h>
 
+#include <array>
 #include <string>
 #include <vector>
 
