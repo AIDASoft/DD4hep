@@ -1,5 +1,8 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "DDCMS/DDCMSPlugins.h"
+#include <Math/AxisAngle.h>
+#include <Math/Rotation3D.h>
+#include <Math/Vector3D.h>
 
 #include <CLHEP/Geometry/Transform3D.h>
 #include <CLHEP/Units/GlobalPhysicalConstants.h>
@@ -17,8 +20,11 @@ using namespace std;
 using namespace cms;
 using namespace dd4hep;
 
+using DD3Vector = ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<double>>;
 using DDTranslation = ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<double> >;
 using DDRotation = ROOT::Math::Rotation3D;
+using DDRotationMatrix = ROOT::Math::Rotation3D;
+using DDAxisAngle = ROOT::Math::AxisAngle;  
 
 // Define Endcap Supercrystal class
 
@@ -392,7 +398,7 @@ namespace {
   }
 }  // namespace
 
-static long algorithm(dd4hep::Detector& /* description */, cms::DDParsingContext& ctxt, xml_h e,
+static long algorithm(dd4hep::Detector& /* description */, ParsingContext& ctxt, xml_h e,
                       SensitiveDetector& /* sens */) {
   BenchmarkGrd counter("DDEcalEndcapAlgo");
   cms::DDNamespace ns(ctxt, e, true);
