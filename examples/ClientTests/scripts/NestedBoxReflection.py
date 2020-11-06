@@ -3,12 +3,11 @@
 from __future__ import absolute_import, unicode_literals
 import os
 import sys
-import math
 import time
 import logging
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import rad, keV, MeV, GeV, TeV, m, cm, mm, ns
+from g4units import MeV, GeV, m, mm
 #
 #
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
@@ -50,7 +49,7 @@ def run():
   if hlp:
     help()
     sys.exit(1)
-    
+
   kernel = DDG4.Kernel()
   description = kernel.detectorDescription()
   install_dir = os.environ['DD4hepExamplesINSTALL']
@@ -105,14 +104,14 @@ def run():
   gen.particle = 'e+'
   gen.energy = 100 * GeV
   gen.multiplicity = 200
-  gen.position = (0*m, 0*m, 0*m)
+  gen.position = (0 * m, 0 * m, 0 * m)
   gen.direction = (0, 0, 1.)
   gen.distribution = 'uniform'
   gen.standalone = False
-  #gen.PhiMin = 0.0*rad
-  #gen.PhiMax = 2.0*math.pi*rad
-  #gen.ThetaMin = 0.0*math.pi*rad
-  #gen.ThetaMax = 1.0*math.pi*rad
+  # gen.PhiMin = 0.0*rad
+  # gen.PhiMax = 2.0*math.pi*rad
+  # gen.ThetaMin = 0.0*math.pi*rad
+  # gen.ThetaMax = 1.0*math.pi*rad
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
   #
@@ -146,7 +145,7 @@ def run():
   seq, actions = geant4.setupDetectors()
   #
   logger.info("#  Now build the physics list:")
-  phys = geant4.setupPhysics('QGSP_BERT')
+  geant4.setupPhysics('QGSP_BERT')
   ph = geant4.addPhysics(str('Geant4PhysicsList/Myphysics'))
   ph.addPhysicsConstructor(str('G4StepLimiterPhysics'))
   #
