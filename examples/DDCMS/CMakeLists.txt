@@ -55,10 +55,11 @@ dd4hep_configure_output ()
 dd4hep_add_plugin ( DDCMS
   SOURCES src/*.cpp src/plugins/*.cpp
   USES    DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond
-          ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP ${CLHEP} Geant4::Interface
+          ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP Geant4::Interface
 )
 target_include_directories(DDCMS PUBLIC include)
 target_link_options(DDCMS PRIVATE -L${Geant4_DIR}/..)
+#message (STATUS "CLHEP: ${CLHEP}")
 #
 #
 install(TARGETS DDCMS LIBRARY DESTINATION lib)
