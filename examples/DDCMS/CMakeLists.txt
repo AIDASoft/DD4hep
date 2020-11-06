@@ -58,7 +58,7 @@ dd4hep_add_plugin ( DDCMS
           ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP ${CLHEP} Geant4::Interface
 )
 target_include_directories(DDCMS PUBLIC include)
-target_link_options(DDCMS PRIVATE -L${Geant4_DIR}/.. -lG4clhep)
+target_link_options(DDCMS PRIVATE -L${Geant4_DIR}/..)
 #
 #
 install(TARGETS DDCMS LIBRARY DESTINATION lib)
