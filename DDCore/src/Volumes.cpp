@@ -185,6 +185,7 @@ namespace {
     static TMap map(100);
     TGeoVolume* vol = (TGeoVolume*)map.GetValue(v);
     if ( vol ) {
+      if (newname && newname[0]) v->SetName(newname);
       return vol;
     }
     vol = v->CloneVolume();
@@ -203,19 +204,17 @@ namespace {
       vol->SetName((nam+"_refl").c_str());
     }
     delete vol->GetNodes();
-    vol->SetNodes(NULL);
+    vol->SetNodes(nullptr);
     vol->SetBit(TGeoVolume::kVolumeImportNodes, kFALSE);
     v->CloneNodesAndConnect(vol);
     // The volume is now properly cloned, but with the same shape.
     // Reflect the shape (if any) and connect it.
-#if 0
     if (v->GetShape())   {
       TGeoScale* scale = new TGeoScale( 1., 1.,-1.);
       TGeoShape* reflected_shape =
         TGeoScaledShape::MakeScaledShape((nam+"_shape_refl").c_str(), v->GetShape(), scale);
       vol->SetShape(reflected_shape);
     }
-#endif
     // Reflect the daughters.
     Int_t nd = vol->GetNdaughters();
     if ( !nd ) return vol;
@@ -233,8 +232,8 @@ namespace {
         if (!reflected) {
           // We need to reflect only the translation and propagate to daughters.
           // H' = Sz * H * Sz
-          local_cloned->ReflectZ(kTRUE,kFALSE);
-          local_cloned->ReflectZ(kFALSE,kFALSE);
+          local_cloned->ReflectZ(kTRUE);
+          local_cloned->ReflectZ(kFALSE);
           //            printf("%s after\n", node->GetName());
           //            node->GetMatrix()->Print();
           new_vol = MakeReflection(node->GetVolume());
@@ -281,18 +280,29 @@ namespace {
 /// Perform scan
 void ReflectionBuilder::execute()  const   {
   TGeoIterator next(detector.manager().GetTopVolume());
+  bool print_active = isActivePrintLevel(DEBUG);
   TGeoNode *node;
   while ( (node=next()) ) {
     TGeoMatrix* m = node->GetMatrix();
     if (m->IsReflection()) {
+      if ( print_active )  {
+	printout(INFO,"ReflectionBuilder","Reflection matrix:");
+	m->Print();
+      }
       Volume vol(node->GetVolume());
       TGeoMatrix* mclone = new TGeoCombiTrans(*m);
       mclone->RegisterYourself();
       // Reflect just the rotation component
       mclone->ReflectZ(kFALSE, kTRUE);
+      if ( print_active )  {
+	printout(INFO,"ReflectionBuilder","CLONE matrix:");
+	mclone->Print();
+      }
       TGeoNodeMatrix* nodematrix = (TGeoNodeMatrix*)node;
       nodematrix->SetMatrix(mclone);
-      printout(INFO,"Detector","Reflecting volume: %s ",vol.name());
+      if ( print_active )  {
+	printout(INFO,"ReflectionBuilder","Reflected volume: %s ",vol.name());
+      }
       Volume refl = vol.reflect(vol.sensitiveDetector());
       node->SetVolume(refl.ptr());
     }

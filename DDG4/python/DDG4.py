@@ -561,6 +561,11 @@ class Geant4:
     return self
 
   def printDetectors(self):
+    """
+    Scan the list of detectors and print detector name and sensitive type
+
+    \author  M.Frank
+    """
     logger.info('+++  List of sensitive detectors:')
     for i in self.description.detectors():
       o = DetElement(i.second.ptr())  # noqa: F405
@@ -572,7 +577,36 @@ class Geant4:
           sdtyp = self.sensitive_types[typ]
         logger.info('+++  %-32s type:%-12s  --> Sensitive type: %s', o.name(), typ, sdtyp)
 
+  def setupDetectors(self):
+    """
+    Scan the list of detectors and assign the proper sensitive actions
+
+    \author  M.Frank
+    """
+    seq = None
+    actions = []
+    logger.info('+++  Setting up sensitive detectors:')
+    for i in self.description.detectors():
+      o = DetElement(i.second.ptr())  # noqa: F405
+      sd = self.description.sensitiveDetector(str(o.name()))
+      if sd.isValid():
+        typ = sd.type()
+        sdtyp = 'Unknown'
+        if typ in self.sensitive_types:
+          sdtyp = self.sensitive_types[typ]
+          seq, act = self.setupDetector(o.name(), sdtyp, collections=None)
+          logger.info('+++  %-32s type:%-12s  --> Sensitive type: %s', o.name(), typ, sdtyp)
+          actions.append(act)
+          continue
+        logger.info('+++  %-32s --> UNKNOWN Sensitive type: %s', o.name(), typ)
+    return (seq, actions)
+
   def setupDetector(self, name, action, collections=None):
+    """
+    Setup single subdetector and assign the proper sensitive action
+
+    \author  M.Frank
+    """
     # fg: allow the action to be a tuple with parameter dictionary
     sensitive_type = ""
     parameterDict = {}
@@ -625,6 +659,11 @@ class Geant4:
     return (seq, acts[0])
 
   def setupCalorimeter(self, name, type=None, collections=None):
+    """
+    Setup subdetector of type 'calorimeter' and assign the proper sensitive action
+
+    \author  M.Frank
+    """
     self.description.sensitiveDetector(str(name))
     # sd.setType('calorimeter')
     if type is None:
@@ -632,6 +671,11 @@ class Geant4:
     return self.setupDetector(name, type, collections)
 
   def setupTracker(self, name, type=None, collections=None):
+    """
+    Setup subdetector of type 'tracker' and assign the proper sensitive action
+
+    \author  M.Frank
+    """
     self.description.sensitiveDetector(str(name))
     # sd.setType('tracker')
     if type is None:
