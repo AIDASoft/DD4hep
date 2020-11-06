@@ -31,10 +31,9 @@
     </limitset>
   </limits>
 
-  <geometry reflect="true"/>
   <detectors>
-    <detector id="1" name="NestedBox" type="NestedBoxReflection" readout="NestedBoxHits" vis="VisibleGreen" limits="cal_limits">
-      <comment>A box with 3 boxes inside spanning a coordinate system</comment>
+
+    <detector id="1" name="NestedBoxes" type="DD4hep_Test_NestedBoxReflection" readout="NestedBoxHits" vis="VisibleGreen" limits="cal_limits">
       <assembly/>
       <dimensions x="50*cm"   y="70*cm"   z="90*cm" level="2">
 	<position x="400*cm" y="0*cm" z="0*cm"/>
@@ -53,6 +52,19 @@
 
       <reflect_z  x="0*cm"    y="0*cm"    z="200*cm"/>
       <reflect_z  x="0*cm"    y="0*cm"    z="-200*cm"/>
+    </detector>
+
+    <!--
+    -->
+
+    <detector id="2" name="NestedTube" type="DD4hep_Test_TubeReflection" readout="NestedTubeHits" vis="VisibleGreen" limits="cal_limits">
+      <assembly/>
+      <dimensions r="100*cm" dz="50*cm" level="2">
+	<position x="0*cm" y="200*cm" z="200*cm"/>
+      </dimensions>
+      <reflect_z  x="0*cm" y="200*cm" z="-200*cm"/>
+    </detector>
+
 <!--
       <reflect_x  x="-200*cm" y="200*cm"    z="0*cm"/>
       <reflect_x  x="-200*cm" y="200*cm"    z="200*cm"/>
@@ -77,12 +89,15 @@
       <reflect_z  x="200*cm"  y="-200*cm" z="-200*cm"/>
       <reflect_z  x="200*cm"  y="-200*cm" z="0*cm"/>
 -->
-    </detector>
+    
   </detectors>
   
   <readouts>
     <readout name="NestedBoxHits">
-      <id>system:8,lvl4:5,lvl3:5,lvl2:5,lvl1:5,lvl0:5</id> 
+      <id>system:8,lvl4:4,lvl3:4,lvl2:4,lvl1:4,lvl0:4</id> 
+    </readout>
+    <readout name="NestedTubeHits">
+      <id>system:8,lvl4:4,lvl3:4,lvl2:4,lvl1:4,lvl0:4</id> 
     </readout>
   </readouts>
 

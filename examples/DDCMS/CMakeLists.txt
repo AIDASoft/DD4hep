@@ -35,6 +35,12 @@ else()
   dd4hep_print("|++> CLHEP is not present. NOT building DDCMS examples.")
   return()
 endif()
+#==========================================================================
+if(NOT TARGET Geant4::Interface)
+  dd4hep_print("Not creating DDCMS tests [No Geant4 found]")
+  return()
+endif()
+#==========================================================================
 #
 dd4hep_configure_output ()
 #
@@ -49,9 +55,10 @@ dd4hep_configure_output ()
 dd4hep_add_plugin ( DDCMS
   SOURCES src/*.cpp src/plugins/*.cpp
   USES    DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond
-          ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP
+          ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP ${CLHEP} Geant4::Interface
 )
 target_include_directories(DDCMS PUBLIC include)
+target_link_options(DDCMS PRIVATE -L${Geant4_DIR}/.. -lG4clhep)
 #
 #
 install(TARGETS DDCMS LIBRARY DESTINATION lib)

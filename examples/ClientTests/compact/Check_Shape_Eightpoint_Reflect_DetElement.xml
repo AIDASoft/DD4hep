@@ -20,7 +20,8 @@
         <rotation x="0"  y="0" z="0"/>
       </check>
       <reflect vis="Shape2_vis"/>
-      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Eightpoint_Reflect_DetElement.txt" create="CheckShape_create"/>
+      <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Eightpoint_Reflect_DetElement.txt" create="CheckShape_create"/>
+      <testn type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Eightpoint_Reflect_DetElement.txt" create="1"/>
     </detector>
   </detectors>
 </lccdd>
