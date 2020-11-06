@@ -44,6 +44,30 @@ namespace dd4hep {
   class  Volume;
   class  PlacedVolume;
 
+  /// Scan geometry and create reflected volumes
+  /**
+   *   Build reflections the ROOT way. 
+   *   To be called once the geometry is closed.
+   *   This entity can only be invoked once.
+   *
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoManager.html
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class  ReflectionBuilder   {
+    Detector& detector;
+  public:
+    /// Initializing constructor
+    ReflectionBuilder(Detector& desc) : detector(desc) {}
+    /// Default descructor
+    ~ReflectionBuilder() = default;
+    /// Perform scan
+    void execute()  const;
+  };
+    
   /// Implementation class extending the ROOT placed volume
   /**
    *   For any further documentation please see the following ROOT documentation:
@@ -317,6 +341,10 @@ namespace dd4hep {
     /// Assignment operator (must match copy constructor)
     Volume& operator=(const Volume& a)  = default;
 
+    /// Set flag to enable copy number checks when inserting new nodes
+    /** By default checks are enabled. If you want to disable, call this function */
+    static void enableCopyNumberCheck(bool value);
+    
     /// Check if placement is properly instrumented
     Object* data() const;
 
@@ -356,6 +384,10 @@ namespace dd4hep {
     PlacedVolume placeVolume(const Volume& volume, int copy_no, const RotationZYX& rot) const;
     /// Place rotated daughter volume. The position is automatically the identity position
     PlacedVolume placeVolume(const Volume& volume, int copy_no, const Rotation3D& rot) const;
+    /// Place daughter volume with generic TGeo matrix
+    PlacedVolume placeVolume(const Volume& volume, TGeoMatrix* tr) const;
+    /// Place daughter volume with generic TGeo matrix
+    PlacedVolume placeVolume(const Volume& volume, int copy_nr, TGeoMatrix* tr) const;
     /// Parametrized volume implementation
     /** Embedding parametrized daughter placements in a mother volume
      *  @param start  start transormation for the first placement

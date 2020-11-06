@@ -1463,6 +1463,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   bool open_geometry  = true;
   bool close_document = true;
   bool close_geometry = true;
+  bool build_reflections = false;
 
   if (element.hasChild(_U(debug)))
     (Converter<Debug>(description))(xml_h(compact.child(_U(debug))));
@@ -1473,8 +1474,8 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
       open_geometry  = steer.attr<bool>(_U(open));
     if ( steer.hasAttr(_U(close)) )
       close_document = steer.attr<bool>(_U(close));
-    if ( steer.hasAttr(_U(close_geometry)) )
-      close_geometry = steer.attr<bool>(_U(close_geometry));
+    if ( steer.hasAttr(_U(reflect)) )
+      build_reflections = steer.attr<bool>(_U(reflect));
     for (xml_coll_t clr(steer, _U(clear)); clr; ++clr) {
       string nam = clr.hasAttr(_U(name)) ? clr.attr<string>(_U(name)) : string();
       if ( nam.substr(0,6) == "elemen" )   {
@@ -1553,6 +1554,10 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
     ::snprintf(text, sizeof(text), "%u", xml_h(element).checksum(0));
     description.addConstant(Constant("compact_checksum", text));
     description.endDocument(close_geometry);
+  }
+  if ( build_reflections )   {
+    ReflectionBuilder rb(description);
+    rb.execute();
   }
   xml_coll_t(compact, _U(plugins)).for_each(_U(plugin), Converter<Plugin> (description));
 }

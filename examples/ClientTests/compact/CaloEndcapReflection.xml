@@ -49,6 +49,7 @@
     <detector id="EcalEndcap_ID+100" name="EcalEndcapB" type="DD4hep_ReflectedDetector"
               sensitive="true" sdref="EcalEndcapA"    readout="EcalEndcapBHits">
       <sensitive type="calorimeter"/>
+      <reflect type="Z"/>
     </detector>
 
   </detectors>
@@ -84,6 +85,7 @@
     <detector id="HcalEndcap_ID+100" name="HcalEndcapB" type="DD4hep_ReflectedDetector"
               sensitive="true" sdref="HcalEndcapA"    readout="HcalEndcapBHits">
       <sensitive type="calorimeter"/>
+      <reflect type="Z"/>
     </detector>
   </detectors>
 

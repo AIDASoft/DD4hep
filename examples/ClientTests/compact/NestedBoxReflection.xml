@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="6*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="VisibleGrey"   alpha="0.4" r="0.7" g="0.7" b="0.7" showDaughters="true" visible="true"/>
+    <vis name="DarkGrey"      alpha="0.4" r="0.3" g="0.3" b="0.3" showDaughters="true" visible="true"/>
+    <vis name="VisibleRed"    alpha="0.6" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="VisibleBlue"   alpha="0.6" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+    <vis name="VisibleYellow" alpha="0.6" r="1.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="VisibleGreen"  alpha="0.6" r="0.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="VisibleCyan"   alpha="0.6" r="0.0" g="1.0" b="1.0" showDaughters="true" visible="true"/>
+  </display>
+
+  <limits>
+    <limitset name="cal_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+
+  <detectors>
+
+    <detector id="1" name="NestedBoxes" type="DD4hep_Test_NestedBoxReflection" readout="NestedBoxHits" vis="VisibleGreen" limits="cal_limits">
+      <assembly/>
+      <dimensions x="50*cm"   y="70*cm"   z="90*cm" level="2">
+	<position x="400*cm" y="0*cm" z="0*cm"/>
+      </dimensions>
+      <reflect name="ReflectionX">
+	<rotation phiX="180.*deg" thetaX="90.*deg" phiY="90.*deg" thetaY="90.*deg" phiZ="0.*deg" thetaZ="0.*deg"/>
+	<position x="200*cm" y="0*cm" z="0*cm"/>
+      </reflect>
+      <reflect_x  x="-200*cm" y="0*cm"    z="0*cm"/>
+
+      <reflect name="ReflectionY">
+	<rotation phiY="270.*deg" thetaY="90.*deg" phiX=" 0.*deg" thetaX="90.*deg" phiZ="0.*deg" thetaZ="0.*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+      <reflect_y  x="0*cm"    y="-200*cm" z="0*cm"/>
+
+      <reflect_z  x="0*cm"    y="0*cm"    z="200*cm"/>
+      <reflect_z  x="0*cm"    y="0*cm"    z="-200*cm"/>
+    </detector>
+
+    <!--
+    -->
+
+    <detector id="2" name="NestedTube" type="DD4hep_Test_TubeReflection" readout="NestedTubeHits" vis="VisibleGreen" limits="cal_limits">
+      <assembly/>
+      <dimensions r="100*cm" dz="50*cm" level="2">
+	<position x="0*cm" y="200*cm" z="200*cm"/>
+      </dimensions>
+      <reflect_z  x="0*cm" y="200*cm" z="-200*cm"/>
+    </detector>
+
+<!--
+      <reflect_x  x="-200*cm" y="200*cm"    z="0*cm"/>
+      <reflect_x  x="-200*cm" y="200*cm"    z="200*cm"/>
+      <reflect_x  x="-200*cm" y="200*cm"    z="-200*cm"/>
+      <reflect_x  x="-200*cm" y="-200*cm"   z="200*cm"/>
+      <reflect_x  x="-200*cm" y="-200*cm"   z="-200*cm"/>
+      <reflect_x  x="-200*cm" y="-200*cm"   z="0*cm"/>
+
+      <reflect_y  x="0*cm"    y="200*cm"  z="200*cm"/>
+      <reflect_y  x="0*cm"    y="200*cm"  z="-200*cm"/>
+      <reflect_y  x="0*cm"    y="-200*cm" z="200*cm"/>
+      <reflect_y  x="0*cm"    y="-200*cm" z="-200*cm"/>
+      <reflect_y  x="200*cm"  y="0*cm"    z="200*cm"/>
+      <reflect_y  x="-200*cm" y="0*cm"    z="200*cm"/>
+      <reflect_y  x="200*cm"  y="0*cm"    z="-200*cm"/>
+      <reflect_y  x="-200*cm" y="0*cm"    z="-200*cm"/>
+      
+      <reflect_z  x="200*cm"  y="200*cm"  z="0*cm"/>
+      <reflect_z  x="200*cm"  y="200*cm"  z="200*cm"/>
+      <reflect_z  x="200*cm"  y="200*cm"  z="-200*cm"/>
+      <reflect_z  x="200*cm"  y="-200*cm" z="200*cm"/>
+      <reflect_z  x="200*cm"  y="-200*cm" z="-200*cm"/>
+      <reflect_z  x="200*cm"  y="-200*cm" z="0*cm"/>
+-->
+    
+  </detectors>
+  
+  <readouts>
+    <readout name="NestedBoxHits">
+      <id>system:8,lvl4:4,lvl3:4,lvl2:4,lvl1:4,lvl0:4</id> 
+    </readout>
+    <readout name="NestedTubeHits">
+      <id>system:8,lvl4:4,lvl3:4,lvl2:4,lvl1:4,lvl0:4</id> 
+    </readout>
+  </readouts>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="2*m"
+	   outer_radius="3*m">
+    </field>
+  </fields>
+
+</lccdd>

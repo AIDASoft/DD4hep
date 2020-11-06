@@ -195,8 +195,6 @@ std::pair<bool,TEveElement*> Utilities::LoadDetElement(DetElement de,int levels,
     if (pv.isValid()) {
       TGeoNode* n = pv.ptr();
       TGeoMatrix* matrix = n->GetMatrix();
-      gGeoManager = 0;
-      gGeoManager = new TGeoManager();
       std::pair<bool,TEveElement*> e = createEveShape(0, levels, parent, n, *matrix, de.name());
       TEveElementList* list = dynamic_cast<TEveElementList*>(e.second);
       if ( list )  {

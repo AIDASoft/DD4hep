@@ -32,10 +32,13 @@ Geant4ParticleGun::Geant4ParticleGun(Geant4Context* ctxt, const string& nam)
 {
   InstanceCount::increment(this);
   m_needsControl = true;
-  declareProperty("isotrop",      m_isotrop = false);
   declareProperty("Standalone",   m_standalone = true);
+  declareProperty("mask",         m_mask);
+  declareProperty("isotrop",      m_isotrop = false);
+  declareProperty("standalone",   m_standalone);
   // Backwards compatibility: Un-capitalize
   declareProperty("position",     m_position);
+  declareProperty("distribution", m_distribution);
   declareProperty("direction",    m_direction);
   declareProperty("energy",       m_energy);
   declareProperty("particle",     m_particleName);
@@ -48,17 +51,18 @@ Geant4ParticleGun::~Geant4ParticleGun() {
   InstanceCount::decrement(this);
 }
 
+/// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = m_energy)
+void Geant4ParticleGun::getParticleDirection(int num, ROOT::Math::XYZVector& direction, double& momentum) const  {
+  ( m_isotrop )
+    ? this->Geant4IsotropeGenerator::getParticleDirection(num, direction, momentum)
+    : this->Geant4ParticleGenerator::getParticleDirection(num, direction, momentum);
+}
+
 /// Callback to generate primary particles
 void Geant4ParticleGun::operator()(G4Event* event)   {
-  if ( m_isotrop )   {
-    double mom = 0.0;
-    this->Geant4IsotropeGenerator::getParticleDirection(0,m_direction,mom);
-  }
-  else  {
-    double r = m_direction.R(), eps = numeric_limits<float>::epsilon();
-    if ( r > eps )  {
-      m_direction.SetXYZ(m_direction.X()/r, m_direction.Y()/r, m_direction.Z()/r);
-    }
+  double r = m_direction.R(), eps = numeric_limits<float>::epsilon();
+  if ( r > eps )  {
+    m_direction.SetXYZ(m_direction.X()/r, m_direction.Y()/r, m_direction.Z()/r);
   }
 
   if ( m_standalone )  {

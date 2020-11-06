@@ -47,9 +47,10 @@ namespace dd4hep {
    *  \ingroup DD4HEP_EVE
    */
   struct PointsetCreator : public DDEveHitActor  {
-    TEvePointSet* pointset;
-    float deposit;
-    int count;
+    TEvePointSet* pointset {nullptr};
+    float threshold  {0};
+    float deposit {0};
+    int count {0};
     /// Standard initializing constructor
     PointsetCreator(const std::string& collection, size_t length);
     /// Standard initializing constructor
@@ -69,9 +70,9 @@ namespace dd4hep {
    *  \ingroup DD4HEP_EVE
    */
   struct BoxsetCreator : public DDEveHitActor  {
-    TEveBoxSet* boxset;
-    float emax, towerH, deposit;
-    int count;
+    TEveBoxSet* boxset {0};
+    float emax = 1e12, towerH = 1e12, deposit = 0e0;
+    int count {0};
     /// Standard initializing constructor
     BoxsetCreator(const std::string& collection, size_t length);
     /// Standard initializing constructor

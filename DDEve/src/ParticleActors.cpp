@@ -13,11 +13,14 @@
 
 // Framework include files
 #include "DDEve/ParticleActors.h"
-#include "DD4hep/Objects.h"
 #include "DD4hep/DD4hepUnits.h"
+#include "DD4hep/Printout.h"
+#include "DD4hep/Objects.h"
 
-#include "TEveCompound.h"
 #include "TEveTrack.h"
+#include "TEveBoxSet.h"
+#include "TEvePointSet.h"
+#include "TEveCompound.h"
 #include "TEveTrackPropagator.h"
 
 #include "TParticle.h"
@@ -28,11 +31,13 @@ using namespace std;
 using namespace dd4hep;
 
 #ifdef HAVE_GEANT4_UNITS
-#define CM_2_MM 1.0
-#define MM_2_CM 1.0
+#define CM_2_MM     1.0
+#define MM_2_CM     1.0
+#define MEV_TO_GEV  1000.0
 #else
-#define CM_2_MM 10.0
-#define MM_2_CM 0.1
+#define CM_2_MM    10.0
+#define MM_2_CM     0.1
+#define MEV_TO_GEV  1.0
 #endif
 
 namespace {
@@ -43,7 +48,7 @@ namespace {
 
 /// Standard initializing constructor
 MCParticleCreator::MCParticleCreator(TEveTrackPropagator* p, TEveCompound* ps, const DisplayConfiguration::Config* cfg) 
-  : propagator(p), particles(ps), count(0), lineWidth(4)
+  : propagator(p), particles(ps)
 {
   propagator->SetName("Track propagator for charged particles");
   propagator->SetMaxR(1000);
@@ -55,8 +60,10 @@ MCParticleCreator::MCParticleCreator(TEveTrackPropagator* p, TEveCompound* ps, c
   propagator->RefPMAtt().SetMarkerSize(1.0);
   if ( cfg )  {
     lineWidth = cfg->data.hits.width;
+    threshold = cfg->data.hits.threshold * MEV_TO_GEV;
     propagator->RefPMAtt().SetMarkerSize(cfg->data.hits.size);
     propagator->RefPMAtt().SetMarkerStyle(cfg->data.hits.type);
+    printout(ALWAYS,"MCParticleCreator","+++ Minimal particle energy: %8.3g [GeV]",threshold);
   }
 }
 
@@ -119,16 +126,16 @@ void MCParticleCreator::operator()(const DDEveParticle& p)  {
   TEveVector dir = end-start;
 
   // Tracks longer than 100 micron and energy > 100 MeV
-  if ( dir.R()*CM_2_MM > 100e-3 && p.energy > 10e0 )  {
+  if ( p.energy > 10e0 && p.energy > threshold && dir.R()*CM_2_MM > 100e-3 )  {
     TDatabasePDG* db = TDatabasePDG::Instance();
     TParticlePDG* def = db->GetParticle(p.pdgID);
     TParticle part(p.pdgID,
                    0,0,0,0,0,
                    p.psx*MEV_2_GEV, p.psy*MEV_2_GEV, p.psz*MEV_2_GEV, p.energy*MEV_2_GEV,
                    p.vsx*MM_2_CM, p.vsy*MM_2_CM, p.vsz*MM_2_CM, p.time);
-  
-    TEveTrack* t = new TEveTrack(&part,p.id,propagator);
 
+    TEveTrack* t = new TEveTrack(&part,p.id,propagator);
+    ++count;
     // Add start-vertex as path mark
     //t->AddPathMark(TEvePathMark(TEvePathMark::kDecay,start));
     // Add end-vertex as path mark (kDecay)
@@ -149,7 +156,7 @@ void MCParticleCreator::operator()(const DDEveParticle& p)  {
                      p.vex*MM_2_CM, p.vey*MM_2_CM, p.vez*MM_2_CM,
                      dir.R(),
                      p.psx*MEV_2_GEV, p.psy*MEV_2_GEV, p.psz*MEV_2_GEV, p.energy*MEV_2_GEV));
-
+    
     // Add element to collection
     int pdg = abs(p.pdgID);
     if ( pdg == 11 )
@@ -170,9 +177,41 @@ void MCParticleCreator::operator()(const DDEveParticle& p)  {
       addCompound("Protons", t);
     else
       addCompound("Other", t);
-    //cout << "Add particle " << p.id << " to compound." << endl;
   }
   else  {
-    cout << "SKIP particle " << p.id << "." << endl;
+    printout(ALWAYS,"MCParticleCreator","+++ SKIP particle %4d. Energy: %8.3g [MeV]",p.id,p.energy);
   }
 }
+
+/// Standard initializing constructor
+StartVertexCreator::StartVertexCreator(const std::string& collection, size_t length) 
+  : pointset(0), deposit(0), count(0) 
+{
+  pointset = new TEvePointSet(collection.c_str(),length);
+  pointset->SetMarkerSize(0.2);
+}
+
+/// Standard initializing constructor
+StartVertexCreator::StartVertexCreator(const std::string& collection, size_t length, const DisplayConfiguration::Config& cfg) 
+  : pointset(0), deposit(0), count(0) 
+{
+  pointset = new TEvePointSet(collection.c_str(),length);
+  pointset->SetMarkerSize(cfg.data.hits.size);
+  pointset->SetMarkerStyle(cfg.data.hits.type);
+  //pointset->SetMarkerAlpha(cfg.data.hits.alpha);
+  pointset->SetMainColor(cfg.data.hits.color);
+}
+/// Return eve element
+TEveElement* StartVertexCreator::element() const   {
+  return pointset;
+}
+
+/// Standard destructor
+StartVertexCreator::~StartVertexCreator()   {
+}
+
+/// Action callback of this functor: 
+void StartVertexCreator::operator()(const DDEveParticle& p)  {
+  pointset->SetPoint(count++, p.vsx*MM_2_CM, p.vsy*MM_2_CM, p.vsz*MM_2_CM); 
+}
+

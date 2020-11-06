@@ -610,14 +610,17 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
   PlacedVolume pv;
   int count = 0;
   for ( xml_coll_t itm(e, _U(check)); itm; ++itm, ++count )   {
-    xml_dim_t  x_check = itm;
-    xml_comp_t shape    (x_check.child(_U(shape)));
-    xml_dim_t  pos      (x_check.child(_U(position), false));
-    xml_dim_t  rot      (x_check.child(_U(rotation), false));
-    bool       reflect = x_check.hasChild(_U(reflect));
+    xml_dim_t  x_check  = itm;
+    xml_comp_t shape      (x_check.child(_U(shape)));
+    xml_dim_t  pos        (x_check.child(_U(position), false));
+    xml_dim_t  rot        (x_check.child(_U(rotation), false));
+    bool       reflect  = x_check.hasChild(_U(reflect));
+    bool       reflectZ = x_check.hasChild(_U(reflect_z));
+    bool       reflectY = x_check.hasChild(_U(reflect_y));
+    bool       reflectX = x_check.hasChild(_U(reflect_x));
+    string     shape_type = shape.typeStr();
     Solid      solid;
     Volume     volume;
-    string     shape_type = shape.typeStr();
 
     if ( shape_type == "CAD_Assembly" || shape_type == "CAD_MultiVolume" )   {
       volume = xml::createVolume(description, shape_type, shape);
@@ -630,26 +633,33 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     volume.setVisAttributes(description, x_check.visStr());
     solid->SetName(shape_type.c_str());
 
+    Transform3D tr;
     if ( pos.ptr() && rot.ptr() )  {
       Rotation3D  rot3D(RotationZYX(rot.z(0),rot.y(0),rot.x(0)));
       Position    pos3D(pos.x(0),pos.y(0),pos.z(0));
-      if ( reflect )
-        rot3D = Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.) * rot3D;
-      Transform3D tr(rot3D, pos3D);
-      pv = assembly.placeVolume(volume,tr);
+      tr = Transform3D(rot3D, pos3D);
     }
     else if ( pos.ptr() )  {
-      pv = assembly.placeVolume(volume,Position(pos.x(0),pos.y(0),pos.z(0)));
+      tr = Transform3D(Rotation3D(),Position(pos.x(0),pos.y(0),pos.z(0)));
     }
     else if ( rot.ptr() )  {
       Rotation3D rot3D(RotationZYX(rot.z(0),rot.y(0),rot.x(0)));
-      if ( reflect )
-        rot3D = Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.) * rot3D;
-      pv = assembly.placeVolume(volume,rot3D);
+      tr = Transform3D(rot3D,Position());
     }
-    else {
-      pv = assembly.placeVolume(volume);
+
+    if ( reflect )  {
+      tr = tr * Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.);
     }
+    if ( reflectX )   {
+      tr = tr * Rotation3D(-1.,0.,0.,0.,1.,0.,0.,0.,1.);
+    }
+    if ( reflectY )   {
+      tr = tr * Rotation3D(1.,0.,0.,0.,-1.,0.,0.,0.,1.);
+    }
+    if ( reflectZ )   {
+      tr = tr * Rotation3D(1.,0.,0.,0.,1.,0.,0.,0.,-1.);
+    }
+    pv = assembly.placeVolume(volume,tr);
 
     if ( x_check.hasAttr(_U(id)) )  {
       pv.addPhysVolID("check",x_check.id());

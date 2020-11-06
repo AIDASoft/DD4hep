@@ -92,7 +92,7 @@ namespace dd4hep {
 
     /// Local method (no interface): Load volume manager.
     void imp_loadVolumeManager();
-
+    
     /// Default constructor used by ROOT I/O
     DetectorImp();
 

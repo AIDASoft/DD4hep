@@ -27,9 +27,11 @@ using namespace std;
 using namespace dd4hep;
 
 #ifdef HAVE_GEANT4_UNITS
-#define MM_2_CM 1.0
+#define MM_2_CM        1.0
+#define MEV_TO_GEV  1000.0
 #else
-#define MM_2_CM 0.1
+#define MM_2_CM        0.1
+#define MEV_TO_GEV     1.0
 #endif
 
 /// Action callback of this functor: 
@@ -40,7 +42,6 @@ void EtaPhiHistogramActor::operator()(const DDEveHit& hit)   {
 
 /// Standard initializing constructor
 PointsetCreator::PointsetCreator(const std::string& collection, size_t length) 
-  : pointset(0), deposit(0), count(0) 
 {
   pointset = new TEvePointSet(collection.c_str(),length);
   pointset->SetMarkerSize(0.2);
@@ -48,13 +49,13 @@ PointsetCreator::PointsetCreator(const std::string& collection, size_t length)
 
 /// Standard initializing constructor
 PointsetCreator::PointsetCreator(const std::string& collection, size_t length, const DisplayConfiguration::Config& cfg) 
-  : pointset(0), deposit(0), count(0) 
 {
   pointset = new TEvePointSet(collection.c_str(),length);
   pointset->SetMarkerSize(cfg.data.hits.size);
   pointset->SetMarkerStyle(cfg.data.hits.type);
   //pointset->SetMarkerAlpha(cfg.data.hits.alpha);
   pointset->SetMainColor(cfg.data.hits.color);
+  threshold = cfg.data.hits.threshold * MEV_TO_GEV;
 }
 /// Return eve element
 TEveElement* PointsetCreator::element() const   {
@@ -74,12 +75,14 @@ PointsetCreator::~PointsetCreator()   {
 
 /// Action callback of this functor: 
 void PointsetCreator::operator()(const DDEveHit& hit)   {
-  pointset->SetPoint(count++, hit.x*MM_2_CM, hit.y*MM_2_CM, hit.z*MM_2_CM); 
+  if ( hit.deposit > threshold )   {
+    deposit += hit.deposit;
+    pointset->SetPoint(count++, hit.x*MM_2_CM, hit.y*MM_2_CM, hit.z*MM_2_CM);
+  }
 }
 
 /// Standard initializing constructor
 BoxsetCreator::BoxsetCreator(const std::string& collection, size_t /*length */, const DisplayConfiguration::Config& cfg)
-  : boxset(0), emax(1e12), towerH(1e12), deposit(0.0), count(0)
 {
   emax   = cfg.data.hits.emax;
   towerH = cfg.data.hits.towerH;
@@ -94,7 +97,6 @@ BoxsetCreator::BoxsetCreator(const std::string& collection, size_t /*length */, 
 
 /// Standard initializing constructor
 BoxsetCreator::BoxsetCreator(const std::string& collection, size_t /*length */)
-  : boxset(0), emax(1e12), towerH(1e12), deposit(0.0), count(0)
 {
   boxset = new TEveBoxSet(collection.c_str());
   boxset->SetMainTransparency(0);

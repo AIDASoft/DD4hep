@@ -61,6 +61,9 @@ template <typename T> static typename T::Object* _userExtension(const T& v)  {
 
 ClassImp(PlacedVolumeExtension)
 namespace {
+
+  static bool s_verifyCopyNumbers = true;
+
   TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m)  {
     geo_volume_t* e = new geo_volume_t(name.c_str(),s,m);
     e->SetUserExtension(new Volume::Object());
@@ -182,6 +185,7 @@ namespace {
     static TMap map(100);
     TGeoVolume* vol = (TGeoVolume*)map.GetValue(v);
     if ( vol ) {
+      if (newname && newname[0]) v->SetName(newname);
       return vol;
     }
     vol = v->CloneVolume();
@@ -200,7 +204,7 @@ namespace {
       vol->SetName((nam+"_refl").c_str());
     }
     delete vol->GetNodes();
-    vol->SetNodes(NULL);
+    vol->SetNodes(nullptr);
     vol->SetBit(TGeoVolume::kVolumeImportNodes, kFALSE);
     v->CloneNodesAndConnect(vol);
     // The volume is now properly cloned, but with the same shape.
@@ -228,8 +232,8 @@ namespace {
         if (!reflected) {
           // We need to reflect only the translation and propagate to daughters.
           // H' = Sz * H * Sz
-          local_cloned->ReflectZ(kTRUE,kFALSE);
-          local_cloned->ReflectZ(kFALSE,kFALSE);
+          local_cloned->ReflectZ(kTRUE);
+          local_cloned->ReflectZ(kFALSE);
           //            printf("%s after\n", node->GetName());
           //            node->GetMatrix()->Print();
           new_vol = MakeReflection(node->GetVolume());
@@ -264,6 +268,45 @@ namespace {
     return vol;
   }
 
+  int get_copy_number(TGeoVolume* par)    {
+    TObjArray* a = par ? par->GetNodes() : 0;
+    int copy_nr = (a ? a->GetEntries() : 0);
+    return copy_nr;
+  }
+
+}
+
+
+/// Perform scan
+void ReflectionBuilder::execute()  const   {
+  TGeoIterator next(detector.manager().GetTopVolume());
+  bool print_active = isActivePrintLevel(DEBUG);
+  TGeoNode *node;
+  while ( (node=next()) ) {
+    TGeoMatrix* m = node->GetMatrix();
+    if (m->IsReflection()) {
+      if ( print_active )  {
+	printout(INFO,"ReflectionBuilder","Reflection matrix:");
+	m->Print();
+      }
+      Volume vol(node->GetVolume());
+      TGeoMatrix* mclone = new TGeoCombiTrans(*m);
+      mclone->RegisterYourself();
+      // Reflect just the rotation component
+      mclone->ReflectZ(kFALSE, kTRUE);
+      if ( print_active )  {
+	printout(INFO,"ReflectionBuilder","CLONE matrix:");
+	mclone->Print();
+      }
+      TGeoNodeMatrix* nodematrix = (TGeoNodeMatrix*)node;
+      nodematrix->SetMatrix(mclone);
+      if ( print_active )  {
+	printout(INFO,"ReflectionBuilder","Reflected volume: %s ",vol.name());
+      }
+      Volume refl = vol.reflect(vol.sensitiveDetector());
+      node->SetVolume(refl.ptr());
+    }
+  }
 }
 
 /// Default constructor
@@ -486,6 +529,11 @@ Volume::Volume(const string& nam, const string& title, const Solid& sol, const M
   m_element->SetTitle(title.c_str());
 }
 
+/// Set flag to enable copy number checks when inserting new nodes
+void Volume::enableCopyNumberCheck(bool value)    {
+  s_verifyCopyNumbers = value;
+}
+
 /// Check if placement is properly instrumented
 Volume::Object* Volume::data() const   {
   Volume::Object* o = _userExtension(*this);
@@ -494,7 +542,7 @@ Volume::Object* Volume::data() const   {
 
 /// Create a reflected volume tree. The reflected volume has left-handed coordinates
 Volume Volume::reflect()  const   {
-  return reflect(SensitiveDetector(0));
+  return this->reflect(this->sensitiveDetector());
 }
     
 /// Create a reflected volume tree. The reflected volume has left-handed coordinates
@@ -561,68 +609,69 @@ Volume Volume::divide(const std::string& divname, int iaxis, int ndiv,
   return nullptr;
 }
 
-Int_t get_copy_number(TGeoVolume* par)    {
-  TObjArray* a = par ? par->GetNodes() : 0;
-  Int_t copy_nr = (a ? a->GetEntries() : 0);
-  return copy_nr;
-}
-
 PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix* transform) {
   TGeoVolume* parent = par;
   if ( !parent )   {
     except("dd4hep","Volume: Attempt to assign daughters to an invalid physical parent volume.");
   }
-  if ( !daughter )   {
+  else if ( !daughter )   {
     except("dd4hep","Volume: Attempt to assign an invalid physical daughter volume.");
   }
-  if ( !transform )   {
+  else if ( !transform )   {
     except("dd4hep","Volume: Attempt to place volume without placement matrix.");
   }
   if ( transform != detail::matrix::_identity() ) {
     string nam = string(daughter->GetName()) + "_placement";
     transform->SetName(nam.c_str());
   }
-#if 0
-  if ( transform->IsTranslation() ) {
-    cout << daughter->GetName() << ": Translation: " << transform->GetTranslation()[2] << endl;
-  }
-#endif
   TGeoShape* shape = daughter->GetShape();
   // Need to fix the daughter's BBox of assemblies, if the BBox was not calculated....
   if ( shape->IsA() == TGeoShapeAssembly::Class() )  {
     TGeoShapeAssembly* as = (TGeoShapeAssembly*)shape;
-    if ( std::fabs(as->GetDX()) < numeric_limits<double>::epsilon() &&
-         std::fabs(as->GetDY()) < numeric_limits<double>::epsilon() &&
-         std::fabs(as->GetDZ()) < numeric_limits<double>::epsilon() )  {
-      as->NeedsBBoxRecompute();
-      as->ComputeBBox();
+    as->NeedsBBoxRecompute();
+    as->ComputeBBox();
+  }
+  const Double_t* r = transform->GetRotationMatrix();
+  if ( r )   {
+    Double_t test_rot = r[0] + r[4] + r[8] - 3.0;
+    if ( TMath::Abs(test_rot) < 1E-12)
+      transform->ResetBit(TGeoMatrix::kGeoRotation);
+    else
+      transform->SetBit(TGeoMatrix::kGeoRotation);
+
+    if ( transform->IsRotation() )   {
+      Double_t det =
+        r[0]*r[4]*r[8] + r[3]*r[7]*r[2] + r[6]*r[1]*r[5] -
+        r[2]*r[4]*r[6] - r[5]*r[7]*r[0] - r[8]*r[1]*r[3];
+      /// We have a left handed matrix (determinant < 0). This is a reflection!
+      if ( det < 0e0 )   {
+        transform->SetBit(TGeoMatrix::kGeoReflection);
+        printout(INFO, "PlacedVolume",
+                 "REFLECTION: (x.Cross(y)).Dot(z): %8.3g Parent: %s [%s] Daughter: %s [%s]",
+                 det, par->GetName(), par->IsA()->GetName(),
+                 daughter->GetName(), daughter->IsA()->GetName());
+      }
     }
   }
-  geo_node_t* n;
+  geo_node_t* n {nullptr};
   TString nam_id = TString::Format("%s_%d", daughter->GetName(), id);
-  n = static_cast<geo_node_t*>(parent->GetNode(nam_id));
-  if ( n != 0 )  {
-    printout(ERROR,"PlacedVolume","++ Attempt to add already exiting node %s",(const char*)nam_id);
+  if ( s_verifyCopyNumbers )   {
+    n = static_cast<geo_node_t*>(parent->GetNode(nam_id));
+    if ( n != 0 )  {
+      printout(ERROR,"PlacedVolume","++ Attempt to place already exiting node %s",(const char*)nam_id);
+    }
   }
-  parent->AddNode(daughter, id, transform);
-  //n = static_cast<geo_node_t*>(parent->GetNode(id));
-  n = static_cast<geo_node_t*>(parent->GetNode(nam_id));
+  /* n = */ parent->AddNode(daughter, id, transform);
+  //n = static_cast<geo_node_t*>(parent->GetNode(nam_id));
+  n = static_cast<geo_node_t*>(parent->GetNodes()->Last());
+  if ( nam_id != n->GetName() )   {
+    printout(ERROR,"PlacedVolume","++ FAILED to place node %s",(const char*)nam_id);
+  }
   n->geo_node_t::SetUserExtension(new PlacedVolume::Object());
   return PlacedVolume(n);
 }
 
 PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Rotation3D& rot3D)   {
-  Position   x,y,z;
-  Rotation3D rot = rot3D;
-  rot.GetComponents(x,y,z);
-  bool left_handed = (x.Cross(y)).Dot(z) < 0;
-  if ( left_handed )    {
-    // The reflected volume already scales Z with -1 to be left-handed
-    // We have to accomplish for and undo this when placing the volume
-    rot *= Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.);
-    daughter = daughter.reflect();
-    //cout << "REFLECTION: (x.Cross(y)).Dot(z) " << (x.Cross(y)).Dot(z) << endl;
-  }
   TGeoRotation r;
   double elements[9];
   rot3D.GetComponents(elements);
@@ -632,25 +681,26 @@ PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Rotat
 }
 
 PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Transform3D& tr)   {
-  Position   x, y, z, pos3D;
+  TGeoRotation r;
+  double elements[9];
+  Position   pos3D;
   Rotation3D rot3D;
   tr.GetRotation(rot3D);
   tr.GetTranslation(pos3D);
-  rot3D.GetComponents(x,y,z);
-  bool left_handed = (x.Cross(y)).Dot(z) < 0;
-  if ( left_handed )    {
-    // The reflected volume already scales Z with -1 to be left-handed
-    // We have to accomplish for and undo this when placing the volume
-    rot3D *= Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.);
-    daughter = daughter.reflect();
-    //cout << "REFLECTION: (x.Cross(y)).Dot(z) " << (x.Cross(y)).Dot(z) << endl;
-  }
-  TGeoRotation r;
-  double elements[9];
   rot3D.GetComponents(elements);
   r.SetMatrix(elements);
   auto matrix = make_unique<TGeoCombiTrans>(TGeoTranslation(pos3D.x(), pos3D.y(), pos3D.z()),r);
   return _addNode(par, daughter, copy_nr, matrix.release());
+}
+
+/// Place daughter volume with generic TGeo matrix
+PlacedVolume Volume::placeVolume(const Volume& volume, TGeoMatrix* tr) const    {
+  return _addNode(m_element, volume, get_copy_number(m_element), tr);
+}
+
+/// Place daughter volume with generic TGeo matrix
+PlacedVolume Volume::placeVolume(const Volume& volume, int copy_nr, TGeoMatrix* tr) const    {
+  return _addNode(m_element, volume, copy_nr, tr);
 }
 
 /// Place daughter volume according to generic Transform3D
@@ -998,14 +1048,14 @@ std::string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
 
 
   if ( vol->IsA() == TGeoVolumeAssembly::Class() )    {
-    for(Int_t i=0; i<vol->GetNdaughters(); ++i)  {
+    for(int i=0; i<vol->GetNdaughters(); ++i)  {
       os << toStringMesh(vol->GetNode(i), prec) << endl;
     }
     return os.str();
   }
 
   // Prints shape parameters
-  Int_t nvert = 0, nsegs = 0, npols = 0;
+  int nvert = 0, nsegs = 0, npols = 0;
   sol->GetMeshNumbers(nvert, nsegs, npols);
   Double_t* points = new Double_t[3*nvert];
   sol->SetPoints(points);
@@ -1016,7 +1066,7 @@ std::string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
      << " N(mesh)=" << sol->GetNmeshVertices()
      << "  N(vert)=" << nvert << "  N(seg)=" << nsegs << "  N(pols)=" << npols << endl;
     
-  for(Int_t i=0; i<nvert; ++i)   {
+  for(int i=0; i<nvert; ++i)   {
     Double_t* p = points + 3*i;
     Double_t global[3], local[3] = {p[0], p[1], p[2]};
     mat->LocalToMaster(local, global);

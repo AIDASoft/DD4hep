@@ -5,8 +5,8 @@
 #include <Math/Vector3D.h>
 
 #include <CLHEP/Geometry/Transform3D.h>
-#include <CLHEP/Units/GlobalPhysicalConstants.h>
-#include <CLHEP/Units/GlobalSystemOfUnits.h>
+#include <CLHEP/Units/PhysicalConstants.h>
+#include <CLHEP/Units/SystemOfUnits.h>
 #include <CLHEP/Geometry/Point3D.h>
 #include <CLHEP/Geometry/Plane3D.h>
 #include <CLHEP/Geometry/Vector3D.h>
@@ -144,7 +144,7 @@ DDEcalEndcapTrap::DDEcalEndcapTrap(const int hand, const double front, const dou
   calculateCentres();
 }
 
-void DDEcalEndcapTrap::rotate(const DDTranslation& frontCentre, const DDTranslation& rearCentre) {
+void DDEcalEndcapTrap::rotate(const DDTranslation& /* frontCentre */, const DDTranslation& /* rearCentre */) {
   //
   //  Rotate supercrystal to bring front and rear face centres to specified points
   //
@@ -325,7 +325,7 @@ void DDEcalEndcapTrap::print() {
   //  Print SC coordinates for debugging
   //
   for (int ic = 1; ic <= 8; ic++) {
-    DDTranslation cc = cornerPos(ic);
+    /* DDTranslation cc = */ cornerPos(ic);
   }
 }
 

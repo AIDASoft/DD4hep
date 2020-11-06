@@ -174,6 +174,8 @@ DetectorImp::DetectorImp(const string& name)
   //if ( gGeoManager ) delete gGeoManager;
   m_manager = new TGeoManager(name.c_str(), "Detector Geometry");
   {
+    m_manager->AddNavigator();
+    m_manager->SetCurrentNavigator(0);
     gGeoManager = m_manager;
 #if 1 //FIXME: eventually this should be set to 1 - needs fixes in examples ...
     TGeoElementTable*	table = m_manager->GetElementTable();
@@ -648,7 +650,6 @@ namespace {
       }
     }
   };
-
 }
 
 /// Finalize/close the geometry
@@ -668,12 +669,18 @@ void DetectorImp::endDocument(bool close_geometry)    {
     m_trackingVol.setVisAttributes(trackingVis);
     add(trackingVis);
 #endif
-    /// Since we allow now for anonymous shapes,
-    /// we will rename them to use the name of the volume they are assigned to
+    m_worldVol.solid()->ComputeBBox();
+    // Propagating reflections
+    ReflectionBuilder rb(*this);
+    rb.execute();
+    // Since we allow now for anonymous shapes,
+    // we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();
   }
+  // Patching shape names of anaonymous shapes
   ShapePatcher patcher(m_volManager, m_world);
   patcher.patchShapes();
+
   mapDetectorTypes();
   m_state = READY;
 }
