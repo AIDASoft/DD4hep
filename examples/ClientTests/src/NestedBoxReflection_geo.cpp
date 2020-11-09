@@ -107,8 +107,6 @@ namespace   {
       mat->ReflectZ(kTRUE, kTRUE);
       vol.placeVolume(tvol0, mat);
 
-#if 0
-#endif
       double dz2 = dz-tsol2.dZ();
       // OK
       mat = detail::matrix::_transform(Transform3D(Position(0, 0, dz2)));
@@ -127,8 +125,7 @@ namespace   {
       vol.placeVolume(tvol4, mat);
 
 
-      /** Now eflect the quadrants to the other endcap:  */
-      
+      /** Now eflect the quadrants to the other endcap:  */      
       // OK
       mat = detail::matrix::_transform(Transform3D(Position(0, 0,-dz2)));
       mat->ReflectY(kTRUE,kTRUE);

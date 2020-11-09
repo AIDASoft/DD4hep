@@ -47,6 +47,8 @@ namespace dd4hep {
     UNICODE(MaterialFraction);
 
     UNICODE(RotationSection);
+    UNICODE(ReflectionRotation);
+    UNICODE(rReflectionRotation);
     UNICODE(Rotation);
     UNICODE(rRotation);
     UNICODE(thetaX);

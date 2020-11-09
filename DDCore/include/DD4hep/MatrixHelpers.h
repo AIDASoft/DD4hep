@@ -79,28 +79,43 @@ namespace dd4hep {
       /// Convert a TGeoMatrix object to a generic Transform3D                                  \ingroup DD4HEP \ingroup DD4HEP_CORE
       Transform3D      _transform(const TGeoMatrix* matrix);
       Transform3D      _transform(const TGeoMatrix& matrix);
+      /// Convert a generic ROOT Matrix into a generic transformation Transform3D             \ingroup DD4HEP \ingroup DD4HEP_CORE
+      void             _transform(const TGeoMatrix* matrix, Transform3D& trafo);
+      /// Convert a generic ROOT Matrix into a generic transformation Transform3D             \ingroup DD4HEP \ingroup DD4HEP_CORE
+      void             _transform(const TGeoMatrix& matrix, Transform3D& trafo);
 
       /// Decompose a generic ROOT Matrix into a translation (Position) and a Rotation3D        \ingroup DD4HEP \ingroup DD4HEP_CORE
-      void _decompose(const TGeoMatrix& trafo, Position& pos, Rotation3D& rot);
+      void _decompose(const TGeoMatrix& matrix, Position& pos, Rotation3D& rot);
       /// Decompose a generic ROOT Matrix into a translation (Position) and a RotationZYX       \ingroup DD4HEP \ingroup DD4HEP_CORE
-      void _decompose(const TGeoMatrix& trafo, Position& pos, RotationZYX& rot);
+      void _decompose(const TGeoMatrix& matrix, Position& pos, RotationZYX& rot);
       /// Decompose a generic ROOT Matrix into a translation (Position) and XYZAngles           \ingroup DD4HEP \ingroup DD4HEP_CORE
-      void _decompose(const TGeoMatrix& trafo, Position& pos, XYZAngles& rot);
+      void _decompose(const TGeoMatrix& matrix, Position& pos, XYZAngles& rot);
       /// Decompose a generic Transform3D into a translation (Position) and a Rotation3D        \ingroup DD4HEP \ingroup DD4HEP_CORE
-      void _decompose(const Transform3D& trafo, Position& pos, Rotation3D& rot);
+      void _decompose(const Transform3D& matrix, Position& pos, Rotation3D& rot);
       /// Decompose a generic Transform3D into a translation (Position) and a RotationZYX       \ingroup DD4HEP \ingroup DD4HEP_CORE
-      void _decompose(const Transform3D& trafo, Position& pos, RotationZYX& rot);
+      void _decompose(const Transform3D& matrix, Position& pos, RotationZYX& rot);
       /// Decompose a generic Transform3D into a translation (Position) and XYZAngles \ingroup DD4HEP \ingroup DD4HEP_CORE
-      void _decompose(const Transform3D& trafo, Position& pos, XYZAngles& rot);
+      void _decompose(const Transform3D& matrix, Position& pos, XYZAngles& rot);
       /// Decompose a generic Transform3D into a translation (Translation3D) and a RotationZYX  \ingroup DD4HEP \ingroup DD4HEP_CORE
-      void _decompose(const Transform3D& trafo, Translation3D& pos, RotationZYX& rot);
+      void _decompose(const Transform3D& matrix, Translation3D& pos, RotationZYX& rot);
       /// Decompose a generic Transform3D into a translation (Translation3D) and XYZAngles      \ingroup DD4HEP \ingroup DD4HEP_CORE
-      void _decompose(const Transform3D& trafo, Translation3D& pos, XYZAngles& rot);
+      void _decompose(const Transform3D& matrix, Translation3D& pos, XYZAngles& rot);
+      /// Decompose a Rotation3D into a 3 orthogonal unit vectors.
+      void _decompose(const Rotation3D&  rot, Position& x, Position& y, Position& z);
 
       /// Convert a 3x3 rotation matrix to XYZAngles                                            \ingroup DD4HEP \ingroup DD4HEP_CORE
       XYZAngles _xyzAngles(const double* matrix);
       /// Convert a the rotation part of a TGeoMatrix to XYZAngles                              \ingroup DD4HEP \ingroup DD4HEP_CORE
       XYZAngles _xyzAngles(const TGeoMatrix* matrix);
+
+      /// Access determinant of rotation component (0 if no rotation present)
+      double determinant(const TGeoMatrix* matrix);
+      /// Access determinant of rotation component (0 if no rotation present)
+      double determinant(const TGeoMatrix& matrix);
+      /// Access determinant of the rotation component of a Transform3D
+      double determinant(const Transform3D& trafo);
+      /// Access determinant of a Rotation3D
+      double determinant(const Rotation3D& rot);
 
       enum MatrixEqualityCode  {
         MATRICES_EQUAL = 1,

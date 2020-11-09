@@ -11,12 +11,13 @@
 //
 //==========================================================================
 
-#include "DD4hep/Objects.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/detail/Handle.inl"
-#include "DD4hep/detail/ObjectsInterna.h"
-#include "DD4hep/detail/SegmentationsInterna.h"
+#include <DD4hep/Objects.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/detail/Handle.inl>
+#include <DD4hep/detail/ObjectsInterna.h>
+#include <DD4hep/detail/SegmentationsInterna.h>
 
+#include <TROOT.h>
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
@@ -26,6 +27,8 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(VisAttrObject);
 /// Standard constructor
 VisAttrObject::VisAttrObject() : magic(magic_word())   {
   InstanceCount::increment(this);
+  this->col = gROOT->GetColor(kWhite);
+  this->alpha = 0.0;
 }
 
 /// Default destructor

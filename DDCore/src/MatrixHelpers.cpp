@@ -164,14 +164,28 @@ dd4hep::Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix* matrix)
 dd4hep::Transform3D dd4hep::detail::matrix::_transform(const TGeoMatrix& matrix)    {
   const Double_t* t = matrix.GetTranslation();
   if ( matrix.IsRotation() )  {
-    const Double_t* rot = matrix.GetRotationMatrix();
-    return Transform3D(rot[0],rot[1],rot[2],t[0]*MM_2_CM,
-                       rot[3],rot[4],rot[5],t[1]*MM_2_CM,
-                       rot[6],rot[7],rot[8],t[2]*MM_2_CM);
+    const Double_t* r = matrix.GetRotationMatrix();
+    return Transform3D(r[0],r[1],r[2],t[0]*MM_2_CM,
+                       r[3],r[4],r[5],t[1]*MM_2_CM,
+                       r[6],r[7],r[8],t[2]*MM_2_CM);
   }
   return Transform3D(0e0,0e0,0e0,t[0]*MM_2_CM,
                      0e0,0e0,0e0,t[1]*MM_2_CM,
                      0e0,0e0,0e0,t[2]*MM_2_CM);
+}
+
+/// Decompose a generic ROOT Matrix into a generic transformation Transform3D            \ingroup DD4HEP \ingroup DD4HEP_CORE
+void dd4hep::detail::matrix::_transform(const TGeoMatrix& matrix, Transform3D& tr)   {
+  tr = _transform(matrix);
+}
+
+/// Decompose a generic ROOT Matrix into a generic transformation Transform3D            \ingroup DD4HEP \ingroup DD4HEP_CORE
+void dd4hep::detail::matrix::_transform(const TGeoMatrix* matrix, Transform3D& tr)   {
+  if ( matrix )   {
+    _transform(*matrix, tr);
+    return;
+  }
+  tr = Transform3D();
 }
 
 dd4hep::XYZAngles dd4hep::detail::matrix::_xyzAngles(const TGeoMatrix* matrix) {
@@ -202,6 +216,10 @@ void dd4hep::detail::matrix::_decompose(const Transform3D& trafo, Position& pos,
   trafo.GetDecomposition(rot, pos);  
 }
 
+void dd4hep::detail::matrix::_decompose(const Rotation3D& rot, Position& x, Position& y, Position& z)  {
+  rot.GetComponents(x,y,z);
+}
+
 void dd4hep::detail::matrix::_decompose(const Transform3D& trafo, Translation3D& pos, RotationZYX& rot)   {
   trafo.GetDecomposition(rot, pos);
 }
@@ -220,6 +238,39 @@ void dd4hep::detail::matrix::_decompose(const Transform3D& trafo, Position& pos,
   EulerAngles r;
   trafo.GetDecomposition(r,pos);
   rot.SetXYZ(r.Psi(),r.Theta(),r.Phi());
+}
+
+/// Access determinant of rotation component (0 if no rotation present)
+double dd4hep::detail::matrix::determinant(const TGeoMatrix* matrix)   {
+  return (matrix) ? determinant(*matrix) : 0e0;
+}
+
+/// Access determinant of rotation component (0 if no rotation present)
+double dd4hep::detail::matrix::determinant(const TGeoMatrix& matrix)   {
+  const double* r = matrix.GetRotationMatrix();
+  if ( r )   {
+    double det =
+      r[0]*r[4]*r[8] + r[3]*r[7]*r[2] + r[6]*r[1]*r[5] -
+      r[2]*r[4]*r[6] - r[5]*r[7]*r[0] - r[8]*r[1]*r[3];
+    return det;
+  }
+  return 0.0;
+}
+
+/// Access determinant of the rotation component of a Transform3D
+double dd4hep::detail::matrix::determinant(const Transform3D& tr)   {
+  Position p;
+  Rotation3D r;
+  tr.GetDecomposition(r, p);
+  return determinant(r);
+}
+
+/// Access determinant of a Rotation3D
+double dd4hep::detail::matrix::determinant(const Rotation3D& rot)   {
+  Position x, y, z;
+  rot.GetComponents(x,y,z);
+  double det = (x.Cross(y)).Dot(z);
+  return det;
 }
 
 /// Check matrices for equality

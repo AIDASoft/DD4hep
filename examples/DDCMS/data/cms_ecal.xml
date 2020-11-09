@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<DDDefinition>
+  <debug>
+<!-- 
+    <debug_placements/>
+    <debug_rotations/>
+    <debug_includes/>
+    <debug_materials/>
+
+    <debug_shapes/>
+    <debug_volumes/>
+    <debug_namespaces/>
+    <debug_visattr/>
+    <debug_constants/>
+    <debug_algorithms/>
+-->
+  </debug>
+
+  <open_geometry/>
+<!-- 
+  <close_geometry/>
+-->
+
+  <ConstantsSection label="" eval="true">
+    <Constant name="world_x" value="5*m"/>
+    <Constant name="world_y" value="5*m"/>
+    <Constant name="world_z" value="5*m"/>
+    <Constant name="fm"      value="1e-12*m"/>
+    <Constant name="Air"     value="materials:Air"     type="string"/>
+    <Constant name="Vacuum"  value="materials:Vacuum"  type="string"/>
+  </ConstantsSection>
+  <ConstantsSection label="servicescylinderb.xml" eval="true">
+	<Constant name="zero" value="0.0*fm"/>
+  </ConstantsSection>
+  <ConstantsSection label="servicescylinderf.xml" eval="true">
+	<Constant name="zero" value="0.0*fm"/>
+  </ConstantsSection>
+
+  <IncludeSection>
+    <Include ref="materials.xml"/>
+    <Include ref="rotations.xml"/>
+    <Include ref="trackermaterial.xml"/>
+    <Include ref="ecalmaterial.xml"/>
+    <Include ref="caloBase.xml"/>
+    <Include ref="eecon.xml"/>
+    <Include ref="eehier.xml"/>
+    <Include ref="eregalgo.xml"/>
+    <Include ref="eealgo.xml"/>
+  </IncludeSection>
+
+  <PosPartSection label="">
+    <PosPart copyNumber="1">
+	<rParent name="world_volume"/>
+	<rChild name="eregalgo:ECAL"/>
+   </PosPart>
+    <PosPart copyNumber="2">
+	<rParent name="world_volume"/>
+	<rChild name="eregalgo:EREG"/>
+   </PosPart>
+  </PosPartSection>
+
+</DDDefinition>

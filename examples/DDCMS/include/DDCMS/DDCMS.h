@@ -128,19 +128,19 @@ namespace dd4hep {
       std::set<std::string>              disabledAlgs;
       std::vector<std::string>           namespaces;
       bool geo_inited = false;
-
-      // Debug flags
-      bool debug_includes     = false;
-      bool debug_constants    = false;
-      bool debug_materials    = false;
-      bool debug_rotations    = false;
-      bool debug_shapes       = false;
-      bool debug_volumes      = false;
-      bool debug_placements   = false;
-      bool debug_namespaces   = false;
-      bool debug_visattr      = false;
-      bool debug_algorithms   = false;
-
+      struct _debug  {
+	// Debug flags
+	bool includes     = false;
+	bool constants    = false;
+	bool materials    = false;
+	bool rotations    = false;
+	bool shapes       = false;
+	bool volumes      = false;
+	bool placements   = false;
+	bool namespaces   = false;
+	bool visattr      = false;
+	bool algorithms   = false;
+      } debug;
     public:
       ParsingContext(Detector* det) : description(det) { namespaces.push_back(""); }
       ~ParsingContext() = default;

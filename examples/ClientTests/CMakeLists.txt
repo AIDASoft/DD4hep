@@ -241,6 +241,15 @@ dd4hep_add_test_reg( ClientTests_Check_Temp_Pressure_Air_STP
   REGEX_PASS "Temp=273 \\[Kelvin\\] Pressure=1000 \\[hPa\\] state=Undefined"
   REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
 #
+#  Test reflection matrices
+dd4hep_add_test_reg( ClientTests_Check_reflection_matrices
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoDisplay
+  -input file:${ClientTestsEx_INSTALL}/compact/ReflectionMatrices.xml
+  -load -destroy -print WARNING
+  REGEX_PASS "Analysed 7 right handed and 10 left handed matrices"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
+#
 # only if root version > 6.19: MaterialTester
 #
 foreach (test Assemblies BoxTrafos CaloEndcapReflection IronCylinder LheD_tracker MagnetFields  

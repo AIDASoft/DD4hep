@@ -325,7 +325,7 @@ void DDEcalEndcapTrap::print() {
   //  Print SC coordinates for debugging
   //
   for (int ic = 1; ic <= 8; ic++) {
-    /* DDTranslation cc = */ cornerPos(ic);
+    /* DDTranslation cc = */  cornerPos(ic);
   }
 }
 

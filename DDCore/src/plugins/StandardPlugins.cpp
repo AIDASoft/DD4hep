@@ -1021,6 +1021,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
             "     -sensitive         Only print information for sensitive volumes                \n"
             "     -topstats          Print statistics about top level node                       \n"       
             "\tArguments given: " << arguments(ac,av) << endl << flush;
+	  _exit(0);
         }
       }
       if ( m_printMaxLevel < 999999 )
@@ -1080,6 +1081,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         pref += "/";
         pref += aligned->GetName();
       }
+      /// 
       if ( m_printPositions || m_printVolIDs )  {
         if ( m_printPointers )    {
           if ( ideal != aligned )
@@ -1113,32 +1115,40 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
           }
         }
         opt_info = log.str();
+	log.str("");
+      }
+      ///  
+      if ( m_printVis && pv.volume().visAttributes().isValid() )   {
+        log << " Vis:" << pv.volume().visAttributes().name();
+	opt_info += log.str();
+	log.str("");
       }
       TGeoVolume* volume = ideal ? ideal->GetVolume() : 0;
       if ( !m_printSensitivesOnly || (m_printSensitivesOnly && sensitive) )  {
         char sens = pv.volume().isSensitive() ? 'S' : ' ';
         if ( m_printPointers )    {
           if ( ideal == aligned )  {
-            ::snprintf(fmt,sizeof(fmt),"%03d %%s [Ideal:%p] %%-%ds %%-16s (%%s) \t %c %%s",
+            ::snprintf(fmt,sizeof(fmt),"%03d %%s [Ideal:%p] %%-%ds %%-16s Vol:%%s shape:%%s \t %c %%s",
                        level+1,(void*)ideal,2*level+1,sens);
           }
           else  {
-            ::snprintf(fmt,sizeof(fmt),"%03d %%s Ideal:%p Aligned:%p %%-%ds %%-16s (%%s) %c %%s",
+            ::snprintf(fmt,sizeof(fmt),"%03d %%s Ideal:%p Aligned:%p %%-%ds %%-16s Vol:%%s shape:%%s %c %%s",
                        level+1,(void*)ideal,(void*)aligned,2*level+1,sens);
           }
         }
         else  {
           if ( ideal == aligned )  {
-            ::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds %%-16s (%%s) \t %c %%s",
+            ::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds %%-16s Vol:%%s shape:%%s \t %c %%s",
                        level+1,2*level+1,sens);
           }
           else  {
-            ::snprintf(fmt,sizeof(fmt),"%03d %%s Ideal:%p Aligned:%p %%-%ds %%-16s (%%s) %c %%s",
+            ::snprintf(fmt,sizeof(fmt),"%03d %%s Ideal:%p Aligned:%p %%-%ds %%-16s Vol:%%s shape:%%s %c %%s",
                        level+1,(void*)ideal,(void*)aligned,2*level+1,sens);
           }
         }
         printout(INFO,"VolumeDump",fmt,pref.c_str(),"",
                  aligned->GetName(),
+		 volume->GetName(),
                  volume ? volume->GetShape()->IsA()->GetName() : "[Invalid Volume]",
                  opt_info.c_str());
         if ( sens == 'S' ) ++m_numSensitive;
@@ -1148,7 +1158,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         Material mat = vol.material();
         TGeoMaterial* mptr = mat->GetMaterial();
         bool ok = mat.A() == mptr->GetA() && mat.Z() == mptr->GetZ();
-        ::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds Material: %%-16s A:%%f %%f   Z:%%f %%f",
+        ::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds Material: %%-16s A:%%6.2f %%6.2f  Z:%%6.2f %%6.2f",
                    level+1,2*level+1);
         ++m_numMaterial;
         if ( !ok ) ++m_numMaterialERR;
@@ -1169,9 +1179,6 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         }
         log << fmt << " \t";
       }
-      if ( m_printVis && pv.volume().visAttributes().isValid() )   {
-        log << " Vis:" << pv.volume().visAttributes().name();
-      }
       if ( !log.str().empty() )  {
         ::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds %%s",level+1,2*level+1);
         printout(INFO, "VolumeDump", fmt, "  ->", "", log.str().c_str());
@@ -1189,6 +1196,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       }
       return 1;
     }
+    ///
     int operator()()   {
       PlacedVolume pv;
       DetElement   top = description.world();

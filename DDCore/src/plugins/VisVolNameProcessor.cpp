@@ -14,7 +14,9 @@
 #define DD4HEP_DDCORE_VISVOLNAMEPROCESSOR_H
 
 // Framework include files
-#include "DD4hep/VolumeProcessor.h"
+#include <DD4hep/VolumeProcessor.h>
+// C/C++ include files
+#include <vector>
 
 namespace dd4hep  {
   
@@ -27,10 +29,11 @@ namespace dd4hep  {
    */
   class VisVolNameProcessor : public PlacedVolumeProcessor  {
   public:
-    Detector&              description;
-    std::string            name;
-    size_t                 numApplied = 0;
-    bool                   show = false;
+    Detector&                description;
+    std::string              name;
+    size_t                   numApplied = 0;
+    bool                     show = false;
+    VisAttr                  visattr;
     /// Print properties
     void _show();
   public:
@@ -57,18 +60,19 @@ namespace dd4hep  {
 //
 //==========================================================================
 
-//#include "DD4hep/VisVolNameProcessor.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/DetectorTools.h"
-#include "DD4hep/DetectorHelper.h"
-#include "DD4hep/DetFactoryHelper.h"
+//#include <DD4hep/VisVolNameProcessor.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/DetectorTools.h>
+#include <DD4hep/DetectorHelper.h>
+#include <DD4hep/DetFactoryHelper.h>
 #include <sstream>
 
 using namespace std;
 using namespace dd4hep;
 
 /// Initializing constructor
-VisVolNameProcessor::VisVolNameProcessor(Detector& desc) : description(desc), name("VisVolNameProcessor")
+VisVolNameProcessor::VisVolNameProcessor(Detector& desc)
+  : description(desc), name("VisVolNameProcessor")
 {
 }
 
@@ -82,9 +86,8 @@ VisVolNameProcessor::~VisVolNameProcessor()   {
 /// Callback to output PlacedVolume information of an single Placement
 int VisVolNameProcessor::operator()(PlacedVolume pv, int /* level */)   {
   Volume   vol = pv.volume();
-  VisAttr  vis = description.visAttributes(vol.name());
-  if ( vol.visAttributes().ptr() != vis.ptr() )  {
-    vol.setVisAttributes(vis);
+  if ( vol.visAttributes().ptr() != visattr.ptr() && name == vol.name() )  {
+    vol.setVisAttributes(visattr);
     ++numApplied;
   }
   return 1;
@@ -96,8 +99,12 @@ static void* create_object(Detector& description, int argc, char** argv)   {
   for ( int i=0; i<argc; ++i )   {
     if ( argv[i] )    {
       if ( ::strncmp(argv[i],"-name",4) == 0 )   {
-        string     name = argv[++i];
+        string name = argv[++i];
         proc->name = name;
+	proc->visattr = description.visAttributes(name);
+	if ( !proc->visattr.ptr() )   {
+	  except(name,"+++ Unknown visual attribute: %s",name.c_str());
+	}
         continue;
       }
       else if ( ::strncmp(argv[i],"-show",4) == 0 )   {
