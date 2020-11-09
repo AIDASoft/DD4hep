@@ -90,7 +90,7 @@ static int alignment_example (Detector& description, int argc, char** argv)  {
   int num_delta = Scanner().scan(Collector(deltas,nominal),description.world());
   /// Show that utilities can work with this one:
   int num_printed = Scanner().scan(AlignmentsPrinter(&nominal),description.world());
-  printout(INFO,"Prepare","Got a total of %ld Deltas (Nominals: %d , Printed: %d)",
+  printout(ALWAYS,"Prepare","Got a total of %ld Deltas (Nominals: %d , Printed: %d)",
            deltas.size(), num_delta, num_printed);
 
   // ++++++++++++++++++++++++ Now compute the alignments for a generic slice
@@ -98,12 +98,12 @@ static int alignment_example (Detector& description, int argc, char** argv)  {
   // Now compute the tranformation matrices
   AlignmentsCalculator calculator;
   AlignmentsCalculator::Result ares = calculator.compute(deltas,slice);  
-  printout(INFO,"Compute","Total %ld conditions inserted. Alignments:(C:%ld,M:%ld)",
+  printout(ALWAYS,"Compute","Total %ld conditions inserted. Alignments:(C:%ld,M:%ld)",
            slice.data.size(), ares.computed, ares.missing);
   if ( ares.missing > 0 ) {
     printout(ERROR,"Compute","Failed tro compute %ld alignments.",ares.missing);
   }
-  printout(INFO,"Summary","Printed %d, scanned %d and computed a total of %ld alignments (C:%ld,M:%ld).",
+  printout(ALWAYS,"Summary","Printed %d, scanned %d and computed a total of %ld alignments (C:%ld,M:%ld).",
            num_printed, num_delta, slice.data.size(), ares.computed, ares.missing);
   // All done.
   return 1;

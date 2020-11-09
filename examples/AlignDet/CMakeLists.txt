@@ -131,7 +131,7 @@ dd4hep_add_test_reg( AlignDet_CLICSiD_stress_LONGTEST
 #---Testing: Load Telescope geometry and read and print alignments --------
 dd4hep_add_test_reg( AlignDet_CLICSiD_align_nominal_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
-  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_nominal
+  EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy -plugin DD4hep_AlignmentExample_nominal
      -input  file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
   REGEX_PASS "Printed 35107, scanned 35107 and computed a total of 35107 alignments \\(C:35107,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
