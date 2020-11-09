@@ -1582,8 +1582,8 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   //setPrintLevel(VERBOSE);
   //debugMaterials  = true;
   //debugElements   = true;
-  debugReflections  = true;
-  debugPlacements   = true;
+  //debugReflections  = true;
+  //debugPlacements   = true;
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   handleArray(this, geo.manager->GetListOfGDMLMatrices(), &Geant4Converter::handleMaterialProperties);
   handleArray(this, geo.manager->GetListOfOpticalSurfaces(), &Geant4Converter::handleOpticalSurface);
