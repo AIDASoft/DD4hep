@@ -316,6 +316,8 @@
     <arg value="vis-invisible-daughters"/>
     <arg value="-show"/>
   </plugin>
+
+<!--
   <plugin name="DD4hep_PlacedVolumeProcessor">
     <arg value="-recursive"/>
     <arg value="-detector"/>
@@ -327,7 +329,7 @@
     <arg value="VolName_Vis"/>
     <arg value="-show"/>
   </plugin>
-<!--
+
   <plugin name="DD4hep_DetectorDump">
     <arg value="-sensitive"/>
   </plugin>
