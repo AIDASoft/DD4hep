@@ -98,7 +98,7 @@ def run():
     cmds.append('/vis/viewer/set/viewpointThetaPhi 55. 45.')
     cmds.append('/vis/scene/add/axes 0 0 0 3 m')
     ui.Commands = cmds
-#  
+  #
   # and run
   geant4.execute()
 
