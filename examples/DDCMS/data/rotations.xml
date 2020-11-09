@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
+        <RotationSection label="rotations.xml">
+                <Rotation name="000D" thetaX="90*deg" phiX="0*deg" thetaY="90*deg" phiY="90*deg" thetaZ="0*deg" phiZ="0*deg"/>
+                <Rotation name="180D" thetaX="90*deg" phiX="180*deg" thetaY="90*deg" phiY="90*deg" thetaZ="180*deg" phiZ="0*deg"/>
+                <Rotation name="180X" thetaX="90*deg" phiX="0*deg" thetaY="90*deg" phiY="-90*deg" thetaZ="180*deg" phiZ="0*deg"/>
+                <Rotation name="90XD" thetaX="90*deg" phiX="90*deg" thetaY="0*deg" phiY="0*deg" thetaZ="90*deg" phiZ="0*deg"/>
+                <Rotation name="R180" thetaX="90*deg" phiX="180*deg" thetaY="90*deg" phiY="-90*deg" thetaZ="0*deg" phiZ="0*deg"/>
+		<ReflectionRotation name="180R" thetaX="90*deg" phiX="0*deg" thetaY="90*deg" phiY="90*deg" thetaZ="180*deg" phiZ="0*deg"/>
+		<ReflectionRotation name="180RYZ" thetaX="90*deg" phiX="180*deg" thetaY="90*deg" phiY="90*deg" thetaZ="0*deg" phiZ="0*deg"/>
+		<ReflectionRotation name="R005R" thetaX="90*deg" phiX="175*deg" thetaY="90*deg" phiY="85*deg" thetaZ="0*deg" phiZ="0*deg"/>
+		<ReflectionRotation name="R010R" thetaX="90*deg" phiX="170*deg" thetaY="90*deg" phiY="80*deg" thetaZ="0*deg" phiZ="0*deg"/>
+		<ReflectionRotation name="R025R" thetaX="90*deg" phiX="155*deg" thetaY="90*deg" phiY="65*deg" thetaZ="0*deg" phiZ="0*deg"/>
+		<ReflectionRotation name="ReflectionY" phiY="270.*deg" thetaY="90.*deg" phiX=" 0.*deg" thetaX="90.*deg" phiZ="0.*deg" thetaZ="0.*deg"/>
+
+        </RotationSection>
+
+</DDDefinition>

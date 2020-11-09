@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="6*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="VisibleGrey"   alpha="0.4" r="0.7" g="0.7" b="0.7" showDaughters="true" visible="true"/>
+  </display>
+
+  <detectors>
+    <detector id="1" name="Matrices" type="DD4hep_Test_ReflectionMatrices" vis="VisibleGrey">
+      <assembly/>
+      <dimensions x="50*cm"   y="70*cm"   z="90*cm" level="2">
+	<position x="0*cm" y="0*cm" z="0*cm"/>
+      </dimensions>
+      <reflect name="ReflectionX[LEFT-handed]">
+	<rotation phiY="90.*deg" thetaY="90.*deg"
+		  phiX="180.*deg" thetaX="90.*deg"
+		  phiZ="0.*deg" thetaZ="0.*deg"/>
+	<position x="200*cm" y="0*cm" z="0*cm"/>
+      </reflect>
+      <reflect name="ReflectionY[LEFT-handed]">
+	<rotation phiY="270.*deg" thetaY="90.*deg"
+		  phiX=" 0.*deg" thetaX="90.*deg"
+		  phiZ="0.*deg" thetaZ="0.*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+      <reflect name="180R[LEFT-handed]">
+	<rotation thetaX="90*deg" phiX="0*deg"
+		  thetaY="90*deg" phiY="90*deg"
+		  thetaZ="180*deg" phiZ="0*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+      <reflect name="180RYZ[LEFT-handed]">
+	<rotation thetaX="90*deg" phiX="180*deg"
+		  thetaY="90*deg" phiY="90*deg"
+		  thetaZ="0*deg" phiZ="0*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+      <reflect name="R005R[LEFT-handed]">
+	<rotation thetaX="90*deg" phiX="175*deg"
+		  thetaY="90*deg" phiY="85*deg"
+		  thetaZ="0*deg" phiZ="0*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+      <reflect name="R010R[LEFT-handed]">
+	<rotation thetaX="90*deg" phiX="170*deg"
+		  thetaY="90*deg" phiY="80*deg"
+		  thetaZ="0*deg" phiZ="0*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+      <reflect name="R025R[LEFT-handed]">
+	<rotation thetaX="90*deg" phiX="155*deg"
+		  thetaY="90*deg" phiY="65*deg"
+		  thetaZ="0*deg" phiZ="0*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+
+      <reflect_x  name="reflect_x[LEFT-handed]" x="-200*cm" y="0*cm"    z="0*cm"/>
+      <reflect_y  name="reflect_x[LEFT-handed]" x="0*cm"    y="-200*cm" z="0*cm"/>
+      <reflect_z  name="reflect_x[LEFT-handed]" x="0*cm"    y="0*cm"    z="200*cm"/>
+
+      <reflect name="EERotVFE">
+	<rotation phiX=" 0.*deg" thetaX=" 0.*deg" phiY="  0.*deg" thetaY="90.*deg" phiZ="90.*deg" thetaZ="90.*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+
+      <reflect name="EERotZ90">
+	<rotation phiX="90.*deg" thetaX="90.*deg" phiY="180.*deg" thetaY="90.*deg" phiZ=" 0.*deg" thetaZ=" 0.*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+
+      <reflect name="EEfCR420">
+	<rotation phiX="-57*deg" thetaX=" 90*deg" phiY=" 33*deg" thetaY="110*deg" phiZ="33*deg" thetaZ=" 20*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+
+      <reflect name="EEfCRot45">
+	<rotation phiX="  0.*deg" thetaX="180.*deg" phiY=" 45.*deg" thetaY="90.*deg" phiZ="-45.*deg" thetaZ="90.*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+
+      <reflect name="EEfCRotX">
+	<rotation phiX="0.*deg" thetaX="90.*deg" phiY="0.*deg" thetaY="180.*deg" phiZ="90.*deg" thetaZ="90.*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+
+      <reflect name="EEfCRotY">
+	<rotation phiX="0.*deg" thetaX="180.*deg" phiY="90.*deg" thetaY="90.*deg" phiZ="0.*deg" thetaZ="90.*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+
+      <reflect name="EEfCR100">
+	<rotation phiX="0.*deg" thetaX="180.*deg" phiY="123.*deg" thetaY="90.*deg" phiZ="33.*deg" thetaZ="90.*deg"/>
+	<position x="0*cm" y="200*cm" z="0*cm"/>
+      </reflect>
+      
+    </detector>
+  </detectors>
+  
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="2*m"
+	   outer_radius="3*m">
+    </field>
+  </fields>
+
+</lccdd>

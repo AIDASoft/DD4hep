@@ -1,0 +1,50 @@
+<plugins>
+<!--
+
+   # Configuration file top load the CMS geometry
+
+   This XML script extends the raw geometry defintiion from CMS (see cms_tracker.xml for details).
+   * We load the primary geometry entities and instantiate them.
+     Note: TEC, and PixbarFWD do not work and cannot be converted;
+   * Here the DetElement structure and the readout structures are defined to run Geant4
+     Note: TEC, and PixbarFWD do not work and cannot be used for Geant4. To be investigated.
+   * Here we also define the visualization attributes to get nicer pictures.
+
+                         M.Frank CERN EP/LBC  October 2017
+
+-->
+
+  <display>
+
+    <vis name="solid-light-grey"                                 alpha="0.5"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="false"/>
+    <vis name="solid-verylight-grey"                             alpha="0.6"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="true"/>
+    <vis name="solid-red"                                        alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-verylight-red"                              alpha="0.6"   r="1.0"  g="0.8"  b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="solid-green"                                      alpha="1.0"   r="0.0"  g="0.9"  b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="solid-light-green"                                alpha="0.4"   r="0.0"  g="0.4"  b="0.0" showDaughters="true"  visible="false"/>
+    <vis name="solid-verylight-green"                            alpha="0.6"   r="0.8"  g="1.0"  b="0.8" showDaughters="true"  visible="true"/>
+    <vis name="solid-blue"                                       alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-light-blue"                                 alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-verylight-blue"                             alpha="0.6"   r="0.8"  g="0.8"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-verylight-yellow"                           alpha="0.3"   r="1.0"  g="1.0"  b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="CMS_Invisible"                                    alpha="0.5"   r="0.9"  g="0.9"  b="0.9" showDaughters="true"  visible="false"/>
+
+    <vis name="vis-active-material"                              alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="vis-invisible-daughters"                          alpha="1.0"   r="0.1"  g="0.1"  b="0.8" showDaughters="true"  visible="false"/>
+
+    <vis name="EFRY"                                             alpha="0.7"   r="0.0"  g="0.9"  b="0.2" showDaughters="true"  visible="true"/>
+  </display>
+
+  <plugin name="DD4hep_XMLLoader">
+    <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/cms_ecal.xml"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-name"/>
+    <arg value="EFRY"/>
+    <arg value="-show"/>
+  </plugin>
+</plugins>

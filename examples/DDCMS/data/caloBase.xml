@@ -1,4 +1,7 @@
 <DDDefinition>
+  <RotationSection label="caloBase.xml">
+    <Rotation name="000D" thetaX="90*deg" phiX="0*deg" thetaY="90*deg" phiY="90*deg" thetaZ="0*deg" phiZ="0*deg"/>
+  </RotationSection> 
   <SolidSection label="caloBase.xml">
     <Polycone name="CALO" startPhi="0*deg" deltaPhi="360*deg">
       <ZSection z=" -554.10000*cm" rMin="  8.93000*cm" rMax="295.00000*cm"/>

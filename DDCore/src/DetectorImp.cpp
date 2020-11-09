@@ -196,8 +196,7 @@ DetectorImp::DetectorImp(const string& name)
   m_std_conditions.temperature = Temperature_NTP;
   
   VisAttr attr("invisible");
-  attr.setColor(0.5, 0.5, 0.5);
-  attr.setAlpha(1);
+  attr.setColor(1.0, 0.5, 0.5, 0.5);
   attr.setLineStyle(VisAttr::SOLID);
   attr.setDrawingStyle(VisAttr::SOLID);
   attr.setVisible(false);
@@ -720,10 +719,9 @@ void DetectorImp::init() {
     VisAttr worldVis = visAttributes("WorldVis");
     if ( !worldVis.isValid() )  {
       worldVis = VisAttr("WorldVis");
-      worldVis.setAlpha(1.0);
       worldVis.setVisible(false);
       worldVis.setShowDaughters(true);
-      worldVis.setColor(1.0, 1.0, 1.0);
+      worldVis.setColor(1., 1., 1., 1.);
       worldVis.setLineStyle(VisAttr::SOLID);
       worldVis.setDrawingStyle(VisAttr::WIREFRAME);
       //m_worldVol.setVisAttributes(worldVis);

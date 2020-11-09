@@ -814,16 +814,16 @@ template <> void Converter<PropertyTable>::operator()(xml_h e) const {
  */
 template <> void Converter<VisAttr>::operator()(xml_h e) const {
   VisAttr attr(e.attr<string>(_U(name)));
-  float red   = e.hasAttr(_U(r)) ? e.attr<float>(_U(r)) : 1.0f;
-  float green = e.hasAttr(_U(g)) ? e.attr<float>(_U(g)) : 1.0f;
-  float blue  = e.hasAttr(_U(b)) ? e.attr<float>(_U(b)) : 1.0f;
+  xml_dim_t dim(e);
+  float alpha = dim.alpha(1.0);
+  float red   = dim.r(1.0);
+  float green = dim.g(1.0);
+  float blue  = dim.b(1.0);
 
   printout(s_debug.visattr ? ALWAYS : DEBUG, "Compact",
-           "++ Converting VisAttr  structure: %-16s. R=%.3f G=%.3f B=%.3f",
-           attr.name(), red, green, blue);
-  attr.setColor(red, green, blue);
-  if (e.hasAttr(_U(alpha)))
-    attr.setAlpha(e.attr<float>(_U(alpha)));
+           "++ Converting VisAttr  structure: %-16s. Alpha=%.2f R=%.3f G=%.3f B=%.3f",
+           attr.name(), alpha, red, green, blue);
+  attr.setColor(alpha, red, green, blue);
   if (e.hasAttr(_U(visible)))
     attr.setVisible(e.attr<bool>(_U(visible)));
   if (e.hasAttr(_U(lineStyle))) {

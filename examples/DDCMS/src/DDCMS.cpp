@@ -62,7 +62,7 @@ Namespace::Namespace(ParsingContext* ctx, xml_h element) : context(ctx)  {
     if ( !context->namespaces.empty() )  {
       name = context->namespaces.back();
     }
-    printout(context->debug_namespaces ? ALWAYS : DEBUG,
+    printout(context->debug.namespaces ? ALWAYS : DEBUG,
              "DDCMS","+++ Current namespace is now: %s",name.c_str());
     return;
   }
@@ -77,7 +77,7 @@ Namespace::Namespace(ParsingContext* ctx, xml_h element) : context(ctx)  {
   if ( !name.empty() ) name += NAMESPACE_SEP;
   context->namespaces.push_back(name);
   pop = true;
-  printout(context->debug_namespaces ? ALWAYS : DEBUG,
+  printout(context->debug.namespaces ? ALWAYS : DEBUG,
            "DDCMS","+++ Current namespace is now: %s",name.c_str());
   return;
 }
@@ -98,7 +98,7 @@ Namespace::Namespace(ParsingContext& ctx, xml_h element, bool ) : context(&ctx) 
   if ( !name.empty() ) name += NAMESPACE_SEP;
   context->namespaces.push_back(name);
   pop = true;
-  printout(context->debug_namespaces ? ALWAYS : DEBUG,
+  printout(context->debug.namespaces ? ALWAYS : DEBUG,
            "DDCMS","+++ Current namespace is now: %s",name.c_str());
   return;
 }
@@ -117,7 +117,7 @@ Namespace::Namespace(ParsingContext& ctx) : context(&ctx)  {
 Namespace::~Namespace()   {
   if ( pop )  {
     context->namespaces.pop_back();
-    printout(context->debug_namespaces ? ALWAYS : DEBUG,
+    printout(context->debug.namespaces ? ALWAYS : DEBUG,
              "DDCMS","+++ Current namespace is now: %s",context->ns().c_str());
   }
 }
@@ -169,7 +169,7 @@ void Namespace::addConstant(const string& nam, const string& val, const string& 
 void Namespace::addConstantNS(const string& nam, const string& val, const string& typ)  const {
   const string& v = val;
   const string& n = nam;
-  printout(context->debug_constants ? ALWAYS : DEBUG,
+  printout(context->debug.constants ? ALWAYS : DEBUG,
            "DDCMS","+++ Add constant object: %-40s = %s [type:%s]",
            n.c_str(), v.c_str(), typ.c_str());
   _toDictionary(n, v, typ);
@@ -185,6 +185,11 @@ Material Namespace::material(const string& nam)  const   {
 /// Add rotation matrix to current namespace
 void Namespace::addRotation(const string& nam,const Rotation3D& rot)  const  {
   string n = prepend(nam);
+  Position x, y, z;
+  rot.GetComponents(x,y,z);
+  double det = (x.Cross(y)).Dot(z);
+  printout(DEBUG, "DDCMS","+++ Add rotation:  %s  %s-handed",
+           nam.c_str(), (det>=0) ? "RIGHT" : "LEFT");
   context->rotations[n] = rot;
 }
 
@@ -218,7 +223,7 @@ Volume Namespace::addVolumeNS(Volume vol)  const  {
   Material mat = vol.material();
   vol->SetName(nam.c_str());
   context->volumes[nam] = vol;
-  printout(context->debug_volumes ? ALWAYS : DEBUG, "DDCMS",
+  printout(context->debug.volumes ? ALWAYS : DEBUG, "DDCMS",
            "+++ Add volume:%-38s Solid:%-26s[%-16s] Material:%s",
            vol.name(), sol.name(), sol.type(), mat.name());
   return vol;
@@ -231,7 +236,7 @@ Volume Namespace::addVolume(Volume vol)  const  {
   Material mat = vol.material();
   vol->SetName(nam.c_str());
   context->volumes[nam] = vol;
-  printout(context->debug_volumes ? ALWAYS : DEBUG, "DDCMS",
+  printout(context->debug.volumes ? ALWAYS : DEBUG, "DDCMS",
            "+++ Add volume:%-38s Solid:%-26s[%-16s] Material:%s",
            vol.name(), sol.name(), sol.type(), mat.name());
   return vol;
@@ -258,7 +263,7 @@ Volume Namespace::volume(const string& nam, bool exc)  const   {
 
 /// Add solid to current namespace as fully indicated by the name
 Solid Namespace::addSolidNS(const string& nam,Solid sol)  const   {
-  printout(context->debug_shapes ? ALWAYS : DEBUG, "DDCMS",
+  printout(context->debug.shapes ? ALWAYS : DEBUG, "DDCMS",
            "+++ Add shape of type %s : %s",sol->IsA()->GetName(), nam.c_str());
   context->shapes[nam] = sol.setName(nam);
   return sol;

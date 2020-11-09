@@ -363,16 +363,16 @@ namespace dd4hep {
 
     /// Get alpha value
     float alpha() const;
-    /// Set alpha value
-    void setAlpha(float value);
 
     /// Get object color
     int color() const;
     /// Set object color
-    void setColor(float red, float green, float blue);
+    void setColor(float alpha, float red, float green, float blue);
 
     /// Get RGB values of the color (if valid)
     bool rgb(float& red, float& green, float& blue) const;
+    /// Get alpha and RGB values of the color (if valid)
+    bool argb(float& alpha, float& red, float& green, float& blue) const;
 
     /// String representation of this object
     std::string toString() const;

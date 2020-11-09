@@ -88,7 +88,7 @@ namespace dd4hep {
   class VisAttrObject: public NamedObject {
   public:
     unsigned long magic;
-    TColor*       col    = 0;
+    TColor*       col    = nullptr;
     int           color  = 0;
     float         alpha  = 0;
     unsigned char drawingStyle  = VisAttr::SOLID;
