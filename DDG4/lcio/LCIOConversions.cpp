@@ -189,7 +189,7 @@ namespace dd4hep {
       }
       for(size_t i=0; i<nhits; ++i)   {
         const Geant4Calorimeter::Hit* hit = coll->hit(i);
-        float pos[3] = {float(hit->position.x()/mm), float(hit->position.y()/mm), float(hit->position.z()/mm)};
+        float pos[3] = {float(hit->position.x()/CLHEP::mm), float(hit->position.y()/CLHEP::mm), float(hit->position.z()/CLHEP::mm)};
         lcio::SimCalorimeterHitImpl*  lc_hit = new lcio::SimCalorimeterHitImpl;
         lc_hit->setCellID0((hit->cellID >>    0         ) & 0xFFFFFFFF);
         lc_hit->setCellID1((hit->cellID >> sizeof(int)*8) & 0xFFFFFFFF); // ????
@@ -202,15 +202,15 @@ namespace dd4hep {
           int trackID = pm->particleID(c.trackID);
           EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_parts->getElementAt(trackID);
           if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )     {
-            float contrib_pos[] = {float(c.x/mm), float(c.y/mm), float(c.z/mm)};
+            float contrib_pos[] = {float(c.x/CLHEP::mm), float(c.y/CLHEP::mm), float(c.z/CLHEP::mm)};
 #if LCIO_VERSION_GE( 2, 11 )
-            lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns, c.length/mm, c.pdgID, contrib_pos);
+            lc_hit->addMCParticleContribution(lc_mcp, c.deposit/CLHEP::GeV, c.time/CLHEP::ns, c.length/CLHEP::mm, c.pdgID, contrib_pos);
 #else
-            lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns, c.pdgID, contrib_pos);
+            lc_hit->addMCParticleContribution(lc_mcp, c.deposit/CLHEP::GeV, c.time/CLHEP::ns, c.pdgID, contrib_pos);
 #endif
           }
           else    {
-            lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns);
+            lc_hit->addMCParticleContribution(lc_mcp, c.deposit/CLHEP::GeV, c.time/CLHEP::ns);
           }
         }
       }
