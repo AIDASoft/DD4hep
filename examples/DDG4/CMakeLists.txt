@@ -30,7 +30,7 @@ if (DD4HEP_USE_GEANT4)
   SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/Dictionary.h
   LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
   DEFINITIONS DD4HEP_DICTIONARY_MODE
-  OPTIONS -rmf=${LIBRARY_OUTPUT_PATH}/G__DDG4UserDict.rootmap -rml=libDDG4UserLib.so
+  OPTIONS -rmf ${LIBRARY_OUTPUT_PATH}/G__DDG4UserDict.rootmap -rml libDDG4UserLib.so
   OUTPUT ${LIBRARY_OUTPUT_PATH}
   )
   #----  Example of a client library with user defined plugins  --------------------
