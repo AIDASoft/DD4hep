@@ -88,7 +88,7 @@ dd4hep_add_test_reg( DDCMS_NamespaceConstants
   EXEC_ARGS  geoPluginRun  -destroy -print WARNING
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/cms_tracker.xml
   -plugin DD4hep_TestConstantsMultiplier
-  REGEX_PASS "Tested 2551 numeric constants for expression evaluation"
+  REGEX_PASS "Tested 2553 numeric constants for expression evaluation"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )

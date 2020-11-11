@@ -49,6 +49,7 @@
 
     <Include ref="vacuum.xml"/>
     <Include ref="cmsextent.xml"/>
+    <Include ref="cavernData.xml"/>
     <Include ref="cms.xml"/>
 
     <Include ref="pixfwdMaterials.xml"/>
