@@ -679,7 +679,6 @@ void DetectorImp::endDocument(bool close_geometry)    {
   // Patching shape names of anaonymous shapes
   ShapePatcher patcher(m_volManager, m_world);
   patcher.patchShapes();
-
   mapDetectorTypes();
   m_state = READY;
 }
