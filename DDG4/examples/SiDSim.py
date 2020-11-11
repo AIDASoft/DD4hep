@@ -56,7 +56,7 @@ def run():
   if hlp:
     help()
     sys.exit(1)
-      
+
   kernel = DDG4.Kernel()
   description = kernel.detectorDescription()
   install_dir = os.environ['DD4hepINSTALL']
