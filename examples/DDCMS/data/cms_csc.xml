@@ -26,16 +26,16 @@
   
 
   <IncludeSection>
-    <Include ref="../../DD4hep/examples/DDCMS/data/materials.xml"/>
-    <Include ref="../../DD4hep/examples/DDCMS/data/rotations.xml"/>   
+    <Include ref="materials.xml"/>
+    <Include ref="rotations.xml"/>   
 
-    <Include ref="../../DD4hep/examples/DDCMS/data/cms.xml"/>
-    <Include ref="../../DD4hep/examples/DDCMS/data/cmsextent.xml"/>
-    <Include ref="../../DD4hep/examples/DDCMS/data/cavernData.xml"/>
+    <Include ref="cms.xml"/>
+    <Include ref="cmsextent.xml"/>
+    <Include ref="cavernData.xml"/>
  
-    <Include ref='Geometry/CMSCommonData/data/muonBase/2018/v1/muonBase.xml'/>
-    <Include ref='Geometry/MuonCommonData/data/mf/2021/v2/mf.xml'/>
-    <Include ref='Geometry/MuonCommonData/data/csc/2021/v3/csc.xml'/>  
+    <Include ref='muonBase.xml'/>
+    <Include ref='mf.xml'/>
+    <Include ref='csc.xml'/>  
   </IncludeSection>
   
   
