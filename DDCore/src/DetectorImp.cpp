@@ -178,7 +178,7 @@ DetectorImp::DetectorImp(const string& name)
     m_manager->SetCurrentNavigator(0);
     gGeoManager = m_manager;
 #if 1 //FIXME: eventually this should be set to 1 - needs fixes in examples ...
-    TGeoElementTable*	table = m_manager->GetElementTable();
+    TGeoElementTable* table = m_manager->GetElementTable();
     table->TGeoElementTable::~TGeoElementTable();
     new(table) TGeoElementTable();
     // This will initialize the table without filling:
