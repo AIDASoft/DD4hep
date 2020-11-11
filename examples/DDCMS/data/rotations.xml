@@ -4,7 +4,11 @@
                 <Rotation name="000D" thetaX="90*deg" phiX="0*deg" thetaY="90*deg" phiY="90*deg" thetaZ="0*deg" phiZ="0*deg"/>
                 <Rotation name="180D" thetaX="90*deg" phiX="180*deg" thetaY="90*deg" phiY="90*deg" thetaZ="180*deg" phiZ="0*deg"/>
                 <Rotation name="180X" thetaX="90*deg" phiX="0*deg" thetaY="90*deg" phiY="-90*deg" thetaZ="180*deg" phiZ="0*deg"/>
+		<Rotation name="90DX" thetaX="90*deg" phiX="-90*deg" thetaY="180*deg" phiY="0*deg" thetaZ="90*deg" phiZ="0*deg"/>
                 <Rotation name="90XD" thetaX="90*deg" phiX="90*deg" thetaY="0*deg" phiY="0*deg" thetaZ="90*deg" phiZ="0*deg"/>
+		<Rotation name="R005" thetaX="90*deg" phiX="5*deg" thetaY="90*deg" phiY="95*deg" thetaZ="0*deg" phiZ="0*deg"/>
+		<Rotation name="R010" thetaX="90*deg" phiX="10*deg" thetaY="90*deg" phiY="100*deg" thetaZ="0*deg" phiZ="0*deg"/>
+		<Rotation name="R025" thetaX="90*deg" phiX="25*deg" thetaY="90*deg" phiY="115*deg" thetaZ="0*deg" phiZ="0*deg"/>
                 <Rotation name="R180" thetaX="90*deg" phiX="180*deg" thetaY="90*deg" phiY="-90*deg" thetaZ="0*deg" phiZ="0*deg"/>
 		<ReflectionRotation name="180R" thetaX="90*deg" phiX="0*deg" thetaY="90*deg" phiY="90*deg" thetaZ="180*deg" phiZ="0*deg"/>
 		<ReflectionRotation name="180RYZ" thetaX="90*deg" phiX="180*deg" thetaY="90*deg" phiY="90*deg" thetaZ="0*deg" phiZ="0*deg"/>
