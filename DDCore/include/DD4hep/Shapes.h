@@ -15,8 +15,8 @@
 #define DD4HEP_SHAPES_H
 
 // Framework include files
-#include "DD4hep/Handle.h"
-#include "DD4hep/Objects.h"
+#include <DD4hep/Handle.h>
+#include <DD4hep/Objects.h>
 #include <DD4hep/DD4hepUnits.h>
 
 // C/C++ include files
@@ -28,24 +28,24 @@
 #endif
 
 // ROOT include files
-#include "TGeoCone.h"
-#include "TGeoPgon.h"
-#include "TGeoPcon.h"
-#include "TGeoArb8.h"
-#include "TGeoTrd1.h"
-#include "TGeoTrd2.h"
-#include "TGeoTube.h"
-#include "TGeoEltu.h"
-#include "TGeoXtru.h"
-#include "TGeoHype.h"
-#include "TGeoTorus.h"
-#include "TGeoSphere.h"
-#include "TGeoHalfSpace.h"
-#include "TGeoParaboloid.h"
-#include "TGeoCompositeShape.h"
-#include "TGeoShapeAssembly.h"
+#include <TGeoCone.h>
+#include <TGeoPgon.h>
+#include <TGeoPcon.h>
+#include <TGeoArb8.h>
+#include <TGeoTrd1.h>
+#include <TGeoTrd2.h>
+#include <TGeoTube.h>
+#include <TGeoEltu.h>
+#include <TGeoXtru.h>
+#include <TGeoHype.h>
+#include <TGeoTorus.h>
+#include <TGeoSphere.h>
+#include <TGeoHalfSpace.h>
+#include <TGeoParaboloid.h>
+#include <TGeoCompositeShape.h>
+#include <TGeoShapeAssembly.h>
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
-#include "TGeoTessellated.h"
+#include <TGeoTessellated.h>
 #endif
 
 #ifdef __GNUC__

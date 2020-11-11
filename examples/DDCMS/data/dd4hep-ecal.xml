@@ -32,14 +32,14 @@
     <vis name="vis-active-material"                              alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
     <vis name="vis-invisible-daughters"                          alpha="1.0"   r="0.1"  g="0.1"  b="0.8" showDaughters="true"  visible="false"/>
 
-    <vis name="eregalgo:ECAL"                                    alpha="1.0"   r="0.1"  g="0.1"  b="0.1" showDaughters="true"  visible="false"/>
-    <vis name="eregalgo:EREG"                                    alpha="0.3"   r="1.0"  g="0.1"  b="1.0" showDaughters="true"  visible="false"/>
-    <vis name="eehier:ENCA"                                      alpha="1.0"   r="0.1"  g="0.1"  b="0.1" showDaughters="true"  visible="false"/>
-    <vis name="eehier:EEDee"                                     alpha="1.0"   r="0.1"  g="1.0"  b="0.1" showDaughters="true"  visible="false"/>
-    <vis name="eehier:EEFrontQuad"                               alpha="0.3"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="false"/>
-    <vis name="eehier:EEBackQuad"                                alpha="0.3"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="false"/>
-    <vis name="eehier:EEFrontDee"                                alpha="0.5"   r="0.0"  g="1.0"  b="0.1" showDaughters="true"  visible="false"/>
-    <vis name="eehier:EEBackDee"                                 alpha="0.5"   r="0.0"  g="1.0"  b="0.1" showDaughters="true"  visible="false"/>
+    <vis name="eregalgo:ECAL"                                    alpha="1.0"   r="0.1"  g="0.1"  b="0.1" showDaughters="true"  visible="true"/>
+    <vis name="eregalgo:EREG"                                    alpha="0.3"   r="1.0"  g="0.1"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="eehier:ENCA"                                      alpha="1.0"   r="0.1"  g="0.1"  b="0.1" showDaughters="true"  visible="true"/>
+    <vis name="eehier:EEDee"                                     alpha="1.0"   r="0.1"  g="1.0"  b="0.1" showDaughters="true"  visible="true"/>
+    <vis name="eehier:EEFrontQuad"                               alpha="0.3"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="eehier:EEBackQuad"                                alpha="0.3"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="eehier:EEFrontDee"                                alpha="0.5"   r="0.0"  g="1.0"  b="0.1" showDaughters="true"  visible="true"/>
+    <vis name="eehier:EEBackDee"                                 alpha="0.5"   r="0.0"  g="1.0"  b="0.1" showDaughters="true"  visible="true"/>
     <vis name="eregalgo:EESCEnv1"                                alpha="0.5"   r="0.0"  g="0.0"  b="0.9" showDaughters="false" visible="true"/>
     <vis name="eregalgo:EESCEnv2"                                alpha="0.5"   r="0.0"  g="0.0"  b="0.9" showDaughters="false" visible="true"/>
     <vis name="eregalgo:EESCEnv3"                                alpha="0.5"   r="0.0"  g="0.0"  b="0.9" showDaughters="false" visible="true"/>
