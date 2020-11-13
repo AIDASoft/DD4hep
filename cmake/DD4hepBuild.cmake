@@ -468,29 +468,40 @@ endfunction()
 #
 #---------------------------------------------------------------------------------------------------
 function ( fill_dd4hep_library_path )
-  string(REGEX REPLACE "/lib/libCore.*" "" ROOT_ROOT ${ROOT_Core_LIBRARY})
-  SET( ENV{DD4HEP_LIBRARY_PATH} ${ROOT_ROOT}/lib )
+  get_filename_component(ROOT_LIBDIR "${ROOT_Core_LIBRARY}" DIRECTORY)
+  set( _libpath ${ROOT_LIBDIR} )
   if ( NOT "${Boost_LIBRARY_DIRS}" STREQUAL "" )
-    SET( ENV{DD4HEP_LIBRARY_PATH} $ENV{DD4HEP_LIBRARY_PATH}:${Boost_LIBRARY_DIRS} )
+    list( APPEND _libpath "${Boost_LIBRARY_DIRS}" )
   else()
     dd4hep_print("|++> The boost library path cannot be determined. Problems maybe ahead.")
   endif()
   if ( ${DD4HEP_USE_GEANT4} )
-    string(REGEX REPLACE "/lib/Geant4.*" "" Geant4_ROOT ${Geant4_DIR})
-    SET( ENV{DD4HEP_LIBRARY_PATH} ${Geant4_ROOT}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
+    get_filename_component(Geant4_LIBDIR "${Geant4_DIR}" DIRECTORY)
+    list( INSERT _libpath 0 "${Geant4_LIBDIR}" )
   endif()
 
   if(${DD4HEP_USE_LCIO})
-    SET( ENV{DD4HEP_LIBRARY_PATH} ${LCIO_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
+    list( INSERT _libpath 0 "${LCIO_DIR}/lib" )
   endif()
 
-  SET( ENV{DD4HEP_LIBRARY_PATH} ${CLHEP_ROOT_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
-
-  if(${DD4HEP_USE_XERCESC})
-    SET( ENV{DD4HEP_LIBRARY_PATH} ${XERCESC_ROOT_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
+  if(DD4HEP_USE_GEANT4 AND DD4HEP_USE_CLHEP)
+    # Using external CLHEP (not Geant4's builtin)
+    get_target_property(_loc CLHEP::CLHEP LOCATION)
+    get_filename_component(_dir "${_loc}" DIRECTORY)
+    list( INSERT _libpath 0 "${_dir}" )
   endif()
 
-  SET( ENV{DD4HEP_LIBRARY_PATH} ${CMAKE_BINARY_DIR}/lib:$ENV{DD4HEP_LIBRARY_PATH} )
+  if(XERCESC_LIB_DIR)
+    list( INSERT _libpath 0 "${XERCESC_LIB_DIR}" )
+  endif()
+
+  list( INSERT _libpath 0 "${CMAKE_BINARY_DIR}/lib" )
+  list( REMOVE_DUPLICATES _libpath )
+  # Exclude common system library directories. These are automatically searched anyway,
+  # and prepending them before the locations of the externals may cause trouble.
+  list( REMOVE_ITEM _libpath "/usr/lib" "/usr/local/lib" )
+  string( REGEX REPLACE ";" ":" _libpath "${_libpath}" )
+  set( ENV{DD4HEP_LIBRARY_PATH} "${_libpath}" )
 endfunction()
 
 
