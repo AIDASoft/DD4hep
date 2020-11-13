@@ -86,7 +86,7 @@ dd4hep_add_test_reg( DDCMS_TestShapes
 dd4hep_add_test_reg( DDCMS_NamespaceConstants
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
   EXEC_ARGS  geoPluginRun  -destroy -print WARNING
-  -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/cms_tracker.xml
+  -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
   -plugin DD4hep_TestConstantsMultiplier
   REGEX_PASS "Tested 2553 numeric constants for expression evaluation"
   REGEX_FAIL "Exception"
@@ -96,9 +96,9 @@ dd4hep_add_test_reg( DDCMS_NamespaceConstants
 #  Test CMS tracker detector construction
 dd4hep_add_test_reg( DDCMS_LoadGeometry
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
-  EXEC_ARGS  geoPluginRun
-  -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/cms_tracker.xml -destroy -print WARNING
-  -plugin DD4hep_PlacedVolumeProcessor -recursive -processor DDCMS_DetElementCreator
+  EXEC_ARGS  geoDisplay
+  -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
+  -destroy -print WARNING -load
   REGEX_PASS "Instrumented 5 subdetectors with 36091 DetElements 25776 sensitives out of 224404 volumes and 1161 sensitive placements."
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
