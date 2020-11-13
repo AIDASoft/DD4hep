@@ -31,7 +31,7 @@ dd4hep_configure_scripts(DDG4_MySensDet DEFAULT_SETUP WITH_TESTS)
 enable_testing ()
 include(CTest)
 #
-#---Geant4 Testsing-----------------------------------------------------------------
+#---Geant4 Testing-----------------------------------------------------------------
 #
 if (DD4HEP_USE_GEANT4)
   #---------------------------  Plugin library for the simulation framework  ---------
