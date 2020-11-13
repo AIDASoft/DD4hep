@@ -22,7 +22,7 @@ dd4hep_set_compiler_flags()
 
 set(DDG4examples_INSTALL  ${CMAKE_INSTALL_PREFIX}/examples/DDG4)
 #
-#---Geant4 Testsing-----------------------------------------------------------------
+#---Geant4 Testing-----------------------------------------------------------------
 #
 if (DD4HEP_USE_GEANT4)
   #----  Dictionary of classes to be written to the ROOT file   --------------------

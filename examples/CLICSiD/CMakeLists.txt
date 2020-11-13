@@ -128,7 +128,7 @@ dd4hep_add_test_reg( CLICSiD_GDML_import_LONGTEST
 #
 endif()
 #
-#---Geant4 Testsing-----------------------------------------------------------------
+#---Geant4 Testing-----------------------------------------------------------------
 #
 if (DD4HEP_USE_GEANT4)
   #

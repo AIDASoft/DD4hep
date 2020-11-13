@@ -816,7 +816,7 @@ MACRO(DD4HEP_SETUP_GEANT4_TARGETS)
     # Geant4::10.2.2 at least, not in 10.5 (check where it switches)
     string(REPLACE " " ";" Geant4_Flags ${Geant4_CXX_FLAGS} ${Geant4_CXX_FLAGS_${CMAKE_BUILD_TYPE}})
 
-    #Geant4_DEFINITIONS already include -D, we jave to get rid of that so we can join things when creating dictionaries
+    #Geant4_DEFINITIONS already include -D, we have to get rid of that so we can join things when creating dictionaries
     SET(G4_DEF_TEMP "")
     foreach(def ${Geant4_DEFINITIONS})
       string(REPLACE "-D" "" def ${def})
