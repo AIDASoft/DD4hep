@@ -203,17 +203,24 @@ const Rotation3D& Namespace::rotation(const string& nam)  const   {
     return s_null;
   else if ( nam.find(":NULL") == nam.length()-5 )
     return s_null;
-  string n = nam;
+
+  string n = this->name + nam;
+  i = context->rotations.find(n);
+  if ( i != context->rotations.end() )
+    return (*i).second;
+
+  n = nam;
   if ( (idx=nam.find(NAMESPACE_SEP)) != string::npos )  {
     n[idx] = NAMESPACE_SEP;
     i = context->rotations.find(n);
     if ( i != context->rotations.end() )
       return (*i).second;
   }
+  printout(ERROR,"Namespace","[%s] Cannot find rotation identifier: '%s'",this->name.c_str(), nam.c_str());
   for (const auto& r : context->rotations )  {
-    cout << r.first << endl;
+    printout(ERROR,"Namespace","[%s] Known rotation: '%s'",this->name.c_str(), r.first.c_str());
   }
-  throw runtime_error("Unknown rotation identifier:"+nam);
+  throw runtime_error("Unknown rotation identifier: '"+nam+"'");
 }
 
 /// Add rotation matrix to current namespace

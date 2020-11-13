@@ -1,0 +1,95 @@
+<plugins>
+<!--
+
+   # Configuration file top load the CMS geometry
+
+   This XML script extends the raw geometry defintiion from CMS (see cms_tracker.xml for details).
+   * We load the primary geometry entities and instantiate them.
+     Note: TEC, and PixbarFWD do not work and cannot be converted;
+   * Here the DetElement structure and the readout structures are defined to run Geant4
+     Note: TEC, and PixbarFWD do not work and cannot be used for Geant4. To be investigated.
+   * Here we also define the visualization attributes to get nicer pictures.
+
+                         M.Frank CERN EP/LBC  October 2017
+
+-->
+
+  <display>
+    <vis name="vis-invisible-daughters"                    alpha="0.3"   r="0.1"  g="0.1"  b="0.8" showDaughters="true"  visible="false"/>
+    <vis name="csc:MELayer"                                alpha="0.3"   r="0.3"  g="0.3"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="csc:MESpaceDiv"                             alpha="0.5"   r="0.5"  g="1.0"  b="0.5" showDaughters="true"  visible="true"/>
+    <vis name="csc:MESpace"                                alpha="0.5"   r="1.0"  g="0.3"  b="0.3" showDaughters="true"  visible="true"/>
+    <vis name="csc:ME"                                     alpha="0.9"   r="0.3"  g="0.3"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="muon:MUON"                                  alpha="0.3"   r="0.7"  g="0.7"  b="0.7" showDaughters="true"  visible="true"/>
+  </display>
+
+  <plugin name="DD4hep_XMLLoader">
+    <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/world-open.xml"/>
+  </plugin>
+  <plugin name="DD4hep_XMLLoader">
+    <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/cms_csc.xml"/>
+  </plugin>
+
+  <!--
+  <plugin name="DD4hep_VolumeDump">
+    <arg value="-materials"/>
+    <arg value="-vis"/>
+  </plugin>
+  -->
+  
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-processor"/>  <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-vis"/>        <arg value="csc:MESpace"/>
+    <arg value="-match"/>      <arg value="csc:ME..Space"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-processor"/>  <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-vis"/>        <arg value="csc:MESpaceDiv"/>
+    <arg value="-match"/>      <arg value="csc:ME..SpaceDivi.(.*)"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-processor"/>  <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-vis"/>        <arg value="csc:ME"/>
+    <arg value="-match"/>      <arg value="csc:ME.."/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-processor"/>  <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-vis"/>        <arg value="muon:MUON"/>
+    <arg value="-match"/>      <arg value="muonBase:MUON"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-processor"/>  <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-vis"/>        <arg value="csc:MELayer"/>
+    <arg value="-match"/>      <arg value="csc:ME..Layer"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-processor"/>  <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-match"/>      <arg value="mf:MEP"/>
+    <arg value="-match"/>      <arg value="mf:MEN"/>
+    <arg value="-match"/>      <arg value="mf:ME.Ring."/>
+    <arg value="-match"/>      <arg value="mf:ME..Ring."/>
+    <arg value="-match"/>      <arg value="mf:RR.."/>
+    <arg value="-vis"/>        <arg value="vis-invisible-daughters"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_XMLLoader">
+    <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/world-close.xml"/>
+  </plugin>
+</plugins>

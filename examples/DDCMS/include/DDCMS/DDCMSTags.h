@@ -33,6 +33,7 @@ namespace dd4hep {
     UNICODE(DDCMS);
 
     UNICODE(DDDefinition);
+    UNICODE(Division);
 
     UNICODE(ConstantsSection);
     UNICODE(Constant);
@@ -46,6 +47,7 @@ namespace dd4hep {
     UNICODE(atomicNumber);
     UNICODE(MaterialFraction);
 
+    UNICODE(nReplicas);
     UNICODE(RotationSection);
     UNICODE(ReflectionRotation);
     UNICODE(rReflectionRotation);
@@ -59,7 +61,11 @@ namespace dd4hep {
     UNICODE(phiZ);
 
     UNICODE(numSide);
-    
+    UNICODE(parent);
+    UNICODE(width);
+    UNICODE(axis);
+    UNICODE(offset);
+
     UNICODE(TransformationSection);
     UNICODE(Transformation);
 

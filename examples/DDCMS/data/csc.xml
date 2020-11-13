@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../../DetectorDescription/Schema/DDLSchema.xsd">
 <!--22/10/2020, Sergio Lo Meo (sergio.lo.meo@cern.ch) : fixed overlaps and deleted subtraction solids -->
- <ConstantsSection label="ChamberSpecsConstants" eval="true">
+ <ConstantsSection label="csc.xml" eval="true">
    <Constant name="ME11GasGap" value="7.0*mm"/>
    <Constant name="ME11LayerOffset" value="-17.0014*mm"/>
    <Constant name="ME11LayerSpacing" value="2.2*cm"/>

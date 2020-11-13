@@ -27,8 +27,6 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(VisAttrObject);
 /// Standard constructor
 VisAttrObject::VisAttrObject() : magic(magic_word())   {
   InstanceCount::increment(this);
-  this->col = gROOT->GetColor(kWhite);
-  this->alpha = 0.0;
 }
 
 /// Default destructor

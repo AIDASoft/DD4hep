@@ -71,6 +71,9 @@ namespace dd4hep {
       hit->position      = position;
       hit->momentum      = 0.5*(h. preMom() + h.postMom());
       hit->length        = hit_len;
+      hit->step_length   = hit_len;
+      hit->prePos        = prePos;
+      hit->postPos       = postPos;
       collection(m_collectionID)->add(hit);
       mark(h.track);
       if ( 0 == hit->cellID )  {

@@ -15,162 +15,64 @@
 -->
 
   <display>
-
-    <vis name="solid-light-grey"                                 alpha="0.5"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="false"/>
-    <vis name="solid-verylight-grey"                             alpha="0.6"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="true"/>
-    <vis name="solid-red"                                        alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
-    <vis name="solid-verylight-red"                              alpha="0.6"   r="1.0"  g="0.8"  b="0.8" showDaughters="true"  visible="true"/>
-    <vis name="solid-green"                                      alpha="1.0"   r="0.0"  g="0.9"  b="0.2" showDaughters="true"  visible="true"/>
-    <vis name="solid-light-green"                                alpha="0.4"   r="0.0"  g="0.4"  b="0.0" showDaughters="true"  visible="false"/>
-    <vis name="solid-verylight-green"                            alpha="0.6"   r="0.8"  g="1.0"  b="0.8" showDaughters="true"  visible="true"/>
-    <vis name="solid-blue"                                       alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
-    <vis name="solid-light-blue"                                 alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
-    <vis name="solid-verylight-blue"                             alpha="0.6"   r="0.8"  g="0.8"  b="1.0" showDaughters="true"  visible="true"/>
-    <vis name="solid-verylight-yellow"                           alpha="0.3"   r="1.0"  g="1.0"  b="0.2" showDaughters="true"  visible="true"/>
-    <vis name="CMS_Invisible"                                    alpha="0.5"   r="0.9"  g="0.9"  b="0.9" showDaughters="true"  visible="false"/>
-
-    <vis name="vis-active-material"                              alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
-    <vis name="vis-invisible-daughters"                          alpha="1.0"   r="0.1"  g="0.1"  b="0.8" showDaughters="true"  visible="false"/>
-
-    <vis name="eregalgo:ECAL"                                    alpha="1.0"   r="0.1"  g="0.1"  b="0.1" showDaughters="true"  visible="true"/>
-    <vis name="eregalgo:EREG"                                    alpha="0.3"   r="1.0"  g="0.1"  b="1.0" showDaughters="true"  visible="true"/>
-    <vis name="eehier:ENCA"                                      alpha="1.0"   r="0.1"  g="0.1"  b="0.1" showDaughters="true"  visible="true"/>
-    <vis name="eehier:EEDee"                                     alpha="1.0"   r="0.1"  g="1.0"  b="0.1" showDaughters="true"  visible="true"/>
-    <vis name="eehier:EEFrontQuad"                               alpha="0.3"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
-    <vis name="eehier:EEBackQuad"                                alpha="0.3"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
-    <vis name="eehier:EEFrontDee"                                alpha="0.5"   r="0.0"  g="1.0"  b="0.1" showDaughters="true"  visible="true"/>
-    <vis name="eehier:EEBackDee"                                 alpha="0.5"   r="0.0"  g="1.0"  b="0.1" showDaughters="true"  visible="true"/>
-    <vis name="eregalgo:EESCEnv1"                                alpha="0.5"   r="0.0"  g="0.0"  b="0.9" showDaughters="false" visible="true"/>
-    <vis name="eregalgo:EESCEnv2"                                alpha="0.5"   r="0.0"  g="0.0"  b="0.9" showDaughters="false" visible="true"/>
-    <vis name="eregalgo:EESCEnv3"                                alpha="0.5"   r="0.0"  g="0.0"  b="0.9" showDaughters="false" visible="true"/>
-    <vis name="eregalgo:EESCEnv4"                                alpha="0.5"   r="0.0"  g="0.0"  b="0.9" showDaughters="false" visible="true"/>
-    <vis name="eregalgo:EESCEnv5"                                alpha="0.5"   r="0.0"  g="0.0"  b="0.9" showDaughters="false" visible="true"/>
-    <vis name="eregalgo:EESCEnv6"                                alpha="0.5"   r="0.0"  g="0.0"  b="0.9" showDaughters="false" visible="true"/>
-    <vis name="EESCAlv4"                                         alpha="0.5"   r="0.8"  g="0.1"  b="0.1" showDaughters="true"  visible="true"/>
-    <vis name="EFRY"                                             alpha="0.7"   r="0.0"  g="0.9"  b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="ecal:ECAL"                                        alpha="1.0"   r="0.1"  g="0.1"  b="0.1" showDaughters="true"  visible="true"/>
+    <vis name="ecal:EEDee"                                       alpha="0.5"   r="0.1"  g="1.0"  b="0.1" showDaughters="true"  visible="true"/>
+    <vis name="ecal:EEQuad"                                      alpha="0.3"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="ecal:EESCEnv"                                     alpha="0.5"   r="0.0"  g="0.0"  b="0.9" showDaughters="false" visible="true"/>
+    <vis name="ecal:EREG"                                        alpha="0.3"   r="1.0"  g="0.1"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="ecal:EFRY"                                        alpha="0.7"   r="0.0"  g="0.9"  b="0.2" showDaughters="true"  visible="true"/>
   </display>
 
+  <plugin name="DD4hep_XMLLoader">
+    <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/world-open.xml"/>
+  </plugin>
   <plugin name="DD4hep_XMLLoader">
     <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/cms_ecal.xml"/>
   </plugin>
   <plugin name="DD4hep_PlacedVolumeProcessor">
     <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eregalgo:ECAL"/>
+    <arg value="-processor"/>         <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-vis"/>               <arg value="ecal:ECAL"/>
+    <arg value="-match"/>             <arg value="eregalgo:ECAL"/>
+    <arg value="-match"/>             <arg value="eehier:ENCA"/>
     <arg value="-show"/>
   </plugin>
   <plugin name="DD4hep_PlacedVolumeProcessor">
     <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eehier:ENCA"/>
+    <arg value="-processor"/>         <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-vis"/>               <arg value="ecal:EEDee"/>
+    <arg value="-match"/>             <arg value="eehier:EEDee"/>
+    <arg value="-match"/>             <arg value="eehier:EEBackDee"/>
+    <arg value="-match"/>             <arg value="eehier:EEFrontDee"/>
     <arg value="-show"/>
   </plugin>
   <plugin name="DD4hep_PlacedVolumeProcessor">
     <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eehier:EEDee"/>
+    <arg value="-processor"/>         <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-vis"/>               <arg value="ecal:EEQuad"/>
+    <arg value="-match"/>             <arg value="eehier:EEFrontQuad"/>
+    <arg value="-match"/>             <arg value="eehier:EEBackQuad"/>
     <arg value="-show"/>
   </plugin>
   <plugin name="DD4hep_PlacedVolumeProcessor">
     <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eehier:EEFrontDee"/>
+    <arg value="-processor"/>         <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-vis"/>               <arg value="ecal:EESCEnv"/>
+    <arg value="-match"/>             <arg value="eregalgo:EESCEnv."/>
     <arg value="-show"/>
   </plugin>
   <plugin name="DD4hep_PlacedVolumeProcessor">
     <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eehier:EEBackDee"/>
+    <arg value="-processor"/>         <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-vis"/>               <arg value="ecal:EREG"/>
+    <arg value="-match"/>             <arg value="eregalgo:EREG"/>
     <arg value="-show"/>
   </plugin>
   <plugin name="DD4hep_PlacedVolumeProcessor">
     <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eehier:EEFrontQuad"/>
-    <arg value="-show"/>
-  </plugin>
-  <plugin name="DD4hep_PlacedVolumeProcessor">
-    <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eehier:EEBackQuad"/>
-    <arg value="-show"/>
-  </plugin>
-  <plugin name="DD4hep_PlacedVolumeProcessor">
-    <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eregalgo:EESCEnv1"/>
-    <arg value="-show"/>
-  </plugin>
-  <plugin name="DD4hep_PlacedVolumeProcessor">
-    <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eregalgo:EESCEnv2"/>
-    <arg value="-show"/>
-  </plugin>
-  <plugin name="DD4hep_PlacedVolumeProcessor">
-    <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eregalgo:EESCEnv3"/>
-    <arg value="-show"/>
-  </plugin>
-  <plugin name="DD4hep_PlacedVolumeProcessor">
-    <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eregalgo:EESCEnv4"/>
-    <arg value="-show"/>
-  </plugin>
-  <plugin name="DD4hep_PlacedVolumeProcessor">
-    <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eregalgo:EESCEnv5"/>
-    <arg value="-show"/>
-  </plugin>
-  <plugin name="DD4hep_PlacedVolumeProcessor">
-    <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eregalgo:EESCEnv6"/>
-    <arg value="-show"/>
-  </plugin>
-  <plugin name="DD4hep_PlacedVolumeProcessor">
-    <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="eregalgo:EREG"/>
-    <arg value="-show"/>
-  </plugin>
-  <plugin name="DD4hep_PlacedVolumeProcessor">
-    <arg value="-recursive"/>
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="EFRY"/>
+    <arg value="-processor"/>         <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-vis"/>               <arg value="ecal:EFRY"/>
+    <arg value="-match"/>             <arg value="EFRY"/>
     <arg value="-show"/>
   </plugin>
   <!--
@@ -180,6 +82,6 @@
   </plugin>
   -->
   <plugin name="DD4hep_XMLLoader">
-    <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/cms_close_geom.xml"/>
+    <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/world-close.xml"/>
   </plugin>
 </plugins>
