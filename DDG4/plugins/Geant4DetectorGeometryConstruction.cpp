@@ -256,9 +256,9 @@ int Geant4DetectorGeometryConstruction::printVolumeObj(const char* vol_path, Pla
         printP2("+++ TGeoShape:       %8.3g  %8.3g  %8.3g  [%s]", sc(0,0), sc(1,1), sc(2,2),
                 dot > 0e0 ? "RIGHT handed" : "LEFT handed");
       }
-      const TGeoMatrix* m = pv->GetMatrix();
+      const TGeoMatrix* matrix = pv->GetMatrix();
       printP2("+++ TGeoMatrix:      %s",
-              m->TestBit(TGeoMatrix::kGeoReflection) ? "LEFT handed" : "RIGHT handed");        
+              matrix->TestBit(TGeoMatrix::kGeoReflection) ? "LEFT handed" : "RIGHT handed");        
       printP2("+++ Shape: %s  cubic volume: %8.3g mm^3  area: %8.3g mm^2",
               sol->GetName().c_str(), sol->GetCubicVolume(), sol->GetSurfaceArea());
       return 1;

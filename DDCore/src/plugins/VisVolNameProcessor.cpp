@@ -102,9 +102,9 @@ int VisVolNameProcessor::operator()(PlacedVolume pv, int /* level */)   {
   Volume vol = pv.volume();
   if ( vol.visAttributes().ptr() != visattr.ptr() )   {
     string vol_nam = vol.name();
-    for ( const auto& m : matches )   {
-      if ( std::regex_match(vol_nam, m.second) )  {
-	printout(ALWAYS,m.first,"++       Set visattr %s to %s",
+    for ( const auto& match : matches )   {
+      if ( std::regex_match(vol_nam, match.second) )  {
+	printout(ALWAYS,match.first,"++       Set visattr %s to %s",
 		 visattr.isValid() ? visattr.name() : "", vol_nam.c_str());
 	vol.setVisAttributes(visattr);
 	++numApplied;
