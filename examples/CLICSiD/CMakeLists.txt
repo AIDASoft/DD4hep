@@ -160,7 +160,7 @@ if (DD4HEP_USE_GEANT4)
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
     EXEC_ARGS  python ${DD4hep_ROOT}/bin/g4GeometryScan --compact=$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
                       "--position=0,0,0" "--direction=0,1,0"
-    REGEX_PASS "|   856     2374.8789   3000.000     (   0.00,3000.00,   0.00)  Path:\"/world\" Shape:G4Box  Mat:Air" )
+    REGEX_PASS " +856 +2374\.8789 +3000\.000 +. +0\.00,3000\.00, *0\.00. +Path:\"/world\" +Shape:G4Box +Mat:Air" )
   #
   # Geant4 simulations with initialization using AClick and XMl
   foreach(script CLICSiDXML CLICSiDAClick)
