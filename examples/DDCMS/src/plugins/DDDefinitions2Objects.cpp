@@ -1066,24 +1066,24 @@ namespace {
 /// Converter for <Division/> tags
 template <>
 void Converter<division>::operator()(xml_h element) const {
-  Namespace ns(_param<ParsingContext>());
+  Namespace _ns(_param<ParsingContext>());
   xml_dim_t e(element);
   string childName = e.nameStr();
   if (strchr(childName.c_str(), NAMESPACE_SEP) == nullptr)
-    childName = ns.prepend(childName);
+    childName = _ns.prepend(childName);
 
-  string parentName = ns.attr<string>(e, _CMU(parent));
+  string parentName = _ns.attr<string>(e, _CMU(parent));
   if (strchr(parentName.c_str(), NAMESPACE_SEP) == nullptr)
-    parentName = ns.prepend(parentName);
-  string axis = ns.attr<string>(e, _CMU(axis));
+    parentName = _ns.prepend(parentName);
+  string axis = _ns.attr<string>(e, _CMU(axis));
 
   // If you divide a tube of 360 degrees the offset displaces
   // the starting angle, but you still fill the 360 degrees
-  double offset = e.hasAttr(_CMU(offset)) ? ns.attr<double>(e, _CMU(offset)) : 0e0;
-  double width = e.hasAttr(_CMU(width)) ? ns.attr<double>(e, _CMU(width)) : 0e0;
-  int nReplicas = e.hasAttr(_CMU(nReplicas)) ? ns.attr<int>(e, _CMU(nReplicas)) : 0;
+  double offset = e.hasAttr(_CMU(offset)) ? _ns.attr<double>(e, _CMU(offset)) : 0e0;
+  double width = e.hasAttr(_CMU(width)) ? _ns.attr<double>(e, _CMU(width)) : 0e0;
+  int nReplicas = e.hasAttr(_CMU(nReplicas)) ? _ns.attr<int>(e, _CMU(nReplicas)) : 0;
 
-  printout(ns.context->debug.placements ? ALWAYS : DEBUG,
+  printout(_ns.context->debug.placements ? ALWAYS : DEBUG,
            "DD4CMS",
            "+++ Start executing Division of %s along %s (%d) with offset %6.3f and %6.3f to produce %s....",
            parentName.c_str(),
@@ -1093,7 +1093,7 @@ void Converter<division>::operator()(xml_h element) const {
            width,
            childName.c_str());
 
-  Volume parent = ns.volume(parentName);
+  Volume parent = _ns.volume(parentName);
 
   const TGeoShape* shape = parent.solid();
   TClass* cl = shape->IsA();
@@ -1103,7 +1103,7 @@ void Converter<division>::operator()(xml_h element) const {
     double startInDeg = convertRadToDeg(offset);
     int numCopies = (int)((sh->GetPhi2() - sh->GetPhi1()) / widthInDeg);
 
-    printout(ns.context->debug.placements ? ALWAYS : DEBUG,
+    printout(_ns.context->debug.placements ? ALWAYS : DEBUG,
              "DD4CMS",
              "+++    ...divide %s along %s (%d) with offset %6.3f deg and %6.3f deg to produce %d copies",
              parent.solid().type(),
@@ -1114,8 +1114,8 @@ void Converter<division>::operator()(xml_h element) const {
              numCopies);
     Volume child = parent.divide(childName, static_cast<int>(axesmap.at(axis)), numCopies, startInDeg, widthInDeg);
 
-    ns.context->volumes[childName] = child;
-    printout(ns.context->debug.placements ? ALWAYS : DEBUG,
+    _ns.context->volumes[childName] = child;
+    printout(_ns.context->debug.placements ? ALWAYS : DEBUG,
              "DD4CMS",
              "+++ %s Parent: %-24s [%s] Child: %-32s [%s] is multivolume [%s]",
              e.tag().c_str(),
@@ -1126,7 +1126,7 @@ void Converter<division>::operator()(xml_h element) const {
              child->IsVolumeMulti() ? "YES" : "NO");
   } else if (cl == TGeoTrd1::Class() ) {
     double dy = static_cast<const TGeoTrd1*>(shape)->GetDy();
-    printout(ns.context->debug.placements ? ALWAYS : DEBUG,
+    printout(_ns.context->debug.placements ? ALWAYS : DEBUG,
              "DD4CMS",
              "+++    ...divide %s along %s (%d) with offset %6.3f cm and %6.3f cm to produce %d copies in %6.3f",
              parent.solid().type(),
@@ -1139,8 +1139,8 @@ void Converter<division>::operator()(xml_h element) const {
 
     Volume child = parent.divide(childName, static_cast<int>(axesmap.at(axis)), nReplicas, -dy + offset + width, width);
 
-    ns.context->volumes[childName] = child;
-    printout(ns.context->debug.placements ? ALWAYS : DEBUG,
+    _ns.context->volumes[childName] = child;
+    printout(_ns.context->debug.placements ? ALWAYS : DEBUG,
              "DD4CMS",
              "+++ %s Parent: %-24s [%s] Child: %-32s [%s] is multivolume [%s]",
              e.tag().c_str(),

@@ -283,14 +283,14 @@ void ReflectionBuilder::execute()  const   {
   bool print_active = isActivePrintLevel(DEBUG);
   TGeoNode *node;
   while ( (node=next()) ) {
-    TGeoMatrix* m = node->GetMatrix();
-    if (m->IsReflection()) {
+    TGeoMatrix* matrix = node->GetMatrix();
+    if (matrix->IsReflection()) {
       if ( print_active )  {
 	printout(INFO,"ReflectionBuilder","Reflection matrix:");
-	m->Print();
+	matrix->Print();
       }
       Volume vol(node->GetVolume());
-      TGeoMatrix* mclone = new TGeoCombiTrans(*m);
+      TGeoMatrix* mclone = new TGeoCombiTrans(*matrix);
       mclone->RegisterYourself();
       // Reflect just the rotation component
       mclone->ReflectZ(kFALSE, kTRUE);
@@ -301,7 +301,7 @@ void ReflectionBuilder::execute()  const   {
       TGeoNodeMatrix* nodematrix = (TGeoNodeMatrix*)node;
       nodematrix->SetMatrix(mclone);
       if ( print_active )  {
-	printout(INFO,"ReflectionBuilder","Reflected volume: %s ",vol.name());
+	printout(INFO,"ReflectionBuilder","Reflected volume: %s ", vol.name());
       }
       Volume refl = vol.reflect(vol.sensitiveDetector());
       node->SetVolume(refl.ptr());
@@ -815,10 +815,10 @@ Material Volume::material() const {
 const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
   if ( attr.isValid() ) {
     VisAttr::Object* vis = attr.data<VisAttr::Object>();
-    TColor* c = vis->color;
+    TColor* col = vis->color;
     int draw_style = vis->drawingStyle;
     int line_style = vis->lineStyle;
-    int col_num    = c->GetNumber();
+    int col_num    = col->GetNumber();
     int col_tr_num = vis->colortr->GetNumber();
     m_element->SetVisibility(vis->visible ? kTRUE : kFALSE);
     m_element->SetVisContainers(kTRUE);
@@ -826,9 +826,9 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
     printout(DEBUG,"setVisAttributes",
              "Set color %3d transparent(alpha:%.3f): %3d [%02X,%02X,%02X] DrawingStyle:%9s LineStyle:%6s for volume %s",
              col_num, vis->alpha, col_tr_num,
-             c ? int(255*c->GetRed())   : 0xFF,
-             c ? int(255*c->GetGreen()) : 0xFF,
-             c ? int(255*c->GetBlue())  : 0xFF,
+             col ? int(255*col->GetRed())   : 0xFF,
+             col ? int(255*col->GetGreen()) : 0xFF,
+             col ? int(255*col->GetBlue())  : 0xFF,
              draw_style == VisAttr::SOLID ? "Solid" : "Wireframe",
              line_style == VisAttr::SOLID ? "Solid" : "Dashed",
              name()
