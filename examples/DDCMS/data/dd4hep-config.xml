@@ -90,17 +90,24 @@
 
     <vis name="solid-light-grey"                                 alpha="0.5"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="false"/>
     <vis name="solid-verylight-grey"                             alpha="0.6"   r="0.5"  g="0.5"  b="0.5" showDaughters="true"  visible="true"/>
-    <vis name="solid-red"                                        alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
-    <vis name="solid-verylight-red"                              alpha="0.6"   r="1.0"  g="0.8"  b="0.8" showDaughters="true"  visible="true"/>
-    <vis name="solid-green"                                      alpha="1.0"   r="0.0"  g="0.9"  b="0.2" showDaughters="true"  visible="true"/>
-    <vis name="solid-light-green"                                alpha="0.4"   r="0.0"  g="0.4"  b="0.0" showDaughters="true"  visible="false"/>
-    <vis name="solid-verylight-green"                            alpha="0.6"   r="0.8"  g="1.0"  b="0.8" showDaughters="true"  visible="true"/>
-    <vis name="solid-blue"                                       alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
-    <vis name="solid-light-blue"                                 alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
-    <vis name="solid-verylight-blue"                             alpha="0.6"   r="0.8"  g="0.8"  b="1.0" showDaughters="true"  visible="true"/>
-    <vis name="solid-verylight-yellow"                           alpha="0.3"   r="1.0"  g="1.0"  b="0.2" showDaughters="true"  visible="true"/>
-    <vis name="CMS_Invisible"                                    alpha="0.5"   r="0.9"  g="0.9"  b="0.9" showDaughters="true"  visible="false"/>
 
+    <vis name="solid-red"                                        alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-light-red"                                  alpha="0.6"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-verylight-red"                              alpha="0.4"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
+
+    <vis name="solid-green"                                      alpha="1.0"   r="0.0"  g="0.9"  b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="solid-light-green"                                alpha="0.6"   r="0.0"  g="0.9"  b="0.2" showDaughters="true"  visible="false"/>
+    <vis name="solid-verylight-green"                            alpha="0.4"   r="0.0"  g="0.9"  b="0.2" showDaughters="true"  visible="true"/>
+
+    <vis name="solid-blue"                                       alpha="1.0"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-light-blue"                                 alpha="0.6"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
+    <vis name="solid-verylight-blue"                             alpha="0.4"   r="0.0"  g="0.0"  b="1.0" showDaughters="true"  visible="true"/>
+
+    <vis name="solid-yellow"                                     alpha="1.0"   r="1.0"  g="1.0"  b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="solid-light-yellow"                               alpha="0.6"   r="1.0"  g="1.0"  b="0.2" showDaughters="true"  visible="true"/>
+    <vis name="solid-verylight-yellow"                           alpha="0.4"   r="1.0"  g="1.0"  b="0.2" showDaughters="true"  visible="true"/>
+
+    <vis name="CMS_Invisible"                                    alpha="0.5"   r="0.9"  g="0.9"  b="0.9" showDaughters="true"  visible="false"/>
     <vis name="vis-active-material"                              alpha="1.0"   r="1.0"  g="0.0"  b="0.0" showDaughters="true"  visible="true"/>
     <vis name="vis-invisible-daughters"                          alpha="1.0"   r="0.1"  g="0.1"  b="0.8" showDaughters="true"  visible="false"/>
   </display>
@@ -120,6 +127,50 @@
   <plugin name="DD4hep_VolumeManager"/>
   <plugin name="DD4hep_InteractiveUI"/>
 
+
+  <!--
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-processor"/>  <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-match"/>      <arg value="tec.(.*)"/>
+    <arg value="-match"/>      <arg value="tib.(.*)"/>
+    <arg value="-match"/>      <arg value="tob.(.*)"/>
+    <arg value="-match"/>      <arg value="tid.(.*)"/>
+    <arg value="-vis"/>        <arg value="vis-invisible-daughters"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2"/>
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
+    <arg value="-name"/>
+    <arg value="Si_Vis"/>
+    <arg value="-vis-active"/>
+    <arg value="solid-light-red"/>
+    <arg value="-mat-active"/>
+    <arg value="materials:Silicon"/>
+    <arg value="-show"/>
+  </plugin>
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2/TOB_1"/>
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
+    <arg value="-vis-active"/>
+    <arg value="solid-light-green"/>
+
+    <arg value="-elt-active"/>
+    <arg value="SI"/>
+    <arg value="-fraction"/>
+    <arg value="0.7"/>
+    <arg value="-show"/>
+  </plugin>
+
   <plugin name="DD4hep_PlacedVolumeProcessor">
     <arg value="-recursive"/>
     <arg value="-detector"/>
@@ -135,6 +186,20 @@
     <arg value="AL"/>
     <arg value="-fraction"/>
     <arg value="0.7"/>
+    <arg value="-show"/>
+  </plugin>
+
+
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-detector"/>
+    <arg value="Tracker_2/TIB_1"/>
+    <arg value="-processor"/>
+    <arg value="DD4hep_VisMaterialProcessor"/>
+    <arg value="-vis-active"/>
+    <arg value="solid-verylight-blue"/>
+    <arg value="-mat-active"/>
+    <arg value="Silicon"/>
     <arg value="-show"/>
   </plugin>
 
@@ -193,7 +258,7 @@
     <arg value="solid-verylight-yellow"/>
     <arg value="-show"/>
   </plugin>
-<!--
+
   <plugin name="DD4hep_PlacedVolumeProcessor">
     <arg value="-recursive"/>
     <arg value="-detector"/>
@@ -237,7 +302,7 @@
     <arg value="0.7"/>
     <arg value="-show"/>
   </plugin>
--->
+
   <plugin name="DD4hep_PlacedVolumeProcessor">
     <arg value="-recursive"/>
     <arg value="-detector"/>
@@ -319,31 +384,31 @@
     <arg value="vis-invisible-daughters"/>
     <arg value="-show"/>
   </plugin>
-
+-->
 <!--
-  <plugin name="DD4hep_PlacedVolumeProcessor">
-    <arg value="-recursive"/>
-    <arg value="-detector"/>
-    <arg value="Tracker_2"/>
-
-    <arg value="-processor"/>
-    <arg value="DD4hep_VisVolNameProcessor"/>
-    <arg value="-name"/>
-    <arg value="VolName_Vis"/>
-    <arg value="-show"/>
-  </plugin>
-
   <plugin name="DD4hep_DetectorDump">
     <arg value="-sensitive"/>
   </plugin>
   <plugin name="DD4hep_GeometryDisplay"/>
 
-  <plugin name="DD4hep_VolumeDump">
-    <arg value="-sensitive"/>
-    <arg value="-volids"/>
+-->
+
+  <!--
+  <plugin name="DD4hep_PlacedVolumeProcessor">
+    <arg value="-recursive"/>
+    <arg value="-processor"/>  <arg value="DD4hep_VisVolNameProcessor"/>
+    <arg value="-match"/>      <arg value="tec.(.*)"/>
+    <arg value="-vis"/>        <arg value="vis-solid-red"/>
+    <arg value="-show"/>
   </plugin>
 -->
-  <plugin name="DD4hep_XMLLoader">
+<plugin name="DD4hep_XMLLoader">
     <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/world-close.xml"/>
   </plugin>
+<!--
+  <plugin name="DD4hep_VolumeDump">
+    <arg value="-materials"/>
+    <arg value="-vis"/>
+  </plugin>
+-->
 </plugins>
