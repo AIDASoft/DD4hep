@@ -59,6 +59,12 @@ IF(${CMAKE_CXX_STANDARD} LESS 14)
   MESSAGE(FATAL_ERROR "DD4hep requires at least CXX Standard 14 to compile")
 ENDIF()
 
+# ----for APPLE scripts have to set the DYLD_LIBRARY_PATH
+if(APPLE)
+  set(USE_DYLD 1)
+  set(CMAKE_MACOSX_RPATH 1)
+endif()
+
 ###############################
 # Define DD4hep build options #
 ###############################
