@@ -51,8 +51,9 @@ namespace dd4hep {
   namespace {
 
     static UInt_t unique_mat_id = 0xAFFEFEED;
-
-
+    double convertRadToDeg(double r)   {
+      return r*360e0/(2e0*M_PI);
+    }
     class disabled_algo;
     class include_constants;
     class include_load;
@@ -76,6 +77,7 @@ namespace dd4hep {
     class transform3d;
 
     class pospartsection;
+    class division;
     class pospart;
 
     class logicalpartsection;
@@ -141,9 +143,12 @@ namespace dd4hep {
   template <> void Converter<logicalpartsection>::operator()(xml_h element) const;
   template <> void Converter<logicalpart>::operator()(xml_h element) const;
 
+  /// Converter for <PosPartSection/> tags
   template <> void Converter<pospartsection>::operator()(xml_h element) const;
   /// Converter for <PosPart/> tags
   template <> void Converter<pospart>::operator()(xml_h element) const;
+  /// Converter for <Division/> tags
+  template <> void Converter<division>::operator()(xml_h element) const;
 
   /// Generic converter for solids: <SolidSection/> tags
   template <> void Converter<solidsection>::operator()(xml_h element) const;
@@ -227,7 +232,9 @@ template <> void Converter<rotationsection>::operator()(xml_h element) const   {
 
 template <> void Converter<pospartsection>::operator()(xml_h element) const   {
   Namespace _ns(_param<ParsingContext>(), element);
+  xml_coll_t(element, _CMU(Division)).for_each(Converter<division>(description,_ns.context,optional));
   xml_coll_t(element, _CMU(PosPart)).for_each(Converter<pospart>(description,_ns.context,optional));
+  xml_coll_t(element, _CMU(Algorithm)).for_each(Converter<algorithm>(description,_ns.context,optional));
 }
 
 /// Generic converter for  <LogicalPartSection/> tags
@@ -877,7 +884,10 @@ template <> void Converter<trd1>::operator()(xml_h element) const {
   printout(_ns.context->debug.shapes ? ALWAYS : DEBUG, "DDCMS",
            "+   Trd1:       dz=%8.3f [cm] dx1:%.3f dy1:%.3f dx2:%.3f dy2:%.3f",
            dz, dx1, dy1, dx2, dy2);
-  _ns.addSolid(nam, Trapezoid(dx1, dx2, dy1, dy2, dz));
+  if ( dy1 == dy2 )
+    _ns.addSolid(nam, Trd1(dx1, dx2, dy1, dz));
+  else
+    _ns.addSolid(nam, Trd2(dx1, dx2, dy1, dy2, dz));
 }
 
 /// Converter for <Tubs/> tags
@@ -1034,6 +1044,114 @@ template <> void Converter<include_unload>::operator()(xml_h element) const   {
 /// DD4hep specific Converter for <Include/> tags: process only the constants
 template <> void Converter<include_constants>::operator()(xml_h element) const   {
   xml_coll_t(element, _CMU(ConstantsSection)).for_each(Converter<constantssection>(description,param,optional));
+}
+
+namespace {
+
+  //  The meaning of the axis index is the following:
+  //    for all volumes having shapes like box, trd1, trd2, trap, gtra or para - 1,2,3 means X,Y,Z;
+  //    for tube, tubs, cone, cons - 1 means Rxy, 2 means phi and 3 means Z;
+  //    for pcon and pgon - 2 means phi and 3 means Z;
+  //    for spheres 1 means R and 2 means phi.
+
+  enum class DDAxes { x = 1, y = 2, z = 3, rho = 1, phi = 2, undefined };
+  const std::map<std::string, DDAxes> axesmap{{"x", DDAxes::x},
+                                              {"y", DDAxes::y},
+                                              {"z", DDAxes::z},
+                                              {"rho", DDAxes::rho},
+                                              {"phi", DDAxes::phi},
+                                              {"undefined", DDAxes::undefined}};
+}  // namespace
+
+/// Converter for <Division/> tags
+template <>
+void Converter<division>::operator()(xml_h element) const {
+  Namespace ns(_param<ParsingContext>());
+  xml_dim_t e(element);
+  string childName = e.nameStr();
+  if (strchr(childName.c_str(), NAMESPACE_SEP) == nullptr)
+    childName = ns.prepend(childName);
+
+  string parentName = ns.attr<string>(e, _CMU(parent));
+  if (strchr(parentName.c_str(), NAMESPACE_SEP) == nullptr)
+    parentName = ns.prepend(parentName);
+  string axis = ns.attr<string>(e, _CMU(axis));
+
+  // If you divide a tube of 360 degrees the offset displaces
+  // the starting angle, but you still fill the 360 degrees
+  double offset = e.hasAttr(_CMU(offset)) ? ns.attr<double>(e, _CMU(offset)) : 0e0;
+  double width = e.hasAttr(_CMU(width)) ? ns.attr<double>(e, _CMU(width)) : 0e0;
+  int nReplicas = e.hasAttr(_CMU(nReplicas)) ? ns.attr<int>(e, _CMU(nReplicas)) : 0;
+
+  printout(ns.context->debug.placements ? ALWAYS : DEBUG,
+           "DD4CMS",
+           "+++ Start executing Division of %s along %s (%d) with offset %6.3f and %6.3f to produce %s....",
+           parentName.c_str(),
+           axis.c_str(),
+           axesmap.at(axis),
+           offset,
+           width,
+           childName.c_str());
+
+  Volume parent = ns.volume(parentName);
+
+  const TGeoShape* shape = parent.solid();
+  TClass* cl = shape->IsA();
+  if (cl == TGeoTubeSeg::Class()) {
+    const TGeoTubeSeg* sh = (const TGeoTubeSeg*)shape;
+    double widthInDeg = convertRadToDeg(width);
+    double startInDeg = convertRadToDeg(offset);
+    int numCopies = (int)((sh->GetPhi2() - sh->GetPhi1()) / widthInDeg);
+
+    printout(ns.context->debug.placements ? ALWAYS : DEBUG,
+             "DD4CMS",
+             "+++    ...divide %s along %s (%d) with offset %6.3f deg and %6.3f deg to produce %d copies",
+             parent.solid().type(),
+             axis.c_str(),
+             axesmap.at(axis),
+             startInDeg,
+             widthInDeg,
+             numCopies);
+    Volume child = parent.divide(childName, static_cast<int>(axesmap.at(axis)), numCopies, startInDeg, widthInDeg);
+
+    ns.context->volumes[childName] = child;
+    printout(ns.context->debug.placements ? ALWAYS : DEBUG,
+             "DD4CMS",
+             "+++ %s Parent: %-24s [%s] Child: %-32s [%s] is multivolume [%s]",
+             e.tag().c_str(),
+             parentName.c_str(),
+             parent.isValid() ? "VALID" : "INVALID",
+             child.name(),
+             child.isValid() ? "VALID" : "INVALID",
+             child->IsVolumeMulti() ? "YES" : "NO");
+  } else if (cl == TGeoTrd1::Class() ) {
+    double dy = static_cast<const TGeoTrd1*>(shape)->GetDy();
+    printout(ns.context->debug.placements ? ALWAYS : DEBUG,
+             "DD4CMS",
+             "+++    ...divide %s along %s (%d) with offset %6.3f cm and %6.3f cm to produce %d copies in %6.3f",
+             parent.solid().type(),
+             axis.c_str(),
+             axesmap.at(axis),
+             -dy + offset + width,
+             width,
+             nReplicas,
+             dy);
+
+    Volume child = parent.divide(childName, static_cast<int>(axesmap.at(axis)), nReplicas, -dy + offset + width, width);
+
+    ns.context->volumes[childName] = child;
+    printout(ns.context->debug.placements ? ALWAYS : DEBUG,
+             "DD4CMS",
+             "+++ %s Parent: %-24s [%s] Child: %-32s [%s] is multivolume [%s]",
+             e.tag().c_str(),
+             parentName.c_str(),
+             parent.isValid() ? "VALID" : "INVALID",
+             child.name(),
+             child.isValid() ? "VALID" : "INVALID",
+             child->IsVolumeMulti() ? "YES" : "NO");
+  } else {
+    printout(ERROR, "DD4CMS", "++ FAILED Division of a %s is not implemented yet!", parent.solid().type());
+  }
 }
 
 /// Converter for <Algorithm/> tags

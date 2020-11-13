@@ -285,7 +285,7 @@ string Material::toString() const {
 VisAttr::VisAttr(const string& nam) {
   Object* obj = new Object();
   assign(obj, nam, "vis");
-  obj->color = 2;
+  obj->color = gROOT->GetColor(kWhite);
   obj->alpha = 0.9f;
   setLineStyle (SOLID);
   setDrawingStyle(SOLID);
@@ -296,7 +296,7 @@ VisAttr::VisAttr(const string& nam) {
 VisAttr::VisAttr(const char* nam) {
   Object* obj = new Object();
   assign(obj, nam, "vis");
-  obj->color = 2;
+  obj->color = gROOT->GetColor(kWhite);
   obj->alpha = 0.9f;
   setLineStyle (SOLID);
   setDrawingStyle(SOLID);
@@ -345,32 +345,38 @@ void VisAttr::setDrawingStyle(int value) {
 
 /// Get alpha value
 float VisAttr::alpha() const {
-  Object& o = object<Object>();
-  if ( o.col )  {
-    return o.alpha;
-  }
-  return 0.0f;
+  return object<Object>().alpha;
 }
 
 /// Get object color
 int VisAttr::color() const {
-  return object<Object>().color;
+  return object<Object>().color->GetNumber();
 }
 
 /// Set object color
 void VisAttr::setColor(float alpha, float red, float green, float blue) {
-  Object& o = object<Object>();
-  Int_t col = TColor::GetColor(red, green, blue);
-  o.alpha   = alpha;
-  o.color   = col;//TColor::GetColorTransparent(o.alpha=alpha, col);
-  o.col     = gROOT->GetColor(o.color);
+  Object& o  = object<Object>();
+  Int_t col  = TColor::GetColor(red, green, blue);
+  o.alpha    = alpha;
+  o.color    = gROOT->GetColor(col);
+  if ( !o.color )    {
+    except("VisAttr","+++ %s Failed to allocate Color: r:%02X g:%02X b:%02X",
+	   this->name(), int(red*255.), int(green*255.), int(blue*255));
+  }
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,34,25)
+  o.colortr = new TColor(gROOT->GetListOfColors()->GetLast()+1,
+			 o.color->GetRed(), o.color->GetGreen(), o.color->GetBlue());
+  o.colortr->SetAlpha(alpha);
+#else
+  o.colortr = o.color;
+#endif
 }
 
 /// Get RGB values of the color (if valid)
 bool VisAttr::rgb(float& red, float& green, float& blue) const {
   Object& o = object<Object>();
-  if ( o.col )  {
-    o.col->GetRGB(red, green, blue);
+  if ( o.color )  {
+    o.color->GetRGB(red, green, blue);
     return true;
   }
   return false;
@@ -379,9 +385,9 @@ bool VisAttr::rgb(float& red, float& green, float& blue) const {
 /// Get alpha and RGB values of the color (if valid)
 bool VisAttr::argb(float& alpha, float& red, float& green, float& blue) const {
   Object& o = object<Object>();
-  if ( o.col )  {
+  if ( o.color )  {
     alpha = o.alpha;
-    o.col->GetRGB(red, green, blue);
+    o.color->GetRGB(red, green, blue);
     return true;
   }
   return false;
@@ -390,10 +396,10 @@ bool VisAttr::argb(float& alpha, float& red, float& green, float& blue) const {
 /// String representation of this object
 string VisAttr::toString() const {
   const VisAttr::Object* obj = &object<Object>();
-  TColor* col = obj->col;
+  TColor* c = obj->color;
   char text[256];
   ::snprintf(text, sizeof(text), "%-20s RGB:%-8s [%d] %7.2f  Style:%d %d ShowDaughters:%3s Visible:%3s", ptr()->GetName(),
-             col->AsHexString(), obj->color, col->GetAlpha(), int(obj->drawingStyle), int(obj->lineStyle),
+             c->AsHexString(), c->GetNumber(), c->GetAlpha(), int(obj->drawingStyle), int(obj->lineStyle),
              yes_no(obj->showDaughters), yes_no(obj->visible));
   return text;
 }

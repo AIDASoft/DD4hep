@@ -29,9 +29,9 @@ int PlacedVolumeProcessor::process(PlacedVolume pv, int level, bool recursive)  
     if ( recursive )  {
       for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
         PlacedVolume placement(node->GetDaughter(idau));
-        if ( placement.data() ) {
+        //if ( placement.data() ) {
           ret += process(placement,level+1,recursive);
-        }
+	  //}
       }
     }
     return ret;

@@ -106,6 +106,9 @@
   </display>
 
   <plugin name="DD4hep_XMLLoader">
+    <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/world-open.xml"/>
+  </plugin>
+  <plugin name="DD4hep_XMLLoader">
     <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/cms_tracker.xml"/>
   </plugin>
 
@@ -340,4 +343,7 @@
     <arg value="-volids"/>
   </plugin>
 -->
+  <plugin name="DD4hep_XMLLoader">
+    <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/world-close.xml"/>
+  </plugin>
 </plugins>

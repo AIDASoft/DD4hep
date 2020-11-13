@@ -36,42 +36,39 @@ namespace SomeExperiment {
    *  \version 1.0
    *  \ingroup DD4HEP_SIMULATION
    */
-  class MyTrackerHit /* : public dd4hep::sim::Geant4HitData  */ {
+  class MyTrackerHit : public dd4hep::sim::Geant4Tracker::Hit   {
 
   public:
-    /// dd4hep::sim::Geant4HitData: cellID
-    long long int cellID = 0;
-    /// dd4hep::sim::Geant4HitData: User flag to classify hits
-    long flag = 0;
-    /// dd4hep::sim::Geant4HitData: Original Geant 4 track identifier of the creating track (debugging)
-    long g4ID = -1;
-
-    
-    /// Hit position
-    dd4hep::Position      position;
-    /// Hit direction
-    dd4hep::Direction     momentum;
-    /// Length of the track segment contributing to this hit
-    double        length = 0;
-    /// Monte Carlo / Geant4 information
-    dd4hep::sim::Geant4HitData::MonteCarloContrib truth;
-    /// Energy deposit in the tracker hit
-    double        energyDeposit = 0;
+    dd4hep::Position prePos;
+    dd4hep::Position postPos;
+    double step_length;
 
   public:
     /// Default constructor
     MyTrackerHit() = default;
     /// Initializing constructor
     MyTrackerHit(int track_id, int pdg_id, double deposit, double time_stamp)
-      : length(0.0), truth(track_id, pdg_id, deposit, time_stamp, 0.), energyDeposit(deposit) {}
+      : dd4hep::sim::Geant4Tracker::Hit(track_id,pdg_id,deposit,time_stamp) {}
     /// Default destructor
     virtual ~MyTrackerHit() = default;
     /// Assignment operator
     MyTrackerHit& operator=(const MyTrackerHit& c);
-    /// Clear hit content
-    MyTrackerHit& clear();
-    /// Store Geant4 point and step information into tracker hit structure.
-    MyTrackerHit& storePoint(const G4Step* step, const G4StepPoint* pnt);
+  };
+
+  /// Helper to dump data file
+  /**
+   *  Usage:  
+   *  $> root.exe
+   *  ....
+   *  root [0] gSystem->Load("libDDG4Plugins.so");
+   *  root [1] gSystem->Load("libDDG4_MySensDet.so");
+   *  root [2] SomeExperiment::Dump::dumpData(<num-ebents>,<file-name>);
+   *
+   */
+  class Dump   {
+  public:
+    /// Standalone function to dump data from a root file
+    static int dumpData(int num_evts, const char* file_name);
   };
 }
 
@@ -86,6 +83,7 @@ namespace SomeExperiment {
 #pragma link C++ namespace dd4hep::sim;
 #pragma link C++ namespace SomeExperiment;
 #pragma link C++ class     SomeExperiment::MyTrackerHit+;
+#pragma link C++ class     SomeExperiment::Dump;
 #endif
 
 #endif // EXAMPLES_DDG4_MYSENSDET_SRC_MYTRACKERHIT_H
