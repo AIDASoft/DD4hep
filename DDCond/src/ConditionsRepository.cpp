@@ -211,7 +211,7 @@ int ConditionsRepository::save(ConditionsManager manager, const string& output) 
         for( const auto& cp : pool->elements )   {
           RangeConditions rc;
           cp.second->select_all(rc);
-          for( const auto cond : rc )
+          for( const auto& cond : rc )
             all[cond.key()] = cond;
         }
       }
