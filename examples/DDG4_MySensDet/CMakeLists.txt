@@ -53,7 +53,7 @@ if (DD4HEP_USE_GEANT4)
   # Geant4 material scan. From position=0,0,0 to end-of-world 
   dd4hep_add_test_reg( DDG4_MySensDet_g4material_scan_SiliconBlock_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4_MySensDet.sh"
-    EXEC_ARGS  python ${DD4hep_DIR}/bin/g4MaterialScan --compact=file:${CMAKE_INSTALL_PREFIX}/examples/ClientTests/compact/SiliconBlock.xml
+    EXEC_ARGS  python ${DD4hep_ROOT}/bin/g4MaterialScan --compact=file:${CMAKE_INSTALL_PREFIX}/examples/ClientTests/compact/SiliconBlock.xml
                "--position=0,0,0" "--direction=0,1,0"
     REGEX_PASS " Terminate Geant4 and delete associated actions."
   )

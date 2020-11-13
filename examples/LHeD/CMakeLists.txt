@@ -68,14 +68,14 @@ endforeach()
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( LHeD_check_geometry_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
-  EXEC_ARGS  python ${DD4hep_DIR}/bin/checkGeometry --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
+  EXEC_ARGS  python ${DD4hep_ROOT}/bin/checkGeometry --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
   # This takes too long                  --full=true --ntracks=10 --option=o --vx=0 --vy=0 --vz=0
   REGEX_PASS " Execution finished..." )
 #
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( LHeD_check_overlaps_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
-  EXEC_ARGS  python ${DD4hep_DIR}/bin/checkOverlaps --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
+  EXEC_ARGS  python ${DD4hep_ROOT}/bin/checkOverlaps --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
 #
@@ -95,7 +95,7 @@ if (DD4HEP_USE_GEANT4)
   # Material scan
   dd4hep_add_test_reg( LHeD_DDG4_g4material_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
-    EXEC_ARGS  python ${DD4hep_DIR}/bin/g4MaterialScan --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
+    EXEC_ARGS  python ${DD4hep_ROOT}/bin/g4MaterialScan --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
                       "--position=0,0,0" "--direction=0,1,0"
     REGEX_PASS " Terminate Geant4 and delete associated actions." )
   #
