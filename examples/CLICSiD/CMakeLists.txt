@@ -61,14 +61,14 @@ endforeach()
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( CLICSiD_check_geometry_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  python ${DD4hep_DIR}/bin/checkGeometry --compact=file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
+  EXEC_ARGS  python ${DD4hep_ROOT}/bin/checkGeometry --compact=file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
   # This takes too long                  --full=true --ntracks=10 --option=o --vx=0 --vy=0 --vz=0
   REGEX_PASS " Execution finished..." )
 #
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( CLICSiD_check_overlaps_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  python ${DD4hep_DIR}/bin/checkOverlaps --compact=file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
+  EXEC_ARGS  python ${DD4hep_ROOT}/bin/checkOverlaps --compact=file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
 #
@@ -151,14 +151,14 @@ if (DD4HEP_USE_GEANT4)
   # Material scan
   dd4hep_add_test_reg( CLICSiD_DDG4_g4material_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-    EXEC_ARGS  python ${DD4hep_DIR}/bin/g4MaterialScan --compact=$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
+    EXEC_ARGS  python ${DD4hep_ROOT}/bin/g4MaterialScan --compact=$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
                       "--position=0,0,0" "--direction=0,1,0"
     REGEX_PASS " Terminate Geant4 and delete associated actions." )
   #
   # Geometry scan
   dd4hep_add_test_reg( CLICSiD_DDG4_g4geometry_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-    EXEC_ARGS  python ${DD4hep_DIR}/bin/g4GeometryScan --compact=$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
+    EXEC_ARGS  python ${DD4hep_ROOT}/bin/g4GeometryScan --compact=$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
                       "--position=0,0,0" "--direction=0,1,0"
     REGEX_PASS "|   856     2374.8789   3000.000     (   0.00,3000.00,   0.00)  Path:\"/world\" Shape:G4Box  Mat:Air" )
   #
@@ -168,7 +168,7 @@ if (DD4HEP_USE_GEANT4)
     # Build AClick from the source file
     dd4hep_add_test_reg( CLICSiD_DDG4_${script}_as_AClick_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-      EXEC_ARGS  root.exe -b -x -n -q -l "${DD4hep_DIR}/examples/DDG4/examples/run.C(\"${CLICSiDEx_INSTALL}/scripts/${script}\")"
+      EXEC_ARGS  root.exe -b -x -n -q -l "${DD4hep_ROOT}/examples/DDG4/examples/run.C(\"${CLICSiDEx_INSTALL}/scripts/${script}\")"
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=9"
       REGEX_FAIL "EXCEPTION;ERROR;Error" )
     #

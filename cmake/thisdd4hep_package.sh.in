@@ -9,7 +9,7 @@
 #################################################################################
 # Default of DD4hep is the primary installation directory
 if [ ! ${DD4hep_DIR} ]; then
-    export DD4hep_DIR=@DD4hep_DIR@;
+    export DD4hep_DIR=@DD4hep_ROOT@;
 fi;
 if [ @CLHEP_DIR@ ]; then
     export CLHEP_DIR=@CLHEP_DIR@;

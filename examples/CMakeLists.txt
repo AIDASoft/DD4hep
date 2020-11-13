@@ -35,6 +35,16 @@ IF(NOT TARGET DD4hep::DDCore)
 ENDIF()
 include(DD4hepMacros) 
 
+IF( "$ENV{DD4hepINSTALL}" STREQUAL "" )
+  IF( DD4hep_FOUND )
+    MESSAGE( FATAL_ERROR "Must source <DD4hep-install-dir>/bin/thisdd4hep.sh first" )
+    EXIT(1)
+  ENDIF()
+  # When building the examples together with DD4hep (-DDD4HEP_BUILD_EXAMPLES=ON),
+  # thisdd4hep.sh hasn't run. Manually set up the required variables for the tests.
+  SET( ENV{DD4hepINSTALL} ${CMAKE_INSTALL_PREFIX} )
+ENDIF()
+
 dd4hep_set_compiler_flags()
 dd4hep_configure_output()
 

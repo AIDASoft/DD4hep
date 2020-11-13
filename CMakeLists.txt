@@ -53,6 +53,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 SET(DD4hep_DIR ${CMAKE_SOURCE_DIR} CACHE STRING "DD4hep directory")
+SET(DD4hep_ROOT ${CMAKE_INSTALL_PREFIX})
 
 IF(${CMAKE_CXX_STANDARD} LESS 14)
   MESSAGE(FATAL_ERROR "DD4hep requires at least CXX Standard 14 to compile")
@@ -214,7 +215,6 @@ ELSE()
   endif()
 
   if(DD4HEP_BUILD_EXAMPLES)
-    set(DD4hep_DIR ${CMAKE_INSTALL_PREFIX})
     add_subdirectory(examples)
   endif()
 
