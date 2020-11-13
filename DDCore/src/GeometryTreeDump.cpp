@@ -190,7 +190,7 @@ void* GeometryTreeDump::handleSolid(const string& name, const TGeoShape* shape) 
 /// Dump structure information in GDML format to output stream
 void GeometryTreeDump::handleStructure(const std::set<Volume>& volset) const {
   m_output << "\t<structure>" << endl;
-  for (const auto vol : volset)
+  for (const auto& vol : volset)
     handleVolume(vol->GetName(), vol);
   m_output << "\t</structure>" << endl;
 }
