@@ -27,40 +27,36 @@ dd4hep_parse_this()   {
         thisroot=$(dirname ${SOURCE})
         THIS=$(cd ${thisroot}/.. > /dev/null;pwd); export THIS
     fi
+    unset SOURCE package thisroot
 }
 #-----------------------------------------------------------------------------
 dd4hep_add_path()   {
-    path_name=${1};
-    path_prefix=${2};
-    eval path_value=\$$path_name;
+    path_name=${1}
+    path_prefix=${2}
+    eval path_value=\$$path_name
     if [ "${path_value}" ]; then
-	path_value=${path_prefix}:"${path_value}";
+        # Prevent duplicates
+        if ! echo ${path_value} | tr : '\n' | grep -q "^${path_prefix}$"; then
+            path_value="${path_prefix}:${path_value}"
+        fi
     else
-	path_value=${path_prefix};
+	path_value="${path_prefix}"
     fi; 
-    eval export ${path_name}="${path_value}";
+    eval export ${path_name}='${path_value}'
+    unset path_name path_prefix path_value
 }
 #-----------------------------------------------------------------------------
 dd4hep_add_library_path()    {
-    path_prefix=${1};
-    if [ @APPLE@ ];
-    then
-        if [ ${DYLD_LIBRARY_PATH} ]; then
-            export DYLD_LIBRARY_PATH=${path_prefix}:$DYLD_LIBRARY_PATH;
-            export LD_LIBRARY_PATH=${path_prefix}:$LD_LIBRARY_PATH;
-            export DD4HEP_LIBRARY_PATH=${path_prefix}:$DD4HEP_LIBRARY_PATH;
-        else
-            export DYLD_LIBRARY_PATH=${path_prefix};
-            export LD_LIBRARY_PATH=${path_prefix};
-            export DD4HEP_LIBRARY_PATH=${path_prefix};
-        fi;
+    p=${1};
+    if [ @APPLE@ ]; then
+        # Do not prepend system library locations on macOS. Stuff will break.
+        [[ "$p" = "/usr/lib" || "$p" = "/usr/local/lib" ]] && unset p && return
+        dd4hep_add_path DYLD_LIBRARY_PATH     "$p"
+        dd4hep_add_path DD4HEP_LIBRARY_PATH   "$p"
     else
-        if [ ${LD_LIBRARY_PATH} ]; then
-	    export LD_LIBRARY_PATH=${path_prefix}:$LD_LIBRARY_PATH;
-        else
-	    export LD_LIBRARY_PATH=${path_prefix};
-        fi;
-    fi;
+        dd4hep_add_path LD_LIBRARY_PATH       "$p"
+    fi
+    unset p
 }
 #-----------------------------------------------------------------------------
 #
@@ -131,4 +127,5 @@ fi;
 #
 unset ROOTENV_INIT;
 unset THIS;
+unset SOURCE;
 #-----------------------------------------------------------------------------
