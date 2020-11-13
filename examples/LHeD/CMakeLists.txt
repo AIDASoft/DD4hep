@@ -79,7 +79,7 @@ dd4hep_add_test_reg( LHeD_check_overlaps_LONGTEST
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
 #
-#---Geant4 Testsing-----------------------------------------------------------------
+#---Geant4 Testing-----------------------------------------------------------------
 #
 if (DD4HEP_USE_GEANT4)
   #
