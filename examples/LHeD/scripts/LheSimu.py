@@ -31,7 +31,7 @@ def run():
   lhed.setupField(quiet=False)
   DDG4.importConstants(kernel.detectorDescription(), debug=False)
 
-  dd4hep_dir = os.environ['DD4hep']
+  dd4hep_dir = os.environ['DD4hep_DIR']
   kernel.loadXML("file:" + dd4hep_dir + "/examples/LHeD/scripts/DDG4_field.xml")
 
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
