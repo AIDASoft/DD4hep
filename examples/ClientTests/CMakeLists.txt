@@ -110,7 +110,7 @@ dd4hep_add_test_reg( ClientTests_DumpMaterials
 dd4hep_add_test_reg( ClientTests_MultipleGeometries
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS   multipleGeo
-  -compact file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml
+  -compact file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
   -compact file:${ClientTestsEx_INSTALL}/compact/MiniTel.xml
   -compact file:${ClientTestsEx_INSTALL}/compact/NestedDetectors.xml
   -no-interp
@@ -342,7 +342,6 @@ if (DD4HEP_USE_GEANT4)
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${ClientTestsEx_INSTALL}/scripts/Check_Air.py
     -geometry  ${ClientTestsEx_INSTALL}/compact/Check_Air.xml batch
-    REQUIRES   DDG4 Geant4
     REGEX_PASS "Imean:  85.538 eV   temperature: 333.33 K  pressure:   2.22 atm"
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
   #

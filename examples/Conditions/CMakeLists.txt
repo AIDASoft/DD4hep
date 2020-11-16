@@ -141,7 +141,7 @@ dd4hep_add_test_reg( Conditions_Telescope_root_load_pool
 dd4hep_add_test_reg( Conditions_CLICSiD_stress_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_stress 
-    -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml -iovs 10 -runs 100
+    -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 10 -runs 100
   REGEX_PASS "\\+  Accessed a total of 31596300 conditions \\(S:30192020,L:     0,C:1404280,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -150,7 +150,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_stress_LONGTEST
 dd4hep_add_test_reg( Conditions_CLICSiD_stress2_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_stress2 
-    -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml -iovs 20
+    -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 20
   REGEX_PASS "\\+  Accessed a total of 6319260 conditions \\(S:3510700,L:     0,C:2808560,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -159,7 +159,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_stress2_LONGTEST
 dd4hep_add_test_reg( Conditions_CLICSiD_MT_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_MT 
-    -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml -iovs 3 -runs 2 -threads 1
+    -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 3 -runs 2 -threads 1
   REGEX_PASS "\\+  Accessed a total of 10742742 conditions \\(S:9900174,L:     0,C:842568,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -168,7 +168,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_MT_LONGTEST
 dd4hep_add_test_reg( Conditions_CLICSiD_root_save_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_save
-    -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml -iovs 3
+    -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 3
     -conditions CLICSiDConditions.root
   REGEX_PASS "\\+ Successfully saved 2527704 condition to file."
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
@@ -178,7 +178,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_root_save_LONGTEST
 dd4hep_add_test_reg( Conditions_CLICSiD_root_load_iov_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_load
-    -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml -iovs 3 -restore iovpool
+    -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 3 -restore iovpool
     -conditions CLICSiDConditions.root
   DEPENDS Conditions_CLICSiD_root_save_LONGTEST
   REGEX_PASS "\\+  Accessed a total of 947889 conditions \\(S:842568,L:     0,C:105321,M:0\\)"
@@ -189,7 +189,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_root_load_iov_LONGTEST
 dd4hep_add_test_reg( Conditions_CLICSiD_root_load_usr_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_load
-    -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml -iovs 3 -restore userpool
+    -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 3 -restore userpool
     -conditions CLICSiDConditions.root
   DEPENDS Conditions_CLICSiD_root_save_LONGTEST
   REGEX_PASS "\\+  Accessed a total of 947889 conditions \\(S:842568,L:     0,C:105321,M:0\\)"
@@ -200,7 +200,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_root_load_usr_LONGTEST
 dd4hep_add_test_reg( Conditions_CLICSiD_root_load_cond_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_load
-    -input file:$ENV{DD4hepINSTALL}/DDDetectors/compact/SiD.xml -iovs 3 -restore condpool
+    -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 3 -restore condpool
     -conditions CLICSiDConditions.root
   DEPENDS Conditions_CLICSiD_root_save_LONGTEST
   REGEX_PASS "\\+  Accessed a total of 947889 conditions \\(S:842568,L:     0,C:105321,M:0\\)"
