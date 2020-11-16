@@ -105,11 +105,11 @@ bool Geant4ParticleHandler::adopt(Geant4Action* action)    {
         m_userHandler->addRef();
         return true;
       }
-      except("Cannot add an invalid user particle handler object [Invalid-object-type].", c_name());
+      except("Cannot add an invalid user particle handler object [Invalid-object-type].");
     }
-    except("Cannot add an user particle handler object [Object-exists].", c_name());
+    except("Cannot add an user particle handler object [Object-exists].");
   }
-  except("Cannot add an invalid user particle handler object [NULL-object].", c_name());
+  except("Cannot add an invalid user particle handler object [NULL-object].");
   return false;
 }
 
@@ -128,7 +128,7 @@ void Geant4ParticleHandler::mark(const G4Track* track, int reason)   {
       return;
     }
   }
-  except("Cannot mark the G4Track if the pointer is invalid!", c_name());
+  except("Cannot mark the G4Track if the pointer is invalid!");
 }
 
 /// Store a track produced in a step to be kept for later MC truth analysis
@@ -137,7 +137,7 @@ void Geant4ParticleHandler::mark(const G4Step* step_value, int reason)   {
     mark(step_value->GetTrack(),reason);
     return;
   }
-  except("Cannot mark the G4Track if the step-pointer is invalid!", c_name());
+  except("Cannot mark the G4Track if the step-pointer is invalid!");
 }
 
 /// Mark a Geant4 track of the step to be kept for later MC truth analysis
@@ -146,7 +146,7 @@ void Geant4ParticleHandler::mark(const G4Step* step_value)   {
     mark(step_value->GetTrack());
     return;
   }
-  except("Cannot mark the G4Track if the step-pointer is invalid!", c_name());
+  except("Cannot mark the G4Track if the step-pointer is invalid!");
 }
 
 /// Mark a Geant4 track of the step to be kept for later MC truth analysis
