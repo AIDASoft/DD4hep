@@ -36,14 +36,9 @@ dd4hep_add_path()   {
     path_name=${1}
     path_prefix=${2}
     eval path_value=\$$path_name
-    if [ "${path_value}" ]; then
-        # Prevent duplicates
-        if ! echo ${path_value} | tr : '\n' | grep -q "^${path_prefix}$"; then
-            path_value="${path_prefix}:${path_value}"
-        fi
-    else
-	path_value="${path_prefix}"
-    fi;
+    # Prevent duplicates
+    path_value=`echo ${path_value} | tr : '\n' | grep -v ${path_prefix} | tr '\n' : | sed 's|:$||'`
+    path_value="${path_prefix}${path_value:+:${path_value}}"
     eval export ${path_name}='${path_value}'
     unset path_name path_prefix path_value
 }
