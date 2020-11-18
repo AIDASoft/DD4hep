@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!--- Author  : Markus Frank -->
-<!--- Created : 2016-11-07   -->
 <conditions>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
 
     <value name="external_pressure" type="float" value="980*hPa"/>
     <value name="other_pressure" type="double">980*hPa</value>

@@ -1,5 +1,15 @@
-
 <conditions>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
   <detelement path="TPC/TPC_SideB" name="ambience" validity="1396887257,1396887257#epoch">
     <alignment   ref="SideB_aligments.xml" validity="563543#run"/>
     <temperature name="AmbientTemperature" value="20.9*kelvin"/>
