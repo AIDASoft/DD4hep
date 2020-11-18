@@ -546,6 +546,78 @@ may be both electric and magnetic. The strength of the overall field is calculat
 \end{minted}
 \end{itemize}
 
+\section{Units}
+DD4hep offers the user the possibility to choose and use the preferred units for any quantity and offers a consistent units solution defined as:
+\begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
+static constexpr double centimeter = 1.;
+static constexpr double second = 1.;
+static constexpr double kiloelectronvolt = 1;
+static constexpr double eplus = 1.;
+static constexpr double kelvin = 1.;
+static constexpr double mole = 1.;
+static constexpr double candela = 1.;
+static constexpr double radian = 1.;
+static constexpr double steradian = 1.;
+\end{minted}
+All other units are derived from the base ones:
+\begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
+static constexpr double centimeter = 10. * millimeter;
+static constexpr double centimeter2 = centimeter * centimeter;
+static constexpr double centimeter3 = centimeter * centimeter * centimeter;
+
+static constexpr double meter = 1000. * millimeter;
+static constexpr double meter2 = meter * meter;
+static constexpr double meter3 = meter * meter * meter;
+
+static constexpr double kilometer = 1000. * meter;
+static constexpr double kilometer2 = kilometer * kilometer;
+static constexpr double kilometer3 = kilometer * kilometer * kilometer;
+
+static constexpr double kilogram = joule * second * second / (meter * meter);
+\end{minted}
+One can find all units definitions in the file \texttt{DDParsers/include/Evaluator/DD4hepUnits.h} in the DD4hep source directory. All units are part of the \texttt{dd4hep} namespace. The reader might observe that the units convention is very close to the one used in ROOT/TGeo with the notable exception that in the latter case \texttt{degree} is set to 1 instead of \texttt{radian}.
+
+\subsection{Input data with units}
+The user \textbf{must} use units to define data which is to be used by DD4hep:
+\begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
+double length = 5*dd4hep::cm;
+double time = 20*dd4hep::ns;
+double energy = 500*dd4hep::GeV;
+\end{minted}
+
+DD4hep assumes that this convention for the units is respected, in order to assure independence. If units are not specified in the client application, data are implicitly treated in internal DD4hep units. \textbf{This practice is however severely discouraged, as the base definition of units in DD4hep might change in a later version!}
+
+Be aware that DD4hep exposes to the user in many places underlying interfaces of Geant4, in such cases the user needs to use the Geant4 system of units to interact.
+
+\subsection{Output data with units}
+When processing output data from DD4hep, it is imperative to cast the unit before forwarding the data to a third party program. To do so, it is sufficient to divide the data by the corresponding unit:
+\begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
+cout << length / dd4hep::cm << " cm";
+cout << time / dd4hep::ns  << " ns";
+cout << energy / dd4hep::GeV  << " GeV";
+\end{minted}
+
+DD4hep assumes that this convention for the units is respected, in order to assure independence. If units are not cast in the client application, DD4hep return values in internal units. \textbf{This practice is however severely discouraged, as the base definition of units in DD4hep might change in a later version!}
+
+Be aware that DD4hep exposes to the user in many places underlying interfaces of Geant4, in such cases the user needs to divide the return value of such interface by the Geant4 system of units:
+\begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
+Geant4Calorimeter::Hit* hit;
+cout << hit->position.x() / CLHEP::mm << " mm";
+\end{minted}
+Not casting the unit, and assuming implicit DD4hep units, would lead to a wrong result.
+
+\subsection{Units in namespaces}
+A very common scenario is that users need to handle in the same source code data from several different systems of units, like Geant4, DD4hep or others. DD4hep units are stored in the namespace \texttt{dd4hep} whilst Geant4 units are stored in the namespace \texttt{CLHEP}. It is imperative to keep in mind that for instance \texttt{mm} from \texttt{DD4hepUnits.h} takes precedence over \texttt{mm} from \texttt{G4SystemOfUnits.hh} inside the \texttt{dd4hep} namespace. The user is advised to always explicitly state which unit from which namespace is used. The following example code compiles without error:
+\begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
+#include <G4SystemOfUnits.hh>
+namespace dd4hep {
+  Geant4Calorimeter::Hit* hit;
+  cout << hit->position.x() / mm << " mm";
+}
+\end{minted}
+however it is logically wrong, as position will be cast to DD4hep \texttt{mm} instead of Geant4 \texttt{mm}.
+
+
 \section{Material Description}
 \label{sec:compact-material-description}
 
