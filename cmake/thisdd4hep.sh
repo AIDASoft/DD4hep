@@ -112,7 +112,7 @@ dd4hep_add_path PYTHONPATH ${THIS}/@DD4HEP_PYTHON_INSTALL_DIR@;
 #----ROOT_INCLUDE_PATH--------------------------------------------------------
 dd4hep_add_path ROOT_INCLUDE_PATH ${THIS}/include;
 #-----------------------------------------------------------------------------
-if [ @USE_DYLD@ ];
+if [ @APPLE@ ];
 then
     export DD4HEP_LIBRARY_PATH=${DYLD_LIBRARY_PATH};
 else

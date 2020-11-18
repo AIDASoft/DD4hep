@@ -52,11 +52,6 @@ include(DD4hepMacros)
 add_subdirectory(DDParsers)
 #
 #---Configuration-------------------------------------------------------------------
-# ----for APPLE scripts have to set the DYLD_LIBRARY_PATH 
-if( APPLE ) 
-  set( USE_DYLD 1)
-  set(CMAKE_MACOSX_RPATH 1)
-endif()
 #-----------------------------------------------------------------------------------
 display_std_variables()
 
