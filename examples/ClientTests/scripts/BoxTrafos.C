@@ -1,7 +1,11 @@
-// $Id: Geant4Hits.h 513 2013-04-05 14:31:53Z gaede $
 //====================================================================
 //  AIDA Detector description implementation
 //--------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 //  Author     : M.Frank
 //

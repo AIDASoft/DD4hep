@@ -1,4 +1,16 @@
 <ddeve>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+
   <display visLevel="7" loadLevel="3"/>
   <collection name="NestedBoxHits"     hits="PointSet"  color="kMagenta" size="0.3"  type="20"      threshold="1000*eV"/>
   <collectiona name="StartVertexPoints" hits="ParticleOrigin" color="kCyan"    size="2.3"  type="20"/>

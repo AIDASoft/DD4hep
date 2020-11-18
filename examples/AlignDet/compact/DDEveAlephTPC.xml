@@ -1,4 +1,15 @@
 <ddeve>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
   <view name="3D TPC" type="View3D" structure="true" sensitive="true">
     <detelement name="TPC" load_geo="5" show="5" alpha="0.5"/>
   </view>
