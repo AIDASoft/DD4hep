@@ -76,16 +76,30 @@ static Handle<TObject> create_Polycone(Detector&, xml_h element)   {
 DECLARE_XML_SHAPE(Polycone__shape_constructor,create_Polycone)
 
 static Handle<TObject> create_ConeSegment(Detector&, xml_h element)   {
+  Solid solid;
   xml_dim_t e(element);
-  Solid solid = ConeSegment(e.dz(),e.rmin1(0.0),e.rmax1(),e.rmin2(0.0),e.rmax2(),e.phi1(0.0),e.phi2(2*M_PI));
+  xml_attr_t aphi = element.attr_nothrow(_U(phi1));
+  xml_attr_t bphi = element.attr_nothrow(_U(phi2));
+  if ( aphi || bphi )  {
+    double phi1 = e.phi1(0.0);
+    double phi2 = e.phi2(2*M_PI) - phi1;
+    /// Old naming: angles from [phi1,phi2]
+    solid = ConeSegment(e.dz(),e.rmin1(0.0),e.rmax1(),e.rmin2(0.0),e.rmax2(),phi1,phi2);
+  }
+  else  {
+    double start_phi = e.startphi(0.0);
+    double delta_phi = e.deltaphi(2*M_PI);
+    /// New naming: angles from [startphi,startphi+deltaphi]
+    solid = ConeSegment(e.dz(),e.rmin1(0.0),e.rmax1(),e.rmin2(0.0),e.rmax2(),start_phi,delta_phi);
+  }
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(ConeSegment__shape_constructor,create_ConeSegment)
 
 static Handle<TObject> create_Tube(Detector&, xml_h element)   {
-  xml_dim_t e(element);
   Solid solid;
+  xml_dim_t e(element);
   xml_attr_t aphi = element.attr_nothrow(_U(phi1));
   if ( aphi )  {
     double phi1 = e.phi1();
@@ -263,7 +277,7 @@ static Handle<TObject> create_Sphere(Detector&, xml_h element)   {
   else if ( e.hasAttr(_U(deltatheta)) )
     endtheta = starttheta + e.deltatheta();
 
-  Solid solid = Sphere(e.rmin(), e.rmax(), starttheta, endtheta, startphi, endphi);
+  Solid solid = Sphere(e.rmin(0e0), e.rmax(), starttheta, endtheta, startphi, endphi);
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;
 }

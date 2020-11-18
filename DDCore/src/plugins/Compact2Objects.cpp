@@ -65,7 +65,7 @@ namespace dd4hep {
   class Plugin;
   class Compact;
   class Includes;
-  class GdmlFile;
+  class IncludeFile;
   class Property;
   class XMLFile;
   class JsonFile;
@@ -97,7 +97,7 @@ namespace dd4hep {
 #endif
   template <> void Converter<DetElement>::operator()(xml_h element) const;
   template <> void Converter<STD_Conditions>::operator()(xml_h element) const;
-  template <> void Converter<GdmlFile>::operator()(xml_h element) const;
+  template <> void Converter<IncludeFile>::operator()(xml_h element) const;
   template <> void Converter<JsonFile>::operator()(xml_h element) const;
   template <> void Converter<XMLFile>::operator()(xml_h element) const;
   template <> void Converter<Header>::operator()(xml_h element) const;
@@ -1314,7 +1314,7 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
-template <> void Converter<GdmlFile>::operator()(xml_h element) const   {
+template <> void Converter<IncludeFile>::operator()(xml_h element) const   {
   xml::DocumentHolder doc(xml::DocumentHandler().load(element, element.attr_value(_U(ref))));
   xml_h root = doc.root();
   if ( s_debug.includes )   {
@@ -1443,7 +1443,10 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
     Converter<JsonFile>(this->description)(element);
   }
   else if ( type == "gdml" )  {
-    Converter<GdmlFile>(this->description)(element);
+    Converter<IncludeFile>(this->description)(element);
+  }
+  else if ( type == "include" )  {
+    Converter<IncludeFile>(this->description)(element);
   }
   else if ( type == "xml-extended" )  {
     Converter<XMLFile>(this->description)(element);
@@ -1506,10 +1509,11 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
     printout(INFO,"Compact","+++ degree:     %8.3g  Units:%8.3g",xml::_toDouble(_Unicode(degree)),dd4hep::degree);
   }
   
-  xml_coll_t(compact, _U(define)).for_each(_U(include), Converter<DetElementInclude>(description));
-  xml_coll_t(compact, _U(define)).for_each(_U(constant), Converter<Constant>(description));
-  xml_coll_t(compact, _U(std_conditions)).for_each(Converter<STD_Conditions>(description));
-  xml_coll_t(compact, _U(includes)).for_each(_U(gdmlFile), Converter<GdmlFile>(description));
+  xml_coll_t(compact, _U(define)).for_each(_U(include),    Converter<DetElementInclude>(description));
+  xml_coll_t(compact, _U(define)).for_each(_U(constant),   Converter<Constant>(description));
+  xml_coll_t(compact, _U(std_conditions)).for_each(        Converter<STD_Conditions>(description));
+  xml_coll_t(compact, _U(includes)).for_each(_U(gdmlFile), Converter<IncludeFile>(description));
+  xml_coll_t(compact, _U(includes)).for_each(_U(file),     Converter<IncludeFile>(description));
 
   if (element.hasChild(_U(info)))
     (Converter<Header>(description))(xml_h(compact.child(_U(info))));

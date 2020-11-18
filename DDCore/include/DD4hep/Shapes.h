@@ -827,7 +827,7 @@ namespace dd4hep {
     double b() const                       { return access()->GetB();                }
   };
 
-  /// Class describing a elliptical tube shape
+  /// Class describing a twisted tube shape
   /**
    *   This is actually no TGeo shape. This implementation is a placeholder
    *   for the Geant4 implementation G4TwistedTube.
