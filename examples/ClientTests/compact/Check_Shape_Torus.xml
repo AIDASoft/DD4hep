@@ -6,11 +6,13 @@
   <detectors>
     <detector id="1" name="Shape_Torus" type="DD4hep_TestShape_Creator">
       <check vis="Shape1_vis">
-        <shape type="Torus" r="50*cm" rmin="10*cm" rmax="30*cm" rmin2="50*cm" rmax2="60*cm" z="40*cm"/>
+        <shape type="Torus" r="50*cm" rmin="10*cm" rmax="30*cm" z="40*cm"/>
         <position x="30"  y="30"   z="30"/>
         <rotation x="0"   y="0"    z="0"/>
       </check>
-      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Torus.txt" create="CheckShape_create"/>
+      <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Torus.txt" create="CheckShape_create"/>
+      <!-- Entry to create reference file -->
+      <testn type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Torus.txt" create="1"/>
     </detector>
   </detectors>
 </lccdd>
