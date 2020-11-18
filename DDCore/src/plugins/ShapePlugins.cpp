@@ -240,14 +240,14 @@ static Handle<TObject> create_Torus(Detector&, xml_h element)   {
     double phi1 = e.phi1(0.0);
     double phi2 = e.phi2(2*M_PI);
     /// Old naming: angles from [phi1,phi2]
-    solid = Torus(e.r(), e.rmin(0.0), e.rmax(), phi1, phi2);
+    solid = Torus(e.r(), e.rmin(0.0), e.rmax(), phi1, phi2-phi1);
   }
   else  {
     double start_phi = e.startphi(0.0);
     double delta_phi = e.deltaphi(2*M_PI);
     while ( start_phi > 2.0*M_PI ) start_phi -= 2.0*M_PI;
-    /// New naming: angles from [startphi,startphi+deltaphi]
-    solid = Torus(e.r(), e.rmin(0.0), e.rmax(), start_phi, start_phi+delta_phi);
+    /// TGeo naming: angles from [startphi,startphi+deltaphi]
+    solid = Torus(e.r(), e.rmin(0.0), e.rmax(), start_phi, delta_phi);
   }
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;
