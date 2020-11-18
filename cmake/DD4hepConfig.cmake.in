@@ -97,11 +97,6 @@ ENDIF()
 #---- build with xercesc or tinyxml ?
 INCLUDE( ${@CMAKE_PROJECT_NAME@_DIR}/cmake/DD4hep_XML_setup.cmake )
 
-#----- APPLE ? -------
-
-set( USE_DYLD @USE_DYLD@ )
-MARK_AS_ADVANCED( USE_DYLD )
-
 # ---------- final checking ---------------------------------------------------
 INCLUDE( FindPackageHandleStandardArgs )
 # set DD4HEP_FOUND to TRUE if all listed variables are TRUE and not empty
