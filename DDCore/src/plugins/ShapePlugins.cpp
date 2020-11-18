@@ -89,6 +89,7 @@ static Handle<TObject> create_ConeSegment(Detector&, xml_h element)   {
   else  {
     double start_phi = e.startphi(0.0);
     double delta_phi = e.deltaphi(2*M_PI);
+    while ( start_phi > 2.0*M_PI ) start_phi -= 2.0*M_PI;
     /// New naming: angles from [startphi,startphi+deltaphi]
     solid = ConeSegment(e.dz(),e.rmin1(0.0),e.rmax1(),e.rmin2(0.0),e.rmax2(),start_phi,start_phi+delta_phi);
   }
