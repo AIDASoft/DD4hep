@@ -51,7 +51,7 @@ class Gun(ConfigHelper):
   def distribution(self, val):
     if val is None:
       return
-    possibleDistributions = ['uniform', 'cos(theta)', 'eta', 'pseudorapidity', 'ffbar']  # (1+cos^2 theta)
+    possibleDistributions = self._distribution_EXTRA['choices']
     if not isinstance(val, six.string_types):
       raise RuntimeError("malformed input '%s' for gun.distribution. Need a string : %s " %
                          (val, ",".join(possibleDistributions)))
