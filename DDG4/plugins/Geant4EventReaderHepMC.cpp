@@ -174,7 +174,7 @@ namespace dd4hep {
         void set_io(int typ, const string& k)
         { io_type = typ;    key = k;                 }
         void use_default_units()
-        { mom_unit = MeV;   pos_unit = CLHEP::mm;           }
+        { mom_unit = CLHEP::MeV;   pos_unit = CLHEP::mm;           }
         bool read();
         void clear();
       };
