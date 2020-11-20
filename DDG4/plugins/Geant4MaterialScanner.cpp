@@ -170,7 +170,6 @@ void Geant4MaterialScanner::begin(const G4Track* track) {
 
 /// End-of-tracking callback
 void Geant4MaterialScanner::end(const G4Track* track) {
-  using namespace CLHEP;
   if ( !m_steps.empty() )  {
     constexpr const char* line = " +--------------------------------------------------------------------------------------------------------------------------------------------------\n";
     constexpr const char* fmt1 = " | %5d %-20s %3.0f %8.3f %8.4f %11.4f  %11.4f %10.3f %8.2f %11.6f %11.6f  (%7.2f,%7.2f,%7.2f)\n";
@@ -179,7 +178,7 @@ void Geant4MaterialScanner::end(const G4Track* track) {
     const Position& post = m_steps[m_steps.size()-1]->post;
 
     ::printf("%s + Material scan between: x_0 = (%7.2f,%7.2f,%7.2f) [cm] and x_1 = (%7.2f,%7.2f,%7.2f) [cm]  TrackID:%d: \n%s",
-             line,pre.X()/cm,pre.Y()/cm,pre.Z()/cm,post.X()/cm,post.Y()/cm,post.Z()/cm,track->GetTrackID(),line);
+             line,pre.X()/CLHEP::cm,pre.Y()/CLHEP::cm,pre.Z()/CLHEP::cm,post.X()/CLHEP::cm,post.Y()/CLHEP::cm,post.Z()/CLHEP::cm,track->GetTrackID(),line);
     ::printf(" |     \\   %-11s        Atomic                 Radiation   Interaction               Path   Integrated  Integrated    Material\n","Material");
     ::printf(" | Num. \\  %-11s   Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint  \n","Name");
     ::printf(" | Layer \\ %-11s            [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm)\n","");
@@ -191,10 +190,10 @@ void Geant4MaterialScanner::end(const G4Track* track) {
       const Position& prePos  = (*i)->pre;
       const Position& postPos = (*i)->post;
       Position direction = postPos - prePos;
-      double length  = direction.R()/cm;
-      double intLen  = material->GetNuclearInterLength()/cm;
-      double radLen  = material->GetRadlen()/cm;
-      double density = material->GetDensity()/(gram/cm3);
+      double length  = direction.R()/CLHEP::cm;
+      double intLen  = material->GetNuclearInterLength()/CLHEP::cm;
+      double radLen  = material->GetRadlen()/CLHEP::cm;
+      double density = material->GetDensity()/(CLHEP::gram/CLHEP::cm3);
       double nLambda = length / intLen;
       double nx0     = length / radLen;
       double Aeff    = 0.0;
@@ -203,7 +202,7 @@ void Geant4MaterialScanner::end(const G4Track* track) {
       const double* fractions = material->GetFractionVector();
       for(size_t j=0; j<material->GetNumberOfElements(); ++j)  {
         Zeff += fractions[j]*(material->GetElement(j)->GetZ());
-        Aeff += fractions[j]*(material->GetElement(j)->GetA())/gram;
+        Aeff += fractions[j]*(material->GetElement(j)->GetA())/CLHEP::gram;
       }
       m_sumX0     += nx0;
       m_sumLambda += nLambda;
@@ -211,7 +210,7 @@ void Geant4MaterialScanner::end(const G4Track* track) {
       ::printf(fmt,count,material->GetName().c_str(),
                Zeff, Aeff, density, radLen, intLen, length,
                m_sumPath,m_sumX0,m_sumLambda,
-               postPos.X()/cm,postPos.Y()/cm,postPos.Z()/cm);
+               postPos.X()/CLHEP::cm,postPos.Y()/CLHEP::cm,postPos.Z()/CLHEP::cm);
       //cout << *m << endl;
     }
     for_each(m_steps.begin(),m_steps.end(),detail::DestroyObject<StepInfo*>());

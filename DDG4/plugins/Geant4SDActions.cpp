@@ -17,7 +17,6 @@
 #include "G4OpticalPhoton.hh"
 #include "G4VProcess.hh"
 
-using namespace CLHEP;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

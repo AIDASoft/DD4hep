@@ -27,8 +27,6 @@
 #include <stdexcept>
 #include <cmath>
 
-using CLHEP::MeV;
-using CLHEP::GeV;
 using namespace std;
 using namespace dd4hep::sim;
 

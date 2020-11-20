@@ -28,7 +28,6 @@
 #include "TSystem.h"
 
 using namespace std;
-using namespace CLHEP;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
@@ -73,9 +72,9 @@ namespace {
         printout(ALWAYS,container,
                  "+++ Track:%3d PDG:%6d Pos:(%+.2e,%+.2e,%+.2e)[mm] Pixel:(%+.2e,%+.2e,%+.2e)[mm] %s Deposit:%7.3f MeV CellID:%16lX",
                  h->truth.trackID,h->truth.pdgID,
-                 pos.x()/mm,pos.y()/mm,pos.z()/mm,
+                 pos.x()/CLHEP::mm,pos.y()/CLHEP::mm,pos.z()/CLHEP::mm,
                  pos_cell.x()/dd4hep::mm,pos_cell.y()/dd4hep::mm,pos_cell.z()/dd4hep::mm,
-                 pv.name(),h->truth.deposit/MeV,h->cellID
+                 pv.name(),h->truth.deposit/CLHEP::MeV,h->cellID
                  );
         delete h;
       }
@@ -87,8 +86,8 @@ namespace {
         printout(ALWAYS,container,
                  "+++ Track:%3d PDG:%6d Pos:(%+.2e,%+.2e,%+.2e)[mm] Deposit:%7.3f MeV CellID:%16lX",
                  h->truth.trackID,h->truth.pdgID,
-                 pos.x()/mm,pos.y()/mm,pos.z()/mm,
-                 h->truth.deposit/MeV,h->cellID
+                 pos.x()/CLHEP::mm,pos.y()/CLHEP::mm,pos.z()/CLHEP::mm,
+                 h->truth.deposit/CLHEP::MeV,h->cellID
                  );
         delete h;
       }
@@ -118,9 +117,9 @@ namespace {
         PlacedVolume pv = vm.lookupPlacement(h->cellID);
         printout(ALWAYS,container,
                  "+++ Pos:(%+.2e,%+.2e,%+.2e)[mm] Pixel:(%+.2e,%+.2e,%+.2e)[mm] %s Deposit:%7.3f MeV CellID:%16lX",
-                 pos.x()/mm,pos.y()/mm,pos.z()/mm,
+                 pos.x()/CLHEP::mm,pos.y()/CLHEP::mm,pos.z()/CLHEP::mm,
                  pos_cell.x()/dd4hep::mm,pos_cell.y()/dd4hep::mm,pos_cell.z()/dd4hep::mm,
-                 pv.name(),h->energyDeposit/MeV,h->cellID
+                 pv.name(),h->energyDeposit/CLHEP::MeV,h->cellID
                  );
         delete h;
       }
@@ -152,8 +151,8 @@ namespace {
                  "+++%s %3d stat:%08X PDG:%6d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
                  "Vtx:(%+.2e,%+.2e,%+.2e)[mm] #Dau:%3d #Par:%1d%-6s",
                  "",p->id,p->status,p->pdgID,
-                 p->psx/MeV,p->psy/MeV,p->psz/MeV,
-                 p->vsx/mm,p->vsy/mm,p->vsz/mm,
+                 p->psx/CLHEP::MeV,p->psy/CLHEP::MeV,p->psz/CLHEP::MeV,
+                 p->vsx/CLHEP::mm,p->vsy/CLHEP::mm,p->vsz/CLHEP::mm,
                  int(p->daughters.size()),
                  int(p->parents.size()),
                  text);
