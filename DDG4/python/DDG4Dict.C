@@ -232,7 +232,7 @@ typedef dd4hep::sim::Geant4ActionCreation Geant4ActionCreation;
 #pragma link C++ typedef dd4hep::sim::Geant4ParticleIntMap;
 
 #pragma link C++ class dd4hep::sim::PropertyResult;
-#pragma link C++ class dd4hep::sim::Geant4InputAction::Particles;
+//#pragma link C++ class dd4hep::sim::Geant4InputAction::Particles; // same as std::vector<dd4hep::sim::Geant4Particle*>
 
 #pragma link C++ class dd4hep::sim::Geant4ParticleHandle;
 #pragma link C++ class dd4hep::sim::Geant4ParticleMap;
