@@ -610,7 +610,7 @@ SIM = DD4hepSimulation()
 """
     optionDict = parser._option_string_actions
     parameters = vars(self)
-    for parName, parameter in sorted(list(parameters.items()), sortParameters):
+    for parName, parameter in sorted(list(parameters.items()), key=sortParameters):
       if parName.startswith("_"):
         continue
       if isinstance(parameter, ConfigHelper):
@@ -619,7 +619,7 @@ SIM = DD4hepSimulation()
         steeringFileBase += "## %s \n" % "\n## ".join(parameter.__doc__.splitlines())
         steeringFileBase += "################################################################################\n"
         options = parameter.getOptions()
-        for opt, optionsDict in sorted(six.iteritems(options), sortParameters):
+        for opt, optionsDict in sorted(six.iteritems(options), key=sortParameters):
           if opt.startswith("_"):
             continue
           parValue = optionsDict['default']
@@ -733,20 +733,26 @@ SIM = DD4hepSimulation()
 # MODULE FUNCTIONS GO HERE
 ################################################################################
 
-def sortParameters(parA, parB):
-  """sort the parameters by name: first normal parameters, then set of
-  parameters based on ConfigHelper objects
-  """
-  parTypeA = parA[1]
-  parTypeB = parB[1]
-  if isinstance(parTypeA, ConfigHelper) and isinstance(parTypeB, ConfigHelper):
-    return 1 if str(parA[0]) > str(parB[0]) else -1
-  elif isinstance(parTypeA, ConfigHelper):
-    return 1
-  elif isinstance(parTypeB, ConfigHelper):
-    return -1
-  else:
-    return 1 if str(parA[0]) > str(parB[0]) else -1
+
+def sortParameters(key):
+  from functools import cmp_to_key
+
+  def _sortParameters(parA, parB):
+    """sort the parameters by name: first normal parameters, then set of
+    parameters based on ConfigHelper objects
+    """
+    parTypeA = parA[1]
+    parTypeB = parB[1]
+    if isinstance(parTypeA, ConfigHelper) and isinstance(parTypeB, ConfigHelper):
+      return 1 if str(parA[0]) > str(parB[0]) else -1
+    elif isinstance(parTypeA, ConfigHelper):
+      return 1
+    elif isinstance(parTypeB, ConfigHelper):
+      return -1
+    else:
+      return 1 if str(parA[0]) > str(parB[0]) else -1
+
+  return cmp_to_key(_sortParameters)(key)
 
 
 def getOutputLevel(level):
