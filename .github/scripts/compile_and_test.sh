@@ -18,6 +18,7 @@ cmake -GNinja \
       -DBUILD_TESTING=ON \
       -DDD4HEP_DEBUG_CMAKE=ON \
       -DBUILD_SHARED_LIBS=${SHARED} \
+      -DDD4HEP_USE_XERCESC=ON \
       -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
       -DCMAKE_CXX_STANDARD=${STANDARD} .. && \
@@ -39,6 +40,7 @@ mkdir build && \
 cd build && \
 cmake -GNinja \
       -DBoost_NO_BOOST_CMAKE=ON \
+      -DDD4HEP_USE_XERCESC=ON \
       -DCMAKE_CXX_STANDARD=${STANDARD} .. && \
 ninja && \
 ninja install && \
