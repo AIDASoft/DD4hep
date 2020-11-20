@@ -39,7 +39,6 @@
 #include <stdexcept>
 #include <algorithm>
 
-using CLHEP::MeV;
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::sim;
