@@ -70,7 +70,7 @@ class Gun(ConfigHelper):
     use the options phiMin, phiMax, thetaMin, and thetaMax to limit the range of randomly distributed directions
     if one of these options is not None the random distribution will be set to True and cannot be turned off!
     """
-    return self._isotrop
+    return self._isotrop or bool(self._distribution)
 
   @isotrop.setter
   def isotrop(self, val):
