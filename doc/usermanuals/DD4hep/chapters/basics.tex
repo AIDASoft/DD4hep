@@ -587,7 +587,7 @@ double energy = 500*dd4hep::GeV;
 
 DD4hep assumes that this convention for the units is respected, in order to assure independence. If units are not specified in the client application, data are implicitly treated in internal DD4hep units. \textbf{This practice is however severely discouraged, as the base definition of units in DD4hep might change in a later version!}
 
-Be aware that DD4hep exposes to the user in many places underlying interfaces of Geant4, in such cases the user needs to use the Geant4 system of units to interact.
+Be aware that DD4hep exposes to the user in many places underlying interfaces of Geant4, in such cases the user needs to use the Geant4/CLHEP system of units to interact.
 
 \subsection{Output data with units}
 When processing output data from DD4hep, it is imperative to cast the unit before forwarding the data to a third party program. To do so, it is sufficient to divide the data by the corresponding unit:
@@ -599,7 +599,7 @@ cout << energy / dd4hep::GeV  << " GeV";
 
 DD4hep assumes that this convention for the units is respected, in order to assure independence. If units are not cast in the client application, DD4hep return values in internal units. \textbf{This practice is however severely discouraged, as the base definition of units in DD4hep might change in a later version!}
 
-Be aware that DD4hep exposes to the user in many places underlying interfaces of Geant4, in such cases the user needs to divide the return value of such interface by the Geant4 system of units:
+Be aware that DD4hep exposes to the user in many places underlying interfaces of Geant4, in such cases the user needs to divide the return value of such interface by the Geant4/CLHEP system of units:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 Geant4Calorimeter::Hit* hit;
 cout << hit->position.x() / CLHEP::mm << " mm";
@@ -607,7 +607,12 @@ cout << hit->position.x() / CLHEP::mm << " mm";
 Not casting the unit, and assuming implicit DD4hep units, would lead to a wrong result.
 
 \subsection{Units in namespaces}
-A very common scenario is that users need to handle in the same source code data from several different systems of units, like Geant4, DD4hep or others. DD4hep units are stored in the namespace \texttt{dd4hep} whilst Geant4 units are stored in the namespace \texttt{CLHEP}. It is imperative to keep in mind that for instance \texttt{mm} from \texttt{DD4hepUnits.h} takes precedence over \texttt{mm} from \texttt{G4SystemOfUnits.hh} inside the \texttt{dd4hep} namespace. The user is advised to always explicitly state which unit from which namespace is used. The following example code compiles without error:
+A very common scenario is that users need to handle in the same source code data from several different systems of units, like Geant4/CLHEP, DD4hep or others. DD4hep units are stored in the namespace \texttt{dd4hep} whilst Geant4/CLHEP units behavior depends on which units file the user includes:
+\begin{itemize}
+\item \textbf{G4SystemOfUnits.hh} the units are directly in the top level namespace
+\item \textbf{CLHEP/Units/SystemOfUnits.h} the units are inside the \texttt{CLHEP::} namespace
+\end{itemize}
+It is imperative to keep in mind that for instance \texttt{mm} from \texttt{DD4hepUnits.h} takes precedence over \texttt{mm} from \texttt{G4SystemOfUnits.hh} inside the \texttt{dd4hep} namespace. The user is advised to always explicitly state which unit from which namespace is used. The following example code compiles without error:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 #include <G4SystemOfUnits.hh>
 namespace dd4hep {
@@ -615,7 +620,7 @@ namespace dd4hep {
   cout << hit->position.x() / mm << " mm";
 }
 \end{minted}
-however it is logically wrong, as position will be cast to DD4hep \texttt{mm} instead of Geant4 \texttt{mm}.
+however it is logically wrong, as position will be cast to DD4hep \texttt{mm} instead of Geant4 \texttt{mm}. It is considered good practice to use \texttt{CLHEP/Units/SystemOfUnits.h} without \texttt{using namespace CLHEP;} and not rely at all on \texttt{G4SystemOfUnits.hh} whilst writing code that interacts with DD4hep.
 
 
 \section{Material Description}
