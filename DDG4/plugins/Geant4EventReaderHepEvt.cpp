@@ -89,7 +89,6 @@ namespace dd4hep {
 #include <cerrno>
 
 using namespace std;
-using namespace CLHEP;
 using namespace dd4hep::sim;
 typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
 

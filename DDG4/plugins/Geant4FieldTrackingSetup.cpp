@@ -148,7 +148,6 @@ namespace dd4hep {
 #include <limits>
 
 using namespace std;
-using namespace CLHEP;
 using namespace dd4hep;
 using namespace dd4hep::sim;
 

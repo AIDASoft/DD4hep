@@ -80,7 +80,6 @@ namespace dd4hep {
 #include <cerrno>
 
 using namespace std;
-using namespace CLHEP;
 using namespace dd4hep::sim;
 typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
 
@@ -233,12 +232,12 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
     }
 
     //  Momentum vector
-    p->pex = p->psx = betaX*TMath::Abs(Energy)*GeV;
-    p->pey = p->psy = betaY*TMath::Abs(Energy)*GeV;
-    p->pez = p->psz = betaZ*TMath::Abs(Energy)*GeV;
+    p->pex = p->psx = betaX*TMath::Abs(Energy)*CLHEP::GeV;
+    p->pey = p->psy = betaY*TMath::Abs(Energy)*CLHEP::GeV;
+    p->pez = p->psz = betaZ*TMath::Abs(Energy)*CLHEP::GeV;
 
     //  Mass
-    p->mass = 0.0005109989461*GeV;
+    p->mass = 0.0005109989461*CLHEP::GeV;
     //
 
 
@@ -249,9 +248,9 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
 
 
     //  Vertex
-    p->vsx = posX*nm;
-    p->vsy = posY*nm;
-    p->vsz = posZ*nm;
+    p->vsx = posX*CLHEP::nm;
+    p->vsy = posY*CLHEP::nm;
+    p->vsz = posZ*CLHEP::nm;
 
     Vertex* vtx = new Vertex ;
     vtx->x = p->vsx ;

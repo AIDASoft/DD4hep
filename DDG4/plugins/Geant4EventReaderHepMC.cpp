@@ -95,7 +95,6 @@ namespace dd4hep {
 #include <algorithm>
 
 using namespace std;
-using namespace CLHEP;
 using namespace dd4hep::sim;
 typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
 
@@ -175,7 +174,7 @@ namespace dd4hep {
         void set_io(int typ, const string& k)
         { io_type = typ;    key = k;                 }
         void use_default_units()
-        { mom_unit = MeV;   pos_unit = mm;           }
+        { mom_unit = MeV;   pos_unit = CLHEP::mm;           }
         bool read();
         void clear();
       };
@@ -279,7 +278,7 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */,
                "+++ %s ID:%3d status:%08X typ:%9d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
                "time: %+.2e [ns] #Dau:%3d #Par:%1d",
                "",p->id,p->status,p->pdgID,
-               p->psx/MeV,p->psy/MeV,p->psz/MeV,p->time/ns,
+               p->psx/CLHEP::MeV,p->psy/CLHEP::MeV,p->psz/CLHEP::MeV,p->time/CLHEP::ns,
                p->daughters.size(),
                p->parents.size());
       //output.emplace_back(p);
@@ -619,14 +618,14 @@ int HepMC::read_units(EventStream &info, istringstream & input)   {
     string mom, pos;
     input >> mom >> pos;
     if ( !input.fail() )  {
-      if ( mom == "KEV" ) info.mom_unit = keV;
-      else if ( mom == "MEV" ) info.mom_unit = MeV;
-      else if ( mom == "GEV" ) info.mom_unit = GeV;
-      else if ( mom == "TEV" ) info.mom_unit = TeV;
+      if ( mom == "KEV" ) info.mom_unit = CLHEP::keV;
+      else if ( mom == "MEV" ) info.mom_unit = CLHEP::MeV;
+      else if ( mom == "GEV" ) info.mom_unit = CLHEP::GeV;
+      else if ( mom == "TEV" ) info.mom_unit = CLHEP::TeV;
 
-      if ( pos == "MM" ) info.pos_unit = mm;
-      else if ( pos == "CM" ) info.pos_unit = cm;
-      else if ( pos == "M"  ) info.pos_unit = m;
+      if ( pos == "MM" ) info.pos_unit = CLHEP::mm;
+      else if ( pos == "CM" ) info.pos_unit = CLHEP::cm;
+      else if ( pos == "M"  ) info.pos_unit = CLHEP::m;
     }
   }
   return input.fail() ? 0 : 1;

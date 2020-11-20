@@ -16,7 +16,6 @@
 #include "DDG4/Geant4SensDetAction.inl"
 #include "DDG4/Factories.h"
 
-//using namespace CLHEP;
 
 namespace SomeExperiment {
 
