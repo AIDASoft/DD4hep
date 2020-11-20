@@ -35,7 +35,7 @@
 #include "UTIL/Operators.h"
 #include "UTIL/ILDConf.h"
 
-#include <G4SystemOfUnits.hh>
+#include "CLHEP/Units/SystemOfUnits.h"
 
 using namespace std;
 using namespace lcio ;

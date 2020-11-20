@@ -24,9 +24,11 @@
 
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
-#include "G4SystemOfUnits.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4Version.hh"
+
+#include "CLHEP/Units/SystemOfUnits.h"
+#include "CLHEP/Units/PhysicalConstants.h"
 
 #include <fstream>
 #include <sstream>
@@ -91,18 +93,18 @@ void Geant4ExtraParticles::constructParticle(Constructor& ) {
     if(width<0) width = 0;
 
     // normalize to G4 units
-    mass *= GeV;
+    mass *= CLHEP::GeV;
 
     if (charge != 0) {
       charge /= 3.;
     }
 
     if (lifetime > 0) {
-      lifetime = lifetime*mm/c_light;
+      lifetime = lifetime*CLHEP::mm/CLHEP::c_light;
     }
 
     if (width == 0 && lifetime > 0) {
-      width = hbar_Planck/lifetime;
+      width = CLHEP::hbar_Planck/lifetime;
     }
 
     // don't add if the particle already exists
