@@ -93,7 +93,7 @@ class Gun(ConfigHelper):
     self._direction = ConfigHelper.makeTuple(val)
     if len(self._direction) != 3:
       raise RuntimeError(
-          " gun.direction: malformed input '%s', needs to be a string representing a three vector " % val)
+          " gun.direction: malformed input '%s', needs to be a string representing a three vector " % (val,))
 
   @property
   def position(self):
@@ -105,7 +105,8 @@ class Gun(ConfigHelper):
     """check that the position is a three vector and can be parsed by ddg4"""
     self._position = ConfigHelper.makeTuple(val)
     if len(self._position) != 3:
-      raise RuntimeError(" gun.position: malformed input '%s', needs to be a string representing a three vector " % val)
+      raise RuntimeError(
+          " gun.position: malformed input '%s', needs to be a string representing a three vector " % (val,))
 
   def setOptions(self, ddg4Gun):
     """set the starting properties of the DDG4 particle gun"""
