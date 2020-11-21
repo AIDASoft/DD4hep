@@ -589,8 +589,12 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       TGeoScaledShape* sh   = (TGeoScaledShape*) shape;
       TGeoShape*       sol  = sh->GetShape();
       const double*    vals = sh->GetScale()->GetScale();
+      G4Scale3D        scal(vals[0], vals[1], vals[2]);
       G4VSolid* g4solid = (G4VSolid*)handleSolid(sol->GetName(), sol);
-      solid = new G4ScaledSolid(sh->GetName(), g4solid, {vals[0], vals[1], vals[2]});
+      if ( scal.xx()>0e0 && scal.yy()>0e0 && scal.zz()>0e0 )
+	solid = new G4ScaledSolid(sh->GetName(), g4solid, scal);
+      else
+	solid = new G4ReflectedSolid(sh->GetName(), g4solid, scal);
     }
     else if (isa == TGeoCompositeShape::Class())   {
       const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;
