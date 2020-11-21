@@ -138,9 +138,10 @@ def run():
     cmds.append('/vis/drawVolume')
     cmds.append('/vis/viewer/set/viewpointThetaPhi 55. 11.')
     cmds.append('/vis/scene/add/axes 0 0 0 1 m')
-  #else:
+  #
   #  cmds.append('/ddg4/ConstructGeometry/printVolume /world_volume_1/Shape_Test_0/Shape_Test_vol_0_0')
   #  cmds.append('/ddg4/UI/exit')
+  #
   ui.Commands = cmds
   kernel.NumEvents = 0
   kernel.configure()
