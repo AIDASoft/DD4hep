@@ -42,6 +42,7 @@
 #include <TGeoSphere.h>
 #include <TGeoHalfSpace.h>
 #include <TGeoParaboloid.h>
+#include <TGeoScaledShape.h>
 #include <TGeoCompositeShape.h>
 #include <TGeoShapeAssembly.h>
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
@@ -221,6 +222,61 @@ namespace dd4hep {
     ShapelessSolid& operator=(ShapelessSolid&& copy) = default;
     /// Copy Assignment operator
     ShapelessSolid& operator=(const ShapelessSolid& copy) = default;
+  };
+
+  /// Class describing a Scale shape
+  /**
+   *   For any further documentation please see the following ROOT documentation:
+   *   \see http://root.cern.ch/root/html/TGeoScaledShape.html
+   *
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class Scale : public Solid_type<TGeoScaledShape> {
+  protected:
+    /// Internal helper method to support object construction
+    void make(const std::string& name, Solid base_solid, double x_scale, double y_scale, double z_scale);
+
+  public:
+    /// Default constructor
+    Scale() = default;
+    /// Move constructor
+    Scale(Scale&& e) = default;
+    /// Copy constructor
+    Scale(const Scale& e) = default;
+    /// Constructor to be used with an existing object
+    template <typename Q> Scale(const Q* p) : Solid_type<TGeoScaledShape>(p) { }
+    /// Copy Constructor to be used with an existing object handle
+    template <typename Q> Scale(const Handle<Q>& e) : Solid_type<TGeoScaledShape>(e) { }
+
+    /// Constructor to create an anonymous new Scale object (retrieves name from volume)
+    Scale(Solid base_solid, double x_scale, double y_scale, double z_scale)
+    { make("", base_solid, x_scale, y_scale, z_scale);    }
+    /// Constructor to create a named new Scale object (retrieves name from volume)
+    Scale(const std::string& nam, Solid base_solid, double x_scale, double y_scale, double z_scale)
+    { make(nam.c_str(), base_solid, x_scale, y_scale, z_scale);    }
+
+    /// Constructor to create an anonymous new Scale object (retrieves name from volume)
+    template <typename X, typename Y, typename Z>
+    Scale(Solid base_solid, const X& x_scale, const Y& y_scale, const Z& z_scale)
+    { make("", base_solid, _toDouble(x_scale), _toDouble(y_scale), _toDouble(z_scale));    }
+    /// Constructor to create a named new Scale object (retrieves name from volume)
+    template <typename X, typename Y, typename Z>
+    Scale(const std::string& nam, Solid base_solid, const X& x_scale, const Y& y_scale, const Z& z_scale)
+    { make(nam.c_str(), base_solid, _toDouble(x_scale), _toDouble(y_scale), _toDouble(z_scale));  }
+
+    /// Move Assignment operator
+    Scale& operator=(Scale&& copy) = default;
+    /// Copy Assignment operator
+    Scale& operator=(const Scale& copy) = default;
+    /// Access x-scale factor
+    double scale_x() const;
+    /// Access y-scale factor
+    double scale_y() const;
+    /// Access z-scale factor
+    double scale_z() const;
   };
 
   /// Class describing a box shape

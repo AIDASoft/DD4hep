@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+
+  <includes>
+    <gdmlFile ref="CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Test_Shape_Scaled_Cone" type="DD4hep_TestShape_Creator" readout="CheckHits">
+      <sensitive type="tracker"/>
+      <material name="Silicon"/>
+      <check id="1" vis="Shape1_vis">
+        <shape type="Scale" x="1.0" y="0.3" z="1.0">
+          <shape type="Cone" rmin1="5*cm" rmax1="30*cm" rmin2="20*cm" rmax2="90*cm" z="40*cm"/>
+	</shape>
+        <position x="0"  y="0*cm"   z="50*cm"/>
+        <rotation x="-0.1"  y="0"    z="0"/>
+      </check>
+      <check id="2" vis="Shape2_vis">
+        <shape type="Scale" x="0.6" y="0.4" z="1.0">
+          <shape type="Cone" rmin1="5*cm" rmax1="30*cm" rmin2="20*cm" rmax2="90*cm" z="40*cm"/>
+	</shape>
+        <position x="0*cm" y="-50*cm"  z="0*cm"/>
+        <rotation x="1"    y="0"  z="0"/>
+      </check>
+      <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Scaled_Cone.txt" create="CheckShape_create"/>
+      <testn type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Scaled_Cone.txt" create="1"/>
+    </detector>
+  </detectors>
+</lccdd>
