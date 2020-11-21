@@ -51,4 +51,11 @@
     <vis name="Shape8_vis"       alpha="0.5" r="0.0" g="0.4" b="0.4" showDaughters="true" visible="true"/>
     <vis name="Shape_grey"       alpha="0.5" r="0.0" g="0.4" b="0.4" showDaughters="true" visible="true"/>
   </display>
+
+  <readouts>
+    <readout name="CheckHits">
+      <id>system:8,check:24</id> 
+    </readout>
+  </readouts>
+
 </lccdd>

@@ -16,16 +16,27 @@
 #include <DD4hep/Printout.h>
 #include <XML/Utilities.h>
 #include <DD4hep/ShapeTags.h>
+#include <TGeoScaledShape.h>
 #include <TGeoShapeAssembly.h>
 #include <TSystem.h>
 #include <TClass.h>
 
 // C/C++ include files
 #include <fstream>
+#include <memory>
 
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
+
+static Handle<TObject> create_Scaled(Detector&, xml_h e)   {
+  xml_dim_t scale(e);
+  Solid shape(xml_comp_t(scale.child(_U(shape))).createShape());
+  Solid solid = Scale(shape.ptr(), scale.x(1.0), scale.y(1.0), scale.z(1.0));
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  return solid;
+}
+DECLARE_XML_SHAPE(Scale__shape_constructor,create_Scaled)
 
 static Handle<TObject> create_Assembly(Detector&, xml_h e)   {
   xml_dim_t dim(e);
@@ -631,15 +642,21 @@ TGeoCombiTrans* createPlacement(const Rotation3D& iRot, const Position& iTrans) 
   return new TGeoCombiTrans(t, r);
 }
 
-static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
+static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens)  {
   xml_det_t    x_det     = e;
   string       name      = x_det.nameStr();
   xml_dim_t    x_reflect = x_det.child(_U(reflect), false);
   xml_comp_t   x_test    = x_det.child(xml_tag_t("test"), false);
   DetElement   det         (name,x_det.id());
+  Material     mat       = description.air();
   Assembly     assembly    (name);
   PlacedVolume pv;
   int count = 0;
+  
+  if ( x_det.hasChild(_U(material)) )  {
+    mat = description.material(x_det.child(_U(material)).attr<string>(_U(name)));
+    printout(INFO,"TestShape","+++ Volume material is %s", mat.name());      
+  }
   for ( xml_coll_t itm(e, _U(check)); itm; ++itm, ++count )   {
     xml_dim_t  x_check  = itm;
     xml_comp_t shape      (x_check.child(_U(shape)));
@@ -659,7 +676,13 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     }
     else   {
       solid  = xml::createShape(description, shape_type, shape);
-      volume = Volume(name+_toString(count,"_vol_%d"),solid, description.air());
+      volume = Volume(name+_toString(count,"_vol_%d"),solid, mat);
+    }
+    if ( x_det.hasChild(_U(sensitive)) )  {
+      string sens_type = x_det.child(_U(sensitive)).attr<string>(_U(type));
+      volume.setSensitiveDetector(sens);
+      sens.setType(sens_type);
+      printout(INFO,"TestShape","+++ Sensitive type is %s", sens_type.c_str());      
     }
     volume.setVisAttributes(description, x_check.visStr());
     solid->SetName(shape_type.c_str());
@@ -694,6 +717,7 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
 
     if ( x_check.hasAttr(_U(id)) )  {
       pv.addPhysVolID("check",x_check.id());
+      printout(INFO,"TestShape","+++ Volume id is %d", x_check.id());      
     }
 
     printout(INFO,"TestShape","Created successfull shape of type: %s",
@@ -731,6 +755,8 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
       instance_test = isInstance<EllipticalTube>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),EXTRUDEDPOLYGON_TAG) )
       instance_test = isInstance<ExtrudedPolygon>(solid);
+    else if ( 0 == strcasecmp(solid->GetTitle(),SCALE_TAG) )
+      instance_test = isInstance<Scale>(solid);
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
     else if ( 0 == strcasecmp(solid->GetTitle(),TESSELLATEDSOLID_TAG) )  {
       instance_test = isInstance<TessellatedSolid>(solid);
@@ -813,7 +839,7 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
   if ( x_reflect )   {
     xml_dim_t   x_pos(x_reflect.child(_U(position), false));
     xml_dim_t   x_rot(x_reflect.child(_U(rotation), false));
-    DetElement  full_detector(name+"_full",x_det.id());
+    DetElement  full_detector(name+"_full",100+x_det.id());
     Assembly    full_assembly(name+"_full");
     RotationZYX refl_rot;
     Position    refl_pos;
@@ -828,7 +854,7 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
     det.setPlacement(pv);
 
     /// Place reflected object
-    auto reflected = det.reflect(name+"_reflected",x_det.id());
+    auto reflected = det.reflect(name+"_reflected",100+x_det.id());
     pv = full_assembly.placeVolume(reflected.second, refl_trafo);
     full_detector.add(reflected.first);
     reflected.first.setPlacement(pv);
@@ -841,6 +867,7 @@ static Ref_t create_shape(Detector& description, xml_h e, Ref_t /* sens */)  {
   }
   else  {
     pv = description.worldVolume().placeVolume(assembly);
+    pv.addPhysVolID("system", x_det.id());
     det.setPlacement(pv);
   }
 

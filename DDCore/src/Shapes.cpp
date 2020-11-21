@@ -116,6 +116,26 @@ ShapelessSolid::ShapelessSolid(const string& nam)  {
   _assign(new TGeoShapeAssembly(), nam, SHAPELESS_TAG, true);
 }
 
+void Scale::make(const string& nam, Solid base, double x_scale, double y_scale, double z_scale)   {
+  auto scale = make_unique<TGeoScale>(x_scale, y_scale, z_scale);
+  _assign(new TGeoScaledShape(nam.c_str(), base.access(), scale.release()), "", SCALE_TAG, true);
+}
+
+/// Access x-scale factor
+double Scale::scale_x() const {
+  return this->access()->GetScale()->GetScale()[0];
+}
+
+/// Access y-scale factor
+double Scale::scale_y() const {
+  return this->access()->GetScale()->GetScale()[1];
+}
+
+/// Access z-scale factor
+double Scale::scale_z() const {
+  return this->access()->GetScale()->GetScale()[2];
+}
+
 void Box::make(const string& nam, double x_val, double y_val, double z_val)   {
   _assign(new TGeoBBox(nam.c_str(), x_val, y_val, z_val), "", BOX_TAG, true);
 }
@@ -1010,6 +1030,7 @@ INSTANTIATE(TGeoHype);
 INSTANTIATE(TGeoTrap);
 INSTANTIATE(TGeoTrd1);
 INSTANTIATE(TGeoTrd2);
+INSTANTIATE(TGeoScaledShape);
 INSTANTIATE(TGeoCompositeShape);
 
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)

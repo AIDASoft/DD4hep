@@ -30,6 +30,7 @@
 #define SPHERE_TAG              "Sphere"
 #define TORUS_TAG               "Torus"
 #define TRAP_TAG                "Trap"
+#define SCALE_TAG               "Scale"
 #define POLYHEDRA_TAG           "Polyhedra"
 #define EXTRUDEDPOLYGON_TAG     "ExtrudedPolygon"
 #define EIGHTPOINTSOLID_TAG     "EightPointSolid"

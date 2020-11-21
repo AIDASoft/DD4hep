@@ -66,6 +66,7 @@
 #include "G4Transform3D.hh"
 #include "G4ThreeVector.hh"
 #include "G4PVPlacement.hh"
+#include "G4ScaledSolid.hh"
 #include "G4ElectroMagneticField.hh"
 #include "G4FieldManager.hh"
 #include "G4ReflectionFactory.hh"
@@ -585,12 +586,11 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       solid = convertShape<TGeoTessellated>(shape);
 #endif
     else if (isa == TGeoScaledShape::Class())  {
-      TGeoScaledShape* sh = (TGeoScaledShape*) shape;
+      TGeoScaledShape* sh   = (TGeoScaledShape*) shape;
+      TGeoShape*       sol  = sh->GetShape();
       const double*    vals = sh->GetScale()->GetScale();
-      Solid            s_sh(sh->GetShape());
-      G4VSolid* scaled = (G4VSolid*)handleSolid(s_sh.name(), s_sh.ptr());
-      solid = new G4ReflectedSolid(scaled->GetName() + "_refl",
-                                   scaled, G4Scale3D(vals[0],vals[1],vals[2]));
+      G4VSolid* g4solid = (G4VSolid*)handleSolid(sol->GetName(), sol);
+      solid = new G4ScaledSolid(sh->GetName(), g4solid, {vals[0], vals[1], vals[2]});
     }
     else if (isa == TGeoCompositeShape::Class())   {
       const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;

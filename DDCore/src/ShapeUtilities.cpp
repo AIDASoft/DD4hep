@@ -62,6 +62,7 @@ namespace dd4hep {
     return check_shape_type<typename SOLID::Object>(solid);
   }
   template bool isInstance<Box>               (const Handle<TGeoShape>& solid);
+  template bool isInstance<Scale>             (const Handle<TGeoShape>& solid);
   template bool isInstance<ShapelessSolid>    (const Handle<TGeoShape>& solid);
   template bool isInstance<HalfSpace>         (const Handle<TGeoShape>& solid);
   template bool isInstance<ConeSegment>       (const Handle<TGeoShape>& solid);
@@ -132,6 +133,7 @@ namespace dd4hep {
     return check_shape_type<typename SOLID::Object>(solid);
   }
   template bool isA<Box>(const Handle<TGeoShape>& solid);
+  template bool isA<Scale>(const Handle<TGeoShape>& solid);
   template bool isA<ShapelessSolid>(const Handle<TGeoShape>& solid);
   template bool isA<HalfSpace>(const Handle<TGeoShape>& solid);
   template bool isA<Cone>(const Handle<TGeoShape>& solid);
@@ -397,6 +399,7 @@ namespace dd4hep {
   {  return dimensions<typename T::Object>(get_ptr<typename T::Object>(shape.ptr()));  }
   template vector<double> dimensions<ShapelessSolid>   (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<Box>              (const Handle<TGeoShape>& shape);
+  template vector<double> dimensions<Scale>            (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<HalfSpace>        (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<Polycone>         (const Handle<TGeoShape>& shape);
   template vector<double> dimensions<ConeSegment>      (const Handle<TGeoShape>& shape);
@@ -798,6 +801,8 @@ namespace dd4hep {
   template <> void set_dimensions(ShapelessSolid shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
   template <> void set_dimensions(Box shape, const std::vector<double>& params)
+  {  set_dimensions(shape.ptr(), params);   }
+  template <> void set_dimensions(Scale shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
   template <> void set_dimensions(HalfSpace shape, const std::vector<double>& params)
   {  set_dimensions(shape.ptr(), params);   }
