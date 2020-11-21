@@ -210,10 +210,11 @@ namespace {
     // The volume is now properly cloned, but with the same shape.
     // Reflect the shape (if any) and connect it.
     if (v->GetShape())   {
-      TGeoScale* scale = new TGeoScale( 1., 1.,-1.);
-      TGeoShape* reflected_shape =
-        TGeoScaledShape::MakeScaledShape((nam+"_shape_refl").c_str(), v->GetShape(), scale);
-      vol->SetShape(reflected_shape);
+      //TGeoScale* scale = new TGeoScale( 1., 1.,-1.);
+      //TGeoShape* reflected_shape =
+      //  TGeoScaledShape::MakeScaledShape((nam+"_shape_refl").c_str(), v->GetShape(), scale);
+      //vol->SetShape(reflected_shape);
+      vol->SetShape(v->GetShape());
     }
     // Reflect the daughters.
     Int_t nd = vol->GetNdaughters();
@@ -293,7 +294,7 @@ void ReflectionBuilder::execute()  const   {
       TGeoMatrix* mclone = new TGeoCombiTrans(*matrix);
       mclone->RegisterYourself();
       // Reflect just the rotation component
-      mclone->ReflectZ(kFALSE, kTRUE);
+      //mclone->ReflectZ(kFALSE, kTRUE);
       if ( print_active )  {
 	printout(INFO,"ReflectionBuilder","CLONE matrix:");
 	mclone->Print();
