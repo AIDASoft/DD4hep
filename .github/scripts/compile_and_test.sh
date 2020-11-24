@@ -14,6 +14,7 @@ cmake -GNinja \
       -DDD4HEP_USE_GEANT4=ON \
       -DBoost_NO_BOOST_CMAKE=ON \
       -DDD4HEP_USE_LCIO=ON \
+      -DDD4HEP_USE_EDM4HEP=${EDM4HEP:-OFF} \
       -DDD4HEP_USE_TBB=${TBB} \
       -DBUILD_TESTING=ON \
       -DDD4HEP_DEBUG_CMAKE=ON \
