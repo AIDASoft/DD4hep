@@ -62,10 +62,24 @@ if (DD4HEP_USE_GEANT4)
     set_tests_properties(t_${TEST_NAME} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED")
   endforeach(TEST_NAME)
 
-  ADD_TEST( t_test_ddsim "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
-    ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -G -N=2 --outputFile=testSid.root
-    --gun.position \"0.0 0.0 1.0*cm\" --gun.direction \"1.0 0.0 1.0\" --gun.energy 100*GeV --part.userParticleHandler=)
-  SET_TESTS_PROPERTIES( t_test_ddsim PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+
+  set(DDSIM_OUTPUT_FILES .root)
+
+  if(DD4HEP_USE_LCIO)
+    LIST(APPEND DDSIM_OUTPUT_FILES .slcio)
+  endif()
+
+  if(DD4HEP_USE_EDM4HEP)
+    LIST(APPEND DDSIM_OUTPUT_FILES edm4hep.root)
+  endif()
+
+  foreach(OUTPUT_FILE IN LISTS DDSIM_OUTPUT_FILES)
+    ADD_TEST( t_test_ddsim_${OUTPUT_FILE} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -G -N=2
+      --outputFile=testSid${OUTPUT_FILE}
+      --gun.position \"0.0 0.0 1.0*cm\" --gun.direction \"1.0 0.0 1.0\" --gun.energy 100*GeV --part.userParticleHandler=)
+    SET_TESTS_PROPERTIES( t_test_ddsim_${OUTPUT_FILE} PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+  endforeach()
 
 endif()
 install(DIRECTORY include/DD4hep DESTINATION include)
