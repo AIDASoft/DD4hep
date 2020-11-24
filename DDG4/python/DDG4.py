@@ -111,13 +111,12 @@ def importConstants(description, namespace=None, debug=False):
 
     for k, v in list(todo.items()):
       if not hasattr(ns, k):
-        val = evaluator.evaluate(v)
-        status = evaluator.status()
-        if status == 0:
-          evaluator.setVariable(k, val)
-          setattr(ns, k, val)
+        val = evaluator.evaluate(str(v))
+        if val.first == 0:
+          evaluator.setVariable(str(k), val.second)
+          setattr(ns, k, val.second)
           if debug:
-            logger.info('Imported global value: "' + k + '" = "' + str(val) + '" into namespace' + ns.__name__)
+            logger.info('Imported global value: "' + k + '" = "' + str(val.second) + '" into namespace' + ns.__name__)
           del todo[k]
           num = num + 1
   if cnt < 100:
