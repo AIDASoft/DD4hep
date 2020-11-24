@@ -99,6 +99,66 @@ namespace dd4hep  {
       std::pair<int,double> evaluate(const std::string& expression, std::ostream& os)  const;
 
       /**
+       * Adds to the dictionary a function without parameters.
+       * If such a function already exist in the dictionary,
+       * then status will be set to WARNING_EXISTING_FUNCTION.
+       *
+       * @param name function name.
+       * @param fun pointer to the real function in the user code.
+       */
+      void setFunction(const std::string& name, double (*fun)())  const;
+
+      /**
+       * Adds to the dictionary a function with one parameter.
+       * If such a function already exist in the dictionary,
+       * then status will be set to WARNING_EXISTING_FUNCTION.
+       *
+       * @param name function name.
+       * @param fun pointer to the real function in the user code.
+       */
+      void setFunction(const std::string& name, double (*fun)(double))  const;
+
+      /**
+       * Adds to the dictionary a function with two parameters.
+       * If such a function already exist in the dictionary,
+       * then status will be set to WARNING_EXISTING_FUNCTION.
+       *
+       * @param name function name.
+       * @param fun pointer to the real function in the user code.
+       */
+      void setFunction(const std::string& name, double (*fun)(double, double))  const;
+
+      /**
+       * Adds to the dictionary a function with three parameters.
+       * If such a function already exist in the dictionary,
+       * then status will be set to WARNING_EXISTING_FUNCTION.
+       *
+       * @param name function name.
+       * @param fun pointer to the real function in the user code.
+       */
+      void setFunction(const std::string& name, double (*fun)(double, double, double))  const;
+
+      /**
+       * Adds to the dictionary a function with four parameters.
+       * If such a function already exist in the dictionary,
+       * then status will be set to WARNING_EXISTING_FUNCTION.
+       *
+       * @param name function name.
+       * @param fun pointer to the real function in the user code.
+       */
+      void setFunction(const std::string& name, double (*fun)(double, double, double, double))  const;
+
+      /**
+       * Adds to the dictionary a function with five parameters.
+       * If such a function already exist in the dictionary,
+       * then status will be set to WARNING_EXISTING_FUNCTION.
+       *
+       * @param name function name.
+       * @param fun pointer to the real function in the user code.
+       */
+      void setFunction(const std::string& name, double (*fun)(double, double, double, double, double))  const;
+
+      /**
        * Adds to the dictionary a string constant
        *
        * @param name name of the variable.
@@ -152,8 +212,17 @@ namespace dd4hep  {
        */
       bool findVariable(const std::string& name)  const;
 
+      /**
+       * Finds the function in the dictionary.
+       *
+       * @param  name name of the function to be unset.
+       * @param  npar number of parameters of the function.
+       * @return true if such a function exists, false otherwise.
+       */
+      bool findFunction(const std::string& name, int npar)   const;
+
       class Object;
-      Object* object = 0;          // private data
+      Object* object = 0;                                  // internal data
 
     private:
       Evaluator(const Evaluator &) = delete;               // copy constructor is not allowed

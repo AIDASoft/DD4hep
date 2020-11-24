@@ -74,7 +74,7 @@ namespace dd4hep  {
        * @see error_position
        * @see print_error
        */
-      double evaluate(const char * expression);
+      double evaluate(const char* expression);
 
       /**
        * Returns status of the last operation with the evaluator.
@@ -119,7 +119,7 @@ namespace dd4hep  {
        * @param name name of the variable.
        * @param value value assigned to the variable.
        */
-      void setVariable(const char * name, double value);
+      void setVariable(const char* name, double value);
 
       /**
        * Adds to the dictionary a variable with an arithmetic expression
@@ -130,7 +130,7 @@ namespace dd4hep  {
        * @param name name of the variable.
        * @param expression arithmetic expression.
        */
-      void setVariable(const char * name, const char * expression);
+      void setVariable(const char* name, const char* expression);
 
       /**
        * Adds to the dictionary a function without parameters.
@@ -140,7 +140,7 @@ namespace dd4hep  {
        * @param name function name.
        * @param fun pointer to the real function in the user code.
        */
-      void setFunction(const char * name, double (*fun)());
+      void setFunction(const char* name, double (*fun)());
 
       /**
        * Adds to the dictionary a function with one parameter.
@@ -150,7 +150,7 @@ namespace dd4hep  {
        * @param name function name.
        * @param fun pointer to the real function in the user code.
        */
-      void setFunction(const char * name, double (*fun)(double));
+      void setFunction(const char* name, double (*fun)(double));
 
       /**
        * Adds to the dictionary a function with two parameters.
@@ -160,7 +160,7 @@ namespace dd4hep  {
        * @param name function name.
        * @param fun pointer to the real function in the user code.
        */
-      void setFunction(const char * name, double (*fun)(double, double));
+      void setFunction(const char* name, double (*fun)(double, double));
 
       /**
        * Adds to the dictionary a function with three parameters.
@@ -170,7 +170,7 @@ namespace dd4hep  {
        * @param name function name.
        * @param fun pointer to the real function in the user code.
        */
-      void setFunction(const char * name, double (*fun)(double, double, double));
+      void setFunction(const char* name, double (*fun)(double, double, double));
 
       /**
        * Adds to the dictionary a function with four parameters.
@@ -180,7 +180,7 @@ namespace dd4hep  {
        * @param name function name.
        * @param fun pointer to the real function in the user code.
        */
-      void setFunction(const char * name, double (*fun)(double, double, double, double));
+      void setFunction(const char* name, double (*fun)(double, double, double, double));
 
       /**
        * Adds to the dictionary a function with five parameters.
@@ -190,7 +190,7 @@ namespace dd4hep  {
        * @param name function name.
        * @param fun pointer to the real function in the user code.
        */
-      void setFunction(const char * name, double (*fun)(double, double, double, double, double));
+      void setFunction(const char* name, double (*fun)(double, double, double, double, double));
 
       /**
        * Finds the variable in the dictionary.
@@ -198,7 +198,7 @@ namespace dd4hep  {
        * @param  name name of the variable.
        * @return true if such a variable exists, false otherwise.
        */
-      bool findVariable(const char * name) const;
+      bool findVariable(const char* name) const;
 
       /**
        * Finds the function in the dictionary.
@@ -207,14 +207,14 @@ namespace dd4hep  {
        * @param  npar number of parameters of the function.
        * @return true if such a function exists, false otherwise.
        */
-      bool findFunction(const char * name, int npar) const;
+      bool findFunction(const char* name, int npar) const;
 
       /**
        * Removes the variable from the dictionary.
        *
        * @param name name of the variable.
        */
-      void removeVariable(const char * name);
+      void removeVariable(const char* name);
 
       /**
        * Removes the function from the dictionary.
@@ -222,7 +222,7 @@ namespace dd4hep  {
        * @param name name of the function to be unset.
        * @param npar number of parameters of the function.
        */
-      void removeFunction(const char * name, int npar);
+      void removeFunction(const char* name, int npar);
 
       /**
        * Clear all settings.

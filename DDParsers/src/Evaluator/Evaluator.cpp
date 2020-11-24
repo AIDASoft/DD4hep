@@ -933,5 +933,53 @@ bool Evaluator::findVariable(const std::string& name)  const    {
   return ret;
 }
 
+//---------------------------------------------------------------------------
+void Evaluator::setFunction(const std::string& name, double (*fun)())  const    {
+  object->lock();
+  object->setFunction(name.c_str(), fun);
+  object->unlock();
+}
 
+//---------------------------------------------------------------------------
+void Evaluator::setFunction(const std::string& name, double (*fun)(double))  const    {
+  object->lock();
+  object->setFunction(name.c_str(), fun);
+  object->unlock();
+}
 
+//---------------------------------------------------------------------------
+void Evaluator::setFunction(const std::string& name, double (*fun)(double, double))  const    {
+  object->lock();
+  object->setFunction(name.c_str(), fun);
+  object->unlock();
+}
+
+//---------------------------------------------------------------------------
+void Evaluator::setFunction(const std::string& name, double (*fun)(double, double, double))  const    {
+  object->lock();
+  object->setFunction(name.c_str(), fun);
+  object->unlock();
+}
+
+//---------------------------------------------------------------------------
+void Evaluator::setFunction(const std::string& name, double (*fun)(double, double, double, double))  const    {
+  object->lock();
+  object->setFunction(name.c_str(), fun);
+  object->unlock();
+}
+
+//---------------------------------------------------------------------------
+void Evaluator::setFunction(const std::string& name, double (*fun)(double, double, double, double, double))  const    {
+  object->lock();
+  object->setFunction(name.c_str(), fun);
+  object->unlock();
+}
+
+//---------------------------------------------------------------------------
+bool Evaluator::findFunction(const std::string& name, int npar) const    {
+  bool ret;
+  object->lock();
+  ret = object->findFunction(name.c_str(), npar);
+  object->unlock();
+  return ret;
+}
