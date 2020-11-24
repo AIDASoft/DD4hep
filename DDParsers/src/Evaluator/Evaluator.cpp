@@ -3,17 +3,19 @@
 // ---------------------------------------------------------------------------
 
 #include "Evaluator/Evaluator.h"
+#include "Evaluator/detail/Evaluator.h"
 
 #include <iostream>
 #include <cmath>        // for pow()
+#include <sstream>
+#include <mutex>
+#include <cctype>
+#include <cerrno>
+#include <cstring>
+#include <cstdlib>     // for strtod()
 #include "stack.src"
 #include "string.src"
 #include "hash_map.src"
-#include <sstream>
-#include <cstring>
-#include <cctype>
-#include <cerrno>
-#include <cstdlib>     // for strtod()
 
 // Disable some diagnostics, which we know, but need to ignore
 #if defined(__GNUC__) && !defined(__APPLE__) && !defined(__llvm__)
@@ -59,11 +61,12 @@ namespace {
 
   /// Internal expression evaluator helper class
   struct Struct {
-    dic_type theDictionary;
-    pchar    theExpression;
-    pchar    thePosition;
-    int      theStatus;
-    double   theResult;
+    dic_type    theDictionary;
+    pchar       theExpression;
+    pchar       thePosition;
+    int         theStatus;
+    double      theResult;
+    std::mutex  theLock;
   };
 
   /// Internal expression evaluator helper union
@@ -610,7 +613,7 @@ static void setItem(const char * prefix, const char * name,
 using namespace dd4hep::tools;
 
 //---------------------------------------------------------------------------
-Evaluator::Evaluator() {
+Evaluator::Object::Object() {
   Struct * s = new Struct();
   p = (void *) s;
   s->theExpression = 0;
@@ -620,17 +623,17 @@ Evaluator::Evaluator() {
 }
 
 //---------------------------------------------------------------------------
-Evaluator::~Evaluator() {
+Evaluator::Object::~Object() {
   Struct * s = reinterpret_cast<Struct*>(p);
   if (s->theExpression != 0) {
     delete[] s->theExpression;
     s->theExpression = 0;
   }
-  delete reinterpret_cast<Struct*>(p);
+  delete s;
 }
 
 //---------------------------------------------------------------------------
-double Evaluator::evaluate(const char * expression) {
+double Evaluator::Object::evaluate(const char * expression) {
   Struct * s = reinterpret_cast<Struct*>(p);
   if (s->theExpression != 0) { delete[] s->theExpression; }
   s->theExpression = 0;
@@ -650,17 +653,17 @@ double Evaluator::evaluate(const char * expression) {
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::status() const {
+int Evaluator::Object::status() const {
   return (reinterpret_cast<Struct*>(p))->theStatus;
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::error_position() const {
+int Evaluator::Object::error_position() const {
   return (reinterpret_cast<Struct*>(p))->thePosition - (reinterpret_cast<Struct*>(p))->theExpression;
 }
 
 //---------------------------------------------------------------------------
-void Evaluator::print_error() const {
+void Evaluator::Object::print_error() const {
   std::stringstream str;
   print_error(str);
   if ( str.str().empty() )  return;
@@ -668,8 +671,8 @@ void Evaluator::print_error() const {
 }
 
 //---------------------------------------------------------------------------
-void Evaluator::print_error(std::ostream& os) const {
-  static char prefix[] = "Evaluator : ";
+void Evaluator::Object::print_error(std::ostream& os) const {
+  static char prefix[] = "Evaluator::Object : ";
   Struct * s = reinterpret_cast<Struct*>(p);
   const char* opt = (s->thePosition ? s->thePosition : "");
   switch (s->theStatus) {
@@ -703,7 +706,7 @@ void Evaluator::print_error(std::ostream& os) const {
 }
 
 //---------------------------------------------------------------------------
-void Evaluator::setEnviron(const char* name, const char* value)  {
+void Evaluator::Object::setEnviron(const char* name, const char* value)  {
   Struct* s = reinterpret_cast<Struct*>(p);
   string prefix = "${";
   string item_name = prefix + string(name) + string("}");
@@ -727,7 +730,7 @@ void Evaluator::setEnviron(const char* name, const char* value)  {
   }
 }
 //---------------------------------------------------------------------------
-const char* Evaluator::getEnviron(const char* name)  {
+const char* Evaluator::Object::getEnviron(const char* name)  {
   Struct* s = reinterpret_cast<Struct*>(p);
   string item_name = name;
   //std::cout << " ++++++++++++++++++++++++++++ Try to resolve env:" << name << std::endl;
@@ -750,45 +753,45 @@ const char* Evaluator::getEnviron(const char* name)  {
 }
 
 //---------------------------------------------------------------------------
-void Evaluator::setVariable(const char * name, double value)
+void Evaluator::Object::setVariable(const char * name, double value)
 { setItem("", name, Item(value), reinterpret_cast<Struct*>(p)); }
 
-void Evaluator::setVariable(const char * name, const char * expression)
+void Evaluator::Object::setVariable(const char * name, const char * expression)
 { setItem("", name, Item(expression), reinterpret_cast<Struct*>(p)); }
 
 //---------------------------------------------------------------------------
-void Evaluator::setFunction(const char * name,double (*fun)())   {
+void Evaluator::Object::setFunction(const char * name,double (*fun)())   {
   FCN fcn(fun);
   setItem("0", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
 }
 
-void Evaluator::setFunction(const char * name,double (*fun)(double))   {
+void Evaluator::Object::setFunction(const char * name,double (*fun)(double))   {
   FCN fcn(fun);
   setItem("1", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
 }
 
-void Evaluator::setFunction(const char * name, double (*fun)(double,double))  {
+void Evaluator::Object::setFunction(const char * name, double (*fun)(double,double))  {
   FCN fcn(fun);
   setItem("2", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
 }
 
-void Evaluator::setFunction(const char * name, double (*fun)(double,double,double))  {
+void Evaluator::Object::setFunction(const char * name, double (*fun)(double,double,double))  {
   FCN fcn(fun);
   setItem("3", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
 }
 
-void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double)) {
+void Evaluator::Object::setFunction(const char * name, double (*fun)(double,double,double,double)) {
   FCN fcn(fun);
   setItem("4", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
 }
 
-void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double,double))  {
+void Evaluator::Object::setFunction(const char * name, double (*fun)(double,double,double,double,double))  {
   FCN fcn(fun);
   setItem("5", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
 }
 
 //---------------------------------------------------------------------------
-bool Evaluator::findVariable(const char * name) const {
+bool Evaluator::Object::findVariable(const char * name) const {
   if (name == 0 || *name == '\0') return false;
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return false;
@@ -799,7 +802,7 @@ bool Evaluator::findVariable(const char * name) const {
 }
 
 //---------------------------------------------------------------------------
-bool Evaluator::findFunction(const char * name, int npar) const {
+bool Evaluator::Object::findFunction(const char * name, int npar) const {
   if (name == 0 || *name == '\0')    return false;
   if (npar < 0  || npar > MAX_N_PAR) return false;
   const char * pointer; int n; REMOVE_BLANKS;
@@ -810,7 +813,7 @@ bool Evaluator::findFunction(const char * name, int npar) const {
 }
 
 //---------------------------------------------------------------------------
-void Evaluator::removeVariable(const char * name) {
+void Evaluator::Object::removeVariable(const char * name) {
   if (name == 0 || *name == '\0') return;
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return;
@@ -819,7 +822,7 @@ void Evaluator::removeVariable(const char * name) {
 }
 
 //---------------------------------------------------------------------------
-void Evaluator::removeFunction(const char * name, int npar) {
+void Evaluator::Object::removeFunction(const char * name, int npar) {
   if (name == 0 || *name == '\0')    return;
   if (npar < 0  || npar > MAX_N_PAR) return;
   const char * pointer; int n; REMOVE_BLANKS;
@@ -829,11 +832,106 @@ void Evaluator::removeFunction(const char * name, int npar) {
 }
 
 //---------------------------------------------------------------------------
-void Evaluator::clear() {
+void Evaluator::Object::lock()  {
   Struct * s = reinterpret_cast<Struct*>(p);
-  s->theDictionary.clear();
-  s->theExpression = 0;
-  s->thePosition   = 0;
-  s->theStatus     = OK;
-  s->theResult     = 0.0;
+  s->theLock.lock();
 }
+
+//---------------------------------------------------------------------------
+void Evaluator::Object::unlock()  {
+  Struct * s = reinterpret_cast<Struct*>(p);
+  s->theLock.unlock();
+}
+
+//---------------------------------------------------------------------------
+Evaluator::Evaluator()   {
+  object = new Object();
+}
+
+//---------------------------------------------------------------------------
+Evaluator::~Evaluator()   {
+  delete object;
+}
+
+//---------------------------------------------------------------------------
+std::pair<int,double> Evaluator::evaluate(const std::string& expression)  const   {
+  object->lock();
+  double result = object->evaluate(expression.c_str());
+  int    status = object->status();
+  object->unlock();
+  return std::make_pair(status,result);
+}
+
+//---------------------------------------------------------------------------
+std::pair<int,double> Evaluator::evaluate(const std::string& expression, std::ostream& os)  const   {
+  object->lock();
+  double result = object->evaluate(expression.c_str());
+  int    status = object->status();
+  if ( status != OK )   {
+    object->print_error(os);
+  }
+  object->unlock();
+  return std::make_pair(status,result);
+}
+
+//---------------------------------------------------------------------------
+void Evaluator::setEnviron(const std::string& name, const std::string& value)  const    {
+  object->lock();
+  object->setEnviron(name.c_str(), value.c_str());
+  object->unlock();
+}
+
+//---------------------------------------------------------------------------
+std::pair<int,std::string> Evaluator::getEnviron(const std::string& name)  const    {
+  const char* env = nullptr;
+  std::pair<int,std::string> result;
+  object->lock();
+  env = object->getEnviron(name.c_str());
+  result.first = object->status();
+  if ( env ) result.second = env;
+  object->unlock();
+  return result;
+}
+
+//---------------------------------------------------------------------------
+std::pair<int,std::string> Evaluator::getEnviron(const std::string& name, std::ostream& os)  const    {
+  const char* env = nullptr;
+  std::pair<int,std::string> result;
+  object->lock();
+  env = object->getEnviron(name.c_str());
+  result.first = object->status();
+  if ( env )   {
+    result.second = env;
+  }
+  if ( result.first != OK )   {
+    object->print_error(os);
+  }
+  object->unlock();
+  return result;
+}
+
+//---------------------------------------------------------------------------
+void Evaluator::setVariable(const std::string& name, double value)  const    {
+  object->lock();
+  object->setVariable(name.c_str(), value);
+  object->unlock();
+}
+
+//---------------------------------------------------------------------------
+void Evaluator::setVariable(const std::string& name, const std::string& value)  const    {
+  object->lock();
+  object->setVariable(name.c_str(), value.c_str());
+  object->unlock();
+}
+
+//---------------------------------------------------------------------------
+bool Evaluator::findVariable(const std::string& name)  const    {
+  bool ret;
+  object->lock();
+  ret = object->findVariable(name.c_str());
+  object->unlock();
+  return ret;
+}
+
+
+

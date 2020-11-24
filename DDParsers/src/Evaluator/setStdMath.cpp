@@ -2,6 +2,7 @@
 // ----------------------------------------------------------------------
 
 #include "Evaluator/Evaluator.h"
+#include "Evaluator/detail/Evaluator.h"
 #include <limits>
 
 #ifdef DD4HEP_NONE
@@ -68,7 +69,7 @@ namespace dd4hep  {
 
   namespace tools {
 
-    void Evaluator::setStdMath() {
+    void Evaluator::Object::setStdMath() {
 
       //   S E T   S T A N D A R D   C O N S T A N T S
 
