@@ -120,7 +120,7 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 ########################
 
 # Configure ROOT
-find_package (ROOT 6.08 REQUIRED)
+find_package (ROOT 6.08 REQUIRED CONFIG)
 DD4HEP_SETUP_ROOT_TARGETS()
 
 # Configure BOOST
@@ -129,7 +129,7 @@ DD4HEP_SETUP_BOOST_TARGETS()
 
 # Configure Geant4
 if(DD4HEP_USE_GEANT4)
-  find_package( Geant4 10.2.2 REQUIRED  gdml ui_all vis_all )
+  find_package( Geant4 10.2.2 REQUIRED  gdml ui_all vis_all CONFIG)
   IF(NOT Geant4_builtin_clhep_FOUND)
     SET(DD4HEP_USE_CLHEP TRUE)
   ENDIF()
@@ -141,7 +141,7 @@ if(DD4HEP_USE_GEANT4)
 endif()
 
 if(DD4HEP_USE_LCIO)
-  find_package(LCIO REQUIRED)
+  find_package(LCIO REQUIRED CONFIG)
   DD4HEP_SETUP_LCIO_TARGETS()
 endif()
 
@@ -150,7 +150,7 @@ IF(DD4HEP_USE_HEPMC3)
 ENDIF()
 
 if(DD4HEP_USE_TBB)
-  find_package(TBB REQUIRED)
+  find_package(TBB REQUIRED CONFIG)
 endif()
 
 

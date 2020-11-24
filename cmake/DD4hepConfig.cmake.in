@@ -56,7 +56,7 @@ if(DD4HEP_USE_GEANT4)
     find_dependency(CLHEP REQUIRED CONFIG)
     UNSET(CLHEP_INCLUDE_DIR)
   ENDIF()
-  find_dependency(Geant4 10.2.2 REQUIRED gdml ui_all vis_all)
+  find_dependency(Geant4 10.2.2 REQUIRED gdml ui_all vis_all CONFIG)
   DD4HEP_SETUP_GEANT4_TARGETS()
 endif()
 
