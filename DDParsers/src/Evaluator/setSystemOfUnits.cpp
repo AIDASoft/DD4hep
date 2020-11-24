@@ -2,20 +2,21 @@
 // ----------------------------------------------------------------------
 
 #include "Evaluator/Evaluator.h"
+#include "Evaluator/detail/Evaluator.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {
 
   namespace tools {
 
-    void Evaluator::setSystemOfUnits(double meter,
-				     double kilogram,
-				     double second,
-				     double ampere,
-				     double kelvin,
-				     double mole,
-				     double candela,
-				     double radians)
+    void Evaluator::Object::setSystemOfUnits(double meter,
+					     double kilogram,
+					     double second,
+					     double ampere,
+					     double kelvin,
+					     double mole,
+					     double candela,
+					     double radians)
     {
       const double kilo_  = 1.e+03; // chilioi (Greek) "thousand"
       const double mega_  = 1.e+06; // megas (Greek) "large"

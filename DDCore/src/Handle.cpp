@@ -30,7 +30,7 @@ namespace dd4hep {
 }
 
 namespace {
-  dd4hep::tools::Evaluator& eval(dd4hep::evaluator());
+  const dd4hep::tools::Evaluator& eval(dd4hep::evaluator());
 }
 
 using namespace std;
@@ -38,51 +38,47 @@ using namespace dd4hep;
 using namespace dd4hep::detail;
 
 namespace   {
-  void check_evaluation(const string& value, int status)   {
-    if (status != tools::Evaluator::OK) {
-      stringstream str;
-      eval.print_error(str);
-      throw runtime_error("dd4hep: "+str.str()+" : value="+value+" [Evaluation error]");
+
+  void check_evaluation(const string& value, std::pair<int,double> res, stringstream& err)   {
+    if ( res.first != tools::Evaluator::OK) {
+      throw runtime_error("dd4hep: "+err.str()+" : value="+value+" [Evaluation error]");
     }
   }
+  
 }
 
 namespace dd4hep  {
   
-  short _toShort(const string& value) {
+  std::pair<int, double> _toFloatingPoint(const string& value)   {
+    stringstream err;
+    auto result = eval.evaluate(value, err);
+    check_evaluation(value, result, err);
+    return result;
+  }
+  
+  std::pair<int, double> _toInteger(const string& value)    {
     string s(value);
     size_t idx = s.find("(int)");
     if (idx != string::npos)
       s.erase(idx, 5);
+    idx = s.find("(long)");
+    if (idx != string::npos)
+      s.erase(idx, 6);
     while (s[0] == ' ')
       s.erase(0, 1);
-    double result = eval.evaluate(s.c_str());
-    check_evaluation(value, eval.status());
-    return (short) result;
+    return _toFloatingPoint(s);
+  }
+
+  short _toShort(const string& value) {
+    return (short) _toInteger(value).second;
   }
 
   int _toInt(const string& value) {
-    string s(value);
-    size_t idx = s.find("(int)");
-    if (idx != string::npos)
-      s.erase(idx, 5);
-    while (s[0] == ' ')
-      s.erase(0, 1);
-    double result = eval.evaluate(s.c_str());
-    check_evaluation(value, eval.status());
-    return (int) result;
+    return (int) _toInteger(value).second;
   }
 
   long _toLong(const string& value) {
-    string s(value);
-    size_t idx = s.find("(int)");
-    if (idx != string::npos)
-      s.erase(idx, 5);
-    while (s[0] == ' ')
-      s.erase(0, 1);
-    double result = eval.evaluate(s.c_str());
-    check_evaluation(value, eval.status());
-    return (long) result;
+    return (long) _toInteger(value).second;
   }
 
   bool _toBool(const string& value) {
@@ -91,16 +87,12 @@ namespace dd4hep  {
 
   /// String conversions: string to float value
   float _toFloat(const string& value) {
-    double result = eval.evaluate(value.c_str());
-    check_evaluation(value, eval.status());
-    return (float) result;
+    return (float) _toFloatingPoint(value).second;
   }
 
   /// String conversions: string to double value
   double _toDouble(const string& value) {
-    double result = eval.evaluate(value.c_str());
-    check_evaluation(value, eval.status());
-    return result;
+    return _toFloatingPoint(value).second;
   }
 
   /// Generic type conversion from string to primitive value  \ingroup DD4HEP_CORE
@@ -234,6 +226,7 @@ namespace dd4hep  {
       return;
     }
     else  {
+      stringstream err;
       string n = name, v = value;
       size_t idx = v.find("(int)");
       if (idx != string::npos)
@@ -243,9 +236,31 @@ namespace dd4hep  {
         v.erase(idx, 7);
       while (v[0] == ' ')
         v.erase(0, 1);
-      double result = eval.evaluate(v.c_str());
-      check_evaluation(v, eval.status());
-      eval.setVariable(n.c_str(), result);
+      auto result = eval.evaluate(v, err);
+      check_evaluation(v, result, err);
+      eval.setVariable(n, result.second);
+    }
+  }
+
+  /// Evaluate string constant using environment stored in the evaluator
+  string _getEnviron(const string& env)   {
+    size_t id1 = env.find("${");
+    size_t id2 = env.rfind("}");
+    if ( id1 == string::npos || id2 == string::npos )   {
+      return "";
+    }
+    else  {
+      stringstream err;
+      string v   = env.substr(id1,id2-id1+1);
+      auto   ret = eval.getEnviron(v, err);
+      if ( ret.first != tools::Evaluator::OK) {
+	cerr << env << ": " << err.str() << endl;
+	throw runtime_error("dd4hep: Severe error during environment lookup of " + env);
+      }
+      v = env.substr(0,id1);
+      v += ret.second;
+      v += env.substr(id2+1);
+      return v;
     }
   }
 
