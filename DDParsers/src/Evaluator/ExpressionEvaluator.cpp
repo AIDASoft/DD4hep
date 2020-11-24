@@ -10,14 +10,25 @@
 // Author     : M.Frank
 //
 //==========================================================================
+
+/// Framework include files
 #include "Parsers/config.h"
 #include "Evaluator/Evaluator.h"
 #include "Evaluator/detail/Evaluator.h"
 #include "Evaluator/DD4hepUnits.h"
 
+/// C/C++ include files
+#include <mutex>
+
 namespace units = dd4hep;
 
 namespace {
+
+  void _eval_lock(bool lock_or_unlock)    {
+    static std::mutex construction_lock;
+    if ( lock_or_unlock ) construction_lock.lock();
+    else construction_lock.unlock();
+  }
   
   void _init(dd4hep::tools::Evaluator& e) {
     // Initialize numerical expressions parser with the standard math functions
@@ -72,10 +83,14 @@ namespace dd4hep {
   const tools::Evaluator& evaluator() {
     static const tools::Evaluator* e = 0;
     if ( !e )   {
-      static tools::Evaluator ev;
-      _init(ev);
-      _tgeoUnits(ev);
-      e = &ev;
+      _eval_lock(true);
+      if ( !e )   {
+	static tools::Evaluator ev;
+	_init(ev);
+	_tgeoUnits(ev);
+	e = &ev;
+      }
+      _eval_lock(false);
     }
     return *e;
   }
@@ -84,10 +99,14 @@ namespace dd4hep {
   const tools::Evaluator& g4Evaluator()   {
     static const tools::Evaluator* e = 0;
     if ( !e )   {
-      static tools::Evaluator ev;
-      _init(ev);
-      _g4Units(ev);
-      e = &ev;
+      _eval_lock(true);
+      if ( !e )   {
+	static tools::Evaluator ev;
+	_init(ev);
+	_g4Units(ev);
+	e = &ev;
+      }
+      _eval_lock(false);
     }
     return *e;
   }
@@ -96,10 +115,14 @@ namespace dd4hep {
   const tools::Evaluator& cgsEvaluator()   {
     static const tools::Evaluator* e = 0;
     if ( !e )   {
-      static tools::Evaluator ev;
-      _init(ev);
-      _cgsUnits(ev);
-      e = &ev;
+      _eval_lock(true);
+      if ( !e )   {
+	static tools::Evaluator ev;
+	_init(ev);
+	_cgsUnits(ev);
+	e = &ev;
+      }
+      _eval_lock(false);
     }
     return *e;
   }
