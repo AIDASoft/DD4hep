@@ -267,8 +267,10 @@ namespace dd4hep  {
       void lock();
       void unlock();
 
+      struct Struct;
+      
     private:
-      void * p;                             // private data
+      Struct* imp {0};                      // private data
       Object(const Object &);               // copy constructor is not allowed
       Object & operator=(const Object &);   // assignment is not allowed
     };

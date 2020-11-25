@@ -103,73 +103,80 @@ namespace dd4hep  {
        * If such a function already exist in the dictionary,
        * then status will be set to WARNING_EXISTING_FUNCTION.
        *
-       * @param name function name.
-       * @param fun pointer to the real function in the user code.
+       * @param  name function name.
+       * @param  fun pointer to the real function in the user code.
+       * @return result of the evaluation.
        */
-      void setFunction(const std::string& name, double (*fun)())  const;
+      int setFunction(const std::string& name, double (*fun)())  const;
 
       /**
        * Adds to the dictionary a function with one parameter.
        * If such a function already exist in the dictionary,
        * then status will be set to WARNING_EXISTING_FUNCTION.
        *
-       * @param name function name.
-       * @param fun pointer to the real function in the user code.
+       * @param  name function name.
+       * @param  fun pointer to the real function in the user code.
+       * @return result of the evaluation.
        */
-      void setFunction(const std::string& name, double (*fun)(double))  const;
+      int setFunction(const std::string& name, double (*fun)(double))  const;
 
       /**
        * Adds to the dictionary a function with two parameters.
        * If such a function already exist in the dictionary,
        * then status will be set to WARNING_EXISTING_FUNCTION.
        *
-       * @param name function name.
-       * @param fun pointer to the real function in the user code.
+       * @param  name function name.
+       * @param  fun pointer to the real function in the user code.
+       * @return result of the evaluation.
        */
-      void setFunction(const std::string& name, double (*fun)(double, double))  const;
+      int setFunction(const std::string& name, double (*fun)(double, double))  const;
 
       /**
        * Adds to the dictionary a function with three parameters.
        * If such a function already exist in the dictionary,
        * then status will be set to WARNING_EXISTING_FUNCTION.
        *
-       * @param name function name.
-       * @param fun pointer to the real function in the user code.
+       * @param  name function name.
+       * @param  fun pointer to the real function in the user code.
+       * @return result of the evaluation.
        */
-      void setFunction(const std::string& name, double (*fun)(double, double, double))  const;
+      int setFunction(const std::string& name, double (*fun)(double, double, double))  const;
 
       /**
        * Adds to the dictionary a function with four parameters.
        * If such a function already exist in the dictionary,
        * then status will be set to WARNING_EXISTING_FUNCTION.
        *
-       * @param name function name.
-       * @param fun pointer to the real function in the user code.
+       * @param  name function name.
+       * @param  fun pointer to the real function in the user code.
+       * @return result of the evaluation.
        */
-      void setFunction(const std::string& name, double (*fun)(double, double, double, double))  const;
+      int setFunction(const std::string& name, double (*fun)(double, double, double, double))  const;
 
       /**
        * Adds to the dictionary a function with five parameters.
        * If such a function already exist in the dictionary,
        * then status will be set to WARNING_EXISTING_FUNCTION.
        *
-       * @param name function name.
-       * @param fun pointer to the real function in the user code.
+       * @param  name function name.
+       * @param  fun pointer to the real function in the user code.
+       * @return result of the evaluation.
        */
-      void setFunction(const std::string& name, double (*fun)(double, double, double, double, double))  const;
+      int setFunction(const std::string& name, double (*fun)(double, double, double, double, double))  const;
 
       /**
        * Adds to the dictionary a string constant
        *
-       * @param name name of the variable.
-       * @param value value assigned to the variable.
+       * @param  name name of the variable.
+       * @param  value value assigned to the variable.
+       * @return result of the evaluation.
        */
-      void setEnviron(const std::string& name, const std::string& value)  const;
+      int setEnviron(const std::string& name, const std::string& value)  const;
 
       /**
        * Lookup the dictionary for a string constant
        *
-       * @param name name of the variable.
+       * @param  name name of the variable.
        * @return pair(status,result) of the evaluation.
        */
       std::pair<int,std::string> getEnviron(const std::string& name)  const;
@@ -177,8 +184,8 @@ namespace dd4hep  {
       /**
        * Lookup the dictionary for a string constant
        *
-       * @param name name of the variable.
-       * @param  Possible stream identifier for error message
+       * @param  name name of the variable.
+       * @param  stream identifier for error message
        * @return pair(status,result) of the evaluation.
        */
       std::pair<int,std::string> getEnviron(const std::string& name, std::ostream& os)  const;
@@ -188,10 +195,11 @@ namespace dd4hep  {
        * If a variable with such a name already exist in the dictionary,
        * then status will be set to WARNING_EXISTING_VARIABLE.
        *
-       * @param name name of the variable.
-       * @param value value assigned to the variable.
+       * @param  name name of the variable.
+       * @param  value value assigned to the variable.
+       * @return result of the evaluation.
        */
-      void setVariable(const std::string& name, double value)  const;
+      int setVariable(const std::string& name, double value)  const;
 
       /**
        * Adds to the dictionary a variable with an arithmetic expression
@@ -199,10 +207,24 @@ namespace dd4hep  {
        * If a variable with such a name already exist in the dictionary,
        * then status will be set to WARNING_EXISTING_VARIABLE.
        *
-       * @param name name of the variable.
-       * @param expression arithmetic expression.
+       * @param  name name of the variable.
+       * @param  expression arithmetic expression.
+       * @return result of the evaluation.
        */
-      void setVariable(const std::string& name, const std::string& expression)  const;
+      int setVariable(const std::string& name, const std::string& expression)  const;
+
+      /**
+       * Adds to the dictionary a variable with an arithmetic expression
+       * assigned to it.
+       * If a variable with such a name already exist in the dictionary,
+       * then status will be set to WARNING_EXISTING_VARIABLE.
+       *
+       * @param  name name of the variable.
+       * @param  expression arithmetic expression.
+       * @param  stream identifier for error message
+       * @return result of the evaluation.
+       */
+      int setVariable(const std::string& name, const std::string& expression, std::ostream& os)  const;
 
       /**
        * Finds the variable in the dictionary.

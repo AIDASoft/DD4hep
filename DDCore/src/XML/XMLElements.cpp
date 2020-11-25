@@ -24,7 +24,6 @@
 #include "XML/config.h"
 #endif
 
-#include "XML/Evaluator.h"
 #include "XML/XMLElements.h"
 #include "XML/Printout.h"
 #include "XML/XMLTags.h"
@@ -41,21 +40,18 @@ static const size_t INVALID_NODE = ~0U;
 
 // Forward declarations
 namespace dd4hep {
-  const dd4hep::tools::Evaluator& evaluator();
   std::pair<int, double> _toInteger(const string& value);
   std::pair<int, double> _toFloatingPoint(const string& value);
-  void _toDictionary(const string& name, const string& value, const string& typ);
+  void   _toDictionary(const string& name, const string& value, const string& typ);
   string _getEnviron(const string& env);
 }
 
 // Static storage
 namespace {
   bool s_resolve_environment = true;
-
-  const dd4hep::tools::Evaluator& eval(dd4hep::evaluator());
   string _checkEnviron(const string& env)  {
     if ( s_resolve_environment )  {
-      string r = getEnviron(env);
+      string r = dd4hep::_getEnviron(env);
       return r.empty() ? env : r;
     }
     return env;
