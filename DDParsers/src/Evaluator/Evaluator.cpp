@@ -903,6 +903,18 @@ int Evaluator::setVariable(const std::string& name, double value)  const    {
 }
 
 //---------------------------------------------------------------------------
+int Evaluator::setVariable(const std::string& name, double value, std::ostream& os)  const    {
+  object->lock();
+  object->setVariable(name.c_str(), value);
+  int result = object->status();
+  if ( result != OK )   {
+    object->print_error(os);
+  }
+  object->unlock();
+  return result;
+}
+
+//---------------------------------------------------------------------------
 int Evaluator::setVariable(const std::string& name, const std::string& value)  const    {
   object->lock();
   object->setVariable(name.c_str(), value.c_str());

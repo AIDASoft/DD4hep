@@ -202,6 +202,17 @@ namespace dd4hep  {
       int setVariable(const std::string& name, double value)  const;
 
       /**
+       * Adds to the dictionary a variable with given value.
+       * If a variable with such a name already exist in the dictionary,
+       * then status will be set to WARNING_EXISTING_VARIABLE.
+       *
+       * @param  name name of the variable.
+       * @param  value value assigned to the variable.
+       * @return result of the evaluation.
+       */
+      int setVariable(const std::string& name, double value, std::ostream& os)  const;
+
+      /**
        * Adds to the dictionary a variable with an arithmetic expression
        * assigned to it.
        * If a variable with such a name already exist in the dictionary,
