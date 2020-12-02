@@ -344,11 +344,11 @@ int dd4hep::sim::smearInteraction(const Geant4Action* caller,
 static G4PrimaryParticle* createG4Primary(const Geant4ParticleHandle p)  {
   G4PrimaryParticle* g4 = 0;
   if ( 0 != p->pdgID )   {
-    g4 = new G4PrimaryParticle(p->pdgID, p->psx, p->psy, p->psz);
+    g4 = new G4PrimaryParticle(p->pdgID, p->psx, p->psy, p->psz, p.energy());
   }
   else   {
     const G4ParticleDefinition* def = p.definition();
-    g4 = new G4PrimaryParticle(def, p->psx, p->psy, p->psz);
+    g4 = new G4PrimaryParticle(def, p->psx, p->psy, p->psz, p.energy());
     g4->SetCharge(p.charge());
   }
   g4->SetMass(p->mass);
