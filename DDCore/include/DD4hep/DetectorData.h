@@ -67,7 +67,9 @@ namespace dd4hep {
           std::pair<iterator, bool> r = this->emplace(n, e.ptr());
           if (!throw_on_doubles || r.second) {
             if (not r.second) {
-              printout(WARNING,"Detector","+++ Object '%s' is already defined and new one will be ignored", n.c_str());
+              printout(WARNING,"Detector",
+		       "+++ Object '%s' is already defined. New value will be ignored",
+		       n.c_str());
             }
             return;
           }

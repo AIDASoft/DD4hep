@@ -11,10 +11,12 @@
 //
 //==========================================================================
 
+#include "DD4hep/detail/Handle.inl"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
-#include "DD4hep/detail/Handle.inl"
 #include "Evaluator/Evaluator.h"
+
+/// C/C++ include files
 #include <iostream>
 #include <iomanip>
 #include <climits>
@@ -38,7 +40,10 @@ using namespace dd4hep;
 using namespace dd4hep::detail;
 
 namespace   {
+  /// Set true for backwards compatibility
+  static bool s_allow_variable_redefine = true;
 
+  ///
   void check_evaluation(const string& value, std::pair<int,double> res, stringstream& err)   {
     if ( res.first != tools::Evaluator::OK) {
       throw runtime_error("dd4hep: "+err.str()+" : value="+value+" [Evaluation error]");
@@ -48,6 +53,13 @@ namespace   {
 }
 
 namespace dd4hep  {
+
+  /// Steer redefinition of variable re-definition during expression evaluation. returns old value
+  bool set_allow_variable_redefine(bool value)    {
+    bool tmp = s_allow_variable_redefine;
+    s_allow_variable_redefine = value;
+    return tmp;
+  }
   
   std::pair<int, double> _toFloatingPoint(const string& value)   {
     stringstream err;
@@ -165,7 +177,7 @@ namespace dd4hep  {
     double val = _toDouble(left + "*" + right);
     if ( val >= 0 && val <= double(UCHAR_MAX) )
       return (unsigned char) (int)val;
-    except("_multiply<char>",
+    except("_multiply<unsigned char>",
            "Multiplication %e = %s * %s out of bounds for conversion to unsigned char.",
            val, left.c_str(), right.c_str());
     return 0;
@@ -175,7 +187,7 @@ namespace dd4hep  {
     double val = _toDouble(left + "*" + right);
     if ( val >= double(SHRT_MIN) && val <= double(SHRT_MAX) )
       return (short) val;
-    except("_multiply<char>",
+    except("_multiply<short>",
            "Multiplication %e = %s * %s out of bounds for conversion to short.",
            val, left.c_str(), right.c_str());
     return 0;
@@ -185,7 +197,7 @@ namespace dd4hep  {
     double val = _toDouble(left + "*" + right);
     if ( val >= 0 && val <= double(USHRT_MAX) )
       return (unsigned short)val;
-    except("_multiply<char>",
+    except("_multiply<unsigned short>",
            "Multiplication %e = %s * %s out of bounds for conversion to unsigned short.",
            val, left.c_str(), right.c_str());
     return 0;
@@ -226,6 +238,7 @@ namespace dd4hep  {
       return;
     }
     else  {
+      int status;
       stringstream err;
       string n = name, v = value;
       size_t idx = v.find("(int)");
@@ -239,12 +252,17 @@ namespace dd4hep  {
       auto result = eval.evaluate(v, err);
       check_evaluation(v, result, err);
       err.str("");
-      if ( eval.setVariable(n, result.second, err) != tools::Evaluator::OK ) {
+      status = eval.setVariable(n, result.second, err);
+      if ( status != tools::Evaluator::OK )   {
 	stringstream err_msg;
-	err_msg << "dd4hep: " << err.str() << " : value="
-		<< result.second
-		<< " [setVariable error]";
-	throw runtime_error(err_msg.str());
+	err_msg << "name=" << name << " value=" << value
+		<< "  " << err.str() << " [setVariable error]";
+	if ( status == tools::Evaluator::WARNING_EXISTING_VARIABLE )   {
+	  if ( s_allow_variable_redefine )
+	    printout(WARNING,"Evaluator","+++ Overwriting variable: "+err_msg.str());
+	  else
+	    except("Evaluator","+++ Overwriting variable: "+err_msg.str());
+	}
       }
     }
   }
