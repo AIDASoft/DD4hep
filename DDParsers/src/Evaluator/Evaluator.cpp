@@ -671,6 +671,15 @@ void Evaluator::Object::print_error(std::ostream& os) const {
   static char prefix[] = "Evaluator::Object : ";
   const char* opt = (imp->thePosition ? imp->thePosition : "");
   switch (imp->theStatus) {
+  case WARNING_EXISTING_VARIABLE:
+    os << prefix << "existing variable";
+    return;
+  case WARNING_EXISTING_FUNCTION:
+    os << prefix << "existing function";
+    return;
+  case WARNING_BLANK_STRING:
+    os << prefix << "blank string detected";
+    return;
   case ERROR_NOT_A_NAME:
     os << prefix << "invalid name : " << opt;
     return;
