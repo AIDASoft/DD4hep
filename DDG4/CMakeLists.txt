@@ -149,7 +149,7 @@ FOREACH(ddsimFile ${DDSIM_FILES})
   configure_file(python/DDSim/${ddsimFile} ${CMAKE_BINARY_DIR}/python/DDSim/${ddsimFile} @ONLY)
 ENDFOREACH()
 
-install(DIRECTORY python/DDSim DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
+install(DIRECTORY ${CMAKE_BINARY_DIR}/python/DDSim DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
 
 install(DIRECTORY examples DESTINATION examples/DDG4)
 
