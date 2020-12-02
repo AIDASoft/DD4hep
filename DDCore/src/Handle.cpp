@@ -238,7 +238,14 @@ namespace dd4hep  {
         v.erase(0, 1);
       auto result = eval.evaluate(v, err);
       check_evaluation(v, result, err);
-      eval.setVariable(n, result.second);
+      err.str("");
+      if ( eval.setVariable(n, result.second, err) != tools::Evaluator::OK ) {
+	stringstream err_msg;
+	err_msg << "dd4hep: " << err.str() << " : value="
+		<< result.second
+		<< " [setVariable error]";
+	throw runtime_error(err_msg.str());
+      }
     }
   }
 
@@ -255,7 +262,8 @@ namespace dd4hep  {
       auto   ret = eval.getEnviron(v, err);
       if ( ret.first != tools::Evaluator::OK) {
 	cerr << env << ": " << err.str() << endl;
-	throw runtime_error("dd4hep: Severe error during environment lookup of " + env);
+	throw runtime_error("dd4hep: Severe error during environment lookup of " + env +
+			    " " + err.str());
       }
       v = env.substr(0,id1);
       v += ret.second;
