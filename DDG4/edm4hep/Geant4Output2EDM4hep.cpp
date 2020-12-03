@@ -26,7 +26,6 @@
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
 #include <G4Version.hh>
-#include <G4SystemOfUnits.hh>
 
 // edm4hep include files
 #include "edm4hep/EventHeaderCollection.h"
@@ -502,7 +501,7 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
            float(hit->position.x()/CLHEP::mm),
            float(hit->position.y()/CLHEP::mm),
            float(hit->position.z()/CLHEP::mm)});
-      sch.setEnergy( hit->energyDeposit );
+      sch.setEnergy( hit->energyDeposit/CLHEP::GeV );
 
       // now add the individual step contributions
       for(Geant4HitData::Contributions::const_iterator ci=hit->truth.begin();
