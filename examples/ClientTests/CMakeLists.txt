@@ -195,9 +195,21 @@ list(APPEND ClientTests_ShapeTests Box Cone ConeSegment Tube ElTube CutTube Hype
 list(APPEND ClientTests_ShapeTests EightPointSolid Eightpoint_Reflect_Volume Eightpoint_Reflect_DetElement)
 list(APPEND ClientTests_ShapeTests Polycone Polyhedra PseudoTrap PseudoTrap2 Sphere Torus Trap Trd1 Trd2)
 list(APPEND ClientTests_ShapeTests TruncatedTube ExtrudedPolygon)
-if(${ROOT_VERSION} VERSION_GREATER 6.21.00)
-list(APPEND ClientTests_ShapeTests Tessellated)
+#
+#
+if( ${ROOT_VERSION} VERSION_GREATER 6.21.00 )
+  # message(STATUS "++ ROOT version: ${ROOT_VERSION} ... adding tests...")
+  list(APPEND ClientTests_ShapeTests Tessellated)
+else()
+  message(STATUS "++ ROOT version: ${ROOT_VERSION} ... NO version specific tests for ROOT>6.21...")
 endif()
+if( ${Geant4_VERSION} VERSION_GREATER 10.2.99 )
+  # message(STATUS "++ Geant4 version: ${Geant4_VERSION} ... adding tests...")
+  list(APPEND ClientTests_ShapeTests Scaled_Cone)
+else()
+  message(STATUS "++ Geant4 version: ${Geant4_VERSION} ... NO version specific tests for G4>=10.3...")
+endif()
+
 foreach (test ${ClientTests_ShapeTests})
   dd4hep_add_test_reg( ClientTests_Check_Shape_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"

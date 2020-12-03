@@ -24,7 +24,6 @@
 #include "XML/config.h"
 #endif
 
-#include "XML/Evaluator.h"
 #include "XML/XMLElements.h"
 #include "XML/Printout.h"
 #include "XML/XMLTags.h"
@@ -41,16 +40,18 @@ static const size_t INVALID_NODE = ~0U;
 
 // Forward declarations
 namespace dd4hep {
-  dd4hep::tools::Evaluator& evaluator();
+  std::pair<int, double> _toInteger(const string& value);
+  std::pair<int, double> _toFloatingPoint(const string& value);
+  void   _toDictionary(const string& name, const string& value, const string& typ);
+  string _getEnviron(const string& env);
 }
+
 // Static storage
 namespace {
   bool s_resolve_environment = true;
-
-  dd4hep::tools::Evaluator& eval(dd4hep::evaluator());
   string _checkEnviron(const string& env)  {
     if ( s_resolve_environment )  {
-      string r = getEnviron(env);
+      string r = dd4hep::_getEnviron(env);
       return r.empty() ? env : r;
     }
     return env;
@@ -290,21 +291,7 @@ string dd4hep::xml::_ptrToString(const void* v, const char* fmt) {
 long dd4hep::xml::_toLong(const XmlChar* value) {
   if (value) {
     string s = _toString(value);
-    size_t idx = s.find("(int)");
-    if (idx != string::npos)
-      s.erase(idx, 5);
-    idx = s.find("(long)");
-    if (idx != string::npos)
-      s.erase(idx, 6);
-    while (s[0] == ' ')
-      s.erase(0, 1);
-    double result = eval.evaluate(s.c_str());
-    if (eval.status() != tools::Evaluator::OK) {
-      cerr << s << ": ";
-      eval.print_error();
-      throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
-    }
-    return (long) result;
+    return dd4hep::_toInteger(s).second;
   }
   return -1;
 }
@@ -325,7 +312,7 @@ unsigned int dd4hep::xml::_toUInt(const XmlChar* value) {
 }
 
 bool dd4hep::xml::_toBool(const XmlChar* value) {
-  if (value) {
+  if (value)   {
     string s = _toString(value);
     char   c = ::toupper(s[0]);
     if ( c == 'T' || c == '1' ) return true;
@@ -336,48 +323,24 @@ bool dd4hep::xml::_toBool(const XmlChar* value) {
 }
 
 float dd4hep::xml::_toFloat(const XmlChar* value) {
-  if (value) {
+  if (value)   {
     string s = _toString(value);
-    double result = eval.evaluate(s.c_str());
-
-    if (eval.status() != tools::Evaluator::OK) {
-      cerr << s << ": ";
-      eval.print_error();
-      throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
-    }
-    return (float) result;
+    return (float) dd4hep::_toFloatingPoint(s).second;
   }
   return 0.0;
 }
 
 double dd4hep::xml::_toDouble(const XmlChar* value) {
-  if (value) {
+  if (value)   {
     string s = _toString(value);
-    double result = eval.evaluate(s.c_str());
-    if (eval.status() != tools::Evaluator::OK) {
-      cerr << s << ": ";
-      eval.print_error();
-      throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
-    }
-    return result;
+    return dd4hep::_toFloatingPoint(s).second;
   }
   return 0.0;
 }
 
 void dd4hep::xml::_toDictionary(const XmlChar* name, const XmlChar* value) {
   string n = _toString(name).c_str(), v = _toString(value);
-  size_t idx = v.find("(int)");
-  if (idx != string::npos)
-    v.erase(idx, 5);
-  while (v[0] == ' ')
-    v.erase(0, 1);
-  double result = eval.evaluate(v.c_str());
-  if (eval.status() != tools::Evaluator::OK) {
-    cerr << v << ": ";
-    eval.print_error();
-    throw runtime_error("dd4hep: Severe error during expression evaluation of " + v);
-  }
-  eval.setVariable(n.c_str(), result);
+  dd4hep::_toDictionary(n, v, "number");
 }
 
 /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_XML
@@ -414,24 +377,7 @@ template void dd4hep::xml::_toDictionary(const XmlChar* name, double value);
 
 /// Evaluate string constant using environment stored in the evaluator
 string dd4hep::xml::getEnviron(const string& env)   {
-  size_t id1 = env.find("${");
-  size_t id2 = env.rfind("}");
-  if ( id1 == string::npos || id2 == string::npos )   {
-    return "";
-  }
-  else  {
-    string v = env.substr(id1,id2-id1+1);
-    const char* ret = eval.getEnviron(v.c_str());
-    if (eval.status() != tools::Evaluator::OK) {
-      cerr << env << ": ";
-      eval.print_error();
-      throw runtime_error("dd4hep: Severe error during environment lookup of " + env);
-    }
-    v = env.substr(0,id1);
-    v += ret;
-    v += env.substr(id2+1);
-    return v;
-  }
+  return dd4hep::_getEnviron(env);
 }
 
 /// Enable/disable environment resolution when parsing strings

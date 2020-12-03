@@ -39,8 +39,12 @@ namespace dd4hep {
   // Forward declarations
   class NamedObject;
 
+  /// Steer redefinition of variable re-definition during expression evaluation. returns old value
+  bool set_allow_variable_redefine(bool value);
+
   long num_object_validations();
   void increment_object_validations();
+
   /// Function tp print warning about deprecated factory usage. Used by Plugin mechanism.
   void warning_deprecated_xml_factory(const char* name);
 

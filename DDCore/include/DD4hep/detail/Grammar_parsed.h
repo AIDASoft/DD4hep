@@ -45,8 +45,8 @@
 
 #endif
 
-namespace dd4hep { dd4hep::tools::Evaluator& g4Evaluator();  }
-namespace {  static dd4hep::tools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
+namespace dd4hep {  const dd4hep::tools::Evaluator& g4Evaluator();  }
+namespace {  static const dd4hep::tools::Evaluator& s__eval(dd4hep::g4Evaluator());  }
 // Forward declarations
 
 /// Namespace for the AIDA detector description toolkit
@@ -199,11 +199,11 @@ namespace dd4hep {
 	val.erase(idx, 5);
       while (val[0] == ' ')
 	val.erase(0, 1);
-      double result = s__eval.evaluate(val.c_str());
-      if (s__eval.status() != tools::Evaluator::OK) {
+      auto result = s__eval.evaluate(val.c_str());
+      if (result.first != tools::Evaluator::OK) {
 	return 0;
       }
-      *ptr = (T)result;
+      *ptr = (T)result.second;
       return 1;
     }
 

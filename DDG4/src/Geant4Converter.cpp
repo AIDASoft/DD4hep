@@ -76,6 +76,9 @@
 #if G4VERSION_NUMBER >= 1040
 #include "G4MaterialPropertiesIndex.hh"
 #endif
+#if G4VERSION_NUMBER >= 1030
+#include "G4ScaledSolid.hh"
+#endif
 #include "CLHEP/Units/SystemOfUnits.h"
 
 // C/C++ include files
@@ -585,12 +588,19 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       solid = convertShape<TGeoTessellated>(shape);
 #endif
     else if (isa == TGeoScaledShape::Class())  {
-      TGeoScaledShape* sh = (TGeoScaledShape*) shape;
+      TGeoScaledShape* sh   = (TGeoScaledShape*) shape;
+#if G4VERSION_NUMBER >= 1030
+      TGeoShape*       sol  = sh->GetShape();
       const double*    vals = sh->GetScale()->GetScale();
-      Solid            s_sh(sh->GetShape());
-      G4VSolid* scaled = (G4VSolid*)handleSolid(s_sh.name(), s_sh.ptr());
-      solid = new G4ReflectedSolid(scaled->GetName() + "_refl",
-                                   scaled, G4Scale3D(vals[0],vals[1],vals[2]));
+      G4Scale3D        scal(vals[0], vals[1], vals[2]);
+      G4VSolid* g4solid = (G4VSolid*)handleSolid(sol->GetName(), sol);
+      if ( scal.xx()>0e0 && scal.yy()>0e0 && scal.zz()>0e0 )
+	solid = new G4ScaledSolid(sh->GetName(), g4solid, scal);
+      else
+	solid = new G4ReflectedSolid(g4solid->GetName()+"_refl", g4solid, scal);
+#else
+      except("Geant4Converter","++ TGeoScaledShape are only supported by Geant4 for versions >= 10.3");
+#endif
     }
     else if (isa == TGeoCompositeShape::Class())   {
       const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;

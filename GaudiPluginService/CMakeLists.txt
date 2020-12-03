@@ -36,7 +36,10 @@ target_compile_options(listcomponents PRIVATE -Wno-deprecated)
 target_compile_features(listcomponents PRIVATE
   $<TARGET_PROPERTY:ROOT::Core,INTERFACE_COMPILE_FEATURES>
 )
-
+set_target_properties(listcomponents
+  PROPERTIES
+  OUTPUT_NAME listcomponents_dd4hep
+  )
 INSTALL(TARGETS listcomponents DD4hepGaudiPluginMgr EXPORT DD4hep
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib

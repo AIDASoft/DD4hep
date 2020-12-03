@@ -14,8 +14,8 @@ jobs:
       run: |
         brew install ninja
         brew cask install osxfuse
-        curl -L -o cvmfs-2.7.4.pkg https://ecsft.cern.ch/dist/cvmfs/cvmfs-2.7.4/cvmfs-2.7.4.pkg
-        sudo installer -package cvmfs-2.7.4.pkg -target /
+        curl -L -o cvmfs-latest.pkg http://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-latest.pkg
+        sudo installer -package cvmfs-latest.pkg -target /
         wget --no-check-certificate https://lcd-data.web.cern.ch/lcd-data/CernVM/default.local
         sudo mv default.local /etc/cvmfs/default.local
         sudo cvmfs_config setup
@@ -34,7 +34,7 @@ jobs:
         source /Users/Shared/cvmfs/sft.cern.ch/lcg/views/${{ matrix.LCG }}/setup.sh
         mkdir build
         cd build
-        cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
+        cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
         ninja
         ninja install
         . ../bin/thisdd4hep.sh
@@ -42,7 +42,7 @@ jobs:
         cd ../examples/
         mkdir build
         cd build
-        cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17 ..
+        cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
         ninja
         ninja install
         ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement
