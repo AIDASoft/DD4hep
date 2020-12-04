@@ -55,8 +55,8 @@ public:
   public: 
     hash_map_iterator() : entry(0) {}
     hash_map_iterator(Entry & e) : entry(&e) {} 
-    std::pair<const K,T> & operator * () const { return entry->data; }
-    std::pair<const K,T> * operator ->() const { return &(operator*()); }
+    std::pair<const K,T>& operator * () const { return entry->data; }
+    std::pair<const K,T>* operator ->() const { return &(operator*()); }
     bool operator==(hash_map_iterator i) const {
       return (entry == i.entry);
     }
@@ -65,11 +65,26 @@ public:
     }
   };
 
+  class hash_map_const_iterator { // Hash_map iterator
+    Entry const* entry;
+  public: 
+    hash_map_const_iterator() : entry(0) {}
+    hash_map_const_iterator(Entry & e) : entry(&e) {} 
+    std::pair<const K,T> const& operator * () const { return entry->data; }
+    std::pair<const K,T> const* operator ->() const { return &(operator*()); }
+    bool operator==(hash_map_const_iterator i) const {
+      return (entry == i.entry);
+    }
+    bool operator!=(hash_map_const_iterator i) const {
+      return (entry != i.entry);
+    }
+  };
+
 public:
   typedef unsigned int            size_type;
   typedef std::pair<const K,T> value_type;
   typedef hash_map_iterator       iterator;
-  typedef hash_map_iterator       const_iterator;
+  typedef hash_map_const_iterator const_iterator;
 
 private:
   Entry**   table;          // Hash table: pointers to entries
@@ -96,6 +111,11 @@ private:
   bool eq(const string & a, const string & b) const {
     return (a == b);
   }
+
+  bool eq(const char * a, const string& b) const {
+    return (b == a);
+  }
+
 
 public:
 
@@ -160,10 +180,28 @@ public:
   }
 
   // Finds element with given key.  
-  iterator find(const K & key) const {
+  const_iterator find(const K & key) const {
+    size_type i = hash(key) % max_size;
+    for (Entry* p=table[i]; p; p=p->next) {
+      if (eq(key,p->data.first)) return const_iterator(*p);
+    }
+    return end();
+  }
+
+  iterator find(const K & key) {
     size_type i = hash(key) % max_size;
     for (Entry* p=table[i]; p; p=p->next) {
       if (eq(key,p->data.first)) return iterator(*p);
+    }
+    return end();
+  }
+
+  // Finds element with a key equivalent.  
+  template<typename K2>
+  const_iterator find(const K2 & key) const {
+    size_type i = hash(key) % max_size;
+    for (Entry* p=table[i]; p; p=p->next) {
+      if (eq(key,p->data.first)) return const_iterator(*p);
     }
     return end();
   }
@@ -199,7 +237,8 @@ public:
   }
 
   // Returns end iterator.
-  iterator end() const { return iterator(); }
+  const_iterator end() const { return const_iterator(); }
+  iterator end() { return iterator(); }
 
 #ifdef DEBUG_MODE
   // Prints content of the hash table.
