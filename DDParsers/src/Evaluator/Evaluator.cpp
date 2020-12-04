@@ -165,7 +165,8 @@ static int variable(const string & name, double & result,
   dic_type::const_iterator iter = dictionary.find(name);
   if (iter == dictionary.end())
     return EVAL::ERROR_UNKNOWN_VARIABLE;
-  Item item = iter->second;
+  //NOTE: copying ::string not thread safe so must use ref
+  Item const& item = iter->second;
   switch (item.what) {
   case Item::VARIABLE:
     result = item.variable;
@@ -205,7 +206,8 @@ static int function(const string & name, stack<double> & par,
 
   dic_type::const_iterator iter = dictionary.find(sss[npar]+name);
   if (iter == dictionary.end()) return EVAL::ERROR_UNKNOWN_FUNCTION;
-  Item item = iter->second;
+  //NOTE: copying ::string not thread safe so must use ref
+  Item const& item = iter->second;
 
   double pp[MAX_N_PAR];
   for(int i=0; i<npar; i++) { pp[i] = par.top(); par.pop(); }
@@ -743,12 +745,15 @@ void Evaluator::Object::EvalStatus::print_error(std::ostream& os) const {
 int Evaluator::Object::setEnviron(const char* name, const char* value)  {
   string prefix = "${";
   string item_name = prefix + string(name) + string("}");
+
+  //Need to take lock before creating Item since since Item to be destroyed
+  // before the lock in order avoid ::string ref count thread problem
+  Struct::WriteLock guard(imp);
   Item item;
   item.what = Item::STRING;
   item.expression = value;
   item.function = 0;
   item.variable = 0;
-  Struct::WriteLock guard(imp);
   dic_type::iterator iter = imp->theDictionary.find(item_name);
   if (iter != imp->theDictionary.end()) {
     iter->second = item;
@@ -765,13 +770,13 @@ int Evaluator::Object::setEnviron(const char* name, const char* value)  {
 
 //---------------------------------------------------------------------------
 std::pair<const char*,int> Evaluator::Object::getEnviron(const char* name)  const {
-  string item_name = name;
   Struct::ReadLock guard(imp);
-  dic_type::iterator iter = imp->theDictionary.find(item_name);
-  if (iter != imp->theDictionary.end()) {
+  Struct const* cImp = imp;
+  dic_type::const_iterator iter = cImp->theDictionary.find(name);
+  if (iter != cImp->theDictionary.end()) {
     return std::make_pair(iter->second.expression.c_str(), EVAL::OK);
   }
-  if ( ::strlen(item_name.c_str()) > 3 )  {
+  if ( ::strlen(name) > 3 )  {
     // Need to remove braces from ${xxxx} for call to getenv()
     string env_name(name+2,::strlen(name)-3);
     const char* env_str = ::getenv(env_name.c_str());
@@ -788,7 +793,15 @@ int Evaluator::Object::setVariable(const char * name, double value)  {
 }
 
 int Evaluator::Object::setVariable(const char * name, const char * expression)  {
-  return setItem("", name, Item(expression), imp);
+  Item item(expression);
+  auto returnValue = setItem("", name, item, imp);
+  {
+    //We need to decrement the ref count on the item.expression while holding
+    // the lock since the ::string was copied into the dictionary
+    Struct::WriteLock guard(imp);
+    item.expression = "";
+  }
+  return returnValue;
 }
 
 void Evaluator::Object::setVariableNoLock(const char * name, double value)  {
