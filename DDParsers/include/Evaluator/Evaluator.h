@@ -261,9 +261,9 @@ namespace dd4hep  {
       bool findFunction(const std::string& name, int npar)   const;
 
       class Object;
-      Object* object = 0;                                  // internal data
 
     private:
+      Object* object = 0;                                  // internal data
       Evaluator(const Evaluator &) = delete;               // copy constructor is not allowed
       Evaluator & operator=(const Evaluator &) = delete;   // assignment is not allowed
     };
