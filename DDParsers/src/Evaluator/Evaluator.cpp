@@ -646,8 +646,11 @@ static int setItem(const char * prefix, const char * name,
 using namespace dd4hep::tools;
 
 //---------------------------------------------------------------------------
-Evaluator::Object::Object() {
-  imp = new Struct();
+Evaluator::Object::Object(double meter, double kilogram, double second, double ampere, double kelvin
+                          , double mole, double candela, double radians) : imp( new Struct()) {
+  setStdMath();
+  setSystemOfUnits(meter, kilogram, second, ampere, kelvin
+                   , mole, candela, radians );
 }
 
 //---------------------------------------------------------------------------
@@ -815,8 +818,14 @@ void Evaluator::Object::removeFunction(const char * name, int npar) {
 }
 
 //---------------------------------------------------------------------------
-Evaluator::Evaluator()   {
-  object = new Object();
+Evaluator::Evaluator(double meter, double kilogram, double second, double ampere, double kelvin
+                          , double mole, double candela, double radians)   {
+  object = new Object(meter, kilogram, second, ampere, kelvin, mole, candela, radians);
+}
+
+//---------------------------------------------------------------------------
+Evaluator::Evaluator(Evaluator&& other):object(other.object) {
+  other.object=nullptr;
 }
 
 //---------------------------------------------------------------------------

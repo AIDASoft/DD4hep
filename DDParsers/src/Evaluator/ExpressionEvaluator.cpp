@@ -18,31 +18,18 @@
 #include "Evaluator/DD4hepUnits.h"
 
 /// C/C++ include files
-#include <mutex>
 
 namespace units = dd4hep;
 
 namespace {
 
-  void _eval_lock(bool lock_or_unlock)    {
-    static std::mutex construction_lock;
-    if ( lock_or_unlock ) construction_lock.lock();
-    else construction_lock.unlock();
-  }
-  
-  void _init(dd4hep::tools::Evaluator& e) {
-    // Initialize numerical expressions parser with the standard math functions
-    // and the system of units used by Gaudi (Geant4)
-    e.object->setStdMath();
-  }
-
-  void _cgsUnits(dd4hep::tools::Evaluator& e) {
+  dd4hep::tools::Evaluator _cgsUnits() {
     // ===================================================================================
     // CGS units
-    e.object->setSystemOfUnits(100., 1000., 1.0, 1.0, 1.0, 1.0, 1.0);
+    return dd4hep::tools::Evaluator(100., 1000., 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
   }
   
-  void _tgeoUnits(dd4hep::tools::Evaluator& e) {
+  dd4hep::tools::Evaluator _tgeoUnits() {
     // ===================================================================================
     // DDG4 units (TGeo) 1 sec = 10^9 [nsec]
     //                   1 Coulomb = 1/e As
@@ -51,21 +38,21 @@ namespace {
 
     //    e.setSystemOfUnits(1.e+2, 1./1.60217733e-6, 1.0, 1./1.60217733e-19, 1.0, 1.0, 1.0);
     // use the units as defined in DD4hepUnits.h:
-    e.object->setSystemOfUnits( units::meter,
-				units::kilogram,
-				units::second,
-				units::ampere,
-				units::kelvin,
-				units::mole,
-				units::candela,
-				units::rad );
+    return dd4hep::tools::Evaluator( units::meter,
+                                     units::kilogram,
+                                     units::second,
+                                     units::ampere,
+                                     units::kelvin,
+                                     units::mole,
+                                     units::candela,
+                                     units::rad );
   }
   
-  void _g4Units(dd4hep::tools::Evaluator& e) {
+  dd4hep::tools::Evaluator _g4Units() {
     // ===================================================================================
     // Geant4 units
     // Geant4:  kilogram = joule*s*s/(m*m) 1/e_SI * 1e-6 * 1e9 1e9 / 1e3 / 1e3 = 1. / 1.60217733e-25
-    e.object->setSystemOfUnits(1.e+3, 1./1.60217733e-25, 1.e+9, 1./1.60217733e-10, 1.0, 1.0, 1.0);
+    return dd4hep::tools::Evaluator(1.e+3, 1./1.60217733e-25, 1.e+9, 1./1.60217733e-10, 1.0, 1.0, 1.0, 1.0);
   }
 }
 
@@ -73,50 +60,20 @@ namespace {
 namespace dd4hep {
 
   const tools::Evaluator& evaluator() {
-    static const tools::Evaluator* e = 0;
-    if ( !e )   {
-      _eval_lock(true);
-      if ( !e )   {
-	static tools::Evaluator ev;
-	_init(ev);
-	_tgeoUnits(ev);
-	e = &ev;
-      }
-      _eval_lock(false);
-    }
-    return *e;
+    static const tools::Evaluator e = _tgeoUnits();
+    return e;
   }
 
   /// Access to G4 evaluator. Note: Uses Geant4 units!
   const tools::Evaluator& g4Evaluator()   {
-    static const tools::Evaluator* e = 0;
-    if ( !e )   {
-      _eval_lock(true);
-      if ( !e )   {
-	static tools::Evaluator ev;
-	_init(ev);
-	_g4Units(ev);
-	e = &ev;
-      }
-      _eval_lock(false);
-    }
-    return *e;
+    static const tools::Evaluator e = _g4Units();
+    return e;
   }
 
   /// Access to G4 evaluator. Note: Uses cgs units!
   const tools::Evaluator& cgsEvaluator()   {
-    static const tools::Evaluator* e = 0;
-    if ( !e )   {
-      _eval_lock(true);
-      if ( !e )   {
-	static tools::Evaluator ev;
-	_init(ev);
-	_cgsUnits(ev);
-	e = &ev;
-      }
-      _eval_lock(false);
-    }
-    return *e;
+    static const tools::Evaluator e = _cgsUnits();
+    return e;
   }
 }
 
