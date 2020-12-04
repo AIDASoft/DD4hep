@@ -33,17 +33,13 @@ namespace {
   void _init(dd4hep::tools::Evaluator& e) {
     // Initialize numerical expressions parser with the standard math functions
     // and the system of units used by Gaudi (Geant4)
-    e.object->lock();
     e.object->setStdMath();
-    e.object->unlock();
   }
 
   void _cgsUnits(dd4hep::tools::Evaluator& e) {
     // ===================================================================================
     // CGS units
-    e.object->lock();
     e.object->setSystemOfUnits(100., 1000., 1.0, 1.0, 1.0, 1.0, 1.0);
-    e.object->unlock();
   }
   
   void _tgeoUnits(dd4hep::tools::Evaluator& e) {
@@ -55,7 +51,6 @@ namespace {
 
     //    e.setSystemOfUnits(1.e+2, 1./1.60217733e-6, 1.0, 1./1.60217733e-19, 1.0, 1.0, 1.0);
     // use the units as defined in DD4hepUnits.h:
-    e.object->lock();
     e.object->setSystemOfUnits( units::meter,
 				units::kilogram,
 				units::second,
@@ -64,16 +59,13 @@ namespace {
 				units::mole,
 				units::candela,
 				units::rad );
-    e.object->unlock();
   }
   
   void _g4Units(dd4hep::tools::Evaluator& e) {
     // ===================================================================================
     // Geant4 units
     // Geant4:  kilogram = joule*s*s/(m*m) 1/e_SI * 1e-6 * 1e9 1e9 / 1e3 / 1e3 = 1. / 1.60217733e-25
-    e.object->lock();
     e.object->setSystemOfUnits(1.e+3, 1./1.60217733e-25, 1.e+9, 1./1.60217733e-10, 1.0, 1.0, 1.0);
-    e.object->unlock();
   }
 }
 
