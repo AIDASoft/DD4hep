@@ -61,6 +61,7 @@ typedef hash_map<string,Item> dic_type;
 
 /// Internal expression evaluator helper class
 struct EVAL::Object::Struct {
+  // based on https://stackoverflow.com/a/58018604
   struct ReadLock {
     ReadLock(Struct* s): theStruct(s), theLg(s->theLock) { 
       while(theStruct->theWriterWaiting)
