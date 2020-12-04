@@ -15,6 +15,7 @@ cmake -GNinja \
       -DBoost_NO_BOOST_CMAKE=ON \
       -DDD4HEP_USE_LCIO=ON \
       -DDD4HEP_USE_TBB=${TBB} \
+      -DDD4HEP_USE_HEPMC3=${HEPMC3:-OFF} \
       -DBUILD_TESTING=ON \
       -DDD4HEP_DEBUG_CMAKE=ON \
       -DBUILD_SHARED_LIBS=${SHARED} \
