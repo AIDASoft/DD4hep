@@ -351,7 +351,9 @@ static G4PrimaryParticle* createG4Primary(const Geant4ParticleHandle p)  {
     g4 = new G4PrimaryParticle(def, p->psx, p->psy, p->psz, p.energy());
     g4->SetCharge(p.charge());
   }
-  g4->SetMass(p->mass);
+  // The particle is fully defined with the 4-vector set above, setting the mass isn't necessary, not
+  // using the 4-vector, means the PDG mass is used, and the momentum is scaled if the mass is set here
+  // g4->SetMass(p->mass);
   return g4;
 }
 
