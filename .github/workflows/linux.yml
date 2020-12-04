@@ -152,6 +152,7 @@ jobs:
       SHARED: ON
       STANDARD: 17
       TBB: OFF
+      HEPMC3: ON
     steps:
     - uses: actions/checkout@v2
     - name: Install CVMFS
@@ -170,7 +171,7 @@ jobs:
     - name: Start container
       run: |
         ls
-        docker run -it --name CI_container -v /home/runner/work/DD4hep/DD4hep:/Package -e VIEW=${{ matrix.LCG }} -e SHARED=${SHARED} -e STANDARD=${STANDARD} -e TBB=${TBB} -v /cvmfs/sft.cern.ch:/cvmfs/sft.cern.ch -v /cvmfs/geant4.cern.ch:/cvmfs/geant4.cern.ch -v /cvmfs/sft-nightlies.cern.ch:/cvmfs/sft-nightlies.cern.ch -d ghcr.io/aidasoft/centos7:latest /bin/bash
+        docker run -it --name CI_container -v /home/runner/work/DD4hep/DD4hep:/Package -e VIEW=${{ matrix.LCG }} -e SHARED=${SHARED} -e STANDARD=${STANDARD} -e TBB=${TBB} -e HEPMC3=${HEPMC3} -v /cvmfs/sft.cern.ch:/cvmfs/sft.cern.ch -v /cvmfs/geant4.cern.ch:/cvmfs/geant4.cern.ch -v /cvmfs/sft-nightlies.cern.ch:/cvmfs/sft-nightlies.cern.ch -d ghcr.io/aidasoft/centos7:latest /bin/bash
     - name: Compile and test
       run: |
         docker exec CI_container /bin/bash -c "./Package/.github/scripts/compile_and_test.sh"
