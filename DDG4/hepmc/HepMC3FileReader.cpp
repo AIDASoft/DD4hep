@@ -109,7 +109,10 @@ HEPMC3FileReader::moveToEvent(int event_number) {
   while( m_currEvent != event_number) {
     printout(INFO,"HEPMC3FileReader::moveToEvent","Event number before skipping: %d", m_currEvent );
     HepMC3::GenEvent genEvent;
-    m_reader->skip(event_number);
+    auto status_OK = m_reader->skip(event_number);
+    if(not status_OK) {
+      return EVENT_READER_IO_ERROR;
+    }
     m_currEvent = event_number;
     printout(INFO,"HEPMC3FileReader::moveToEvent","Event number after skipping: %d", m_currEvent );
   }
@@ -119,7 +122,10 @@ HEPMC3FileReader::moveToEvent(int event_number) {
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
 HEPMC3FileReader::readGenEvent(int /*event_number*/, HepMC3::GenEvent& genEvent)  {
-  m_reader->read_event(genEvent);
+  auto status_OK = m_reader->read_event(genEvent);
+    if(not status_OK) {
+      return EVENT_READER_IO_ERROR;
+    }
   ++m_currEvent;
   if (genEvent.particles().size()) {
     printout(INFO,"HEPMC3FileReader","Read event from file");
