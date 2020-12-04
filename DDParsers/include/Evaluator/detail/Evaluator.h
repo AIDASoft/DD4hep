@@ -51,6 +51,36 @@ namespace dd4hep  {
        * @see error_position
        * @see print_error
        */
+      struct EvalStatus {
+        /**
+         * Returns status of the last operation with the evaluator.
+         */
+        int status() const;
+
+        /**
+         * Returns result of the last operation with the evaluator.
+         */
+        double result() const;
+        
+        /**
+         * Returns position in the input string where the problem occured.
+         */
+        int error_position(const char* expression) const;
+        
+        /**
+         * Prints error message if status() is an ERROR.
+         */
+        void print_error(std::ostream& os) const;
+        
+        /**
+         * Prints error message if status() is an ERROR using std::cerr.
+         */
+        void print_error() const;
+
+        char const* thePosition = 0;
+        int         theStatus = OK;
+        double      theResult = 0.0;
+      };
 
       /**
        * Constructor.
@@ -74,42 +104,23 @@ namespace dd4hep  {
        * @see error_position
        * @see print_error
        */
-      double evaluate(const char* expression);
-
-      /**
-       * Returns status of the last operation with the evaluator.
-       */
-      int status() const;
-
-      /**
-       * Returns position in the input string where the problem occured.
-       */
-      int error_position() const;
-
-      /**
-       * Prints error message if status() is an ERROR.
-       */
-      void print_error(std::ostream& os) const;
-
-      /**
-       * Prints error message if status() is an ERROR using std::cerr.
-       */
-      void print_error() const;
+      EvalStatus evaluate(const char* expression);
 
       /**
        * Adds to the dictionary a string constant
        *
        * @param name name of the variable.
        * @param value value assigned to the variable.
+       * @return returns status
        */
-      void setEnviron(const char* name, const char* value);
+      int setEnviron(const char* name, const char* value);
 
       /**
        * Lookup the dictionary for a string constant
        *
        * @param name name of the variable.
        */
-      const char* getEnviron(const char* name);
+      std::pair<const char*, int> getEnviron(const char* name);
 
       /**
        * Adds to the dictionary a variable with given value.
@@ -119,7 +130,7 @@ namespace dd4hep  {
        * @param name name of the variable.
        * @param value value assigned to the variable.
        */
-      void setVariable(const char* name, double value);
+      int setVariable(const char* name, double value);
 
       /**
        * Adds to the dictionary a variable with an arithmetic expression
@@ -130,7 +141,7 @@ namespace dd4hep  {
        * @param name name of the variable.
        * @param expression arithmetic expression.
        */
-      void setVariable(const char* name, const char* expression);
+      int setVariable(const char* name, const char* expression);
 
       /**
        * Adds to the dictionary a function without parameters.
@@ -140,7 +151,7 @@ namespace dd4hep  {
        * @param name function name.
        * @param fun pointer to the real function in the user code.
        */
-      void setFunction(const char* name, double (*fun)());
+      int setFunction(const char* name, double (*fun)());
 
       /**
        * Adds to the dictionary a function with one parameter.
@@ -150,7 +161,7 @@ namespace dd4hep  {
        * @param name function name.
        * @param fun pointer to the real function in the user code.
        */
-      void setFunction(const char* name, double (*fun)(double));
+      int setFunction(const char* name, double (*fun)(double));
 
       /**
        * Adds to the dictionary a function with two parameters.
@@ -160,7 +171,7 @@ namespace dd4hep  {
        * @param name function name.
        * @param fun pointer to the real function in the user code.
        */
-      void setFunction(const char* name, double (*fun)(double, double));
+      int setFunction(const char* name, double (*fun)(double, double));
 
       /**
        * Adds to the dictionary a function with three parameters.
@@ -170,7 +181,7 @@ namespace dd4hep  {
        * @param name function name.
        * @param fun pointer to the real function in the user code.
        */
-      void setFunction(const char* name, double (*fun)(double, double, double));
+      int setFunction(const char* name, double (*fun)(double, double, double));
 
       /**
        * Adds to the dictionary a function with four parameters.
@@ -180,7 +191,7 @@ namespace dd4hep  {
        * @param name function name.
        * @param fun pointer to the real function in the user code.
        */
-      void setFunction(const char* name, double (*fun)(double, double, double, double));
+      int setFunction(const char* name, double (*fun)(double, double, double, double));
 
       /**
        * Adds to the dictionary a function with five parameters.
@@ -190,7 +201,7 @@ namespace dd4hep  {
        * @param name function name.
        * @param fun pointer to the real function in the user code.
        */
-      void setFunction(const char* name, double (*fun)(double, double, double, double, double));
+      int setFunction(const char* name, double (*fun)(double, double, double, double, double));
 
       /**
        * Finds the variable in the dictionary.
@@ -263,9 +274,6 @@ namespace dd4hep  {
       void setSystemOfUnits(double meter = 1.0, double kilogram = 1.0, double second = 1.0, double ampere = 1.0, double kelvin =
                             1.0, double mole = 1.0, double candela = 1.0, double radians = 1.0 );
 
-
-      void lock();
-      void unlock();
 
       struct Struct;
       

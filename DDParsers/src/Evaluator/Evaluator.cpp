@@ -55,16 +55,12 @@ struct Item {
   explicit Item(void  *x) : what(FUNCTION),  variable(0),expression(), function(x) {}
 };
 
-typedef char * pchar;
+//typedef char * pchar;
 typedef hash_map<string,Item> dic_type;
 
 /// Internal expression evaluator helper class
 struct EVAL::Object::Struct {
   dic_type    theDictionary;
-  pchar       theExpression;
-  pchar       thePosition;
-  int         theStatus;
-  double      theResult;
   std::mutex  theLock;
 };
 
@@ -108,7 +104,7 @@ static constexpr char sss[MAX_N_PAR+2] = "012345";
 enum { ENDL, LBRA, OR, AND, EQ, NE, GE, GT, LE, LT,
        PLUS, MINUS, MULT, DIV, POW, RBRA, VALUE };
 
-static int engine(pchar, pchar, double &, pchar &, const dic_type &);
+static int engine(char const*, char const*, double &, char const* &, const dic_type &);
 
 static int variable(const string & name, double & result,
                     const dic_type & dictionary)
@@ -136,8 +132,8 @@ static int variable(const string & name, double & result,
     result = item.variable;
     return EVAL::OK;
   case Item::EXPRESSION: {
-    pchar exp_begin = (char *)(item.expression.c_str());
-    pchar exp_end   = exp_begin + strlen(exp_begin) - 1;
+    char const* exp_begin = (item.expression.c_str());
+    char const* exp_end   = exp_begin + strlen(exp_begin) - 1;
     if (engine(exp_begin, exp_end, result, exp_end, dictionary) == EVAL::OK)
       return EVAL::OK;
     return EVAL::ERROR_CALCULATION_ERROR;
@@ -200,8 +196,8 @@ static int function(const string & name, stack<double> & par,
   return (errno == 0) ? EVAL::OK : EVAL::ERROR_CALCULATION_ERROR;
 }
 
-static int operand(pchar begin, pchar end, double & result,
-                   pchar & endp, const dic_type & dictionary)
+static int operand(char const* begin, char const* end, double & result,
+                   char const* & endp, const dic_type & dictionary)
 /***********************************************************************
  *                                                                     *
  * Name: operand                                     Date:    03.10.00 *
@@ -220,7 +216,7 @@ static int operand(pchar begin, pchar end, double & result,
  *                                                                     *
  ***********************************************************************/
 {
-  pchar pointer = begin;
+  char const* pointer = begin;
   int   EVAL_STATUS;
   char  c;
 
@@ -248,10 +244,7 @@ static int operand(pchar begin, pchar end, double & result,
     if ( !(c == '_' || c == ':') && !isalnum(c)) break;
     pointer++;
   }
-  c = *pointer;
-  *pointer = '\0';
-  string name(begin);
-  *pointer = c;
+  string name(begin, pointer-begin);
 
   //   G E T   V A R I A B L E
 
@@ -264,10 +257,11 @@ static int operand(pchar begin, pchar end, double & result,
 
   //   G E T   F U N C T I O N
 
-  stack<pchar>  pos;                // position stack
+  stack<char const*>  pos;                // position stack
   stack<double> par;                // parameter stack
   double        value;
-  pchar         par_begin = pointer+1, par_end;
+  char const*   par_begin = pointer+1;
+  char const*   par_end;
 
   for(;;pointer++) {
     c = (pointer > end) ? '\0' : *pointer;
@@ -396,8 +390,8 @@ static int maker(int op, stack<double> & val)
  *   dictionary - dictionary of available variables and functions.     *
  *                                                                     *
  ***********************************************************************/
-static int engine(pchar begin, pchar end, double & result,
-                  pchar & endp, const dic_type & dictionary)
+static int engine(char const* begin, char const* end, double & result,
+                  char const*& endp, const dic_type & dictionary)
 {
   static constexpr int SyntaxTable[17][17] = {
     //E  (  || && == != >= >  <= <  +  -  *  /  ^  )  V - current token
@@ -439,10 +433,10 @@ static int engine(pchar begin, pchar end, double & result,
   };
 
   stack<int>    op;                      // operator stack
-  stack<pchar>  pos;                     // position stack
+  stack<char const*>  pos;                     // position stack
   stack<double> val;                     // value stack
   double        value;
-  pchar         pointer = begin;
+  char const*   pointer = begin;
   int           iWhat, iCur, iPrev = 0, iTop, EVAL_STATUS;
   char          c;
 
@@ -565,12 +559,11 @@ static int engine(pchar begin, pchar end, double & result,
 }
 
 //---------------------------------------------------------------------------
-static void setItem(const char * prefix, const char * name,
-                    const Item & item, EVAL::Object::Struct* imp) {
+static int setItem(const char * prefix, const char * name,
+                   const Item & item, EVAL::Object::Struct* imp) {
 
   if (name == 0 || *name == '\0') {
-    imp->theStatus = EVAL::ERROR_NOT_A_NAME;
-    return;
+    return EVAL::ERROR_NOT_A_NAME;
   }
 
   //   R E M O V E   L E A D I N G   A N D   T R A I L I N G   S P A C E S
@@ -580,31 +573,72 @@ static void setItem(const char * prefix, const char * name,
   //   C H E C K   N A M E
 
   if (n == 0) {
-    imp->theStatus = EVAL::ERROR_NOT_A_NAME;
-    return;
+    return EVAL::ERROR_NOT_A_NAME;
   }
   for(int i=0; i<n; i++) {
     char c = *(pointer+i);
     if ( !(c == '_' || c== ':') && !isalnum(c)) {
-      imp->theStatus = EVAL::ERROR_NOT_A_NAME;
-      return;
+      return EVAL::ERROR_NOT_A_NAME;
     }
   }
 
   //   A D D   I T E M   T O   T H E   D I C T I O N A R Y
 
   string item_name = prefix + string(pointer,n);
+  std::lock_guard<std::mutex> guard(imp->theLock);
   dic_type::iterator iter = imp->theDictionary.find(item_name);
   if (iter != imp->theDictionary.end()) {
     iter->second = item;
     if (item_name == name) {
-      imp->theStatus = EVAL::WARNING_EXISTING_VARIABLE;
+      return EVAL::WARNING_EXISTING_VARIABLE;
     }else{
-      imp->theStatus = EVAL::WARNING_EXISTING_FUNCTION;
+      return EVAL::WARNING_EXISTING_FUNCTION;
     }
-  }else{
-    imp->theDictionary[item_name] = item;
-    imp->theStatus = EVAL::OK;
+  }
+  imp->theDictionary[item_name] = item;
+  return EVAL::OK;
+}
+
+//---------------------------------------------------------------------------
+  static void print_error_status(std::ostream& os, int status, char const* extra) {
+  static char prefix[] = "Evaluator::Object : ";
+  const char* opt = (extra ? extra : "");
+  switch (status) {
+  case EVAL::WARNING_EXISTING_VARIABLE:
+    os << prefix << "existing variable";
+    return;
+  case EVAL::WARNING_EXISTING_FUNCTION:
+    os << prefix << "existing function";
+    return;
+  case EVAL::WARNING_BLANK_STRING:
+    os << prefix << "blank string detected";
+    return;
+  case EVAL::ERROR_NOT_A_NAME:
+    os << prefix << "invalid name : " << opt;
+    return;
+  case EVAL::ERROR_SYNTAX_ERROR:
+    os << prefix << "systax error"        ;
+    return;
+  case EVAL::ERROR_UNPAIRED_PARENTHESIS:
+    os << prefix << "unpaired parenthesis";
+    return;
+  case EVAL::ERROR_UNEXPECTED_SYMBOL:
+    os << prefix << "unexpected symbol : " << opt;
+    return;
+  case EVAL::ERROR_UNKNOWN_VARIABLE:
+    os << prefix << "unknown variable : " << opt;
+    return;
+  case EVAL::ERROR_UNKNOWN_FUNCTION:
+    os << prefix << "unknown function : " << opt;
+    return;
+  case EVAL::ERROR_EMPTY_PARAMETER:
+    os << prefix << "empty parameter in function call: " << opt;
+    return;
+  case EVAL::ERROR_CALCULATION_ERROR:
+    os << prefix << "calculation error";
+    return;
+  default:
+    return;
   }
 }
 
@@ -614,52 +648,44 @@ using namespace dd4hep::tools;
 //---------------------------------------------------------------------------
 Evaluator::Object::Object() {
   imp = new Struct();
-  imp->theExpression = 0;
-  imp->thePosition   = 0;
-  imp->theStatus     = OK;
-  imp->theResult     = 0.0;
 }
 
 //---------------------------------------------------------------------------
 Evaluator::Object::~Object() {
-  if (imp->theExpression != 0) {
-    delete[] imp->theExpression;
-    imp->theExpression = 0;
-  }
   delete imp;
 }
 
 //---------------------------------------------------------------------------
-double Evaluator::Object::evaluate(const char * expression) {
-  if (imp->theExpression != 0) { delete[] imp->theExpression; }
-  imp->theExpression = 0;
-  imp->thePosition   = 0;
-  imp->theStatus     = WARNING_BLANK_STRING;
-  imp->theResult     = 0.0;
+Evaluator::Object::EvalStatus Evaluator::Object::evaluate(const char * expression) {
+  EvalStatus s;
   if (expression != 0) {
-    imp->theExpression = new char[strlen(expression)+1];
-    strcpy(imp->theExpression, expression);
-    imp->theStatus = engine(imp->theExpression,
-			  imp->theExpression+strlen(expression)-1,
-			  imp->theResult,
-			  imp->thePosition,
-			  imp->theDictionary);
+    std::lock_guard<std::mutex> guard(imp->theLock);
+    s.theStatus = engine(expression,
+                         expression+strlen(expression)-1,
+                         s.theResult,
+                         s.thePosition,
+                         imp->theDictionary);
   }
-  return imp->theResult;
+  return s;
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::Object::status() const {
-  return imp->theStatus;
+int Evaluator::Object::EvalStatus::status() const {
+  return theStatus;
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::Object::error_position() const {
-  return imp->thePosition - imp->theExpression;
+double Evaluator::Object::EvalStatus::result() const {
+  return theResult;
 }
 
 //---------------------------------------------------------------------------
-void Evaluator::Object::print_error() const {
+int Evaluator::Object::EvalStatus::error_position(const char* expression) const {
+  return thePosition - expression;
+}
+
+//---------------------------------------------------------------------------
+void Evaluator::Object::EvalStatus::print_error() const {
   std::stringstream str;
   print_error(str);
   if ( str.str().empty() )  return;
@@ -667,123 +693,84 @@ void Evaluator::Object::print_error() const {
 }
 
 //---------------------------------------------------------------------------
-void Evaluator::Object::print_error(std::ostream& os) const {
-  static char prefix[] = "Evaluator::Object : ";
-  const char* opt = (imp->thePosition ? imp->thePosition : "");
-  switch (imp->theStatus) {
-  case WARNING_EXISTING_VARIABLE:
-    os << prefix << "existing variable";
-    return;
-  case WARNING_EXISTING_FUNCTION:
-    os << prefix << "existing function";
-    return;
-  case WARNING_BLANK_STRING:
-    os << prefix << "blank string detected";
-    return;
-  case ERROR_NOT_A_NAME:
-    os << prefix << "invalid name : " << opt;
-    return;
-  case ERROR_SYNTAX_ERROR:
-    os << prefix << "systax error"        ;
-    return;
-  case ERROR_UNPAIRED_PARENTHESIS:
-    os << prefix << "unpaired parenthesis";
-    return;
-  case ERROR_UNEXPECTED_SYMBOL:
-    os << prefix << "unexpected symbol : " << opt;
-    return;
-  case ERROR_UNKNOWN_VARIABLE:
-    os << prefix << "unknown variable : " << opt;
-    return;
-  case ERROR_UNKNOWN_FUNCTION:
-    os << prefix << "unknown function : " << opt;
-    return;
-  case ERROR_EMPTY_PARAMETER:
-    os << prefix << "empty parameter in function call: " << opt;
-    return;
-  case ERROR_CALCULATION_ERROR:
-    os << prefix << "calculation error";
-    return;
-  default:
-    return;
-  }
+void Evaluator::Object::EvalStatus::print_error(std::ostream& os) const {
+  print_error_status(os, theStatus, thePosition);
 }
 
 //---------------------------------------------------------------------------
-void Evaluator::Object::setEnviron(const char* name, const char* value)  {
+int Evaluator::Object::setEnviron(const char* name, const char* value)  {
   string prefix = "${";
   string item_name = prefix + string(name) + string("}");
-  dic_type::iterator iter = imp->theDictionary.find(item_name);
   Item item;
   item.what = Item::STRING;
   item.expression = value;
   item.function = 0;
   item.variable = 0;
+  std::lock_guard<std::mutex> guard(imp->theLock);
+  dic_type::iterator iter = imp->theDictionary.find(item_name);
   if (iter != imp->theDictionary.end()) {
     iter->second = item;
     if (item_name == name) {
-      imp->theStatus = EVAL::WARNING_EXISTING_VARIABLE;
+      return EVAL::WARNING_EXISTING_VARIABLE;
     }else{
-      imp->theStatus = EVAL::WARNING_EXISTING_FUNCTION;
+      return EVAL::WARNING_EXISTING_FUNCTION;
     }
   }else{
     imp->theDictionary[item_name] = item;
-    imp->theStatus = EVAL::OK;
+    return EVAL::OK;
   }
 }
 
 //---------------------------------------------------------------------------
-const char* Evaluator::Object::getEnviron(const char* name)  {
+std::pair<const char*,int> Evaluator::Object::getEnviron(const char* name)  {
   string item_name = name;
+  std::lock_guard<std::mutex> guard(imp->theLock);
   dic_type::iterator iter = imp->theDictionary.find(item_name);
   if (iter != imp->theDictionary.end()) {
-    imp->theStatus = EVAL::OK;
-    return iter->second.expression.c_str();
+    return std::make_pair(iter->second.expression.c_str(), EVAL::OK);
   }
   if ( ::strlen(item_name.c_str()) > 3 )  {
     // Need to remove braces from ${xxxx} for call to getenv()
     string env_name(name+2,::strlen(name)-3);
     const char* env_str = ::getenv(env_name.c_str());
     if ( 0 != env_str )    {
-      imp->theStatus = EVAL::OK;
-      return env_str;
+      return std::make_pair(env_str, EVAL::OK);
     }
   }
-  imp->theStatus = EVAL::ERROR_UNKNOWN_VARIABLE;
-  return 0;
+  return std::make_pair(nullptr,EVAL::ERROR_UNKNOWN_VARIABLE);
 }
 
 //---------------------------------------------------------------------------
-void Evaluator::Object::setVariable(const char * name, double value)  {
-  setItem("", name, Item(value), imp);
+int Evaluator::Object::setVariable(const char * name, double value)  {
+  return setItem("", name, Item(value), imp);
 }
 
-void Evaluator::Object::setVariable(const char * name, const char * expression)  {
-  setItem("", name, Item(expression), imp);
+int Evaluator::Object::setVariable(const char * name, const char * expression)  {
+  return setItem("", name, Item(expression), imp);
 }
 
-void Evaluator::Object::setFunction(const char * name,double (*fun)())   {
-  setItem("0", name, Item(FCN(fun).ptr), imp);
+int Evaluator::Object::setFunction(const char * name,double (*fun)())   {
+  return setItem("0", name, Item(FCN(fun).ptr), imp);
 }
 
-void Evaluator::Object::setFunction(const char * name,double (*fun)(double))   {
-  setItem("1", name, Item(FCN(fun).ptr), imp);
+int Evaluator::Object::setFunction(const char * name,double (*fun)(double))   {
+  return setItem("1", name, Item(FCN(fun).ptr), imp);
 }
 
-void Evaluator::Object::setFunction(const char * name, double (*fun)(double,double))  {
-  setItem("2", name, Item(FCN(fun).ptr), imp);
+int Evaluator::Object::setFunction(const char * name, double (*fun)(double,double))  {
+  return setItem("2", name, Item(FCN(fun).ptr), imp);
 }
 
-void Evaluator::Object::setFunction(const char * name, double (*fun)(double,double,double))  {
-  setItem("3", name, Item(FCN(fun).ptr), imp);
+int Evaluator::Object::setFunction(const char * name, double (*fun)(double,double,double))  {
+  return setItem("3", name, Item(FCN(fun).ptr), imp);
 }
 
-void Evaluator::Object::setFunction(const char * name, double (*fun)(double,double,double,double)) {
-  setItem("4", name, Item(FCN(fun).ptr), imp);
+int Evaluator::Object::setFunction(const char * name, double (*fun)(double,double,double,double)) {
+  return setItem("4", name, Item(FCN(fun).ptr), imp);
 }
 
-void Evaluator::Object::setFunction(const char * name, double (*fun)(double,double,double,double,double))  {
-  setItem("5", name, Item(FCN(fun).ptr), imp);
+int Evaluator::Object::setFunction(const char * name, double (*fun)(double,double,double,double,double))  {
+  return setItem("5", name, Item(FCN(fun).ptr), imp);
 }
 
 //---------------------------------------------------------------------------
@@ -791,6 +778,7 @@ bool Evaluator::Object::findVariable(const char * name) const {
   if (name == 0 || *name == '\0') return false;
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return false;
+  std::lock_guard<std::mutex> guard(imp->theLock);
   return
     (imp->theDictionary.find(string(pointer,n)) == imp->theDictionary.end()) ?
     false : true;
@@ -802,6 +790,7 @@ bool Evaluator::Object::findFunction(const char * name, int npar) const {
   if (npar < 0  || npar > MAX_N_PAR) return false;
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return false;
+  std::lock_guard<std::mutex> guard(imp->theLock);
   return (imp->theDictionary.find(sss[npar]+string(pointer,n)) ==
 	  imp->theDictionary.end()) ? false : true;
 }
@@ -811,6 +800,7 @@ void Evaluator::Object::removeVariable(const char * name) {
   if (name == 0 || *name == '\0') return;
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return;
+  std::lock_guard<std::mutex> guard(imp->theLock);
   imp->theDictionary.erase(string(pointer,n));
 }
 
@@ -820,17 +810,8 @@ void Evaluator::Object::removeFunction(const char * name, int npar) {
   if (npar < 0  || npar > MAX_N_PAR) return;
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return;
+  std::lock_guard<std::mutex> guard(imp->theLock);
   imp->theDictionary.erase(sss[npar]+string(pointer,n));
-}
-
-//---------------------------------------------------------------------------
-void Evaluator::Object::lock()  {
-  imp->theLock.lock();
-}
-
-//---------------------------------------------------------------------------
-void Evaluator::Object::unlock()  {
-  imp->theLock.unlock();
 }
 
 //---------------------------------------------------------------------------
@@ -845,31 +826,23 @@ Evaluator::~Evaluator()   {
 
 //---------------------------------------------------------------------------
 std::pair<int,double> Evaluator::evaluate(const std::string& expression)  const   {
-  object->lock();
-  double result = object->evaluate(expression.c_str());
-  int    status = object->status();
-  object->unlock();
-  return std::make_pair(status,result);
+  auto result = object->evaluate(expression.c_str());
+  return std::make_pair(result.status(),result.result());
 }
 
 //---------------------------------------------------------------------------
 std::pair<int,double> Evaluator::evaluate(const std::string& expression, std::ostream& os)  const   {
-  object->lock();
-  double result = object->evaluate(expression.c_str());
-  int    status = object->status();
+  auto result = object->evaluate(expression.c_str());
+  int    status = result.status();
   if ( status != OK )   {
-    object->print_error(os);
+    result.print_error(os);
   }
-  object->unlock();
-  return std::make_pair(status,result);
+  return std::make_pair(result.status(),result.result());
 }
 
 //---------------------------------------------------------------------------
 int Evaluator::setEnviron(const std::string& name, const std::string& value)  const    {
-  object->lock();
-  object->setEnviron(name.c_str(), value.c_str());
-  int result = object->status();
-  object->unlock();
+  int result = object->setEnviron(name.c_str(), value.c_str());
   return result;
 }
 
@@ -877,141 +850,102 @@ int Evaluator::setEnviron(const std::string& name, const std::string& value)  co
 std::pair<int,std::string> Evaluator::getEnviron(const std::string& name)  const    {
   const char* env = nullptr;
   std::pair<int,std::string> result;
-  object->lock();
-  env = object->getEnviron(name.c_str());
-  result.first = object->status();
-  if ( env ) result.second = env;
-  object->unlock();
+  auto env_status = object->getEnviron(name.c_str());
+  result.first = env_status.second;
+  if ( env ) result.second = env_status.first;
   return result;
 }
 
 //---------------------------------------------------------------------------
 std::pair<int,std::string> Evaluator::getEnviron(const std::string& name, std::ostream& os)  const    {
-  const char* env = nullptr;
   std::pair<int,std::string> result;
-  object->lock();
-  env = object->getEnviron(name.c_str());
-  result.first = object->status();
-  if ( env )   {
-    result.second = env;
+  auto env_status = object->getEnviron(name.c_str());
+  result.first = env_status.second;
+  if ( env_status.first )   {
+    result.second = env_status.first;
   }
   if ( result.first != OK )   {
-    object->print_error(os);
+    print_error_status(os, result.first, name.c_str());
   }
-  object->unlock();
   return result;
 }
 
 //---------------------------------------------------------------------------
 int Evaluator::setVariable(const std::string& name, double value)  const    {
-  object->lock();
-  object->setVariable(name.c_str(), value);
-  int result = object->status();
-  object->unlock();
+  int result = object->setVariable(name.c_str(), value);
   return result;
 }
 
 //---------------------------------------------------------------------------
 int Evaluator::setVariable(const std::string& name, double value, std::ostream& os)  const    {
-  object->lock();
-  object->setVariable(name.c_str(), value);
-  int result = object->status();
+  int result = object->setVariable(name.c_str(), value);
   if ( result != OK )   {
-    object->print_error(os);
+    print_error_status(os, result, name.c_str());
   }
-  object->unlock();
   return result;
 }
 
 //---------------------------------------------------------------------------
 int Evaluator::setVariable(const std::string& name, const std::string& value)  const    {
-  object->lock();
-  object->setVariable(name.c_str(), value.c_str());
-  int result = object->status();
-  object->unlock();
+  int result = object->setVariable(name.c_str(), value.c_str());
   return result;
 }
 
 //---------------------------------------------------------------------------
 int Evaluator::setVariable(const std::string& name, const std::string& value, std::ostream& os)  const    {
-  object->lock();
-  object->setVariable(name.c_str(), value.c_str());
-  int result = object->status();
+  int result = object->setVariable(name.c_str(), value.c_str());
   if ( result != OK )   {
-    object->print_error(os);
+    print_error_status(os, result, name.c_str());
   }
-  object->unlock();
   return result;
 }
 
 //---------------------------------------------------------------------------
 bool Evaluator::findVariable(const std::string& name)  const    {
   bool ret;
-  object->lock();
   ret = object->findVariable(name.c_str());
-  object->unlock();
   return ret;
 }
 
 //---------------------------------------------------------------------------
 int Evaluator::setFunction(const std::string& name, double (*fun)())  const    {
-  object->lock();
-  object->setFunction(name.c_str(), fun);
-  int result = object->status();
-  object->unlock();
+  int result = object->setFunction(name.c_str(), fun);
   return result;
 }
 
 //---------------------------------------------------------------------------
 int Evaluator::setFunction(const std::string& name, double (*fun)(double))  const    {
-  object->lock();
-  object->setFunction(name.c_str(), fun);
-  int result = object->status();
-  object->unlock();
+  int result = object->setFunction(name.c_str(), fun);
   return result;
 }
 
 //---------------------------------------------------------------------------
 int Evaluator::setFunction(const std::string& name, double (*fun)(double, double))  const    {
-  object->lock();
-  object->setFunction(name.c_str(), fun);
-  int result = object->status();
-  object->unlock();
+  int result = object->setFunction(name.c_str(), fun);
   return result;
 }
 
 //---------------------------------------------------------------------------
 int Evaluator::setFunction(const std::string& name, double (*fun)(double, double, double))  const    {
-  object->lock();
-  object->setFunction(name.c_str(), fun);
-  int result = object->status();
-  object->unlock();
+  int result = object->setFunction(name.c_str(), fun);
   return result;
 }
 
 //---------------------------------------------------------------------------
 int Evaluator::setFunction(const std::string& name, double (*fun)(double, double, double, double))  const    {
-  object->lock();
-  object->setFunction(name.c_str(), fun);
-  int result = object->status();
-  object->unlock();
+  int result = object->setFunction(name.c_str(), fun);
   return result;
 }
 
 //---------------------------------------------------------------------------
 int Evaluator::setFunction(const std::string& name, double (*fun)(double, double, double, double, double))  const    {
-  object->lock();
-  object->setFunction(name.c_str(), fun);
-  int result = object->status();
-  object->unlock();
+  int result =object->setFunction(name.c_str(), fun);
   return result;
 }
 
 //---------------------------------------------------------------------------
 bool Evaluator::findFunction(const std::string& name, int npar) const    {
   bool ret;
-  object->lock();
   ret = object->findFunction(name.c_str(), npar);
-  object->unlock();
   return ret;
 }
