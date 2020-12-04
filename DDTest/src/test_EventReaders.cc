@@ -37,11 +37,14 @@ int main(int argc, char** argv ){
   std::string inputFileFolder = argv[1];
 
   std::vector<TestTuple> tests;
+  #ifdef DD4HEP_USE_LCIO
   tests.push_back( TestTuple( "LCIOStdHepReader", "bbudsc_3evt.stdhep" ) );
   tests.push_back( TestTuple( "LCIOFileReader",   "muons.slcio" , /*skipEOF= */ true ) );
+  #endif
   tests.push_back( TestTuple( "Geant4EventReaderHepEvtShort", "Muons10GeV.HEPEvt" ) );
-  tests.push_back( TestTuple( "Geant4EventReaderHepMC", "g4pythia.hepmc" ) );
-
+  #ifdef DD4HEP_USE_HEPMC3
+  tests.push_back( TestTuple( "HEPMC3FileReader", "g4pythia.hepmc", /*skipEOF= */ true) );
+  #endif
 
   try{
     for(std::vector<TestTuple>::const_iterator it = tests.begin(); it != tests.end(); ++it) {
