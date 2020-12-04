@@ -133,7 +133,7 @@ namespace dd4hep  {
        * @see error_position
        * @see print_error
        */
-      EvalStatus evaluate(const char* expression);
+      EvalStatus evaluate(const char* expression) const;
 
       /**
        * Adds to the dictionary a string constant
@@ -149,7 +149,7 @@ namespace dd4hep  {
        *
        * @param name name of the variable.
        */
-      std::pair<const char*, int> getEnviron(const char* name);
+      std::pair<const char*, int> getEnviron(const char* name) const;
 
       /**
        * Adds to the dictionary a variable with given value.
@@ -305,7 +305,6 @@ namespace dd4hep  {
        * Sets standard mathematical functions and constants.
        */
       void setStdMath();
-
 
       Struct* imp {0};                               // private data
       Object(const Object &) = delete;               // copy constructor is not allowed
