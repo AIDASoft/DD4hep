@@ -791,6 +791,12 @@ int Evaluator::Object::setVariable(const char * name, const char * expression)  
   return setItem("", name, Item(expression), imp);
 }
 
+void Evaluator::Object::setVariableNoLock(const char * name, double value)  {
+  string item_name = name;
+  Item item(value);
+  imp->theDictionary[item_name] = item;
+}
+
 int Evaluator::Object::setFunction(const char * name,double (*fun)())   {
   return setItem("0", name, Item(FCN(fun).ptr), imp);
 }
@@ -814,6 +820,19 @@ int Evaluator::Object::setFunction(const char * name, double (*fun)(double,doubl
 int Evaluator::Object::setFunction(const char * name, double (*fun)(double,double,double,double,double))  {
   return setItem("5", name, Item(FCN(fun).ptr), imp);
 }
+
+void Evaluator::Object::setFunctionNoLock(const char * name,double (*fun)(double))   {
+  string item_name = "1"+string(name);
+  Item item(FCN(fun).ptr);
+  imp->theDictionary[item_name] = item;
+}
+
+void Evaluator::Object::setFunctionNoLock(const char * name, double (*fun)(double,double))  {
+  string item_name = "2"+string(name);
+  Item item(FCN(fun).ptr);
+  imp->theDictionary[item_name] = item;
+}
+
 
 //---------------------------------------------------------------------------
 bool Evaluator::Object::findVariable(const char * name) const {

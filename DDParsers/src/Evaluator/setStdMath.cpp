@@ -73,65 +73,65 @@ namespace dd4hep  {
 
       //   S E T   S T A N D A R D   C O N S T A N T S
 
-      setVariable("pi",     3.14159265358979323846);
-      setVariable("e",      2.7182818284590452354);
-      setVariable("gamma",  0.577215664901532861);
+      setVariableNoLock("pi",     3.14159265358979323846);
+      setVariableNoLock("e",      2.7182818284590452354);
+      setVariableNoLock("gamma",  0.577215664901532861);
 
 
-      // setVariable("radian", 1.0);
-      // setVariable("rad",    1.0);
-      // setVariable("degree", 3.14159265358979323846/180.);
-      // setVariable("deg",    3.14159265358979323846/180.);
-      setVariable("radian", units::radian );
-      setVariable("rad",    units::radian );
-      setVariable("degree", units::degree );
-      setVariable("deg",    units::degree );
-      setVariable("int:epsilon",    std::numeric_limits<int>::epsilon());
-      setVariable("long:epsilon",   std::numeric_limits<long>::epsilon());
-      setVariable("float:epsilon",  std::numeric_limits<float>::epsilon());
-      setVariable("double:epsilon", std::numeric_limits<double>::epsilon());
+      // setVariableNoLock("radian", 1.0);
+      // setVariableNoLock("rad",    1.0);
+      // setVariableNoLock("degree", 3.14159265358979323846/180.);
+      // setVariableNoLock("deg",    3.14159265358979323846/180.);
+      setVariableNoLock("radian", units::radian );
+      setVariableNoLock("rad",    units::radian );
+      setVariableNoLock("degree", units::degree );
+      setVariableNoLock("deg",    units::degree );
+      setVariableNoLock("int:epsilon",    std::numeric_limits<int>::epsilon());
+      setVariableNoLock("long:epsilon",   std::numeric_limits<long>::epsilon());
+      setVariableNoLock("float:epsilon",  std::numeric_limits<float>::epsilon());
+      setVariableNoLock("double:epsilon", std::numeric_limits<double>::epsilon());
 
       //   S E T   S T A N D A R D   F U N C T I O N S
 
-      setFunction("abs",        eval_abs);
-      setFunction("fabs",       eval_fabs);
-      setFunction("fmod",       eval_fmod);
-      setFunction("min",        eval_min);
-      setFunction("max",        eval_max);
-      setFunction("sqrt",       eval_sqrt);
-      setFunction("cbrt",       eval_cbrt);
-      setFunction("pow",        eval_pow);
-      setFunction("sin",        eval_sin);
-      setFunction("cos",        eval_cos);
-      setFunction("tan",        eval_tan);
-      setFunction("asin",       eval_asin);
-      setFunction("acos",       eval_acos);
-      setFunction("atan",       eval_atan);
-      setFunction("atan2",      eval_atan2);
-      setFunction("sinh",       eval_sinh);
-      setFunction("cosh",       eval_cosh);
-      setFunction("tanh",       eval_tanh);
-      setFunction("exp",        eval_exp);
-      setFunction("exp2",       eval_exp2);
-      setFunction("exp10",      eval_exp10);
-      setFunction("expm1",      eval_expm1);
-      setFunction("log",        eval_log);
-      setFunction("logb",       eval_logb);
-      setFunction("log10",      eval_log10);
-      setFunction("log1p",      eval_log1p);
-      setFunction("hypot",      eval_hypot);
-      setFunction("erf",        eval_erf);
-      setFunction("erfc",       eval_erfc);
-      setFunction("gamma",      eval_gamma);
-      setFunction("double",     eval_double);
-      setFunction("int",        eval_int);
-      setFunction("nint",       eval_nint);
-      setFunction("floor",      eval_floor);
-      setFunction("round",      eval_round);
-      setFunction("ceil",       eval_ceil);
-      setFunction("isnan",      eval_isnan);
-      setFunction("isinf",      eval_isinf);
-      setFunction("nearbyint",  eval_nearbyint);
+      setFunctionNoLock("abs",        eval_abs);
+      setFunctionNoLock("fabs",       eval_fabs);
+      setFunctionNoLock("fmod",       eval_fmod);
+      setFunctionNoLock("min",        eval_min);
+      setFunctionNoLock("max",        eval_max);
+      setFunctionNoLock("sqrt",       eval_sqrt);
+      setFunctionNoLock("cbrt",       eval_cbrt);
+      setFunctionNoLock("pow",        eval_pow);
+      setFunctionNoLock("sin",        eval_sin);
+      setFunctionNoLock("cos",        eval_cos);
+      setFunctionNoLock("tan",        eval_tan);
+      setFunctionNoLock("asin",       eval_asin);
+      setFunctionNoLock("acos",       eval_acos);
+      setFunctionNoLock("atan",       eval_atan);
+      setFunctionNoLock("atan2",      eval_atan2);
+      setFunctionNoLock("sinh",       eval_sinh);
+      setFunctionNoLock("cosh",       eval_cosh);
+      setFunctionNoLock("tanh",       eval_tanh);
+      setFunctionNoLock("exp",        eval_exp);
+      setFunctionNoLock("exp2",       eval_exp2);
+      setFunctionNoLock("exp10",      eval_exp10);
+      setFunctionNoLock("expm1",      eval_expm1);
+      setFunctionNoLock("log",        eval_log);
+      setFunctionNoLock("logb",       eval_logb);
+      setFunctionNoLock("log10",      eval_log10);
+      setFunctionNoLock("log1p",      eval_log1p);
+      setFunctionNoLock("hypot",      eval_hypot);
+      setFunctionNoLock("erf",        eval_erf);
+      setFunctionNoLock("erfc",       eval_erfc);
+      setFunctionNoLock("gamma",      eval_gamma);
+      setFunctionNoLock("double",     eval_double);
+      setFunctionNoLock("int",        eval_int);
+      setFunctionNoLock("nint",       eval_nint);
+      setFunctionNoLock("floor",      eval_floor);
+      setFunctionNoLock("round",      eval_round);
+      setFunctionNoLock("ceil",       eval_ceil);
+      setFunctionNoLock("isnan",      eval_isnan);
+      setFunctionNoLock("isinf",      eval_isinf);
+      setFunctionNoLock("nearbyint",  eval_nearbyint);
     }
 
   } // namespace tools
