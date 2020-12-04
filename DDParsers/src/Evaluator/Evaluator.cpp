@@ -9,6 +9,7 @@
 #include <cmath>        // for pow()
 #include <sstream>
 #include <mutex>
+#include <condition_variable>
 #include <cctype>
 #include <cerrno>
 #include <cstring>
@@ -60,7 +61,45 @@ typedef hash_map<string,Item> dic_type;
 
 /// Internal expression evaluator helper class
 struct EVAL::Object::Struct {
+  struct ReadLock {
+    ReadLock(Struct* s): theStruct(s), theLg(s->theLock) { 
+      while(theStruct->theWriterWaiting)
+        theStruct->theCond.wait(theLg);
+      ++theStruct->theReadersWaiting;
+    }
+
+    ReadLock(const ReadLock&) = delete;
+    ~ReadLock() {
+      --theStruct->theReadersWaiting;
+      while(theStruct->theReadersWaiting > 0)
+        theStruct->theCond.wait(theLg);
+      theStruct->theCond.notify_one();
+    }
+    Struct* theStruct;
+    std::unique_lock<std::mutex> theLg;
+
+  };
+  struct WriteLock {
+    WriteLock(Struct* s): theStruct(s), theLg(s->theLock) {
+      while(theStruct->theWriterWaiting)
+        theStruct->theCond.wait(theLg);
+    }
+    WriteLock(const WriteLock&) = delete;
+    ~WriteLock() {
+      theStruct->theWriterWaiting = true;
+      while(theStruct->theReadersWaiting > 0)
+        theStruct->theCond.wait(theLg);
+      theStruct->theWriterWaiting = false;
+      theStruct->theCond.notify_all();
+    }
+    Struct* theStruct;
+    std::unique_lock<std::mutex> theLg;
+  };
+
   dic_type    theDictionary;
+  int theReadersWaiting = 0;
+  bool theWriterWaiting = false;
+  std::condition_variable theCond;
   std::mutex  theLock;
 };
 
@@ -585,7 +624,7 @@ static int setItem(const char * prefix, const char * name,
   //   A D D   I T E M   T O   T H E   D I C T I O N A R Y
 
   string item_name = prefix + string(pointer,n);
-  std::lock_guard<std::mutex> guard(imp->theLock);
+  EVAL::Object::Struct::WriteLock guard(imp);
   dic_type::iterator iter = imp->theDictionary.find(item_name);
   if (iter != imp->theDictionary.end()) {
     iter->second = item;
@@ -659,10 +698,10 @@ Evaluator::Object::~Object() {
 }
 
 //---------------------------------------------------------------------------
-Evaluator::Object::EvalStatus Evaluator::Object::evaluate(const char * expression) {
+Evaluator::Object::EvalStatus Evaluator::Object::evaluate(const char * expression) const {
   EvalStatus s;
   if (expression != 0) {
-    std::lock_guard<std::mutex> guard(imp->theLock);
+    Struct::ReadLock guard(imp);
     s.theStatus = engine(expression,
                          expression+strlen(expression)-1,
                          s.theResult,
@@ -709,7 +748,7 @@ int Evaluator::Object::setEnviron(const char* name, const char* value)  {
   item.expression = value;
   item.function = 0;
   item.variable = 0;
-  std::lock_guard<std::mutex> guard(imp->theLock);
+  Struct::WriteLock guard(imp);
   dic_type::iterator iter = imp->theDictionary.find(item_name);
   if (iter != imp->theDictionary.end()) {
     iter->second = item;
@@ -725,9 +764,9 @@ int Evaluator::Object::setEnviron(const char* name, const char* value)  {
 }
 
 //---------------------------------------------------------------------------
-std::pair<const char*,int> Evaluator::Object::getEnviron(const char* name)  {
+std::pair<const char*,int> Evaluator::Object::getEnviron(const char* name)  const {
   string item_name = name;
-  std::lock_guard<std::mutex> guard(imp->theLock);
+  Struct::ReadLock guard(imp);
   dic_type::iterator iter = imp->theDictionary.find(item_name);
   if (iter != imp->theDictionary.end()) {
     return std::make_pair(iter->second.expression.c_str(), EVAL::OK);
@@ -781,7 +820,7 @@ bool Evaluator::Object::findVariable(const char * name) const {
   if (name == 0 || *name == '\0') return false;
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return false;
-  std::lock_guard<std::mutex> guard(imp->theLock);
+  Struct::ReadLock guard(imp);
   return
     (imp->theDictionary.find(string(pointer,n)) == imp->theDictionary.end()) ?
     false : true;
@@ -793,7 +832,7 @@ bool Evaluator::Object::findFunction(const char * name, int npar) const {
   if (npar < 0  || npar > MAX_N_PAR) return false;
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return false;
-  std::lock_guard<std::mutex> guard(imp->theLock);
+  Struct::ReadLock guard(imp);
   return (imp->theDictionary.find(sss[npar]+string(pointer,n)) ==
 	  imp->theDictionary.end()) ? false : true;
 }
@@ -803,7 +842,7 @@ void Evaluator::Object::removeVariable(const char * name) {
   if (name == 0 || *name == '\0') return;
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return;
-  std::lock_guard<std::mutex> guard(imp->theLock);
+  Struct::WriteLock guard(imp);
   imp->theDictionary.erase(string(pointer,n));
 }
 
@@ -813,7 +852,7 @@ void Evaluator::Object::removeFunction(const char * name, int npar) {
   if (npar < 0  || npar > MAX_N_PAR) return;
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return;
-  std::lock_guard<std::mutex> guard(imp->theLock);
+  Struct::WriteLock guard(imp);
   imp->theDictionary.erase(sss[npar]+string(pointer,n));
 }
 
