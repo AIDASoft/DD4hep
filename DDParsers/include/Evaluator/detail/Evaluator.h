@@ -306,6 +306,14 @@ namespace dd4hep  {
        */
       void setStdMath();
 
+      /**
+       * Used only during construction
+       */
+      void setVariableNoLock(const char* name, double value);
+      void setFunctionNoLock(const char* name, double (*fun)(double));
+      void setFunctionNoLock(const char* name, double (*fun)(double, double));
+
+
       Struct* imp {0};                               // private data
       Object(const Object &) = delete;               // copy constructor is not allowed
       Object & operator=(const Object &) = delete;   // assignment is not allowed
