@@ -85,7 +85,36 @@ namespace dd4hep  {
       /**
        * Constructor.
        */
-      Object();
+
+      /**
+       * Sets system of units. Default is the SI system of units.
+       * To set the CGS (Centimeter-Gram-Second) system of units
+       * one should call:
+       *   Object o(100., 1000., 1.0, 1.0, 1.0, 1.0, 1.0);
+       *
+       * To set system of units accepted in the GEANT4 simulation toolkit
+       * one should call:
+       * @code
+       *   setSystemOfUnits(1.e+3, 1./1.60217733e-25, 1.e+9, 1./1.60217733e-10,
+       *                    1.0, 1.0, 1.0);
+       * @endcode
+       *
+       * The basic units in GEANT4 are:
+       * @code
+       *   millimeter              (millimeter = 1.)
+       *   nanosecond              (nanosecond = 1.)
+       *   Mega electron Volt      (MeV        = 1.)
+       *   positron charge         (eplus      = 1.)
+       *   degree Kelvin           (kelvin     = 1.)
+       *   the amount of substance (mole       = 1.)
+       *   luminous intensity      (candela    = 1.)
+       *   radian                  (radian     = 1.)
+       *   steradian               (steradian  = 1.)
+       * @endcode
+       */
+
+      Object(double meter = 1.0, double kilogram = 1.0, double second = 1.0, double ampere = 1.0, double kelvin =
+                            1.0, double mole = 1.0, double candela = 1.0, double radians = 1.0 );
 
       /**
        * Destructor.
@@ -240,11 +269,9 @@ namespace dd4hep  {
        */
       void clear();
 
-      /**
-       * Sets standard mathematical functions and constants.
-       */
-      void setStdMath();
-
+      struct Struct;
+      
+    private:
       /**
        * Sets system of units. Default is the SI system of units.
        * To set the CGS (Centimeter-Gram-Second) system of units
@@ -271,16 +298,18 @@ namespace dd4hep  {
        *   steradian               (steradian  = 1.)
        * @endcode
        */
-      void setSystemOfUnits(double meter = 1.0, double kilogram = 1.0, double second = 1.0, double ampere = 1.0, double kelvin =
-                            1.0, double mole = 1.0, double candela = 1.0, double radians = 1.0 );
+      void setSystemOfUnits(double meter, double kilogram, double second, double ampere, double kelvin
+                          , double mole, double candela, double radians );
+
+      /**
+       * Sets standard mathematical functions and constants.
+       */
+      void setStdMath();
 
 
-      struct Struct;
-      
-    private:
-      Struct* imp {0};                      // private data
-      Object(const Object &);               // copy constructor is not allowed
-      Object & operator=(const Object &);   // assignment is not allowed
+      Struct* imp {0};                               // private data
+      Object(const Object &) = delete;               // copy constructor is not allowed
+      Object & operator=(const Object &) = delete;   // assignment is not allowed
     };
 
   }   // namespace tools
