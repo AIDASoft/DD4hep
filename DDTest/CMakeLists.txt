@@ -23,6 +23,7 @@ foreach(TEST_NAME
     test_cellDimensions
     test_cellDimensionsRPhi2
     test_segmentationHandles
+    test_Evaluator
     )
   add_executable(${TEST_NAME} src/${TEST_NAME}.cc)
   target_link_libraries(${TEST_NAME} DD4hep::DDCore DD4hep::DDRec DD4hep::DDTest)
