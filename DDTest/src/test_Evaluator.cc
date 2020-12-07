@@ -3,6 +3,7 @@
 #include <iostream>
 #include <assert.h>
 #include <cmath>
+#include <array>
 
 #include <atomic>
 #include <thread>
