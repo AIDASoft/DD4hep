@@ -25,7 +25,8 @@
 // Geant4 headers
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
-#include <G4Version.hh>
+#include "G4Version.hh"
+#include "G4SystemOfUnits.hh"
 
 // edm4hep include files
 #include "edm4hep/EventHeaderCollection.h"
