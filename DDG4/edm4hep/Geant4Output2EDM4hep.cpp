@@ -26,7 +26,9 @@
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
 #include "G4Version.hh"
-#include "G4SystemOfUnits.hh"
+
+// use the Geant4 units in namespace CLHEP
+#include "CLHEP/Units/SystemOfUnits.h"
 
 // edm4hep include files
 #include "edm4hep/EventHeaderCollection.h"
