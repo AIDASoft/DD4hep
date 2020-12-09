@@ -1,3 +1,133 @@
+# v01-15
+
+* 2020-12-08 Frank Gaede ([PR#740](https://github.com/AIDASoft/DD4hep/pull/740))
+  - add back the  Geant4Output2EDM4hep plugin from EDM4hep
+       - use optional flag `D4HEP_USE_EDM4HEP` to build this
+       - requires podio and EDM4hep to be present
+  - fix treatment of units in Geant4Output2EDM4hep
+  - DDTest: add optional ddsim tests with edm4hep and lcio output (A.Sailer)
+  - enable `D4HEP_USE_EDM4HEP` in CI for dev (A.Sailer)
+
+* 2020-12-07 Christopher Jones ([PR#767](https://github.com/AIDASoft/DD4hep/pull/767))
+  - Made internal classes used by Evaluator to be less stateful
+  - Switch to using a read/write lock as modifications to the Evaluator are much less frequent than reads.
+  - Added unit test for Evaluator
+
+* 2020-12-04 Andre Sailer ([PR#766](https://github.com/AIDASoft/DD4hep/pull/766))
+  - DDG4: hepmc3reader: add checks for read and skip success
+  - DDTest: test hepmc3 reader, make lcio and hepmc3 reader tests depend on configuration.
+
+* 2020-12-04 Andre Sailer ([PR#765](https://github.com/AIDASoft/DD4hep/pull/765))
+  - DDG4: Geant4InputHandling: create particle with 4 vector (vecP, E), solves issue where the dynamic mass differs from the PDG mass (e.g., via particle.tbl / extraParticles), #760
+
+* 2020-12-03 MarkusFrankATcernch ([PR#753](https://github.com/AIDASoft/DD4hep/pull/753))
+  - Always use `CLHEP/Units/SystemOfUnits.h` and never `G4SystemOfUnits.hh`
+    -  in `G4SystemOfUnits.hh`units are directly in the top level namespace
+    - in `CLHEP/Units/SystemOfUnits.h` units are in the `CLHEP::` namespace
+  - Remove all usage `using namespace CLHEP` and `using CLHEP::__some_unit__` to clarify which unit is used
+
+* 2020-12-02 MarkusFrankATcernch ([PR#764](https://github.com/AIDASoft/DD4hep/pull/764))
+  - Make scaled shapes includes conditional on Geant4 version (>=10.3)
+  - Improve thread safety of expression evaluator
+
+* 2020-12-02 Andre Sailer ([PR#754](https://github.com/AIDASoft/DD4hep/pull/754))
+  - ddsim: fix problem with `--dumpSteeringFile` in python3
+  - ddsim: fix issue in where isotrop was False, when distribution was set (python3)
+  - ddsim: fix exception in exceptions for gun direction and position
+  - ddsim: fix problem where `hepmc.useHepMC3` was always True by default
+  - PluginManager: rename the listcomponents executable to listcomponents_dd4hep, to avoid clash with the Gaudi listcomponents. This is transparent for users of the dd4hep_add_plugin cmake macro.
+  - DDG4Dict: remove `dd4hep::sim::Geant4InputAction::Particles;` as this is available under a different name, fixes warning
+  - CMake: DD4hepConfig.cmake: use find_dependency with CONFIG for Geant4, TBB, ROOT, LCIO, and if needed CLHEP, to avoid accidental use of `Find<PACKAGE>.cmake` modules
+
+* 2020-11-24 MarkusFrankATcernch ([PR#757](https://github.com/AIDASoft/DD4hep/pull/757))
+  - Expression evaluation was not protected against race conditions when executing in multiple threads. We lock now the evaluation namespace with an associated lock when evaluating expression statements. Each evaluation call is wrapped and protected. This should ensure thread safety.
+
+* 2020-11-24 Marko Petric ([PR#751](https://github.com/AIDASoft/DD4hep/pull/751))
+  - Resolve which type of linker is used and assign proper linking flags
+
+* 2020-11-21 Markus FRANK ([PR#756](https://github.com/AIDASoft/DD4hep/pull/756))
+  - Remove from Geant4 conversion of scaled shapes artifacts of the prior implementation of reflections.
+    This was a wrong implementation and should now be fixed.
+    This PR should fix issue https://github.com/AIDASoft/DD4hep/issues/750
+  - Introduce the Scale (based on TGeoScaledShape) as a separate shape om DD4hep.
+  - Add test for scaled shape
+
+* 2020-11-19 Marko Petric ([PR#749](https://github.com/AIDASoft/DD4hep/pull/749))
+  - Add explanation of the system of units to the user manual
+
+* 2020-11-19 MarkusFrankATcernch ([PR#748](https://github.com/AIDASoft/DD4hep/pull/748))
+  - Review documentation
+    o Add chapter to describe MC truth handling for DDG4
+    o Review shape and shape plugin section in the DD4hep manual
+  - Adapt ConeSegment shape plugin to allow for standard syntax
+  - Fix Torus shape plugin and test 
+  - Add copyright notice to various test files
+
+* 2020-11-19 Ole Hansen ([PR#745](https://github.com/AIDASoft/DD4hep/pull/745))
+  - Improve path handling in setup scripts, by avoiding duplicates in paths. Also support whitespaces in paths and don't add system paths to library paths on macOS
+
+* 2020-11-19 Ole Hansen ([PR#743](https://github.com/AIDASoft/DD4hep/pull/743))
+  - Fix compilation warnings from Apple Clang 12
+  - Fix broken `t_CLICSiD_DDG4_g4geometry_scan_LONGTEST` test condition which always matched.
+
+* 2020-11-18 Ole Hansen ([PR#744](https://github.com/AIDASoft/DD4hep/pull/744))
+  - CMake: Fix regression that examples and example tests can now be built and run together with the main project
+
+* 2020-11-16 Markus FRANK ([PR#747](https://github.com/AIDASoft/DD4hep/pull/747))
+  - Add documentation of DDG4 Monte-Carlo truth handler
+  - Add documentation of DDG4 ROOT output module
+
+* 2020-11-13 Markus FRANK ([PR#742](https://github.com/AIDASoft/DD4hep/pull/742))
+  - Add example for CMS CSC: tests divisions
+  - Add example for CMS ECAL: tests reflections
+  - Improve DDG4_MySensDet: Example illustrating how to have customized sensitive detectors and user defined hit classes with data saved to ROOT. Example corresponding to question raised in https://github.com/AIDASoft/DD4hep/issues/703
+  The example also includes a small script to read back the data generated with this example:
+  Command line usage:
+     *  $> root.exe
+     *  ....
+     *  root [0] gSystem->Load("libDDG4Plugins.so");
+     *  root [1] gSystem->Load("libDDG4_MySensDet.so");
+     *  root [2] SomeExperiment::Dump::dumpData(<num-ebents>,<file-name>);
+  
+  - Remove the odd shadowing warning.
+  - Improve visualization attributes:
+    As reported by Sanhyung Ko (https://indico.cern.ch/event/967418/contributions/4075358/attachments/2128099/3583278/201009_shKo_dd4hep.pdf) the application of visual attributes to volumes was very resource intensive. 
+    This should be fixed by asking for the transparent color only once at the level of the attribute rather then for each volume.
+
+* 2020-11-11 Frank Gaede ([PR#738](https://github.com/AIDASoft/DD4hep/pull/738))
+  - fix units in DDG4/LCIO conversions  
+       - prepend namespace CLHEP where missing
+
+* 2020-11-10 Markus FRANK ([PR#736](https://github.com/AIDASoft/DD4hep/pull/736))
+  - Update DDCMS example to take into account new xml tags.
+  - Improve some core object helpers
+
+* 2020-11-06 Markus FRANK ([PR#734](https://github.com/AIDASoft/DD4hep/pull/734))
+  - No new implementation for reflections. Still uses TGeo way with scaled shape.
+    This implementation is not supposed to be used.
+  - Added test to debug reflections
+
+* 2020-11-05 Ianna Osborne ([PR#732](https://github.com/AIDASoft/DD4hep/pull/732))
+  - Examples.DDCMS: add CMS EcalEndcap description to test reflected volumes
+
+* 2020-11-03 Andre Sailer ([PR#731](https://github.com/AIDASoft/DD4hep/pull/731))
+  - Tests: Always run AClick tests sequentially, fixes #730
+
+* 2020-11-03 Andre Sailer ([PR#728](https://github.com/AIDASoft/DD4hep/pull/728))
+  * CMake: fix python version compatibility check between python and root used for python. Add exception for CMake 3.17.1
+  * Tests: fix some test configuration to run all tests after `-D DD4HEP_BUILD_EXAMPLES=ON`
+  * Tests: fix tests for root 6.22.04 and master
+
+* 2020-11-02 Andre Sailer ([PR#725](https://github.com/AIDASoft/DD4hep/pull/725))
+  -  CMake: fail if ROOT and DD4hep python disagree
+
+* 2020-10-14 Ianna Osborne ([PR#723](https://github.com/AIDASoft/DD4hep/pull/723))
+  - SpecParRegistry: remove need for TBB
+    - TBB has a slight overhead compare to std containers
+    - Using std containers allows to return references to the containers in the registry
+  
+  - Reverse the plan to process XML files in parallel
+
 # v01-14-01
 
 * 2020-10-02 Markus Frank ([PR#720](https://github.com/AIDASoft/DD4hep/pull/720))
