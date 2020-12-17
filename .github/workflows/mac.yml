@@ -10,25 +10,14 @@ jobs:
         LCG: ["LCG_98python3/x86_64-mac1015-clang110-opt","LCG_97apython3/x86_64-mac1015-clang110-opt"]
     steps:
     - uses: actions/checkout@v2
-    - name: Install CVMFS
+    - uses: cvmfs-contrib/github-action-cvmfs@main
+      with:
+        cvmfs_repositories: 'sft.cern.ch,geant4.cern.ch'
+    - name: Install LCG requirements
       run: |
         brew install ninja
-        brew cask install osxfuse
-        curl -L -o cvmfs-latest.pkg http://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-latest.pkg
-        sudo installer -package cvmfs-latest.pkg -target /
-        wget --no-check-certificate https://lcd-data.web.cern.ch/lcd-data/CernVM/default.local
-        sudo mv default.local /etc/cvmfs/default.local
-        sudo cvmfs_config setup
         brew cask install gfortran
         brew cask install xquartz
-    - name: Mount CVMFS
-      run: |
-        mkdir -p /Users/Shared/cvmfs/sft.cern.ch
-        mkdir -p /Users/Shared/cvmfs/geant4.cern.ch
-        sudo mount -t cvmfs sft.cern.ch /Users/Shared/cvmfs/sft.cern.ch
-        sudo mount -t cvmfs geant4.cern.ch /Users/Shared/cvmfs/geant4.cern.ch
-        ls /Users/Shared/cvmfs/sft.cern.ch
-        ls /Users/Shared/cvmfs/geant4.cern.ch
     - name: Build DD4hep
       run: |
         source /Users/Shared/cvmfs/sft.cern.ch/lcg/views/${{ matrix.LCG }}/setup.sh
