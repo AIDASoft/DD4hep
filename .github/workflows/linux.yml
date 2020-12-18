@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   centos7:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -16,7 +16,7 @@ jobs:
       TBB: OFF
     steps:
     - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@main
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
     - name: Start container
       run: |
         ls
@@ -27,7 +27,7 @@ jobs:
 
 
   centos7-tbb:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -40,7 +40,7 @@ jobs:
       TBB: ON
     steps:
     - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@main
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
     - name: Start container
       run: |
         ls
@@ -51,7 +51,7 @@ jobs:
 
 
   non-shared-libs:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         LCG: ["LCG_98python3/x86_64-centos7-gcc10-opt"]
@@ -61,7 +61,7 @@ jobs:
       TBB: ON
     steps:
     - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@main
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
     - name: Start container
       run: |
         ls
@@ -72,7 +72,7 @@ jobs:
 
 
   ubuntu18:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -84,7 +84,7 @@ jobs:
       TBB: ON
     steps:
     - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@main
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
     - name: Start container
       run: |
         ls
@@ -95,7 +95,7 @@ jobs:
 
 
   dev:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -109,7 +109,7 @@ jobs:
       EDM4HEP: ON
     steps:
     - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@main
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
     - name: Start container
       run: |
         ls

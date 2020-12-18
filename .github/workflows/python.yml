@@ -4,13 +4,13 @@ on: [push, pull_request]
 
 jobs:
   python-lint:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         LCG: ["LCG_98/x86_64-centos7-gcc10-opt"]
     steps:
     - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@main
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
     - name: Start container
       run: |
         docker run -it --privileged --name CI_container -v /home/runner/work/DD4hep/DD4hep:/Package -e VIEW=${{ matrix.LCG }} -v /cvmfs:/cvmfs:shared -d ghcr.io/aidasoft/centos7:latest /bin/bash
