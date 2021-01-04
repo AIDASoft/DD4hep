@@ -29,10 +29,6 @@
 
 #include "RVersion.h"
 
-#ifndef HAVE_GEANT4_UNITS
-// #define HAVE_GEANT4_UNITS
-#endif
-
 // We use the ROOT system units if they are avalible (FAILS SOME TESTS FOR NOW)
 #if 0
 /// ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
@@ -50,7 +46,7 @@ namespace dd4hep {
     //
     // Length [L]
     //
-#ifdef HAVE_GEANT4_UNITS
+#ifdef DD4HEP_USE_GEANT4_UNITS
     static constexpr double millimeter = 1.0;
 #else
     static constexpr double millimeter = 0.1;
@@ -129,7 +125,7 @@ namespace dd4hep {
     //
     // Time [T]
     //
-#ifdef HAVE_GEANT4_UNITS
+#ifdef DD4HEP_USE_GEANT4_UNITS
     static constexpr double nanosecond = 1.0;
 #else
     static constexpr double nanosecond = 1.e-9;
@@ -158,7 +154,7 @@ namespace dd4hep {
     //
     // Energy [E]
     //
-#ifdef HAVE_GEANT4_UNITS
+#ifdef DD4HEP_USE_GEANT4_UNITS
     static constexpr double megaelectronvolt = 1.0;
 #else
     static constexpr double megaelectronvolt = 1.e-3;

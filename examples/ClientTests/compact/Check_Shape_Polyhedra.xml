@@ -25,7 +25,7 @@
           <plane rmin="1851.5*mm" rmax="1851.5*mm" z="3215.42*mm"/>
         </shape>
         <position x="30*cm"  y="30*cm" z="50*cm"/>
-        <rotation x="0"      y="0"     z="0"/>
+        <rotation x="0*rad"  y="0*rad" z="0*rad"/>
       </check>
       <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Polyhedra.txt" create="CheckShape_create"/>
     </detector>

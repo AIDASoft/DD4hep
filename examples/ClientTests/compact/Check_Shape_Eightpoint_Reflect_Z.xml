@@ -45,8 +45,8 @@
            <vertex x="-23*cm" y=" 27*cm"/>
            <vertex x=" 13*cm" y="-27*cm"/>
         </shape>
-        <position x="0"  y="0" z="-100"/>
-        <rotation x="0"  y="0" z="0"/>
+        <position x="0*cm"  y="0*cm"  z="-100*cm"/>
+        <rotation x="0*rad" y="0*rad" z="0*rad"/>
         <reflect_z/>
       </check>
       <testnot  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Eightpoint_Reflect_Z.txt" create="1" a="CheckShape_create"/>

@@ -73,7 +73,8 @@ dd4hep_add_test_reg( AlignDet_Telescope_dump_xml
 #---Testing: Write out alignment file from the alignment data using a detelement scan
 dd4hep_add_test_reg( AlignDet_Telescope_write_xml
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
-  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_read_xml 
+  EXEC_ARGS  geoPluginRun -volmgr -destroy
+  -plugin DD4hep_AlignmentExample_read_xml 
   -input file:${AlignDet_INSTALL}/compact/Telescope.xml 
   -delta file:${CMAKE_INSTALL_PREFIX}/examples/Conditions/data/repository.xml 
   -plugin DD4hep_ConditionsXMLRepositoryWriter -iov_type run -iov_value 1500 -manager -output new_cond.xml

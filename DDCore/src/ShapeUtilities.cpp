@@ -1253,21 +1253,21 @@ namespace dd4hep {
     for(Int_t i=0; i<nvert; ++i)   {
       Double_t* p = points + 3*i;
       os << setw(16) << left << sol->IsA()->GetName() << " " << setw(3) << left << i
-         << " Local  ("  << setw(7) << setprecision(prec) << fixed << right << p[0]
-         << ", "         << setw(7) << setprecision(prec) << fixed << right << p[1]
-         << ", "         << setw(7) << setprecision(prec) << fixed << right << p[2]
+         << " Local  ("  << setw(7) << setprecision(prec) << fixed << right << p[0]/dd4hep::cm
+         << ", "         << setw(7) << setprecision(prec) << fixed << right << p[1]/dd4hep::cm
+         << ", "         << setw(7) << setprecision(prec) << fixed << right << p[2]/dd4hep::cm
          << ")" << endl;
     }
     Box box = sol;
     const Double_t* org = box->GetOrigin();
     os << setw(16) << left << sol->IsA()->GetName()
        << " Bounding box: "
-       << " dx="        << setw(7) << setprecision(prec) << fixed << right << box->GetDX()
-       << " dy="        << setw(7) << setprecision(prec) << fixed << right << box->GetDY()
-       << " dz="        << setw(7) << setprecision(prec) << fixed << right << box->GetDZ()
-       << " Origin: x=" << setw(7) << setprecision(prec) << fixed << right << org[0]
-       << " y="         << setw(7) << setprecision(prec) << fixed << right << org[1]
-       << " z="         << setw(7) << setprecision(prec) << fixed << right << org[2]
+       << " dx="        << setw(7) << setprecision(prec) << fixed << right << box->GetDX()/dd4hep::cm
+       << " dy="        << setw(7) << setprecision(prec) << fixed << right << box->GetDY()/dd4hep::cm
+       << " dz="        << setw(7) << setprecision(prec) << fixed << right << box->GetDZ()/dd4hep::cm
+       << " Origin: x=" << setw(7) << setprecision(prec) << fixed << right << org[0]/dd4hep::cm
+       << " y="         << setw(7) << setprecision(prec) << fixed << right << org[1]/dd4hep::cm
+       << " z="         << setw(7) << setprecision(prec) << fixed << right << org[2]/dd4hep::cm
        << endl;
   
     /// -------------------- DONE --------------------

@@ -193,7 +193,7 @@ dd4hep_add_test_reg( ClientTests_Save_ROOT_MiniTel_LONGTEST
 set(ClientTests_ShapeTests)
 list(APPEND ClientTests_ShapeTests Box Cone ConeSegment Tube ElTube CutTube Hyperboloid Paraboloid)
 list(APPEND ClientTests_ShapeTests EightPointSolid Eightpoint_Reflect_Volume Eightpoint_Reflect_DetElement)
-list(APPEND ClientTests_ShapeTests Polycone Polyhedra PseudoTrap PseudoTrap2 Sphere Torus Trap Trd1 Trd2)
+list(APPEND ClientTests_ShapeTests Polycone Polyhedra PseudoTrap PseudoTrap1 PseudoTrap2 Sphere Torus Trap Trd1 Trd2)
 list(APPEND ClientTests_ShapeTests TruncatedTube ExtrudedPolygon)
 #
 #

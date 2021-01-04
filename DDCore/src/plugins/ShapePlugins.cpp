@@ -719,9 +719,10 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
       pv.addPhysVolID("check",x_check.id());
       printout(INFO,"TestShape","+++ Volume id is %d", x_check.id());      
     }
-
-    printout(INFO,"TestShape","Created successfull shape of type: %s",
-             shape_type.c_str());
+    const char* nam = solid->GetName();
+    printout(INFO,"TestShape","Created successfull shape of type: %s %c%s%c",
+	     shape_type.c_str(), nam ? '[' : ' ', nam ? nam : "" ,nam ? ']' : ' ');
+      
     bool instance_test = false;
     if ( 0 == strcasecmp(solid->GetTitle(),BOX_TAG) )
       instance_test = isInstance<Box>(solid);
@@ -832,8 +833,8 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
                instance_test ? "OK" : "FAILED");
     }
     else   {
-      printout(INFO,"TestShape","Correct shape type: %s <-> %s Instance test: %s",
-               shape_type.c_str(), solid->GetTitle(), "OK");
+      printout(INFO,"TestShape","Correct shape type: %s %s <-> %s Instance test: %s",
+               solid->GetName(), shape_type.c_str(), solid->GetTitle(), "OK");
     }
   }
   if ( x_reflect )   {
@@ -913,8 +914,14 @@ void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
   Volume v = pv.volume();
   for (Int_t ipv=0, npv=v->GetNdaughters(); ipv < npv; ipv++) {
     PlacedVolume place = v->GetNode(ipv);
+    auto vol   = place.volume();
+    auto solid = vol.solid();
     os << "ShapeCheck[" << ipv << "] ";
     os << toStringMesh(place, 2);
+    printout(INFO,"Mesh_Verifier","+++ Checking mesh of %s %s [%s] vol:%s.",
+	     solid->IsA()->GetName(),
+	     solid->GetName(), solid->GetTitle(),
+	     vol->GetName());
   }
   gSystem->ExpandPathName(ref);
   if ( ref_cr )   {
@@ -950,8 +957,8 @@ void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
         solid.setDimensions(params);
       }
       else if ( isInstance<PseudoTrap>(solid) )   {
-        auto params = solid.dimensions();
-        solid.setDimensions(params);
+        //auto params = solid.dimensions();
+        //solid.setDimensions(params);
       }
       else if ( solid->IsA() != TGeoCompositeShape::Class() )   {
         auto params = solid.dimensions();

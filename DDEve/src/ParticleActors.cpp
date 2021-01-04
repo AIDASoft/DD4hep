@@ -30,7 +30,7 @@
 using namespace std;
 using namespace dd4hep;
 
-#ifdef HAVE_GEANT4_UNITS
+#ifdef DD4HEP_USE_GEANT4_UNITS
 #define CM_2_MM     1.0
 #define MM_2_CM     1.0
 #define MEV_TO_GEV  1000.0

@@ -19,9 +19,9 @@
   <detectors>
     <detector id="1" name="Shape_Sphere" type="DD4hep_TestShape_Creator">
       <check vis="Shape1_vis">
-        <shape type="Sphere" rmin="10*cm" rmax="30*cm" theta="0.1" deltatheta="pi*rad-0.2" phi="0" deltaphi="3/4*pi"/>
-        <position x="30"  y="30"   z="30"/>
-        <rotation x="0"   y="0"    z="0"/>
+        <shape type="Sphere" rmin="10*cm" rmax="30*cm" theta="0.1" deltatheta="pi*rad-0.2" phi="0*rad" deltaphi="3/4*pi*rad"/>
+        <position x="30*cm"  y="30*cm" z="30*cm"/>
+        <rotation x="0*rad"  y="0*rad" z="0*rad"/>
       </check>
       <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Sphere.txt" create="CheckShape_create"/>
     </detector>

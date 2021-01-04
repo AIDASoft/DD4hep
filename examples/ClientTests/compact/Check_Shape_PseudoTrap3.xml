@@ -36,7 +36,7 @@
                y1="30*cm" y2="10*cm" 
                z="30*cm"  radius="3*cm" minusZ="false"/>
         <position x="-40*cm"  y="-10*cm" z="0*cm"/>
-        <rotation x="0"     y="0"    z="0"/>
+        <rotation x="0*rad"   y="0*rad"  z="0*rad"/>
       </check>
       <!--   <PseudoTrap name="ptrap2" dx1="10*cm" dx2="3*cm" dy1="30*cm" dy2="10*cm" dz="30*cm" radius="10*cm" atMinusZ="true"/>     -->
       <check vis="Shape2_vis">
@@ -45,7 +45,7 @@
                y1="30*cm" y2="10*cm" 
                z="30*cm"  radius="10*cm" minusZ="true"/>
         <position x="-10*cm"  y="-10*cm" z="0*cm"/>
-        <rotation x="0"     y="0"    z="0"/>
+        <rotation x="0*rad"   y="0*rad"  z="0*rad"/>
       </check>
 
       <!--   <PseudoTrap name="ptrap3" dx1="10*cm" dx2="3*cm" dy1="30*cm" dy2="10*cm" dz="30*cm" radius="-10*cm" atMinusZ="false"/>     -->
@@ -54,8 +54,8 @@
                x1="10*cm" x2="3*cm" 
                y1="30*cm" y2="10*cm" 
                z="30*cm"  radius="-3*cm" minusZ="false"/>
-        <position x="20*cm"  y="-10*cm" z="0*cm"/>
-        <rotation x="0"     y="0"    z="0"/>
+        <position x="20*cm" y="-10*cm" z="0*cm"/>
+        <rotation x="0*rad" y="0*rad"  z="0*rad"/>
       </check>
       <!--   <PseudoTrap name="ptrap4" dx1="10*cm" dx2="3*cm" dy1="30*cm" dy2="10*cm" dz="30*cm" radius="-10*cm" atMinusZ="true"/>     -->
       <check vis="Shape4_vis">
@@ -64,20 +64,20 @@
                y1="30*cm" y2="10*cm" 
                z="30*cm"  radius="-10*cm" minusZ="true"/>
         <position x="50*cm"  y="-10*cm" z="0*cm"/>
-        <rotation x="0"     y="0"    z="0"/>
+        <rotation x="0*rad"  y="0*rad"  z="0*rad"/>
       </check>
       <check vis="Shape4_vis">
         <shape type="PseudoTrap" name="ptrap4" 
                x1="10*cm" x2="3*cm" 
                y1="30*cm" y2="10*cm" 
                z="30*cm"  radius="-30*cm" minusZ="true"/>
-        <position x="80*cm"  y="-10*cm" z="0*cm"/>
-        <rotation x="0"     y="0"    z="0"/>
+        <position x="80*cm" y="-10*cm" z="0*cm"/>
+        <rotation x="0"     y="0"      z="0*rad"/>
       </check>
       <check vis="Shape1_grey">
         <shape type="Box" name="plane" dx="80*cm" dy="50*cm" dz="0.0001*cm"/>
-        <position x="20*cm"  y="0*cm" z="-30*cm"/>
-        <rotation x="0"     y="0"    z="0"/>
+        <position x="20*cm"  y="0*cm"   z="-30*cm"/>
+        <rotation x="0*rad"  y="0*rad"  z="0*rad"/>
       </check>
       <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap3.txt" create="CheckShape_create"/>
     </detector>

@@ -23,8 +23,8 @@
                lx="5*cm" ly="5*cm"  lz="5*cm"
                tx="8*cm" ty="15*cm" tz="6*cm"
                phi1="0" phi2="pi"/>
-        <position x="30"  y="30"   z="50"/>
-        <rotation x="0"   y="pi/4" z="0"/>
+        <position x="30*cm"  y="30*cm"    z="50*cm"/>
+        <rotation x="0*rad"  y="pi/4*rad" z="0*rad"/>
       </check>
       <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_CutTube.txt" create="CheckShape_create"/>
     </detector>
