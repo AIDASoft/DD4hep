@@ -30,7 +30,7 @@
 // C/C++ include files
 #include <stdexcept>
 
-#ifdef HAVE_GEANT4_UNITS
+#ifdef DD4HEP_USE_GEANT4_UNITS
 #define MM_2_CM 1.0
 #else
 #define MM_2_CM 0.1

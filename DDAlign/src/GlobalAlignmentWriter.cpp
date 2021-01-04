@@ -81,9 +81,9 @@ void GlobalAlignmentWriter::addNode(xml::Element elt, GlobalAlignment a)  const 
        fabs(t[1]) > numeric_limits<double>::epsilon() ||
        fabs(t[2]) > numeric_limits<double>::epsilon() ) {
     xml::Element e = xml::Element(elt.document(),_U(position));
-    e.setAttr(_U(x),t[0]);
-    e.setAttr(_U(y),t[1]);
-    e.setAttr(_U(z),t[2]);
+    e.setAttr(_U(x),_toString(t[0]/dd4hep::mm,"%f*mm"));
+    e.setAttr(_U(y),_toString(t[1]/dd4hep::mm,"%f*mm"));
+    e.setAttr(_U(z),_toString(t[2]/dd4hep::mm,"%f*mm"));
     elt.append(e);
   }
   if ( mat.IsRotation() )  {
@@ -95,9 +95,9 @@ void GlobalAlignmentWriter::addNode(xml::Element elt, GlobalAlignment a)  const 
       xml::Element e = xml::Element(elt.document(),_U(rotation));
       // Don't know why the angles have the wrong sign....
       rot *= -1;
-      e.setAttr(_U(x),rot.X());
-      e.setAttr(_U(y),rot.Y());
-      e.setAttr(_U(z),rot.Z());
+      e.setAttr(_U(x),_toString(rot.X()/dd4hep::rad,"%f*rad"));
+      e.setAttr(_U(y),_toString(rot.Y()/dd4hep::rad,"%f*rad"));
+      e.setAttr(_U(z),_toString(rot.Z()/dd4hep::rad,"%f*rad"));
       elt.append(e);
     }
   }

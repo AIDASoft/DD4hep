@@ -159,25 +159,25 @@ namespace {
   xml::Element _convert(xml::Element par, const Translation3D& tr)  {
     xml::Element e = xml::Element(par.document(),_U(pivot));
     const Translation3D::Vector& v = tr.Vect();
-    e.setAttr(_U(x),v.X());
-    e.setAttr(_U(y),v.Y());
-    e.setAttr(_U(z),v.Z());
+    e.setAttr(_U(x),_toString(v.X()/dd4hep::mm,"%f*mm"));
+    e.setAttr(_U(y),_toString(v.Y()/dd4hep::mm,"%f*mm"));
+    e.setAttr(_U(z),_toString(v.Z()/dd4hep::mm,"%f*mm"));
     return e;
   }
   xml::Element _convert(xml::Element par, const Position& pos)  {
     xml::Element e = xml::Element(par.document(),_U(position));
-    e.setAttr(_U(x),pos.X());
-    e.setAttr(_U(y),pos.Y());
-    e.setAttr(_U(z),pos.Z());
+    e.setAttr(_U(x),_toString(pos.X()/dd4hep::mm,"%f*mm"));
+    e.setAttr(_U(y),_toString(pos.Y()/dd4hep::mm,"%f*mm"));
+    e.setAttr(_U(z),_toString(pos.Z()/dd4hep::mm,"%f*mm"));
     return e;
   }
   xml::Element _convert(xml::Element par, const RotationZYX& rot)  {
     xml::Element e = xml::Element(par.document(),_U(rotation));
     double z, y, x;
     rot.GetComponents(z,y,x);
-    e.setAttr(_U(x),x);
-    e.setAttr(_U(y),y);
-    e.setAttr(_U(z),z);
+    e.setAttr(_U(x),_toString(x/dd4hep::rad,"%f*rad"));
+    e.setAttr(_U(y),_toString(y/dd4hep::rad,"%f*rad"));
+    e.setAttr(_U(z),_toString(z/dd4hep::rad,"%f*rad"));
     return e;
   }
   template <> xml::Element _convert<value>(xml::Element par, Condition c)  {

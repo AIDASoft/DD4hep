@@ -46,7 +46,7 @@ static void print_world_trafo(AlignmentsCalib& calib, const std::string& path)  
   if ( a.isValid() )  {
     const double* tr = a.worldTransformation().GetTranslation();
     printout(INFO,"Example","++ World transformation of: %-32s  Tr:(%8.2g,%8.2g,%8.2g [cm])",
-             path.c_str(), tr[0],tr[1],tr[2]);
+             path.c_str(), tr[0]/dd4hep::cm, tr[1]/dd4hep::cm, tr[2]/dd4hep::cm);
     a.worldTransformation().Print();
     return;
   }
@@ -150,8 +150,8 @@ static int AlignmentExample_align_telescope (Detector& description, int argc, ch
   }
 
   /// Let's change something:
-  Delta delta(Position(333.0,0,0));
-  calib.set(calib.detector("/world/Telescope"),Delta(Position(55.0,0,0)));
+  Delta delta(Position(333.0/dd4hep::cm,0,0));
+  calib.set(calib.detector("/world/Telescope"),Delta(Position(55.0/dd4hep::cm,0,0)));
   calib.set(calib.detector("/world/Telescope/module_1"),delta);
   calib.set("/world/Telescope/module_3",delta);
   /// Commit transaction and push deltas to the alignment conditions

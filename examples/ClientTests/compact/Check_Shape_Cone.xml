@@ -20,8 +20,8 @@
     <detector id="1" name="Shape_Cone" type="DD4hep_TestShape_Creator">
       <check vis="Shape1_vis">
         <shape type="Cone" rmin1="10*cm" rmax1="30*cm" rmin2="50*cm" rmax2="60*cm" z="40*cm"/>
-        <position x="30"  y="30"   z="30"/>
-        <rotation x="0"   y="0"    z="0"/>
+        <position x="30*cm"  y="30*cm"   z="30*cm"/>
+        <rotation x="0*rad"  y="0*rad"   z="0*rad"/>
       </check>
       <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Cone.txt" create="CheckShape_create"/>
     </detector>

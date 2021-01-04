@@ -23,14 +23,14 @@
         <shape type="PseudoTrap" z="30*cm" radius="-40*cm"
                x1="33*cm" x2="3*cm" y1="30*cm" y2="10*cm" minusZ="true"/>
         <position x="30*cm"  y="30*cm" z="50*cm"/>
-        <rotation x="0"      y="0"     z="0"/>
+        <rotation x="0*rad"  y="0*rad" z="0*rad"/>
       </check>
       <!-- Intersection pseudo-trap   -->
       <check vis="Shape2_vis">
         <shape type="PseudoTrap" z="30*cm" radius="30*cm"
                x1="3*cm" x2="30*cm" y1="30*cm" y2="10*cm" minusZ="false"/>
         <position x="30*cm"  y="30*cm" z="-50*cm"/>
-        <rotation x="0"      y="0"     z="0"/>
+        <rotation x="0*rad"  y="0*rad" z="0*rad"/>
       </check>
 
       <!-- Creates a different mesh on different platforms.
@@ -38,10 +38,9 @@
          <shape type="PseudoTrap" z="30*cm" radius="5*cm"
                 x1="3*cm" x2="10*cm" y1="30*cm" y2="10*cm" minusZ="true"/>
          <position x="30*cm"  y="30*cm" z="-50*cm"/>
-         <rotation x="0"      y="0"     z="0"/>
+         <rotation x="0*rad"  y="0*rad" z="0*rad"/>
       </check>
       -->
-
       <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap.txt" create="CheckShape_create"/>
     </detector>
   </detectors>

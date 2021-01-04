@@ -20,8 +20,8 @@
     <detector id="1" name="Shape_Test" type="DD4hep_TestShape_Creator">
       <check vis="Shape1_vis">
         <shape type="TwistedTube" twist="20*degree" rmin="10*cm" rmax="30*cm" dz="40*cm" deltaphi="45*degree" />
-        <position x="30"  y="30"   z="30"/>
-        <rotation x="0"   y="0"    z="0"/>
+        <position x="30*cm" y="30*cm" z="30*cm"/>
+        <rotation x="0*rad" y="0*rad" z="0*rad"/>
       </check>
       <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_TwistedTube.txt" create="CheckShape_create"/>
     </detector>

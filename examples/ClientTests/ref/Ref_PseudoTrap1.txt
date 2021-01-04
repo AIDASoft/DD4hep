@@ -1,0 +1,9 @@
+ShapeCheck[0] TGeoCompositeShape 6 Mesh-points:
+TGeoCompositeShape PseudoTrap N(mesh)=6  N(vert)=6  N(seg)=0  N(pols)=0
+TGeoCompositeShape 0   Local  (  50.00,   30.00,  -92.93) Global (  50.00,   30.00,  -92.93)
+TGeoCompositeShape 1   Local  (  50.00,  -30.00,  -92.93) Global (  50.00,  -30.00,  -92.93)
+TGeoCompositeShape 2   Local  (-186.36,  -30.00,   92.93) Global (-186.36,  -30.00,   92.93)
+TGeoCompositeShape 3   Local  (-186.36,   30.00,   92.93) Global (-186.36,   30.00,   92.93)
+TGeoCompositeShape 4   Local  ( 186.36,   30.00,   92.93) Global ( 186.36,   30.00,   92.93)
+TGeoCompositeShape 5   Local  ( 186.36,  -30.00,   92.93) Global ( 186.36,  -30.00,   92.93)
+TGeoCompositeShape Bounding box:  dx= 186.36 dy=  30.00 dz=  92.93 Origin: x=   0.00 y=   0.00 z=   0.00

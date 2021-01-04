@@ -24,15 +24,15 @@
         <shape type="Scale" x="1.0" y="0.3" z="1.0">
           <shape type="Cone" rmin1="5*cm" rmax1="30*cm" rmin2="20*cm" rmax2="90*cm" z="40*cm"/>
 	</shape>
-        <position x="0"  y="0*cm"   z="50*cm"/>
-        <rotation x="-0.1"  y="0"    z="0"/>
+        <position x="0*cm"      y="0*cm"   z="50*cm"/>
+        <rotation x="-0.1*rad"  y="0*rad"  z="0*rad"/>
       </check>
       <check id="2" vis="Shape2_vis">
         <shape type="Scale" x="0.6" y="0.4" z="1.0">
           <shape type="Cone" rmin1="5*cm" rmax1="30*cm" rmin2="20*cm" rmax2="90*cm" z="40*cm"/>
 	</shape>
-        <position x="0*cm" y="-50*cm"  z="0*cm"/>
-        <rotation x="1"    y="0"  z="0"/>
+        <position x="0*cm"  y="-50*cm" z="0*cm"/>
+        <rotation x="1*rad" y="0*rad"  z="0*rad"/>
       </check>
       <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Scaled_Cone.txt" create="CheckShape_create"/>
       <testn type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Scaled_Cone.txt" create="1"/>

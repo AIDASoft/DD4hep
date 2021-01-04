@@ -19,9 +19,9 @@
   <detectors>
     <detector id="1" name="Shape_Hyperboloid" type="DD4hep_TestShape_Creator">
       <check vis="Shape1_vis">
-        <shape type="Hyperboloid" rmin="10*cm" rmax="30*cm" dz="50*cm" inner_stereo="pi/5" outer_stereo="pi/4"/>
+        <shape type="Hyperboloid" rmin="10*cm" rmax="30*cm" dz="50*cm" inner_stereo="pi/5*rad" outer_stereo="pi/4*rad"/>
         <position x="30*cm" y="30*cm" z="30*cm"/>
-        <rotation x="0"     y="0"     z="0"/>
+        <rotation x="0*rad" y="0*rad" z="0*rad"/>
       </check>
       <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Hyperboloid.txt" create="CheckShape_create"/>
     </detector>

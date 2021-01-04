@@ -701,20 +701,26 @@ void PseudoTrap::make(const string& nam, double x1, double x2, double y1, double
   else  {
     except(PSEUDOTRAP_TAG,"Check parameters of the PseudoTrap!");   
   }
+  printout(WARNING,"PseudoTrap","++ Trd2(%s): x1=%.3g x2=%.3g y1=%.3g y2=%.3g halfZ=%.3g",
+	   (nam+"Trd2").c_str(), x1, x2, y1, y2, halfZ);
+  printout(WARNING,"PseudoTrap","++ Tubs(%s): r=%.3g h=%.3g startPhi=%.3g endPhi=%.3g",
+	   (nam+"Tubs").c_str(), std::abs(r),h,startPhi,startPhi + halfOpeningAngle*2.);
 
   Solid trap(new TGeoTrd2((nam+"Trd2").c_str(), x1, x2, y1, y2, halfZ));
   Solid tubs(new TGeoTubeSeg((nam+"Tubs").c_str(), 0.,std::abs(r),h,startPhi,startPhi + halfOpeningAngle*2.));
-  TGeoCompositeShape* solid = 0;
-  if( intersec )  {
-    solid = SubtractionSolid(nam, trap, tubs, Transform3D(RotationX(M_PI/2.), Position(0.,0.,displacement))).ptr();
-  }
-  else  {
-    SubtractionSolid sub((nam+"Subs").c_str(), tubs, Box(1.1*x, 1.1*h, std::sqrt(r*r-x*x)), Transform3D(RotationX(M_PI/2.)));
-    solid = UnionSolid(nam, trap, sub, Transform3D(RotationX(M_PI/2.), Position(0,0,displacement))).ptr();
-  }
   stringstream params;
   params << x1 << " " << x2 << " " << y1 << " " << y2 << " " << z << " "
          << r << " " << char(atMinusZ ? '1' : '0') << " ";
+  TGeoCompositeShape* solid = 0;
+  if( intersec )  {
+    printout(WARNING,"PseudoTrap","++ Intersection displacement=%.3g", displacement);
+    solid = SubtractionSolid(nam, trap, tubs, Transform3D(RotationX(M_PI/2.), Position(0.,0.,displacement))).ptr();
+  }
+  else  {
+    printout(WARNING,"PseudoTrap","++ Union displacement=%.3g sqrt(r*r-x*x)=%.3g", displacement, std::sqrt(r*r-x*x));
+    SubtractionSolid sub((nam+"Subs").c_str(), tubs, Box(1.1*x, 1.1*h, std::sqrt(r*r-x*x)), Transform3D(RotationX(M_PI/2.)));
+    solid = UnionSolid(nam, trap, sub, Transform3D(RotationX(M_PI/2.), Position(0,0,displacement))).ptr();
+  }
   solid->GetBoolNode()->GetRightMatrix()->SetTitle(params.str().c_str());
   _assign(solid,"",PSEUDOTRAP_TAG, true);
 }

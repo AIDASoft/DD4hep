@@ -76,9 +76,9 @@ typedef GlobalAlignmentStack::StackEntry StackEntry;
 /** Convert volume objects
  *
  *      <volume subpath="layer4_0">
- *        <position x="0"   y="0"  z="0"/>
- *        <rotation x="0.5" y="0.1"  z="0.2"/>
- *        <pivot    x="0" y="0"    z="100"/>
+ *        <position x="0*mm" y="0*mm" z="0*mm"/>
+ *        <rotation x="0.5"  y="0.1"  z="0.2"/>
+ *        <pivot    x="0*mm" y="0*mm" z="100*mm"/>
  *      <volume>
  *         ...
  *      <volume>
@@ -126,9 +126,9 @@ template <> void Converter<volume>::operator()(xml_h e) const {
  *    realigned.
  *
  *    <detelement path="/world/TPC/TPC_SideA/TPC_SideA_sector02">
- *      <position x="0"   y="0"  z="0"/>
- *      <rotation x="0.5" y="0"  z="0"/>
- *      <pivot    x="0"   y="0"  z="100"/>
+ *      <position x="0*mm" y="0*mm" z="0*mm"/>
+ *      <rotation x="0.5"  y="0.1"  z="0.2"/>
+ *      <pivot    x="0*mm" y="0*mm" z="100*mm"/>
  *    </detelement>
  *
  *  @author  M.Frank
@@ -184,8 +184,8 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
 /** Convert detelement_include objects
  *
  *    <detelement path="/world/TPC/TPC_SideA/TPC_SideA_sector02">
- *      <position x="0"   y="0"  z="0"/>
- *      <rotation x="0.5" y="0"  z="0"/>
+ *      <position x="0*mm" y="0*mm" z="0*mm"/>
+ *      <rotation x="0.5"  y="0.1"  z="0.2"/>
  *    </detelement>
  *
  *  @author  M.Frank

@@ -29,8 +29,8 @@
            <vertex x="-23*cm" y=" 27*cm"/>
            <vertex x=" 13*cm" y="-27*cm"/>
         </shape>
-        <position x="0"  y="0" z="100"/>
-        <rotation x="0"  y="0" z="0"/>
+        <position x="0*cm"  y="0*cm"  z="100*cm"/>
+        <rotation x="0*rad" y="0*rad" z="0*rad"/>
       </check>
       <check vis="Shape2_vis">
         <shape type="EightPointSolid" dz="30*cm">
@@ -43,8 +43,8 @@
            <vertex x="-23*cm" y=" 27*cm"/>
            <vertex x=" 13*cm" y="-27*cm"/>
         </shape>
-        <position x="0"  y="0" z="-100"/>
-        <rotation x="0"  y="0" z="0"/>
+        <position x="0*cm"  y="0*cm"  z="-100*cm"/>
+        <rotation x="0*rad" y="0*rad" z="0*rad"/>
         <reflect/>
       </check>
       <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Eightpoint_Reflect_Volume.txt" create="CheckShape_create"/>

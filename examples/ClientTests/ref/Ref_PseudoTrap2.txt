@@ -1,20 +1,11 @@
-ShapeCheck[0] TGeoCompositeShape 6 Mesh-points:
-TGeoCompositeShape PseudoTrap N(mesh)=6  N(vert)=6  N(seg)=0  N(pols)=0
-TGeoCompositeShape 0   Local  (  50.00,   30.00,  -92.93) Global (  50.00,   30.00,  -92.93)
-TGeoCompositeShape 1   Local  (  50.00,  -30.00,  -92.93) Global (  50.00,  -30.00,  -92.93)
-TGeoCompositeShape 2   Local  (-186.36,  -30.00,   92.93) Global (-186.36,  -30.00,   92.93)
-TGeoCompositeShape 3   Local  (-186.36,   30.00,   92.93) Global (-186.36,   30.00,   92.93)
-TGeoCompositeShape 4   Local  ( 186.36,   30.00,   92.93) Global ( 186.36,   30.00,   92.93)
-TGeoCompositeShape 5   Local  ( 186.36,  -30.00,   92.93) Global ( 186.36,  -30.00,   92.93)
-TGeoCompositeShape Bounding box:  dx= 186.36 dy=  30.00 dz=  92.93 Origin: x=   0.00 y=   0.00 z=   0.00
-ShapeCheck[1] TGeoCompositeShape 4 Mesh-points:
+ShapeCheck[0] TGeoCompositeShape 4 Mesh-points:
 TGeoCompositeShape PseudoTrap N(mesh)=4  N(vert)=4  N(seg)=0  N(pols)=0
 TGeoCompositeShape 0   Local  ( -29.37,  -30.00,  -92.93) Global ( 370.63,  272.93,  -30.00)
 TGeoCompositeShape 1   Local  ( -29.37,   30.00,  -92.93) Global ( 370.63,  272.93,   30.00)
 TGeoCompositeShape 2   Local  (  29.37,   30.00,  -92.93) Global ( 429.37,  272.93,   30.00)
 TGeoCompositeShape 3   Local  (  29.37,  -30.00,  -92.93) Global ( 429.37,  272.93,  -30.00)
 TGeoCompositeShape Bounding box:  dx=  86.36 dy=  90.00 dz=  92.93 Origin: x=   0.00 y=   0.00 z=   0.00
-ShapeCheck[2] TGeoCompositeShape 46 Mesh-points:
+ShapeCheck[1] TGeoCompositeShape 46 Mesh-points:
 TGeoCompositeShape PseudoTrap N(mesh)=46  N(vert)=46  N(seg)=0  N(pols)=0
 TGeoCompositeShape 0   Local  ( -29.37,  -30.00,  -92.93) Global (-392.93, -150.00,  -29.37)
 TGeoCompositeShape 1   Local  ( -29.37,   30.00,  -92.93) Global (-392.93, -210.00,  -29.37)
@@ -63,7 +54,7 @@ TGeoCompositeShape 43  Local  ( -64.58,  -90.00,  112.62) Global (-187.38,  -90.
 TGeoCompositeShape 44  Local  ( -72.40,  -90.00,  106.69) Global (-193.31,  -90.00,  -72.40)
 TGeoCompositeShape 45  Local  ( -79.67,  -90.00,  100.12) Global (-199.88,  -90.00,  -79.67)
 TGeoCompositeShape Bounding box:  dx=  86.36 dy=  90.00 dz= 112.86 Origin: x=   0.00 y=   0.00 z=  19.92
-ShapeCheck[3] TGeoCompositeShape 6 Mesh-points:
+ShapeCheck[2] TGeoCompositeShape 6 Mesh-points:
 TGeoCompositeShape PseudoTrap N(mesh)=6  N(vert)=6  N(seg)=0  N(pols)=0
 TGeoCompositeShape 0   Local  ( -29.37,  -30.00, -292.93) Global ( -29.37,  360.00,  292.93)
 TGeoCompositeShape 1   Local  ( -29.37,   30.00, -292.93) Global ( -29.37,  300.00,  292.93)

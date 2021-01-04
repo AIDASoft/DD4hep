@@ -43,6 +43,11 @@ macro(dd4hep_set_compiler_flags)
     set ( COMPILER_FLAGS ${COMPILER_FLAGS} -Winconsistent-missing-override -Wno-c++1z-extensions -Wheader-hygiene )
   endif()
 
+  IF( DD4HEP_USE_GEANT4_UNITS )
+    MESSAGE(STATUS "+++ Building DD4hep with Geant4 units......")
+    add_compile_definitions(DD4HEP_USE_GEANT4_UNITS=1)
+  ENDIF()
+  
   FOREACH( FLAG ${COMPILER_FLAGS} )
     ## meed to replace the minus or plus signs from the variables, because it is passed
     ## as a macro to g++ which causes a warning about no whitespace after macro

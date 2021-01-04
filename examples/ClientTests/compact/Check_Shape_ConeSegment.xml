@@ -21,12 +21,12 @@
       <check vis="Shape1_vis">
         <shape type="ConeSegment" rmin1="10*cm" rmax1="30*cm" rmin2="15*cm" rmax2="60*cm" dz="40*cm" phi1="0*rad" phi2="7./8.*pi*rad"/>
         <position x="30*cm"  y="30*cm"   z="30*cm"/>
-        <rotation x="0"   y="0"    z="0"/>
+        <rotation x="0*rad"  y="0*rad"   z="0*rad"/>
       </check>
       <check vis="Shape2_vis">
         <shape type="ConeSegment" rmin1="10*cm" rmax1="30*cm" rmin2="15*cm" rmax2="60*cm" dz="40*cm" phi1="pi/5.*rad" phi2="1./8.*pi*rad"/>
         <position x="30*cm"  y="30*cm"   z="-80*cm"/>
-        <rotation x="0"   y="0"    z="0"/>
+        <rotation x="0*rad"  y="0*rad"   z="0*rad"/>
       </check>
       <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_ConeSegment.txt" create="CheckShape_create"/>
     </detector>
