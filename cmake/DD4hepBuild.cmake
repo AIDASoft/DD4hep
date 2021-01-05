@@ -570,6 +570,10 @@ function(dd4hep_add_dictionary dictionary )
     LIST(APPEND comp_defs ${def})
   endforeach()
 
+if(DD4HEP_BUILD_DEBUG)
+    LIST(APPEND comp_defs DD4HEP_DEBUG=1)
+  endif()
+
   foreach(DEP ${ARG_USES})
     # Get INCLUDE DIRECTORIES from Dependencies
     LIST(APPEND inc_dirs $<TARGET_PROPERTY:${DEP},INTERFACE_INCLUDE_DIRECTORIES>)

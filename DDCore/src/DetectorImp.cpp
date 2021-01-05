@@ -164,10 +164,14 @@ DetectorImp::DetectorImp()
 DetectorImp::DetectorImp(const string& name)
   : TNamed(), DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
 {
+  static bool first = true;
+  if ( first )    {
+    first = false;
 #if defined(DD4HEP_USE_GEANT4_UNITS) && ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
-  printout(WARNING,"DD4hep","++ Using globally Geant4 unit system (mm,ns,MeV)");
-  TGeoUnit::setUnitType(TGeoUnit::kTGeant4Units);
+    printout(WARNING,"DD4hep","++ Using globally Geant4 unit system (mm,ns,MeV)");
+    TGeoUnit::setUnitType(TGeoUnit::kTGeant4Units);
 #endif
+  }
   SetName(name.c_str());
   SetTitle("DD4hep detector description object");
   set_terminate( description_unexpected );

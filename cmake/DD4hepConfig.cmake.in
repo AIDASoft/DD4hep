@@ -25,6 +25,7 @@ set ( @CMAKE_PROJECT_NAME@_DIR                "${_thisdir}" )
 set ( @CMAKE_PROJECT_NAME@_ROOT               "${_thisdir}" )
 set ( @CMAKE_PROJECT_NAME@_VERSION            "@DD4hep_VERSION@" )
 set ( @CMAKE_PROJECT_NAME@_SOVERSION          "@DD4hep_SOVERSION@" )
+set ( DD4HEP_BUILD_DEBUG                       @DD4HEP_BUILD_DEBUG@ )
 set ( DD4HEP_USE_GEANT4                        @DD4HEP_USE_GEANT4@ )
 set ( DD4HEP_USE_CLHEP                         @DD4HEP_USE_CLHEP@ )
 set ( DD4HEP_USE_LCIO                          @DD4HEP_USE_LCIO@ )
@@ -50,6 +51,10 @@ endif()
 
 FIND_DEPENDENCY(Boost REQUIRED)
 DD4HEP_SETUP_BOOST_TARGETS()
+
+if(DD4HEP_BUILD_DEBUG)
+  add_compile_definitions(DD4HEP_DEBUG=1)
+endif()
 
 if(DD4HEP_USE_GEANT4)
   MESSAGE(STATUS "@CMAKE_PROJECT_NAME@ uses Geant4")
