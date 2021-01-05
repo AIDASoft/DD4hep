@@ -16,7 +16,6 @@
 // Framework include files
 #include "XML/XML.h"
 #include "DD4hep/Detector.h"
-#include "DD4hep/Factories.h"
 #include "DD4hep/DD4hepUnits.h"
 
 /// Namespace for the AIDA detector description toolkit

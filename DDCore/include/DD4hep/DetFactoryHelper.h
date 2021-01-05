@@ -15,6 +15,7 @@
 
 /** Obsolete header. Better use XML/Helper.h instead !  */
 
-#include "XML/Helper.h"
+#include <XML/Helper.h>
+#include <DD4hep/Factories.h>
 
 #endif // DD4HEP_DETFACTORYHELPER_H
