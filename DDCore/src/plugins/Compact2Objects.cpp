@@ -28,6 +28,7 @@
 #include <DD4hep/DD4hepUnits.h>
 #include <DD4hep/FieldTypes.h>
 #include <DD4hep/Printout.h>
+#include <DD4hep/Factories.h>
 #include <DD4hep/Plugins.h>
 #include <DD4hep/detail/SegmentationsInterna.h>
 #include <DD4hep/detail/DetectorInterna.h>
