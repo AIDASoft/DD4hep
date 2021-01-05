@@ -106,6 +106,7 @@ namespace {
     TClass* cl = BasicGrammar::instance<OpaqueDataBlock>().clazz();//gROOT->GetClass("dd4hep::OpaqueDataBlock");
    
     OpaqueDataBlock* block = (OpaqueDataBlock*)obj;
+    
     if ( b.IsReading() )  {
       b.ReadVersion(&R__s, &R__c, cl);
       BasicGrammar::key_type key = 0;
@@ -134,11 +135,14 @@ namespace {
       printout(ERROR,"OpaqueData","+++ ERROR +++ Opaque data block has no grammar attached. Cannot be saved!");
     }
     else  {
+      const std::type_info& typ_info = typeid(*block);
       const BasicGrammar& gr = *block->grammar;
       std::string typ = gr.type_name();
+
+      printout(DEBUG,"OpaqueData","Saving object %p type: %s [%s] [%s]",
+	       obj, typ_info.name(), typ.c_str(), block->grammar->name.c_str());
       R__c = b.WriteVersion(cl,kTRUE);
       b << gr.hash();
-      //printout(INFO,"OpaqueData","   Data type:%s  Grammar:%s",typ.c_str(),block->grammar->name.c_str());
 
       /// Now perform the I/O action
       if ( gr.type() == typeid(std::string) )
