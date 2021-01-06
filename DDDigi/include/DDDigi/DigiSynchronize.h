@@ -52,7 +52,7 @@ namespace dd4hep {
         return m_actors;
       }
       /// Adopt a new action as part of the sequence. Sequence takes ownership.
-      void adopt(DigiEventAction* action);
+      virtual void adopt(DigiEventAction* action);
       /// Begin-of-event callback
       virtual void execute(DigiContext& context)  const override;
       ///

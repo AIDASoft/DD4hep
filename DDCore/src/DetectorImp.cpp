@@ -169,7 +169,11 @@ DetectorImp::DetectorImp(const string& name)
     first = false;
 #if defined(DD4HEP_USE_GEANT4_UNITS) && ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
     printout(WARNING,"DD4hep","++ Using globally Geant4 unit system (mm,ns,MeV)");
+    TGeoManager::SetDefaultG4Units();
     TGeoUnit::setUnitType(TGeoUnit::kTGeant4Units);
+#elif ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
+    TGeoManager::SetDefaultRootUnits();
+    TGeoUnit::setUnitType(TGeoUnit::kTGeoUnits);
 #endif
   }
   SetName(name.c_str());

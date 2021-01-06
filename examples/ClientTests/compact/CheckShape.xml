@@ -32,6 +32,8 @@
     <constant name="world_x" value="world_side"/>
     <constant name="world_y" value="world_side"/>
     <constant name="world_z" value="world_side"/>
+    <constant name="unit_length" value="1*10"/>
+    <constant name="unit_pos"    value="unit_length/10"/>
     <constant name="CheckShape_create" value="0"/>
   </define>
 

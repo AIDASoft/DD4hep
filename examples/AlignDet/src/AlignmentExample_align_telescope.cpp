@@ -150,8 +150,8 @@ static int AlignmentExample_align_telescope (Detector& description, int argc, ch
   }
 
   /// Let's change something:
-  Delta delta(Position(333.0/dd4hep::cm,0,0));
-  calib.set(calib.detector("/world/Telescope"),Delta(Position(55.0/dd4hep::cm,0,0)));
+  Delta delta(Position(333.0*dd4hep::cm,0,0));
+  calib.set(calib.detector("/world/Telescope"),Delta(Position(55.0*dd4hep::cm,0,0)));
   calib.set(calib.detector("/world/Telescope/module_1"),delta);
   calib.set("/world/Telescope/module_3",delta);
   /// Commit transaction and push deltas to the alignment conditions
