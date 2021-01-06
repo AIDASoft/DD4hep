@@ -149,21 +149,23 @@ void dd4hep::align::printAlignment(PrintLevel lvl, const string& prefix,
   }
   if ( align_delta.hasTranslation() )  {
     stringstream str;
-    Parsers::toStream(align_delta.translation, str);
-    printout(lvl,tag,"++ %s DELTA Translation: %s",
+    Position copy(align_delta.translation * (1./dd4hep::cm));
+    Parsers::toStream(copy, str);
+    printout(lvl,tag,"++ %s DELTA Translation: %s [cm]",
              opt.c_str(), replace_all(str.str(),"\n","").c_str());
   }
   if ( align_delta.hasPivot() )  {
     stringstream str;
-    Parsers::toStream(align_delta.pivot, str);
+    Delta::Pivot copy(align_delta.pivot.Vect() * (1./dd4hep::cm));
+    Parsers::toStream(copy, str);
     string res = replace_all(str.str(),"\n","");
     res = "( "+replace_all(res,"  "," , ")+" )";
-    printout(lvl,tag,"++ %s DELTA Pivot:       %s", opt.c_str(), res.c_str());
+    printout(lvl,tag,"++ %s DELTA Pivot:       %s [cm]", opt.c_str(), res.c_str());
   }
   if ( align_delta.hasRotation() )  {
     stringstream str;
     Parsers::toStream(align_delta.rotation, str);
-    printout(lvl,tag,"++ %s DELTA Rotation:    %s", opt.c_str(), replace_all(str.str(),"\n","").c_str());
+    printout(lvl,tag,"++ %s DELTA Rotation:    %s [rad]", opt.c_str(), replace_all(str.str(),"\n","").c_str());
   }
   if ( isActivePrintLevel(lvl) )  {
     printf("%s %s WorldTrafo (to %s): ",opt.c_str(), tag.c_str(), de.world().path().c_str());

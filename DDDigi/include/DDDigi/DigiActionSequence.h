@@ -57,7 +57,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiActionSequence();
       /// Adopt a new action as part of the sequence. Sequence takes ownership.
-      void adopt(DigiEventAction* action);
+      virtual void adopt(DigiEventAction* action)  override;
       /// Register external listener callbacks before starting the sequence
       template <typename Q, typename T>
       void begin(Q* p, void (T::*f)(DigiContext* context)) {

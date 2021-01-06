@@ -20,8 +20,8 @@
     <detector id="1" name="Shape_PseudoTrap" type="DD4hep_TestShape_Creator">
       <!-- Union pseudo-trap:          -->
       <check vis="Shape1_vis">
-        <shape type="PseudoTrap" z="30*cm" radius="-40*cm"
-               x1="33*cm" x2="3*cm" y1="30*cm" y2="10*cm" minusZ="true"/>
+        <shape type="PseudoTrap" z="30*cm" radius="40*cm"
+               x1="33*cm" x2="15*cm" y1="30*cm" y2="10*cm" minusZ="true"/>
         <position x="30*cm"  y="30*cm" z="50*cm"/>
         <rotation x="0*rad"  y="0*rad" z="0*rad"/>
       </check>
@@ -42,6 +42,7 @@
       </check>
       -->
       <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap.txt" create="CheckShape_create"/>
+      <testn type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap.txt" create="1"/>
     </detector>
   </detectors>
 </lccdd>

@@ -20,5 +20,5 @@ TGeoScaledShape  4   Local  ( -28.00,  -23.00,  -30.00) Global ( -28.00,  -23.00
 TGeoScaledShape  5   Local  ( -23.00,   27.00,  -30.00) Global ( -23.00,   27.00, -130.00)
 TGeoScaledShape  6   Local  ( -23.00,   27.00,  -30.00) Global ( -23.00,   27.00, -130.00)
 TGeoScaledShape  7   Local  (  13.00,  -27.00,  -30.00) Global (  13.00,  -27.00, -130.00)
-TGeoScaledShape  Bounding box:  dx=  27.50 dy=  27.00 dz=  30.00 Origin: x=  -2.50 y=   0.00 z=  -0.00
+TGeoScaledShape  Bounding box:  dx=  27.50 dy=  27.00 dz=  30.00 Origin: x=  -2.50 y=   0.00 z=   0.00
 

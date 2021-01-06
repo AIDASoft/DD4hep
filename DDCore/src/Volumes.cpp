@@ -1006,7 +1006,13 @@ std::string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
   TGeoMatrix*  mat   = place->GetMatrix();
   Solid        sol   = vol.solid();
   stringstream os;
-
+  struct _numbering {
+    double adjust(double value)  const   {
+      if ( std::abs(value) < TGeoShape::Tolerance() )
+	return 0.0;
+      return value/dd4hep::cm;
+    }
+  } _vertex;
 
   if ( vol->IsA() == TGeoVolumeAssembly::Class() )    {
     for(int i=0; i<vol->GetNdaughters(); ++i)  {
@@ -1032,24 +1038,24 @@ std::string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
     Double_t global[3], local[3] = {p[0], p[1], p[2]};
     mat->LocalToMaster(local, global);
     os << setw(16) << left << sol->IsA()->GetName() << " " << setw(3) << left << i
-       << " Local  ("  << setw(7) << setprecision(prec) << fixed << right << local[0]/dd4hep::cm
-       << ", "         << setw(7) << setprecision(prec) << fixed << right << local[1]/dd4hep::cm
-       << ", "         << setw(7) << setprecision(prec) << fixed << right << local[2]/dd4hep::cm
-       << ") Global (" << setw(7) << setprecision(prec) << fixed << right << global[0]/dd4hep::cm
-       << ", "         << setw(7) << setprecision(prec) << fixed << right << global[1]/dd4hep::cm
-       << ", "         << setw(7) << setprecision(prec) << fixed << right << global[2]/dd4hep::cm
+       << " Local  ("  << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(local[0])
+       << ", "         << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(local[1])
+       << ", "         << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(local[2])
+       << ") Global (" << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(global[0])
+       << ", "         << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(global[1])
+       << ", "         << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(global[2])
        << ")" << endl;
   }
   Box box = sol;
   const Double_t* org = box->GetOrigin();
   os << setw(16) << left << sol->IsA()->GetName()
      << " Bounding box: "
-     << " dx="        << setw(7) << setprecision(prec) << fixed << right << box->GetDX()/dd4hep::cm
-     << " dy="        << setw(7) << setprecision(prec) << fixed << right << box->GetDY()/dd4hep::cm
-     << " dz="        << setw(7) << setprecision(prec) << fixed << right << box->GetDZ()/dd4hep::cm
-     << " Origin: x=" << setw(7) << setprecision(prec) << fixed << right << org[0]/dd4hep::cm
-     << " y="         << setw(7) << setprecision(prec) << fixed << right << org[1]/dd4hep::cm
-     << " z="         << setw(7) << setprecision(prec) << fixed << right << org[2]/dd4hep::cm
+     << " dx="        << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(box->GetDX())
+     << " dy="        << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(box->GetDY())
+     << " dz="        << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(box->GetDZ())
+     << " Origin: x=" << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(org[0])
+     << " y="         << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(org[1])
+     << " z="         << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(org[2])
      << endl;
   
   /// -------------------- DONE --------------------

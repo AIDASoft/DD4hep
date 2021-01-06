@@ -42,6 +42,10 @@
 #define DECREMENT_COUNTER
 #endif
 
+#if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
+#define DD4HEP_INTERPRETER_MODE 1
+#endif
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 

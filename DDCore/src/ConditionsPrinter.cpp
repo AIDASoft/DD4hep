@@ -179,17 +179,23 @@ int ConditionsPrinter::operator()(Condition cond)   const   {
       string piv;
       stringstream str_tr, str_rot, str_piv;
       const Delta& D = cond.get<Delta>();
-      if ( D.hasTranslation() ) Parsers::toStream(D.translation, str_tr);
-      if ( D.hasRotation()    ) Parsers::toStream(D.rotation, str_rot);
-      if ( D.hasPivot()       ) {
-        Parsers::toStream(D.pivot, str_piv);
+      if ( D.hasTranslation() )  {
+	Position copy(D.translation * (1./dd4hep::cm));
+	Parsers::toStream(copy, str_tr);
+      }
+      if ( D.hasRotation()    )  {
+	Parsers::toStream(D.rotation, str_rot);
+      }
+      if ( D.hasPivot()       )  {
+	Position copy(D.pivot.Vect() * (1./dd4hep::cm));
+        Parsers::toStream(copy, str_piv);
         piv = str_replace(str_piv.str(),"\n","");
         piv = str_replace(piv,"  "," , ");
       }
       printout(printLevel,name,"++ %s \t[%p] Typ:%s",
                prefix.c_str(), cond.ptr(),
                typeName(typeid(*ptr)).c_str());
-      printout(printLevel,name,"++ %s \tData(%11s-%8s-%5s): [%s, %s, %s]",
+      printout(printLevel,name,"++ %s \tData(%11s-%8s-%5s): [%s [cm], %s [rad], %s [cm]]",
                prefix.c_str(), 
                D.hasTranslation() ? "Translation" : "",
                D.hasRotation() ? "Rotation(Phi,Theta,Psi)" : "",

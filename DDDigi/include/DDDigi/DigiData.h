@@ -14,7 +14,7 @@
 #define DDDIGI_DIGIDATA_H
 
 /// Framework include files
-#include "DD4hep/Any.h"
+#include "DD4hep/config.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
@@ -254,7 +254,22 @@ namespace dd4hep {
       key_type toLong()  const  {  return key; }
       void set(const std::string& name, int mask);
     };
+  }    // End namespace digi
+}      // End namespace dd4hep
     
+
+/// <any> is not properly processed by cling.
+/// We need to exclude any reference to it.
+#if !defined(DD4HEP_INTERPRETER_MODE)
+#include "DD4hep/Any.h"
+#endif
+
+/// Namespace for the AIDA detector description toolkit
+namespace dd4hep {
+
+  /// Namespace for the Digitization part of the AIDA detector description toolkit
+  namespace digi {
+
     ///  User event data for DDDigi
     /**
      *
@@ -270,10 +285,13 @@ namespace dd4hep {
       std::map<unsigned long, std::shared_ptr<DigiCounts> >          digitizations;
 
       int eventNumber = 0;
+#if defined(DD4HEP_INTERPRETER_MODE)
+      std::map<key_type, long>  data;
+#else
       std::map<key_type, dd4hep::any>  data;
-
+#endif
     public:
-#if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
+#if defined(DD4HEP_INTERPRETER_MODE) || defined(G__ROOT)
       /// Inhibit default constructor
       DigiEvent();
 #endif
@@ -285,6 +303,8 @@ namespace dd4hep {
       DigiEvent(int num);
       /// Default destructor
       virtual ~DigiEvent();
+
+#if !defined(DD4HEP_INTERPRETER_MODE)
       /// Add item by key to the data 
       template<typename T> bool put(const Key& key, T&& object)     {
         bool ret = data.emplace(key.toLong(),make_any<T>(object)).second;
@@ -316,7 +336,7 @@ namespace dd4hep {
         except("DigiEvent","Invalid data requested from event container. Key:%ld",key.toLong());
         throw std::runtime_error("DigiEvent"); // Will never get here!
       }
-
+#endif
       /// Add an extension object to the detector element
       void* addExtension(unsigned long long int k, ExtensionEntry* e)  {
         return ObjectExtensions::addExtension(k, e);
