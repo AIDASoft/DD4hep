@@ -40,26 +40,26 @@ dd4hep_add_dictionary( G__DD4hep
   include/XML/tinystring.h
   ${EXCLUDE_HEADER}
   LINKDEF include/ROOT/LinkDef.h
-  USES DDParsers ${XML_LIBRARIES} ${TBB_IMPORTED_TARGETS}
+  USES DDCore DDParsers ${XML_LIBRARIES} ${TBB_IMPORTED_TARGETS}
   DEFINITIONS DD4HEP_MUST_USE_DETECTORIMP_H
   )
 
 dd4hep_add_dictionary( G__DD4hepGeo
   SOURCES include/ROOT/Warnings.h src/GeoDictionary.h
   LINKDEF include/ROOT/LinkDef.h
-  USES DDParsers ${XML_LIBRARIES}
+  USES DDCore DDParsers ${XML_LIBRARIES}
   )
 
 dd4hep_add_dictionary( G__DD4hepProperties
   SOURCES include/ROOT/Warnings.h src/PropertyDictionary.h
   LINKDEF include/ROOT/LinkDef.h
-  USES DDParsers ${XML_LIBRARIES}
+  USES DDCore DDParsers ${XML_LIBRARIES}
   )
 
 dd4hep_add_dictionary( G__DD4hepSegmentations
   SOURCES include/ROOT/Warnings.h src/SegmentationDictionary.h
   LINKDEF include/ROOT/LinkDef.h
-  USES DDParsers ${XML_LIBRARIES}
+  USES DDCore DDParsers ${XML_LIBRARIES}
   )
 
 if(TARGET Boost::boost)

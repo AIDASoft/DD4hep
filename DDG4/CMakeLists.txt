@@ -57,7 +57,7 @@ if(TARGET Python::Python AND TARGET ${DD4HEP_ROOT_PYTHON})
     )
   dd4hep_add_dictionary(G__DDPython
     SOURCES  tpython/DDPython.C
-    USES     Python::Python
+    USES     DD4hep::DDCore Python::Python
     )
   #---------------------------  Specialized python plugins  --------------------------
   dd4hep_print("|++> ROOT Has Python, creating DDPython library and plugins")
