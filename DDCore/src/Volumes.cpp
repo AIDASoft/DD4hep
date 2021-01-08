@@ -1009,7 +1009,7 @@ std::string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
   struct _numbering {
     double adjust(double value)  const   {
       if ( std::abs(value) < TGeoShape::Tolerance() )
-	return 0.0;
+        return 0.0;
       return value/dd4hep::cm;
     }
   } _vertex;

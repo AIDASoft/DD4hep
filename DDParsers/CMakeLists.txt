@@ -23,6 +23,9 @@ add_library(DDParsers ${DDParsers_SOURCES} ${DDParsers_SPIRIT_SOURCES})
 add_library(DD4hep::DDParsers ALIAS DDParsers)
 
 target_compile_definitions(DDParsers INTERFACE BOOST_SPIRIT_USE_PHOENIX_V3)
+IF( DD4HEP_USE_GEANT4_UNITS )
+  target_compile_definitions(DDParsers PUBLIC DD4HEP_USE_GEANT4_UNITS=1)
+ENDIF()
 
 target_include_directories(DDParsers
   PUBLIC

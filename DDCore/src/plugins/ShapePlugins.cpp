@@ -957,8 +957,8 @@ void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
         solid.setDimensions(params);
       }
       else if ( isInstance<PseudoTrap>(solid) )   {
-        //auto params = solid.dimensions();
-        //solid.setDimensions(params);
+        auto params = solid.dimensions();
+        solid.setDimensions(params);
       }
       else if ( solid->IsA() != TGeoCompositeShape::Class() )   {
         auto params = solid.dimensions();
