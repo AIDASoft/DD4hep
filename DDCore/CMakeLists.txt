@@ -21,6 +21,7 @@ if(${CMAKE_CXX_STANDARD} LESS 17)
   list(FILTER DDCore_SOURCES EXCLUDE REGEX Filter\.cpp|SpecParRegistry\.cpp )
 endif()
 
+# Build the generic DD4hep dictionary
 dd4hep_add_dictionary( G__DD4hep
   SOURCES include/ROOT/Warnings.h
   include/DD4hep/*.h
@@ -44,18 +45,21 @@ dd4hep_add_dictionary( G__DD4hep
   DEFINITIONS DD4HEP_MUST_USE_DETECTORIMP_H
   )
 
+# Build the DD4hep dictionary for all geometry instantiations
 dd4hep_add_dictionary( G__DD4hepGeo
   SOURCES include/ROOT/Warnings.h src/GeoDictionary.h
   LINKDEF include/ROOT/LinkDef.h
   USES DDCore DDParsers ${XML_LIBRARIES}
   )
 
+# Build the DD4hep dictionary for property type instantiations
 dd4hep_add_dictionary( G__DD4hepProperties
   SOURCES include/ROOT/Warnings.h src/PropertyDictionary.h
   LINKDEF include/ROOT/LinkDef.h
   USES DDCore DDParsers ${XML_LIBRARIES}
   )
 
+# Build the DD4hep dictionary for the segmentation instantiations
 dd4hep_add_dictionary( G__DD4hepSegmentations
   SOURCES include/ROOT/Warnings.h src/SegmentationDictionary.h
   LINKDEF include/ROOT/LinkDef.h
