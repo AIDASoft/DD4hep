@@ -43,11 +43,6 @@ macro(dd4hep_set_compiler_flags)
     set ( COMPILER_FLAGS ${COMPILER_FLAGS} -Winconsistent-missing-override -Wno-c++1z-extensions -Wheader-hygiene )
   endif()
 
-  IF( DD4HEP_USE_GEANT4_UNITS )
-    MESSAGE(STATUS "+++ Building DD4hep with Geant4 units......")
-    add_compile_definitions(DD4HEP_USE_GEANT4_UNITS=1)
-  ENDIF()
-  
   FOREACH( FLAG ${COMPILER_FLAGS} )
     ## meed to replace the minus or plus signs from the variables, because it is passed
     ## as a macro to g++ which causes a warning about no whitespace after macro
@@ -569,10 +564,6 @@ function(dd4hep_add_dictionary dictionary )
   foreach(def ${ARG_DEFINITIONS})
     LIST(APPEND comp_defs ${def})
   endforeach()
-
-if(DD4HEP_BUILD_DEBUG)
-    LIST(APPEND comp_defs DD4HEP_DEBUG=1)
-  endif()
 
   foreach(DEP ${ARG_USES})
     # Get INCLUDE DIRECTORIES from Dependencies

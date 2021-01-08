@@ -200,24 +200,19 @@ ELSE()
 
   include(DD4hep_XML_setup)
 
-  IF(DD4HEP_BUILD_DEBUG MATCHES "ON" OR (CMAKE_BUILD_TYPE MATCHES "DEBUG|Debug" AND NOT DD4HEP_BUILD_DEBUG MATCHES "OFF"))
-    message(STATUS "BUILD DD4HEP with debug extensions")
-    set(DD4HEP_BUILD_DEBUG ON)
-    add_compile_definitions(DD4HEP_DEBUG=1)
-  ELSE()
-    set(DD4HEP_BUILD_DEBUG OFF)
-  ENDIF()
-
   #These packages are mandatory
   SET(DD4HEP_SELECTED_PACKAGE DDCore)
   FOREACH(DDPackage GaudiPluginService DDParsers DDCore)
     dd4hep_print("|> Building ${DDPackage}")
     add_subdirectory(${DDPackage})
   ENDFOREACH()
-  IF(DD4HEP_BUILD_DEBUG MATCHES "ON" OR (CMAKE_BUILD_TYPE MATCHES "DEBUG|Debug" AND NOT DD4HEP_BUILD_DEBUG MATCHES "OFF"))
-    target_compile_definitions(DDCore PUBLIC DD4HEP_DEBUG=1)
-  ENDIF()
 
+  IF(DD4HEP_BUILD_DEBUG MATCHES "ON" OR (CMAKE_BUILD_TYPE MATCHES "DEBUG|Debug" AND NOT DD4HEP_BUILD_DEBUG MATCHES "OFF"))
+    message(STATUS "BUILD DD4HEP and depending software with debug extensions")
+    set(DD4HEP_BUILD_DEBUG ON)
+  ELSE()
+    set(DD4HEP_BUILD_DEBUG OFF)
+  ENDIF()
 
   message(STATUS "BUILD Packages: ${DD4HEP_BUILD_PACKAGES}")
   FOREACH(DDPackage IN LISTS DD4HEP_BUILD_PACKAGES)
