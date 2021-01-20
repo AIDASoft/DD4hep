@@ -16,8 +16,8 @@ jobs:
     - name: Install LCG requirements
       run: |
         brew install ninja
-        brew cask install gfortran
-        brew cask install xquartz
+        brew install gfortran
+        brew install --cask xquartz
     - name: Build DD4hep
       run: |
         source /Users/Shared/cvmfs/sft.cern.ch/lcg/views/${{ matrix.LCG }}/setup.sh
