@@ -410,51 +410,38 @@ namespace dd4hep   {
   }
 }
 
+#ifdef __APPLE__
+/// Initializing Constructor
+dd4hep::Cast::Cast(const std::type_info& t, cast_t c) : type(t), cast(c)  {
+}
 /// Initializing Constructor
 dd4hep::ComponentCast::ComponentCast(const std::type_info& t, destroy_t d, cast_t c)
-  : type(t), destroy(d), cast(c) {
-#ifdef __APPLE__
-  abi_class = 0;
+  : Cast(t, c), destroy(d)    {
+}
 #else
+/// Initializing Constructor
+dd4hep::Cast::Cast(const std::type_info& t) : type(t)   {
   abi_class = dynamic_cast<const class_t*>(&type);
   if (!abi_class) {
     throw std::runtime_error("Class type " + typeName(type) + " is not an abi object type!");
   }
+}
+/// Initializing Constructor
+dd4hep::ComponentCast::ComponentCast(const std::type_info& t, destroy_t d)
+  : Cast(t), destroy(d)   {
+}
 #endif
+
+/// Defautl destructor
+dd4hep::Cast::~Cast() {
 }
 
 /// Defautl destructor
 dd4hep::ComponentCast::~ComponentCast() {
 }
 
-#if 0
-// Dynamic cast runtime.
-// src2dst has the following possible values
-//  >-1: src_type is a unique public non-virtual base of dst_type
-//       dst_ptr + src2dst == src_ptr
-//   -1: unspecified relationship
-//   -2: src_type is not a public base of dst_type
-//   -3: src_type is a multiple public non-virtual base of dst_type
-extern "C" void*
-__dynamic_cast(const void* __src_ptr,// Starting object.
-               const abi::__class_type_info* __src_type,// Static type of object.
-               const abi::__class_type_info* __dst_type,// Desired target type.
-               ptrdiff_t __src2dst);// How src and dst are related.
-#endif
-#if 0
-#ifndef __APPLE__
-static inline void* cast_wrap(const void* p,
-                              const abi::__class_type_info* src,
-                              const abi::__class_type_info* dst,
-                              ptrdiff_t src2dst)
-{
-  return abi::__dynamic_cast(p,src,dst,src2dst);
-}
-#endif
-#endif
-
 /// Apply cast using typeinfo instead of dynamic_cast
-void* dd4hep::ComponentCast::apply_dynCast(const ComponentCast& to, const void* ptr) const
+void* dd4hep::Cast::apply_dynCast(const Cast& to, const void* ptr) const
 {
   if (&to == this) {
     return (void*) ptr;
@@ -494,7 +481,7 @@ void* dd4hep::ComponentCast::apply_dynCast(const ComponentCast& to, const void* 
 }
 
 /// Apply cast using typeinfo instead of dynamic_cast
-void* dd4hep::ComponentCast::apply_upCast(const ComponentCast& to, const void* ptr) const
+void* dd4hep::Cast::apply_upCast(const Cast& to, const void* ptr) const
 {
   if (&to == this) {
     return (void*) ptr;
@@ -503,7 +490,7 @@ void* dd4hep::ComponentCast::apply_upCast(const ComponentCast& to, const void* p
 }
   
 /// Apply cast using typeinfo instead of dynamic_cast
-void* dd4hep::ComponentCast::apply_downCast(const ComponentCast& to, const void* ptr) const
+void* dd4hep::Cast::apply_downCast(const Cast& to, const void* ptr) const
 {
   if (&to == this) {
     return (void*) ptr;

@@ -28,5 +28,5 @@ void NonDefaultCtorCond::set(int val)  {
   d = val;
 }
 
-#include "DD4hep/detail/Grammar_unparsed.h"
+#include "DD4hep/GrammarUnparsed.h"
 static auto s_registry = dd4hep::GrammarRegistry::pre_note<NonDefaultCtorCond>();

@@ -229,7 +229,7 @@ Alignment AlignmentData::nominal() const   {
   return detector.nominal();
 }
 
-#include "DD4hep/detail/Grammar_unparsed.h"
+#include "DD4hep/GrammarUnparsed.h"
 static auto s_registry = GrammarRegistry::pre_note<Delta>(1)
               .pre_note<AlignmentData>(1)
               .pre_note<std::map<DetElement, Delta> >(1);
