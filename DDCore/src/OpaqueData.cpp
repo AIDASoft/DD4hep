@@ -180,5 +180,5 @@ void* OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g)   {
   return 0;
 }
 
-#include "DD4hep/detail/Grammar_unparsed.h"
+#include "DD4hep/GrammarUnparsed.h"
 static auto s_registry = GrammarRegistry::pre_note<OpaqueDataBlock>(1);

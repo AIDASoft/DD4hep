@@ -67,5 +67,5 @@ void AlignmentObject::clear()   {
   flags = Condition::ALIGNMENT_DERIVED;
 }
 
-#include "DD4hep/detail/Grammar_unparsed.h"
+#include "DD4hep/GrammarUnparsed.h"
 static auto s_registry = GrammarRegistry::pre_note<AlignmentObject>();

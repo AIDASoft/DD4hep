@@ -229,7 +229,7 @@ Property& PropertyConfigurable::property(const string& nam)   {
   return properties()[nam];
 }
 
-#include "DD4hep/detail/Grammar_parsed.h"
+#include "DD4hep/GrammarParsed.h"
 namespace dd4hep { 
   namespace Parsers {
     template <> int parse(Property& result, const std::string& input) {

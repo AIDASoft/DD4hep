@@ -56,6 +56,18 @@ namespace dd4hep {
     /// Pointer to object data
     void* pointer = 0;                //! No ROOT persistency
 
+    /// Helper class to perform resolution of non-polymorph types
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class dyn_cast  {
+    public:
+      virtual ~dyn_cast() = default;
+    };
+
   public:
     /// Create data block from string representation
     bool fromString(const std::string& rep);
@@ -73,6 +85,10 @@ namespace dd4hep {
     template <typename T> T& get();
     /// Generic getter (const version). Specify the exact type, not a polymorph type
     template <typename T> const T& get() const;
+    /// Generic getter. Resolves polymorph types. It is mandatory that the datatype is polymorph!
+    template <typename T> T& as();
+    /// Generic getter (const version). Resolves polymorph types. It is mandatory that the datatype is polymorph!
+    template <typename T> const T& as() const;
   };
 
   
@@ -139,37 +155,61 @@ namespace dd4hep {
   };
 
   /// Generic getter. Specify the exact type, not a polymorph type
-  template <typename T> T& OpaqueData::get() {
+  template <typename T> inline T& OpaqueData::get() {
     if (!grammar || !grammar->equals(typeid(T))) { throw std::bad_cast(); }
     return *(T*)pointer;
   }
 
   /// Generic getter (const version). Specify the exact type, not a polymorph type
-  template <typename T> const T& OpaqueData::get() const {
+  template <typename T> inline const T& OpaqueData::get() const {
     if (!grammar || !grammar->equals(typeid(T))) { throw std::bad_cast(); }
     return *(T*)pointer;
   }
 
+  /// Generic getter. Specify the exact type, not a polymorph type
+  template <typename T> inline T& OpaqueData::as() {
+    union _cast {
+      void* ptr;
+      dyn_cast* dynamic;
+      _cast(void* p)   { ptr = p; }
+    } cast(this->pointer);
+    T* obj = dynamic_cast<T*>(cast.dynamic);
+    if ( obj ) return *obj;
+    throw std::bad_cast();
+  }
+
+  /// Generic getter (const version). Specify the exact type, not a polymorph type
+  template <typename T> inline const T& OpaqueData::as() const {
+    union _cast {
+      const void* ptr;
+      const dyn_cast* dynamic;
+      _cast(const void* p)   { ptr = p; }
+    } cast(this->pointer);
+    const T* obj = dynamic_cast<const T*>(cast.dynamic);
+    if ( obj ) return *obj;
+    throw std::bad_cast();
+  }
+
   /// Construct conditions object and bind the data
-  template <typename T, typename... Args> T& OpaqueDataBlock::construct(Args... args)   {
+  template <typename T, typename... Args> inline T& OpaqueDataBlock::construct(Args... args)   {
     this->bind(&BasicGrammar::instance<T>());
     return *(new(this->pointer) T(std::forward<Args>(args)...));
   }
 
   /// Bind data value
-  template <typename T> T& OpaqueDataBlock::bind()  {
+  template <typename T> inline T& OpaqueDataBlock::bind()  {
     this->bind(&BasicGrammar::instance<T>());
     return *(new(this->pointer) T());
   }
 
   /// Bind data value
-  template <typename T> T& OpaqueDataBlock::bind(void* ptr, size_t len)  {
+  template <typename T> inline T& OpaqueDataBlock::bind(void* ptr, size_t len)  {
     this->bind(ptr,len,&BasicGrammar::instance<T>());
     return *(new(this->pointer) T());
   }
 
   /// Bind grammar and assign value
-  template <typename T> T& OpaqueDataBlock::bind(const std::string& value)   {
+  template <typename T> inline T& OpaqueDataBlock::bind(const std::string& value)   {
     T& ret = this->bind<T>();
     if ( !value.empty() && !this->fromString(value) )  {
       throw std::runtime_error("OpaqueDataBlock::set> Failed to bind type "+
@@ -179,7 +219,7 @@ namespace dd4hep {
   }
 
   /// Bind grammar and assign value
-  template <typename T> T& OpaqueDataBlock::bind(void* ptr, size_t len, const std::string& value)   {
+  template <typename T> inline T& OpaqueDataBlock::bind(void* ptr, size_t len, const std::string& value)   {
     T& ret = this->bind<T>(ptr, len);
     if ( !value.empty() && !this->fromString(value) )  {
       throw std::runtime_error("OpaqueDataBlock::set> Failed to bind type "+
@@ -188,7 +228,7 @@ namespace dd4hep {
     return ret;
   }
   /// Bind external data value to the pointer
-  template <typename T> void OpaqueDataBlock::bindExtern(T* ptr)    {
+  template <typename T> inline void OpaqueDataBlock::bindExtern(T* ptr)    {
     bindExtern(ptr, &BasicGrammar::instance<T>());
   }
 

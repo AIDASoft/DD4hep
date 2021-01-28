@@ -229,6 +229,10 @@ namespace dd4hep {
     template <typename T> T& get();
     /// Generic getter (const version). Specify the exact type, not a polymorph type
     template <typename T> const T& get() const;
+    /// Generic getter. Resolves polymorph types. It is mandatory that the datatype is polymorph!
+    template <typename T> T& as();
+    /// Generic getter (const version). Resolves polymorph types. It is mandatory that the datatype is polymorph!
+    template <typename T> const T& as() const;
   };
 
   /// Initializing constructor
@@ -244,20 +248,28 @@ namespace dd4hep {
     return data().construct<T,Args...>(args...);
   }
   /// Bind the data of the conditions object to a given format.
-  template <typename T> T& Condition::bind()   {
+  template <typename T> inline T& Condition::bind()   {
     return data().bind<T>();
   }
   /// Bind the data of the conditions object to a given format and fill data from string representation.
-  template <typename T> T& Condition::bind(const std::string& val)   {
+  template <typename T> inline T& Condition::bind(const std::string& val)   {
     return data().bind<T>(val);
   }
   /// Generic getter. Specify the exact type, not a polymorph type
-  template <typename T> T& Condition::get() {
+  template <typename T> inline T& Condition::get() {
     return data().get<T>();
   }
   /// Generic getter (const version). Specify the exact type, not a polymorph type
-  template <typename T> const T& Condition::get() const {
+  template <typename T> inline const T& Condition::get() const {
     return data().get<T>();
+  }    
+  /// Generic getter. Specify the exact type, not a polymorph type
+  template <typename T> inline T& Condition::as() {
+    return data().as<T>();
+  }
+  /// Generic getter (const version). Specify the exact type, not a polymorph type
+  template <typename T> inline const T& Condition::as() const {
+    return data().as<T>();
   }
     
   /// Key definition to optimize ans simplyfy the access to conditions entities

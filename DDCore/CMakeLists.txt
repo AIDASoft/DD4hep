@@ -34,8 +34,8 @@ dd4hep_add_dictionary( G__DD4hep
   include/DD4hep/Plugins.h
   include/DD4hep/IoStreams.h
   include/DD4hep/SurfaceInstaller.h
-  include/DD4hep/detail/Grammar_parsed.h
-  include/DD4hep/detail/Grammar_unparsed.h
+  include/DD4hep/GrammarParsed.h
+  include/DD4hep/GrammarUnparsed.h
   include/XML/UnicodeValues.h
   include/XML/tinyxml.h
   include/XML/tinystring.h

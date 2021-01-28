@@ -100,6 +100,64 @@ namespace dd4hep {
   void notImplemented(const std::string& msg);
 
   /// Class to perform dynamic casts using unknown pointers.
+  /** @class Cast Primitives.h dd4hep/Primitives.h
+   *
+   *  It is mandatory that the pointers referred do actually
+   *  support the asked functionalty.
+   *  Miracles also I cannot do.....
+   *
+   *   @author  M.Frank
+   *   @date    13.08.2013
+   */
+  class Cast {
+  public:
+    typedef void  (*destroy_t)(void*);
+    typedef void* (*cast_t)(const void*);
+#ifdef __CINT__
+    const std::type_info* type;
+#else
+    const std::type_info& type;
+#endif
+#ifdef __APPLE__
+    cast_t      cast;
+  protected:
+    /// Initializing Constructor
+    Cast(const std::type_info& t, cast_t c);
+  public:
+    template <typename TYPE> static void* _cast(const void* arg)  {
+      TYPE* ptr = (TYPE*)arg;
+      ptr = dynamic_cast<TYPE*>(ptr);
+      return (void*)ptr;
+    }
+    /// Instantiation method    
+    template <typename TYPE> static Cast& instance() {
+      static Cast c(typeid(TYPE),_cast<TYPE>);
+      return c;
+    }
+#else
+    const void* abi_class;
+  protected:
+    /// Initializing Constructor
+    Cast(const std::type_info& t);
+    /// Instantiation method
+    template <typename TYPE> static Cast& instance() {
+      static Cast c(typeid(TYPE));
+      return c;
+    }
+#endif
+    /// Defautl destructor
+    virtual ~Cast();
+
+  public:
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* apply_dynCast(const Cast& to, const void* ptr) const;
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* apply_upCast(const Cast& to, const void* ptr) const;
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* apply_downCast(const Cast& to, const void* ptr) const;
+  };
+
+  /// Class to perform dynamic casts using unknown pointers.
   /** @class ComponentCast Primitives.h dd4hep/Primitives.h
    *
    *  It is mandatory that the pointers referred do actually
@@ -109,46 +167,35 @@ namespace dd4hep {
    *   @author  M.Frank
    *   @date    13.08.2013
    */
-  class ComponentCast {
+  class ComponentCast : public Cast {
   public:
     typedef void  (*destroy_t)(void*);
-    typedef void* (*cast_t)(const void*);
-#ifdef __CINT__
-    const std::type_info* type;
-#else
-    const std::type_info& type;
-#endif
-    const void* abi_class;
     destroy_t   destroy;
-    cast_t      cast;
 
   private:
-    /// Initializing Constructor
-    ComponentCast(const std::type_info& t, destroy_t d, cast_t c);
     /// Defautl destructor
     virtual ~ComponentCast();
-
-  public:
     template <typename TYPE> static void _destroy(void* arg)  {
       TYPE* ptr = (TYPE*)arg;
       if (ptr)    delete ptr;
     }
-    template <typename TYPE> static void* _cast(const void* arg)  {
-      TYPE* ptr = (TYPE*)arg;
-      ptr = dynamic_cast<TYPE*>(ptr);
-      return (void*)ptr;
-    }
+#ifdef __APPLE__
+    /// Initializing Constructor
+    ComponentCast(const std::type_info& t, destroy_t d, cast_t c);
+  public:
     template <typename TYPE> static ComponentCast& instance() {
       static ComponentCast c(typeid(TYPE),_destroy<TYPE>,_cast<TYPE>);
       return c;
     }
-
-    /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_dynCast(const ComponentCast& to, const void* ptr) const;
-    /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_upCast(const ComponentCast& to, const void* ptr) const;
-    /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_downCast(const ComponentCast& to, const void* ptr) const;
+#else
+    /// Initializing Constructor
+    ComponentCast(const std::type_info& t, destroy_t d);
+  public:
+    template <typename TYPE> static ComponentCast& instance() {
+      static ComponentCast c(typeid(TYPE),_destroy<TYPE>);
+      return c;
+    }
+#endif
   };
 
   /// Convert volumeID to string format (016X)
