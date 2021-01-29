@@ -66,8 +66,6 @@ namespace dd4hep {
     mutable int         root_data_type = -1;
     /// Initialization flag
     mutable bool        inited         = false;
-    /// ABI cast object
-    const Cast&         abi_cast;
 
     /// Structure to be filled if automatic object parsing from string is supposed to be supported
     struct specialization_t   {
@@ -97,7 +95,7 @@ namespace dd4hep {
     
   protected:
     /// Default constructor
-    BasicGrammar(const Cast& cast, const std::string& typ);
+    BasicGrammar(const std::string& typ);
 
     /// Default destructor
     virtual ~BasicGrammar();
@@ -126,8 +124,6 @@ namespace dd4hep {
     key_type hash() const                 {  return hash_value;   }
     /// Access to the type information name
     const std::string& type_name() const  {  return name;         }
-    /// Access ABI object cast
-    virtual const Cast& cast() const      {  return abi_cast;     }
     /// Access ROOT data type for fundamentals
     int data_type()  const  {
       if ( inited ) return root_data_type;
@@ -142,6 +138,8 @@ namespace dd4hep {
     virtual bool equals(const std::type_info& other_type) const = 0;
     /// Access to the type information
     virtual const std::type_info& type() const = 0;
+    /// Access ABI object cast
+    virtual const Cast& cast() const = 0;
     /// Access the object size (sizeof operator)
     virtual size_t sizeOf() const = 0;
     /// Opaque object destructor
@@ -181,13 +179,15 @@ namespace dd4hep {
     virtual size_t sizeOf() const  override;
     /// Opaque object destructor
     virtual void destruct(void* pointer) const  override;
+    /// Access ABI object cast
+    virtual const Cast& cast() const  override;
     /// Bind opaque address to object
     template <typename... Args> void construct(void* pointer, Args... args)  const;
   };
 
   /// Standarsd constructor
   template <typename TYPE> Grammar<TYPE>::Grammar()
-    : BasicGrammar(Cast::instance<TYPE>(), typeName(typeid(TYPE)))
+    : BasicGrammar(typeName(typeid(TYPE)))
   {
   }
 
@@ -200,6 +200,11 @@ namespace dd4hep {
     return typeid(TYPE);
   }
 
+  /// Access ABI object cast
+  template <typename TYPE> const Cast& Grammar<TYPE>::cast() const  {
+    return Cast::instance<TYPE>();
+  }
+  
   /// Access to the type information
   template <typename TYPE> bool Grammar<TYPE>::equals(const std::type_info& other_type) const  {
     return other_type == typeid(TYPE);
