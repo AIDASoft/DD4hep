@@ -85,14 +85,15 @@ int Geant4Output2ROOT::fill(const string& nam, const ComponentCast& type, void* 
     TBranch* b = 0;
     Branches::const_iterator i = m_branches.find(nam);
     if (i == m_branches.end()) {
-      TClass* cl = TBuffer::GetClass(type.type);
+      const std::type_info& typ = type.type();
+      TClass* cl = TBuffer::GetClass(typ);
       if (cl) {
         b = m_tree->Branch(nam.c_str(), cl->GetName(), (void*) 0);
         b->SetAutoDelete(false);
         m_branches.emplace(nam, b);
       }
       else {
-        throw runtime_error("No ROOT TClass object availible for object type:" + typeName(type.type));
+        throw runtime_error("No ROOT TClass object availible for object type:" + typeName(typ));
       }
     }
     else {

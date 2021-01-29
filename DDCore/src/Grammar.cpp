@@ -53,8 +53,8 @@ bool dd4hep::BasicGrammar::specialization_t::operator==(const specialization_t& 
 }
 
 /// Default constructor
-dd4hep::BasicGrammar::BasicGrammar(const std::string& typ)
-  : name(typ), hash_value(dd4hep::detail::hash64(typ))
+dd4hep::BasicGrammar::BasicGrammar(const Cast& c, const std::string& typ)
+  : name(typ), hash_value(dd4hep::detail::hash64(typ)), abi_cast(c)
 {
   auto j = prenote_registry().find(hash_value);
   if ( j != prenote_registry().end() )   {

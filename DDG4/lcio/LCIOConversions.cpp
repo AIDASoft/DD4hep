@@ -82,7 +82,7 @@ namespace dd4hep {
       if ( coll )  {
         typedef pair<arg_t::first_type,Geant4HitCollection*> _A;
         typedef Geant4Conversion<output_t,_A> _C;
-        const _C& cnv= _C::converter(coll->type().type);
+        const _C& cnv= _C::converter(coll->type().type());
         return cnv(_A(args.first,coll));
       }
       throw unrelated_type_error(typeid(Geant4HitCollection),typeid(*c),

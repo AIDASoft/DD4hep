@@ -57,15 +57,18 @@ namespace dd4hep {
   public:
     typedef unsigned long long int key_type;
     /// Instance type name
-    const std::string  name;
+    const std::string   name;
     /// Instance hash code
-    const key_type     hash_value     = 0;
+    const key_type      hash_value     = 0;
     /// Cached TClass reference for speed improvements
-    mutable TClass*    root_class     = 0;
+    mutable TClass*     root_class     = 0;
     /// Cached TDataType information for fundamental types
-    mutable int        root_data_type = -1;
+    mutable int         root_data_type = -1;
     /// Initialization flag
-    mutable bool       inited         = false;
+    mutable bool        inited         = false;
+    /// ABI cast object
+    const Cast&         abi_cast;
+
     /// Structure to be filled if automatic object parsing from string is supposed to be supported
     struct specialization_t   {
       /// Bind opaque address to object
@@ -94,7 +97,7 @@ namespace dd4hep {
     
   protected:
     /// Default constructor
-    BasicGrammar(const std::string& typ);
+    BasicGrammar(const Cast& cast, const std::string& typ);
 
     /// Default destructor
     virtual ~BasicGrammar();
@@ -123,6 +126,8 @@ namespace dd4hep {
     key_type hash() const                 {  return hash_value;   }
     /// Access to the type information name
     const std::string& type_name() const  {  return name;         }
+    /// Access ABI object cast
+    virtual const Cast& cast() const      {  return abi_cast;     }
     /// Access ROOT data type for fundamentals
     int data_type()  const  {
       if ( inited ) return root_data_type;
@@ -182,7 +187,7 @@ namespace dd4hep {
 
   /// Standarsd constructor
   template <typename TYPE> Grammar<TYPE>::Grammar()
-    : BasicGrammar(typeName(typeid(TYPE)))
+    : BasicGrammar(Cast::instance<TYPE>(), typeName(typeid(TYPE)))
   {
   }
 
