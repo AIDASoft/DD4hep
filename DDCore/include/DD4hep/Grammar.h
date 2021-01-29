@@ -69,6 +69,8 @@ namespace dd4hep {
 
     /// Structure to be filled if automatic object parsing from string is supposed to be supported
     struct specialization_t   {
+      /// Ponter to ABI Cast structure
+      const Cast* cast = 0;
       /// Bind opaque address to object
       void (*bind)(void* pointer) = 0;
       /// Opaque copy constructor
@@ -120,6 +122,7 @@ namespace dd4hep {
     static void invalidConversion(const std::type_info& from, const std::type_info& to);
     /// Error callback on invalid conversion
     static void invalidConversion(const std::string& value, const std::type_info& to);
+
     /// Access the hash value for this grammar type
     key_type hash() const                 {  return hash_value;   }
     /// Access to the type information name
@@ -134,12 +137,14 @@ namespace dd4hep {
       if ( inited ) return root_class;
       return initialized_clazz();
     }
+    /// Set cast structure
+    virtual void setCast(const Cast* cast)  const;
+    /// Access ABI object cast
+    virtual const Cast& cast() const;
     /// Access to the type information
     virtual bool equals(const std::type_info& other_type) const = 0;
     /// Access to the type information
     virtual const std::type_info& type() const = 0;
-    /// Access ABI object cast
-    virtual const Cast& cast() const = 0;
     /// Access the object size (sizeof operator)
     virtual size_t sizeOf() const = 0;
     /// Opaque object destructor
@@ -179,8 +184,6 @@ namespace dd4hep {
     virtual size_t sizeOf() const  override;
     /// Opaque object destructor
     virtual void destruct(void* pointer) const  override;
-    /// Access ABI object cast
-    virtual const Cast& cast() const  override;
     /// Bind opaque address to object
     template <typename... Args> void construct(void* pointer, Args... args)  const;
   };
@@ -200,11 +203,6 @@ namespace dd4hep {
     return typeid(TYPE);
   }
 
-  /// Access ABI object cast
-  template <typename TYPE> const Cast& Grammar<TYPE>::cast() const  {
-    return Cast::instance<TYPE>();
-  }
-  
   /// Access to the type information
   template <typename TYPE> bool Grammar<TYPE>::equals(const std::type_info& other_type) const  {
     return other_type == typeid(TYPE);

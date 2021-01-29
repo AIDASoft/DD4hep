@@ -160,6 +160,20 @@ void dd4hep::BasicGrammar::invalidConversion(const std::type_info& from, const s
                              "' to '" + to_name + "' is not implemented.");
 }
 
+/// Set cast structure
+void dd4hep::BasicGrammar::setCast(const Cast* cast)  const   {
+  BasicGrammar* g = const_cast<BasicGrammar*>(this);
+  g->specialization.cast = cast;
+}
+
+/// Access ABI object cast
+const dd4hep::Cast& dd4hep::BasicGrammar::cast() const   {
+  if ( specialization.cast )
+    return *specialization.cast;
+  except("Grammar","Cannot serialize object with incomplete grammar: %s",type_name().c_str());
+  return *specialization.cast;
+}
+
 /// Serialize an opaque value to a string
 std::string dd4hep::BasicGrammar::str(const void* ptr) const    {
   if ( specialization.str )
