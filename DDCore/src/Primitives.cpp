@@ -462,9 +462,9 @@ void* dd4hep::Cast::apply_dynCast(const Cast& to, const void* ptr) const
       if (r)      return r;
     }
 #endif
-#endif
     throw unrelated_type_error(type, to.type, "Failed to apply abi dynamic cast operation!");
   }
+#endif
   throw unrelated_type_error(type, to.type, "Target type is not an abi class type!");
 }
 
