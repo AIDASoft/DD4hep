@@ -37,6 +37,14 @@ dd4hep_configure_scripts ( Conditions DEFAULT_SETUP WITH_TESTS )
 #--------------------------------------------------------------------------
 #
 #---Testing: Load Telescope geometry and read conditions ------------------
+dd4hep_add_test_reg( Conditions_dynamic_payload
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
+  EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_Conditions_dynamic
+  REGEX_PASS "Test PASSED"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Load Telescope geometry and read conditions ------------------
 dd4hep_add_test_reg( Conditions_Telescope_cond_dump_by_pool
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy 

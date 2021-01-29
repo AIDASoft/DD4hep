@@ -99,105 +99,6 @@ namespace dd4hep {
   /// Throw exception when handles are check for validity
   void notImplemented(const std::string& msg);
 
-  /// Class to perform dynamic casts using unknown pointers.
-  /** @class Cast Primitives.h dd4hep/Primitives.h
-   *
-   *  It is mandatory that the pointers referred do actually
-   *  support the asked functionalty.
-   *  Miracles also I cannot do.....
-   *
-   *   @author  M.Frank
-   *   @date    13.08.2013
-   */
-  class Cast {
-  public:
-    typedef void  (*destroy_t)(void*);
-    typedef void* (*cast_t)(const void*);
-#ifdef __CINT__
-    const std::type_info* type;
-#else
-    const std::type_info& type;
-#endif
-#ifdef __APPLE__
-    cast_t      cast;
-  protected:
-    /// Initializing Constructor
-    Cast(const std::type_info& t, cast_t c);
-  public:
-    template <typename TYPE> static void* _cast(const void* arg)  {
-      TYPE* ptr = (TYPE*)arg;
-      ptr = dynamic_cast<TYPE*>(ptr);
-      return (void*)ptr;
-    }
-    /// Instantiation method    
-    template <typename TYPE> static Cast& instance() {
-      static Cast c(typeid(TYPE),_cast<TYPE>);
-      return c;
-    }
-#else
-    const void* abi_class;
-  protected:
-    /// Initializing Constructor
-    Cast(const std::type_info& t);
-    /// Instantiation method
-    template <typename TYPE> static Cast& instance() {
-      static Cast c(typeid(TYPE));
-      return c;
-    }
-#endif
-    /// Defautl destructor
-    virtual ~Cast();
-
-  public:
-    /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_dynCast(const Cast& to, const void* ptr) const;
-    /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_upCast(const Cast& to, const void* ptr) const;
-    /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_downCast(const Cast& to, const void* ptr) const;
-  };
-
-  /// Class to perform dynamic casts using unknown pointers.
-  /** @class ComponentCast Primitives.h dd4hep/Primitives.h
-   *
-   *  It is mandatory that the pointers referred do actually
-   *  support the asked functionalty.
-   *  Miracles also I cannot do.....
-   *
-   *   @author  M.Frank
-   *   @date    13.08.2013
-   */
-  class ComponentCast : public Cast {
-  public:
-    typedef void  (*destroy_t)(void*);
-    destroy_t   destroy;
-
-  private:
-    /// Defautl destructor
-    virtual ~ComponentCast();
-    template <typename TYPE> static void _destroy(void* arg)  {
-      TYPE* ptr = (TYPE*)arg;
-      if (ptr)    delete ptr;
-    }
-#ifdef __APPLE__
-    /// Initializing Constructor
-    ComponentCast(const std::type_info& t, destroy_t d, cast_t c);
-  public:
-    template <typename TYPE> static ComponentCast& instance() {
-      static ComponentCast c(typeid(TYPE),_destroy<TYPE>,_cast<TYPE>);
-      return c;
-    }
-#else
-    /// Initializing Constructor
-    ComponentCast(const std::type_info& t, destroy_t d);
-  public:
-    template <typename TYPE> static ComponentCast& instance() {
-      static ComponentCast c(typeid(TYPE),_destroy<TYPE>);
-      return c;
-    }
-#endif
-  };
-
   /// Convert volumeID to string format (016X)
   std::string volumeID(VolumeID vid);
 
@@ -682,7 +583,6 @@ namespace dd4hep {
       { return v.second; }
     };
 
-
     /// Data structure to manipulate a bitmask held by reference and represented by an integer
     /**
      * @author  M.Frank
@@ -724,5 +624,114 @@ namespace dd4hep {
     template <typename T>  ReferenceBitMask<T>::ReferenceBitMask(T& arg) : mask(arg) {}
 
   }    // End namespace detail
+
+  /// Class to perform dynamic casts using unknown pointers.
+  /** @class Cast Primitives.h dd4hep/Primitives.h
+   *
+   *  It is mandatory that the pointers referred do actually
+   *  support the asked functionalty.
+   *  Miracles also I cannot do.....
+   *
+   *   @author  M.Frank
+   *   @date    13.08.2013
+   */
+  class Cast {
+  public:
+#ifdef __CINT__
+    const std::type_info* type;
+#else
+    const std::type_info& type;
+#endif
+#ifdef __APPLE__
+    typedef void* (*cast_t)(const void*);
+    cast_t      cast;
+  protected:
+    /// Initializing Constructor
+    Cast(const std::type_info& t, cast_t c);
+  public:
+    template <typename TYPE> static void* _cast(const void* arg)  {
+      TYPE* ptr = (TYPE*)arg;
+      ptr = dynamic_cast<TYPE*>(ptr);
+      return (void*)ptr;
+    }
+    /// Instantiation method    
+    template <typename TYPE> static const Cast& instance() {
+      static Cast c(typeid(TYPE),_cast<TYPE>);
+      return c;
+    }
+#else
+    const void* abi_class;
+  protected:
+    /// Initializing Constructor
+    Cast(const std::type_info& t);
+  public:
+    /// Instantiation method
+    template <typename TYPE> static const Cast& instance() {
+      static Cast c(typeid(TYPE));
+      return c;
+    }
+#endif
+  protected:
+    /// Defautl destructor
+    virtual ~Cast();
+
+  public:
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* apply_dynCast(const Cast& to, const void* ptr) const;
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* apply_upCast(const Cast& to, const void* ptr) const;
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* apply_downCast(const Cast& to, const void* ptr) const;
+  };
+
+  /// Class to perform dynamic casts using unknown pointers.
+  /** @class ComponentCast Primitives.h dd4hep/Primitives.h
+   *
+   *  It is mandatory that the pointers referred do actually
+   *  support the asked functionalty.
+   *  Miracles also I cannot do.....
+   *
+   *   @author  M.Frank
+   *   @date    13.08.2013
+   */
+  class ComponentCast {
+  public:
+
+    typedef void  (*destroy_t)(void*);
+    destroy_t   destroy;
+  private:
+    const Cast& cast;
+    
+  private:
+    /// Initializing Constructor
+    ComponentCast(const Cast& c, destroy_t d) : destroy(d), cast(c)  {}
+    /// Defautl destructor
+    virtual ~ComponentCast() = default;
+    /// Function template to create destructor
+    template <typename TYPE> static void _destroy(void* arg)  {
+      TYPE* ptr = (TYPE*)arg;
+      if (ptr)    delete ptr;
+    }
+  public:
+    template <typename TYPE> static ComponentCast& instance() {
+      static ComponentCast c(Cast::instance<TYPE>(),_destroy<TYPE>);
+      return c;
+    }
+    const std::type_info& type()  const   {
+      return cast.type;
+    }
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* apply_dynCast(const ComponentCast& to, const void* ptr) const  {
+      return cast.apply_dynCast(to.cast, ptr);
+    }
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* apply_upCast(const ComponentCast& to, const void* ptr) const   {
+      return cast.apply_upCast(to.cast, ptr);
+    }
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* apply_downCast(const ComponentCast& to, const void* ptr) const   {
+      return cast.apply_downCast(to.cast, ptr);
+    }
+  };
 }      // End namespace dd4hep
 #endif // PARSERS_PRIMITIVES_H

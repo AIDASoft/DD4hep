@@ -56,18 +56,6 @@ namespace dd4hep {
     /// Pointer to object data
     void* pointer = 0;                //! No ROOT persistency
 
-    /// Helper class to perform resolution of non-polymorph types
-    /**
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_CONDITIONS
-     */
-    class dyn_cast  {
-    public:
-      virtual ~dyn_cast() = default;
-    };
-
   public:
     /// Create data block from string representation
     bool fromString(const std::string& rep);
@@ -168,25 +156,19 @@ namespace dd4hep {
 
   /// Generic getter. Specify the exact type, not a polymorph type
   template <typename T> inline T& OpaqueData::as() {
-    union _cast {
-      void* ptr;
-      dyn_cast* dynamic;
-      _cast(void* p)   { ptr = p; }
-    } cast(this->pointer);
-    T* obj = dynamic_cast<T*>(cast.dynamic);
-    if ( obj ) return *obj;
+    if ( grammar )   {
+      T* obj = (T*)(grammar->cast().apply_dynCast(Cast::instance<T>(), this->pointer));
+      if ( obj ) return *obj;
+    }
     throw std::bad_cast();
   }
 
   /// Generic getter (const version). Specify the exact type, not a polymorph type
   template <typename T> inline const T& OpaqueData::as() const {
-    union _cast {
-      const void* ptr;
-      const dyn_cast* dynamic;
-      _cast(const void* p)   { ptr = p; }
-    } cast(this->pointer);
-    const T* obj = dynamic_cast<const T*>(cast.dynamic);
-    if ( obj ) return *obj;
+    if ( grammar )   {
+      const T* obj = (const T*)(grammar->cast().apply_dynCast(Cast::instance<T>(), this->pointer));
+      if ( obj ) return *obj;
+    }
     throw std::bad_cast();
   }
 

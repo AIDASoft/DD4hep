@@ -414,10 +414,6 @@ namespace dd4hep   {
 /// Initializing Constructor
 dd4hep::Cast::Cast(const std::type_info& t, cast_t c) : type(t), cast(c)  {
 }
-/// Initializing Constructor
-dd4hep::ComponentCast::ComponentCast(const std::type_info& t, destroy_t d, cast_t c)
-  : Cast(t, c), destroy(d)    {
-}
 #else
 /// Initializing Constructor
 dd4hep::Cast::Cast(const std::type_info& t) : type(t)   {
@@ -426,18 +422,10 @@ dd4hep::Cast::Cast(const std::type_info& t) : type(t)   {
     throw std::runtime_error("Class type " + typeName(type) + " is not an abi object type!");
   }
 }
-/// Initializing Constructor
-dd4hep::ComponentCast::ComponentCast(const std::type_info& t, destroy_t d)
-  : Cast(t), destroy(d)   {
-}
 #endif
 
 /// Defautl destructor
 dd4hep::Cast::~Cast() {
-}
-
-/// Defautl destructor
-dd4hep::ComponentCast::~ComponentCast() {
 }
 
 /// Apply cast using typeinfo instead of dynamic_cast
@@ -474,10 +462,10 @@ void* dd4hep::Cast::apply_dynCast(const Cast& to, const void* ptr) const
       if (r)      return r;
     }
 #endif
+#endif
     throw unrelated_type_error(type, to.type, "Failed to apply abi dynamic cast operation!");
   }
   throw unrelated_type_error(type, to.type, "Target type is not an abi class type!");
-#endif
 }
 
 /// Apply cast using typeinfo instead of dynamic_cast
@@ -515,4 +503,3 @@ void* dd4hep::Cast::apply_downCast(const Cast& to, const void* ptr) const
   throw unrelated_type_error(type, to.type, "Target type is not an abi class type!");
 #endif
 }
-
