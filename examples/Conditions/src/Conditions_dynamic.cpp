@@ -93,8 +93,13 @@ static int condition_example (Detector& /* description */, int /* argc */, char*
 #define DATA_2  2.2222e2
 
   Condition cond("Cond","payload");
-  payload& p = cond.bind<payload>();
+  payload&  p = cond.bind<payload>();
 
+  BasicGrammar::instance<payload>().setCast( &Cast::instance<payload>() );
+  BasicGrammar::instance<base_0>().setCast(  &Cast::instance<base_0>() );
+  BasicGrammar::instance<base_1<int> >().setCast( &Cast::instance<base_1<int> >() );
+  BasicGrammar::instance<base_2<double> >().setCast( &Cast::instance<base_2<double> >() );
+  
   p.data_0 = DATA_0;
   p.data_1 = DATA_1;
   p.data_2 = DATA_2;
