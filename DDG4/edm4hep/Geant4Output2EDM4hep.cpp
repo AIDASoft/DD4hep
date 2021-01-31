@@ -442,7 +442,7 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
       &m_store->get<edm4hep::MCParticleCollection>("MCParticles"));
 
   //-------------------------------------------------------------------
-  if( typeid( Geant4Tracker::Hit ) == coll->type().type  ){
+  if( typeid( Geant4Tracker::Hit ) == coll->type().type()  ){
 
     edm4hep::SimTrackerHitCollection* sthc =
       const_cast<edm4hep::SimTrackerHitCollection*>(&m_store->get<edm4hep::SimTrackerHitCollection>(colName));
@@ -478,7 +478,7 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
     }
   //-------------------------------------------------------------------
   }
-  else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type ){
+  else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type() ){
 
     Geant4Sensitive*       sd      = coll->sensitive();
     int hit_creation_mode = sd->hitCreationMode();
@@ -534,7 +534,7 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   } else {
 
     printout(ERROR, "Geant4Output2EDM4hep" , " unknown type in Geant4HitCollection  %s ",
-       coll->type().type.name() );
+	     coll->type().type().name() );
   }
 }
 
@@ -563,13 +563,13 @@ void Geant4Output2EDM4hep::createCollections(OutputContext<G4Event>& ctxt){
       continue ;
     }
 
-    if( typeid( Geant4Tracker::Hit ) == coll->type().type  ){
+    if( typeid( Geant4Tracker::Hit ) == coll->type().type()  ){
 
       m_store->create<edm4hep::SimTrackerHitCollection>(colName);
       m_file->registerForWrite(colName);
       printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
     }
-    else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type ){
+    else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type() ){
 
       m_store->create<edm4hep::SimCalorimeterHitCollection>(colName);
       m_file->registerForWrite(colName);
@@ -583,7 +583,7 @@ void Geant4Output2EDM4hep::createCollections(OutputContext<G4Event>& ctxt){
     } else {
 
       printout(WARNING, "Geant4Output2EDM4hep" ,
-         " unknown type in Geant4HitCollection  %s ", coll->type().type.name() );
+	       " unknown type in Geant4HitCollection  %s ", coll->type().type().name() );
     }
   }
 
