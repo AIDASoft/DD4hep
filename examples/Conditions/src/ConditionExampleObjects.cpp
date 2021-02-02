@@ -130,6 +130,42 @@ void ConditionUpdate3::resolve(Condition target, ConditionUpdateContext& context
   data.insert(data.end(), c2.begin(), c2.end());
 }
 
+/// Interface to client Callback in order to update the condition
+Condition ConditionUpdate4::operator()(const ConditionKey& key, ConditionUpdateContext&)  {
+#ifdef DD4HEP_CONDITIONS_DEBUG
+  printout(printLevel,"ConditionUpdate3","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
+  Condition    target(key.name,"derived");
+#else
+  printout(printLevel,"ConditionUpdate3","++ Building dependent condition: %016llX",key.hash);
+  Condition    target(key.hash);
+#endif
+  target.bind<vector<int> >();
+  return target;
+}
+
+/// Interface to client Callback in order to update the condition
+void ConditionUpdate4::resolve(Condition target, ConditionUpdateContext& context)  {
+  vector<int>& data  = target.get<vector<int> >();
+  Condition    cond3 = context.condition(context.key(0));
+  Condition    cond2 = context.condition(context.key(1));
+  Condition    cond0 = context.condition(context.key(2));
+  Condition    cond1 = context.condition(context.key(3));
+
+  // Ensure the data are really accessible
+  if ( typeid(*cond0.ptr()) == typeid(detail::ConditionObject) )   {  }
+  if ( typeid(*cond1.ptr()) == typeid(detail::ConditionObject) )   {  }
+  if ( typeid(*cond2.ptr()) == typeid(detail::ConditionObject) )   {  }
+  if ( typeid(*cond3.ptr()) == typeid(detail::ConditionObject) )   {  }
+
+  data.push_back(cond0.get<int>());
+  data.push_back(cond0.get<int>()*2);
+  vector<int>& c1 = cond1.get<vector<int> >();
+  data.insert(data.end(), c1.begin(), c1.end());
+
+  vector<int>& c2 = cond2.get<vector<int> >();
+  data.insert(data.end(), c2.begin(), c2.end());
+}
+
 /// Initializing constructor
 ConditionsDependencyCreator::ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p, bool persist)
   : OutputLevel(p), content(c), persist_conditions(persist)
@@ -138,6 +174,7 @@ ConditionsDependencyCreator::ConditionsDependencyCreator(ConditionsContent& c, P
   call1  = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate1(printLevel));
   call2  = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate2(printLevel));
   call3  = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate3(printLevel));
+  call4  = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate4(printLevel));
 }
 
 /// Destructor
@@ -151,10 +188,12 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)  const  {
   ConditionKey      target1(de,"derived_data/derived_1");
   ConditionKey      target2(de,"derived_data/derived_2");
   ConditionKey      target3(de,"derived_data/derived_3");
+  ConditionKey      target4(de,"derived_data/derived_4");
   DependencyBuilder sbuild_1(de, starget1.item_key(), scall1);
   DependencyBuilder build_1(de, target1.item_key(), call1);
   DependencyBuilder build_2(de, target2.item_key(), call2);
   DependencyBuilder build_3(de, target3.item_key(), call3);
+  DependencyBuilder build_4(de, target4.item_key(), call4);
 
   // Compute the derived stuff
   sbuild_1.add(key);
@@ -166,12 +205,20 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)  const  {
   build_3.add(key);
   build_3.add(target1);
   build_3.add(target2);
+
+  /// Make here some random dependencies
+  build_4.add(target3);
+  build_4.add(target2);
+  build_4.add(key);
+  build_4.add(target1);
+
   if ( !persist_conditions )  {
     content.addDependency(sbuild_1.release());
   }
   content.addDependency(build_1.release());
   content.addDependency(build_2.release());
   content.addDependency(build_3.release());
+  content.addDependency(build_4.release());
   printout(printLevel,"Example","++ Added derived conditions dependencies for %s",de.path().c_str());
   return 1;
 }
@@ -194,10 +241,19 @@ int ConditionsDataAccess::accessConditions(DetElement de, const std::vector<Cond
   ConditionKey key_derived1    (de,"derived_data/derived_1");
   ConditionKey key_derived2    (de,"derived_data/derived_2");
   ConditionKey key_derived3    (de,"derived_data/derived_3");
+  ConditionKey key_derived4    (de,"derived_data/derived_4");
   int result = 0, count = 0;
 
   // Let's go for the deltas....
   for( auto cond : conditions )  {
+    const auto& info = typeid(*cond.ptr());
+    if ( info != typeid(detail::ConditionObject) )  {
+      printout(ERROR,"accessConditions","Condition with bad base class!");
+    }
+    if ( 0 == dynamic_cast<detail::ConditionObject*>(cond.ptr()) )  {
+      printout(ERROR,"accessConditions","Condition with bad base class!");
+    }
+    
     if ( cond.item_key() == key_temperature.item_key() )  {
       result += int(cond.get<double>());
     }
@@ -220,6 +276,9 @@ int ConditionsDataAccess::accessConditions(DetElement de, const std::vector<Cond
       result += int(cond.get<vector<int> >().size());
     }
     else if ( cond.item_key() == key_derived3.item_key() )  {
+      result += int(cond.get<vector<int> >().size());
+    }
+    else if ( cond.item_key() == key_derived4.item_key() )  {
       result += int(cond.get<vector<int> >().size());
     }
     else if ( cond.item_key() == key_noctor_1.item_key() )  {
