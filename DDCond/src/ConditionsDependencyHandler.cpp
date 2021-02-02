@@ -50,6 +50,9 @@ Condition ConditionsDependencyHandler::Work::resolve(Work*& current)   {
   Work* previous = current;
   current = this;
   state = RESOLVED;
+  if ( !condition )   {
+    printout(ERROR,"ConditionsDependency","ERROR: Cannot resolve not existing conditions.");
+  }
   context.dependency->callback->resolve(condition, context);
   previous->do_intersection(iov);
   current = previous;
@@ -57,8 +60,8 @@ Condition ConditionsDependencyHandler::Work::resolve(Work*& current)   {
 }
 
 /// Default constructor
-ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager mgr,
-                                                         UserPool& pool,
+ConditionsDependencyHandler::ConditionsDependencyHandler(ConditionsManager   mgr,
+                                                         UserPool&           pool,
                                                          const Dependencies& dependencies,
                                                          ConditionUpdateUserContext* user_param)
   : m_manager(mgr.access()), m_pool(pool), m_dependencies(dependencies),
@@ -93,10 +96,12 @@ void ConditionsDependencyHandler::compute()   {
   for( const auto& i : m_todo )   {
     if ( !i.second->condition )  {
       do_callback(i.second);
-      continue;
+      if ( !i.second->condition )  {
+	except("ConditionsDependencyHandler",
+	       "Derived condition was not created after calling the creation callback!");
+      }
     }
     // printout(INFO,"UserPool","Already calcluated: %s",d->name());
-    continue;
   }
 }
 

@@ -133,18 +133,18 @@ namespace dd4hep {
       /// Access to the detector description instance
       virtual Detector& detectorDescription() const  override;
       /// Access to the conditions manager
-      virtual Ref_t manager() const  override                    { return m_manager;         }
+      virtual Ref_t manager() const  override                 { return m_manager;           }
       /// Access to pool IOV
-      virtual const IOV& requiredValidity()  const  override     { return m_pool.validity(); }
+      virtual const IOV& requiredValidity()  const  override  { return m_pool.validity();   }
       /// Accessor for the current conditons mapping
-      virtual ConditionsMap& conditionsMap() const override      { return m_pool;            }
+      virtual ConditionsMap& conditionsMap() const override   { return m_pool;              }
       /// ConditionResolver implementation: Interface to access conditions.
-      virtual Condition get(const ConditionKey& key) override    { return get(key.hash);     }
+      virtual Condition get(const ConditionKey& key) override { return get(key.hash, true); }
       /// Interface to access conditions by conditions key
       virtual Condition get(const ConditionKey& key, bool throw_if_not)  override
-      {  return get(key.hash, throw_if_not);                                                 }
+      {  return get(key.hash, throw_if_not);                                                }
       /// ConditionResolver implementation: Interface to access conditions
-      virtual Condition get(Condition::key_type key) override    { return get(key, true);    }
+      virtual Condition get(Condition::key_type key) override { return get(key, true);      }
       /// Interface to access conditions by hash value
       virtual Condition get(Condition::key_type key, bool throw_if_not)  override;
       /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)

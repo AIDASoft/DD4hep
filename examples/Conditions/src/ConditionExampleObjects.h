@@ -168,6 +168,26 @@ namespace dd4hep {
       virtual void resolve(Condition condition, ConditionUpdateContext& context) override  final;
     };
     
+    /// Specialized conditions update callback 
+    /**
+     *  Used by clients to update a condition.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class ConditionUpdate4 : public ConditionUpdateCall, public OutputLevel  {
+    public:
+      /// Initializing constructor
+      ConditionUpdate4(PrintLevel p) : OutputLevel(p) {    }
+      /// Default destructor
+      virtual ~ConditionUpdate4() = default;
+      /// Interface to client Callback in order to update the condition
+      virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& context) override  final;
+      /// Interface to client Callback in order to update the condition
+      virtual void resolve(Condition condition, ConditionUpdateContext& context) override  final;
+    };
+    
     /// This is important, otherwise the register and forward calls won't find them!
     /**
      *  \author  M.Frank
@@ -196,7 +216,7 @@ namespace dd4hep {
       /// Content object to be filled
       ConditionsContent&   content;
       /// Three different update call types
-      std::shared_ptr<ConditionUpdateCall> scall1, call1, call2, call3;
+      std::shared_ptr<ConditionUpdateCall> scall1, call1, call2, call3, call4;
       /// Flag for special setup for ROOT persistency
       bool persist_conditions;
       /// Constructor
