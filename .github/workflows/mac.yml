@@ -7,32 +7,28 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        LCG: ["LCG_98python3/x86_64-mac1015-clang110-opt","LCG_97apython3/x86_64-mac1015-clang110-opt"]
+        LCG: ["LCG_98python3/x86_64-mac1015-clang110-opt",
+              "LCG_99/x86_64-mac1015-clang120-opt"]
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
       with:
         cvmfs_repositories: 'sft.cern.ch,geant4.cern.ch'
-    - name: Install LCG requirements
-      run: |
-        brew install ninja
-        brew install gfortran
-        brew install --cask xquartz
-    - name: Build DD4hep
-      run: |
-        source /Users/Shared/cvmfs/sft.cern.ch/lcg/views/${{ matrix.LCG }}/setup.sh
-        mkdir build
-        cd build
-        cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
-        ninja
-        ninja install
-        . ../bin/thisdd4hep.sh
-        ctest --output-on-failure -j4
-        cd ../examples/
-        mkdir build
-        cd build
-        cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
-        ninja
-        ninja install
-        ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement
-
+    - uses: aidasoft/run-lcg-view@v1
+      with:
+        release-platform: ${{ matrix.LCG }}
+        run: |
+          mkdir build
+          cd build
+          cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
+          ninja
+          ninja install
+          . ../bin/thisdd4hep.sh
+          ctest --output-on-failure -j4
+          cd ../examples/
+          mkdir build
+          cd build
+          cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
+          ninja
+          ninja install
+          ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement

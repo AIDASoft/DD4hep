@@ -3,118 +3,128 @@ name: linux
 on: [push, pull_request]
 
 jobs:
-  centos7:
+  old:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_97apython3/x86_64-centos7-gcc8-opt",
-              "LCG_97/x86_64-centos7-gcc9-opt"]
-    env:
-      SHARED: ON
-      STANDARD: 17
-      TBB: OFF
-    steps:
-    - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - name: Start container
-      run: |
-        ls
-        docker run -it --privileged --name CI_container -v /home/runner/work/DD4hep/DD4hep:/Package -e VIEW=${{ matrix.LCG }} -e SHARED=${SHARED} -e STANDARD=${STANDARD} -e TBB=${TBB} -v /cvmfs:/cvmfs:shared -d ghcr.io/aidasoft/centos7:latest /bin/bash
-    - name: Compile and test
-      run: |
-        docker exec CI_container /bin/bash -c "./Package/.github/scripts/compile_and_test.sh"
-
-
-  centos7-tbb:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        LCG: ["LCG_98/x86_64-centos7-gcc9-opt",
+        LCG: ["LCG_97a/x86_64-centos7-gcc8-opt",
               "LCG_98python3/x86_64-centos7-gcc10-opt",
-              "LCG_98python3/x86_64-centos7-clang10-opt"]
-    env:
-      SHARED: ON
-      STANDARD: 17
-      TBB: ON
-    steps:
-    - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - name: Start container
-      run: |
-        ls
-        docker run -it --privileged --name CI_container -v /home/runner/work/DD4hep/DD4hep:/Package -e VIEW=${{ matrix.LCG }} -e SHARED=${SHARED} -e STANDARD=${STANDARD} -e TBB=${TBB} -v /cvmfs:/cvmfs:shared -d ghcr.io/aidasoft/centos7:latest /bin/bash
-    - name: Compile and test
-      run: |
-        docker exec CI_container /bin/bash -c "./Package/.github/scripts/compile_and_test.sh"
-
-
-  non-shared-libs:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        LCG: ["LCG_98python3/x86_64-centos7-gcc10-opt"]
-    env:
-      SHARED: OFF
-      STANDARD: 17
-      TBB: ON
-    steps:
-    - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - name: Start container
-      run: |
-        ls
-        docker run -it --privileged --name CI_container -v /home/runner/work/DD4hep/DD4hep:/Package -e VIEW=${{ matrix.LCG }} -e SHARED=${SHARED} -e STANDARD=${STANDARD} -e TBB=${TBB} -v /cvmfs:/cvmfs:shared -d ghcr.io/aidasoft/centos7:latest /bin/bash
-    - name: Compile and test
-      run: |
-        docker exec CI_container /bin/bash -c "./Package/.github/scripts/compile_and_test.sh"
-
-
-  ubuntu18:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        LCG: ["LCG_98/x86_64-ubuntu1804-gcc8-opt",
               "LCG_98python3/x86_64-ubuntu1804-gcc7-opt"]
-    env:
-      SHARED: ON
-      STANDARD: 17
-      TBB: ON
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - name: Start container
-      run: |
-        ls
-        docker run -it --privileged --name CI_container -v /home/runner/work/DD4hep/DD4hep:/Package -e VIEW=${{ matrix.LCG }} -e SHARED=${SHARED} -e STANDARD=${STANDARD} -e TBB=${TBB} -v /cvmfs:/cvmfs:shared -d ghcr.io/aidasoft/ubuntu18:latest /bin/bash
-    - name: Compile and test
-      run: |
-        docker exec CI_container /bin/bash -c "./Package/.github/scripts/compile_and_test.sh"
+    - uses: aidasoft/run-lcg-view@v1
+      with:
+        release-platform: ${{ matrix.LCG }}
+        run: |
+          mkdir build
+          cd build
+          unset CPATH
+          cmake -GNinja \
+            -DDD4HEP_USE_GEANT4=ON \
+            -DBoost_NO_BOOST_CMAKE=ON \
+            -DDD4HEP_USE_LCIO=ON \
+            -DDD4HEP_USE_EDM4HEP=OFF \
+            -DDD4HEP_USE_TBB=OFF \
+            -DDD4HEP_USE_HEPMC3=OFF \
+            -DDD4HEP_BUILD_DEBUG=OFF \
+            -DBUILD_TESTING=ON \
+            -DDD4HEP_DEBUG_CMAKE=ON \
+            -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
+            -DCMAKE_CXX_STANDARD=17 ..
+          ninja install
+          . ../bin/thisdd4hep.sh
+          ctest --output-on-failure -j4
+          cd ../examples/
+          mkdir build
+          cd build
+          cmake -GNinja \
+            -DBoost_NO_BOOST_CMAKE=ON \
+            -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_CXX_STANDARD=17 ..
+          ninja install
+          ctest --output-on-failure -j2
 
-
-  dev:
+  new:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["dev3/latest/x86_64-centos7-gcc9-opt",
-              "dev4/latest/x86_64-centos7-gcc9-opt"]
-    env:
-      SHARED: ON
-      STANDARD: 17
-      TBB: OFF
-      HEPMC3: ON
-      EDM4HEP: ON
-      DD_DEBUG: ON
+        LCG: ["LCG_99/x86_64-centos7-clang10-opt",
+              "LCG_99/x86_64-centos7-gcc10-opt",
+              "LCG_99/x86_64-centos8-gcc10-opt",
+              "LCG_99/x86_64-ubuntu2004-gcc9-opt",
+              "dev3/x86_64-centos7-clang10-opt",
+              "dev4/x86_64-centos7-gcc10-opt"]
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - name: Start container
-      run: |
-        ls
-        docker run -it --privileged --name CI_container -v /home/runner/work/DD4hep/DD4hep:/Package -e VIEW=${{ matrix.LCG }} -e SHARED=${SHARED} -e STANDARD=${STANDARD} -e TBB=${TBB}  -e HEPMC3=${HEPMC3} -e EDM4HEP=${EDM4HEP} -e DD_DEBUG=${DD_DEBUG} -v /cvmfs:/cvmfs:shared -d ghcr.io/aidasoft/centos7:latest /bin/bash
-    - name: Compile and test
-      run: |
-        docker exec CI_container /bin/bash -c "./Package/.github/scripts/compile_and_test.sh"
+    - uses: aidasoft/run-lcg-view@v1
+      with:
+        release-platform: ${{ matrix.LCG }}
+        run: |
+          mkdir build
+          cd build
+          unset CPATH
+          cmake -GNinja \
+            -DDD4HEP_USE_GEANT4=ON \
+            -DBoost_NO_BOOST_CMAKE=ON \
+            -DDD4HEP_USE_LCIO=ON \
+            -DDD4HEP_USE_EDM4HEP=ON \
+            -DDD4HEP_USE_TBB=ON \
+            -DDD4HEP_USE_HEPMC3=ON \
+            -DDD4HEP_BUILD_DEBUG=OFF \
+            -DBUILD_TESTING=ON \
+            -DDD4HEP_DEBUG_CMAKE=ON \
+            -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
+            -DCMAKE_CXX_STANDARD=17 ..
+          ninja install
+          . ../bin/thisdd4hep.sh
+          ctest --output-on-failure -j4
+          cd ../examples/
+          mkdir build
+          cd build
+          cmake -GNinja \
+            -DBoost_NO_BOOST_CMAKE=ON \
+            -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_CXX_STANDARD=17 ..
+          ninja install
+          ctest --output-on-failure -j2
+
+  non-shared:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        LCG: ["LCG_99/x86_64-centos7-gcc10-opt"]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
+    - uses: aidasoft/run-lcg-view@v1
+      with:
+        release-platform: ${{ matrix.LCG }}
+        run: |
+          mkdir build
+          cd build
+          unset CPATH
+          cmake -GNinja \
+            -DDD4HEP_USE_GEANT4=ON \
+            -DBoost_NO_BOOST_CMAKE=ON \
+            -DDD4HEP_USE_LCIO=ON \
+            -DDD4HEP_USE_EDM4HEP=ON \
+            -DDD4HEP_USE_TBB=ON \
+            -DDD4HEP_USE_HEPMC3=ON \
+            -DDD4HEP_BUILD_DEBUG=OFF \
+            -DBUILD_TESTING=ON \
+            -DDD4HEP_DEBUG_CMAKE=ON \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
+            -DCMAKE_CXX_STANDARD=17 ..
+          ninja
