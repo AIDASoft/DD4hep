@@ -95,3 +95,7 @@ const dd4hep::IOVType* detail::ConditionObject::iovType() const    {
   invalidHandleError<IOVType>();
   return 0;
 }
+
+
+#include "DD4hep/GrammarUnparsed.h"
+static auto s_registry = GrammarRegistry::pre_note<vector<Condition> >(1);

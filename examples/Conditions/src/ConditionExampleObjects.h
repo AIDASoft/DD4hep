@@ -184,8 +184,46 @@ namespace dd4hep {
       virtual ~ConditionUpdate4() = default;
       /// Interface to client Callback in order to update the condition
       virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& context) override  final;
+    };
+    
+    /// Specialized conditions update callback 
+    /**
+     *  Used by clients to update a condition.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class ConditionUpdate5 : public ConditionUpdateCall, public OutputLevel  {
+    public:
+      /// Initializing constructor
+      ConditionUpdate5(PrintLevel p) : OutputLevel(p) {    }
+      /// Default destructor
+      virtual ~ConditionUpdate5() = default;
       /// Interface to client Callback in order to update the condition
-      virtual void resolve(Condition condition, ConditionUpdateContext& context) override  final;
+      virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& context) override  final;
+    };
+    
+    /// Specialized conditions update callback 
+    /**
+     *  Used by clients to update a condition.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class ConditionUpdate6 : public ConditionUpdateCall, public OutputLevel  {
+    public:
+      size_t max_deps = 0;
+      size_t min_deps = 999999999999UL;
+      size_t num_deps = 0;
+      size_t call_count = 0;
+      /// Initializing constructor
+      ConditionUpdate6(PrintLevel p) : OutputLevel(p) {    }
+      /// Default destructor
+      virtual ~ConditionUpdate6();
+      /// Interface to client Callback in order to update the condition
+      virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& context) override  final;
     };
     
     /// This is important, otherwise the register and forward calls won't find them!
@@ -216,11 +254,13 @@ namespace dd4hep {
       /// Content object to be filled
       ConditionsContent&   content;
       /// Three different update call types
-      std::shared_ptr<ConditionUpdateCall> scall1, call1, call2, call3, call4;
+      std::shared_ptr<ConditionUpdateCall> scall1, call1, call2, call3, call4, call5, call6;
       /// Flag for special setup for ROOT persistency
       bool persist_conditions;
+      /// Flag to indicate increased complexity
+      int  extended;
       /// Constructor
-      ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p, bool persist=false);
+      ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p, bool persist=false, int extended=0);
       /// Destructor
       virtual ~ConditionsDependencyCreator();
       /// Callback to process a single detector element
@@ -268,6 +308,7 @@ namespace dd4hep {
       const IOV&     iov;
       /// Reference to the conditions map to access conditions
       ConditionsMap& map;
+
       /// Constructor
       ConditionsDataAccess(const IOV& i, ConditionsMap& m, PrintLevel l=DEBUG)
         : OutputLevel(l), iov(i), map(m) {}
