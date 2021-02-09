@@ -71,7 +71,7 @@ dd4hep_add_test_reg( Conditions_Telescope_populate
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_populate
       -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml -iovs 5
-  REGEX_PASS "Accessed a total of 1000 conditions \\(S:   500,L:     0,C:   500,M:0\\)"
+  REGEX_PASS "Accessed a total of 1000 conditions \\(S:   600,L:     0,C:   400,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
@@ -80,7 +80,7 @@ dd4hep_add_test_reg( Conditions_Telescope_stress
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_stress 
     -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml -iovs 10 -runs 20
-  REGEX_PASS "\\+  Accessed a total of 4000 conditions \\(S:  3100,L:     0,C:   900,M:0\\)"
+  REGEX_PASS "\\+  Accessed a total of 4000 conditions \\(S:  3280,L:     0,C:   720,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
@@ -89,7 +89,7 @@ dd4hep_add_test_reg( Conditions_Telescope_stress2
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_stress2 
     -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml -iovs 10
-  REGEX_PASS "\\+  Accessed a total of 2000 conditions \\(S:  1000,L:     0,C:  1000,M:0\\)"
+  REGEX_PASS "\\+  Accessed a total of 2000 conditions \\(S:  1200,L:     0,C:   800,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
@@ -98,7 +98,7 @@ dd4hep_add_test_reg( Conditions_Telescope_MT_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_MT 
     -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml -iovs 30 -runs 10 -threads 1
-  REGEX_PASS "\\+  Accessed a total of 358000 conditions \\(S:328000,L:     0,C: 30000,M:0\\)"
+  REGEX_PASS "\\+  Accessed a total of 358000 conditions \\(S:334000,L:     0,C: 24000,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
@@ -150,7 +150,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_stress_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_stress 
     -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 10 -runs 100
-  REGEX_PASS "\\+  Accessed a total of 35107000 conditions \\(S:33351650,L:     0,C:1755350,M:0\\)"
+  REGEX_PASS "\\+  Accessed a total of 35107000 conditions \\(S:33702720,L:     0,C:1404280,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
@@ -159,7 +159,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_stress2_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_stress2 
     -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 20
-  REGEX_PASS "\\+  Accessed a total of 7021400 conditions \\(S:3510700,L:     0,C:3510700,M:0\\)"
+  REGEX_PASS "\\+  Accessed a total of 7021400 conditions \\(S:4212840,L:     0,C:2808560,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
@@ -168,7 +168,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_MT_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_MT 
     -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 3 -runs 2 -threads 1
-  REGEX_PASS "\\+  Accessed a total of 11936380 conditions \\(S:10883170,L:     0,C:1053210,M:0\\)"
+  REGEX_PASS "\\+  Accessed a total of 11936380 conditions \\(S:11093812,L:     0,C:842568,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
