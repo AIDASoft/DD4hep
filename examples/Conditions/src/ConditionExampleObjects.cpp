@@ -332,7 +332,7 @@ int ConditionsDataAccess::accessConditions(DetElement de, const std::vector<Cond
 
   // Let's go for the deltas....
   for( auto cond : conditions )  {
-    const auto& info = typeid(*cond.ptr());
+    const auto& info = cond.descriptor().type();
     if ( info != typeid(detail::ConditionObject) )  {
       printout(ERROR,"accessConditions","Condition with bad base class!");
     }
