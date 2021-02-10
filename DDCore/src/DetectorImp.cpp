@@ -197,7 +197,6 @@ DetectorImp::DetectorImp(const string& name)
     new(table) TGeoElementTable();
     // This will initialize the table without filling:
     table->AddElement("VACUUM","VACUUM", 1, 1, 1e-15);
-    // table->Print();
 #endif
   }
   if ( 0 == gGeoIdentity )
