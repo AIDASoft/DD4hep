@@ -280,6 +280,18 @@ void ConditionsDependencyHandler::do_callback(Work* work)   {
       work->state = CREATED;
       ++num_callback;
     }
+    else   {
+      printout(ERROR,"ConditionDependency",
+	       "+++ Callback handler returned invalid condition.  Key:%s %c%s%c",
+	       work->context.dependency->target.toString().c_str(),
+#if defined(DD4HEP_CONDITIONS_DEBUG)
+	       '[',work->context.dependency->detector.path().c_str(),']'
+#else
+	       ' ',"",' '
+#endif
+	       );
+      throw std::runtime_error("Invalid derived condition callback");
+    }
     return;
   }
   catch(const std::exception& e)   {
