@@ -333,13 +333,10 @@ int ConditionsDataAccess::accessConditions(DetElement de, const std::vector<Cond
   // Let's go for the deltas....
   for( auto cond : conditions )  {
     const auto& info = cond.descriptor().type();
-    if ( info != typeid(detail::ConditionObject) )  {
-      printout(ERROR,"accessConditions","Condition with bad base class!");
-    }
     if ( 0 == dynamic_cast<detail::ConditionObject*>(cond.ptr()) )  {
       printout(ERROR,"accessConditions","Condition with bad base class!");
     }
-    
+   
     if ( cond.item_key() == key_path.item_key() )  {
       ++result;
       if ( cond.get<string>() != de.path() )
