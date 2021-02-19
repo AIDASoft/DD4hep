@@ -1,0 +1,20 @@
+name: coverity
+
+on:
+  schedule:
+    - cron:  '0 0 * * *'
+
+jobs:
+  run-coverity:
+    runs-on: ubuntu-latest
+    if: github.repository == 'AIDASoft/DD4hep'
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
+    - uses: aidasoft/run-lcg-view@v2
+      with:
+        coverity-cmake-command: 'cmake -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DDD4HEP_USE_EDM4HEP=ON -DDD4HEP_USE_TBB=ON -DDD4HEP_USE_HEPMC3=ON -DDD4HEP_BUILD_DEBUG=OFF -DBUILD_TESTING=ON -DDD4HEP_DEBUG_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..'
+        coverity-project: 'AIDASoft%2FDD4hep'
+        coverity-project-token: ${{ secrets.DD4HEP_COVERITY_TOKEN  }}
+        github-pat: ${{ secrets.READ_COVERITY_IMAGE }}
+        release-platform: "LCG_99/x86_64-centos7-gcc10-opt"
