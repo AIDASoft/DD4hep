@@ -412,7 +412,14 @@ Detector& DetectorImp::addDetector(const Handle<NamedObject>& ref_det) {
   }
   m_detectors.append(ref_det);
   det_element->flag |= DetElement::Object::IS_TOP_LEVEL_DETECTOR;
-  Volume volume = det_element.placement()->GetMotherVolume();
+  PlacedVolume pv = det_element.placement();
+  if ( !pv.isValid() )   {
+    stringstream str;
+    str << "Detector: Adding subdetectors with no valid placement is not allowed: "
+	<< det_element.name() << " ID:" << det_element.id() << ".";
+    except("DD4hep",str.str());
+  }
+  Volume volume = pv->GetMotherVolume();
   if ( volume == m_worldVol )  {
     printout(DEBUG,"DD4hep","+++ Detector: Added detector %s to the world instance.",
              det_element.name());
@@ -692,9 +699,9 @@ void DetectorImp::endDocument(bool close_geometry)    {
     add(trackingVis);
 #endif
     m_worldVol.solid()->ComputeBBox();
-    // Propagating reflections
-    ReflectionBuilder rb(*this);
-    rb.execute();
+    // Propagating reflections: This is useless now and unused!!!!
+    //ReflectionBuilder rb(*this);
+    //rb.execute();
     // Since we allow now for anonymous shapes,
     // we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();
