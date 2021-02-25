@@ -165,7 +165,7 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
       //  take into account eventual reflection)
       //
 #if 0
-      printout(INFO,"Geant4Converter","+++ Place %svolume %s in assembly.",
+      printout(INFO,"Geant4Converter","++ Place %svolume %s in assembly.",
 	       triplets[i].IsReflection() ? "REFLECTED " : "",
 	       detail::tools::placementPath(new_chain).c_str());
 #endif
@@ -804,7 +804,7 @@ void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) 
 	G4Translate3D trans;
 	transform.getDecomposition(scale, rot, trans);
 	printout(debugReflections ? ALWAYS : lvl, "Geant4Converter",
-		 "+++ Placing reflected ASSEMBLY. dau:%s to mother %s "
+		 "++ Placing reflected ASSEMBLY. dau:%s to mother %s "
 		 "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f",
                  dau_vol->GetName(), mot_vol->GetName(),
                  transform.dx(), transform.dy(), transform.dz(),
@@ -857,7 +857,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
     printout(lvl, "Geant4Converter", "++ Placement %s not converted [Veto'ed for simulation]",node->GetName());
     return 0;
   }
-  g4 = nullptr;
+  //g4 = nullptr;
   if (!g4) {
     TGeoVolume* mot_vol = node->GetMotherVolume();
     TGeoMatrix* tr = node->GetMatrix();
@@ -900,7 +900,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         // Imprint the assembly. The mother MUST already be transformed.
         //
 	transform.getDecomposition(scale, rot, trans);
-        printout(lvl, "Geant4Converter", "+++ Assembly: makeImprint: dau:%-12s %s in mother %-12s "
+        printout(lvl, "Geant4Converter", "++ Assembly: makeImprint: dau:%-12s %s in mother %-12s "
                  "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f",
                  node->GetName(), node_is_reflected ? "(REFLECTED)" : "",
 		 mot_vol ? mot_vol->GetName() : "<unknown>",
@@ -926,8 +926,8 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
                                                copy,      // its copy number
                                                checkOverlaps);
       transform.getDecomposition(scale, rot, trans);
-      printout(debugReflections ? ALWAYS : lvl, "Geant4Converter",
-	       "+++ Place %svolume %-12s in mother %-12s "
+      printout(debugReflections||debugPlacements ? ALWAYS : lvl, "Geant4Converter",
+	       "++ Place %svolume %-12s in mother %-12s "
 	       "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f",
 	       node_is_reflected ? "REFLECTED " : "", _v.name(),
 	       mot_vol ? mot_vol->GetName() : "<unknown>",
@@ -939,7 +939,6 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         return info.g4Placements[node] = pvPlaced.first;
       else if ( !node_is_reflected && !pvPlaced.second )
         return info.g4Placements[node] = pvPlaced.first;
-      //G4LogicalVolume* g4refMoth = G4ReflectionFactory::Instance()->GetReflectedLV(g4mot);
       // Now deal with valid pvPlaced.second ...
       if ( node_is_reflected )
         return info.g4Placements[node] = pvPlaced.first;
@@ -1039,8 +1038,8 @@ void* Geant4Converter::handlePlacement2(const std::pair<const TGeoNode*,const TG
                                                copy,      // its copy number
                                                checkOverlaps);
       transform.getDecomposition(scale, rot, trans);
-      printout(debugReflections ? ALWAYS : lvl, "Geant4Converter",
-	       "+++ Place %svolume %-12s in mother %-12s "
+      printout(debugReflections||debugPlacements ? ALWAYS : lvl, "Geant4Converter",
+	       "++ Place %svolume %-12s in mother %-12s "
 	       "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f",
 	       node_is_reflected ? "REFLECTED " : "", _v.name(),
 	       mot_vol ? mot_vol->GetName() : "<unknown>",

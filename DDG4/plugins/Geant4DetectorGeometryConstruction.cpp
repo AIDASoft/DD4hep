@@ -64,15 +64,22 @@ namespace dd4hep {
       /// Write GDML file
       int writeGDML(const char* gdml_output);
       /// Print geant4 volume 
-      int printVolumeObj(const char* vol_path, PlacedVolume pv);
-      /// Print geant4 volume tree
+      int printVolumeObj(const char* vol_path, PlacedVolume pv, int flg);
+      /// Print volume tree with attributes
       int printVolumeTree(const char* vol_path);
+      /// Print volume tree WITHOUT attributes
+      int printVolTree(const char* vol_path);
+      /// Print geant4 volume tree
+      int printG4Tree(const char* vol_path);
       /// Print geant4 volume
       int printVolume(const char* vol_path);
       /// Check geant4 volume
       int checkVolume(const char* vol_path);
       /// Print geant4 material
       int printMaterial(const char* mat_name);
+
+      std::pair<std::string, PlacedVolume> resolve_path(const char* vol_path)   const;
+      void printG4(const std::string& prefix, const G4VPhysicalVolume* g4pv)  const;
 
     public:
       /// Initializing constructor for DDG4
@@ -163,7 +170,7 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   conv.debugPlacements  = m_debugPlacements;
   conv.debugReflections = m_debugReflections;
 
-  ctxt->geometry       = conv.create(world).detach();
+  ctxt->geometry = conv.create(world).detach();
   ctxt->geometry->printLevel = outputLevel();
   g4map.attach(ctxt->geometry);
   G4VPhysicalVolume* w = ctxt->geometry->world();
@@ -181,11 +188,27 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   enableUI();
 }
 
+pair<string, PlacedVolume>
+Geant4DetectorGeometryConstruction::resolve_path(const char* vol_path)  const {
+  string       p   = vol_path;
+  Detector&    det = context()->kernel().detectorDescription();
+  PlacedVolume top = det.world().placement();
+  PlacedVolume pv  = detail::tools::findNode(top, p);
+  if ( !pv.isValid() )    {
+    DetElement de = detail::tools::findElement(det, p);
+    if ( de.isValid() )  {
+      pv = de.placement();
+      p = detail::tools::placementPath(de);
+    }
+  }
+  return make_pair(p,pv);
+}
+
 /// Print geant4 material
 int Geant4DetectorGeometryConstruction::printMaterial(const char* mat_name)  {
   if ( mat_name )   {
-    auto& g4map = Geant4Mapping::instance().data();
-    for ( auto it = g4map.g4Materials.begin(); it != g4map.g4Materials.end(); ++it )  {
+    auto& g4map = Geant4Mapping::instance().data().g4Materials;
+    for ( auto it = g4map.begin(); it != g4map.end(); ++it )  {
       const auto* mat = (*it).second;
       if ( mat->GetName() == mat_name )   {
         const auto* ion = mat->GetIonisation();
@@ -210,57 +233,64 @@ int Geant4DetectorGeometryConstruction::printMaterial(const char* mat_name)  {
 }
 
 /// Print geant4 volume
-int Geant4DetectorGeometryConstruction::printVolumeObj(const char* vol_path, PlacedVolume pv)   {
+int Geant4DetectorGeometryConstruction::printVolumeObj(const char* vol_path, PlacedVolume pv, int flg)   {
   if ( pv.isValid() )   {
     const G4LogicalVolume* vol = 0;
     auto& g4map = Geant4Mapping::instance().data();
     auto pit = g4map.g4Placements.find(pv.ptr());
     auto vit = g4map.g4Volumes.find(pv.volume());
+    warning("+++ printVolume: %s", vol_path);
     if ( vit != g4map.g4Volumes.end() )   {
       vol = (*vit).second;
       auto* sol = vol->GetSolid();
       const auto* mat = vol->GetMaterial();
       const auto* ion = mat->GetIonisation();
       Solid sh  = pv.volume().solid();
-      printP2("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-      printP2("+++  Dump of GEANT4 solid: %s", vol_path);
-      cout << mat;
-      if ( ion )   {
-        cout << "          MEE:  ";
-        cout << setprecision(12);
-        cout << ion->GetMeanExcitationEnergy()/CLHEP::eV;
-        cout << " [eV]";
+      if ( flg )  {
+	printP2("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+	printP2(  "+++  Dump of GEANT4 solid: %s", vol_path);
       }
-      else
-        cout << "          MEE: UNKNOWN";
-      cout << endl << *sol;
-      printP2("+++  Dump of ROOT   solid: %s", vol_path);
-      sh->InspectShape();
-      if ( sh->IsA() == TGeoScaledShape::Class() )    {
-        TGeoScaledShape* scaled = (TGeoScaledShape*)sh.ptr();
-        const Double_t* scale = scaled->GetScale()->GetScale();
-        double dot = scale[0]*scale[1]*scale[2];
-        printP2("+++ TGeoScaledShape: %8.3g  %8.3g  %8.3g  [%s]", scale[0], scale[1], scale[2],
-                dot > 0e0 ? "RIGHT handed" : "LEFT handed");
+      if ( flg )   {
+	cout << mat;
+	if ( ion )   {
+	  cout << "          MEE:  ";
+	  cout << setprecision(12);
+	  cout << ion->GetMeanExcitationEnergy()/CLHEP::eV;
+	  cout << " [eV]";
+	}
+	else
+	  cout << "          MEE: UNKNOWN";
       }
-      else if ( pit != g4map.g4Placements.end() )   {
-        const G4VPhysicalVolume* pl = (*pit).second;
-        const G4RotationMatrix* rot = pl->GetRotation();
-        const G4ThreeVector& tr = pl->GetTranslation();
-        G4Transform3D transform(rot ? *rot : G4RotationMatrix(), tr);
-        HepGeom::Scale3D  sc;
-        HepGeom::Rotate3D rr;
-        G4Translate3D     tt;
-        transform.getDecomposition(sc,rr,tt);
-        double dot = sc(0,0)*sc(1,1)*sc(2,2);
-        printP2("+++ TGeoShape:       %8.3g  %8.3g  %8.3g  [%s]", sc(0,0), sc(1,1), sc(2,2),
-                dot > 0e0 ? "RIGHT handed" : "LEFT handed");
+      if ( flg )   {
+	cout << endl << *sol;
+	printP2("+++  Dump of ROOT   solid: %s", vol_path);
+	sh->InspectShape();
+	if ( sh->IsA() == TGeoScaledShape::Class() )    {
+	  TGeoScaledShape* scaled = (TGeoScaledShape*)sh.ptr();
+	  const Double_t* scale = scaled->GetScale()->GetScale();
+	  double dot = scale[0]*scale[1]*scale[2];
+	  printP2("+++ TGeoScaledShape: %8.3g  %8.3g  %8.3g  [%s]", scale[0], scale[1], scale[2],
+		  dot > 0e0 ? "RIGHT handed" : "LEFT handed");
+	}
+	else if ( pit != g4map.g4Placements.end() )   {
+	  const G4VPhysicalVolume* pl = (*pit).second;
+	  const G4RotationMatrix* rot = pl->GetRotation();
+	  const G4ThreeVector& tr = pl->GetTranslation();
+	  G4Transform3D transform(rot ? *rot : G4RotationMatrix(), tr);
+	  HepGeom::Scale3D  sc;
+	  HepGeom::Rotate3D rr;
+	  G4Translate3D     tt;
+	  transform.getDecomposition(sc,rr,tt);
+	  double dot = sc(0,0)*sc(1,1)*sc(2,2);
+	  printP2("+++ TGeoShape:       %8.3g  %8.3g  %8.3g  [%s]", sc(0,0), sc(1,1), sc(2,2),
+		  dot > 0e0 ? "RIGHT handed" : "LEFT handed");
+	}
+	const TGeoMatrix* matrix = pv->GetMatrix();
+	printP2("+++ TGeoMatrix:      %s",
+		matrix->TestBit(TGeoMatrix::kGeoReflection) ? "LEFT handed" : "RIGHT handed");        
+	printP2("+++ Shape: %s  cubic volume: %8.3g mm^3  area: %8.3g mm^2",
+		sol->GetName().c_str(), sol->GetCubicVolume(), sol->GetSurfaceArea());
       }
-      const TGeoMatrix* matrix = pv->GetMatrix();
-      printP2("+++ TGeoMatrix:      %s",
-              matrix->TestBit(TGeoMatrix::kGeoReflection) ? "LEFT handed" : "RIGHT handed");        
-      printP2("+++ Shape: %s  cubic volume: %8.3g mm^3  area: %8.3g mm^2",
-              sol->GetName().c_str(), sol->GetCubicVolume(), sol->GetSurfaceArea());
       return 1;
     }
     else   {
@@ -271,7 +301,7 @@ int Geant4DetectorGeometryConstruction::printVolumeObj(const char* vol_path, Pla
         for(Int_t i=0; i < v->GetNdaughters(); ++i)   {
           TGeoNode*   dau_nod = v->GetNode(i);
           string p = vol_path + string("/") + dau_nod->GetName();
-          printVolumeObj(p.c_str(), dau_nod);
+          printVolumeObj(p.c_str(), dau_nod, flg);
         }
         return 0;
       }
@@ -286,10 +316,10 @@ int Geant4DetectorGeometryConstruction::printVolumeObj(const char* vol_path, Pla
 /// Print geant4 volume
 int Geant4DetectorGeometryConstruction::printVolume(const char* vol_path)  {
   if ( vol_path )   {
-    Detector&    det = context()->kernel().detectorDescription();
-    PlacedVolume top = det.world().placement();
-    PlacedVolume pv  = detail::tools::findNode(top, vol_path);
-    return printVolumeObj(vol_path, pv);
+    auto [p, pv] = resolve_path(vol_path);
+    if ( pv.isValid() )    {
+      return printVolumeObj(vol_path, pv, ~0x0);
+    }
   }
   warning("+++ printVolume: Property VolumePath not set. [Ignored]");
   return 0;
@@ -298,36 +328,52 @@ int Geant4DetectorGeometryConstruction::printVolume(const char* vol_path)  {
 /// Print geant4 volume
 int Geant4DetectorGeometryConstruction::printVolumeTree(const char* vol_path)  {
   if ( vol_path )   {
-    string       p   = vol_path;
-    Detector&    det = context()->kernel().detectorDescription();
-    PlacedVolume top = det.world().placement();
-    PlacedVolume pv  = detail::tools::findNode(top, vol_path);
-    if ( printVolumeObj(p.c_str(), pv) )     {
-      TGeoVolume* vol = pv->GetVolume();
-      for(Int_t i=0; i < vol->GetNdaughters(); ++i)   {
-        PlacedVolume dau_pv(vol->GetNode(i));
-        //TGeoMatrix* tr = d->GetMatrix();
-        string path = (p + "/") + dau_pv.name();
-        warning("+++ printVolume: %s  -> %s", dau_pv.name(), p.c_str());
-        if ( printVolumeTree(path.c_str()) )     {
-        }
+    auto [p, pv] = resolve_path(vol_path);
+    if ( pv.isValid() )    {
+      if ( printVolumeObj(p.c_str(), pv, ~0x0) )     {
+	TGeoVolume* vol = pv->GetVolume();
+	for(Int_t i=0; i < vol->GetNdaughters(); ++i)   {
+	  PlacedVolume dau_pv(vol->GetNode(i));
+	  string path = (p + "/") + dau_pv.name();
+	  if ( printVolumeTree(path.c_str()) )     {
+	  }
+	}
       }
+      return 1;
     }
   }
-  warning("+++ printVolume: Property VolumePath not set. [Ignored]");
+  warning("+++ printVolume: Could not access Volume/DetElement '%s'", vol_path ? vol_path : "UNKNOWN");
+  return 0;
+}
+
+int Geant4DetectorGeometryConstruction::printVolTree(const char* vol_path)  {
+  if ( vol_path )   {
+    auto [p, pv] = resolve_path(vol_path);
+    if ( pv.isValid() )    {
+      if ( printVolumeObj(p.c_str(), pv, 0) )     {
+	TGeoVolume* vol = pv->GetVolume();
+	for(Int_t i=0; i < vol->GetNdaughters(); ++i)   {
+	  PlacedVolume dau_pv(vol->GetNode(i));
+	  string path = (p + "/") + dau_pv.name();
+	  if ( printVolTree(path.c_str()) )     {
+	  }
+	}
+      }
+      return 1;
+    }
+  }
+  warning("+++ printVolume: Could not access Volume/DetElement '%s'", vol_path ? vol_path : "UNKNOWN");
   return 0;
 }
 
 /// Check geant4 volume
 int Geant4DetectorGeometryConstruction::checkVolume(const char* vol_path)  {
   if ( vol_path )   {
-    Detector&    det = context()->kernel().detectorDescription();
-    PlacedVolume top = det.world().placement();
-    PlacedVolume pv  = detail::tools::findNode(top, vol_path);
+    auto [p, pv] = resolve_path(vol_path);
     if ( pv.isValid() )   {
-      auto& g4map = Geant4Mapping::instance().data();
-      auto it = g4map.g4Volumes.find(pv.volume());
-      if ( it != g4map.g4Volumes.end() )   {
+      auto& g4map = Geant4Mapping::instance().data().g4Volumes;
+      auto it = g4map.find(pv.volume());
+      if ( it != g4map.end() )   {
         const G4LogicalVolume* vol = (*it).second;
         auto* g4_sol = vol->GetSolid();
         Box   rt_sol = pv.volume().solid();
@@ -379,6 +425,32 @@ int Geant4DetectorGeometryConstruction::writeGDML(const char* output)  {
   return 0;
 }
 
+void Geant4DetectorGeometryConstruction::printG4(const string& prefix, const G4VPhysicalVolume* g4pv)    const   {
+  string path = prefix + "/";
+  printP2(  "+++  GEANT4 volume: %s", prefix.c_str());
+  auto* g4v = g4pv->GetLogicalVolume();
+  for(size_t i=0, n=g4v->GetNoDaughters(); i<n; ++i)    {
+    auto* dau = g4v->GetDaughter(i);
+    printG4(path + dau->GetName(), dau);
+  }
+}
+
+int Geant4DetectorGeometryConstruction::printG4Tree(const char* vol_path)  {
+  if ( vol_path )   {
+    auto [p, pv] = resolve_path(vol_path);
+    if ( pv.isValid() )    {
+      auto& g4map = Geant4Mapping::instance().data().g4Placements;
+      auto it = g4map.find(pv);
+      if ( it != g4map.end() )   {
+	printG4(p, (*it).second);
+      }
+      return 1;
+    }
+  }
+  warning("+++ printVolume: Could not access Volume/DetElement '%s'", vol_path ? vol_path : "UNKNOWN");
+  return 0;
+}
+
 /// Install command control messenger to write GDML file from command prompt.
 void Geant4DetectorGeometryConstruction::installCommandMessenger()   {
   this->Geant4DetectorConstruction::installCommandMessenger();
@@ -387,7 +459,11 @@ void Geant4DetectorGeometryConstruction::installCommandMessenger()   {
                      Callback(this).make(&Geant4DetectorGeometryConstruction::writeGDML),1);
   m_control->addCall("printVolume", "Print Geant4 volume properties [uses argument]",
                      Callback(this).make(&Geant4DetectorGeometryConstruction::printVolume),1);
-  m_control->addCall("printVolumeTree", "Print Geant4 volume tree with properties [uses argument]",
+  m_control->addCall("printTree",   "Print volume tree WITHOUT properties [uses argument]",
+                     Callback(this).make(&Geant4DetectorGeometryConstruction::printVolTree),1);
+  m_control->addCall("printG4Tree",   "Print Geant4 volume tree [uses argument]",
+                     Callback(this).make(&Geant4DetectorGeometryConstruction::printG4Tree),1);
+  m_control->addCall("printVolumeTree", "Print volume tree with properties [uses argument]",
                      Callback(this).make(&Geant4DetectorGeometryConstruction::printVolumeTree),1);
   m_control->addCall("checkVolume", "Check Geant4 volume properties [uses argument]",
                      Callback(this).make(&Geant4DetectorGeometryConstruction::checkVolume),1);
