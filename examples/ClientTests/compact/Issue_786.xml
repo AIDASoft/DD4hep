@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="30*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <display>
+    <vis name="Shape0_vis" alpha="0.75" r="0"   g="1"   b="1"   showDaughters="true" visible="true"/>
+    <vis name="Shape1_vis" alpha="0.75" r="1"   g="0"   b="0"   showDaughters="true" visible="true"/>
+    <vis name="Shape2_vis" alpha="0.75" r="0"   g="1"   b="0"   showDaughters="true" visible="true"/>
+    <vis name="Shape3_vis" alpha="0.75" r="0"   g="0"   b="1"   showDaughters="true" visible="true"/>
+    <vis name="Shape4_vis" alpha="0.75" r="1"   g="1"   b="0"   showDaughters="true" visible="true"/>
+    <vis name="Shape5_vis" alpha="0.75" r="1"   g="0"   b="1"   showDaughters="true" visible="true"/>
+    <vis name="Shape_grey" alpha="0.5"  r="0.0" g="0.4" b="0.4" showDaughters="true" visible="true"/>
+  </display>
+
+  <detectors>
+    <detector id="1" name="Issue" type="Issue_786" readout="IssueHits" vis="Shape_grey"/>
+  </detectors>
+  
+  <readouts>
+    <readout name="IssueHits">
+      <id>system:8,node:3,parent:3,container:4,child:2</id> 
+    </readout>
+  </readouts>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="2*m"
+	   outer_radius="3*m">
+    </field>
+  </fields>
+
+</lccdd>
