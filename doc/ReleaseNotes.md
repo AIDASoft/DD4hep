@@ -1,3 +1,34 @@
+# v01-16
+
+* 2021-03-02 Markus FRANK ([PR#787](https://github.com/AIDASoft/DD4hep/pull/787))
+  - Resolves #786. Also add an example to reproduce the Fix.
+  - Add protection in Detector object against registering DetElements without placement
+  - Modernize loop handling according to C++ 17 standards
+
+* 2021-02-15 Andre Sailer ([PR#783](https://github.com/AIDASoft/DD4hep/pull/783))
+  - Adapt to new ROOT mechanism for switching the unit system.
+    Units can be switched now multiple times provided the units are unlocked in the TGeoManager.
+    See TGeoManager::LockDefaultUnits(Bool_t new_value).
+    This is only available for ROOT versions >= 6.22.08
+  - Improve examples/Conditions. Allow for more complex dependencies. Not enabled by default.
+
+* 2021-01-31 Markus FRANK ([PR#779](https://github.com/AIDASoft/DD4hep/pull/779))
+  - Propagate changes in ComponentCast to the EDM module
+
+* 2021-01-30 Markus FRANK ([PR#778](https://github.com/AIDASoft/DD4hep/pull/778))
+  - Move the header DD4hep/detail/Grammar_parsed.h to DD4hep/GrammarParsed.h
+  - Move the header DD4hep/detail/Grammar_unparsed.h to DD4hep/GrammarUnparsed.h
+  - Try to improve type agnostic ABI cast. Works for down casts only.
+
+* 2021-01-08 Markus FRANK ([PR#772](https://github.com/AIDASoft/DD4hep/pull/772))
+  - This is the first release prepared to use Geant4 units (mm,ns,MeV). This compilation mode can be steered by a cmake flag: `-DDD4HEP_USE_GEANT4_UNITS=ON`. Once set, the flag is automatically propagated to depending projects in the generated `DD4hepConfig.cmake`. It programs TGeo to use the Geant4 units system. The unit system is applied also to depending quantities like interaction lengths etc.
+  - Update some tests and ensure compatibility in the checks/reference files for both unit system. There is one caveat: Mesh-creation of shapes depends to some degree on the unit system, because mesh points are  removed depending on a tolerance value which is the same for both systems.
+  - A fix had to be applied to propagate the flag `DD4HEP_BUILD_DEBUG` to depending projects.  This flag affects some object layouts and hence MUST be applied also to depending projects.
+  - Remove inclusions of `Plugins.h` from being processed by rootcling. Plugins.h uses `#include <any>`, which cannot be processed.
+
+* 2020-12-18 Marko Petric ([PR#771](https://github.com/AIDASoft/DD4hep/pull/771))
+  - Expand list of cmake versions that have bug in detecting python version  (see AIDASoft/podio#162)
+
 # v01-15
 
 * 2020-12-08 Frank Gaede ([PR#740](https://github.com/AIDASoft/DD4hep/pull/740))
