@@ -55,7 +55,7 @@ FOREACH(DDExample IN LISTS DD4HEP_EXAMPLES)
   add_subdirectory(${DDExample})
 ENDFOREACH()
 
-add_subdirectory(DDUpgrade)
+###add_subdirectory(DDUpgrade)
 
 if(APPLE)
   SET ( ENV{DD4HEP_LIBRARY_PATH} $ENV{DYLD_LIBRARY_PATH} )
