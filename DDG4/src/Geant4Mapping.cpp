@@ -84,8 +84,9 @@ Geant4VolumeManager Geant4Mapping::volumeManager() const {
 PlacedVolume Geant4Mapping::placement(const G4VPhysicalVolume* node) const {
   checkValidity();
   const Geant4GeometryMaps::PlacementMap& pm = m_dataPtr->g4Placements;
-  for (Geant4GeometryMaps::PlacementMap::const_iterator i = pm.begin(); i != pm.end(); ++i)
-    if ((*i).second == node)
-      return PlacedVolume((*i).first);
+  for( const auto& entry : pm )  {
+    if ( entry.second == node )
+      return PlacedVolume(entry.first);
+  }
   return PlacedVolume(0);
 }

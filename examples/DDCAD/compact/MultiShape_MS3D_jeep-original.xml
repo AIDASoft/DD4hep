@@ -1,0 +1,56 @@
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+
+  <includes>
+    <gdmlFile ref="../../ClientTests/compact/CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_OBJ" type="DD4hep_TestShape_Creator">
+      <check>
+        <shape type="CAD_MultiVolume" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/MS3D/jeep1.ms3d" unit="cm">
+
+          <!--      Envelope definition
+                    This is optional: By default the child volumes are placed in an assembly.
+          -->
+          <envelope name="Garage" material="Air" vis="Shape_grey">
+            <shape type="Box" dx="10*cm" dy="10*cm" dz="10*cm"/>
+          </envelope>
+
+          <!--      Transformation defining the positioning of all sub-volumes within the envelope  -->
+          <position x="-5*cm" y="0" z="0"/>
+          <rotation x="0" y="0" z="-pi/2*rad"/>
+
+          <!--      These are the 4 wheels  -->
+          <volume id="0" name="Wheel1" material="Iron" vis="Shape4_vis">
+          </volume>
+          <volume id="1" name="Wheel2" material="Iron" vis="Shape4_vis">
+          </volume>
+          <volume id="2" name="Wheel3" material="Iron" vis="Shape4_vis">
+          </volume>
+          <volume id="3" name="Wheel4" material="Iron" vis="Shape4_vis">
+          </volume>
+
+          <!--      This is the rest of the jeep  -->
+          <volume id="4" name="E" material="Iron" vis="Shape4_vis">
+          </volume>
+          <volume id="5" name="F" material="Iron" vis="Shape4_vis">
+          </volume>
+          <volume id="6" name="C" material="Iron" vis="Shape4_vis">
+          </volume>
+        </shape>
+      </check>
+
+    </detector>
+  </detectors>
+</lccdd>
