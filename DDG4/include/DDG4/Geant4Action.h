@@ -195,66 +195,56 @@ namespace dd4hep {
         }
         /// NON-CONST actions
         template <typename R, typename Q> void operator()(R (Q::*pmf)()) {
-          if (m_v.empty())
-            return;
-          for (typename _V::iterator i = m_v.begin(); i != m_v.end(); ++i)
-            ((*i)->*pmf)();
+          if ( !m_v.empty() )
+	    for (const auto& o : m_v)
+	      (o->*pmf)();
         }
         template <typename R, typename Q, typename A0> void operator()(R (Q::*pmf)(A0), A0 a0) {
-          if (m_v.empty())
-            return;
-          for (typename _V::iterator i = m_v.begin(); i != m_v.end(); ++i)
-            ((*i)->*pmf)(a0);
+          if ( !m_v.empty() )
+	    for (const auto& o : m_v)
+	      (o->*pmf)(a0);
         }
         template <typename R, typename Q, typename A0, typename A1> void operator()(R (Q::*pmf)(A0, A1), A0 a0, A1 a1) {
-          if (m_v.empty())
-            return;
-          for (typename _V::iterator i = m_v.begin(); i != m_v.end(); ++i)
-            ((*i)->*pmf)(a0, a1);
+          if ( !m_v.empty() )
+	    for (const auto& o : m_v)
+	      (o->*pmf)(a0, a1);
         }
         /// CONST actions
         template <typename R, typename Q> void operator()(R (Q::*pmf)() const) const {
-          if (m_v.empty())
-            return;
-          for (typename _V::const_iterator i = m_v.begin(); i != m_v.end(); ++i)
-            ((*i)->*pmf)();
+          if ( !m_v.empty() )
+	    for (const auto& o : m_v)
+	      (o->*pmf)();
         }
         template <typename R, typename Q, typename A0> void operator()(R (Q::*pmf)(A0) const, A0 a0) const {
-          if (m_v.empty())
-            return;
-          for (typename _V::const_iterator i = m_v.begin(); i != m_v.end(); ++i)
-            ((*i)->*pmf)(a0);
+          if ( !m_v.empty() )
+	    for (const auto& o : m_v)
+	      (o->*pmf)(a0);
         }
-        template <typename R, typename Q, typename A0, typename A1> void operator()(R (Q::*pmf)(A0, A1) const, A0 a0,
-                                                                                    A1 a1) const {
-          if (m_v.empty())
-            return;
-          for (typename _V::const_iterator i = m_v.begin(); i != m_v.end(); ++i)
-            ((*i)->*pmf)(a0, a1);
+        template <typename R, typename Q, typename A0, typename A1> void operator()(R (Q::*pmf)(A0, A1) const, A0 a0, A1 a1) const {
+	  if ( !m_v.empty() )
+	    for (const auto& o : m_v)
+	      (o->*pmf)(a0, a1);
         }
         /// CONST filters
         template <typename Q> bool filter(bool (Q::*pmf)() const) const {
-          if (!m_v.empty())
-            return true;
-          for (typename _V::const_iterator i = m_v.begin(); i != m_v.end(); ++i)
-            if (!((*i)->*pmf)())
-              return false;
+          if ( !m_v.empty() )
+	    for (const auto& o : m_v)
+	      if ( !(o->*pmf)() )
+		return false;
           return true;
         }
         template <typename Q, typename A0> bool filter(bool (Q::*pmf)(A0) const, A0 a0) const {
-          if (m_v.empty())
-            return true;
-          for (typename _V::const_iterator i = m_v.begin(); i != m_v.end(); ++i)
-            if (!((*i)->*pmf)(a0))
-              return false;
+          if ( !m_v.empty() )
+	    for (const auto& o : m_v)
+	      if ( !(o->*pmf)(a0) )
+		return false;
           return true;
         }
         template <typename Q, typename A0, typename A1> bool filter(bool (Q::*pmf)(A0, A1) const, A0 a0, A1 a1) const {
-          if (m_v.empty())
-            return true;
-          for (typename _V::const_iterator i = m_v.begin(); i != m_v.end(); ++i)
-            if (!((*i)->*pmf)(a0, a1))
-              return false;
+          if ( !m_v.empty() )
+	    for (const auto& o : m_v)
+	      if ( !(o->*pmf)(a0,a1) )
+		return false;
           return true;
         }
       };

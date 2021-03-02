@@ -98,8 +98,7 @@ Geant4ParticleHandler& Geant4ParticleHandler::operator=(const Geant4ParticleHand
 bool Geant4ParticleHandler::adopt(Geant4Action* action)    {
   if ( action )   {
     if ( !m_userHandler )  {
-      Geant4UserParticleHandler* h = dynamic_cast<Geant4UserParticleHandler*>(action);
-      if ( h )  {
+      if ( Geant4UserParticleHandler* h = dynamic_cast<Geant4UserParticleHandler*>(action) )  {
         m_userHandler = h;
         m_userHandler->addRef();
         return true;
@@ -357,10 +356,10 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     m_equivalentTracks[g4_id] = pid;
     // Need to find the last stored particle and OR this particle's mask
     // with the mask of the last stored particle
-    TrackEquivalents::const_iterator iequiv, iend = m_equivalentTracks.end();
+    auto iend = m_equivalentTracks.end(), iequiv=m_equivalentTracks.end();
     ParticleMap::iterator ip;
     for(ip=m_particleMap.find(pid); ip == m_particleMap.end(); ip=m_particleMap.find(pid))  {
-      if ((iequiv=m_equivalentTracks.find(pid)) == iend) break;  // ERROR
+      if (iequiv=m_equivalentTracks.find(pid); iequiv == iend) break;  // ERROR
       pid = (*iequiv).second;
     }
     if ( ip != m_particleMap.end() )
@@ -615,8 +614,7 @@ int Geant4ParticleHandler::recombineParents()  {
       //continue;
     }
     else if ( mask.isSet(G4PARTICLE_KEEP_PROCESS) )  {
-      ParticleMap::iterator ip = m_particleMap.find(p->g4Parent);
-      if ( ip != m_particleMap.end() )   {
+      if(ParticleMap::iterator ip = m_particleMap.find(p->g4Parent); ip != m_particleMap.end() )   {
         Particle* parent_part = (*ip).second;
         PropertyMask parent_mask(parent_part->reason);
         if ( parent_mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )   {
@@ -631,10 +629,9 @@ int Geant4ParticleHandler::recombineParents()  {
     /// Remove this track from the list and also do the cleanup in the parent's children list
     if ( remove_me )  {
       int g4_id = (*i).first;
-      ParticleMap::iterator ip = m_particleMap.find(p->g4Parent);
       remove.insert(g4_id);
       m_equivalentTracks[g4_id] = p->g4Parent;
-      if ( ip != m_particleMap.end() )   {
+      if(ParticleMap::iterator ip = m_particleMap.find(p->g4Parent); ip != m_particleMap.end() )   {
         Particle* parent_part = (*ip).second;
         PropertyMask(parent_part->reason).set(mask.value());
         parent_part->steps += p->steps;
@@ -646,9 +643,8 @@ int Geant4ParticleHandler::recombineParents()  {
       }
     }
   }
-  for(set<int>::const_iterator r=remove.begin(); r!=remove.end();++r)  {
-    ParticleMap::iterator ir = m_particleMap.find(*r);
-    if ( ir != m_particleMap.end() )  {
+  for( int r : remove )  {
+    if( auto ir = m_particleMap.find(r); ir != m_particleMap.end() )  {
       (*ir).second->release();
       m_particleMap.erase(ir);
     }
@@ -661,15 +657,15 @@ void Geant4ParticleHandler::checkConsistency()  const   {
   int num_errors = 0;
 
   /// First check the consistency of the particle map itself
-  for(ParticleMap::const_iterator j, i=m_particleMap.begin(); i!=m_particleMap.end(); ++i)  {
-    Geant4ParticleHandle p((*i).second);
+  for(const auto [idx, particle] : m_particleMap )  {
+    Geant4ParticleHandle p(particle);
     PropertyMask mask(p->reason);
     PropertyMask status(p->status);
     set<int>& daughters = p->daughters;
+    ParticleMap::const_iterator j;
     // For all particles, the set of daughters must be contained in the record.
-    for(set<int>::const_iterator id=daughters.begin(); id!=daughters.end(); ++id)   {
-      int id_dau = *id;
-      if ( (j=m_particleMap.find(id_dau)) == m_particleMap.end() )   {
+    for( int id_dau : daughters )   {
+      if ( j=m_particleMap.find(id_dau); j == m_particleMap.end() )   {
         ++num_errors;
         error("+++ Particle:%d Daughter %d is not in particle map!",p->id,id_dau);
       }
@@ -677,12 +673,11 @@ void Geant4ParticleHandler::checkConsistency()  const   {
     // We assume that particles from the generator have consistent parents
     // For all other particles except the primaries, the parent must be contained in the record.
     if ( !mask.isSet(G4PARTICLE_PRIMARY) && !status.anySet(G4PARTICLE_GEN_STATUS) )  {
-      TrackEquivalents::const_iterator eq_it = m_equivalentTracks.find(p->g4Parent);
       bool in_map = false, in_parent_list = false;
-      int parent_id = -1;
-      if ( eq_it != m_equivalentTracks.end() )   {
+      int  parent_id = -1;
+      if( auto eq_it=m_equivalentTracks.find(p->g4Parent); eq_it != m_equivalentTracks.end() )   {
         parent_id = (*eq_it).second;
-        in_map = (j=m_particleMap.find(parent_id)) != m_particleMap.end();
+        in_map    = (j=m_particleMap.find(parent_id)) != m_particleMap.end();
         in_parent_list = p->parents.find(parent_id) != p->parents.end();
       }
       if ( !in_map || !in_parent_list )  {
@@ -690,8 +685,8 @@ void Geant4ParticleHandler::checkConsistency()  const   {
         parent_list[0] = 0;
         ++num_errors;
         p.dumpWithMomentum(ERROR,name(),"INCONSISTENCY");
-        for(set<int>::const_iterator ip=p->parents.begin(); ip!=p->parents.end();++ip)
-          ::snprintf(parent_list+strlen(parent_list),sizeof(parent_list)-strlen(parent_list),"%d ",*ip);
+        for( int ip : p->parents )
+          ::snprintf(parent_list+strlen(parent_list),sizeof(parent_list)-strlen(parent_list),"%d ",ip);
         error("+++ Particle:%d Parent %d (G4id:%d)  In record:%s In parent list:%s [%s]",
               p->id,parent_id,p->g4Parent,yes_no(in_map),yes_no(in_parent_list),parent_list);
       }
@@ -713,7 +708,6 @@ void Geant4ParticleHandler::setVertexEndpointBit() {
     if( p->parents.empty() ) {
       continue;
     }
-
     Geant4Particle *parent(pm[ *p->parents.begin() ]);
     const double X( parent->vex - p->vsx );
     const double Y( parent->vey - p->vsy );
