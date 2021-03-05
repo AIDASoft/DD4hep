@@ -391,6 +391,13 @@ getRelevant(set<int>& visited,
       or (primaryConfig.m_rejectPDGs.count(abs(p->pdgID)) != 0) // quarks, gluon, "strings", W, Z etc.
       or (isProperTimeZero and p.definition()->GetPDGStable() ) // initial state electrons, etc.
       or (isProperTimeZero and primaryConfig.m_zeroTimePDGs.count(abs(p->pdgID)) != 0 ) ; // charged 'documentation' leptons, e.g. in lepton pairs w/ FSR
+    printout(dd4hep::DEBUG, "Input",
+	     "Checking rejection: PDG(%-*d), Definition(%s), isProperTimeZero(%s), stable(%s), reject(%s)",
+	     8, p->pdgID,
+	     p.definition() ? "true" : "false",
+	     isProperTimeZero ? "true" : "false",
+	     (bool(p.definition()) ? p.definition()->GetPDGStable() : false)  ? "true" : "false",
+	     rejectParticle ? "true" : "false");
     if (not rejectParticle) {
       map<int,G4PrimaryParticle*>::iterator ip4 = prim.find(p->id);
       G4PrimaryParticle* p4 = (ip4 == prim.end()) ? 0 : (*ip4).second;
