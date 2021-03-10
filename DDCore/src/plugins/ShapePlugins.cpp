@@ -405,9 +405,11 @@ static Handle<TObject> create_TessellatedSolid(Detector&, xml_h element)   {
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   for ( xml_coll_t facet(element, _U(facet)); facet; ++facet )   {
     xml_dim_t f(facet);
-    int i0 = f.attr<int>(_U(v0)), i1 = f.attr<int>(_U(v1)), i2 = f.attr<int>(_U(v2));
+    unsigned int i0 = f.attr<unsigned int>(_U(v0));
+    unsigned int i1 = f.attr<unsigned int>(_U(v1));
+    unsigned int i2 = f.attr<unsigned int>(_U(v2));
     if ( f.hasAttr(_U(v3)) )   {
-      int i3 = f.attr<int>(_U(v3));
+      unsigned int i3 = f.attr<unsigned int>(_U(v3));
       solid.addFacet(vertices[i0], vertices[i1], vertices[i2], vertices[i3]);
     }
     else   {

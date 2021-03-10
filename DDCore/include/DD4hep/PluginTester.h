@@ -38,8 +38,8 @@ namespace dd4hep {
 
     /// Defintiion of the extension entry
     struct Entry {
-      destruct_t destruct;
-      int id;
+      destruct_t destruct = nullptr;
+      int id = -1;
     };
     typedef std::map<const std::type_info*, Entry> ExtensionMap;
 
