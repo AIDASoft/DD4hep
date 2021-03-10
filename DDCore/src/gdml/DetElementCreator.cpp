@@ -226,13 +226,21 @@ DetElementCreator::~DetElementCreator()  {
   printout(INFO,"",str.str().c_str());
   char volid[32];
   for(auto& p : all_placements )  {
-    PlacedVolume place = p.first;
-    Volume vol = place.volume();
-    ::snprintf(volid,sizeof(volid),"Lv%d", p.second.first);
-    printout(DEBUG,pref, "DetElementCreator: ++ Set volid (%-24s): %-6s = %3d  -> %s  (%p)",
-             vol.isSensitive() ? vol.sensitiveDetector().name() : "Not Sensitive",
-             volid, p.second.second, place.name(), place.ptr());
-    place.addPhysVolID(volid, p.second.second);
+    try  {
+      PlacedVolume place = p.first;
+      Volume vol = place.volume();
+      ::snprintf(volid,sizeof(volid),"Lv%d", p.second.first);
+      printout(DEBUG,pref, "DetElementCreator: ++ Set volid (%-24s): %-6s = %3d  -> %s  (%p)",
+	       vol.isSensitive() ? vol.sensitiveDetector().name() : "Not Sensitive",
+	       volid, p.second.second, place.name(), place.ptr());
+      place.addPhysVolID(volid, p.second.second);
+    }
+    catch(const exception& e)   {
+      except(pref, "DetElementCreator: Exception on destruction: %s", e.what());
+    }
+    catch(...)   {
+      except(pref, "DetElementCreator: UNKNOWN Exception on destruction.");
+    }
   }
   printout(ALWAYS, pref, "DetElementCreator: ++ Instrumented %ld subdetectors with %d "
            "DetElements %d sensitives out of %d volumes and %ld sensitive placements.",

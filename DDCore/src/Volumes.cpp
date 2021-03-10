@@ -817,51 +817,56 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
   if ( attr.isValid() ) {
     VisAttr::Object* vis = attr.data<VisAttr::Object>();
     TColor* col = vis->color;
-    int draw_style = vis->drawingStyle;
-    int line_style = vis->lineStyle;
-    int col_num    = col->GetNumber();
-    int col_tr_num = vis->colortr->GetNumber();
-    m_element->SetVisibility(vis->visible ? kTRUE : kFALSE);
-    m_element->SetVisContainers(kTRUE);
-    m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
-    printout(DEBUG,"setVisAttributes",
-             "Set color %3d transparent(alpha:%.3f): %3d [%02X,%02X,%02X] DrawingStyle:%9s LineStyle:%6s for volume %s",
-             col_num, vis->alpha, col_tr_num,
-             col ? int(255*col->GetRed())   : 0xFF,
-             col ? int(255*col->GetGreen()) : 0xFF,
-             col ? int(255*col->GetBlue())  : 0xFF,
-             draw_style == VisAttr::SOLID ? "Solid" : "Wireframe",
-             line_style == VisAttr::SOLID ? "Solid" : "Dashed",
-             name()
-             );
-    m_element->SetLineWidth(10);
-    m_element->SetLineColor(col_num);
-    m_element->SetFillColor(col_tr_num);
-    if (draw_style == VisAttr::SOLID) {
-      m_element->SetFillStyle(1001);   // Root: solid
+    if ( col )   {
+      int draw_style = vis->drawingStyle;
+      int line_style = vis->lineStyle;
+      int col_num    = col->GetNumber();
+      int col_tr_num = vis->colortr->GetNumber();
+      m_element->SetVisibility(vis->visible ? kTRUE : kFALSE);
+      m_element->SetVisContainers(kTRUE);
+      m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
+      printout(DEBUG,"setVisAttributes",
+	       "Set color %3d transparent(alpha:%.3f): %3d [%02X,%02X,%02X] DrawingStyle:%9s LineStyle:%6s for volume %s",
+	       col_num, vis->alpha, col_tr_num,
+	       int(255*col->GetRed()),
+	       int(255*col->GetGreen()),
+	       int(255*col->GetBlue()),
+	       draw_style == VisAttr::SOLID ? "Solid" : "Wireframe",
+	       line_style == VisAttr::SOLID ? "Solid" : "Dashed",
+	       name()
+	       );
+      m_element->SetLineWidth(10);
+      m_element->SetLineColor(col_num);
+      m_element->SetFillColor(col_tr_num);
+      if (draw_style == VisAttr::SOLID) {
+	m_element->SetFillStyle(1001);   // Root: solid
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
-      // As suggested by Valentin Volkl https://sft.its.cern.ch/jira/browse/DDFORHEP-20
-      //
-      // According to https://root.cern.ch/phpBB3/viewtopic.php?t=2309#p66013
-      // a transparency>50 will make a volume invisible in the normal pad.
-      // Hence: possibly restrict transparency to a maximum of 50.
-      //        but let's see first how this behaves.
-      m_element->SetTransparency((1.0-vis->alpha)*100);
+	// As suggested by Valentin Volkl https://sft.its.cern.ch/jira/browse/DDFORHEP-20
+	//
+	// According to https://root.cern.ch/phpBB3/viewtopic.php?t=2309#p66013
+	// a transparency>50 will make a volume invisible in the normal pad.
+	// Hence: possibly restrict transparency to a maximum of 50.
+	//        but let's see first how this behaves.
+	m_element->SetTransparency((1.0-vis->alpha)*100);
 #endif
+      }
+      else {
+	printout(DEBUG,"setVisAttributes","Set to wireframe vis:%s",name());
+	m_element->SetLineColor(kBlack);
+	m_element->SetFillColor(0);
+	m_element->SetFillStyle(0);      // Root: hollow
+      }
+      if (line_style == VisAttr::SOLID)  // Root line style: 1=solid, 2=dash, 3=dot, 4=dash-dot.
+	m_element->SetLineStyle(1);
+      else if (line_style == VisAttr::DASHED)
+	m_element->SetLineStyle(2);
+      else
+	m_element->SetLineStyle(line_style);
     }
-    else {
-      printout(DEBUG,"setVisAttributes","Set to wireframe vis:%s",name());
-      m_element->SetLineColor(kBlack);
-      m_element->SetFillColor(0);
-      m_element->SetFillStyle(0);      // Root: hollow
+    else   {
+      except("Volume","setVisAttributes: encountered valid, but badly initialized visattr: %s",attr.name());
     }
-    if (line_style == VisAttr::SOLID)  // Root line style: 1=solid, 2=dash, 3=dot, 4=dash-dot.
-      m_element->SetLineStyle(1);
-    else if (line_style == VisAttr::DASHED)
-      m_element->SetLineStyle(2);
-    else
-      m_element->SetLineStyle(line_style);
   }
   Volume::Object* o = _userExtension(*this);
   if ( o ) o->vis = attr;

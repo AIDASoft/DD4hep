@@ -1125,7 +1125,8 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       }
       TGeoVolume* volume = ideal ? ideal->GetVolume() : 0;
       if ( !m_printSensitivesOnly || (m_printSensitivesOnly && sensitive) )  {
-        char sens = pv.volume().isSensitive() ? 'S' : ' ';
+	Volume vol = pv.volume();
+        char  sens = vol.isSensitive() ? 'S' : ' ';
         if ( m_printPointers )    {
           if ( ideal == aligned )  {
             ::snprintf(fmt,sizeof(fmt),"%03d %%s [Ideal:%p] %%-%ds %%-16s Vol:%%s shape:%%s \t %c %%s",
@@ -1146,10 +1147,11 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
                        level+1,(void*)ideal,(void*)aligned,2*level+1,sens);
           }
         }
+	const auto* sh = volume ? volume->GetShape() : nullptr;
         printout(INFO,"VolumeDump",fmt,pref.c_str(),"",
                  aligned->GetName(),
-		 volume->GetName(),
-                 volume ? volume->GetShape()->IsA()->GetName() : "[Invalid Volume]",
+		 vol.name(),
+                 sh ? sh->IsA()->GetName() : "[Invalid Shape]",
                  opt_info.c_str());
         if ( sens == 'S' ) ++m_numSensitive;
       }

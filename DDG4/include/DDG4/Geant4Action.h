@@ -329,6 +329,8 @@ namespace dd4hep {
       /// Support for messages with variable output level using output level+2
       void printP2(const char* fmt, ...) const;
 
+      /// Support of always printed messages.
+      void always(const char* fmt, ...) const;
       /// Support of debug messages.
       void debug(const char* fmt, ...) const;
       /// Support of info messages.
