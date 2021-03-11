@@ -298,7 +298,7 @@ long dd4hep::xml::_toLong(const XmlChar* value) {
 
 unsigned long dd4hep::xml::_toULong(const XmlChar* value) {
   long val = _toLong(value);
-  if ( val > 0 ) return (unsigned long) val;
+  if ( val >= 0 ) return (unsigned long) val;
   string s = _toString(value);
   throw runtime_error("dd4hep: Severe error during expression evaluation of " + s);
 }
