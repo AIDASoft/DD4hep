@@ -173,36 +173,36 @@
           <vertex x="0 * cm" y="0.5 * (-1 - sqrt5) * cm" z="1 * cm"/>
           <vertex x="0.5 * (-1 + sqrt5) * cm" y="0.5 * (-1 - sqrt5) * cm" z="0 * cm"/>
 
-          <facet v0="0 * cm"  v1="1 * cm"  v2="2 * cm"  v3="3 * cm"/>
-          <facet v0="4 * cm"  v1="7 * cm"  v2="6 * cm"  v3="5 * cm"/>
-          <facet v0="8 * cm"  v1="9 * cm"  v2="10 * cm" v3="11 * cm"/>
-          <facet v0="12 * cm" v1="15 * cm" v2="14 * cm" v3="13 * cm"/>
-          <facet v0="16 * cm" v1="17 * cm" v2="18 * cm" v3="19 * cm"/>
-          <facet v0="20 * cm" v1="21 * cm" v2="22 * cm" v3="23 * cm"/>
-          <facet v0="24 * cm" v1="25 * cm" v2="26 * cm" v3="27 * cm"/>
-          <facet v0="28 * cm" v1="29 * cm" v2="30 * cm" v3="31 * cm"/>
-          <facet v0="32 * cm" v1="35 * cm" v2="34 * cm" v3="33 * cm"/>
-          <facet v0="36 * cm" v1="39 * cm" v2="38 * cm" v3="37 * cm"/>
-          <facet v0="40 * cm" v1="41 * cm" v2="42 * cm" v3="43 * cm"/>
-          <facet v0="44 * cm" v1="45 * cm" v2="46 * cm" v3="47 * cm"/>
-          <facet v0="48 * cm" v1="51 * cm" v2="50 * cm" v3="49 * cm"/>
-          <facet v0="52 * cm" v1="55 * cm" v2="54 * cm" v3="53 * cm"/>
-          <facet v0="56 * cm" v1="57 * cm" v2="58 * cm" v3="59 * cm"/>
-          <facet v0="60 * cm" v1="63 * cm" v2="62 * cm" v3="61 * cm"/>
-          <facet v0="64 * cm" v1="67 * cm" v2="66 * cm" v3="65 * cm"/>
-          <facet v0="68 * cm" v1="71 * cm" v2="70 * cm" v3="69 * cm"/>
-          <facet v0="72 * cm" v1="73 * cm" v2="74 * cm" v3="75 * cm"/>
-          <facet v0="76 * cm" v1="77 * cm" v2="78 * cm" v3="79 * cm"/>
-          <facet v0="80 * cm" v1="81 * cm" v2="82 * cm" v3="83 * cm"/>
-          <facet v0="84 * cm" v1="87 * cm" v2="86 * cm" v3="85 * cm"/>
-          <facet v0="88 * cm" v1="89 * cm" v2="90 * cm" v3="91 * cm"/>
-          <facet v0="92 * cm" v1="93 * cm" v2="94 * cm" v3="95 * cm"/>
-          <facet v0="96 * cm" v1="99 * cm" v2="98 * cm" v3="97 * cm"/>
-          <facet v0="100 * cm" v1="101 * cm" v2="102 * cm" v3="103 * cm"/>
-          <facet v0="104 * cm" v1="107 * cm" v2="106 * cm" v3="105 * cm"/>
-          <facet v0="108 * cm" v1="111 * cm" v2="110 * cm" v3="109 * cm"/>
-          <facet v0="112 * cm" v1="113 * cm" v2="114 * cm" v3="115 * cm"/>
-          <facet v0="116 * cm" v1="117 * cm" v2="118 * cm" v3="119 * cm"/>
+          <facet v0="0"  v1="1"  v2="2"  v3="3"/>
+          <facet v0="4"  v1="7"  v2="6"  v3="5"/>
+          <facet v0="8"  v1="9"  v2="10" v3="11"/>
+          <facet v0="12" v1="15" v2="14" v3="13"/>
+          <facet v0="16" v1="17" v2="18" v3="19"/>
+          <facet v0="20" v1="21" v2="22" v3="23"/>
+          <facet v0="24" v1="25" v2="26" v3="27"/>
+          <facet v0="28" v1="29" v2="30" v3="31"/>
+          <facet v0="32" v1="35" v2="34" v3="33"/>
+          <facet v0="36" v1="39" v2="38" v3="37"/>
+          <facet v0="40" v1="41" v2="42" v3="43"/>
+          <facet v0="44" v1="45" v2="46" v3="47"/>
+          <facet v0="48" v1="51" v2="50" v3="49"/>
+          <facet v0="52" v1="55" v2="54" v3="53"/>
+          <facet v0="56" v1="57" v2="58" v3="59"/>
+          <facet v0="60" v1="63" v2="62" v3="61"/>
+          <facet v0="64" v1="67" v2="66" v3="65"/>
+          <facet v0="68" v1="71" v2="70" v3="69"/>
+          <facet v0="72" v1="73" v2="74" v3="75"/>
+          <facet v0="76" v1="77" v2="78" v3="79"/>
+          <facet v0="80" v1="81" v2="82" v3="83"/>
+          <facet v0="84" v1="87" v2="86" v3="85"/>
+          <facet v0="88" v1="89" v2="90" v3="91"/>
+          <facet v0="92" v1="93" v2="94" v3="95"/>
+          <facet v0="96" v1="99" v2="98" v3="97"/>
+          <facet v0="100" v1="101" v2="102" v3="103"/>
+          <facet v0="104" v1="107" v2="106" v3="105"/>
+          <facet v0="108" v1="111" v2="110" v3="109"/>
+          <facet v0="112" v1="113" v2="114" v3="115"/>
+          <facet v0="116" v1="117" v2="118" v3="119"/>
 
         </shape>
         <position x="0 * cm"    y="0 * cm"  z="0 * cm"/>

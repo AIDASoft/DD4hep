@@ -184,7 +184,7 @@ namespace dd4hep {
    */
   template <class TYPE> class PropertyValue : private Property {
   public:
-    TYPE data;
+    TYPE data  {};
     /// Default constructor
     PropertyValue() : Property(data) {}
     /// Copy constructor

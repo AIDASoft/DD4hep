@@ -204,6 +204,14 @@ void Geant4Action::printP2(const char* fmt, ...) const   {
   }
 }
 
+/// Support of always printed messages.
+void Geant4Action::always(const char* fmt, ...) const {
+  va_list args;
+  va_start(args, fmt);
+  dd4hep::printout(dd4hep::ALWAYS, m_name, fmt, args);
+  va_end(args);
+}
+
 /// Support of debug messages.
 void Geant4Action::debug(const char* fmt, ...) const {
   va_list args;

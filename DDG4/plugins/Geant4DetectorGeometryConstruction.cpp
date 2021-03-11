@@ -211,18 +211,19 @@ int Geant4DetectorGeometryConstruction::printMaterial(const char* mat_name)  {
     for ( auto it = g4map.begin(); it != g4map.end(); ++it )  {
       const auto* mat = (*it).second;
       if ( mat->GetName() == mat_name )   {
+	stringstream output;
         const auto* ion = mat->GetIonisation();
         printP2("+++  Dump of GEANT4 material: %s", mat_name);
-        cout << mat;
+        output << mat;
         if ( ion )   {
-          cout << "          MEE:  ";
-          cout << setprecision(12);
-          cout << ion->GetMeanExcitationEnergy()/CLHEP::eV;
-          cout << " [eV]";
+          output << "          MEE:  ";
+          output << setprecision(12);
+          output << ion->GetMeanExcitationEnergy()/CLHEP::eV;
+          output << " [eV]";
         }
         else
-          cout << "          MEE: UNKNOWN";
-        cout << endl << endl;
+          output << "          MEE: UNKNOWN";
+	always("+++ printMaterial: \n%s\n", output.str().c_str());
         return 1;
       }
     }

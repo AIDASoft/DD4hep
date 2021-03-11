@@ -158,6 +158,9 @@ void Detector::destroyInstance(const std::string& name) {
 DetectorImp::DetectorImp()
   : TNamed(), DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
 {
+  m_std_conditions.convention  = STD_Conditions::NTP;
+  m_std_conditions.pressure    = Pressure_NTP;
+  m_std_conditions.temperature = Temperature_NTP;
 }
 
 /// Initializing constructor
