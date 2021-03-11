@@ -70,8 +70,8 @@ namespace dd4hep {
             e.z_cid = (e.z_bin << segment.z_f_offset) & segment.z_mask;
             pos[2] = (e.z_bin + 0.5) * segment.z_grid_size;
             if ( !sol->Contains(pos) ) continue;
-            e.cell_id = vid | e.x_cid | e.y_cid | e.y_cid;
-            e.cell_id = vid | e.x_cid | e.y_cid;
+            e.cell_id = vid | e.x_cid | e.y_cid | e.z_cid;
+            //e.cell_id = vid | e.x_cid | e.y_cid;
             cell_handler(ct, *this, e);
           }
         }

@@ -37,24 +37,16 @@
 #include "TGLCamera.h"
 #include "TEveStraightLineSet.h"
 #include "TSysEvtHandler.h"
-//#include "TEvePad.h"
 #include <TEveScene.h>
 #include <TEveProjectionManager.h>
 #include <TEveProjectionAxes.h>
 #include <TEveWindow.h>
 
 #include "TGeoManager.h"
-//#include "TGLUtil.h"
 #include "TGLClip.h"
 #include "TMap.h"
 #include "TObjString.h"
-
-// #define private public
-// #include "TEveManager.h"
-
 #include "TGeoShape.h"
-
-
 #include "TGLScenePad.h"
 
 
@@ -88,8 +80,6 @@ static long teve_display(Detector& description, int /* argc */, char** /* argv *
   // option 0 in TEve seems to correspond to option 1 in TGeo ( used in geoDisplay ...)
   tn->SetVisOption(0) ;
   tn->SetVisLevel(4);
-
-  /* EvNavHandler *fh = */ new EvNavHandler;
 
   // // ---- try to set transparency - does not seem to work ...
   // TGeoNode* node1 = gGeoManager->GetTopNode();
