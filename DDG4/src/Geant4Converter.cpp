@@ -936,9 +936,6 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
     info.g4Placements[node] = g4;
     printout(ERROR, "Geant4Converter", "++ DEAD code. Should not end up here!");
   }
-  else {
-    printout(ERROR, "Geant4Converter", "++ Attempt to DOUBLE-place physical volume: %s No:%d", name.c_str(), node->GetNumber());
-  }
   return g4;
 }
 
