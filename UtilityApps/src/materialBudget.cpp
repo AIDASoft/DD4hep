@@ -105,6 +105,7 @@ int main_wrapper(int argc, char** argv)   {
   std::string steeringFile =  argv[2];
   int nbins = 90 ;
   double phi0 = M_PI / 2. ;
+  double etaMax = -1. ;
   std::string outFileName("material_budget.root") ;
   std::vector<SDetHelper> subdets ;
     
@@ -125,6 +126,9 @@ int main_wrapper(int argc, char** argv)   {
     
     if( token == "nbins" ){
       iss >> nbins ;
+    }
+    else if( token == "etaMax" ){
+      iss >> etaMax ;
     }
     else if( token == "rootfile" ){
       iss >> outFileName ;
@@ -160,13 +164,27 @@ int main_wrapper(int argc, char** argv)   {
 
     std::string hxn(det.name), hxnn(det.name) ;
     std::string hln(det.name), hlnn(det.name) ;
-    hxn += "x0" ;
-    hxnn += " integrated X0 vs -theta" ;
-    det.hx = new TH1F( hxn.c_str(), hxnn.c_str(), nbins, -90. , 0. ) ;
 
-    hln += "lambda" ;
-    hlnn += " integrated int. lengths vs -theta" ;
-    det.hl = new TH1F( hln.c_str(), hlnn.c_str(), nbins, -90. , 0. ) ;
+    if( etaMax > 0. ) {  // use eta
+
+      hxn += "x0" ;
+      hxnn += " integrated X0 vs eta" ;
+      det.hx = new TH1F( hxn.c_str(), hxnn.c_str(), nbins, 0. , etaMax ) ;
+
+      hln += "lambda" ;
+      hlnn += " integrated int. lengths vs eta" ;
+      det.hl = new TH1F( hln.c_str(), hlnn.c_str(), nbins,  0. , etaMax ) ;
+
+    } else {   // use polar angle
+
+      hxn += "x0" ;
+      hxnn += " integrated X0 vs -theta" ;
+      det.hx = new TH1F( hxn.c_str(), hxnn.c_str(), nbins, -90. , 0. ) ;
+
+      hln += "lambda" ;
+      hlnn += " integrated int. lengths vs -theta" ;
+      det.hl = new TH1F( hln.c_str(), hlnn.c_str(), nbins, -90. , 0. ) ;
+    }
 
   }
   //-------------------------
@@ -177,6 +195,7 @@ int main_wrapper(int argc, char** argv)   {
   MaterialManager matMgr( world ) ;
   
   double dTheta = 0.5*M_PI/nbins; // bin size
+  double dEta  = etaMax/nbins ;
 
   std::cout  << "====================================================================================================" << std::endl ;
 
@@ -186,7 +205,7 @@ int main_wrapper(int argc, char** argv)   {
   
   for(int i=0 ; i< nbins ;++i){
 
-    double theta = (0.5+i)*dTheta ;
+    double theta = ( etaMax > 0. ?  2. * atan ( exp ( - (0.5+i)*dEta ) ) : (0.5+i)*dTheta  ) ;
 
     std::cout << std::scientific << theta << " " ;
     
@@ -210,8 +229,11 @@ int main_wrapper(int argc, char** argv)   {
 	path_length += length;
       }
 
-      det.hx->Fill( -theta/M_PI*180. , sum_x0 ) ;
-      det.hl->Fill( -theta/M_PI*180. , sum_lambda ) ;
+
+      double binX = ( etaMax > 0. ? (0.5+i)*dEta : -theta/M_PI*180. ) ;
+
+      det.hx->Fill( binX , sum_x0 ) ;
+      det.hl->Fill( binX , sum_lambda ) ;
 
       std::cout  << std::scientific  << sum_x0 << "  " << sum_lambda << "  " ; // << path_length ;
 
@@ -238,6 +260,9 @@ void dumpExampleSteering(){
   std::cout << "rootfile material_budget.root" << std::endl ;
   std::cout << "# number of bins for polar angle (default 90)" << std::endl ;
   std::cout << "nbins 90" << std::endl ;
+  std::cout <<  std::endl ;
+  std::cout << "# use pseudo rapidity rather than polar angle - specify maximum eta value" << std::endl ;
+  std::cout << "# etaMax 3." << std::endl ;
   std::cout <<  std::endl ;
   std::cout << "# phi direction in deg (default: 90./y-axis)" << std::endl ;
   std::cout << "phi 90." << std::endl ;
