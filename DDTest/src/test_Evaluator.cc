@@ -152,6 +152,9 @@ int main(int /* argc */, char** /* argv */ ){
           --countDownToStart;
           while(countDownToStart != 0);
           return;
+#if 0
+	    Commented out to please Coverity:
+	    CID 1501200 (#1 of 1): Structurally dead code (UNREACHABLE)unreachable: This code cannot be reached:
 
           for(int i=0; i< 100; ++i) {
             std::string newName = name+nameExtensions[i];
@@ -168,6 +171,7 @@ int main(int /* argc */, char** /* argv */ ){
               break;
             }
           }
+#endif
         }
       );
       

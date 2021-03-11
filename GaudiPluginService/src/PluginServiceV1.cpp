@@ -185,8 +185,10 @@ namespace Gaudi {
                     std::string fullPath = ( dirName + '/' + name );
                     { // check if it is a regular file
                       struct stat buf;
-                      stat( fullPath.c_str(), &buf );
-                      if ( !S_ISREG( buf.st_mode ) ) continue;
+                      if ( 0 != ::stat( fullPath.c_str(), &buf ) )
+			continue;
+                      else if ( !S_ISREG( buf.st_mode ) )
+			continue;
                     }
                     // read the file
                     logger().debug( std::string( "  reading " ) + name );

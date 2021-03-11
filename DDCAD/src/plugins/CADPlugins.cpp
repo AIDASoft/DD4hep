@@ -39,11 +39,11 @@ static Handle<TObject> create_CAD_Shape(Detector&, xml_h e)   {
   }
   else   {
     if ( elt.hasAttr(_U(item)) )  {
-      size_t which = elt.attr<unsigned int>(_U(item));
+      size_t which = elt.attr<size_t>(_U(item));
       solid = shapes[which].release();
     }
     else if ( elt.hasAttr(_U(mesh)) )  {
-      size_t which = elt.attr<unsigned int>(_U(mesh));
+      size_t which = elt.attr<size_t>(_U(mesh));
       solid = shapes[which].release();
     }
     else  {

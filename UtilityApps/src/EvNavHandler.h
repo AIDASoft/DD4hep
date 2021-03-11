@@ -12,18 +12,20 @@
 #ifndef UTILITYAPPS_SRC_EVNAVHANDLER_H
 #define UTILITYAPPS_SRC_EVNAVHANDLER_H
 
-
+// Forward declarations
 void next_event() ;
 
-class EvNavHandler {
-public:
-  void Fwd() {
-    next_event();
-  }
-  void Bck() {}
-};
+// Do not clutter global namespace
+namespace {
 
-
+  class EvNavHandler {
+  public:
+    void Fwd() {
+      next_event();
+    }
+    void Bck() {}
+  };
+}
 #endif
 
 

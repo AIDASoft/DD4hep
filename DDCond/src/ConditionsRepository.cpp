@@ -149,10 +149,9 @@ namespace {
 
   /// Load the repository from file and fill user passed data structory
   int readText(const string& input, ConditionsRepository::Data& data)    {
-    size_t idx;
     ConditionsRepository::Entry e;
-    long siz_nam, siz_add, siz_tot;
-    char sep, c, text[2*PATH_MAX+64];
+    size_t   idx, siz_nam, siz_add, siz_tot;
+    char     sep, c, text[2*PATH_MAX+64];
     ifstream in(input);
     in >> c >> c >> c >> c >> c >> c >> c >> sep 
        >> c >> siz_nam
@@ -166,7 +165,7 @@ namespace {
       if ( in.good() )  {
         if ( siz_tot )  {
           // Direct access mode with fixed record size
-          if ( siz_nam+9 < (long)sizeof(text) )  {
+          if ( 10+siz_nam+siz_add < (long)sizeof(text) )  {
             text[8] = text[9+siz_nam] = text[10+siz_nam+siz_add] = 0;
             e.name = text+9;
             e.address = text+10+siz_nam;  
