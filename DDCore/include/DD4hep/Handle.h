@@ -90,7 +90,7 @@ namespace dd4hep {
     typedef Handle<T> Base;
     
     /// Single and only data member: Reference to the actual element.
-    T* m_element = 0;
+    T* m_element  {nullptr};
 
     /// Default constructor
     Handle() = default;

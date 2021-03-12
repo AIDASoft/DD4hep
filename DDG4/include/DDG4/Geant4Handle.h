@@ -41,10 +41,10 @@ namespace dd4hep {
     template <typename TYPE> class Geant4Handle {
     protected:
       void checked_assign(TYPE* p);
-      TYPE* null()  { return 0; }
+      TYPE* null()  { return nullptr; }
     public:
       /// Pointer to referenced object
-      mutable TYPE* value = 0;
+      mutable TYPE* value  {nullptr};
       /// Default constructor
       explicit Geant4Handle() = default;
       /// Construction initialized with object pointer
@@ -96,7 +96,7 @@ namespace dd4hep {
     class KernelHandle {
     public:
       /// Pointer to referenced object
-      mutable Geant4Kernel* value;
+      mutable Geant4Kernel* value {nullptr};
       /// Default constructor
       explicit KernelHandle();
       /// Construction initialized with object pointer

@@ -71,7 +71,7 @@ namespace dd4hep {
     DetectorBuildType m_buildType;
 
     /// Optical surface manager
-    detail::OpticalSurfaceManagerObject* m_surfaceManager = 0;   //! not persistent
+    detail::OpticalSurfaceManagerObject* m_surfaceManager {nullptr};   //! not persistent
 
   private:
     /// Disable move constructor

@@ -158,6 +158,7 @@ void Detector::destroyInstance(const std::string& name) {
 DetectorImp::DetectorImp()
   : TNamed(), DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
 {
+  m_surfaceManager = new detail::OpticalSurfaceManagerObject(*this);
   m_std_conditions.convention  = STD_Conditions::NTP;
   m_std_conditions.pressure    = Pressure_NTP;
   m_std_conditions.temperature = Temperature_NTP;
@@ -241,9 +242,13 @@ DetectorImp::~DetectorImp() {
       detector_instances().remove(m_manager->GetName());
     }
   }
-  deletePtr(m_surfaceManager);
+  if ( m_surfaceManager )   {
+    delete m_surfaceManager;
+    m_surfaceManager = nullptr;
+  }
   destroyData(false);
   m_extensions.clear();
+  m_detectorTypes.clear();
   InstanceCount::decrement(this);
 }
 
