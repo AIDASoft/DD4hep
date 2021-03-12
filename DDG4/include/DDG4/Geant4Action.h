@@ -111,20 +111,20 @@ namespace dd4hep {
     class Geant4Action {
     protected:
       /// Reference to the Geant4 context
-      Geant4Context*     m_context = 0;
+      Geant4Context*     m_context  {nullptr};
       /// Control directory of this action
-      Geant4UIMessenger* m_control = 0;
+      Geant4UIMessenger* m_control  {nullptr};
 
       /// Default property: Output level
-      int                m_outputLevel = 3;
+      int                m_outputLevel  {3};
       /// Default property: Flag to create control instance
-      bool               m_needsControl = false;
+      bool               m_needsControl {false};
       /// Action name
       std::string        m_name;
       /// Property pool
       PropertyManager    m_properties;
       /// Reference count. Initial value: 1
-      long               m_refCount = 1;
+      long               m_refCount     {1};
 
     public:
       /// Functor to update the context of a Geant4Action object
@@ -135,8 +135,8 @@ namespace dd4hep {
        */
       class ContextSwap   {
         /// reference to the context;
-        Geant4Context* context = 0;
-        Geant4Action*  action = 0;
+        Geant4Context* context {nullptr};
+        Geant4Action*  action  {nullptr};
       public:
         /// Constructor
         ContextSwap(Geant4Action* a,Geant4Context* c) : action(a)  {

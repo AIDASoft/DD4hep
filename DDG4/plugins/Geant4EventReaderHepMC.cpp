@@ -480,7 +480,8 @@ int HepMC::read_particle(EventStream &info, istringstream& input, Geant4Particle
   /// Keep a copy of the full generator status
   p->genStatus = stat&G4PARTICLE_GEN_STATUS_MASK;
   
-  // read flow patterns if any exist
+  // read flow patterns if any exist. Protect against tainted readings.
+  size = min(size,100);
   for (int i = 0; i < size; ++i ) {
     input >> p->colorFlow[0] >> p->colorFlow[1];
     if(!input) return 0;

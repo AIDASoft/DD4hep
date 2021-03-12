@@ -105,6 +105,14 @@ namespace   {
 #endif
 #if defined(DD4HEP_PARSERS_NO_ROOT)
     handle = ::dlopen(plugin_name, RTLD_LAZY | RTLD_GLOBAL);
+    if ( handle )   {
+      struct handle_guard  {
+	void* _handle {nullptr};
+	handle_guard(void* hdl) : _handle(hdl) {}
+	~handle_guard()  { if ( _handle ) ::dlclose(_handle); _handle = nullptr; }
+      };
+      static handle_guard _guard(handle);
+    }
 #else
     if ( 0 != gSystem->Load(plugin_name) ) {}
 #endif

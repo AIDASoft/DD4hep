@@ -249,21 +249,23 @@ int Geant4DetectorGeometryConstruction::printVolumeObj(const char* vol_path, Pla
       Solid sh  = pv.volume().solid();
       if ( flg )  {
 	printP2("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-	printP2(  "+++  Dump of GEANT4 solid: %s", vol_path);
+	printP2("+++  Dump of GEANT4 solid: %s", vol_path);
       }
+      stringstream output;
       if ( flg )   {
-	cout << mat;
+	output << mat;
 	if ( ion )   {
-	  cout << "          MEE:  ";
-	  cout << setprecision(12);
-	  cout << ion->GetMeanExcitationEnergy()/CLHEP::eV;
-	  cout << " [eV]";
+	  output << "          MEE:  ";
+	  output << setprecision(12);
+	  output << ion->GetMeanExcitationEnergy()/CLHEP::eV;
+	  output << " [eV]";
 	}
 	else
-	  cout << "          MEE: UNKNOWN";
+	  output << "          MEE: UNKNOWN";
       }
       if ( flg )   {
-	cout << endl << *sol;
+	output << endl << *sol;
+	printP2("%s", output.str().c_str());
 	printP2("+++  Dump of ROOT   solid: %s", vol_path);
 	sh->InspectShape();
 	if ( sh->IsA() == TGeoScaledShape::Class() )    {

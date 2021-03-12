@@ -399,8 +399,9 @@ void Manager_Type1::pushUpdates()   {
     if ( !ents.empty() )  {
       for(Condition c : ents )  {
         c->setFlag(Condition::ACTIVE);
-        /// FIXME!
-        throw runtime_error("FIXME!!!");
+	except("ConditionsMgr",
+	       "+++ We should never end up here [%s]. FIXME!!!!",
+	       c.str(0).c_str());
         //c->pool->insert(c);
       }
     }

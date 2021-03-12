@@ -239,80 +239,80 @@ namespace dd4hep {
 
     template <> 
     Geant4Handle<Geant4RunAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4ActionContainer::runAction,type_name,
-                            "Geant4SharedRunAction",shared,null());
+      value = _create_share(kernel,&Geant4ActionContainer::runAction, type_name,
+                            "Geant4SharedRunAction", shared, null());
     }
     template <> 
     Geant4Handle<Geant4RunAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4ActionContainer::runAction,type_name,
-                            "Geant4SharedRunAction",shared,null());
+      value = _create_share(kernel,&Geant4ActionContainer::runAction, type_name,
+                            "Geant4SharedRunAction", shared, null());
     }
 
     template <> 
     Geant4Handle<Geant4EventAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4ActionContainer::eventAction,type_name,
-                            "Geant4SharedEventAction",shared,null());
+      value = _create_share(kernel,&Geant4ActionContainer::eventAction, type_name,
+                            "Geant4SharedEventAction", shared, null());
     }
     template <> 
     Geant4Handle<Geant4EventAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4ActionContainer::eventAction,type_name,
-                            "Geant4SharedEventAction",shared,null());
+      value = _create_share(kernel,&Geant4ActionContainer::eventAction, type_name,
+                            "Geant4SharedEventAction", shared, null());
     }
 
     template <> 
     Geant4Handle<Geant4GeneratorAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4ActionContainer::generatorAction,type_name,
-                            "Geant4SharedGeneratorAction",shared,null());
+      value = _create_share(kernel,&Geant4ActionContainer::generatorAction, type_name,
+                            "Geant4SharedGeneratorAction", shared, null());
     }
     template <> 
     Geant4Handle<Geant4GeneratorAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4ActionContainer::generatorAction,type_name,
-                            "Geant4SharedGeneratorAction",shared,null());
+      value = _create_share(kernel,&Geant4ActionContainer::generatorAction, type_name,
+                            "Geant4SharedGeneratorAction", shared, null());
     }
 
     template <> 
     Geant4Handle<Geant4TrackingAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4ActionContainer::trackingAction,type_name,
-                            "Geant4SharedTrackingAction",shared,null());
+      value = _create_share(kernel,&Geant4ActionContainer::trackingAction, type_name,
+                            "Geant4SharedTrackingAction", shared, null());
     }
     template <> 
     Geant4Handle<Geant4TrackingAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4ActionContainer::trackingAction,type_name,
-                            "Geant4SharedTrackingAction",shared,null());
+      value = _create_share(kernel,&Geant4ActionContainer::trackingAction, type_name,
+                            "Geant4SharedTrackingAction", shared, null());
     }
 
     template <> 
     Geant4Handle<Geant4SteppingAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4ActionContainer::steppingAction,type_name,
-                            "Geant4SharedSteppingAction",shared,null());
+      value = _create_share(kernel,&Geant4ActionContainer::steppingAction, type_name,
+                            "Geant4SharedSteppingAction", shared, null());
     }
     template <> 
     Geant4Handle<Geant4SteppingAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4ActionContainer::steppingAction,type_name,
-                            "Geant4SharedSteppingAction",shared,null());
+      value = _create_share(kernel,&Geant4ActionContainer::steppingAction, type_name,
+                            "Geant4SharedSteppingAction", shared, null());
     }
 
     template <> 
     Geant4Handle<Geant4StackingAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4ActionContainer::stackingAction,type_name,
-                            "Geant4SharedStackingAction",shared,null());
+      value = _create_share(kernel,&Geant4ActionContainer::stackingAction, type_name,
+                            "Geant4SharedStackingAction", shared, null());
     }
     template <> 
     Geant4Handle<Geant4StackingAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4ActionContainer::stackingAction,type_name,
-                            "Geant4SharedStackingAction",shared,null());
+      value = _create_share(kernel,&Geant4ActionContainer::stackingAction, type_name,
+                            "Geant4SharedStackingAction", shared, null());
     }
 
     template <> Geant4Handle<Geant4Sensitive>::Geant4Handle(Geant4Kernel& kernel, const string& type_name,
                                                             const string& detector, bool /* shared */) {
       try {
-        Geant4Context* ctxt = kernel.workerContext();
-        TypeName typ = TypeName::split(type_name);
-        Detector& description = kernel.detectorDescription();
-        DetElement det = description.detector(detector);
-        Geant4Sensitive* object = PluginService::Create<Geant4Sensitive*>(typ.first, ctxt, typ.second, &det, &description);
-        if (object) {
-          value = object;
+        Geant4Context*  ctxt = kernel.workerContext();
+        TypeName         typ = TypeName::split(type_name);
+        Detector&        dsc = kernel.detectorDescription();
+        DetElement       det = dsc.detector(detector);
+        Geant4Sensitive* obj = PluginService::Create<Geant4Sensitive*>(typ.first, ctxt, typ.second, &det, &dsc);
+        if ( obj ) {
+          value = obj;
           return;
         }
       }

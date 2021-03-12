@@ -164,10 +164,14 @@ namespace {
       in.getline(text,sizeof(text),'\n');
       if ( in.good() )  {
         if ( siz_tot )  {
+	  text[8] = 0;
           // Direct access mode with fixed record size
-          if ( 10+siz_nam+siz_add < (long)sizeof(text) )  {
-            text[8] = text[9+siz_nam] = text[10+siz_nam+siz_add] = 0;
+          if ( 9+siz_nam < (long)sizeof(text) )  {
+            text[9+siz_nam] = 0;
             e.name = text+9;
+	  }
+          if ( 10+siz_nam+siz_add < (long)sizeof(text) )  {
+            text[10+siz_nam+siz_add] = 0;
             e.address = text+10+siz_nam;  
             if ( (idx=e.name.find(' ')) != string::npos && idx < e.name.length() )
               e.name[idx] = 0;
@@ -181,7 +185,7 @@ namespace {
         else  {
           // Variable record size
           e.name=text+9;
-          if ( (idx=e.name.find(sep)) != string::npos && idx < sizeof(text)-9 )
+          if ( (idx=e.name.find(sep)) != string::npos && idx < sizeof(text)-10 )
             text[9+idx] = 0, e.address=text+idx+10, e.name=text+9;
           if ( (idx=e.address.find(sep)) != string::npos && idx < e.address.length() )
             e.address[idx] = 0;
