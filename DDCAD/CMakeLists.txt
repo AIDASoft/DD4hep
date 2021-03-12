@@ -28,6 +28,13 @@ elseif(DD4HEP_LOAD_ASSIMP)
     find_package(Git REQUIRED)
     set(ASSIMP_C_FLAGS   "")
     set(ASSIMP_CXX_FLAGS "-Wno-class-memaccess -Wno-tautological-compare -Wno-sizeof-pointer-memaccess")
+
+    if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
+      set(ASSIMP_BYPRODUCT "${INSTALL_DIR}/lib/libassimpd${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    else()
+      set(ASSIMP_BYPRODUCT "${INSTALL_DIR}/lib/libassimp${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    endif()
+
     ExternalProject_Add(
         assimp_project
         SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/assimp
@@ -42,8 +49,8 @@ elseif(DD4HEP_LOAD_ASSIMP)
 		   -DBUILD_SHARED_LIBS=1
 		   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         BUILD_COMMAND     ${CMAKE_BUILD_TOOL} install
-	INSTALL_COMMAND   ""
-
+        INSTALL_COMMAND   ""
+        BUILD_BYPRODUCTS  ${ASSIMP_BYPRODUCT}
     )
     ExternalProject_Get_Property(assimp_project INSTALL_DIR)
     set(ASSIMP_INCLUDE_DIRS "${INSTALL_DIR}/include")
@@ -52,11 +59,7 @@ elseif(DD4HEP_LOAD_ASSIMP)
     add_library(assimp SHARED IMPORTED GLOBAL)
     add_dependencies(assimp assimp_project)
     add_library(assimp::assimp ALIAS assimp)
-    if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
-      set_target_properties(assimp PROPERTIES IMPORTED_LOCATION ${INSTALL_DIR}/lib/libassimpd.so)
-    else()
-      set_target_properties(assimp PROPERTIES IMPORTED_LOCATION ${INSTALL_DIR}/lib/libassimp.so)
-    endif()
+    set_target_properties(assimp PROPERTIES IMPORTED_LOCATION ${ASSIMP_BYPRODUCT})
     target_include_directories(assimp INTERFACE ${ASSIMP_INCLUDE_DIRS})
 else()
     MESSAGE(STATUS "+++> No ASSIMP implementation accessible. CAD reading will not be supported!")
