@@ -105,7 +105,10 @@ namespace   {
 #endif
 #if defined(DD4HEP_PARSERS_NO_ROOT)
     handle = ::dlopen(plugin_name, RTLD_LAZY | RTLD_GLOBAL);
-    if ( handle )   {
+    if ( !handle )   {
+      throw runtime_error("Failed to load plugin manager library: "+string(plugin_name));
+    }
+    else   {
       struct handle_guard  {
 	void* _handle {nullptr};
 	handle_guard(void* hdl) : _handle(hdl) {}
@@ -117,7 +120,7 @@ namespace   {
     if ( 0 != gSystem->Load(plugin_name) ) {}
 #endif
     getDebug = get_func< int (*) ()>(handle, plugin_name,MAKE_FUNC(getdebug,DD4HEP_PLUGINSVC_VERSION));
-  setDebug = get_func< int (*) (int)>(handle, plugin_name,MAKE_FUNC(setdebug,DD4HEP_PLUGINSVC_VERSION));
+    setDebug = get_func< int (*) (int)>(handle, plugin_name,MAKE_FUNC(setdebug,DD4HEP_PLUGINSVC_VERSION));
     create   = get_func< PluginService::stub_t (*)(const char*,
                                                    const char*)>(handle, plugin_name,MAKE_FUNC(create,DD4HEP_PLUGINSVC_VERSION));
     add      = get_func< void (*) (const char* identifier, 

@@ -149,24 +149,29 @@ namespace {
 
   /// Load the repository from file and fill user passed data structory
   int readText(const string& input, ConditionsRepository::Data& data)    {
-    ConditionsRepository::Entry e;
     size_t   idx, siz_nam, siz_add, siz_tot;
-    char     sep, c, text[2*PATH_MAX+64];
+    char     sep, c, text[2*PATH_MAX];
+    ConditionsRepository::Entry e;
     ifstream in(input);
+
     in >> c >> c >> c >> c >> c >> c >> c >> sep 
        >> c >> siz_nam
        >> c >> siz_add
        >> c >> siz_tot;
     text[0] = 0;
+    siz_nam = std::min(siz_nam, 1024UL);
+    siz_add = std::min(siz_add, 1024UL);
     in.getline(text,sizeof(text),'\n');
+    text[sizeof(text)-1] = 0;
     do {
       text[0] = 0;
       in.getline(text,sizeof(text),'\n');
       if ( in.good() )  {
+	text[sizeof(text)-1] = 0;
         if ( siz_tot )  {
 	  text[8] = 0;
           // Direct access mode with fixed record size
-          if ( 9+siz_nam < (long)sizeof(text) )  {
+          if ( 9+siz_nam < sizeof(text) )  {
             text[9+siz_nam] = 0;
             e.name = text+9;
 	  }
