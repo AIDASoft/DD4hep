@@ -64,6 +64,7 @@ ClassImp(DetectorImp)
 
 namespace {
   recursive_mutex  s_detector_apply_lock;
+
   struct TypePreserve {
     DetectorBuildType& m_t;
     TypePreserve(DetectorBuildType& t)
@@ -73,6 +74,7 @@ namespace {
       m_t = BUILD_NONE;
     }
   };
+
   struct Instances  {
     recursive_mutex  lock;
     map<string, Detector*> detectors;
@@ -101,33 +103,39 @@ namespace {
     }
   };
   
+  class DetectorGuard  final  {
+  protected:
+    static pair<mutex, map<DetectorImp*, TGeoManager*> >& detector_lock()   {
+      static pair<mutex, map<DetectorImp*, TGeoManager*> > s_inst;
+      return s_inst;
+    }
+    DetectorImp* detector {nullptr};
+  public:
+    DetectorGuard(DetectorImp* imp) : detector(imp) {}
+    ~DetectorGuard() = default;
+    void lock(TGeoManager* mgr)   const  {
+      auto& lock = detector_lock();
+      lock.first.lock();
+      lock.second[detector] = mgr;
+    }
+    TGeoManager* unlock()  const  {
+      TGeoManager* mgr = nullptr;
+      auto& lock = detector_lock();
+      auto i = lock.second.find(detector);
+      if ( i != lock.second.end() )   {
+	mgr = (*i).second;
+	lock.second.erase(i);
+      }
+      lock.first.unlock();
+      return mgr;
+    }
+  };
+  
   Instances& detector_instances()    {
     static Instances s_inst;
     return s_inst;
   }
 
-  pair<mutex, map<DetectorImp*, TGeoManager*> >& detector_lock()   {
-    static pair<mutex, map<DetectorImp*, TGeoManager*> > s_inst;
-    return s_inst;
-  }
-  
-  void lock_detector(DetectorImp* imp, TGeoManager* mgr)   {
-    auto& lock = detector_lock();
-    lock.first.lock();
-    lock.second[imp] = mgr;
-  }
-  TGeoManager* unlock_detector(DetectorImp* imp)   {
-    TGeoManager* mgr = nullptr;
-    auto& lock = detector_lock();
-    auto i = lock.second.find(imp);
-    if ( i != lock.second.end() )   {
-      mgr = (*i).second;
-      lock.second.erase(i);
-    }
-    lock.first.unlock();
-    return mgr;
-  }
-  
   void description_unexpected()    {
     try  {
       throw;
@@ -221,7 +229,7 @@ DetectorImp::DetectorImp(const string& name)
   SetName(name.c_str());
   SetTitle("DD4hep detector description object");
   set_terminate( description_unexpected );
-  lock_detector( this, gGeoManager );
+  DetectorGuard(this).lock(gGeoManager);
   gGeoManager = nullptr;
   InstanceCount::increment(this);
   m_manager = new TGeoManager(name.c_str(), "Detector Geometry");
@@ -258,7 +266,7 @@ DetectorImp::DetectorImp(const string& name)
 
 /// Standard destructor
 DetectorImp::~DetectorImp() {
-  lock_detector( this, gGeoManager );
+  DetectorGuard(this).lock(gGeoManager);
   if ( m_manager )  {
     lock_guard<recursive_mutex> lock(detector_instances().lock);
     if ( m_manager == gGeoManager ) gGeoManager = 0;
@@ -275,7 +283,7 @@ DetectorImp::~DetectorImp() {
   m_extensions.clear();
   m_detectorTypes.clear();
   InstanceCount::decrement(this);
-  gGeoManager = unlock_detector(this);
+  DetectorGuard(this).unlock();
 }
 
 /// ROOT I/O call
@@ -745,7 +753,7 @@ void DetectorImp::endDocument(bool close_geometry)    {
   patcher.patchShapes();
   mapDetectorTypes();
   m_state = READY;
-  gGeoManager = unlock_detector(this);
+  DetectorGuard(this).unlock();
 }
 
 /// Initialize the geometry and set the bounding box of the world volume
