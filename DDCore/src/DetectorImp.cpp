@@ -100,11 +100,34 @@ namespace {
       return 0;
     }
   };
-  static Instances& detector_instances()    {
+  
+  Instances& detector_instances()    {
     static Instances s_inst;
     return s_inst;
   }
 
+  pair<mutex, map<DetectorImp*, TGeoManager*> >& detector_lock()   {
+    static pair<mutex, map<DetectorImp*, TGeoManager*> > s_inst;
+    return s_inst;
+  }
+  
+  void lock_detector(DetectorImp* imp, TGeoManager* mgr)   {
+    auto& lock = detector_lock();
+    lock.first.lock();
+    lock.second[imp] = mgr;
+  }
+  TGeoManager* unlock_detector(DetectorImp* imp)   {
+    TGeoManager* mgr = nullptr;
+    auto& lock = detector_lock();
+    auto i = lock.second.find(imp);
+    if ( i != lock.second.end() )   {
+      mgr = (*i).second;
+      lock.second.erase(i);
+    }
+    lock.first.unlock();
+    return mgr;
+  }
+  
   void description_unexpected()    {
     try  {
       throw;
@@ -198,8 +221,9 @@ DetectorImp::DetectorImp(const string& name)
   SetName(name.c_str());
   SetTitle("DD4hep detector description object");
   set_terminate( description_unexpected );
+  lock_detector( this, gGeoManager );
+  gGeoManager = nullptr;
   InstanceCount::increment(this);
-  //if ( gGeoManager ) delete gGeoManager;
   m_manager = new TGeoManager(name.c_str(), "Detector Geometry");
   {
     m_manager->AddNavigator();
@@ -234,6 +258,7 @@ DetectorImp::DetectorImp(const string& name)
 
 /// Standard destructor
 DetectorImp::~DetectorImp() {
+  lock_detector( this, gGeoManager );
   if ( m_manager )  {
     lock_guard<recursive_mutex> lock(detector_instances().lock);
     if ( m_manager == gGeoManager ) gGeoManager = 0;
@@ -250,6 +275,7 @@ DetectorImp::~DetectorImp() {
   m_extensions.clear();
   m_detectorTypes.clear();
   InstanceCount::decrement(this);
+  gGeoManager = unlock_detector(this);
 }
 
 /// ROOT I/O call
@@ -719,6 +745,7 @@ void DetectorImp::endDocument(bool close_geometry)    {
   patcher.patchShapes();
   mapDetectorTypes();
   m_state = READY;
+  gGeoManager = unlock_detector(this);
 }
 
 /// Initialize the geometry and set the bounding box of the world volume
