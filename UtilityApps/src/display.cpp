@@ -18,11 +18,12 @@
 int main(int argc,char** argv)  {
   std::vector<const char*> av;
   std::string level, visopt, opt, detector;
-  bool dry = false;
+  bool dry = false, help = false;
   for(int i=0; i<argc; ++i)  {
     if ( i==1 && argv[i][0] != '-' ) av.emplace_back("-input");
-    if      ( strncmp(argv[i],"-load-only",4) == 0 ) dry = true, av.emplace_back(argv[i]);
-    else if ( strncmp(argv[i],"-dry-run",4)   == 0 ) dry = true, av.emplace_back(argv[i]);
+    if      ( strncmp(argv[i],"-load-only",4) == 0 ) dry  = true, av.emplace_back(argv[i]);
+    else if ( strncmp(argv[i],"-dry-run",4)   == 0 ) dry  = true, av.emplace_back(argv[i]);
+    else if ( strncmp(argv[i],"-help",4)      == 0 ) help = true, av.emplace_back(argv[i]);
     else if ( strncmp(argv[i],"-visopt",4)    == 0 ) visopt   = argv[++i];
     else if ( strncmp(argv[i],"-level", 4)    == 0 ) level    = argv[++i];
     else if ( strncmp(argv[i],"-option",4)    == 0 ) opt      = argv[++i];
@@ -33,6 +34,7 @@ int main(int argc,char** argv)  {
     av.emplace_back("-interactive");
     av.emplace_back("-plugin");
     av.emplace_back("DD4hep_GeometryDisplay");
+    if ( help              ) av.emplace_back("-help");
     if ( !opt.empty()      ) av.emplace_back("-opt"),      av.emplace_back(opt.c_str());
     if ( !level.empty()    ) av.emplace_back("-level"),    av.emplace_back(level.c_str());
     if ( !visopt.empty()   ) av.emplace_back("-visopt"),   av.emplace_back(visopt.c_str());

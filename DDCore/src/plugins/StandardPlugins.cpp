@@ -135,12 +135,13 @@ static long display(Detector& description, int argc, char** argv) {
       detector = argv[++i];
     else  {
       cout <<
-        "Usage: -plugin <name> -arg [-arg]                                                   \n"
+        "Usage: -plugin DD4hep_GeometryDisplay  -arg [-arg]                                \n\n"
         "     -detector <string> Top level DetElement path. Default: '/world'                \n"
         "     -option   <string> ROOT Draw option.    Default: 'ogl'                         \n"
         "     -level    <number> Visualization level  [TGeoManager::SetVisLevel]  Default: 4 \n"
         "     -visopt   <number> Visualization option [TGeoManager::SetVisOption] Default: 1 \n"       
-        "\tArguments given: " << arguments(argc,argv) << endl << flush;
+        "     -help              Print this help output  \n"       
+        "     Arguments given: " << arguments(argc,argv) << endl << flush;
       ::exit(EINVAL);
     }
   }
