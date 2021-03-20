@@ -105,8 +105,8 @@ namespace {
   
   class DetectorGuard  final  {
   protected:
-    static pair<mutex, map<DetectorImp*, TGeoManager*> >& detector_lock()   {
-      static pair<mutex, map<DetectorImp*, TGeoManager*> > s_inst;
+    static pair<recursive_mutex, map<DetectorImp*, TGeoManager*> >& detector_lock()   {
+      static pair<recursive_mutex, map<DetectorImp*, TGeoManager*> > s_inst;
       return s_inst;
     }
     DetectorImp* detector {nullptr};
