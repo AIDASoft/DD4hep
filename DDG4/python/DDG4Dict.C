@@ -194,12 +194,12 @@ namespace dd4hep {
     };
 
     /// Container definitions for Geant4Vertex
-    typedef vector<Geant4Vertex*>  Geant4VertexVector;
-    typedef map<int,Geant4Vertex*> Geant4VertexIntMap;
+    typedef std::vector<Geant4Vertex*>  Geant4VertexVector;
+    typedef std::map<int,Geant4Vertex*> Geant4VertexIntMap;
 
     /// Container definitions for Geant4Particle
-    typedef vector<Geant4Particle*>  Geant4ParticleVector;
-    typedef map<int,Geant4Particle*> Geant4ParticleIntMap;
+    typedef std::vector<Geant4Particle*>  Geant4ParticleVector;
+    typedef std::map<int,Geant4Particle*> Geant4ParticleIntMap;
   }
 }
 
