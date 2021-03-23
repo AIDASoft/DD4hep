@@ -50,7 +50,7 @@ namespace dd4hep {
   namespace align {}
   namespace detail {}
   void run_interpreter(const std::string& name)  {
-    pair<int, char**> a(0,0);
+    std::pair<int, char**> a(0,0);
     TRint app(name.c_str(), &a.first, a.second);
     app.Run();
   }
@@ -65,7 +65,7 @@ namespace dd4hep {
       interp() = default;
       virtual ~interp() = default;
       static void run(const std::string& name)  {
-	pair<int, char**> a(0,0);
+	std::pair<int, char**> a(0,0);
 	TRint app(name.c_str(), &a.first, a.second);
 	app.Run();
       }
