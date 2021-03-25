@@ -300,7 +300,10 @@ int Geant4Kernel::initialize() {
 
 int Geant4Kernel::run() {
   try  {
-    return Geant4Exec::run(*this);
+    auto result = Geant4Exec::run(*this);
+    // flush the geant4 stream buffer
+    G4cout << G4endl;
+    return result;
   }
   catch(const exception& e)   {
     printout(FATAL,"Geant4Kernel","+++ Exception while simulating:%s",e.what());
