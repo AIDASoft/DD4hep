@@ -320,7 +320,7 @@ Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, do
 void Tube::make(const string& nam, double rmin, double rmax, double z, double start_phi, double end_phi) {
   // Check if it is a full tube
   if(fabs(end_phi-start_phi-2*M_PI)<10e-6){
-    _assign(new TGeoTubeSeg(nam.c_str(), rmin, rmax, z, 0, 360.),nam,TUBE_TAG,true);
+    _assign(new TGeoTubeSeg(nam.c_str(), rmin, rmax, z, start_phi/units::deg, start_phi/units::deg+360.),nam,TUBE_TAG,true);
   }else{
     _assign(new TGeoTubeSeg(nam.c_str(), rmin, rmax, z, start_phi/units::deg, end_phi/units::deg),nam,TUBE_TAG,true);
   }
