@@ -1,3 +1,42 @@
+# v01-16-01
+
+* 2021-03-26 Andre Sailer ([PR#799](https://github.com/AIDASoft/DD4hep/pull/799))
+  - DDG4: flush the geant4 strstream buffer after run. fixes #798
+
+* 2021-03-26 Marko Petric ([PR#793](https://github.com/AIDASoft/DD4hep/pull/793))
+  - Account for possible units rounding bug in Tube creation (address #784 )
+
+* 2021-03-23 Andre Sailer ([PR#797](https://github.com/AIDASoft/DD4hep/pull/797))
+  - DDG4Dict: Adapt to changes in Root 6.24
+
+* 2021-03-23 Andre Sailer ([PR#796](https://github.com/AIDASoft/DD4hep/pull/796))
+  - RootDictionary: fix incompatibility with Root 6.24
+
+* 2021-03-23 Andre Sailer ([PR#795](https://github.com/AIDASoft/DD4hep/pull/795))
+  - Geant4Input: Add debug output for accepting or rejecting Particles
+
+* 2021-03-14 Markus FRANK ([PR#794](https://github.com/AIDASoft/DD4hep/pull/794))
+  - Address Coverity issues
+
+* 2021-03-12 Marko Petric ([PR#792](https://github.com/AIDASoft/DD4hep/pull/792))
+  - Use `CMAKE_SHARED_LIBRARY_SUFFIX` to define suffix of assimp libs
+  - Define `BUILD_BYPRODUCTS` for compatibility with `ninja`
+
+* 2021-03-12 Markus FRANK ([PR#791](https://github.com/AIDASoft/DD4hep/pull/791))
+  - Remove a bunch of Coverity warnings.
+
+* 2021-03-12 MarkusFrankATcernch ([PR#790](https://github.com/AIDASoft/DD4hep/pull/790))
+  - update materialBudget utility
+      -  allow to optionally use pseudo rapidity eta rather than polar angle
+
+* 2021-03-12 Marko Petric ([PR#788](https://github.com/AIDASoft/DD4hep/pull/788))
+  - Use flag `--as-needed` for GNU linkers
+
+* 2021-03-11 Markus FRANK ([PR#789](https://github.com/AIDASoft/DD4hep/pull/789))
+  - Fix several coverity warnings
+  - Fix bug in extracting unsigned int/long from xml: conversion to unsigned values had a bug.
+  - Remove unnecessary printout in Geant4Converter
+
 # v01-16
 
 * 2021-03-02 Markus FRANK ([PR#787](https://github.com/AIDASoft/DD4hep/pull/787))
