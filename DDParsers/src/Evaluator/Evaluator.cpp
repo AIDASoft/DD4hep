@@ -929,11 +929,10 @@ int Evaluator::setEnviron(const std::string& name, const std::string& value)  co
 
 //---------------------------------------------------------------------------
 std::pair<int,std::string> Evaluator::getEnviron(const std::string& name)  const    {
-  const char* env = nullptr;
   std::pair<int,std::string> result;
   auto env_status = object->getEnviron(name.c_str());
   result.first = env_status.second;
-  if ( env ) result.second = env_status.first;
+  if( env_status.first ) result.second = env_status.first;
   return result;
 }
 
