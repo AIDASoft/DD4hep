@@ -63,21 +63,10 @@ namespace dd4hep {
       ~Geant4AssemblyVolume()   {
       }
 
-      //std::vector<G4AssemblyTriplet>& triplets()  { return fTriplets; }
-      long placeVolume(const TGeoNode* n, G4LogicalVolume* pPlacedVolume, G4Transform3D& transformation) {
-        size_t id = fTriplets.size();
-        m_entries.push_back(n);
-        this->AddPlacedVolume(pPlacedVolume, transformation);
-        return (long)id;
-      }
-
-      long placeAssembly(const TGeoNode* n, Geant4AssemblyVolume* pPlacedVolume, G4Transform3D& transformation) {
-        size_t id = fTriplets.size();
-        m_entries.push_back(n);
-        this->AddPlacedAssembly(pPlacedVolume, transformation);
-        return (long)id;
-      }
-
+      long placeVolume(const TGeoNode* n, G4LogicalVolume* pPlacedVolume, G4Transform3D& transformation);
+      
+      long placeAssembly(const TGeoNode* n, Geant4AssemblyVolume* pPlacedVolume, G4Transform3D& transformation);
+      
       void imprint(Geant4GeometryInfo& info,
                    const TGeoNode* n,
                    Chain chain,
