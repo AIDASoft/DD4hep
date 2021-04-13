@@ -27,6 +27,26 @@
 
 using namespace dd4hep::sim;
 
+long Geant4AssemblyVolume::placeVolume(const TGeoNode* n,
+				       G4LogicalVolume* pPlacedVolume,
+				       G4Transform3D& transformation)
+{
+  size_t id = fTriplets.size();
+  m_entries.emplace_back(n);
+  this->AddPlacedVolume(pPlacedVolume, transformation);
+  return (long)id;
+}
+
+long Geant4AssemblyVolume::placeAssembly(const TGeoNode* n,
+					 Geant4AssemblyVolume* pPlacedVolume,
+					 G4Transform3D& transformation)
+{
+  size_t id = fTriplets.size();
+  m_entries.emplace_back(n);
+  this->AddPlacedAssembly(pPlacedVolume, transformation);
+  return (long)id;
+}
+
 void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
                                    const TGeoNode*       parent,
                                    Chain                 chain,
@@ -51,8 +71,9 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
   //cout << " Assembly:" << detail::tools::placementPath(chain) << endl;
 
   for( unsigned int i = 0; i < triplets.size(); i++ )  {
-    const TGeoNode* node = pParentAssembly->m_entries[i];
     Chain new_chain = chain;
+    const TGeoNode* node = pParentAssembly->m_entries[i];
+
     new_chain.emplace_back(node);
     //cout << " Assembly: Entry: " << detail::tools::placementPath(new_chain) << endl;
 
@@ -91,9 +112,9 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
 	     << ':'
 	     << parent->GetNumber()
              << '#'
-             << m_entries[i]->GetName()
+             << node->GetName()
              << ':'
-             << m_entries[i]->GetNumber()
+             << node->GetNumber()
              << std::ends;
       // Generate a new physical volume instance inside a mother
       // (as we allow 3D transformation use G4ReflectionFactory to
