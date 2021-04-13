@@ -30,17 +30,11 @@
 #include "Geant4ShapeConverter.h"
 
 // ROOT includes
-#include "TROOT.h"
-#include "TColor.h"
-#include "TGeoNode.h"
-
-#include "TGeoMatrix.h"
-#include "TGeoBoolNode.h"
-#include "TGeoParaboloid.h"
-#include "TGeoScaledShape.h"
-#include "TGeoManager.h"
-#include "TClass.h"
 #include "TMath.h"
+#include "TROOT.h"
+//#include "TColor.h"
+//#include "TGeoManager.h"
+#include "TGeoBoolNode.h"
 
 // Geant4 include files
 #include "G4VisAttributes.hh"
@@ -52,25 +46,20 @@
 #include "G4Ellipsoid.hh"
 #include "G4UnionSolid.hh"
 #include "G4ReflectedSolid.hh"
-#include "G4EllipticalTube.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4IntersectionSolid.hh"
 
-#include "G4Element.hh"
 #include "G4Region.hh"
-#include "G4UserLimits.hh"
-#include "G4LogicalVolume.hh"
-#include "G4Material.hh"
+#include "G4Element.hh"
 #include "G4Element.hh"
 #include "G4Isotope.hh"
-#include "G4Transform3D.hh"
-#include "G4ThreeVector.hh"
-#include "G4PVPlacement.hh"
-#include "G4ElectroMagneticField.hh"
+#include "G4Material.hh"
+#include "G4UserLimits.hh"
 #include "G4FieldManager.hh"
 #include "G4ReflectionFactory.hh"
 #include "G4OpticalSurface.hh"
 #include "G4LogicalSkinSurface.hh"
+#include "G4ElectroMagneticField.hh"
 #include "G4LogicalBorderSurface.hh"
 #include "G4MaterialPropertiesTable.hh"
 #if G4VERSION_NUMBER >= 1040
@@ -94,122 +83,8 @@ using namespace std;
 
 #include "DDG4/Geant4AssemblyVolume.h"
 #include "DD4hep/DetectorTools.h"
-#include "G4RotationMatrix.hh"
-#include "G4AffineTransform.hh"
-#include "G4LogicalVolume.hh"
-#include "G4VPhysicalVolume.hh"
-#include "G4ReflectionFactory.hh"
 
 static const double CM_2_MM = (CLHEP::centimeter/dd4hep::centimeter);
-
-void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
-                                   const TGeoNode*       parent,
-                                   Chain                 chain,
-                                   Geant4AssemblyVolume* pAssembly,
-                                   G4LogicalVolume*      pMotherLV,
-                                   G4Transform3D&        transformation,
-                                   G4int                 copyNumBase,
-                                   G4bool                surfCheck)
-{
-  static int level=0;
-  TGeoVolume* vol = parent->GetVolume();
-  unsigned int numberOfDaughters = (copyNumBase == 0) ? pMotherLV->GetNoDaughters() : copyNumBase;
-
-  ++level;
-
-  // We start from the first available index
-  //
-  numberOfDaughters++;
-  ImprintsCountPlus();
-
-  vector<G4AssemblyTriplet> triplets = pAssembly->fTriplets;
-  //cout << " Assembly:" << detail::tools::placementPath(chain) << endl;
-
-  for( unsigned int i = 0; i < triplets.size(); i++ )  {
-    const TGeoNode* node = pAssembly->m_entries[i];
-    Chain new_chain = chain;
-    new_chain.emplace_back(node);
-    //cout << " Assembly: Entry: " << detail::tools::placementPath(new_chain) << endl;
-
-    G4Transform3D Ta( *(triplets[i].GetRotation()),
-                      triplets[i].GetTranslation() );
-    if ( triplets[i].IsReflection() )  {
-      Ta = Ta * G4ReflectZ3D();
-    }
-
-    G4Transform3D Tfinal = transformation * Ta;
-    if ( triplets[i].GetVolume() )    {
-      // Generate the unique name for the next PV instance
-      // The name has format:
-      //
-      // av_WWW_impr_XXX_YYY_ZZZ
-      // where the fields mean:
-      // WWW - assembly volume instance number
-      // XXX - assembly volume imprint number
-      // YYY - the name of a log. volume we want to make a placement of
-      // ZZZ - the log. volume index inside the assembly volume
-      //
-      stringstream pvName;
-      pvName << "av_"
-             << GetAssemblyID()
-             << "_impr_"
-             << GetImprintsCount()
-             << "_"
-             << triplets[i].GetVolume()->GetName().c_str()
-             << "_pv_"
-             << i
-             << ends;
-
-      // Generate a new physical volume instance inside a mother
-      // (as we allow 3D transformation use G4ReflectionFactory to
-      //  take into account eventual reflection)
-      //
-#if 0
-      printout(INFO,"Geant4Converter","++ Place %svolume %s in assembly.",
-	       triplets[i].IsReflection() ? "REFLECTED " : "",
-	       detail::tools::placementPath(new_chain).c_str());
-#endif
-      G4PhysicalVolumesPair pvPlaced
-        = G4ReflectionFactory::Instance()->Place( Tfinal,
-                                                  pvName.str().c_str(),
-                                                  triplets[i].GetVolume(),
-                                                  pMotherLV,
-                                                  false,
-                                                  numberOfDaughters + i,
-                                                  surfCheck );
-
-      // Register the physical volume created by us so we can delete it later
-      //
-      //fPVStore.emplace_back( pvPlaced.first );
-      info.g4VolumeImprints[vol].emplace_back(new_chain,pvPlaced.first);
-#if 0
-      cout << " Assembly:Parent:" << parent->GetName() << " " << node->GetName()
-           << " " <<  (void*)node << " G4:" << pvName.str() << " Daughter:"
-           << detail::tools::placementPath(new_chain) << endl;
-      cout << endl;
-#endif
-
-      if ( pvPlaced.second )  {
-        G4Exception("G4AssemblyVolume::MakeImprint(..)", "GeomVol0003", FatalException,
-                    "Fancy construct popping new mother from the stack!");
-        //fPVStore.emplace_back( pvPlaced.second );
-      }
-    }
-    else if ( triplets[i].GetAssembly() )  {
-      // Place volumes in this assembly with composed transformation
-      imprint(info, parent, new_chain, (Geant4AssemblyVolume*)triplets[i].GetAssembly(),
-              pMotherLV, Tfinal, i*100+copyNumBase, surfCheck );
-    }
-    else   {
-      --level;
-      G4Exception("G4AssemblyVolume::MakeImprint(..)",
-                  "GeomVol0003", FatalException,
-                  "Triplet has no volume and no assembly");
-    }
-  }
-  //cout << "Imprinted assembly level:" << level << " in mother:" << pMotherLV->GetName() << endl;
-  --level;
-}
 
 namespace {
   static string indent = "";
@@ -897,7 +772,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         Geant4AssemblyVolume* ass = (Geant4AssemblyVolume*)info.g4AssemblyVolumes[node];
         Geant4AssemblyVolume::Chain chain;
         chain.emplace_back(node);
-        ass->imprint(info,node,chain,ass,(*volIt).second, transform, copy, checkOverlaps);
+        ass->imprint(info, node, chain, ass, (*volIt).second, transform, copy, checkOverlaps);
         return nullptr;
       }
       else if ( node != info.manager->GetTopNode() && volIt == info.g4Volumes.end() )  {

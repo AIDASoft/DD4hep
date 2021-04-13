@@ -199,6 +199,7 @@ DetectorImp::DetectorImp()
 DetectorImp::DetectorImp(const string& name)
   : TNamed(), DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
 {
+  static bool first = true;
 #if defined(DD4HEP_USE_GEANT4_UNITS) && ROOT_VERSION_CODE >= ROOT_VERSION(6,22,7)
     printout(WARNING,"DD4hep","++ Using globally Geant4 unit system (mm,ns,MeV)");
     if ( TGeoManager::GetDefaultUnits() != TGeoManager::kG4Units )  {
@@ -213,9 +214,7 @@ DetectorImp::DetectorImp(const string& name)
       TGeoManager::LockDefaultUnits(kTRUE);
     }
 #else
-  static bool first = true;
   if ( first )    {
-    first = false;
 #if defined(DD4HEP_USE_GEANT4_UNITS) && ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
     printout(WARNING,"DD4hep","++ Using globally Geant4 unit system (mm,ns,MeV)");
     TGeoManager::SetDefaultG4Units();
@@ -226,10 +225,15 @@ DetectorImp::DetectorImp(const string& name)
 #endif
   }
 #endif
+
+  if ( first )    {
+    first = false;
+    set_terminate( description_unexpected );
+  }
+  
   SetName(name.c_str());
   SetTitle("DD4hep detector description object");
-  set_terminate( description_unexpected );
-  DetectorGuard(this).lock(gGeoManager);
+  //DetectorGuard(this).lock(gGeoManager);
   gGeoManager = nullptr;
   InstanceCount::increment(this);
   m_manager = new TGeoManager(name.c_str(), "Detector Geometry");
@@ -742,8 +746,6 @@ void DetectorImp::endDocument(bool close_geometry)    {
 #endif
     m_worldVol.solid()->ComputeBBox();
     // Propagating reflections: This is useless now and unused!!!!
-    //ReflectionBuilder rb(*this);
-    //rb.execute();
     // Since we allow now for anonymous shapes,
     // we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();
@@ -753,7 +755,7 @@ void DetectorImp::endDocument(bool close_geometry)    {
   patcher.patchShapes();
   mapDetectorTypes();
   m_state = READY;
-  DetectorGuard(this).unlock();
+  //DetectorGuard(this).unlock();
 }
 
 /// Initialize the geometry and set the bounding box of the world volume

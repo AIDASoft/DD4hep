@@ -96,7 +96,7 @@ namespace dd4hep {
                       int sd_lvl,
                       PrintLevel p);
     /// Default destructor
-    virtual ~DetElementCreator();
+    virtual ~DetElementCreator() noexcept(false);
     /// Callback to output PlacedVolume information of an single Placement
     virtual int operator()(PlacedVolume pv, int level);
     /// Callback to output PlacedVolume information of an entire Placement
@@ -140,7 +140,7 @@ DetElementCreator::DetElementCreator(Detector& desc,
 }
 
 /// Default destructor
-DetElementCreator::~DetElementCreator()  {
+DetElementCreator::~DetElementCreator() noexcept(false)  {
   Count total;
   stringstream str, id_str;
   const char* pref = detector_volume_match.c_str();
