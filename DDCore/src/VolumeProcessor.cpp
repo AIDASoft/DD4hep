@@ -18,7 +18,7 @@
 using namespace dd4hep;
 
 /// Default destructor
-PlacedVolumeProcessor::~PlacedVolumeProcessor()   {
+PlacedVolumeProcessor::~PlacedVolumeProcessor()  noexcept(false)  {
 }
 
 /// Callback to output PlacedVolume information of an entire DetElement

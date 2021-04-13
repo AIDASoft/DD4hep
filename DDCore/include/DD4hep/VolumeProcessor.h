@@ -43,7 +43,7 @@ namespace dd4hep {
     /// Default copy constructor
     PlacedVolumeProcessor(const PlacedVolumeProcessor& copy) = default;
     /// Default destructor
-    virtual ~PlacedVolumeProcessor();
+    virtual ~PlacedVolumeProcessor() noexcept(false);
     /// Default assignment
     PlacedVolumeProcessor& operator=(const PlacedVolumeProcessor& copy) = default;
     /// Callback to output PlacedVolume information of an single Placement

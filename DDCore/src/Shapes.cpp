@@ -766,7 +766,7 @@ void Polyhedra::make(const string& nam, int nsides, double start, double delta,
 }
 
 /// Helper function to create the polyhedron
-void ExtrudedPolygon::make(const string& nam,
+void ExtrudedPolygon::make(const string&         nam,
                            const vector<double>& pt_x,
                            const vector<double>& pt_y,
                            const vector<double>& sec_z,

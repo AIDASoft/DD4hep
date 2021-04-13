@@ -104,17 +104,21 @@ namespace   {
     if ( 0 == plugin_name ) plugin_name = "libDD4hepGaudiPluginMgr";
 #endif
 #if defined(DD4HEP_PARSERS_NO_ROOT)
-    handle = ::dlopen(plugin_name, RTLD_LAZY | RTLD_GLOBAL);
+    struct handle_guard  {
+      void* _handle {nullptr};
+      handle_guard(void* hdl) : _handle(hdl) {
+      }
+      ~handle_guard()  {
+	if ( _handle ) ::dlclose(_handle);
+	_handle = nullptr;
+      }
+    };
+    static handle_guard _guard(nullptr);
+    if ( nullptr == _guard._handle )   {
+      _guard._handle = handle = ::dlopen(plugin_name, RTLD_LAZY | RTLD_GLOBAL);
+    }
     if ( !handle )   {
       throw runtime_error("Failed to load plugin manager library: "+string(plugin_name));
-    }
-    else   {
-      struct handle_guard  {
-	void* _handle {nullptr};
-	handle_guard(void* hdl) : _handle(hdl) {}
-	~handle_guard()  { if ( _handle ) ::dlclose(_handle); _handle = nullptr; }
-      };
-      static handle_guard _guard(handle);
     }
 #else
     if ( 0 != gSystem->Load(plugin_name) ) {}
