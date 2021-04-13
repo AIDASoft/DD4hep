@@ -107,13 +107,13 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
 #endif
       pvName << "AV_"
              << GetAssemblyID()
-             << '#'
+             << '!'
 	     << parent->GetName()
-	     << ':'
+	     << '#'
 	     << parent->GetNumber()
-             << '#'
+             << '!'
              << node->GetName()
-             << ':'
+             << '#'
              << node->GetNumber()
              << std::ends;
       // Generate a new physical volume instance inside a mother
