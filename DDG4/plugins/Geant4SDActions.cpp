@@ -353,7 +353,7 @@ namespace dd4hep {
         sensitive->mark(step->GetTrack());
         mean_pos.SetXYZ(0,0,0);
         mean_time = 0;
-        post = pre;
+        post.copyFrom(pre);
         combined = 0;
         cell = 0;
       }

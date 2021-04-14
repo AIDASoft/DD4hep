@@ -156,28 +156,36 @@ std::vector<G4ParticleDefinition*> Geant4ParticleHandle::g4DefinitionsRegEx(cons
   std::string exp = expression;   //'^'+expression+"$";
   G4ParticleTable* pt = G4ParticleTable::GetParticleTable();
   G4ParticleTable::G4PTblDicIterator* iter = pt->GetIterator();
-  char msgbuf[128];
-  regex_t reg;
-  int ret = ::regcomp(&reg, exp.c_str(), 0);
-  if (ret) {
-    throw std::runtime_error(format("Geant4ParticleHandle", "REGEX: Failed to compile particle name %s", exp.c_str()));
-  }
-  results.clear();
+
   iter->reset();
-  while ((*iter)()) {
-    G4ParticleDefinition* p = iter->value();
-    ret = ::regexec(&reg, p->GetParticleName().c_str(), 0, NULL, 0);
-    if (!ret)
+  if ( expression == "*" || expression == ".(*)" )   {
+    while ((*iter)()) {
+      G4ParticleDefinition* p = iter->value();
       results.emplace_back(p);
-    else if (ret == REG_NOMATCH)
-      continue;
-    else {
-      ::regerror(ret, &reg, msgbuf, sizeof(msgbuf));
-      ::regfree(&reg);
-      throw std::runtime_error(format("Geant4ParticleHandle", "REGEX: Failed to match particle name %s err=%s", exp.c_str(), msgbuf));
     }
   }
-  ::regfree(&reg);
+  else   {
+    regex_t reg;
+    int ret = ::regcomp(&reg, exp.c_str(), 0);
+    if (ret) {
+      throw std::runtime_error(format("Geant4ParticleHandle", "REGEX: Failed to compile particle name %s", exp.c_str()));
+    }
+    while ((*iter)()) {
+      G4ParticleDefinition* p = iter->value();
+      ret = ::regexec(&reg, p->GetParticleName().c_str(), 0, NULL, 0);
+      if (!ret)
+	results.emplace_back(p);
+      else if (ret == REG_NOMATCH)
+	continue;
+      else {
+	char msgbuf[128];
+	::regerror(ret, &reg, msgbuf, sizeof(msgbuf));
+	::regfree(&reg);
+	throw std::runtime_error(format("Geant4ParticleHandle", "REGEX: Failed to match particle name %s err=%s", exp.c_str(), msgbuf));
+      }
+    }
+    ::regfree(&reg);
+  }
   return results;
 }
 

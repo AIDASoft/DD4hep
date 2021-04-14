@@ -52,7 +52,7 @@ namespace SomeExperiment {
     /// Default destructor
     virtual ~MyTrackerHit() = default;
     /// Assignment operator
-    MyTrackerHit& operator=(const MyTrackerHit& c);
+    void copyFrom(const MyTrackerHit& c);
   };
 
   /// Helper to dump data file

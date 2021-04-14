@@ -145,8 +145,8 @@ namespace dd4hep {
     inline Geant4Tracker::Hit::Hit(int, int, double, double)   {}
     /// Default destructor
     inline Geant4Tracker::Hit::~Hit()  {    }
-    /// Assignment operator
-    inline Geant4Tracker::Hit& Geant4Tracker::Hit::operator=(const Hit&)   { return *this; }
+    /// Explicit assignment operation
+    inline void Geant4Tracker::Hit::copyFrom(const Hit&)   {   }
     /// Clear hit content
     inline Geant4Tracker::Hit& Geant4Tracker::Hit::clear()    { return *this; }
     /// Store Geant4 point and step information into tracker hit structure.

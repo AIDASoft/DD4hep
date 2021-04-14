@@ -264,18 +264,17 @@ void Geant4PhysicsList::constructProcesses(G4VUserPhysicsList* physics_pointer) 
     if ( defs.empty() )  {
       except("Particle:%s Cannot find the corresponding entry in the particle table.", part_name.c_str());
     }
-    for ( G4ParticleDefinition* particle : defs )   {
-      G4ProcessManager* mgr = particle->GetProcessManager();
-      for ( const Process& p : procs )  {
-        if ( G4VProcess* g4 = PluginService::Create<G4VProcess*>(p.name) )   {
+    for ( const Process& p : procs )  {
+      if ( G4VProcess* g4 = PluginService::Create<G4VProcess*>(p.name) )   {
+	for ( G4ParticleDefinition* particle : defs )   {
+	  G4ProcessManager* mgr = particle->GetProcessManager();
 	  mgr->AddDiscreteProcess(g4);
 	  info("Particle:%s -> [%s] added discrete process %s", 
 	       part_name.c_str(), particle->GetParticleName().c_str(), p.name.c_str());
-	  continue;
 	}
-	except("Particle:%s -> [%s] Cannot create discrete physics process %s", 
-	       part_name.c_str(), particle->GetParticleName().c_str(), p.name.c_str());
+	continue;
       }
+      except("Cannot create discrete physics process %s", p.name.c_str());
     }
   }
   for ( const auto& [part_name, procs] : m_processes )   {
@@ -283,19 +282,18 @@ void Geant4PhysicsList::constructProcesses(G4VUserPhysicsList* physics_pointer) 
     if (defs.empty())  {
       except("Particle:%s Cannot find the corresponding entry in the particle table.", part_name.c_str());
     }
-    for ( G4ParticleDefinition* particle : defs )   {
-      G4ProcessManager* mgr = particle->GetProcessManager();
-      for ( const Process& p : procs )  {
-        if ( G4VProcess* g4 = PluginService::Create<G4VProcess*>(p.name) )   {
+    for ( const Process& p : procs )  {
+      if ( G4VProcess* g4 = PluginService::Create<G4VProcess*>(p.name) )   {
+	for ( G4ParticleDefinition* particle : defs )   {
+	  G4ProcessManager* mgr = particle->GetProcessManager();
 	  mgr->AddProcess(g4, p.ordAtRestDoIt, p.ordAlongSteptDoIt, p.ordPostStepDoIt);
 	  info("Particle:%s -> [%s] added process %s with flags (%d,%d,%d)", 
 	       part_name.c_str(), particle->GetParticleName().c_str(), p.name.c_str(),
 	       p.ordAtRestDoIt, p.ordAlongSteptDoIt, p.ordPostStepDoIt);
-	  continue;
 	}
-	except("Particle:%s -> [%s] Cannot create physics process %s", 
-	       part_name.c_str(), particle->GetParticleName().c_str(), p.name.c_str());
+	continue;
       }
+      except("Cannot create physics process %s", p.name.c_str());
     }
   }
 }
