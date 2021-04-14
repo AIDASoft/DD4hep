@@ -18,12 +18,11 @@
 using namespace SomeExperiment;
 
 /// Assignment operator
-MyTrackerHit& MyTrackerHit::operator=(const MyTrackerHit& c)  {
+void MyTrackerHit::copyFrom(const MyTrackerHit& c)  {
   if ( &c != this )  {
-    this->dd4hep::sim::Geant4Tracker::Hit::operator=(c);
+    this->dd4hep::sim::Geant4Tracker::Hit::copyFrom(c);
     this->step_length = c.step_length;
     this->postPos = c.postPos;
     this->prePos = c.prePos;
   }
-  return *this;
 }

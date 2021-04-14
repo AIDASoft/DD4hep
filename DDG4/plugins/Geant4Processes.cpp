@@ -38,6 +38,10 @@
 //
 // ======================================================================
 
+// Fast simulation
+#include "G4FastSimulationManagerProcess.hh"
+DECLARE_GEANT4_PROCESS(G4FastSimulationManagerProcess)
+
 // Photon Processes:
 #include "G4GammaConversion.hh"
 DECLARE_GEANT4_PROCESS(G4GammaConversion)

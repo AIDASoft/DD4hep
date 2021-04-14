@@ -238,12 +238,20 @@ namespace dd4hep {
       public:
         /// Default constructor
         Hit();
+        /// Move constructor
+        Hit(Hit&& c) = delete;
+        /// copy constructor
+        Hit(const Hit& c) = delete;
         /// Initializing constructor
         Hit(int track_id, int pdg_id, double deposit, double time_stamp);
         /// Default destructor
         virtual ~Hit();
-        /// Assignment operator
-        Hit& operator=(const Hit& c);
+        /// Move assignment operator
+        Hit& operator=(Hit&& c) = delete;
+        /// Copy assignment operator
+        Hit& operator=(const Hit& c) = delete;
+	/// Explicit assignment operation
+	void copyFrom(const Hit& c);
         /// Clear hit content
         Hit& clear();
         /// Store Geant4 point and step information into tracker hit structure.
@@ -280,10 +288,18 @@ namespace dd4hep {
       public:
         /// Default constructor (for ROOT)
         Hit();
+        /// Move constructor
+        Hit(Hit&& c) = delete;
+        /// copy constructor
+        Hit(const Hit& c) = delete;
         /// Standard constructor
         Hit(const Position& cell_pos);
         /// Default destructor
         virtual ~Hit();
+        /// Move assignment operator
+        Hit& operator=(Hit&& c) = delete;
+        /// Copy assignment operator
+        Hit& operator=(const Hit& c) = delete;
       };
     };
 

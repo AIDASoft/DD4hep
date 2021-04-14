@@ -130,7 +130,7 @@ namespace dd4hep {
         post.truth.deposit = 0.0;
         current = pre.truth.trackID;
         sensitive->mark(step->GetTrack());
-        post = pre;
+        post.copyFrom(pre);
         parent = step->GetTrack()->GetParentID();
         g4ID = step->GetTrack()->GetTrackID();
 

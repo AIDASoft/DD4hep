@@ -92,7 +92,8 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* ste
 
 /// Default constructor
 Geant4Tracker::Hit::Hit()
-: Geant4HitData(), position(), momentum(), length(0.0), truth(), energyDeposit(0.0) {
+: Geant4HitData(), position(), momentum(), length(0.0), truth(), energyDeposit(0.0)
+{
   InstanceCount::increment(this);
 }
 
@@ -107,15 +108,14 @@ Geant4Tracker::Hit::~Hit() {
   InstanceCount::decrement(this);
 }
 
-/// Assignment operator
-Geant4Tracker::Hit& Geant4Tracker::Hit::operator=(const Hit& c) {
+/// Explicit assignment operation
+void Geant4Tracker::Hit::copyFrom(const Hit& c) {
   if ( &c != this )  {
     position = c.position;
     momentum = c.momentum;
     length = c.length;
     truth = c.truth;
   }
-  return *this;
 }
 
 /// Clear hit content
