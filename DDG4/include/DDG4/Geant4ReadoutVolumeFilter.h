@@ -49,6 +49,8 @@ namespace dd4hep {
       virtual ~Geant4ReadoutVolumeFilter();
       /// Filter action. Return true if hits should be processed
       virtual bool operator()(const G4Step* step) const;
+      /// GFLASH interface: Filter action. Return true if hits should be processed.
+      virtual bool operator()(const G4GFlashSpot* step) const;
     };
   }    // End namespace sim
 }      // End namespace dd4hep

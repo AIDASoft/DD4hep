@@ -26,6 +26,7 @@
 class G4HCofThisEvent;
 class G4Step;
 class G4Event;
+class G4GFlashSpot;
 class G4TouchableHistory;
 class G4VHitsCollection;
 class G4VReadOutGeometry;
@@ -97,8 +98,13 @@ namespace dd4hep {
       Geant4Filter(Geant4Context* context, const std::string& name);
       /// Standard destructor
       virtual ~Geant4Filter();
-      /// Filter action. Return true if hits should be processed
+      /// Filter action. Return true if hits should be processed. Default returns true
       virtual bool operator()(const G4Step* step) const;
+      /// GFLASH interface: Filter action. Return true if hits should be processed.
+      /** The default implementation throws an exception that the 
+       *  GFLASH interface is not implemented.
+       */
+      virtual bool operator()(const G4GFlashSpot* step) const;
     };
 
     /// The base class for Geant4 sensitive detector actions implemented by users
@@ -215,9 +221,14 @@ namespace dd4hep {
       void adoptFilter_front(Geant4Action* filter);
 
       /// Callback before hit processing starts. Invoke all filters.
-      /** Return fals if any filter returns false
+      /** Return false if any filter returns false
        */
       bool accept(const G4Step* step) const;
+
+      /// GFLASH interface: Callback before hit processing starts. Invoke all filters.
+      /** Return false if any filter returns false
+       */
+      bool accept(const G4GFlashSpot* step) const;
 
       /// Initialize the usage of a single hit collection. Returns the collection ID
       template <typename TYPE> size_t defineCollection(const std::string& coll_name);
@@ -246,6 +257,12 @@ namespace dd4hep {
       /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
       virtual bool process(G4Step* step, G4TouchableHistory* history);
 
+      /// Separate GFLASH interface: Method for generating hit(s) using the information of the G4GFlashSpot object.
+      /** The default implementation throws an exception that the 
+       *  GFLASH interface is not implemented.
+       */
+      virtual bool processGFlash(G4GFlashSpot* spot, G4TouchableHistory* history);
+
       /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
       /** Hits collections created but not being set to G4HCofThisEvent
        *  at the event should be deleted.
@@ -260,6 +277,12 @@ namespace dd4hep {
        */
       long long int volumeID(const G4Step* step);
 
+      /// Returns the volumeID of the sensitive volume corresponding to the GFlash spot
+      /** Combining the VolIDS of the complete geometry path (Geant4TouchableHistory)
+       * from the current sensitive volume to the world volume
+       */
+      long long int volumeID(const G4GFlashSpot* spot);
+
       /// Returns the cellID of the sensitive volume corresponding to the step
       /** The CellID is the VolumeID + the local coordinates of the sensitive area.
        *  Calculated by combining the VolIDS of the complete geometry path (Geant4TouchableHistory)
@@ -267,6 +290,12 @@ namespace dd4hep {
        */
       long long int cellID(const G4Step* step);
 
+      /// Returns the cellID of the sensitive volume corresponding to the GFlash spot
+      /** The CellID is the VolumeID + the local coordinates of the sensitive area.
+       *  Calculated by combining the VolIDS of the complete geometry path (Geant4TouchableHistory)
+       *  from the current sensitive volume to the world volume
+       */
+      long long int cellID(const G4GFlashSpot* spot);
     };
 
     /// The sequencer to host Geant4 sensitive actions called if particles interact with sensitive elements
@@ -382,12 +411,16 @@ namespace dd4hep {
       void adoptFilter(Geant4Action* filter);
 
       /// Callback before hit processing starts. Invoke all filters.
-      /** Return fals if any filter returns false
-       */
       bool accept(const G4Step* step) const;
 
-      /// Function to process hits
-      virtual bool process(G4Step* step, G4TouchableHistory* hist);
+      /// GFLASH interface: Callback before hit processing starts. Invoke all filters.
+      bool accept(const G4GFlashSpot* step) const;
+
+      /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
+      virtual bool process(G4Step* step, G4TouchableHistory* history);
+
+      /// Separate GFLASH interface: Method for generating hit(s) using the information of the G4GFlashSpot object.
+      virtual bool processGFlash(G4GFlashSpot* spot, G4TouchableHistory* history);
 
       /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
       /** The hits collection(s) created by this sensitive detector must
@@ -525,6 +558,9 @@ namespace dd4hep {
       virtual void end(G4HCofThisEvent* hce);
       /// G4VSensitiveDetector interface: Method for generating hit(s) using the G4Step object.
       virtual bool process(G4Step* step,G4TouchableHistory* history);
+      /// Separate GFLASH interface: Method for generating hit(s) using the information of the G4GFlashSpot object.
+      virtual bool processGFlash(G4GFlashSpot* spot, G4TouchableHistory* history);
+
       /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
       virtual void clear(G4HCofThisEvent* hce);
     };

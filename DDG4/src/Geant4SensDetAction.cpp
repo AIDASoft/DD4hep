@@ -17,10 +17,11 @@
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4Kernel.h"
 #include "DDG4/Geant4Mapping.h"
-#include "DDG4/Geant4SensDetAction.h"
 #include "DDG4/Geant4StepHandler.h"
+#include "DDG4/Geant4SensDetAction.h"
 #include "DDG4/Geant4VolumeManager.h"
 #include "DDG4/Geant4MonteCarloTruth.h"
+#include "DDG4/Geant4GFlashSpotHandler.h"
 
 // Geant4 include files
 #include <G4Step.hh>
@@ -90,6 +91,12 @@ bool Geant4Filter::operator()(const G4Step*) const {
   return true;
 }
 
+/// Filter action. Return true if hits should be processed
+bool Geant4Filter::operator()(const G4GFlashSpot*) const {
+  except("The filter action %s does not support the GFLASH interface for Geant4.", c_name());
+  return false;
+}
+
 /// Constructor. The detector element is identified by the name
 Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& nam, DetElement det, Detector& description_ref)
   : Geant4Action(ctxt, nam), m_sensitiveDetector(0), m_sequence(0),
@@ -147,7 +154,15 @@ void Geant4Sensitive::adopt_front(Geant4Filter* filter) {
 
 /// Callback before hit processing starts. Invoke all filters.
 bool Geant4Sensitive::accept(const G4Step* step) const {
-  bool result = m_filters.filter(&Geant4Filter::operator(), step);
+  bool (Geant4Filter::*filter)(const G4Step*) const = &Geant4Filter::operator();
+  bool result = m_filters.filter(filter, step);
+  return result;
+}
+
+/// GFLASH interface: Callback before hit processing starts. Invoke all filters.
+bool Geant4Sensitive::accept(const G4GFlashSpot* spot) const {
+  bool (Geant4Filter::*filter)(const G4GFlashSpot*) const = &Geant4Filter::operator();
+  bool result = m_filters.filter(filter, spot);
   return result;
 }
 
@@ -198,8 +213,14 @@ void Geant4Sensitive::begin(G4HCofThisEvent* /* HCE */) {
 void Geant4Sensitive::end(G4HCofThisEvent* /* HCE */) {
 }
 
-/// Method for generating hit(s) using the information of G4Step object.
+/// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
 bool Geant4Sensitive::process(G4Step* /* step */, G4TouchableHistory* /* history */) {
+  return false;
+}
+
+/// Separate GFLASH interface: Method for generating hit(s) using the information of the G4GFlashSpot object.
+bool Geant4Sensitive::processGFlash(G4GFlashSpot* /* spot */, G4TouchableHistory* /* history */) {
+  except("The sensitive action %s does not support the GFLASH interface for Geant4.", c_name());
   return false;
 }
 
@@ -227,6 +248,14 @@ long long int Geant4Sensitive::volumeID(const G4Step* step) {
   return id;
 }
 
+/// Returns the volumeID of the sensitive volume corresponding to the GFlash spot
+long long int Geant4Sensitive::volumeID(const G4GFlashSpot* spot) {
+  Geant4GFlashSpotHandler h(spot);
+  Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
+  VolumeID id = volMgr.volumeID(h.touchable());
+  return id;
+}
+
 /// Returns the cellID(volumeID+local coordinate encoding) of the sensitive volume corresponding to the step
 long long int Geant4Sensitive::cellID(const G4Step* step) {
   Geant4StepHandler h(step);
@@ -236,6 +265,22 @@ long long int Geant4Sensitive::cellID(const G4Step* step) {
     G4ThreeVector global = 0.5 * ( h.prePosG4()+h.postPosG4());
     G4ThreeVector local  = h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);
     Position loc(local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
+    Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
+    VolumeID cID = m_segmentation.cellID(loc,glob,volID);
+    return cID;
+  }
+  return volID;
+}
+
+/// Returns the cellID(volumeID+local coordinate encoding) of the sensitive volume corresponding to the GFlash spot
+long long int Geant4Sensitive::cellID(const G4GFlashSpot* spot) {
+  Geant4GFlashSpotHandler h(spot);
+  Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
+  VolumeID volID = volMgr.volumeID(h.touchable());
+  if ( m_segmentation.isValid() )  {
+    G4ThreeVector global = h.positionG4();
+    G4ThreeVector local  = h.touchable()->GetHistory()->GetTopTransform().TransformPoint(global);
+    Position loc (local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
     Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
     VolumeID cID = m_segmentation.cellID(loc,glob,volID);
     return cID;
@@ -350,19 +395,37 @@ Geant4HitCollection* Geant4SensDetActionSequence::collectionByID(size_t id) cons
 
 /// Callback before hit processing starts. Invoke all filters.
 bool Geant4SensDetActionSequence::accept(const G4Step* step) const {
-  bool result = m_filters.filter(&Geant4Filter::operator(), step);
+  bool (Geant4Filter::*filter)(const G4Step*) const = &Geant4Filter::operator();
+  bool result = m_filters.filter(filter, step);
   return result;
 }
 
-/// Function to process hits
-bool Geant4SensDetActionSequence::process(G4Step* step, G4TouchableHistory* hist) {
+/// Callback before hit processing starts. Invoke all filters.
+bool Geant4SensDetActionSequence::accept(const G4GFlashSpot* spot) const {
+  bool (Geant4Filter::*filter)(const G4GFlashSpot*) const = &Geant4Filter::operator();
+  bool result = m_filters.filter(filter, spot);
+  return result;
+}
+
+/// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
+bool Geant4SensDetActionSequence::process(G4Step* step, G4TouchableHistory* history) {
   bool result = false;
-  for (vector<Geant4Sensitive*>::iterator i = m_actors->begin(); i != m_actors->end(); ++i) {
-    Geant4Sensitive* sensitive = *i;
-    if (sensitive->accept(step))
-      result |= sensitive->process(step, hist);
+  for (Geant4Sensitive* sensitive : m_actors)  {
+    if ( sensitive->accept(step) )
+      result |= sensitive->process(step, history);
   }
-  m_process(step, hist);
+  m_process(step, history);
+  return result;
+}
+
+/// Separate GFLASH interface: Method for generating hit(s) using the information of the G4GFlashSpot object.
+bool Geant4SensDetActionSequence::processGFlash(G4GFlashSpot* spot, G4TouchableHistory* history)  {
+  bool result = false;
+  for (Geant4Sensitive* sensitive : m_actors)  {
+    if ( sensitive->accept(spot) )
+      result |= sensitive->processGFlash(spot, history);
+  }
+  m_process(spot, history);
   return result;
 }
 

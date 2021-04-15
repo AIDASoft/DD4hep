@@ -16,6 +16,7 @@
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4Data.h"
 #include "DDG4/Geant4StepHandler.h"
+#include "DDG4/Geant4GFlashSpotHandler.h"
 
 // Geant4 include files
 #include "G4Step.hh"
@@ -88,6 +89,14 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* ste
   float pos[] = {float((pre.x()+post.x())/2.0),float((pre.y()+post.y())/2.0),float((pre.z()+post.z())/2.0) };
   Contribution contrib(h.trkID(),h.trkPdgID(),deposit,h.trkTime(),length,pos);
   return contrib;
+}
+
+/// Extract the MC contribution for a given hit from the GFlash spot information
+Geant4HitData::Contribution Geant4HitData::extractContribution(const G4GFlashSpot* spot) {
+  Geant4GFlashSpotHandler h(spot);
+  G4ThreeVector           p = h.positionG4();
+  double                  position[3] = {p.x(), p.y(), p.z()};
+  return Contribution(h.trkID(),h.trkPdgID(),h.energy(),h.trkTime(),0e0,position);
 }
 
 /// Default constructor

@@ -26,7 +26,6 @@
 #include "DDG4/Geant4Field.h"
 #include "DDG4/Geant4Converter.h"
 #include "DDG4/Geant4UserLimits.h"
-#include "DDG4/Geant4SensitiveDetector.h"
 #include "Geant4ShapeConverter.h"
 
 // ROOT includes
@@ -48,6 +47,7 @@
 #include "G4ReflectedSolid.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4IntersectionSolid.hh"
+#include "G4VSensitiveDetector.hh"
 
 #include "G4Region.hh"
 #include "G4Element.hh"
@@ -56,6 +56,7 @@
 #include "G4Material.hh"
 #include "G4UserLimits.hh"
 #include "G4FieldManager.hh"
+#include "G4LogicalVolume.hh"
 #include "G4ReflectionFactory.hh"
 #include "G4OpticalSurface.hh"
 #include "G4LogicalSkinSurface.hh"
@@ -463,8 +464,8 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       solid = convertShape<TGeoTessellated>(shape);
 #endif
     else if (isa == TGeoScaledShape::Class())  {
-      TGeoScaledShape* sh   = (TGeoScaledShape*) shape;
 #if G4VERSION_NUMBER >= 1030
+      TGeoScaledShape* sh   = (TGeoScaledShape*) shape;
       TGeoShape*       sol  = sh->GetShape();
       const double*    vals = sh->GetScale()->GetScale();
       G4Scale3D        scal(vals[0], vals[1], vals[2]);

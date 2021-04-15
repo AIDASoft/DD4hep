@@ -25,6 +25,7 @@
 // Forward declarations
 class G4Step;
 class G4StepPoint;
+class G4GFlashSpot;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -189,9 +190,13 @@ namespace dd4hep {
         /// Clear data content
         void clear() {
           x = y = z = 0.0;
-          time = deposit = length = 0.0;
+          time  = deposit = length = 0.0;
           pdgID = trackID = -1;
         }
+	/// Access position
+	Position position() const   {
+	  return Position(x, y, z);
+	}
       };
       typedef MonteCarloContrib Contribution;
       typedef std::vector<MonteCarloContrib> Contributions;
@@ -204,6 +209,8 @@ namespace dd4hep {
       static Contribution extractContribution(const G4Step* step);
       /// Extract the MC contribution for a given hit from the step information with BirksLaw option
       static Contribution extractContribution(const G4Step* step, bool ApplyBirksLaw);
+      /// Extract the MC contribution for a given hit from the GFlash spot information
+      static Contribution extractContribution(const G4GFlashSpot* spot);
     };
 
     /// Helper class to define structures used by the generic DDG4 tracker sensitive detector
