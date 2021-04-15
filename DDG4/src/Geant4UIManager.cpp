@@ -19,6 +19,7 @@
 #include "DD4hep/Printout.h"
 
 // Geant4 include files
+#include "G4Version.hh"
 #include "G4VisExecutive.hh"
 #include "G4UImanager.hh"
 #include "G4UIsession.hh"

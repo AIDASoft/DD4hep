@@ -17,6 +17,9 @@
 #include "DD4hep/DD4hepUnits.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
+// Geant4 include files
+#include "G4Version.hh"
+
 namespace units = dd4hep;
 using namespace dd4hep;
 using namespace dd4hep::sim;

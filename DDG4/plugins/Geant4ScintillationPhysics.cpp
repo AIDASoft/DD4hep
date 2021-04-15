@@ -28,6 +28,7 @@
 #include "DDG4/Geant4PhysicsList.h"
 
 /// Geant4 include files
+#include "G4Version.hh"
 #include "G4ParticleTableIterator.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4LossTableManager.hh"
