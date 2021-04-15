@@ -15,6 +15,8 @@
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4PhysicsConstructor.h"
 #include "G4VModularPhysicsList.hh"
+
+// Geant4 include files
 #include "G4Version.hh"
 
 using namespace dd4hep::sim;

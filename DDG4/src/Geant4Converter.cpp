@@ -36,6 +36,7 @@
 #include "TGeoBoolNode.h"
 
 // Geant4 include files
+#include "G4Version.hh"
 #include "G4VisAttributes.hh"
 #include "G4ProductionCuts.hh"
 #include "G4VUserRegionInformation.hh"
@@ -49,7 +50,6 @@
 #include "G4IntersectionSolid.hh"
 #include "G4VSensitiveDetector.hh"
 
-#include "G4Version.hh"
 #include "G4Region.hh"
 #include "G4Element.hh"
 #include "G4Element.hh"
