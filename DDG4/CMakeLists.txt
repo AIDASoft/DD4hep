@@ -34,8 +34,6 @@ target_include_directories(DDG4 BEFORE
   $<INSTALL_INTERFACE:include>
 )
 
-#---------------------------  Legacy libraries (for Frank) -------------------------
-dd4hep_add_plugin(DDG4Legacy  SOURCES legacy/*.cpp USES DDG4)
 #-----------------------------------------------------------------------------------
 dd4hep_add_dictionary( G__DDG4
   SOURCES python/DDG4Dict.C
@@ -163,10 +161,10 @@ install(DIRECTORY ${CMAKE_BINARY_DIR}/python/DDSim DESTINATION ${DD4HEP_PYTHON_I
 
 install(DIRECTORY examples DESTINATION examples/DDG4)
 
-set_target_properties(DDG4 DDG4Plugins DDG4Legacy PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+set_target_properties(DDG4 DDG4Plugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 
-install(TARGETS DDG4 DDG4Plugins DDG4Legacy g4gdmlDisplay g4FromXML
+install(TARGETS DDG4 DDG4Plugins g4gdmlDisplay g4FromXML
   EXPORT DD4hep
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

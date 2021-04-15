@@ -66,6 +66,11 @@ namespace dd4hep {
     template <typename T> bool Geant4SensitiveAction<T>::process(G4Step* step,G4TouchableHistory* history)  {
       return Geant4Sensitive::process(step,history);
     }
+    
+    /// Separate GFLASH interface: Method for generating hit(s) using the information of the G4GFlashSpot object.
+    template <typename T> bool Geant4SensitiveAction<T>::processGFlash(G4GFlashSpot* spot, G4TouchableHistory* history)   {
+      return Geant4Sensitive::processGFlash(spot,history);
+    }
 
     /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
     template <typename T> void Geant4SensitiveAction<T>::clear(G4HCofThisEvent* hce)  {
