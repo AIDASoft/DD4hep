@@ -1776,8 +1776,10 @@ namespace dd4hep {
     void make(const std::string& nam, const std::vector<Object::Vertex_t>& vertices);
 
   public:
-    typedef Object::Vertex_t Vertex_t;
-    
+    typedef Object::Vertex_t  Vertex;
+    typedef TGeoFacet         Facet;
+
+  public:
     /// Default constructor
     TessellatedSolid() = default;
     /// Move Constructor
@@ -1794,7 +1796,7 @@ namespace dd4hep {
     { this->make("", num_facets);    }
 
     /// Constructor to create a new identified object with attribute initialization
-    TessellatedSolid(const std::vector<Vertex_t>& vertices)
+    TessellatedSolid(const std::vector<Vertex>& vertices)
     { this->make("", vertices);   }
 
     /// Constructor to create a new anonymous object with attribute initialization
@@ -1802,7 +1804,7 @@ namespace dd4hep {
     { this->make(nam, num_facets);    }
 
     /// Constructor to create a new identified object with attribute initialization
-    TessellatedSolid(const std::string& nam, const std::vector<Vertex_t>& vertices)
+    TessellatedSolid(const std::string& nam, const std::vector<Vertex>& vertices)
     { this->make(nam, vertices);   }
 
     /// Move Assignment operator
@@ -1810,13 +1812,22 @@ namespace dd4hep {
     /// Copy Assignment operator
     TessellatedSolid& operator=(const TessellatedSolid& copy) = default;
     /// Add new facet to the shape
-    bool addFacet(const Vertex_t& pt0, const Vertex_t& pt1, const Vertex_t& pt2)  const;
+    bool addFacet(const Vertex& pt0, const Vertex& pt1, const Vertex& pt2)  const;
     /// Add new facet to the shape
-    bool addFacet(const Vertex_t& pt0, const Vertex_t& pt1, const Vertex_t& pt2, const Vertex_t& pt3)  const;
+    bool addFacet(const Vertex& pt0, const Vertex& pt1, const Vertex& pt2, const Vertex& pt3)  const;
     /// Add new facet to the shape. Call only if the tessellated shape was constructed with vertices
     bool addFacet(const int pt0, const int pt1, const int pt2)  const;
     /// Add new facet to the shape. Call only if the tessellated shape was constructed with vertices
     bool addFacet(const int pt0, const int pt1, const int pt2, const int pt3)  const;
+
+    /// Access the number of facets in the shape
+    int num_facet()   const;
+    /// Access a facet from the built shape
+    const Facet& facet(int index)    const;
+    /// Access the number of vertices in the shape
+    int num_vertex()   const;
+    /// Access a single vertex from the shape
+    const Vertex& vertex(int index)    const;
   };
 #endif
   

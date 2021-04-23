@@ -65,6 +65,11 @@ namespace dd4hep {
       typedef std::map<std::string, ParticleProcesses> PhysicsProcesses;
 
       /// Structure describing a G4 particle constructor
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
+       */
       class ParticleConstructor : public std::string {
       public:
         /// Default constructor
@@ -141,6 +146,9 @@ namespace dd4hep {
       /// Access discrete processes for one particle type (CONST)
       const ParticleProcesses& discreteProcesses(const std::string& part_name) const;
 
+      /// Access physics constructor by name
+      PhysicsConstructor physics(const std::string& name)  const;
+      
       /// Access all physics particles
       ParticleConstructors& particles() {
         return m_particles;

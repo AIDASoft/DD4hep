@@ -12,18 +12,18 @@
 //==========================================================================
 
 /// Framework include files
-#include "DDCAD/InputReader.h"
+#include "DDCAD/OutputWriter.h"
 
 using namespace dd4hep;
 using namespace dd4hep::cad;
 
 /// Default constructor
-InputReader::InputReader(Detector& det)
+OutputWriter::OutputWriter(Detector& det)
   : detector(det)
 {
 }
 
 /// Default destructor
-InputReader::~InputReader()
+OutputWriter::~OutputWriter()
 {
 }

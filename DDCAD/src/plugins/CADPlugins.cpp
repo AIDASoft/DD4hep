@@ -13,9 +13,11 @@
 
 /// Framework include files
 #include <DD4hep/DetFactoryHelper.h>
+#include <DD4hep/DetectorTools.h>
 #include <DD4hep/Printout.h>
 #include <XML/Utilities.h>
 #include <DDCAD/ASSIMPReader.h>
+#include <DDCAD/ASSIMPWriter.h>
 
 // C/C++ include files
 
@@ -23,11 +25,48 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
-static Handle<TObject> create_CAD_Shape(Detector&, xml_h e)   {
+static void* read_CAD_Volume(Detector& dsc, int argc, char** argv)   {
+  string fname;
+  double scale = 1.0;
+  bool   help  = false;
+  for(int i = 0; i < argc && argv[i]; ++i)  {
+    if (      0 == ::strncmp( "-input",argv[i],4) )  fname = argv[++i];
+    else if ( 0 == ::strncmp("--input",argv[i],5) )  fname = argv[++i];
+    else if ( 0 == ::strncmp( "-scale",argv[i],4) )  scale = ::atof(argv[++i]);
+    else if ( 0 == ::strncmp("--scale",argv[i],5) )  scale = ::atof(argv[++i]);
+    else if ( 0 == ::strncmp( "-help",argv[i],2) )   help  = true;
+    else if ( 0 == ::strncmp("--help",argv[i],3) )   help  = true;
+  }
+
+  if ( fname.empty() || help )    {
+    cout <<
+      "Usage: -plugin DD4hep_CAD_export -arg [-arg]                           \n\n"
+      "     -output   <string> Output file name.                                \n"
+      "     -type     <string> Output file type.                                \n"
+      "     -recursive         Export volume/detector element and all daughters.\n"
+      "     -volume   <string> Path to the volume to be exported.               \n"
+      "     -detector <string> Path to the detector element to be exported.     \n"
+      "     -help              Print this help output.                          \n"
+      "     -scale    <number> Unit scale before writing output data.           \n"
+      "     Arguments given: " << arguments(argc,argv) << endl << flush;
+    ::exit(EINVAL);
+  }
+
+  auto volumes = cad::ASSIMPReader(dsc).readVolumes(fname, scale);
+  if ( volumes.empty() )   {
+    except("CAD_Volume","+++ CAD file: %s does not contain any "
+           "understandable tessellated volumes.", fname.c_str());
+  }
+  auto* result = new std::vector<std::unique_ptr<TGeoVolume> >(move(volumes));
+  return result;
+}
+DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_read_CAD_volumes,read_CAD_Volume)
+
+static Handle<TObject> create_CAD_Shape(Detector& dsc, xml_h e)   {
   xml_elt_t elt(e);
   string fname = elt.attr<string>(_U(ref));
   double unit  = elt.hasAttr(_U(unit)) ? elt.attr<double>(_U(unit)) : dd4hep::cm;
-  auto shapes = cad::ASSIMPReader().read(fname, unit);
+  auto shapes = cad::ASSIMPReader(dsc).readShapes(fname, unit);
   if ( shapes.empty() )   {
     except("CAD_Shape","+++ CAD file: %s does not contain any "
            "understandable tessellated shapes.", fname.c_str());
@@ -56,29 +95,23 @@ static Handle<TObject> create_CAD_Shape(Detector&, xml_h e)   {
 }
 DECLARE_XML_SHAPE(CAD_Shape__shape_constructor,create_CAD_Shape)
 
-
-static Handle<TObject> create_CAD_MultiShape_Assembly(Detector&, xml_h e)   {
+static Handle<TObject> create_CAD_Assembly(Detector& dsc, xml_h e)   {
   xml_elt_t elt(e);
   string fname = elt.attr<string>(_U(ref));
   double unit  = elt.hasAttr(_U(unit)) ? elt.attr<double>(_U(unit)) : dd4hep::cm;
-  auto shapes = cad::ASSIMPReader().read(fname, unit);
-  if ( shapes.empty() )   {
+  auto volumes = cad::ASSIMPReader(dsc).readVolumes(fname, unit);
+  if ( volumes.empty() )   {
     except("CAD_Shape","+++ CAD file: %s does not contain any "
-           "understandable tessellated shapes.", fname.c_str());
+           "understandable tessellated volumes.", fname.c_str());
   }
   Assembly assembly("assembly");
-  for(size_t i=0; i < shapes.size(); ++i)   {
-    Solid solid = shapes[i].release();
-    if ( solid.isValid() )   {
-      Volume vol(_toString(int(i),"vol_%d"), solid, Detector::getInstance().material("Air"));
-      assembly.placeVolume(vol);
-    }
-  }
+  for(size_t i=0; i < volumes.size(); ++i)
+    assembly.placeVolume(volumes[i].release());
+
   if ( elt.hasAttr(_U(name)) ) assembly->SetName(elt.attr<string>(_U(name)).c_str());
   return assembly;
 }
-DECLARE_XML_VOLUME(CAD_Assembly__volume_constructor,create_CAD_MultiShape_Assembly)
-
+DECLARE_XML_VOLUME(CAD_Assembly__volume_constructor,create_CAD_Assembly)
 
 /// CAD volume importer plugin
 /**
@@ -126,10 +159,10 @@ static Handle<TObject> create_CAD_Volume(Detector& dsc, xml_h e)   {
   xml_elt_t elt(e);
   string fname = elt.attr<string>(_U(ref));
   double unit  = elt.attr<double>(_U(unit));
-  auto shapes = cad::ASSIMPReader().read(fname, unit);
-  if ( shapes.empty() )   {
+  auto volumes = cad::ASSIMPReader(dsc).readVolumes(fname, unit);
+  if ( volumes.empty() )   {
     except("CAD_Volume","+++ CAD file: %s does not contain any "
-           "understandable tessellated shapes.", fname.c_str());
+           "understandable tessellated volumes.", fname.c_str());
   }
   Volume envelope;
   if ( elt.hasChild(_U(envelope)) )   {
@@ -165,26 +198,28 @@ static Handle<TObject> create_CAD_Volume(Detector& dsc, xml_h e)   {
   else if ( elt.hasAttr(_U(material)) ) default_material = dsc.material(elt.attr<string>(_U(material)));
 
   if ( elt.hasChild(_U(volume)) )   {
-    map<int, xml_h> shape_map;
+    map<int, xml_h> volume_map;
     for (xml_coll_t c(elt,_U(volume)); c; ++c )
-      shape_map.emplace(xml_dim_t(c).id(),c);
+      volume_map.emplace(xml_dim_t(c).id(),c);
 
-    for (size_t i=0; i < shapes.size(); ++i)   {
-      Solid       sol = shapes[i].release();
-      Material    mat = default_material;
-      auto is = shape_map.find(i);
-      if ( is == shape_map.end() )   {
-        Volume vol(_toString(int(i),"vol_%d"), sol, mat);
+    for (size_t i=0; i < volumes.size(); ++i)   {
+      Volume   vol = volumes[i].release();
+      Material mat = default_material;
+      auto is = volume_map.find(i);
+      if ( is == volume_map.end() )   {
         envelope.placeVolume(vol);
       }
       else   {
         xml_dim_t x_vol = (*is).second;
         xml_dim_t x_pos = x_vol.child(_U(position),false);
         xml_dim_t x_rot = x_vol.child(_U(rotation),false);
-        string     vnam = x_vol.hasAttr(_U(name)) ? x_vol.attr<string>(_U(name)) : _toString(int(i),"vol_%d");
 
         if ( x_vol.hasAttr(_U(material)) )  {
-          mat = dsc.material(x_vol.attr<string>(_U(material)));
+	  string mat_name = x_vol.attr<string>(_U(material));
+          mat = dsc.material(mat_name);
+	  if ( !mat.isValid() )
+	    except("CAD_MultiVolume","+++ Failed to access material "+mat_name);
+	  vol.setMaterial(mat);
         }
         Position    pos;
         RotationZYX rot;
@@ -197,7 +232,6 @@ static Handle<TObject> create_CAD_Volume(Detector& dsc, xml_h e)   {
         else if ( x_rot )
           rot = RotationZYX(x_rot.z(0), x_rot.y(0), x_rot.x(0));
       
-        Volume vol(vnam, sol, mat);
         PlacedVolume pv = envelope.placeVolume(vol,env_trafo*Transform3D(rot, pos));
         vol.setAttributes(dsc, x_vol.regionStr(), x_vol.limitsStr(), x_vol.visStr());
         for (xml_coll_t cc(x_vol,_U(physvolid)); cc; ++cc )   {
@@ -208,10 +242,11 @@ static Handle<TObject> create_CAD_Volume(Detector& dsc, xml_h e)   {
     }
   }
   else   {
-    for(size_t i=0; i < shapes.size(); ++i)   {
-      Solid solid = shapes[i].release();
-      if ( solid.isValid() )   {
-        Volume vol(_toString(int(i),"vol_%d"), solid, default_material);
+    for(size_t i=0; i < volumes.size(); ++i)   {
+      Volume vol = volumes[i].release();
+      if ( vol.isValid() )   {
+	if ( (vol.material() == dsc.air()) && default_material.isValid() )
+	  vol.setMaterial(default_material);
         envelope.placeVolume(vol);
       }
     }
@@ -220,3 +255,77 @@ static Handle<TObject> create_CAD_Volume(Detector& dsc, xml_h e)   {
   return envelope;
 }
 DECLARE_XML_VOLUME(CAD_MultiVolume__volume_constructor,create_CAD_Volume)
+
+/// CAD volume importer plugin
+/**
+ *
+ */
+static long CAD_export(Detector& description, int argc, char** argv)   {
+  bool recursive = false, help = false;
+  string volume, detector, fname, ftype;
+  double scale = 1.0;
+  
+  for(int i = 0; i < argc && argv[i]; ++i)  {
+    if (      0 == ::strncmp( "-output",argv[i],4) )    fname     = argv[++i];
+    else if ( 0 == ::strncmp("--output",argv[i],5) )    fname     = argv[++i];
+    else if ( 0 == ::strncmp( "-type",argv[i],4) )      ftype     = argv[++i];
+    else if ( 0 == ::strncmp("--type",argv[i],5) )      ftype     = argv[++i];
+    else if ( 0 == ::strncmp( "-detector",argv[i],4) )  detector  = argv[++i];
+    else if ( 0 == ::strncmp("--detector",argv[i],5) )  detector  = argv[++i];
+    else if ( 0 == ::strncmp( "-volume",argv[i],4) )    volume    = argv[++i];
+    else if ( 0 == ::strncmp("--volume",argv[i],5) )    volume    = argv[++i];
+    else if ( 0 == ::strncmp( "-recursive",argv[i],4) ) recursive = true;
+    else if ( 0 == ::strncmp("--recursive",argv[i],5) ) recursive = true;
+    else if ( 0 == ::strncmp( "-scale",argv[i],4) )     scale     = ::atof(argv[++i]);
+    else if ( 0 == ::strncmp("--scale",argv[i],5) )     scale     = ::atof(argv[++i]);
+    else if ( 0 == ::strncmp( "-help",argv[i],2) )      help      = true;
+    else if ( 0 == ::strncmp("--help",argv[i],3) )      help      = true;
+  }
+
+  if ( fname.empty() || ftype.empty() ) help = true;
+  if ( volume.empty() && detector.empty() ) help = true;
+  if ( help )   {
+    cout <<
+      "Usage: -plugin DD4hep_CAD_export -arg [-arg]                           \n\n"
+      "     -output   <string> Output file name.                                \n"
+      "     -type     <string> Output file type.                                \n"
+      "     -recursive         Export volume/detector element and all daughters.\n"
+      "     -volume   <string> Path to the volume to be exported.               \n"
+      "     -detector <string> Path to the detector element to be exported.     \n"
+      "     -help              Print this help output.                          \n"
+      "     -scale    <number> Unit scale before writing output data.           \n"
+      "     Arguments given: " << arguments(argc,argv) << endl << flush;
+    ::exit(EINVAL);
+  }
+
+  PlacedVolume pv;
+  if ( !detector.empty() )   {
+    DetElement elt;
+    if ( detector == "/world" )
+      elt = description.world();
+    else
+      elt = detail::tools::findElement(description,detector);
+    if ( !elt.isValid() )  {
+      except("DD4hep_CAD_export","+++ Invalid DetElement path: %s",detector.c_str());
+    }
+    if ( !elt.placement().isValid() )   {
+      except("DD4hep_CAD_export","+++ Invalid DetElement placement: %s",detector.c_str());
+    }
+    pv = elt.placement();
+  }
+  else if ( !volume.empty() )   {
+    pv = detail::tools::findNode(description.world().placement(), volume);
+    if ( !pv.isValid() )   {
+      except("DD4hep_CAD_export","+++ Invalid placement path: %s",volume.c_str());
+    }
+  }
+  cad::ASSIMPWriter wr(description);
+  std::vector<PlacedVolume> places {pv};
+  auto num_mesh = wr.write(fname, ftype, places, recursive, scale);
+  if ( num_mesh < 0 )   {
+    printout(ERROR, "DD4hep_CAD_export","+++ Failed to export shapes to CAD file: %s [%s]",
+	     fname.c_str(), ftype.c_str());
+  }
+  return 1;
+}
+DECLARE_APPLY(DD4hep_CAD_export,CAD_export)
