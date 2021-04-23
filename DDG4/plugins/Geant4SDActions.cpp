@@ -47,12 +47,16 @@ namespace dd4hep {
     }
 
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<Geant4VoidSensitive>::process(G4Step* /*step*/,G4TouchableHistory* /*hist*/ ) {
+    template <> bool
+    Geant4SensitiveAction<Geant4VoidSensitive>::process(G4Step*             /* step */,
+							G4TouchableHistory* /* hist */) {
       return true;
     }
     
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<Geant4VoidSensitive>::processGFlash(G4GFlashSpot* /*spot*/,G4TouchableHistory* /*hist*/ ) {
+    template <> bool
+    Geant4SensitiveAction<Geant4VoidSensitive>::processGFlash(G4GFlashSpot*       /* spot */,
+							      G4TouchableHistory* /* hist */) {
       return true;
     }
     typedef Geant4SensitiveAction<Geant4VoidSensitive> Geant4VoidSensitiveAction;
@@ -75,7 +79,8 @@ namespace dd4hep {
     }
 
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<Geant4Tracker>::process(G4Step* step,G4TouchableHistory* /*hist*/ ) {
+    template <> bool
+    Geant4SensitiveAction<Geant4Tracker>::process(G4Step* step,G4TouchableHistory* /* hist */) {
       typedef Geant4Tracker::Hit Hit;
       Geant4StepHandler h(step);
       Position prePos    = h.prePos();
@@ -111,8 +116,9 @@ namespace dd4hep {
     }
     
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<Geant4Tracker>::processGFlash(G4GFlashSpot* spot,
-									 G4TouchableHistory* /*hist*/ )
+    template <> bool
+    Geant4SensitiveAction<Geant4Tracker>::processGFlash(G4GFlashSpot*          spot,
+							G4TouchableHistory* /* hist */)
     {
       typedef Geant4Tracker::Hit Hit;
       Geant4GFlashSpotHandler h(spot);
@@ -155,7 +161,8 @@ namespace dd4hep {
     }
 
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<Geant4Calorimeter>::process(G4Step* step,G4TouchableHistory*) {
+    template <> bool
+    Geant4SensitiveAction<Geant4Calorimeter>::process(G4Step* step,G4TouchableHistory*) {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4StepHandler    h(step);
       HitContribution      contrib = Hit::extractContribution(step);

@@ -10,11 +10,11 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDCAD_ASSIMPREADER_H
-#define DDCAD_ASSIMPREADER_H
+#ifndef DDCAD_ASSIMPWRITER_H
+#define DDCAD_ASSIMPWRITER_H
 
 /// Framework include files
-#include <DDCAD/InputReader.h>
+#include <DDCAD/OutputWriter.h>
 
 /// C/C++ include files
 
@@ -24,7 +24,7 @@ namespace dd4hep {
   /// Namespace for implementation details of the AIDA detector description toolkit
   namespace cad  {
 
-    /// Reader class to input geometry shapes from CAD files
+    /// Writer class to output geometry shapes from CAD files
     /**
      *  As a helper the ASSIMP library is used to interprete the 
      *  CAD formats.
@@ -33,21 +33,19 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DDCAD
      */
-    class ASSIMPReader : public InputReader   {
+    class ASSIMPWriter : public OutputWriter   {
     public:
-      using InputReader::InputReader;
-
+      using OutputWriter::OutputWriter;
       /// Default destructor
-      virtual ~ASSIMPReader() = default;
-
-      /// Read input file
-      virtual std::vector<std::unique_ptr<TGeoTessellated> >
-      readShapes(const std::string& source, double unit_Length)  const  override;
-      
-      /// Read input file and create a volume-set
-      virtual std::vector<std::unique_ptr<TGeoVolume> >
-      readVolumes(const std::string& source, double unit_length)  const override;
+      virtual ~ASSIMPWriter() = default;
+      /// Write output file
+      virtual int write(const std::string& output_file,
+			const std::string& output_type,
+			const VolumePlacements& places,
+			bool   recursive,
+			double unit_scale = 1.0)  const  override;      
     };
+    
   }        /* End namespace cad                      */
 }          /* End namespace dd4hep                   */
-#endif // DDCAD_ASSIMPREADER_H
+#endif // DDCAD_ASSIMPWRITER_H

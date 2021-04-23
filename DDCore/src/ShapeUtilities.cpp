@@ -752,7 +752,7 @@ namespace dd4hep {
   template <> void set_dimensions(TGeoTessellated* sh, const std::vector<double>& params)    {
     int num_vtx   = params[0];
     int num_facet = params[1];
-    std::vector<TessellatedSolid::Vertex_t> vertices;
+    std::vector<TessellatedSolid::Vertex> vertices;
     size_t i_par = 1;
     printout(DEBUG,"TessellatedSolid","+++ Loading %d vertices, %d facets",num_vtx, num_facet);
     for (int i=0; i<num_vtx; ++i)   {

@@ -1437,20 +1437,20 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
     else   {
       cout << "  "
            << (flag==0 ? "DD4hep_DetectorDump" : "DD4hep_DetectorVolumeDump") << " -arg [-arg]     \n"
-        "    --sensitive            Process only sensitive volumes.                                \n"
+        "   --sensitive             Process only sensitive volumes.                                \n"
         "    -sensitive             dto.                                                           \n"
-        "    --no-sensitive         Invert sensitive only flag.                                    \n"
+        "   --no-sensitive          Invert sensitive only flag.                                    \n"
         "    -no-sensitive          dto.                                                           \n"
-        "    --shapes               Print shape information.                                       \n"
+        "   --shapes                Print shape information.                                       \n"
         "    -shapes                dto.                                                           \n"
-        "    --positions            Print position information.                                    \n"
+        "   --positions             Print position information.                                    \n"
         "    -positions             dto.                                                           \n"
-        "    --materials            Print material information.                                    \n"
+        "   --materials             Print material information.                                    \n"
         "    -materials             dto.                                                           \n"
-        "    --detector   <path>    Process elements only if <path> is part of the DetElement path.\n"
+        "   --detector   <path>     Process elements only if <path> is part of the DetElement path.\n"
         "    -detector    <path>    dto.                                                           \n"
         "    -level       <number>  Maximal depth to be explored by the scan                       \n"
-        "    --level       <number> dto.                                                           \n"
+        "   --level       <number>  dto.                                                           \n"
         "\tArguments given: " << arguments(argc,argv) << endl << flush;        
       ::exit(EINVAL);
     }

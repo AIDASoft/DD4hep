@@ -394,7 +394,7 @@ DECLARE_XML_SHAPE(EightPointSolid__shape_constructor,create_EightPointSolid)
 /// Plugin factory to created tessellated shapes
 static Handle<TObject> create_TessellatedSolid(Detector&, xml_h element)   {
   xml_dim_t e(element);
-  std::vector<TessellatedSolid::Vertex_t> vertices;
+  std::vector<TessellatedSolid::Vertex> vertices;
   for ( xml_coll_t vtx(element, _U(vertex)); vtx; ++vtx )   {
     xml_dim_t v(vtx);
     vertices.emplace_back(v.x(), v.y(), v.z());

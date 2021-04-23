@@ -10,15 +10,12 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDCAD_INPUTREADER_H
-#define DDCAD_INPUTREADER_H
+#ifndef DDCAD_INPUTWRITER_H
+#define DDCAD_INPUTWRITER_H
 
 // Framework include files
 #include <DD4hep/config.h>
-
-/// ROOT include files
-#include <TGeoVolume.h>
-#include <TGeoTessellated.h>
+#include <DD4hep/Volumes.h>
 
 /// C/C++ include files
 #include <string>
@@ -34,34 +31,39 @@ namespace dd4hep {
   /// Namespace for implementation details of the AIDA detector description toolkit
   namespace cad  {
 
-    /// Interface of the reader class to input geometry shapes from CAD files
+    /// Interface of the writer class to output geometry shapes from CAD files
     /**
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_DDCAD
      */
-    class InputReader   {
+    class OutputWriter   {
+    public:
+      enum output_flags   {
+	EXPORT_POINT_CLOUDS = 1 << 1,
+	LAST = 0
+      };
     public:
       /// Reference to the detector object
       Detector& detector;
-      
+      /// Output configuration flags
+      unsigned long flags  { 0 };
+
     public:
+      typedef std::vector<PlacedVolume> VolumePlacements;
       /// Default constructor
-      InputReader(Detector& detector);
-
+      OutputWriter(Detector& detector);
       /// Default destructor
-      virtual ~InputReader();
-
-      /// Read input file
-      virtual std::vector<std::unique_ptr<TGeoTessellated> >
-      readShapes(const std::string& source, double unit_length)  const  = 0;
-
-      /// Read input file and create a volume-set
-      virtual std::vector<std::unique_ptr<TGeoVolume> >
-      readVolumes(const std::string& source, double unit_length)  const = 0;
+      virtual ~OutputWriter();
+      /// Write output file
+      virtual int write(const std::string& output_file,
+			const std::string& output_type,
+			const VolumePlacements& places,
+			bool   recursive,
+			double unit_scale = 1.0)  const = 0;      
     };
     
   }        /* End namespace cad                      */
 }          /* End namespace dd4hep                   */
-#endif // DDCAD_INPUTREADER_H
+#endif // DDCAD_INPUTWRITER_H

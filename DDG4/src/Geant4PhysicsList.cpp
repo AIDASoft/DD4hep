@@ -199,6 +199,19 @@ const Geant4PhysicsList::ParticleProcesses& Geant4PhysicsList::discreteProcesses
   throw runtime_error("Failed to access the physics process"); // never called anyway
 }
 
+/// Access physics constructor by name (CONST)
+Geant4PhysicsList::PhysicsConstructor Geant4PhysicsList::physics(const std::string& nam)  const    {
+  for ( const auto& ctor : m_physics )   {
+    if ( ctor == nam )  {
+      if ( nullptr == ctor.pointer )
+	except("Failed to instaniate the physics for constructor '%s'", nam.c_str());
+      return ctor;
+    }
+  }
+  except("Failed to access the physics for constructor '%s' [Unknown physics]", nam.c_str());
+  throw runtime_error("Failed to access the physics process"); // never called anyway
+}
+
 /// Add PhysicsConstructor by name
 void Geant4PhysicsList::adoptPhysicsConstructor(Geant4Action* action)  {
   if ( 0 != action )   {
@@ -219,11 +232,10 @@ void Geant4PhysicsList::constructPhysics(G4VModularPhysicsList* physics_pointer)
   debug("constructPhysics %p", physics_pointer);
   for ( auto& ctor : m_physics )   {
     if ( 0 == ctor.pointer )   {
-      if ( G4VPhysicsConstructor* p = PluginService::Create<G4VPhysicsConstructor*>(ctor) )  {
+      if ( G4VPhysicsConstructor* p = PluginService::Create<G4VPhysicsConstructor*>(ctor) )
 	ctor.pointer = p;
-	continue;
-      }
-      except("Failed to create the physics for G4VPhysicsConstructor '%s'", ctor.c_str());
+      else
+	except("Failed to create the physics for G4VPhysicsConstructor '%s'", ctor.c_str());
     }
     physics_pointer->RegisterPhysics(ctor.pointer);
     info("Registered Geant4 physics constructor %s to physics list", ctor.c_str());
@@ -239,7 +251,7 @@ void Geant4PhysicsList::constructParticles(G4VUserPhysicsList* physics_pointer) 
     if ( !def )  {
       /// Check if we have here a particle group constructor
       long* result = (long*) PluginService::Create<long>(ctor);
-      if (!result || *result != 1L)   {
+      if ( !result || *result != 1L )   {
         except("Failed to create particle type '%s' result=%d", ctor.c_str(), result);
       }
       info("Constructed Geant4 particle %s [using signature long (*)()]",ctor.c_str());
@@ -249,7 +261,7 @@ void Geant4PhysicsList::constructParticles(G4VUserPhysicsList* physics_pointer) 
   for ( const auto& ctor : m_particlegroups )  {
     /// Check if we have here a particle group constructor
     long* result = (long*) PluginService::Create<long>(ctor);
-    if (!result || *result != 1L)  {
+    if ( !result || *result != 1L )  {
       except("Failed to create particle type '%s' result=%d", ctor.c_str(), result);
     }
     info("Constructed Geant4 particle group %s [using signature long (*)()]",ctor.c_str());

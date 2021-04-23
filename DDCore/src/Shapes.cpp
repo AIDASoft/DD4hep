@@ -794,17 +794,17 @@ void TessellatedSolid::make(const std::string& nam, int num_facets)   {
 }
 
 /// Internal helper method to support object construction
-void TessellatedSolid::make(const std::string& nam, const std::vector<Object::Vertex_t>& vertices)   {
+void TessellatedSolid::make(const std::string& nam, const std::vector<Vertex>& vertices)   {
   _assign(new TGeoTessellated(nam.c_str(), vertices), nam, TESSELLATEDSOLID_TAG, false);
 }
 
 /// Add new facet to the shape
-bool TessellatedSolid::addFacet(const Vertex_t& pt0, const Vertex_t& pt1, const Vertex_t& pt2)  const {
+bool TessellatedSolid::addFacet(const Vertex& pt0, const Vertex& pt1, const Vertex& pt2)  const {
   return access()->AddFacet(pt0, pt1, pt2);
 }
 
 /// Add new facet to the shape
-bool TessellatedSolid::addFacet(const Vertex_t& pt0, const Vertex_t& pt1, const Vertex_t& pt2, const Vertex_t& pt3)  const {
+bool TessellatedSolid::addFacet(const Vertex& pt0, const Vertex& pt1, const Vertex& pt2, const Vertex& pt3)  const {
   return access()->AddFacet(pt0, pt1, pt2, pt3);
 }
 
@@ -816,6 +816,26 @@ bool TessellatedSolid::addFacet(const int pt0, const int pt1, const int pt2)  co
 /// Add new facet to the shape. Call only if the tessellated shape was constructed with vertices
 bool TessellatedSolid::addFacet(const int pt0, const int pt1, const int pt2, const int pt3)  const   {
   return access()->AddFacet(pt0, pt1, pt2, pt3);
+}
+
+/// Access the number of facets in the shape
+int TessellatedSolid::num_facet()   const   {
+  return access()->GetNvertices();
+}
+
+/// Access a facet from the built shape
+const TessellatedSolid::Facet& TessellatedSolid::facet(int index)    const   {
+  return ptr()->GetFacet(index);
+}
+
+/// Access the number of vertices in the shape
+int TessellatedSolid::num_vertex()   const   {
+  return access()->GetNvertices();
+}
+
+/// Access a single vertex from the shape
+const TessellatedSolid::Vertex& TessellatedSolid::vertex(int index)    const    {
+  return ptr()->GetVertex(index);
 }
 #endif
 
