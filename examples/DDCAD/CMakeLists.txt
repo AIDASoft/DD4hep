@@ -44,7 +44,10 @@ include(CTest)
 #
 #  Test basic shapes by comparing mesh vertices with reference file
 set(DDCAD_Tests)
-## Multi-shapes: BLEND_HUMAN COB_dwarf
+set(ClientTestsEx_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
+set(DDCADTests_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/DDCAD)
+#
+# Multi-shapes: BLEND_HUMAN COB_dwarf
 list(APPEND DDCAD_Tests BHV_Boxing_Toes Collada_duck PLY_Wuson )
 foreach (test ${DDCAD_Tests})
   dd4hep_add_test_reg( DDCAD_Check_Shape_${test}
@@ -53,3 +56,27 @@ foreach (test ${DDCAD_Tests})
       REGEX_PASS "Shape verification SUCCESSFUL."
       REGEX_FAIL "ERROR;FAILED" )
 endforeach()
+#
+#  Test CAD export from a simplyfied model
+dd4hep_add_test_reg( DDCAD_export_cal_endcaps
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/CaloEndcapReflection.xml
+  -plugin DD4hep_CAD_export -output endcap_reflection.collada
+  -type collada -recursive -detector /world -recursive -scale 1.0
+  REGEX_PASS "Analysed 96 of 96 meshes"
+  REGEX_FAIL "Exception"
+  REGEX_FAIL "FAILED"
+)
+#
+#  Test CAD import from the exported simplyfied model
+dd4hep_add_test_reg( DDCAD_import_cal_endcaps
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
+  EXEC_ARGS  geoDisplay -input ${DDCADTests_INSTALL}/compact/Import_CaloEndcap.xml -load -destroy
+  DEPENDS    Persist_Conditions_Save
+  REGEX_PASS "Read 96 meshes"
+  REGEX_FAIL "Exception"
+)
+#
+#
+#
+

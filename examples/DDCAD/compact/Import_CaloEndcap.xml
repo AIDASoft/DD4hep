@@ -1,0 +1,26 @@
+<lccdd>
+<!--
+    #==========================================================================
+    #  AIDA Detector description implementation 
+    #==========================================================================
+    # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+    # All rights reserved.
+    #
+    # For the licensing terms see $DD4hepINSTALL/LICENSE.
+    # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+    #
+    #==========================================================================
+-->
+
+  <includes>
+    <gdmlFile ref="../../ClientTests/compact/CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_Collada" type="DD4hep_TestShape_Creator">
+      <check>
+        <shape type="CAD_MultiVolume" ref="./endcap_reflection.collada" unit="cm"/>
+      </check>
+    </detector>
+  </detectors>
+</lccdd>

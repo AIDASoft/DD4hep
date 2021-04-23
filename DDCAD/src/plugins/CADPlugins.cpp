@@ -41,13 +41,9 @@ static void* read_CAD_Volume(Detector& dsc, int argc, char** argv)   {
   if ( fname.empty() || help )    {
     cout <<
       "Usage: -plugin DD4hep_CAD_export -arg [-arg]                           \n\n"
-      "     -output   <string> Output file name.                                \n"
-      "     -type     <string> Output file type.                                \n"
-      "     -recursive         Export volume/detector element and all daughters.\n"
-      "     -volume   <string> Path to the volume to be exported.               \n"
-      "     -detector <string> Path to the detector element to be exported.     \n"
+      "     -input    <string> Input file name.                                 \n"
+      "     -scale    <float>  Scale factor when importing shapes.              \n"
       "     -help              Print this help output.                          \n"
-      "     -scale    <number> Unit scale before writing output data.           \n"
       "     Arguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
   }
