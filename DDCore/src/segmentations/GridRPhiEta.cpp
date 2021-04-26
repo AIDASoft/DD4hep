@@ -1,5 +1,6 @@
 #include "DDSegmentation/GridRPhiEta.h"
 #include "DDSegmentation/SegmentationUtil.h"
+#include "DD4hep/Factories.h"
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -47,7 +48,7 @@ double GridRPhiEta::r(const CellID& cID) const {
   CellID rValue = _decoder->get(cID, m_rID);
   return binToPosition(rValue, m_gridSizeR, m_offsetR);
 }
-REGISTER_SEGMENTATION(GridRPhiEta)
 }
 }
 
+DECLARE_SEGMENTATION(GridRPhiEta,create_segmentation<dd4hep::DDSegmentation::GridRPhiEta>)

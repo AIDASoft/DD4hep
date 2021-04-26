@@ -15,6 +15,8 @@
 #include "DD4hep/detail/SegmentationsInterna.h"
 #include "DD4hep/InstanceCount.h"
 
+#include "DDSegmentation/Segmentation.h"
+
 using namespace std;
 using namespace dd4hep;
 

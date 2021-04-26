@@ -19,8 +19,8 @@
 #ifndef DDSEGMENTATION_SEGMENTATION_H
 #define DDSEGMENTATION_SEGMENTATION_H
 
+#include "DD4hep/detail/SegmentationsInterna.h"
 #include "DDSegmentation/BitFieldCoder.h"
-#include "DDSegmentation/SegmentationFactory.h"
 #include "DDSegmentation/SegmentationParameter.h"
 
 #include <map>
@@ -176,10 +176,6 @@ namespace dd4hep {
       /// No copy constructor allowed
       Segmentation(const Segmentation&);
     };
-
-    /// Macro to instantiate a new SegmentationCreator by its type name
-#define REGISTER_SEGMENTATION(classname)                                \
-    static const SegmentationCreator<classname> classname##_creator(#classname);
 
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */

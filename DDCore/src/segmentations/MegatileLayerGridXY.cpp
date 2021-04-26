@@ -7,6 +7,7 @@
  */
 
 #include "DDSegmentation/MegatileLayerGridXY.h"
+#include "DD4hep/Factories.h"
 
 #undef NDEBUG
 #include <cmath>
@@ -183,7 +184,8 @@ namespace dd4hep {
 #endif
     }
 
-    REGISTER_SEGMENTATION(MegatileLayerGridXY)
 
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
+
+DECLARE_SEGMENTATION(MegatileLayerGridXY,create_segmentation<dd4hep::DDSegmentation::MegatileLayerGridXY>)

@@ -6,6 +6,7 @@
  */
 
 #include "DDSegmentation/WaferGridXY.h"
+#include "DD4hep/Factories.h"
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -126,7 +127,7 @@ std::vector<double> WaferGridXY::cellDimensions(const CellID&) const {
 #endif
 }
 
-REGISTER_SEGMENTATION(WaferGridXY)
-
 } /* namespace DDSegmentation */
 } /* namespace dd4hep */
+
+DECLARE_SEGMENTATION(WaferGridXY,create_segmentation<dd4hep::DDSegmentation::WaferGridXY>)

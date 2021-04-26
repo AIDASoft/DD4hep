@@ -13,7 +13,6 @@
 
 // Framework include files
 #include "DD4hep/NoSegmentation.h"
-#include "DD4hep/detail/SegmentationsInterna.h"
 #include "DDSegmentation/NoSegmentation.h"
 
 // C/C++ include files
