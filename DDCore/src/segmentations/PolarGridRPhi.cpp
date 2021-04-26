@@ -6,6 +6,7 @@
  */
 
 #include "DDSegmentation/PolarGridRPhi.h"
+#include "DD4hep/Factories.h"
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -81,7 +82,7 @@ std::vector<double> PolarGridRPhi::cellDimensions(const CellID& cID) const {
 #endif
 }
 
-REGISTER_SEGMENTATION(PolarGridRPhi)
 
 } /* namespace DDSegmentation */
 } /* namespace dd4hep */
+DECLARE_SEGMENTATION(PolarGridRPhi,create_segmentation<dd4hep::DDSegmentation::PolarGridRPhi>)

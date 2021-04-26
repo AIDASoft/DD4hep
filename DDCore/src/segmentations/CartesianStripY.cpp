@@ -7,6 +7,7 @@
  */
 
 #include "DDSegmentation/CartesianStripY.h"
+#include "DD4hep/Factories.h"
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -62,6 +63,6 @@ std::vector<double> CartesianStripY::cellDimensions(const CellID&) const {
 #endif
 }
 
-REGISTER_SEGMENTATION(CartesianStripY)
 }  // namespace DDSegmentation
 } /* namespace dd4hep */
+DECLARE_SEGMENTATION(CartesianStripY,create_segmentation<dd4hep::DDSegmentation::CartesianStripY>)

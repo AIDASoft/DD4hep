@@ -17,7 +17,6 @@
 #include "DD4hep/Handle.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/BitFieldCoder.h"
-#include "DDSegmentation/Segmentation.h"
 
 // C/C++ include files
 
@@ -28,6 +27,13 @@ namespace dd4hep {
   class DetElementObject;
   class SegmentationObject;
   class SensitiveDetectorObject;
+
+  namespace DDSegmentation {
+    class Segmentation;
+    class SegmentationParameter;
+    typedef SegmentationParameter* Parameter;
+    typedef std::vector<Parameter> Parameters;
+  }
 
   /// Implementation class supporting generic Segmentation of sensitive detectors
   /**

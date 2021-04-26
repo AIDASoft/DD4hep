@@ -6,6 +6,7 @@
  */
 
 #include "DDSegmentation/NoSegmentation.h"
+#include "DD4hep/Factories.h"
 
 namespace dd4hep {
   namespace DDSegmentation {
@@ -36,7 +37,7 @@ namespace dd4hep {
       return vID;
     }
 
-REGISTER_SEGMENTATION(NoSegmentation)
 
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
+DECLARE_SEGMENTATION(NoSegmentation,create_segmentation<dd4hep::DDSegmentation::NoSegmentation>)

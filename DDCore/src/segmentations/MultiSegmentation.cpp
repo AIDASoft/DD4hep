@@ -6,6 +6,8 @@
  */
 
 #include "DDSegmentation/MultiSegmentation.h"
+#include "DD4hep/Factories.h"
+
 #include <iomanip>
 #include <stdexcept>
 #include <iostream>
@@ -98,7 +100,7 @@ namespace dd4hep {
       return subsegmentation(cID).cellDimensions(cID);
     }
 
-    REGISTER_SEGMENTATION(MultiSegmentation)
-
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
+
+DECLARE_SEGMENTATION(MultiSegmentation,create_segmentation<dd4hep::DDSegmentation::MultiSegmentation>)

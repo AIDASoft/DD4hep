@@ -6,6 +6,7 @@
  */
 
 #include "DDSegmentation/CartesianGridXY.h"
+#include "DD4hep/Factories.h"
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -75,7 +76,9 @@ std::vector<double> CartesianGridXY::cellDimensions(const CellID&) const {
 #endif
 }
 
-REGISTER_SEGMENTATION(CartesianGridXY)
 
 } /* namespace DDSegmentation */
 } /* namespace dd4hep */
+
+
+DECLARE_SEGMENTATION(CartesianGridXY,dd4hep::create_segmentation<dd4hep::DDSegmentation::CartesianGridXY>)

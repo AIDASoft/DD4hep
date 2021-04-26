@@ -13,7 +13,6 @@
 
 // Framework include files
 #include "DD4hep/WaferGridXY.h"
-#include "DD4hep/detail/SegmentationsInterna.h"
 #include "DDSegmentation/WaferGridXY.h"
 
 // C/C++ include files

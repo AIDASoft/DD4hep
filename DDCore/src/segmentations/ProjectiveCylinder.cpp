@@ -7,6 +7,7 @@
 
 #include "DDSegmentation/ProjectiveCylinder.h"
 #include "DDSegmentation/SegmentationUtil.h"
+#include "DD4hep/Factories.h"
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -80,7 +81,8 @@ double ProjectiveCylinder::phi(const CellID& cID) const {
 	return 2. * M_PI * ((double) phiIndex + 0.5) / (double) _phiBins;
 }
 
-REGISTER_SEGMENTATION(ProjectiveCylinder)
 
 } /* namespace DDSegmentation */
 } /* namespace dd4hep */
+
+DECLARE_SEGMENTATION(ProjectiveCylinder,create_segmentation<dd4hep::DDSegmentation::ProjectiveCylinder>)

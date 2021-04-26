@@ -7,6 +7,7 @@
  *     by Christian Grefe, CERN
  */
 #include "DDSegmentation/CartesianGridYZ.h"
+#include "DD4hep/Factories.h"
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -76,7 +77,8 @@ std::vector<double> CartesianGridYZ::cellDimensions(const CellID&) const {
 #endif
 }
 
-REGISTER_SEGMENTATION(CartesianGridYZ)
 
 } /* namespace DDSegmentation */
 } /* namespace dd4hep */
+
+DECLARE_SEGMENTATION(CartesianGridYZ,create_segmentation<dd4hep::DDSegmentation::CartesianGridYZ>)
