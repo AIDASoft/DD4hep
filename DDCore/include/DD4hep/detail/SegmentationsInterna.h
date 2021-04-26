@@ -121,5 +121,13 @@ namespace dd4hep {
   /// Default destructor
   template <typename IMP> inline SegmentationWrapper<IMP>::~SegmentationWrapper()  {
   }
+
+  namespace {
+    template<typename T> SegmentationObject*
+    create_segmentation(const BitFieldCoder* decoder)  {
+      return new SegmentationWrapper<T>(decoder);
+    }
+  }
+
 }         /* End namespace dd4hep                       */
 #endif // DD4HEP_DETAIL_SEGMENTATIONSINTERNA_H
