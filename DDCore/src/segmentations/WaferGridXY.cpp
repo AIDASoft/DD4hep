@@ -6,7 +6,6 @@
  */
 
 #include "DDSegmentation/WaferGridXY.h"
-#include "DD4hep/Factories.h"
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -130,4 +129,6 @@ std::vector<double> WaferGridXY::cellDimensions(const CellID&) const {
 } /* namespace DDSegmentation */
 } /* namespace dd4hep */
 
-DECLARE_SEGMENTATION(WaferGridXY,create_segmentation<dd4hep::DDSegmentation::WaferGridXY>)
+// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
+// needs also #include "DD4hep/Factories.h"
+// DECLARE_SEGMENTATION(WaferGridXY,create_segmentation<dd4hep::DDSegmentation::WaferGridXY>)

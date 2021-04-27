@@ -7,7 +7,6 @@
  */
 
 #include "DDSegmentation/CartesianStripX.h"
-#include "DD4hep/Factories.h"
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -65,4 +64,7 @@ std::vector<double> CartesianStripX::cellDimensions(const CellID&) const {
 
 }  // namespace DDSegmentation
 } /* namespace dd4hep */
-DECLARE_SEGMENTATION(CartesianStripX,create_segmentation<dd4hep::DDSegmentation::CartesianStripX>)
+
+// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
+// needs also #include "DD4hep/Factories.h"
+// DECLARE_SEGMENTATION(CartesianStripX,create_segmentation<dd4hep::DDSegmentation::CartesianStripX>)

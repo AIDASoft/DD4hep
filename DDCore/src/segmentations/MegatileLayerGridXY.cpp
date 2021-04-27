@@ -7,7 +7,6 @@
  */
 
 #include "DDSegmentation/MegatileLayerGridXY.h"
-#include "DD4hep/Factories.h"
 
 #undef NDEBUG
 #include <cmath>
@@ -188,4 +187,6 @@ namespace dd4hep {
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
 
-DECLARE_SEGMENTATION(MegatileLayerGridXY,create_segmentation<dd4hep::DDSegmentation::MegatileLayerGridXY>)
+// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
+// needs also #include "DD4hep/Factories.h"
+// DECLARE_SEGMENTATION(MegatileLayerGridXY,create_segmentation<dd4hep::DDSegmentation::MegatileLayerGridXY>)

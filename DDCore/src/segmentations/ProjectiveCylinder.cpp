@@ -7,7 +7,6 @@
 
 #include "DDSegmentation/ProjectiveCylinder.h"
 #include "DDSegmentation/SegmentationUtil.h"
-#include "DD4hep/Factories.h"
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -85,4 +84,6 @@ double ProjectiveCylinder::phi(const CellID& cID) const {
 } /* namespace DDSegmentation */
 } /* namespace dd4hep */
 
-DECLARE_SEGMENTATION(ProjectiveCylinder,create_segmentation<dd4hep::DDSegmentation::ProjectiveCylinder>)
+// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
+// needs also #include "DD4hep/Factories.h"
+// DECLARE_SEGMENTATION(ProjectiveCylinder,create_segmentation<dd4hep::DDSegmentation::ProjectiveCylinder>)

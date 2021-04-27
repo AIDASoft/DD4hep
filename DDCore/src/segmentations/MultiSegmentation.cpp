@@ -6,7 +6,6 @@
  */
 
 #include "DDSegmentation/MultiSegmentation.h"
-#include "DD4hep/Factories.h"
 
 #include <iomanip>
 #include <stdexcept>
@@ -103,4 +102,6 @@ namespace dd4hep {
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
 
-DECLARE_SEGMENTATION(MultiSegmentation,create_segmentation<dd4hep::DDSegmentation::MultiSegmentation>)
+// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
+// needs also #include "DD4hep/Factories.h"
+// DECLARE_SEGMENTATION(MultiSegmentation,create_segmentation<dd4hep::DDSegmentation::MultiSegmentation>)
