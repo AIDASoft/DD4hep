@@ -6,7 +6,6 @@
  */
 
 #include "DDSegmentation/NoSegmentation.h"
-#include "DD4hep/Factories.h"
 
 namespace dd4hep {
   namespace DDSegmentation {
@@ -40,4 +39,7 @@ namespace dd4hep {
 
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
-DECLARE_SEGMENTATION(NoSegmentation,create_segmentation<dd4hep::DDSegmentation::NoSegmentation>)
+
+// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
+// needs also #include "DD4hep/Factories.h"
+// DECLARE_SEGMENTATION(NoSegmentation,create_segmentation<dd4hep::DDSegmentation::NoSegmentation>)

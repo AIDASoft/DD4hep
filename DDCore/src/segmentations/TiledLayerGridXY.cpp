@@ -6,7 +6,6 @@
  */
 
 #include "DDSegmentation/TiledLayerGridXY.h"
-#include "DD4hep/Factories.h"
 
 // C/C++ includes
 #include <algorithm>
@@ -127,4 +126,6 @@ std::vector<double> TiledLayerGridXY::cellDimensions(const CellID&) const {
 } /* namespace DDSegmentation */
 } /* namespace dd4hep */
 
-DECLARE_SEGMENTATION(TiledLayerGridXY,create_segmentation<dd4hep::DDSegmentation::TiledLayerGridXY>)
+// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
+// needs also #include "DD4hep/Factories.h"
+// DECLARE_SEGMENTATION(TiledLayerGridXY,create_segmentation<dd4hep::DDSegmentation::TiledLayerGridXY>)

@@ -1,6 +1,5 @@
 #include "DDSegmentation/GridRPhiEta.h"
 #include "DDSegmentation/SegmentationUtil.h"
-#include "DD4hep/Factories.h"
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -51,4 +50,6 @@ double GridRPhiEta::r(const CellID& cID) const {
 }
 }
 
-DECLARE_SEGMENTATION(GridRPhiEta,create_segmentation<dd4hep::DDSegmentation::GridRPhiEta>)
+// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
+// needs also #include "DD4hep/Factories.h"
+// DECLARE_SEGMENTATION(GridRPhiEta,create_segmentation<dd4hep::DDSegmentation::GridRPhiEta>)
