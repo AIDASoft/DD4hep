@@ -53,13 +53,11 @@ namespace {
 /// Default constructor
 GeoHandler::GeoHandler() : m_propagateRegions(false)  {
   m_data = new map<int,set<const TGeoNode*> >();
-  m_places = new map<int, set<pair<const TGeoNode*,const TGeoNode*> > >();
 }
 
 /// Initializing constructor
 GeoHandler::GeoHandler(map<int,set<const TGeoNode*> >* ptr)
   : m_propagateRegions(false), m_data(ptr) {
-  m_places = new map<int, set<pair<const TGeoNode*,const TGeoNode*> > >();
 }
 
 /// Default destructor
@@ -67,9 +65,6 @@ GeoHandler::~GeoHandler() {
   if (m_data)
     delete m_data;
   m_data = nullptr;
-  if ( m_places )
-    delete m_places;
-  m_places = nullptr;
 }
 
 map<int,set<const TGeoNode*> >* GeoHandler::release() {
@@ -89,7 +84,6 @@ GeoHandler& GeoHandler::collect(DetElement element) {
   DetElement par = element.parent();
   TGeoNode* par_node = par.isValid() ? par.placement().ptr() : nullptr;
   m_data->clear();
-  m_places->clear();
   return i_collect(par_node, element.placement().ptr(), 0, Region(), LimitSet());
 }
 
@@ -97,7 +91,6 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
   DetElement par = element.parent();
   TGeoNode* par_node = par.isValid() ? par.placement().ptr() : nullptr;
   m_data->clear();
-  m_places->clear();
   i_collect(par_node, element.placement().ptr(), 0, Region(), LimitSet());
   for (auto i = m_data->rbegin(); i != m_data->rend(); ++i) {
     const auto& mapped = (*i).second;
@@ -154,8 +147,6 @@ GeoHandler& GeoHandler::i_collect(const TGeoNode* parent,
     }
   }
   (*m_data)[level].emplace(current);
-  (*m_places)[level].emplace(make_pair(parent,current));
-  //printf("GeoHandler: collect level:%d %s\n",level,current->GetName());
   if (num_children > 0) {
     for (int i = 0; i < num_children; ++i) {
       TGeoNode* node = (TGeoNode*) nodes->At(i);
