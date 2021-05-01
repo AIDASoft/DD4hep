@@ -6,7 +6,6 @@
  */
 
 #include "DDSegmentation/CartesianGridXY.h"
-#include "DD4hep/Factories.h"
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -80,5 +79,6 @@ std::vector<double> CartesianGridXY::cellDimensions(const CellID&) const {
 } /* namespace DDSegmentation */
 } /* namespace dd4hep */
 
-
-DECLARE_SEGMENTATION(CartesianGridXY,dd4hep::create_segmentation<dd4hep::DDSegmentation::CartesianGridXY>)
+// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
+// needs also #include "DD4hep/Factories.h"
+// DECLARE_SEGMENTATION(CartesianGridXY,dd4hep::create_segmentation<dd4hep::DDSegmentation::CartesianGridXY>)
