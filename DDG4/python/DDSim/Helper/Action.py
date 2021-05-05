@@ -65,7 +65,7 @@ class Action(ConfigHelper):
   def mapActions(self):
     """Create a map of patterns and actions to be applied to sensitive detectors.
 
-    Example: if the name of the detector matches tpc the TPCSDAction is used.
+    Example: if the name of the detector matches 'tpc' the TPCSDAction is used.
 
       SIM.action.mapActions['tpc'] = "TPCSDAction"
     """
