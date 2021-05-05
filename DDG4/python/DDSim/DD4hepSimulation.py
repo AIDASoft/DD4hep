@@ -592,7 +592,7 @@ class DD4hepSimulation(object):
           logger.info('       replace default action with : %s', action)
           break
       if abortForMissingAction and action is None:
-        logger.error('Cannot find Action for detector %s. Extend "action.mapAction"', det)
+        logger.error('Cannot find Action for detector %s. You have to extend "action.mapAction"', det)
         raise RuntimeError("Cannot find Action")
       seq, act = setupFuction(det, type=action)
       self.filter.applyFilters(seq, det, defaultFilter)
