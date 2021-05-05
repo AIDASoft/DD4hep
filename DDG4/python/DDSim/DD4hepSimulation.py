@@ -457,27 +457,15 @@ class DD4hepSimulation(object):
 
     trk, cal, unk = self.getDetectorLists(detectorDescription)
 
-    # ---- add the trackers:
-    try:
-      self.__setupSensitiveDetectors(trk, simple.setupTracker, self.filter.tracker)
-    except Exception as e:
-      logger.error("Setting up sensitive detector %s", e)
-      raise
-
-    # ---- add the calorimeters:
-    try:
-      self.__setupSensitiveDetectors(cal, simple.setupCalorimeter, self.filter.calo)
-    except Exception as e:
-      logger.error("Setting up sensitive detector %s", e)
-      raise
-
-    # ---- try the unknowns:
-    try:
-      self.__setupSensitiveDetectors(unk, simple.setupDetector, defaultFilter=None,
-                                     abortForMissingAction=True)
-    except Exception as e:
-      logger.error("Setting up sensitive detector %s", e)
-      raise
+    for detectors, function, defFilter, abort in [(trk, simple.setupTracker, self.filter.tracker, False),
+                                                  (cal, simple.setupCalorimeter, self.filter.calo, False),
+                                                  (unk, simple.setupDetector, None, True),
+                                                  ]:
+      try:
+        self.__setupSensitiveDetectors(detectors, function, defFilter, abort)
+      except Exception as e:
+        logger.error("Failed setting up sensitive detector %s", e)
+        raise
 
   # =================================================================================
     # Now build the physics list:
