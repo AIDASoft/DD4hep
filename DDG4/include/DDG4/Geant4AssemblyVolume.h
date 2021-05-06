@@ -60,7 +60,7 @@ namespace dd4hep {
       }
 
       /// Default destructor
-      ~Geant4AssemblyVolume()   {
+      virtual ~Geant4AssemblyVolume()   {
       }
 
       long placeVolume(const TGeoNode* n, G4LogicalVolume* pPlacedVolume, G4Transform3D& transformation);
