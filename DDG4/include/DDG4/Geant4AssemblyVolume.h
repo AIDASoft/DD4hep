@@ -59,6 +59,7 @@ namespace dd4hep {
       Geant4AssemblyVolume() {
       }
 
+      
       /// Default destructor
       virtual ~Geant4AssemblyVolume()   {
       }
