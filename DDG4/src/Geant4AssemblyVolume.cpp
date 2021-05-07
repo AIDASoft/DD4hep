@@ -27,13 +27,25 @@
 
 using namespace dd4hep::sim;
 
+/// Default constructor with initialization
+Geant4AssemblyVolume::Geant4AssemblyVolume() {
+  m_assembly = new G4AssemblyVolume();
+}
+
+      
+/// Default destructor
+Geant4AssemblyVolume::~Geant4AssemblyVolume()   {
+  // Do not delete the G4 assembly. This is done by Geant4!
+  m_assembly = nullptr;
+}
+
 long Geant4AssemblyVolume::placeVolume(const TGeoNode* n,
 				       G4LogicalVolume* pPlacedVolume,
 				       G4Transform3D& transformation)
 {
-  size_t id = fTriplets.size();
+  size_t id = m_assembly->TotalTriplets();
   m_entries.emplace_back(n);
-  this->AddPlacedVolume(pPlacedVolume, transformation);
+  m_assembly->AddPlacedVolume(pPlacedVolume, transformation);
   return (long)id;
 }
 
@@ -41,9 +53,9 @@ long Geant4AssemblyVolume::placeAssembly(const TGeoNode* n,
 					 Geant4AssemblyVolume* pPlacedVolume,
 					 G4Transform3D& transformation)
 {
-  size_t id = fTriplets.size();
+  size_t id = m_assembly->TotalTriplets();
   m_entries.emplace_back(n);
-  this->AddPlacedAssembly(pPlacedVolume, transformation);
+  m_assembly->AddPlacedAssembly(pPlacedVolume->m_assembly, transformation);
   return (long)id;
 }
 
@@ -56,33 +68,38 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
                                    G4int                 copyNumBase,
                                    G4bool                surfCheck)
 {
+  struct _Wrap : public G4AssemblyVolume  {
+    void imprintsCountPlus()  {   this->G4AssemblyVolume::ImprintsCountPlus(); }
+  } *parent_wrapper = nullptr;
   static int level=0;
   TGeoVolume* vol = parent->GetVolume();
   unsigned int numberOfDaughters = (copyNumBase == 0) ? pMotherLV->GetNoDaughters() : copyNumBase;
 
+  parent_wrapper = (_Wrap*)pParentAssembly->m_assembly;
   ++level;
 
   // We start from the first available index
   //
   numberOfDaughters++;
-  ImprintsCountPlus();
+  parent_wrapper->imprintsCountPlus();
 
-  std::vector<G4AssemblyTriplet> triplets = pParentAssembly->fTriplets;
   //cout << " Assembly:" << detail::tools::placementPath(chain) << endl;
 
-  for( unsigned int i = 0; i < triplets.size(); i++ )  {
+  std::vector<G4AssemblyTriplet>::iterator iter = pParentAssembly->m_assembly->GetTripletsIterator();
+  for( unsigned int i = 0, n = parent_wrapper->TotalTriplets(); i < n; i++, iter++ )  {
     Chain new_chain = chain;
+    const auto& triplet = *iter;
     const TGeoNode* node = pParentAssembly->m_entries[i];
 
     new_chain.emplace_back(node);
     //cout << " Assembly: Entry: " << detail::tools::placementPath(new_chain) << endl;
 
-    G4Transform3D Ta( *(triplets[i].GetRotation()), triplets[i].GetTranslation() );
-    if ( triplets[i].IsReflection() )  {
+    G4Transform3D Ta( *(triplet.GetRotation()), triplet.GetTranslation() );
+    if ( triplet.IsReflection() )  {
       Ta = Ta * G4ReflectZ3D();
     }
     G4Transform3D Tfinal = transformation * Ta;
-    if ( triplets[i].GetVolume() )    {
+    if ( triplet.GetVolume() )    {
       // Generate the unique name for the next PV instance
       // The name has format:
       //
@@ -96,17 +113,17 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
       std::stringstream pvName;
 #if 0
       pvName << "av_"
-             << GetAssemblyID()
+             << m_assembly->GetAssemblyID()
              << "_impr_"
              << GetImprintsCount()
              << "_"
-             << triplets[i].GetVolume()->GetName().c_str()
+             << triplet.GetVolume()->GetName().c_str()
              << "_pv_"
              << i
              << ends;
 #endif
       pvName << "AV_"
-             << GetAssemblyID()
+             << m_assembly->GetAssemblyID()
              << '!'
 	     << parent->GetName()
 	     << '#'
@@ -122,13 +139,13 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
       //
 #if 0
       printout(INFO,"Geant4Converter","++ Place %svolume %s in assembly.",
-	       triplets[i].IsReflection() ? "REFLECTED " : "",
+	       triplet.IsReflection() ? "REFLECTED " : "",
 	       detail::tools::placementPath(new_chain).c_str());
 #endif
       G4PhysicalVolumesPair pvPlaced
         = G4ReflectionFactory::Instance()->Place( Tfinal,
                                                   pvName.str().c_str(),
-                                                  triplets[i].GetVolume(),
+                                                  triplet.GetVolume(),
                                                   pMotherLV,
                                                   false,
                                                   numberOfDaughters + i,
@@ -151,9 +168,9 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
         //fPVStore.emplace_back( pvPlaced.second );
       }
     }
-    else if ( triplets[i].GetAssembly() )  {
+    else if ( triplet.GetAssembly() )  {
       // Place volumes in this assembly with composed transformation
-      imprint(info, parent, new_chain, (Geant4AssemblyVolume*)triplets[i].GetAssembly(),
+      imprint(info, parent, new_chain, (Geant4AssemblyVolume*)triplet.GetAssembly(),
               pMotherLV, Tfinal, i*100+copyNumBase, surfCheck );
     }
     else   {

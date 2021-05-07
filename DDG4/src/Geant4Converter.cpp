@@ -577,7 +577,6 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
              n.c_str(), volume, sh->IsA()->GetName(), volume->IsA()->GetName(), yes_no(is_assembly));
     
     if ( is_assembly ) {
-      //info.g4AssemblyVolumes[v] = new Geant4AssemblyVolume();
       return nullptr;
     }
     Region        reg    = _v.region();

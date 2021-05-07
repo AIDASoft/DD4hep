@@ -13,22 +13,11 @@
 #ifndef DDG4_GEANT4ASSEMBLYVOLUME_H
 #define DDG4_GEANT4ASSEMBLYVOLUME_H
 
-// Disable diagnostics for ROOT dictionaries
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wkeyword-macro"
-#endif
-
-#define private public
-#include "G4AssemblyVolume.hh"
-#undef private
-
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-
 // ROOT includes
 #include "TGeoNode.h"
+
+// Geant4 include files
+#include "G4AssemblyVolume.hh"
 
 /// C/C++ include files
 #include <vector>
@@ -48,22 +37,20 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4AssemblyVolume : public G4AssemblyVolume {
+    class Geant4AssemblyVolume  {
       
     public:
 
-      std::vector<const TGeoNode*> m_entries;
       typedef std::vector<const TGeoNode*> Chain;
+      std::vector<const TGeoNode*> m_entries;
+      G4AssemblyVolume*            m_assembly;
 
       /// Default constructor with initialization
-      Geant4AssemblyVolume() {
-      }
-
+      Geant4AssemblyVolume();
       
       /// Default destructor
-      virtual ~Geant4AssemblyVolume()   {
-      }
-
+      virtual ~Geant4AssemblyVolume();
+      
       long placeVolume(const TGeoNode* n, G4LogicalVolume* pPlacedVolume, G4Transform3D& transformation);
       
       long placeAssembly(const TGeoNode* n, Geant4AssemblyVolume* pPlacedVolume, G4Transform3D& transformation);
