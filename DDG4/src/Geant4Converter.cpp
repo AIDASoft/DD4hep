@@ -682,7 +682,7 @@ void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) 
                    __FILE__, __LINE__, name.c_str(), dau->GetName());
           return 0;
         }
-        g4->placeAssembly(dau,(*ia).second,transform);
+        g4->placeAssembly(dau, (*ia).second, transform);
         printout(lvl, "Geant4Converter", "+++ Assembly: AddPlacedAssembly : dau:%s "
                  "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
                  dau_vol->GetName(), mot_vol->GetName(),

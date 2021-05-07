@@ -43,11 +43,21 @@ namespace dd4hep {
 
       typedef std::vector<const TGeoNode*> Chain;
       std::vector<const TGeoNode*> m_entries;
+      std::vector<Geant4AssemblyVolume*> m_places;
       G4AssemblyVolume*            m_assembly;
 
       /// Default constructor with initialization
       Geant4AssemblyVolume();
-      
+
+      /// Inhibit move construction
+      Geant4AssemblyVolume(Geant4AssemblyVolume&& copy) = delete;
+      /// Inhibit copy construction
+      Geant4AssemblyVolume(const Geant4AssemblyVolume& copy) = delete;
+      /// Inhibit move assignment
+      Geant4AssemblyVolume& operator=(Geant4AssemblyVolume&& copy) = delete;
+      /// Inhibit copy assignment
+      Geant4AssemblyVolume& operator=(const Geant4AssemblyVolume& copy) = delete;
+
       /// Default destructor
       virtual ~Geant4AssemblyVolume();
       
