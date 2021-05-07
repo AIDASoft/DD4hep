@@ -45,6 +45,7 @@ long Geant4AssemblyVolume::placeVolume(const TGeoNode* n,
 {
   size_t id = m_assembly->TotalTriplets();
   m_entries.emplace_back(n);
+  m_places.emplace_back(nullptr);
   m_assembly->AddPlacedVolume(pPlacedVolume, transformation);
   return (long)id;
 }
@@ -55,6 +56,7 @@ long Geant4AssemblyVolume::placeAssembly(const TGeoNode* n,
 {
   size_t id = m_assembly->TotalTriplets();
   m_entries.emplace_back(n);
+  m_places.emplace_back(pPlacedVolume);
   m_assembly->AddPlacedAssembly(pPlacedVolume->m_assembly, transformation);
   return (long)id;
 }
@@ -69,27 +71,24 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
                                    G4bool                surfCheck)
 {
   struct _Wrap : public G4AssemblyVolume  {
-    void imprintsCountPlus()  {   this->G4AssemblyVolume::ImprintsCountPlus(); }
-  } *parent_wrapper = nullptr;
-  static int level=0;
+    static void imprintsCountPlus(G4AssemblyVolume* p)
+    {  _Wrap* w = (_Wrap*)p; w->ImprintsCountPlus(); }
+  };
   TGeoVolume* vol = parent->GetVolume();
+  G4AssemblyVolume* par_ass = pParentAssembly->m_assembly;
   unsigned int numberOfDaughters = (copyNumBase == 0) ? pMotherLV->GetNoDaughters() : copyNumBase;
 
-  parent_wrapper = (_Wrap*)pParentAssembly->m_assembly;
-  ++level;
-
   // We start from the first available index
-  //
   numberOfDaughters++;
-  parent_wrapper->imprintsCountPlus();
+  _Wrap::imprintsCountPlus(par_ass);
 
   //cout << " Assembly:" << detail::tools::placementPath(chain) << endl;
-
-  std::vector<G4AssemblyTriplet>::iterator iter = pParentAssembly->m_assembly->GetTripletsIterator();
-  for( unsigned int i = 0, n = parent_wrapper->TotalTriplets(); i < n; i++, iter++ )  {
+  std::vector<G4AssemblyTriplet>::iterator iter = par_ass->GetTripletsIterator();
+  for( unsigned int i = 0, n = par_ass->TotalTriplets(); i < n; i++, iter++ )  {
     Chain new_chain = chain;
     const auto& triplet = *iter;
     const TGeoNode* node = pParentAssembly->m_entries[i];
+    Geant4AssemblyVolume* avol = pParentAssembly->m_places[i];
 
     new_chain.emplace_back(node);
     //cout << " Assembly: Entry: " << detail::tools::placementPath(new_chain) << endl;
@@ -170,15 +169,11 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
     }
     else if ( triplet.GetAssembly() )  {
       // Place volumes in this assembly with composed transformation
-      imprint(info, parent, new_chain, (Geant4AssemblyVolume*)triplet.GetAssembly(),
-              pMotherLV, Tfinal, i*100+copyNumBase, surfCheck );
+      imprint(info, parent, new_chain, avol, pMotherLV, Tfinal, i*100+copyNumBase, surfCheck );
     }
     else   {
-      --level;
       G4Exception("Geant4AssemblyVolume::imprint(..)", "GeomVol0003", FatalException,
                   "Triplet has no volume and no assembly");
     }
   }
-  //cout << "Imprinted assembly level:" << level << " in mother:" << pMotherLV->GetName() << endl;
-  --level;
 }
