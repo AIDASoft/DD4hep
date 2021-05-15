@@ -19,6 +19,10 @@
   <detectors>
     <detector id="1" name="Shape_Collada" type="DD4hep_TestShape_Creator">
       <check>
+	<!--
+        <shape type="CAD_MultiVolume" ref="./endcap.collada" unit="cm"/>
+        <shape type="CAD_MultiVolume" ref="./endcap.stl" unit="cm"/>
+	-->
         <shape type="CAD_MultiVolume" ref="./endcap_reflection.collada" unit="cm"/>
       </check>
     </detector>

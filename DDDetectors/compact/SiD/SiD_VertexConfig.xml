@@ -18,6 +18,8 @@
 
   <!--  Definition of the used visualization attributes    -->
   <display>
+    <vis name="VertexSupportVis"     alpha="1.0" r=".4" g=".4"  b=".6"  drawingStyle="wireframe" showDaughters="false" visible="true"/>
+    <vis name="VertexCableVis"       alpha="1.0" r=".5" g=".5"  b=".8"  drawingStyle="solid"     showDaughters="false" visible="true"/>
     <vis name="SiVertexModuleVis"    alpha="1.0" r="1" g="1"    b="0.6" drawingStyle="wireframe" showDaughters="true"  visible="true"/>
     <vis name="SiVertexSensitiveVis" alpha="1.0" r="1" g="0.2"  b="0.2" drawingStyle="solid"     showDaughters="true"  visible="true"/>
     <vis name="SiVertexPassiveVis"   alpha="1.0" r="0" g="0.2"  b="1"   drawingStyle="solid"     showDaughters="true"  visible="true"/>

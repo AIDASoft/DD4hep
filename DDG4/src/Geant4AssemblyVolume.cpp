@@ -110,17 +110,6 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
       // ZZZ - the log. volume index inside the assembly volume
       //
       std::stringstream pvName;
-#if 0
-      pvName << "av_"
-             << m_assembly->GetAssemblyID()
-             << "_impr_"
-             << GetImprintsCount()
-             << "_"
-             << triplet.GetVolume()->GetName().c_str()
-             << "_pv_"
-             << i
-             << ends;
-#endif
       pvName << "AV_"
              << m_assembly->GetAssemblyID()
              << '!'
@@ -136,11 +125,6 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
       // (as we allow 3D transformation use G4ReflectionFactory to
       //  take into account eventual reflection)
       //
-#if 0
-      printout(INFO,"Geant4Converter","++ Place %svolume %s in assembly.",
-	       triplet.IsReflection() ? "REFLECTED " : "",
-	       detail::tools::placementPath(new_chain).c_str());
-#endif
       G4PhysicalVolumesPair pvPlaced
         = G4ReflectionFactory::Instance()->Place( Tfinal,
                                                   pvName.str().c_str(),
@@ -155,6 +139,9 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
       //fPVStore.emplace_back( pvPlaced.first );
       info.g4VolumeImprints[vol].emplace_back(new_chain,pvPlaced.first);
 #if 0
+      printout(INFO,"Geant4Converter","++ Place %svolume %s in assembly.",
+	       triplet.IsReflection() ? "REFLECTED " : "",
+	       detail::tools::placementPath(new_chain).c_str());
       cout << " Assembly:Parent:" << parent->GetName() << " " << node->GetName()
            << " " <<  (void*)node << " G4:" << pvName.str() << " Daughter:"
            << detail::tools::placementPath(new_chain) << endl;

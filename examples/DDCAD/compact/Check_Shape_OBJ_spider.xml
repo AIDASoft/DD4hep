@@ -15,10 +15,53 @@
     <gdmlFile ref="../../ClientTests/compact/CheckShape.xml"/>
   </includes>
 
+  <materials>
+    <material name="HLeibTex">
+      <D value="7.85" unit="g/cm3"/>
+      <fraction n="1.0" ref="Fe"/>
+    </material>
+    <material name="BeinTex">
+      <D value="7.85" unit="g/cm3"/>
+      <fraction n="1.0" ref="Fe"/>
+    </material>
+    <material name="Augentex">
+      <D value="7.85" unit="g/cm3"/>
+      <fraction n="1.0" ref="Fe"/>
+    </material>
+    <material name="Skin">
+      <D value="7.85" unit="g/cm3"/>
+      <fraction n="1.0" ref="Fe"/>
+    </material>
+  </materials>
+
   <detectors>
     <detector id="1" name="Shape_OBJ" type="DD4hep_TestShape_Creator">
       <check vis="Shape1_vis">
-        <shape type="CAD_Assembly" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/OBJ/spider.obj" mesh="0"/>
+	<!--
+        <shape type="CAD_Assembly" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/OBJ/spider.obj" mesh="0" vis="Shape0_vis"/>
+	-->
+        <shape type="CAD_MultiVolume" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/OBJ/spider.obj" unit="cm">
+	  <volume id="0"  name="v1" material="Iron" vis="Shape3_vis"/>
+	  <volume id="1"  name="v1" material="Iron" vis="Shape3_vis"/>
+	  <volume id="2"  name="v1" material="Iron" vis="Shape1_vis"/>
+	  <volume id="3"  name="v1" material="Iron" vis="Shape1_vis"/>
+	  <volume id="4"  name="v1" material="Iron" vis="Shape1_vis"/>
+	  <volume id="5"  name="v1" material="Iron" vis="Shape1_vis"/>
+	  <volume id="6"  name="v1" material="Iron" vis="Shape1_vis"/>
+	  <volume id="7"  name="v1" material="Iron" vis="Shape1_vis"/>
+	  <volume id="8"  name="v1" material="Iron" vis="Shape1_vis"/>
+	  <volume id="9"  name="v1" material="Iron" vis="Shape1_vis"/>
+	  <volume id="10" name="v1" material="Iron" vis="Shape1_vis"/>
+	  <volume id="11" name="v1" material="Iron" vis="Shape5_vis"/>
+	  <volume id="12" name="v1" material="Iron" vis="Shape5_vis"/>
+	  <volume id="13" name="v1" material="Iron" vis="Shape5_vis"/>
+	  <volume id="14" name="v1" material="Iron" vis="Shape5_vis"/>
+	  <volume id="15" name="v1" material="Iron" vis="Shape5_vis"/>
+	  <volume id="16" name="v1" material="Iron" vis="Shape5_vis"/>
+	  <volume id="17" name="v1" material="Iron" vis="Shape5_vis"/>
+	  <volume id="18" name="v1" material="Iron" vis="Shape5_vis"/>
+        </shape>
+
       </check>
       <test1  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/ref/Ref_OBJ_spider.txt" create="CheckShape_create"/>
     </detector>
