@@ -58,6 +58,27 @@ foreach (test ${DDCAD_Tests})
 endforeach()
 #
 #  Test CAD export from a simplyfied model
+dd4hep_add_test_reg( DDCAD_export_sid_vertex
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
+  EXEC_ARGS  geoPluginRun -input ${CLICSiDEx_INSTALL}/compact/SiD_multiple_inputs.xml
+  	                  -input ${CLICSiDEx_INSTALL}/compact/SiD_Vertex.xml
+			  -plugin DD4hep_CAD_export -output clicsid_vertex.collada
+			  -type collada -recursive -detector /world -recursive -scale 1.0 
+  REGEX_PASS "Analysed 383 of 383 meshes"
+  REGEX_FAIL "Exception"
+  REGEX_FAIL "FAILED"
+)
+#
+#  Test CAD import from the exported simplyfied model
+dd4hep_add_test_reg( DDCAD_import_sid_vertex
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
+  EXEC_ARGS  geoDisplay -input ${DDCADTests_INSTALL}/compact/Import_SiD_Vertex.xml -load -destroy
+  DEPENDS    Persist_Conditions_Save
+  REGEX_PASS "Read 383 meshes"
+  REGEX_FAIL "Exception"
+)
+#
+#  Test CAD export from a simplyfied model
 dd4hep_add_test_reg( DDCAD_export_cal_endcaps
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/CaloEndcapReflection.xml

@@ -26,7 +26,16 @@
     <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
     <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
   </includes>
+  
+  <materials>
+    <material name="DefaultMaterial">
+      <D value="7.85" unit="g/cm3"/>
+      <fraction n="0.998" ref="Fe"/>
+      <fraction n=".002"  ref="C"/>
+    </material>
+  </materials>
 
+  
   <define>
     <constant name="world_side" value="300*cm"/>
     <constant name="world_x" value="world_side"/>

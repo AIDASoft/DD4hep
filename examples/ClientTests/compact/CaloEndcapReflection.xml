@@ -63,7 +63,6 @@
       <sensitive type="calorimeter"/>
       <reflect type="Z"/>
     </detector>
-
   </detectors>
 
   <!--  Definition of the readout segmentation/definition  -->
@@ -115,7 +114,7 @@
 
   <comment>Beampipe</comment>
   <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_Beampipe.xml"/>
-  
+
   <fields>
     <field name="GlobalSolenoid" type="solenoid" 
 	   inner_field="5.0*tesla"
