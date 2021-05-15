@@ -266,7 +266,7 @@ class DD4hepSimulation(object):
   def getDetectorLists(self, detectorDescription):
     ''' get lists of trackers and calorimeters that are defined in detectorDescription (the compact xml file)'''
     import DDG4
-    trackers, calos = [], []
+    trackers, calos, unknown = [], [], []
     for i in detectorDescription.detectors():
       det = DDG4.DetElement(i.second.ptr())
       name = det.name()
@@ -274,14 +274,15 @@ class DD4hepSimulation(object):
       if sd.isValid():
         detType = sd.type()
         logger.info('getDetectorLists - found active detector %s type: %s', name, detType)
-        if any(pat in detType.lower() for pat in self.action.trackerSDTypes):
+        if any(pat.lower() in detType.lower() for pat in self.action.trackerSDTypes):
           trackers.append(det.name())
-        elif any(pat in detType.lower() for pat in self.action.calorimeterSDTypes):
+        elif any(pat.lower() in detType.lower() for pat in self.action.calorimeterSDTypes):
           calos.append(det.name())
         else:
-          logger.warn('Unknown sensitive detector type: %s', detType)
+          logger.warning('Unknown sensitive detector type: %s', detType)
+          unknown.append(det.name())
 
-    return trackers, calos
+    return trackers, calos, unknown
 
 # ==================================================================================
 
@@ -454,21 +455,17 @@ class DD4hepSimulation(object):
     # =================================================================================
     # get lists of trackers and calorimeters in detectorDescription
 
-    trk, cal = self.getDetectorLists(detectorDescription)
+    trk, cal, unk = self.getDetectorLists(detectorDescription)
 
-    # ---- add the trackers:
-    try:
-      self.__setupSensitiveDetectors(trk, simple.setupTracker, self.filter.tracker)
-    except Exception as e:
-      logger.error("Setting up sensitive detector %s", e)
-      raise
-
-  # ---- add the calorimeters:
-    try:
-      self.__setupSensitiveDetectors(cal, simple.setupCalorimeter, self.filter.calo)
-    except Exception as e:
-      logger.error("Setting up sensitive detector %s", e)
-      raise
+    for detectors, function, defFilter, abort in [(trk, simple.setupTracker, self.filter.tracker, False),
+                                                  (cal, simple.setupCalorimeter, self.filter.calo, False),
+                                                  (unk, simple.setupDetector, None, True),
+                                                  ]:
+      try:
+        self.__setupSensitiveDetectors(detectors, function, defFilter, abort)
+      except Exception as e:
+        logger.error("Failed setting up sensitive detector %s", e)
+        raise
 
   # =================================================================================
     # Now build the physics list:
@@ -574,21 +571,29 @@ class DD4hepSimulation(object):
       self._errorMessages.append("ERROR: printLevel '%s' unknown" % level)
       return -1
 
-  def __setupSensitiveDetectors(self, detectors, setupFuction, defaultFilter=None):
-    """ attach sensitive detector actions for all subdetectors
-    can be steered with the `Action` ConfigHelpers
+  def __setupSensitiveDetectors(self, detectors, setupFuction, defaultFilter=None,
+                                abortForMissingAction=False,
+                                ):
+    """Attach sensitive detector actions for all subdetectors.
+
+    Can be steered with the `Action` ConfigHelpers
 
     :param detectors: list of detectors
     :param setupFunction: function used to register the sensitive detector
+    :param defaultFilter: default filter to apply for given types
+    :param abortForMissingAction: if true end program if there is no action found
     """
     for det in detectors:
-      logger.info('Setting up SD for %s' % det)
+      logger.info('Setting up SD for %s', det)
       action = None
       for pattern in self.action.mapActions:
         if pattern.lower() in det.lower():
           action = self.action.mapActions[pattern]
           logger.info('       replace default action with : %s', action)
           break
+      if abortForMissingAction and action is None:
+        logger.error('Cannot find Action for detector %s. You have to extend "action.mapAction"', det)
+        raise RuntimeError("Cannot find Action")
       seq, act = setupFuction(det, type=action)
       self.filter.applyFilters(seq, det, defaultFilter)
 

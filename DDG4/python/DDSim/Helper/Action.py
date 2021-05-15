@@ -8,14 +8,22 @@ import ddsix as six
 
 
 class Action(ConfigHelper):
-  """Action holding sensitive detector actions
+  """Helper holding sensitive detector actions.
+
   The default tracker and calorimeter actions can be set with
 
   >>> SIM = DD4hepSimulation()
   >>> SIM.action.tracker=('Geant4TrackerWeightedAction', {'HitPositionCombination': 2, 'CollectSingleDeposits': False})
   >>> SIM.action.calo = "Geant4CalorimeterAction"
 
-  for specific subdetectors specific sensitive detectors can be set based on pattern matching
+  The default sensitive actions for calorimeters and trackers are applied based on the sensitive type.
+  The list of sensitive types can be changed with
+
+  >>> SIM = DD4hepSimulation()
+  >>> SIM.action.trackerSDTypes = ['tracker', 'myTrackerSensType']
+  >>> SIM.calor.calorimeterSDTypes = ['calorimeter', 'myCaloSensType']
+
+  For specific subdetectors specific sensitive detectors can be set based on patterns in the name of the subdetector.
 
   >>> SIM = DD4hepSimulation()
   >>> SIM.action.mapActions['tpc'] = "TPCSDAction"
@@ -55,8 +63,12 @@ class Action(ConfigHelper):
 
   @property
   def mapActions(self):
-    """ create a map of patterns and actions to be applied to sensitive detectors
-        example: SIM.action.mapActions['tpc'] = "TPCSDAction" """
+    """Create a map of patterns and actions to be applied to sensitive detectors.
+
+    Example: if the name of the detector matches 'tpc' the TPCSDAction is used.
+
+      SIM.action.mapActions['tpc'] = "TPCSDAction"
+    """
     return self._mapActions
 
   @mapActions.setter
