@@ -577,7 +577,6 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
              n.c_str(), volume, sh->IsA()->GetName(), volume->IsA()->GetName(), yes_no(is_assembly));
     
     if ( is_assembly ) {
-      //info.g4AssemblyVolumes[v] = new Geant4AssemblyVolume();
       return nullptr;
     }
     Region        reg    = _v.region();
@@ -683,7 +682,7 @@ void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) 
                    __FILE__, __LINE__, name.c_str(), dau->GetName());
           return 0;
         }
-        g4->placeAssembly(dau,(*ia).second,transform);
+        g4->placeAssembly(dau, (*ia).second, transform);
         printout(lvl, "Geant4Converter", "+++ Assembly: AddPlacedAssembly : dau:%s "
                  "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
                  dau_vol->GetName(), mot_vol->GetName(),

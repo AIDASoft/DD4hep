@@ -125,8 +125,8 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
   return *this;
 }
 
-GeoHandler& GeoHandler::i_collect(const TGeoNode* parent,
-				  const TGeoNode* current,
+GeoHandler& GeoHandler::i_collect(const TGeoNode* /* parent */,
+				  const TGeoNode*    current,
 				  int level, Region rg, LimitSet ls)
 {
   TGeoVolume* volume = current->GetVolume();

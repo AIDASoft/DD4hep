@@ -19,6 +19,7 @@ class Physics(ConfigHelper):
     self._pdgfile = None
     self._rejectPDGs = {1, 2, 3, 4, 5, 6, 21, 23, 24, 25}
     self._zeroTimePDGs = {11, 13, 15, 17}
+    self._userFunctions = []
 
   @property
   def rejectPDGs(self):
@@ -131,4 +132,29 @@ class Physics(ConfigHelper):
       seq.adopt(rg)
       rg.RangeCut = self.rangecut
 
+    for func in self._userFunctions:
+      func(kernel)
+
     return seq
+
+  def setupUserPhysics(self, userFunction):
+    """Add a function to setup physics plugins.
+
+    The function must take the DDG4.Kernel() object as the only argument.
+
+    For example::
+
+      def setupCerenkov(kernel):
+        from DDG4 import PhysicsList
+        seq = kernel.physicsList()
+        cerenkov = PhysicsList(kernel, 'Geant4CerenkovPhysics/CerenkovPhys')
+        cerenkov.MaxNumPhotonsPerStep = 10
+        cerenkov.MaxBetaChangePerStep = 10.0
+        cerenkov.TrackSecondariesFirst = True
+        cerenkov.VerboseLevel = 2
+        cerenkov.enableUI()
+        return None
+
+      SIM.physics.setupUserPhysics(setupCerenkov)
+    """
+    self._userFunctions.append(userFunction)

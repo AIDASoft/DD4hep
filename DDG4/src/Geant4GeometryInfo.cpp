@@ -13,6 +13,7 @@
 
 // Framework include files
 #include "DDG4/Geant4GeometryInfo.h"
+#include "DDG4/Geant4AssemblyVolume.h"
 
 // Geant4 include files
 #include "G4VPhysicalVolume.hh"
@@ -46,6 +47,9 @@ Geant4GeometryInfo::Geant4GeometryInfo()
 
 /// Default destructor
 Geant4GeometryInfo::~Geant4GeometryInfo() {
+  for( auto& a : g4AssemblyVolumes )
+    delete a.second;
+  g4AssemblyVolumes.clear();
 }
 
 /// The world placement
