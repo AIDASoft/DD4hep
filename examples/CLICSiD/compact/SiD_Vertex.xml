@@ -1,0 +1,19 @@
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_Tracker.xml"/>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_VertexEndcap.xml"/>
+-->
+  <geometry open="false" close="true"/>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_VertexConfig.xml"/>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_VertexBarrel.xml"/>
+</lccdd>
