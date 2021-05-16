@@ -44,8 +44,9 @@ include(CTest)
 #
 #  Test basic shapes by comparing mesh vertices with reference file
 set(DDCAD_Tests)
+set(DDCADEx_INSTALL       ${CMAKE_INSTALL_PREFIX}/examples/DDCAD)
+set(CLICSiDEx_INSTALL     ${CMAKE_INSTALL_PREFIX}/examples/CLICSiD)
 set(ClientTestsEx_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
-set(DDCADTests_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/DDCAD)
 #
 # Multi-shapes: BLEND_HUMAN COB_dwarf
 list(APPEND DDCAD_Tests BHV_Boxing_Toes Collada_duck PLY_Wuson )
@@ -72,7 +73,8 @@ dd4hep_add_test_reg( DDCAD_export_sid_vertex
 #  Test CAD import from the exported simplyfied model
 dd4hep_add_test_reg( DDCAD_import_sid_vertex
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
-  EXEC_ARGS  geoDisplay -input ${DDCADTests_INSTALL}/compact/Import_SiD_Vertex.xml -load -destroy
+  EXEC_ARGS  geoDisplay -input ${CLICSiDEx_INSTALL}/compact/SiD_multiple_inputs.xml
+  	     		-input ${DDCADEx_INSTALL}/compact/Import_SiD_Vertex.xml -load -destroy
   DEPENDS    Persist_Conditions_Save
   REGEX_PASS "Read 383 meshes"
   REGEX_FAIL "Exception"
@@ -92,7 +94,7 @@ dd4hep_add_test_reg( DDCAD_export_cal_endcaps
 #  Test CAD import from the exported simplyfied model
 dd4hep_add_test_reg( DDCAD_import_cal_endcaps
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
-  EXEC_ARGS  geoDisplay -input ${DDCADTests_INSTALL}/compact/Import_CaloEndcap.xml -load -destroy
+  EXEC_ARGS  geoDisplay -input ${DDCADEx_INSTALL}/compact/Import_CaloEndcap.xml -load -destroy
   DEPENDS    Persist_Conditions_Save
   REGEX_PASS "Read 96 meshes"
   REGEX_FAIL "Exception"
