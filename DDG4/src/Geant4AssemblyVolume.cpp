@@ -91,14 +91,16 @@ void Geant4AssemblyVolume::imprint(const Geant4Converter& cnv,
 	   "Geant4Converter","++ Assembly: %s", detail::tools::placementPath(chain).c_str());
   std::vector<G4AssemblyTriplet>::iterator iter = par_ass->GetTripletsIterator();
   for( unsigned int i = 0, n = par_ass->TotalTriplets(); i < n; i++, iter++ )  {
-    Chain new_chain = chain;
-    const auto& triplet = *iter;
-    const TGeoNode* node = pParentAssembly->m_entries[i];
+    Chain            new_chain = chain;
+    const auto&        triplet = *iter;
+    const TGeoNode*       node = pParentAssembly->m_entries[i];
     Geant4AssemblyVolume* avol = pParentAssembly->m_places[i];
-
+    std::string           path;
+    
     new_chain.emplace_back(node);
-    printout(cnv.debugPlacements ? ALWAYS : DEBUG,
-	     " Assembly: Entry: %s",detail::tools::placementPath(new_chain).c_str());
+
+    path = detail::tools::placementPath(new_chain);
+    printout(cnv.debugPlacements ? ALWAYS : DEBUG, " Assembly: Entry: %s", path.c_str());
 
     G4Transform3D Ta( *(triplet.GetRotation()), triplet.GetTranslation() );
     if ( triplet.IsReflection() )  {
@@ -141,22 +143,17 @@ void Geant4AssemblyVolume::imprint(const Geant4Converter& cnv,
                                                   numberOfDaughters + i,
                                                   surfCheck );
 
-      // Register the physical volume created by us so we can delete it later
-      //
-      //fPVStore.emplace_back( pvPlaced.first );
       info.g4VolumeImprints[vol].emplace_back(new_chain,pvPlaced.first);
       printout(cnv.debugPlacements ? ALWAYS : DEBUG,
-	       "Geant4Converter","++ Place %svolume %s in assembly.",
-	       triplet.IsReflection() ? "REFLECTED " : "",
-	       detail::tools::placementPath(new_chain).c_str());
+	       "Geant4Converter", "++ Place %svolume %s in assembly.",
+	       triplet.IsReflection() ? "REFLECTED " : "", path.c_str());
       printout(cnv.debugPlacements ? ALWAYS : DEBUG,
-	       "Geant4Converter"," Assembly:Parent: %s %s %p G4:%s Daughter: %s",
-	       parent->GetName(), node->GetName(), (void*)node, pvName.str().c_str(),
-	       detail::tools::placementPath(new_chain).c_str());
+	       "Geant4Converter", " Assembly:Parent: %s %s %p G4:%s",
+	       parent->GetName(), node->GetName(),
+	       (void*)node, pvName.str().c_str());
       if ( pvPlaced.second )  {
         G4Exception("Geant4AssemblyVolume::imprint(..)", "GeomVol0003", FatalException,
                     "Fancy construct popping new mother from the stack!");
-        //fPVStore.emplace_back( pvPlaced.second );
       }
     }
     else if ( triplet.GetAssembly() )  {
