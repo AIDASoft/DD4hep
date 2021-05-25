@@ -11,17 +11,18 @@
 //
 //==========================================================================
 
-// Geant4 include files
-#include "DD4hep/DetectorTools.h"
+/// Geant4 include files
 #include "G4LogicalVolume.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4ReflectionFactory.hh"
 
-// C/C++ include files
+/// C/C++ include files
 #include <sstream>
 #include <string>
 
-// Framework include files
+/// Framework include files
+#include "DD4hep/DetectorTools.h"
+#include "DDG4/Geant4Converter.h"
 #include "DDG4/Geant4GeometryInfo.h"
 #include "DDG4/Geant4AssemblyVolume.h"
 
@@ -39,6 +40,7 @@ Geant4AssemblyVolume::~Geant4AssemblyVolume()   {
   m_assembly = nullptr;
 }
 
+/// Place logical daughter volume into the assembly
 long Geant4AssemblyVolume::placeVolume(const TGeoNode* n,
 				       G4LogicalVolume* pPlacedVolume,
 				       G4Transform3D& transformation)
@@ -50,6 +52,7 @@ long Geant4AssemblyVolume::placeVolume(const TGeoNode* n,
   return (long)id;
 }
 
+/// Place daughter assembly into the assembly
 long Geant4AssemblyVolume::placeAssembly(const TGeoNode* n,
 					 Geant4AssemblyVolume* pPlacedVolume,
 					 G4Transform3D& transformation)
@@ -61,28 +64,31 @@ long Geant4AssemblyVolume::placeAssembly(const TGeoNode* n,
   return (long)id;
 }
 
-void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
-                                   const TGeoNode*       parent,
-                                   Chain                 chain,
-                                   Geant4AssemblyVolume* pParentAssembly,
-                                   G4LogicalVolume*      pMotherLV,
-                                   G4Transform3D&        transformation,
-                                   G4int                 copyNumBase,
-                                   G4bool                surfCheck)
+/// Expand all daughter placements and expand the contained assemblies to imprints
+void Geant4AssemblyVolume::imprint(const Geant4Converter& cnv,
+                                   const TGeoNode*        parent,
+                                   Chain                  chain,
+                                   Geant4AssemblyVolume*  pParentAssembly,
+                                   G4LogicalVolume*       pMotherLV,
+                                   G4Transform3D&         transformation,
+                                   G4int                  copyNumBase,
+                                   G4bool                 surfCheck)
 {
   struct _Wrap : public G4AssemblyVolume  {
     static void imprintsCountPlus(G4AssemblyVolume* p)
     {  _Wrap* w = (_Wrap*)p; w->ImprintsCountPlus(); }
   };
-  TGeoVolume* vol = parent->GetVolume();
+  TGeoVolume*       vol = parent->GetVolume();
   G4AssemblyVolume* par_ass = pParentAssembly->m_assembly;
+  Geant4GeometryInfo&  info = cnv.data();
   unsigned int numberOfDaughters = (copyNumBase == 0) ? pMotherLV->GetNoDaughters() : copyNumBase;
 
   // We start from the first available index
   numberOfDaughters++;
   _Wrap::imprintsCountPlus(par_ass);
 
-  //cout << " Assembly:" << detail::tools::placementPath(chain) << endl;
+  printout(cnv.debugPlacements ? ALWAYS : DEBUG,
+	   "Geant4Converter","++ Assembly: %s", detail::tools::placementPath(chain).c_str());
   std::vector<G4AssemblyTriplet>::iterator iter = par_ass->GetTripletsIterator();
   for( unsigned int i = 0, n = par_ass->TotalTriplets(); i < n; i++, iter++ )  {
     Chain new_chain = chain;
@@ -91,7 +97,8 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
     Geant4AssemblyVolume* avol = pParentAssembly->m_places[i];
 
     new_chain.emplace_back(node);
-    //cout << " Assembly: Entry: " << detail::tools::placementPath(new_chain) << endl;
+    printout(cnv.debugPlacements ? ALWAYS : DEBUG,
+	     " Assembly: Entry: %s",detail::tools::placementPath(new_chain).c_str());
 
     G4Transform3D Ta( *(triplet.GetRotation()), triplet.GetTranslation() );
     if ( triplet.IsReflection() )  {
@@ -138,16 +145,14 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
       //
       //fPVStore.emplace_back( pvPlaced.first );
       info.g4VolumeImprints[vol].emplace_back(new_chain,pvPlaced.first);
-#if 0
-      printout(INFO,"Geant4Converter","++ Place %svolume %s in assembly.",
+      printout(cnv.debugPlacements ? ALWAYS : DEBUG,
+	       "Geant4Converter","++ Place %svolume %s in assembly.",
 	       triplet.IsReflection() ? "REFLECTED " : "",
 	       detail::tools::placementPath(new_chain).c_str());
-      cout << " Assembly:Parent:" << parent->GetName() << " " << node->GetName()
-           << " " <<  (void*)node << " G4:" << pvName.str() << " Daughter:"
-           << detail::tools::placementPath(new_chain) << endl;
-      cout << endl;
-#endif
-
+      printout(cnv.debugPlacements ? ALWAYS : DEBUG,
+	       "Geant4Converter"," Assembly:Parent: %s %s %p G4:%s Daughter: %s",
+	       parent->GetName(), node->GetName(), (void*)node, pvName.str().c_str(),
+	       detail::tools::placementPath(new_chain).c_str());
       if ( pvPlaced.second )  {
         G4Exception("Geant4AssemblyVolume::imprint(..)", "GeomVol0003", FatalException,
                     "Fancy construct popping new mother from the stack!");
@@ -156,7 +161,7 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo&   info,
     }
     else if ( triplet.GetAssembly() )  {
       // Place volumes in this assembly with composed transformation
-      imprint(info, parent, new_chain, avol, pMotherLV, Tfinal, i*100+copyNumBase, surfCheck );
+      imprint(cnv, parent, new_chain, avol, pMotherLV, Tfinal, i*100+copyNumBase, surfCheck );
     }
     else   {
       G4Exception("Geant4AssemblyVolume::imprint(..)", "GeomVol0003", FatalException,

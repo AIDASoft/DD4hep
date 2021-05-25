@@ -493,7 +493,9 @@ namespace dd4hep {
    *   \ingroup DD4HEP_CORE
    */
   class VolumeMulti : public Volume   {
+    /// Import volume from pointer as a result of Solid->Divide()
     void verifyVolumeMulti();
+
   public:
     /// Default constructor
     VolumeMulti() = default;

@@ -104,10 +104,15 @@ Solid_type<T>::divide(const Volume& voldiv, const string& divname,
                       int iaxis, int ndiv, double start, double step)   const {
   T* p = this->ptr();
   if ( p )  {
-    VolumeMulti mv(p->Divide(voldiv.ptr(), divname.c_str(), iaxis, ndiv, start, step));
-    return mv.ptr();
+    auto* pdiv = p->Divide(voldiv.ptr(), divname.c_str(), iaxis, ndiv, start, step);
+    if ( pdiv )   {
+      VolumeMulti mv(pdiv);
+      return mv.ptr();
+    }
+    except("dd4hep","Volume: Failed to divide volume %s -> %s [Invalid result]",
+	   voldiv.name(), divname.c_str());
   }
-  except("dd4hep","Volume: Attempt to divide an invalid logical volume.");
+  except("dd4hep","Volume: Attempt to divide an invalid logical volume to %s.", divname.c_str());
   return 0;
 }
 

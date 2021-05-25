@@ -65,6 +65,9 @@ namespace dd4hep {
   /// Output mesh vertices to string
   std::string toStringMesh(const TGeoShape* shape, int precision=2);
   
+  /// Retrieve tag name from shape type
+  std::string get_shape_tag(const TGeoShape* shape);
+  
   /// Access Shape dimension parameters (As in TGeo, but angles in radians rather than degrees)
   std::vector<double> get_shape_dimensions(TGeoShape* shape);
   

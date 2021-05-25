@@ -65,11 +65,12 @@ namespace  {
     operator Tessellated::Vertex_t () const
     { return Tessellated::Vertex_t(x,y,z); }
   };
+#if 0
   vertex operator-(const vertex& v1, const vertex& v2)
   {  return vertex(v1.x-v2.x, v1.y-v2.y, v1.z-v2.z);   }
   vertex operator+(const vertex& v1, const vertex& v2)
   {  return vertex(v1.x+v2.x, v1.y+v2.y, v1.z+v2.z);   }
-
+#endif
 #if 0
       num_facet = tes->GetNfacets();
       int *nn = new int[num_facet];
@@ -214,7 +215,7 @@ int ASSIMPWriter::write(const std::string& file_name,
     if ( !tes.isValid() )   {
       typedef vertex vtx_t;
       unique_ptr<TBuffer3D> buf3D(v.solid()->MakeBuffer3D());
-      struct pol_t { int c, n; int segs[1]; } *pol;
+      struct pol_t { int c, n; int segs[1]; } *pol = nullptr;
       struct seg_t { int c, _1, _2;         };
       const  seg_t* segs = (seg_t*)buf3D->fSegs;
       const  vtx_t* vtcs = (vtx_t*)buf3D->fPnts;
@@ -230,7 +231,7 @@ int ASSIMPWriter::write(const std::string& file_name,
       tes = buf.get();
       q = buf3D->fPols;
       for( i=0, q=buf3D->fPols; i<buf3D->NbPols(); ++i)  {
-	pol_t* pol = (pol_t*)q;
+	pol = (pol_t*)q;
 	q += (2+pol->n);
 	for( int j=0; j < pol->n; j += 2 )   {
 	  /* ------------------------------------------------------------
