@@ -13,10 +13,10 @@
 #ifndef DDG4_GEANT4ASSEMBLYVOLUME_H
 #define DDG4_GEANT4ASSEMBLYVOLUME_H
 
-// ROOT includes
+/// ROOT includes
 #include "TGeoNode.h"
 
-// Geant4 include files
+/// Geant4 include files
 #include "G4AssemblyVolume.hh"
 
 /// C/C++ include files
@@ -29,6 +29,7 @@ namespace dd4hep {
   namespace sim {
 
     /// Forward declarations
+    class Geant4Converter;
     class Geant4GeometryInfo;
     
     /// Hack! Wrapper around G4AssemblyVolume to access protected members.
@@ -59,21 +60,20 @@ namespace dd4hep {
       Geant4AssemblyVolume& operator=(const Geant4AssemblyVolume& copy) = delete;
       /// Default destructor
       virtual ~Geant4AssemblyVolume();
-      
+      /// Place logical daughter volume into the assembly
       long placeVolume(const TGeoNode* n, G4LogicalVolume* pPlacedVolume, G4Transform3D& transformation);
-      
+      /// Place daughter assembly into the assembly      
       long placeAssembly(const TGeoNode* n, Geant4AssemblyVolume* pPlacedVolume, G4Transform3D& transformation);
-      
-      void imprint(Geant4GeometryInfo& info,
-                   const TGeoNode* n,
-                   Chain chain,
-                   Geant4AssemblyVolume* pAssembly,
-                   G4LogicalVolume*  pMotherLV,
-                   G4Transform3D&    transformation,
-                   G4int copyNumBase,
-                   G4bool surfCheck );
+      /// Expand all daughter placements and expand the contained assemblies to imprints
+      void imprint(const Geant4Converter& cnv,
+                   const TGeoNode*        n,
+                   Chain                  chain,
+                   Geant4AssemblyVolume*  pAssembly,
+                   G4LogicalVolume*       pMotherLV,
+                   G4Transform3D&         transformation,
+                   G4int                  copyNumBase,
+                   G4bool                 surfCheck );
     };
   }
 }
-
 #endif

@@ -773,7 +773,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         Geant4AssemblyVolume* ass = (Geant4AssemblyVolume*)info.g4AssemblyVolumes[node];
         Geant4AssemblyVolume::Chain chain;
         chain.emplace_back(node);
-        ass->imprint(info, node, chain, ass, (*volIt).second, transform, copy, checkOverlaps);
+        ass->imprint(*this, node, chain, ass, (*volIt).second, transform, copy, checkOverlaps);
         return nullptr;
       }
       else if ( node != info.manager->GetTopNode() && volIt == info.g4Volumes.end() )  {

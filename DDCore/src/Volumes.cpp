@@ -60,6 +60,7 @@ template <typename T> static typename T::Object* _userExtension(const T& v)  {
 }
 
 ClassImp(PlacedVolumeExtension)
+
 namespace {
 
   static bool s_verifyCopyNumbers = true;
@@ -97,6 +98,15 @@ namespace {
 
   class VolumeImport   {
   public:
+    void setShapeTitle(TGeoVolume* vol)   {
+      if ( vol )   {
+	TGeoShape* sh = vol->GetShape();
+	string tag = get_shape_tag(sh);
+	sh->SetTitle(tag.c_str());
+      }
+    }
+
+  public:
     /// Callback for simple imports. Simple add a user extension
     void operator()(TGeoVolume* v)   {
       TClass* c = v->IsA();
@@ -112,10 +122,13 @@ namespace {
       }
       if  ( c == TGeoVolumeMulti::Class() )  {
         TGeoVolumeMulti* mv = (TGeoVolumeMulti*)v;
-        for(int i=0, n=mv->GetNvolumes(); i<n; ++i)
-          (*this)(mv->GetVolume(i));
+        for( int i=0, n=mv->GetNvolumes(); i<n; ++i )   {
+	  TGeoVolume* vol = mv->GetVolume(i);
+	  this->setShapeTitle(vol);
+          (*this)(vol);
+	}
       }
-      for(Int_t i=0; i<v->GetNdaughters(); ++i)  {
+      for( Int_t i=0; i<v->GetNdaughters(); ++i )  {
         geo_node_t* pv = v->GetNode(i);
         if ( !pv->GetUserExtension() )
           pv->geo_node_t::SetUserExtension(new PlacedVolume::Object());
@@ -156,8 +169,11 @@ namespace {
           new_v->SetUserExtension(new_e = new VolumeMulti::Object(*old_e));
           old_e->reflected = new_v;
           new_e->reflected = old_v;
-          for(int i=0, n=new_mv->GetNvolumes(); i<n; ++i)
-            (*this)(new_mv->GetVolume(i), old_mv->GetVolume(i), sd, set_bit);
+          for(int i=0, n=new_mv->GetNvolumes(); i<n; ++i)  {
+	    TGeoVolume* vol = new_mv->GetVolume(i);
+	    this->setShapeTitle(vol);
+            (*this)(vol, old_mv->GetVolume(i), sd, set_bit);
+	  }
         }
         else
           except("dd4hep","VolumeImport: Unknown TGeoVolume sub-class: %s",new_v->IsA()->GetName());
@@ -601,10 +617,14 @@ Volume Volume::divide(const std::string& divname, int iaxis, int ndiv,
                       double start, double step, int numed, const char* option)   {
   TGeoVolume* p = m_element;
   if ( p )  {
-    VolumeImport imp;
     TGeoVolume* mvp = p->Divide(divname.c_str(), iaxis, ndiv, start, step, numed, option);
-    imp(mvp);
-    return mvp;
+    if ( mvp )   {
+      VolumeImport imp;
+      imp(mvp);
+      return VolumeMulti(mvp);
+    }
+    except("dd4hep","Volume: Failed to divide volume %s -> %s [Invalid result]",
+	   p->GetName(), divname.c_str());
   }
   except("dd4hep","Volume: Attempt to divide an invalid logical volume.");
   return nullptr;
@@ -990,7 +1010,7 @@ VolumeMulti::VolumeMulti(const string& nam, Material mat) {
   m_element = _createTGeoVolumeMulti(nam, mat.ptr());
 }
 
-/// Copy from pointer as a result of Solid->Divide()
+/// Import volume from pointer as a result of Solid->Divide()
 void VolumeMulti::verifyVolumeMulti()   {
   if ( m_element )  {
     // This will lead to an exception if the type is not TGeoVolumeMulti

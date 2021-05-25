@@ -56,7 +56,7 @@ namespace dd4hep {
       return solid.isValid() && solid->IsA() == T::Class();
     }
   }
-  
+
   /// Type check of various shapes. Result like dynamic_cast. Compare with python's isinstance(obj,type)
   template <typename SOLID> bool isInstance(const Handle<TGeoShape>& solid)   {
     return check_shape_type<typename SOLID::Object>(solid);
@@ -185,6 +185,79 @@ namespace dd4hep {
     return sh && sh->IsA() == TGeoCompositeShape::Class()
       &&   sh->GetBoolNode()->GetBooleanOperator() == TGeoBoolNode::kGeoIntersection
       &&   ::strcmp(sh->GetTitle(), INTERSECTION_TAG) == 0;
+  }
+
+  /// Retrieve tag name from shape type
+  string get_shape_tag(const TGeoShape* sh)    {
+    if ( sh )    {
+      TClass* cl = sh->IsA();
+      if ( cl == TGeoShapeAssembly::Class() )
+        return SHAPELESS_TAG;
+      else if ( cl == TGeoBBox::Class() )
+        return BOX_TAG;
+      else if ( cl == TGeoHalfSpace::Class() )
+        return HALFSPACE_TAG;
+      else if ( cl == TGeoPgon::Class() )
+        return POLYHEDRA_TAG;
+      else if ( cl == TGeoPcon::Class() )
+        return POLYCONE_TAG;
+      else if ( cl == TGeoConeSeg::Class() )
+        return CONESEGMENT_TAG;
+      else if ( cl == TGeoCone::Class() )
+        return CONE_TAG;
+      else if ( cl == TGeoTube::Class() )
+        return TUBE_TAG;
+      else if ( cl == TGeoTubeSeg::Class() )
+        return TUBE_TAG;
+      else if ( cl == TGeoCtub::Class() )
+        return CUTTUBE_TAG;
+      else if ( cl == TGeoEltu::Class() )
+        return ELLIPTICALTUBE_TAG;
+      else if ( cl == TwistedTubeObject::Class() )
+        return TWISTEDTUBE_TAG;
+      else if ( cl == TGeoTrd1::Class() )
+        return TRD1_TAG;
+      else if ( cl == TGeoTrd2::Class() )
+        return TRD2_TAG;
+      else if ( cl == TGeoParaboloid::Class() )
+        return PARABOLOID_TAG;
+      else if ( cl == TGeoHype::Class() )
+        return HYPERBOLOID_TAG;
+      //else if ( cl == TGeoGtra::Class() )
+      //  return 
+      else if ( cl == TGeoTrap::Class() )
+        return TRAP_TAG;
+      else if ( cl == TGeoArb8::Class() )
+        return EIGHTPOINTSOLID_TAG;
+      else if ( cl == TGeoSphere::Class() )
+        return SPHERE_TAG;
+      else if ( cl == TGeoTorus::Class() )
+        return TORUS_TAG;
+      else if ( cl == TGeoXtru::Class() )
+        return EXTRUDEDPOLYGON_TAG;
+      else if ( cl == TGeoScaledShape::Class() )
+        return SCALE_TAG;
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
+      else if ( cl == TGeoTessellated::Class() )
+        return TESSELLATEDSOLID_TAG;
+#endif
+      else if (isA<TruncatedTube>(sh) )
+        return TRUNCATEDTUBE_TAG;
+      else if (isA<PseudoTrap>(sh) )
+        return PSEUDOTRAP_TAG;
+      else if ( isInstance<SubtractionSolid>(sh) )
+	return SUBTRACTION_TAG;
+      else if ( isInstance<UnionSolid>(sh) )
+	return UNION_TAG;
+      else if ( isInstance<IntersectionSolid>(sh) )
+	return INTERSECTION_TAG;
+      else
+        except("Solid","Failed to type of shape: %s [%s]",
+	       sh->GetName(), cl->GetName() );
+      return "";
+    }
+    except("Solid","Failed to access dimensions [Invalid handle].");
+    return "";
   }
 
   template <typename T> vector<double> dimensions(const TGeoShape* shape)    {
@@ -468,62 +541,62 @@ namespace dd4hep {
   template <> vector<double> dimensions<Solid>(const Handle<TGeoShape>& shape)   {
     if ( shape.ptr() )   {
       TClass* cl = shape->IsA();
-      if (cl == TGeoShapeAssembly::Class())
-        return dimensions<TGeoShapeAssembly>(shape.ptr());
-      else if (cl == TGeoBBox::Class())
-        return dimensions<TGeoBBox>(shape.ptr());
-      else if (cl == TGeoHalfSpace::Class())
-        return dimensions<TGeoHalfSpace>(shape.ptr());
-      else if (cl == TGeoPgon::Class())
-        return dimensions<TGeoPgon>(shape.ptr());
-      else if (cl == TGeoPcon::Class())
-        return dimensions<TGeoPcon>(shape.ptr());
-      else if (cl == TGeoConeSeg::Class())
-        return dimensions<TGeoConeSeg>(shape.ptr());
-      else if (cl == TGeoCone::Class())
-        return dimensions<TGeoCone>(shape.ptr());
-      else if (cl == TGeoTube::Class())
-        return dimensions<TGeoTube>(shape.ptr());
-      else if (cl == TGeoTubeSeg::Class())
-        return dimensions<TGeoTubeSeg>(shape.ptr());
-      else if (cl == TGeoCtub::Class())
-        return dimensions<TGeoCtub>(shape.ptr());
-      else if (cl == TGeoEltu::Class())
-        return dimensions<TGeoEltu>(shape.ptr());
-      else if (cl == TwistedTubeObject::Class())
-        return dimensions<TwistedTubeObject>(shape.ptr());
-      else if (cl == TGeoTrd1::Class())
-        return dimensions<TGeoTrd1>(shape.ptr());
-      else if (cl == TGeoTrd2::Class())
-        return dimensions<TGeoTrd2>(shape.ptr());
-      else if (cl == TGeoParaboloid::Class())
-        return dimensions<TGeoParaboloid>(shape.ptr());
-      else if (cl == TGeoHype::Class())
-        return dimensions<TGeoHype>(shape.ptr());
-      else if (cl == TGeoGtra::Class())
-        return dimensions<TGeoGtra>(shape.ptr());
-      else if (cl == TGeoTrap::Class())
-        return dimensions<TGeoTrap>(shape.ptr());
-      else if (cl == TGeoArb8::Class())
-        return dimensions<TGeoArb8>(shape.ptr());
-      else if (cl == TGeoSphere::Class())
-        return dimensions<TGeoSphere>(shape.ptr());
-      else if (cl == TGeoTorus::Class())
-        return dimensions<TGeoTorus>(shape.ptr());
-      else if (cl == TGeoXtru::Class())
-        return dimensions<TGeoXtru>(shape.ptr());
-      else if (cl == TGeoScaledShape::Class())
-        return dimensions<TGeoScaledShape>(shape.ptr());
+      if ( cl == TGeoShapeAssembly::Class() )
+        return dimensions<TGeoShapeAssembly>(shape.ptr() );
+      else if ( cl == TGeoBBox::Class() )
+        return dimensions<TGeoBBox>(shape.ptr() );
+      else if ( cl == TGeoHalfSpace::Class() )
+        return dimensions<TGeoHalfSpace>(shape.ptr() );
+      else if ( cl == TGeoPgon::Class() )
+        return dimensions<TGeoPgon>(shape.ptr() );
+      else if ( cl == TGeoPcon::Class() )
+        return dimensions<TGeoPcon>(shape.ptr() );
+      else if ( cl == TGeoConeSeg::Class() )
+        return dimensions<TGeoConeSeg>(shape.ptr() );
+      else if ( cl == TGeoCone::Class() )
+        return dimensions<TGeoCone>(shape.ptr() );
+      else if ( cl == TGeoTube::Class() )
+        return dimensions<TGeoTube>(shape.ptr() );
+      else if ( cl == TGeoTubeSeg::Class() )
+        return dimensions<TGeoTubeSeg>(shape.ptr() );
+      else if ( cl == TGeoCtub::Class() )
+        return dimensions<TGeoCtub>(shape.ptr() );
+      else if ( cl == TGeoEltu::Class() )
+        return dimensions<TGeoEltu>(shape.ptr() );
+      else if ( cl == TwistedTubeObject::Class() )
+        return dimensions<TwistedTubeObject>(shape.ptr() );
+      else if ( cl == TGeoTrd1::Class() )
+        return dimensions<TGeoTrd1>(shape.ptr() );
+      else if ( cl == TGeoTrd2::Class() )
+        return dimensions<TGeoTrd2>(shape.ptr() );
+      else if ( cl == TGeoParaboloid::Class() )
+        return dimensions<TGeoParaboloid>(shape.ptr() );
+      else if ( cl == TGeoHype::Class() )
+        return dimensions<TGeoHype>(shape.ptr() );
+      else if ( cl == TGeoGtra::Class() )
+        return dimensions<TGeoGtra>(shape.ptr() );
+      else if ( cl == TGeoTrap::Class() )
+        return dimensions<TGeoTrap>(shape.ptr() );
+      else if ( cl == TGeoArb8::Class() )
+        return dimensions<TGeoArb8>(shape.ptr() );
+      else if ( cl == TGeoSphere::Class() )
+        return dimensions<TGeoSphere>(shape.ptr() );
+      else if ( cl == TGeoTorus::Class() )
+        return dimensions<TGeoTorus>(shape.ptr() );
+      else if ( cl == TGeoXtru::Class() )
+        return dimensions<TGeoXtru>(shape.ptr() );
+      else if ( cl == TGeoScaledShape::Class() )
+        return dimensions<TGeoScaledShape>(shape.ptr() );
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
-      else if (cl == TGeoTessellated::Class())
-        return dimensions<TGeoTessellated>(shape.ptr());
+      else if ( cl == TGeoTessellated::Class() )
+        return dimensions<TGeoTessellated>(shape.ptr() );
 #endif
-      else if (isA<TruncatedTube>(shape.ptr()))
+      else if (isA<TruncatedTube>(shape.ptr() ))
         return dimensions<TruncatedTube>(shape);
-      else if (isA<PseudoTrap>(shape.ptr()))
+      else if (isA<PseudoTrap>(shape.ptr() ))
         return dimensions<PseudoTrap>(shape);
-      else if (cl == TGeoCompositeShape::Class())
-        return dimensions<TGeoCompositeShape>(shape.ptr());
+      else if ( cl == TGeoCompositeShape::Class() )
+        return dimensions<TGeoCompositeShape>(shape.ptr() );
       else  {
         printout(ERROR,"Solid","Failed to access dimensions for shape of type:%s.",
                  cl->GetName());
@@ -1004,53 +1077,53 @@ namespace dd4hep {
     if ( shape.ptr() ) {
       TClass* cl = shape->IsA();
       Solid solid(shape);
-      if (cl == TGeoShapeAssembly::Class())
+      if ( cl == TGeoShapeAssembly::Class() )
         set_dimensions(ShapelessSolid(shape), params);
-      else if (cl == TGeoBBox::Class())
+      else if ( cl == TGeoBBox::Class() )
         set_dimensions(Box(shape), params);
-      else if (cl == TGeoHalfSpace::Class())
+      else if ( cl == TGeoHalfSpace::Class() )
         set_dimensions(HalfSpace(shape), params);
-      else if (cl == TGeoPcon::Class())
+      else if ( cl == TGeoPcon::Class() )
         set_dimensions(Polycone(shape), params);
-      else if (cl == TGeoConeSeg::Class())
+      else if ( cl == TGeoConeSeg::Class() )
         set_dimensions(ConeSegment(shape), params);
-      else if (cl == TGeoCone::Class())
+      else if ( cl == TGeoCone::Class() )
         set_dimensions(Cone(shape), params);
-      else if (cl == TGeoTube::Class())
+      else if ( cl == TGeoTube::Class() )
         set_dimensions(Tube(shape), params);
-      else if (cl == TGeoTubeSeg::Class())
+      else if ( cl == TGeoTubeSeg::Class() )
         set_dimensions(Tube(shape), params);
-      else if (cl == TGeoCtub::Class())
+      else if ( cl == TGeoCtub::Class() )
         set_dimensions(CutTube(shape), params);
-      else if (cl == TGeoEltu::Class())
+      else if ( cl == TGeoEltu::Class() )
         set_dimensions(EllipticalTube(shape), params);
-      else if (cl == TwistedTubeObject::Class())
+      else if ( cl == TwistedTubeObject::Class() )
         set_dimensions(TwistedTube(shape), params);
-      else if (cl == TGeoTrd1::Class())
+      else if ( cl == TGeoTrd1::Class() )
         set_dimensions(Trd1(shape), params);
-      else if (cl == TGeoTrd2::Class())
+      else if ( cl == TGeoTrd2::Class() )
         set_dimensions(Trd2(shape), params);
-      else if (cl == TGeoParaboloid::Class())
+      else if ( cl == TGeoParaboloid::Class() )
         set_dimensions(Paraboloid(shape), params);
-      else if (cl == TGeoHype::Class())
+      else if ( cl == TGeoHype::Class() )
         set_dimensions(Hyperboloid(shape), params);
-      else if (cl == TGeoSphere::Class())
+      else if ( cl == TGeoSphere::Class() )
         set_dimensions(Sphere(shape), params);
-      else if (cl == TGeoTorus::Class())
+      else if ( cl == TGeoTorus::Class() )
         set_dimensions(Torus(shape), params);
-      else if (cl == TGeoTrap::Class())
+      else if ( cl == TGeoTrap::Class() )
         set_dimensions(Trap(shape), params);
-      else if (cl == TGeoPgon::Class())
+      else if ( cl == TGeoPgon::Class() )
         set_dimensions(PolyhedraRegular(shape), params);
-      else if (cl == TGeoXtru::Class())
+      else if ( cl == TGeoXtru::Class() )
         set_dimensions(ExtrudedPolygon(shape), params);
-      else if (cl == TGeoArb8::Class())
+      else if ( cl == TGeoArb8::Class() )
         set_dimensions(EightPointSolid(shape), params);
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
-      else if (cl == TGeoTessellated::Class())
+      else if ( cl == TGeoTessellated::Class() )
         set_dimensions(TessellatedSolid(shape), params);
 #endif
-      else if (cl == TGeoScaledShape::Class())  {
+      else if ( cl == TGeoScaledShape::Class() )  {
         TGeoScaledShape* sh = (TGeoScaledShape*) shape.ptr();
         set_dimensions(sh, params);
       }
@@ -1067,7 +1140,7 @@ namespace dd4hep {
       else if ( isA<BooleanSolid>(solid) )
         set_dimensions(BooleanSolid(shape), params);
       else
-        printout(ERROR,"Solid","Failed to set dimensions for shape of type:%s.",cl->GetName());
+        printout(ERROR,"Solid","Failed to set dimensions for shape of type:%s.",cl->GetName() );
       return;
     }
     except("Solid","set_shape_dimensions: Failed to set dimensions [Invalid handle].");
@@ -1103,21 +1176,21 @@ namespace dd4hep {
           << " y:" << sh->GetDY()
           << " z:" << sh->GetDZ();
     }
-    else if (cl == TGeoHalfSpace::Class()) {
+    else if ( cl == TGeoHalfSpace::Class() ) {
       TGeoHalfSpace* sh = (TGeoHalfSpace*)(const_cast<TGeoShape*>(shape));
       log << " Point:  (" << sh->GetPoint()[0] << ", " << sh->GetPoint()[1] << ", " << sh->GetPoint()[2] << ") " 
           << " Normal: (" << sh->GetNorm()[0]  << ", " << sh->GetNorm()[1]  << ", " << sh->GetNorm()[2]  << ") ";
     }
-    else if (cl == TGeoTube::Class()) {
+    else if ( cl == TGeoTube::Class() ) {
       const TGeoTube* sh = (const TGeoTube*) shape;
       log << " rmin:" << sh->GetRmin() << " rmax:" << sh->GetRmax() << " dz:" << sh->GetDz();
     }
-    else if (cl == TGeoTubeSeg::Class()) {
+    else if ( cl == TGeoTubeSeg::Class() ) {
       const TGeoTubeSeg* sh = (const TGeoTubeSeg*) shape;
       log << " rmin:" << sh->GetRmin() << " rmax:" << sh->GetRmax() << " dz:" << sh->GetDz()
           << " Phi1:" << sh->GetPhi1() << " Phi2:" << sh->GetPhi2();
     }
-    else if (cl == TGeoCtub::Class()) {
+    else if ( cl == TGeoCtub::Class() ) {
       const TGeoCtub* sh = (const TGeoCtub*) shape;
       const Double_t*	hi = sh->GetNhigh();
       const Double_t*	lo = sh->GetNlow();
@@ -1126,31 +1199,31 @@ namespace dd4hep {
           << " lx:" << lo[0] << " ly:" << lo[1] << " lz:" << lo[2]
           << " hx:" << hi[0] << " hy:" << hi[1] << " hz:" << hi[2];
     }
-    else if (cl == TGeoEltu::Class()) {
+    else if ( cl == TGeoEltu::Class() ) {
       const TGeoEltu* sh = (const TGeoEltu*) shape;
       log << " A:" << sh->GetA() << " B:" << sh->GetB() << " dz:" << sh->GetDz();
     }
-    else if (cl == TGeoTrd1::Class()) {
+    else if ( cl == TGeoTrd1::Class() ) {
       const TGeoTrd1* sh = (const TGeoTrd1*) shape;
       log << " x1:" << sh->GetDx1() << " x2:" << sh->GetDx2() << " y:" << sh->GetDy() << " z:" << sh->GetDz();
     }
-    else if (cl == TGeoTrd2::Class()) {
+    else if ( cl == TGeoTrd2::Class() ) {
       const TGeoTrd2* sh = (const TGeoTrd2*) shape;
       log << " x1:" << sh->GetDx1() << " x2:" << sh->GetDx2()
           << " y1:" << sh->GetDy1() << " y2:" << sh->GetDy2() << " z:" << sh->GetDz();
     }
-    else if (cl == TGeoTrap::Class()) {
+    else if ( cl == TGeoTrap::Class() )   {
       const TGeoTrap* sh = (const TGeoTrap*) shape;
       log << " dz:" << sh->GetDz() << " Theta:" << sh->GetTheta() << " Phi:" << sh->GetPhi()
           << " H1:" << sh->GetH1() << " Bl1:"   << sh->GetBl1()   << " Tl1:" << sh->GetTl1() << " Alpha1:" << sh->GetAlpha1()
           << " H2:" << sh->GetH2() << " Bl2:"   << sh->GetBl2()   << " Tl2:" << sh->GetTl2() << " Alpha2:" << sh->GetAlpha2();
     }
-    else if (cl == TGeoHype::Class()) {
+    else if ( cl == TGeoHype::Class() )   {
       const TGeoHype* sh = (const TGeoHype*) shape;
       log << " rmin:" << sh->GetRmin() << " rmax:"  << sh->GetRmax() << " dz:" << sh->GetDz()
           << " StIn:" << sh->GetStIn() << " StOut:" << sh->GetStOut();
     }
-    else if (cl == TGeoPgon::Class()) {
+    else if ( cl == TGeoPgon::Class() )   {
       const TGeoPgon* sh = (const TGeoPgon*) shape;
       log << " Phi1:"   << sh->GetPhi1()   << " dPhi:" << sh->GetDphi()
           << " NEdges:" << sh->GetNedges() << " Nz:" << sh->GetNz();
@@ -1159,7 +1232,7 @@ namespace dd4hep {
             << " r:[" << sh->GetRmin(i) << "," << sh->GetRmax(i) << "]";
       }
     }
-    else if (cl == TGeoPcon::Class()) {
+    else if ( cl == TGeoPcon::Class() )  {
       const TGeoPcon* sh = (const TGeoPcon*) shape;
       log << " Phi1:" << sh->GetPhi1() << " dPhi:" << sh->GetDphi() << " Nz:" << sh->GetNz();
       for(int i=0, n=sh->GetNz(); i<n; ++i)  {
@@ -1167,35 +1240,35 @@ namespace dd4hep {
             << " r:[" << sh->GetRmin(i) << "," << sh->GetRmax(i) << "]";
       }
     }
-    else if (cl == TGeoCone::Class()) {
+    else if ( cl == TGeoCone::Class() )  {
       const TGeoCone* sh = (const TGeoCone*) shape;
       log << " rmin1:" << sh->GetRmin1() << " rmax1:" << sh->GetRmax1()
           << " rmin2:" << sh->GetRmin2() << " rmax2:" << sh->GetRmax2()
           << " dz:"    << sh->GetDz();
     }
-    else if (cl == TGeoConeSeg::Class()) {
+    else if ( cl == TGeoConeSeg::Class() )  {
       const TGeoConeSeg* sh = (const TGeoConeSeg*) shape;
       log << " rmin1:" << sh->GetRmin1() << " rmax1:" << sh->GetRmax1()
           << " rmin2:" << sh->GetRmin2() << " rmax2:" << sh->GetRmax2()
           << " dz:"    << sh->GetDz()
           << " Phi1:"  << sh->GetPhi1() << " Phi2:" << sh->GetPhi2();
     }
-    else if (cl == TGeoParaboloid::Class()) {
+    else if ( cl == TGeoParaboloid::Class() )  {
       const TGeoParaboloid* sh = (const TGeoParaboloid*) shape;
       log << " dz:" << sh->GetDz() << " RLo:" << sh->GetRlo() << " Rhi:" << sh->GetRhi();
     }
-    else if (cl == TGeoSphere::Class()) {
+    else if ( cl == TGeoSphere::Class() )   {
       const TGeoSphere* sh = (const TGeoSphere*) shape;
       log << " rmin:" << sh->GetRmin() << " rmax:" << sh->GetRmax()
           << " Phi1:" << sh->GetPhi1() << " Phi2:" << sh->GetPhi2()
           << " Theta1:" << sh->GetTheta1() << " Theta2:" << sh->GetTheta2();
     }
-    else if (cl == TGeoTorus::Class()) {
+    else if ( cl == TGeoTorus::Class() )   {
       const TGeoTorus* sh = (const TGeoTorus*) shape;
       log << " rmin:" << sh->GetRmin() << " rmax:" << sh->GetRmax() << " r:" << sh->GetR()
           << " Phi1:" << sh->GetPhi1() << " dPhi:" << sh->GetDphi();
     }
-    else if (cl == TGeoArb8::Class()) {
+    else if ( cl == TGeoArb8::Class() )   {
       TGeoArb8* sh = (TGeoArb8*) shape;
       const Double_t* v = sh->GetVertices();
       log << " dz:" << sh->GetDz();
@@ -1204,7 +1277,7 @@ namespace dd4hep {
         log << " y[" << i << "]:" << *v; ++v;
       }
     }
-    else if (cl == TGeoXtru::Class()) {
+    else if ( cl == TGeoXtru::Class() )   {
       const TGeoXtru* sh = (const TGeoXtru*) shape;
       log << " X:   " << sh->GetX(0)
           << " Y:   " << sh->GetY(0)
@@ -1214,7 +1287,7 @@ namespace dd4hep {
           << " Nvtx:" << sh->GetNvert()
           << " Nz:  " << sh->GetNz();
     }
-    else if (shape->IsA() == TGeoCompositeShape::Class()) {
+    else if (shape->IsA() == TGeoCompositeShape::Class() )   {
       const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;
       const TGeoBoolNode* boolean = sh->GetBoolNode();
       const TGeoShape* left  = boolean->GetLeftShape();
