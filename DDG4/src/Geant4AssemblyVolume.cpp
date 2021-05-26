@@ -78,6 +78,7 @@ void Geant4AssemblyVolume::imprint(const Geant4Converter& cnv,
     static void imprintsCountPlus(G4AssemblyVolume* p)
     {  _Wrap* w = (_Wrap*)p; w->ImprintsCountPlus(); }
   };
+  std::string       path;
   TGeoVolume*       vol = parent->GetVolume();
   G4AssemblyVolume* par_ass = pParentAssembly->m_assembly;
   Geant4GeometryInfo&  info = cnv.data();
@@ -87,20 +88,20 @@ void Geant4AssemblyVolume::imprint(const Geant4Converter& cnv,
   numberOfDaughters++;
   _Wrap::imprintsCountPlus(par_ass);
 
-  printout(cnv.debugPlacements ? ALWAYS : DEBUG,
-	   "Geant4Converter","++ Assembly: %s", detail::tools::placementPath(chain).c_str());
+  path = detail::tools::placementPath(chain);
+  printout(cnv.debugPlacements ? ALWAYS : DEBUG, "Geant4Converter",
+	   "++ Assembly: %s", path.c_str());
   std::vector<G4AssemblyTriplet>::iterator iter = par_ass->GetTripletsIterator();
   for( unsigned int i = 0, n = par_ass->TotalTriplets(); i < n; i++, iter++ )  {
     Chain            new_chain = chain;
     const auto&        triplet = *iter;
     const TGeoNode*       node = pParentAssembly->m_entries[i];
     Geant4AssemblyVolume* avol = pParentAssembly->m_places[i];
-    std::string           path;
     
     new_chain.emplace_back(node);
-
     path = detail::tools::placementPath(new_chain);
-    printout(cnv.debugPlacements ? ALWAYS : DEBUG, " Assembly: Entry: %s", path.c_str());
+    printout(cnv.debugPlacements ? ALWAYS : DEBUG, "Geant4Converter",
+	     " Assembly: Entry: %s", path.c_str());
 
     G4Transform3D Ta( *(triplet.GetRotation()), triplet.GetTranslation() );
     if ( triplet.IsReflection() )  {
