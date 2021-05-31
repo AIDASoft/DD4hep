@@ -147,11 +147,14 @@ namespace dd4hep {
       const TGeoXtru* sh = (const TGeoXtru*) shape;
       size_t nz = sh->GetNz();
       vector<G4ExtrudedSolid::ZSection> z;
-      vector<G4TwoVector> polygon;
       z.reserve(nz);
-      polygon.reserve(nz);
       for(size_t i=0; i<nz; ++i)   {
         z.emplace_back(G4ExtrudedSolid::ZSection(sh->GetZ(i) * CM_2_MM, {sh->GetXOffset(i), sh->GetYOffset(i)}, sh->GetScale(i)));
+      }
+      size_t np = sh->GetNvert();
+      vector<G4TwoVector> polygon;
+      polygon.reserve(np);
+      for(size_t i=0; i<np; ++i) {
         polygon.emplace_back(sh->GetX(i) * CM_2_MM,sh->GetY(i) * CM_2_MM);
       }
       return new G4ExtrudedSolid(sh->GetName(), polygon, z);
