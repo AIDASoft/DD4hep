@@ -1,3 +1,53 @@
+# v01-17-00
+
+* 2021-06-02 Andre Sailer ([PR#838](https://github.com/aidasoft/DD4hep/pull/838))
+  - Geant4ShapeConverter: ExtrudedSolid: convert all vertices, fix #836, https://github.com/cms-sw/cmssw/issues/33656
+
+* 2021-06-01 Marko Petric ([PR#840](https://github.com/aidasoft/DD4hep/pull/840))
+  - Do not propagate CMAKE_BUILD_TYPE in DD4hepConfig.cmake
+
+* 2021-05-27 Markus FRANK ([PR#835](https://github.com/aidasoft/DD4hep/pull/835))
+  - On divisions the created solids did not carry the proper tag to identify them.
+    This PR fixes this issue when multi-volumes are imported in dd4hep.
+    See issue https://github.com/AIDASoft/DD4hep/issues/833
+
+* 2021-05-17 Markus FRANK ([PR#829](https://github.com/aidasoft/DD4hep/pull/829))
+  - Add missing Solid instantiation for TGeoCtub
+
+* 2021-05-12 Andre Sailer ([PR#823](https://github.com/aidasoft/DD4hep/pull/823))
+  - DDSim: add possibility for users to extend the physics setup with Physics.setupUserFunction
+
+* 2021-05-07 Markus FRANK ([PR#825](https://github.com/aidasoft/DD4hep/pull/825))
+  - Fix as reported from CMS
+
+* 2021-05-01 Markus FRANK ([PR#821](https://github.com/aidasoft/DD4hep/pull/821))
+  - Fix issue #820
+
+* 2021-04-27 Andre Sailer ([PR#817](https://github.com/aidasoft/DD4hep/pull/817))
+  - Move `create_segmentation` to DDCore/include/DD4hep/detail/SegmentationsInterna.h  to allow segmentation creation in other libraries
+  - Removed REGISTER_SEGMENTATION macro and DDSegmentation::SegmentationFactory class because they are obsolete. Use DECLARE_SEGMENTATION to create a plugin entry for segmentations.
+
+* 2021-04-24 Markus FRANK ([PR#816](https://github.com/aidasoft/DD4hep/pull/816))
+  - Following requests, the support to output Volumes as CAD meshes.
+    Depending on the underlying technology material names and visual attributes are supported
+  - Improve CAD imports to take into account material names and visual attributes if supported
+    by the underlying CAD format.
+  - Add two examples showing the import and export technique.
+
+* 2021-04-15 Markus FRANK ([PR#809](https://github.com/aidasoft/DD4hep/pull/809))
+  - DDG4: Extend existing sensitive detectors to be used for GFlash parametrized fast simulations
+  - DDG4: Remove legacy sensitive detectors, since they are no longer used by FCC
+
+* 2021-04-15 Markus FRANK ([PR#808](https://github.com/aidasoft/DD4hep/pull/808))
+  - Disable copy and move construction/assignment in Geant4 data
+    See issue https://github.com/AIDASoft/DD4hep/issues/807
+  - Adopt new naming convention for Geant4 assembly imprints
+     See issue https://github.com/AIDASoft/DD4hep/issues/804
+  - Add G4FastSimulationManagerProcess for GFlash
+
+* 2021-04-12 Marko Petric ([PR#803](https://github.com/aidasoft/DD4hep/pull/803))
+  - Fix bug in evaluator reported by Coverity
+
 # v01-16-01
 
 * 2021-03-26 Andre Sailer ([PR#799](https://github.com/AIDASoft/DD4hep/pull/799))
