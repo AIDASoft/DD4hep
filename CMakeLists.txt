@@ -46,6 +46,7 @@ ENDIF()
 #############################################################
 
 ENABLE_LANGUAGE(CXX)
+ENABLE_LANGUAGE(C)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ standard used for compiling")
