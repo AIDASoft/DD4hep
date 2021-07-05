@@ -20,6 +20,7 @@
 #include "DDG4/Geant4HitCollection.h"
 #include "DDG4/Geant4OutputAction.h"
 #include "DDG4/Geant4SensDetAction.h"
+#include "DDG4/Geant4DataConversion.h"
 #include "DDG4/EventParameters.h"
 
 // Geant4 headers
@@ -563,16 +564,23 @@ void Geant4Output2EDM4hep::createCollections(OutputContext<G4Event>& ctxt){
       continue ;
     }
 
+    Geant4Sensitive* sd = coll->sensitive();
+    string sd_enc = dd4hep::sim::Geant4ConversionHelper::encoding(sd->sensitiveDetector());
+
     if( typeid( Geant4Tracker::Hit ) == coll->type().type()  ){
 
-      m_store->create<edm4hep::SimTrackerHitCollection>(colName);
+      auto& sthc = m_store->create<edm4hep::SimTrackerHitCollection>(colName);
       m_file->registerForWrite(colName);
+      auto& sthc_md = m_store->getCollectionMetaData( sthc.getID() );
+      sthc_md.setValue("CellIDEncodingString", sd_enc);
       printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
     }
     else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type() ){
 
-      m_store->create<edm4hep::SimCalorimeterHitCollection>(colName);
+      auto& schc = m_store->create<edm4hep::SimCalorimeterHitCollection>(colName);
       m_file->registerForWrite(colName);
+      auto& schc_md = m_store->getCollectionMetaData( schc.getID() );
+      schc_md.setValue("CellIDEncodingString", sd_enc);
       printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
 
       colName += "Contributions"  ;
