@@ -205,8 +205,9 @@ namespace dd4hep {
 
     template <> G4VSolid* convertShape<TGeoSphere>(const TGeoShape* shape)  {
       const TGeoSphere* sh = (const TGeoSphere*) shape;
-      return new G4Sphere(sh->GetName(), sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM, sh->GetPhi1() * DEGREE_2_RAD,
-                          sh->GetPhi2() * DEGREE_2_RAD, sh->GetTheta1() * DEGREE_2_RAD, sh->GetTheta2() * DEGREE_2_RAD);
+      return new G4Sphere(sh->GetName(), sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM,
+                          sh->GetPhi1() * DEGREE_2_RAD, (sh->GetPhi2()-sh->GetPhi1()) * DEGREE_2_RAD,
+                          sh->GetTheta1() * DEGREE_2_RAD, (sh->GetTheta2()- sh->GetTheta1()) * DEGREE_2_RAD);
     }
 
     template <> G4VSolid* convertShape<TGeoTorus>(const TGeoShape* shape)  {
