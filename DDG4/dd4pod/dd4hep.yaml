@@ -1,0 +1,125 @@
+---
+options :
+  # should getters / setters be prefixed with get / set?
+  getSyntax: False
+  # should POD members be exposed with getters/setters in classes that have them as members?
+  exposePODMembers: False
+  includeSubfolder: True
+
+components:
+  dd4pod::ThreeVector:
+    Members:
+      - double x
+      - double y
+      - double z
+
+  dd4pod::FourVector :
+    Members :
+      - double x
+      - double y
+      - double z
+      - double t
+
+
+  dd4pod::MonteCarloContrib:
+    #Description: "Podio implementation of dd4hep's dd4hep::sim::MonteCarloContrib class"
+    #Author : "W.Armstrong"
+    Members:
+      - int    trackID // track id
+      - int    pdgID   // pdgID
+      - double deposit // en deposit
+      - double time    // time
+      - double length  // length
+      - double x       // x
+      - double y       // x
+      - double z       // x
+
+datatypes :
+
+  dd4pod::Geant4Particle:
+    Description: "Podio implementation of dd4hep's dd4hep::sim::Geant4Particle class"
+    Author : "W.Armstrong"
+    Members:
+      - int ID          // x
+      - int g4Parent    // x
+      - int reason      // x
+      - int mask        // x
+      - int steps       // x
+      - int secondaries // x
+      - int pdgID       // x
+      - int status      // x
+      - std::array<int,2> colorFlow // x
+      - int  genStatus // x
+      - int  charge    // x
+      - std::array<int,1> spare    // x
+      - std::array<float,3>  spin  // x
+      - double vsx   // x startpoint
+      - double vsy   // y startpoint
+      - double vsz   // z startpoint
+      - double vex   // x endpoint
+      - double vey   // y endpoint
+      - double vez   // z endpoint
+      - double psx   // px at startpoint
+      - double psy   // py at startpoint 
+      - double psz   // pz at startpoint 
+      - double pex   // px at endpoint
+      - double pey   // py at endpoint
+      - double pez   // pz at endpoint 
+      - double mass  // mass [GeV]
+      - double time  // time [ns]
+      - double properTime // x
+    VectorMembers:
+      - int parents    // parent ids
+      - int daughters  // daughter ids
+        #    OneToManyRelations:
+        #- dd4pod::Geant4Particle parents  // x
+        #- dd4pod::Geant4Particle daughters  // x
+    ExtraCode :
+      declaration: "
+      double Px()  const {return psx();}\n
+      double Py()  const {return psy();}\n
+      double Pz()  const {return psz();}\n
+      double Px2() const {return psx()*psx();}\n
+      double Py2() const {return psy()*psy();}\n
+      double Pz2() const {return psz()*psz();}\n
+      //ROOT::Math::XYZTVector PVec() const { return  ROOT::Math::XYZTVector(Px(),Py(),Pz(),std::sqrt(Px2()+Py2()+Pz2()+mass()*mass()));     }\n
+      //double theta() const { return  ROOT::Math::XYZVector(Px(),Py(),Pz()).Theta();}\n
+      "
+
+  dd4pod::PhotoMultiplierHit:
+    Description: "Podio implementation of a pmt hit "
+    Author : "W.Armstrong"
+    Members:
+      - long long                 cellID   // cellID
+      - long                      flag     // User flag to classify hits
+      - long                      g4ID     // Original Geant 4 track identifier of the creating track (debugging)
+      - dd4pod::FourVector        position // position 
+      - dd4pod::FourVector        momentum // momentum
+      - double                    length   // length 
+      - dd4pod::MonteCarloContrib truth    // truth 
+      - double                    energy   // photon energy
+
+  dd4pod::TrackerHit:
+    Description: "Podio implementation of dd4hep's dd4hep::sim::Geant4Tracker::Hit class"
+    Author : "W.Armstrong"
+    Members:
+      - long long                 cellID        // cellID
+      - long                      flag          // User flag to classify hits
+      - long                      g4ID          // Original Geant4 track identifier of the creating track (debugging)
+      - dd4pod::FourVector        position      // position 
+      - dd4pod::FourVector        momentum      // momentum
+      - double                    length        // length 
+      - dd4pod::MonteCarloContrib truth         // truth 
+      - double                    energyDeposit // energyDeposit
+
+  dd4pod::CalorimeterHit:
+    Description: "Podio implementation of dd4hep's dd4hep::sim::Geant4Calorimeter::Hit class"
+    Author : "W.Armstrong"
+    Members:
+      - long long                 cellID        // cellID 
+      - long                      flag          // User flag to classify hits
+      - long                      g4ID          // Original Geant4 track identifier of the creating track (debugging)
+      - dd4pod::FourVector        position      // position
+      - dd4pod::MonteCarloContrib truth         // truth
+      - double                    energyDeposit // energyDeposit
+
