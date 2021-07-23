@@ -805,21 +805,46 @@ template <> void Converter<PropertyTable>::operator()(xml_h e) const {
 }
 #endif
 
-/** Convert compact visualization attribute to Detector visualization attribute
+/** Convert compact visualization attribute to Detector visualization attribute.
  *
  *  <vis name="SiVertexBarrelModuleVis"
  *       alpha="1.0" r="1.0" g="0.75" b="0.76"
  *       drawingStyle="wireframe"
  *       showDaughters="false"
  *       visible="true"/>
+ *
+ *  Optionally inherit an already defined VisAttr and override other properties.
+ *
+ *  <vis name="SiVertexEndcapModuleVis"
+ *       ref="SiVertexBarrelModuleVis"
+ *       alpha="0.5"/>
  */
 template <> void Converter<VisAttr>::operator()(xml_h e) const {
   VisAttr attr(e.attr<string>(_U(name)));
+  float alpha = 1.0;
+  float red   = 1.0;
+  float green = 1.0;
+  float blue  = 1.0;
+  if(e.hasAttr(_U(ref))) {
+    auto refName = e.attr<string>(_U(ref));
+    const auto refAttr = description.visAttributes(refName);
+    if(!refAttr.isValid() )  {
+        throw runtime_error("reference VisAttr " + refName + " does not exist");
+    }
+    // Not sure if there is an easy deep copy constructor
+    // Just copying things manually
+    refAttr.argb(alpha,red,green,blue);
+    attr.setColor(alpha,red,green,blue);
+    attr.setDrawingStyle( refAttr.drawingStyle());
+    attr.setLineStyle( refAttr.lineStyle());
+    attr.setShowDaughters(refAttr.showDaughters());
+    attr.setVisible(refAttr.visible());
+  }
   xml_dim_t dim(e);
-  float alpha = dim.alpha(1.0);
-  float red   = dim.r(1.0);
-  float green = dim.g(1.0);
-  float blue  = dim.b(1.0);
+  alpha = dim.alpha(alpha);
+  red   = dim.r(red  );
+  green = dim.g(green);
+  blue  = dim.b(blue );
 
   printout(s_debug.visattr ? ALWAYS : DEBUG, "Compact",
            "++ Converting VisAttr  structure: %-16s. Alpha=%.2f R=%.3f G=%.3f B=%.3f",
