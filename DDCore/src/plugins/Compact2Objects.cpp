@@ -831,8 +831,8 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
     if(!refAttr.isValid() )  {
         throw runtime_error("reference VisAttr " + refName + " does not exist");
     }
-    // Not sure if there is an easy deep copy constructor
-    // Just copying things manually
+    // Just copying things manually.
+    // I think a handle's copy constructor/assignment would reuse the underlying pointer... maybe?
     refAttr.argb(alpha,red,green,blue);
     attr.setColor(alpha,red,green,blue);
     attr.setDrawingStyle( refAttr.drawingStyle());
