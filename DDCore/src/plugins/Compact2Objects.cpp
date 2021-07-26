@@ -825,7 +825,9 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
   float red   = 1.0;
   float green = 1.0;
   float blue  = 1.0;
+  bool use_ref = false;
   if(e.hasAttr(_U(ref))) {
+    use_ref = true;
     auto refName = e.attr<string>(_U(ref));
     const auto refAttr = description.visAttributes(refName);
     if(!refAttr.isValid() )  {
@@ -860,7 +862,8 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
       attr.setLineStyle(VisAttr::DASHED);
   }
   else {
-    attr.setLineStyle(VisAttr::SOLID);
+    if (!use_ref)
+      attr.setLineStyle(VisAttr::SOLID);
   }
   if (e.hasAttr(_U(drawingStyle))) {
     string ds = e.attr<string>(_U(drawingStyle));
@@ -870,12 +873,15 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
       attr.setDrawingStyle(VisAttr::SOLID);
   }
   else {
-    attr.setDrawingStyle(VisAttr::SOLID);
+    if (!use_ref)
+      attr.setDrawingStyle(VisAttr::SOLID);
   }
   if (e.hasAttr(_U(showDaughters)))
     attr.setShowDaughters(e.attr<bool>(_U(showDaughters)));
-  else
-    attr.setShowDaughters(true);
+  else {
+    if (!use_ref)
+      attr.setShowDaughters(true);
+  }
   description.addVisAttribute(attr);
 }
 
