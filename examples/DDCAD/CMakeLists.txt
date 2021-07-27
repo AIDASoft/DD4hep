@@ -75,7 +75,7 @@ dd4hep_add_test_reg( DDCAD_import_sid_vertex
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
   EXEC_ARGS  geoDisplay -input ${CLICSiDEx_INSTALL}/compact/SiD_multiple_inputs.xml
   	     		-input ${DDCADEx_INSTALL}/compact/Import_SiD_Vertex.xml -load -destroy
-  DEPENDS    Persist_Conditions_Save
+  DEPENDS    DDCAD_export_sid_vertex
   REGEX_PASS "Read 383 meshes"
   REGEX_FAIL "Exception"
 )
@@ -95,7 +95,7 @@ dd4hep_add_test_reg( DDCAD_export_cal_endcaps
 dd4hep_add_test_reg( DDCAD_import_cal_endcaps
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
   EXEC_ARGS  geoDisplay -input ${DDCADEx_INSTALL}/compact/Import_CaloEndcap.xml -load -destroy
-  DEPENDS    Persist_Conditions_Save
+  DEPENDS    DDCAD_export_cal_endcaps
   REGEX_PASS "Read 96 meshes"
   REGEX_FAIL "Exception"
 )
