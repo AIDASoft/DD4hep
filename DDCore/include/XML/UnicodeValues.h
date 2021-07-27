@@ -148,6 +148,8 @@ UNICODE (end_x);
 UNICODE (end_y);
 UNICODE (end_z);
 UNICODE (eval);
+UNICODE (extend);
+UNICODE (extends);
 
 UNICODE (f);
 UNICODE (F);

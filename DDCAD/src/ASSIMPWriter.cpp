@@ -23,6 +23,8 @@
 #include "assimp/scene.h"
 
 #include <TBuffer3D.h>
+#include <TBuffer3DTypes.h>
+#include <TGeoBoolNode.h>
 #include <TGeoMatrix.h>
 
 /// C/C++ include files
@@ -71,55 +73,28 @@ namespace  {
   vertex operator+(const vertex& v1, const vertex& v2)
   {  return vertex(v1.x+v2.x, v1.y+v2.y, v1.z+v2.z);   }
 #endif
-#if 0
-      num_facet = tes->GetNfacets();
-      int *nn = new int[num_facet];
-      bool* flipped = new bool[num_facet];
-      for( i=0; i < num_facet; ++i )
-	flipped[i] = false, nn[0] = 0;
-      for( i=0; i < num_facet; ++i )   {
-	for( size_t j= i+1; j < num_facet; ++j)   {
-	  bool isneighbour = tes->GetFacet(i).IsNeighbour(tes->GetFacet(j), flipped[j]);
-	  if ( isneighbour )  {
-	    if ( flipped[i] ) flipped[j] = !flipped[j];
-	    ++nn[i];
-	    ++nn[j];
-	    if ( nn[i] == tes->GetFacet(i).GetNvert() )
-	      break;
-	  }
- 	}
-      }
-      for( i=0; i < num_facet; ++i )  {
-	if ( flipped[i] )  {
-	  const_cast<TGeoFacet*>(&tes->GetFacet(i))->Flip();
-	}
-      }
-      delete [] flipped;
-      delete [] nn;
-#endif
-#if 0
-   template <typename TGBinder>
-   TPlane3 compute_plane(const TGBinder &poly)   {
-      TPoint3 plast(poly[poly.Size()-1]);
-      TPoint3 pivot;
-      TVector3 edge;
-      Int_t j;
-      for (j = 0; j < poly.Size(); j++) {
-         pivot = poly[j];
-         edge =  pivot - plast;
-         if (!edge.FuzzyZero()) break;
-      }
-      for (; j < poly.Size(); j++) {
-         TVector3 v2 = poly[j] - pivot;
-         TVector3 v3 = edge.Cross(v2);
-         if (!v3.FuzzyZero())
-            return TPlane3(v3,pivot);
-      }
 
-      return TPlane3();
-   }
+  unique_ptr<TGeoTessellated> _tessellate_primitive(const std::string& name, Solid solid)   {
+    typedef vertex vtx_t;
+    const TBuffer3D& buf3D = solid->GetBuffer3D(TBuffer3D::kAll, false);
+    struct pol_t { int c, n; int segs[1]; } *pol = nullptr;
+    struct seg_t { int c, _1, _2;         };
+    const  seg_t* segs = (seg_t*)buf3D.fSegs;
+    const  vtx_t* vtcs = (vtx_t*)buf3D.fPnts;
+    size_t i, num_facet = 0;
+    const  Int_t* q;
 
+    for( i=0, q=buf3D.fPols; i<buf3D.NbPols(); ++i, q += (2+pol->n))  {
+      pol = (pol_t*)q;
+      for( int j=0; j < pol->n-1; ++j ) num_facet += 2;
+    }
 
+    unique_ptr<TGeoTessellated> tes = make_unique<TGeoTessellated>(name.c_str(), num_facet);
+    q = buf3D.fPols;
+    for( i=0, q=buf3D.fPols; i<buf3D.NbPols(); ++i)  {
+      pol = (pol_t*)q;
+      q += (2+pol->n);
+      for( int j=0; j < pol->n; j += 2 )   {
 	/* ------------------------------------------------------------
 	//   Convert quadri-linear facet to 2 tri-linear facets
 	//
@@ -130,46 +105,63 @@ namespace  {
 	//    +---------------+
 	//  v0             v1 v2/v3
 	// --------------------------------------------------------- */
-	int num_points[3];
-	pol_t* pol = (pol_t*)q;
-	int s1 = pol->segs[0], s2 = pol->segs[1];
-        int ends[4] = {segs[s1]._1,segs[s1]._2,segs[s2]._1,segs[s2]._2};
+	const int    s1  = pol->segs[j], s2 = pol->segs[(j+1)%pol->n];
+	const int    s[] = { segs[s1]._1, segs[s1]._2, segs[s2]._1, segs[s2]._2 };
+	const vtx_t& v0  = vtcs[s[0]], &v1=vtcs[s[1]], &v2=vtcs[s[2]], &v3=vtcs[s[3]];
 
-	q += (2+pol->n);
-	if (ends[0] == ends[2]) {
-	  numPnts[0] = ends[1];
-	  numPnts[1] = ends[0];
-	  numPnts[2] = ends[3];
+	if ( s[0] == s[2] )   {       // Points are ( s[1], s[0], s[3] )
+	  tes->AddFacet(v1, v0, v3);
 	}
-	else if (ends[0] == ends[3]) {
-	  numPnts[0] = ends[1];
-	  numPnts[1] = ends[0];
-	  numPnts[2] = ends[2];
+	else if ( s[0] == s[3] )   {  // Points are ( s[1], s[0], s[2] )
+	  tes->AddFacet(v1, v0, v2);
 	}
-	else if (ends[1] == ends[2]) {
-	  numPnts[0] = ends[0];
-	  numPnts[1] = ends[1];
-	  numPnts[2] = ends[3];
+	else if ( s[1] == s[2] )   {  // Points are ( s[0], s[1], s[3] )
+	  tes->AddFacet(v0, v1, v3);
 	}
-	else {
-	  numPnts[0] = ends[0];
-	  numPnts[1] = ends[1];
-	  numPnts[2] = ends[2];
+	else   {                      // Points are ( s[0], s[1], s[2] )
+	  tes->AddFacet(v0, v1, v2);
 	}
-	Int_t lastAdded = numPnts[2];
-	for( int j=pol->n; j != 2; --j )   {
-	  ends[0] = segs[pol->segs[j]]._1;
-	  ends[1] = segs[pol->segs[j]]._2;
-	  if (ends[0] == lastAdded) {
-	    lastAdded = ends[1];
-	  }
-	  else  {
-	    lastAdded = ends[0];
-	  }
-	}
+      }
+    }
+    return tes;
+  }
 
-  
-#endif
+
+  struct TessellateComposite   {
+    TBuffer3D buffer    { TBuffer3DTypes::kComposite };
+    std::vector<unique_ptr<TGeoTessellated> > meshes;
+  public:
+    TessellateComposite() = default;
+    virtual ~TessellateComposite() = default;
+    void collect_mesh(TGeoShape* s)  {
+      if (TGeoCompositeShape *shape = dynamic_cast<TGeoCompositeShape *>(s))
+	collect_composite(shape);
+      else
+	meshes.push_back(move(_tessellate_primitive(s->GetName(),s)));
+    }
+    void collect_composite(TGeoCompositeShape* sh)   {
+      TGeoBoolNode* node  = sh->GetBoolNode();
+      TGeoShape*    left  = node->GetLeftShape();
+      TGeoShape*    right = node->GetRightShape();
+      TGeoHMatrix  *glmat = (TGeoHMatrix*)sh->GetTransform();
+      TGeoHMatrix   mat;
+      mat = glmat; // keep a copy
+
+      glmat->Multiply(node->GetLeftMatrix());
+      collect_mesh(left);
+      *glmat = &mat;
+
+      glmat->Multiply(node->GetRightMatrix());
+      collect_mesh(right);
+      *glmat = &mat;
+    }
+    unique_ptr<TGeoTessellated> build_composite(const std::string& name, TGeoCompositeShape* shape)     {
+      int num_facet = 0;
+      this->collect_composite(shape);
+      unique_ptr<TGeoTessellated> tes = make_unique<TGeoTessellated>(name.c_str(), num_facet);
+      return tes;
+    }
+  };
 }
 
 /// Write output file
@@ -206,62 +198,21 @@ int ASSIMPWriter::write(const std::string& file_name,
     unique_ptr<TGeoHMatrix> trafo(placements[imesh].second);
     PlacedVolume     pv  = placements[imesh].first;
     Volume           v   = pv.volume();
+    Solid            s   = v.solid();
     Material         m   = v.material();
-    TessellatedSolid tes = v.solid();
+    TessellatedSolid tes = s;
     aiString         node_name(v.name());
 
-    //
     unique_ptr<TGeoTessellated> buf;
     if ( !tes.isValid() )   {
-      typedef vertex vtx_t;
-      unique_ptr<TBuffer3D> buf3D(v.solid()->MakeBuffer3D());
-      struct pol_t { int c, n; int segs[1]; } *pol = nullptr;
-      struct seg_t { int c, _1, _2;         };
-      const  seg_t* segs = (seg_t*)buf3D->fSegs;
-      const  vtx_t* vtcs = (vtx_t*)buf3D->fPnts;
-      size_t i, num_facet = 0;
-      const  Int_t* q;
-
-      for( i=0, q=buf3D->fPols; i<buf3D->NbPols(); ++i, q += (2+pol->n))  {
-	pol = (pol_t*)q;
-	for( int j=0; j < pol->n-1; ++j ) num_facet += 2;
+      if ( auto* shape=dynamic_cast<TGeoCompositeShape*>(s.ptr()) )   {
+	TessellateComposite helper;
+	buf = helper.build_composite(v.name(), shape);
       }
-      
-      buf = make_unique<TGeoTessellated>(v.name(), num_facet);
+      else   {
+	buf = _tessellate_primitive(v.name(), s);
+      }
       tes = buf.get();
-      q = buf3D->fPols;
-      for( i=0, q=buf3D->fPols; i<buf3D->NbPols(); ++i)  {
-	pol = (pol_t*)q;
-	q += (2+pol->n);
-	for( int j=0; j < pol->n; j += 2 )   {
-	  /* ------------------------------------------------------------
-	  //   Convert quadri-linear facet to 2 tri-linear facets
-	  //
-	  //    f1 +---------------+ v2/v3: f0
-	  //      /                / 
-	  //     /                /
-	  //    /                /
-	  //    +---------------+
-	  //  v0             v1 v2/v3
-	  // --------------------------------------------------------- */
-	  const int    s1  = pol->segs[j], s2 = pol->segs[(j+1)%pol->n];
-	  const int    s[] = { segs[s1]._1, segs[s1]._2, segs[s2]._1, segs[s2]._2 };
-	  const vtx_t& v0  = vtcs[s[0]], &v1=vtcs[s[1]], &v2=vtcs[s[2]], &v3=vtcs[s[3]];
-
-          if ( s[0] == s[2] )   {       // Points are ( s[1], s[0], s[3] )
-	    tes->AddFacet(v1, v0, v3);
-          }
-          else if ( s[0] == s[3] )   {  // Points are ( s[1], s[0], s[2] )
-	    tes->AddFacet(v1, v0, v2);
-	  }
-          else if ( s[1] == s[2] )   {  // Points are ( s[0], s[1], s[3] )
-	    tes->AddFacet(v0, v1, v3);
-	  }
-          else   {                      // Points are ( s[0], s[1], s[2] )
-	    tes->AddFacet(v0, v1, v2);
-	  }
-	}
-      }
     }
     if ( tes->GetNfacets() == 0 )   {
       continue;
