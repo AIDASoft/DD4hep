@@ -51,6 +51,11 @@ ADD_TEST( t_test_python_import "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
 SET_TESTS_PROPERTIES( t_test_python_import PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
 
 if (DD4HEP_USE_GEANT4)
+
+  ADD_TEST( t_test_python_import_ddg4 "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+    pytest ${PROJECT_SOURCE_DIR}/DDTest/python/test_import_ddg4.py)
+  SET_TESTS_PROPERTIES( t_test_python_import_ddg4 PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+
   foreach(TEST_NAME
       test_EventReaders
       )
