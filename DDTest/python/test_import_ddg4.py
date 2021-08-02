@@ -8,15 +8,5 @@ from __future__ import absolute_import
 import pytest
 from test_import import test_module
 
-
-parametrize = pytest.mark.parametrize
-
-
-moduleNames = [
-    'DDG4',
-    ]
-
-
-@parametrize('moduleName', moduleNames)
-def test_module_ddg4(moduleName):
+def test_module_ddg4():
     test_module('DDG4')
