@@ -5,7 +5,11 @@ This file adds a test for the DDG4 python module.
 """
 
 from __future__ import absolute_import
-from test_import import test_module, parametrize
+import pytest
+from test_import import test_module
+
+
+parametrize = pytest.mark.parametrize
 
 
 moduleNames = [
@@ -15,4 +19,4 @@ moduleNames = [
 
 @parametrize('moduleName', moduleNames)
 def test_module_ddg4(moduleName):
-    test_module(moduleName)
+    test_module('DDG4')
