@@ -9,4 +9,4 @@ from test_import import test_module
 
 
 def test_module_ddg4():
-    test_module('DDG4')
+    test_module(str('DDG4'))
