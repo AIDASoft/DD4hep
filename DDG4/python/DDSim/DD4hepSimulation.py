@@ -18,6 +18,7 @@ from DDSim.Helper.Physics import Physics
 from DDSim.Helper.Filter import Filter
 from DDSim.Helper.Random import Random
 from DDSim.Helper.Action import Action
+from DDSim.Helper.OutputConfig import OutputConfig
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from DDSim.Helper.MagneticField import MagneticField
 from DDSim.Helper.ParticleHandler import ParticleHandler
@@ -93,6 +94,7 @@ class DD4hepSimulation(object):
     self.part = ParticleHandler()
     self.field = MagneticField()
     self.action = Action()
+    self.outputConfig = OutputConfig()
     self.guineapig = GuineaPig()
     self.lcio = LCIO()
     self.hepmc3 = HepMC3()
@@ -342,7 +344,9 @@ class DD4hepSimulation(object):
     self.random.initialize(DDG4, kernel, self.output.random)
 
     # Configure I/O
-    if self.outputFile.endswith(".slcio"):
+    if callable(self.outputConfig._userPlugin):
+      self.outputConfig._userPlugin(self)
+    elif self.outputFile.endswith(".slcio"):
       lcOut = simple.setupLCIOOutput('LcioOutput', self.outputFile)
       lcOut.RunHeader = self.meta.addParametersToRunHeader(self)
       eventPars = self.meta.parseEventParameters()
