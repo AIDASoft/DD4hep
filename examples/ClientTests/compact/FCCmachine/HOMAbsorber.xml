@@ -1,0 +1,62 @@
+<lccdd>
+
+  <info name="FCCee"
+        title="FCCee Beam instrumentation: taken correspoding to CLD: HOMAbsorber_v00.xml"
+        author="nalipour taken from lcgeo"
+        url="no"
+        status="development"
+        version="1.0">
+    <comment> Higher mode absorber for FCCee detector based on CLD</comment>
+  </info>
+
+  <detectors>
+
+    <detector name="HOMAbsorber" type="MaterialEnvelope_o1_v01" vis="SeeThrough" id="DetID_HOMAbsorber" insideTrackingVolume="false" >
+
+      <envelope vis="ITVis">
+
+        <shape type="BooleanShape" operation="Union"  material="Iron">
+
+          <shape type="BooleanShape" operation="Intersection">
+            <shape type="Box"  dx="world_side" dy="world_side" dz="world_side"/>
+            <shape type="BooleanShape" operation="Subtraction">
+	      <shape type="Box"  dx="42.5*mm" dy="37.5*mm" dz="(100.67/2.)*mm" material="Iron" />
+              <shape type="Cone" rmin1="0" rmax1="(1198*mm )*0.015+ SeparatedBeamPipe_rmax +BeamPipeWidth+0.2*mm" rmin2="0" rmax2="(1298.665*mm)*0.015+SeparatedBeamPipe_rmax +BeamPipeWidth+0.2*mm" z="(100.665/2.)*mm+0.1*mm"/>
+              <position x="0" y="0" z="0"/>
+            </shape>
+            <position x="0" y="0" z="1198*mm+(100.665/2.)*mm"/>
+          </shape>
+
+          <shape type="BooleanShape" operation="Intersection">
+            <shape type="Box"  dx="world_side" dy="world_side" dz="world_side"/>
+            <shape type="BooleanShape" operation="Subtraction">
+	      <shape type="Box"  dx="42.5*mm" dy="37.5*mm" dz="(100.67/2.)*mm" material="Iron" />
+              <shape type="Cone" rmin1="0" rmax1="(1298.665*mm+0.2*mm)*0.015+SeparatedBeamPipe_rmax +BeamPipeWidth+0.2*mm" rmin2="0" rmax2="(1198*mm )*0.015+ SeparatedBeamPipe_rmax +BeamPipeWidth+0.2*mm" z="(100.665/2.)*mm+0.1*mm" />
+              <position x="0" y="0" z="0"/>
+            </shape>
+	    <position x="0" y="0" z="-(1198*mm+(100.665/2.)*mm)"/>
+          </shape>
+
+        </shape>
+
+      </envelope>
+
+    </detector>
+
+    <detector name="HOMAbsorbers_PunchThrough" type="DD4hep_FCC_Mask_o1_v01" insideTrackingVolume="true" vis="ITVis" >
+      <parameter crossingangle="CrossingAngle" />
+      
+      <section type="PunchedCenter"        
+	       start="1198*mm" 
+	       end="1298.665*mm" 
+	       rMin1="SeparatedBeamPipe_rmax +BeamPipeWidth+0.1*mm" 
+	       rMin2="SeparatedBeamPipe_rmax +BeamPipeWidth+0.1*mm "
+	       rMax1="(1198*mm )*0.015+ SeparatedBeamPipe_rmax +BeamPipeWidth+0.1*mm "
+               rMax2="(1298.665*mm)*0.015+SeparatedBeamPipe_rmax +BeamPipeWidth+0.1*mm "
+	       material="Iron" name="HOM1" />
+      
+    </detector>
+
+  </detectors>
+  
+</lccdd>

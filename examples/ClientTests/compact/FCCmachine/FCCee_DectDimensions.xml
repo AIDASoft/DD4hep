@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+       xmlns:xs="http://www.w3.org/2001/XMLSchema"
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <info name="FCCDectDimensions"
+	title="master file with includes and world dimension"
+	author="nalipour"
+	url="no"
+	status="development"
+	version="1.0">
+    <comment>
+    </comment>
+  </info>
+
+
+  <define>
+    <constant name="world_side" value="6100*mm"/>
+    <constant name="CrossingAngle" value="0.030*rad"/>  
+
+    <constant name="GlobalTrackerReadoutID_DCH" type="string" value="system:1,layer:16,phi:16"/>
+    <constant name="GlobalTrackerReadoutID" type="string" value="system:5,side:-2,layer:6,module:11,sensor:8"/>
+
+    <constant name="SolenoidField" value="2*tesla"/>
+    
+    
+    <constant name="DetID_NOTUSED"          value=" 0"/>
+    
+    <constant name="DetID_VXD_Barrel"       value=" 1"/>
+    <constant name="DetID_VXD_Endcap"       value=" 2"/>
+    <constant name="DetID_DCH"       value=" 3"/>
+    <constant name="DetID_Calo_Barrel"       value=" 4"/>
+    <constant name="DetID_Calo_Endcap"       value=" 5"/>
+    <constant name="DetID_Calo_Endcap_2"       value=" 6"/>
+
+    <constant name="DetID_HCAL_Barrel"      value=" 10"/>
+    <constant name="DetID_HCAL_Endcap"      value=" 11"/>
+    <constant name="DetID_HCAL_Ring"        value=" 12"/>
+    
+    <constant name="DetID_Yoke_Barrel"      value=" 13"/>
+    <constant name="DetID_Yoke_Endcap"      value=" 14"/>
+    
+    <constant name="DetID_LumiCal"          value=" 15"/>
+    <constant name="DetID_LumiCalInstrumentation"          value=" 16"/>
+    <constant name="DetID_LumiCalCooling"          value=" 17"/>
+    <constant name="DetID_LumiCalBackShield"          value=" 18"/>
+    <constant name="DetID_HOMAbsorber"          value=" 19"/>
+    <constant name="DetID_LumiCalNoseShield"          value=" 22"/>
+    
+    <constant name="BeamPipeWidth"   	value="1.2*mm" />
+    <constant name="BeamPipeWidthFirstCone"   	value="1.0*mm" />
+    <constant name="CentralBeamPipe_zmax" value="12.5*cm"/>
+    <constant name="BePartEnd_z" value="90.0*cm"/>
+    <constant name="SeparatedBeamPipe_z" value="1159.97*mm"/>
+    <constant name="CentralBeamPipe_rmax" value="15.0*mm"/>
+    <constant name="BeamPipeGoldWidth" value="0.005*mm" /> 
+    <constant name="BeamPipeGoldTolerance" value="0.001*mm" />  <!-- dummy tolerance, some small non zero value -->
+    
+    <constant name="InnerTracker_half_length" value="2300*mm" />
+    
+    <constant name="ConeBeamPipe_zmax" value="InnerTracker_half_length" />
+    <constant name="ConeBeamPipe_rmax_1"  value="InnerTracker_half_length * 0.1 + 1*mm" />
+    
+    <constant name="BigBeamPipe_zmax" value="1120*mm"/>
+    <constant name="SeparatedBeamPipe_rmax"  value="15*mm"/>
+    <constant name="BeamPipeTantalShieldWidth"  value="15*mm"/>
+    <constant name="SideFillerShieldWidth"  value="7*mm"/>
+    <constant name="TopFillerShieldWidth"  value="8*mm"/>
+    <constant name="BeamPipe_end" value="12500*mm"/>
+    
+    
+    <constant name="size_x" value="60*mm"/>       
+    <constant name="size_y" value="12*mm"/>         
+    <constant name="size_z" value="50*mm"/>   
+    
+    <constant name="env_safety" value="0.1*mm"/>
+    
+    <constant name="Vertex_inner_radius" value="17*mm"/>
+    <constant name="Vertex_outer_radius" value="111*mm"/>
+    <constant name="Vertex_half_length" value="302*mm"/>
+    
+    <constant name="InnerTracker_inner_radius" value="61*mm"/>
+    <constant name="InnerTracker_outer_radius" value="696*mm"/>
+    
+    <constant name="OuterTracker_inner_radius" value="696*mm"/>
+    <constant name="OuterTracker_outer_radius" value="2145*mm"/>  <!-- to avoid overlap with CaloFace, but it has to be large enough to accommodate OT-->
+    <constant name="OuterTracker_half_length" value="2300*mm"/>
+    
+    <constant name="ECalBarrel_inner_radius" value="2150*mm"/>
+    <constant name="ECalBarrel_outer_radius" value="2352*mm"/>
+    <constant name="ECalBarrel_half_length" value="2210*mm"/>
+    <constant name="ECalBarrel_symmetry" value="12"/>
+    
+    <constant name="ECalEndcap_inner_radius" value="340*mm"/>
+    <constant name="ECalEndcap_outer_radius" value="2350*mm"/>
+    <constant name="ECalEndcap_min_z" value="2307*mm"/>
+    <constant name="ECalEndcap_max_z" value="2509*mm"/>
+    <constant name="ECalEndcap_outer_symmetry" value="12"/>
+    <constant name="ECalEndcap_inner_symmetry" value="12"/>
+    
+    <!-- ECal plug not used -->
+    <constant name="ECalPlug_inner_radius" value="260*mm"/>
+    <constant name="ECalPlug_outer_radius" value="380*mm"/>
+    <constant name="ECalPlug_min_z" value="2307*mm"/>
+    <constant name="ECalPlug_max_z" value="2509*mm"/>
+    <constant name="ECalPlug_outer_symmetry" value="12"/>
+    <constant name="ECalPlug_inner_symmetry" value="12"/>
+    
+    <constant name="HCalBarrel_inner_radius" value="2400*mm"/>
+    <constant name="HCalBarrel_outer_radius" value="3566*mm"/>
+    <constant name="HCalBarrel_half_length" value="2210*mm"/>
+    <constant name="HCalBarrel_symmetry" value="12"/>
+    
+    <constant name="HCalEndcap_inner_radius" value="340*mm"/>
+    <constant name="HCalEndcap_outer_radius" value="3566*mm"/>
+    <constant name="HCalEndcap_min_z" value="2539*mm"/>
+    <constant name="HCalEndcap_max_z" value="3705*mm"/>
+    <constant name="HCalEndcap_symmetry" value="12"/>
+    <constant name="HCalEndcap_zcutout" value="200*mm"/>
+    <constant name="HCalEndcap_rcutout" value="0*mm"/>
+    
+    <constant name="HCalRing_inner_radius" value="2370*mm"/>
+    <constant name="HCalRing_outer_radius" value="HCalEndcap_outer_radius"/>
+    <constant name="HCalRing_min_z" value="2353.5*mm"/>
+    <constant name="HCalRing_max_z" value="HCalEndcap_min_z"/>
+    <constant name="HCalRing_symmetry" value="12"/>
+    
+    <constant name="Solenoid_inner_radius" value="3719*mm"/>
+    <constant name="Solenoid_outer_radius" value="4272*mm"/>
+    <constant name="Solenoid_half_length" value="3705*mm"/>
+    <constant name="Solenoid_Coil_half_length" value="3476*mm"/>
+    <constant name="Solenoid_Coil_radius" value="3930*mm"/>
+    
+    <constant name="YokeBarrel_inner_radius" value="4479*mm"/>
+    <constant name="YokeBarrel_outer_radius" value="6000*mm"/>
+    <constant name="YokeBarrel_half_length" value="3755*mm"/>
+    <constant name="YokeBarrel_symmetry" value="12"/>
+    
+    <constant name="YokeEndcap_inner_radius" value="400*mm"/>
+    <constant name="YokeEndcap_outer_radius" value="6000*mm"/>
+    <constant name="YokeEndcap_min_z" value="3755*mm"/>
+    <constant name="YokeEndcap_max_z" value="5300*mm"/>
+    <constant name="YokeEndcap_outer_symmetry" value="12"/>
+    <constant name="YokeEndcap_inner_symmetry" value="0"/>
+    
+    <constant name="CompSol_min_z" value="1230*mm"/>
+
+    <constant name="LumiCal_max_z" value="1186.5*mm" />
+    <constant name="LumiCal_min_z" value="1074*mm"/>
+    
+    <constant name="LumiCal_dz" value="(LumiCal_max_z-LumiCal_min_z)/2.0"/>
+    
+    <constant name="LumiCal_inner_radius" value="55.0*mm"/>
+    <constant name="LumiCal_outer_radius" value="112.0*mm- env_safety"/>
+    
+    <constant name="LumiCal_Instr_thickness" value="20*mm"/>
+    <constant name="LumiCal_Instr_inner_radius" value="LumiCal_outer_radius"/>
+    <constant name="LumiCal_Instr_outer_radius" value="LumiCal_outer_radius+LumiCal_Instr_thickness - env_safety"/>
+    
+    <constant name="LumiCal_Cool_thickness" value="9.75*mm"/>
+    <constant name="LumiCal_Cool_inner_radius" value="LumiCal_Instr_outer_radius"/>
+    <constant name="LumiCal_Cool_outer_radius" value="LumiCal_Instr_outer_radius+LumiCal_Cool_thickness"/>
+    
+    <constant name="Lcal_services_rmax" value="LumiCal_outer_radius+30*mm"/>
+    <constant name="Lcal_offset_phi" value=" 0."/>
+    <!--preliminary LumiCal shielding-->
+    <!--back shielding-->
+    <constant name="LumiCal_Shield_inner_radius" value="LumiCal_inner_radius"/>
+    <constant name="LumiCal_Shield_outer_radius" value="LumiCal_outer_radius+LumiCal_Instr_thickness+LumiCal_Cool_thickness"/>
+    <constant name="LumiCal_shield_dz" value="1.75*mm"/> 
+    <!--nose-->
+    <constant name="LumiCal_NoseShield_inner_radius" value="LumiCal_inner_radius-5*mm"/>
+    <constant name="LumiCal_NoseShield_outer_radius" value="LumiCal_inner_radius+10*mm"/>
+    <constant name="LumiCal_nose_shield_dz" value="12*mm"/>
+    
+    <constant name="BeamCal_inner_radius" value="32*mm"/>
+    <constant name="BeamCal_outer_radius" value="150*mm"/>
+    <constant name="BeamCal_min_z" value="3181*mm"/>
+    <constant name="BeamCal_max_z" value="3441*mm"/>
+    <constant name="BeamCal_dz" value="(BeamCal_max_z-BeamCal_min_z)/2.0"/>
+    
+    <constant name="Kicker_inner_radius" value="4*mm"/>
+    <constant name="Kicker_outer_radius" value="25*mm"/>
+    <constant name="Kicker_min_z" value="3480*mm"/>
+    <constant name="Kicker_max_z" value="3780*mm"/>
+    
+    <constant name="BPM_inner_radius" value="36*mm"/>
+    <constant name="BPM_outer_radius" value="55*mm"/>
+    <constant name="BPM_min_z" value="3790*mm"/>
+    <constant name="BPM_max_z" value="3880*mm"/>        
+
+    <constant name="QD0_min_z" value="2000*mm"/>
+    <constant name="QD0_max_z" value="5200*mm"/>
+    <constant name="QD0Coil_outer_radius" value="30*mm"/>
+    <constant name="CollimatorInFrontOfQD0_dz" value="20*cm"/>   
+    <constant name="CollimatorInFrontOfQD0_radius" value="10*mm"/>
+    <constant name="CollimatorInFrontOfQD0_dr" value="16*mm"/>
+    
+    <constant name="tracker_region_zmax" value="OuterTracker_half_length"/>
+    <constant name="tracker_region_rmax" value="OuterTracker_outer_radius"/>
+
+    <constant name="GlobalTrackerReadoutID" type="string" value="system:5,side:-2,layer:6,module:11,sensor:8"/>
+  </define>
+  
+  
+  <limits>
+    <limitset name="cal_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+  <regions>
+    <region name="BeampipeRegion"/>
+    <region name="VertexBarrelRegion"/>
+    <region name="VertexEndcapRegion"/>
+  </regions>
+
+
+  <display>
+    <vis name="VXDVis"        alpha="0.1" r="0.1" 	g=".5"      b=".5"    showDaughters="true"  visible="false"/>
+    <vis name="VXDLayerVis"   alpha="1.0" r="0.1" 	g=".5"      b=".5"    showDaughters="true"  visible="true"/>
+    <vis name="VXDSupportVis" alpha="1.0" r="0.0" 	g="1.0"     b="0.0"   showDaughters="true"  visible="true"/>
+    <vis name="ITVis"       	alpha="1.0" r="0.54"  	g="0.43"    b="0.04"  showDaughters="true"  visible="true"/>
+    <vis name="OTVis"       	alpha="1.0" r="0.8"   	g="0.8"     b="0.4"   showDaughters="true"  visible="false"/>
+    <vis name="ECALVis"     	alpha="1.0" r="0.2"   	g="0.6"     b="0"     showDaughters="true"  visible="true"/>
+    <vis name="HCALVis"     	alpha="1.0" r="0.078" 	g="0.01176" b="0.588" showDaughters="true"  visible="true"/>
+    <vis name="SOLVis"      	alpha="1.0" r="0.4"   	g="0.4"     b="0.4"   showDaughters="true"  visible="true"/>
+    <vis name="YOKEVis"     	alpha="1.0" r="0.6"   	g="0.0"     b="0.0"   showDaughters="true"  visible="true"/>
+    <vis name="LCALInstrVis"  alpha="1.0" r="0.35"  	g="0.0"     b="0.47"  showDaughters="true"  visible="true"/>
+    <vis name="LCALVis"    	alpha="1.0" r="0.25"  	g="0.88"    b="0.81"  showDaughters="true"  visible="true"/>
+    <vis name="LCALCoolVis"   alpha="1.0" r="0.2"   	g="0.6"     b="0"     showDaughters="true"  visible="true"/>
+    <vis name="BCALVis"     	alpha="1.0" r="0.0"   	g="0.4"     b="0.4"   showDaughters="true"  visible="true"/>
+    <vis name="KICKVis"     	alpha="1.0" r="1.0"   	g="0.498"   b="0.0"   showDaughters="true"  visible="true"/>
+    <vis name="QD0CoilIVis"   alpha="1.0" r="1.0"   	g="0.498"   b="0.0"   showDaughters="true"  visible="true"/>
+    <vis name="QD0CoilOVis"   alpha="1.0" r="1.0"   	g="0.25"    b="0.0"   showDaughters="true"  visible="true"/>
+    <vis name="CompSolVis"    alpha="1.0" r="0.5"   	g="0.5"     b="0.0"   showDaughters="true"  visible="true"/>
+    <vis name="ScreenSolVis"  alpha="1.0" r="1"   	g="1"       b="0"     showDaughters="true"  visible="true"/>
+    <vis name="ColliVis"      alpha="1.0" r="0.7"   	g="0.5"     b="1"     showDaughters="true"  visible="true"/>
+    <vis name="TantalumVis"   alpha="1.0" r="1"   	g="0.5"     b="0.5"   showDaughters="true"  visible="true"/>
+    <vis name="BPMVis"      	alpha="1.0" r="0.25"  	g="0.88"    b="0.81"  showDaughters="true"  visible="true"/>
+    <vis name="SupportVis"  	alpha="1"   r="0.2"   	g="0.2"     b="0.2"   showDaughters="true" visible="true"/>
+  </display>
+
+</lccdd>

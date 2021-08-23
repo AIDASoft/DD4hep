@@ -1,0 +1,38 @@
+<lccdd>    
+
+  <info name="FCCee"
+        title="FCCee Beam instrumentation: taken correspoding to CLD: BeamInstrumentation_o3_v02_fitShield.xml"
+        author="nalipour taken from lcgeo"
+        url="no"
+        status="development"
+        version="1.0">
+    <comment>A beam instrumentation for FCCee detector based on CLD</comment>
+  </info>
+    
+    <detectors>
+        <comment>Beampipe Instrumentation</comment>
+        
+
+        <detector name="CompSol" type="DD4hep_FCC_Mask_o1_v01" insideTrackingVolume="true" vis="CompSolVis">
+            <parameter crossingangle="CrossingAngle" />
+            <envelope vis="CoilVis">
+                <shape type="Assembly"/>
+            </envelope>
+            <section type="Center"               start="CompSol_min_z"    end="QD0_min_z" rMin1="103*mm"  rMin2="180*mm"  rMax1="123*mm" rMax2="200*mm"    material="SolenoidMixture"  name="CompSol" />
+        </detector>
+
+
+        <detector name="ScreenSol" type="DD4hep_FCC_Mask_o1_v01" insideTrackingVolume="true" vis="ScreenSolVis">
+            <parameter crossingangle="CrossingAngle" />
+            <envelope vis="CoilVis">
+                <shape type="Assembly"/>
+            </envelope>
+
+           <section type="Center"  start="QD0_min_z" end="QD0_min_z+5*cm" rMin1="SeparatedBeamPipe_rmax+1*mm+5*cm" rMin2="SeparatedBeamPipe_rmax+1*mm+5*cm" rMax1="200*mm" rMax2="200*mm" material="SolenoidMixture"  name="CompSol" />
+
+            <section type="Center"    start="QD0_min_z+5*cm"    end="QD0_max_z" rMin1="180*mm"  rMin2="180*mm"  rMax1="200*mm" rMax2="200*mm"    material="SolenoidMixture"  name="CompSol" />
+        </detector>
+
+
+    </detectors>
+</lccdd>

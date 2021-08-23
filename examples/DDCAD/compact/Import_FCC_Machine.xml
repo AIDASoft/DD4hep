@@ -1,0 +1,50 @@
+<lccdd>
+<!--
+    #==========================================================================
+    #  AIDA Detector description implementation 
+    #==========================================================================
+    # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+    # All rights reserved.
+    #
+    # For the licensing terms see $DD4hepINSTALL/LICENSE.
+    # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+    #
+    #==========================================================================
+-->
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+  <materials>
+    <material name="beam" state="gas">
+      <P unit="pascal" value="6.25e-06"/>
+      <MEE unit="eV" value="38.5760755714278"/>
+      <D unit="g/cm3" value="1.7e-14"/>
+      <fraction n="0.36264" ref="H"/>
+      <fraction n="0.36276" ref="N"/>
+      <fraction n="0.117748421296248" ref="C"/>
+      <fraction n="0.156851578703752" ref="O"/>
+    </material>
+    <material formula="SolenoidMixture" name="SolenoidMixture" state="solid" >
+      <RL type="X0" unit="cm" value="1.75749" />
+      <NIL type="lambda" unit="cm" value="16.959" />
+      <D type="density" unit="g/cm3" value="7.874" />
+      <composite n="1" ref="Fe" />
+    </material>
+  </materials>
+  <define>
+    <constant name="world_size" value="25*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <detectors>
+    <detector id="1" name="Shape_Collada" type="DD4hep_TestShape_Creator">
+      <check>
+        <shape type="CAD_MultiVolume" ref="./Machine.collada" unit="cm"/>
+      </check>
+    </detector>
+  </detectors>
+</lccdd>

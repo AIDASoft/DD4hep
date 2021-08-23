@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+
+
+  <info name="FCCDectMaster"
+    title="FCCee Machine Elements geometry master file"
+    author="Niloufar Alipour Tehrani (adapted: G Ganis)"
+    url="no"
+    status="development"
+    version="1.0">
+    <comment>
+      Machine-releated elements for the FCCee Detector concept.
+    </comment>
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+  <materials>
+    <material name="beam" state="gas">
+      <P unit="pascal" value="6.25e-06"/>
+      <MEE unit="eV" value="38.5760755714278"/>
+      <D unit="g/cm3" value="1.7e-14"/>
+      <fraction n="0.36264" ref="H"/>
+      <fraction n="0.36276" ref="N"/>
+      <fraction n="0.117748421296248" ref="C"/>
+      <fraction n="0.156851578703752" ref="O"/>
+    </material>
+    <material formula="SolenoidMixture" name="SolenoidMixture" state="solid" >
+      <RL type="X0" unit="cm" value="1.75749" />
+      <NIL type="lambda" unit="cm" value="16.959" />
+      <D type="density" unit="g/cm3" value="7.874" />
+      <composite n="1" ref="Fe" />
+    </material>
+   
+  </materials>
+
+  <define>
+    <constant name="world_size" value="25*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <include ref="./FCCee_DectDimensions.xml" />
+
+  <include ref="Beampipe.xml"/>
+  <include ref="BeamInstrumentation.xml"/>
+  <include ref="HOMAbsorber.xml"/>
+
+</lccdd>
