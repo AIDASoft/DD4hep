@@ -72,7 +72,7 @@ def run():
   act.ReadoutName = 'EcalBarrelHits_1'
   act.enableUI()
   seq.add(act)
-  # Add extra parallel readout action with readout EcalBarrelHits_2  
+  # Add extra parallel readout action with readout EcalBarrelHits_2
   act = DDG4.SensitiveAction(sid.kernel, str(typ + '/EcalBarrelHandler_2'), det)
   act.ReadoutName = 'EcalBarrelHits_2'
   act.enableUI()
