@@ -104,7 +104,7 @@ namespace dd4hep {
       collection(m_collectionID)->add(hit);
       mark(h.track);
       if ( 0 == hit->cellID )  {
-        hit->cellID        = volumeID( step ) ;
+        hit->cellID      = volumeID( step ) ;
         except("+++ Invalid CELL ID for hit!");
       }
       print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
@@ -131,7 +131,7 @@ namespace dd4hep {
       collection(m_collectionID)->add(hit);
       mark(h.track);
       if ( 0 == hit->cellID )  {
-        hit->cellID = volumeID( spot ) ;
+        hit->cellID      = volumeID( spot ) ;
         except("+++ Invalid CELL ID for hit!");
       }
       print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",

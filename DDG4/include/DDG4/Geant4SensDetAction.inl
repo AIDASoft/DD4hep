@@ -11,10 +11,11 @@
 //
 //==========================================================================
 
-// Framework include files
+/// Framework include files
 #include "DDG4/Geant4SensDetAction.h"
-#include "DD4hep/detail/ObjectsInterna.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/detail/ObjectsInterna.h"
 
 #include "DDG4/Geant4ReadoutVolumeFilter.h"
 #include "DDG4/Geant4Data.h"
@@ -33,6 +34,7 @@ namespace dd4hep {
 						    Detector& description_ref)
       : Geant4Sensitive(ctxt,nam,det,description_ref), m_collectionName(), m_collectionID(0)
     {
+      declareProperty("ReadoutName",    m_readoutName);
       declareProperty("CollectionName", m_collectionName);
       initialize();
       InstanceCount::increment(this);
@@ -50,6 +52,21 @@ namespace dd4hep {
 
     /// Finalization overload for specialization
     template <typename T> void Geant4SensitiveAction<T>::finalize()    {
+    }
+
+    /// Access the readout object. Note: if m_readoutName is set, the m_readout != m_sensitive.readout()
+    template <typename T> Readout Geant4SensitiveAction<T>::readout()     {
+      if ( !m_readoutName.empty() && m_sensitive.readout() == m_readout )   {
+        m_readout = detectorDescription().readout(m_readoutName);
+        if ( !m_readout.isValid() )   {
+          except("+++ Failed to access parallel readout '%s'",m_sensitive.name());
+        }
+        m_segmentation = m_readout.segmentation();
+        if ( !m_segmentation.isValid() )   {
+          except("+++ Failed to access segmentation for readout '%s'",m_readout.name());
+        }
+      }
+      return m_readout;
     }
 
     /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
@@ -84,7 +101,7 @@ namespace dd4hep {
     /// Define readout specific hit collection. matching name must be present in readout structure
     template <typename T> template <typename HIT> 
     size_t Geant4SensitiveAction<T>::defineReadoutCollection(const std::string match_name)  {
-      Readout ro = m_sensitive.readout();
+      auto ro = readout();
       for(const auto& c : ro->hits )  {
         if ( c.name == match_name )   {
           size_t coll_id = defineCollection<HIT>(match_name);
@@ -94,7 +111,7 @@ namespace dd4hep {
         }
       }
       except("+++ Custom collection name '%s' not defined in the Readout object: %s.",
-             m_collectionName.c_str(), ro.name());      
+             m_collectionName.c_str(), ro.name());
       return 0; // Anyhow not reachable. Exception thrown before
     }
 
@@ -103,8 +120,7 @@ namespace dd4hep {
     size_t Geant4SensitiveAction<T>::declareReadoutFilteredCollection()
     {
       if ( m_collectionName.empty() )  {
-        Readout ro = m_sensitive.readout();
-        return defineCollection<HIT>(ro.name());
+        return defineCollection<HIT>(readout().name());
       }
       return defineReadoutCollection<HIT>(m_collectionName);
     }

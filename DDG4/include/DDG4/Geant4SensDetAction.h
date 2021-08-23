@@ -123,28 +123,28 @@ namespace dd4hep {
 
     private:
       /// Reference to G4 sensitive detector
-      Geant4ActionSD* m_sensitiveDetector = 0;
+      Geant4ActionSD* m_sensitiveDetector     { nullptr };
       /// Reference to the containing action sequence
-      Geant4SensDetActionSequence* m_sequence = 0;
+      Geant4SensDetActionSequence* m_sequence { nullptr };
 
     protected:
       /// Property: Hit creation mode. Maybe one of the enum HitCreationFlags
       int  m_hitCreationMode = 0;
 #if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
       /// Reference to the detector description object
-      Detector*            m_detDesc {0};
+      Detector*            m_detDesc          { nullptr };
 #else
       /// Reference to the detector description object
       Detector&            m_detDesc;
 #endif
       /// Reference to the detector element describing this sensitive element
-      DetElement           m_detector;
+      DetElement           m_detector         {  };
       /// Reference to the sensitive detector element
-      SensitiveDetector    m_sensitive;
+      SensitiveDetector    m_sensitive        {  };
       /// Reference to the readout structure
-      Readout              m_readout;
+      Readout              m_readout          {  };
       /// Reference to segmentation
-      Segmentation         m_segmentation;
+      Segmentation         m_segmentation     {  };
       /// The list of sensitive detector filter objects
       Actors<Geant4Filter> m_filters;
 
@@ -198,6 +198,9 @@ namespace dd4hep {
       G4VReadOutGeometry* readoutGeometry() const {
         return detector().readoutGeometry();
       }
+
+      /// Access the detector desciption object
+      Detector& detectorDescription()   const;
 
       /// Mark the track to be kept for MC truth propagation during hit processing
       void mark(const G4Track* track) const;
@@ -508,11 +511,14 @@ namespace dd4hep {
       typedef T UserData;
     protected:
       /// Property: collection name. If not set default is readout name!
-      std::string m_collectionName;
+      std::string m_collectionName    { };
+      /// Property: segmentation name for parallel readouts. If not set readout segmentation is used!
+      std::string m_readoutName       { };
+
       /// Collection identifier
-      size_t      m_collectionID = -1;
+      size_t      m_collectionID    { 0 };
       /// User data block
-      UserData    m_userData;
+      UserData    m_userData          { };
 
     protected:
       /// Define standard assignments and constructors
@@ -531,6 +537,9 @@ namespace dd4hep {
       /// Define collections created by this sensitivie action object
       virtual void defineCollections();
 
+      /// Access the readout object. Note: if m_readoutName is set, the m_readout != m_sensitive.readout()
+      Readout readout();
+      
       /// Define readout specific hit collection with volume ID filtering
       /** 
        *  Convenience function. To be called by specialized sensitive actions inheriting this class.

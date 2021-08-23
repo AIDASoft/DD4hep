@@ -39,15 +39,9 @@
 
 
   <limits>
-    <limitset name="cal_limits">
-      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
-    </limitset>
-    <limitset name="SiTrackerBarrelRegionLimitSet">
-      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
-      <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
-      <limit name="range_min" particles="*" value="5.0" unit="mm" />
-    </limitset>
+    <include ref="SiD_Limits.xml"/>
   </limits>
+
   <regions>
     <region name="SiTrackerBarrelRegion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
       <limitsetref name="SiTrackerBarrelRegionLimitSet"/>

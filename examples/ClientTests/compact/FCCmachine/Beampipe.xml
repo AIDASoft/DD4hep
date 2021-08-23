@@ -1,0 +1,154 @@
+<lccdd>
+
+  <info name="FCCee"
+        title="FCCee Beam pipe: taken corresponding to CLD: Beampipe_o4_v04_noNotch_W_n02.xml"
+        author="nalipour taken from lcgeo"
+        url="no"
+        status="development"
+        version="1.0">
+    <comment>A beampipe for FCCee detector based on CLD</comment>
+  </info>
+    
+    <!--  Definition of global dictionary constants          -->
+    <define>
+      <constant name="beampipegoldwidth" value="BeamPipeGoldWidth"/>
+      <constant name="beampipegoldtolerance" value="BeamPipeGoldTolerance"/>
+    </define>
+    
+    <!--  Definition of the used visualization attributes    -->
+    <display>
+        <vis name="BeamPipeVis" alpha="0.0" r="0.0" g="1.0" b="0.0" showDaughters="true" visible="false"/>
+        <vis name="GoldCoatingVis" alpha="0.0" r="0.0" g="1.0" b="1.0" showDaughters="true" visible="true"/>
+        <vis name="TubeVis"  alpha="1.0" r="1.0" g="0.7"  b="0.5"   showDaughters="true"  visible="true"/>
+        <vis name="VacVis"   alpha="1.0" r="1.0" g="1.0"  b="1.0"   showDaughters="true"  visible="false"/>
+    </display>
+    
+    
+    <detectors>
+
+        <comment>Part of beampipe made of Beryllium</comment>
+        
+        <detector name="BeBeampipe" type="DD4hep_Beampipe_o1_v01" insideTrackingVolume="true" nocore="true" vis="BeamPipeVis">
+            <parameter crossingangle="CrossingAngle" />
+            <envelope vis="BlueVis">
+                <shape type="Assembly"/>
+            </envelope>
+
+            <section type="Center"               start="0*mm"    end="CentralBeamPipe_zmax" rMin1="CentralBeamPipe_rmax"  rMin2="CentralBeamPipe_rmax"    rMax1="CentralBeamPipe_rmax+BeamPipeWidth"  rMax2="CentralBeamPipe_rmax+BeamPipeWidth"                material="Beryllium" name="VertexInnerBe" />
+
+            <section type="Center" start="CentralBeamPipe_zmax"  end="BePartEnd_z"  rMin1="CentralBeamPipe_rmax"  rMin2="CentralBeamPipe_rmax+(BePartEnd_z-CentralBeamPipe_zmax)*0.017"      rMax1="CentralBeamPipe_rmax+BeamPipeWidthFirstCone"  rMax2="CentralBeamPipe_rmax+BeamPipeWidthFirstCone+(BePartEnd_z-CentralBeamPipe_zmax)*0.017" material="Beryllium" name="FirstConeBe" />
+
+        </detector>
+
+	<detector name="BeamPipe" type="DD4hep_Beampipe_o1_v01" insideTrackingVolume="true" vis="BeamPipeVis" >
+            <envelope vis="BlueVis">
+                <shape type="Assembly"/>
+            </envelope>
+            <parameter crossingangle="CrossingAngle" />
+
+
+            <comment>Golden foil in the inner part of the Be beampipe</comment>
+
+            <section type="Center"               start="0*mm"    end="CentralBeamPipe_zmax" rMin1="CentralBeamPipe_rmax-(beampipegoldwidth+beampipegoldtolerance)"  rMin2="CentralBeamPipe_rmax-(beampipegoldwidth+beampipegoldtolerance)"    rMax1="CentralBeamPipe_rmax-beampipegoldtolerance"  rMax2="CentralBeamPipe_rmax-beampipegoldtolerance"                material="Gold" name="VertexInnerGold"  />
+
+            <section type="Center" start="CentralBeamPipe_zmax"  end="BePartEnd_z"  rMin1="CentralBeamPipe_rmax-(beampipegoldwidth+beampipegoldtolerance)"  rMin2="CentralBeamPipe_rmax-(beampipegoldwidth+beampipegoldtolerance)+(BePartEnd_z-CentralBeamPipe_zmax)*0.017"      rMax1="CentralBeamPipe_rmax-beampipegoldtolerance"  rMax2="CentralBeamPipe_rmax-beampipegoldtolerance+(BePartEnd_z-CentralBeamPipe_zmax)*0.017" material="Gold" name="FirstConeGold" />
+
+        <comment>Part of beampipe made of Copper</comment>
+        
+            <section type="Center" start="BePartEnd_z"  end="SeparatedBeamPipe_z"  rMin1="CentralBeamPipe_rmax+(BePartEnd_z-CentralBeamPipe_zmax)*0.017"  rMin2="CentralBeamPipe_rmax+(BePartEnd_z-CentralBeamPipe_zmax)*0.017+(SeparatedBeamPipe_z-BePartEnd_z)*0.017"      rMax1="CentralBeamPipe_rmax+BeamPipeWidthFirstCone+(BePartEnd_z-CentralBeamPipe_zmax)*0.017"  rMax2="CentralBeamPipe_rmax+BeamPipeWidthFirstCone+(BePartEnd_z-CentralBeamPipe_zmax)*0.017+(SeparatedBeamPipe_z-BePartEnd_z)*0.017" material="Copper" name="CopperCone" />
+
+
+
+	    <section type="PunchedCenter"        start="SeparatedBeamPipe_z" end="SeparatedBeamPipe_z+3*mm"    rMin1="SeparatedBeamPipe_rmax"      rMin2="SeparatedBeamPipe_rmax"       rMax1="CentralBeamPipe_rmax+BeamPipeWidthFirstCone+(BePartEnd_z-CentralBeamPipe_zmax)*0.015+(SeparatedBeamPipe_z-BePartEnd_z)*0.015"     rMax2="CentralBeamPipe_rmax+BeamPipeWidthFirstCone+(BePartEnd_z-CentralBeamPipe_zmax)*0.017+(SeparatedBeamPipe_z-BePartEnd_z)*0.017 + 3*mm*0.017" material="Copper"     name="SplitVacChambers"/>
+
+
+             <section type="DnstreamClippedFront" start="SeparatedBeamPipe_z+3.01*mm" end="6000*mm"  rMin1="SeparatedBeamPipe_rmax"  rMin2="SeparatedBeamPipe_rmax" rMax1="SeparatedBeamPipe_rmax+1*mm"  rMax2="SeparatedBeamPipe_rmax+1*mm"  material="Copper"      name="DownStreamBeamPipe_1"/>
+
+          
+	   <section type="UpstreamClippedFront"  start="SeparatedBeamPipe_z+3.01*mm" end="6000*mm"  rMin1="SeparatedBeamPipe_rmax"  rMin2="SeparatedBeamPipe_rmax" rMax1="SeparatedBeamPipe_rmax+1*mm"  rMax2="SeparatedBeamPipe_rmax+1*mm"  material="Copper"      name="UpStreamBeamPipe_1"/>
+
+
+</detector>
+<comment>Full Cone Tungsten Shield</comment>
+<detector name="BeamPipeShield" type="DD4hep_FCC_Mask_o1_v01" insideTrackingVolume="true" vis="TantalumVis" >
+        <parameter crossingangle="CrossingAngle" />
+
+        <comment>Before HOM space</comment>
+        <section type="PunchedCenter"        
+        start="LumiCal_max_z + 5*mm" end="1197.5*mm" 
+        rMin1="SeparatedBeamPipe_rmax + BeamPipeWidth + 0.1*mm" 
+        rMin2="SeparatedBeamPipe_rmax + BeamPipeWidth + 0.1*mm "
+        rMax1="SeparatedBeamPipe_rmax + (LumiCal_max_z + 5*mm )*0.015 + BeamPipeWidth + 0.1*mm + BeamPipeTantalShieldWidth"
+        rMax2="SeparatedBeamPipe_rmax + (1197.5*mm) * 0.015 + BeamPipeWidth + 0.1*mm + BeamPipeTantalShieldWidth"
+        material="Tungsten" name="TaShield_BH2" />
+
+
+
+        <comment>After HOM space (1197.5*m - 1298.7*mm) +18 cm as solenoid is now closer to IP </comment>
+        <section type="PunchedCenter"        
+        start="1298.7*mm" end="QD0_min_z + 18*cm" 
+        rMin1="SeparatedBeamPipe_rmax + BeamPipeWidth + 0.1*mm" 
+        rMin2="SeparatedBeamPipe_rmax + BeamPipeWidth + 0.1*mm "
+        rMax1="SeparatedBeamPipe_rmax + (1298.7*mm )*0.015 + BeamPipeWidth + 0.1*mm + BeamPipeTantalShieldWidth"
+        rMax2="SeparatedBeamPipe_rmax + (QD0_min_z + 18*cm) * 0.015 + BeamPipeWidth + 0.1*mm + BeamPipeTantalShieldWidth"
+        material="Tungsten" name="TaShield_AH" />
+
+        </detector>
+<comment>Asymmetric Tungsten Shield no Rotation</comment>
+
+<detector name="BeamPipeShield_noRot" type="DD4hep_FCC_Mask_o1_v01_noRot" insideTrackingVolume="true" vis="TantalumVis"  >
+        <parameter crossingangle="CrossingAngle" />
+
+        <section type="Center"        
+        start="500*mm" end="LumiCal_max_z + 4.9*mm" 
+        rMin1="CentralBeamPipe_rmax + (500.0*mm-CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm"  
+        rMin2="CentralBeamPipe_rmax + (LumiCal_max_z + 4.9*mm-CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm"           
+        rMax1="CentralBeamPipe_rmax + (500.0*mm-CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm + TopFillerShieldWidth"  
+        rMax2="CentralBeamPipe_rmax + (LumiCal_max_z + 4.9*mm-CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm + BeamPipeTantalShieldWidth"
+        Phi1="326*degree"
+        Phi2="34*degree"      
+      
+        material="Tungsten" name="TaShieldTopPart" />
+
+	<comment>was 370</comment>
+        <section type="Center"        
+        start="330*mm" end="500*mm" 
+        rMin1="CentralBeamPipe_rmax + (330*mm - CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm"  
+        rMin2="CentralBeamPipe_rmax + (500*mm - CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm"           
+        rMax1="CentralBeamPipe_rmax + (330*mm - CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm"  
+        rMax2="CentralBeamPipe_rmax + (500*mm - CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm + TopFillerShieldWidth"
+        Phi1="326*degree"
+        Phi2="34*degree"      
+      
+        material="Tungsten" name="TaShieldTopPart2" />
+
+
+	<comment>one degree less, to fit lumical window</comment>
+        <section type="Center"        
+        start="600*mm" end="LumiCal_max_z + 4.9*mm" 
+        rMin1="CentralBeamPipe_rmax + (600*mm - CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm"  
+        rMin2="CentralBeamPipe_rmax + (LumiCal_max_z + 4.9*mm - CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm"           
+        rMax1="CentralBeamPipe_rmax + (600*mm - CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm + SideFillerShieldWidth"  
+        rMax2="CentralBeamPipe_rmax + (LumiCal_max_z + 4.9*mm - CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm + BeamPipeTantalShieldWidth"
+        Phi1="34*degree"
+        Phi2="70*degree"      
+      
+        material="Tungsten" name="TaShieldFiller1" />
+
+        <section type="Center"        
+        start="600*mm" end="LumiCal_max_z + 4.9*mm" 
+        rMin1="CentralBeamPipe_rmax + (600*mm - CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm"  
+        rMin2="CentralBeamPipe_rmax + (LumiCal_max_z + 4.9*mm - CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm"           
+        rMax1="CentralBeamPipe_rmax + (600*mm - CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm + SideFillerShieldWidth"  
+        rMax2="CentralBeamPipe_rmax + (LumiCal_max_z + 4.9*mm - CentralBeamPipe_zmax)*0.017 + BeamPipeWidthFirstCone + 0.1*mm + BeamPipeTantalShieldWidth"
+        Phi1="291*degree"
+        Phi2="326*degree" 
+
+      
+        material="Tungsten" name="TaShieldFiller2" />
+
+
+      </detector>
+
+    </detectors>
+</lccdd>

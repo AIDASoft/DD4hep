@@ -1462,7 +1462,7 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
       xml_coll_t(node, _U(readout)).for_each(Converter<Readout>(this->description));
     else if ( tag == "regions" )
       xml_coll_t(node, _U(region)).for_each(Converter<Region>(this->description));
-    else if ( tag == "limitsets" )
+    else if ( tag == "limits" || tag == "limitsets" )
       xml_coll_t(node, _U(limitset)).for_each(Converter<LimitSet>(this->description));
     else if ( tag == "display" )
       xml_coll_t(node,_U(vis)).for_each(Converter<VisAttr>(this->description));
@@ -1569,6 +1569,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
     (Converter<World>(description))(xml_h(compact.child(_U(world))));
 
   if ( open_geometry ) description.init();
+  xml_coll_t(compact, _U(limits)).for_each(_U(include),  Converter<DetElementInclude>(description));
   xml_coll_t(compact, _U(limits)).for_each(_U(limitset), Converter<LimitSet>(description));
 
   printout(DEBUG, "Compact", "++ Converting readout  structures...");

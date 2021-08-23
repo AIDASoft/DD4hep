@@ -1,0 +1,61 @@
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+  <info name="clic_sid_cdr"
+        title="CLIC Silicon Detector CDR"
+        author="Christian Grefe"
+        url="https://twiki.cern.ch/twiki/bin/view/CLIC/ClicSidCdr"
+        status="development"
+        version="$Id: compact.xml 1374 2014-11-05 10:49:55Z markus.frank@cern.ch $">
+    <comment>The compact format for the CLIC Silicon Detector used for the conceptual design report</comment>        
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_Materials.xml"/>
+
+  <define>
+    <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiDConstants.xml"/>
+  </define>
+
+  <limits>
+    <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD_Limits.xml"/>
+  </limits>
+
+  <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD/SiD_EcalBarrel.xml"/>
+
+  <readouts>
+    <readout name="EcalBarrelHits">
+      <segmentation type="CartesianGridXY" grid_size_x="3.5" grid_size_y="3.5" />
+      <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
+    </readout>        
+
+    <readout name="EcalBarrelHits_0">
+      <segmentation type="CartesianGridXY" grid_size_x="1" grid_size_y="1" />
+      <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
+    </readout>        
+
+    <readout name="EcalBarrelHits_1">
+      <segmentation type="CartesianGridXY" grid_size_x="5" grid_size_y="5" />
+      <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
+    </readout>        
+
+    <readout name="EcalBarrelHits_2">
+      <segmentation type="CartesianGridXY" grid_size_x="10" grid_size_y="10" />
+      <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
+    </readout>        
+
+  </readouts>
+
+</lccdd>

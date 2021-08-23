@@ -98,18 +98,17 @@ bool Geant4Filter::operator()(const G4GFlashSpot*) const {
 }
 
 /// Constructor. The detector element is identified by the name
-Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& nam, DetElement det, Detector& description_ref)
-  : Geant4Action(ctxt, nam), m_sensitiveDetector(0), m_sequence(0),
-    m_detDesc(description_ref), m_detector(det), m_sensitive(), m_readout(), m_segmentation()
+Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& nam, DetElement det, Detector& det_ref)
+  : Geant4Action(ctxt, nam), m_detDesc(det_ref), m_detector(det)
 {
   InstanceCount::increment(this);
   if (!det.isValid()) {
     throw runtime_error(format("Geant4Sensitive", "DDG4: Detector elemnt for %s is invalid.", nam.c_str()));
   }
   declareProperty("HitCreationMode", m_hitCreationMode = SIMPLE_MODE);
-  m_sequence  = context()->kernel().sensitiveAction(m_detector.name());
-  m_sensitive = description_ref.sensitiveDetector(det.name());
-  m_readout   = m_sensitive.readout();
+  m_sequence     = context()->kernel().sensitiveAction(m_detector.name());
+  m_sensitive    = m_detDesc.sensitiveDetector(det.name());
+  m_readout      = m_sensitive.readout();
   m_segmentation = m_readout.segmentation();
 }
 
@@ -184,6 +183,11 @@ Geant4ActionSD& Geant4Sensitive::detector() const {
 /// Access to the hosting sequence
 Geant4SensDetActionSequence& Geant4Sensitive::sequence() const {
   return *m_sequence;
+}
+
+/// Access the detector desciption object
+Detector& Geant4Sensitive::detectorDescription() const {
+  return m_detDesc;
 }
 
 /// Access HitCollection container names
