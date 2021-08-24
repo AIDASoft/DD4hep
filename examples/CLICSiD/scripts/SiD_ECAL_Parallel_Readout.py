@@ -62,16 +62,19 @@ def run():
   act = DDG4.SensitiveAction(sid.kernel, str(typ + '/EcalBarrelHandler'), det)
   act.enableUI()
   seq.add(act)
+  #
   # Add extra parallel readout action with readout EcalBarrelHits_0
   act = DDG4.SensitiveAction(sid.kernel, str(typ + '/EcalBarrelHandler_0'), det)
   act.ReadoutName = 'EcalBarrelHits_0'
   act.enableUI()
   seq.add(act)
+  #
   # Add extra parallel readout action with readout EcalBarrelHits_1
   act = DDG4.SensitiveAction(sid.kernel, str(typ + '/EcalBarrelHandler_1'), det)
   act.ReadoutName = 'EcalBarrelHits_1'
   act.enableUI()
   seq.add(act)
+  #
   # Add extra parallel readout action with readout EcalBarrelHits_2
   act = DDG4.SensitiveAction(sid.kernel, str(typ + '/EcalBarrelHandler_2'), det)
   act.ReadoutName = 'EcalBarrelHits_2'
