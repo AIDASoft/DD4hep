@@ -18,7 +18,7 @@ IF(NOT TARGET DD4hep::DDCore)
 ENDIF()
 
 dd4hep_set_compiler_flags()
-find_package(Python REQUIRED COMPONENTS Interpreter)
+dd4hep_use_python_executable()
 #==========================================================================
 dd4hep_configure_output ()
 

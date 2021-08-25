@@ -12,7 +12,7 @@
 add_library(DDTest INTERFACE)
 add_library(DD4hep::DDTest ALIAS DDTest)
 
-find_package(Python REQUIRED COMPONENTS Interpreter)
+dd4hep_use_python_executable()
 target_include_directories(DDTest INTERFACE include)
 
 foreach(TEST_NAME
