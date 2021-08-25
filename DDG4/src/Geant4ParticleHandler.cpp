@@ -490,8 +490,7 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
   //     Processing by Geant4 to establish mother daughter relationships.
   //     == > use finalParticles map and NOT m_particleMap.
   int equiv_id = -1;
-  for(iend=finalParticles.end(), i=finalParticles.begin(); i!=iend; ++i)  {
-    Particle* p = (*i).second;
+  for( auto& [idx, p] : finalParticles )  {
     if ( p->g4Parent > 0 )  {
       TrackEquivalents::iterator iequ = equivalents.find(p->g4Parent);
       if ( iequ != equivalents.end() )  {
@@ -657,7 +656,7 @@ void Geant4ParticleHandler::checkConsistency()  const   {
   int num_errors = 0;
 
   /// First check the consistency of the particle map itself
-  for(const auto [idx, particle] : m_particleMap )  {
+  for(const auto& [idx, particle] : m_particleMap )  {
     Geant4ParticleHandle p(particle);
     PropertyMask mask(p->reason);
     PropertyMask status(p->status);
@@ -699,22 +698,15 @@ void Geant4ParticleHandler::checkConsistency()  const   {
 }
 
 void Geant4ParticleHandler::setVertexEndpointBit() {
-
-  ParticleMap& pm = m_particleMap;
-  ParticleMap::const_iterator iend, i;
-  for(iend=pm.end(), i=pm.begin(); i!=iend; ++i)  {
-    Particle* p = (*i).second;
-
-    if( p->parents.empty() ) {
-      continue;
-    }
-    Geant4Particle *parent(pm[ *p->parents.begin() ]);
-    const double X( parent->vex - p->vsx );
-    const double Y( parent->vey - p->vsy );
-    const double Z( parent->vez - p->vsz );
-    if( sqrt(X*X + Y*Y + Z*Z) > m_minDistToParentVertex ){
-      PropertyMask(p->status).set(G4PARTICLE_SIM_PARENT_RADIATED);
+  for( auto& [idx, p] : m_particleMap )   {
+    if( !p->parents.empty() )   {
+      Geant4Particle *parent(m_particleMap[ *p->parents.begin() ]);
+      const double X( parent->vex - p->vsx );
+      const double Y( parent->vey - p->vsy );
+      const double Z( parent->vez - p->vsz );
+      if( sqrt(X*X + Y*Y + Z*Z) > m_minDistToParentVertex ){
+        PropertyMask(p->status).set(G4PARTICLE_SIM_PARENT_RADIATED);
+      }
     }
   }
-
 }

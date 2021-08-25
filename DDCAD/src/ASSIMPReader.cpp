@@ -61,7 +61,7 @@ ASSIMPReader::readShapes(const std::string& source, double unit_length)  const
     }
   }
   printout(ALWAYS,"ASSIMPReader","+++ Read %ld meshes from %s",
-	   result.size(), source.c_str());
+           result.size(), source.c_str());
   return result;
 }
 
@@ -95,48 +95,48 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
         shape->AddFacet(a,b,c);
       }
       if ( shape->GetNfacets() > 2 )   {
-	std::string nam;
-	Material mat;
-	VisAttr  vis;
+        std::string nam;
+        Material mat;
+        VisAttr  vis;
         if ( scene->HasMaterials() )   {
           aiMaterial* ai_mat = scene->mMaterials[mesh->mMaterialIndex];
-	  nam = ai_mat->GetName().C_Str();
-	  mat = detector.material(nam);
+          nam = ai_mat->GetName().C_Str();
+          mat = detector.material(nam);
         }
-	if ( !mat.isValid() )   {
-	  printout(ERROR, "ASSIMPReader",
-		   "+++ %s: No material named '%s' FOUND. Will use Air. [Missing material]",
-		   text, nam.c_str());
- 	  mat = detector.air();
-	}
-	::snprintf(text,sizeof(text),"tessellated_%ld", result.size());
-	text[sizeof(text)-1] = 0;
-	Volume vol(text, Solid(shape.ptr()), mat);
-	if ( mesh->HasVertexColors(0) )   {
-	  const aiColor4D* col = mesh->mColors[0];
-	  if ( col )   {
-	    for( const auto& _v : detector.visAttributes() )   {
-	      float a, r, g, b, eps = 0.05;
-	      VisAttr(_v.second).argb(a, r, g, b);
-	      if( std::abs(col->a-a) < eps && std::abs(col->r-r) < eps &&
-		  std::abs(col->g-g) < eps && std::abs(col->b-b) < eps )   {
-		vis = _v.second;
-		break;
-	      }
-	    }
-	    if ( !vis.isValid() )   {
-	      ::snprintf(text,sizeof(text),"vis_tessellated_%p", (void*)vol.ptr());
-	      text[sizeof(text)-1] = 0;
-	      vis = VisAttr(text);
-	      vis.setColor(col->a,col->r,col->g,col->b);
-	      detector.add(vis);
-	    }
-	    vol.setVisAttributes(vis);
-	  }
-	}
-	printout(INFO,"ASSIMPReader",
-		 "+++ %-17s Material: %-16s  Viualization: %s",
-		 vol.name(), mat.name(), vis.isValid() ? vis.name() : "NONE");
+        if ( !mat.isValid() )   {
+          printout(ERROR, "ASSIMPReader",
+                   "+++ %s: No material named '%s' FOUND. Will use Air. [Missing material]",
+                   text, nam.c_str());
+          mat = detector.air();
+        }
+        ::snprintf(text,sizeof(text),"tessellated_%ld", result.size());
+        text[sizeof(text)-1] = 0;
+        Volume vol(text, Solid(shape.ptr()), mat);
+        if ( mesh->HasVertexColors(0) )   {
+          const aiColor4D* col = mesh->mColors[0];
+          if ( col )   {
+            for( const auto& _v : detector.visAttributes() )   {
+              float ca, cr, cg, cb, eps = 0.05;
+              VisAttr(_v.second).argb(ca, cr, cg, cb);
+              if( std::abs(col->a-ca) < eps && std::abs(col->r-cr) < eps &&
+                  std::abs(col->g-cg) < eps && std::abs(col->b-cb) < eps )   {
+                vis = _v.second;
+                break;
+              }
+            }
+            if ( !vis.isValid() )   {
+              ::snprintf(text,sizeof(text),"vis_tessellated_%p", (void*)vol.ptr());
+              text[sizeof(text)-1] = 0;
+              vis = VisAttr(text);
+              vis.setColor(col->a,col->r,col->g,col->b);
+              detector.add(vis);
+            }
+            vol.setVisAttributes(vis);
+          }
+        }
+        printout(INFO,"ASSIMPReader",
+                 "+++ %-17s Material: %-16s  Viualization: %s",
+                 vol.name(), mat.name(), vis.isValid() ? vis.name() : "NONE");
         result.emplace_back(std::unique_ptr<TGeoVolume>(vol.ptr()));
         continue;
       }
@@ -144,6 +144,6 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
     }
   }
   printout(ALWAYS,"ASSIMPReader","+++ Read %ld meshes from %s",
-	   result.size(), source.c_str());
+           result.size(), source.c_str());
   return result;
 }
