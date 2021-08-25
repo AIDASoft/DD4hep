@@ -13,6 +13,7 @@
 
     <Include ref="trackermaterial.xml"/>
     <Include ref="tibtidcommonmaterial.xml"/>
+    <Include ref="tobmaterial.xml"/>
 
     <Include ref="cmsextent.xml"/>
     <Include ref="cavernData.xml"/>
@@ -157,7 +158,6 @@
     <Include ref="tibtidservicesb.xml"/>
     <Include ref="tibtidservicesf.xml"/>
 
-    <Include ref="tobmaterial.xml"/>
     <Include ref="tobmodpar.xml"/>
     <Include ref="tobrodpar.xml"/>
     <Include ref="tobmodule0.xml"/>

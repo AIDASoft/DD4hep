@@ -18,6 +18,7 @@ IF(NOT TARGET DD4hep::DDCore)
 ENDIF()
 
 dd4hep_set_compiler_flags()
+find_package(Python REQUIRED COMPONENTS Interpreter)
 #==========================================================================
 set(LHeDEx_INSTALL         ${CMAKE_INSTALL_PREFIX}/examples/LHeD)
 dd4hep_install_dir( src compact scripts sim DESTINATION ${LHeDEx_INSTALL} )
@@ -68,14 +69,14 @@ endforeach()
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( LHeD_check_geometry_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
-  EXEC_ARGS  python ${DD4hep_ROOT}/bin/checkGeometry --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
+  EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/checkGeometry --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
   # This takes too long                  --full=true --ntracks=10 --option=o --vx=0 --vy=0 --vz=0
   REGEX_PASS " Execution finished..." )
 #
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( LHeD_check_overlaps_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
-  EXEC_ARGS  python ${DD4hep_ROOT}/bin/checkOverlaps --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
+  EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/checkOverlaps --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
 #
@@ -87,7 +88,7 @@ if (DD4HEP_USE_GEANT4)
   foreach(script LHeDMagField LHeDPhysics LHeDRandom LHeDScan)
     dd4hep_add_test_reg( LHeD_DDG4_${script}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
-      EXEC_ARGS  python ${LHeDEx_INSTALL}/scripts/${script}.py
+      EXEC_ARGS  ${Python_EXECUTABLE} ${LHeDEx_INSTALL}/scripts/${script}.py
       REGEX_PASS "TEST_PASSED"
       REGEX_FAIL "Exception;EXCEPTION;ERROR" )
   endforeach(script)
@@ -95,7 +96,7 @@ if (DD4HEP_USE_GEANT4)
   # Material scan
   dd4hep_add_test_reg( LHeD_DDG4_g4material_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
-    EXEC_ARGS  python ${DD4hep_ROOT}/bin/g4MaterialScan --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
+    EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/g4MaterialScan --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
                       "--position=0,0,0" "--direction=0,1,0"
     REGEX_PASS " Terminate Geant4 and delete associated actions." )
   #

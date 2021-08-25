@@ -18,6 +18,7 @@ IF(NOT TARGET DD4hep::DDCore)
 ENDIF()
 
 dd4hep_set_compiler_flags()
+find_package(Python REQUIRED COMPONENTS Interpreter)
 #==========================================================================
 
 set(DDG4examples_INSTALL  ${CMAKE_INSTALL_PREFIX}/examples/DDG4)
@@ -50,14 +51,14 @@ if (DD4HEP_USE_GEANT4)
   # Test HepMC input reader
   dd4hep_add_test_reg( DDG4_HepMC_reader
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
-    EXEC_ARGS  python ${DD4hep_ROOT}/examples/DDG4/examples/readHEPMC.py
+    EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/examples/DDG4/examples/readHEPMC.py
                       ${DDG4examples_INSTALL}/data/hepmc_geant4.dat
     REGEX_PASS "Geant4InputAction\\[Input\\]: Event 10 Error when moving to event -  EOF")
   #
   # Test HepMC input reader with slightly non-standard HEPMC file
   dd4hep_add_test_reg( DDG4_HepMC_reader_minbias
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
-    EXEC_ARGS  python ${DD4hep_ROOT}/examples/DDG4/examples/readHEPMC.py
+    EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/examples/DDG4/examples/readHEPMC.py
                       ${DDG4examples_INSTALL}/data/LHCb_MinBias_HepMC.txt
     REGEX_PASS "Geant4InputAction\\[Input\\]: Event 27 Error when moving to event -  EOF")
 endif()

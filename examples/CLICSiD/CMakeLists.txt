@@ -18,6 +18,7 @@ IF(NOT TARGET DD4hep::DDCore)
 ENDIF()
 
 dd4hep_set_compiler_flags()
+find_package(Python REQUIRED COMPONENTS Interpreter)
 #==========================================================================
 
 set(CLICSiDEx_INSTALL         ${CMAKE_INSTALL_PREFIX}/examples/CLICSiD)
@@ -61,14 +62,14 @@ endforeach()
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( CLICSiD_check_geometry_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  python ${DD4hep_ROOT}/bin/checkGeometry --compact=file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
+  EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/checkGeometry --compact=file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
   # This takes too long                  --full=true --ntracks=10 --option=o --vx=0 --vy=0 --vz=0
   REGEX_PASS " Execution finished..." )
 #
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( CLICSiD_check_overlaps_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  python ${DD4hep_ROOT}/bin/checkOverlaps --compact=file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
+  EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/checkOverlaps --compact=file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
 #
@@ -136,7 +137,7 @@ if (DD4HEP_USE_GEANT4)
   foreach(script testDDPython CLICMagField CLICPhysics CLICRandom CLICSiDScan)
     dd4hep_add_test_reg( CLICSiD_DDG4_${script}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-      EXEC_ARGS  python ${CLICSiDEx_INSTALL}/scripts/${script}.py
+      EXEC_ARGS  ${Python_EXECUTABLE} ${CLICSiDEx_INSTALL}/scripts/${script}.py
       REGEX_PASS "TEST_PASSED"
       REGEX_FAIL "Exception;EXCEPTION;ERROR" )
   endforeach(script)
@@ -144,21 +145,21 @@ if (DD4HEP_USE_GEANT4)
   # Write GDML from Geant4 using UI
   #dd4hep_add_test_reg( CLICSiD_DDG4_GDML_LONGTEST
   #    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  #    EXEC_ARGS  python ${CLICSiDEx_INSTALL}/scripts/CLIC_GDML.py
+  #    EXEC_ARGS  ${Python_EXECUTABLE} ${CLICSiDEx_INSTALL}/scripts/CLIC_GDML.py
   #    REGEX_PASS "G4GDML. Writing 'CLICSiD.gdml' done !"
   #    REGEX_FAIL "Exception;EXCEPTION;ERROR" )
   #
   # Material scan
   dd4hep_add_test_reg( CLICSiD_DDG4_g4material_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-    EXEC_ARGS  python ${DD4hep_ROOT}/bin/g4MaterialScan --compact=${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
+    EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/g4MaterialScan --compact=${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
                       "--position=0,0,0" "--direction=0,1,0"
     REGEX_PASS " Terminate Geant4 and delete associated actions." )
   #
   # Geometry scan
   dd4hep_add_test_reg( CLICSiD_DDG4_g4geometry_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-    EXEC_ARGS  python ${DD4hep_ROOT}/bin/g4GeometryScan --compact=${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
+    EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/g4GeometryScan --compact=${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
                       "--position=0,0,0" "--direction=0,1,0"
     REGEX_PASS " +856 +2374\.8789 +3000\.000 +. +0\.00,3000\.00, *0\.00. +Path:\"/world\" +Shape:G4Box +Mat:Air" )
   #

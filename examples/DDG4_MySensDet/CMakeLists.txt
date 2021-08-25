@@ -18,6 +18,7 @@ IF(NOT TARGET DD4hep::DDCore)
 ENDIF()
 
 dd4hep_set_compiler_flags()
+find_package(Python REQUIRED COMPONENTS Interpreter)
 #==========================================================================
 if(NOT TARGET Geant4::Interface)
   dd4hep_print("Not creating DDG4_MySensDet tests")
@@ -53,14 +54,14 @@ if (DD4HEP_USE_GEANT4)
   # Geant4 material scan. From position=0,0,0 to end-of-world 
   dd4hep_add_test_reg( DDG4_MySensDet_g4material_scan_SiliconBlock_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4_MySensDet.sh"
-    EXEC_ARGS  python ${DD4hep_ROOT}/bin/g4MaterialScan --compact=file:${CMAKE_INSTALL_PREFIX}/examples/ClientTests/compact/SiliconBlock.xml
+    EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/g4MaterialScan --compact=file:${CMAKE_INSTALL_PREFIX}/examples/ClientTests/compact/SiliconBlock.xml
                "--position=0,0,0" "--direction=0,1,0"
     REGEX_PASS " Terminate Geant4 and delete associated actions."
   )
              
   dd4hep_add_test_reg( DDG4_MySensDet_sim_SiliconBlock_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4_MySensDet.sh"
-    EXEC_ARGS  python ${DDG4_MySensDet_INSTALL}/scripts/MyTrackerSD_sim.py 
+    EXEC_ARGS  ${Python_EXECUTABLE} ${DDG4_MySensDet_INSTALL}/scripts/MyTrackerSD_sim.py 
                --compact=file:${CMAKE_INSTALL_PREFIX}/examples/ClientTests/compact/SiliconBlock.xml
     REGEX_PASS NONE
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
