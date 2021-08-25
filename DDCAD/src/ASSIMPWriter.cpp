@@ -37,7 +37,7 @@ using namespace dd4hep::cad;
 namespace  {
 
   void _collect(std::vector<std::pair<PlacedVolume,TGeoHMatrix*> >& cont,
-		bool recursive, const TGeoHMatrix& to_global, PlacedVolume pv)
+                bool recursive, const TGeoHMatrix& to_global, PlacedVolume pv)
   {
     Volume v = pv.volume();
     for(Int_t i=0; i<v->GetNdaughters(); ++i)  {
@@ -49,11 +49,11 @@ namespace  {
       mother->Multiply(p->GetMatrix());
 
       if ( sol->IsA() != TGeoShapeAssembly::Class() )
-	cont.push_back(make_pair(p, mother.get()));
+        cont.push_back(make_pair(p, mother.get()));
       if ( recursive )
-	_collect(cont, recursive, *mother, p);	
+        _collect(cont, recursive, *mother, p);	
       if ( sol->IsA() != TGeoShapeAssembly::Class() )
-	mother.release();
+        mother.release();
     }
   }
   struct vertex{ double x,y,z;
@@ -95,32 +95,32 @@ namespace  {
       pol = (pol_t*)q;
       q += (2+pol->n);
       for( int j=0; j < pol->n; j += 2 )   {
-	/* ------------------------------------------------------------
-	//   Convert quadri-linear facet to 2 tri-linear facets
-	//
-	//    f1 +---------------+ v2/v3: f0
-	//      /                / 
-	//     /                /
-	//    /                /
-	//    +---------------+
-	//  v0             v1 v2/v3
-	// --------------------------------------------------------- */
-	const int    s1  = pol->segs[j], s2 = pol->segs[(j+1)%pol->n];
-	const int    s[] = { segs[s1]._1, segs[s1]._2, segs[s2]._1, segs[s2]._2 };
-	const vtx_t& v0  = vtcs[s[0]], &v1=vtcs[s[1]], &v2=vtcs[s[2]], &v3=vtcs[s[3]];
+        /* ------------------------------------------------------------
+        //   Convert quadri-linear facet to 2 tri-linear facets
+        //
+        //    f1 +---------------+ v2/v3: f0
+        //      /                / 
+        //     /                /
+        //    /                /
+        //    +---------------+
+        //  v0             v1 v2/v3
+        // --------------------------------------------------------- */
+        const int    s1  = pol->segs[j], s2 = pol->segs[(j+1)%pol->n];
+        const int    s[] = { segs[s1]._1, segs[s1]._2, segs[s2]._1, segs[s2]._2 };
+        const vtx_t& v0  = vtcs[s[0]], &v1=vtcs[s[1]], &v2=vtcs[s[2]], &v3=vtcs[s[3]];
 
-	if ( s[0] == s[2] )   {       // Points are ( s[1], s[0], s[3] )
-	  tes->AddFacet(v1, v0, v3);
-	}
-	else if ( s[0] == s[3] )   {  // Points are ( s[1], s[0], s[2] )
-	  tes->AddFacet(v1, v0, v2);
-	}
-	else if ( s[1] == s[2] )   {  // Points are ( s[0], s[1], s[3] )
-	  tes->AddFacet(v0, v1, v3);
-	}
-	else   {                      // Points are ( s[0], s[1], s[2] )
-	  tes->AddFacet(v0, v1, v2);
-	}
+        if ( s[0] == s[2] )   {       // Points are ( s[1], s[0], s[3] )
+          tes->AddFacet(v1, v0, v3);
+        }
+        else if ( s[0] == s[3] )   {  // Points are ( s[1], s[0], s[2] )
+          tes->AddFacet(v1, v0, v2);
+        }
+        else if ( s[1] == s[2] )   {  // Points are ( s[0], s[1], s[3] )
+          tes->AddFacet(v0, v1, v3);
+        }
+        else   {                      // Points are ( s[0], s[1], s[2] )
+          tes->AddFacet(v0, v1, v2);
+        }
       }
     }
     return tes;
@@ -135,9 +135,9 @@ namespace  {
     virtual ~TessellateComposite() = default;
     void collect_mesh(TGeoShape* s)  {
       if (TGeoCompositeShape *shape = dynamic_cast<TGeoCompositeShape *>(s))
-	collect_composite(shape);
+        collect_composite(shape);
       else
-	meshes.push_back(move(_tessellate_primitive(s->GetName(),s)));
+        meshes.push_back(move(_tessellate_primitive(s->GetName(),s)));
     }
     void collect_composite(TGeoCompositeShape* sh)   {
       TGeoBoolNode* node  = sh->GetBoolNode();
@@ -166,10 +166,10 @@ namespace  {
 
 /// Write output file
 int ASSIMPWriter::write(const std::string& file_name,
-			const std::string& file_type,
-			const VolumePlacements& places,
-			bool   recursive,
-			double unit_scale)  const
+                        const std::string& file_type,
+                        const VolumePlacements& places,
+                        bool   recursive,
+                        double unit_scale)  const
 {
   std::vector<std::pair<PlacedVolume,TGeoHMatrix*> > placements;
   vector<Material>        materials;
@@ -206,11 +206,11 @@ int ASSIMPWriter::write(const std::string& file_name,
     unique_ptr<TGeoTessellated> buf;
     if ( !tes.isValid() )   {
       if ( auto* shape=dynamic_cast<TGeoCompositeShape*>(s.ptr()) )   {
-	TessellateComposite helper;
-	buf = helper.build_composite(v.name(), shape);
+        TessellateComposite helper;
+        buf = helper.build_composite(v.name(), shape);
       }
       else   {
-	buf = _tessellate_primitive(v.name(), s);
+        buf = _tessellate_primitive(v.name(), s);
       }
       tes = buf.get();
     }
@@ -225,8 +225,8 @@ int ASSIMPWriter::write(const std::string& file_name,
     size_t index = std::numeric_limits<size_t>::max();
     for( size_t j=0; j<materials.size(); ++j )  {
       if( materials[j] == m )   {
-	index = j;
-	break;
+        index = j;
+        break;
       }
     }
     if ( index > materials.size() )   {
@@ -265,23 +265,23 @@ int ASSIMPWriter::write(const std::string& file_name,
       const auto& facet = tes->GetFacet(j);
       tmp = facet.ComputeNormal(degenerated);
       if ( !degenerated && facet.GetNvert() > 0 )   {
-	aiFace& face  = mesh->mFaces[mesh->mNumFaces];
-	double  u     = unit_scale;
+        aiFace& face  = mesh->mFaces[mesh->mNumFaces];
+        double  u     = unit_scale;
 
-	face.mIndices = new unsigned int[facet.GetNvert()];
-	trafo->LocalToMaster(&tmp.x, &norm.x);
-	face.mNumIndices = 0;
-	for( long k=0; k < facet.GetNvert(); ++k )  {
-	  tmp = facet.GetVertex(k);
-	  trafo->LocalToMaster(&tmp.x, &vtx.x);
-	  face.mIndices[face.mNumIndices] = nvx;
-	  mesh->mNormals[nvx]  = aiVector3D(norm.x, norm.y, norm.z);
-	  mesh->mVertices[nvx] = aiVector3D(vtx.x*u,vtx.y*u,vtx.z*u);
-	  ++mesh->mNumVertices;
-	  ++face.mNumIndices;
-	  ++nvx;
-	}
-	++mesh->mNumFaces;
+        face.mIndices = new unsigned int[facet.GetNvert()];
+        trafo->LocalToMaster(&tmp.x, &norm.x);
+        face.mNumIndices = 0;
+        for( long k=0; k < facet.GetNvert(); ++k )  {
+          tmp = facet.GetVertex(k);
+          trafo->LocalToMaster(&tmp.x, &vtx.x);
+          face.mIndices[face.mNumIndices] = nvx;
+          mesh->mNormals[nvx]  = aiVector3D(norm.x, norm.y, norm.z);
+          mesh->mVertices[nvx] = aiVector3D(vtx.x*u,vtx.y*u,vtx.z*u);
+          ++mesh->mNumVertices;
+          ++face.mNumIndices;
+          ++nvx;
+        }
+        ++mesh->mNumFaces;
       }
     }
     if ( imesh == 122585 )
@@ -314,12 +314,12 @@ int ASSIMPWriter::write(const std::string& file_name,
     ++scene.mNumMeshes;
   }
   printout(ALWAYS,"ASSIMPWriter","+++ Analysed %ld of %ld meshes.",
-	   scene.mNumMeshes, placements.size());
+           scene.mNumMeshes, placements.size());
   if ( scene.mNumMeshes > 0 )   {
     Assimp::Exporter exporter;
     Assimp::ExportProperties *props = new Assimp::ExportProperties;
     props->SetPropertyBool(AI_CONFIG_EXPORT_POINT_CLOUDS,
-			   flags&EXPORT_POINT_CLOUDS ? true : false);
+                           flags&EXPORT_POINT_CLOUDS ? true : false);
     exporter.Export(&scene, file_type.c_str(), file_name.c_str(), 0, props);
     return 1;
   }

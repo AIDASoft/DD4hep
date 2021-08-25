@@ -25,11 +25,11 @@ macro(dd4hep_to_parent_scope val)
 endmacro(dd4hep_to_parent_scope)
 #---------------------------------------------------------------------------------------------------
 macro(dd4hep_use_python_executable)
-  find_package(Python)
-  if("${Python_EXECUTABLE}" STREQUAL "")
-     set (Python_EXECUTABLE python)
-  endif()
-  dd4hep_print("|++> Using python executable:  ${Python_EXECUTABLE}")
+  #find_package(Python)
+  #if("${Python_EXECUTABLE}" STREQUAL "")
+  #   set (Python_EXECUTABLE python)
+  #endif()
+  dd4hep_print("|++> Using python executable:  ${Python_EXECUTABLE} -- ${PYTHON_EXECUTABLE}")
 endmacro(dd4hep_use_python_executable)
 #---------------------------------------------------------------------------------------------------
 #  MACRO: dd4hep_set_compiler_flags
@@ -695,6 +695,10 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
   ELSE()
     FIND_PACKAGE(Python COMPONENTS Development)
   ENDIF()
+  IF("${Python_EXECUTABLE}" STREQUAL "")
+     set (Python_EXECUTABLE python${Python_VERSION_MAJOR})
+  ENDIF()
+  dd4hep_print("|++> Using python executable:  ${Python_EXECUTABLE} -- ${PYTHON_EXECUTABLE}")
 
   SET(DD4HEP_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
 
