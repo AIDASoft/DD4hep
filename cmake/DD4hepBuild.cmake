@@ -23,7 +23,14 @@ set ( DD4hepBuild_included ON )
 macro(dd4hep_to_parent_scope val)
   set ( ${val} ${${val}} PARENT_SCOPE )
 endmacro(dd4hep_to_parent_scope)
-
+#---------------------------------------------------------------------------------------------------
+macro(dd4hep_use_python_executable)
+  find_package(Python)
+  if("${Python_EXECUTABLE}" STREQUAL "")
+     set (Python_EXECUTABLE python)
+  endif()
+  dd4hep_print("|++> Using python executable:  ${Python_EXECUTABLE}")
+endmacro(dd4hep_use_python_executable)
 #---------------------------------------------------------------------------------------------------
 #  MACRO: dd4hep_set_compiler_flags
 #
