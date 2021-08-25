@@ -126,7 +126,6 @@ namespace  {
     return tes;
   }
 
-
   struct TessellateComposite   {
     TBuffer3D buffer    { TBuffer3DTypes::kComposite };
     std::vector<unique_ptr<TGeoTessellated> > meshes;
@@ -137,7 +136,7 @@ namespace  {
       if (TGeoCompositeShape *shape = dynamic_cast<TGeoCompositeShape *>(s))
         collect_composite(shape);
       else
-        meshes.push_back(move(_tessellate_primitive(s->GetName(),s)));
+        meshes.emplace_back(_tessellate_primitive(s->GetName(),s));
     }
     void collect_composite(TGeoCompositeShape* sh)   {
       TGeoBoolNode* node  = sh->GetBoolNode();
@@ -242,9 +241,9 @@ int ASSIMPWriter::write(const std::string& file_name,
     mesh->mName = node_name;
     mesh->mMaterialIndex = index;
     if ( v.visAttributes().isValid() )   {
-      float r = 0e0, g = 0e0, b = 0e0, a = 0e0;
-      v.visAttributes().argb(a, r, g, b);
-      mesh->mColors[0] = new aiColor4D(r, g, b, a);
+      float cr = 0e0, cg = 0e0, cb = 0e0, ca = 0e0;
+      v.visAttributes().argb(ca, cr, cg, cb);
+      mesh->mColors[0] = new aiColor4D(cr, cg, cb, ca);
     }
     mesh->mFaces       = new aiFace[tes->GetNfacets()];
     mesh->mVertices    = new aiVector3D[num_vert];
