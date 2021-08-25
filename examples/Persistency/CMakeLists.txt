@@ -18,6 +18,7 @@ IF(NOT TARGET DD4hep::DDCore)
 ENDIF()
 
 dd4hep_set_compiler_flags()
+find_package(Python REQUIRED COMPONENTS Interpreter)
 #==========================================================================
 if(TARGET XercesC::XercesC)
   SET(OPT_XERCESC XercesC::XercesC)
@@ -219,7 +220,7 @@ if (DD4HEP_USE_GEANT4)
   #  Test restoring geometry from ROOT file and start Geant4
   dd4hep_add_test_reg( Persist_CLICSiD_Geant4_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
-    EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/../CLICSiD/scripts/CLICSiD_LoadROOTGeo.py  batch
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../CLICSiD/scripts/CLICSiD_LoadROOTGeo.py  batch
     DEPENDS    Persist_CLICSiD_Save_LONGTEST
     REGEX_PASS "\\+\\+\\+ Finished run 0 after 10 events \\(10 events in total\\)"
     REGEX_FAIL "Exception;EXCEPTION;ERROR"

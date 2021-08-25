@@ -18,6 +18,7 @@ IF(NOT TARGET DD4hep::DDCore)
 ENDIF()
 
 dd4hep_set_compiler_flags()
+find_package(Python REQUIRED COMPONENTS Interpreter)
 #==========================================================================
 dd4hep_configure_output ()
 
@@ -33,7 +34,7 @@ dd4hep_configure_scripts (DDDigi DEFAULT_SETUP WITH_TESTS)
 # Test basic processing chain
 dd4hep_add_test_reg(DDDigi_framework
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
-  EXEC_ARGS  python ${DDDigiexamples_INSTALL}/scripts/TestFramework.py
+  EXEC_ARGS  ${Python_EXECUTABLE} ${DDDigiexamples_INSTALL}/scripts/TestFramework.py
   REGEX_PASS "\\+\\+\\+ 10 Events out of 10 processed."
   REGEX_FAIL "Error;ERROR;Exception"
   )
