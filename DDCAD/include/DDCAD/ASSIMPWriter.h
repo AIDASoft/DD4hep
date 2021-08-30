@@ -35,15 +35,17 @@ namespace dd4hep {
      */
     class ASSIMPWriter : public OutputWriter   {
     public:
+      long flags { 1 };
+    public:
       using OutputWriter::OutputWriter;
       /// Default destructor
       virtual ~ASSIMPWriter() = default;
       /// Write output file
       virtual int write(const std::string& output_file,
-			const std::string& output_type,
-			const VolumePlacements& places,
-			bool   recursive,
-			double unit_scale = 1.0)  const  override;      
+                        const std::string& output_type,
+                        const VolumePlacements& places,
+                        bool   recursive,
+                        double unit_scale = 1.0)  const  override;      
     };
     
   }        /* End namespace cad                      */

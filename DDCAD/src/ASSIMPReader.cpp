@@ -23,6 +23,9 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 
+/// C/C++ include files
+#include <sstream>
+
 using namespace dd4hep;
 using namespace dd4hep::cad;
 
@@ -33,12 +36,13 @@ ASSIMPReader::readShapes(const std::string& source, double unit_length)  const
   typedef TessellatedSolid::Vertex Vertex;
   std::vector<std::unique_ptr<TGeoTessellated> > result;
   std::unique_ptr<Assimp::Importer> importer = std::make_unique<Assimp::Importer>();
-  int flags = aiProcess_Triangulate|aiProcess_JoinIdenticalVertices|aiProcess_CalcTangentSpace;
-  auto scene = importer->ReadFile( source.c_str(), flags);
+  int aiflags = aiProcess_Triangulate|aiProcess_JoinIdenticalVertices|aiProcess_CalcTangentSpace;
+  auto scene = importer->ReadFile( source.c_str(), aiflags);
   if ( !scene )  {
     except("ASSIMPReader","+++ FileNotFound: %s",source.c_str());
   }
   double unit = unit_length;
+  bool   dump_facets = ((flags>>8)&0x1) == 1;
   for (unsigned int index = 0; index < scene->mNumMeshes; index++)   {
     aiMesh* mesh = scene->mMeshes[index];
     if ( mesh->mNumFaces > 0 )   {
@@ -52,6 +56,14 @@ ASSIMPReader::readShapes(const std::string& source, double unit_length)  const
         Vertex b(v[idx[1]].x*unit, v[idx[1]].y*unit, v[idx[1]].z*unit); 
         Vertex c(v[idx[2]].x*unit, v[idx[2]].y*unit, v[idx[2]].z*unit); 
         shape->AddFacet(a,b,c);
+        if ( dump_facets )   {
+          size_t which = shape->GetNfacets()-1;
+          const auto& facet = shape->GetFacet(which);
+          std::stringstream str;
+          str << facet;
+          printout(ALWAYS,"ASSIMPReader","++ Facet %4ld : %s",
+                   which, str.str().c_str());
+        }
       }
       if ( shape->GetNfacets() > 2 )   {
         result.emplace_back(std::unique_ptr<TGeoTessellated>(shape.ptr()));
@@ -72,9 +84,10 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
   typedef TessellatedSolid::Vertex Vertex;
   std::vector<std::unique_ptr<TGeoVolume> > result;
   std::unique_ptr<Assimp::Importer> importer = std::make_unique<Assimp::Importer>();
-  int flags = aiProcess_Triangulate|aiProcess_JoinIdenticalVertices|aiProcess_CalcTangentSpace;
-  auto scene = importer->ReadFile( source.c_str(), flags);
-  char text[128];
+  bool dump_facets = ((flags>>8)&0x1) == 1;
+  int aiflags = aiProcess_Triangulate|aiProcess_JoinIdenticalVertices|aiProcess_CalcTangentSpace;
+  auto scene = importer->ReadFile( source.c_str(), aiflags);
+  char text[1048];
   
   if ( !scene )  {
     except("ASSIMPReader","+++ FileNotFound: %s",source.c_str());
@@ -83,9 +96,19 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
   for (unsigned int index = 0; index < scene->mNumMeshes; index++)   {
     aiMesh* mesh = scene->mMeshes[index];
     if ( mesh->mNumFaces > 0 )   {
-      auto name = mesh->mName.C_Str();
-      TessellatedSolid shape(name, mesh->mNumFaces);
+      std::string name = mesh->mName.C_Str();
+      std::vector<Vertex> vertices;
       const aiVector3D* v = mesh->mVertices;
+      for(unsigned int i=0; i < mesh->mNumVertices; i++)  {
+        vertices.emplace_back(Vertex(v[i].x*unit, v[i].y*unit, v[i].z*unit));
+      }
+      TessellatedSolid shape(name,vertices);
+      for(unsigned int i=0; i < mesh->mNumFaces; i++)  {
+        const unsigned int* idx  = mesh->mFaces[i].mIndices;
+        shape->AddFacet(idx[0], idx[1], idx[2]);
+      }
+#if 0
+      TessellatedSolid shape(name, mesh->mNumFaces);
       for(unsigned int i=0; i < mesh->mNumFaces; i++)  {
         const aiFace&     face = mesh->mFaces[i];
         const unsigned int* idx = face.mIndices;
@@ -94,24 +117,28 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
         Vertex c(v[idx[2]].x*unit, v[idx[2]].y*unit, v[idx[2]].z*unit); 
         shape->AddFacet(a,b,c);
       }
+#endif
       if ( shape->GetNfacets() > 2 )   {
-        std::string nam;
+        std::string mat_name;
         Material mat;
         VisAttr  vis;
         if ( scene->HasMaterials() )   {
           aiMaterial* ai_mat = scene->mMaterials[mesh->mMaterialIndex];
-          nam = ai_mat->GetName().C_Str();
-          mat = detector.material(nam);
+          mat_name = ai_mat->GetName().C_Str();
+          mat = detector.material(mat_name);
         }
         if ( !mat.isValid() )   {
           printout(ERROR, "ASSIMPReader",
                    "+++ %s: No material named '%s' FOUND. Will use Air. [Missing material]",
-                   text, nam.c_str());
+                   text, mat_name.c_str());
           mat = detector.air();
         }
-        ::snprintf(text,sizeof(text),"tessellated_%ld", result.size());
-        text[sizeof(text)-1] = 0;
-        Volume vol(text, Solid(shape.ptr()), mat);
+        if ( name.empty() )  {
+          ::snprintf(text,sizeof(text),"tessellated_%ld", result.size());
+          text[sizeof(text)-1] = 0;
+          name = text;
+        }
+        Volume vol(name, Solid(shape.ptr()), mat);
         if ( mesh->HasVertexColors(0) )   {
           const aiColor4D* col = mesh->mColors[0];
           if ( col )   {
@@ -125,7 +152,7 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
               }
             }
             if ( !vis.isValid() )   {
-              ::snprintf(text,sizeof(text),"vis_tessellated_%p", (void*)vol.ptr());
+              ::snprintf(text,sizeof(text),"vis_%s_%p", name.c_str(), (void*)vol.ptr());
               text[sizeof(text)-1] = 0;
               vis = VisAttr(text);
               vis.setColor(col->a,col->r,col->g,col->b);
@@ -137,6 +164,16 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
         printout(INFO,"ASSIMPReader",
                  "+++ %-17s Material: %-16s  Viualization: %s",
                  vol.name(), mat.name(), vis.isValid() ? vis.name() : "NONE");
+        shape->CloseShape(true,true,true);
+        if ( dump_facets )   {
+          for( size_t i=0, n=shape->GetNfacets(); i < n; ++i )   {
+            const auto& facet = shape->GetFacet(i);
+            std::stringstream str;
+            str << facet;
+            printout(ALWAYS,"ASSIMPReader","++ Facet %4ld : %s",
+                     i, str.str().c_str());
+          }
+        }
         result.emplace_back(std::unique_ptr<TGeoVolume>(vol.ptr()));
         continue;
       }
