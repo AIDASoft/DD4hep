@@ -95,7 +95,7 @@ target_include_directories(DDCAD
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
   $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(DDCAD PUBLIC DD4hep::DDCore assimp::assimp )
+target_link_libraries(DDCAD PUBLIC DD4hep::DDCore assimp::assimp ROOT::RCsg)
 
 dd4hep_add_plugin(DDCADPlugins
   SOURCES src/plugins/*.cpp

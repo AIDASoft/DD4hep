@@ -65,7 +65,7 @@ dd4hep_add_test_reg( DDCAD_export_sid_vertex
   	                  -input ${CLICSiDEx_INSTALL}/compact/SiD_Vertex.xml
 			  -plugin DD4hep_CAD_export -output clicsid_vertex.collada
 			  -type collada -recursive -detector /world -recursive -scale 1.0 
-  REGEX_PASS "Analysed 383 of 383 meshes"
+  REGEX_PASS "Analysed 383 out of 383 meshes"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
 )
@@ -86,7 +86,7 @@ dd4hep_add_test_reg( DDCAD_export_cal_endcaps
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/CaloEndcapReflection.xml
   -plugin DD4hep_CAD_export -output endcap_reflection.collada
   -type collada -recursive -detector /world -recursive -scale 1.0
-  REGEX_PASS "Analysed 96 of 96 meshes"
+  REGEX_PASS "Analysed 96 out of 96 meshes"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
 )
@@ -100,6 +100,24 @@ dd4hep_add_test_reg( DDCAD_import_cal_endcaps
   REGEX_FAIL "Exception"
 )
 #
+#  Test CAD export of FCC machine part
+dd4hep_add_test_reg( DDCAD_export_FCC_machine
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/FCCmachine/FCCee_DectMaster.xml
+  -plugin DD4hep_CAD_export -output Machine.collada
+  -type collada -recursive -detector /world -recursive -scale 1.0
+  REGEX_PASS "Analysed 49 out of 49 meshes"
+  REGEX_FAIL "Exception"
+  REGEX_FAIL "FAILED"
+)
 #
+#  Test CAD import of FCC machine part
+dd4hep_add_test_reg( DDCAD_import_FCC_machine
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
+  EXEC_ARGS  geoDisplay -input ${DDCADEx_INSTALL}/compact/Import_FCC_Machine.xml -load -destroy
+  DEPENDS    DDCAD_export_FCC_machine
+  REGEX_PASS "Read 49 meshes"
+  REGEX_FAIL "Exception"
+)
 #
 

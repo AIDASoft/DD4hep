@@ -60,9 +60,13 @@ DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_read_CAD_volumes,read_CAD_Volume)
 
 static Handle<TObject> create_CAD_Shape(Detector& dsc, xml_h e)   {
   xml_elt_t elt(e);
+  cad::ASSIMPReader rdr(dsc);
   string fname = elt.attr<string>(_U(ref));
-  double unit  = elt.hasAttr(_U(unit)) ? elt.attr<double>(_U(unit)) : dd4hep::cm;
-  auto shapes = cad::ASSIMPReader(dsc).readShapes(fname, unit);
+  long   flags = elt.hasAttr(_U(flags)) ? elt.attr<long>(_U(flags))  : 0;
+  double unit  = elt.hasAttr(_U(unit))  ? elt.attr<double>(_U(unit)) : dd4hep::cm;
+
+  if ( flags ) rdr.flags = flags;
+  auto shapes = rdr.readShapes(fname, unit);
   if ( shapes.empty() )   {
     except("CAD_Shape","+++ CAD file: %s does not contain any "
            "understandable tessellated shapes.", fname.c_str());
@@ -149,13 +153,19 @@ DECLARE_XML_VOLUME(CAD_Assembly__volume_constructor,create_CAD_Assembly)
  *       <physvolid name="slice" value="10"/>
  *     </volume>
  *
+ *     If flags: (flags>>8)&1 == 1 (257): dump facets
+ *
  *   </XXX>
  */
 static Handle<TObject> create_CAD_Volume(Detector& dsc, xml_h e)   {
   xml_elt_t elt(e);
   string fname = elt.attr<string>(_U(ref));
   double unit  = elt.attr<double>(_U(unit));
-  auto volumes = cad::ASSIMPReader(dsc).readVolumes(fname, unit);
+  long   flags = elt.hasAttr(_U(flags)) ? elt.attr<long>(_U(flags))  : 0;
+  cad::ASSIMPReader rdr(dsc);
+
+  if ( flags ) rdr.flags = flags;
+  auto volumes = rdr.readVolumes(fname, unit);
   if ( volumes.empty() )   {
     except("CAD_Volume","+++ CAD file: %s does not contain any "
            "understandable tessellated volumes.", fname.c_str());
@@ -257,9 +267,10 @@ DECLARE_XML_VOLUME(CAD_MultiVolume__volume_constructor,create_CAD_Volume)
  *
  */
 static long CAD_export(Detector& description, int argc, char** argv)   {
-  bool recursive = false, help = false;
+  bool   recursive = false, help = false;
   string volume, detector, fname, ftype;
   double scale = 1.0;
+  int    flags = 0;
   
   for(int i = 0; i < argc && argv[i]; ++i)  {
     if (      0 == ::strncmp( "-output",argv[i],4) )    fname     = argv[++i];
@@ -274,6 +285,8 @@ static long CAD_export(Detector& description, int argc, char** argv)   {
     else if ( 0 == ::strncmp("--recursive",argv[i],5) ) recursive = true;
     else if ( 0 == ::strncmp( "-scale",argv[i],4) )     scale     = ::atof(argv[++i]);
     else if ( 0 == ::strncmp("--scale",argv[i],5) )     scale     = ::atof(argv[++i]);
+    else if ( 0 == ::strncmp( "-flags",argv[i],4) )     flags     = ::atol(argv[++i]);
+    else if ( 0 == ::strncmp("--flags",argv[i],5) )     flags     = ::atol(argv[++i]);
     else if ( 0 == ::strncmp( "-help",argv[i],2) )      help      = true;
     else if ( 0 == ::strncmp("--help",argv[i],3) )      help      = true;
   }
@@ -290,6 +303,7 @@ static long CAD_export(Detector& description, int argc, char** argv)   {
       "     -detector <string> Path to the detector element to be exported.     \n"
       "     -help              Print this help output.                          \n"
       "     -scale    <number> Unit scale before writing output data.           \n"
+      "     -flags    <number> Flagsging helper to pass args -- Experts only.   \n"
       "     Arguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
   }
@@ -316,6 +330,7 @@ static long CAD_export(Detector& description, int argc, char** argv)   {
     }
   }
   cad::ASSIMPWriter wr(description);
+  if ( flags ) wr.flags = flags;
   std::vector<PlacedVolume> places {pv};
   auto num_mesh = wr.write(fname, ftype, places, recursive, scale);
   if ( num_mesh < 0 )   {

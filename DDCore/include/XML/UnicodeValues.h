@@ -165,6 +165,7 @@ UNICODE (finish);
 UNICODE (first);
 UNICODE (firstposition);
 UNICODE (firstrotation);
+UNICODE (flags);
 UNICODE (formula);
 UNICODE (fraction);
 UNICODE (fractions);

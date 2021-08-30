@@ -35,6 +35,8 @@ namespace dd4hep {
      */
     class ASSIMPReader : public InputReader   {
     public:
+      long flags = 0;
+    public:
       using InputReader::InputReader;
 
       /// Default destructor

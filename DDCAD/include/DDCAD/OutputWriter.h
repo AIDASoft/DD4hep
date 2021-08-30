@@ -41,14 +41,12 @@ namespace dd4hep {
     class OutputWriter   {
     public:
       enum output_flags   {
-	EXPORT_POINT_CLOUDS = 1 << 1,
-	LAST = 0
+                           EXPORT_POINT_CLOUDS = 1 << 1,
+                           LAST = 0
       };
     public:
       /// Reference to the detector object
       Detector& detector;
-      /// Output configuration flags
-      unsigned long flags  { 0 };
 
     public:
       typedef std::vector<PlacedVolume> VolumePlacements;
@@ -58,10 +56,10 @@ namespace dd4hep {
       virtual ~OutputWriter();
       /// Write output file
       virtual int write(const std::string& output_file,
-			const std::string& output_type,
-			const VolumePlacements& places,
-			bool   recursive,
-			double unit_scale = 1.0)  const = 0;      
+                        const std::string& output_type,
+                        const VolumePlacements& places,
+                        bool   recursive,
+                        double unit_scale = 1.0)  const = 0;      
     };
     
   }        /* End namespace cad                      */
