@@ -29,7 +29,6 @@
 #include <TGeoMatrix.h>
 #include <TClass.h>
 #include <CsgOps.h>
-#include <GL/glu.h>
 
 /// C/C++ include files
 #include <set>
