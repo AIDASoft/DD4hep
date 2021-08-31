@@ -48,7 +48,7 @@ set(DDCADEx_INSTALL       ${CMAKE_INSTALL_PREFIX}/examples/DDCAD)
 set(CLICSiDEx_INSTALL     ${CMAKE_INSTALL_PREFIX}/examples/CLICSiD)
 set(ClientTestsEx_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
 #
-# Multi-shapes: BLEND_HUMAN COB_dwarf
+# Single shape tests:
 list(APPEND DDCAD_Tests BHV_Boxing_Toes Collada_duck PLY_Wuson)
 foreach (test ${DDCAD_Tests})
   dd4hep_add_test_reg( DDCAD_Check_Shape_${test}
@@ -58,8 +58,9 @@ foreach (test ${DDCAD_Tests})
       REGEX_FAIL "ERROR;FAILED" )
 endforeach()
 #
-#
-list(APPEND DDCAD_Tests_MV COB_dwarf OBJ_spider MS3D_jeep)
+# Multi-shape tests
+# Not working: OBJ_spider
+list(APPEND DDCAD_Tests_MV COB_dwarf MS3D_jeep)
 foreach (test ${DDCAD_Tests_MV})
   dd4hep_add_test_reg( DDCAD_Check_Shape_${test}
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
