@@ -33,6 +33,10 @@
       <fraction n="0.998" ref="Fe"/>
       <fraction n=".002"  ref="C"/>
     </material>
+    <material name="Material01">
+      <D value="7.85" unit="g/cm3"/>
+      <fraction n="1.0" ref="Fe"/>
+    </material>
   </materials>
 
   

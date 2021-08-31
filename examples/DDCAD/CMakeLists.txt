@@ -49,13 +49,24 @@ set(CLICSiDEx_INSTALL     ${CMAKE_INSTALL_PREFIX}/examples/CLICSiD)
 set(ClientTestsEx_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
 #
 # Multi-shapes: BLEND_HUMAN COB_dwarf
-list(APPEND DDCAD_Tests BHV_Boxing_Toes Collada_duck PLY_Wuson )
+list(APPEND DDCAD_Tests BHV_Boxing_Toes Collada_duck PLY_Wuson)
 foreach (test ${DDCAD_Tests})
   dd4hep_add_test_reg( DDCAD_Check_Shape_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
       EXEC_ARGS  geoDisplay file:${DDCAD_INSTALL}/compact/Check_Shape_${test}.xml -load -destroy
       REGEX_PASS "Shape verification SUCCESSFUL."
       REGEX_FAIL "ERROR;FAILED" )
+endforeach()
+#
+#
+list(APPEND DDCAD_Tests_MV COB_dwarf OBJ_spider MS3D_jeep)
+foreach (test ${DDCAD_Tests_MV})
+  dd4hep_add_test_reg( DDCAD_Check_Shape_${test}
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
+    EXEC_ARGS  geoDisplay file:${DDCAD_INSTALL}/compact/Check_Shape_${test}.xml -load -destroy
+    REGEX_PASS "Read [0-9]([0-9]*) meshes"
+    REGEX_FAIL "Exception"
+  )
 endforeach()
 #
 #  Test CAD export from a simplyfied model
