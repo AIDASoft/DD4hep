@@ -28,7 +28,23 @@
 
 using namespace dd4hep;
 using namespace dd4hep::cad;
-
+#if 0
+      if ( shape->GetNfacets() > 2 )   {
+        shape->CloseShape(true,true,true);
+        if ( dump_facets )   {
+          for( size_t i=0, n=shape->GetNfacets(); i < n; ++i )   {
+            const auto& facet = shape->GetFacet(i);
+            std::stringstream str;
+            str << facet;
+            printout(ALWAYS,"ASSIMPReader","++ Facet %4ld : %s",
+                     i, str.str().c_str());
+          }
+        }
+        result.emplace_back(std::unique_ptr<TGeoTessellated>(shape.ptr()));
+        continue;
+      }
+      delete shape.ptr();
+#endif
 /// Read input file
 std::vector<std::unique_ptr<TGeoTessellated> >
 ASSIMPReader::readShapes(const std::string& source, double unit_length)  const
@@ -47,8 +63,9 @@ ASSIMPReader::readShapes(const std::string& source, double unit_length)  const
     aiMesh* mesh = scene->mMeshes[index];
     if ( mesh->mNumFaces > 0 )   {
       auto name = mesh->mName.C_Str();
-      TessellatedSolid shape(name, mesh->mNumFaces);
       const aiVector3D* v = mesh->mVertices;
+#if 0
+      TessellatedSolid shape(name, mesh->mNumFaces);
       for(unsigned int i=0; i < mesh->mNumFaces; i++)  {
         const aiFace&     face = mesh->mFaces[i];
         const unsigned int* idx = face.mIndices;
@@ -56,16 +73,29 @@ ASSIMPReader::readShapes(const std::string& source, double unit_length)  const
         Vertex b(v[idx[1]].x*unit, v[idx[1]].y*unit, v[idx[1]].z*unit); 
         Vertex c(v[idx[2]].x*unit, v[idx[2]].y*unit, v[idx[2]].z*unit); 
         shape->AddFacet(a,b,c);
-        if ( dump_facets )   {
-          size_t which = shape->GetNfacets()-1;
-          const auto& facet = shape->GetFacet(which);
-          std::stringstream str;
-          str << facet;
-          printout(ALWAYS,"ASSIMPReader","++ Facet %4ld : %s",
-                   which, str.str().c_str());
-        }
+      }
+#endif
+      std::vector<Vertex> vertices;
+      vertices.reserve(mesh->mNumVertices);
+      for(unsigned int i=0; i < mesh->mNumVertices; i++)  {
+        vertices.emplace_back(Vertex(v[i].x*unit, v[i].y*unit, v[i].z*unit));
+      }
+      TessellatedSolid shape(name, vertices);
+      for(unsigned int i=0; i < mesh->mNumFaces; i++)  {
+        const unsigned int* idx  = mesh->mFaces[i].mIndices;
+        shape->AddFacet(idx[0], idx[1], idx[2]);
       }
       if ( shape->GetNfacets() > 2 )   {
+        shape->CloseShape(true,true,true);
+        if ( dump_facets )   {
+          for( size_t i=0, n=shape->GetNfacets(); i < n; ++i )   {
+            const auto& facet = shape->GetFacet(i);
+            std::stringstream str;
+            str << facet;
+            printout(ALWAYS,"ASSIMPReader","++ Facet %4ld : %s",
+                     i, str.str().c_str());
+          }
+        }
         result.emplace_back(std::unique_ptr<TGeoTessellated>(shape.ptr()));
         continue;
       }
@@ -97,8 +127,10 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
     aiMesh* mesh = scene->mMeshes[index];
     if ( mesh->mNumFaces > 0 )   {
       std::string name = mesh->mName.C_Str();
-      std::vector<Vertex> vertices;
       const aiVector3D* v = mesh->mVertices;
+      std::vector<Vertex> vertices;
+
+      vertices.reserve(mesh->mNumVertices);
       for(unsigned int i=0; i < mesh->mNumVertices; i++)  {
         vertices.emplace_back(Vertex(v[i].x*unit, v[i].y*unit, v[i].z*unit));
       }

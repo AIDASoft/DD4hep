@@ -99,9 +99,9 @@ namespace  {
 
   unique_ptr<TGeoTessellated> TessellateShape::build_mesh(int id, const std::string& name, TGeoShape* shape)      {
     auto mesh = unique_ptr<RootCsg::TBaseMesh>(this->make_mesh(shape));
+    size_t nskip = 0;
     vector<_Vertex> vertices;
     vertices.reserve(mesh->NumberOfVertices());
-    size_t nskip = 0;
     map<size_t,size_t> vtx_index_replacements;
     for( size_t ipoint = 0, npoints = mesh->NumberOfVertices(); ipoint < npoints; ++ipoint )   {
       long found = -1;

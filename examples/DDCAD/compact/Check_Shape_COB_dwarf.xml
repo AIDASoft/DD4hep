@@ -22,7 +22,6 @@
         <position x="0" y="0" z="0"/>
         <rotation x="0" y="0" z="0"/>
       </check>
-      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/ref/Ref_COB_dwarf.txt" create="CheckShape_create"/>
     </detector>
   </detectors>
 </lccdd>
