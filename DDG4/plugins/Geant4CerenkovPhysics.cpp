@@ -28,13 +28,16 @@
 #include "DDG4/Geant4PhysicsList.h"
 
 /// Geant4 include files
-#include "G4OpticalParameters.hh"
 #include "G4ParticleTableIterator.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTypes.hh"
 #include "G4ParticleTable.hh"
 #include "G4ProcessManager.hh"
 #include "G4Version.hh"
+
+#if G4VERSION_NUMBER >= 1070
+#include "G4OpticalParameters.hh"
+#endif
 
 #include "G4Cerenkov.hh"
 

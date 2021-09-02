@@ -29,7 +29,6 @@
 
 /// Geant4 include files
 #include "G4Version.hh"
-#include "G4OpticalParameters.hh"
 #include "G4ParticleTableIterator.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4LossTableManager.hh"
@@ -38,6 +37,10 @@
 #include "G4ParticleTable.hh"
 #include "G4EmSaturation.hh"
 #include "G4Threading.hh"
+
+#if G4VERSION_NUMBER >= 1070
+#include "G4OpticalParameters.hh"
+#endif
 
 #include "G4Scintillation.hh"
 

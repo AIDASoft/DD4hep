@@ -40,6 +40,10 @@
 #include "G4ParticleTable.hh"
 #include "G4ProcessManager.hh"
 
+#if G4VERSION_NUMBER >= 1070
+#include "G4OpticalParameters.hh"
+#endif
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
