@@ -28,6 +28,7 @@
 #include "DDG4/Geant4PhysicsList.h"
 
 /// Geant4 include files
+#include "G4OpticalParameters.hh"
 #include "G4ParticleTableIterator.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTypes.hh"
@@ -76,12 +77,21 @@ namespace dd4hep {
              yes_no(m_trackSecondariesFirst), yes_no(m_stackPhotons),
              yes_no(m_trackSecondariesFirst));
         G4Cerenkov* process = new G4Cerenkov(name());
+#if G4VERSION_NUMBER >= 1070
+        G4OpticalParameters* params = G4OpticalParameters::Instance();
+        params->SetCerenkovVerboseLevel(m_verbosity);
+        params->SetCerenkovMaxPhotonsPerStep(m_maxNumPhotonsPerStep);
+        params->SetCerenkovMaxBetaChange(m_maxBetaChangePerStep);
+        params->SetCerenkovTrackSecondariesFirst(m_trackSecondariesFirst);
+        params->SetCerenkovStackPhotons(m_stackPhotons);
+#else
         process->SetVerboseLevel(m_verbosity);
         process->SetMaxNumPhotonsPerStep(m_maxNumPhotonsPerStep);
         process->SetMaxBetaChangePerStep(m_maxBetaChangePerStep);
         process->SetTrackSecondariesFirst(m_trackSecondariesFirst);
 #if G4VERSION_NUMBER>1030
         process->SetStackPhotons(m_stackPhotons);
+#endif
 #endif
         auto pit = G4ParticleTable::GetParticleTable()->GetIterator();
         pit->reset();

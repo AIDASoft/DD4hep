@@ -34,6 +34,7 @@
 #include "G4OpRayleigh.hh"
 #include "G4OpMieHG.hh"
 #include "G4OpBoundaryProcess.hh"
+#include "G4OpticalParameters.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTypes.hh"
 #include "G4ParticleTable.hh"
@@ -81,11 +82,18 @@ namespace dd4hep {
         G4OpRayleigh*         fRayleighScatteringProcess = new G4OpRayleigh();
         G4OpMieHG*            fMieHGScatteringProcess    = new G4OpMieHG();
 
+#if G4VERSION_NUMBER >= 1070
+        G4OpticalParameters* params = G4OpticalParameters::Instance();
+        params->SetAbsorptionVerboseLevel(m_verbosity);
+        params->SetRayleighVerboseLevel(m_verbosity);
+        params->SetMieVerboseLevel(m_verbosity);
+        params->SetBoundaryVerboseLevel(m_verbosity);
+#else
         fAbsorptionProcess->SetVerboseLevel(m_verbosity);
         fRayleighScatteringProcess->SetVerboseLevel(m_verbosity);
         fMieHGScatteringProcess->SetVerboseLevel(m_verbosity);
         fBoundaryProcess->SetVerboseLevel(m_verbosity);
-
+#endif
         G4ProcessManager* pmanager = particle->GetProcessManager();
         pmanager->AddDiscreteProcess(fAbsorptionProcess);
         pmanager->AddDiscreteProcess(fRayleighScatteringProcess);

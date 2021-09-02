@@ -29,6 +29,7 @@
 
 /// Geant4 include files
 #include "G4Version.hh"
+#include "G4OpticalParameters.hh"
 #include "G4ParticleTableIterator.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4LossTableManager.hh"
@@ -80,6 +81,15 @@ namespace dd4hep {
              yes_no(m_finiteRiseTime), yes_no(m_stackPhotons),
              yes_no(m_trackSecondariesFirst));
         G4Scintillation* process = new G4Scintillation(name());
+#if G4VERSION_NUMBER >= 1070
+        G4OpticalParameters* params = G4OpticalParameters::Instance();
+        params->SetScintVerboseLevel(m_verbosity);
+        params->SetScintFiniteRiseTime(m_finiteRiseTime);
+        params->SetScintStackPhotons(m_stackPhotons);
+        params->SetScintTrackSecondariesFirst(m_trackSecondariesFirst);
+        params->SetScintYieldFactor(m_scintillationYieldFactor);
+        params->SetScintExcitationRatio(m_scintillationExcitationRatio);
+#else
         process->SetVerboseLevel(m_verbosity);
         process->SetFiniteRiseTime(m_finiteRiseTime);
 #if G4VERSION_NUMBER>1030
@@ -88,6 +98,7 @@ namespace dd4hep {
         process->SetTrackSecondariesFirst(m_trackSecondariesFirst);
         process->SetScintillationYieldFactor(m_scintillationYieldFactor);
         process->SetScintillationExcitationRatio(m_scintillationExcitationRatio);
+#endif
         // Use Birks Correction in the Scintillation process
         if ( G4Threading::IsMasterThread() )  {
           G4EmSaturation* emSaturation =
