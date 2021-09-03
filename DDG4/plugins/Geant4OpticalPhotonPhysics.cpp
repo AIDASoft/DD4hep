@@ -39,6 +39,7 @@
 #include "G4ParticleTypes.hh"
 #include "G4ParticleTable.hh"
 #include "G4ProcessManager.hh"
+#include "G4Version.hh"
 
 #if G4VERSION_NUMBER >= 1070
 #include "G4OpticalParameters.hh"
