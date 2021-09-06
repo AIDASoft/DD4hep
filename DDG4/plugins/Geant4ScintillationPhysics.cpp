@@ -71,6 +71,8 @@ namespace dd4hep {
         declareProperty("FiniteRiseTime",                m_finiteRiseTime = false);
         declareProperty("TrackSecondariesFirst",         m_trackSecondariesFirst = false);
         declareProperty("StackPhotons",                  m_stackPhotons = true);
+        declareProperty("ByParticleType",                m_byParticleType = false);
+        declareProperty("TrackInfo",                     m_trackInfo = false);
         declareProperty("VerboseLevel",                  m_verbosity = 0);
       }
       /// Default destructor
@@ -92,15 +94,23 @@ namespace dd4hep {
         params->SetScintTrackSecondariesFirst(m_trackSecondariesFirst);
         params->SetScintYieldFactor(m_scintillationYieldFactor);
         params->SetScintExcitationRatio(m_scintillationExcitationRatio);
+        params->SetScintByParticleType(m_byParticleType);
+        params->SetScintTrackInfo(m_trackInfo);
 #else
         process->SetVerboseLevel(m_verbosity);
         process->SetFiniteRiseTime(m_finiteRiseTime);
-#if G4VERSION_NUMBER>1030
+#if G4VERSION_NUMBER >= 1030
         process->SetStackPhotons(m_stackPhotons);
 #endif
         process->SetTrackSecondariesFirst(m_trackSecondariesFirst);
         process->SetScintillationYieldFactor(m_scintillationYieldFactor);
         process->SetScintillationExcitationRatio(m_scintillationExcitationRatio);
+#if G4VERSION_NUMBER >= 940
+        process->SetScintByParticleType(m_byParticleType);
+#endif
+#if G4VERSION_NUMBER >= 1030
+        process->SetScintTrackInfo(m_trackInfo);
+#endif
 #endif
         // Use Birks Correction in the Scintillation process
         if ( G4Threading::IsMasterThread() )  {
@@ -128,6 +138,8 @@ namespace dd4hep {
       bool   m_stackPhotons;
       bool   m_finiteRiseTime;
       bool   m_trackSecondariesFirst;
+      bool   m_byParticleType;
+      bool   m_trackInfo;
     };
   }
 }
