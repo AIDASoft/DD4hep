@@ -106,10 +106,10 @@ namespace dd4hep {
         process->SetScintillationYieldFactor(m_scintillationYieldFactor);
         process->SetScintillationExcitationRatio(m_scintillationExcitationRatio);
 #if G4VERSION_NUMBER >= 940
-        process->SetScintByParticleType(m_byParticleType);
+        process->SetScintillationByParticleType(m_byParticleType);
 #endif
 #if G4VERSION_NUMBER >= 1030
-        process->SetScintTrackInfo(m_trackInfo);
+        process->SetScintillationTrackInfo(m_trackInfo);
 #endif
 #endif
         // Use Birks Correction in the Scintillation process
