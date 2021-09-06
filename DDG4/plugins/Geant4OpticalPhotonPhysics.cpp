@@ -67,6 +67,7 @@ namespace dd4hep {
         : Geant4PhysicsList(ctxt, nam)
       {
         declareProperty("VerboseLevel", m_verbosity = 0);
+        declareProperty("BoundaryInvokeSD", m_boundaryInvokeSD = false);
       }
       /// Default destructor
       virtual ~Geant4OpticalPhotonPhysics() = default;
@@ -92,11 +93,15 @@ namespace dd4hep {
         params->SetRayleighVerboseLevel(m_verbosity);
         params->SetMieVerboseLevel(m_verbosity);
         params->SetBoundaryVerboseLevel(m_verbosity);
+        params->SetBoundaryInvokeSD(m_boundaryInvokeSD);
 #else
         fAbsorptionProcess->SetVerboseLevel(m_verbosity);
         fRayleighScatteringProcess->SetVerboseLevel(m_verbosity);
         fMieHGScatteringProcess->SetVerboseLevel(m_verbosity);
         fBoundaryProcess->SetVerboseLevel(m_verbosity);
+#if G4VERSION_NUMBER >= 1000
+        fBoundaryProcess->SetInvokeSD(m_boundaryInvokeSD);
+#endif
 #endif
         G4ProcessManager* pmanager = particle->GetProcessManager();
         pmanager->AddDiscreteProcess(fAbsorptionProcess);
@@ -106,6 +111,7 @@ namespace dd4hep {
       }
     private:
       int         m_verbosity;
+      bool        m_boundaryInvokeSD;
     };
   }
 }
