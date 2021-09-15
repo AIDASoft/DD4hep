@@ -53,17 +53,19 @@ using namespace dd4hep::detail;
 typedef TGeoNode                geo_node_t;
 typedef TGeoVolume              geo_volume_t;
 typedef TGeoVolumeAssembly      geo_assembly_t;
-template <typename T> static typename T::Object* _userExtension(const T& v)  {
-  typedef typename T::Object O;
-  O* o = (O*)(v.ptr()->GetUserExtension());
-  return o;
-}
 
 ClassImp(PlacedVolumeExtension)
 
 namespace {
 
+  static constexpr double s_rotation_test_limit = 1e-14;
   static bool s_verifyCopyNumbers = true;
+
+  template <typename T> typename T::Object* _userExtension(const T& v)  {
+    typedef typename T::Object O;
+    O* o = (O*)(v.ptr()->GetUserExtension());
+    return o;
+  }
 
   TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m)  {
     geo_volume_t* e = new geo_volume_t(name.c_str(),s,m);
@@ -100,9 +102,9 @@ namespace {
   public:
     void setShapeTitle(TGeoVolume* vol)   {
       if ( vol )   {
-	TGeoShape* sh = vol->GetShape();
-	string tag = get_shape_tag(sh);
-	sh->SetTitle(tag.c_str());
+        TGeoShape* sh = vol->GetShape();
+        string tag = get_shape_tag(sh);
+        sh->SetTitle(tag.c_str());
       }
     }
 
@@ -123,10 +125,10 @@ namespace {
       if  ( c == TGeoVolumeMulti::Class() )  {
         TGeoVolumeMulti* mv = (TGeoVolumeMulti*)v;
         for( int i=0, n=mv->GetNvolumes(); i<n; ++i )   {
-	  TGeoVolume* vol = mv->GetVolume(i);
-	  this->setShapeTitle(vol);
+          TGeoVolume* vol = mv->GetVolume(i);
+          this->setShapeTitle(vol);
           (*this)(vol);
-	}
+        }
       }
       for( Int_t i=0; i<v->GetNdaughters(); ++i )  {
         geo_node_t* pv = v->GetNode(i);
@@ -170,10 +172,10 @@ namespace {
           old_e->reflected = new_v;
           new_e->reflected = old_v;
           for(int i=0, n=new_mv->GetNvolumes(); i<n; ++i)  {
-	    TGeoVolume* vol = new_mv->GetVolume(i);
-	    this->setShapeTitle(vol);
+            TGeoVolume* vol = new_mv->GetVolume(i);
+            this->setShapeTitle(vol);
             (*this)(vol, old_mv->GetVolume(i), sd, set_bit);
-	  }
+          }
         }
         else
           except("dd4hep","VolumeImport: Unknown TGeoVolume sub-class: %s",new_v->IsA()->GetName());
@@ -303,8 +305,8 @@ void ReflectionBuilder::execute()  const   {
     TGeoMatrix* matrix = node->GetMatrix();
     if (matrix->IsReflection()) {
       if ( print_active )  {
-	printout(INFO,"ReflectionBuilder","Reflection matrix:");
-	matrix->Print();
+        printout(INFO,"ReflectionBuilder","Reflection matrix:");
+        matrix->Print();
       }
       Volume vol(node->GetVolume());
       TGeoMatrix* mclone = new TGeoCombiTrans(*matrix);
@@ -312,13 +314,13 @@ void ReflectionBuilder::execute()  const   {
       // Reflect just the rotation component
       //mclone->ReflectZ(kFALSE, kTRUE);
       if ( print_active )  {
-	printout(INFO,"ReflectionBuilder","CLONE matrix:");
-	mclone->Print();
+        printout(INFO,"ReflectionBuilder","CLONE matrix:");
+        mclone->Print();
       }
       TGeoNodeMatrix* nodematrix = (TGeoNodeMatrix*)node;
       nodematrix->SetMatrix(mclone);
       if ( print_active )  {
-	printout(INFO,"ReflectionBuilder","Reflected volume: %s ", vol.name());
+        printout(INFO,"ReflectionBuilder","Reflected volume: %s ", vol.name());
       }
       Volume refl = vol.reflect(vol.sensitiveDetector());
       node->SetVolume(refl.ptr());
@@ -624,7 +626,7 @@ Volume Volume::divide(const std::string& divname, int iaxis, int ndiv,
       return VolumeMulti(mvp);
     }
     except("dd4hep","Volume: Failed to divide volume %s -> %s [Invalid result]",
-	   p->GetName(), divname.c_str());
+           p->GetName(), divname.c_str());
   }
   except("dd4hep","Volume: Attempt to divide an invalid logical volume.");
   return nullptr;
@@ -655,7 +657,7 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
   const Double_t* r = transform->GetRotationMatrix();
   if ( r )   {
     Double_t test_rot = r[0] + r[4] + r[8] - 3.0;
-    if ( TMath::Abs(test_rot) < 1E-12)
+    if ( TMath::Abs(test_rot) < s_rotation_test_limit )
       transform->ResetBit(TGeoMatrix::kGeoRotation);
     else
       transform->SetBit(TGeoMatrix::kGeoRotation);
@@ -846,43 +848,43 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
       m_element->SetVisContainers(kTRUE);
       m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
       printout(DEBUG,"setVisAttributes",
-	       "Set color %3d transparent(alpha:%.3f): %3d [%02X,%02X,%02X] DrawingStyle:%9s LineStyle:%6s for volume %s",
-	       col_num, vis->alpha, col_tr_num,
-	       int(255*col->GetRed()),
-	       int(255*col->GetGreen()),
-	       int(255*col->GetBlue()),
-	       draw_style == VisAttr::SOLID ? "Solid" : "Wireframe",
-	       line_style == VisAttr::SOLID ? "Solid" : "Dashed",
-	       name()
-	       );
+               "Set color %3d transparent(alpha:%.3f): %3d [%02X,%02X,%02X] DrawingStyle:%9s LineStyle:%6s for volume %s",
+               col_num, vis->alpha, col_tr_num,
+               int(255*col->GetRed()),
+               int(255*col->GetGreen()),
+               int(255*col->GetBlue()),
+               draw_style == VisAttr::SOLID ? "Solid" : "Wireframe",
+               line_style == VisAttr::SOLID ? "Solid" : "Dashed",
+               name()
+               );
       m_element->SetLineWidth(10);
       m_element->SetLineColor(col_num);
       m_element->SetFillColor(col_tr_num);
       if (draw_style == VisAttr::SOLID) {
-	m_element->SetFillStyle(1001);   // Root: solid
+        m_element->SetFillStyle(1001);   // Root: solid
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
-	// As suggested by Valentin Volkl https://sft.its.cern.ch/jira/browse/DDFORHEP-20
-	//
-	// According to https://root.cern.ch/phpBB3/viewtopic.php?t=2309#p66013
-	// a transparency>50 will make a volume invisible in the normal pad.
-	// Hence: possibly restrict transparency to a maximum of 50.
-	//        but let's see first how this behaves.
-	m_element->SetTransparency((1.0-vis->alpha)*100);
+        // As suggested by Valentin Volkl https://sft.its.cern.ch/jira/browse/DDFORHEP-20
+        //
+        // According to https://root.cern.ch/phpBB3/viewtopic.php?t=2309#p66013
+        // a transparency>50 will make a volume invisible in the normal pad.
+        // Hence: possibly restrict transparency to a maximum of 50.
+        //        but let's see first how this behaves.
+        m_element->SetTransparency((1.0-vis->alpha)*100);
 #endif
       }
       else {
-	printout(DEBUG,"setVisAttributes","Set to wireframe vis:%s",name());
-	m_element->SetLineColor(kBlack);
-	m_element->SetFillColor(0);
-	m_element->SetFillStyle(0);      // Root: hollow
+        printout(DEBUG,"setVisAttributes","Set to wireframe vis:%s",name());
+        m_element->SetLineColor(kBlack);
+        m_element->SetFillColor(0);
+        m_element->SetFillStyle(0);      // Root: hollow
       }
       if (line_style == VisAttr::SOLID)  // Root line style: 1=solid, 2=dash, 3=dot, 4=dash-dot.
-	m_element->SetLineStyle(1);
+        m_element->SetLineStyle(1);
       else if (line_style == VisAttr::DASHED)
-	m_element->SetLineStyle(2);
+        m_element->SetLineStyle(2);
       else
-	m_element->SetLineStyle(line_style);
+        m_element->SetLineStyle(line_style);
     }
     else   {
       except("Volume","setVisAttributes: encountered valid, but badly initialized visattr: %s",attr.name());

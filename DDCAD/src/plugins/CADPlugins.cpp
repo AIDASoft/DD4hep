@@ -221,11 +221,11 @@ static Handle<TObject> create_CAD_Volume(Detector& dsc, xml_h e)   {
         xml_dim_t x_rot = x_vol.child(_U(rotation),false);
 
         if ( x_vol.hasAttr(_U(material)) )  {
-	  string mat_name = x_vol.attr<string>(_U(material));
+          string mat_name = x_vol.attr<string>(_U(material));
           mat = dsc.material(mat_name);
-	  if ( !mat.isValid() )
-	    except("CAD_MultiVolume","+++ Failed to access material "+mat_name);
-	  vol.setMaterial(mat);
+          if ( !mat.isValid() )
+            except("CAD_MultiVolume","+++ Failed to access material "+mat_name);
+          vol.setMaterial(mat);
         }
         Position    pos;
         RotationZYX rot;
@@ -251,8 +251,8 @@ static Handle<TObject> create_CAD_Volume(Detector& dsc, xml_h e)   {
     for(size_t i=0; i < volumes.size(); ++i)   {
       Volume vol = volumes[i].release();
       if ( vol.isValid() )   {
-	if ( (vol.material() == dsc.air()) && default_material.isValid() )
-	  vol.setMaterial(default_material);
+        if ( (vol.material() == dsc.air()) && default_material.isValid() )
+          vol.setMaterial(default_material);
         envelope.placeVolume(vol);
       }
     }
@@ -335,7 +335,7 @@ static long CAD_export(Detector& description, int argc, char** argv)   {
   auto num_mesh = wr.write(fname, ftype, places, recursive, scale);
   if ( num_mesh < 0 )   {
     printout(ERROR, "DD4hep_CAD_export","+++ Failed to export shapes to CAD file: %s [%s]",
-	     fname.c_str(), ftype.c_str());
+             fname.c_str(), ftype.c_str());
   }
   return 1;
 }

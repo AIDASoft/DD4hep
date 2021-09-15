@@ -275,7 +275,7 @@ double dd4hep::detail::matrix::determinant(const Rotation3D& rot)   {
 
 /// Check matrices for equality
 int dd4hep::detail::matrix::_matrixEqual(const TGeoMatrix& left, const TGeoMatrix& right)   {
-  double epsilon = 1e-12;
+  static constexpr double epsilon = 1e-12;
   int result = MATRICES_EQUAL;
   const Double_t* t1 = left.GetTranslation();
   const Double_t* t2 = right.GetTranslation();

@@ -12,8 +12,6 @@
 //==========================================================================
 
 /// Framework include files
-#include <DD4hep/Shapes.h>
-#include <DD4hep/Objects.h>
 #include <DD4hep/Detector.h>
 #include <DD4hep/Printout.h>
 #include <DDCAD/ASSIMPWriter.h>
@@ -23,10 +21,11 @@
 #include "assimp/Exporter.hpp"
 #include "assimp/scene.h"
 
-#include <TBuffer3D.h>
+/// ROOT include files
 #include <TBuffer3DTypes.h>
 #include <TGeoBoolNode.h>
 #include <TGeoMatrix.h>
+#include <TBuffer3D.h>
 #include <TClass.h>
 #include <CsgOps.h>
 
@@ -37,7 +36,7 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::cad;
 
-using _Vertex = Tessellated::Vertex_t;
+using Vertex = Tessellated::Vertex_t;
 
 namespace  {
 
@@ -54,12 +53,12 @@ namespace  {
       if ( sol->IsA() != TGeoShapeAssembly::Class() )
         cont.push_back(make_pair(p, mother.get()));
       if ( recursive )
-        _collect(cont, recursive, *mother, p);	
+        _collect(cont, recursive, *mother, p);  
       if ( sol->IsA() != TGeoShapeAssembly::Class() )
         mother.release();
     }
   }
-  bool equals(_Vertex const &lhs, _Vertex const &rhs)  {
+  bool equals(Vertex const &lhs, Vertex const &rhs)  {
     constexpr double kTolerance = 1.e-32;
     return TMath::Abs(lhs[0] - rhs[0]) < kTolerance &&
                                          TMath::Abs(lhs[1] - rhs[1]) < kTolerance &&
@@ -100,13 +99,13 @@ namespace  {
   unique_ptr<TGeoTessellated> TessellateShape::build_mesh(int id, const std::string& name, TGeoShape* shape)      {
     auto mesh = unique_ptr<RootCsg::TBaseMesh>(this->make_mesh(shape));
     size_t nskip = 0;
-    vector<_Vertex> vertices;
+    vector<Vertex> vertices;
     vertices.reserve(mesh->NumberOfVertices());
     map<size_t,size_t> vtx_index_replacements;
     for( size_t ipoint = 0, npoints = mesh->NumberOfVertices(); ipoint < npoints; ++ipoint )   {
       long found = -1;
       const double* v = mesh->GetVertex(ipoint);
-      _Vertex vtx(v[0], v[1], v[2]);
+      Vertex vtx(v[0], v[1], v[2]);
       for(size_t i=0; i < vertices.size(); ++i)   {
         if ( equals(vertices[i],vtx) )  {
           vtx_index_replacements[ipoint] = found = i;
@@ -152,7 +151,7 @@ namespace  {
             ++nskip;
             continue;
           }
-          _Vertex w[3] = {vertices[vv0],vertices[vv1],vertices[vv2]};
+          Vertex w[3] = {vertices[vv0],vertices[vv1],vertices[vv2]};
           if ( TGeoFacet::CompactFacet(w, 3) < 3 )   {
             ++nskip;
             continue;
@@ -225,7 +224,7 @@ namespace  {
   }
 
   unique_ptr<TGeoTessellated> TessellateShape::tessellate_primitive(const std::string& name, Solid solid)   {
-    using  vtx_t = _Vertex;
+    using  vtx_t = Vertex;
     const  TBuffer3D& buf3D = solid->GetBuffer3D(TBuffer3D::kAll, false);
     struct pol_t { int c, n; int segs[1]; } *pol = nullptr;
     struct seg_t { int c, _1, _2;         };
@@ -307,7 +306,7 @@ int ASSIMPWriter::write(const std::string& file_name,
   root->mNumMeshes    = 0;
   root->mNumChildren  = 0;
   root->mChildren     = new aiNode* [num_mesh];
-  root->mMeshes       = 0;//new unsigned int[root->mNumMeshes];
+  root->mMeshes       = 0;
   auto* geo_transform = TGeoShape::GetTransform();
 
   TGeoHMatrix identity;
@@ -384,7 +383,7 @@ int ASSIMPWriter::write(const std::string& file_name,
       face.mNumIndices = 0;
       face.mIndices = nullptr;
     }
-    _Vertex vtx, tmp, norm;
+    Vertex vtx, tmp, norm;
     for( long j=0, nvx=0, n=tes->GetNfacets(); j < n; ++j )  {
       bool degenerated  = false;
       const auto& facet = tes->GetFacet(j);
@@ -411,9 +410,9 @@ int ASSIMPWriter::write(const std::string& file_name,
           stringstream str;
           const auto* id = face.mIndices;
           const auto* vv = mesh->mVertices;
-          TGeoFacet fac(_Vertex(vv[id[0]].x,vv[id[0]].y,vv[id[0]].z),
-                        _Vertex(vv[id[1]].x,vv[id[1]].y,vv[id[1]].z),
-                        _Vertex(vv[id[2]].x,vv[id[2]].y,vv[id[2]].z));
+          TGeoFacet fac(Vertex(vv[id[0]].x,vv[id[0]].y,vv[id[0]].z),
+                        Vertex(vv[id[1]].x,vv[id[1]].y,vv[id[1]].z),
+                        Vertex(vv[id[2]].x,vv[id[2]].y,vv[id[2]].z));
           str << fac;
           printout(ALWAYS,"ASSIMPWriter","++ Facet %4ld : %s", j, str.str().c_str());
         }
@@ -426,10 +425,13 @@ int ASSIMPWriter::write(const std::string& file_name,
     
     /// Check if we have here a valid mesh
     if ( 0 == mesh->mNumFaces || 0 == mesh->mNumVertices )    {
-      delete [] mesh->mVertices;
+      if ( mesh->mVertices ) delete [] mesh->mVertices;
+      mesh->mVertices = nullptr;
       mesh->mNumVertices = 0;
-      delete [] mesh->mNormals;
-      delete [] mesh->mFaces;
+      if ( mesh->mNormals ) delete [] mesh->mNormals;
+      mesh->mNormals = nullptr;
+      if ( mesh->mFaces ) delete [] mesh->mFaces;
+      mesh->mFaces = nullptr;
       mesh->mNumFaces = 0;
       continue;
     }

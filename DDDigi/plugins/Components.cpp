@@ -24,6 +24,9 @@
 #include "DDDigi/DigiInputAction.h"
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiInputAction)
 
+#include "DDDigi/DigiDDG4Input.h"
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiDDG4Input)
+
 #include "DDDigi/DigiSynchronize.h"
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSynchronize)
 
