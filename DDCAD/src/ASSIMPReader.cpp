@@ -12,44 +12,26 @@
 //==========================================================================
 
 /// Framework include files
-#include <DD4hep/Shapes.h>
 #include <DD4hep/Printout.h>
 #include <DD4hep/Detector.h>
 #include <DDCAD/ASSIMPReader.h>
 
 /// Open Asset Importer Library
-
-#include "assimp/Importer.hpp"
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
+#include "assimp/Importer.hpp"
 
 /// C/C++ include files
 #include <sstream>
 
 using namespace dd4hep;
 using namespace dd4hep::cad;
-#if 0
-      if ( shape->GetNfacets() > 2 )   {
-        shape->CloseShape(true,true,true);
-        if ( dump_facets )   {
-          for( size_t i=0, n=shape->GetNfacets(); i < n; ++i )   {
-            const auto& facet = shape->GetFacet(i);
-            std::stringstream str;
-            str << facet;
-            printout(ALWAYS,"ASSIMPReader","++ Facet %4ld : %s",
-                     i, str.str().c_str());
-          }
-        }
-        result.emplace_back(std::unique_ptr<TGeoTessellated>(shape.ptr()));
-        continue;
-      }
-      delete shape.ptr();
-#endif
+
 /// Read input file
 std::vector<std::unique_ptr<TGeoTessellated> >
 ASSIMPReader::readShapes(const std::string& source, double unit_length)  const
 {
-  typedef TessellatedSolid::Vertex Vertex;
+  using Vertex = TessellatedSolid::Vertex;
   std::vector<std::unique_ptr<TGeoTessellated> > result;
   std::unique_ptr<Assimp::Importer> importer = std::make_unique<Assimp::Importer>();
   int aiflags = aiProcess_Triangulate|aiProcess_JoinIdenticalVertices|aiProcess_CalcTangentSpace;
@@ -64,17 +46,6 @@ ASSIMPReader::readShapes(const std::string& source, double unit_length)  const
     if ( mesh->mNumFaces > 0 )   {
       auto name = mesh->mName.C_Str();
       const aiVector3D* v = mesh->mVertices;
-#if 0
-      TessellatedSolid shape(name, mesh->mNumFaces);
-      for(unsigned int i=0; i < mesh->mNumFaces; i++)  {
-        const aiFace&     face = mesh->mFaces[i];
-        const unsigned int* idx = face.mIndices;
-        Vertex a(v[idx[0]].x*unit, v[idx[0]].y*unit, v[idx[0]].z*unit); 
-        Vertex b(v[idx[1]].x*unit, v[idx[1]].y*unit, v[idx[1]].z*unit); 
-        Vertex c(v[idx[2]].x*unit, v[idx[2]].y*unit, v[idx[2]].z*unit); 
-        shape->AddFacet(a,b,c);
-      }
-#endif
       std::vector<Vertex> vertices;
       vertices.reserve(mesh->mNumVertices);
       for(unsigned int i=0; i < mesh->mNumVertices; i++)  {
@@ -111,7 +82,7 @@ ASSIMPReader::readShapes(const std::string& source, double unit_length)  const
 std::vector<std::unique_ptr<TGeoVolume> >
 ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
 {
-  typedef TessellatedSolid::Vertex Vertex;
+  using Vertex = TessellatedSolid::Vertex;
   std::vector<std::unique_ptr<TGeoVolume> > result;
   std::unique_ptr<Assimp::Importer> importer = std::make_unique<Assimp::Importer>();
   bool dump_facets = ((flags>>8)&0x1) == 1;
@@ -139,17 +110,6 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
         const unsigned int* idx  = mesh->mFaces[i].mIndices;
         shape->AddFacet(idx[0], idx[1], idx[2]);
       }
-#if 0
-      TessellatedSolid shape(name, mesh->mNumFaces);
-      for(unsigned int i=0; i < mesh->mNumFaces; i++)  {
-        const aiFace&     face = mesh->mFaces[i];
-        const unsigned int* idx = face.mIndices;
-        Vertex a(v[idx[0]].x*unit, v[idx[0]].y*unit, v[idx[0]].z*unit); 
-        Vertex b(v[idx[1]].x*unit, v[idx[1]].y*unit, v[idx[1]].z*unit); 
-        Vertex c(v[idx[2]].x*unit, v[idx[2]].y*unit, v[idx[2]].z*unit); 
-        shape->AddFacet(a,b,c);
-      }
-#endif
       if ( shape->GetNfacets() > 2 )   {
         std::string mat_name;
         Material mat;
