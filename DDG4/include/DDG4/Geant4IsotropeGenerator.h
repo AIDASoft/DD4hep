@@ -40,6 +40,10 @@ namespace dd4hep {
       double      m_thetaMin;
       /// Property: Maximal theta angular value
       double      m_thetaMax;
+      /// Property: Minimal momentum value
+      double      m_momentumMin;
+      /// Property: Maximal momentum value
+      double      m_momentumMax;
       
       /// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = m_energy)
       /** Use this function to implement isotrop guns, multiple guns etc. 
@@ -54,6 +58,8 @@ namespace dd4hep {
       void getParticleDirectionCosTheta(int num, ROOT::Math::XYZVector& direction, double& momentum) const;
       /// Uniform particle distribution
       void getParticleDirectionUniform(int num, ROOT::Math::XYZVector& direction, double& momentum) const;
+      /// Uniform particle momentum
+      void getParticleMomentumUniform(double& momentum) const;
 
     public:
       /// Inhibit default constructor

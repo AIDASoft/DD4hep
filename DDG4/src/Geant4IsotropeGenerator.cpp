@@ -29,12 +29,24 @@ Geant4IsotropeGenerator::Geant4IsotropeGenerator(Geant4Context* ctxt, const stri
   declareProperty("PhiMax", m_phiMax = 2.0*M_PI);
   declareProperty("ThetaMin", m_thetaMin = 0.0);
   declareProperty("ThetaMax", m_thetaMax = M_PI);
+  declareProperty("MomentumMin", m_momentumMin =  0.0);
+  declareProperty("MomentumMax", m_momentumMax = -1.0);
   declareProperty("Distribution", m_distribution = "uniform" );
 }
 
 /// Default destructor
 Geant4IsotropeGenerator::~Geant4IsotropeGenerator() {
   InstanceCount::decrement(this);
+}
+
+/// Uniform momentum distribution
+void Geant4IsotropeGenerator::getParticleMomentumUniform(double& momentum) const  {
+  Geant4Event&  evt = context()->event();
+  Geant4Random& rnd = evt.random();
+  if (m_momentumMax < m_momentumMin)
+    momentum = m_momentumMin+(momentum-m_momentumMin)*rnd.rndm();
+  else
+    momentum = m_momentumMin+(m_momentumMax-m_momentumMin)*rnd.rndm();
 }
 
 /// Uniform particle distribution
@@ -48,7 +60,7 @@ void Geant4IsotropeGenerator::getParticleDirectionUniform(int, ROOT::Math::XYZVe
   double x3 = std::cos(theta);
 
   direction.SetXYZ(x1,x2,x3);
-  momentum = rnd.rndm()*momentum;
+  getParticleMomentumUniform(momentum);
 }
 
 /// Particle distribution ~ cos(theta)
@@ -63,7 +75,10 @@ void Geant4IsotropeGenerator::getParticleDirectionCosTheta(int, ROOT::Math::XYZV
   double x3 = cos_theta;
 
   direction.SetXYZ(x1,x2,x3);
-  momentum = rnd.rndm()*momentum;
+  if (m_momentumMax < m_momentumMin)
+    momentum = m_momentumMin+(momentum-m_momentumMin)*rnd.rndm();
+  else
+    momentum = m_momentumMin+(m_momentumMax-m_momentumMin)*rnd.rndm();
 }
 
 /// Particle distribution flat in eta (pseudo rapidity)
@@ -84,7 +99,10 @@ void Geant4IsotropeGenerator::getParticleDirectionEta(int, ROOT::Math::XYZVector
   double x3         = std::sinh(eta);
   double r          = std::sqrt(1.0+x3*x3);
   direction.SetXYZ(x1/r,x2/r,x3/r);
-  momentum = rnd.rndm()*momentum;
+  if (m_momentumMax < m_momentumMin)
+    momentum = m_momentumMin+(momentum-m_momentumMin)*rnd.rndm();
+  else
+    momentum = m_momentumMin+(m_momentumMax-m_momentumMin)*rnd.rndm();
 }
 
 /// e+e- --> ffbar particle distribution ~ 1 + cos^2(theta)
@@ -110,6 +128,10 @@ void Geant4IsotropeGenerator::getParticleDirectionFFbar(int, ROOT::Math::XYZVect
       double x2 = std::sin(theta)*std::sin(phi);
       double x3 = std::cos(theta);
       direction.SetXYZ(x1,x2,x3);
+      if (m_momentumMax < m_momentumMin)
+        momentum = m_momentumMin+(momentum-m_momentumMin)*rnd.rndm();
+      else
+        momentum = m_momentumMin+(m_momentumMax-m_momentumMin)*rnd.rndm();
       momentum = rnd.rndm()*momentum;
       return;
     }
