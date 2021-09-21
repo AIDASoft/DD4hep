@@ -1,3 +1,112 @@
+# v01-18
+
+* 2021-09-07 Wouter Deconinck ([PR#869](https://github.com/aidasoft/DD4hep/pull/869))
+  - Use G4OpticalParameters in geant4.10.7 and newer
+
+* 2021-09-06 Andre Sailer ([PR#863](https://github.com/aidasoft/DD4hep/pull/863))
+  - DDSim: add possibility for users to inject configurations for their own output plugins. See example in OutputConfig section of the steering file
+
+* 2021-08-31 Markus Frank ([PR#867](https://github.com/aidasoft/DD4hep/pull/867))
+  - Mainly update reference files for CAD shape tests, since the order of the vertices changed when adding facets
+    with vertex indices rather than coordinates.
+
+* 2021-08-30 Markus Frank ([PR#866](https://github.com/aidasoft/DD4hep/pull/866))
+  - The export of beoolean shapes (union, subtraction, intersection) to was not properly working
+    and actually casued segment vialotions. This PR fixes the problem and handles these shapes
+    properly using the RootCsg operations for boolean shapes.
+  - Examples geometries were provided by Gerri from FCC:  examples/ClientTests/compact/FCCmachine and files thereein.
+  - Test example is in DDCAD:   DDCAD_export_FCC_machine and DDCAD_import_FCC_machine
+  - This PR addresses the issues: https://github.com/AIDASoft/DD4hep/issues/813 , https://github.com/AIDASoft/DD4hep/issues/858
+
+* 2021-08-25 Markus Frank ([PR#865](https://github.com/aidasoft/DD4hep/pull/865))
+  - In cmake tests use the macro ${Python_EXECUTABLE} to invoke the python interpreter rather than
+    only `python`.
+  - if  `FIND_PACKAGE(Python ${REQUIRE_PYTHON_VERSION} EXACT QUIET COMPONENTS Interpreter)`
+    does not resolve the python executable fall back to `python${Python_VERSION_MAJOR}`.
+
+* 2021-08-24 Markus FRANK ([PR#864](https://github.com/aidasoft/DD4hep/pull/864))
+  - Support for multiple readouts or (G4VUserParallelWorld equivalent)
+    Issue https://github.com/AIDASoft/DD4hep/issues/861
+    Example: 
+    examples/CLICSiD/compact/SiD_ECAL_Parallel_Readout.xml + 
+    examples/CLICSiD/scripts/SiD_ECAL_Parallel_Readout.py
+  
+    For a given subdetector the sequence of sensitive actions can be enhanced
+    having multiple sensitive actions where each one can have its own Readout
+    definition. Hence each action can produce its own set of hits depending on the
+    readout geometry (segmentation).
+    in XML these readout structures must first be defined:
+  ```
+    <readouts>
+      <readout name="EcalBarrelHits">
+        <segmentation type="CartesianGridXY" grid_size_x="3.5" grid_size_y="3.5" />
+        <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
+      </readout>        
+  
+      <readout name="EcalBarrelHits_0">
+        <segmentation type="CartesianGridXY" grid_size_x="1" grid_size_y="1" />
+        <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
+      </readout>        
+   ....
+    </readouts>
+  
+  ```
+  and can then be assigned to the sensitive actions in the python setup:
+  ```  det = str('EcalBarrel')
+    typ = sid.geant4.sensitive_types['calorimeter']
+    seq = DDG4.SensitiveSequence(sid.kernel, str('Geant4SensDetActionSequence/') + det)
+    seq.enableUI()
+    act = DDG4.SensitiveAction(sid.kernel, str(typ + '/EcalBarrelHandler'), det)
+    act.enableUI()
+    seq.add(act)
+    # Add extra parallel readout action with readout EcalBarrelHits_0
+    act = DDG4.SensitiveAction(sid.kernel, str(typ + '/EcalBarrelHandler_0'), det)
+    act.ReadoutName = 'EcalBarrelHits_0'
+    act.enableUI()
+    seq.add(act)
+    # Add extra parallel readout action with readout EcalBarrelHits_1
+    act = DDG4.SensitiveAction(sid.kernel, str(typ + '/EcalBarrelHandler_1'), det)
+    act.ReadoutName = 'EcalBarrelHits_1'
+  ...
+  ```
+
+* 2021-08-10 Wouter Deconinck ([PR#860](https://github.com/aidasoft/DD4hep/pull/860))
+  - Optionally import gdml physvol below top level, avoiding world
+
+* 2021-08-03 Valentin Volkl ([PR#855](https://github.com/aidasoft/DD4hep/pull/855))
+  - [testing] separate import test for ddg4 and rest of dd4hep
+
+* 2021-07-29 Markus FRANK ([PR#853](https://github.com/aidasoft/DD4hep/pull/853))
+  - Implement fix as proposed in issue https://github.com/AIDASoft/DD4hep/issues/850.
+
+* 2021-07-27 Whitney Armstrong ([PR#851](https://github.com/aidasoft/DD4hep/pull/851))
+  - Using `ref="OtherVisName"` attribute with the `vis` tag, the visualization attribute is an extension of
+  `"OtherVisName"` which is used to initialize the new vis attribute.
+   - The new VisAttr inherits all the properties  of the ref and additional arguments override these values.
+  
+  Example where the only difference is the `alpha` value.
+  
+  ```
+    <vis name="SiVertexBarrelModuleVis"
+         alpha="1.0" r="1.0" g="0.75" b="0.76"
+         drawingStyle="wireframe"
+         showDaughters="false"
+         visible="true"/>
+  
+    <vis name="SiVertexEndcapModuleVis"
+         ref="SiVertexBarrelModuleVis"
+         alpha="0.5"/>
+  ```
+
+* 2021-07-22 Whitney Armstrong ([PR#849](https://github.com/aidasoft/DD4hep/pull/849))
+  - Fix G4Sphere construction to use delta theta/phi instead of TGeo's ending angles phi2/theta2.
+
+* 2021-07-21 Placido Fernandez Declara ([PR#847](https://github.com/aidasoft/DD4hep/pull/847))
+  - EDM4hepOutput: On collection creation for EDM4hep, save CellIDEncodingString
+
+* 2021-06-24 Thomas Madlener ([PR#843](https://github.com/aidasoft/DD4hep/pull/843))
+  - Explicitly enable `C` as language to avoid problems in the build file generation step of cmake (see spack/spack#24232)
+
 # v01-17-00
 
 * 2021-06-02 Andre Sailer ([PR#838](https://github.com/aidasoft/DD4hep/pull/838))

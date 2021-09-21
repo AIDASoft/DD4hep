@@ -38,6 +38,11 @@
 #include "G4ParticleTypes.hh"
 #include "G4ParticleTable.hh"
 #include "G4ProcessManager.hh"
+#include "G4Version.hh"
+
+#if G4VERSION_NUMBER >= 1070
+#include "G4OpticalParameters.hh"
+#endif
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -62,6 +67,7 @@ namespace dd4hep {
         : Geant4PhysicsList(ctxt, nam)
       {
         declareProperty("VerboseLevel", m_verbosity = 0);
+        declareProperty("BoundaryInvokeSD", m_boundaryInvokeSD = false);
       }
       /// Default destructor
       virtual ~Geant4OpticalPhotonPhysics() = default;
@@ -81,11 +87,22 @@ namespace dd4hep {
         G4OpRayleigh*         fRayleighScatteringProcess = new G4OpRayleigh();
         G4OpMieHG*            fMieHGScatteringProcess    = new G4OpMieHG();
 
+#if G4VERSION_NUMBER >= 1070
+        G4OpticalParameters* params = G4OpticalParameters::Instance();
+        params->SetAbsorptionVerboseLevel(m_verbosity);
+        params->SetRayleighVerboseLevel(m_verbosity);
+        params->SetMieVerboseLevel(m_verbosity);
+        params->SetBoundaryVerboseLevel(m_verbosity);
+        params->SetBoundaryInvokeSD(m_boundaryInvokeSD);
+#else
         fAbsorptionProcess->SetVerboseLevel(m_verbosity);
         fRayleighScatteringProcess->SetVerboseLevel(m_verbosity);
         fMieHGScatteringProcess->SetVerboseLevel(m_verbosity);
         fBoundaryProcess->SetVerboseLevel(m_verbosity);
-
+#if G4VERSION_NUMBER >= 1000
+        fBoundaryProcess->SetInvokeSD(m_boundaryInvokeSD);
+#endif
+#endif
         G4ProcessManager* pmanager = particle->GetProcessManager();
         pmanager->AddDiscreteProcess(fAbsorptionProcess);
         pmanager->AddDiscreteProcess(fRayleighScatteringProcess);
@@ -94,6 +111,7 @@ namespace dd4hep {
       }
     private:
       int         m_verbosity;
+      bool        m_boundaryInvokeSD;
     };
   }
 }
