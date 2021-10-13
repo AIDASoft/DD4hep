@@ -23,8 +23,8 @@ using namespace std;
 // Disable some diagnostics, which we know, but need to ignore
 #if defined(__GNUC__) && !defined(__APPLE__) && !defined(__llvm__)
 /*  This is OK:
-    ../DDCore/src/Evaluator/Evaluator.cpp: In function 'int engine(pchar, pchar, double&, char*&, const dic_type&)':
-    ../DDCore/src/Evaluator/Evaluator.cpp:164:23: warning: 'pp[3]' may be used uninitialized in this function [-Wmaybe-uninitialized]
+    ../DDCore/src/Evaluator/Evaluator.cpp: In execute_function 'int engine(pchar, pchar, double&, char*&, const dic_type&)':
+    ../DDCore/src/Evaluator/Evaluator.cpp:164:23: warning: 'pp[3]' may be used uninitialized in this execute_function [-Wmaybe-uninitialized]
     result = (*fcn.f4)(pp[3],pp[2],pp[1],pp[0]);
     ....
 */
@@ -186,11 +186,11 @@ static int variable(const string & name, double & result,
   }
 }
 
-static int function(const string & name, stack<double> & par,
+static int execute_function(const string & name, stack<double> & par,
                     double & result, const dic_type & dictionary)
 /***********************************************************************
  *                                                                     *
- * Name: function                                    Date:    03.10.00 *
+ * Name: execute_function                            Date:    03.10.00 *
  * Author: Evgeni Chernyaev                          Revised:          *
  *                                                                     *
  * Function: Finds value of the function.                              *
@@ -344,7 +344,7 @@ static int operand(char const* begin, char const* end, double & result,
         default:
           EVAL_EXIT( EVAL_STATUS, par_end );
         }
-        EVAL_STATUS = function(name, par, result, dictionary);
+        EVAL_STATUS = execute_function(name, par, result, dictionary);
         EVAL_EXIT( EVAL_STATUS, (EVAL_STATUS == EVAL::OK) ? pointer : begin);
       }
     }
