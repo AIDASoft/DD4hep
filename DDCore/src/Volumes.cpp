@@ -58,7 +58,7 @@ ClassImp(PlacedVolumeExtension)
 
 namespace {
 
-  static constexpr double s_rotation_test_limit = 1e-14;
+  static constexpr double s_rotation_test_limit = 1e-12;
   static bool s_verifyCopyNumbers = true;
 
   template <typename T> typename T::Object* _userExtension(const T& v)  {
