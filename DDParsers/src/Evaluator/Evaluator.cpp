@@ -43,18 +43,39 @@
 //---------------------------------------------------------------------------
 #define EVAL dd4hep::tools::Evaluator
 
-/// Internal expression evaluator helper class
-struct Item {
-  enum { UNKNOWN, VARIABLE, EXPRESSION, FUNCTION, STRING } what;
-  double variable;
-  std::string expression;
-  void   *function;
+namespace  {
+  
+  /// Internal expression evaluator helper class
+  struct Item {
+    enum { UNKNOWN, VARIABLE, EXPRESSION, FUNCTION, STRING } what;
+    double variable;
+    std::string expression;
+    void   *function;
 
-  explicit Item()              : what(UNKNOWN),   variable(0),expression(), function(0) {}
-  explicit Item(double x)      : what(VARIABLE),  variable(x),expression(), function(0) {}
-  explicit Item(std::string x) : what(EXPRESSION),variable(0),expression(x),function(0) {}
-  explicit Item(void  *x)      : what(FUNCTION),  variable(0),expression(), function(x) {}
-};
+    explicit Item()              : what(UNKNOWN),   variable(0),expression(), function(0) {}
+    explicit Item(double x)      : what(VARIABLE),  variable(x),expression(), function(0) {}
+    explicit Item(std::string x) : what(EXPRESSION),variable(0),expression(x),function(0) {}
+    explicit Item(void  *x)      : what(FUNCTION),  variable(0),expression(), function(x) {}
+  };
+
+  /// Internal expression evaluator helper union
+  union FCN {
+    void* ptr;
+    double (*f0)();
+    double (*f1)(double);
+    double (*f2)(double,double);
+    double (*f3)(double,double,double);
+    double (*f4)(double,double,double,double);
+    double (*f5)(double,double,double,double,double);
+    FCN(void* p) { ptr = p; }
+    FCN(double (*f)()) { f0 = f; }
+    FCN(double (*f)(double)) { f1 = f; }
+    FCN(double (*f)(double,double)) { f2 = f; }
+    FCN(double (*f)(double,double,double)) { f3 = f; }
+    FCN(double (*f)(double,double,double,double)) { f4 = f; }
+    FCN(double (*f)(double,double,double,double,double)) { f5 = f; }
+  };
+}
 
 //typedef char * pchar;
 typedef std::unordered_map<std::string,Item> dic_type;
@@ -103,27 +124,6 @@ struct EVAL::Object::Struct {
   std::condition_variable theCond;
   std::mutex  theLock;
 };
-
-namespace {
-
-  /// Internal expression evaluator helper union
-  union FCN {
-    void* ptr;
-    double (*f0)();
-    double (*f1)(double);
-    double (*f2)(double,double);
-    double (*f3)(double,double,double);
-    double (*f4)(double,double,double,double);
-    double (*f5)(double,double,double,double,double);
-    FCN(void* p) { ptr = p; }
-    FCN(double (*f)()) { f0 = f; }
-    FCN(double (*f)(double)) { f1 = f; }
-    FCN(double (*f)(double,double)) { f2 = f; }
-    FCN(double (*f)(double,double,double)) { f3 = f; }
-    FCN(double (*f)(double,double,double,double)) { f4 = f; }
-    FCN(double (*f)(double,double,double,double,double)) { f5 = f; }
-  };
-}
 
 //---------------------------------------------------------------------------
 #define REMOVE_BLANKS							\
