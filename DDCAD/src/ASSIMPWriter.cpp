@@ -314,11 +314,11 @@ int ASSIMPWriter::write(const std::string& file_name,
     unique_ptr<TGeoHMatrix>     trafo(placements[imesh].second);
     unique_ptr<TGeoTessellated> shape_holder;
     PlacedVolume     pv  = placements[imesh].first;
-    Volume           v   = pv.volume();
-    Solid            s   = v.solid();
-    Material         m   = v.material();
-    TessellatedSolid tes = s;
-    aiString         node_name(v.name());
+    Volume           vol = pv.volume();
+    Solid            sol = vol.solid();
+    Material         mat = vol.material();
+    TessellatedSolid tes = sol;
+    aiString         node_name(vol.name());
 
     identity.Clear();
     TGeoShape::SetTransform(&identity);
@@ -326,15 +326,15 @@ int ASSIMPWriter::write(const std::string& file_name,
     /// If the shape is already tessellated, no need to create another one!
     if ( !tes.isValid() )   {
       TessellateShape helper;
-      auto* shape=dynamic_cast<TGeoCompositeShape*>(s.ptr());
+      auto* shape = dynamic_cast<TGeoCompositeShape*>(sol.ptr());
       if ( build_mode || shape )   {  // Always use this method!
         auto* paintVol = detector.manager().GetPaintVolume();
-        detector.manager().SetPaintVolume(v.ptr());
-        shape_holder = helper.build_mesh(imesh, v.name(), s.ptr());
+        detector.manager().SetPaintVolume(vol.ptr());
+        shape_holder = helper.build_mesh(imesh, vol.name(), sol.ptr());
         detector.manager().SetPaintVolume(paintVol);
       }
       else   {
-        shape_holder = helper.tessellate_primitive(v.name(), s);
+        shape_holder = helper.tessellate_primitive(vol.name(), sol);
       }
       tes = shape_holder.get();
     }
@@ -348,16 +348,16 @@ int ASSIMPWriter::write(const std::string& file_name,
 
     size_t index = std::numeric_limits<size_t>::max();
     for( size_t j=0; j<materials.size(); ++j )  {
-      if( materials[j] == m )   {
+      if( materials[j] == mat )   {
         index = j;
         break;
       }
     }
     if ( index > materials.size() )   {
-      aiString name(m.name());
+      aiString name(mat.name());
       auto* ai_mat = new aiMaterial();
       index = materials.size();
-      materials.push_back(m);
+      materials.push_back(mat);
       ai_mat->AddProperty(&name, AI_MATKEY_NAME);
       scene.mMaterials[scene.mNumMaterials] = ai_mat;
       ++scene.mNumMaterials;
@@ -365,9 +365,9 @@ int ASSIMPWriter::write(const std::string& file_name,
     aiMesh* mesh = new aiMesh;
     mesh->mName = node_name;
     mesh->mMaterialIndex = index;
-    if ( v.visAttributes().isValid() )   {
+    if ( vol.visAttributes().isValid() )   {
       float cr = 0e0, cg = 0e0, cb = 0e0, ca = 0e0;
-      v.visAttributes().argb(ca, cr, cg, cb);
+      vol.visAttributes().argb(ca, cr, cg, cb);
       mesh->mColors[0] = new aiColor4D(cr, cg, cb, ca);
     }
     mesh->mFaces       = new aiFace[tes->GetNfacets()];
