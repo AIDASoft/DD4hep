@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   macOS:
-    runs-on: macos-latest
+    runs-on: macos-10.05
     strategy:
       matrix:
         LCG: ["LCG_98python3/x86_64-mac1015-clang110-opt",
