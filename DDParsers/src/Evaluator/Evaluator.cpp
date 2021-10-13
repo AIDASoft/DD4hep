@@ -14,9 +14,11 @@
 #include <cerrno>
 #include <cstring>
 #include <cstdlib>     // for strtod()
-#include "stack.src"
-#include "string.src"
-#include "hash_map.src"
+#include <stack>
+#include <string>
+#include <unordered_map>
+
+using namespace std;
 
 // Disable some diagnostics, which we know, but need to ignore
 #if defined(__GNUC__) && !defined(__APPLE__) && !defined(__llvm__)
@@ -50,14 +52,14 @@ struct Item {
   string expression;
   void   *function;
 
-  explicit Item()         : what(UNKNOWN),   variable(0),expression(), function(0) {}
-  explicit Item(double x) : what(VARIABLE),  variable(x),expression(), function(0) {}
+  explicit Item()              : what(UNKNOWN),   variable(0),expression(), function(0) {}
+  explicit Item(double x)      : what(VARIABLE),  variable(x),expression(), function(0) {}
   explicit Item(string x) : what(EXPRESSION),variable(0),expression(x),function(0) {}
-  explicit Item(void  *x) : what(FUNCTION),  variable(0),expression(), function(x) {}
+  explicit Item(void  *x)      : what(FUNCTION),  variable(0),expression(), function(x) {}
 };
 
 //typedef char * pchar;
-typedef hash_map<string,Item> dic_type;
+typedef unordered_map<string,Item> dic_type;
 
 /// Internal expression evaluator helper class
 struct EVAL::Object::Struct {
@@ -77,7 +79,7 @@ struct EVAL::Object::Struct {
       theStruct->theCond.notify_one();
     }
     Struct* theStruct;
-    std::unique_lock<std::mutex> theLg;
+    unique_lock<mutex> theLg;
 
   };
   struct WriteLock {
@@ -94,14 +96,14 @@ struct EVAL::Object::Struct {
       theStruct->theCond.notify_all();
     }
     Struct* theStruct;
-    std::unique_lock<std::mutex> theLg;
+    unique_lock<mutex> theLg;
   };
 
   dic_type    theDictionary;
   int theReadersWaiting = 0;
   bool theWriterWaiting = false;
-  std::condition_variable theCond;
-  std::mutex  theLock;
+  condition_variable theCond;
+  mutex  theLock;
 };
 
 namespace {
@@ -642,7 +644,7 @@ static int setItem(const char * prefix, const char * name,
 }
 
 //---------------------------------------------------------------------------
-  static void print_error_status(std::ostream& os, int status, char const* extra) {
+  static void print_error_status(ostream& os, int status, char const* extra) {
   static char prefix[] = "Evaluator::Object : ";
   const char* opt = (extra ? extra : "");
   switch (status) {
@@ -731,14 +733,14 @@ int Evaluator::Object::EvalStatus::error_position(const char* expression) const 
 
 //---------------------------------------------------------------------------
 void Evaluator::Object::EvalStatus::print_error() const {
-  std::stringstream str;
+  stringstream str;
   print_error(str);
   if ( str.str().empty() )  return;
-  std::cerr << str.str() << std::endl;
+  cerr << str.str() << endl;
 }
 
 //---------------------------------------------------------------------------
-void Evaluator::Object::EvalStatus::print_error(std::ostream& os) const {
+void Evaluator::Object::EvalStatus::print_error(ostream& os) const {
   print_error_status(os, theStatus, thePosition);
 }
 
@@ -770,22 +772,22 @@ int Evaluator::Object::setEnviron(const char* name, const char* value)  {
 }
 
 //---------------------------------------------------------------------------
-std::pair<const char*,int> Evaluator::Object::getEnviron(const char* name)  const {
+pair<const char*,int> Evaluator::Object::getEnviron(const char* name)  const {
   Struct::ReadLock guard(imp);
   Struct const* cImp = imp;
   dic_type::const_iterator iter = cImp->theDictionary.find(name);
   if (iter != cImp->theDictionary.end()) {
-    return std::make_pair(iter->second.expression.c_str(), EVAL::OK);
+    return make_pair(iter->second.expression.c_str(), EVAL::OK);
   }
   if ( ::strlen(name) > 3 )  {
     // Need to remove braces from ${xxxx} for call to getenv()
     string env_name(name+2,::strlen(name)-3);
     const char* env_str = ::getenv(env_name.c_str());
     if ( 0 != env_str )    {
-      return std::make_pair(env_str, EVAL::OK);
+      return make_pair(env_str, EVAL::OK);
     }
   }
-  return std::make_pair(nullptr,EVAL::ERROR_UNKNOWN_VARIABLE);
+  return make_pair(nullptr,EVAL::ERROR_UNKNOWN_VARIABLE);
 }
 
 //---------------------------------------------------------------------------
@@ -906,30 +908,30 @@ Evaluator::~Evaluator()   {
 }
 
 //---------------------------------------------------------------------------
-std::pair<int,double> Evaluator::evaluate(const std::string& expression)  const   {
+pair<int,double> Evaluator::evaluate(const string& expression)  const   {
   auto result = object->evaluate(expression.c_str());
-  return std::make_pair(result.status(),result.result());
+  return make_pair(result.status(),result.result());
 }
 
 //---------------------------------------------------------------------------
-std::pair<int,double> Evaluator::evaluate(const std::string& expression, std::ostream& os)  const   {
+pair<int,double> Evaluator::evaluate(const string& expression, ostream& os)  const   {
   auto result = object->evaluate(expression.c_str());
   int    status = result.status();
   if ( status != OK )   {
     result.print_error(os);
   }
-  return std::make_pair(result.status(),result.result());
+  return make_pair(result.status(),result.result());
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::setEnviron(const std::string& name, const std::string& value)  const    {
+int Evaluator::setEnviron(const string& name, const string& value)  const    {
   int result = object->setEnviron(name.c_str(), value.c_str());
   return result;
 }
 
 //---------------------------------------------------------------------------
-std::pair<int,std::string> Evaluator::getEnviron(const std::string& name)  const    {
-  std::pair<int,std::string> result;
+pair<int,string> Evaluator::getEnviron(const string& name)  const    {
+  pair<int,string> result;
   auto env_status = object->getEnviron(name.c_str());
   result.first = env_status.second;
   if( env_status.first ) result.second = env_status.first;
@@ -937,8 +939,8 @@ std::pair<int,std::string> Evaluator::getEnviron(const std::string& name)  const
 }
 
 //---------------------------------------------------------------------------
-std::pair<int,std::string> Evaluator::getEnviron(const std::string& name, std::ostream& os)  const    {
-  std::pair<int,std::string> result;
+pair<int,string> Evaluator::getEnviron(const string& name, ostream& os)  const    {
+  pair<int,string> result;
   auto env_status = object->getEnviron(name.c_str());
   result.first = env_status.second;
   if ( env_status.first )   {
@@ -951,13 +953,13 @@ std::pair<int,std::string> Evaluator::getEnviron(const std::string& name, std::o
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::setVariable(const std::string& name, double value)  const    {
+int Evaluator::setVariable(const string& name, double value)  const    {
   int result = object->setVariable(name.c_str(), value);
   return result;
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::setVariable(const std::string& name, double value, std::ostream& os)  const    {
+int Evaluator::setVariable(const string& name, double value, ostream& os)  const    {
   int result = object->setVariable(name.c_str(), value);
   if ( result != OK )   {
     print_error_status(os, result, name.c_str());
@@ -966,13 +968,13 @@ int Evaluator::setVariable(const std::string& name, double value, std::ostream& 
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::setVariable(const std::string& name, const std::string& value)  const    {
+int Evaluator::setVariable(const string& name, const string& value)  const    {
   int result = object->setVariable(name.c_str(), value.c_str());
   return result;
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::setVariable(const std::string& name, const std::string& value, std::ostream& os)  const    {
+int Evaluator::setVariable(const string& name, const string& value, ostream& os)  const    {
   int result = object->setVariable(name.c_str(), value.c_str());
   if ( result != OK )   {
     print_error_status(os, result, name.c_str());
@@ -981,50 +983,50 @@ int Evaluator::setVariable(const std::string& name, const std::string& value, st
 }
 
 //---------------------------------------------------------------------------
-bool Evaluator::findVariable(const std::string& name)  const    {
+bool Evaluator::findVariable(const string& name)  const    {
   bool ret;
   ret = object->findVariable(name.c_str());
   return ret;
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::setFunction(const std::string& name, double (*fun)())  const    {
+int Evaluator::setFunction(const string& name, double (*fun)())  const    {
   int result = object->setFunction(name.c_str(), fun);
   return result;
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::setFunction(const std::string& name, double (*fun)(double))  const    {
+int Evaluator::setFunction(const string& name, double (*fun)(double))  const    {
   int result = object->setFunction(name.c_str(), fun);
   return result;
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::setFunction(const std::string& name, double (*fun)(double, double))  const    {
+int Evaluator::setFunction(const string& name, double (*fun)(double, double))  const    {
   int result = object->setFunction(name.c_str(), fun);
   return result;
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::setFunction(const std::string& name, double (*fun)(double, double, double))  const    {
+int Evaluator::setFunction(const string& name, double (*fun)(double, double, double))  const    {
   int result = object->setFunction(name.c_str(), fun);
   return result;
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::setFunction(const std::string& name, double (*fun)(double, double, double, double))  const    {
+int Evaluator::setFunction(const string& name, double (*fun)(double, double, double, double))  const    {
   int result = object->setFunction(name.c_str(), fun);
   return result;
 }
 
 //---------------------------------------------------------------------------
-int Evaluator::setFunction(const std::string& name, double (*fun)(double, double, double, double, double))  const    {
+int Evaluator::setFunction(const string& name, double (*fun)(double, double, double, double, double))  const    {
   int result =object->setFunction(name.c_str(), fun);
   return result;
 }
 
 //---------------------------------------------------------------------------
-bool Evaluator::findFunction(const std::string& name, int npar) const    {
+bool Evaluator::findFunction(const string& name, int npar) const    {
   bool ret;
   ret = object->findFunction(name.c_str(), npar);
   return ret;
