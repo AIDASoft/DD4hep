@@ -214,9 +214,10 @@ DetElement DetElement::child(const string& child_name) const {
   if (isValid()) {
     const Children& c = ptr()->children;
     Children::const_iterator i = c.find(child_name);
-    return i == c.end() ? DetElement() : (*i).second;
+    if ( i != c.end() ) return (*i).second;
+    throw runtime_error("dd4hep: DetElement::child Unknown child with name: "+child_name);
   }
-  return DetElement();
+  throw runtime_error("dd4hep: DetElement::child: Self is not defined [Invalid Handle]");
 }
 
 /// Access to the detector elements's parent
