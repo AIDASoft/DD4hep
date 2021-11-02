@@ -135,24 +135,6 @@ namespace {
     static Instances s_inst;
     return s_inst;
   }
-
-  void description_unexpected()    {
-    try  {
-      throw;
-    }  catch( exception& e )  {
-      cout << "\n"
-           << "**************************************************** \n"
-           << "*  A runtime error has occured :                     \n"
-           << "*    " << e.what()   << endl
-           << "*  the program will have to be terminated - sorry.   \n"
-           << "**************************************************** \n"
-           << endl ;
-
-      set_terminate(std::terminate);
-      // this provokes ROOT seg fault and stack trace (comment out to avoid it)
-      exit(1) ;
-    }
-  }
 }
 
 string dd4hep::versionString(){
@@ -226,11 +208,6 @@ DetectorImp::DetectorImp(const string& name)
   }
 #endif
 
-  if ( first )    {
-    first = false;
-    set_terminate( description_unexpected );
-  }
-  
   SetName(name.c_str());
   SetTitle("DD4hep detector description object");
   //DetectorGuard(this).lock(gGeoManager);
