@@ -76,7 +76,7 @@ static long gdml_parse(Detector& description, int argc, char** argv) {
         const auto& e = elements[i];
         if ( e == world.name() )
           continue;
-        child = parent.child(e);
+        child = parent.child(e, false);
         if ( child.isValid() )  {
           parent = child;
           continue;

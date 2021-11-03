@@ -437,6 +437,8 @@ namespace dd4hep {
     const Children& children() const;
     /// Access to individual children by name
     DetElement child(const std::string& name) const;
+    /// Access to individual children by name. Have option to not throw an exception
+    DetElement child(const std::string& child_name, bool throw_if_not_found) const;
     /// Access to the detector elements's parent
     DetElement parent() const;
     /// Access to the world object. Only possible once the geometry is closed.
