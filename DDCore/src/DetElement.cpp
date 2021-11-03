@@ -214,7 +214,24 @@ DetElement DetElement::child(const string& child_name) const {
   if (isValid()) {
     const Children& c = ptr()->children;
     Children::const_iterator i = c.find(child_name);
-    return i == c.end() ? DetElement() : (*i).second;
+    if ( i != c.end() ) return (*i).second;
+    throw runtime_error("dd4hep: DetElement::child Unknown child with name: "+child_name);
+  }
+  throw runtime_error("dd4hep: DetElement::child: Self is not defined [Invalid Handle]");
+}
+
+/// Access to individual children by name. Have option to not throw an exception
+DetElement DetElement::child(const string& child_name, bool throw_if_not_found) const {
+  if (isValid()) {
+    const Children& c = ptr()->children;
+    Children::const_iterator i = c.find(child_name);
+    if ( i != c.end() ) return (*i).second;
+    if ( throw_if_not_found )   {
+      throw runtime_error("dd4hep: DetElement::child Unknown child with name: "+child_name);
+    }
+  }
+  if ( throw_if_not_found )   {
+    throw runtime_error("dd4hep: DetElement::child: Self is not defined [Invalid Handle]");
   }
   return DetElement();
 }

@@ -41,6 +41,21 @@ using namespace dd4hep::sim;
 namespace {
   G4Mutex kernel_mutex=G4MUTEX_INITIALIZER;
   dd4hep::dd4hep_ptr<Geant4Kernel> s_main_instance(0);
+  void description_unexpected()    {
+    try  {
+      throw;
+    }  catch( exception& e )  {
+      cout << "\n"
+           << "**************************************************** \n"
+           << "*  A runtime error has occured :                     \n"
+           << "*    " << e.what()   << endl
+           << "*  the program will have to be terminated - sorry.   \n"
+           << "**************************************************** \n"
+           << endl ;
+      // this provokes ROOT seg fault and stack trace (comment out to avoid it)
+      exit(1) ;
+    }
+  }
 }
 
 /// Standard constructor
@@ -147,6 +162,8 @@ Geant4Kernel& Geant4Kernel::instance(Detector& description) {
   if ( 0 == s_main_instance.get() )   {
     G4AutoLock protection_lock(&kernel_mutex);    {
       if ( 0 == s_main_instance.get() )   { // Need to check again!
+        /// Install here the termination handler
+        std::set_terminate(description_unexpected);
         s_main_instance.adopt(new Geant4Kernel(description));
       }
     }
