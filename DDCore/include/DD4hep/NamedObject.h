@@ -45,11 +45,15 @@ namespace dd4hep {
     NamedObject() = default;
     /// Copy constructor
     NamedObject(const NamedObject& c) = default;
+    /// Move constructor
+    NamedObject(NamedObject&& c) = default;
+
     /// Default destructor
     virtual ~NamedObject() = default;
     /// Assignment operator
     NamedObject& operator=(const NamedObject& c) = default;
-
+    /// Move assignment operator
+    NamedObject& operator=(NamedObject&& c) = default;
     /// Access name
     const char* GetName()  const  {
       return name.c_str();
