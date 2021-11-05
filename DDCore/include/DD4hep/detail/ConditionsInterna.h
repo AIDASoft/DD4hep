@@ -85,12 +85,16 @@ namespace dd4hep {
       ConditionObject();
       /// No copy constructor
       ConditionObject(const ConditionObject&) = delete;
+      // Move constructor
+      ConditionObject(ConditionObject&&) = default;
       /// Standard constructor
       ConditionObject(const std::string& nam,const std::string& tit="");
       /// Standard Destructor
       virtual ~ConditionObject();
       /// No assignment operation
       ConditionObject& operator=(const ConditionObject&) = delete;
+      /// Move assignment operator
+      ConditionObject& operator=(ConditionObject&&) = default;
       /// Increase reference counter (Used by persistency mechanism)
       ConditionObject* addRef()  {  ++refCount; return this;         }
       /// Release object (Used by persistency mechanism)
