@@ -54,6 +54,12 @@ namespace dd4hep {
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
+     *
+     * The copy and move constructors have been removed from this class. It would be
+     * unsafe to copy or move an instance of it as:
+     *  - we do not know how to copy the OpaqueDataBlock member "data"
+     *  - there are potentially Handles pointing to instantiated ConditionObjects that would be invalid
+     *    after a copy or move.
      */
     class ConditionObject
 #if defined(DD4HEP_CONDITIONS_HAVE_NAME)
@@ -85,16 +91,16 @@ namespace dd4hep {
       ConditionObject();
       /// No copy constructor
       ConditionObject(const ConditionObject&) = delete;
-      // Move constructor
-      ConditionObject(ConditionObject&&) = default;
+      // No move constructor
+      ConditionObject(ConditionObject&&) = delete;
       /// Standard constructor
       ConditionObject(const std::string& nam,const std::string& tit="");
       /// Standard Destructor
       virtual ~ConditionObject();
       /// No assignment operation
       ConditionObject& operator=(const ConditionObject&) = delete;
-      /// Move assignment operator
-      ConditionObject& operator=(ConditionObject&&) = default;
+      /// No move assignment operator
+      ConditionObject& operator=(ConditionObject&&) = delete;
       /// Increase reference counter (Used by persistency mechanism)
       ConditionObject* addRef()  {  ++refCount; return this;         }
       /// Release object (Used by persistency mechanism)
