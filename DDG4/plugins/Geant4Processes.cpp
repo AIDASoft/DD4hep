@@ -103,10 +103,12 @@ DECLARE_GEANT4_PROCESS(G4CoulombScattering)
 DECLARE_GEANT4_PROCESS(G4PolarizedCompton)
 #include "G4PolarizedGammaConversion.hh"
 DECLARE_GEANT4_PROCESS(G4PolarizedGammaConversion)
+#include "G4ePairProduction.hh"
+DECLARE_GEANT4_PROCESS(G4ePairProduction)
 
 #if G4VERSION_NUMBER < 1100
 #include "G4PolarizedPhotoElectricEffect.hh"
-DECLARE_GEANT4_PROCESS(G4ePolarizedPhotoElectricEffect)
+DECLARE_GEANT4_PROCESS(G4PolarizedPhotoElectricEffect)
 #include "G4ePolarizedBremsstrahlung.hh"
 DECLARE_GEANT4_PROCESS(G4ePolarizedBremsstrahlung)
 #include "G4ePolarizedIonisation.hh"
