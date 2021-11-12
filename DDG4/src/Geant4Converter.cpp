@@ -148,8 +148,16 @@ namespace {
     case kWLSCOMPONENT:                   return make_pair(CLHEP::keV/units::keV, 1.0);
     case kWLSABSLENGTH:                   return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
     case kABSLENGTH:                      return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
+#if G4VERSION_NUMBER >= 1100
+    case kWLSCOMPONENT2:                  return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kWLSABSLENGTH2:                  return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
+    case kSCINTILLATIONCOMPONENT1:        return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kSCINTILLATIONCOMPONENT2:        return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kSCINTILLATIONCOMPONENT3:        return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+#else
     case kFASTCOMPONENT:                  return make_pair(CLHEP::keV/units::keV, 1.0);
     case kSLOWCOMPONENT:                  return make_pair(CLHEP::keV/units::keV, 1.0);
+#endif
     case kPROTONSCINTILLATIONYIELD:       return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV); // Yields: 1/energy
     case kDEUTERONSCINTILLATIONYIELD:     return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
     case kTRITONSCINTILLATIONYIELD:       return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
@@ -179,11 +187,6 @@ namespace {
     case kMIEHG_FORWARD_RATIO:         return 1.0;
     case kSCINTILLATIONYIELD:          return units::keV/CLHEP::keV;                         // Energy
     case kRESOLUTIONSCALE:             return 1.0;
-    case kFASTTIMECONSTANT:            return CLHEP::second/units::second;                   // Time
-    case kFASTSCINTILLATIONRISETIME:   return CLHEP::second/units::second;                   // Time
-    case kSLOWTIMECONSTANT:            return CLHEP::second/units::second;                   // Time
-    case kSLOWSCINTILLATIONRISETIME:   return CLHEP::second/units::second;                   // Time
-    case kYIELDRATIO:                  return 1.0;
     case kFERMIPOT:                    return CLHEP::keV/units::keV;                         // Energy
     case kDIFFUSION:                   return 1.0;
     case kSPINFLIP:                    return 1.0;
@@ -202,6 +205,39 @@ namespace {
     case kMR_ANGNOTHETA:               return 1.0;
     case kMR_ANGNOPHI:                 return 1.0;
     case kMR_ANGCUT:                   return 1.0;
+
+#if G4VERSION_NUMBER >= 1100
+    case kSCINTILLATIONTIMECONSTANT1:  return CLHEP::second/units::second;                   // Time
+    case kSCINTILLATIONTIMECONSTANT2:  return CLHEP::second/units::second;                   // Time
+    case kSCINTILLATIONTIMECONSTANT3:  return CLHEP::second/units::second;                   // Time
+    case kSCINTILLATIONRISETIME1:      return CLHEP::second/units::second;                   // Time
+    case kSCINTILLATIONRISETIME2:      return CLHEP::second/units::second;                   // Time
+    case kSCINTILLATIONRISETIME3:      return CLHEP::second/units::second;                   // Time
+    case kSCINTILLATIONYIELD1:         return 1.0;
+    case kSCINTILLATIONYIELD2:         return 1.0;
+    case kSCINTILLATIONYIELD3:         return 1.0;
+    case kPROTONSCINTILLATIONYIELD1:   return 1.0;
+    case kPROTONSCINTILLATIONYIELD2:   return 1.0;
+    case kPROTONSCINTILLATIONYIELD3:   return 1.0;
+    case kDEUTERONSCINTILLATIONYIELD1: return 1.0;
+    case kDEUTERONSCINTILLATIONYIELD2: return 1.0;
+    case kDEUTERONSCINTILLATIONYIELD3: return 1.0;
+    case kALPHASCINTILLATIONYIELD1:    return 1.0;
+    case kALPHASCINTILLATIONYIELD2:    return 1.0;
+    case kALPHASCINTILLATIONYIELD3:    return 1.0;
+    case kIONSCINTILLATIONYIELD1:      return 1.0;
+    case kIONSCINTILLATIONYIELD2:      return 1.0;
+    case kIONSCINTILLATIONYIELD3:      return 1.0;
+    case kELECTRONSCINTILLATIONYIELD1: return 1.0;
+    case kELECTRONSCINTILLATIONYIELD2: return 1.0;
+    case kELECTRONSCINTILLATIONYIELD3: return 1.0;
+#else
+    case kFASTTIMECONSTANT:            return CLHEP::second/units::second;                   // Time
+    case kFASTSCINTILLATIONRISETIME:   return CLHEP::second/units::second;                   // Time
+    case kSLOWTIMECONSTANT:            return CLHEP::second/units::second;                   // Time
+    case kSLOWSCINTILLATIONRISETIME:   return CLHEP::second/units::second;                   // Time
+    case kYIELDRATIO:                  return 1.0;
+#endif
     default:
       break;
     }
