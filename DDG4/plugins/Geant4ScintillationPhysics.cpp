@@ -40,6 +40,15 @@
 
 #if G4VERSION_NUMBER >= 1070
 #include "G4OpticalParameters.hh"
+
+/// This is a beta release problem:
+#if G4VERSION_NUMBER == 1100
+#include "G4OpticalParameters.hh"
+#pragma message("Geant4 version 11 beta: temporary fix to be removed!")
+void G4OpticalParameters::SetScintExcitationRatio(double) {}
+void G4OpticalParameters::SetScintYieldFactor(double) {}
+#endif
+
 #endif
 
 #include "G4Scintillation.hh"
