@@ -1,3 +1,35 @@
+# v01-19
+
+* 2021-11-12 Markus Frank ([PR#882](https://github.com/aidasoft/DD4hep/pull/882))
+  - See issue in github: https://github.com/AIDASoft/DD4hep/issues/881
+  - Material properties have changed in Geant4 between version 10 and 11.
+  - This fix should fix the compilation problems and take new properties in Geant4.11 into account.
+
+* 2021-11-12 MarkusFrankATcernch ([PR#876](https://github.com/aidasoft/DD4hep/pull/876))
+  - Fix cmake issue when using cmake 3.16.3 (or any of the other versions of cmake that require special python version handling presumably) in a dependent package.
+
+* 2021-11-10 Ben Couturier ([PR#880](https://github.com/aidasoft/DD4hep/pull/880))
+  - Added the default move constructor and default move assignment operator to dd4hep::detail::ConditionObject and dd4hep::NamedObject
+
+* 2021-11-03 Markus Frank ([PR#877](https://github.com/aidasoft/DD4hep/pull/877))
+  - To not compromize client code with an enforced termination handler, the DD4hep termination handler
+  moved to DDG4, where it actually is needed. In DDG4 the termination handler is activated when the main
+  Geant4Kernel instance is created.
+  Reasoning: Please see issue https://github.com/AIDASoft/DD4hep/issues/874 .
+  - Throw an exception if clients ask a DetElement handle for a child by name if such a child is not present or the handle is invalid. This is the new default now. The old behaviour is kept with a second accessor for children by name, with an explicit statement that an exception is unwanted such as: child = DetElement::child("name", false)
+  Please see issue: https://github.com/AIDASoft/DD4hep/issues/878.
+
+* 2021-10-13 Markus Frank ([PR#873](https://github.com/aidasoft/DD4hep/pull/873))
+  - Remove internal classes from evaluator. Use STL provided classes 
+  - Remove hidden clashes with CLHEP evaluator (move internal class Item to anonymous namespace)
+
+* 2021-09-22 Wouter Deconinck ([PR#872](https://github.com/aidasoft/DD4hep/pull/872))
+  - Allow for specifying MomentumMin and MomentumMax in Geant4IsotropeGenerator
+
+* 2021-09-15 Markus Frank ([PR#871](https://github.com/aidasoft/DD4hep/pull/871))
+  - Finalize CAD stuff.
+  - Fix issue https://github.com/AIDASoft/DD4hep/issues/870
+
 # v01-18
 
 * 2021-09-07 Wouter Deconinck ([PR#869](https://github.com/aidasoft/DD4hep/pull/869))
