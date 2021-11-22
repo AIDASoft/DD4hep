@@ -372,6 +372,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
     G4MaterialPropertiesTable* tab = 0;
     TListIter propIt(&material->GetProperties());
     for(TObject* obj=propIt.Next(); obj; obj = propIt.Next())  {
+      string       exc_str;
       TNamed*      named  = (TNamed*)obj;
       TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
       Geant4GeometryInfo::PropertyVector* v =
@@ -384,9 +385,22 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         tab = new G4MaterialPropertiesTable();
         mat->SetMaterialPropertiesTable(tab);
       }
-      int idx = tab->GetPropertyIndex(named->GetName(), false);
+      string err;
+      int idx = -1;
+      try   {
+        idx = tab->GetPropertyIndex(named->GetName());
+      }
+      catch(const std::exception& e)   {
+        exc_str = e.what();
+        idx = -1;
+      }
+      catch(...)   {
+        idx = -1;
+      }
       if ( idx < 0 )   {
-        printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 CONST Property: %-20s [IGNORED]", named->GetName());
+        printout(ERROR, "Geant4Converter",
+                 "++ UNKNOWN Geant4 CONST Property: %-20s %s [IGNORED]",
+                 exc_str.c_str(), named->GetName());
         continue;
       }
       // We need to convert the property from TGeo units to Geant4 units
@@ -406,6 +420,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
     /// Attach the material properties if any
     TListIter cpropIt(&material->GetConstProperties());
     for(TObject* obj=cpropIt.Next(); obj; obj = cpropIt.Next())  {
+      string  exc_str;
       Bool_t     err = kFALSE;
       TNamed*  named = (TNamed*)obj;
       double       v = info.manager->GetProperty(named->GetTitle(),&err);
@@ -419,9 +434,21 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         tab = new G4MaterialPropertiesTable();
         mat->SetMaterialPropertiesTable(tab);
       }
-      int idx = tab->GetConstPropertyIndex(named->GetName(), false);
+      int idx = -1;
+      try   {
+        idx = tab->GetPropertyIndex(named->GetName());
+      }
+      catch(const std::exception& e)   {
+        exc_str = e.what();
+        idx = -1;
+      }
+      catch(...)   {
+        idx = -1;
+      }
       if ( idx < 0 )   {
-        printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 CONST Property: %-20s [IGNORED]", named->GetName());
+        printout(ERROR, "Geant4Converter",
+                 "++ UNKNOWN Geant4 CONST Property: %-20s %s [IGNORED]",
+                 exc_str.c_str(), named->GetName());
         continue;
       }
       // We need to convert the property from TGeo units to Geant4 units
