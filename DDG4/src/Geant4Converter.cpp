@@ -385,7 +385,6 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         tab = new G4MaterialPropertiesTable();
         mat->SetMaterialPropertiesTable(tab);
       }
-      string err;
       int idx = -1;
       try   {
         idx = tab->GetPropertyIndex(named->GetName());
@@ -1185,6 +1184,7 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
     G4MaterialPropertiesTable* tab = 0;
     TListIter it(&optSurf->GetProperties());
     for(TObject* obj = it.Next(); obj; obj = it.Next())  {
+      string exc_str;
       TNamed*      named = (TNamed*)obj;
       TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
       if ( 0 == tab )  {
@@ -1197,9 +1197,21 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
         except("Geant4OpticalSurface","++ Failed to convert opt.surface %s. Property table %s is not defined!",
                optSurf->GetName(), named->GetTitle());
       }
-      int idx = tab->GetPropertyIndex(named->GetName(), false);
+      int idx = -1;
+      try   {
+        idx = tab->GetPropertyIndex(named->GetName());
+      }
+      catch(const std::exception& e)   {
+        exc_str = e.what();
+        idx = -1;
+      }
+      catch(...)   {
+        idx = -1;
+      }
       if ( idx < 0 )   {
-        printout(ERROR, "Geant4Converter", "++ UNKNOWN Geant4 Property: %-20s [IGNORED]", named->GetName());
+        printout(ERROR, "Geant4Converter",
+                 "++ UNKNOWN Geant4 Property: %-20s %s [IGNORED]",
+                 exc_str.c_str(), named->GetName());
         continue;
       }
       // We need to convert the property from TGeo units to Geant4 units
