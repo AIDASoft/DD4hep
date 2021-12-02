@@ -17,13 +17,13 @@ class Physics(ConfigHelper):
     self._list = "FTFP_BERT"
     self._decays = False
     self._pdgfile = None
-    self._rejectPDGs = {1, 2, 3, 4, 5, 6, # quarks
-                        21, 23, 24, 25, # bosons
-                        1103, # d? diquarks
+    self._rejectPDGs = {1, 2, 3, 4, 5, 6,  # quarks
+                        21, 23, 24, 25,  # bosons
+                        1103,  # d? diquarks
                         2101, 2103, 2203,  # u? diquarks
-                        3101, 3103, 3201, 3203, 3303, # s? diquarks
-                        4101, 4103, 4201, 4203, 4301, 4303, 4403, # c? diquarks
-                        5101, 5103, 5201, 5203, 5301, 5303, 5401, 5403, 5503} # b? diquarks
+                        3101, 3103, 3201, 3203, 3303,  # s? diquarks
+                        4101, 4103, 4201, 4203, 4301, 4303, 4403,  # c? diquarks
+                        5101, 5103, 5201, 5203, 5301, 5303, 5401, 5403, 5503}  # b? diquarks
     self._zeroTimePDGs = {11, 13, 15, 17}
     self._userFunctions = []
 
