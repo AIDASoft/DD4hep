@@ -281,7 +281,6 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
     size_t cnt = 0;
     map<int,int> p_ids;
     vector<const Geant4Particle*> p_part(pm.size(),0);
-    vector<edm4hep::MCParticle> p_edm4hep(pm.size());
     // First create the particles
     for(ParticleMap::const_iterator i=pm.begin(); i!=pm.end();++i, ++cnt)   {
       int id = (*i).first;
@@ -289,7 +288,7 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
       PropertyMask mask(p->status);
       //      std::cout << " ********** mcp status : 0x" << std::hex << p->status << ", mask.isSet(G4PARTICLE_GEN_STABLE) x" << std::dec << mask.isSet(G4PARTICLE_GEN_STABLE)  <<std::endl ;
       const G4ParticleDefinition* def = p.definition();
-      edm4hep::MCParticle mcp = edm4hep::MCParticle();
+      auto mcp = mcpc->create();
       mcp.setPDG(p->pdgID);
 
       float ps_fa[3] = {float(p->psx/CLHEP::GeV),float(p->psy/CLHEP::GeV),float(p->psz/CLHEP::GeV)};
@@ -337,17 +336,15 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
       mcp.setSpin(p->spin);
       mcp.setColorFlow(p->colorFlow);
 
-      mcpc->push_back(mcp);
       p_ids[id] = cnt;
       p_part[cnt] = p;
-      p_edm4hep[cnt] = mcp;
     }
 
     // Now establish parent-daughter relationships
     for(size_t i=0, n=p_ids.size(); i<n; ++i)   {
       map<int,int>::iterator k;
       const Geant4Particle* p = p_part[i];
-      edm4hep::MCParticle q = p_edm4hep[i];
+      auto q = (*mcpc)[i];
       const Geant4Particle::Particles& dau = p->daughters;
       for(Geant4Particle::Particles::const_iterator j=dau.begin(); j!=dau.end(); ++j)  {
         int idau = *j;
@@ -356,7 +353,7 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
           continue;
         }
         int iqdau = (*k).second;
-        edm4hep::MCParticle qdau = p_edm4hep[iqdau];
+        auto qdau = (*mcpc)[iqdau];
         qdau.addToParents(q);
       }
       const Geant4Particle::Particles& par = p->parents;
@@ -367,7 +364,7 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
           continue;
         }
         int iqpar = (*k).second;
-        edm4hep::MCParticle qpar = p_edm4hep[iqpar];
+        auto qpar = (*mcpc)[iqpar];
         q.addToParents(qpar);
       }
     }
