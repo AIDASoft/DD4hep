@@ -43,7 +43,7 @@
 #include <typeinfo>
 #include <iostream>
 #include <ctime>
-
+#include <unordered_map>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -87,6 +87,8 @@ namespace dd4hep {
       std::map< std::string, std::string > m_eventParametersFloat;
       std::map< std::string, std::string > m_eventParametersString;
       bool m_FirstEvent =  true  ;
+
+      std::unordered_map<std::string, podio::CollectionBase*> m_collections;
 
       /// create the podio collections for the particles and hits
       void createCollections(OutputContext<G4Event>& ctxt) ;
@@ -273,9 +275,7 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
   typedef Geant4ParticleMap::ParticleMap ParticleMap;
   const ParticleMap& pm = particles->particleMap;
   size_t nparts = pm.size();
-  edm4hep::MCParticleCollection* mcpc =
-    const_cast<edm4hep::MCParticleCollection*>(
-      &m_store->get<edm4hep::MCParticleCollection>("MCParticles"));
+  auto mcpc = static_cast<edm4hep::MCParticleCollection*>(m_collections["MCParticles"]);
 
   if ( nparts > 0 )  {
     size_t cnt = 0;
@@ -396,8 +396,8 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
 
   // this does not compile as create() is we only get a const ref - need to review PODIO EventStore API
   // auto& evtHCol = m_store->get<edm4hep::EventHeaderCollection>("EventHeader") ;
-  // auto evtHdr = evtHCol.create() ;
-  auto* evtHCol = const_cast<edm4hep::EventHeaderCollection*>(&m_store->get<edm4hep::EventHeaderCollection>("EventHeader") );
+// auto evtHdr = evtHCol.create() ;
+  auto* evtHCol = static_cast<edm4hep::EventHeaderCollection*>(m_collections["EventHeader"]);
   auto evtHdr = evtHCol->create() ;
 
   evtHdr.setRunNumber(runNumber);
@@ -435,15 +435,12 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
 
   Geant4ParticleMap* pm = context()->event().extension<Geant4ParticleMap>(false);
 
-  edm4hep::MCParticleCollection* mcpc =
-    const_cast<edm4hep::MCParticleCollection*>(
-      &m_store->get<edm4hep::MCParticleCollection>("MCParticles"));
+  auto* mcpc = static_cast<edm4hep::MCParticleCollection*>(m_collections["MCParticles"]);
 
   //-------------------------------------------------------------------
   if( typeid( Geant4Tracker::Hit ) == coll->type().type()  ){
 
-    edm4hep::SimTrackerHitCollection* sthc =
-      const_cast<edm4hep::SimTrackerHitCollection*>(&m_store->get<edm4hep::SimTrackerHitCollection>(colName));
+    auto* sthc = static_cast<edm4hep::SimTrackerHitCollection*>(m_collections[colName]);
 
     for(unsigned i=0 ; i < nhits ; ++i){
       auto sth = sthc->create() ;
@@ -481,15 +478,11 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
     Geant4Sensitive*       sd      = coll->sensitive();
     int hit_creation_mode = sd->hitCreationMode();
 
-    edm4hep::SimCalorimeterHitCollection* sCaloHitColl =
-      const_cast<edm4hep::SimCalorimeterHitCollection*>(
-  &m_store->get<edm4hep::SimCalorimeterHitCollection>(colName));
+    auto* sCaloHitColl = static_cast<edm4hep::SimCalorimeterHitCollection*>(m_collections[colName]);
 
     colName += "Contributions"  ;
 
-    edm4hep::CaloHitContributionCollection* sCaloHitContColl =
-      const_cast<edm4hep::CaloHitContributionCollection*>(
-  &m_store->get<edm4hep::CaloHitContributionCollection>(colName));
+    auto* sCaloHitContColl = static_cast<edm4hep::CaloHitContributionCollection*>(m_collections[colName]);
 
 
     for(unsigned i=0 ; i < nhits ; ++i){
@@ -536,14 +529,17 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   }
 }
 
-
 void Geant4Output2EDM4hep::createCollections(OutputContext<G4Event>& ctxt){
 
-  m_store->create<edm4hep::MCParticleCollection>("MCParticles");
+  auto* mcColl = new edm4hep::MCParticleCollection();
+  m_collections.emplace("MCParticles", mcColl);
+  m_store->registerCollection("MCParticles", mcColl);
   m_file->registerForWrite("MCParticles");
   printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection MCParticles" );
 
-  m_store->create<edm4hep::EventHeaderCollection>("EventHeader") ;
+  auto* evtHeader = new edm4hep::EventHeaderCollection();
+  m_collections.emplace("EventHeader", evtHeader);
+  m_store->registerCollection("EventHeader", evtHeader);
   m_file->registerForWrite("EventHeader");
   printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection EventHeader" );
 
@@ -566,22 +562,28 @@ void Geant4Output2EDM4hep::createCollections(OutputContext<G4Event>& ctxt){
 
     if( typeid( Geant4Tracker::Hit ) == coll->type().type()  ){
 
-      auto& sthc = m_store->create<edm4hep::SimTrackerHitCollection>(colName);
+      auto* sthc = new edm4hep::SimTrackerHitCollection();
+      m_collections.emplace(colName, sthc);
+      m_store->registerCollection(colName, sthc);
       m_file->registerForWrite(colName);
-      auto& sthc_md = m_store->getCollectionMetaData( sthc.getID() );
+      auto& sthc_md = m_store->getCollectionMetaData( sthc->getID() );
       sthc_md.setValue("CellIDEncodingString", sd_enc);
       printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
     }
     else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type() ){
 
-      auto& schc = m_store->create<edm4hep::SimCalorimeterHitCollection>(colName);
+      auto* schc = new edm4hep::SimCalorimeterHitCollection();
+      m_collections.emplace(colName, schc);
+      m_store->registerCollection(colName, schc);
       m_file->registerForWrite(colName);
-      auto& schc_md = m_store->getCollectionMetaData( schc.getID() );
+      auto& schc_md = m_store->getCollectionMetaData( schc->getID() );
       schc_md.setValue("CellIDEncodingString", sd_enc);
       printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
 
       colName += "Contributions"  ;
-      m_store->create<edm4hep::CaloHitContributionCollection>(colName);
+      auto* chContribColl = new edm4hep::CaloHitContributionCollection();
+      m_collections.emplace(colName, chContribColl);
+      m_store->registerCollection(colName, chContribColl);
       m_file->registerForWrite(colName);
       printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
 
