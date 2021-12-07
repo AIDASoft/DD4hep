@@ -274,17 +274,18 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
   typedef detail::ReferenceBitMask<const int> PropertyMask;
   typedef Geant4ParticleMap::ParticleMap ParticleMap;
   const ParticleMap& pm = particles->particleMap;
-  size_t nparts = pm.size();
   auto mcpc = static_cast<edm4hep::MCParticleCollection*>(m_collections["MCParticles"]);
 
-  if ( nparts > 0 )  {
+  if ( pm.size() > 0 )  {
     size_t cnt = 0;
+    // Mapping of ids in the ParticleMap to indices in the MCParticle collection
     map<int,int> p_ids;
-    vector<const Geant4Particle*> p_part(pm.size(),0);
+    vector<const Geant4Particle*> p_part;
+    p_part.reserve(pm.size());
     // First create the particles
-    for(ParticleMap::const_iterator i=pm.begin(); i!=pm.end();++i, ++cnt)   {
-      int id = (*i).first;
-      const Geant4ParticleHandle p = (*i).second;
+    for (const auto& iParticle : pm) {
+      int id = iParticle.first;
+      const Geant4ParticleHandle p = iParticle.second;
       PropertyMask mask(p->status);
       //      std::cout << " ********** mcp status : 0x" << std::hex << p->status << ", mask.isSet(G4PARTICLE_GEN_STABLE) x" << std::dec << mask.isSet(G4PARTICLE_GEN_STABLE)  <<std::endl ;
       const G4ParticleDefinition* def = p.definition();
@@ -336,19 +337,18 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
       mcp.setSpin(p->spin);
       mcp.setColorFlow(p->colorFlow);
 
-      p_ids[id] = cnt;
-      p_part[cnt] = p;
+      p_ids[id] = cnt++;
+      p_part.push_back(p);
     }
 
     // Now establish parent-daughter relationships
-    for(size_t i=0, n=p_ids.size(); i<n; ++i)   {
-      map<int,int>::iterator k;
+    for(size_t i=0; i < p_ids.size(); ++i)   {
       const Geant4Particle* p = p_part[i];
       auto q = (*mcpc)[i];
-      const Geant4Particle::Particles& dau = p->daughters;
-      for(Geant4Particle::Particles::const_iterator j=dau.begin(); j!=dau.end(); ++j)  {
-        int idau = *j;
-        if ( (k=p_ids.find(idau)) == p_ids.end() )  {  // Error!!!
+
+      for (const auto& idau : p->daughters) {
+        const auto k = p_ids.find(idau);
+        if (k == p_ids.end()) {
           printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find daughter with ID:%d",p->id,idau);
           continue;
         }
@@ -356,16 +356,18 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
         auto qdau = (*mcpc)[iqdau];
         qdau.addToParents(q);
       }
-      const Geant4Particle::Particles& par = p->parents;
-      for(Geant4Particle::Particles::const_iterator j=par.begin(); j!=par.end(); ++j)  {
-        int ipar = *j; // A parent ID iof -1 means NO parent, because a base of 0 is perfectly leagal!
-        if ( ipar>=0 && (k=p_ids.find(ipar)) == p_ids.end() )  {  // Error!!!
-          printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find parent with ID:%d",p->id,ipar);
-          continue;
+
+      for (const auto& ipar : p->parents) {
+        if (ipar >= 0) { // A parent ID of -1 means NO parent, because a base of 0 is perfectly legal
+          const auto k = p_ids.find(ipar);
+          if (k == p_ids.end()) {
+            printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find parent with ID:%d",p->id,ipar);
+            continue;
+          }
+          int iqpar = (*k).second;
+          auto qpar = (*mcpc)[iqpar];
+          q.addToParents(qpar);
         }
-        int iqpar = (*k).second;
-        auto qpar = (*mcpc)[iqpar];
-        q.addToParents(qpar);
       }
     }
   }
