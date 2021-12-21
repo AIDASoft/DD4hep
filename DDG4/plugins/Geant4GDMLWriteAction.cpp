@@ -89,7 +89,9 @@ namespace dd4hep {
 #include "DDG4/Geant4UIMessenger.h"
 
 // Geant 4 includes
+#ifndef GEANT4_NO_GDML
 #include "G4GDMLParser.hh"
+#endif
 #include "G4Version.hh"
 
 // C/C++ include files
@@ -143,6 +145,9 @@ void Geant4GDMLWriteAction::writeGDML()   {
     warning("+++ GDML file %s already exists. Overwriting existing file.", fname.c_str());
     ::unlink(fname.c_str());
   }
+#ifdef GEANT4_NO_GDML
+  warning("+++ writeGDML: GDML not found in the present Geant4 build! Output: %s not written", fname.c_str());
+#else
   unique_ptr<G4GDMLParser> parser(new G4GDMLParser());
   parser->SetRegionExport(m_exportRegions != 0);
   parser->SetEnergyCutsExport(m_exportEnergyCuts != 0);
@@ -151,6 +156,7 @@ void Geant4GDMLWriteAction::writeGDML()   {
 #endif
   info("+++ Writing GDML file: %s", fname.c_str());
   parser->Write(fname, context()->world());
+#endif
 }
 
 #include "DDG4/Factories.h"

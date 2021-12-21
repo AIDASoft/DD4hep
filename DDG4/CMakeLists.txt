@@ -26,7 +26,7 @@ target_link_libraries(DDG4
   DD4hep::DDCore
   Geant4::Interface
   )
-
+#
 #Ensure our own includes come before those of the system
 target_include_directories(DDG4 BEFORE
   PUBLIC
@@ -34,6 +34,12 @@ target_include_directories(DDG4 BEFORE
   $<INSTALL_INTERFACE:include>
 )
 
+if(NOT Geant4_gdml_FOUND)
+  dd4hep_print("|++> Geant4 has no GDML library present....do not build corresponding features")
+  target_compile_definitions(DDG4 PUBLIC -DGEANT4_NO_GDML)
+else()
+  dd4hep_print("|++> Geant4 GDML library present....build G4 GDML components")
+endif()
 #-----------------------------------------------------------------------------------
 dd4hep_add_dictionary( G__DDG4
   SOURCES python/DDG4Dict.C
@@ -129,13 +135,16 @@ ENDIF()
 #   install(TARGETS DDG4Reco EXPORT DD4hep LIBRARY DESTINATION lib)
 # ENDIF()
 #-----------------------------------------------------------------------------------
-add_executable(g4gdmlDisplay g4gdmlDisplay.cpp)
+if(Geant4_gdml_FOUND)
+  add_executable(g4gdmlDisplay g4gdmlDisplay.cpp)
+  target_link_libraries(g4gdmlDisplay DDG4)
+  install(TARGETS g4gdmlDisplay EXPORT DD4hep RUNTIME DESTINATION bin)
+endif()
+#
 #-----------------------------------------------------------------------------------
 add_executable(g4FromXML g4FromXML.cpp)
-#-----------------------------------------------------------------------------------
-target_link_libraries(g4gdmlDisplay DDG4)
 target_link_libraries(g4FromXML DDG4)
-
+#
 #---Package installation procedure(s) ----------------------------------------------
 file(GLOB DDG4_python python/*.py python/*.C)
 install(FILES ${DDG4_python} DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
@@ -163,8 +172,7 @@ install(DIRECTORY examples DESTINATION examples/DDG4)
 
 set_target_properties(DDG4 DDG4Plugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
-
-install(TARGETS DDG4 DDG4Plugins g4gdmlDisplay g4FromXML
+install(TARGETS DDG4 DDG4Plugins g4FromXML
   EXPORT DD4hep
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

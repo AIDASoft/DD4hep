@@ -118,9 +118,9 @@ namespace dd4hep {
 #include <G4VSolid.hh>
 #include "CLHEP/Units/SystemOfUnits.h"
 
-//#ifdef GEANT4_HAS_GDML
+#ifndef GEANT4_NO_GDML
 #include <G4GDMLParser.hh>
-//#endif
+#endif
 
 #include <cmath>
 
@@ -403,11 +403,13 @@ int Geant4DetectorGeometryConstruction::checkVolume(const char* vol_path)  {
 
 /// Write GDML file
 int Geant4DetectorGeometryConstruction::writeGDML(const char* output)  {
+#ifdef GEANT4_NO_GDML
+  warning("+++ writeGDML: GDML not found in the present Geant4 build! Output: %s not written", output);
+#else
   G4VPhysicalVolume* w  = context()->world();
   if ( output && ::strlen(output) > 0 && output != m_dumpGDML.c_str() )
     m_dumpGDML = output;
 
-  //#ifdef GEANT4_HAS_GDML
   if ( !m_dumpGDML.empty() ) {
     G4GDMLParser parser;
     parser.Write(m_dumpGDML.c_str(), w);
@@ -424,7 +426,7 @@ int Geant4DetectorGeometryConstruction::writeGDML(const char* output)  {
     }
   }
   warning("+++ writeGDML: Neither property DumpGDML nor environment DUMP_GDML set. No file written!");
-  //#endif
+#endif
   return 0;
 }
 
