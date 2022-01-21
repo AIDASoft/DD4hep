@@ -1,3 +1,39 @@
+# v01-20
+
+* 2021-12-21 Markus Frank ([PR#888](https://github.com/aidasoft/DD4hep/pull/888))
+  - Changes for Geant4 11.0.0.
+    Propagate additional setup properties for optical parameters in Geant4ScintillationPhysics.
+    Other required changes were already included when preparing for the Geant4 beta release.
+  - Allow for Geant4 builds without GDML.
+    Enable conditional build if the Geant4 build does not support GDML
+
+* 2021-12-16 Thomas Madlener ([PR#887](https://github.com/aidasoft/DD4hep/pull/887))
+  - Rework the EDM4hep output action. The major reason is the renaming of the default types in AIDASoft/podio#205 and its effects on EDM4hep (key4hep/EDM4hep#132). These changes are:
+    - Use `auto` wherever possible to remove any explicit mentioning of EDM4hep types.
+    - Switch to range-based for-loops where possible
+    - Keep an internal map of the collections to get rid of the `const_cast`s that were used before.
+  - EDM4hep output: Make sure that the daughter relations are also set, because that is not done automatically in EDM4hep but is in LCIO.
+
+* 2021-12-02 Wouter Deconinck ([PR#886](https://github.com/aidasoft/DD4hep/pull/886))
+  - Add diquarks to default DDG4 rejectPDGs list
+
+* 2021-11-26 Markus Frank ([PR#885](https://github.com/aidasoft/DD4hep/pull/885))
+  - Remove another occurrency of a call to G4::GetPropertyIndex() with 2nd argument.
+  - This PR is an addendum to the already closed request https://github.com/AIDASoft/DD4hep/pull/884
+
+* 2021-11-22 Markus Frank ([PR#884](https://github.com/aidasoft/DD4hep/pull/884))
+  - Issue https://github.com/AIDASoft/DD4hep/issues/881
+    Next attempt for resolution. Avoid explicit use of the second argument in 
+  ```
+    G4int GetConstPropertyIndex(const G4String& key,
+                                G4bool warning = false) const;
+    // Get the constant property index from the key-name
+  
+    G4int GetPropertyIndex(const G4String& key, G4bool warning = false) const;
+    // Get the property index by the key-name.
+    ```
+    Should satisfy existing and future snapshots of Geant4.
+
 # v01-19
 
 * 2021-11-12 Markus Frank ([PR#882](https://github.com/aidasoft/DD4hep/pull/882))
