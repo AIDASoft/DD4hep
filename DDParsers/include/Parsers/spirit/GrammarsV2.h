@@ -33,8 +33,18 @@
 #include <boost/fusion/include/unused.hpp>
 #include <boost/fusion/include/std_pair.hpp>
 
+// version is like X YYY ZZ (no spaces)
+#if BOOST_VERSION >= 107800
+
+#include <boost/phoenix/core.hpp>
+#include <boost/phoenix/operator.hpp>
+
+#else
+
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
+
+#endif
 
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits.hpp>
