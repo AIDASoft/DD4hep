@@ -102,7 +102,7 @@ namespace dd4hep {
       } data;
       std::string name;
       std::string hits;
-      std::string use  {"true"};
+      std::string use;
       int type;
       /// Default constructor
       Config();
