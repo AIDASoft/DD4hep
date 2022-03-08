@@ -107,14 +107,14 @@ bool GenericEventHandler::Open(const string& file_type, const string& file_name)
     detail::deletePtr(m_current);
     //  prefer event handler configured in xml
     if ( file_type.find("FCC") != string::npos ) {
-      m_current = (EventHandler*)PluginService::Create<void*>("DDEve_FCCEventHandler",(const char*)0);
+      m_current = (EventHandler*)PluginService::Create<void*>("DD4hep_DDEve_FCCEventHandler",(const char*)0);
     }
     // fall back to defaults according to file ending
     else if ( idx != string::npos )   {
-      m_current = (EventHandler*)PluginService::Create<void*>("DDEve_LCIOEventHandler",(const char*)0);
+      m_current = (EventHandler*)PluginService::Create<void*>("DD4hep_DDEve_LCIOEventHandler",(const char*)0);
     }
     else if ( idr != string::npos )   {
-      m_current = (EventHandler*)PluginService::Create<void*>("DDEve_DDG4EventHandler",(const char*)0);
+      m_current = (EventHandler*)PluginService::Create<void*>("DD4hep_DDEve_DDG4EventHandler",(const char*)0);
     }
     else   {
       throw runtime_error("Attempt to open file:"+file_name+" of unknown type:"+file_type);
