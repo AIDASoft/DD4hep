@@ -320,6 +320,7 @@ UNICODE (offset);
 UNICODE (open);
 UNICODE (operation);
 UNICODE (opticalsurface);
+UNICODE (option);
 UNICODE (overlap);
 UNICODE (outer);
 UNICODE (outer_field);

@@ -11,6 +11,7 @@
 //
 //==========================================================================
 
+
 // Framework include files
 #include "DD4hep/Detector.h"
 #include "DD4hep/Plugins.h"
@@ -86,7 +87,8 @@ using namespace std;
 #include "DDG4/Geant4AssemblyVolume.h"
 #include "DD4hep/DetectorTools.h"
 
-static const double CM_2_MM = (CLHEP::centimeter/dd4hep::centimeter);
+static constexpr const double CM_2_MM = (CLHEP::centimeter/dd4hep::centimeter);
+static constexpr const char* GEANT4_TAG_IGNORE = "Geant4-ignore";
 
 namespace {
   static string indent = "";
@@ -375,6 +377,18 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       string       exc_str;
       TNamed*      named  = (TNamed*)obj;
       TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
+      const char*  cptr   = ::strstr(matrix->GetName(), GEANT4_TAG_IGNORE);
+      if ( 0 != cptr )   {
+	printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
+		 matrix->GetName(), matrix->GetTitle());
+	continue;
+      }
+      cptr = ::strstr(matrix->GetTitle(), GEANT4_TAG_IGNORE);
+      if ( 0 != cptr )   {
+	printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
+		 matrix->GetName(), matrix->GetTitle());
+	continue;
+      }
       Geant4GeometryInfo::PropertyVector* v =
         (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
       if ( 0 == v )   {
@@ -408,7 +422,8 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       for(size_t i=0, count=bins.size(); i<count; ++i)
         bins[i] *= conv.first, vals[i] *= conv.second;
 
-      G4MaterialPropertyVector* vec = new G4MaterialPropertyVector(&bins[0], &vals[0], bins.size());
+      G4MaterialPropertyVector* vec =
+	new G4MaterialPropertyVector(&bins[0], &vals[0], bins.size());
       tab->AddProperty(named->GetName(), vec);
       printout(lvl, "Geant4Converter", "++      Property: %-20s [%ld x %ld] -> %s ",
                named->GetName(), matrix->GetRows(), matrix->GetCols(), named->GetTitle());
@@ -422,7 +437,20 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       string  exc_str;
       Bool_t     err = kFALSE;
       TNamed*  named = (TNamed*)obj;
-      double       v = info.manager->GetProperty(named->GetTitle(),&err);
+
+      const char*  cptr = ::strstr(named->GetName(), GEANT4_TAG_IGNORE);
+      if ( 0 != cptr )   {
+	printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
+		 named->GetName(), named->GetTitle());
+	continue;
+      }
+      cptr = ::strstr(named->GetTitle(), GEANT4_TAG_IGNORE);
+      if ( 0 != cptr )   {
+	printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
+		 named->GetName(), named->GetTitle());
+	continue;
+      }
+      double v = info.manager->GetProperty(named->GetTitle(),&err);
       if ( err != kFALSE )   {
         except("Geant4Converter",
                "++ FAILED to create G4 material %s "
@@ -1034,14 +1062,14 @@ void Geant4Converter::handleProperties(Detector::Properties& prp) const {
     const Detector::PropertyValues& vals = prp[p.second];
     string type = vals.find("type")->second;
     string tag  = type + "_Geant4_action";
-    Detector* detPtr = const_cast<Detector*>(&m_detDesc);
-    long result = PluginService::Create<long>(tag, detPtr, hdlr, &vals);
-    if (0 == result) {
+    Detector* det = const_cast<Detector*>(&m_detDesc);
+    long      res = PluginService::Create<long>(tag, det, hdlr, &vals);
+    if ( 0 == res ) {
       throw runtime_error("Failed to locate plugin to interprete files of type"
                           " \"" + tag + "\" - no factory:" + type);
     }
-    result = *(long*)result;
-    if (result != 1) {
+    res = *(long*)res;
+    if ( res != 1 ) {
       throw runtime_error("Failed to invoke the plugin " + tag + " of type " + type);
     }
     printout(outputLevel, "Geant4Converter", "+++++ Executed Successfully Geant4 setup module *%s*.", type.c_str());
@@ -1050,25 +1078,40 @@ void Geant4Converter::handleProperties(Detector::Properties& prp) const {
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 /// Convert the geometry type material into the corresponding Geant4 object(s).
-void* Geant4Converter::handleMaterialProperties(TObject* matrix) const    {
-  TGDMLMatrix* gdmlMat = (TGDMLMatrix*)matrix;
-  Geant4GeometryInfo& info = data();
-  Geant4GeometryInfo::PropertyVector* g4 = info.g4OpticalProperties[gdmlMat];
-  if ( !g4 ) {
+void* Geant4Converter::handleMaterialProperties(TObject* mtx) const    {
+  Geant4GeometryInfo& info   = data();
+  TGDMLMatrix*        matrix = (TGDMLMatrix*)mtx;
+  const char*         cptr   = ::strstr(matrix->GetName(), GEANT4_TAG_IGNORE);
+  Geant4GeometryInfo::PropertyVector* g4 = info.g4OpticalProperties[matrix];
+
+  if ( 0 != cptr )   {  // Check if the property should not be passed to Geant4
+    printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
+	     matrix->GetName(), matrix->GetTitle());	     
+    return nullptr;
+  }
+  cptr = ::strstr(matrix->GetTitle(), GEANT4_TAG_IGNORE);
+  if ( 0 != cptr )   {  // Check if the property should not be passed to Geant4
+    printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
+	     matrix->GetName(), matrix->GetTitle());
+    return nullptr;
+  }
+  
+  if ( !g4 )  {
     PrintLevel lvl = debugMaterials ? ALWAYS : outputLevel;
     g4 = new Geant4GeometryInfo::PropertyVector();
-    size_t rows = gdmlMat->GetRows();
-    g4->name    = gdmlMat->GetName();
-    g4->title   = gdmlMat->GetTitle();
+    size_t rows = matrix->GetRows();
+    g4->name    = matrix->GetName();
+    g4->title   = matrix->GetTitle();
     g4->bins.reserve(rows);
     g4->values.reserve(rows);
     for( size_t i=0; i<rows; ++i )   {
-      g4->bins.emplace_back(gdmlMat->Get(i,0)  /*   *CLHEP::eV/units::eV   */);
-      g4->values.emplace_back(gdmlMat->Get(i,1));
+      g4->bins.emplace_back(matrix->Get(i,0)  /*   *CLHEP::eV/units::eV   */);
+      g4->values.emplace_back(matrix->Get(i,1));
     }
-    printout(lvl, "Geant4Converter", "++ Successfully converted material property:%s : %s [%ld rows]",
-             gdmlMat->GetName(), gdmlMat->GetTitle(), rows);
-    info.g4OpticalProperties[gdmlMat] = g4;
+    printout(lvl, "Geant4Converter",
+	     "++ Successfully converted material property:%s : %s [%ld rows]",
+             matrix->GetName(), matrix->GetTitle(), rows);
+    info.g4OpticalProperties[matrix] = g4;
   }
   return g4;
 }
@@ -1185,12 +1228,17 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
     TListIter it(&optSurf->GetProperties());
     for(TObject* obj = it.Next(); obj; obj = it.Next())  {
       string exc_str;
-      TNamed*      named = (TNamed*)obj;
+      TNamed*      named  = (TNamed*)obj;
       TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
+      const char*  cptr   = ::strstr(matrix->GetName(), GEANT4_TAG_IGNORE);
+      if ( 0 != cptr )  // Check if the property should not be passed to Geant4
+	continue;
+
       if ( 0 == tab )  {
         tab = new G4MaterialPropertiesTable();
         g4->SetMaterialPropertiesTable(tab);
       }
+
       Geant4GeometryInfo::PropertyVector* v =
         (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
       if ( !v )  {  // Error!
