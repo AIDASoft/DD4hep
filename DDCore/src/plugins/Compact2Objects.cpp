@@ -731,8 +731,9 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
       }
       continue;
     }
-    size_t cols = props.attr<long>(_U(coldim));
-    string nam  = props.attr<string>(_U(name));
+    size_t     cols = props.attr<long>(_U(coldim));
+    string     nam  = props.attr<string>(_U(name));
+    xml_attr_t opt  = props.attr_nothrow(_U(option));
     stringstream str(props.attr<string>(_U(values))), str_nam;
     string val;
     vector<double> values;
@@ -744,6 +745,10 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
     }
     /// Create table and register table
     TGDMLMatrix* table = new TGDMLMatrix("",values.size()/cols, cols);
+    if ( opt )   {
+      string tit = e.attr<string>(opt);
+      str_nam << tit << "|";
+    }
     str_nam << nam << "__" << (void*)table;
     table->SetName(str_nam.str().c_str());
     table->SetTitle(nam.c_str());
@@ -766,6 +771,17 @@ template <> void Converter<PropertyConstant>::operator()(xml_h e) const    {
   if ( s_debug.matrix )    {
     printout(ALWAYS,"Compact","+++ Reading property %s : %f",name.c_str(), value);
   }
+#if 0
+  xml_attr_t opt = e.attr_nothrow(_U(title));
+  if ( opt )    {
+    string  val = e.attr<string>(opt);
+    TNamed* nam = description.manager().GetProperty(name.c_str());
+    if ( !nam )   {
+      except("Compact","Failed to access just added manager property: %s",name.c_str());
+    }
+    nam->SetTitle(val.c_str());
+  }
+#endif
 }
 
 /** Convert compact property table objects (defines)
@@ -774,34 +790,37 @@ template <> void Converter<PropertyConstant>::operator()(xml_h e) const    {
  *
  */
 template <> void Converter<PropertyTable>::operator()(xml_h e) const {
-  string val;
-  vector<double> values;
-  size_t cols = e.attr<unsigned long>(_U(coldim));
-  stringstream str(e.attr<string>(_U(values)));
+  vector<double> vals;
+  size_t         cols = e.attr<unsigned long>(_U(coldim));
+  stringstream   str(e.attr<string>(_U(values)));
 
   if ( s_debug.matrix )    {
     printout(ALWAYS,"Compact","+++ Reading property table %s with %d columns.",
              e.attr<string>(_U(name)).c_str(), cols);
   }
-  values.reserve(1024);
+  vals.reserve(1024);
   while ( !str.eof() )   {
-    val = "";
-    str >> val;
-    if ( val.empty() && !str.good() ) break;
-    values.emplace_back(_toDouble(val));
+    string item;
+    str >> item;
+    if ( item.empty() && !str.good() ) break;
+    vals.emplace_back(_toDouble(item));
     if ( s_debug.matrix )    {
-      cout << " state:" << (str.good() ? "OK " : "BAD") << " '" << val << "'";
-      if ( 0 == (values.size()%cols) ) cout << endl;
+      cout << " state:" << (str.good() ? "OK " : "BAD") << " '" << item << "'";
+      if ( 0 == (vals.size()%cols) ) cout << endl;
     }
   }
   if ( s_debug.matrix )    {
     cout << endl;
   }
   /// Create table and register table
-  PropertyTable table(description, e.attr<string>(_U(name)), "", values.size()/cols, cols);
-  for (size_t i=0, n=values.size(); i<n; ++i)
-    table->Set(i/cols, i%cols, values[i]);
-  //if ( s_debug.matrix ) table->Print();
+  xml_attr_t    opt = e.attr_nothrow(_U(option));
+  PropertyTable tab(description,
+		    e.attr<string>(_U(name)),
+		    opt ? e.attr<string>(opt).c_str() : "",
+		    vals.size()/cols, cols);
+  for( size_t i=0, n=vals.size(); i < n; ++i )
+    tab->Set(i/cols, i%cols, vals[i]);
+  //if ( s_debug.matrix ) tab->Print();
 }
 #endif
 
