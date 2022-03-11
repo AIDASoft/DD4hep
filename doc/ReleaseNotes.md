@@ -1,3 +1,22 @@
+# v01-20-01
+
+* 2022-03-08 Markus FRANK ([PR#894](https://github.com/AIDASoft/DD4hep/pull/894))
+  - The refactoring of namespaces (some years ago) left some factory name discrepancies in DDEve.
+  This PR fixes them and re-enables the various views and projections.
+  See issue https://github.com/AIDASoft/DD4hep/issues/893.
+  - There are still some issues when loading a new file, which are not yet entirely understood.
+  The suspicion is that the displayed 2D histograms somehow "reside" in the opened file and disappear
+  when the file is closed. This however needs confirmation (and eventually fixing).
+
+* 2022-03-04 Wouter Deconinck ([PR#892](https://github.com/AIDASoft/DD4hep/pull/892))
+  - Support `ddsim --gun.momentumMin 1*GeV --momentumMax 10*GeV` (default remains momentumMin = 0.0)
+
+* 2022-02-25 Andre Sailer ([PR#891](https://github.com/AIDASoft/DD4hep/pull/891))
+  - DDParsers: do not use deprecated boost headers with boost 1.78
+  - DDG4 Particle.tbl: drop some diffr(active) particles causing warnings with Geant4 11.0
+  - DetectorIMP: Changing message about Geant4 unit system to INFO, fixes #844
+  - Volumes: Changing message about REFLECTION to DEBUG, fixes #844
+
 # v01-20
 
 * 2021-12-21 Markus Frank ([PR#888](https://github.com/aidasoft/DD4hep/pull/888))
