@@ -70,7 +70,7 @@ static void* _create(const char*)  {
   return eh;
 }
 using namespace dd4hep::detail;
-DECLARE_CONSTRUCTOR(DDEve_LCIOEventHandler,_create)
+DECLARE_CONSTRUCTOR(DD4hep_DDEve_LCIOEventHandler,_create)
 
 /// Standard constructor
 LCIOEventHandler::LCIOEventHandler() : EventHandler(), m_lcReader(0), m_event(0) {

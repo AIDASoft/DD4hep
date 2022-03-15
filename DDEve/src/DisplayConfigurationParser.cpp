@@ -83,17 +83,17 @@ namespace {
 static void extract(DisplayConfiguration::Config& c, xml_h e, int typ)   {
   c.name  = e.attr<string>(_U(name));
   c.type = typ;
-  c.data.defaults.show_evt  = e.hasAttr(u_show_evt) ? e.attr<int>(u_show_evt) :  1;
-  c.data.defaults.load_geo  = e.hasAttr(u_load_geo) ? e.attr<int>(u_load_geo) : -1;
-  c.data.defaults.color = e.hasAttr(_U(color)) ? e.attr<int>(_U(color)) : 0xBBBBBB;
-  c.data.defaults.alpha = e.hasAttr(_U(alpha)) ? e.attr<float>(_U(alpha)) : -1.0;
-  c.data.calo3d.emax    = e.hasAttr(u_emax) ? e.attr<float>(u_emax) : 25.0;
-  c.data.calo3d.towerH  = e.hasAttr(u_towerH) ? e.attr<float>(u_towerH) : 25.0;
-  if ( e.hasAttr(_U(dz))   ) c.data.calo3d.dz = e.attr<float>(_U(dz));
+  c.data.defaults.show_evt  = e.hasAttr(u_show_evt) ? e.attr<int>(u_show_evt)  :  1;
+  c.data.defaults.load_geo  = e.hasAttr(u_load_geo) ? e.attr<int>(u_load_geo)  : -1;
+  c.data.defaults.color     = e.hasAttr(_U(color))  ? e.attr<int>(_U(color))   : 0xBBBBBB;
+  c.data.defaults.alpha     = e.hasAttr(_U(alpha))  ? e.attr<float>(_U(alpha)) : -1.0;
+  c.data.calo3d.emax        = e.hasAttr(u_emax)     ? e.attr<float>(u_emax)    : 25.0;
+  c.data.calo3d.towerH      = e.hasAttr(u_towerH)   ? e.attr<float>(u_towerH)  : 25.0;
+  if ( e.hasAttr(_U(dz))   ) c.data.calo3d.dz   = e.attr<float>(_U(dz));
   if ( e.hasAttr(_U(rmin)) ) c.data.calo3d.rmin = e.attr<float>(_U(rmin));
-  if ( e.hasAttr(_U(threshold)) ) c.data.calo3d.threshold = e.attr<float>(_U(threshold));
+  if ( e.hasAttr(u_use)    ) c.use  = e.attr<string>(u_use);
   if ( e.hasAttr(u_hits)   ) c.hits = e.attr<string>(u_hits);
-  if ( e.hasAttr(u_use)    ) c.use = e.attr<string>(u_use);
+  if ( e.hasAttr(_U(threshold)) ) c.data.calo3d.threshold = e.attr<float>(_U(threshold));
 }
 
 /** Convert display configuration objects of  tag type ddeve/detelement
@@ -222,7 +222,7 @@ template <> void Converter<collection>::operator()(xml_h e)  const  {
   c.name = e.attr<string>(_U(name));
   c.hits = e.attr<string>(u_hits);
   c.type = DisplayConfiguration::COLLECTION;
-  c.use  = e.hasAttr(u_use) ? e.attr<string>(u_use) : string("true");
+  c.use  = e.hasAttr(u_use) ? e.attr<string>(u_use) : string();
   c.data.hits.size  = e.attr<float>(_U(size));
   c.data.hits.type  = e.attr<float>(_U(type));
   c.data.hits.color = e.hasAttr(_U(color))  ? e.attr<int>(_U(color)) : kRed;

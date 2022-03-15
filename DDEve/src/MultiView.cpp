@@ -72,7 +72,7 @@ View& MultiView::Build(TEveWindow* slot)   {
   /// First panel
   if ( panels.size()>0)   {
     const DisplayConfiguration::Config& cfg = panels[0];
-    string typ = "DD4hep__"+cfg.use;
+    string typ = "DD4hep_DDEve_"+cfg.use;
     v = PluginService::Create<View*>(typ.c_str(),m_eve,cfg.name.c_str());
   }
   else  {
@@ -84,7 +84,7 @@ View& MultiView::Build(TEveWindow* slot)   {
   /// Second panel
   if ( panels.size()>1)   {
     const DisplayConfiguration::Config& cfg = panels[1];
-    string typ = "DD4hep__"+cfg.use;
+    string typ = "DD4hep_DDEve_"+cfg.use;
     v = PluginService::Create<View*>(typ.c_str(),m_eve,cfg.name.c_str());
   }
   else  {

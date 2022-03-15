@@ -7,8 +7,8 @@ SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DD4hep)
 #################
 
 SET( DD4hep_VERSION_MAJOR 1 )
-SET( DD4hep_VERSION_MINOR 18 )
-SET( DD4hep_VERSION_PATCH 0 )
+SET( DD4hep_VERSION_MINOR 20 )
+SET( DD4hep_VERSION_PATCH 1 )
 
 #######################
 # Basic project setup #

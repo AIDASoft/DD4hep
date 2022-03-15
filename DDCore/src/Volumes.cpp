@@ -58,7 +58,7 @@ ClassImp(PlacedVolumeExtension)
 
 namespace {
 
-  static constexpr double s_rotation_test_limit = 1e-14;
+  static constexpr double s_rotation_test_limit = 1e-12;
   static bool s_verifyCopyNumbers = true;
 
   template <typename T> typename T::Object* _userExtension(const T& v)  {
@@ -669,7 +669,7 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
       /// We have a left handed matrix (determinant < 0). This is a reflection!
       if ( det < 0e0 )   {
         transform->SetBit(TGeoMatrix::kGeoReflection);
-        printout(INFO, "PlacedVolume",
+        printout(DEBUG, "PlacedVolume",
                  "REFLECTION: (x.Cross(y)).Dot(z): %8.3g Parent: %s [%s] Daughter: %s [%s]",
                  det, par->GetName(), par->IsA()->GetName(),
                  daughter->GetName(), daughter->IsA()->GetName());

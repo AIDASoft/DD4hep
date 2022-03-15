@@ -1,3 +1,90 @@
+# v01-20-01
+
+* 2022-03-08 Markus FRANK ([PR#894](https://github.com/AIDASoft/DD4hep/pull/894))
+  - The refactoring of namespaces (some years ago) left some factory name discrepancies in DDEve.
+  This PR fixes them and re-enables the various views and projections.
+  See issue https://github.com/AIDASoft/DD4hep/issues/893.
+  - There are still some issues when loading a new file, which are not yet entirely understood.
+  The suspicion is that the displayed 2D histograms somehow "reside" in the opened file and disappear
+  when the file is closed. This however needs confirmation (and eventually fixing).
+
+* 2022-03-04 Wouter Deconinck ([PR#892](https://github.com/AIDASoft/DD4hep/pull/892))
+  - Support `ddsim --gun.momentumMin 1*GeV --momentumMax 10*GeV` (default remains momentumMin = 0.0)
+
+* 2022-02-25 Andre Sailer ([PR#891](https://github.com/AIDASoft/DD4hep/pull/891))
+  - DDParsers: do not use deprecated boost headers with boost 1.78
+  - DDG4 Particle.tbl: drop some diffr(active) particles causing warnings with Geant4 11.0
+  - DetectorIMP: Changing message about Geant4 unit system to INFO, fixes #844
+  - Volumes: Changing message about REFLECTION to DEBUG, fixes #844
+
+# v01-20
+
+* 2021-12-21 Markus Frank ([PR#888](https://github.com/aidasoft/DD4hep/pull/888))
+  - Changes for Geant4 11.0.0.
+    Propagate additional setup properties for optical parameters in Geant4ScintillationPhysics.
+    Other required changes were already included when preparing for the Geant4 beta release.
+  - Allow for Geant4 builds without GDML.
+    Enable conditional build if the Geant4 build does not support GDML
+
+* 2021-12-16 Thomas Madlener ([PR#887](https://github.com/aidasoft/DD4hep/pull/887))
+  - Rework the EDM4hep output action. The major reason is the renaming of the default types in AIDASoft/podio#205 and its effects on EDM4hep (key4hep/EDM4hep#132). These changes are:
+    - Use `auto` wherever possible to remove any explicit mentioning of EDM4hep types.
+    - Switch to range-based for-loops where possible
+    - Keep an internal map of the collections to get rid of the `const_cast`s that were used before.
+  - EDM4hep output: Make sure that the daughter relations are also set, because that is not done automatically in EDM4hep but is in LCIO.
+
+* 2021-12-02 Wouter Deconinck ([PR#886](https://github.com/aidasoft/DD4hep/pull/886))
+  - Add diquarks to default DDG4 rejectPDGs list
+
+* 2021-11-26 Markus Frank ([PR#885](https://github.com/aidasoft/DD4hep/pull/885))
+  - Remove another occurrency of a call to G4::GetPropertyIndex() with 2nd argument.
+  - This PR is an addendum to the already closed request https://github.com/AIDASoft/DD4hep/pull/884
+
+* 2021-11-22 Markus Frank ([PR#884](https://github.com/aidasoft/DD4hep/pull/884))
+  - Issue https://github.com/AIDASoft/DD4hep/issues/881
+    Next attempt for resolution. Avoid explicit use of the second argument in 
+  ```
+    G4int GetConstPropertyIndex(const G4String& key,
+                                G4bool warning = false) const;
+    // Get the constant property index from the key-name
+  
+    G4int GetPropertyIndex(const G4String& key, G4bool warning = false) const;
+    // Get the property index by the key-name.
+    ```
+    Should satisfy existing and future snapshots of Geant4.
+
+# v01-19
+
+* 2021-11-12 Markus Frank ([PR#882](https://github.com/aidasoft/DD4hep/pull/882))
+  - See issue in github: https://github.com/AIDASoft/DD4hep/issues/881
+  - Material properties have changed in Geant4 between version 10 and 11.
+  - This fix should fix the compilation problems and take new properties in Geant4.11 into account.
+
+* 2021-11-12 MarkusFrankATcernch ([PR#876](https://github.com/aidasoft/DD4hep/pull/876))
+  - Fix cmake issue when using cmake 3.16.3 (or any of the other versions of cmake that require special python version handling presumably) in a dependent package.
+
+* 2021-11-10 Ben Couturier ([PR#880](https://github.com/aidasoft/DD4hep/pull/880))
+  - Added the default move constructor and default move assignment operator to dd4hep::detail::ConditionObject and dd4hep::NamedObject
+
+* 2021-11-03 Markus Frank ([PR#877](https://github.com/aidasoft/DD4hep/pull/877))
+  - To not compromize client code with an enforced termination handler, the DD4hep termination handler
+  moved to DDG4, where it actually is needed. In DDG4 the termination handler is activated when the main
+  Geant4Kernel instance is created.
+  Reasoning: Please see issue https://github.com/AIDASoft/DD4hep/issues/874 .
+  - Throw an exception if clients ask a DetElement handle for a child by name if such a child is not present or the handle is invalid. This is the new default now. The old behaviour is kept with a second accessor for children by name, with an explicit statement that an exception is unwanted such as: child = DetElement::child("name", false)
+  Please see issue: https://github.com/AIDASoft/DD4hep/issues/878.
+
+* 2021-10-13 Markus Frank ([PR#873](https://github.com/aidasoft/DD4hep/pull/873))
+  - Remove internal classes from evaluator. Use STL provided classes 
+  - Remove hidden clashes with CLHEP evaluator (move internal class Item to anonymous namespace)
+
+* 2021-09-22 Wouter Deconinck ([PR#872](https://github.com/aidasoft/DD4hep/pull/872))
+  - Allow for specifying MomentumMin and MomentumMax in Geant4IsotropeGenerator
+
+* 2021-09-15 Markus Frank ([PR#871](https://github.com/aidasoft/DD4hep/pull/871))
+  - Finalize CAD stuff.
+  - Fix issue https://github.com/AIDASoft/DD4hep/issues/870
+
 # v01-18
 
 * 2021-09-07 Wouter Deconinck ([PR#869](https://github.com/aidasoft/DD4hep/pull/869))

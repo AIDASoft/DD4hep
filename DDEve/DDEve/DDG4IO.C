@@ -120,7 +120,7 @@ namespace {
 }
 
 #include "DD4hep/Factories.h"
-DECLARE_CONSTRUCTOR(DDEve_DDG4HitAccess,_convertHit)
-DECLARE_CONSTRUCTOR(DDEve_DDG4ParticleAccess,_convertParticle)
+DECLARE_CONSTRUCTOR(DD4hep_DDEve_DDG4HitAccess,_convertHit)
+DECLARE_CONSTRUCTOR(DD4hep_DDEve_DDG4ParticleAccess,_convertParticle)
 #endif
 

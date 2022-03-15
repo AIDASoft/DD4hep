@@ -28,6 +28,6 @@ namespace {
 }
 
 #define DECLARE_VIEW_FACTORY(x) \
-DD4HEP_PLUGINSVC_FACTORY(x,dd4hep_DDEve_##x,dd4hep::View*(dd4hep::Display*, const char*),__LINE__)
+DD4HEP_PLUGINSVC_FACTORY(x,DD4hep_DDEve_##x,dd4hep::View*(dd4hep::Display*, const char*),__LINE__)
 
 #endif // DDEVE_FACTORIES_H

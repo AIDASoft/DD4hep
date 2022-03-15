@@ -43,7 +43,7 @@
 #include <typeinfo>
 #include <iostream>
 #include <ctime>
-
+#include <unordered_map>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -87,6 +87,8 @@ namespace dd4hep {
       std::map< std::string, std::string > m_eventParametersFloat;
       std::map< std::string, std::string > m_eventParametersString;
       bool m_FirstEvent =  true  ;
+
+      std::unordered_map<std::string, podio::CollectionBase*> m_collections;
 
       /// create the podio collections for the particles and hits
       void createCollections(OutputContext<G4Event>& ctxt) ;
@@ -272,24 +274,22 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
   typedef detail::ReferenceBitMask<const int> PropertyMask;
   typedef Geant4ParticleMap::ParticleMap ParticleMap;
   const ParticleMap& pm = particles->particleMap;
-  size_t nparts = pm.size();
-  edm4hep::MCParticleCollection* mcpc =
-    const_cast<edm4hep::MCParticleCollection*>(
-      &m_store->get<edm4hep::MCParticleCollection>("MCParticles"));
+  auto mcpc = static_cast<edm4hep::MCParticleCollection*>(m_collections["MCParticles"]);
 
-  if ( nparts > 0 )  {
+  if ( pm.size() > 0 )  {
     size_t cnt = 0;
+    // Mapping of ids in the ParticleMap to indices in the MCParticle collection
     map<int,int> p_ids;
-    vector<const Geant4Particle*> p_part(pm.size(),0);
-    vector<edm4hep::MCParticle> p_edm4hep(pm.size());
+    vector<const Geant4Particle*> p_part;
+    p_part.reserve(pm.size());
     // First create the particles
-    for(ParticleMap::const_iterator i=pm.begin(); i!=pm.end();++i, ++cnt)   {
-      int id = (*i).first;
-      const Geant4ParticleHandle p = (*i).second;
+    for (const auto& iParticle : pm) {
+      int id = iParticle.first;
+      const Geant4ParticleHandle p = iParticle.second;
       PropertyMask mask(p->status);
       //      std::cout << " ********** mcp status : 0x" << std::hex << p->status << ", mask.isSet(G4PARTICLE_GEN_STABLE) x" << std::dec << mask.isSet(G4PARTICLE_GEN_STABLE)  <<std::endl ;
       const G4ParticleDefinition* def = p.definition();
-      edm4hep::MCParticle mcp = edm4hep::MCParticle();
+      auto mcp = mcpc->create();
       mcp.setPDG(p->pdgID);
 
       float ps_fa[3] = {float(p->psx/CLHEP::GeV),float(p->psy/CLHEP::GeV),float(p->psz/CLHEP::GeV)};
@@ -337,38 +337,39 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
       mcp.setSpin(p->spin);
       mcp.setColorFlow(p->colorFlow);
 
-      mcpc->push_back(mcp);
-      p_ids[id] = cnt;
-      p_part[cnt] = p;
-      p_edm4hep[cnt] = mcp;
+      p_ids[id] = cnt++;
+      p_part.push_back(p);
     }
 
     // Now establish parent-daughter relationships
-    for(size_t i=0, n=p_ids.size(); i<n; ++i)   {
-      map<int,int>::iterator k;
+    for(size_t i=0; i < p_ids.size(); ++i)   {
       const Geant4Particle* p = p_part[i];
-      edm4hep::MCParticle q = p_edm4hep[i];
-      const Geant4Particle::Particles& dau = p->daughters;
-      for(Geant4Particle::Particles::const_iterator j=dau.begin(); j!=dau.end(); ++j)  {
-        int idau = *j;
-        if ( (k=p_ids.find(idau)) == p_ids.end() )  {  // Error!!!
+      auto q = (*mcpc)[i];
+
+      for (const auto& idau : p->daughters) {
+        const auto k = p_ids.find(idau);
+        if (k == p_ids.end()) {
           printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find daughter with ID:%d",p->id,idau);
           continue;
         }
         int iqdau = (*k).second;
-        edm4hep::MCParticle qdau = p_edm4hep[iqdau];
+        auto qdau = (*mcpc)[iqdau];
         qdau.addToParents(q);
+        q.addToDaughters(qdau);
       }
-      const Geant4Particle::Particles& par = p->parents;
-      for(Geant4Particle::Particles::const_iterator j=par.begin(); j!=par.end(); ++j)  {
-        int ipar = *j; // A parent ID iof -1 means NO parent, because a base of 0 is perfectly leagal!
-        if ( ipar>=0 && (k=p_ids.find(ipar)) == p_ids.end() )  {  // Error!!!
-          printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find parent with ID:%d",p->id,ipar);
-          continue;
+
+      for (const auto& ipar : p->parents) {
+        if (ipar >= 0) { // A parent ID of -1 means NO parent, because a base of 0 is perfectly legal
+          const auto k = p_ids.find(ipar);
+          if (k == p_ids.end()) {
+            printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find parent with ID:%d",p->id,ipar);
+            continue;
+          }
+          int iqpar = (*k).second;
+          auto qpar = (*mcpc)[iqpar];
+          q.addToParents(qpar);
+          qpar.addToDaughters(q);
         }
-        int iqpar = (*k).second;
-        edm4hep::MCParticle qpar = p_edm4hep[iqpar];
-        q.addToParents(qpar);
       }
     }
   }
@@ -399,8 +400,8 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
 
   // this does not compile as create() is we only get a const ref - need to review PODIO EventStore API
   // auto& evtHCol = m_store->get<edm4hep::EventHeaderCollection>("EventHeader") ;
-  // auto evtHdr = evtHCol.create() ;
-  auto* evtHCol = const_cast<edm4hep::EventHeaderCollection*>(&m_store->get<edm4hep::EventHeaderCollection>("EventHeader") );
+// auto evtHdr = evtHCol.create() ;
+  auto* evtHCol = static_cast<edm4hep::EventHeaderCollection*>(m_collections["EventHeader"]);
   auto evtHdr = evtHCol->create() ;
 
   evtHdr.setRunNumber(runNumber);
@@ -438,15 +439,12 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
 
   Geant4ParticleMap* pm = context()->event().extension<Geant4ParticleMap>(false);
 
-  edm4hep::MCParticleCollection* mcpc =
-    const_cast<edm4hep::MCParticleCollection*>(
-      &m_store->get<edm4hep::MCParticleCollection>("MCParticles"));
+  auto* mcpc = static_cast<edm4hep::MCParticleCollection*>(m_collections["MCParticles"]);
 
   //-------------------------------------------------------------------
   if( typeid( Geant4Tracker::Hit ) == coll->type().type()  ){
 
-    edm4hep::SimTrackerHitCollection* sthc =
-      const_cast<edm4hep::SimTrackerHitCollection*>(&m_store->get<edm4hep::SimTrackerHitCollection>(colName));
+    auto* sthc = static_cast<edm4hep::SimTrackerHitCollection*>(m_collections[colName]);
 
     for(unsigned i=0 ; i < nhits ; ++i){
       auto sth = sthc->create() ;
@@ -484,15 +482,11 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
     Geant4Sensitive*       sd      = coll->sensitive();
     int hit_creation_mode = sd->hitCreationMode();
 
-    edm4hep::SimCalorimeterHitCollection* sCaloHitColl =
-      const_cast<edm4hep::SimCalorimeterHitCollection*>(
-  &m_store->get<edm4hep::SimCalorimeterHitCollection>(colName));
+    auto* sCaloHitColl = static_cast<edm4hep::SimCalorimeterHitCollection*>(m_collections[colName]);
 
     colName += "Contributions"  ;
 
-    edm4hep::CaloHitContributionCollection* sCaloHitContColl =
-      const_cast<edm4hep::CaloHitContributionCollection*>(
-  &m_store->get<edm4hep::CaloHitContributionCollection>(colName));
+    auto* sCaloHitContColl = static_cast<edm4hep::CaloHitContributionCollection*>(m_collections[colName]);
 
 
     for(unsigned i=0 ; i < nhits ; ++i){
@@ -539,14 +533,17 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   }
 }
 
-
 void Geant4Output2EDM4hep::createCollections(OutputContext<G4Event>& ctxt){
 
-  m_store->create<edm4hep::MCParticleCollection>("MCParticles");
+  auto* mcColl = new edm4hep::MCParticleCollection();
+  m_collections.emplace("MCParticles", mcColl);
+  m_store->registerCollection("MCParticles", mcColl);
   m_file->registerForWrite("MCParticles");
   printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection MCParticles" );
 
-  m_store->create<edm4hep::EventHeaderCollection>("EventHeader") ;
+  auto* evtHeader = new edm4hep::EventHeaderCollection();
+  m_collections.emplace("EventHeader", evtHeader);
+  m_store->registerCollection("EventHeader", evtHeader);
   m_file->registerForWrite("EventHeader");
   printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection EventHeader" );
 
@@ -569,22 +566,28 @@ void Geant4Output2EDM4hep::createCollections(OutputContext<G4Event>& ctxt){
 
     if( typeid( Geant4Tracker::Hit ) == coll->type().type()  ){
 
-      auto& sthc = m_store->create<edm4hep::SimTrackerHitCollection>(colName);
+      auto* sthc = new edm4hep::SimTrackerHitCollection();
+      m_collections.emplace(colName, sthc);
+      m_store->registerCollection(colName, sthc);
       m_file->registerForWrite(colName);
-      auto& sthc_md = m_store->getCollectionMetaData( sthc.getID() );
+      auto& sthc_md = m_store->getCollectionMetaData( sthc->getID() );
       sthc_md.setValue("CellIDEncodingString", sd_enc);
       printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
     }
     else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type() ){
 
-      auto& schc = m_store->create<edm4hep::SimCalorimeterHitCollection>(colName);
+      auto* schc = new edm4hep::SimCalorimeterHitCollection();
+      m_collections.emplace(colName, schc);
+      m_store->registerCollection(colName, schc);
       m_file->registerForWrite(colName);
-      auto& schc_md = m_store->getCollectionMetaData( schc.getID() );
+      auto& schc_md = m_store->getCollectionMetaData( schc->getID() );
       schc_md.setValue("CellIDEncodingString", sd_enc);
       printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
 
       colName += "Contributions"  ;
-      m_store->create<edm4hep::CaloHitContributionCollection>(colName);
+      auto* chContribColl = new edm4hep::CaloHitContributionCollection();
+      m_collections.emplace(colName, chContribColl);
+      m_store->registerCollection(colName, chContribColl);
       m_file->registerForWrite(colName);
       printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
 

@@ -14,15 +14,15 @@
 #include <cerrno>
 #include <cstring>
 #include <cstdlib>     // for strtod()
-#include "stack.src"
-#include "string.src"
-#include "hash_map.src"
+#include <stack>
+#include <string>
+#include <unordered_map>
 
 // Disable some diagnostics, which we know, but need to ignore
 #if defined(__GNUC__) && !defined(__APPLE__) && !defined(__llvm__)
 /*  This is OK:
-    ../DDCore/src/Evaluator/Evaluator.cpp: In function 'int engine(pchar, pchar, double&, char*&, const dic_type&)':
-    ../DDCore/src/Evaluator/Evaluator.cpp:164:23: warning: 'pp[3]' may be used uninitialized in this function [-Wmaybe-uninitialized]
+    ../DDCore/src/Evaluator/Evaluator.cpp: In execute_function 'int engine(pchar, pchar, double&, char*&, const dic_type&)':
+    ../DDCore/src/Evaluator/Evaluator.cpp:164:23: warning: 'pp[3]' may be used uninitialized in this execute_function [-Wmaybe-uninitialized]
     result = (*fcn.f4)(pp[3],pp[2],pp[1],pp[0]);
     ....
 */
@@ -43,21 +43,42 @@
 //---------------------------------------------------------------------------
 #define EVAL dd4hep::tools::Evaluator
 
-/// Internal expression evaluator helper class
-struct Item {
-  enum { UNKNOWN, VARIABLE, EXPRESSION, FUNCTION, STRING } what;
-  double variable;
-  string expression;
-  void   *function;
+namespace  {
+  
+  /// Internal expression evaluator helper class
+  struct Item {
+    enum { UNKNOWN, VARIABLE, EXPRESSION, FUNCTION, STRING } what;
+    double variable;
+    std::string expression;
+    void   *function;
 
-  explicit Item()         : what(UNKNOWN),   variable(0),expression(), function(0) {}
-  explicit Item(double x) : what(VARIABLE),  variable(x),expression(), function(0) {}
-  explicit Item(string x) : what(EXPRESSION),variable(0),expression(x),function(0) {}
-  explicit Item(void  *x) : what(FUNCTION),  variable(0),expression(), function(x) {}
-};
+    explicit Item()              : what(UNKNOWN),   variable(0),expression(), function(0) {}
+    explicit Item(double x)      : what(VARIABLE),  variable(x),expression(), function(0) {}
+    explicit Item(std::string x) : what(EXPRESSION),variable(0),expression(x),function(0) {}
+    explicit Item(void  *x)      : what(FUNCTION),  variable(0),expression(), function(x) {}
+  };
+
+  /// Internal expression evaluator helper union
+  union FCN {
+    void* ptr;
+    double (*f0)();
+    double (*f1)(double);
+    double (*f2)(double,double);
+    double (*f3)(double,double,double);
+    double (*f4)(double,double,double,double);
+    double (*f5)(double,double,double,double,double);
+    FCN(void* p) { ptr = p; }
+    FCN(double (*f)()) { f0 = f; }
+    FCN(double (*f)(double)) { f1 = f; }
+    FCN(double (*f)(double,double)) { f2 = f; }
+    FCN(double (*f)(double,double,double)) { f3 = f; }
+    FCN(double (*f)(double,double,double,double)) { f4 = f; }
+    FCN(double (*f)(double,double,double,double,double)) { f5 = f; }
+  };
+}
 
 //typedef char * pchar;
-typedef hash_map<string,Item> dic_type;
+typedef std::unordered_map<std::string,Item> dic_type;
 
 /// Internal expression evaluator helper class
 struct EVAL::Object::Struct {
@@ -104,27 +125,6 @@ struct EVAL::Object::Struct {
   std::mutex  theLock;
 };
 
-namespace {
-
-  /// Internal expression evaluator helper union
-  union FCN {
-    void* ptr;
-    double (*f0)();
-    double (*f1)(double);
-    double (*f2)(double,double);
-    double (*f3)(double,double,double);
-    double (*f4)(double,double,double,double);
-    double (*f5)(double,double,double,double,double);
-    FCN(void* p) { ptr = p; }
-    FCN(double (*f)()) { f0 = f; }
-    FCN(double (*f)(double)) { f1 = f; }
-    FCN(double (*f)(double,double)) { f2 = f; }
-    FCN(double (*f)(double,double,double)) { f3 = f; }
-    FCN(double (*f)(double,double,double,double)) { f4 = f; }
-    FCN(double (*f)(double,double,double,double,double)) { f5 = f; }
-  };
-}
-
 //---------------------------------------------------------------------------
 #define REMOVE_BLANKS							\
   for(pointer=name;;pointer++) if (!isspace(*pointer)) break;		\
@@ -146,7 +146,7 @@ enum { ENDL, LBRA, OR, AND, EQ, NE, GE, GT, LE, LT,
 
 static int engine(char const*, char const*, double &, char const* &, const dic_type &);
 
-static int variable(const string & name, double & result,
+static int variable(const std::string & name, double & result,
                     const dic_type & dictionary)
 /***********************************************************************
  *                                                                     *
@@ -184,11 +184,11 @@ static int variable(const string & name, double & result,
   }
 }
 
-static int function(const string & name, stack<double> & par,
+static int execute_function(const std::string & name, std::stack<double> & par,
                     double & result, const dic_type & dictionary)
 /***********************************************************************
  *                                                                     *
- * Name: function                                    Date:    03.10.00 *
+ * Name: execute_function                            Date:    03.10.00 *
  * Author: Evgeni Chernyaev                          Revised:          *
  *                                                                     *
  * Function: Finds value of the function.                              *
@@ -286,7 +286,7 @@ static int operand(char const* begin, char const* end, double & result,
     if ( !(c == '_' || c == ':') && !isalnum(c)) break;
     pointer++;
   }
-  string name(begin, pointer-begin);
+  std::string name(begin, pointer-begin);
 
   //   G E T   V A R I A B L E
 
@@ -299,8 +299,8 @@ static int operand(char const* begin, char const* end, double & result,
 
   //   G E T   F U N C T I O N
 
-  stack<char const*>  pos;                // position stack
-  stack<double> par;                // parameter stack
+  std::stack<char const*>  pos;                // position stack
+  std::stack<double> par;                // parameter stack
   double        value;
   char const*   par_begin = pointer+1;
   char const*   par_end;
@@ -342,7 +342,7 @@ static int operand(char const* begin, char const* end, double & result,
         default:
           EVAL_EXIT( EVAL_STATUS, par_end );
         }
-        EVAL_STATUS = function(name, par, result, dictionary);
+        EVAL_STATUS = execute_function(name, par, result, dictionary);
         EVAL_EXIT( EVAL_STATUS, (EVAL_STATUS == EVAL::OK) ? pointer : begin);
       }
     }
@@ -363,7 +363,7 @@ static int operand(char const* begin, char const* end, double & result,
  *   val - stack of values.                                            *
  *                                                                     *
  ***********************************************************************/
-static int maker(int op, stack<double> & val)
+static int maker(int op, std::stack<double> & val)
 {
   if (val.size() < 2) return EVAL::ERROR_SYNTAX_ERROR;
   double val2 = val.top(); val.pop();
@@ -474,9 +474,9 @@ static int engine(char const* begin, char const* end, double & result,
     { 4, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 }  // ^
   };
 
-  stack<int>    op;                      // operator stack
-  stack<char const*>  pos;                     // position stack
-  stack<double> val;                     // value stack
+  std::stack<int>    op;                      // operator stack
+  std::stack<char const*>  pos;                     // position stack
+  std::stack<double> val;                     // value stack
   double        value;
   char const*   pointer = begin;
   int           iWhat, iCur, iPrev = 0, iTop, EVAL_STATUS;
@@ -626,7 +626,7 @@ static int setItem(const char * prefix, const char * name,
 
   //   A D D   I T E M   T O   T H E   D I C T I O N A R Y
 
-  string item_name = prefix + string(pointer,n);
+  std::string item_name = prefix + std::string(pointer,n);
   EVAL::Object::Struct::WriteLock guard(imp);
   dic_type::iterator iter = imp->theDictionary.find(item_name);
   if (iter != imp->theDictionary.end()) {
@@ -744,8 +744,8 @@ void Evaluator::Object::EvalStatus::print_error(std::ostream& os) const {
 
 //---------------------------------------------------------------------------
 int Evaluator::Object::setEnviron(const char* name, const char* value)  {
-  string prefix = "${";
-  string item_name = prefix + string(name) + string("}");
+  std::string prefix = "${";
+  std::string item_name = prefix + std::string(name) + std::string("}");
 
   //Need to take lock before creating Item since since Item to be destroyed
   // before the lock in order avoid ::string ref count thread problem
@@ -779,7 +779,7 @@ std::pair<const char*,int> Evaluator::Object::getEnviron(const char* name)  cons
   }
   if ( ::strlen(name) > 3 )  {
     // Need to remove braces from ${xxxx} for call to getenv()
-    string env_name(name+2,::strlen(name)-3);
+    std::string env_name(name+2,::strlen(name)-3);
     const char* env_str = ::getenv(env_name.c_str());
     if ( 0 != env_str )    {
       return std::make_pair(env_str, EVAL::OK);
@@ -806,7 +806,7 @@ int Evaluator::Object::setVariable(const char * name, const char * expression)  
 }
 
 void Evaluator::Object::setVariableNoLock(const char * name, double value)  {
-  string item_name = name;
+  std::string item_name = name;
   Item item(value);
   imp->theDictionary[item_name] = item;
 }
@@ -836,13 +836,13 @@ int Evaluator::Object::setFunction(const char * name, double (*fun)(double,doubl
 }
 
 void Evaluator::Object::setFunctionNoLock(const char * name,double (*fun)(double))   {
-  string item_name = "1"+string(name);
+  std::string item_name = "1"+std::string(name);
   Item item(FCN(fun).ptr);
   imp->theDictionary[item_name] = item;
 }
 
 void Evaluator::Object::setFunctionNoLock(const char * name, double (*fun)(double,double))  {
-  string item_name = "2"+string(name);
+  std::string item_name = "2"+std::string(name);
   Item item(FCN(fun).ptr);
   imp->theDictionary[item_name] = item;
 }
@@ -855,7 +855,7 @@ bool Evaluator::Object::findVariable(const char * name) const {
   if (n == 0) return false;
   Struct::ReadLock guard(imp);
   return
-    (imp->theDictionary.find(string(pointer,n)) == imp->theDictionary.end()) ?
+    (imp->theDictionary.find(std::string(pointer,n)) == imp->theDictionary.end()) ?
     false : true;
 }
 
@@ -866,7 +866,7 @@ bool Evaluator::Object::findFunction(const char * name, int npar) const {
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return false;
   Struct::ReadLock guard(imp);
-  return (imp->theDictionary.find(sss[npar]+string(pointer,n)) ==
+  return (imp->theDictionary.find(sss[npar]+std::string(pointer,n)) ==
 	  imp->theDictionary.end()) ? false : true;
 }
 
@@ -876,7 +876,7 @@ void Evaluator::Object::removeVariable(const char * name) {
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return;
   Struct::WriteLock guard(imp);
-  imp->theDictionary.erase(string(pointer,n));
+  imp->theDictionary.erase(std::string(pointer,n));
 }
 
 //---------------------------------------------------------------------------
@@ -886,7 +886,7 @@ void Evaluator::Object::removeFunction(const char * name, int npar) {
   const char * pointer; int n; REMOVE_BLANKS;
   if (n == 0) return;
   Struct::WriteLock guard(imp);
-  imp->theDictionary.erase(sss[npar]+string(pointer,n));
+  imp->theDictionary.erase(sss[npar]+std::string(pointer,n));
 }
 
 //---------------------------------------------------------------------------
