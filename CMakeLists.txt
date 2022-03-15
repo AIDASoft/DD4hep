@@ -81,6 +81,7 @@ option(DD4HEP_LOAD_ASSIMP       "Download and build ASSIMP from github"         
 option(BUILD_TESTING            "Enable and build tests"                        ON)
 option(BUILD_SHARED_LIBS        "If OFF build STATIC Libraries"                 ON)
 option(DD4HEP_SET_RPATH         "Link libraries with built-in RPATH (run-time search path)" ON)
+option(DD4HEP_RELAX_PYVER       "Do not require exact python version match with ROOT" OFF)
 
 SET(DD4HEP_BUILD_PACKAGES "DDRec DDDetectors DDCond DDAlign DDCAD DDDigi DDG4 DDEve UtilityApps"
   CACHE STRING "List of DD4hep packages to build")
