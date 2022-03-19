@@ -354,7 +354,6 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
         }
         int iqdau = (*k).second;
         auto qdau = (*mcpc)[iqdau];
-        qdau.addToParents(q);
         q.addToDaughters(qdau);
       }
 
@@ -368,7 +367,6 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
           int iqpar = (*k).second;
           auto qpar = (*mcpc)[iqpar];
           q.addToParents(qpar);
-          qpar.addToDaughters(q);
         }
       }
     }
