@@ -139,7 +139,8 @@ static long display(Detector& description, int argc, char** argv) {
         "     -detector <string> Top level DetElement path. Default: '/world'                \n"
         "     -option   <string> ROOT Draw option.    Default: 'ogl'                         \n"
         "     -level    <number> Visualization level  [TGeoManager::SetVisLevel]  Default: 4 \n"
-        "     -visopt   <number> Visualization option [TGeoManager::SetVisOption] Default: 1 \n"       
+        "     -visopt   <number> Visualization option [TGeoManager::SetVisOption] Default: 1\n"       
+        "     -load              Only load the geometry. Do not invoke the display          \n"
         "     -help              Print this help output  \n"       
         "     Arguments given: " << arguments(argc,argv) << endl << flush;
       ::exit(EINVAL);
