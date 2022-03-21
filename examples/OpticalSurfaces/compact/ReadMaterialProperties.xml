@@ -20,6 +20,10 @@
     <comment>Test reading of TGeo's Material Properties</comment>
   </info>
 
+  <debug>
+    <type name="materials" value="1"/>
+  </debug>
+
   <define>
     <constant name="world_side" value="1*m"/>
     <constant name="world_x" value="world_side/2"/>
@@ -200,11 +204,26 @@
               4.136*eV 
     "/>
     </ignore>
+
+    <matrix name= "Water__SpecialMine" option="Geant4-ignore" coldim="1" values="  
+              2.034*eV 
+              2.068*eV 
+              2.103*eV 
+              2.139*eV 
+              2.177*eV 
+              2.216*eV 
+    "/>
   </properties>
 
   <includes>
     <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
   </includes>
+
+  <properties>
+    <constant name="Birk__Water|Geant4-ignore" value="12.345678"/>
+    <constant name="Water__Mine|Geant4-ignore" value="87.654321"/>
+  </properties>
+
   <materials>
     <material name="Air">
       <D type="density" unit="g/cm3" value="0.0012"/>
@@ -227,6 +246,24 @@
       <property name="ABSLENGTH"     ref="ABSLENGTH__0x123aff00"/>
       <property name="FASTCOMPONENT" ref="FASTCOMPONENT__0x123aff00"/>
       <property name="SLOWCOMPONENT" ref="SLOWCOMPONENT__0x123aff00"/>
+      <!-- Properties ignored by Geant4 -->
+      <property name="Property_of_mine" ref="Water__SpecialMine"/>
+      <constant name="BirksConstant"    ref="Birk__Water|Geant4-ignore"/>
+      <!-- Constants  ignored by Geant4 -->
+      <constant name="Constant_of_mine" ref="Water__Mine|Geant4-ignore"/>
     </material>
   </materials>
+
+  <readouts>
+    <readout name="Hits">
+      <id>system:8,box:8</id>
+    </readout>
+  </readouts>
+    
+  <detectors>
+    <detector id="1" name="MaterialTester" type="MaterialTester" readout="Hits">
+      <box x="50*cm" y="50*cm" z="50*cm" material="Water"/>
+      <test name="Water"/>
+    </detector>
+  </detectors>
 </lccdd>

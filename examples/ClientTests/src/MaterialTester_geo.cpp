@@ -37,6 +37,15 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
   Assembly     assembly(det_name+"_assembly");
   DetElement   det(det_name,x_det.typeStr(), x_det.id());
 
+  if ( x_det.hasChild(_U(box)) )    {
+    xml_det_t xbox = x_det.child(_U(box));
+    Volume box = Volume(det_name+"_box",
+                        Box(xbox.x(), xbox.y(), xbox.z()),
+                        description.material(xbox.attr<string>(_U(material))));
+    PlacedVolume place = assembly.placeVolume(box);
+    place.addPhysVolID("box",0);
+  }
+  
   for(xml_coll_t k(x_det,_Unicode(test)); k; ++k)  {	
     xml_comp_t c = k;
     Material mat = description.material(c.nameStr());
@@ -64,6 +73,37 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
         printout(INFO,det_name,"+++                   Zmix:%7.3f Nmix:%3d Amix:%7.3f Wmix:%7.3f",
                  mix->GetZmixt()[i],nmix ? nmix[i] : -1,
                  mix->GetAmixt()[i],wmix ? wmix[i] : -1e0);
+      }
+    }
+    if ( material->GetNproperties() > 0 )    {
+      printout(INFO,det_name,"+++          Properties: %d", material->GetNproperties());
+      for(Int_t i=0, n=material->GetNproperties(); i<n; ++i)  {
+        TGDMLMatrix* m = material->GetProperty(i);
+        printout(INFO,det_name,"+++                   \"%s\" [%s] rows:%d cols:%d",
+                 m->GetName(), m->GetTitle(), m->GetRows(), m->GetCols());
+        m->Print();
+      }
+      printout(INFO,det_name,"+++          Properties by NAME:");
+      for(Int_t i=0, n=material->GetNproperties(); i<n; ++i)  {
+        const auto* name = material->GetProperties().At(i)->GetName();
+        const auto* m = material->GetProperty(name);
+        printout(INFO,det_name,"+++                   \"%s\" [%s,%s] cols: %d rows: %d", name,
+                 m->GetName(), m->GetTitle(), m->GetCols(), m->GetRows());
+      }
+    }
+    if ( material->GetNconstProperties() > 0 )    {
+      printout(INFO,det_name,"+++          CONST Properties: %d", material->GetNconstProperties());
+      const TList& all = material->GetConstProperties();
+      for(Int_t i=0, n=material->GetNconstProperties(); i<n; ++i)  {
+        const TNamed* m = (const TNamed*)all.At(i);
+        double        v = material->GetConstProperty(i);
+        printout(INFO,det_name,"+++                   \"%s\" [%s] value: %f", m->GetName(), m->GetTitle(), v);
+      }
+      printout(INFO,det_name,"+++          CONST Properties by NAME:");
+      for(Int_t i=0, n=material->GetNconstProperties(); i<n; ++i)  {
+        const auto* name = material->GetConstProperties().At(i)->GetName();
+        double v = material->GetConstProperty(name);
+        printout(INFO,det_name,"+++                   \"%s\"  value: %f", name, v);
       }
     }
   }

@@ -339,6 +339,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       state = kStateUndefined;
       break;
     }
+    printout(lvl,"Geant4Material","+++ Setting up material %s", name.c_str());
     if ( material->IsMixture() )  {
       double A_total = 0.0;
       double W_total = 0.0;
@@ -354,8 +355,8 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         TGeoElement* e = mix->GetElement(i);
         G4Element* g4e = (G4Element*) handleElement(e->GetName(), Atom(e));
         if (!g4e) {
-          printout(ERROR, "Material", 
-                   "Missing component %s for material %s. A=%f W=%f", 
+          printout(ERROR, name, 
+                   "Missing element component %s for material %s. A=%f W=%f", 
                    e->GetName(), mix->GetName(), A_total, W_total);
         }
         //mat->AddElement(g4e, (mix->GetAmixt())[i] / A_total);
@@ -379,15 +380,15 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
       const char*  cptr   = ::strstr(matrix->GetName(), GEANT4_TAG_IGNORE);
       if ( 0 != cptr )   {
-	printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
-		 matrix->GetName(), matrix->GetTitle());
-	continue;
+        printout(INFO,name,"++ Ignore property %s [%s]. Not Suitable for Geant4.",
+                 matrix->GetName(), matrix->GetTitle());
+        continue;
       }
       cptr = ::strstr(matrix->GetTitle(), GEANT4_TAG_IGNORE);
       if ( 0 != cptr )   {
-	printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
-		 matrix->GetName(), matrix->GetTitle());
-	continue;
+        printout(INFO,name,"++ Ignore property %s [%s]. Not Suitable for Geant4.",
+                 matrix->GetName(), matrix->GetTitle());
+        continue;
       }
       Geant4GeometryInfo::PropertyVector* v =
         (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
@@ -412,7 +413,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       }
       if ( idx < 0 )   {
         printout(ERROR, "Geant4Converter",
-                 "++ UNKNOWN Geant4 CONST Property: %-20s %s [IGNORED]",
+                 "++ UNKNOWN Geant4 Property: %-20s %s [IGNORED]",
                  exc_str.c_str(), named->GetName());
         continue;
       }
@@ -423,13 +424,13 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         bins[i] *= conv.first, vals[i] *= conv.second;
 
       G4MaterialPropertyVector* vec =
-	new G4MaterialPropertyVector(&bins[0], &vals[0], bins.size());
+        new G4MaterialPropertyVector(&bins[0], &vals[0], bins.size());
       tab->AddProperty(named->GetName(), vec);
-      printout(lvl, "Geant4Converter", "++      Property: %-20s [%ld x %ld] -> %s ",
+      printout(lvl, name, "++      Property: %-20s [%ld x %ld] -> %s ",
                named->GetName(), matrix->GetRows(), matrix->GetCols(), named->GetTitle());
       for(size_t i=0, count=v->bins.size(); i<count; ++i)
-        printout(lvl,named->GetName(),"  Geant4: %8.3g [MeV]  TGeo: %8.3g [GeV] Conversion: %8.3g",
-                 bins[i], v->bins[i], conv.first);
+        printout(lvl, name, "  Geant4: %s %8.3g [MeV]  TGeo: %8.3g [GeV] Conversion: %8.3g",
+                 named->GetName(), bins[i], v->bins[i], conv.first);
     }
     /// Attach the material properties if any
     TListIter cpropIt(&material->GetConstProperties());
@@ -440,19 +441,19 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
 
       const char*  cptr = ::strstr(named->GetName(), GEANT4_TAG_IGNORE);
       if ( 0 != cptr )   {
-	printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
-		 named->GetName(), named->GetTitle());
-	continue;
+        printout(INFO, name, "++ Ignore CONST property %s [%s].",
+                 named->GetName(), named->GetTitle());
+        continue;
       }
       cptr = ::strstr(named->GetTitle(), GEANT4_TAG_IGNORE);
       if ( 0 != cptr )   {
-	printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
-		 named->GetName(), named->GetTitle());
-	continue;
+        printout(INFO, name,"++ Ignore CONST property %s [%s].",
+                 named->GetName(), named->GetTitle());
+        continue;
       }
       double v = info.manager->GetProperty(named->GetTitle(),&err);
       if ( err != kFALSE )   {
-        except("Geant4Converter",
+        except(name,
                "++ FAILED to create G4 material %s "
                "[Cannot convert const property: %s]",
                material->GetName(), named->GetName());
@@ -473,14 +474,14 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         idx = -1;
       }
       if ( idx < 0 )   {
-        printout(ERROR, "Geant4Converter",
+        printout(ERROR, name,
                  "++ UNKNOWN Geant4 CONST Property: %-20s %s [IGNORED]",
                  exc_str.c_str(), named->GetName());
         continue;
       }
       // We need to convert the property from TGeo units to Geant4 units
       double conv = g4ConstPropertyConversion(idx);
-      printout(lvl, "Geant4Converter", "++      CONST Property: %-20s %g ", named->GetName(), v);
+      printout(lvl, name, "++      CONST Property: %-20s %g ", named->GetName(), v);
       tab->AddConstProperty(named->GetName(), v * conv);
     }
 #endif
@@ -491,7 +492,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       str << "              log(MEE): " << ionization->GetLogMeanExcEnergy();
     else
       str << "              log(MEE): UNKNOWN";
-    printout(lvl, "Geant4Converter", "++ Created G4 material %s", str.str().c_str());
+    printout(lvl, name, "++ Created G4 material %s", str.str().c_str());
     info.g4Materials[medium] = mat;
   }
   return mat;
@@ -562,9 +563,9 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       G4Scale3D        scal(vals[0], vals[1], vals[2]);
       G4VSolid* g4solid = (G4VSolid*)handleSolid(sol->GetName(), sol);
       if ( scal.xx()>0e0 && scal.yy()>0e0 && scal.zz()>0e0 )
-	solid = new G4ScaledSolid(sh->GetName(), g4solid, scal);
+        solid = new G4ScaledSolid(sh->GetName(), g4solid, scal);
       else
-	solid = new G4ReflectedSolid(g4solid->GetName()+"_refl", g4solid, scal);
+        solid = new G4ReflectedSolid(g4solid->GetName()+"_refl", g4solid, scal);
 #else
       except("Geant4Converter","++ TGeoScaledShape are only supported by Geant4 for versions >= 10.3");
 #endif
@@ -753,16 +754,16 @@ void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) 
       MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
 
       if ( is_left_handed(tr) )   {
-	G4Scale3D     scale;
-	G4Rotate3D    rot;
-	G4Translate3D trans;
-	transform.getDecomposition(scale, rot, trans);
-	printout(debugReflections ? ALWAYS : lvl, "Geant4Converter",
-		 "++ Placing reflected ASSEMBLY. dau:%s to mother %s "
-		 "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f",
+        G4Scale3D     scale;
+        G4Rotate3D    rot;
+        G4Translate3D trans;
+        transform.getDecomposition(scale, rot, trans);
+        printout(debugReflections ? ALWAYS : lvl, "Geant4Converter",
+                 "++ Placing reflected ASSEMBLY. dau:%s to mother %s "
+                 "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f",
                  dau_vol->GetName(), mot_vol->GetName(),
                  transform.dx(), transform.dy(), transform.dz(),
-		 scale.xx(), scale.yy(), scale.zz());
+                 scale.xx(), scale.yy(), scale.zz());
       }
 
       if ( dau_vol->IsA() == TGeoVolumeAssembly::Class() )  {
@@ -817,12 +818,12 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
     TGeoMatrix* tr = node->GetMatrix();
     if ( !tr ) {
       except("Geant4Converter",
-	     "++ Attempt to handle placement without transformation:%p %s of type %s vol:%p",
-	     node, node->GetName(), node->IsA()->GetName(), vol);
+             "++ Attempt to handle placement without transformation:%p %s of type %s vol:%p",
+             node, node->GetName(), node->IsA()->GetName(), vol);
     }
     else if (0 == vol) {
       except("Geant4Converter", "++ Unknown G4 volume:%p %s of type %s ptr:%p",
-	     node, node->GetName(), node->IsA()->GetName(), vol);
+             node, node->GetName(), node->IsA()->GetName(), vol);
     }
     else {
       int           copy               = node->GetNumber();
@@ -857,9 +858,9 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         printout(lvl, "Geant4Converter", "++ Assembly: makeImprint: dau:%-12s %s in mother %-12s "
                  "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f",
                  node->GetName(), node_is_reflected ? "(REFLECTED)" : "",
-		 mot_vol ? mot_vol->GetName() : "<unknown>",
+                 mot_vol ? mot_vol->GetName() : "<unknown>",
                  transform.dx(), transform.dy(), transform.dz(),
-		 scale.xx(), scale.yy(), scale.zz());
+                 scale.xx(), scale.yy(), scale.zz());
         Geant4AssemblyVolume* ass = (Geant4AssemblyVolume*)info.g4AssemblyVolumes[node];
         Geant4AssemblyVolume::Chain chain;
         chain.emplace_back(node);
@@ -880,12 +881,12 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
                                                copy,      // its copy number
                                                checkOverlaps);
       printout(debugReflections||debugPlacements ? ALWAYS : lvl, "Geant4Converter",
-	       "++ Place %svolume %-12s in mother %-12s "
-	       "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f",
-	       node_is_reflected ? "REFLECTED " : "", _v.name(),
-	       mot_vol ? mot_vol->GetName() : "<unknown>",
-	       transform.dx(), transform.dy(), transform.dz(),
-	       scale.xx(), scale.yy(), scale.zz());
+               "++ Place %svolume %-12s in mother %-12s "
+               "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f",
+               node_is_reflected ? "REFLECTED " : "", _v.name(),
+               mot_vol ? mot_vol->GetName() : "<unknown>",
+               transform.dx(), transform.dy(), transform.dz(),
+               scale.xx(), scale.yy(), scale.zz());
       // First 2 cases can be combined.
       // Leave them separated for debugging G4ReflectionFactory for now...
       if ( node_is_reflected  && !pvPlaced.second )
@@ -1086,13 +1087,13 @@ void* Geant4Converter::handleMaterialProperties(TObject* mtx) const    {
 
   if ( 0 != cptr )   {  // Check if the property should not be passed to Geant4
     printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
-	     matrix->GetName(), matrix->GetTitle());	     
+             matrix->GetName(), matrix->GetTitle());	     
     return nullptr;
   }
   cptr = ::strstr(matrix->GetTitle(), GEANT4_TAG_IGNORE);
   if ( 0 != cptr )   {  // Check if the property should not be passed to Geant4
     printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
-	     matrix->GetName(), matrix->GetTitle());
+             matrix->GetName(), matrix->GetTitle());
     return nullptr;
   }
   
@@ -1109,7 +1110,7 @@ void* Geant4Converter::handleMaterialProperties(TObject* mtx) const    {
       g4->values.emplace_back(matrix->Get(i,1));
     }
     printout(lvl, "Geant4Converter",
-	     "++ Successfully converted material property:%s : %s [%ld rows]",
+             "++ Successfully converted material property:%s : %s [%ld rows]",
              matrix->GetName(), matrix->GetTitle(), rows);
     info.g4OpticalProperties[matrix] = g4;
   }
@@ -1232,7 +1233,7 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
       TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
       const char*  cptr   = ::strstr(matrix->GetName(), GEANT4_TAG_IGNORE);
       if ( 0 != cptr )  // Check if the property should not be passed to Geant4
-	continue;
+        continue;
 
       if ( 0 == tab )  {
         tab = new G4MaterialPropertiesTable();
@@ -1426,7 +1427,7 @@ namespace  {
     for (typename C::const_iterator i = c.begin(); i != c.end(); ++i)  {
       const auto& cc = (*i).second;
       for (const auto& j : cc)   {
-	(o->*pmf)(j);
+        (o->*pmf)(j);
       }
     }
   }
