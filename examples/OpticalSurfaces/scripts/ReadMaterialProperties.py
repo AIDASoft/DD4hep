@@ -54,9 +54,8 @@ def run():
   # Configure G4 geometry setup
   seq, act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
   act.DebugMaterials = True
-  act.DebugVolumes   = True
-  act.DebugShapes    = True
-
+  act.DebugVolumes = True
+  act.DebugShapes = True
 
   # Setup particle gun
   gun = geant4.setupGun("Gun", particle='gamma', energy=5 * keV, multiplicity=1)
