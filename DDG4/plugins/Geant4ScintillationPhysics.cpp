@@ -162,35 +162,35 @@ namespace dd4hep {
 
     private:
       /// G4 11 beta, then disappeared....
-      double m_scintillationYieldFactor;
+      double m_scintillationYieldFactor      { 1.0 };
       /// G4 11 beta, then disappeared....
-      double m_scintillationExcitationRatio;
+      double m_scintillationExcitationRatio  { 1.0 };
 
       /// G4OpticalParameters: "VerboseLevel"
-      int    m_verbosity;
+      int    m_verbosity                  { 0 };
       /// G4OpticalParameters: "CerenkovStackPhotons"
-      bool   m_stackPhotons;
+      bool   m_stackPhotons               { true };
       /// G4OpticalParameters: "ScintFiniteRiseTime"
-      bool   m_finiteRiseTime;
+      bool   m_finiteRiseTime             { false };
       /// G4OpticalParameters: "ScintTrackSecondariesFirst"
-      bool   m_trackSecondariesFirst;
+      bool   m_trackSecondariesFirst      { false };
       /// G4OpticalParameters: "ScintByParticleType"
-      bool   m_byParticleType;
+      bool   m_byParticleType             { false };
       /// G4OpticalParameters: "ScintTrackInfo"
-      bool   m_trackInfo;
+      bool   m_trackInfo                  { false };
 
       /// G4OpticalParameters: "BoundaryInvokeSD"
-      bool m_boundaryInvokeSD;
+      bool m_boundaryInvokeSD             { false };
       /// G4OpticalParameters: "WLSTimeProfile"
-      std::string m_WLSTimeProfile;
+      std::string m_WLSTimeProfile        { };
       /// G4OpticalParameters: "WLS2TimeProfile";
-      std::string m_WLS2TimeProfile;
+      std::string m_WLS2TimeProfile       { };
       /// G4OpticalParameters: "CerenkovMaxBetaChange"
-      double m_CerenkovMaxBetaChange;
+      double m_CerenkovMaxBetaChange      { -1.0 };
       /// G4OpticalParameters: "CerenkovMaxPhotonsPerStep"
-      int  m_CerenkovMaxPhotonsPerStep;
+      int  m_CerenkovMaxPhotonsPerStep    { -1 };
       /// G4OpticalParameters: "ScintEnhancedTimeConstants"
-      bool m_ScintEnhancedTimeConstants;
+      bool m_ScintEnhancedTimeConstants   { false };
     };
   }
 }

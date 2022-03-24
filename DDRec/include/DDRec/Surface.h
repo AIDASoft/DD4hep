@@ -401,10 +401,10 @@ namespace dd4hep {
     class VolConeImpl : public VolSurfaceBase {
       
       //internal helper variables
-      double _ztip ;     // z position of the tip in the volume coordinate system
-      double _zt0 ;      // z distance of the front face from the tip
-      double _zt1 ;      // z distance of the back face from the tip
-      double _tanTheta ; // tan of half the openeing angle 
+      double _ztip        { 0.0 }; // z position of the tip in the volume coordinate system
+      double _zt0         { 0.0 }; // z distance of the front face from the tip
+      double _zt1         { 0.0 }; // z distance of the back face from the tip
+      double _tanTheta    { 0.0 }; // tan of half the openeing angle 
 
     public:
       
