@@ -108,7 +108,7 @@ Segmentation* createPolarGridRPhi2() {
 }
 
 CellID getCellID(dd4hep::DDSegmentation::Segmentation* seg, long long rB, long long pB){
-  CellID cID ;
+  CellID cID { 0 };
   seg->decoder()->set(cID,"r",rB) ;
   seg->decoder()->set(cID,"phi",pB);
   return cID;

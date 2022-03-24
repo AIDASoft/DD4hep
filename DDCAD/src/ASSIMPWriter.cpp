@@ -47,14 +47,15 @@ namespace  {
     for(Int_t i=0; i<v->GetNdaughters(); ++i)  {
       PlacedVolume p   = v->GetNode(i);
       Solid        sol = p.volume().solid();
+      bool         use = sol->IsA() != TGeoShapeAssembly::Class();
       unique_ptr<TGeoHMatrix> mother(new TGeoHMatrix(to_global));
       mother->Multiply(p->GetMatrix());
 
-      if ( sol->IsA() != TGeoShapeAssembly::Class() )
+      if ( use )
         cont.push_back(make_pair(p, mother.get()));
       if ( recursive )
         _collect(cont, recursive, *mother, p);  
-      if ( sol->IsA() != TGeoShapeAssembly::Class() )
+      if ( use )
         mother.release();
     }
   }
@@ -433,6 +434,7 @@ int ASSIMPWriter::write(const std::string& file_name,
       if ( mesh->mFaces ) delete [] mesh->mFaces;
       mesh->mFaces = nullptr;
       mesh->mNumFaces = 0;
+      delete mesh;
       continue;
     }
     

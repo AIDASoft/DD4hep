@@ -32,6 +32,7 @@
 #include "TFile.h"
 #include "TH1F.h"
 
+#include <cerrno>
 #include <fstream>
 
 #include "main.h"
@@ -44,13 +45,13 @@ void dumpExampleSteering() ;
 namespace {
 
   struct SDetHelper{
-    std::string name ;
-    double r0 ;
-    double r1 ;
-    double z0 ;
-    double z1 ;
-    TH1F*  hx ;
-    TH1F*  hl ;
+    std::string name { };
+    double r0 { 0.0 };
+    double r1 { 0.0 };
+    double z0 { 0.0 };
+    double z1 { 0.0 };
+    TH1F*  hx { nullptr };
+    TH1F*  hl { nullptr };
   };
 
   /// comput a point on a cylinder (r,z) for a given direction (theta,phi) from the IP
@@ -111,11 +112,9 @@ int main_wrapper(int argc, char** argv)   {
     
 
   std::ifstream infile(steeringFile );
-
   std::string line;
 
-  while (std::getline(infile, line))
-  {
+  while (std::getline(infile, line))  {
     // ignore empty lines and comments
     if( line.empty() || line.find("#") == 0 )
       continue ;
@@ -138,7 +137,7 @@ int main_wrapper(int argc, char** argv)   {
       phi0 = phi0 / 180. * M_PI ;
     }
     else if( token == "subdet" ){
-      SDetHelper det ;
+      SDetHelper det;
       iss >>  det.name >> det.r0 >> det.z0 >> det.r1 >> det.z1 ;
       subdets.emplace_back( det );
     }
@@ -146,8 +145,12 @@ int main_wrapper(int argc, char** argv)   {
     if ( !iss.eof() || iss.fail() ){
       std::cout << " ERROR parsing line : " << line << std::endl ;
       exit(1) ;
-    }
-    
+    }    
+  }
+
+  if ( nbins <= 0 )    {
+    std::cout << "Invalid value for binning (nbins) " << nbins << std::endl;
+    return EINVAL;
   }
 
   // =================================================================================================

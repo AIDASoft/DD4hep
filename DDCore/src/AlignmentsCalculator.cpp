@@ -66,7 +66,7 @@ namespace dd4hep {
         DetElement::Object*         det   = 0;
         const Delta*                delta = 0;
         AlignmentCondition::Object* cond  = 0;
-        unsigned char               key   = 0, valid = 0, created = 0, _pad[1];
+        unsigned char               key   = 0, valid = 0, created = 0, _pad[1] { 0 };
         Entry(DetElement d, const Delta* del) : det(d.ptr()), delta(del), key(d.key())  {}
       };
 

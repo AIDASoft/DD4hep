@@ -97,7 +97,7 @@ int main() {
     tests.push_back( TestTuple( 160.0, -179*DegToRad,    14,   0 ) );
 
 
-    dd4hep::DDSegmentation::VolumeID volID = 0;
+    dd4hep::DDSegmentation::VolumeID volID { 0 };
 
     //Test from position to cellID
     for(std::vector<TestTuple>::const_iterator it = tests.begin(); it != tests.end(); ++it) {
@@ -119,19 +119,19 @@ int main() {
       test( expectedID , cid , " Test get ID From Position" );
 
       std::cout << std::setw(20) <<  " "
-		<< std::setw(20) <<  "rBin     "
-		<< std::setw(20) <<  "pBin     "
-		<< std::endl;
+                << std::setw(20) <<  "rBin     "
+                << std::setw(20) <<  "pBin     "
+                << std::endl;
 
       std::cout << std::setw(20) <<  "Expected"
-		<< std::setw(20) <<  rB
-		<< std::setw(20) <<  pB
-		<< std::endl;
+                << std::setw(20) <<  rB
+                << std::setw(20) <<  pB
+                << std::endl;
 
       std::cout << std::setw(20) <<  "Calculated"
-		<< std::setw(20) <<  seg.decoder()->get(cid,"r")
-		<< std::setw(20) <<  seg.decoder()->get(cid,"phi")
-		<< std::endl;
+                << std::setw(20) <<  seg.decoder()->get(cid,"r")
+                << std::setw(20) <<  seg.decoder()->get(cid,"phi")
+                << std::endl;
 
     }
 
@@ -164,7 +164,7 @@ int main() {
       const long long rB = (*it)._rB;
       const long long pB = (*it)._pB;
 
-      dd4hep::DDSegmentation::CellID cellID  ;
+      dd4hep::DDSegmentation::CellID cellID  { 0 };
 
       seg.decoder()->set(cellID,"r"  , rB);
       seg.decoder()->set(cellID,"phi", pB);
@@ -179,24 +179,24 @@ int main() {
       test( fabs(expectedPosition.z() - calculatedPosition.z())  < 1e-11, " Test get Position from ID: Z" );
 
       std::cout << std::setw(20) <<  " "
-		<< std::setw(20) <<  "r     "
-		<< std::setw(20) <<  "phi     "
-		<< std::endl;
+                << std::setw(20) <<  "r     "
+                << std::setw(20) <<  "phi     "
+                << std::endl;
 
       std::cout << std::setw(20) <<  "Expected"
-		<< std::setw(20) <<  r
-		<< std::setw(20) <<  phi/DegToRad
-		<< std::endl;
+                << std::setw(20) <<  r
+                << std::setw(20) <<  phi/DegToRad
+                << std::endl;
 
       const double rCalc =
-	sqrt( calculatedPosition.x() * calculatedPosition.x() +
-	      calculatedPosition.y() * calculatedPosition.y() );
+        sqrt( calculatedPosition.x() * calculatedPosition.x() +
+              calculatedPosition.y() * calculatedPosition.y() );
       const double pCalc = atan2( calculatedPosition.y(), calculatedPosition.x() );
 
       std::cout << std::setw(20) <<  "Calculated"
-		<< std::setw(20) <<  rCalc
-		<< std::setw(20) <<  pCalc/DegToRad
-		<< std::endl;
+                << std::setw(20) <<  rCalc
+                << std::setw(20) <<  pCalc/DegToRad
+                << std::endl;
 
     }
 
@@ -209,5 +209,4 @@ int main() {
     test.error( "exception occurred" );
   }
   return 0;
-
 }

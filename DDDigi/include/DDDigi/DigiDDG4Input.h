@@ -40,9 +40,9 @@ namespace dd4hep {
     class DigiDDG4Input : public DigiInputAction {
     protected:
       /// Reference to the current ROOT file to be read
-      TFile*                   m_current;
+      TFile*                   m_current   { nullptr };
       /// List of input sources to be worked down
-      std::vector<std::string> m_todo;
+      std::vector<std::string> m_todo      {  };
 
     protected:
       /// Define standard assignments and constructors
