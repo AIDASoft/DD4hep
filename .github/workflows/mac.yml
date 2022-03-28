@@ -14,6 +14,7 @@ jobs:
     - uses: cvmfs-contrib/github-action-cvmfs@v2
       with:
         cvmfs_repositories: 'sft.cern.ch,geant4.cern.ch'
+        CVMFS_MACOS_PKG_LOCATION: 'http://ecsft.cern.ch/dist/cvmfs/cvmfs-2.9.1/cvmfs-2.9.1.pkg'
     - uses: aidasoft/run-lcg-view@v1
       with:
         release-platform: ${{ matrix.LCG }}
