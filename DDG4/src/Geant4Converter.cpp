@@ -464,7 +464,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       }
       int idx = -1;
       try   {
-        idx = tab->GetPropertyIndex(named->GetName());
+        idx = tab->GetConstPropertyIndex(named->GetName());
       }
       catch(const std::exception& e)   {
         exc_str = e.what();
