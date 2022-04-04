@@ -65,6 +65,9 @@ namespace dd4hep {
       for(auto const& ival: this->strParameters()) {
         lcparameters.setValues(ival.first, ival.second);
       }
+
+      lcparameters.setValues("eventNumber", this->eventNumber());
+      lcparameters.setValues("runNumber", this->runNumber());
     }
 
     class  Geant4ParticleMap;
