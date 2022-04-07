@@ -1,3 +1,76 @@
+# v01-20-02
+
+* 2022-04-04 Sanghyun Ko ([PR#902](https://github.com/aidasoft/dd4hep/pull/902))
+  - Fix a bug that cannot set G4 const property, following up #884
+
+* 2022-03-30 Valentin Volkl ([PR#899](https://github.com/aidasoft/dd4hep/pull/899))
+  - cmake: DD4hepConfig: Drop unnecessary call to DD4HEP_SETUP_BOOST_TARGETS
+
+* 2022-03-30 Markus Frank ([PR#898](https://github.com/aidasoft/dd4hep/pull/898))
+  - Reduce coverity warnings
+
+* 2022-03-21 Markus Frank ([PR#897](https://github.com/aidasoft/dd4hep/pull/897))
+  See for the example
+  -- /examples/ClientTests/src/MaterialTester_geo.cpp
+  -- /examples/OpticalSurfaces/compact/ReadMaterialProperties.xml
+  -- /examples/OpticalSurfaces/scripts/ReadMaterialProperties.py
+  
+  The python file is only there to show that the G4 simulation does not get screwed.....
+  Otherwise: to define properties, which do not participate in Geant4:
+  ```
+      <material name="Water">
+        <D type="density" value="1.0" unit="g/cm3"/>
+        <composite n="2" ref="H"/>
+        <composite n="1" ref="O"/>
+        <!-- Properties used by Geant4    -->
+        <property name="RINDEX"        ref="RINDEX__0x123aff00"/>
+        <property name="ABSLENGTH"     ref="ABSLENGTH__0x123aff00"/>
+        <property name="FASTCOMPONENT" ref="FASTCOMPONENT__0x123aff00"/>
+        <property name="SLOWCOMPONENT" ref="SLOWCOMPONENT__0x123aff00"/>
+        <!-- Properties ignored by Geant4 -->
+        <property name="Property_of_mine" ref="Water__0x123aff00"/>
+        <constant name="BirksConstant"    ref="Birk__Water|Geant4-ignore"/>
+        <!-- Constants  ignored by Geant4 -->
+        <constant name="Constant_of_mine" ref="Water__Mine|Geant4-ignore"/>
+      </material>
+  ```
+  where:
+  ```
+    <properties>
+      <constant name="Birk__Water|Geant4-ignore" value="12.345678"/>
+      <constant name="Water__Mine|Geant4-ignore" value="87.654321"/>
+    </properties>
+  ```
+  and
+  ```
+      <matrix name= "Water__0x123aff00" option="Geant4-ignore" coldim="1" values="  
+                2.034*eV 
+                2.068*eV 
+                2.103*eV 
+                2.139*eV 
+                2.177*eV 
+                2.216*eV 
+      "/>
+    </properties>
+  ```
+  For non-const properties you have to set the option to "Geant4-ignore",
+  otherwise you append the string to the name. The "ref" string in the material
+  and the property must match.
+  In the program you can then access the propertiers by name like this:
+  ```
+  Material material(...)
+  double v = material->GetConstProperty("BirksConstant");
+  TGDMLMatrix* m = material->GetProperty("Property_of_mine");
+  ```
+  like any other property. See for details:
+  /examples/ClientTests/src/MaterialTester_geo.cpp lines 78-108
+
+* 2022-03-21 Wouter Deconinck ([PR#896](https://github.com/aidasoft/dd4hep/pull/896))
+  - edm4hep: don't add particle as parent to its daughters, and vice versa
+
+* 2022-03-15 Paul Gessinger ([PR#895](https://github.com/aidasoft/dd4hep/pull/895))
+  - Allow relaxing the python version requirements at CMake level via option `DD4HEP_RELAX_PYVER`.
+
 # v01-20-01
 
 * 2022-03-08 Markus FRANK ([PR#894](https://github.com/AIDASoft/DD4hep/pull/894))
