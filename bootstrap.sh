@@ -7,7 +7,7 @@
 ########################################################################################################################
 
 
-source ./.dd4hep-ci.d/init_x86_64.sh
+source /cvmfs/sft.cern.ch/lcg/views/LCG_101/x86_64-centos7-gcc11-opt/setup.sh
 
 STRING=$(env LC_CTYPE=C tr -dc "a-zA-Z0-9-_\$\?" < /dev/urandom | head -c 4)
 
@@ -20,11 +20,11 @@ else
 fi
 ninja
 ninja install
-../bin/thisdd4hep.sh
+source ../bin/thisdd4hep.sh
 ctest --output-on-failure -j4
 cd ../examples/
 mkdir build_${STRING}
-cd build
+cd build_${STRING}
 cmake -GNinja ..
 ninja
 ninja install
