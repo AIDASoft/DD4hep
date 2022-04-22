@@ -53,7 +53,7 @@ namespace dd4hep {
     TGPopupMenu& menu()  {  return m_popup; }
 
     /// Add the menu to the menu bar
-    virtual void Build(TGMenuBar* bar, int hints=kLHintsNormal);
+    virtual void Build(TGMenuBar* menuBar, int hints=kLHintsNormal);
 
     /// Add a menu separator to the menu.
     virtual void AddSeparator(TGMenuEntry* before = 0);

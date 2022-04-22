@@ -212,9 +212,9 @@ namespace dd4hep {
     virtual void OnNewEvent(EventHandler& handler)  override;
 
     /// Build the DDEve specific menues. Default bar is the ROOT browser's bar
-    virtual void BuildMenus(TGMenuBar* bar=0);
+    virtual void BuildMenus(TGMenuBar* menuBar=0);
     /// Add new menu to the main menu bar
-    virtual void AddMenu(TGMenuBar* bar, PopupMenu* menu, int hints=kLHintsNormal);
+    virtual void AddMenu(TGMenuBar* menuBar, PopupMenu* menu, int hints=kLHintsNormal);
 
     ClassDefOverride(Display,0);
   };
