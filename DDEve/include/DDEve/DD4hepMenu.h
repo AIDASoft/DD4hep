@@ -48,7 +48,7 @@ namespace dd4hep {
     virtual ~DD4hepMenu();
 
     /// Add the menu to the menu bar
-    virtual void Build(TGMenuBar* bar, int hints=kLHintsNormal)  override;
+    virtual void Build(TGMenuBar* menuBar, int hints=kLHintsNormal)  override;
     /// Callback when loading the configuration
     void OnLoadXML(TGMenuEntry* entry, void* ptr);
     /// Callback when loading the configuration

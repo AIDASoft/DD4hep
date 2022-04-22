@@ -48,7 +48,7 @@ namespace dd4hep {
     virtual ~ViewMenu();
 
     /// Add the menu to the menu bar
-    virtual void Build(TGMenuBar* bar, int hints=kLHintsNormal)  override;
+    virtual void Build(TGMenuBar* menuBar, int hints=kLHintsNormal)  override;
 
     /// Import Geometry data and build the view
     void BuildView(View *view)  const;
