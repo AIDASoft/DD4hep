@@ -46,7 +46,7 @@ namespace dd4hep {
   class SegmentationObject {
   public:
     /// Standard constructor
-    SegmentationObject(DDSegmentation::Segmentation* s = 0);
+    SegmentationObject(DDSegmentation::Segmentation* seg = 0);
     /// Default destructor
     virtual ~SegmentationObject();
     /// Access the encoding string
