@@ -38,6 +38,8 @@ IF(LATEX_COMPILER AND BIBER_COMPILER)
     ADD_SUBDIRECTORY(usermanuals/DDEve)
     ADD_SUBDIRECTORY(usermanuals/DDG4)
     ADD_SUBDIRECTORY(usermanuals/DDRec)
+
+    MESSAGE(STATUS "Tried to set up Latex, if you saw errors, please disable building the documentation (BUILD_DOCS=OFF) or install missing packages.")
     
 ELSE()
     MESSAGE(STATUS "No LaTeX/Biber found, cannot compile user manual.")
