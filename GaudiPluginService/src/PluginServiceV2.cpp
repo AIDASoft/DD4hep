@@ -156,7 +156,9 @@ namespace Gaudi {
           std::regex  line_format{"^(?:[[:space:]]*(?:(v[0-9]+)::)?([^:]+):(.*[^[:space:]]))?[[:space:]]*(?:#.*)?$"};
           std::smatch matches;
 
-          std::string search_path = std::getenv( envVar.c_str() );
+          std::string search_path;
+          const char* envPtr = std::getenv( envVar.c_str() );
+          if ( envPtr ) search_path = envPtr;
           if ( search_path.empty() ) {
             return;
           }
