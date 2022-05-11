@@ -4,11 +4,10 @@ on: [push, pull_request]
 
 jobs:
   macOS:
-    runs-on: macos-10.15
+    runs-on: macos-11
     strategy:
       matrix:
-        LCG: ["LCG_98python3/x86_64-mac1015-clang110-opt",
-              "LCG_99/x86_64-mac1015-clang120-opt"]
+        LCG: ["LCG_101/x86_64-mac11-clang120-opt"]
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
