@@ -79,7 +79,7 @@ public:
   const HandleMap& readouts() const           {    return m_data->m_readouts;         }
   /// Accessor to the map of sub-detectors
   const HandleMap& detectors() const          {    return m_data->m_detectors;        }
-  /// Retrieve a sensitive detector by it's name from the detector description
+  /// Retrieve a sensitive detector by its name from the detector description
   const HandleMap& sensitiveDetectors() const {    return m_data->m_sensitive;        }
   /// Accessor to the map of field entries, which together form the global field
   const HandleMap& fields() const             {    return m_data->m_fields;           }

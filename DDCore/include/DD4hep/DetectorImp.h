@@ -236,40 +236,40 @@ namespace dd4hep {
     /// Typed access to constants: double values
     virtual double constantAsDouble(const std::string& name) const  override;
 
-    /// Retrieve a constant by it's name from the detector description
+    /// Retrieve a constant by its name from the detector description
     virtual Constant constant(const std::string& name) const  override;
 
-    /// Retrieve a limitset by it's name from the detector description
+    /// Retrieve a limitset by its name from the detector description
     virtual LimitSet limitSet(const std::string& name) const  override {
       return getRefChild(m_limits, name);
     }
-    /// Retrieve a visualization attribute by it's name from the detector description
+    /// Retrieve a visualization attribute by its name from the detector description
     virtual VisAttr visAttributes(const std::string& name) const  override {
       return getRefChild(m_display, name, false);
     }
-    /// Retrieve a matrial by it's name from the detector description
+    /// Retrieve a matrial by its name from the detector description
     virtual Material material(const std::string& name) const  override;
 
-    /// Retrieve a region object by it's name from the detector description
+    /// Retrieve a region object by its name from the detector description
     virtual Region region(const std::string& name) const  override {
       return getRefChild(m_regions, name);
     }
-    /// Retrieve a id descriptor by it's name from the detector description
+    /// Retrieve a id descriptor by its name from the detector description
     virtual IDDescriptor idSpecification(const std::string& name) const  override {
       return getRefChild(m_idDict, name);
     }
-    /// Retrieve a readout object by it's name from the detector description
+    /// Retrieve a readout object by its name from the detector description
     virtual Readout readout(const std::string& name) const  override {
       return getRefChild(m_readouts, name);
     }
-    /// Retrieve a subdetector element by it's name from the detector description
+    /// Retrieve a subdetector element by its name from the detector description
     virtual DetElement detector(const std::string& name) const  override;
     //{      return getRefChild(m_detectors, name);    }
-    /// Retrieve a sensitive detector by it's name from the detector description
+    /// Retrieve a sensitive detector by its name from the detector description
     virtual SensitiveDetector sensitiveDetector(const std::string& name) const  override {
       return getRefChild(m_sensitive, name, false);
     }
-    /// Retrieve a subdetector element by it's name from the detector description
+    /// Retrieve a subdetector element by its name from the detector description
     virtual CartesianField field(const std::string& name) const  override {
       return getRefChild(m_fields, name, false);
     }
@@ -298,7 +298,7 @@ namespace dd4hep {
     virtual const HandleMap& detectors() const  override {
       return m_detectors;
     }
-    /// Retrieve a sensitive detector by it's name from the detector description
+    /// Retrieve a sensitive detector by its name from the detector description
     virtual const HandleMap& sensitiveDetectors() const  override {
       return m_sensitive;
     }

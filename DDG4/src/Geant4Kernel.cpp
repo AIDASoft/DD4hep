@@ -189,7 +189,7 @@ Geant4Kernel& Geant4Kernel::createWorker()   {
   throw runtime_error(format("Geant4Kernel", "DDG4: Only the master instance may create workers."));
 }
 
-/// Access worker instance by it's identifier
+/// Access worker instance by its identifier
 Geant4Kernel& Geant4Kernel::worker(unsigned long identifier, bool create_if)    {
   if ( Workers::iterator i=m_workers.find(identifier); i != m_workers.end() )   {
     return *((*i).second);

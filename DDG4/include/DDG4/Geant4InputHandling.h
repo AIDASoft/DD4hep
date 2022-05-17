@@ -35,10 +35,10 @@ namespace dd4hep {
 
     /** Helpers to import and export G4 records  */
 
-    /// Create a vertex object from it's G4 counterpart
+    /// Create a vertex object from its G4 counterpart
     Geant4Vertex* createPrimary(const G4PrimaryVertex* g4);
     
-    /// Create a particle object from it's G4 counterpart
+    /// Create a particle object from its G4 counterpart
     Geant4Particle* createPrimary(int particle_id, const Geant4Vertex* v, const G4PrimaryParticle* g4p);
 
     /// Create a DDG4 interaction record from a Geant4 interaction defined by a primary vertex

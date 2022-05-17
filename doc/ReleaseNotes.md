@@ -1408,7 +1408,7 @@
        ```cpp
        dd4hep::Volume trackers = dd4hep::Description::trackingVolume()
        ```
-    -  Although the concept is available in the DD4hep core, it's configuration from XML is only implemented for the compact notation. For details see the example `examples/ClientTests/compact/TrackingRegion.xml`.
+    -  Although the concept is available in the DD4hep core, its configuration from XML is only implemented for the compact notation. For details see the example `examples/ClientTests/compact/TrackingRegion.xml`.
      -  If the volume should be connected to the world:   connected="true". This is useful for debugging because  the volume can be visualized else if the volume is part of the parallelworld: connected="false". The volume is always connected to the top level. The anchor detector element defines the base transformation to place the volume within the (parallel) world.
   
   ```xml
@@ -1747,7 +1747,7 @@
    
       A user defined implementations must be specialized somewhere in a compilation unit of the user framework, not in a header file. The framework object could host e.g. references for histogramming, logging, data access etc.
     
-      This way any experiment/user related data processing framework can exhibit it's essential tools to `DDG4` actions.
+      This way any experiment/user related data processing framework can exhibit its essential tools to `DDG4` actions.
     
       A possible specialized implementations would look like the following:
     ```cpp

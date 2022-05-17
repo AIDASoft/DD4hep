@@ -87,7 +87,7 @@ DetService::Content DetService::openContent(const string& nam)   {
   return Content();
 }
 
-/// Add a condition address to the content. Condition is identified by it's global key
+/// Add a condition address to the content. Condition is identified by its global key
 bool DetService::_addContent(Content& content,
                              Condition::key_type key,
                              const std::string& address)    {
@@ -103,7 +103,7 @@ bool DetService::_addContent(Content& content,
   return false;
 }
 
-/// Add a condition address to the content. Condition is identified by it's global key
+/// Add a condition address to the content. Condition is identified by its global key
 void DetService::addContent(Content& content,
                             Condition::key_type key,
                             const std::string& address)    {

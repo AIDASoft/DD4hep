@@ -27,7 +27,7 @@ SensitiveDetector DetectorHelper::sensitiveDetector(const std::string& detector)
   return sensitive;
 }
 
-/// Given a detector element, access it's sensitive detector (if the sub-detector is sensitive!)
+/// Given a detector element, access its sensitive detector (if the sub-detector is sensitive!)
 SensitiveDetector DetectorHelper::sensitiveDetector(DetElement detector) const    {
   for(DetElement par = detector; par.isValid(); par = par.parent())  {
     if ( par.ptr() != ptr()->world().ptr() )  {
@@ -45,7 +45,7 @@ SensitiveDetector DetectorHelper::sensitiveDetector(DetElement detector) const  
   return SensitiveDetector();
 }
 
-/// Find a detector element by it's system ID
+/// Find a detector element by its system ID
 DetElement DetectorHelper::detectorByID(int id)  const    {
   const Detector::HandleMap& detectors = ptr()->detectors();
   for(const auto& det : detectors )  {

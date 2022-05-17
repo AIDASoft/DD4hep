@@ -85,7 +85,7 @@ namespace dd4hep {
     bool hasRotation() const                {  return checkFlag(HAVE_ROTATION);    }
     /// Access flags: Check if the delta operation contains a pivot
     bool hasPivot() const                   {  return checkFlag(HAVE_PIVOT);       }
-    /// Compute the alignment delta for one detector element and it's alignment condition
+    /// Compute the alignment delta for one detector element and its alignment condition
     void computeMatrix(TGeoHMatrix& tr_delta)  const;
   };
 

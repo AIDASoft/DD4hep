@@ -112,7 +112,7 @@ namespace dd4hep {
     static Handle<NamedObject> create(Detector& description);
   };
 
-  /// Create an arbitrary object from it's XML representation.
+  /// Create an arbitrary object from its XML representation.
   /**
    *
    *  \author  M.Frank
@@ -138,7 +138,7 @@ namespace dd4hep {
     static Handle<TObject> create(Detector& description, xml::Handle_t e);
   };
   
-  ///  Read an arbitrary XML document and analyze it's content
+  ///  Read an arbitrary XML document and analyze its content
   /**
    *
    *  \author  M.Frank
@@ -151,7 +151,7 @@ namespace dd4hep {
     static long create(Detector& description, xml::Handle_t e);
   };
 
-  /// Read an arbitrary XML document and analyze it's content
+  /// Read an arbitrary XML document and analyze its content
   /**
    *
    *  \author  M.Frank

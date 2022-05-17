@@ -51,7 +51,7 @@ GlobalAlignmentStack::StackEntry::~StackEntry() {
   InstanceCount::decrement(this);
 }
 #if 0
-/// Set flag to reset the entry to it's ideal geometrical position
+/// Set flag to reset the entry to its ideal geometrical position
 GlobalAlignmentStack::StackEntry& GlobalAlignmentStack::StackEntry::setReset(bool new_value)   {
   new_value ? (delta.flags |= RESET_VALUE) : (delta.flags &= ~RESET_VALUE);
   return *this;

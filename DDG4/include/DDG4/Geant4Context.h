@@ -170,7 +170,7 @@ namespace dd4hep {
      *  e.g. references for histogramming, logging, data access etc.
      *
      *  This way any experiment/user related data processing framework can exhibit
-     *  it's essential tools to DDG4 actions.
+     *  its essential tools to DDG4 actions.
      *
      *  A possible specialized implementations would look like the following:
      *
