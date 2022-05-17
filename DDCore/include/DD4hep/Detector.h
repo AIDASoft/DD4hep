@@ -258,9 +258,9 @@ namespace dd4hep {
     virtual Readout readout(const std::string& name) const = 0;
     /// Retrieve a sensitive detector by it's name from the detector description
     virtual SensitiveDetector sensitiveDetector(const std::string& name) const = 0;
-    /// Retrieve a subdetector element by it's name from the detector description
-    virtual CartesianField field(const std::string& name) const = 0;
     /// Retrieve a field component by it's name from the detector description
+    virtual CartesianField field(const std::string& name) const = 0;
+    /// Retrieve a subdetector element by it's name from the detector description
     virtual DetElement detector(const std::string& name) const = 0;
 
     /// Add a new constant to the detector description
