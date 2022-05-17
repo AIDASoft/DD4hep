@@ -17,6 +17,8 @@
 #include <bitset>
 #include <ostream>
 
+#include <boost/variant.hpp>
+
 #include "DD4hep/DetElement.h"
 
 namespace dd4hep {
@@ -501,8 +503,41 @@ namespace dd4hep {
       std::map<std::string, double> doubleParameters{};
     };
     using DoubleParameters = StructExtension<MapStringDoubleStruct>;
-
     std::ostream& operator<<( std::ostream& io , const DoubleParameters& d ) ;
+
+    struct MapStringVariantStruct {
+      std::map<std::string, boost::variant<double, int, std::string, bool>> variantParameters{};
+
+      template <typename T>
+      const T& get(const std::string& key) const {
+        auto it = variantParameters.find(key);
+        if(it == variantParameters.end()) {
+          throw std::runtime_error{"Key "+key+"not found"};
+        }
+        return boost::get<T>(it->second);
+      }
+
+      template <typename T>
+      T value_or(const std::string& key, T alternative) {
+        auto it = variantParameters.find(key);
+        if(it == variantParameters.end()) {
+          return alternative;
+        }
+        return boost::get<T>(it->second);
+      }
+
+      template <typename T>
+      void set(const std::string& key, T value) {
+        variantParameters[key] = value;
+      }
+
+      bool contains(const std::string& key) const {
+        return variantParameters.find(key) != variantParameters.end();
+      }
+    };
+    using VariantParameters = StructExtension<MapStringVariantStruct>;
+    std::ostream& operator<<( std::ostream& io , const VariantParameters& d ) ;
+
 
   } /* namespace rec */
 } /* namespace dd4hep */
