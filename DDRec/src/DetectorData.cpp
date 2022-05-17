@@ -225,6 +225,42 @@ namespace dd4hep {
       return io ;
     }
 
+    namespace { 
+      struct visitor_impl {
+        std::ostream& m_io;
+        void operator()(std::string value) const {
+          m_io << ": str = " << value;
+        }
+
+        void operator()(int value) const {
+          m_io << ": int = " << value;
+        }
+
+        void operator()(double value) const {
+          m_io << ": double = " << value;
+        }
+
+        void operator()(bool value) const {
+          m_io << ": bool = " << (value ? "true" : "false");
+        }
+
+      };
+    }
+
+    std::ostream& operator<<(std::ostream& io, const VariantParameters& v) {
+      boost::io::ios_base_all_saver ifs(io);
+      io <<  " --VariantParameters: "  << std::scientific << std::endl ;
+
+      visitor_impl visitor{io};
+
+      for (auto const& thePair: v.variantParameters) {
+        io <<  "    "
+           << std::setw(40) << thePair.first << "";
+        boost::apply_visitor(visitor, thePair.second);
+        io << std::endl;
+      }
+      return io ;
+    }
  
 
   } // namespace
