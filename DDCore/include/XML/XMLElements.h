@@ -453,9 +453,9 @@ namespace dd4hep {
       void removeAttrs() const;
       /// Set attributes as in argument handle
       void setAttrs(Handle_t e) const;
-      /// Access typed attribute value by it's unicode name
+      /// Access typed attribute value by its unicode name
       template <class T> T attr(const XmlChar* name) const;
-      /// Access typed attribute value by it's unicode name. If not existing returns default value
+      /// Access typed attribute value by its unicode name. If not existing returns default value
       template <class T> T attr(const XmlChar* name, T default_value) const;
 
       /// Generic attribute setter with unicode value
@@ -477,11 +477,11 @@ namespace dd4hep {
       bool hasAttr(const char* t) const {
         return hasAttr(Strng_t(t));
       }
-      /// Access typed attribute value by it's name
+      /// Access typed attribute value by its name
       template <class T> T attr(const char* name) const {
         return this->attr<T>(Strng_t(name));
       }
-      /// Access typed attribute value by it's name
+      /// Access typed attribute value by its name
       template <class T> T attr(const char* name, const T& default_value) const {
         Strng_t tag(name);
         return this->hasAttr(tag) ? this->attr<T>(tag) : default_value;
@@ -499,13 +499,13 @@ namespace dd4hep {
        */
       /// Check the existence of a child with a given tag name
       bool hasChild(const XmlChar* tag) const;
-      /// Access a single child by it's tag name (unicode)
+      /// Access a single child by its tag name (unicode)
       Handle_t child(const XmlChar* tag, bool throw_exception = true) const;
       /// Access a group of children identified by the same tag name
       NodeList children(const XmlChar* tag) const;
       /// Access the number of children of this DOM element with a given tag name
       size_t numChildren(const XmlChar* tag, bool throw_exception) const;
-      /// Remove a single child node identified by it's handle from the tree of the element
+      /// Remove a single child node identified by its handle from the tree of the element
       Handle_t remove(Handle_t e) const;
       /// Remove children with a given tag name from the DOM node
       void removeChildren(const XmlChar* tag) const;
@@ -850,11 +850,11 @@ namespace dd4hep {
         return m_element.attr<T>(tag_value, default_value);
       }
 #ifndef __TIXML__
-      /// Access typed attribute value by it's name
+      /// Access typed attribute value by its name
       template <class T> T attr(const char* name) const {
         return this->attr<T>(Strng_t(name));
       }
-      /// Access typed attribute value by it's name
+      /// Access typed attribute value by its name
       template <class T> T attr(const char* name, T default_value) const {
         return this->attr<T>(Strng_t(name), default_value);
       }
@@ -883,7 +883,7 @@ namespace dd4hep {
       std::vector<Attribute> attributes() const {
         return m_element.attributes();
       }
-      /// Access single attribute by it's name
+      /// Access single attribute by its name
       Attribute getAttr(const XmlChar* name) const;
       /// Set single attribute
       template <class T>

@@ -41,8 +41,8 @@ namespace dd4hep {
      *  The particle gun is a input source like any other and participates
      *  in the general input stage merging process like any other input
      *  e.g. from file. Hence, there may be several particle guns present
-     *  each generating it's own primary vertex. Use the mask property to
-     *  ensure each gun generates it's own, well identified primary vertex.
+     *  each generating its own primary vertex. Use the mask property to
+     *  ensure each gun generates its own, well identified primary vertex.
      *
      *  There is one 'user lazyness' support though:
      *  If there is only one particle gun in use, the property 'Standalone',

@@ -167,7 +167,7 @@ namespace dd4hep {
       virtual ~Geant4PrimaryEvent();
       /// Add a new interaction object to the event
       void add(int id, Geant4PrimaryInteraction* interaction);
-      /// Retrieve an interaction by it's ID
+      /// Retrieve an interaction by its ID
       Geant4PrimaryInteraction* get(int id) const;
       /// Number of interaction contained in the primary event
       size_t size()  const      {        return m_interactions.size();      }

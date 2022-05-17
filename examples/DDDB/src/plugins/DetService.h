@@ -86,7 +86,7 @@ namespace gaudi  {
     Slice _project(Content &content, Context *ctx, const IOVType *typ, EventStamp stamp);
     /// Remove content from cache
     bool _remove(CachedContents &cache, Content &content);
-    /// Add a condition address to the content. Condition is identified by it's global key
+    /// Add a condition address to the content. Condition is identified by its global key
     bool _addContent(Content &content, Condition::key_type key, const std::string &address);
 
   public:
@@ -119,7 +119,7 @@ namespace gaudi  {
     /// Open content creation context and copy items from registered object
     virtual Content getContent(const std::string &name) override;
 
-    /// Add a condition address to the content. Condition is identified by it's global key
+    /// Add a condition address to the content. Condition is identified by its global key
     virtual void addContent(Content &content,
                             Condition::key_type key,
                             const std::string &address) override;

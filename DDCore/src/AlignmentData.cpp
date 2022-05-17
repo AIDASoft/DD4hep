@@ -55,7 +55,7 @@ void Delta::clear()   {
   rotation    = RotationZYX();
 }
 
-/// Compute the alignment delta for one detector element and it's alignment condition
+/// Compute the alignment delta for one detector element and its alignment condition
 void Delta::computeMatrix(TGeoHMatrix& tr_delta)  const   {
   const Delta&       delta = *this;
   const Position&      pos = delta.translation;

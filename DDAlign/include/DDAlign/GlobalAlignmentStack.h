@@ -86,7 +86,7 @@ namespace dd4hep {
         /// Check flag if the node location and all children should be reset
         bool resetChildren() const     {  return delta.checkFlag(RESET_CHILDREN);   }
 
-        /// Set flag to reset the entry to it's ideal geometrical position
+        /// Set flag to reset the entry to its ideal geometrical position
         StackEntry& setReset(bool new_value=true);
         /// Set flag to reset the entry's children to their ideal geometrical position
         StackEntry& setResetChildren(bool new_value=true);

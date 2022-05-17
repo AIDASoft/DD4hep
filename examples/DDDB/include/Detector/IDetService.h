@@ -65,7 +65,7 @@ namespace gaudi   {
     /// Retrive existing and registered conditions content object by name
     virtual Content getContent(const std::string& name) = 0;
 
-    /// Add a condition address to the content. Condition is identified by it's global key
+    /// Add a condition address to the content. Condition is identified by its global key
     virtual void addContent(Content& content,
                             Condition::key_type key,
                             const std::string& address) = 0;

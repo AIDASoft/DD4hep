@@ -294,7 +294,7 @@ size_t Handle_t::numChildren(const char* t, bool throw_exception) const {
   throw runtime_error(msg);
 }
 
-/// Remove a single child node identified by it's handle from the tree of the element
+/// Remove a single child node identified by its handle from the tree of the element
 Handle_t Handle_t::child(const char* t, bool throw_exception) const {
   Elt_t e = node_first(m_node, t);
   if (e || !throw_exception)
