@@ -505,6 +505,11 @@ namespace dd4hep {
     using DoubleParameters = StructExtension<MapStringDoubleStruct>;
     std::ostream& operator<<( std::ostream& io , const DoubleParameters& d ) ;
 
+    /** Data structure that holds a map of string keys to a typesafe union of double, int, string or bool.
+     *  It can be used as an extension object for detector elements to attach arbitrary information 
+     *  @author P.Gessinger, CERN
+     *  @date May, 24 2022
+     */
     struct MapStringVariantStruct {
       std::map<std::string, boost::variant<double, int, std::string, bool>> variantParameters{};
 
