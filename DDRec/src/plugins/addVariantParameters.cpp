@@ -22,6 +22,24 @@
 
 namespace dd4hep::rec {
 
+/**
+ *  @author P.Gessinger, CERN
+ *  @date May, 24 2022
+ *
+ *  \brief Plugin which attaches parameters with string keys and int, double, 
+ *  string or bool values to detector elements
+ *
+ *  This plugin can be configured to attach a varying number of variant paremeters
+ *  to a single detector elements. The first argument is the detector element name.
+ *  Any following arguments should conform to the following format:
+ *    
+ *    key: type = value
+ *  
+ *  where type can be one of "int", "bool", "double", or "str", with "str" being the default.
+ *  This will ensure an instance of the @c VariantParameters extension is attached to a detector
+ *  element, and insert @c key with a @c value of type @c type.
+ */
+
 static long addVariantParameters(Detector& description, int argc, char** argv) {
 
   if(argc < 2) {
@@ -42,7 +60,6 @@ static long addVariantParameters(Detector& description, int argc, char** argv) {
     if(!std::regex_match(kv, m, expr)) {
       throw std::runtime_error("Unable to parse key-value pair to assign");
     }
-    // std::cout << m.size() << ": " << m.str(0) << std::endl;
     if (m.size() != 4) {
       throw std::runtime_error("Unable to parse key-value pair to assign");
     }
@@ -56,16 +73,7 @@ static long addVariantParameters(Detector& description, int argc, char** argv) {
 
     printout(INFO,"ParametersPlugin","+++ %s -> %s: %s = %s", detector.c_str(), key.c_str(), type.c_str(), value.c_str());
 
-    auto recurse = [detector](auto&& self, DetElement elt) -> DetElement {
-      if(elt.name() == detector) { return elt; }
-      for(auto& child : elt.children()) {
-        DetElement res = self(self, child.second);
-        if (res.isValid()) { return res; }
-      }
-      return DetElement{}; // not found
-    };
-
-    DetElement elt = recurse(recurse, description.world());
+    DetElement elt = description.detector(detector);
     if(!elt.isValid()){
       printout(ERROR,"ParametersPlugin","+++ Did not find element with name '%s'", detector.c_str());
       return 0;
