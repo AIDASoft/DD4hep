@@ -24,7 +24,7 @@ namespace dd4hep::rec {
 
 /**
  *  @author P.Gessinger, CERN
- *  @date May, 24 2022
+ *  @date May, 25 2022
  *
  *  \brief Plugin which attaches parameters with string keys and int, double, 
  *  string or bool values to detector elements
