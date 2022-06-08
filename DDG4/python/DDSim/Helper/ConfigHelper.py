@@ -13,6 +13,9 @@ call for the parser object create an additional member::
 """
 
 from __future__ import absolute_import, unicode_literals
+
+import argparse
+
 import ddsix as six
 
 
@@ -129,3 +132,11 @@ class ConfigHelper(object):
                               dest="%s.%s" % (name, var),
                               **optionsDict
                               )
+
+
+class ExtendAction(argparse.Action):
+  """Class to add the extend action for argparse to python2.7"""
+  def __call__(self, parser, namespace, values, option_string=None):
+    items = getattr(namespace, self.dest) or []
+    items.extend(values)
+    setattr(namespace, self.dest, items)
