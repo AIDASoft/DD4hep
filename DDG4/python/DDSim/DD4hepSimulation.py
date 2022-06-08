@@ -63,7 +63,7 @@ class DD4hepSimulation(object):
 
   def __init__(self):
     self.steeringFile = None
-    self.compactFile = ""
+    self.compactFile = []
     self.inputFiles = []
     self.outputFile = "dummyOutput.slcio"
     self.runType = "batch"
@@ -145,8 +145,8 @@ class DD4hepSimulation(object):
     if self._argv is None:
       self._argv = list(argv) if argv else list(sys.argv)
 
-    parser.add_argument("--compactFile", action="store", default=self.compactFile,
-                        help="The compact XML file")
+    parser.add_argument("--compactFile", nargs='+', action="extend", default=self.compactFile, type=str,
+                        help="The compact XML file, or multiple compact files, if the last one is the closer.")
 
     parser.add_argument("--runType", action="store", choices=("batch", "vis", "run", "shell"), default=self.runType,
                         help="The type of action to do in this invocation"  # Note: implicit string concatenation
@@ -301,7 +301,8 @@ class DD4hepSimulation(object):
     kernel = DDG4.Kernel()
     dd4hep.setPrintLevel(self.printLevel)
 
-    kernel.loadGeometry(str("file:" + self.compactFile))
+    for compactFile in self.compactFile:
+      kernel.loadGeometry(str("file:" + compactFile))
     detectorDescription = kernel.detectorDescription()
 
     DDG4.importConstants(detectorDescription)
