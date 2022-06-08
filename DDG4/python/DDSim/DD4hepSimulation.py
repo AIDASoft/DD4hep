@@ -19,7 +19,7 @@ from DDSim.Helper.Filter import Filter
 from DDSim.Helper.Random import Random
 from DDSim.Helper.Action import Action
 from DDSim.Helper.OutputConfig import OutputConfig
-from DDSim.Helper.ConfigHelper import ConfigHelper
+from DDSim.Helper.ConfigHelper import ConfigHelper, ExtendAction
 from DDSim.Helper.MagneticField import MagneticField
 from DDSim.Helper.ParticleHandler import ParticleHandler
 from DDSim.Helper.Gun import Gun
@@ -131,6 +131,8 @@ class DD4hepSimulation(object):
 
     parser = argparse.ArgumentParser("Running DD4hep Simulations:",
                                      formatter_class=argparse.RawTextHelpFormatter)
+    # add myextend for python2.7
+    parser.register('action', 'myextend', ExtendAction)
 
     parser.add_argument("--steeringFile", "-S", action="store", default=self.steeringFile,
                         help="Steering file to change default behaviour")
@@ -145,7 +147,7 @@ class DD4hepSimulation(object):
     if self._argv is None:
       self._argv = list(argv) if argv else list(sys.argv)
 
-    parser.add_argument("--compactFile", nargs='+', action="extend", default=self.compactFile, type=str,
+    parser.add_argument("--compactFile", nargs='+', action="myextend", default=self.compactFile, type=str,
                         help="The compact XML file, or multiple compact files, if the last one is the closer.")
 
     parser.add_argument("--runType", action="store", choices=("batch", "vis", "run", "shell"), default=self.runType,
