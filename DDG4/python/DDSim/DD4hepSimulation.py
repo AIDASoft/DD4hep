@@ -227,7 +227,7 @@ class DD4hepSimulation(object):
     self._dumpParameter = parsed.dumpParameter
     self._dumpSteeringFile = parsed.dumpSteeringFile
 
-    self.compactFile = parsed.compactFile
+    self.compactFile = ConfigHelper.makeList(parsed.compactFile)
     self.inputFiles = parsed.inputFiles
     self.inputFiles = self.__checkFileFormat(self.inputFiles, POSSIBLEINPUTFILES)
     self.outputFile = parsed.outputFile
