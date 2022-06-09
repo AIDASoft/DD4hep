@@ -58,7 +58,7 @@ static void help(int argc, char** argv)  {
  */
 static int condition_example (Detector& description, int argc, char** argv)  {
   string input, conditions, restore="iovpool";
-  int    num_iov = 10;
+  int    num_iov = 10, extend = 0;
   bool   arg_error = false;
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-input",argv[i],4) )
@@ -69,6 +69,8 @@ static int condition_example (Detector& description, int argc, char** argv)  {
       restore = argv[++i];
     else if ( 0 == ::strncmp("-iovs",argv[i],4) )
       num_iov = ::atol(argv[++i]);
+    else if ( 0 == ::strncmp("-extend",argv[i],4) )
+      extend = ::atol(argv[++i]);
     else
       arg_error = true;
   }
@@ -77,12 +79,14 @@ static int condition_example (Detector& description, int argc, char** argv)  {
   // First we load the geometry
   description.fromXML(input);
 
+  detail::have_condition_item_inventory(1);
+  
   /******************** Initialize the conditions manager *****************/
   ConditionsManager manager = installManager(description);
   shared_ptr<ConditionsContent> content(new ConditionsContent());
   shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
   Scanner(ConditionsKeys(*content,INFO),description.world());
-  Scanner(ConditionsDependencyCreator(*content,DEBUG),description.world());
+  Scanner(ConditionsDependencyCreator(*content,DEBUG,false,extend),description.world());
 
   /******************** Load the conditions from file *********************/
   printout(INFO,"ConditionsExample","+  Start conditions import from ROOT object(s): %s",

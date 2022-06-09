@@ -78,6 +78,10 @@ namespace dd4hep {
       virtual Condition get(Condition::key_type key) = 0;
       /// Interface to access conditions by hash value
       virtual Condition get(Condition::key_type key, bool throw_if_not) = 0;
+      /// Interface to access conditions by hash value
+      virtual Condition get(Condition::key_type key,
+                            const ConditionDependency* dependency,
+                            bool throw_if_not) = 0;
       /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
       virtual std::vector<Condition> get(DetElement de) = 0;
       /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
@@ -389,7 +393,7 @@ namespace dd4hep {
     /// Access to dependency keys
     inline const ConditionKey&
     ConditionUpdateContext::key(size_t which)  const  {
-      return dependency->dependencies[which];
+      return dependency->dependencies.at(which);
     }
 
     /// Access of other conditions data from the resolver

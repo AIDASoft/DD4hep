@@ -55,6 +55,27 @@ void ConditionNonDefaultCtorUpdate1::resolve(Condition target, ConditionUpdateCo
 }
 
 /// Interface to client Callback in order to update the condition
+Condition ConditionUpdateUnresolved::operator()(const ConditionKey& key, ConditionUpdateContext&)  {
+#ifdef DD4HEP_CONDITIONS_DEBUG
+  printout(printLevel,"ConditionUpdateUnresolved","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
+  Condition    target(key.name,"derived");
+#else
+  printout(printLevel,"ConditionUpdateUnresolved","++ Building dependent condition: %016llX",key.hash);
+  Condition    target(key.hash);
+#endif
+  target.construct<vector<int> >();
+  return target;
+}
+
+/// Interface to client Callback in order to update the condition
+void ConditionUpdateUnresolved::resolve(Condition target, ConditionUpdateContext& context)  {
+  vector<int>& data  = target.get<vector<int> >();
+  Condition    cond0 = context.condition(context.key(0));
+  data.emplace_back(cond0.get<int>());
+  data.emplace_back(cond0.get<int>()*2);
+}
+
+/// Interface to client Callback in order to update the condition
 Condition ConditionUpdate1::operator()(const ConditionKey& key, ConditionUpdateContext&)  {
 #ifdef DD4HEP_CONDITIONS_DEBUG
   printout(printLevel,"ConditionUpdate1","++ Building dependent condition: %016llX  [%s]",key.hash, key.name.c_str());
@@ -238,6 +259,7 @@ ConditionsDependencyCreator::ConditionsDependencyCreator(ConditionsContent& c, P
   call4  = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate4(printLevel));
   call5  = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate5(printLevel));
   call6  = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdate6(printLevel));
+  callUnresolved = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdateUnresolved(printLevel));
 }
 
 /// Destructor
@@ -288,13 +310,18 @@ int ConditionsDependencyCreator::operator()(DetElement de, int)  const  {
     content.addDependency(build_5.release());
   }
   if ( extended >= 3 )   {
-    DependencyBuilder build(de, key_path.item_key(), call6);
+    DependencyBuilder build_6(de, key_path.item_key(), call6);
     if ( de.parent().isValid() )
-      build.add(ConditionKey(de.parent(),"de_path"));
+      build_6.add(ConditionKey(de.parent(),"de_path"));
     for(const auto& c : de.children())   {
-      build.add(ConditionKey(c.second,"de_path"));
+      build_6.add(ConditionKey(c.second,"de_path"));
     }
-    content.addDependency(build.release());
+    content.addDependency(build_6.release());
+  }
+  if ( extended >= 4 )   {
+    DependencyBuilder build_7(de, "Unresolved_dependency", callUnresolved);
+    build_7.add(ConditionKey(de.parent(),"unresolved_data"));
+    content.addDependency(build_7.release());
   }
   if ( !persist_conditions )  {
     content.addDependency(sbuild_1.release());

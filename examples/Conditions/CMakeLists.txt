@@ -134,7 +134,7 @@ dd4hep_add_test_reg( Conditions_Telescope_root_load_usr
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
-#---Testing: Save conditions to ROOT file
+#---Testing: Load conditions from ROOT file
 dd4hep_add_test_reg( Conditions_Telescope_root_load_pool
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_load
@@ -143,6 +143,14 @@ dd4hep_add_test_reg( Conditions_Telescope_root_load_pool
   DEPENDS Conditions_Telescope_root_save
   REGEX_PASS "\\+  Accessed a total of 6000 conditions \\(S:  5400,L:     0,C:   600,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Attempt to build unresolved conditions object
+dd4hep_add_test_reg( Conditions_Telescope_unresolved
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
+  EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_populate
+      -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml -iovs 1 -extend 100
+  REGEX_PASS "Condition: /world/Telescope/module_6#Unresolved_dependency dependent on missing condition: /world/Telescope#unresolved_data"
   )
 #
 #---Testing: Simple stress: Load CLICSiD geometry and have multiple runs on IOVs

@@ -233,6 +233,9 @@ namespace dd4hep {
     template <typename T> T& as();
     /// Generic getter (const version). Resolves polymorph types. It is mandatory that the datatype is polymorph!
     template <typename T> const T& as() const;
+
+    /// Allow to trace condition names from keys for debugging
+    static int haveInventory(int value = -1);
   };
 
   /// Initializing constructor
@@ -490,6 +493,52 @@ namespace dd4hep {
 
   // Utility type definitions
   typedef std::vector<Condition>          RangeConditions;
+
+  /// Conditions internal namespace
+  namespace detail  {
+    /// Setup conditions item name inventory for debugging
+    /** Populate a conditions item name inventory to ease debugging
+     *  missing dependencies for derived conditions, which otherwise is
+     *  difficult in optimized mode where all string values are suppressed.
+     *
+     *  Note: the inventory gets populated while creating item dependencies etc.
+     *  Enabling afterwards has no effect.
+     *
+     *  value < 0  Return current value
+     *  value = 0  Disable inventory for performance issues
+     *  value > 0  Enable inventory population
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    int have_condition_item_inventory(int value = -1);
+
+    
+    /// Resolve key from conditions item name inventory for debugging
+    /** The functionhave_condition_item_inventory must be called
+     *  before items get populated to fill the inventory.....
+     *
+     *  key: conditions item key
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    std::string get_condition_item_name(Condition::itemkey_type key);
+
+    /// Resolve key from conditions item name inventory for debugging
+    /** The functionhave_condition_item_inventory must be called
+     *  before items get populated to fill the inventory.....
+     *
+     *  key: full condition item hash
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    std::string get_condition_item_name(Condition::key_type key);
+  }
   
 }          /* End namespace dd4hep                   */
 #endif // DD4HEP_CONDITIONS_H
