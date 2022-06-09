@@ -247,7 +247,7 @@ Condition ConditionsDependencyHandler::get(Condition::key_type key,
     if ( dependency )    {
       // We need here more elaborate printout to ease debugging capabilities
       std::string de_path   = dependency->detector.path();
-#if 0 // defined(DD4HEP_CONDITIONS_HAVE_NAME)
+#if defined(DD4HEP_CONDITIONS_HAVE_NAME)
       std::string cond_from = dependency->target.name;
       std::string cond_to   = "UNKNOWN";
       for(const auto& d : dependency->dependencies)    {
