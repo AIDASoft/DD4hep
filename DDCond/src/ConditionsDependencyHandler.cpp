@@ -23,7 +23,7 @@ using namespace dd4hep::cond;
 
 namespace {
   std::string dependency_name(const ConditionDependency* d)  {
-#ifdef DD4HEP_CONDITIONS_DEBUG
+#if defined(DD4HEP_CONDITIONS_HAVE_NAME)
     return d->target.name;
 #else
     char text[64];
@@ -51,7 +51,7 @@ Condition ConditionsDependencyHandler::Work::resolve(Work*& current)   {
   current = this;
   state = RESOLVED;
   if ( !condition )   {
-    printout(ERROR,"ConditionsDependency","ERROR: Cannot resolve not existing conditions.");
+    printout(ERROR,"DependencyHandler","ERROR: Cannot resolve not existing conditions.");
   }
   context.dependency->callback->resolve(condition, context);
   previous->do_intersection(iov);
@@ -97,8 +97,8 @@ void ConditionsDependencyHandler::compute()   {
     if ( !i.second->condition )  {
       do_callback(i.second);
       if ( !i.second->condition )  {
-	except("ConditionsDependencyHandler",
-	       "Derived condition was not created after calling the creation callback!");
+        except("DependencyHandler",
+               "Derived condition was not created after calling the creation callback!");
       }
     }
     // printout(INFO,"UserPool","Already calcluated: %s",d->name());
@@ -191,7 +191,7 @@ std::vector<Condition> ConditionsDependencyHandler::getByItem(Condition::itemkey
     for (auto c : proc.conditions ) m_currentWork->do_intersection(c->iov);
     return proc.conditions;
   }
-  except("ConditionsDependencyHandler",
+  except("DependencyHandler",
          "Conditions bulk accesses are only possible during conditions resolution!");
   return std::vector<Condition>();
 }
@@ -205,13 +205,21 @@ std::vector<Condition> ConditionsDependencyHandler::get(Condition::detkey_type d
     for (auto c : conditions ) m_currentWork->do_intersection(c->iov);
     return conditions;
   }
-  except("ConditionsDependencyHandler",
+  except("DependencyHandler",
          "Conditions bulk accesses are only possible during conditions resolution!");
   return std::vector<Condition>();
 }
 
 /// ConditionResolver implementation: Interface to access conditions
 Condition ConditionsDependencyHandler::get(Condition::key_type key, bool throw_if_not)  {
+  return this->get(key, nullptr, throw_if_not);
+}
+
+/// ConditionResolver implementation: Interface to access conditions
+Condition ConditionsDependencyHandler::get(Condition::key_type key,
+                                           const ConditionDependency* dependency,
+                                           bool throw_if_not)
+{
   /// If we are not already resolving here, we follow the normal procedure
   Condition c = m_pool.get(key);
   if ( c.isValid() )  {
@@ -236,6 +244,40 @@ Condition ConditionsDependencyHandler::get(Condition::key_type key, bool throw_i
     }
   }
   if ( throw_if_not )  {
+    if ( dependency )    {
+      // We need here more elaborate printout to ease debugging capabilities
+      std::string de_path   = dependency->detector.path();
+#if 0 // defined(DD4HEP_CONDITIONS_HAVE_NAME)
+      std::string cond_from = dependency->target.name;
+      std::string cond_to   = "UNKNOWN";
+      for(const auto& d : dependency->dependencies)    {
+        if ( d.hash == key )    {
+          cond_to = d.name;
+          break;
+        }
+      }
+      printout(ERROR,"DependencyHandler",
+               "Failed to resolve conditon:%016lX for DetElement: %s",
+               key, de_path.c_str());
+      printout(ERROR,"DependencyHandler",
+               "Condition: %s dependent on missing condition: %s",
+               cond_from.c_str(), cond_to.c_str());
+#else
+      if ( detail::have_condition_item_inventory(-1) )   {
+        std::string item_from = detail::get_condition_item_name(dependency->target.hash);
+        std::string item_to   = detail::get_condition_item_name(key);
+        printout(ERROR,"DependencyHandler",
+                 "Failed to resolve conditon:%016lX for DetElement: %s",
+                 key, de_path.c_str());
+        printout(ERROR,"DependencyHandler",
+                 "Condition: %s#%s dependent on missing condition item: %s",
+                 de_path.c_str(), item_from.c_str(), item_to.c_str());
+      }
+#endif
+      except("DependencyHandler",
+             "Failed to resolve conditon:%016lX for DetElement: %s",
+             key,de_path.c_str());
+    }
     except("ConditionsDependencyHandler","Failed to resolve conditon:%016lX",key);
   }
   return Condition();
@@ -281,7 +323,7 @@ void ConditionsDependencyHandler::do_callback(Work* work)   {
       ++num_callback;
     }
     else   {
-      printout(ERROR,"ConditionDependency",
+      printout(ERROR,"DependencyHandler",
 	       "+++ Callback handler returned invalid condition.  Key:%s %c%s%c",
 	       work->context.dependency->target.toString().c_str(),
 #if defined(DD4HEP_CONDITIONS_DEBUG)
@@ -295,18 +337,18 @@ void ConditionsDependencyHandler::do_callback(Work* work)   {
     return;
   }
   catch(const std::exception& e)   {
-    printout(ERROR,"ConditionDependency",
+    printout(ERROR,"DependencyHandler",
              "+++ Exception while creating dependent Condition %s:",
              dependency_name(dep).c_str());
-    printout(ERROR,"ConditionDependency","\t\t%s", e.what());
+    printout(ERROR,"DependencyHandler","\t\t%s", e.what());
   }
   catch(...)   {
-    printout(ERROR,"ConditionDependency",
+    printout(ERROR,"DependencyHandler",
              "+++ UNKNOWN exception while creating dependent Condition %s.",
              dependency_name(dep).c_str());
   }
   m_pool.print("*");
-  except("ConditionDependency",
+  except("DependencyHandler",
          "++ Exception while creating dependent Condition %s.",
          dependency_name(dep).c_str());
 }

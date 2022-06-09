@@ -49,7 +49,7 @@ std::vector<Condition> ConditionUpdateContext::getByItem(Condition::itemkey_type
 
 /// Access to condition object by dependency key
 Condition ConditionUpdateContext::condition(const ConditionKey& key_value)  const  {
-  Condition c = resolver->get(key_value);
+  Condition c = this->resolver->get(key_value, this->dependency, true);
   if ( c.isValid() )  {
     /// Update result IOV according by and'ing the new iov structure
     iov->iov_intersection(c.iov());

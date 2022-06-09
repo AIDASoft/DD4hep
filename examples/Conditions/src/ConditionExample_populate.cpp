@@ -42,13 +42,15 @@ using namespace dd4hep::ConditionExamples;
 static int condition_example (Detector& description, int argc, char** argv)  {
 
   string input;
-  int    num_iov = 10;
+  int    num_iov = 10, extend = 0;
   bool   arg_error = false;
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-input",argv[i],4) )
       input = argv[++i];
     else if ( 0 == ::strncmp("-iovs",argv[i],4) )
       num_iov = ::atol(argv[++i]);
+    else if ( 0 == ::strncmp("-extend",argv[i],4) )
+      extend = ::atol(argv[++i]);
     else
       arg_error = true;
   }
@@ -66,6 +68,8 @@ static int condition_example (Detector& description, int argc, char** argv)  {
   // First we load the geometry
   description.fromXML(input);
 
+  detail::have_condition_item_inventory(1);
+  
   /******************** Initialize the conditions manager *****************/
   ConditionsManager manager = installManager(description);
   const IOVType*    iov_typ = manager.registerIOVType(0,"run").second;
@@ -76,7 +80,7 @@ static int condition_example (Detector& description, int argc, char** argv)  {
   shared_ptr<ConditionsContent> content(new ConditionsContent());
   shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
   Scanner(ConditionsKeys(*content,INFO),description.world());
-  Scanner(ConditionsDependencyCreator(*content,DEBUG),description.world());
+  Scanner(ConditionsDependencyCreator(*content,DEBUG,false,extend),description.world());
 
   /******************** Populate the conditions store *********************/
   // Have 10 run-slices [11,20] .... [91,100]
