@@ -92,7 +92,7 @@ static long addVariantParameters(Detector& description, int argc, char** argv) {
       extension->variantParameters[key] = dd4hep:_toDouble(value);
     }
     else if (type == "int") {
-      extension->variantParameters[key] = std::stoi(value);
+      extension->variantParameters[key] = dd4hep::_toInt(value);
     }
     else if (type == "bool") {
       if (value == "true") {
