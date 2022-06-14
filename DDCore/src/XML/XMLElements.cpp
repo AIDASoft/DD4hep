@@ -682,7 +682,7 @@ size_t Handle_t::numChildren(const XmlChar* t, bool throw_exception) const {
   throw runtime_error(msg);
 }
 
-/// Remove a single child node identified by it's handle from the tree of the element
+/// Remove a single child node identified by its handle from the tree of the element
 Handle_t Handle_t::child(const XmlChar* t, bool throw_exception) const {
   Elt_t e = node_first(m_node, t);
   if (e || !throw_exception)
@@ -704,7 +704,7 @@ void Handle_t::append(Handle_t e) const {
   _N(m_node)->appendChild(_N(e.ptr()));
 }
 
-/// Remove a single child node identified by it's handle from the tree of the element
+/// Remove a single child node identified by its handle from the tree of the element
 Handle_t Handle_t::remove(Handle_t node) const {
 #ifdef DD4HEP_USE_TINYXML
   bool e = (m_node && node.ptr() ? _N(m_node)->RemoveChild(_N(node.ptr())) : false);

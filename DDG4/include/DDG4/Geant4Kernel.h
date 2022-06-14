@@ -279,7 +279,7 @@ namespace dd4hep {
       /** Geant4 Multi threading support */
       /// Create identified worker instance
       virtual Geant4Kernel& createWorker();
-      /// Access worker instance by it's identifier
+      /// Access worker instance by its identifier
       Geant4Kernel& worker(unsigned long thread_identifier, bool create_if=false);
       /// Access number of workers
       int numWorkers() const;

@@ -37,7 +37,7 @@ namespace dd4hep {
      *  very easy way.
      *  - You may assign any xml handle to a childvalue object
      *  - Any child with the name and the value attribute set may then be accessed
-     *    by it's natural way. All possible child names are
+     *    by its natural way. All possible child names are
      *    reflected by the object's member functions.
      *
      *    IMPORTANT NOTE:

@@ -297,7 +297,7 @@ The basic interface of the \texttt{XML::Element} class allows to access tags and
   bool hasAttr(const XmlChar* name) const;
   /// Retrieve a collection of all attributes of this DOM element
   std::vector<Attribute> attributes() const;
-  /// Access single attribute by it's name
+  /// Access single attribute by its name
   Attribute getAttr(const XmlChar* name) const;
   /// Access attribute with implicit return type conversion
   template <class T> T attr(const XmlChar* tag) const;
@@ -345,29 +345,29 @@ class Detector {
 
   ///+++ Access to geometry and detector description objects
 
-  /// Retrieve a constant by it's name from the detector description
+  /// Retrieve a constant by its name from the detector description
   virtual Constant constant(const std::string& name)      const = 0;
-  /// Retrieve a matrial by it's name from the detector description
+  /// Retrieve a matrial by its name from the detector description
   virtual Material material(const std::string& name)      const = 0;
-  /// Retrieve a field component by it's name from the detector description
+  /// Retrieve a field component by its name from the detector description
   virtual DetElement detector(const std::string& name)      const = 0;
-  /// Retrieve a sensitive detector by it's name from the detector description
+  /// Retrieve a sensitive detector by its name from the detector description
   virtual SensitiveDetector sensitiveDetector(const std::string& name) const = 0;
-  /// Retrieve a readout object by it's name from the detector description
+  /// Retrieve a readout object by its name from the detector description
   virtual Readout readout(const std::string& name)       const = 0;
-  /// Retrieve a id descriptor by it's name from the detector description
+  /// Retrieve a id descriptor by its name from the detector description
   virtual IDDescriptor idSpecification(const std::string& name)   const = 0;
-  /// Retrieve a subdetector element by it's name from the detector description
+  /// Retrieve a subdetector element by its name from the detector description
   virtual CartesianFieldfield(const std::string& name)     const = 0;
 
   ///+++ Access to visualisation attributes and Geant4 processing hints
 
-  /// Retrieve a visualization attribute by it's name from the detector description
+  /// Retrieve a visualization attribute by its name from the detector description
   virtual VisAttr visAttributes(const std::string& name) const = 0;
 
-  /// Retrieve a region object by it's name from the detector description
+  /// Retrieve a region object by its name from the detector description
   virtual Region  region(const std::string& name)    const = 0;
-  /// Retrieve a limitset by it's name from the detector description
+  /// Retrieve a limitset by its name from the detector description
   virtual LimitSet limitSet(const std::string& name)      const = 0;
   //...
   
@@ -1400,7 +1400,7 @@ PlacedVolume placeVolume(const Volume& volume, const Transform3D& tr)  const;
 
 For more details of the \texttt{Volume} and the \texttt{PlacedVolume} classes please see the header file \texttt{Volumes.h}.
 
-One volume like construct is special: the assembly constructs. Assemblies are volumes without shapes. The ``assembly'' shape does not own a own surface by itself, but rather defines it's surface and 
+One volume like construct is special: the assembly constructs. Assemblies are volumes without shapes. The ``assembly'' shape does not own a own surface by itself, but rather defines its surface and
 bounding box from the contained children. In this corner also the implementation concepts between TGeo and Geant4 diverge. Whereas TGeo handles assemblies very similar to real volumes, in Geant4 assemblies are purely artificial and disappear at the very moment volumes  are placed.
 
 \section{Detector Elements}
@@ -1613,7 +1613,7 @@ Constant Electric or Magnetic Fields are defined as follows:
     <strength x="x-val" y="y-val" z="z-val"/>
   </field>
 \end{minted}
-The {\texttt{field}} attribute accepts take the values {\texttt{[electric,magnetic]}} depending on it's nature.
+The {\texttt{field}} attribute accepts take the values {\texttt{[electric,magnetic]}} depending on its nature.
 
 Magnetic Dipoles are defined as follows:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
@@ -1810,7 +1810,7 @@ DECLARE_DETELEMENT(CylindricalEndcapCalorimeter,create_detector);
 48 & It identify uniquely every slice within the layer an identifier (here the number of the created slice) is attached. This identifier must be present in the bitmap defined by the \texttt{IDDescriptor} of this subdetector.\\
 52-55 & Same as 46-48, but now the created layer volume is placed in the envelope of the entire subdetector.\\
 59 & Set envelope attributes.\\
-61 & Construct the main detector element of this subdetector.This will be the unique entry point to access any information of the subdetector. {\textbf{Note:}} the subdetector my consist of a hierarchy of detector elements.For example each layer could be described by it's own \texttt{DetElement} and alllayer-\texttt{DetElement} instances being children of the subdetector instance.\\
+61 & Construct the main detector element of this subdetector.This will be the unique entry point to access any information of the subdetector. {\textbf{Note:}} the subdetector my consist of a hierarchy of detector elements.For example each layer could be described by its own \texttt{DetElement} and alllayer-\texttt{DetElement} instances being children of the subdetector instance.\\
 62-62 & Place the subdetector envelope into its mother (typically the top level (world) volume).\\
 64-65 & Add the missing \texttt{IDDescriptor} identifiers to complete the bitmap.\\
 66 & Store the placement in the subdetector detector element in order to make it availible to later clients of this \texttt{DetElement}. \\

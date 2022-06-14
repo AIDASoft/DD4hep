@@ -410,7 +410,7 @@ void DetectorImp::setStdConditions(const std::string& type)   {
   }
 }
 
-/// Retrieve a subdetector element by it's name from the detector description
+/// Retrieve a subdetector element by its name from the detector description
 DetElement DetectorImp::detector(const std::string& name) const  {
   HandleMap::const_iterator i = m_detectors.find(name);
   if (i != m_detectors.end()) {
@@ -486,7 +486,7 @@ Detector& DetectorImp::addConstant(const Handle<NamedObject>& x) {
   return *this;
 }
 
-/// Retrieve a constant by it's name from the detector description
+/// Retrieve a constant by its name from the detector description
 Constant DetectorImp::constant(const string& name) const {
   if ( !m_inhibitConstants )   {
     return getRefChild(m_define, name);
@@ -528,7 +528,7 @@ Detector& DetectorImp::addField(const Handle<NamedObject>& x) {
   return *this;
 }
 
-/// Retrieve a matrial by it's name from the detector description
+/// Retrieve a matrial by its name from the detector description
 Material DetectorImp::material(const string& name) const {
   TGeoMedium* mat = m_manager->GetMedium(name.c_str());
   if (mat) {

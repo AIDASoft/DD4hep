@@ -104,7 +104,7 @@ void Geant4PrimaryEvent::add(int id, Geant4PrimaryInteraction* interaction)   {
   except("Geant4PrimaryEvent","+++ CANNOT add invalid Interaction!");
 }
 
-/// Retrieve an interaction by it's ID
+/// Retrieve an interaction by its ID
 Geant4PrimaryEvent::Interaction* Geant4PrimaryEvent::get(int mask) const   {
   Interactions::const_iterator i = m_interactions.find(mask);
   return (i != m_interactions.end()) ? (*i).second : 0;

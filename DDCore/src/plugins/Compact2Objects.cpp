@@ -156,7 +156,7 @@ static Ref_t create_SolenoidField(Detector& description, xml_h e) {
   CartesianField obj;
   SolenoidField* ptr = new SolenoidField();
   //
-  // This logic is a bit weird, but has it's origin in the compact syntax:
+  // This logic is a bit weird, but has its origin in the compact syntax:
   // If no "inner_radius" is given, the "outer_radius" IS the "inner_radius"
   // and the "outer_radius" is given by one side of the world volume's box
   //
@@ -1165,7 +1165,7 @@ template <> void Converter<CartesianField>::operator()(xml_h e) const {
     msg = "created";
   }
   type = field.type();
-  // Now update the field structure with the generic part ie. set it's properties
+  // Now update the field structure with the generic part ie. set its properties
   CartesianField::Properties& prp = field.properties();
   for ( xml_coll_t c(e, _U(properties)); c; ++c ) {
     string props_name = c.attr<string>(_U(name));

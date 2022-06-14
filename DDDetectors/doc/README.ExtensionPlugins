@@ -10,7 +10,7 @@ helper objects (in dd4hep speak these are called Views). Some default views
 are provided by this package for some of the detector constructors of the 
 "default subdetector palette".
 We first show how to invoke these plugins in order to attach the required 
-extension object and then briefly discuss the plugin palette and it's 
+extension object and then briefly discuss the plugin palette and its
 applicability to the various detector constructor types.
 
 Invokation of Extension Plugins

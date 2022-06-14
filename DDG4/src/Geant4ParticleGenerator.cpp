@@ -61,7 +61,7 @@ void Geant4ParticleGenerator::getParticleMultiplicity(int& ) const   {
 void Geant4ParticleGenerator::getVertexPosition(ROOT::Math::XYZVector& ) const   {
 }
 
-/// Print single particle interaction identified by it's mask
+/// Print single particle interaction identified by its mask
 void Geant4ParticleGenerator::printInteraction(int mask)  const  {
   Geant4PrimaryEvent* prim = context()->event().extension<Geant4PrimaryEvent>();
   if ( !prim )   {
@@ -76,7 +76,7 @@ void Geant4ParticleGenerator::printInteraction(int mask)  const  {
   printInteraction(inter);
 }
 
-/// Print single particle interaction identified by it's reference
+/// Print single particle interaction identified by its reference
 void Geant4ParticleGenerator::printInteraction(Geant4PrimaryInteraction* inter)  const  {
   int count = 0;
   if ( !inter )   {

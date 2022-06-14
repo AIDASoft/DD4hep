@@ -211,12 +211,12 @@ string detail::tools::elementPath(DetElement element)  {
   return elementPath(nodes);
 }
 
-/// Find DetElement as child of the top level volume by it's absolute path
+/// Find DetElement as child of the top level volume by its absolute path
 DetElement detail::tools::findElement(const Detector& description, const string& path)   {
   return findDaughterElement(description.world(),path);
 }
 
-/// Find DetElement as child of a parent by it's relative or absolute path
+/// Find DetElement as child of a parent by its relative or absolute path
 DetElement detail::tools::findDaughterElement(DetElement parent, const string& subpath)  {
   if ( parent.isValid() )   {
     size_t idx = subpath.find('/',1);

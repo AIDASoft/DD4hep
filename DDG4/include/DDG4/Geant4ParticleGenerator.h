@@ -67,7 +67,7 @@ namespace dd4hep {
 
       /// Print single particle interaction identified by its mask
       virtual void printInteraction(int mask)  const;
-      /// Print single particle interaction identified by it's reference
+      /// Print single particle interaction identified by its reference
       virtual void printInteraction(Geant4PrimaryInteraction* inter)  const;
     
 

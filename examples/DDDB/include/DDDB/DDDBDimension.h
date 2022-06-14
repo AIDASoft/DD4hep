@@ -36,7 +36,7 @@ namespace dd4hep {
      *  very easy way.
      *  - You may assign any xml handle to a dimension object
      *  - Any attribute of this xml element may then be accessed
-     *    by it's natural way. All possible attribute names are
+     *    by its natural way. All possible attribute names are
      *    reflected by the Dimension object's member functions.
      *  - If an attribute is requested and not present, a exception
      *    is thrown.

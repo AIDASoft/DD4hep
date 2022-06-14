@@ -3,118 +3,6 @@ stages:
     - documentation
     - deployment
 
-centos7-gcc10-Geant10.6:
-  stage: build
-  tags:
-    - docker
-  image: clicdp/cc7-lcg
-  script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98/x86_64-centos7-gcc10-opt/setup.sh
-    - mkdir build
-    - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
-    - ninja -k 0
-    - ninja install
-    - . ../bin/thisdd4hep.sh
-    - ctest --output-on-failure -j4
-    - cd ../examples/
-    - mkdir build
-    - cd build
-    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17 ..
-    - ninja -k 0
-    - ninja install
-    - ctest --output-on-failure
-
-centos7-gcc9-Geant10.6:
-  stage: build
-  tags:
-    - docker
-  image: clicdp/cc7-lcg
-  script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98/x86_64-centos7-gcc9-opt/setup.sh
-    - mkdir build
-    - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
-    - ninja -k 0
-    - ninja install
-    - . ../bin/thisdd4hep.sh
-    - ctest --output-on-failure -j4
-    - cd ../examples/
-    - mkdir build
-    - cd build
-    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17  ..
-    - ninja -k 0
-    - ninja install
-    - ctest --output-on-failure
-
-centos7-gcc10-Geant10.6-XERCESC:
-  stage: build
-  tags:
-    - docker
-  image: clicdp/cc7-lcg
-  script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98/x86_64-centos7-gcc10-opt/setup.sh
-    - unset CPATH
-    - mkdir build
-    - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
-    - ninja -k 0
-    - ninja install
-    - . ../bin/thisdd4hep.sh
-    - ctest --output-on-failure -j4
-    - cd ../examples/
-    - mkdir build
-    - cd build
-    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
-    - ninja -k 0
-    - ninja install
-    - ctest --output-on-failure
-
-centos7-gcc10-Geant10.6-Python3:
-  stage: build
-  tags:
-    - docker
-  image: clicdp/cc7-lcg
-  script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-centos7-gcc10-opt/setup.sh
-    - mkdir build
-    - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
-    - ninja -k 0
-    - ninja install
-    - . ../bin/thisdd4hep.sh
-    - ctest --output-on-failure -j4
-    - cd ../examples/
-    - mkdir build
-    - cd build
-    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17  ..
-    - ninja -k 0
-    - ninja install
-    - ctest --output-on-failure
-
-
-centos7-clang10-Geant10.6-XERCESC:
-  stage: build
-  tags:
-    - docker
-  image: clicdp/cc7-lcg
-  script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98/x86_64-centos7-clang10-opt/setup.sh
-    - mkdir build
-    - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
-    - ninja -k 0
-    - ninja install
-    - . ../bin/thisdd4hep.sh
-    - ctest --output-on-failure -j4
-    - cd ../examples/
-    - mkdir build
-    - cd build
-    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
-    - ninja -k 0
-    - ninja install
-    - ctest --output-on-failure
-
 mac1015-clang110-Geant10.6:
   stage: build
   tags:
@@ -167,7 +55,7 @@ Python:
   stage: build
   tags:
     - docker
-  image: clicdp/cc7-lcg
+  image: ghcr.io/aidasoft/centos7:latest
   script:
     - source /cvmfs/sft.cern.ch/lcg/views/LCG_98/x86_64-centos7-gcc10-opt/setup.sh
     - echo "RUNNING PYLINT PY3K CHECK"
@@ -185,9 +73,10 @@ Python:
 # Compile Doxygen reference
 doxygen:
     stage: documentation
+    needs: ["Python"]
     tags:
         - docker
-    image: clicdp/cc7-lcg
+    image: ghcr.io/aidasoft/centos7:latest
     script:
         - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-centos7-gcc10-opt/setup.sh
         - mkdir -p public
@@ -204,9 +93,10 @@ doxygen:
 # Compile LaTeX user manual:
 usermanuals:
     stage: documentation
+    needs: ["Python"]
     tags:
       - docker
-    image: clicdp/cc7-lcg
+    image: ghcr.io/aidasoft/centos7:latest
     script:
         - yum install -y ghostscript poppler-utils perl
         - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-centos7-gcc10-opt/setup.sh
@@ -244,9 +134,7 @@ deploy-documentation:
     stage: deployment
     tags:
       - docker
-    dependencies:
-        - usermanuals
-        - doxygen
+    needs: ["usermanuals", "doxygen"]
     # Docker image with tools to deploy to EOS
     image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
     script:

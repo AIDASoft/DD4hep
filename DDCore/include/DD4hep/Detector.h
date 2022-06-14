@@ -239,28 +239,28 @@ namespace dd4hep {
     /// Typed access to constants: double values
     virtual double constantAsDouble(const std::string& name) const = 0;
 
-    /// Retrieve a constant by it's name from the detector description
+    /// Retrieve a constant by its name from the detector description
     virtual Constant constant(const std::string& name) const = 0;
     /// Typed access to constants: access any type values
     template <class T> T constant(const std::string& name) const;
 
-    /// Retrieve a matrial by it's name from the detector description
+    /// Retrieve a matrial by its name from the detector description
     virtual Material material(const std::string& name) const = 0;
-    /// Retrieve a id descriptor by it's name from the detector description
+    /// Retrieve a id descriptor by its name from the detector description
     virtual IDDescriptor idSpecification(const std::string& name) const = 0;
-    /// Retrieve a region object by it's name from the detector description
+    /// Retrieve a region object by its name from the detector description
     virtual Region region(const std::string& name) const = 0;
-    /// Retrieve a visualization attribute by it's name from the detector description
+    /// Retrieve a visualization attribute by its name from the detector description
     virtual VisAttr visAttributes(const std::string& name) const = 0;
-    /// Retrieve a limitset by it's name from the detector description
+    /// Retrieve a limitset by its name from the detector description
     virtual LimitSet limitSet(const std::string& name) const = 0;
-    /// Retrieve a readout object by it's name from the detector description
+    /// Retrieve a readout object by its name from the detector description
     virtual Readout readout(const std::string& name) const = 0;
-    /// Retrieve a sensitive detector by it's name from the detector description
+    /// Retrieve a sensitive detector by its name from the detector description
     virtual SensitiveDetector sensitiveDetector(const std::string& name) const = 0;
-    /// Retrieve a subdetector element by it's name from the detector description
+    /// Retrieve a field component by its name from the detector description
     virtual CartesianField field(const std::string& name) const = 0;
-    /// Retrieve a field component by it's name from the detector description
+    /// Retrieve a subdetector element by its name from the detector description
     virtual DetElement detector(const std::string& name) const = 0;
 
     /// Add a new constant to the detector description
