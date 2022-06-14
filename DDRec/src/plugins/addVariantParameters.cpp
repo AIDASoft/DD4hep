@@ -89,7 +89,7 @@ static long addVariantParameters(Detector& description, int argc, char** argv) {
       extension->variantParameters[key] = value;
     }
     else if (type == "double") {
-      extension->variantParameters[key] = dd4hep:_toDouble(value);
+      extension->variantParameters[key] = dd4hep::_toDouble(value);
     }
     else if (type == "int") {
       extension->variantParameters[key] = dd4hep::_toInt(value);
