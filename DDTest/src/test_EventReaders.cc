@@ -44,6 +44,7 @@ int main(int argc, char** argv ){
   tests.push_back( TestTuple( "Geant4EventReaderHepEvtShort", "Muons10GeV.HEPEvt" ) );
   #ifdef DD4HEP_USE_HEPMC3
   tests.push_back( TestTuple( "HEPMC3FileReader", "g4pythia.hepmc", /*skipEOF= */ true) );
+  tests.push_back( TestTuple( "HEPMC3FileReader", "Pythia_output.hepmc", /*skipEOF= */ true) );
   #endif
 
   try{
