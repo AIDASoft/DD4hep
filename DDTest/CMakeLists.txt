@@ -56,6 +56,13 @@ if (DD4HEP_USE_GEANT4)
   ADD_TEST( t_test_python_import_ddg4 "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
     pytest ${PROJECT_SOURCE_DIR}/DDTest/python/test_import_ddg4.py)
   SET_TESTS_PROPERTIES( t_test_python_import_ddg4 PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+  if(DD4HEP_USE_HEPMC3)
+    ADD_TEST( t_test_ddsim_ion_hepmc3 "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=2
+      --outputFile=testSidIons.root --inputFiles ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+      --part.userParticleHandler=)
+    SET_TESTS_PROPERTIES( t_test_ddsim_ion_hepmc3 PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+  endif()
 
   foreach(TEST_NAME
       test_EventReaders
