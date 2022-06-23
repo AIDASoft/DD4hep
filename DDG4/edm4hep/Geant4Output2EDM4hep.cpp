@@ -565,29 +565,40 @@ void Geant4Output2EDM4hep::createCollections(OutputContext<G4Event>& ctxt){
     if( typeid( Geant4Tracker::Hit ) == coll->type().type()  ){
 
       auto* sthc = new edm4hep::SimTrackerHitCollection();
-      m_collections.emplace(colName, sthc);
-      m_store->registerCollection(colName, sthc);
-      m_file->registerForWrite(colName);
-      auto& sthc_md = m_store->getCollectionMetaData( sthc->getID() );
-      sthc_md.setValue("CellIDEncodingString", sd_enc);
-      printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
+      auto pairColCheck = m_collections.emplace(colName, sthc);
+      if ( pairColCheck.second ) {
+        m_store->registerCollection(colName, sthc);
+        m_file->registerForWrite(colName);
+        auto& sthc_md = m_store->getCollectionMetaData( sthc->getID() );
+        sthc_md.setValue("CellIDEncodingString", sd_enc);
+        printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
+      } else {
+        delete sthc;
+      }
+      printout(DEBUG,"Geant4Output2EDM4hep","+++ re-using collection %s",colName.c_str() );
+
     }
     else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type() ){
 
       auto* schc = new edm4hep::SimCalorimeterHitCollection();
-      m_collections.emplace(colName, schc);
-      m_store->registerCollection(colName, schc);
-      m_file->registerForWrite(colName);
-      auto& schc_md = m_store->getCollectionMetaData( schc->getID() );
-      schc_md.setValue("CellIDEncodingString", sd_enc);
-      printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
+      auto pairColCheck = m_collections.emplace(colName, schc);
+      if ( pairColCheck.second ) {
+        m_store->registerCollection(colName, schc);
+        m_file->registerForWrite(colName);
+        auto& schc_md = m_store->getCollectionMetaData( schc->getID() );
+        schc_md.setValue("CellIDEncodingString", sd_enc);
+        printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
 
-      colName += "Contributions"  ;
-      auto* chContribColl = new edm4hep::CaloHitContributionCollection();
-      m_collections.emplace(colName, chContribColl);
-      m_store->registerCollection(colName, chContribColl);
-      m_file->registerForWrite(colName);
-      printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
+        colName += "Contributions"  ;
+        auto* chContribColl = new edm4hep::CaloHitContributionCollection();
+        m_collections.emplace(colName, chContribColl);
+        m_store->registerCollection(colName, chContribColl);
+        m_file->registerForWrite(colName);
+        printout(DEBUG,"Geant4Output2EDM4hep","+++ created collection %s",colName.c_str() );
+      } else {
+        delete schc;
+        printout(DEBUG,"Geant4Output2EDM4hep","+++ re-using collection %s",colName.c_str() );
+      }
 
     } else {
 
