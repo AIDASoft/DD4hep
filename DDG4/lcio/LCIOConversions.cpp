@@ -105,13 +105,21 @@ namespace dd4hep {
                          Geant4Tracker::Hit>::operator()(const arg_t& args)  const   {
 
       Geant4HitCollection*   coll    = args.second;
+      string                 hc_nam  = coll->GetName();
       Geant4Sensitive*       sd      = coll->sensitive();
       size_t                 nhits   = coll->GetSize();
       string                 dsc     = encoding(sd->sensitiveDetector());
       Geant4ParticleMap*     pm      = args.first->event().extension<Geant4ParticleMap>();
       lcio::LCEventImpl*     lc_evt  = args.first->event().extension<lcio::LCEventImpl>();
       EVENT::LCCollection*   lc_part = lc_evt->getCollection(lcio::LCIO::MCPARTICLE);
-      lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
+      lcio::LCCollectionVec* lc_coll = nullptr;
+      bool isNewCollection           = false;
+      try {
+        lc_coll = static_cast<lcio::LCCollectionVec*>(lc_evt->getCollection(hc_nam));
+      } catch (lcio::DataNotAvailableException &e) {
+        lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
+        isNewCollection = true;
+      }
       UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc_coll);
       int hit_creation_mode = sd->hitCreationMode();
 
@@ -120,7 +128,7 @@ namespace dd4hep {
       else
         lc_coll->setFlag(LCIO::THBIT_ID1);
 
-      lc_coll->reserve(nhits);
+      lc_coll->reserve(nhits + lc_coll->getNumberOfElements());
       for(size_t i=0; i<nhits; ++i)   {
         const Geant4Tracker::Hit* hit = coll->hit(i);
         const Geant4Tracker::Hit::Contribution& t = hit->truth;
@@ -146,8 +154,11 @@ namespace dd4hep {
 	  lc_hit->setProducedBySecondary( (particleIt->second->originalG4ID != t.trackID) );
         }
 #endif
-
         lc_coll->addElement(lc_hit);
+      }
+
+      if(isNewCollection) {
+        lc_evt->addCollection(lc_coll, hc_nam);
       }
       return lc_coll;
     }
