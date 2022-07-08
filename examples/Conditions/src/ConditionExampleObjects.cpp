@@ -262,10 +262,6 @@ ConditionsDependencyCreator::ConditionsDependencyCreator(ConditionsContent& c, P
   callUnresolved = std::shared_ptr<ConditionUpdateCall>(new ConditionUpdateUnresolved(printLevel));
 }
 
-/// Destructor
-ConditionsDependencyCreator::~ConditionsDependencyCreator()  {
-}
-
 /// Callback to process a single detector element
 int ConditionsDependencyCreator::operator()(DetElement de, int)  const  {
   ConditionKey      key     (de,"derived_data");
