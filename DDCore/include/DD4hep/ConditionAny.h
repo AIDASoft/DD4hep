@@ -70,6 +70,8 @@ namespace dd4hep {
     template <typename Q> ConditionAny(const Handle<Q>& e);
     /// Initializing constructor for a initialized std::any payload
     ConditionAny(key_type hash_key);
+    /// Initializing constructor for a initialized and filled std::any payload
+    template <typename PAYLOAD> ConditionAny(key_type hash_key, PAYLOAD&& data);
     /// Initializing constructor for a initialized std::any payload
     ConditionAny(const std::string& name, const std::string& type);
     /// Initializing constructor for a initialized and filled std::any payload
@@ -131,6 +133,14 @@ namespace dd4hep {
   /// Copy constructor from Condition
   inline ConditionAny::ConditionAny(const Condition& c) : Handle<detail::ConditionObject>()  {
     this->use_data(c.ptr());
+  }
+
+  /// Construct conditions object and bind the data
+  template <typename PAYLOAD> inline 
+    ConditionAny::ConditionAny(key_type hash_key, PAYLOAD&& data)   {
+    ConditionAny c(hash_key);
+    c.get() = std::move(data);
+    this->m_element = c.ptr();
   }
 
   /// Construct conditions object and bind the data
