@@ -137,7 +137,7 @@ namespace dd4hep {
   template <typename PAYLOAD> inline 
     ConditionAny::ConditionAny(const std::string& name, const std::string& type, PAYLOAD&& data)   {
     ConditionAny c(name, type);
-    c.get() = data;
+    c.get() = std::move(data);
     this->m_element = c.ptr();
   }
 
