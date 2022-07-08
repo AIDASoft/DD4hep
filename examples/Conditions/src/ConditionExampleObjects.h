@@ -282,7 +282,7 @@ namespace dd4hep {
       /// Constructor
       ConditionsDependencyCreator(ConditionsContent& c, PrintLevel p, bool persist=false, int extended=0);
       /// Destructor
-      virtual ~ConditionsDependencyCreator();
+      virtual ~ConditionsDependencyCreator() = default;
       /// Callback to process a single detector element
       virtual int operator()(DetElement de, int level) const final;
     };
