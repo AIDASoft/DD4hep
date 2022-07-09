@@ -142,14 +142,6 @@ namespace dd4hep {
     Ref_t               global_alignment;
     //@}
 
-#if 0      
-    // To be removed!
-    /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
-    std::vector<Alignment> volume_alignments;
-    /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
-    std::vector<Alignment> volume_surveys;
-#endif
-
   private:
     friend class VolumeManager_Populator;
 
