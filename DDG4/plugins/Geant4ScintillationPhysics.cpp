@@ -88,7 +88,7 @@ namespace dd4hep {
         declareProperty("WLS2TimeProfile",               m_WLS2TimeProfile);
         declareProperty("CerenkovMaxPhotonsPerStep",     m_CerenkovMaxPhotonsPerStep = -1);
         declareProperty("CerenkovMaxBetaChange",         m_CerenkovMaxBetaChange = -1.0);
-        // declareProperty("ScintEnhancedTimeConstants",    m_ScintEnhancedTimeConstants=false);
+        declareProperty("ScintEnhancedTimeConstants",    m_ScintEnhancedTimeConstants=false);
       }
       /// Default destructor
       virtual ~Geant4ScintillationPhysics() = default;

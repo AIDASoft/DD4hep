@@ -221,9 +221,9 @@ ConditionsSelect::~ConditionsSelect()   {
 
 /// Constructor from string
 ConditionKey::KeyMaker::KeyMaker(DetElement detector, const string& value)   {
-  KeyMaker m(detector.key(), detail::hash32(value));
-  hash = m.hash;
-  s_key_tracer.add(m.values.item_key, value);
+  KeyMaker key_maker(detector.key(), detail::hash32(value));
+  hash = key_maker.hash;
+  s_key_tracer.add(key_maker.values.item_key, value);
 }
 
 /// Constructor from detector element and item sub-key
@@ -233,16 +233,16 @@ ConditionKey::KeyMaker::KeyMaker(DetElement detector, Condition::itemkey_type it
 
 /// Constructor from string
 ConditionKey::KeyMaker::KeyMaker(Condition::detkey_type det_key, const string& value)   {
-  KeyMaker m(det_key, detail::hash32(value));
-  hash = m.hash;
-  s_key_tracer.add(m.values.item_key, value);
+  KeyMaker key_maker(det_key, detail::hash32(value));
+  hash = key_maker.hash;
+  s_key_tracer.add(key_maker.values.item_key, value);
 }
 
 /// Constructor from string
 ConditionKey::ConditionKey(DetElement detector, const string& value)  {
-  KeyMaker m(detector.key(), value);
-  hash = m.hash;
-  s_key_tracer.add(m.values.item_key, value);
+  KeyMaker key_maker(detector.key(), value);
+  hash = key_maker.hash;
+  s_key_tracer.add(key_maker.values.item_key, value);
 #ifdef DD4HEP_CONDITIONS_HAVE_NAME
   name = detector.path()+"#"+value;
 #endif
@@ -250,9 +250,9 @@ ConditionKey::ConditionKey(DetElement detector, const string& value)  {
 
 /// Constructor from detector element key and item sub-key
 ConditionKey::ConditionKey(Condition::detkey_type det_key, const string& value)    {
-  KeyMaker m(det_key, value);
-  s_key_tracer.add(m.values.item_key, value);
-  hash = m.hash;
+  KeyMaker key_maker(det_key, value);
+  s_key_tracer.add(key_maker.values.item_key, value);
+  hash = key_maker.hash;
 #ifdef DD4HEP_CONDITIONS_HAVE_NAME
   char text[32];
   ::snprintf(text,sizeof(text),"%08X#",det_key);
@@ -272,16 +272,16 @@ ConditionKey::ConditionKey(DetElement detector, Condition::itemkey_type item_key
 
 /// Hash code generation from input string
 Condition::key_type ConditionKey::hashCode(DetElement detector, const char* value)  {
-  KeyMaker m(detector.key(), value);
-  s_key_tracer.add(m.values.item_key, value);
-  return m.hash;
+  KeyMaker key_maker(detector.key(), value);
+  s_key_tracer.add(key_maker.values.item_key, value);
+  return key_maker.hash;
 }
 
 /// Hash code generation from input string
 Condition::key_type ConditionKey::hashCode(DetElement detector, const string& value)  {
-  KeyMaker m(detector.key(), value);
-  s_key_tracer.add(m.values.item_key, value);
-  return m.hash;
+  KeyMaker key_maker(detector.key(), value);
+  s_key_tracer.add(key_maker.values.item_key, value);
+  return key_maker.hash;
 }
 
 /// 32 bit hashcode of the item
