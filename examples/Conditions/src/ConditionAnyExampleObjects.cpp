@@ -79,6 +79,7 @@ void ConditionAnyUpdate2::resolve(Condition target, ConditionUpdateContext& cont
   vector<int>& c1 = cond1.as<vector<int> >();
   data.insert(data.end(), c1.begin(), c1.end());
 }
+<<<<<<< HEAD
 
 
 /// Interface to client Callback in order to update the condition
