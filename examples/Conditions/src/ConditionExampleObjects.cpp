@@ -121,7 +121,6 @@ void ConditionUpdate2::resolve(Condition target, ConditionUpdateContext& context
   data.insert(data.end(), c1.begin(), c1.end());
 }
 
-
 /// Interface to client Callback in order to update the condition
 Condition ConditionUpdate3::operator()(const ConditionKey& key, ConditionUpdateContext&)  {
 #ifdef DD4HEP_CONDITIONS_DEBUG

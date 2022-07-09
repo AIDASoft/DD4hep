@@ -95,6 +95,7 @@ static int condition_any_basic (Detector& /* description */, int /* argc */, cha
   try  {
     c1 = c2;
     cout << "Assigned:  ConditionAny = Condition(vector) . " << endl;
+    cout << "Test FAILED" << endl;
   }
   catch(const std::exception& e)   {
     cout << "Expected exception: ConditionAny = Condition(vector) : " << e.what() << endl;
@@ -118,6 +119,7 @@ static int condition_any_basic (Detector& /* description */, int /* argc */, cha
     ConditionAny c5(c2);
     cout << "Construct c5: ConditionAny( Condition(vector) ) Pointer: " 
 	 << (void*)c5.ptr() << " type:" << c5.any_type().name() << endl;
+    cout << "Test FAILED" << endl;
   }
   catch(const std::exception& e)   {
     cout << "Expected exception: Construct c5: ConditionAny( Condition(vector) ) : " << e.what() << endl;
