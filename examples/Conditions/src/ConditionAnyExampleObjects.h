@@ -62,6 +62,44 @@ namespace dd4hep {
       virtual void resolve(Condition condition, ConditionUpdateContext& context) override  final;
     };
 
+    /// Specialized conditions update callback 
+    /**
+     *  Used by clients to update a condition.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class ConditionAnyUpdate3 : public ConditionUpdateCall, public OutputLevel  {
+    public:
+      /// Initializing constructor
+      ConditionAnyUpdate3(PrintLevel p) : OutputLevel(p) {    }
+      /// Default destructor
+      virtual ~ConditionAnyUpdate3() = default;
+      /// Interface to client Callback in order to update the condition
+      virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& context) override  final;
+      /// Interface to client Callback in order to update the condition
+      virtual void resolve(Condition condition, ConditionUpdateContext& context) override  final;
+    };
+    
+    /// Specialized conditions update callback 
+    /**
+     *  Used by clients to update a condition.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class ConditionAnyUpdate4 : public ConditionUpdateCall, public OutputLevel  {
+    public:
+      /// Initializing constructor
+      ConditionAnyUpdate4(PrintLevel p) : OutputLevel(p) {    }
+      /// Default destructor
+      virtual ~ConditionAnyUpdate4() = default;
+      /// Interface to client Callback in order to update the condition
+      virtual Condition operator()(const ConditionKey& key, ConditionUpdateContext& context) override  final;
+    };
+    
     /// This is important, otherwise the register and forward calls won't find them!
     /**
      *  \author  M.Frank
@@ -91,7 +129,7 @@ namespace dd4hep {
       /// Content object to be filled
       ConditionsContent&   content;
       /// Three different update call types
-      std::shared_ptr<ConditionUpdateCall> scall1, call1, call2, call3, call4, call5, call6, callUnresolved;
+      std::shared_ptr<ConditionUpdateCall> call1, call2, call3, call4;
       /// Flag for special setup for ROOT persistency
       bool persist_conditions;
       /// Flag to indicate increased complexity
@@ -155,7 +193,7 @@ namespace dd4hep {
       ConditionsAnyDataAccess(const IOV& i, ConditionsMap& m, PrintLevel l=DEBUG)
         : OutputLevel(l), iov(i), map(m) {}
       /// Destructor
-      virtual ~ConditionsAnyDataAccess() = default;
+      virtual ~ConditionsAnyDataAccess();
       /// Callback to process a single detector element
       virtual int operator()(DetElement de, int level)  const;
       /// Common call to access selected conditions

@@ -56,13 +56,14 @@ ConditionAny::ConditionAny(const string& nam, const string& typ) : Handle<Object
 void ConditionAny::use_data(detail::ConditionObject* obj)   {
   if ( obj )   {
     if ( !obj->data.grammar )   {
-      except("ConditionAny","+++ Cannot assign unbound conditions data to handle. [Invalid operation]");
+      except("ConditionAny",
+	     "+++ Cannot assign unbound conditions data to handle. [Invalid operation]");
     }
     if ( obj->data.grammar != any_grammar() )   {
       except("ConditionAny",
 	     "+++ Cannot assign data of type " +
 	     obj->data.grammar->type_name() +
-	     " to std::any. [Invalid operation]");
+	     " to handle holding std::any. [Invalid operation]");
     }
   }
   this->m_element = obj;
@@ -93,14 +94,42 @@ ConditionAny::itemkey_type ConditionAny::item_key()  const   {
   return ConditionKey::KeyMaker(access()->hash).values.item_key;
 }
 
+/// Flag operations: Get flags
+ConditionAny::mask_type ConditionAny::flags()  const    {
+  return access()->flags;
+}
+
+/// Flag operations: Set a conditons flag
+void ConditionAny::setFlag(mask_type option)   {
+  access()->setFlag(option);
+}
+
+/// Flag operations: UN-Set a conditons flag
+void ConditionAny::unFlag(mask_type option)   {
+  access()->unFlag(option);
+}
+
+/// Flag operations: Test for a given a conditons flag
+bool ConditionAny::testFlag(mask_type option) const {
+  return access()->testFlag(option);
+}
+
 /// Generic getter. Specify the exact type, not a polymorph type
 std::any& ConditionAny::get() {
-  return this->access()->data.get<std::any>();
+  auto& o = this->access()->data;
+  if ( o.grammar && (o.grammar == any_grammar()) )   {
+    return *(std::any*)o.ptr();
+  }
+  throw std::bad_cast();
 }
 
 /// Generic getter (const version). Specify the exact type, not a polymorph type
 const std::any& ConditionAny::get() const {
-  return this->access()->data.get<std::any>();
+  const auto& o = this->access()->data;
+  if ( o.grammar && (o.grammar == any_grammar()) )   {
+    return *(std::any*)o.ptr();
+  }
+  throw std::bad_cast();
 }
   
 /// Checks whether the object contains a value
@@ -110,19 +139,20 @@ bool ConditionAny::has_value()   const   {
 
 /// Access to the type information
 const type_info& ConditionAny::any_type() const   {
-  return this->get().type();
+  const auto* o = this->ptr();
+  if ( o && o->data.grammar && (o->data.grammar == any_grammar()) )   {
+    const std::any* a = (const std::any*)o->data.ptr();
+    return a->type();
+  }
+  return typeid(void);
 }
 
-#if 0
-/// Access to the grammar type
-const dd4hep::BasicGrammar& ConditionAny::descriptor() const   {
-  const BasicGrammar* grammar = access()->data.grammar;
-  if ( !grammar ) {
-    invalidHandleError<ConditionAny>();
-    // This code is never reached, since function above throws exception!
-    // Needed to satisfay CppCheck
-    throw runtime_error("Null pointer in Grammar object");
+/// Access to the type information as string
+const std::string  ConditionAny::any_type_name() const   {
+  const auto* o = this->ptr();
+  if ( o && o->data.grammar && (o->data.grammar == any_grammar()) )   {
+    const std::any* a = (const std::any*)o->data.ptr();
+    return typeName(a->type());
   }
-  return *grammar;
+  return typeName(typeid(void));
 }
-#endif

@@ -129,7 +129,40 @@ NEEDS ADDITIONAL CLARIFICATION
 \section{DD4hep Handles}
 \label{sec:dd4hep-user-manual-handles}
 
-Handles are the means of clients accessing DD4hep detector description data. The data itself is not held by the handle itself, the handle only allows the access to the data typically held by a pointer. The template handle class (see for details the \href{https://dd4hep.web.cern.ch/dd4hep/reference/classdd4hep_1_1Handle.html}{\texttt{Handle.h}} header file) allows type safe assignment of other unrelated handles and supports standard data conversions to the underlying object in form of the raw pointer, a reference etc. The template handle class:
+Handles are the means of clients accessing DD4hep detector description data. Handles are an intrinsic ingredient to DD4hep meant to also support various views onto relatively simple structures. The data itself is not held by the handle itself, the handle only allows the access to the data typically held by a pointer.
+
+DD4hep internally prefers to expose data structures which are as simple as possible while at the same time being as complicated as necessary. These objects are then manipulated by Handles, smart pointer objects with sometimes specialized functionality depending on the contained data type. It is seen as a clear advantage that these smart pointer objects to not impose any restrictions on the underlying object except the accessibility of the contained data.
+
+The freedom to attach handle based facades to virtually any data item allows for optimized data views depending on the application type, such as special views for reconstruction, simulation, tracking, etc.
+
+For the importance of the functionality of this issue we repeat here the functionality described in~\ref{subsect:extesions-and-views} which is achieved by specializing the basic templated handle implementation:
+\begin{description}
+\item [Convenience Views] provide higher level abstractions and internally group complex calculations. Such views simplify the life of the end-users.
+\item [Optimization Views] allows end-users extend the data of the common detector detector element and store precomputed results, which would be expensive to obtain repeatedly.
+\item [Compatibility Views] help to ensure smooth periods of software redesign. During the life-time of the experiment often various software constructs are for functional reasons re-designed and re-engineered. Compatibility Views either adapt new data designs to existing application code or expose new behavior based on existing data.
+\end{description}
+
+Since the lifetime of DD4hep objects is mostly defined by the lifetime of the {\texttt{dd4hep::Detector}} object (in turn defining the lifetime of ROOT's {\texttt{TGeoManager}}) or for the conditions is managed by the ConditionsManager object under the steering of the embeding framework there is also no memory model imposed which would only lead to performance penalties. Hence, handles can be applied to data structures independent of their origin:
+\begin{itemize}
+\item allocated from the stack
+\item allocated from the heap
+\item allocated as single objects of in bulk by array constructors.
+\end{itemize}
+
+There is no restriction to allow toolkit users to extend any of the internally used DD4hep classes such as e.g. the {\texttt{dd4hep::DetElement}} data object {\texttt{dd4hep::detail::DetElementObject}} with their own implementation supporting further enhanced functionality both in terms of additional data and additional member functions provided the user specialized class inherits from the DD4hep provided base. Obviously such enhancements do not hold for the geometry classes provided by ROOT because here the ROOT framework internally calls its object constructors. Hence, though DD4hep internally uses templated handles to manipulate data objects, DD4hep allows for all freedom to extend any of the internally used objects and a priori no restrictions are imposed by the DD4hep framework besides the mentioned inheritance.
+
+The design approach of DD4hep to internally use handles to manipulate objects which is also offered to clients clearly has difficulties to support the Liskov substitution principle. This was a conscious decision when designing DD4hep.
+
+Frameworks which see the substitution principle for the implementation of the simple data structures mandatory for its functionality clearly limit the  benefits of the handles unless
+
+\begin{itemize}
+\item the depending frameworks provides handles which are a fully implemented facade or
+\item the depending framework use consistently the operator->() provided by all   handles to directly access the underlying object or
+\item the depending framework uses DD4hep and it is provided only internally and provide top level user code only with pointers/references to the data structures in their full object oriented glory.
+\end{itemize}
+
+The template handle class (see for details the \href{https://dd4hep.web.cern.ch/dd4hep/reference/classdd4hep_1_1Handle.html}{\texttt{Handle.h}} header file) allows type safe assignment of other unrelated handles and supports standard data conversions to the underlying object in form of the raw pointer, a reference etc.
+The template handle class:
 
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 template <typename T> class Handle {
