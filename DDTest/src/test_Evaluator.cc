@@ -146,8 +146,11 @@ int main(int /* argc */, char** /* argv */ ){
           
         }
         ); 
-
-      std::thread t2([&countDownToStart, &success, &e_threads,&nameExtensions]() {
+#if 0
+      std::thread t2([&countDownToStart, &success, &e_threads,&nameExtensions]()
+#endif	
+      std::thread t2([&countDownToStart]()
+      {
           const std::string name("tb");
           --countDownToStart;
           while(countDownToStart != 0);
