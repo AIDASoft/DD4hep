@@ -78,32 +78,33 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
     if ( material->GetNproperties() > 0 )    {
       printout(INFO,det_name,"+++          Properties: %d", material->GetNproperties());
       for(Int_t i=0, n=material->GetNproperties(); i<n; ++i)  {
-        TGDMLMatrix* m = material->GetProperty(i);
+        TGDMLMatrix* matrix = material->GetProperty(i);
         printout(INFO,det_name,"+++                   \"%s\" [%s] rows:%d cols:%d",
-                 m->GetName(), m->GetTitle(), m->GetRows(), m->GetCols());
-        m->Print();
+                 matrix->GetName(), matrix->GetTitle(), matrix->GetRows(), matrix->GetCols());
+        matrix->Print();
       }
       printout(INFO,det_name,"+++          Properties by NAME:");
       for(Int_t i=0, n=material->GetNproperties(); i<n; ++i)  {
         const auto* name = material->GetProperties().At(i)->GetName();
-        const auto* m = material->GetProperty(name);
+        const auto* matrix = material->GetProperty(name);
         printout(INFO,det_name,"+++                   \"%s\" [%s,%s] cols: %d rows: %d", name,
-                 m->GetName(), m->GetTitle(), m->GetCols(), m->GetRows());
+                 matrix->GetName(), matrix->GetTitle(), matrix->GetCols(), matrix->GetRows());
       }
     }
     if ( material->GetNconstProperties() > 0 )    {
       printout(INFO,det_name,"+++          CONST Properties: %d", material->GetNconstProperties());
       const TList& all = material->GetConstProperties();
       for(Int_t i=0, n=material->GetNconstProperties(); i<n; ++i)  {
-        const TNamed* m = (const TNamed*)all.At(i);
-        double        v = material->GetConstProperty(i);
-        printout(INFO,det_name,"+++                   \"%s\" [%s] value: %f", m->GetName(), m->GetTitle(), v);
+        const TNamed* prop  = (const TNamed*)all.At(i);
+        double        value = material->GetConstProperty(i);
+        printout(INFO,det_name,"+++                   \"%s\" [%s] value: %f",
+		 prop->GetName(), prop->GetTitle(), value);
       }
       printout(INFO,det_name,"+++          CONST Properties by NAME:");
       for(Int_t i=0, n=material->GetNconstProperties(); i<n; ++i)  {
-        const auto* name = material->GetConstProperties().At(i)->GetName();
-        double v = material->GetConstProperty(name);
-        printout(INFO,det_name,"+++                   \"%s\"  value: %f", name, v);
+        const auto* name  = material->GetConstProperties().At(i)->GetName();
+        double      value = material->GetConstProperty(name);
+        printout(INFO,det_name,"+++                   \"%s\"  value: %f", name, value);
       }
     }
   }

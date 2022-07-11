@@ -234,8 +234,8 @@ dd4hep_add_test_reg( Conditions_any_basic
 #---Testing: Simple stress: Load Telescope geometry and have multiple runs on IOVs
 dd4hep_add_test_reg( Conditions_any_Telescope_populate
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
-  EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionAnyExample_populate
-      -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml -iovs 2
-  REGEX_PASS "\\+ Analyzed 1020 any object/elements"
+  EXEC_ARGS  geoPluginRun  -destroy -print WARNING -plugin DD4hep_ConditionAnyExample_populate
+      -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml -iovs 2 -extend 1
+  REGEX_PASS "\\+ Analyzed 1360 any object/elements"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )

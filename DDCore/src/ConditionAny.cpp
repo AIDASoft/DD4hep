@@ -17,11 +17,8 @@
 #include "DD4hep/detail/ConditionsInterna.h"
 
 // C/C++ include files
-#include <climits>
 #include <iomanip>
-#include <cstdio>
 
-using namespace std;
 using namespace dd4hep;
 
 namespace {
@@ -36,8 +33,8 @@ ConditionAny::ConditionAny(key_type hash_key) : Handle<Object>()
 {
   if ( hash_key != 0 && hash_key != ~0x0ULL )  {
     Object* o = new Object();
-    this->assign(o,"","");
-    o->data.bind<any>();
+    this->assign(o, "", "");
+    o->data.bind<std::any>();
     o->hash = hash_key;
     return;
   }
@@ -45,11 +42,11 @@ ConditionAny::ConditionAny(key_type hash_key) : Handle<Object>()
 }
 
 /// Initializing constructor for a pure, undecorated conditions object
-ConditionAny::ConditionAny(const string& nam, const string& typ) : Handle<Object>()
+ConditionAny::ConditionAny(const std::string& nam, const std::string& typ) : Handle<Object>()
 {
   Object* o = new Object();
-  this->assign(o,nam,typ);
-  o->data.bind<any>();
+  this->assign(o, nam, typ);
+  o->data.bind<std::any>();
   o->hash = 0;
 }
 
@@ -116,7 +113,7 @@ bool ConditionAny::testFlag(mask_type option) const {
 
 /// Generic getter. Specify the exact type, not a polymorph type
 std::any& ConditionAny::get() {
-  auto& o = this->access()->data;
+  OpaqueData& o = this->access()->data;
   if ( o.grammar && (o.grammar == any_grammar()) )   {
     return *(std::any*)o.ptr();
   }
@@ -125,7 +122,7 @@ std::any& ConditionAny::get() {
 
 /// Generic getter (const version). Specify the exact type, not a polymorph type
 const std::any& ConditionAny::get() const {
-  const auto& o = this->access()->data;
+  const OpaqueData& o = this->access()->data;
   if ( o.grammar && (o.grammar == any_grammar()) )   {
     return *(std::any*)o.ptr();
   }
@@ -138,8 +135,8 @@ bool ConditionAny::has_value()   const   {
 }
 
 /// Access to the type information
-const type_info& ConditionAny::any_type() const   {
-  const auto* o = this->ptr();
+const std::type_info& ConditionAny::any_type() const   {
+  const Object* o = this->ptr();
   if ( o && o->data.grammar && (o->data.grammar == any_grammar()) )   {
     const std::any* a = (const std::any*)o->data.ptr();
     return a->type();
@@ -148,8 +145,8 @@ const type_info& ConditionAny::any_type() const   {
 }
 
 /// Access to the type information as string
-const std::string  ConditionAny::any_type_name() const   {
-  const auto* o = this->ptr();
+const std::string ConditionAny::any_type_name() const   {
+  const Object* o = this->ptr();
   if ( o && o->data.grammar && (o->data.grammar == any_grammar()) )   {
     const std::any* a = (const std::any*)o->data.ptr();
     return typeName(a->type());

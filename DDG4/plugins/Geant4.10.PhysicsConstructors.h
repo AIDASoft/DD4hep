@@ -2,7 +2,7 @@
 #define DDG4_PLUGINS_GEANT4_10_PHYSICSCONSTRUCTORS_H
 
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -106,5 +106,9 @@ DECLARE_GEANT4_PHYSICS(G4NeutronTrackingCut)
 // Optical physics
 #include "G4OpticalPhysics.hh"
 DECLARE_GEANT4_PHYSICS(G4OpticalPhysics)
+
+// Fast simulation
+#include "G4FastSimulationPhysics.hh"
+DECLARE_GEANT4_PHYSICS(G4FastSimulationPhysics)
 
 #endif

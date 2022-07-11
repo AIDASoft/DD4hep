@@ -35,9 +35,14 @@ namespace dd4hep  {
     
     class Geant4InputAction;
 
-    /// Steering class for Geant4 GFlash parametrization
+    /// Geant4 wrapper for the GFlash shower model
     /**
-     *  Steering class for Geant4 GFlash parametrization
+     *  Geant4 wrapper for the GFlash shower model
+     *  See e.g. the G4 example examples/extended/parameterisations/gflash/gflash3
+     *  for details.
+     *
+     *  The parametrization is passed as a Geant4Action to be able to configure it,
+     *  which is polymorph the GVFlashShowerParameterisation.
      *
      *  \author  M.Frank
      *
@@ -49,15 +54,20 @@ namespace dd4hep  {
       /// Define standard assignments and constructors
       DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4GFlashShowerModel);
 
-      /// Region name to which this parametrization should be applied
-      std::string m_regionName;
-      /// Name of the shower model constructor
+      /// Property: Region name to which this parametrization should be applied
+      std::string m_regionName    { "Region-name-not-specified"};
+      /// Property: Name of the shower model constructor
       std::string m_modelName;
+      /// Property: Name of the Geant4Action implementing the parametrization
       std::string m_paramName;
 
+      /// Reference to the shower model
       GFlashShowerModel*             m_showerModel     { nullptr };
+      /// Reference to the parametrization
       GVFlashShowerParameterisation* m_parametrization { nullptr };
+      /// Reference to the particle bounds object
       GFlashParticleBounds*          m_particleBounds  { nullptr };
+      /// Reference to the hit maker
       GFlashHitMaker*                m_hitMaker        { nullptr };
 
     public:
@@ -96,8 +106,10 @@ namespace dd4hep  {
 
 // #include <DDG4/Geant4GFlashShowerModel.h>
 // Framework include files
+#include <DD4hep/Detector.h>
 #include <DDG4/Geant4Action.h>
 #include <DDG4/Geant4Kernel.h>
+#include <DDG4/Geant4Mapping.h>
 
 // Geant4 include files
 #include "GVFlashShowerParameterisation.hh"
@@ -121,8 +133,8 @@ Geant4GFlashShowerModel::Geant4GFlashShowerModel(Geant4Context* ctxt, const std:
 /// Default destructor
 Geant4GFlashShowerModel::~Geant4GFlashShowerModel()    {
   auto* a = dynamic_cast<Geant4Action*>(this->m_parametrization);
-  detail::releasePtr(a);
   this->m_parametrization = nullptr;
+  detail::releasePtr(a);
   detail::deletePtr(m_particleBounds);
   detail::deletePtr(m_showerModel);
   detail::deletePtr(m_hitMaker);
@@ -132,16 +144,17 @@ Geant4GFlashShowerModel::~Geant4GFlashShowerModel()    {
 void Geant4GFlashShowerModel::adoptShowerParametrization(Geant4Action* action)   {
   if ( this->m_parametrization )    {
     auto* a = dynamic_cast<Geant4Action*>(this->m_parametrization);
-    detail::releasePtr(a);
     this->m_parametrization = nullptr;
+    detail::releasePtr(a);
   }
   if ( action )   {
     this->m_parametrization = dynamic_cast<GVFlashShowerParameterisation*>(action);
-    if ( !this->m_parametrization )   {
-      except("The supplied parametrization %s was found as Geant4Action, but is no "
-	     "GVFlashShowerParameterisation!", this->m_paramName.c_str());
+    if ( this->m_parametrization )   {
+      action->addRef();
+      return;
     }
-    action->addRef();
+    except("The supplied parametrization %s was found as Geant4Action, but is no "
+	   "GVFlashShowerParameterisation!", this->m_paramName.c_str());
   }
 }
 
@@ -156,16 +169,25 @@ void Geant4GFlashShowerModel::constructField(Geant4DetectorConstructionContext* 
 /// Sensitive detector construction callback. Called at "ConstructSDandField()"
 void Geant4GFlashShowerModel::constructSensitives(Geant4DetectorConstructionContext* /* ctxt */)    {
   auto& kernel = this->context()->kernel();
-  G4Region* region = 0;
-  Geant4Action* action = nullptr;
-  if ( !this->m_parametrization && this->m_paramName.empty() )    {
-    except("No proper parametrization name supplied in the properties: %s",this->m_paramName.c_str());
+  Geant4GeometryInfo& mapping = Geant4Mapping::instance().data();
+  Region rg = kernel.detectorDescription().region(this->m_regionName);
+  if ( !rg.isValid() )   {
+    except("Failed to access the region %s from the detector description.", this->m_regionName.c_str());
   }
-
+  auto region_iter = mapping.g4Regions.find(rg);
+  if ( region_iter == mapping.g4Regions.end() )    {
+    except("Failed to locate G4Region: %s from the Geant4 mapping.");
+  }
+  G4Region* region = (*region_iter).second;
   this->m_showerModel = new GFlashShowerModel(this->name(), region);
   if ( !this->m_parametrization )   {
-    action = kernel.globalAction(this->m_paramName, false);
-    this->adoptShowerParametrization(action);
+    if ( this->m_paramName.empty() )    {
+      except("No proper parametrization name supplied in the properties: %s",this->m_paramName.c_str());
+    }
+    this->adoptShowerParametrization(kernel.globalAction(this->m_paramName, false));
+  }
+  if ( !this->m_parametrization )    {
+    except("No proper parametrization supplied. Failed to construct shower model.");
   }
   this->m_hitMaker = new GFlashHitMaker();
   this->m_particleBounds = new GFlashParticleBounds();

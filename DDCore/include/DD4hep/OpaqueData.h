@@ -114,6 +114,8 @@ namespace dd4hep {
   public:
     /// Standard initializing constructor
     OpaqueDataBlock();
+    /// Initializing constructor binding data to buffer with move
+    template <typename OBJECT> OpaqueDataBlock(OBJECT&& data);
     /// Copy constructor (Required by ROOT dictionaries)
     OpaqueDataBlock(const OpaqueDataBlock& copy);
     /// Standard Destructor
@@ -138,6 +140,8 @@ namespace dd4hep {
     template <typename T> T& bind(const std::string& value);
     /// Bind data value
     template <typename T> T& bind(void* ptr, size_t len, const std::string& value);
+    /// Bind data value
+    template <typename T> T& bind(T&& data);
     /// Bind external data value to the pointer
     template <typename T> void bindExtern(T* ptr);
   };
@@ -172,6 +176,12 @@ namespace dd4hep {
     throw std::bad_cast();
   }
 
+  /// Initializing constructor binding data to buffer with move
+  template <typename OBJECT> OpaqueDataBlock::OpaqueDataBlock(OBJECT&& obj)    {
+    this->bind(&BasicGrammar::instance<OBJECT>());
+    new(this->pointer) OBJECT(std::move(obj));
+  }
+
   /// Construct conditions object and bind the data
   template <typename T, typename... Args> inline T& OpaqueDataBlock::construct(Args... args)   {
     this->bind(&BasicGrammar::instance<T>());
@@ -182,6 +192,12 @@ namespace dd4hep {
   template <typename T> inline T& OpaqueDataBlock::bind()  {
     this->bind(&BasicGrammar::instance<T>());
     return *(new(this->pointer) T());
+  }
+
+  /// Bind data value
+  template <typename T> inline T& OpaqueDataBlock::bind(T&& obj)   {
+    this->bind(&BasicGrammar::instance<T>());
+    new(this->pointer) T(std::move(obj));
   }
 
   /// Bind data value
