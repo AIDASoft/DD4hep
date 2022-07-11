@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -210,8 +210,9 @@ namespace dd4hep {
       return true;
     }
     /// Method for generating hit(s) using the information of the G4GFlashSpot object.
-    template <> bool Geant4SensitiveAction<Geant4Calorimeter>::processGFlash(G4GFlashSpot* spot,
-									     G4TouchableHistory* /*hist*/ )
+    template <> bool
+    Geant4SensitiveAction<Geant4Calorimeter>::processGFlash(G4GFlashSpot* spot,
+							    G4TouchableHistory* /*hist*/ )
     {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4GFlashSpotHandler h(spot);
@@ -277,7 +278,8 @@ namespace dd4hep {
       m_collectionID = declareReadoutFilteredCollection<Geant4Calorimeter::Hit>();
     }
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<Geant4OpticalCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
+    template <> bool
+    Geant4SensitiveAction<Geant4OpticalCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
       G4Track * track =  step->GetTrack();
       // check that particle is optical photon:
       if( track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition() )  {
@@ -311,8 +313,9 @@ namespace dd4hep {
       }
     }
     /// Method for generating hit(s) using the information of the G4GFlashSpot object.
-    template <> bool Geant4SensitiveAction<Geant4OpticalCalorimeter>::processGFlash(G4GFlashSpot* spot,
-										    G4TouchableHistory* /*hist*/ )
+    template <> bool
+    Geant4SensitiveAction<Geant4OpticalCalorimeter>::processGFlash(G4GFlashSpot* spot,
+								   G4TouchableHistory* /*hist*/ )
     {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4GFlashSpotHandler h(spot);
@@ -370,7 +373,8 @@ namespace dd4hep {
       m_collectionID = declareReadoutFilteredCollection<Geant4Calorimeter::Hit>();
     }
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
+    template <> bool
+    Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4StepHandler    h(step);
       HitContribution      contrib = Hit::extractContribution(step,true);
@@ -414,8 +418,9 @@ namespace dd4hep {
       return true;
     }
     /// Method for generating hit(s) using the information of the G4GFlashSpot object.
-    template <> bool Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::processGFlash(G4GFlashSpot* spot,
-											 G4TouchableHistory* /*hist*/ )
+    template <> bool
+    Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::processGFlash(G4GFlashSpot* spot,
+									G4TouchableHistory* /*hist*/ )
     {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4GFlashSpotHandler h(spot);

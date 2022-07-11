@@ -10,7 +10,6 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DDG4_GEANT4SENSDETACTION_H
 #define DDG4_GEANT4SENSDETACTION_H
 
@@ -573,7 +572,6 @@ namespace dd4hep {
       /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
       virtual void clear(G4HCofThisEvent* hce);
     };
-
 
   }    // End namespace sim
 }      // End namespace dd4hep

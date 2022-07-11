@@ -28,9 +28,10 @@ using namespace dd4hep::ConditionExamples;
  */
 static int condition_example (Detector& description, int argc, char** argv)  {
 
-  string input;
-  int    num_iov = 10, extend = 0;
-  bool   arg_error = false;
+  string     input;
+  PrintLevel print_level = INFO;
+  int        num_iov = 10, extend = 0;
+  bool       arg_error = false;
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-input",argv[i],4) )
       input = argv[++i];
@@ -38,6 +39,8 @@ static int condition_example (Detector& description, int argc, char** argv)  {
       num_iov = ::atol(argv[++i]);
     else if ( 0 == ::strncmp("-extend",argv[i],4) )
       extend = ::atol(argv[++i]);
+    else if ( 0 == ::strncmp("-print",argv[i],4) )
+      print_level = dd4hep::decodePrintLevel(argv[++i]);
     else
       arg_error = true;
   }
@@ -48,6 +51,7 @@ static int condition_example (Detector& description, int argc, char** argv)  {
       "     name:   factory name     DD4hep_ConditionExample_populate                \n"
       "     -input   <string>        Geometry file                                   \n"
       "     -iovs    <number>        Number of parallel IOV slots for processing.    \n"
+      "     -print   <leve>          Set print level (number or string)              \n"
       "\tArguments given: " << arguments(argc,argv) << endl << flush;
     ::exit(EINVAL);
   }
@@ -60,9 +64,9 @@ static int condition_example (Detector& description, int argc, char** argv)  {
   /******************** Initialize the conditions manager *****************/
   ConditionsManager manager = installManager(description);
   const IOVType*    iov_typ = manager.registerIOVType(0,"run").second;
-  if ( 0 == iov_typ )
+  if ( 0 == iov_typ )   {
     except("ConditionsPrepare","++ Unknown IOV type supplied.");
-
+  }
   /******************** Now as usual: create the slice ********************/
   shared_ptr<ConditionsContent> content(new ConditionsContent());
   shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
@@ -75,7 +79,7 @@ static int condition_example (Detector& description, int argc, char** argv)  {
     IOV iov(iov_typ, IOV::Key(1+i*10,(i+1)*10));
     ConditionsPool*   iov_pool = manager.registerIOV(*iov.iovType, iov.key());
     // Create conditions with all deltas. Use a generic creator
-    Scanner(ConditionsAnyCreator(*slice, *iov_pool, INFO),description.world(),0,true);
+    Scanner(ConditionsAnyCreator(*slice, *iov_pool, print_level),description.world(),0,true);
   }
   
   // ++++++++++++++++++++++++ Now compute the conditions for each of these IOVs
@@ -86,16 +90,16 @@ static int condition_example (Detector& description, int argc, char** argv)  {
     ConditionsManager::Result r = manager.prepare(req_iov,*slice);
     total += r;
     if ( 0 == i )  { // First one we print...
-      Scanner(ConditionsAnyDataAccess(req_iov,*slice,INFO),description.world());
+      Scanner(ConditionsAnyDataAccess(req_iov, *slice, print_level), description.world());
     }
     // Now compute the tranformation matrices
-    printout(INFO,"Prepare","Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
+    printout(ALWAYS,"Prepare","+  Total %ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) of IOV %s",
              r.total(), r.selected, r.loaded, r.computed, r.missing, req_iov.str().c_str());
   }
-  printout(INFO,"Statistics","+=========================================================================");
-  printout(INFO,"Statistics","+  Accessed a total of %ld conditions (S:%6ld,L:%6ld,C:%6ld,M:%ld)",
+  printout(ALWAYS,"Statistics","+=========================================================================");
+  printout(ALWAYS,"Statistics","+  Accessed a total of %ld conditions (S:%6ld,L:%6ld,C:%6ld,M:%ld)",
            total.total(), total.selected, total.loaded, total.computed, total.missing);
-  printout(INFO,"Statistics","+=========================================================================");
+  printout(ALWAYS,"Statistics","+=========================================================================");
   // All done.
   return 1;
 }
