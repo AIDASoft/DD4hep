@@ -17,6 +17,7 @@ public:
 };
 
 int main() {
+
   dd4hep::DDTest test( "PolarGridRPhi2" );
 
   try{
