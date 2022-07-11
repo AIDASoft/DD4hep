@@ -13,12 +13,14 @@
 #include <cmath>
 
 
-static dd4hep::DDTest test( "CellDimensions" ) ;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 //using dd4hep::DDSegmentation::BitFieldCoder;
 
 int main() {
+
+  dd4hep::DDTest test( "CellDimensions" );
+
   try{
     BitFieldCoder bf("system:8,barrel:3,layer:8,slice:5,x:16,y:16");
     Segmentation base("CartesianGridXY","Test",&bf);

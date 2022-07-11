@@ -15,8 +15,9 @@ add_library(DD4hep::DDTest ALIAS DDTest)
 dd4hep_use_python_executable()
 target_include_directories(DDTest INTERFACE include)
 
+##    test_example
+
 foreach(TEST_NAME
-    test_example
     test_bitfield64
     test_bitfieldcoder
     test_DetType

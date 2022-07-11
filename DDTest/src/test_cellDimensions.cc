@@ -13,10 +13,10 @@
 #include <cmath>
 
 
-static dd4hep::DDTest test( "CellDimensions" ) ;
-
-
 int main() {
+
+  dd4hep::DDTest test( "CellDimensions" ) ;
+
   try{
 
     dd4hep::DDSegmentation::CartesianGridXY seg("system:8,barrel:3,layer:8,slice:5,x:16,y:16");
