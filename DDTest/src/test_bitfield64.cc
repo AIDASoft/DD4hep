@@ -6,9 +6,9 @@
 
 #include "DDSegmentation/BitField64.h"
 
-using namespace std ;
-using namespace dd4hep ;
-using namespace DDSegmentation ;
+using namespace std;
+using namespace dd4hep;
+using namespace DDSegmentation;
 
 //=============================================================================
 int main(int /* argc */, char** /* argv */ ){

@@ -8,7 +8,7 @@
 int main(int /* argc */, char** /* argv */ ){
 
   // this should be the first line in your test
-  dd4hep::DDTest test( "example" ) ; 
+  dd4hep::DDTest test( "example" );
     
   try{
     
