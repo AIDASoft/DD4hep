@@ -12,19 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/InstanceCount.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/InstanceCount.h>
 
-#include "DDG4/Geant4Kernel.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4HitCollection.h"
-#include "DDG4/Geant4SensDetAction.h"
+#include <DDG4/Geant4Kernel.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4HitCollection.h>
+#include <DDG4/Geant4SensDetAction.h>
 
 // Geant4 include files
-#include "G4VSensitiveDetector.hh"
-#include "G4Event.hh"
-#include "G4Run.hh"
+#include <G4VSensitiveDetector.hh>
+#include <G4VGFlashSensitiveDetector.hh>
+#include <G4Event.hh>
+#include <G4Run.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -65,6 +66,7 @@ namespace dd4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4SensDet : virtual public G4VSensitiveDetector,
+			  virtual public G4VGFlashSensitiveDetector,
                           virtual public G4VSDFilter,
                           virtual public Geant4ActionSD,
                           virtual public RefCountedSequence<Geant4SensDetActionSequence>
@@ -75,8 +77,11 @@ namespace dd4hep {
     public:
       /// Constructor. The detector element is identified by the name
       Geant4SensDet(const std::string& nam, Detector& description)
-        : G4VSensitiveDetector(nam), G4VSDFilter(nam),
-          Geant4Action(0,nam), Geant4ActionSD(nam),
+        : G4VSensitiveDetector(nam),
+	  G4VGFlashSensitiveDetector(),
+	  G4VSDFilter(nam),
+          Geant4Action(0,nam),
+	  Geant4ActionSD(nam),
           RefCountedSequence<Geant4SensDetActionSequence>()
       {
         Geant4Kernel& master = Geant4Kernel::instance(description);
@@ -91,48 +96,51 @@ namespace dd4hep {
       }
 
       /// Destructor
-      virtual ~Geant4SensDet()        {                                 }
+      virtual ~Geant4SensDet() = default;
       /// Overload to avoid ambiguity between G4VSensitiveDetector and G4VSDFilter
-      inline G4String GetName() const
+      inline G4String GetName() const  
       {  return this->G4VSensitiveDetector::SensitiveDetectorName;      }
       /// G4VSensitiveDetector internals: Access to the detector path name
-      virtual std::string path()  const
+      virtual std::string path()  const  override
       {  return this->G4VSensitiveDetector::GetPathName();              }
       /// G4VSensitiveDetector internals: Access to the detector path name
-      virtual std::string fullPath()  const
+      virtual std::string fullPath()  const  override
       {  return this->G4VSensitiveDetector::GetFullPathName();          }
       /// Is the detector active?
-      virtual bool isActive() const
+      virtual bool isActive() const  override
       {  return this->G4VSensitiveDetector::isActive();                 }
       /// This is a utility method which returns the hits collection ID
-      virtual G4int GetCollectionID(G4int i)
+      virtual G4int GetCollectionID(G4int i)  override
       {  return this->G4VSensitiveDetector::GetCollectionID(i);         }
       /// Access to the readout geometry of the sensitive detector
-      virtual G4VReadOutGeometry* readoutGeometry() const
+      virtual G4VReadOutGeometry* readoutGeometry() const  override
       {  return this->G4VSensitiveDetector::GetROgeometry();            }
       /// Access to the Detector sensitive detector handle
-      virtual SensitiveDetector sensitiveDetector() const
+      virtual SensitiveDetector sensitiveDetector() const  override
       {  return m_sensitive;                                            }
       /// Access to the sensitive type of the detector
-      virtual const std::string& sensitiveType() const
+      virtual const std::string& sensitiveType() const  override
       {  return m_sequence->sensitiveType();                            }
       /// Callback if the sequence should be accepted or filtered off
-      virtual G4bool Accept(const G4Step* step) const
+      virtual G4bool Accept(const G4Step* step) const  override
       {  return m_sequence->accept(step);                               }
       /// Method invoked at the begining of each event.
-      virtual void Initialize(G4HCofThisEvent* hce)
+      virtual void Initialize(G4HCofThisEvent* hce)  override
       {  m_sequence->begin(hce);                                        }
       /// Method invoked at the end of each event.
-      virtual void EndOfEvent(G4HCofThisEvent* hce)
+      virtual void EndOfEvent(G4HCofThisEvent* hce)  override
       {  m_sequence->end(hce);                                          }
       /// Method for generating hit(s) using the information of G4Step object.
-      virtual G4bool ProcessHits(G4Step* step,G4TouchableHistory* hist)
+      virtual G4bool ProcessHits(G4Step* step,G4TouchableHistory* hist) override
       {  return m_sequence->process(step,hist);                         }
+      // Separate GFLASH interface
+      virtual G4bool ProcessHits(G4GFlashSpot* spot ,G4TouchableHistory* hist) override
+      {  return m_sequence->processGFlash(spot,hist);                   }
       /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
-      virtual void clear()
+      virtual void clear()  override
       {  m_sequence->clear();                                           }
       /// Initialize the usage of a hit collection. Returns the collection identifier
-      virtual size_t defineCollection(const std::string& coll)  {
+      virtual size_t defineCollection(const std::string& coll)   override  {
         if ( coll.empty() ) {
           except("Geant4Sensitive: No collection defined for %s [Invalid name]",c_name());
         }
@@ -145,7 +153,7 @@ namespace dd4hep {
 }      // End namespace dd4hep
 
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 
 typedef dd4hep::sim::Geant4SensDet Geant4SensDet;
 typedef dd4hep::sim::Geant4SensDet Geant4tracker;

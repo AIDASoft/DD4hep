@@ -15,9 +15,9 @@
 #define DD4HEP_DDG4_GEANT4FIELDTRACKINGSETUP_H 1
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DDG4/Geant4ActionPhase.h"
-#include "DDG4/Geant4DetectorConstruction.h"
+#include <DD4hep/Detector.h>
+#include <DDG4/Geant4ActionPhase.h>
+#include <DDG4/Geant4DetectorConstruction.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -134,17 +134,17 @@ namespace dd4hep {
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Handle.h"
-#include "DD4hep/Fields.h"
-#include "DDG4/Factories.h"
-#include "DDG4/Geant4Field.h"
-#include "DDG4/Geant4Converter.h"
+#include <DD4hep/Handle.h>
+#include <DD4hep/Fields.h>
+#include <DDG4/Factories.h>
+#include <DDG4/Geant4Field.h>
+#include <DDG4/Geant4Converter.h>
 
-#include "G4TransportationManager.hh"
-#include "G4MagIntegratorStepper.hh"
-#include "G4Mag_EqRhs.hh"
-#include "G4ChordFinder.hh"
-#include "G4PropagatorInField.hh"
+#include <G4TransportationManager.hh>
+#include <G4MagIntegratorStepper.hh>
+#include <G4Mag_EqRhs.hh>
+#include <G4ChordFinder.hh>
+#include <G4PropagatorInField.hh>
 #include <limits>
 
 using namespace std;

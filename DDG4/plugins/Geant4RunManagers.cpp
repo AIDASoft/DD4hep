@@ -14,10 +14,10 @@
 #define DDG4_GEANT4RUNMANAGER_H 1
 
 /// Framework include files
-#include "DDG4/Geant4Action.h"
+#include <DDG4/Geant4Action.h>
 
 /// Geant4 include files
-#include "G4RunManager.hh"
+#include <G4RunManager.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -71,12 +71,12 @@ namespace dd4hep {
 }
 #endif   // DDG4_GEANT4RUNMANAGER_H
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 using namespace dd4hep::sim;
 DD4HEP_PLUGINSVC_FACTORY(Geant4STRunManager,G4RunManager,dd4hep::sim::Geant4Action*(_ns::CT*,std::string),__LINE__)
 
 #ifdef G4MULTITHREADED
-#include "G4MTRunManager.hh"
+#include <G4MTRunManager.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
