@@ -21,10 +21,11 @@
 #include <CLHEP/Units/PhysicalConstants.h>
 
 // Geant4 include files
-#include <G4ParticleDefinition.hh>
 #include <G4Event.hh>
-#include <G4PrimaryVertex.hh>
+#include <G4IonTable.hh>
+#include <G4ParticleDefinition.hh>
 #include <G4PrimaryParticle.hh>
+#include <G4PrimaryVertex.hh>
 
 // C/C++ include files
 #include <stdexcept>
@@ -343,7 +344,11 @@ int dd4hep::sim::smearInteraction(const Geant4Action* caller,
 
 static G4PrimaryParticle* createG4Primary(const Geant4ParticleHandle p)  {
   G4PrimaryParticle* g4 = 0;
-  if ( 0 != p->pdgID )   {
+  if ( 1000000000 < p->pdgID ) {
+    const G4ParticleDefinition* def = G4IonTable::GetIonTable()->GetIon(p->pdgID);
+    g4 = new G4PrimaryParticle(def, p->psx, p->psy, p->psz, p.energy());
+    g4->SetCharge(p.charge());
+  } else if ( 0 != p->pdgID ) {
     g4 = new G4PrimaryParticle(p->pdgID, p->psx, p->psy, p->psz, p.energy());
   }
   else   {
