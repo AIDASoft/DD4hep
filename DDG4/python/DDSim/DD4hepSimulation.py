@@ -732,6 +732,7 @@ SIM = DD4hepSimulation()
     if have_mctruth:
       gen = GeneratorAction(simple.kernel(), "Geant4PrimaryHandler/PrimaryHandler")
       gen.RejectPDGs = ConfigHelper.makeString(self.physics.rejectPDGs)
+      gen.ZeroTimePDGs = ConfigHelper.makeString(self.physics.zeroTimePDGs)
       gen.enableUI()
       if output_level is not None:
         gen.OutputLevel = output_level
