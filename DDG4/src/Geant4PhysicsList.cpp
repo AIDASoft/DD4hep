@@ -333,11 +333,31 @@ Geant4PhysicsListActionSequence::~Geant4PhysicsListActionSequence()  {
   InstanceCount::decrement(this);
 }
 
+#include "G4FastSimulationPhysics.hh"
+
+
 /// Extend physics list from factory:
 G4VUserPhysicsList* Geant4PhysicsListActionSequence::extensionList()    {
   G4VModularPhysicsList* physics = ( m_extends.empty() )
     ? new EmptyPhysics()
     : G4PhysListFactory().GetReferencePhysList(m_extends);
+
+#if 0
+  G4FastSimulationPhysics* fastSimulationPhysics = new G4FastSimulationPhysics();
+  // -- We now configure the fastSimulationPhysics object.
+  // -- The gflash model (GFlashShowerModel, see ExGflashDetectorConstruction.cc)
+  // -- is applicable to e+ and e- : we augment the physics list for these
+  // -- particles (by adding a G4FastSimulationManagerProcess with below's
+  // -- calls), this will make the fast simulation to be activated:
+  fastSimulationPhysics->ActivateFastSimulation("e-");
+  fastSimulationPhysics->ActivateFastSimulation("e+");
+  // -- Register this fastSimulationPhysics to the physicsList,
+  // -- when the physics list will be called by the run manager
+  // -- (will happen at initialization of the run manager)
+  // -- for physics process construction, the fast simulation
+  // -- configuration will be applied as well.
+  physics->RegisterPhysics( fastSimulationPhysics );
+#endif
   // Register all physics constructors with the physics list
   constructPhysics(physics);
   // Ensure the particles and processes declared are also invoked.

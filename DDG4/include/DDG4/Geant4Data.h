@@ -263,6 +263,8 @@ namespace dd4hep {
         Hit& clear();
         /// Store Geant4 point and step information into tracker hit structure.
         Hit& storePoint(const G4Step* step, const G4StepPoint* point);
+	/// Store Geant4 spot information into tracker hit structure.
+	Hit& storePoint(const G4GFlashSpot* spot);
       };
     };
 

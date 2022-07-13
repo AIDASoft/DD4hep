@@ -23,6 +23,11 @@ from g4units import GeV, MeV, m
 
    dd4hep simulation example setup using the python configuration
 
+   NOTE:
+   If you get to the command prompt, you must not forget to enable GFlash!
+   By default Geant4 does not enable it. Hence:
+   Idle>  /GFlash/flag 1
+
    @author  M.Frank
    @version 1.0
 
@@ -35,7 +40,7 @@ def run():
   kernel.loadGeometry(str("file:" + install_dir + "/examples/ClientTests/compact/SiliconBlock.xml"))
 
   DDG4.importConstants(kernel.detectorDescription(), debug=False)
-  geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
+  geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction', calo='Geant4CalorimeterAction')
   geant4.printDetectors()
   # Configure UI
   if len(sys.argv) > 1:
@@ -48,22 +53,33 @@ def run():
   # Configure Event actions
   prt = DDG4.EventAction(kernel, 'Geant4ParticlePrint/ParticlePrint')
   prt.OutputLevel = Output.DEBUG
-  prt.OutputType = 3  # Print both: table and tree
+  # prt.OutputType = 3  # Print both: table and tree
   kernel.eventAction().adopt(prt)
 
-  generator_output_level = Output.INFO
+  generator_output_level = prt.OutputLevel #Output.INFO
 
   # Configure G4 geometry setup
-  seq, act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
+  seq, act = geant4.addDetectorConstruction('Geant4DetectorGeometryConstruction/ConstructGeo')
   act.DebugMaterials = True
   act.DebugElements = False
   act.DebugVolumes = True
   act.DebugShapes = True
 
+  # Apply sensitive detectors
+  sensitives = DDG4.DetectorConstruction(kernel, str('Geant4DetectorSensitivesConstruction/ConstructSD'))
+  sensitives.enableUI()
+  seq.adopt(sensitives)
+
+  # Enable GFlash shower model
   model = DDG4.DetectorConstruction(kernel, str('Geant4GFlashShowerModel/ShowerModel'))
   model.Parametrization = 'GFlashHomoShowerParameterisation'
+  # Mandatory model parameters
   model.RegionName = 'SiRegion'
   model.Material = 'Silicon'
+  model.Enable = True
+  # Energy boundaries are optional
+  model.Emin  = {'e+': 0.1*GeV, 'e-': 0.1*GeV }  # Units in GeV
+  model.Ekill = {'e+': 0.1*MeV, 'e-': 0.1*MeV }
   model.enableUI()
   seq.adopt(model)
 
@@ -71,7 +87,7 @@ def run():
   geant4.setupROOTOutput('RootOutput', 'SiliconBlock_' + time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
-  gun = geant4.setupGun("Gun", particle='e-', energy=20 * GeV, multiplicity=1)
+  gun = geant4.setupGun("Gun", particle='e+', energy=50 * GeV, multiplicity=1)
   gun.OutputLevel = generator_output_level
 
   # And handle the simulation particles.
@@ -91,22 +107,15 @@ def run():
   geant4.setupTracker('SiliconBlockDown')
 
   # Now build the physics list:
-  phys = geant4.setupPhysics('QGSP_BERT')
-  ph = DDG4.PhysicsList(kernel, str('Geant4PhysicsList/Myphysics'))
-  ph.addParticleConstructor(str('G4Geantino'))
-  ph.addParticleConstructor(str('G4BosonConstructor'))
-  ph.enableUI()
-  phys.adopt(ph)
-
-  ph = DDG4.PhysicsList(kernel, str('Geant4PhysicsList/FastPhysicsList'))
-  fast = DDG4.Action(kernel, str('Geant4FastPhysics/FastPhysics'))
-  ph.adoptPhysicsConstructor(fast)
+  phys = geant4.setupPhysics('FTFP_BERT')
+  ph = DDG4.PhysicsList(kernel, str('Geant4FastPhysics/FastPhysicsList'))
+  ph.EnabledParticles = ['e+', 'e-']
+  ph.BeVerbose = True
   ph.enableUI()
   phys.adopt(ph)
   phys.dump()
 
   geant4.execute()
-
 
 if __name__ == "__main__":
   run()
