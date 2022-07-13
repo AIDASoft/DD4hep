@@ -76,8 +76,8 @@ def run():
   model.RegionName = 'SiRegion'
   model.Material = 'Silicon'
   model.Enable = True
-  # Energy boundaries are optional
-  model.Emin  = {'e+': 0.1 * GeV, 'e-': 0.1 * GeV}  # Units in GeV
+  # Energy boundaries are optional: Units are GeV
+  model.Emin = {'e+': 0.1 * GeV, 'e-': 0.1 * GeV}
   model.Ekill = {'e+': 0.1 * MeV, 'e-': 0.1 * MeV}
   model.enableUI()
   seq.adopt(model)
