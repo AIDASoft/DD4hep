@@ -26,6 +26,15 @@
     <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
   </includes>
 
+  <materials>
+    <material name="G4_PbWO4">
+      <D type="density" unit="g/cm3" value="8.28"/>
+      <composite n="4" ref="O"/>
+      <composite n="1" ref="Pb"/>
+      <composite n="1" ref="W"/>
+    </material>
+  </materials>
+
   <define>
     <constant name="world_size" value="30*m"/>
     <constant name="world_x" value="world_size"/>
@@ -56,16 +65,16 @@
 
   <detectors>
     <detector id="1" name="SiliconBlockUpper" type="DD4hep_BoxSegment" readout="SiliconUpperHits" vis="VisibleGreen" sensitive="true" region="SiRegion" limits="SiRegionLimitSet">
-      <material name="Silicon"/>
+      <material name="G4_PbWO4"/>
       <sensitive type="tracker"/>
-      <box      x="20*mm" y="20*cm" z="20*cm"/>
-      <position x="4*cm"  y="0"  z="0"/>
-      <rotation x="0"     y="0"     z="0"/>
+      <box      x="30*mm" y="100*cm" z="100*cm"/>
+      <position x="4*cm"  y="0"      z="0"/>
+      <rotation x="0"     y="0"      z="0"/>
     </detector>
     <detector id="2" name="SiliconBlockDown" type="DD4hep_BoxSegment" readout="SiliconDownHits" vis="VisibleRed" sensitive="true" region="SiRegion" limits="SiRegionLimitSet">
-      <material name="Silicon"/>
+      <material name="G4_PbWO4"/>
       <sensitive type="tracker"/>
-      <box      x="20*mm" y="20*cm" z="20*cm"/>
+      <box      x="30*mm" y="100*cm" z="100*cm"/>
       <position x="-4*cm" y="0"     z="0"/>
       <rotation x="0"     y="0"     z="0"/>
     </detector>
@@ -73,10 +82,12 @@
   
   <readouts>
     <readout name="SiliconUpperHits">
-      <id>system:8</id>
+      <segmentation type="CartesianGridXY" grid_size_x="5*mm" grid_size_y="5*mm"/>
+      <id>system:8,x:16:-8,y:-16</id>
     </readout>
     <readout name="SiliconDownHits">
-      <id>system:8</id>
+      <segmentation type="CartesianGridXY" grid_size_x="5*mm" grid_size_y="5*mm"/>
+      <id>system:8,x:16:-8,y:-16</id>
     </readout>
   </readouts>
 

@@ -59,13 +59,19 @@ def run():
   act.DebugElements = False
   act.DebugVolumes = True
   act.DebugShapes = True
-  seq, act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
+
+  model = DDG4.DetectorConstruction(kernel, str('Geant4GFlashShowerModel/ShowerModel'))
+  model.Parametrization = 'GFlashHomoShowerParameterisation'
+  model.RegionName = 'SiRegion'
+  model.Material = 'Silicon'
+  model.enableUI()
+  seq.adopt(model)
 
   # Configure I/O
   geant4.setupROOTOutput('RootOutput', 'SiliconBlock_' + time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
-  gun = geant4.setupGun("Gun", particle='e+', energy=20 * GeV, multiplicity=1)
+  gun = geant4.setupGun("Gun", particle='e-', energy=20 * GeV, multiplicity=1)
   gun.OutputLevel = generator_output_level
 
   # And handle the simulation particles.
@@ -89,6 +95,12 @@ def run():
   ph = DDG4.PhysicsList(kernel, str('Geant4PhysicsList/Myphysics'))
   ph.addParticleConstructor(str('G4Geantino'))
   ph.addParticleConstructor(str('G4BosonConstructor'))
+  ph.enableUI()
+  phys.adopt(ph)
+
+  ph = DDG4.PhysicsList(kernel, str('Geant4PhysicsList/FastPhysicsList'))
+  fast = DDG4.Action(kernel, str('Geant4FastPhysics/FastPhysics'))
+  ph.adoptPhysicsConstructor(fast)
   ph.enableUI()
   phys.adopt(ph)
   phys.dump()

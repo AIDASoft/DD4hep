@@ -14,7 +14,7 @@
 #define DDG4_GEANT4FASTPHYSICS_H
 
 // Framework include files
-#include <DDG4/Geant4PhysicsList.h>
+#include <DDG4/Geant4Action.h>
 
 // Geant4 include files
 #include <G4FastSimulationPhysics.hh>
@@ -28,8 +28,6 @@ namespace dd4hep  {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim  {
     
-    class Geant4InputAction;
-
     /// Wrapper for G4FastSimulationPhysics with properties
     /**
      *  Wrapper for G4FastSimulationPhysics with properties.
@@ -48,13 +46,15 @@ namespace dd4hep  {
 
       /// Vector of particle names for which fast simulation is enabled
       std::vector<std::string> m_enabledParticles;
+      /// Property to set verbosity flag on G4FastSimulationPhysics
+      bool m_verbose  { false };
 
     public:
       /// Standard constructor
       Geant4FastPhysics(Geant4Context* context, const std::string& nam);
 
       /// Default destructor
-      virtual ~Geant4FastPhysics();
+      virtual ~Geant4FastPhysics() = default;
 
       /// This method will be invoked in the Construct() method.
       virtual void ConstructProcess()  override;
@@ -87,20 +87,20 @@ Geant4FastPhysics::Geant4FastPhysics(Geant4Context* ctxt, const std::string& nam
 : Geant4Action(ctxt, nam), G4FastSimulationPhysics()
 {
   declareProperty("EnabledParticles", m_enabledParticles);
+  declareProperty("BeVerbose",        m_verbose);
 }
-
-/// Default destructor
-Geant4FastPhysics::~Geant4FastPhysics()    {
-}
-
 
 /// This method will be invoked in the Construct() method.
 void Geant4FastPhysics::ConstructProcess()    {
+  if ( this->m_verbose ) this->BeVerbose();
+  for( const auto& part_name : m_enabledParticles )    {
+    this->info("Enable fast simulation for particle type: %s", part_name.c_str());
+    this->ActivateFastSimulation(part_name);
+  }
   // -- Create a fast simulation physics constructor, used to augment
   // -- the above physics list to allow for fast simulation
   this->G4FastSimulationPhysics::ConstructProcess();
-  for( const auto& part_name : m_enabledParticles )
-    this->ActivateFastSimulation(part_name);
+  this->info("Constructed and initialized Geant4 Fast Physics.");
 }
 
 #include "DDG4/Factories.h"
