@@ -53,10 +53,9 @@ def run():
   # Configure Event actions
   prt = DDG4.EventAction(kernel, 'Geant4ParticlePrint/ParticlePrint')
   prt.OutputLevel = Output.DEBUG
-  # prt.OutputType = 3  # Print both: table and tree
   kernel.eventAction().adopt(prt)
 
-  generator_output_level = prt.OutputLevel #Output.INFO
+  generator_output_level = prt.OutputLevel
 
   # Configure G4 geometry setup
   seq, act = geant4.addDetectorConstruction('Geant4DetectorGeometryConstruction/ConstructGeo')
@@ -78,8 +77,8 @@ def run():
   model.Material = 'Silicon'
   model.Enable = True
   # Energy boundaries are optional
-  model.Emin  = {'e+': 0.1*GeV, 'e-': 0.1*GeV }  # Units in GeV
-  model.Ekill = {'e+': 0.1*MeV, 'e-': 0.1*MeV }
+  model.Emin  = {'e+': 0.1 * GeV, 'e-': 0.1 * GeV}  # Units in GeV
+  model.Ekill = {'e+': 0.1 * MeV, 'e-': 0.1 * MeV}
   model.enableUI()
   seq.adopt(model)
 
@@ -116,6 +115,7 @@ def run():
   phys.dump()
 
   geant4.execute()
+
 
 if __name__ == "__main__":
   run()
