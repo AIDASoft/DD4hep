@@ -78,7 +78,11 @@ static int condition_any_basic (Detector& /* description */, int /* argc */, cha
   cout << endl << endl;
   cout << "Size std::any:      " << sizeof(std::any) << endl;
   cout << "Size std::vector:   " << sizeof(std::vector<int>) << endl;
-  if ( sizeof(std::any) > sizeof(std::vector<int>) )  {
+  if ( sizeof(std::any) > OpaqueDataBlock::BUFFER_SIZE )  {
+    cout << endl << "Test FAILED" << endl << endl;
+    return EINVAL;
+  }
+  if ( sizeof(std::vector<void*>) > OpaqueDataBlock::BUFFER_SIZE )  {
     cout << endl << "Test FAILED" << endl << endl;
     return EINVAL;
   }

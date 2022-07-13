@@ -152,6 +152,25 @@ Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const G4Step* step, const G4S
   return *this;
 }
 
+/// Store Geant4 spot information into tracker hit structure.
+Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const G4GFlashSpot* spot)   {
+  const GFlashEnergySpot* espot = spot->GetEnergySpot();
+  const G4FastTrack*   ftrk = spot->GetOriginatorTrack();
+  const G4Track* trk  = ftrk->GetPrimaryTrack();
+  G4ThreeVector  pos  = spot->GetPosition();
+  G4ThreeVector  mom  = trk->GetMomentum().unit();
+  double         dep  = espot->GetEnergy();
+  truth.trackID = trk->GetTrackID();
+  truth.pdgID   = trk->GetDefinition()->GetPDGEncoding();
+  truth.deposit = dep;
+  truth.time    = trk->GetGlobalTime();
+  energyDeposit = dep;
+  position.SetXYZ(pos.x(), pos.y(), pos.z());
+  momentum.SetXYZ(mom.x()*dep, mom.y()*dep, mom.z()*dep);
+  length = 0;
+  return *this;
+}
+
 /// Default constructor (for ROOT)
 Geant4Calorimeter::Hit::Hit()
 : Geant4HitData(), position(), truth(), energyDeposit(0) {

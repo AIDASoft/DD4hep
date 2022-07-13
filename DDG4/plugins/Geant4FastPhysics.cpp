@@ -15,9 +15,11 @@
 
 // Framework include files
 #include <DDG4/Geant4Action.h>
+#include <DDG4/Geant4PhysicsList.h>
 
 // Geant4 include files
-#include <G4FastSimulationPhysics.hh>
+#include <G4VModularPhysicsList.hh>
+class G4FastSimulationPhysics;
 
 // C/C++ include files
 #include <vector>
@@ -39,7 +41,7 @@ namespace dd4hep  {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4FastPhysics : public Geant4Action, public G4FastSimulationPhysics    {
+    class Geant4FastPhysics : public Geant4PhysicsList    {
     protected:
       /// Define standard assignments and constructors
       DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4FastPhysics);
@@ -49,6 +51,9 @@ namespace dd4hep  {
       /// Property to set verbosity flag on G4FastSimulationPhysics
       bool m_verbose  { false };
 
+      /// Reference to fast physics object
+      G4FastSimulationPhysics* m_fastPhysics { nullptr };
+
     public:
       /// Standard constructor
       Geant4FastPhysics(Geant4Context* context, const std::string& nam);
@@ -56,8 +61,8 @@ namespace dd4hep  {
       /// Default destructor
       virtual ~Geant4FastPhysics() = default;
 
-      /// This method will be invoked in the Construct() method.
-      virtual void ConstructProcess()  override;
+      /// constructPhysics callback
+      virtual void constructPhysics(G4VModularPhysicsList* physics)  override;
     };
   }     /* End namespace sim   */
 }       /* End namespace dd4hep */
@@ -79,28 +84,38 @@ namespace dd4hep  {
 /// Framework include files
 // #include <DDG4/Geant4FastPhysics.h>
 
+// Geant4 include files
+#include <G4FastSimulationPhysics.hh>
+
 using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4FastPhysics::Geant4FastPhysics(Geant4Context* ctxt, const std::string& nam)
-: Geant4Action(ctxt, nam), G4FastSimulationPhysics()
+: Geant4PhysicsList(ctxt, nam)
 {
   declareProperty("EnabledParticles", m_enabledParticles);
   declareProperty("BeVerbose",        m_verbose);
 }
 
-/// This method will be invoked in the Construct() method.
-void Geant4FastPhysics::ConstructProcess()    {
-  if ( this->m_verbose ) this->BeVerbose();
+/// constructPhysics callback
+void Geant4FastPhysics::constructPhysics(G4VModularPhysicsList* physics)    {
+  /// Create and configure the fast simulation object according to properties
+  m_fastPhysics = new G4FastSimulationPhysics(this->name());
+  if ( this->m_verbose ) m_fastPhysics->BeVerbose();
+
+  /// attach the particles the fast simulation object should act on
   for( const auto& part_name : m_enabledParticles )    {
     this->info("Enable fast simulation for particle type: %s", part_name.c_str());
-    this->ActivateFastSimulation(part_name);
+    m_fastPhysics->ActivateFastSimulation(part_name);
   }
-  // -- Create a fast simulation physics constructor, used to augment
-  // -- the above physics list to allow for fast simulation
-  this->G4FastSimulationPhysics::ConstructProcess();
-  this->info("Constructed and initialized Geant4 Fast Physics.");
+  /// -- Register this fastSimulationPhysics to the physicsList,
+  /// -- when the physics list will be called by the run manager
+  /// -- (will happen at initialization of the run manager)
+  /// -- for physics process construction, the fast simulation
+  /// -- configuration will be applied as well.
+  physics->RegisterPhysics(m_fastPhysics);
+  this->info("Constructed and initialized Geant4 Fast Physics [G4FastSimulationPhysics].");
 }
 
 #include "DDG4/Factories.h"
