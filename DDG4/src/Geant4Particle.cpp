@@ -12,17 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include <DD4hep/Printout.h>
-#include <DD4hep/Primitives.h>
 #include <DD4hep/InstanceCount.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/Printout.h>
 #include <DDG4/Geant4Particle.h>
-#include <TDatabasePDG.h>
-#include <TParticlePDG.h>
-#include <G4ParticleTable.hh>
-#include <G4ParticleDefinition.hh>
-#include <G4VProcess.hh>
+
 #include <G4ChargedGeantino.hh>
 #include <G4Geantino.hh>
+#include <G4IonTable.hh>
+#include <G4ParticleDefinition.hh>
+#include <G4ParticleTable.hh>
+#include <G4VProcess.hh>
+
+#include <TDatabasePDG.h>
+#include <TParticlePDG.h>
 
 #include <sstream>
 #include <iostream>
@@ -114,6 +117,14 @@ void Geant4Particle::removeDaughter(int id_daughter)  {
 const G4ParticleDefinition* Geant4ParticleHandle::definition() const   {
   G4ParticleTable*      tab = G4ParticleTable::GetParticleTable();
   G4ParticleDefinition* def = tab->FindParticle(particle->pdgID);
+  if( 1000000000 < particle->pdgID) {
+    if(particle->pdgID % 10) {
+     // this is an excited ion, not sure how to handle this
+      std::cout << "We are ignoring excited state!!!!"  << std::endl;
+    }
+    // last digit is the excitation level, we just set this to zero
+    return G4IonTable::GetIonTable()->GetIon((particle->pdgID / 10) * 10);
+  }
   if ( 0 == def && 0 == particle->pdgID )   {
     if ( 0 == particle->charge )
       return G4Geantino::Definition();
