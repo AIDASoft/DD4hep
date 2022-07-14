@@ -219,6 +219,7 @@ static int property_test(Detector& /* description */, int /* argc */, char** /* 
     cout << endl << "Test PASSED" << endl << endl;
   else
     cout << endl << "Test FAILED" << endl << "===> " << result << " Subtests FAILED" << endl;
+
   // All done.
   return 1;
 }
