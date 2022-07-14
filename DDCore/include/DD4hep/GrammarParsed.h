@@ -26,10 +26,10 @@
 #endif
 
 /// Framework include files
-#include <DD4hep/Grammar.h>
-#include <DD4hep/Printout.h>
-#include <Parsers/Parsers.h>
-#include <Evaluator/Evaluator.h>
+#include "DD4hep/Grammar.h"
+#include "DD4hep/Printout.h"
+#include "Parsers/Parsers.h"
+#include "Evaluator/Evaluator.h"
 
 /// C/C++ include files
 #include <string>
