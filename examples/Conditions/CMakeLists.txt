@@ -150,7 +150,7 @@ dd4hep_add_test_reg( Conditions_Telescope_unresolved
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_populate
       -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml -iovs 1 -extend 100
-  REGEX_PASS "Condition: /world/Telescope/module_6#Unresolved_dependency dependent on missing condition item:"
+  REGEX_PASS "Condition: /world/Telescope/module_6#Unresolved_dependency dependent on missing condition"
   )
 #
 #---Testing: Simple stress: Load CLICSiD geometry and have multiple runs on IOVs
