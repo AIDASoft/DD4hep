@@ -21,7 +21,7 @@
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
-
+  
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim   {
 
