@@ -110,10 +110,11 @@ def run():
   act.vector_PxPyPzEVector = [(1 * GeV,2 * GeV,3 * GeV,4 * GeV),
                               (11 * GeV,22 * GeV,33 * GeV,44 * GeV),
                               (111 * GeV,222 * GeV,333 * GeV,444 * GeV)]
-  print(dir(act.prop_int))
-  print(dir(act.get()))
-  print(dir(act.get().properties))
+
+  act.enableUI()
+
   #  Check read access:
+  """
   print('--> {value}'.format(value='-------------------------------------------------------'))
   print('--> {value}'.format(value=str(act.prop_str)))              #     'Hello World!'
   print('--> {value}'.format(value=str(act.prop_bool)))             #     True
@@ -124,8 +125,7 @@ def run():
   print('--> {value}'.format(value=str(act.prop_XYZVector)))        #     (1 * m,2 * m,3 * m)
   print('--> {value}'.format(value=str(act.prop_PxPyPzEVector)))    #     (1 * GeV,2 * GeV,3 * GeV,4 * GeV)
   print('--> {value}'.format(value='-------------------------------------------------------'))
-
-  act.enableUI()
+  """
 
   phys = geant4.setupPhysics('FTFP_BERT')
   phys.dump()
