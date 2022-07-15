@@ -285,6 +285,7 @@ def run():
 
   #  Check read access:
 <<<<<<< HEAD
+<<<<<<< HEAD
   print('-------------------------------------------------------')
   print(act.prop_str)              #     'Hello World!'
   print(act.prop_bool)             #     True
@@ -319,6 +320,29 @@ def run():
   print('--> %s'%(str(act.prop_PxPyPzEVector),))    #     (1 * GeV,2 * GeV,3 * GeV,4 * GeV)
   print('--> %s'%(str('-------------------------------------------------------'),))
 >>>>>>> 131094de (Fix python style according to Flake8)
+||||||| parent of d656762e (Fix python style according to Flake8)
+  print('--> %s'%(str('-------------------------------------------------------'),))
+  print('--> %s'%(str(act.prop_str),))              #     'Hello World!'
+  print('--> %s'%(str(act.prop_bool),))             #     True
+  print('--> %s'%(str(act.prop_int),))              #     1234
+  print('--> %s'%(str(act.prop_float),))            #     1234567.8
+  print('--> %s'%(str(act.prop_double),))           #     1234567.8
+  print('--> %s'%(str(act.prop_XYZPoint),))         #     (1,2,3)
+  print('--> %s'%(str(act.prop_XYZVector),))        #     (1 * m,2 * m,3 * m)
+  print('--> %s'%(str(act.prop_PxPyPzEVector),))    #     (1 * GeV,2 * GeV,3 * GeV,4 * GeV)
+  print('--> %s'%(str('-------------------------------------------------------'),))
+=======
+  print('--> {value}'.format(value='-------------------------------------------------------'))
+  print('--> {value}'.format(value=str(act.prop_str)))              #     'Hello World!'
+  print('--> {value}'.format(value=str(act.prop_bool)))             #     True
+  print('--> {value}'.format(value=str(act.prop_int)))              #     1234
+  print('--> {value}'.format(value=str(act.prop_float)))            #     1234567.8
+  print('--> {value}'.format(value=str(act.prop_double)))           #     1234567.8
+  print('--> {value}'.format(value=str(act.prop_XYZPoint)))         #     (1,2,3)
+  print('--> {value}'.format(value=str(act.prop_XYZVector)))        #     (1 * m,2 * m,3 * m)
+  print('--> {value}'.format(value=str(act.prop_PxPyPzEVector)))    #     (1 * GeV,2 * GeV,3 * GeV,4 * GeV)
+  print('--> {value}'.format(value='-------------------------------------------------------'))
+>>>>>>> d656762e (Fix python style according to Flake8)
 
   act.enableUI()
 
