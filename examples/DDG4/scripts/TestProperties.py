@@ -112,16 +112,16 @@ def run():
                               (111 * GeV,222 * GeV,333 * GeV,444 * GeV)]
 
   #  Check read access:
-  print('-------------------------------------------------------')
-  print(act.prop_str)              #     'Hello World!'
-  print(act.prop_bool)             #     True
-  print(act.prop_int)              #     1234
-  print(act.prop_float)            #     1234567.8
-  print(act.prop_double)           #     1234567.8
-  print(act.prop_XYZPoint)         #     (1,2,3)
-  print(act.prop_XYZVector)        #     (1 * m,2 * m,3 * m)
-  print(act.prop_PxPyPzEVector)    #     (1 * GeV,2 * GeV,3 * GeV,4 * GeV)
-  print('-------------------------------------------------------')
+  print('--> %s'%(str('-------------------------------------------------------'),))
+  print('--> %s'%(str(act.prop_str),))              #     'Hello World!'
+  print('--> %s'%(str(act.prop_bool),))             #     True
+  print('--> %s'%(str(act.prop_int),))              #     1234
+  print('--> %s'%(str(act.prop_float),))            #     1234567.8
+  print('--> %s'%(str(act.prop_double),))           #     1234567.8
+  print('--> %s'%(str(act.prop_XYZPoint),))         #     (1,2,3)
+  print('--> %s'%(str(act.prop_XYZVector),))        #     (1 * m,2 * m,3 * m)
+  print('--> %s'%(str(act.prop_PxPyPzEVector),))    #     (1 * GeV,2 * GeV,3 * GeV,4 * GeV)
+  print('--> %s'%(str('-------------------------------------------------------'),))
 
   act.enableUI()
 
