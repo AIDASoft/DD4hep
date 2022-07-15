@@ -26,10 +26,10 @@
 #endif
 
 /// Framework include files
-#include "DD4hep/Grammar.h"
-#include "DD4hep/Printout.h"
-#include "Parsers/Parsers.h"
-#include "Evaluator/Evaluator.h"
+#include <DD4hep/Grammar.h>
+#include <DD4hep/Printout.h>
+#include <Parsers/Parsers.h>
+#include <Evaluator/Evaluator.h>
 
 /// C/C++ include files
 #include <string>
@@ -170,8 +170,22 @@ namespace dd4hep {
       else   {
 	TYPE temp;
 	std::map<std::string,std::string> map_buff;
-	std::string temp_str = grammar_pre_parse_map(str);
-	sc = ::dd4hep::Parsers::parse(map_buff,temp_str);
+	// If we get called from python, the values and keys are already in string form
+	sc = 0;
+	try  {
+	  sc = ::dd4hep::Parsers::parse(map_buff,str);
+	}
+	catch(...)    {
+	}
+	if ( !sc )  {
+	  // Otherwise stringyfy the values
+	  std::string temp_str = grammar_pre_parse_map(str);
+	  try  {
+	    sc = ::dd4hep::Parsers::parse(map_buff,temp_str);
+	  }
+	  catch(...)    {
+	  }
+	}
 	if ( sc )   {
 	  for(const auto& _o : map_buff )    {
 	    typename TYPE::key_type _k;
