@@ -517,13 +517,22 @@ namespace dd4hep {
       const T& get(const std::string& key) const {
         auto it = variantParameters.find(key);
         if(it == variantParameters.end()) {
-          throw std::runtime_error{"Key "+key+"not found"};
+          throw std::runtime_error{"Key "+key+" not found"};
         }
         return boost::get<T>(it->second);
       }
 
       template <typename T>
-      T value_or(const std::string& key, T alternative) {
+      T& get(const std::string& key) {
+        auto it = variantParameters.find(key);
+        if(it == variantParameters.end()) {
+          throw std::runtime_error{"Key "+key+" not found"};
+        }
+        return boost::get<T>(it->second);
+      }
+
+      template <typename T>
+      T value_or(const std::string& key, T alternative) const {
         auto it = variantParameters.find(key);
         if(it == variantParameters.end()) {
           return alternative;
