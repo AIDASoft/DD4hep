@@ -12,13 +12,15 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/GrammarParsed.h"
-
-#include "Math/Point3D.h"
-#include "Math/Vector4D.h"
-#include "Math/Vector3D.h"
+#include <DD4hep/GrammarParsed.h>
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
+
+/// ROOT include files
+#include <Math/Point3D.h>
+#include <Math/Vector4D.h>
+#include <Math/Vector3D.h>
+
 namespace ROOT {
   namespace Math {
     /// Allow point insertion of a point in maps

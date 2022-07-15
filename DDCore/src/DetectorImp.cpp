@@ -79,7 +79,8 @@ namespace {
     recursive_mutex  lock;
     map<string, Detector*> detectors;
     Instances() = default;
-    ~Instances() = default;
+    ~Instances()  {
+    }
     Detector* get(const string& name)   {
       auto i = detectors.find(name);
       return i == detectors.end() ? 0 : (*i).second;

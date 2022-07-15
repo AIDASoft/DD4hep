@@ -139,9 +139,9 @@ namespace dd4hep {  namespace Parsers {
       typedef bool ResultT;
       BoolGrammar() : BoolGrammar::base_type( boolean_literal ) {
         boolean_literal =
-          (qi::lit("true") | "True" | "TRUE" | "1")[qi::_val=true]
+          (qi::lit("true") | qi::lit("True") | qi::lit("TRUE") | "1")[qi::_val=true]
           |
-          (qi::lit("false") | "False" | "FALSE" | "0")[qi::_val=false];
+	  (qi::lit("false") | qi::lit("False") | qi::lit("FALSE") | "0")[qi::_val=false];
       }
       qi::rule<Iterator, bool(), Skipper> boolean_literal;
     };
