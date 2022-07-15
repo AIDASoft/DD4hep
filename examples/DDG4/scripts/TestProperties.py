@@ -282,10 +282,11 @@ def run():
   act.vector_PxPyPzEVector = [(1 * GeV,2 * GeV,3 * GeV,4 * GeV),
                               (11 * GeV,22 * GeV,33 * GeV,44 * GeV),
                               (111 * GeV,222 * GeV,333 * GeV,444 * GeV)]
-  print(dir(act.prop_int))
-  print(dir(act.get()))
-  print(dir(act.get().properties))
+
+  act.enableUI()
+
   #  Check read access:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   print('-------------------------------------------------------')
@@ -334,6 +335,10 @@ def run():
   print('--> %s'%(str(act.prop_PxPyPzEVector),))    #     (1 * GeV,2 * GeV,3 * GeV,4 * GeV)
   print('--> %s'%(str('-------------------------------------------------------'),))
 =======
+||||||| parent of 297d253e (Fix python style according to Flake8)
+=======
+  """
+>>>>>>> 297d253e (Fix python style according to Flake8)
   print('--> {value}'.format(value='-------------------------------------------------------'))
   print('--> {value}'.format(value=str(act.prop_str)))              #     'Hello World!'
   print('--> {value}'.format(value=str(act.prop_bool)))             #     True
@@ -344,9 +349,16 @@ def run():
   print('--> {value}'.format(value=str(act.prop_XYZVector)))        #     (1 * m,2 * m,3 * m)
   print('--> {value}'.format(value=str(act.prop_PxPyPzEVector)))    #     (1 * GeV,2 * GeV,3 * GeV,4 * GeV)
   print('--> {value}'.format(value='-------------------------------------------------------'))
+<<<<<<< HEAD
 >>>>>>> d656762e (Fix python style according to Flake8)
 
   act.enableUI()
+||||||| parent of 297d253e (Fix python style according to Flake8)
+
+  act.enableUI()
+=======
+  """
+>>>>>>> 297d253e (Fix python style according to Flake8)
 
   #  Check read access:
   logger.info('+{value}'.format(value='-------------------------------------------------------'))
