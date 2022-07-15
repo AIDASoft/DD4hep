@@ -26,9 +26,20 @@ from g4units import GeV, MeV, m
 #
 =======
 from g4units import GeV, m
+<<<<<<< HEAD
 #
 #
 >>>>>>> c61ce8aa (Fix python style according to Flake8)
+||||||| parent of 17dfd548 (Fix python style according to Flake8)
+#
+#
+=======
+
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+>>>>>>> 17dfd548 (Fix python style according to Flake8)
 """
 
    dd4hep example setup using the python configuration
@@ -257,7 +268,7 @@ def run():
                            (11 * GeV, 22 * GeV, 33 * GeV, 44 * GeV),
                            (111 * GeV, 222 * GeV, 333 * GeV, 444 * GeV)]
 
-  act.list_str = ['aa', 'bb', 'cc' ,'dd']
+  act.list_str = ['aa', 'bb', 'cc', 'dd']
   act.list_bool = [0, 0, 0, 1, 1, 1]
   act.list_int = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.list_long = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
@@ -266,11 +277,11 @@ def run():
   act.list_double = [0 * m, 1 * m, 2 * m, 3 * m, 4 * m, 5 * m, 6 * m, 7 * m, 8 * m, 8 * m, 8 * m]
   act.list_XYZPoint = [(1, 2, 3), (11, 22, 33), (111, 222, 333), (1111, 2222, 3333)]
   act.list_XYZVector = [(1, 2, 3), (11, 22, 33), (111, 222, 333), (1111, 2222, 3333)]
-  act.list_PxPyPzEVector = [(1 * GeV, 2 * GeV, 3 * GeV,4 * GeV),
+  act.list_PxPyPzEVector = [(1 * GeV, 2 * GeV, 3 * GeV, 4 * GeV),
                             (11 * GeV, 22 * GeV, 33 * GeV, 44 * GeV),
                             (111 * GeV, 222 * GeV, 333 * GeV, 444 * GeV)]
 
-  act.vector_str = ['aa', 'bb', 'cc' ,'dd']
+  act.vector_str = ['aa', 'bb', 'cc', 'dd']
   act.vector_bool = [0, 0, 0, 1, 1, 1]
   act.vector_int = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.vector_long = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
@@ -286,6 +297,7 @@ def run():
   act.enableUI()
 
   #  Check read access:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -371,6 +383,31 @@ def run():
   logger.info('|  {value}'.format(value=str(act.prop_XYZVector)))
   logger.info('|  {value}'.format(value=str(act.prop_PxPyPzEVector)))
   logger.info('+{value}'.format(value='-------------------------------------------------------'))
+||||||| parent of 17dfd548 (Fix python style according to Flake8)
+  """
+  print('--> {value}'.format(value='-------------------------------------------------------'))
+  print('--> {value}'.format(value=str(act.prop_str)))              #     'Hello World!'
+  print('--> {value}'.format(value=str(act.prop_bool)))             #     True
+  print('--> {value}'.format(value=str(act.prop_int)))              #     1234
+  print('--> {value}'.format(value=str(act.prop_float)))            #     1234567.8
+  print('--> {value}'.format(value=str(act.prop_double)))           #     1234567.8
+  print('--> {value}'.format(value=str(act.prop_XYZPoint)))         #     (1,2,3)
+  print('--> {value}'.format(value=str(act.prop_XYZVector)))        #     (1 * m,2 * m,3 * m)
+  print('--> {value}'.format(value=str(act.prop_PxPyPzEVector)))    #     (1 * GeV,2 * GeV,3 * GeV,4 * GeV)
+  print('--> {value}'.format(value='-------------------------------------------------------'))
+  """
+=======
+  logger.info('--> {value}'.format(value='-------------------------------------------------------'))
+  logger.info('--> {value}'.format(value=str(act.prop_str)))              #     'Hello World!'
+  logger.info('--> {value}'.format(value=str(act.prop_bool)))             #     True
+  logger.info('--> {value}'.format(value=str(act.prop_int)))              #     1234
+  logger.info('--> {value}'.format(value=str(act.prop_float)))            #     1234567.8
+  logger.info('--> {value}'.format(value=str(act.prop_double)))           #     1234567.8
+  logger.info('--> {value}'.format(value=str(act.prop_XYZPoint)))         #     (1,2,3)
+  logger.info('--> {value}'.format(value=str(act.prop_XYZVector)))        #     (1 * m,2 * m,3 * m)
+  logger.info('--> {value}'.format(value=str(act.prop_PxPyPzEVector)))    #     (1 * GeV,2 * GeV,3 * GeV,4 * GeV)
+  logger.info('--> {value}'.format(value='-------------------------------------------------------'))
+>>>>>>> 17dfd548 (Fix python style according to Flake8)
 
   phys = geant4.setupPhysics('FTFP_BERT')
   phys.dump()
