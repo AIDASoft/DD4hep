@@ -301,6 +301,7 @@ def run():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   print('-------------------------------------------------------')
   print(act.prop_str)              #     'Hello World!'
   print(act.prop_bool)             #     True
@@ -408,6 +409,29 @@ def run():
   logger.info('--> {value}'.format(value=str(act.prop_PxPyPzEVector)))    #     (1 * GeV,2 * GeV,3 * GeV,4 * GeV)
   logger.info('--> {value}'.format(value='-------------------------------------------------------'))
 >>>>>>> 17dfd548 (Fix python style according to Flake8)
+||||||| parent of 4671e80c (Fix python style according to Flake8)
+  logger.info('--> {value}'.format(value='-------------------------------------------------------'))
+  logger.info('--> {value}'.format(value=str(act.prop_str)))              #     'Hello World!'
+  logger.info('--> {value}'.format(value=str(act.prop_bool)))             #     True
+  logger.info('--> {value}'.format(value=str(act.prop_int)))              #     1234
+  logger.info('--> {value}'.format(value=str(act.prop_float)))            #     1234567.8
+  logger.info('--> {value}'.format(value=str(act.prop_double)))           #     1234567.8
+  logger.info('--> {value}'.format(value=str(act.prop_XYZPoint)))         #     (1,2,3)
+  logger.info('--> {value}'.format(value=str(act.prop_XYZVector)))        #     (1 * m,2 * m,3 * m)
+  logger.info('--> {value}'.format(value=str(act.prop_PxPyPzEVector)))    #     (1 * GeV,2 * GeV,3 * GeV,4 * GeV)
+  logger.info('--> {value}'.format(value='-------------------------------------------------------'))
+=======
+  logger.info('+{value}'.format(value='-------------------------------------------------------'))
+  logger.info('|  {value}'.format(value=str(act.prop_str)))
+  logger.info('|  {value}'.format(value=str(act.prop_bool)))
+  logger.info('|  {value}'.format(value=str(act.prop_int)))
+  logger.info('|  {value}'.format(value=str(act.prop_float)))
+  logger.info('|  {value}'.format(value=str(act.prop_double)))
+  logger.info('|  {value}'.format(value=str(act.prop_XYZPoint)))
+  logger.info('|  {value}'.format(value=str(act.prop_XYZVector)))
+  logger.info('|  {value}'.format(value=str(act.prop_PxPyPzEVector)))
+  logger.info('+{value}'.format(value='-------------------------------------------------------'))
+>>>>>>> 4671e80c (Fix python style according to Flake8)
 
   phys = geant4.setupPhysics('FTFP_BERT')
   phys.dump()
