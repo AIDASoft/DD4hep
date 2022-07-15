@@ -282,7 +282,9 @@ def run():
   act.vector_PxPyPzEVector = [(1 * GeV,2 * GeV,3 * GeV,4 * GeV),
                               (11 * GeV,22 * GeV,33 * GeV,44 * GeV),
                               (111 * GeV,222 * GeV,333 * GeV,444 * GeV)]
-
+  print(dir(act.prop_int))
+  print(dir(act.get()))
+  print(dir(act.get().properties))
   #  Check read access:
 <<<<<<< HEAD
 <<<<<<< HEAD
