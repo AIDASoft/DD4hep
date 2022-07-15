@@ -244,44 +244,44 @@ def run():
   act.map_int_float = {100 * 10: 11.11, 200 * 10: 22.22, 300 * 10: 33.33}
   act.map_int_double = {100 * 10: 11.111, 200 * 10: 22.222, 300 * 10: 33.333}
 
-  act.set_str = ['aa', 'bb', 'cc' ,'dd']
-  act.set_bool = [0,0,0,1,1,1]
+  act.set_str = ['aa', 'bb', 'cc', 'dd']
+  act.set_bool = [0, 0, 0, 1, 1, 1]
   act.set_int = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.set_long = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   #  act.set_ulong = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.set_float = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.set_double = [0 * m, 1 * m, 2 * m, 3 * m, 4 * m, 5 * m, 6 * m, 7 * m, 8 * m, 8 * m, 8 * m]
-  act.set_XYZPoint = [(1,2,3),(11,22,33),(111,222,333),(1111,2222,3333)]
-  act.set_XYZVector = [(1,2,3),(11,22,33),(111,222,333),(1111,2222,3333)]
-  act.set_PxPyPzEVector = [(1 * GeV,2 * GeV,3 * GeV,4 * GeV),
-                           (11 * GeV,22 * GeV,33 * GeV,44 * GeV),
-                           (111 * GeV,222 * GeV,333 * GeV,444 * GeV)]
+  act.set_XYZPoint = [(1, 2, 3), (11, 22, 33), (111, 222, 333), (1111, 2222, 3333)]
+  act.set_XYZVector = [(1, 2, 3), (11, 22, 33), (111, 222, 333), (1111, 2222, 3333)]
+  act.set_PxPyPzEVector = [(1 * GeV, 2 * GeV, 3 * GeV, 4 * GeV),
+                           (11 * GeV, 22 * GeV, 33 * GeV, 44 * GeV),
+                           (111 * GeV, 222 * GeV, 333 * GeV, 444 * GeV)]
 
   act.list_str = ['aa', 'bb', 'cc' ,'dd']
-  act.list_bool = [0,0,0,1,1,1]
+  act.list_bool = [0, 0, 0, 1, 1, 1]
   act.list_int = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.list_long = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.list_ulong = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.list_float = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.list_double = [0 * m, 1 * m, 2 * m, 3 * m, 4 * m, 5 * m, 6 * m, 7 * m, 8 * m, 8 * m, 8 * m]
-  act.list_XYZPoint = [(1,2,3),(11,22,33),(111,222,333),(1111,2222,3333)]
-  act.list_XYZVector = [(1,2,3),(11,22,33),(111,222,333),(1111,2222,3333)]
+  act.list_XYZPoint = [(1, 2, 3), (11, 22, 33), (111, 222, 333), (1111, 2222, 3333)]
+  act.list_XYZVector = [(1, 2, 3), (11, 22, 33), (111, 222, 333), (1111, 2222, 3333)]
   act.list_PxPyPzEVector = [(1 * GeV, 2 * GeV, 3 * GeV,4 * GeV),
-                            (11 * GeV,22 * GeV,33 * GeV,44 * GeV),
-                            (111 * GeV,222 * GeV,333 * GeV,444 * GeV)]
+                            (11 * GeV, 22 * GeV, 33 * GeV, 44 * GeV),
+                            (111 * GeV, 222 * GeV, 333 * GeV, 444 * GeV)]
 
   act.vector_str = ['aa', 'bb', 'cc' ,'dd']
-  act.vector_bool = [0,0,0,1,1,1]
+  act.vector_bool = [0, 0, 0, 1, 1, 1]
   act.vector_int = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.vector_long = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.vector_ulong = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.vector_float = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
   act.vector_double = [0 * m, 1 * m, 2 * m, 3 * m, 4 * m, 5 * m, 6 * m, 7 * m, 8 * m, 8 * m, 8 * m]
-  act.vector_XYZPoint = [(1,2,3),(11,22,33),(111,222,333),(1111,2222,3333)]
-  act.vector_XYZVector = [(1,2,3),(11,22,33),(111,222,333),(1111,2222,3333)]
-  act.vector_PxPyPzEVector = [(1 * GeV,2 * GeV,3 * GeV,4 * GeV),
-                              (11 * GeV,22 * GeV,33 * GeV,44 * GeV),
-                              (111 * GeV,222 * GeV,333 * GeV,444 * GeV)]
+  act.vector_XYZPoint = [(1, 2, 3), (11, 22, 33), (111, 222, 333), (1111, 2222, 3333)]
+  act.vector_XYZVector = [(1, 2, 3), (11, 22, 33), (111, 222, 333), (1111, 2222, 3333)]
+  act.vector_PxPyPzEVector = [(1 * GeV, 2 * GeV, 3 * GeV, 4 * GeV),
+                              (11 * GeV, 22 * GeV, 33 * GeV, 44 * GeV),
+                              (111 * GeV, 222 * GeV, 333 * GeV, 444 * GeV)]
 
   act.enableUI()
 
