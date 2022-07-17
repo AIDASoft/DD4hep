@@ -131,10 +131,10 @@ namespace dd4hep {
       virtual void EndOfEvent(G4HCofThisEvent* hce)  override
       {  m_sequence->end(hce);                                          }
       /// Method for generating hit(s) using the information of G4Step object.
-      virtual G4bool ProcessHits(G4Step* step,G4TouchableHistory* hist) override
+      virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* hist) override
       {  return m_sequence->process(step,hist);                         }
-      // Separate GFLASH interface
-      virtual G4bool ProcessHits(G4GFlashSpot* spot ,G4TouchableHistory* hist) override
+      /// GFLASH interface
+      virtual G4bool ProcessHits(G4GFlashSpot* spot, G4TouchableHistory* hist) override
       {  return m_sequence->processGFlash(spot,hist);                   }
       /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
       virtual void clear()  override
