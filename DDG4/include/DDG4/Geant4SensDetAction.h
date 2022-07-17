@@ -533,6 +533,9 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4SensitiveAction();
 
+      /// Declare optional properties from embedded structure
+      void declareOptionalProperties();
+
       /// Define collections created by this sensitivie action object
       virtual void defineCollections();
 

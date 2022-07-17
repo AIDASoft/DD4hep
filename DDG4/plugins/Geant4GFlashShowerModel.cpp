@@ -10,15 +10,13 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DDG4_GEANT4GFLASHACTION_H
 #define DDG4_GEANT4GFLASHACTION_H
 
 // Framework include files
-#include <DDG4/Geant4DetectorConstruction.h>
+#include <DDG4/Geant4FastSimShowerModel.h>
 
 // Geant4 include files
-#include <G4FastSimulationPhysics.hh>
 class GVFlashShowerParameterisation;
 class G4ParticleDefinition;
 class GFlashParticleBounds;
@@ -50,13 +48,8 @@ namespace dd4hep  {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4GFlashShowerModel : public Geant4DetectorConstruction    {
+    class Geant4GFlashShowerModel : public Geant4FastSimShowerModel   {
     protected:
-      // typedef std::vector<std::pair<std::string, double> > ParticleConfig;
-      typedef std::map<std::string, std::string> ParticleConfig;
-
-      /// Property: Region name to which this parametrization should be applied
-      std::string m_regionName    { "Region-name-not-specified"};
       /// Property: Name of the Geant4Action implementing the parametrization
       std::string m_paramName;
       /// Property: Material name for GFlashHomoShowerParameterisation
@@ -68,21 +61,11 @@ namespace dd4hep  {
       /// Property: Parameter 2 name for GFlashSamplingShowerParameterisation
       double      m_parameter_2;
 
-      /// Property: Parametrisation control: Enable GFlash (is disabled by default in Geant4)
-      bool        m_enable                { false };
       /// Property: Defines if particle containment is checked
-      int         m_particleCountainment  { 1 };
+      int         m_particleContainment { 1 };
       /// Property: Defines step lenght
-      double      m_stepX0                { 0.1 };
-      /// Property: Set minimum kinetic energy to trigger parametrisation
-      ParticleConfig m_eMin  { };
-      /// Property: Set maximum kinetic energy to trigger parametrisation
-      ParticleConfig m_eMax  { };
-      /// Property: Set maximum kinetic energy for electrons to be killed
-      ParticleConfig m_eKill { };
+      double      m_stepX0              { 0.1 };
 
-      /// Reference to the shower model
-      GFlashShowerModel*             m_showerModel     { nullptr };
       /// Reference to the parametrization
       GVFlashShowerParameterisation* m_parametrization { nullptr };
       /// Reference to the particle bounds object
@@ -94,12 +77,6 @@ namespace dd4hep  {
       /// Define standard assignments and constructors
       DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4GFlashShowerModel);
 
-      /// Get parametrization material
-      G4Material* getMaterial(const std::string& name)   const;
-
-      /// Access particle definition from string
-      G4ParticleDefinition* getParticleDefinition(const std::string& name)   const;
-
     public:
       /// Standard constructor
       Geant4GFlashShowerModel(Geant4Context* context, const std::string& nam);
@@ -110,10 +87,6 @@ namespace dd4hep  {
       /// Adopt shower parametrization object
       void adoptShowerParametrization(Geant4Action* param);
 
-      /// Geometry construction callback. Called at "Construct()"
-      virtual void constructGeo(Geant4DetectorConstructionContext* ctxt);
-      /// Electromagnetic field construction callback. Called at "ConstructSDandField()"
-      virtual void constructField(Geant4DetectorConstructionContext* ctxt);
       /// Sensitive detector construction callback. Called at "ConstructSDandField()"
       virtual void constructSensitives(Geant4DetectorConstructionContext* ctxt);
     };
@@ -134,24 +107,20 @@ namespace dd4hep  {
 //
 //==========================================================================
 
-// #include <DDG4/Geant4GFlashShowerModel.h>
 // Framework include files
-#include <DD4hep/Detector.h>
-#include <DDG4/Geant4Action.h>
+// #include <DDG4/Geant4GFlashShowerModel.h>
 #include <DDG4/Geant4Kernel.h>
 #include <DDG4/Geant4Mapping.h>
-#include <DD4hep/DD4hepUnits.h>
 
 // Geant4 include files
 #include <GVFlashShowerParameterisation.hh>
 #include <GFlashHomoShowerParameterisation.hh>
 #include <GFlashSamplingShowerParameterisation.hh>
-#include <G4FastSimulationManager.hh>
+#include <GFlashParticleBounds.hh>
 #include <GFlashShowerModel.hh>
 #include <GFlashHitMaker.hh>
-#include <GFlashParticleBounds.hh>
-#include <G4ParticleTable.hh>
 
+// C/C++ include files
 #include <sstream>
 
 using namespace dd4hep;
@@ -159,21 +128,17 @@ using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4GFlashShowerModel::Geant4GFlashShowerModel(Geant4Context* ctxt, const std::string& nam)
-  : Geant4DetectorConstruction(ctxt, nam)
+  : Geant4FastSimShowerModel(ctxt, nam)
 {
-  declareProperty("RegionName",               m_regionName);
   declareProperty("Parametrization",          m_paramName);
   declareProperty("Material",                 m_material);
   declareProperty("Material_1",               m_material);
   declareProperty("Material_2",               m_material_2);
   declareProperty("Parameter_1",              m_parameter_1);
   declareProperty("Parameter_2",              m_parameter_2);
-  declareProperty("Enable",                   m_enable);
-  declareProperty("CheckParticleContainment", m_particleCountainment);
-  declareProperty("StepLength",               m_stepX0);
-  declareProperty("Emin",                     m_eMin);
-  declareProperty("Emax",                     m_eMax);
-  declareProperty("Ekill",                    m_eKill);
+  declareProperty("CheckParticleContainment", m_particleContainment);
+  this->m_applicablePartNames.emplace_back("e+");
+  this->m_applicablePartNames.emplace_back("e-");
 }
 
 /// Default destructor
@@ -185,32 +150,8 @@ Geant4GFlashShowerModel::~Geant4GFlashShowerModel()    {
   }
   this->m_parametrization = nullptr;
   detail::deletePtr(m_particleBounds);
-  detail::deletePtr(m_showerModel);
   //detail::deletePtr(m_hitMaker);
   m_hitMaker = nullptr;
-}
-
-/// Access particle definition from string
-G4ParticleDefinition* Geant4GFlashShowerModel::getParticleDefinition(const std::string& particle)  const  {
-  G4ParticleTable* pt = G4ParticleTable::GetParticleTable();
-  G4ParticleDefinition* def = pt->FindParticle(particle);
-  if ( def ) return def;
-  except("Failed to access Geant4 particle definition: %s", particle.c_str());
-  return nullptr;
-}
-
-G4Material* Geant4GFlashShowerModel::getMaterial(const std::string& mat_name)   const   {
-  auto& kernel = this->context()->kernel();
-  Geant4GeometryInfo& mapping = Geant4Mapping::instance().data();
-  Material material = kernel.detectorDescription().material(mat_name);
-  if ( material.isValid() )   {
-    auto mat_iter = mapping.g4Materials.find(material);
-    if ( mat_iter != mapping.g4Materials.end() )   {
-      return (*mat_iter).second;
-    }
-  }
-  except("Failed to access shower parametrization material: %s", mat_name.c_str());
-  return nullptr;
 }
 
 /// Adopt shower parametrization object
@@ -231,14 +172,6 @@ void Geant4GFlashShowerModel::adoptShowerParametrization(Geant4Action* action)  
   }
 }
 
-/// Geometry construction callback. Called at "Construct()"
-void Geant4GFlashShowerModel::constructGeo(Geant4DetectorConstructionContext* /* ctxt */)    {
-}
-
-/// Electromagnetic field construction callback. Called at "ConstructSDandField()"
-void Geant4GFlashShowerModel::constructField(Geant4DetectorConstructionContext* /* ctxt */)   {
-}
-
 /// Sensitive detector construction callback. Called at "ConstructSDandField()"
 void Geant4GFlashShowerModel::constructSensitives(Geant4DetectorConstructionContext* /* ctxt */)    {
   auto& kernel = this->context()->kernel();
@@ -249,11 +182,13 @@ void Geant4GFlashShowerModel::constructSensitives(Geant4DetectorConstructionCont
   }
   auto region_iter = mapping.g4Regions.find(rg);
   if ( region_iter == mapping.g4Regions.end() )    {
-    except("Failed to locate G4Region: %s from the Geant4 mapping.");
+    except("Failed to locate G4Region: %s from the Geant4 mapping.", this->m_regionName.c_str());
   }
   G4Region* region = (*region_iter).second;
-  this->m_showerModel = new GFlashShowerModel(this->name(), region);
+  
   std::stringstream logger;
+  auto* shower_model = new GFlashShowerModel(this->name(), region);
+  this->m_model = shower_model;
   logger << "Geant4 shower model initialized with parametrization: ";
   if ( !this->m_parametrization )   {
     if ( this->m_paramName.empty() )    {
@@ -269,7 +204,7 @@ void Geant4GFlashShowerModel::constructSensitives(Geant4DetectorConstructionCont
       G4Material* mat2 = this->getMaterial(m_material_2);
       this->m_parametrization = 
 	new GFlashSamplingShowerParameterisation(mat1, mat2, m_parameter_1, m_parameter_2, nullptr);
-      logger << "GFlashSamplingShowerParameterisation Material: " << mat1->GetName()
+      logger << "GFlashSamplingShowerParameterisation Materials: " << mat1->GetName()
 	     << "  " << mat2->GetName() << " Params: " << m_parameter_1 << " " << m_parameter_2;
     }
     else   {
@@ -285,15 +220,15 @@ void Geant4GFlashShowerModel::constructSensitives(Geant4DetectorConstructionCont
     except("No proper parametrization supplied. Failed to construct shower model.");
   }
   this->m_hitMaker = new GFlashHitMaker();
+  shower_model->SetHitMaker(*this->m_hitMaker);
   this->m_particleBounds = new GFlashParticleBounds();
-  this->m_showerModel->SetParameterisation(*this->m_parametrization);
-  this->m_showerModel->SetParticleBounds(*this->m_particleBounds);
-  this->m_showerModel->SetHitMaker(*this->m_hitMaker);
+  shower_model->SetParticleBounds(*this->m_particleBounds);
+  shower_model->SetParameterisation(*this->m_parametrization);
 
   /// Now configure the shower model:
-  this->m_showerModel->SetFlagParamType(this->m_enable ? 1 : 0);
-  this->m_showerModel->SetFlagParticleContainment(this->m_particleCountainment);
-  this->m_showerModel->SetStepInX0(this->m_stepX0);
+  shower_model->SetStepInX0(this->m_stepX0);
+  shower_model->SetFlagParamType(this->m_enable ? 1 : 0);
+  shower_model->SetFlagParticleContainment(this->m_particleContainment);
 
   for(const auto& prop : this->m_eMin)    {
     G4ParticleDefinition* def = this->getParticleDefinition(prop.first);
@@ -313,6 +248,8 @@ void Geant4GFlashShowerModel::constructSensitives(Geant4DetectorConstructionCont
     this->m_particleBounds->SetEneToKill(*def, val);
     this->info("SetEneToKill           [%-16s] = %8.4f GeV", prop.first.c_str(), val);
   }
+
+  this->addShowerModel(region);
   this->info(logger.str().c_str());
 }
 
