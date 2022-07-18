@@ -99,13 +99,13 @@ Geant4FastSimShowerModel::Geant4FastSimShowerModel(Geant4Context* ctxt, const st
   this->declareProperty("Emax",                this->m_eMax);
   this->declareProperty("Ekill",               this->m_eKill);
   this->declareProperty("Etrigger",            this->m_eTriggerNames);
-  this->m_wrapper.reset(new Geant4ShowerModelWrapper(this));
+  this->m_wrapper= new Geant4ShowerModelWrapper(this);
 }
 
 /// Default destructor
 Geant4FastSimShowerModel::~Geant4FastSimShowerModel()    {
   detail::deletePtr(m_model);
-  m_wrapper.reset();
+  detail::deletePtr(m_wrapper);
 }
 
 /// Access particle definition from string
@@ -163,7 +163,7 @@ void Geant4FastSimShowerModel::addShowerModel(G4Region* region)     {
   if ( m_model )
     fastsimManager->AddFastSimulationModel(m_model);
   else if ( m_wrapper )
-    fastsimManager->AddFastSimulationModel(m_wrapper.get());
+    fastsimManager->AddFastSimulationModel(m_wrapper);
   else
     except("Geant4FastSimShowerModel::addShowerModel: Invalid shower model reference!");
 }

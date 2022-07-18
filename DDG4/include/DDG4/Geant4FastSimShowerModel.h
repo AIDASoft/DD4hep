@@ -52,7 +52,7 @@ namespace dd4hep  {
       // typedef std::vector<std::pair<std::string, double> > ParticleConfig;
       typedef std::map<const G4ParticleDefinition*, double> ParticleCut;
       typedef std::map<std::string, std::string> ParticleConfig;
-      typedef std::unique_ptr<Geant4ShowerModelWrapper> Wrapper;
+      typedef Geant4ShowerModelWrapper* Wrapper;
   
       /// Property: Region name to which this parametrization should be applied
       std::string    m_regionName     { "Region-name-not-specified"};
@@ -78,7 +78,7 @@ namespace dd4hep  {
       /// Reference to the G4 fast simulation model
       G4VFastSimulationModel* m_model { nullptr };
       /// Reference to the shower model
-      Wrapper        m_wrapper        { };
+      Wrapper        m_wrapper        { nullptr };
 
     protected:
       /// Define standard assignments and constructors
