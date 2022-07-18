@@ -35,17 +35,7 @@ from g4units import GeV, MeV, m
 
 
 def run():
-  nevts = -1
-  macro = None
-  batch = False
-  for i in range(len(sys.argv)):
-    if sys.argv[i] == '-batch':
-      batch = True
-    elif sys.argv[i] == '-events':
-      nevts = int(sys.argv[i+1])
-    elif sys.argv[i] == '-macro':
-      macro = sys.argv[i+1]
-
+  args = DDG4.CommandLine()
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/examples/ClientTests/compact/SiliconBlock.xml"))
@@ -54,12 +44,12 @@ def run():
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction', calo='Geant4CalorimeterAction')
   geant4.printDetectors()
   # Configure UI
-  if macro:
-    ui = geant4.setupCshUI(macro=macro)
+  if args.macro:
+    ui = geant4.setupCshUI(macro=args.macro)
   else:
     ui = geant4.setupCshUI()
-  if batch:
-    ui.Commands = ['/run/beamOn '+str(nevts), '/ddg4/UI/terminate']
+  if args.batch:
+    ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
 
   # Configure field
   geant4.setupTrackingField(prt=True)
