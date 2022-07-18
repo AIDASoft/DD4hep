@@ -74,12 +74,12 @@ namespace  Tests {
       Base::end(hce);
     }
     /// G4VSensitiveDetector interface: Method for generating hit(s) using the G4Step object.
-    virtual bool process(G4Step* step,G4VTouchable* history)  override   {
+    virtual bool process(G4Step* step, G4TouchableHistory* history)  override   {
       return Base::process(step,history);
     }
     /// GFlash/FastSim interface: Method for generating hit(s) using the G4Step object.
-    virtual bool process(const Geant4FastSimSpot* spot,G4VTouchable* history)  override {
-      return Base::process(step,history);
+    virtual bool processFastSim(const Geant4FastSimSpot* spot, G4TouchableHistory* history)  override {
+      return Base::processFastSim(spot,history);
     }
     /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
     virtual void clear(G4HCofThisEvent* hce)  override   {
