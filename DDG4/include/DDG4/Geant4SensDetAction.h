@@ -16,15 +16,10 @@
 // Framework include files
 #include "DD4hep/Detector.h"
 #include "DDG4/Geant4Action.h"
-//#include "DDG4/Geant4FastSimSpot.h"
 #include "DDG4/Geant4HitCollection.h"
 
 // Geant4 include files
-//#include <G4Track.hh>
-//#include <G4FastHit.hh>
-//#include <G4FastTrack.hh>
 #include <G4ThreeVector.hh>
-//#include <G4TouchableHandle.hh>
 
 // C/C++ include files
 #include <vector>

@@ -17,8 +17,42 @@
 #include <DDG4/Defs.h>
 
 // Geant4 include files
-#include <G4Track.hh>
+#include "G4Version.hh"
+
+#if G4VERSION_NUMBER < 1070
+
+#include "G4ThreeVector.hh"
+
+class G4FastHit
+{
+ public:
+  G4FastHit();
+  G4FastHit(const G4ThreeVector& aPosition, G4double aEnergy);
+  G4FastHit(const G4ThreeVector& aPosition, G4double aEnergy, G4bool aDebug);
+  virtual ~G4FastHit(){};
+
+  /// Set energy
+  inline void SetEnergy(const G4double& aEnergy) { fEnergy = aEnergy; }
+  /// Get energy
+  inline G4double GetEnergy() const { return fEnergy; }
+  /// Set position
+  inline void SetPosition(const G4ThreeVector& aPosition)
+  {
+    fPosition = aPosition;
+  }
+  /// Get position
+  inline G4ThreeVector GetPosition() const { return fPosition; }
+ private:
+  /// energy
+  G4double fEnergy = 0;
+  /// position
+  G4ThreeVector fPosition = G4ThreeVector();
+};
+#else
 #include <G4FastHit.hh>
+#endif
+
+#include <G4Track.hh>
 #include <G4FastTrack.hh>
 #include <G4ThreeVector.hh>
 #include <G4TouchableHandle.hh>
