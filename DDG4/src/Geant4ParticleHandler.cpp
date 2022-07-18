@@ -490,7 +490,8 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
   //     Processing by Geant4 to establish mother daughter relationships.
   //     == > use finalParticles map and NOT m_particleMap.
   int equiv_id = -1;
-  for( auto& [idx, p] : finalParticles )  {
+  for( auto& part : finalParticles )  {
+    auto& p = part.second;
     if ( p->g4Parent > 0 )  {
       TrackEquivalents::iterator iequ = equivalents.find(p->g4Parent);
       if ( iequ != equivalents.end() )  {
@@ -656,7 +657,8 @@ void Geant4ParticleHandler::checkConsistency()  const   {
   int num_errors = 0;
 
   /// First check the consistency of the particle map itself
-  for(const auto& [idx, particle] : m_particleMap )  {
+  for(const auto& part : m_particleMap )  {
+    Geant4Particle* particle = part.second;
     Geant4ParticleHandle p(particle);
     PropertyMask mask(p->reason);
     PropertyMask status(p->status);
@@ -698,7 +700,8 @@ void Geant4ParticleHandler::checkConsistency()  const   {
 }
 
 void Geant4ParticleHandler::setVertexEndpointBit() {
-  for( auto& [idx, p] : m_particleMap )   {
+  for( auto& part : m_particleMap )   {
+    auto* p = part.second;
     if( !p->parents.empty() )   {
       Geant4Particle *parent(m_particleMap[ *p->parents.begin() ]);
       const double X( parent->vex - p->vsx );

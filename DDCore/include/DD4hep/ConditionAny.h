@@ -150,17 +150,17 @@ namespace dd4hep {
 
   /// Construct conditions object and bind the data
   template <typename PAYLOAD> inline 
-    ConditionAny::ConditionAny(key_type hash_key, PAYLOAD&& data)   {
+    ConditionAny::ConditionAny(key_type hash_key, PAYLOAD&& payload)   {
     ConditionAny c(hash_key);
-    c.get() = std::move(data);
+    c.get() = std::move(payload);
     this->m_element = c.ptr();
   }
 
-  /// Construct conditions object and bind the data
+  /// Construct conditions object and bind the payload
   template <typename PAYLOAD> inline 
-    ConditionAny::ConditionAny(const std::string& name, const std::string& type, PAYLOAD&& data)   {
+    ConditionAny::ConditionAny(const std::string& name, const std::string& type, PAYLOAD&& payload)   {
     ConditionAny c(name, type);
-    c.get() = std::move(data);
+    c.get() = std::move(payload);
     this->m_element = c.ptr();
   }
 

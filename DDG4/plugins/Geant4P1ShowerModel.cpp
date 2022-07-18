@@ -32,12 +32,18 @@
 #include <DDG4/Geant4FastSimSpot.h>
 
 // Geant4 include files
+#include "G4Version.hh"
 #include "G4Gamma.hh"
 #include "Randomize.hh"
 #include "G4SystemOfUnits.hh"
+#if G4VERSION_NUMBER > 1070
 #include "G4FastSimHitMaker.hh"
+#else
+class G4FastSimHitMaker  {  public:  void make(const G4FastHit&, const G4FastTrack&)  { } };
+#endif
 
 // C/C++ include files
+
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {
