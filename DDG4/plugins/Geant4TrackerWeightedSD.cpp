@@ -428,8 +428,8 @@ namespace dd4hep {
       }
 
       /// GFLash processing callback
-      G4bool process(G4GFlashSpot* , G4TouchableHistory* ) {
-        sensitive->except("GFlash action is not implemented for SD: %s", sensitive->c_name());
+      G4bool process(const Geant4FastSimSpot* , G4TouchableHistory* ) {
+        sensitive->except("GFlash/FastSim action is not implemented for SD: %s", sensitive->c_name());
         return false;
       }
     };
@@ -464,8 +464,14 @@ namespace dd4hep {
 
     /// Method for generating hit(s) using the information of G4Step object.
     template <> G4bool
-    Geant4SensitiveAction<TrackerWeighted>::process(G4Step* step, G4TouchableHistory* history) {
+    Geant4SensitiveAction<TrackerWeighted>::process(const G4Step* step, G4TouchableHistory* history) {
       return m_userData.process(step, history);
+    }
+
+    /// Method for generating hit(s) using the information of the Geant4FastSimSpot object.
+    template <> bool
+    Geant4SensitiveAction<TrackerWeighted>::processFastSim(const Geant4FastSimSpot* spot, G4TouchableHistory* history) {
+      return m_userData.process(spot, history);
     }
     typedef Geant4SensitiveAction<TrackerWeighted>  Geant4TrackerWeightedAction;
   }

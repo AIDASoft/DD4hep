@@ -436,11 +436,7 @@ def run():
   phys = geant4.setupPhysics('FTFP_BERT')
   phys.dump()
   ui.Commands = ['/ddg4/Test/show', '/ddg4/Test/dumpProperties', '/ddg4/UI/exit']
-  kernel.NumEvents = 0
-  kernel.configure()
-  kernel.initialize()
-  kernel.run()
-  kernel.terminate()
+  geant4.execute()
 
 
 if __name__ == "__main__":

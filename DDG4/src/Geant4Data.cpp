@@ -12,16 +12,17 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4Data.h"
-#include "DDG4/Geant4StepHandler.h"
-#include "DDG4/Geant4GFlashSpotHandler.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+
+#include <DDG4/Geant4Data.h>
+#include <DDG4/Geant4StepHandler.h>
+#include <DDG4/Geant4FastSimHandler.h>
 
 // Geant4 include files
-#include "G4Step.hh"
-#include "G4Allocator.hh"
-#include "G4OpticalPhoton.hh"
+#include <G4Step.hh>
+#include <G4Allocator.hh>
+#include <G4OpticalPhoton.hh>
 
 using namespace std;
 using namespace dd4hep;
@@ -91,11 +92,11 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* ste
   return contrib;
 }
 
-/// Extract the MC contribution for a given hit from the GFlash spot information
-Geant4HitData::Contribution Geant4HitData::extractContribution(const G4GFlashSpot* spot) {
-  Geant4GFlashSpotHandler h(spot);
-  G4ThreeVector           p = h.positionG4();
-  double                  position[3] = {p.x(), p.y(), p.z()};
+/// Extract the MC contribution for a given hit from the fast simulation spot information
+Geant4HitData::Contribution Geant4HitData::extractContribution(const Geant4FastSimSpot* spot) {
+  Geant4FastSimHandler h(spot);
+  G4ThreeVector        p = h.avgPositionG4();
+  double               position[3] = {p.x(), p.y(), p.z()};
   return Contribution(h.trkID(),h.trkPdgID(),h.energy(),h.trkTime(),0e0,position);
 }
 
@@ -153,21 +154,19 @@ Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const G4Step* step, const G4S
 }
 
 /// Store Geant4 spot information into tracker hit structure.
-Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const G4GFlashSpot* spot)   {
-  const GFlashEnergySpot* espot = spot->GetEnergySpot();
-  const G4FastTrack*   ftrk = spot->GetOriginatorTrack();
-  const G4Track* trk  = ftrk->GetPrimaryTrack();
-  G4ThreeVector  pos  = spot->GetPosition();
+Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const Geant4FastSimSpot* spot)   {
+  const G4Track* trk  = spot->primary;
+  G4ThreeVector  pos  = spot->hitPosition();
   G4ThreeVector  mom  = trk->GetMomentum().unit();
-  double         dep  = espot->GetEnergy();
-  truth.trackID = trk->GetTrackID();
-  truth.pdgID   = trk->GetDefinition()->GetPDGEncoding();
-  truth.deposit = dep;
-  truth.time    = trk->GetGlobalTime();
-  energyDeposit = dep;
-  position.SetXYZ(pos.x(), pos.y(), pos.z());
-  momentum.SetXYZ(mom.x()*dep, mom.y()*dep, mom.z()*dep);
-  length = 0;
+  double         dep  = spot->hit->GetEnergy();
+  this->truth.deposit = dep;
+  this->truth.trackID = trk->GetTrackID();
+  this->truth.time    = trk->GetGlobalTime();
+  this->truth.pdgID   = trk->GetDefinition()->GetPDGEncoding();
+  this->energyDeposit = dep;
+  this->position.SetXYZ(pos.x(), pos.y(), pos.z());
+  this->momentum.SetXYZ(mom.x()*dep, mom.y()*dep, mom.z()*dep);
+  this->length = 0;
   return *this;
 }
 

@@ -62,11 +62,20 @@ Geant4UIManager::~Geant4UIManager()   {
 void Geant4UIManager::installCommandMessenger()   {
   m_control->addCall("exit", "Force exiting this process",
                      Callback(this).make(&Geant4UIManager::forceExit),0);
+  m_control->addCall("terminate", "Regular exit this process",
+                     Callback(this).make(&Geant4UIManager::regularExit),0);
 }
 
 /// Force exiting this process without calling atexit handlers
 void Geant4UIManager::forceExit()   {
   std::_Exit(0);
+}
+
+/// Regularly exiting this process without calling atexit handlers
+void Geant4UIManager::regularExit()   {
+  printout(INFO,"Geant4UIManager","++ End of processing requested.");
+  this->context()->kernel().terminate();
+  this->forceExit();
 }
 
 /// Start visualization

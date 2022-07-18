@@ -35,6 +35,17 @@ from g4units import GeV, MeV, m
 
 
 def run():
+  nevts = -1
+  macro = None
+  batch = False
+  for i in range(len(sys.argv)):
+    if sys.argv[i] == '-batch':
+      batch = True
+    elif sys.argv[i] == '-events':
+      nevts = int(sys.argv[i+1])
+    elif sys.argv[i] == '-macro':
+      macro = sys.argv[i+1]
+
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/examples/ClientTests/compact/SiliconBlock.xml"))
@@ -43,10 +54,12 @@ def run():
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction', calo='Geant4CalorimeterAction')
   geant4.printDetectors()
   # Configure UI
-  if len(sys.argv) > 1:
-    geant4.setupCshUI(macro=sys.argv[1])
+  if macro:
+    ui = geant4.setupCshUI(macro=macro)
   else:
-    geant4.setupCshUI()
+    ui = geant4.setupCshUI()
+  if batch:
+    ui.Commands = ['/run/beamOn '+str(nevts), '/ddg4/UI/terminate']
 
   # Configure field
   geant4.setupTrackingField(prt=True)
@@ -83,7 +96,7 @@ def run():
   seq.adopt(model)
 
   # Configure I/O
-  geant4.setupROOTOutput('RootOutput', 'SiliconBlock_' + time.strftime('%Y-%m-%d_%H-%M'))
+  geant4.setupROOTOutput('RootOutput', 'SiliconBlock_GFlash_' + time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
   gun = geant4.setupGun("Gun", particle='e+', energy=50 * GeV, multiplicity=1)

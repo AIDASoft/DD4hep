@@ -63,6 +63,7 @@ if (DD4HEP_USE_GEANT4)
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4_MySensDet.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${DDG4_MySensDet_INSTALL}/scripts/MyTrackerSD_sim.py 
                --compact=file:${CMAKE_INSTALL_PREFIX}/examples/ClientTests/compact/SiliconBlock.xml
+	       -batch -events 3
     REGEX_PASS NONE
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
 

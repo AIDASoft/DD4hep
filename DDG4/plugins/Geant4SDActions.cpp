@@ -13,7 +13,7 @@
 
 // Framework include files
 #include "DDG4/Geant4SensDetAction.inl"
-#include "DDG4/Geant4GFlashSpotHandler.h"
+#include "DDG4/Geant4FastSimHandler.h"
 #include "DDG4/Geant4EventAction.h"
 #include "G4OpticalPhoton.hh"
 #include "G4VProcess.hh"
@@ -46,17 +46,17 @@ namespace dd4hep {
       m_collectionID = -1;
     }
 
-    /// Method for generating hit(s) using the information of G4Step object.
+    /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
     template <> bool
-    Geant4SensitiveAction<Geant4VoidSensitive>::process(G4Step*             /* step */,
+    Geant4SensitiveAction<Geant4VoidSensitive>::process(const G4Step*       /* step */,
 							G4TouchableHistory* /* hist */) {
       return true;
     }
     
-    /// Method for generating hit(s) using the information of G4Step object.
+    /// GFLASH/FastSim interface: Method for generating hit(s) using the information of G4Step object.
     template <> bool
-    Geant4SensitiveAction<Geant4VoidSensitive>::processGFlash(G4GFlashSpot*       /* spot */,
-							      G4TouchableHistory* /* hist */) {
+    Geant4SensitiveAction<Geant4VoidSensitive>::processFastSim(const Geant4FastSimSpot* /* spot */,
+							       G4TouchableHistory*      /* hist */) {
       return true;
     }
     typedef Geant4SensitiveAction<Geant4VoidSensitive> Geant4VoidSensitiveAction;
@@ -80,7 +80,7 @@ namespace dd4hep {
 
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool
-    Geant4SensitiveAction<Geant4Tracker>::process(G4Step* step,G4TouchableHistory* /* hist */) {
+    Geant4SensitiveAction<Geant4Tracker>::process(const G4Step* step,G4TouchableHistory* /* hist */) {
       typedef Geant4Tracker::Hit Hit;
       Geant4StepHandler h(step);
       Position prePos    = h.prePos();
@@ -104,7 +104,7 @@ namespace dd4hep {
       collection(m_collectionID)->add(hit);
       mark(h.track);
       if ( 0 == hit->cellID )  {
-        hit->cellID      = volumeID( step ) ;
+        hit->cellID      = volumeID(step);
         except("+++ Invalid CELL ID for hit!");
       }
       print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
@@ -115,23 +115,23 @@ namespace dd4hep {
       return true;
     }
     
-    /// Method for generating hit(s) using the information of G4Step object.
+    /// GFlash/FastSim interface: Method for generating hit(s) using the information of Geant4FastSimSpot object.
     template <> bool
-    Geant4SensitiveAction<Geant4Tracker>::processGFlash(G4GFlashSpot*          spot,
-							G4TouchableHistory* /* hist */)
+    Geant4SensitiveAction<Geant4Tracker>::processFastSim(const Geant4FastSimSpot* spot,
+							 G4TouchableHistory* /* hist */)
     {
       typedef Geant4Tracker::Hit Hit;
-      Geant4GFlashSpotHandler h(spot);
+      Geant4FastSimHandler h(spot);
       Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime());
-      hit->cellID        = cellID(spot);
+      hit->cellID        = cellID(h.touchable(), h.avgPositionG4());
       hit->energyDeposit = h.deposit();
-      hit->position      = h.position();
+      hit->position      = h.avgPosition();
       hit->momentum      = h.momentum();
       hit->length        = 0e0;
       collection(m_collectionID)->add(hit);
       mark(h.track);
       if ( 0 == hit->cellID )  {
-        hit->cellID      = volumeID( spot ) ;
+        hit->cellID      = volumeID(h.touchable());
         except("+++ Invalid CELL ID for hit!");
       }
       print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
@@ -140,6 +140,7 @@ namespace dd4hep {
       print("    Geant4 path:%s",handler.path().c_str());
       return true;
     }
+
     typedef Geant4SensitiveAction<Geant4Tracker> Geant4TrackerAction;
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -162,7 +163,7 @@ namespace dd4hep {
 
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool
-    Geant4SensitiveAction<Geant4Calorimeter>::process(G4Step* step,G4TouchableHistory*) {
+    Geant4SensitiveAction<Geant4Calorimeter>::process(const G4Step* step,G4TouchableHistory*) {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4StepHandler    h(step);
       HitContribution      contrib = Hit::extractContribution(step);
@@ -209,24 +210,24 @@ namespace dd4hep {
       mark(h.track);
       return true;
     }
-    /// Method for generating hit(s) using the information of the G4GFlashSpot object.
+    /// GFlash/FastSim interface: Method for generating hit(s) using the information of Geant4FastSimSpot object.
     template <> bool
-    Geant4SensitiveAction<Geant4Calorimeter>::processGFlash(G4GFlashSpot* spot,
-							    G4TouchableHistory* /*hist*/ )
+    Geant4SensitiveAction<Geant4Calorimeter>::processFastSim(const Geant4FastSimSpot* spot,
+							     G4TouchableHistory* /* hist */)
     {
       typedef Geant4Calorimeter::Hit Hit;
-      Geant4GFlashSpotHandler h(spot);
-      HitContribution         contrib = Hit::extractContribution(spot);
-      Geant4HitCollection*    coll    = collection(m_collectionID);
+      Geant4FastSimHandler h(spot);
+      HitContribution      contrib = Hit::extractContribution(spot);
+      Geant4HitCollection* coll    = collection(m_collectionID);
       VolumeID cell = 0;
       
       try {
-        cell = cellID(spot);
+        cell = cellID(h.touchable(), h.avgPositionG4());
       } catch(std::runtime_error &e) {
         std::stringstream out;
         out << std::setprecision(20) << std::scientific;
         out << "ERROR: " << e.what()  << std::endl;
-        out << "Position: (" << std::setw(24) << h.positionG4() << ") " << std::endl;
+        out << "Position: (" << std::setw(24) << h.avgPositionG4() << ") " << std::endl;
         out << "Momentum: (" << std::setw(24) << h.momentumG4() << ") " << std::endl;
         std::cout << out.str();
         return true;
@@ -243,7 +244,7 @@ namespace dd4hep {
                 c_name(),contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str(),
                 coll->GetName().c_str());
         if ( 0 == hit->cellID )  { // for debugging only!
-          hit->cellID = cellID(spot);
+          hit->cellID = cellID(h.touchable(), h.avgPositionG4());
           except("+++ Invalid CELL ID for hit!");
         }
       }
@@ -252,6 +253,7 @@ namespace dd4hep {
       mark(h.track);
       return true;
     }
+
     typedef Geant4SensitiveAction<Geant4Calorimeter> Geant4CalorimeterAction;
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -279,7 +281,7 @@ namespace dd4hep {
     }
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool
-    Geant4SensitiveAction<Geant4OpticalCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
+    Geant4SensitiveAction<Geant4OpticalCalorimeter>::process(const G4Step* step,G4TouchableHistory*) {
       G4Track * track =  step->GetTrack();
       // check that particle is optical photon:
       if( track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition() )  {
@@ -312,13 +314,14 @@ namespace dd4hep {
         return true;
       }
     }
-    /// Method for generating hit(s) using the information of the G4GFlashSpot object.
+
+    /// GFlash/FastSim interface: Method for generating hit(s) using the information of Geant4FastSimSpot object.
     template <> bool
-    Geant4SensitiveAction<Geant4OpticalCalorimeter>::processGFlash(G4GFlashSpot* spot,
-								   G4TouchableHistory* /*hist*/ )
+    Geant4SensitiveAction<Geant4OpticalCalorimeter>::processFastSim(const Geant4FastSimSpot* spot,
+								    G4TouchableHistory* /* hist */)
     {
       typedef Geant4Calorimeter::Hit Hit;
-      Geant4GFlashSpotHandler h(spot);
+      Geant4FastSimHandler   h(spot);
       const G4Track* track = h.track;
       if( track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition() )  {
         return false;
@@ -329,14 +332,14 @@ namespace dd4hep {
       else {
         Geant4HitCollection* coll = collection(m_collectionID);
         HitContribution   contrib = Hit::extractContribution(spot);
-        Position          pos     = h.position();
+        Position          pos     = h.avgPosition();
         Hit* hit = coll->find<Hit>(PositionCompare<Hit,Position>(pos));
         if ( !hit ) {
           hit = new Hit(pos);
-          hit->cellID = volumeID(spot);
+          hit->cellID = volumeID(h.touchable());
           coll->add(hit);
           if ( 0 == hit->cellID )  {
-            hit->cellID = volumeID(spot);
+            hit->cellID = volumeID(h.touchable());
             except("+++ Invalid CELL ID for hit!");
           }
         }
@@ -374,7 +377,7 @@ namespace dd4hep {
     }
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool
-    Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
+    Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::process(const G4Step* step,G4TouchableHistory*) {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4StepHandler    h(step);
       HitContribution      contrib = Hit::extractContribution(step,true);
@@ -417,24 +420,25 @@ namespace dd4hep {
       mark(h.track);
       return true;
     }
-    /// Method for generating hit(s) using the information of the G4GFlashSpot object.
+
+    /// GFlash/FastSim interface: Method for generating hit(s) using the information of Geant4FastSimSpot object.
     template <> bool
-    Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::processGFlash(G4GFlashSpot* spot,
-									G4TouchableHistory* /*hist*/ )
+    Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::processFastSim(const Geant4FastSimSpot* spot,
+									 G4TouchableHistory* /* hist */)
     {
       typedef Geant4Calorimeter::Hit Hit;
-      Geant4GFlashSpotHandler h(spot);
+      Geant4FastSimHandler h(spot);
       HitContribution         contrib = Hit::extractContribution(spot);
       Geant4HitCollection*    coll    = collection(m_collectionID);
       VolumeID cell = 0;
       
       try {
-        cell = cellID(spot);
+        cell = cellID(h.touchable(), h.avgPositionG4());
       } catch(std::runtime_error &e) {
         std::stringstream out;
         out << std::setprecision(20) << std::scientific;
         out << "ERROR: " << e.what()  << std::endl;
-        out << "Position: (" << std::setw(24) << h.positionG4() << ") " << std::endl;
+        out << "Position: (" << std::setw(24) << h.avgPositionG4() << ") " << std::endl;
         out << "Momentum: (" << std::setw(24) << h.momentumG4() << ") " << std::endl;
         std::cout << out.str();
         return true;
@@ -450,7 +454,7 @@ namespace dd4hep {
         printM2("CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
                 contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str());
         if ( 0 == hit->cellID )  { // for debugging only!
-          hit->cellID = cellID(spot);
+          hit->cellID = cellID(h.touchable(), h.avgPositionG4());
           except("+++ Invalid CELL ID for hit!");
         }
       }
@@ -459,6 +463,7 @@ namespace dd4hep {
       mark(h.track);
       return true;
     }
+
     typedef Geant4SensitiveAction<Geant4ScintillatorCalorimeter> Geant4ScintillatorCalorimeterAction;
 
     /**
@@ -508,41 +513,40 @@ namespace dd4hep {
         combined = 0;
         cell = 0;
       }
-      void start(G4Step* step, G4StepPoint* point)   {
+      void start(const G4Step* step, const G4StepPoint* point)   {
         pre.storePoint(step,point);
 	start_collecting(step->GetTrack());
 	firstSpotVolume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
       }
-      void start(G4GFlashSpot* spot)   {
-	const G4Track* track = spot->GetOriginatorTrack()->GetPrimaryTrack();
+      void start(const Geant4FastSimSpot* spot)   {
         pre.storePoint(spot);
-	start_collecting(track);
-	firstSpotVolume = spot->GetTouchableHandle()->GetVolume();
+	start_collecting(spot->primary);
+	firstSpotVolume = spot->volume();
       }
 
       /// Update energy and track information during hit info accumulation
-      template <typename T> inline void update_collected_hit(const T* step)    {
+      void update_collected_hit(const G4VTouchable* h, G4ThreeVector&& global)    {
         pre.truth.deposit += post.truth.deposit;
         mean_pos.SetX(mean_pos.x()+post.position.x()*post.truth.deposit);
         mean_pos.SetY(mean_pos.y()+post.position.y()*post.truth.deposit);
         mean_pos.SetZ(mean_pos.z()+post.position.z()*post.truth.deposit);
         mean_time += post.truth.time*post.truth.deposit;
         if ( 0 == cell )   {
-          cell = sensitive->cellID(step);
+          cell = sensitive->cellID(h, global);
           if ( 0 == cell )  {
-            cell = sensitive->volumeID(step) ;
+            cell = sensitive->volumeID(h) ;
             sensitive->except("+++ Invalid CELL ID for hit!");
           }
         }
         ++combined;
       }
-      void update(G4Step* step) {
-        post.storePoint(step,step->GetPostStepPoint());
-	update_collected_hit(step);
+      void update(const Geant4StepHandler& h) {
+        post.storePoint(h.step, h.post);
+	update_collected_hit(h.preTouchable(), std::move(h.avgPositionG4())); // Compute cellID
       }
-      void update(G4GFlashSpot* spot)   {
-        post.storePoint(spot);
-	update_collected_hit(spot);
+      void update(const Geant4FastSimHandler& h)   {
+        post.storePoint(h.spot);
+	update_collected_hit(h.touchable(), std::move(h.avgPositionG4()));       // Compute cellID
       }
 
       /// Clear collected information and restart for new hit
@@ -589,7 +593,7 @@ namespace dd4hep {
 
 
       /// Method for generating hit(s) using the information of G4Step object.
-      G4bool process(G4Step* step, G4TouchableHistory* ) {
+      G4bool process(const G4Step* step, G4TouchableHistory* ) {
         Geant4StepHandler h(step);
 
 	// std::cout << " process called - pre pos: " << h.prePos() << " post pos " << h.postPos() 
@@ -607,7 +611,7 @@ namespace dd4hep {
           start(step, h.pre);
         }
         /// ....update .....
-        update(step);
+        update(h);
 
         if ( prePV != postPV ) {
           void* postSD = h.sd(h.post);
@@ -625,9 +629,9 @@ namespace dd4hep {
         return true;
       }
 
-      /// Method for generating hit(s) using the information of G4Step object.
-      G4bool process(G4GFlashSpot* spot, G4TouchableHistory* ) {
-	Geant4GFlashSpotHandler h(spot);
+      /// Method for generating hit(s) using the information of fast simulation spot object.
+      G4bool process(const Geant4FastSimSpot* spot, G4TouchableHistory* ) {
+	Geant4FastSimHandler h(spot);
         G4VPhysicalVolume*   prePV = firstSpotVolume, *postPV = h.volume();
         Geant4HitCollection* coll  = sensitive->collection(0);
         /// If we are handling a new track, then store the content of the previous one.
@@ -639,7 +643,7 @@ namespace dd4hep {
           start(spot);
         }
         /// ....update .....
-        update(spot);
+        update(h);
 
         if ( firstSpotVolume && prePV != postPV )   {
           void* postSD = h.sd();
@@ -691,17 +695,18 @@ namespace dd4hep {
 
     /// Method for generating hit(s) using the information of G4Step object.
     template <> G4bool
-    Geant4SensitiveAction<TrackerCombine>::process(G4Step* step, G4TouchableHistory* history) {
+    Geant4SensitiveAction<TrackerCombine>::process(const G4Step* step, G4TouchableHistory* history) {
       return m_userData.process(step, history);
     }
-    /// Method for generating hit(s) using the information of the G4GFlashSpot object.
+
+    /// GFlash/FastSim interface: Method for generating hit(s) using the information of Geant4FastSimSpot object.
     template <> bool
-    Geant4SensitiveAction<TrackerCombine>::processGFlash(G4GFlashSpot* spot,G4TouchableHistory* history) {
+    Geant4SensitiveAction<TrackerCombine>::processFastSim(const Geant4FastSimSpot* spot,
+							  G4TouchableHistory*      history)    {
       return m_userData.process(spot, history);
     }
 
     typedef Geant4SensitiveAction<TrackerCombine>  Geant4TrackerCombineAction;
-
     typedef Geant4TrackerAction                    Geant4SimpleTrackerAction;
     typedef Geant4CalorimeterAction                Geant4SimpleCalorimeterAction;
     typedef Geant4OpticalCalorimeterAction         Geant4SimpleOpticalCalorimeterAction;

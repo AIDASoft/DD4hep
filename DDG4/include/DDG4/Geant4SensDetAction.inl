@@ -47,22 +47,22 @@ namespace dd4hep {
     }
 
     /// Initialization overload for specialization
-    template <typename T> void Geant4SensitiveAction<T>::initialize()    {
+    template <typename T> void Geant4SensitiveAction<T>::initialize()   {
     }
 
     /// Finalization overload for specialization
-    template <typename T> void Geant4SensitiveAction<T>::finalize()    {
+    template <typename T> void Geant4SensitiveAction<T>::finalize()   {
     }
 
     /// Access the readout object. Note: if m_readoutName is set, the m_readout != m_sensitive.readout()
-    template <typename T> Readout Geant4SensitiveAction<T>::readout()     {
-      if ( !m_readoutName.empty() && m_sensitive.readout() == m_readout )   {
+    template <typename T> Readout Geant4SensitiveAction<T>::readout()    {
+      if ( !m_readoutName.empty() && m_sensitive.readout() == m_readout )  {
         m_readout = detectorDescription().readout(m_readoutName);
-        if ( !m_readout.isValid() )   {
+        if ( !m_readout.isValid() )  {
           except("+++ Failed to access parallel readout '%s'",m_sensitive.name());
         }
         m_segmentation = m_readout.segmentation();
-        if ( !m_segmentation.isValid() )   {
+        if ( !m_segmentation.isValid() )  {
           except("+++ Failed to access segmentation for readout '%s'",m_readout.name());
         }
       }
@@ -79,23 +79,13 @@ namespace dd4hep {
       Geant4Sensitive::end(hce);
     }
 
-    /// G4VSensitiveDetector interface: Method for generating hit(s) using the G4Step object.
-    template <typename T> bool Geant4SensitiveAction<T>::process(G4Step* step,G4TouchableHistory* history)  {
-      return Geant4Sensitive::process(step,history);
-    }
-    
-    /// Separate GFLASH interface: Method for generating hit(s) using the information of the G4GFlashSpot object.
-    template <typename T> bool Geant4SensitiveAction<T>::processGFlash(G4GFlashSpot* spot, G4TouchableHistory* history)   {
-      return Geant4Sensitive::processGFlash(spot,history);
-    }
-
     /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
     template <typename T> void Geant4SensitiveAction<T>::clear(G4HCofThisEvent* hce)  {
       Geant4Sensitive::clear(hce);
     }
 
     /// Define collections created by this sensitivie action object
-    template <typename T> void Geant4SensitiveAction<T>::defineCollections()   {
+    template <typename T> void Geant4SensitiveAction<T>::defineCollections()  {
     }
 
     /// Define readout specific hit collection. matching name must be present in readout structure
@@ -103,7 +93,7 @@ namespace dd4hep {
     size_t Geant4SensitiveAction<T>::defineReadoutCollection(const std::string match_name)  {
       auto ro = readout();
       for(const auto& c : ro->hits )  {
-        if ( c.name == match_name )   {
+        if ( c.name == match_name )  {
           size_t coll_id = defineCollection<HIT>(match_name);
           Geant4Filter* filter = new Geant4ReadoutVolumeFilter(context(),name()+"_"+c.name,ro,c.name);
           adopt_front(filter);
@@ -117,12 +107,21 @@ namespace dd4hep {
 
     /// Define readout specific hit collection with volume ID filtering
     template <typename T> template <typename HIT> 
-    size_t Geant4SensitiveAction<T>::declareReadoutFilteredCollection()
-    {
+    size_t Geant4SensitiveAction<T>::declareReadoutFilteredCollection()   {
       if ( m_collectionName.empty() )  {
         return defineCollection<HIT>(readout().name());
       }
       return defineReadoutCollection<HIT>(m_collectionName);
+    }
+
+    /// G4VSensitiveDetector interface: Method for generating hit(s) using the G4Step object.
+    template <typename T> bool Geant4SensitiveAction<T>::process(const G4Step* step,G4TouchableHistory* history)  {
+      return Geant4Sensitive::process(step, history);
+    }
+    
+    /// GFlash/Fast Simulation interface: Method for generating hit(s) using the information from fast simulation
+    template <typename T> bool Geant4SensitiveAction<T>::processFastSim(const Geant4FastSimSpot* spot, G4TouchableHistory* history)  {
+      return Geant4Sensitive::processFastSim(spot, history);
     }
 
     // Forward declarations

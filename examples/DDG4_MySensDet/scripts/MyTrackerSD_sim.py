@@ -2,6 +2,7 @@
 #
 from __future__ import absolute_import, unicode_literals
 import os
+import sys
 import time
 import DDG4
 from DDG4 import OutputLevel as Output
@@ -19,6 +20,17 @@ from g4units import GeV
 
 
 def run():
+  nevts = -1
+  macro = None
+  batch = False
+  for i in range(len(sys.argv)):
+    if sys.argv[i] == '-batch':
+      batch = True
+    elif sys.argv[i] == '-events':
+      nevts = int(sys.argv[i+1])
+    elif sys.argv[i] == '-macro':
+      macro = sys.argv[i+1]
+
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/examples/ClientTests/compact/SiliconBlock.xml"))
@@ -27,10 +39,15 @@ def run():
   # ===> This is actually the ONLY difference to ClientTests/scripts/SiliconBlock.py
   # =======================================================================================
   geant4 = DDG4.Geant4(kernel, tracker='MyTrackerSDAction')
-
   geant4.printDetectors()
-  kernel.NumEvents = 5
-  kernel.UI = ''
+
+  # Configure UI
+  if macro:
+    ui = geant4.setupCshUI(macro=macro)
+  else:
+    ui = geant4.setupCshUI()
+  if batch:
+    ui.Commands = ['/run/beamOn '+str(nevts), '/ddg4/UI/terminate']
 
   # Configure field
   geant4.setupTrackingField(prt=True)
