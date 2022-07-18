@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDG4_GEANT4GFLASHACTION_H
-#define DDG4_GEANT4GFLASHACTION_H
+#ifndef DDG4_GEANT4GFLASHSHOWERMODEL_H
+#define DDG4_GEANT4GFLASHSHOWERMODEL_H
 
 // Framework include files
 #include <DDG4/Geant4FastSimShowerModel.h>
@@ -32,8 +32,6 @@ namespace dd4hep  {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim  {
     
-    class Geant4InputAction;
-
     /// Geant4 wrapper for the GFlash shower model
     /**
      *  Geant4 wrapper for the GFlash shower model
@@ -92,7 +90,7 @@ namespace dd4hep  {
     };
   }     /* End namespace sim   */
 }       /* End namespace dd4hep */
-#endif // DDG4_GEANT4GFLASHACTION_H
+#endif // DDG4_GEANT4GFLASHSHOWERMODEL_H
 
 //==========================================================================
 //  AIDA Detector description implementation
@@ -109,6 +107,8 @@ namespace dd4hep  {
 
 // Framework include files
 // #include <DDG4/Geant4GFlashShowerModel.h>
+#include <DD4hep/Detector.h>
+#include <DDG4/Geant4Action.h>
 #include <DDG4/Geant4Kernel.h>
 #include <DDG4/Geant4Mapping.h>
 
