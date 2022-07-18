@@ -116,8 +116,10 @@ namespace dd4hep {
       Geant4PhysicsList(Geant4Context* context, const std::string& nam);
       /// Default destructor
       virtual ~Geant4PhysicsList();
+
       /// Dump content to stdout
       void dump();
+
       /// Install command control messenger if wanted
       virtual void installCommandMessenger();
       /// Access all physics processes
@@ -190,7 +192,7 @@ namespace dd4hep {
        */
       void addPhysicsConstructor(const std::string& physics_name);
       /// Add PhysicsConstructor as Geant4Action object
-      /** The action object must bve a sub-class of type G4VPhysicsConstructor.
+      /** The action object must be a sub-class of type G4VPhysicsConstructor.
        *  -- The Geant4Action object to supports properties.
        *  -- Specific user actions may be implemented in the 
        *     base class calls to 'ConstructParticle' or 'ConstructProcess'.

@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -426,6 +426,12 @@ namespace dd4hep {
             << ", PDG: " << s->GetTrack()->GetDefinition()->GetPDGEncoding();
         std::cout << str.str() << std::endl;
       }
+
+      /// GFLash processing callback
+      G4bool process(G4GFlashSpot* , G4TouchableHistory* ) {
+        sensitive->except("GFlash action is not implemented for SD: %s", sensitive->c_name());
+        return false;
+      }
     };
 
     /// Initialization overload for specialization
@@ -461,7 +467,6 @@ namespace dd4hep {
     Geant4SensitiveAction<TrackerWeighted>::process(G4Step* step, G4TouchableHistory* history) {
       return m_userData.process(step, history);
     }
-
     typedef Geant4SensitiveAction<TrackerWeighted>  Geant4TrackerWeightedAction;
   }
 }

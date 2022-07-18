@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Objects.h"
-#include "DDG4/Defs.h"
-#include "DDG4/Geant4SteppingAction.h"
+#include <DD4hep/Objects.h>
+#include <DDG4/Defs.h>
+#include <DDG4/Geant4SteppingAction.h>
 
 // Forward declarations
 class G4LogicalVolume;
@@ -85,21 +85,21 @@ namespace dd4hep {
 //====================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Printout.h"
-#include "DDG4/Geant4TouchableHandler.h"
-#include "DDG4/Geant4StepHandler.h"
-#include "DDG4/Geant4EventAction.h"
-#include "DDG4/Geant4TrackingAction.h"
-#include "CLHEP/Units/SystemOfUnits.h"
-#include "G4LogicalVolume.hh"
-#include "G4Material.hh"
-#include "G4VSolid.hh"
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Printout.h>
+#include <DDG4/Geant4TouchableHandler.h>
+#include <DDG4/Geant4StepHandler.h>
+#include <DDG4/Geant4EventAction.h>
+#include <DDG4/Geant4TrackingAction.h>
+#include <CLHEP/Units/SystemOfUnits.h>
+#include <G4LogicalVolume.hh>
+#include <G4Material.hh>
+#include <G4VSolid.hh>
 
 using namespace std;
 using namespace dd4hep::sim;
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 DECLARE_GEANT4ACTION(Geant4GeometryScanner)
 
 /// Initializing constructor

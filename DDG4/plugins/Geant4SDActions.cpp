@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -21,7 +21,7 @@
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
-
+  
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim   {
 
@@ -210,8 +210,9 @@ namespace dd4hep {
       return true;
     }
     /// Method for generating hit(s) using the information of the G4GFlashSpot object.
-    template <> bool Geant4SensitiveAction<Geant4Calorimeter>::processGFlash(G4GFlashSpot* spot,
-									     G4TouchableHistory* /*hist*/ )
+    template <> bool
+    Geant4SensitiveAction<Geant4Calorimeter>::processGFlash(G4GFlashSpot* spot,
+							    G4TouchableHistory* /*hist*/ )
     {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4GFlashSpotHandler h(spot);
@@ -277,7 +278,8 @@ namespace dd4hep {
       m_collectionID = declareReadoutFilteredCollection<Geant4Calorimeter::Hit>();
     }
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<Geant4OpticalCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
+    template <> bool
+    Geant4SensitiveAction<Geant4OpticalCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
       G4Track * track =  step->GetTrack();
       // check that particle is optical photon:
       if( track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition() )  {
@@ -311,8 +313,9 @@ namespace dd4hep {
       }
     }
     /// Method for generating hit(s) using the information of the G4GFlashSpot object.
-    template <> bool Geant4SensitiveAction<Geant4OpticalCalorimeter>::processGFlash(G4GFlashSpot* spot,
-										    G4TouchableHistory* /*hist*/ )
+    template <> bool
+    Geant4SensitiveAction<Geant4OpticalCalorimeter>::processGFlash(G4GFlashSpot* spot,
+								   G4TouchableHistory* /*hist*/ )
     {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4GFlashSpotHandler h(spot);
@@ -370,7 +373,8 @@ namespace dd4hep {
       m_collectionID = declareReadoutFilteredCollection<Geant4Calorimeter::Hit>();
     }
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
+    template <> bool
+    Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4StepHandler    h(step);
       HitContribution      contrib = Hit::extractContribution(step,true);
@@ -414,8 +418,9 @@ namespace dd4hep {
       return true;
     }
     /// Method for generating hit(s) using the information of the G4GFlashSpot object.
-    template <> bool Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::processGFlash(G4GFlashSpot* spot,
-											 G4TouchableHistory* /*hist*/ )
+    template <> bool
+    Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::processGFlash(G4GFlashSpot* spot,
+									G4TouchableHistory* /*hist*/ )
     {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4GFlashSpotHandler h(spot);
@@ -481,34 +486,42 @@ namespace dd4hep {
     struct TrackerCombine {
       Geant4Tracker::Hit pre, post;
       Position           mean_pos;
-      Geant4Sensitive*   sensitive;
-      double             mean_time;
-      double             e_cut;
-      int                current;
-      int                combined;
-      long long int      cell;
+      Geant4Sensitive*   sensitive { nullptr };
+      G4VPhysicalVolume* firstSpotVolume  { nullptr };
+      double             mean_time {  0e0 };
+      double             e_cut     {  0e0 };
+      int                current   {   -1 };
+      int                combined  {    0 };
+      long long int      cell      {    0 };
 
-      TrackerCombine() : pre(), post(), sensitive(0), mean_time(0.0), 
-                         e_cut(0.0), current(-1), combined(0), cell(0)
-      {
+      TrackerCombine() : pre(), post()   {
       }
 
       /// Start a new hit
-      void start(G4Step* step, G4StepPoint* point)   {
-        pre.storePoint(step,point);
+      void start_collecting(const G4Track* track)   {
         pre.truth.deposit = 0.0;
         current = pre.truth.trackID;
-        sensitive->mark(step->GetTrack());
+        sensitive->mark(track);
         mean_pos.SetXYZ(0,0,0);
         mean_time = 0;
         post.copyFrom(pre);
         combined = 0;
         cell = 0;
       }
+      void start(G4Step* step, G4StepPoint* point)   {
+        pre.storePoint(step,point);
+	start_collecting(step->GetTrack());
+	firstSpotVolume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+      }
+      void start(G4GFlashSpot* spot)   {
+	const G4Track* track = spot->GetOriginatorTrack()->GetPrimaryTrack();
+        pre.storePoint(spot);
+	start_collecting(track);
+	firstSpotVolume = spot->GetTouchableHandle()->GetVolume();
+      }
 
       /// Update energy and track information during hit info accumulation
-      void update(G4Step* step) {
-        post.storePoint(step,step->GetPostStepPoint());
+      template <typename T> inline void update_collected_hit(const T* step)    {
         pre.truth.deposit += post.truth.deposit;
         mean_pos.SetX(mean_pos.x()+post.position.x()*post.truth.deposit);
         mean_pos.SetY(mean_pos.y()+post.position.y()*post.truth.deposit);
@@ -523,6 +536,14 @@ namespace dd4hep {
         }
         ++combined;
       }
+      void update(G4Step* step) {
+        post.storePoint(step,step->GetPostStepPoint());
+	update_collected_hit(step);
+      }
+      void update(G4GFlashSpot* spot)   {
+        post.storePoint(spot);
+	update_collected_hit(spot);
+      }
 
       /// Clear collected information and restart for new hit
       void clear()  {
@@ -533,6 +554,7 @@ namespace dd4hep {
         current = -1;
         combined = 0;
         cell = 0;
+	firstSpotVolume = nullptr;
       }
 
       /// Helper function to decide if the hit has to be extracted and saved in the collection
@@ -602,10 +624,37 @@ namespace dd4hep {
         }
         return true;
       }
+
       /// Method for generating hit(s) using the information of G4Step object.
-      G4bool process(G4GFlashSpot* , G4TouchableHistory* ) {
-	sensitive->except("GFlash action is not implemented for SD: %s", sensitive->c_name());
-	return false;
+      G4bool process(G4GFlashSpot* spot, G4TouchableHistory* ) {
+	Geant4GFlashSpotHandler h(spot);
+        G4VPhysicalVolume*   prePV = firstSpotVolume, *postPV = h.volume();
+        Geant4HitCollection* coll  = sensitive->collection(0);
+        /// If we are handling a new track, then store the content of the previous one.
+        if ( mustSaveTrack(h.track) )  {
+          extractHit(coll);
+        }
+        /// Initialize the deposits of the next hit.
+        if ( current < 0 )  {
+          start(spot);
+        }
+        /// ....update .....
+        update(spot);
+
+        if ( firstSpotVolume && prePV != postPV )   {
+          void* postSD = h.sd();
+          extractHit(coll);
+          if ( 0 != postSD )   {
+            void* preSD = prePV ? prePV->GetLogicalVolume()->GetSensitiveDetector() : nullptr;
+            if ( preSD == postSD ) {
+              start(spot);
+            }
+          }
+        }
+        else if ( h.track->GetTrackStatus() == fStopAndKill ) {
+          extractHit(coll);
+        }
+	return true;
       }
 
       /// Post-event action callback

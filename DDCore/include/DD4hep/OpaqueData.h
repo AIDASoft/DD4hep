@@ -91,13 +91,21 @@ namespace dd4hep {
    */
   class OpaqueDataBlock : public OpaqueData   {
 
+  public:
+    /// Buffer size of the in-place data buffer
+    constexpr static const size_t BUFFER_SIZE = 40;
+
   protected:
     /// Data buffer: plain data are allocated directly on this buffer
     /** This internal data buffer is sufficient to store any 
      *  STL vector, list, map, etc. and hence should be sufficient to
      *  probably store normal relatively primitive basic objects.
+     *
+     *  It appears that on clang the size of std::any is 32 bytes (16 bytes on g++_,
+     *  whereas the size of std::vector is 24. Lets take 40 bytes and check it in the 
+     *  Conditions_any_basic example...
      */
-    unsigned char data[sizeof(std::vector<void*>)];
+    unsigned char data[BUFFER_SIZE];
 
   public:
     enum _DataTypes  {
@@ -107,13 +115,14 @@ namespace dd4hep {
       BOUND_DATA  =  1<<3,
       EXTERN_DATA =  1<<4
     };
-
     /// Data buffer type: Must be a bitmap of enum _DataTypes!
     unsigned int type;
 
   public:
     /// Standard initializing constructor
     OpaqueDataBlock();
+    /// Initializing constructor binding data to buffer with move
+    template <typename OBJECT> OpaqueDataBlock(OBJECT&& data);
     /// Copy constructor (Required by ROOT dictionaries)
     OpaqueDataBlock(const OpaqueDataBlock& copy);
     /// Standard Destructor
@@ -138,6 +147,8 @@ namespace dd4hep {
     template <typename T> T& bind(const std::string& value);
     /// Bind data value
     template <typename T> T& bind(void* ptr, size_t len, const std::string& value);
+    /// Bind data value
+    template <typename T> T& bind(T&& data);
     /// Bind external data value to the pointer
     template <typename T> void bindExtern(T* ptr);
   };
@@ -172,6 +183,12 @@ namespace dd4hep {
     throw std::bad_cast();
   }
 
+  /// Initializing constructor binding data to buffer with move
+  template <typename OBJECT> OpaqueDataBlock::OpaqueDataBlock(OBJECT&& obj)    {
+    this->bind(&BasicGrammar::instance<OBJECT>());
+    new(this->pointer) OBJECT(std::move(obj));
+  }
+
   /// Construct conditions object and bind the data
   template <typename T, typename... Args> inline T& OpaqueDataBlock::construct(Args... args)   {
     this->bind(&BasicGrammar::instance<T>());
@@ -182,6 +199,12 @@ namespace dd4hep {
   template <typename T> inline T& OpaqueDataBlock::bind()  {
     this->bind(&BasicGrammar::instance<T>());
     return *(new(this->pointer) T());
+  }
+
+  /// Bind data value
+  template <typename T> inline T& OpaqueDataBlock::bind(T&& obj)   {
+    this->bind(&BasicGrammar::instance<T>());
+    new(this->pointer) T(std::move(obj));
   }
 
   /// Bind data value

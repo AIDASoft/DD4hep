@@ -7,9 +7,6 @@
 #include <algorithm>
 #include <exception>
 
-
-static dd4hep::DDTest test( "PolarGridRPhi2" ) ;
-
 class TestTuple {
 public:
   double    _r;
@@ -20,6 +17,9 @@ public:
 };
 
 int main() {
+
+  dd4hep::DDTest test( "PolarGridRPhi2" );
+
   try{
 
     dd4hep::DDSegmentation::PolarGridRPhi2 seg("system:8,layer:8,barrel:3,layer:8,slice:5,r:16,phi:16");

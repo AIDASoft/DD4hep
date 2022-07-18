@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONSANY_H
-#define DD4HEP_CONDITIONSANY_H
+#ifndef DD4HEP_CONDITIONANY_H
+#define DD4HEP_CONDITIONANY_H
 
 // Framework include files
 #include "DD4hep/Conditions.h"
@@ -42,11 +42,13 @@ namespace dd4hep {
   class ConditionAny : public Handle<detail::ConditionObject> {
   public:
     /// Forward definition of the key type
-    using key_type = Condition::key_type;
+    using key_type     = Condition::key_type;
     /// High part of the key identifies the detector element
-    using detkey_type = Condition::detkey_type;
+    using detkey_type  = Condition::detkey_type;
     /// Low part of the key identifies the item identifier
     using itemkey_type = Condition::itemkey_type;
+    /// Forward definition of the object properties
+    using mask_type    = Condition::mask_type;
 
   private:
     /// Verify that underlying data are either invalid of contain an instance of std::any.
@@ -104,15 +106,26 @@ namespace dd4hep {
     /// Item part of the identifier
     itemkey_type item_key()  const;
 
+    /// Flag operations: Get condition flags
+    mask_type flags()  const;
+    /// Flag operations: Set a conditons flag
+    void setFlag(mask_type option);
+    /// Flag operations: UN-Set a conditons flag
+    void unFlag(mask_type option);
+    /// Flag operations: Test for a given a conditons flag
+    bool testFlag(mask_type option) const;
+
     /// Generic getter. Specify the exact type, not a polymorph type
     std::any& get();
     /// Generic getter (const version). Specify the exact type, not a polymorph type
     const std::any& get() const;
 
-    /// Access to the type information
-    const std::type_info& any_type() const;
     /// Checks whether the object contains a value
     bool has_value()   const;
+    /// Access to the type information
+    const std::type_info& any_type() const;
+    /// Access to the type information as string
+    const std::string     any_type_name() const;
     /// Access the contained object inside std::any
     template <typename T> T& as();
     /// Access the contained object inside std::any

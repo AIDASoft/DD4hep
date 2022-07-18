@@ -6,18 +6,15 @@
 
 #include "DDSegmentation/BitFieldCoder.h"
 
-
-using namespace std ;
-using namespace dd4hep ;
-using namespace DDSegmentation ;
-
-// this should be the first line in your test
-static DDTest test( "bitfield64" ) ; 
+using namespace std;
+using namespace dd4hep;
+using namespace DDSegmentation;
 
 //=============================================================================
-
 int main(int /* argc */, char** /* argv */ ){
-    
+  // this should be the first line in your test
+  DDTest test( "bitfield64" );
+ 
   try{
     
     // ----- write your tests in here -------------------------------------

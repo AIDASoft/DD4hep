@@ -14,7 +14,7 @@
 #define DD4HEP_DDG4_GEANT4GDMLWRITEACTION_H
 
 // Framework include files
-#include "DDG4/Geant4Action.h"
+#include <DDG4/Geant4Action.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -82,17 +82,17 @@ namespace dd4hep {
 //====================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DDG4/Geant4DataDump.h"
-#include "DDG4/Geant4UIMessenger.h"
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DDG4/Geant4DataDump.h>
+#include <DDG4/Geant4UIMessenger.h>
 
 // Geant 4 includes
 #ifndef GEANT4_NO_GDML
-#include "G4GDMLParser.hh"
+#include <G4GDMLParser.hh>
 #endif
-#include "G4Version.hh"
+#include <G4Version.hh>
 
 // C/C++ include files
 #include <sys/types.h>
@@ -159,5 +159,5 @@ void Geant4GDMLWriteAction::writeGDML()   {
 #endif
 }
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 DECLARE_GEANT4ACTION(Geant4GDMLWriteAction)

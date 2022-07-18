@@ -51,8 +51,8 @@ namespace dd4hep {  namespace Parsers {
       std::stringstream err;
       auto result = eval.evaluate(value, err);
       if (result.first != tools::Evaluator::OK) {
-        std::cerr << value << ": " << err.str() << std::endl;
-        throw std::runtime_error("dd4hep::Properties: Severe error during expression evaluation of " + value);
+        throw std::runtime_error("dd4hep::Properties: Severe error during expression evaluation of " + 
+				 value + " : " + err.str());
       }
       return result.second;
     }
@@ -60,8 +60,8 @@ namespace dd4hep {  namespace Parsers {
       std::stringstream err;
       auto result = eval.evaluate(value, err);
       if (result.first != tools::Evaluator::OK) {
-        std::cerr << value << ": " << err.str() << std::endl;
-        throw std::runtime_error("dd4hep::Properties: Severe error during expression evaluation of " + value);
+        throw std::runtime_error("dd4hep::Properties: Severe error during expression evaluation of " +
+				 value + " : " + err.str());
       }
       return (float) result.second;
     }

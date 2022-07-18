@@ -6,24 +6,18 @@
 
 #include "DDSegmentation/BitField64.h"
 
-
-using namespace std ;
-using namespace dd4hep ;
-using namespace DDSegmentation ;
-
-// this should be the first line in your test
-static DDTest test( "bitfield64" ) ; 
+using namespace std;
+using namespace dd4hep;
+using namespace DDSegmentation;
 
 //=============================================================================
-
 int main(int /* argc */, char** /* argv */ ){
     
+  DDTest test( "bitfield64" ) ; 
+
   try{
-    
     // ----- write your tests in here -------------------------------------
-
     test.log( "test bitfield64" );
-
 
     // initialize with a string that uses all 64 bits :
     BitField64 bf("system:5,side:-2,layer:9,module:8,sensor:8,x:32:-16,y:-16" ) ;

@@ -178,10 +178,9 @@ namespace dd4hep {
     itemkey_type item_key()  const;
 
     /** Direct data items in string form */
+#if defined(DD4HEP_CONDITIONS_DEBUG) || !defined(DD4HEP_MINIMAL_CONDITIONS)
     /// Access the type field of the condition
     const std::string& type()  const;
-
-#if defined(DD4HEP_CONDITIONS_DEBUG) || !defined(DD4HEP_MINIMAL_CONDITIONS)
     /// Access the value field of the condition as a string
     const std::string& value()  const;
     /// Access the comment field of the condition

@@ -150,7 +150,7 @@ dd4hep_add_test_reg( Conditions_Telescope_unresolved
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun  -destroy -plugin DD4hep_ConditionExample_populate
       -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml -iovs 1 -extend 100
-  REGEX_PASS "Condition: /world/Telescope/module_6#Unresolved_dependency dependent on missing condition item:"
+  REGEX_PASS "Condition: /world/Telescope/module_6#Unresolved_dependency dependent on missing condition"
   )
 #
 #---Testing: Simple stress: Load CLICSiD geometry and have multiple runs on IOVs
@@ -220,5 +220,22 @@ dd4hep_add_test_reg( Conditions_CLICSiD_root_load_cond_LONGTEST
     -conditions CLICSiDConditions.root
   DEPENDS Conditions_CLICSiD_root_save_LONGTEST
   REGEX_PASS "\\+  Accessed a total of 1053210 conditions \\(S:947889,L:     0,C:105321,M:0\\)"
+  REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+#
+#---Testing: Basic test using std::any as conditions payload
+dd4hep_add_test_reg( Conditions_any_basic
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
+  EXEC_ARGS  geoPluginRun -print INFO -destroy -plugin DD4hep_Conditions_any_basic
+  REGEX_PASS "Test PASSED"
+  REGEX_FAIL "Test FAILED"
+  )
+#
+#---Testing: Simple stress: Load Telescope geometry and have multiple runs on IOVs
+dd4hep_add_test_reg( Conditions_any_Telescope_populate
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
+  EXEC_ARGS  geoPluginRun  -destroy -print WARNING -plugin DD4hep_ConditionAnyExample_populate
+      -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml -iovs 2 -extend 1
+  REGEX_PASS "\\+ Analyzed 1360 any object/elements"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )

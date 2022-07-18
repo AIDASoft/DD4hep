@@ -4,15 +4,11 @@
 #include <assert.h>
 #include <cmath>
 
-using namespace std ;
-using namespace dd4hep ;
-
-// this should be the first line in your test
-static DDTest test( "example" ) ; 
-
 //=============================================================================
-
 int main(int /* argc */, char** /* argv */ ){
+
+  // this should be the first line in your test
+  dd4hep::DDTest test( "example" );
     
   try{
     
@@ -26,11 +22,8 @@ int main(int /* argc */, char** /* argv */ ){
 
     //test( "Example", "BadExample", "example test - string comparison " ); //  this test will fail
 
-
-
     double pi_d = M_PI ;
     float  pi_f = M_PI ;
-
     // ----- example for test of an expresssion - not using equality
 
     test(  1.1 * pi_f > pi_d   , " example comparison:  1.1* float(M_PI)  > double( M_PI) " ) ;  
@@ -41,16 +34,11 @@ int main(int /* argc */, char** /* argv */ ){
     // test(  pi_f >  pi_d  , " example comparison:  float(M_PI)  > double( M_PI) " ) ;  
 
     // --------------------------------------------------------------------
-
-
-  } catch( exception &e ){
-    //} catch( ... ){
-
+  }
+  catch( std::exception &e ){
     test.log( e.what() );
     test.error( "exception occurred" );
   }
-
   return 0;
 }
-
 //=============================================================================

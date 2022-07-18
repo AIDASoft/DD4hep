@@ -151,6 +151,8 @@ namespace dd4hep {
     inline Geant4Tracker::Hit& Geant4Tracker::Hit::clear()    { return *this; }
     /// Store Geant4 point and step information into tracker hit structure.
     inline Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const G4Step*, const G4StepPoint*)  { return *this;}
+    /// Store Geant4 spot information into tracker hit structure.
+    inline Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const G4GFlashSpot*)  { return *this;}    
     /// Default constructor
     inline Geant4Calorimeter::Hit::Hit() : energyDeposit(0e0)  {    }
     /// Initializing constructor

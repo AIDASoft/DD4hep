@@ -13,65 +13,65 @@
 
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Shapes.h"
-#include "DD4hep/Volumes.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/PropertyTable.h"
-#include "DD4hep/detail/ShapesInterna.h"
-#include "DD4hep/detail/ObjectsInterna.h"
-#include "DD4hep/detail/DetectorInterna.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Shapes.h>
+#include <DD4hep/Volumes.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/PropertyTable.h>
+#include <DD4hep/detail/ShapesInterna.h>
+#include <DD4hep/detail/ObjectsInterna.h>
+#include <DD4hep/detail/DetectorInterna.h>
 
-#include "DDG4/Geant4Field.h"
-#include "DDG4/Geant4Converter.h"
-#include "DDG4/Geant4UserLimits.h"
+#include <DDG4/Geant4Field.h>
+#include <DDG4/Geant4Converter.h>
+#include <DDG4/Geant4UserLimits.h>
 #include "Geant4ShapeConverter.h"
 
 // ROOT includes
-#include "TMath.h"
-#include "TROOT.h"
-//#include "TColor.h"
-//#include "TGeoManager.h"
-#include "TGeoBoolNode.h"
+#include <TMath.h>
+#include <TROOT.h>
+//#include <TColor.h>
+//#include <TGeoManager.h>
+#include <TGeoBoolNode.h>
 
 // Geant4 include files
-#include "G4Version.hh"
-#include "G4VisAttributes.hh"
-#include "G4ProductionCuts.hh"
-#include "G4VUserRegionInformation.hh"
+#include <G4Version.hh>
+#include <G4VisAttributes.hh>
+#include <G4ProductionCuts.hh>
+#include <G4VUserRegionInformation.hh>
 
-#include "G4Box.hh"
-#include "G4Tubs.hh"
-#include "G4Ellipsoid.hh"
-#include "G4UnionSolid.hh"
-#include "G4ReflectedSolid.hh"
-#include "G4SubtractionSolid.hh"
-#include "G4IntersectionSolid.hh"
-#include "G4VSensitiveDetector.hh"
+#include <G4Box.hh>
+#include <G4Tubs.hh>
+#include <G4Ellipsoid.hh>
+#include <G4UnionSolid.hh>
+#include <G4ReflectedSolid.hh>
+#include <G4SubtractionSolid.hh>
+#include <G4IntersectionSolid.hh>
+#include <G4VSensitiveDetector.hh>
 
-#include "G4Region.hh"
-#include "G4Element.hh"
-#include "G4Element.hh"
-#include "G4Isotope.hh"
-#include "G4Material.hh"
-#include "G4UserLimits.hh"
-#include "G4FieldManager.hh"
-#include "G4LogicalVolume.hh"
-#include "G4ReflectionFactory.hh"
-#include "G4OpticalSurface.hh"
-#include "G4LogicalSkinSurface.hh"
-#include "G4ElectroMagneticField.hh"
-#include "G4LogicalBorderSurface.hh"
-#include "G4MaterialPropertiesTable.hh"
+#include <G4Region.hh>
+#include <G4Element.hh>
+#include <G4Element.hh>
+#include <G4Isotope.hh>
+#include <G4Material.hh>
+#include <G4UserLimits.hh>
+#include <G4FieldManager.hh>
+#include <G4LogicalVolume.hh>
+#include <G4ReflectionFactory.hh>
+#include <G4OpticalSurface.hh>
+#include <G4LogicalSkinSurface.hh>
+#include <G4ElectroMagneticField.hh>
+#include <G4LogicalBorderSurface.hh>
+#include <G4MaterialPropertiesTable.hh>
 #if G4VERSION_NUMBER >= 1040
-#include "G4MaterialPropertiesIndex.hh"
+#include <G4MaterialPropertiesIndex.hh>
 #endif
 #if G4VERSION_NUMBER >= 1030
-#include "G4ScaledSolid.hh"
+#include <G4ScaledSolid.hh>
 #endif
-#include "CLHEP/Units/SystemOfUnits.h"
+#include <CLHEP/Units/SystemOfUnits.h>
 
 // C/C++ include files
 #include <iostream>
@@ -84,8 +84,8 @@ using namespace dd4hep::sim;
 using namespace dd4hep;
 using namespace std;
 
-#include "DDG4/Geant4AssemblyVolume.h"
-#include "DD4hep/DetectorTools.h"
+#include <DDG4/Geant4AssemblyVolume.h>
+#include <DD4hep/DetectorTools.h>
 
 static constexpr const double CM_2_MM = (CLHEP::centimeter/dd4hep::centimeter);
 static constexpr const char* GEANT4_TAG_IGNORE = "Geant4-ignore";
