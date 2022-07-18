@@ -12,7 +12,6 @@
 #
 from __future__ import absolute_import, unicode_literals
 import os
-import sys
 import time
 import DDG4
 from DDG4 import OutputLevel as Output
@@ -40,7 +39,7 @@ def run():
   geant4.printDetectors()
   # Configure UI
   if args.macro:
-    ui = geant4.setupCshUI(macro=macro)
+    ui = geant4.setupCshUI(macro=args.macro)
   else:
     ui = geant4.setupCshUI()
   if args.batch:
