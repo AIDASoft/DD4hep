@@ -147,7 +147,10 @@ namespace  Tests {
   }
 
   /// Method for generating hit(s) using the information of G4Step object.
-  template <> bool Geant4SensitiveAction<LcioTestTracker>::process(const Geant4FastSimSpot* ,G4TouchableHistory* /*hist*/ ) {
+  template <> bool 
+  Geant4SensitiveAction<LcioTestTracker>::processFastSim(const Geant4FastSimSpot*  /* spot */,
+							 G4TouchableHistory* /*hist*/ )
+  {
     except("Not implemented");
     return true;
   }
