@@ -90,6 +90,7 @@ namespace dd4hep  {
 #if G4VERSION_NUMBER > 1070
 #include "G4FastSimHitMaker.hh"
 #else
+class G4FastHit;
 class G4FastSimHitMaker  {  public:  void make(const G4FastHit&, const G4FastTrack&)  { } };
 #endif
 
