@@ -942,6 +942,12 @@ UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Transform
   _assign(new TGeoCompositeShape("", uni), "", UNION_TAG, true);
 }
 
+/// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
+UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& trans1, const Transform3D& trans2) {
+  TGeoUnion* uni = new TGeoUnion(shape1, shape2, detail::matrix::_transform(trans1), detail::matrix::_transform(trans2));
+  _assign(new TGeoCompositeShape("", uni), "", UNION_TAG, true);
+}
+
 /// Constructor to be used when creating a new object. Rotation is identity rotation
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos) {
   TGeoUnion* uni = new TGeoUnion(shape1, shape2, detail::matrix::_identity(), detail::matrix::_translation(pos));
