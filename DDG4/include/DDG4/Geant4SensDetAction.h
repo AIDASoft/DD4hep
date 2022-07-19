@@ -569,6 +569,7 @@ namespace dd4hep {
       virtual void initialize()  final;
       /// Finalization overload for specialization
       virtual void finalize()  final;
+
       /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
       virtual void begin(G4HCofThisEvent* hce)  final;
       /// G4VSensitiveDetector interface: Method invoked at the end of each event.
