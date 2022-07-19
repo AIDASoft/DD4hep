@@ -88,6 +88,8 @@ namespace dd4hep {
 
       /// Primary track position
       G4ThreeVector trackPosition() const  { return primary->GetPosition();      }
+      /// Primary track momentum
+      G4ThreeVector trackMomentum() const  { return primary->GetMomentum();      }
       /// Primary track kinetic energy
       double kineticEnergy() const         { return primary->GetKineticEnergy(); }
       /// Primary track particle definition

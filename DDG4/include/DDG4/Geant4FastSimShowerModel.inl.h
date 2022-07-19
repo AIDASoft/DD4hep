@@ -85,4 +85,12 @@ namespace dd4hep  {
     }
   }     /* End namespace sim   */
 }       /* End namespace dd4hep */
+
+#include "G4Version.hh"
+#if G4VERSION_NUMBER > 1070
+#include "G4FastSimHitMaker.hh"
+#else
+class G4FastSimHitMaker  {  public:  void make(const G4FastHit&, const G4FastTrack&)  { } };
+#endif
+
 #endif  // DDG4_GEANT4FASTSIMSHOWERMODEL_INL_H
