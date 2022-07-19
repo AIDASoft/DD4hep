@@ -74,7 +74,7 @@ namespace  Tests {
       Base::end(hce);
     }
     /// G4VSensitiveDetector interface: Method for generating hit(s) using the G4Step object.
-    virtual bool process(G4Step* step, G4TouchableHistory* history)  override   {
+    virtual bool process(const G4Step* step, G4TouchableHistory* history)  override   {
       return Base::process(step,history);
     }
     /// GFlash/FastSim interface: Method for generating hit(s) using the G4Step object.
@@ -106,7 +106,7 @@ namespace  Tests {
   }
 
   /// Method for generating hit(s) using the information of G4Step object.
-  template <> bool Geant4SensitiveAction<LcioTestTracker>::process(G4Step* step,G4TouchableHistory* /*hist*/ ) {
+  template <> bool Geant4SensitiveAction<LcioTestTracker>::process(const G4Step* step,G4TouchableHistory* /*hist*/ ) {
     Geant4StepHandler h(step);
 
     Position prePos    = h.prePos();

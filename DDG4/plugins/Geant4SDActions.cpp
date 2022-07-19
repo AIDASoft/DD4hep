@@ -542,11 +542,11 @@ namespace dd4hep {
       }
       void update(const Geant4StepHandler& h) {
         post.storePoint(h.step, h.post);
-	update_collected_hit(h.preTouchable(), std::move(h.avgPositionG4())); // Compute cellID
+	update_collected_hit(h.preTouchable(), h.avgPositionG4()); // Compute cellID
       }
       void update(const Geant4FastSimHandler& h)   {
         post.storePoint(h.spot);
-	update_collected_hit(h.touchable(), std::move(h.avgPositionG4()));       // Compute cellID
+	update_collected_hit(h.touchable(), h.avgPositionG4());       // Compute cellID
       }
 
       /// Clear collected information and restart for new hit
