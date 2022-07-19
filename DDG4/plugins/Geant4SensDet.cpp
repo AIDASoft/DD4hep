@@ -23,12 +23,26 @@
 #include <DDG4/Geant4SensDetAction.h>
 
 // Geant4 include files
+#include <G4Run.hh>
+#include <G4Event.hh>
+#include "G4Version.hh"
 #include <G4TouchableHistory.hh>
 #include <G4VSensitiveDetector.hh>
 #include <G4VGFlashSensitiveDetector.hh>
+#if G4VERSION_NUMBER < 1070
+/// Lower versions of Geant4 do not provide G4VFastSimSensitiveDetector
+class G4VFastSimSensitiveDetector  {
+public:
+  G4VFastSimSensitiveDetector() = default;
+  virtual ~G4VFastSimSensitiveDetector() = default;
+  /// Geant4 Fast simulation interface
+  virtual G4bool ProcessHits(const G4FastHit* hit,
+			     const G4FastTrack* track,
+			     G4TouchableHistory* hist) = 0;
+};
+#else
 #include <G4VFastSimSensitiveDetector.hh>
-#include <G4Event.hh>
-#include <G4Run.hh>
+#endif
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
