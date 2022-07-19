@@ -30,17 +30,11 @@
 // Framework include files
 #include <DDG4/Geant4FastSimShowerModel.inl.h>
 #include <DDG4/Geant4FastSimSpot.h>
+#include <DDG4/Geant4Random.h>
 
 // Geant4 include files
-#include "G4Version.hh"
 #include "G4Gamma.hh"
-#include "Randomize.hh"
 #include "G4SystemOfUnits.hh"
-#if G4VERSION_NUMBER > 1070
-#include "G4FastSimHitMaker.hh"
-#else
-class G4FastSimHitMaker  {  public:  void make(const G4FastHit&, const G4FastTrack&)  { } };
-#endif
 
 // C/C++ include files
 
@@ -121,15 +115,16 @@ namespace dd4hep  {
       xShower = zShower.orthogonal();
       yShower = zShower.cross(xShower);
       // starting point of the shower:
+      Geant4Random* rndm    = Geant4Random::instance();
       G4ThreeVector sShower = spot.particleLocalPosition();
       for (int i = 0; i < nSpots; i++)    {
 	// Longitudinal profile: -- shoot z according to Gamma distribution:
-	G4double bt  = G4RandGamma::shoot(a,1.0);
+	G4double bt  = rndm->gamma(a, 1e0);
 	G4double t   = bt/b;                       // t : reduced quantity = z/X0:
 	G4double z   = t*X0;
 	// transverse profile: we set 90% of energy in one Rm, the rest between 1 and 3.5 Rm:
-	G4double xr  = G4UniformRand();
-	G4double phi = G4UniformRand()*twopi;
+	G4double xr  = rndm->uniform(0e0,1e0);
+	G4double phi = rndm->uniform(0e0,twopi);
 	G4double r;
 	if (xr < 0.9) r = xr/0.9*Rm;
 	else r = ((xr - 0.9)/0.1*2.5 + 1.0)*Rm;
@@ -194,11 +189,11 @@ namespace dd4hep  {
       G4double      Energy  = primary->GetKineticEnergy();
       G4int         nSpot   = 50;
       G4double      deposit = Energy/double(nSpot);
-
+      Geant4Random* rndm    = Geant4Random::instance();
       for (int i = 0; i < nSpot; i++)  {
-	double z   = G4RandGauss::shoot(0,20*cm);
-	double r   = G4RandGauss::shoot(0,10*cm);
-	double phi = G4UniformRand()*twopi;
+	double z   = rndm->gauss(0, 20*cm);
+	double r   = rndm->gauss(0, 10*cm);
+	double phi = rndm->uniform(0e0, twopi);
 	G4ThreeVector position = showerCenter + z*zShower + r*std::cos(phi)*xShower + r*std::sin(phi)*yShower;
 	/// Process spot and call sensitive detector
 	G4FastHit hit(position, deposit);
