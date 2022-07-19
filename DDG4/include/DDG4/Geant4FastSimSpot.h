@@ -26,10 +26,12 @@
 class G4FastHit
 {
  public:
-  G4FastHit();
-  G4FastHit(const G4ThreeVector& aPosition, G4double aEnergy);
-  G4FastHit(const G4ThreeVector& aPosition, G4double aEnergy, G4bool aDebug);
-  virtual ~G4FastHit(){};
+  G4FastHit() = default;
+  G4FastHit(const G4ThreeVector& aPosition, G4double aEnergy)
+    : fEnergy(aEnergy), fPosition(aPosition) {}
+  G4FastHit(const G4ThreeVector& aPosition, G4double aEnergy, G4bool /* aDebug */);
+    : fEnergy(aEnergy), fPosition(aPosition) {}
+  virtual ~G4FastHit() = default;
 
   /// Set energy
   inline void SetEnergy(const G4double& aEnergy) { fEnergy = aEnergy; }
@@ -44,9 +46,9 @@ class G4FastHit
   inline G4ThreeVector GetPosition() const { return fPosition; }
  private:
   /// energy
-  G4double fEnergy = 0;
+  G4double fEnergy  {0e0};
   /// position
-  G4ThreeVector fPosition = G4ThreeVector();
+  G4ThreeVector fPosition  { };
 };
 #else
 #include <G4FastHit.hh>
