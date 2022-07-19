@@ -13,6 +13,9 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/DD4hepUnits.h"
+#include "DD4hep/DetType.h"
+#include "DDRec/DetectorData.h"
+#include "XML/Utilities.h"
 
 #include <cmath>
 #include <string>
@@ -25,19 +28,27 @@ using dd4hep::RotateY;
 using dd4hep::RotateX;
 using dd4hep::ConeSegment;
 using dd4hep::SubtractionSolid;
+using dd4hep::UnionSolid;
 using dd4hep::Material;
 using dd4hep::Volume;
 using dd4hep::Solid;
 using dd4hep::Tube;
 using dd4hep::PlacedVolume;
 using dd4hep::Assembly;
+using dd4hep::Detector;
+using dd4hep::SensitiveDetector;
+using dd4hep::Ref_t;
+
 namespace units = dd4hep;
 
-static dd4hep::Ref_t create_element(dd4hep::Detector& description,
-					      xml_h xmlHandle,
-					      dd4hep::SensitiveDetector /*sens*/) {
+
+static Ref_t create_detector(Detector& description,
+			     xml_h xmlHandle,
+			     SensitiveDetector sens) {
 
   printout(dd4hep::DEBUG,"DD4hep_Mask", "Creating Mask" ) ;
+  std::cout << " and this is the sensitive detector: " << &sens  << std::endl;
+  std::cout << " and the type is: " << sens.type()  << std::endl;
 
   //Access to the XML File
   xml_det_t xmlMask = xmlHandle;
@@ -58,6 +69,11 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
   if (xmlParameter.hasAttr(_Unicode(rotationX)))
     rotationX = xmlParameter.attr< bool >(_Unicode(rotationX));
 
+  int counter = 0; 
+  Solid FinalSolid; 
+  Solid tempFinalSolid; 
+  Material sectionMat;
+  bool isSensitive = false;
   for(xml_coll_t c( xmlMask ,Unicode("section")); c; ++c) {
 
     xml_comp_t xmlSection( c );
@@ -70,7 +86,7 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
     const double rOuterStart  = xmlSection.attr< double > (_Unicode(rMax1));
     const double rOuterEnd    = xmlSection.attr< double > (_Unicode(rMax2));
     const double thickness    = rOuterStart - rInnerStart;
-    Material sectionMat  = description.material(xmlSection.materialStr());
+    sectionMat  = description.material(xmlSection.materialStr());
     const std::string volName      = "tube_" + xmlSection.nameStr();
 
     double phi1 = 0 ;
@@ -79,6 +95,15 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
       phi1 = xmlSection.attr< double > (_U(phi1));
     if (xmlSection.hasAttr(_U(phi2)))
       phi2 = xmlSection.attr< double > (_U(phi2));
+
+    std::string ssensitive = "none";
+    if (xmlSection.hasAttr(_U(sensitive))){
+      isSensitive = true;
+        ssensitive = xmlSection.attr< std::string > (_U(sensitive));
+	sens.setType( xmlSection.attr< std::string > (_U(sensitive))  );  //decide the type of SD (tracker / calorimeter) check for k4run
+	printout(dd4hep::DEBUG, "sensitive in sens ", ssensitive);
+      }
+
 
     std::stringstream pipeInfo;
     pipeInfo << std::setw(8) << zStart      /units::mm
@@ -92,15 +117,15 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	     << std::setw(35) << volName
 	     << std::setw(15) << sectionMat.name()
 	     << std::setw(8) << phi1
-	     << std::setw(8) << phi2;
+	     << std::setw(8) << phi2
+	     << std::setw(8) << ssensitive;
 
     printout(dd4hep::INFO, "DD4hep_Mask", pipeInfo.str() );
 
     // things which can be calculated immediately
     const double zHalf       = fabs(zEnd - zStart) * 0.5; // half z length of the cone
     const double zPosition   = fabs(zEnd + zStart) * 0.5; // middle z position
-    Material material    = sectionMat;
-
+   
     // this could mess up your geometry, so better check it
     if (not ODH::checkForSensibleGeometry(crossingAngle, crossType)){
       throw std::runtime_error( " Mask_o1_v01_geo.cpp : checkForSensibleGeometry() failed " ) ;
@@ -110,12 +135,15 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
     const double mirrorAngle = M_PI - rotateAngle; // for the "mirrored" placement at -z
     // the "mirroring" in fact is done by a rotation of (almost) 180 degrees around the y-axis
 
+    Solid temptempFinalSolid;
+    
     switch (crossType) {
     case ODH::kCenter:
     case ODH::kUpstream:
     case ODH::kDnstream: {
       // a volume on the z-axis, on the upstream branch, or on the downstream branch
       Transform3D transformer, transmirror;
+
       if( rotationX == true) {
         // absolute transformations for the placement in the world, rotate over X
         transformer = Transform3D(RotationX(rotateAngle), RotateX( Position(0, 0, zPosition), rotateAngle) );
@@ -125,16 +153,11 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	transformer = Transform3D(RotationY(rotateAngle), RotateY( Position(0, 0, zPosition), rotateAngle) );
 	transmirror = Transform3D(RotationY(mirrorAngle), RotateY( Position(0, 0, zPosition), mirrorAngle) );
       }
-      // solid for the tube (including vacuum and wall): a solid cone
-      ConeSegment tubeSolid( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);
-
-      // tube consists of vacuum
-      Volume tubeLog( volName, tubeSolid, material ) ;
-      tubeLog.setVisAttributes(description, xmlMask.visStr() );
-
-      // placement of the tube in the world, both at +z and -z
-      envelope.placeVolume( tubeLog,  transformer );
-      envelope.placeVolume( tubeLog,  transmirror );
+      
+      ConeSegment tubeSolid0( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);
+      ConeSegment tubeSolid1( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);
+      
+      temptempFinalSolid = UnionSolid( tubeSolid0, tubeSolid1, transformer, transmirror);
 
     }
       break;
@@ -179,16 +202,8 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 	finalSolid1 = tmpSolid1;
       }
 
-      // tube consists of vacuum (will later have two different daughters)
-      Volume tubeLog0( volName + "_0", finalSolid0, material );
-      Volume tubeLog1( volName + "_1", finalSolid1, material );
-      tubeLog0.setVisAttributes(description, xmlMask.visStr() );
-      tubeLog1.setVisAttributes(description, xmlMask.visStr() );
-
-      // placement of the tube in the world, both at +z and -z
-      envelope.placeVolume( tubeLog0, placementTransformer );
-      envelope.placeVolume( tubeLog1, placementTransmirror );
-
+      temptempFinalSolid = UnionSolid( finalSolid0, finalSolid1, placementTransformer, placementTransmirror);//carcange
+      
       break;
     }
 
@@ -218,16 +233,8 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
       SubtractionSolid finalSolid0( wholeSolid, punchSolid, punchTransformer);
       SubtractionSolid finalSolid1( wholeSolid, punchSolid, punchTransmirror);
 
-      // tube consists of vacuum (will later have two different daughters)
-      Volume tubeLog0( volName + "_0", finalSolid0, material );
-      Volume tubeLog1( volName + "_1", finalSolid1, material );
-      tubeLog0.setVisAttributes(description, xmlMask.visStr() );
-      tubeLog1.setVisAttributes(description, xmlMask.visStr() );
-
-      // placement of the tube in the world, both at +z and -z
-      envelope.placeVolume( tubeLog0, placementTransformer );
-      envelope.placeVolume( tubeLog1, placementTransmirror );
-
+      temptempFinalSolid = UnionSolid( finalSolid0, finalSolid1, placementTransformer, placementTransmirror);
+      
       break;
     }
     default: {
@@ -235,8 +242,22 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
     }
 
     }//end switch
+
+    if(counter>0) tempFinalSolid = UnionSolid(FinalSolid,temptempFinalSolid);
+    else tempFinalSolid = temptempFinalSolid;
+    FinalSolid = tempFinalSolid;
+    counter++;
+    
   }//for all xmlSections
 
+  //Assembly does not like adding different sensitive volumes
+  //so I merge them before and assign sens to the total
+   Volume tubeLog( "TubeMerge", FinalSolid, sectionMat );
+   tubeLog.setVisAttributes(description, xmlMask.visStr() );
+
+   if (isSensitive) tubeLog.setSensitiveDetector(sens);  //assigning to the volume vol the handle "sens"
+   envelope.placeVolume( tubeLog );
+  
   //--------------------------------------
   Volume mother =  description.pickMotherVolume( tube ) ;
   PlacedVolume pv(mother.placeVolume(envelope));
@@ -248,4 +269,4 @@ static dd4hep::Ref_t create_element(dd4hep::Detector& description,
 
   return tube;
 }
-DECLARE_DETELEMENT(DD4hep_Mask_o1_v01,create_element)
+DECLARE_DETELEMENT(DD4hep_Mask_o1_v01,create_detector)
