@@ -94,7 +94,7 @@ namespace dd4hep  {
   }
 
   bool _toBool(const string& value) {
-    return value == "true" || value == "yes";
+    return value == "true" || value == "yes" || value == "True";
   }
 
   /// String conversions: string to float value

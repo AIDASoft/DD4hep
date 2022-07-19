@@ -56,6 +56,15 @@ enable_testing ()
 include(CTest)
 #---  Testing  ------------------------------------------------------------
 #
+#  Test Component properties
+dd4hep_add_test_reg( ClientTests_property_test
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -plugin DD4hep_property_test
+  REGEX_PASS "Test PASSED"
+  REGEX_FAIL "Test FAILED"
+  REGEX_FAIL "FAILED"
+  )
+#
 #  Test Volume scanner for CMS
 dd4hep_add_test_reg( ClientTests_volume_scanner
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"

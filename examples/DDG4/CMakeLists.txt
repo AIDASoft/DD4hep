@@ -44,7 +44,8 @@ if (DD4HEP_USE_GEANT4)
   install(FILES ${LIBRARY_OUTPUT_PATH}/G__DDG4UserDict.rootmap DESTINATION lib)
   #
   #
-  dd4hep_install_dir(data DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDG4 )
+  dd4hep_install_dir(data    DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDG4 )
+  dd4hep_install_dir(scripts DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDG4 )
   #
   dd4hep_configure_scripts (DDG4 DEFAULT_SETUP WITH_TESTS)
   #
@@ -61,4 +62,12 @@ if (DD4HEP_USE_GEANT4)
     EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/examples/DDG4/examples/readHEPMC.py
                       ${DDG4examples_INSTALL}/data/LHCb_MinBias_HepMC.txt
     REGEX_PASS "Geant4InputAction\\[Input\\]: Event 27 Error when moving to event -  EOF")
+  #
+  # Test property types with specialized action
+  dd4hep_add_test_reg( DDG4_Test_property_types
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${DDG4examples_INSTALL}/scripts/TestProperties.py
+    REGEX_PASS "Test PASSED"
+    REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
 endif()

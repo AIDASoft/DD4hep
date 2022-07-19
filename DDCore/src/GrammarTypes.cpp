@@ -12,13 +12,28 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Objects.h"
-#include "DD4hep/GrammarParsed.h"
+#include <DD4hep/GrammarParsed.h>
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
-DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::XYZPoint,eval_obj)
-DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::XYZVector,eval_obj)
-DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::PxPyPzEVector,eval_obj)
+
+/// ROOT include files
+#include <Math/Point3D.h>
+#include <Math/Vector4D.h>
+#include <Math/Vector3D.h>
+
+namespace ROOT {
+  namespace Math {
+    /// Allow point insertion of a point in maps
+    bool operator<(const XYZPoint& a, const XYZPoint& b);
+    /// Allow 3-vector insertion of a  in maps
+    bool operator<(const XYZVector& a, const XYZVector& b);
+    /// Allow 4-vector insertion of a  in maps
+    bool operator<(const PxPyPzEVector& a, const PxPyPzEVector& b);
+  }
+}
+DD4HEP_DEFINE_PARSER_GRAMMAR_ROOTMATH(ROOT::Math::XYZPoint,eval_obj)
+DD4HEP_DEFINE_PARSER_GRAMMAR_ROOTMATH(ROOT::Math::XYZVector,eval_obj)
+DD4HEP_DEFINE_PARSER_GRAMMAR_ROOTMATH(ROOT::Math::PxPyPzEVector,eval_obj)
 #endif
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
