@@ -45,33 +45,17 @@
       <!-- Mother volume dimensions  -->
       <box x="120*cm" y="120*cm" z="120*cm" material="Air"/>
       <!-- Mother volume placement in the world -->
-      <position x="-60*cm" y="-60*cm" z="-60*cm"/>
+      <position x="0*cm" y="0*cm" z="-120*cm"/>
       <rotation x="0" y="0" z="0"/>
 
       <!-- Parameterisation arguments -->
-      <param x="2*cm" y="2*cm" z="2*cm" material="Iron" vis="VisibleRed" limits="param_limits">
+      <param x="15*cm" y="10*cm" z="2*cm" material="Iron" vis="VisibleRed" limits="param_limits">
 	<start>
 	  <!-- Parameterisation start position in the mother volume frame  -->
-	  <position x="-100*cm" y="-100*cm" z="-100*cm"/>
+	  <position x="0*cm" y="0*cm" z="0*cm"/>
 	  <rotation x="0" y="0" z="0"/>
 	</start>
-	<transformation>
-	  <!-- Parameterisation in dimension 1 with 20 placements -->
-	  <dim_x repeat="20">
-	    <position x="10*cm" y="0*cm" z="0*cm"/>
-	    <rotation x="0"     y="0"    z="0"/>
-	  </dim_x>
-	  <!-- Parameterisation in dimension 2 with 20 placements -->
-	  <dim_y repeat="20">
-	    <position x="0*cm" y="10*cm" z="0*cm"/>
-	    <rotation x="0"    y="0"     z="0"/>
-	  </dim_y>
-	  <!-- Parameterisation in dimension 3 with 20 placements -->
-	  <dim_z repeat="20">
-	    <position x="0*cm" y="0*cm" z="10*cm"/>
-	    <rotation x="0"    y="0"    z="0"/>
-	  </dim_z>
-	</transformation>
+	<replicate count="1" distance="10*cm" start="0*cm" axis="z"/>
       </param>
     </detector>
   </detectors>

@@ -44,36 +44,57 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   xml_comp_t x_param = x_det.child(_U(param));
   Box        box     (x_param.x(), x_param.y(), x_param.z());
   Volume     box_vol (x_det.nameStr()+"_param", box, description.material(x_param.materialStr()));
-  xml_dim_t  x_trafo = x_param.transformation();
-  xml_dim_t  x_dim_x = x_trafo.child(_U(dim_x));
-  Transform3D start, trafo1;
   PlacedVolume pv;
 
-  if ( x_param.hasChild(_U(start)) )   {
-    start = get_trafo(x_param.child(_U(start)));
+  if ( x_param.hasChild(_U(replicate)) )   {
+    xml_dim_t x_repl = x_param.child(_U(replicate));
+    std::string   ax = x_repl.attr<std::string>(_U(axis));
+    Volume::ReplicationAxis axis = Volume::Undefined;
+    ax[0] = ::toupper(ax[0]);
+    if ( ax[0] == 'X' ) axis = Volume::X_axis;
+    if ( ax[0] == 'Y' ) axis = Volume::Y_axis;
+    if ( ax[0] == 'Z' ) axis = Volume::Z_axis;
+    if ( ax[0] == 'R' ) axis = Volume::Rho_axis;
+    if ( ax[0] == 'P' ) axis = Volume::Phi_axis;
+    pv = envelope_vol.replicate(box_vol, axis,
+				x_repl.count(),
+				x_repl.distance(),
+				x_repl.start());
   }
+  else if ( x_param.hasChild(_U(transformation)) )   {
+    xml_dim_t  x_dim_x, x_dim_y, x_dim_z, x_trafo = x_param.transformation();
+    Transform3D start, trafo1, trafo2, trafo3;
 
-  trafo1 = get_trafo(x_trafo.child(_U(dim_x)));
+    if ( x_param.hasChild(_U(start)) )   {
+      start = get_trafo(x_param.child(_U(start)));
+    }
+    if ( x_trafo.hasChild(_U(dim_x)) )    {
+      x_dim_x = x_trafo.child(_U(dim_x));
+      trafo1 = get_trafo(x_dim_x);
+    }
+    if ( x_trafo.hasChild(_U(dim_y)) )    {
+      x_dim_y = x_trafo.child(_U(dim_y));
+      trafo2 = get_trafo(x_dim_y);
+    }
+    if ( x_trafo.hasChild(_U(dim_z)) )    {
+      x_dim_z = x_trafo.child(_U(dim_z));
+      trafo3 = get_trafo(x_dim_z);
+    }
 
-  if ( x_trafo.hasChild(_U(dim_y)) && x_trafo.hasChild(_U(dim_z)) )    {
-    xml_dim_t   x_dim_y = x_trafo.child(_U(dim_y));
-    xml_dim_t   x_dim_z = x_trafo.child(_U(dim_z));
-    Transform3D trafo2 = get_trafo(x_dim_y);
-    Transform3D trafo3 = get_trafo(x_dim_z);
-    pv = envelope_vol.paramVolume3D(start, box_vol, 
-				    x_dim_x.repeat(), trafo1,
-				    x_dim_y.repeat(), trafo2,
-				    x_dim_z.repeat(), trafo3);
-  }
-  else if ( x_trafo.hasChild(_U(dim_y)) )    {
-    xml_dim_t   x_dim_y = x_trafo.child(_U(dim_y));
-    Transform3D trafo2 = get_trafo(x_dim_y);
-    pv = envelope_vol.paramVolume2D(start, box_vol, 
-				    x_dim_x.repeat(), trafo1, 
-				    x_dim_y.repeat(), trafo2);
-  }
-  else   {
-    pv = envelope_vol.paramVolume1D(start, box_vol, x_dim_x.repeat(), trafo1);
+    if ( x_trafo.hasChild(_U(dim_y)) && x_trafo.hasChild(_U(dim_z)) )    {
+      pv = envelope_vol.paramVolume3D(start, box_vol, 
+				      x_dim_x.repeat(), trafo1,
+				      x_dim_y.repeat(), trafo2,
+				      x_dim_z.repeat(), trafo3);
+    }
+    else if ( x_trafo.hasChild(_U(dim_y)) )    {
+      pv = envelope_vol.paramVolume2D(start, box_vol, 
+				      x_dim_x.repeat(), trafo1, 
+				      x_dim_y.repeat(), trafo2);
+    }
+    else   {
+      pv = envelope_vol.paramVolume1D(start, box_vol, x_dim_x.repeat(), trafo1);
+    }
   }
   if ( sens.isValid() )   {
     sens.setType("calorimeter");

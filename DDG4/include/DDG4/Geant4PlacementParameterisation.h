@@ -62,17 +62,21 @@ namespace dd4hep {
       using Translations = std::vector<G4ThreeVector>;
       using Dimensions   = std::vector<Dimension>;
 
-      /// Setup parameters
+      /// Setup parameters: Reference to the DD4hep placement handle
+      PlacedVolume         m_placement;
+      /// Setup parameters: Reference to the DD4hep placement parameters
+      const Parameters&    m_params;
+      /// Setup parameters: Initial parameterisation position
       Dimension            m_start          {  };
+      /// Setup parameters: Dimensional parameter setup
       Dimensions           m_dimensions     {  };
-      EAxis                m_axis           { kUndefined };
 
+      /// Axis definition
+      EAxis                m_axis           { kUndefined };
+      /// Total number of parameterized cells
+      size_t               m_num_cells      { 0UL };
       /// Optimization flag for simple parameteristions
       bool                 m_have_rotation  { false };
-
-      /// Reference to the DD4hep placement handle
-      PlacedVolume         m_placement;
-      const Parameters&    m_params;
 
       /// Cached rotations and translations for complex parameterisations
       mutable Rotations    m_rotations;

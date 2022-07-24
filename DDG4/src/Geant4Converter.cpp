@@ -31,8 +31,7 @@
 #include "Geant4ShapeConverter.h"
 
 // ROOT includes
-#include <TMath.h>
-#include <TROOT.h>
+#include <TClass.h>
 #include <TGeoBoolNode.h>
 
 // Geant4 include files
@@ -52,7 +51,6 @@
 #include <G4VSensitiveDetector.hh>
 
 #include <G4Region.hh>
-#include <G4Element.hh>
 #include <G4Element.hh>
 #include <G4Isotope.hh>
 #include <G4Material.hh>
@@ -594,7 +592,8 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       }
 
       if ( matrix->IsRotation() ) {
-        G4Transform3D transform(g4Transform(matrix));
+        G4Transform3D transform;
+	g4Transform(matrix, transform);
         if (oper == TGeoBoolNode::kGeoSubtraction)
           solid = new G4SubtractionSolid(name, left, right, transform);
         else if (oper == TGeoBoolNode::kGeoUnion)
@@ -728,8 +727,9 @@ void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) 
       TGeoNode*     dau     = mot_vol->GetNode(i);
       TGeoVolume*   dau_vol = dau->GetVolume();
       TGeoMatrix*   tr      = dau->GetMatrix();
-      G4Transform3D transform(g4Transform(tr));
+      G4Transform3D transform;
 
+      g4Transform(tr, transform);
       if ( is_left_handed(tr) )   {
         G4Scale3D     scale;
         G4Rotate3D    rot;
@@ -808,9 +808,10 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
       bool          node_is_reflected  = is_left_handed(tr);
       bool          node_is_assembly   = vol->IsA() == TGeoVolumeAssembly::Class();
       bool          mother_is_assembly = mot_vol ? mot_vol->IsA() == TGeoVolumeAssembly::Class() : false;
-      G4Transform3D transform(g4Transform(tr));
+      G4Transform3D transform;
       Geant4GeometryMaps::VolumeMap::const_iterator volIt = info.g4Volumes.find(mot_vol);
 
+      g4Transform(tr, transform);
       if ( mother_is_assembly )   {
         //
         // Mother is an assembly:
@@ -871,6 +872,15 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 	else
 	  except("Geant4Converter",
 		 "++ Replication around unknown axis is not implemented. flags: %16X", flags);
+	auto* g4pv = new G4PVReplica(name,      // its name
+				     g4vol,     // its logical volume
+				     g4mot,     // its mother (logical) volume
+				     axis,      // its replication axis
+				     count,     // Number of replicas
+				     width,     // Distanve between 2 replicas
+				     offset);   // Placement offset in axis direction
+	pvPlaced = { g4pv, nullptr };
+#if 0
 	pvPlaced =
 	  G4ReflectionFactory::Instance()->Replicate(name,      // its name
 						     g4vol,     // its logical volume
@@ -881,6 +891,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 						     offset);   // Placement offset in axis direction
 	/// Update replica list to avoid additional conversions...
 	auto* g4pv = pvPlaced.second ? pvPlaced.second : pvPlaced.first;
+#endif
 	for( auto& handle : pv_data->params->placements )
 	  info.g4Placements[handle.ptr()] = g4pv;
       }
@@ -899,12 +910,12 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
       }
       else    {
 	pvPlaced =
-	  G4ReflectionFactory::Instance()->Place(transform, // no rotation
-						 name,      // its name
-						 g4vol,     // its logical volume
-						 g4mot,     // its mother (logical) volume
-						 false,     // no boolean operations
-						 copy,      // its copy number
+	  G4ReflectionFactory::Instance()->Place(transform,     // no rotation
+						 name,          // its name
+						 g4vol,         // its logical volume
+						 g4mot,         // its mother (logical) volume
+						 false,         // no boolean operations
+						 copy,          // its copy number
 						 checkOverlaps);
       }
       printout(debugReflections||debugPlacements ? ALWAYS : lvl, "Geant4Converter",

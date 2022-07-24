@@ -26,10 +26,13 @@ namespace  {
   
   /// Overload to access protected constructor
   struct MyTransform3D : public G4Transform3D {
-    MyTransform3D(double XX, double XY, double XZ, double DX, double YX, double YY, double YZ, double DY, double ZX, double ZY,
-                  double ZZ, double DZ)
+#if 0
+    MyTransform3D(double XX, double XY, double XZ, double DX,
+		  double YX, double YY, double YZ, double DY,
+		  double ZX, double ZY, double ZZ, double DZ)
       : G4Transform3D(XX, XY, XZ, DX, YX, YY, YZ, DY, ZX, ZY, ZZ, DZ) {
     }
+#endif
     MyTransform3D(const double* t, const double* r)
       : G4Transform3D(r[0],r[1],r[2],t[0]*CM_2_MM,r[3],r[4],r[5],t[1]*CM_2_MM,r[6],r[7],r[8],t[2]*CM_2_MM)  {
     }
@@ -42,12 +45,9 @@ namespace  {
   class MyG4RotationMatrix : public G4RotationMatrix   {
   public:
     MyG4RotationMatrix() : G4RotationMatrix() {}
-    MyG4RotationMatrix(const double* r)
-      : G4RotationMatrix(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8])  {
+    MyG4RotationMatrix(const double* r) : G4RotationMatrix(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8])  {
     }
   };
-  const double identity[9] = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
-
 }
 
 G4RotationMatrix dd4hep::sim::g4Rotation(const TGeoMatrix* matrix)   {
@@ -76,13 +76,20 @@ G4RotationMatrix dd4hep::sim::g4Rotation(const RotationZYX& rot)   {
   return g4Rotation(Rotation3D(rot));
 }
 
-
 G4Transform3D dd4hep::sim::g4Transform(const double translation[])    {
   return MyTransform3D(translation);
 }
 
-G4Transform3D dd4hep::sim::g4Transform(const double translation[], const double rotation[])    {
+G4Transform3D dd4hep::sim::g4Transform(const double* translation, const double* rotation)    {
   return MyTransform3D(translation, rotation);
+}
+
+void dd4hep::sim::g4Transform(const double translation[], G4Transform3D& transform)    {
+  transform = MyTransform3D(translation);
+}
+
+void dd4hep::sim::g4Transform(const double* translation, const double* rotation, G4Transform3D& transform)    {
+  transform = MyTransform3D(translation, rotation);
 }
 
 G4Transform3D dd4hep::sim::g4Transform(const TGeoMatrix& matrix)   {
@@ -93,6 +100,16 @@ G4Transform3D dd4hep::sim::g4Transform(const TGeoMatrix* matrix)   {
   return matrix->IsRotation()
     ? g4Transform(matrix->GetTranslation(), matrix->GetRotationMatrix())
     : g4Transform(matrix->GetTranslation());
+}
+
+void dd4hep::sim::g4Transform(const TGeoMatrix* matrix, G4Transform3D& transform)   {
+  matrix->IsRotation()
+    ? g4Transform(matrix->GetTranslation(), matrix->GetRotationMatrix(), transform)
+    : g4Transform(matrix->GetTranslation(), transform);
+}
+
+void dd4hep::sim::g4Transform(const TGeoMatrix& matrix, G4Transform3D& transform)   {
+  g4Transform(&matrix, transform);
 }
 
 G4Transform3D dd4hep::sim::g4Transform(const TGeoTranslation& translation, const TGeoRotation& rotation)   {
@@ -111,6 +128,12 @@ G4Transform3D dd4hep::sim::g4Transform(const Position& pos, const Rotation3D& ro
   return g4Transform(t, r);
 }
 
+void dd4hep::sim::g4Transform(const Position& pos, const Rotation3D& rot, G4Transform3D& transform)   {
+  double r[9], t[3] = {pos.X(), pos.Y(), pos.Z()};
+  rot.GetComponents(r, r+9);
+  g4Transform(t, r, transform);
+}
+
 G4Transform3D dd4hep::sim::g4Transform(const Position& pos, const RotationZYX& rot)   {
   return g4Transform(pos, Rotation3D(rot));
 }
@@ -120,6 +143,13 @@ G4Transform3D dd4hep::sim::g4Transform(const Transform3D& matrix)   {
   Rotation3D rot;
   matrix.GetDecomposition(rot, pos);
   return g4Transform(pos, rot);
+}
+
+void dd4hep::sim::g4Transform(const Transform3D& matrix, G4Transform3D& transform)   {
+  Position pos;
+  Rotation3D rot;
+  matrix.GetDecomposition(rot, pos);
+  g4Transform(pos, rot, transform);
 }
 
 /// Generate parameterised placements in 2 dimension according to transformation delta

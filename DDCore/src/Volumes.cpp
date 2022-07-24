@@ -1001,6 +1001,8 @@ PlacedVolume Volume::paramVolume3D(const Transform3D& start,
   data->params->addref();
   data->params->flags = PARAMETERIZED;
   data->params->start = start;
+  data->params->trafo1D.first  = trafo_1;
+  data->params->trafo1D.second = count_1;
   data->params->trafo2D.first  = trafo_2;
   data->params->trafo2D.second = count_2;
   data->params->trafo3D.first  = trafo_3;
