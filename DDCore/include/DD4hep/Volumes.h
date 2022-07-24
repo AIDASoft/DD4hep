@@ -375,6 +375,7 @@ namespace dd4hep {
     enum ReplicationAxis  {
       REPLICATED    = 1UL << 4,
       PARAMETERIZED = 1UL << 5,
+      Undefined     = 1UL << 7,
       X_axis        = 1UL << 8,
       Y_axis        = 1UL << 9,
       Z_axis        = 1UL << 10,

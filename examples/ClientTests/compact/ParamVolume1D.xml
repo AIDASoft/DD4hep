@@ -41,7 +41,7 @@
   </limits>
 
   <detectors>
-    <detector id="1" name="Param1D_1" type="DD4hep_ParamVolume" vis="VisibleGreen" limits="param_limits">
+    <detector id="1" name="Param1D_1" type="DD4hep_ParamVolume" vis="VisibleGreen" readout="Hits1" limits="param_limits">
       <box x="20*cm" y="15*cm" z="150*cm" material="Air"/>
       <param x="15*cm" y="10*cm" z="2*cm" material="Iron" vis="VisibleRed" limits="param_limits">
 	<transformation>
@@ -58,7 +58,8 @@
       <position x="0" y="0" z="175*cm"/>
       <rotation x="0" y="0" z="0"/>
     </detector>
-    <detector id="2" name="Param1D_2" type="DD4hep_ParamVolume" vis="VisibleGreen" limits="param_limits">
+
+    <detector id="2" name="Param1D_2" type="DD4hep_ParamVolume" vis="VisibleGreen" readout="Hits2" limits="param_limits">
       <box x="20*cm" y="100*cm" z="15*cm" material="Air"/>
       <param x="15*cm" y="2*cm" z="10*cm" material="Iron" vis="VisibleBlue" limits="param_limits">
 	<transformation>
@@ -75,7 +76,8 @@
       <position x="0" y="130*cm" z="0*cm"/>
       <rotation x="0" y="0" z="0"/>
     </detector>
-    <detector id="3" name="Param1D_3" type="DD4hep_ParamVolume" vis="VisibleGreen" limits="param_limits">
+
+    <detector id="3" name="Param1D_3" type="DD4hep_ParamVolume" vis="VisibleGreen" readout="Hits3" limits="param_limits">
       <box x="100*cm" y="20*cm"  z="15*cm" material="Air"/>
       <param x="2*cm" y="15*cm" z="10*cm" material="Iron" vis="VisibleYellow" limits="param_limits">
 	<transformation>
@@ -93,7 +95,7 @@
       <rotation x="0" y="0" z="0"/>
     </detector>
 
-    <detector id="4" name="Param1D_4" type="DD4hep_ParamVolume" vis="VisibleGreen" limits="param_limits">
+    <detector id="4" name="Param1D_4" type="DD4hep_ParamVolume" vis="VisibleGreen" readout="Hits4" limits="param_limits">
       <box x="100*cm" y="20*cm"  z="15*cm" material="Air"/>
       <param x="2*cm" y="15*cm" z="10*cm" material="Iron" vis="VisibleViolet" limits="param_limits">
 	<transformation>
@@ -134,19 +136,19 @@
   <readouts>
     <readout name="Hits1">
       <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm"/>
-      <id>system:6,x:12:-6,y:24:-6</id> 
+      <id>system:6,volume:16,x:32:-6,y:48:-6</id> 
     </readout>
     <readout name="Hits2">
       <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm"/>
-      <id>system:6,x:12:-6,y:24:-6</id> 
+      <id>system:6,volume:16,x:32:-6,y:48:-6</id> 
     </readout>
     <readout name="Hits3">
       <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm"/>
-      <id>system:6,x:12:-6,y:24:-6</id> 
+      <id>system:6,volume:16,x:32:-6,y:48:-6</id> 
     </readout>
     <readout name="Hits4">
       <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm"/>
-      <id>system:6,side:2,x:12:-6,y:24:-6</id> 
+      <id>system:6,volume:16,x:32:-6,y:48:-6</id> 
     </readout>
   </readouts>
 

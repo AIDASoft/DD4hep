@@ -69,8 +69,15 @@ namespace dd4hep {
     
     /// These conversions automatically apply the conversion from CM to MM!
 
-    G4Transform3D g4Transform(const double translation[]);
-    G4Transform3D g4Transform(const double translation[], const double rotation[]);
+    void          g4Transform(const double* translation, const double* rotation, G4Transform3D& transform);
+    void          g4Transform(const Position& pos, const Rotation3D& rot, G4Transform3D& transform);
+    void          g4Transform(const double* translation, G4Transform3D& transform);
+    void          g4Transform(const Transform3D& matrix, G4Transform3D& transform);
+    void          g4Transform(const TGeoMatrix* matrix, G4Transform3D& transform);
+    void          g4Transform(const TGeoMatrix& matrix, G4Transform3D& transform);
+
+    G4Transform3D g4Transform(const double* translation);
+    G4Transform3D g4Transform(const double* translation, const double* rotation);
 
     G4Transform3D g4Transform(const Transform3D& matrix);
     G4Transform3D g4Transform(const Position& pos, const Rotation3D& rot);

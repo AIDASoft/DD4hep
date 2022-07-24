@@ -67,7 +67,7 @@
   <readouts>
     <readout name="Hits1">
       <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm"/>
-      <id>system:6,x:12:-6,y:24:-6</id> 
+      <id>system:6,volume:16,x:32:-6,y:48:-6</id> 
     </readout>
   </readouts>
 
