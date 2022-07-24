@@ -12,15 +12,15 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4Kernel.h"
-#include "DDG4/Geant4Mapping.h"
-#include "DDG4/Geant4StepHandler.h"
-#include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4VolumeManager.h"
-#include "DDG4/Geant4MonteCarloTruth.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4Kernel.h>
+#include <DDG4/Geant4Mapping.h>
+#include <DDG4/Geant4StepHandler.h>
+#include <DDG4/Geant4SensDetAction.h>
+#include <DDG4/Geant4VolumeManager.h>
+#include <DDG4/Geant4MonteCarloTruth.h>
 
 // Geant4 include files
 #include <G4Step.hh>
@@ -190,17 +190,17 @@ Detector& Geant4Sensitive::detectorDescription() const {
 }
 
 /// Access HitCollection container names
-const string& Geant4Sensitive::hitCollectionName(size_t which) const {
+const string& Geant4Sensitive::hitCollectionName(std::size_t which) const {
   return sequence().hitCollectionName(which);
 }
 
 /// Retrieve the hits collection associated with this detector by its serial number
-Geant4HitCollection* Geant4Sensitive::collection(size_t which) {
+Geant4HitCollection* Geant4Sensitive::collection(std::size_t which) {
   return sequence().collection(which);
 }
 
 /// Retrieve the hits collection associated with this detector by its collection identifier
-Geant4HitCollection* Geant4Sensitive::collectionByID(size_t id) {
+Geant4HitCollection* Geant4Sensitive::collectionByID(std::size_t id) {
   return sequence().collectionByID(id);
 }
 
@@ -343,14 +343,14 @@ void Geant4SensDetActionSequence::adopt(Geant4Filter* filter) {
 }
 
 /// Initialize the usage of a hit collection. Returns the collection identifier
-size_t Geant4SensDetActionSequence::defineCollection(Geant4Sensitive* owner, const std::string& collection_name, create_t func) {
+std::size_t Geant4SensDetActionSequence::defineCollection(Geant4Sensitive* owner, const std::string& collection_name, create_t func) {
   m_collections.emplace_back(collection_name, make_pair(owner,func));
   return m_collections.size() - 1;
 }
 
 /// Called at construction time of the sensitive detector to declare all hit collections
-size_t Geant4SensDetActionSequence::Geant4SensDetActionSequence::defineCollections(Geant4ActionSD* sens_det) {
-  size_t count = 0;
+std::size_t Geant4SensDetActionSequence::Geant4SensDetActionSequence::defineCollections(Geant4ActionSD* sens_det) {
+  std::size_t count = 0;
   m_detector = sens_det;
   m_actors(&Geant4Sensitive::setDetector, sens_det);
   m_actors(&Geant4Sensitive::defineCollections);
@@ -362,7 +362,7 @@ size_t Geant4SensDetActionSequence::Geant4SensDetActionSequence::defineCollectio
 }
 
 /// Access HitCollection container names
-const std::string& Geant4SensDetActionSequence::hitCollectionName(size_t which) const {
+const std::string& Geant4SensDetActionSequence::hitCollectionName(std::size_t which) const {
   if (which < m_collections.size()) {
     return m_collections[which].first;
   }
@@ -372,7 +372,7 @@ const std::string& Geant4SensDetActionSequence::hitCollectionName(size_t which) 
 }
 
 /// Retrieve the hits collection associated with this detector by its serial number
-Geant4HitCollection* Geant4SensDetActionSequence::collection(size_t which) const {
+Geant4HitCollection* Geant4SensDetActionSequence::collection(std::size_t which) const {
   if (which < m_collections.size()) {
     int hc_id = m_detector->GetCollectionID(which);
     Geant4HitCollection* c = (Geant4HitCollection*) m_hce->GetHC(hc_id);
@@ -385,7 +385,7 @@ Geant4HitCollection* Geant4SensDetActionSequence::collection(size_t which) const
 }
 
 /// Retrieve the hits collection associated with this detector by its collection identifier
-Geant4HitCollection* Geant4SensDetActionSequence::collectionByID(size_t id) const {
+Geant4HitCollection* Geant4SensDetActionSequence::collectionByID(std::size_t id) const {
   Geant4HitCollection* c = (Geant4HitCollection*) m_hce->GetHC(id);
   if (c)
     return c;
@@ -435,7 +435,7 @@ bool Geant4SensDetActionSequence::processFastSim(const Geant4FastSimSpot* spot, 
  */
 void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
   m_hce = hce;
-  for (size_t count = 0; count < m_collections.size(); ++count) {
+  for (std::size_t count = 0; count < m_collections.size(); ++count) {
     const HitCollection& cr = m_collections[count];
     Geant4HitCollection* col = (*cr.second.second)(name(), cr.first, cr.second.first);
     int id = m_detector->GetCollectionID(count);

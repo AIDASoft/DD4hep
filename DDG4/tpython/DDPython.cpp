@@ -142,7 +142,9 @@ DDPython::DDPython() : context(0)  {
   bool inited = ::Py_IsInitialized();
   if ( !inited ) {
     ::Py_Initialize();
+#if PY_MAJOR_VERSION <=2 || (PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION < 7)
     ::PyEval_InitThreads();
+#endif
   }
   else  {
     _refCount += 1000; // Ensure we do not call Py_Finalize()!
@@ -310,8 +312,10 @@ void DDPython::afterFork()  const  {
 #else
     ::PyOS_AfterFork_Child();
 #endif
+#if PY_MAJOR_VERSION <=2 || (PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION < 7)
     ::PyEval_InitThreads();
     ::PyEval_ReleaseLock();
+#endif
   }
 }
 

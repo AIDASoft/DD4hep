@@ -14,7 +14,7 @@
 #define DD4HEP_DD4HEPROOTPERSISTENCY_H
 
 // Framework include files
-#include "DD4hep/DetectorData.h"
+#include <DD4hep/DetectorData.h>
 
 
 /// Helper class to support ROOT persistency of Detector objects

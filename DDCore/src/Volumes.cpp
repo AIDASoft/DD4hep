@@ -12,25 +12,26 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/MatrixHelpers.h"
-#include "DD4hep/detail/ObjectsInterna.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/MatrixHelpers.h>
+#include <DD4hep/detail/ObjectsInterna.h>
 
 // ROOT include files
-#include "TClass.h"
-#include "TColor.h"
-#include "TGeoShape.h"
-#include "TGeoVolume.h"
-#include "TGeoNode.h"
-#include "TGeoMatrix.h"
-#include "TGeoMedium.h"
+#include <TROOT.h>
+#include <TClass.h>
+#include <TColor.h>
+#include <TGeoShape.h>
+#include <TGeoVolume.h>
+#include <TGeoNode.h>
+#include <TGeoMatrix.h>
+#include <TGeoMedium.h>
 
-#include "TGeoVoxelFinder.h"
-#include "TGeoShapeAssembly.h"
-#include "TGeoScaledShape.h"
-#include "TMap.h"
+#include <TGeoVoxelFinder.h>
+#include <TGeoShapeAssembly.h>
+#include <TGeoScaledShape.h>
+#include <TMap.h>
 
 // C/C++ include files
 #include <climits>
@@ -54,7 +55,10 @@ typedef TGeoNode                geo_node_t;
 typedef TGeoVolume              geo_volume_t;
 typedef TGeoVolumeAssembly      geo_assembly_t;
 
+/// Enable ROOT persistency
+ClassImp(VolumeExtension)
 ClassImp(PlacedVolumeExtension)
+ClassImp(PlacedVolumeExtension::Parameterisation)
 
 namespace {
 
@@ -336,6 +340,17 @@ PlacedVolume::Processor::Processor()   {
 PlacedVolume::Processor::~Processor()   {
 }
 
+/// Increase ref count
+PlacedVolumeExtension::Parameterisation* PlacedVolumeExtension::Parameterisation::addref()  {
+  ++refCount;
+  return this;
+}
+/// Decrease ref count
+void PlacedVolumeExtension::Parameterisation::release()  {
+  --refCount;
+  if ( 0 == refCount ) delete this;
+}
+
 /// Default constructor
 PlacedVolumeExtension::PlacedVolumeExtension()
   : TGeoExtension(), volIDs()
@@ -360,6 +375,7 @@ PlacedVolumeExtension::PlacedVolumeExtension(const PlacedVolumeExtension& c)
 
 /// Default destructor
 PlacedVolumeExtension::~PlacedVolumeExtension() {
+  if ( this->params ) this->params->release();
   DECREMENT_COUNTER;
 }
 
@@ -447,7 +463,26 @@ const PlacedVolume::VolIDs& PlacedVolume::volIDs() const {
 
 /// Add identifier
 PlacedVolume& PlacedVolume::addPhysVolID(const string& nam, int value) {
-  _data(*this)->volIDs.emplace_back(nam, value);
+  auto* o = _data(*this);
+  if ( !o->params )   {
+    o->volIDs.emplace_back(nam, value);
+    return *this;
+  }
+  if ( value > 0 )    {
+    except("PlacedVolume",
+	   "+++ addPhysVolID(%s): parameterised volumes only accept '0' is volID."
+	   "These automatically get overwritten with the copy number!",
+	   ptr()->GetName());
+  }
+  if ( !o->volIDs.empty() )    {
+    except("PlacedVolume",
+	   "+++ addPhysVolID(%s): parameterised volumes can only host 1 physical volume ID."
+	   " vol id '%s' is already defined!", ptr()->GetName(), o->volIDs[0].first.c_str());
+  }
+  for(PlacedVolume pv : o->params->placements)  {
+    auto* p = _data(pv);
+    p->volIDs.emplace_back(nam, pv->GetNumber());
+  }
   return *this;
 }
 
@@ -477,9 +512,6 @@ string PlacedVolume::toString() const {
   str << ends;
   return str.str();
 }
-
-/// Enable ROOT persistency
-ClassImp(VolumeExtension)
 
 /// Default constructor
 VolumeExtension::VolumeExtension()
@@ -690,7 +722,8 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
   if ( nam_id != n->GetName() )   {
     printout(ERROR,"PlacedVolume","++ FAILED to place node %s",(const char*)nam_id);
   }
-  n->geo_node_t::SetUserExtension(new PlacedVolume::Object());
+  PlacedVolume::Object* extension = new PlacedVolume::Object();
+  n->geo_node_t::SetUserExtension(extension);
   return PlacedVolume(n);
 }
 
@@ -776,37 +809,231 @@ PlacedVolume Volume::placeVolume(const Volume& volume, int copy_no, const Rotati
   return _addNode(m_element, volume, copy_no, rot);
 }
 
-/// Constructor to be used when creating a new parametrized volume object
-void Volume::paramVolume1D(size_t count, Volume entity, const Position& inc)   {
-  paramVolume1D(Transform3D(), count, entity, Transform3D(inc));
-}
-
-/// Constructor to be used when creating a new parametrized volume object
-void Volume::paramVolume1D(size_t count, Volume entity, const RotationZYX& inc)  {
-  paramVolume1D(Transform3D(), count, entity, Transform3D(inc));
-}
-
-/// Constructor to be used when creating a new parametrized volume object
-void Volume::paramVolume1D(size_t count, Volume entity, const Transform3D& inc)   {
-  paramVolume1D(Transform3D(), count, entity, inc);
-}
-
-/// Constructor to be used when creating a new parametrized volume object
-void Volume::paramVolume1D(const Transform3D& start,
-                           size_t count,
-                           Volume entity,
-                           const Transform3D& trafo)
+/// 1D volume replication implementation
+PlacedVolume Volume::replicate(const Volume entity, ReplicationAxis axis,
+			       size_t count, double inc, double start)
 {
-  Transform3D transformation(start);
-  for(size_t i=0; i<count; ++i)    {
-    _addNode(m_element, entity, get_copy_number(m_element), detail::matrix::_transform(transformation));
-    transformation *= trafo;
+  Transform3D offset(1e0,  0e0,  0e0,  axis == X_axis ? start : 0e0,
+		     0e0,  1e0,  0e0,  axis == Y_axis ? start : 0e0,
+		     0e0,  0e0,  1e0,  axis == Z_axis ? start : 0e0);
+  Transform3D tr(1e0,  0e0,  0e0,  axis == X_axis ? inc : 0e0,
+		 0e0,  1e0,  0e0,  axis == Y_axis ? inc : 0e0,
+		 0e0,  0e0,  1e0,  axis == Z_axis ? inc : 0e0);
+  PlacedVolume pv = paramVolume1D(offset, entity, count, tr);
+  auto* data = pv.data();
+  data->params->flags = axis | REPLICATED;
+  return pv;
+}
+
+/// Constructor to be used when creating a new parameterised volume object
+PlacedVolume Volume::paramVolume1D(Volume entity, size_t count, const Position& inc)   {
+  return paramVolume1D(Transform3D(), entity, count, Transform3D(inc));
+}
+
+/// Constructor to be used when creating a new parameterised volume object
+PlacedVolume Volume::paramVolume1D(Volume entity, size_t count, const RotationZYX& inc)  {
+  return paramVolume1D(Transform3D(), entity, count, Transform3D(inc));
+}
+
+/// Constructor to be used when creating a new parameterised volume object
+PlacedVolume Volume::paramVolume1D(Volume entity, size_t count, const Transform3D& inc)   {
+  return paramVolume1D(Transform3D(), entity, count, inc);
+}
+
+/// Constructor to be used when creating a new parameterised volume object
+PlacedVolume Volume::paramVolume1D(const Transform3D& start,
+				   Volume entity,
+				   size_t count,
+				   const Transform3D& trafo)
+{
+  Transform3D tr(start);
+  PlacedVolume pv =
+    _addNode(m_element, entity, get_copy_number(m_element), detail::matrix::_transform(tr));
+  auto* data = pv.data();
+  if ( pv->GetNdaughters() > 1 )   {
+    except("Volume","paramVolume1D: Mother %s has too many daughters: %ld "
+	   "Parameterized volumes may only have one single daughter!",
+	   ptr()->GetName(), pv.volume()->GetNdaughters());
   }
+  data->params = new PlacedVolumeExtension::Parameterisation();
+  data->params->addref();
+  data->params->flags = PARAMETERIZED;
+  data->params->start = start;
+  data->params->trafo1D.first  = trafo;
+  data->params->trafo1D.second = count;
+  data->params->trafo2D.second = 0;
+  data->params->trafo3D.second = 0;
+  data->params->placements.emplace_back(pv);
+  for(size_t i=1; i < count; ++i)    {
+    tr *= trafo;
+    PlacedVolume ppv =
+      _addNode(m_element, entity, get_copy_number(m_element), detail::matrix::_transform(tr));
+    data->params->placements.emplace_back(ppv);
+    ppv.data()->params = data->params->addref();
+  }
+  return pv;
+}
+
+/// Constructor to be used when creating a new parameterised volume object
+PlacedVolume Volume::paramVolume2D(Volume entity,
+				   size_t count_1,
+				   const Transform3D& trafo_1,
+				   size_t count_2,
+				   const Transform3D& trafo_2)
+{
+  return paramVolume2D(Transform3D(), entity, count_1, trafo_1, count_2, trafo_2);
+}
+
+/// Constructor to be used when creating a new parameterised volume object
+PlacedVolume Volume::paramVolume2D(const Transform3D& start,
+				   Volume entity,
+				   size_t count_1,
+				   const Position& pos_1,
+				   size_t count_2,
+				   const Position& pos_2)
+{
+  return paramVolume2D(start, entity, count_1, Transform3D(pos_1), count_2, Transform3D(pos_2));
+}
+
+/// Constructor to be used when creating a new parameterised volume object
+PlacedVolume Volume::paramVolume2D(Volume entity,
+				   size_t count_1,
+				   const Position& pos_1,
+				   size_t count_2,
+				   const Position& pos_2)
+{
+  return paramVolume2D(Transform3D(), entity, count_1, Transform3D(pos_1), count_2, Transform3D(pos_2));
+}
+
+/// Constructor to be used when creating a new parameterised volume object
+PlacedVolume Volume::paramVolume2D(const Transform3D& start,
+				   Volume entity,
+				   size_t count_1,
+				   const Transform3D& trafo_1,
+				   size_t count_2,
+				   const Transform3D& trafo_2)
+{
+  PlacedVolume pv =
+    _addNode(m_element, entity, get_copy_number(m_element), detail::matrix::_transform(start));
+  auto* data = pv.data();
+  if ( pv->GetNdaughters() > 1 )   {
+    except("Volume","paramVolume1D: Mother %s has too many daughters: %ld "
+	   "Parameterized volumes may only have one single daughter!",
+	   ptr()->GetName(), pv.volume()->GetNdaughters());
+  }
+  data->params = new PlacedVolumeExtension::Parameterisation();
+  data->params->addref();
+  data->params->flags = PARAMETERIZED;
+  data->params->start = start;
+  data->params->trafo1D.first  = trafo_1;
+  data->params->trafo1D.second = count_1;
+  data->params->trafo2D.first  = trafo_2;
+  data->params->trafo2D.second = count_2;
+  data->params->trafo3D.second = 0;
+  data->params->placements.emplace_back(pv);
+  Transform3D tr2(start);
+  for(size_t j=0; j < count_2; ++j)    {
+    Transform3D tr1 = tr2;
+    for(size_t i = 0; i < count_1; ++i)    {
+      if ( !( i == 0 && j == 0 ) )   {
+	PlacedVolume ppv =
+	  _addNode(m_element, entity, get_copy_number(m_element), detail::matrix::_transform(tr1));
+	data->params->placements.emplace_back(ppv);
+	ppv.data()->params = data->params->addref();
+      }
+      tr1 *= trafo_1;
+    }
+    tr2 *= trafo_2;
+  }
+  return pv;
+}
+
+/// Constructor to be used when creating a new parameterised volume object
+PlacedVolume Volume::paramVolume3D(const Transform3D& start,
+				   Volume entity,
+				   size_t count_1,
+				   const Position& pos_1,
+				   size_t count_2,
+				   const Position& pos_2,
+				   size_t count_3,
+				   const Position& pos_3)
+{
+  return paramVolume3D(start, entity, 
+		       count_1, Transform3D(pos_1),
+		       count_2, Transform3D(pos_2),
+		       count_3, Transform3D(pos_3));
+}
+
+/// Constructor to be used when creating a new parameterised volume object
+PlacedVolume Volume::paramVolume3D(Volume entity,
+				   size_t count_1,
+				   const Position& pos_1,
+				   size_t count_2,
+				   const Position& pos_2,
+				   size_t count_3,
+				   const Position& pos_3)
+{
+  return paramVolume3D(Transform3D(), entity,
+		       count_1, Transform3D(pos_1),
+		       count_2, Transform3D(pos_2),
+		       count_3, Transform3D(pos_3));
+}
+
+/// Constructor to be used when creating a new parameterised volume object
+PlacedVolume Volume::paramVolume3D(const Transform3D& start,
+				   Volume entity,
+				   size_t count_1,
+				   const Transform3D& trafo_1,
+				   size_t count_2,
+				   const Transform3D& trafo_2,
+				   size_t count_3,
+				   const Transform3D& trafo_3)
+{
+  PlacedVolume pv =
+    _addNode(m_element, entity, get_copy_number(m_element), detail::matrix::_transform(start));
+  auto* data = pv.data();
+  if ( pv->GetNdaughters() > 1 )   {
+    except("Volume","paramVolume1D: Mother %s has too many daughters: %ld "
+	   "Parameterized volumes may only have one single daughter!",
+	   ptr()->GetName(), pv.volume()->GetNdaughters());
+  }
+  data->params = new PlacedVolumeExtension::Parameterisation();
+  data->params->addref();
+  data->params->flags = PARAMETERIZED;
+  data->params->start = start;
+  data->params->trafo2D.first  = trafo_2;
+  data->params->trafo2D.second = count_2;
+  data->params->trafo3D.first  = trafo_3;
+  data->params->trafo3D.second = count_3;
+  data->params->placements.emplace_back(pv);
+  Transform3D tr3(start);
+  for(size_t k=0; k < count_3; ++k)    {
+    Transform3D tr2 = tr3;
+    for(size_t j=0; j < count_2; ++j)    {
+      Transform3D tr1 = tr2;
+      for(size_t i = 0; i < count_1; ++i)    {
+	if ( !( i == 0 && j == 0 && k == 0 ) )   {
+	  PlacedVolume ppv =
+	    _addNode(m_element, entity, get_copy_number(m_element), detail::matrix::_transform(tr1));
+	  data->params->placements.emplace_back(ppv);
+	  ppv.data()->params = data->params->addref();
+	}
+	tr1 *= trafo_1;
+      }
+      tr2 *= trafo_2;
+    }
+    tr3 *= trafo_3;
+  }
+  return pv;
 }
 
 /// Set the volume's option value
-void Volume::setOption(const string& opt) const {
-  m_element->SetOption(opt.c_str());
+const Volume& Volume::setOption(const string& opt) const {
+  if ( isValid() )   {
+    m_element->SetOption(opt.c_str());
+    return *this;
+  }
+  throw runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
 }
 
 /// Access the volume's option value
@@ -831,8 +1058,6 @@ const Volume& Volume::setMaterial(const Material& mat) const {
 Material Volume::material() const {
   return Material(m_element->GetMedium());
 }
-
-#include "TROOT.h"
 
 /// Set Visualization attributes to the volume
 const Volume& Volume::setVisAttributes(const VisAttr& attr) const {

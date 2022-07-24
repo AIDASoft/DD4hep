@@ -685,6 +685,10 @@ namespace dd4hep {
       Dimension position(bool throw_if_not_present = true) const;
       /// Access child element with tag "rotation" as Dimension object
       Dimension rotation(bool throw_if_not_present = true) const;
+      /// Access child element with tag "transformation" as Dimension object
+      Dimension transformation(bool throw_if_not_present = true) const;
+      /// Access child element with tag "transform" as Dimension object
+      Dimension transform(bool throw_if_not_present = true) const;
       /// Access child element with tag "cone" as Dimension object
       Dimension cone(bool throw_if_not_present = true) const;
       /// Access child element with tag "sphere" as Dimension object

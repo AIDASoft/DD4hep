@@ -127,8 +127,7 @@ VolumeID IDDescriptor::get_mask(const std::vector<std::pair<std::string, int> >&
 }
 
 /// Encode a set of volume identifiers (corresponding to this description of course!) to a volumeID.
-VolumeID IDDescriptor::encode(const std::vector<std::pair<std::string, int> >& id_vector) const
-{
+VolumeID IDDescriptor::encode(const std::vector<std::pair<std::string, int> >& id_vector) const  {
   VolumeID id = 0;
   //const PlacedVolume::VolIDs* ids = (const PlacedVolume::VolIDs*)&id_vector;
   //printout(INFO,"IDDescriptor","VolIDs: %s",ids->str().c_str());
@@ -139,6 +138,16 @@ VolumeID IDDescriptor::encode(const std::vector<std::pair<std::string, int> >& i
     id |= ((fld->value(val << off) << off)&fld->mask());
   }
   return id;
+}
+
+/// Encode partial volume identifiers to a volumeID.
+VolumeID IDDescriptor::encode(const Field* fld, VolumeID value)  {
+  if ( fld )   {
+    int off = fld->offset();
+    return ((fld->value(value << off) << off)&fld->mask());
+  }
+  except("IDDescriptor","dd4hep: %s: Cannot encode value with void Field reference.");
+  return 0UL;
 }
 
 /// Encode a set of volume identifiers to a volumeID with the system ID on the top bits

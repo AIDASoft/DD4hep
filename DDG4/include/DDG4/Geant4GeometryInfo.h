@@ -82,6 +82,7 @@ namespace dd4hep {
       typedef std::map<const TGeoShape*, G4VSolid*>           SolidMap;
       //typedef std::map<VisAttr, G4VisAttributes*>             VisMap;
       //typedef std::map<Geant4PlacementPath, VolumeID>         Geant4PathMap;
+      typedef std::map<const G4VPhysicalVolume*, PlacedVolume> G4PlacementMap;
     }
 
     /// Concreate class holding the relation information between geant4 objects and dd4hep objects.
@@ -92,7 +93,22 @@ namespace dd4hep {
      */
     class Geant4GeometryInfo : public TNamed, public detail::GeoHandlerTypes::GeometryInfo {
     public:
-      typedef std::vector<const G4VPhysicalVolume*>           Geant4PlacementPath;
+      struct Placement  {
+	VolumeID     volumeID;
+	int          flags;
+      };
+      union PlacementFlags {
+	int value;
+	struct _flags  {
+	  unsigned     parametrised:1;
+	  unsigned     replicated:1;
+	  unsigned     path_has_parametrised:1;
+	  unsigned     path_has_replicated:1;
+	} flags;
+	PlacementFlags()      { this->value = 0; }
+	PlacementFlags(int v) { this->value = v; }
+      };
+      typedef std::vector<const G4VPhysicalVolume*>  Geant4PlacementPath;
       TGeoManager*                         manager = 0;
       Geant4GeometryMaps::IsotopeMap       g4Isotopes;
       Geant4GeometryMaps::ElementMap       g4Elements;
@@ -102,6 +118,8 @@ namespace dd4hep {
       Geant4GeometryMaps::PlacementMap     g4Placements;
       Geant4GeometryMaps::AssemblyMap      g4AssemblyVolumes;
       Geant4GeometryMaps::VolumeImprintMap g4VolumeImprints;
+      Geant4GeometryMaps::G4PlacementMap   g4Parameterised;
+      Geant4GeometryMaps::G4PlacementMap   g4Replicated;
       struct PropertyVector  {
         std::vector<double> bins;
         std::vector<double> values;
@@ -118,7 +136,7 @@ namespace dd4hep {
       std::map<Region, G4Region*>                              g4Regions;
       std::map<VisAttr, G4VisAttributes*>                      g4Vis;
       std::map<LimitSet, G4UserLimits*>                        g4Limits;
-      std::map<Geant4PlacementPath, VolumeID>                  g4Paths;
+      std::map<Geant4PlacementPath, Placement>                 g4Paths;
       std::map<SensitiveDetector,std::set<const TGeoVolume*> > sensitives;
       std::map<Region,           std::set<const TGeoVolume*> > regions;
       std::map<LimitSet,         std::set<const TGeoVolume*> > limits;
