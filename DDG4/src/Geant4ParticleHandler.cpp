@@ -12,27 +12,27 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Primitives.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4StepHandler.h"
-#include "DDG4/Geant4TrackHandler.h"
-#include "DDG4/Geant4EventAction.h"
-#include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4TrackingAction.h"
-#include "DDG4/Geant4SteppingAction.h"
-#include "DDG4/Geant4ParticleHandler.h"
-#include "DDG4/Geant4UserParticleHandler.h"
+#include <DD4hep/Primitives.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4StepHandler.h>
+#include <DDG4/Geant4TrackHandler.h>
+#include <DDG4/Geant4EventAction.h>
+#include <DDG4/Geant4SensDetAction.h>
+#include <DDG4/Geant4TrackingAction.h>
+#include <DDG4/Geant4SteppingAction.h>
+#include <DDG4/Geant4ParticleHandler.h>
+#include <DDG4/Geant4UserParticleHandler.h>
 
 // Geant4 include files
-#include "G4Step.hh"
-#include "G4Track.hh"
-#include "G4Event.hh"
-#include "G4TrackStatus.hh"
-#include "G4PrimaryVertex.hh"
-#include "G4PrimaryParticle.hh"
-#include "G4TrackingManager.hh"
-#include "G4ParticleDefinition.hh"
-#include "CLHEP/Units/SystemOfUnits.h"
+#include <G4Step.hh>
+#include <G4Track.hh>
+#include <G4Event.hh>
+#include <G4TrackStatus.hh>
+#include <G4PrimaryVertex.hh>
+#include <G4PrimaryParticle.hh>
+#include <G4TrackingManager.hh>
+#include <G4ParticleDefinition.hh>
+#include <CLHEP/Units/SystemOfUnits.h>
 
 // C/C++ include files
 #include <set>

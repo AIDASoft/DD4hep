@@ -497,6 +497,7 @@ UNICODE (torus);
 UNICODE (tracker);
 UNICODE (tracking_cylinder);
 UNICODE (tracking_volume);
+UNICODE (transform);
 UNICODE (transformation);
 UNICODE (trap);
 UNICODE (trapezoid);

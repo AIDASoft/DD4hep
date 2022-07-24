@@ -12,19 +12,19 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4InputHandling.h"
-#include "DDG4/Geant4Primary.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4Action.h"
-#include "DDG4/Geant4PrimaryHandler.h"
-#include "CLHEP/Units/SystemOfUnits.h"
-#include "CLHEP/Units/PhysicalConstants.h"
+#include <DDG4/Geant4InputHandling.h>
+#include <DDG4/Geant4Primary.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4Action.h>
+#include <DDG4/Geant4PrimaryHandler.h>
+#include <CLHEP/Units/SystemOfUnits.h>
+#include <CLHEP/Units/PhysicalConstants.h>
 
 // Geant4 include files
-#include "G4ParticleDefinition.hh"
-#include "G4Event.hh"
-#include "G4PrimaryVertex.hh"
-#include "G4PrimaryParticle.hh"
+#include <G4ParticleDefinition.hh>
+#include <G4Event.hh>
+#include <G4PrimaryVertex.hh>
+#include <G4PrimaryParticle.hh>
 
 // C/C++ include files
 #include <stdexcept>

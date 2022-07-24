@@ -14,9 +14,9 @@
 #define DDG4_GEANT4SENSDETACTION_H
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DDG4/Geant4Action.h"
-#include "DDG4/Geant4HitCollection.h"
+#include <DD4hep/Detector.h>
+#include <DDG4/Geant4Action.h>
+#include <DDG4/Geant4HitCollection.h>
 
 // Geant4 include files
 #include <G4ThreeVector.hh>
@@ -68,7 +68,7 @@ namespace dd4hep {
       virtual ~Geant4ActionSD();
     public:
       /// Initialize the usage of a hit collection. Returns the collection identifier
-      virtual size_t defineCollection(const std::string& name) = 0;
+      virtual std::size_t defineCollection(const std::string& name) = 0;
       /// Access to the readout geometry of the sensitive detector
       virtual G4VReadOutGeometry* readoutGeometry() const = 0;
       /// This is a utility method which returns the hits collection ID
@@ -239,16 +239,16 @@ namespace dd4hep {
       bool accept(const Geant4FastSimSpot* step) const;
 
       /// Initialize the usage of a single hit collection. Returns the collection ID
-      template <typename TYPE> size_t defineCollection(const std::string& coll_name);
+      template <typename TYPE> std::size_t defineCollection(const std::string& coll_name);
 
       /// Access HitCollection container names
-      const std::string& hitCollectionName(size_t which) const;
+      const std::string& hitCollectionName(std::size_t which) const;
 
       /// Retrieve the hits collection associated with this detector by its serial number
-      Geant4HitCollection* collection(size_t which);
+      Geant4HitCollection* collection(std::size_t which);
 
       /// Retrieve the hits collection associated with this detector by its collection identifier
-      Geant4HitCollection* collectionByID(size_t id);
+      Geant4HitCollection* collectionByID(std::size_t id);
 
       /// Define collections created by this sensitivie action object
       virtual void defineCollections();
@@ -370,24 +370,24 @@ namespace dd4hep {
       virtual void updateContext(Geant4Context* ctxt);
 
       /// Called at construction time of the sensitive detector to declare all hit collections
-      size_t defineCollections(Geant4ActionSD* sens_det);
+      std::size_t defineCollections(Geant4ActionSD* sens_det);
 
       /// Initialize the usage of a hit collection. Returns the collection identifier
-      size_t defineCollection(Geant4Sensitive* owner, const std::string& name, create_t func);
+      std::size_t defineCollection(Geant4Sensitive* owner, const std::string& name, create_t func);
 
       /// Define a named collection containing hist of a specified type
-      template <typename TYPE> size_t defineCollection(Geant4Sensitive* owner, const std::string& coll_name) {
+      template <typename TYPE> std::size_t defineCollection(Geant4Sensitive* owner, const std::string& coll_name) {
         return defineCollection(owner, coll_name, Geant4SensDetActionSequence::_create<TYPE>);
       }
 
       /// Access HitCollection container names
-      const std::string& hitCollectionName(size_t which) const;
+      const std::string& hitCollectionName(std::size_t which) const;
 
       /// Retrieve the hits collection associated with this detector by its serial number
-      Geant4HitCollection* collection(size_t which) const;
+      Geant4HitCollection* collection(std::size_t which) const;
 
       /// Retrieve the hits collection associated with this detector by its collection identifier
-      Geant4HitCollection* collectionByID(size_t id) const;
+      Geant4HitCollection* collectionByID(std::size_t id) const;
 
       /// Register begin-of-event callback
       template <typename T> void callAtBegin(T* p, void (T::*f)(G4HCofThisEvent*)) {
@@ -493,7 +493,7 @@ namespace dd4hep {
     };
 
     /// Initialize the usage of a single hit collection. Returns the collection ID
-    template <typename TYPE> inline size_t Geant4Sensitive::defineCollection(const std::string& coll_name) {
+    template <typename TYPE> inline std::size_t Geant4Sensitive::defineCollection(const std::string& coll_name) {
       return sequence().defineCollection<TYPE>(this, coll_name);
     }
 
@@ -521,7 +521,7 @@ namespace dd4hep {
       std::string m_readoutName       { };
 
       /// Collection identifier
-      size_t      m_collectionID    { 0 };
+      std::size_t m_collectionID    { 0 };
       /// User data block
       UserData    m_userData          { };
 
@@ -559,11 +559,11 @@ namespace dd4hep {
        *    At the same time a VolumeID filter is injected at the front of the sensitive's 
        *    filter queue to ONLY act on volume IDs matching this criterium.
        */
-      template <typename HIT> size_t declareReadoutFilteredCollection();
+      template <typename HIT> std::size_t declareReadoutFilteredCollection();
 
       /// Define readout specific hit collection. matching name must be present in readout structure
       template <typename HIT> 
-      size_t defineReadoutCollection(const std::string collection_name);
+      std::size_t defineReadoutCollection(const std::string collection_name);
 
       /// Initialization overload for specialization
       virtual void initialize()  final;
@@ -586,5 +586,4 @@ namespace dd4hep {
 
   }    // End namespace sim
 }      // End namespace dd4hep
-
 #endif // DDG4_GEANT4SENSDETACTION_H

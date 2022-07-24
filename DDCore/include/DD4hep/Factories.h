@@ -14,9 +14,9 @@
 #define DD4HEP_FACTORIES_H
 
 // Framework include files
-#include "DD4hep/Plugins.h"
-#include "DD4hep/DetElement.h"
-#include "DD4hep/NamedObject.h"
+#include <DD4hep/Plugins.h>
+#include <DD4hep/DetElement.h>
+#include <DD4hep/NamedObject.h>
 
 // C/C++ include files
 #include <cstdarg>

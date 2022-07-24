@@ -14,7 +14,7 @@
 #define DD4HEP_BITFIELDCODER_H
 
 // Framework include files
-#include "DDSegmentation/BitFieldCoder.h"
+#include <DDSegmentation/BitFieldCoder.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

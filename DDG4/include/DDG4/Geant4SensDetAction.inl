@@ -12,13 +12,13 @@
 //==========================================================================
 
 /// Framework include files
-#include "DDG4/Geant4SensDetAction.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/detail/ObjectsInterna.h"
+#include <DDG4/Geant4SensDetAction.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/detail/ObjectsInterna.h>
 
-#include "DDG4/Geant4ReadoutVolumeFilter.h"
-#include "DDG4/Geant4Data.h"
+#include <DDG4/Geant4ReadoutVolumeFilter.h>
+#include <DDG4/Geant4Data.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -90,11 +90,11 @@ namespace dd4hep {
 
     /// Define readout specific hit collection. matching name must be present in readout structure
     template <typename T> template <typename HIT> 
-    size_t Geant4SensitiveAction<T>::defineReadoutCollection(const std::string match_name)  {
+    std::size_t Geant4SensitiveAction<T>::defineReadoutCollection(const std::string match_name)  {
       auto ro = readout();
       for(const auto& c : ro->hits )  {
         if ( c.name == match_name )  {
-          size_t coll_id = defineCollection<HIT>(match_name);
+          std::size_t coll_id = defineCollection<HIT>(match_name);
           Geant4Filter* filter = new Geant4ReadoutVolumeFilter(context(),name()+"_"+c.name,ro,c.name);
           adopt_front(filter);
           return coll_id;
@@ -107,7 +107,7 @@ namespace dd4hep {
 
     /// Define readout specific hit collection with volume ID filtering
     template <typename T> template <typename HIT> 
-    size_t Geant4SensitiveAction<T>::declareReadoutFilteredCollection()   {
+    std::size_t Geant4SensitiveAction<T>::declareReadoutFilteredCollection()   {
       if ( m_collectionName.empty() )  {
         return defineCollection<HIT>(readout().name());
       }
@@ -132,7 +132,7 @@ namespace dd4hep {
 }      // End namespace dd4hep
 
 
-#include "DD4hep/Printout.h"
-#include "DDG4/Geant4TouchableHandler.h"
-#include "DDG4/Geant4StepHandler.h"
-#include "DDG4/Geant4VolumeManager.h"
+#include <DD4hep/Printout.h>
+#include <DDG4/Geant4TouchableHandler.h>
+#include <DDG4/Geant4StepHandler.h>
+#include <DDG4/Geant4VolumeManager.h>
