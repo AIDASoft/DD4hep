@@ -872,12 +872,14 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 	else
 	  except("Geant4Converter",
 		 "++ Replication around unknown axis is not implemented. flags: %16X", flags);
+	printout(INFO,"Geant4Converter","++ Replicate: Axis: %ld Count: %ld offset: %f width: %f",
+		 axis, count, offset, width);
 	auto* g4pv = new G4PVReplica(name,      // its name
 				     g4vol,     // its logical volume
 				     g4mot,     // its mother (logical) volume
 				     axis,      // its replication axis
 				     count,     // Number of replicas
-				     width,     // Distanve between 2 replicas
+				     width,     // Distance between 2 replicas
 				     offset);   // Placement offset in axis direction
 	pvPlaced = { g4pv, nullptr };
 #if 0
@@ -887,7 +889,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 						     g4mot,     // its mother (logical) volume
 						     axis,      // its replication axis
 						     count,     // Number of replicas
-						     width,     // Distanve between 2 replicas
+						     width,     // Distance between 2 replicas
 						     offset);   // Placement offset in axis direction
 	/// Update replica list to avoid additional conversions...
 	auto* g4pv = pvPlaced.second ? pvPlaced.second : pvPlaced.first;
