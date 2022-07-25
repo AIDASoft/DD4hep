@@ -441,7 +441,7 @@ if (DD4HEP_USE_GEANT4)
       dd4hep_add_test_reg( ClientTests_sim_${script}_LONGTEST
         COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
         EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/${script}.py -batch -events 2
-		   -geometry ${ClientTestsEx_INSTALL}/compact/${script}.xml -batch -events 2
+		   -geometry ${ClientTestsEx_INSTALL}/compact/SiliconBlock.xml -batch -events 2
         REGEX_PASS "Event 1 Begin event action. Access event related information"
         REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
     endforeach(script)

@@ -12,6 +12,7 @@
 //==========================================================================
 
 // Framework includes
+#include "DD4hep/Printout.h"
 #include "DD4hep/DetFactoryHelper.h"
 
 using namespace dd4hep;
@@ -60,6 +61,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 				x_repl.count(),
 				x_repl.distance(),
 				x_repl.start());
+    printout(INFO,"ReplicateVolume","Axis: %s Count: %d offset:%f  width:%f",
+	     ax.c_str(), x_repl.count(), x_repl.start(), x_repl.distance());
   }
   else if ( x_param.hasChild(_U(transformation)) )   {
     xml_dim_t  x_dim_x, x_dim_y, x_dim_z, x_trafo = x_param.transformation();

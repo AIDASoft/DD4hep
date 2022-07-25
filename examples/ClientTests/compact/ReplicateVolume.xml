@@ -41,11 +41,11 @@
   </limits>
 
   <detectors>
-    <detector id="1" name="Param3D_1" type="DD4hep_ParamVolume" vis="VisibleGreen" readout="Hits3D" limits="param_limits">
+    <detector id="1" name="Replicate_1" type="DD4hep_ParamVolume" vis="VisibleGreen" readout="Hits3D" limits="param_limits">
       <!-- Mother volume dimensions  -->
       <box x="120*cm" y="120*cm" z="120*cm" material="Air"/>
       <!-- Mother volume placement in the world -->
-      <position x="0*cm" y="0*cm" z="-120*cm"/>
+      <position x="0*cm" y="0*cm" z="0*cm"/>
       <rotation x="0" y="0" z="0"/>
 
       <!-- Parameterisation arguments -->
@@ -55,7 +55,7 @@
 	  <position x="0*cm" y="0*cm" z="0*cm"/>
 	  <rotation x="0" y="0" z="0"/>
 	</start>
-	<replicate count="1" distance="10*cm" start="0*cm" axis="z"/>
+	<replicate count="5" distance="10*cm" start="0*cm" axis="z"/>
       </param>
     </detector>
   </detectors>
