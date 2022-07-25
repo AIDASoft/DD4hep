@@ -445,15 +445,15 @@ if (DD4HEP_USE_GEANT4)
         REGEX_PASS "Event 1 Begin event action. Access event related information"
         REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
     endforeach(script)
-    #
-    foreach(script ParamVolume1D ParamVolume2D ParamVolume3D)
-      dd4hep_add_test_reg( ClientTests_sim_${script}_LONGTEST
-        COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-        EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/ParamVolume.py
-    		   -geometry ${script}.xml -batch -events 2
-        REGEX_PASS "Event 1 Begin event action. Access event related information"
-        REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
-    endforeach(script)
-    #
   endif()
+  #
+  foreach(script ParamVolume1D ParamVolume2D ParamVolume3D)
+    dd4hep_add_test_reg( ClientTests_sim_${script}_LONGTEST
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+      EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/ParamVolume.py
+      		 -geometry ${script}.xml -batch -events 2
+      REGEX_PASS "Event 1 Begin event action. Access event related information"
+      REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+  endforeach(script)
+  #
 endif(DD4HEP_USE_GEANT4)
