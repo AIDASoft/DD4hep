@@ -17,6 +17,7 @@
 #include "DDG4/Defs.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/Factories.h"
 #include "DD4hep/Primitives.h"
 
 // C/C++ include files
@@ -82,9 +83,11 @@ namespace {
     typedef G4MagIntegratorStepper Stepper;
   };
 
-  DD4HEP_PLUGIN_FACTORY_ARGS_3(long, dd4hep::Detector*, const _ns::GH*, const _ns::STRM*) 
-  {    return make_return<long>(dd4hep::Geant4SetupAction<P>::create(*a0, *a1, *a2));  }
-
+  DD4HEP_PLUGIN_FACTORY_ARGS_3(long, dd4hep::Detector*, const _ns::GH*, const _ns::STRM*)   {
+    static long ret;
+    ret = dd4hep::Geant4SetupAction<P>::create(*a0, *a1, *a2);
+    return long(&ret);
+  }
   /// Factory to create Geant4 sensitive detectors
   DD4HEP_PLUGIN_FACTORY_ARGS_2(G4VSensitiveDetector*,std::string,dd4hep::Detector*)
   {    return dd4hep::Geant4SensitiveDetectorFactory<P>::create(a0,*a1);  }
@@ -128,7 +131,9 @@ namespace {
   /// Generic particle constructor
   DD4HEP_PLUGIN_FACTORY_ARGS_0(long)  {
     P::ConstructParticle();
-    return make_return<long>(1L);
+    static long ret;
+    ret = 1L;
+    return long(&ret);
   }
 
   /// Factory to create Geant4 physics constructions
