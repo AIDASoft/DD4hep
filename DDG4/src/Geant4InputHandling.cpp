@@ -402,6 +402,14 @@ getRelevant(set<int>& visited,
              (bool(p.definition()) ? p.definition()->GetPDGStable() : false)  ? "true" : "false",
              status.isSet(G4PARTICLE_GEN_DOCUMENTATION) || status.isSet(G4PARTICLE_GEN_BEAM) || status.isSet(G4PARTICLE_GEN_OTHER) ? "true" : "false",
              rejectParticle ? "true" : "false");
+    // end running simulation if we have a really inconsistent record, that is unrejected stable particle with children
+    bool failStableWithChildren = (not rejectParticle and p.definition()->GetPDGStable());
+    if (failStableWithChildren) {
+      printout(FATAL,"Input",
+               "+++ Stable particle (PDG: %-10d) with daughters! check your MC record, adapt particle.tbl file...",
+               p->pdgID);
+      throw std::runtime_error("Cannot Simmulate this MC Record");
+    }
     if (not rejectParticle) {
       map<int,G4PrimaryParticle*>::iterator ip4 = prim.find(p->id);
       G4PrimaryParticle* p4 = (ip4 == prim.end()) ? 0 : (*ip4).second;
