@@ -62,6 +62,23 @@ namespace   {
     }
     return 0;
   }
+  template <> int _test_cont<vector<bool> >(const string& tag, const string& data)    {
+    vector<bool> value;
+    stringstream log;
+    Property prop(value);
+    try  {
+      prop.str(data);
+      log << "| " << setw(32) << left << tag << " ";
+      for(const auto p : value)
+	log << setw(6) << left << "" << "   " << setw(10) << left << p << "  ";
+      cout << log.str() << endl;
+    }
+    catch(const exception& e)   {
+      cout << "Test FAILED: " << tag << " Exception: " << e.what() << endl;
+      return 1;
+    }
+    return 0;
+  }
   template <typename T> int _test_map(const string& tag, const string& data)    {
     T value;
     stringstream log;
@@ -82,10 +99,10 @@ namespace   {
 }
 
 static int property_test(Detector& /* description */, int /* argc */, char** /* argv */)  {
+  using _ulong = unsigned long;
   using XYZPoint = ROOT::Math::XYZPoint;
   using XYZVector = ROOT::Math::XYZVector;
   using PxPyPzE = ROOT::Math::PxPyPzEVector;
-
   int result = 0;
   cout << "+----------------------------------------------------------------------------------------------------------" << endl;
   result += _test_prop<string>                   ("prop_str",                "'a'");
@@ -94,8 +111,8 @@ static int property_test(Detector& /* description */, int /* argc */, char** /* 
   result += _test_prop<int>                      ("prop_int_eval",           "1*11");
   result += _test_prop<long>                     ("prop_long",               "1111");
   result += _test_prop<long>                     ("prop_long_eval",          "1*1111");
-  result += _test_prop<ulong>                    ("prop_ulong",              "11111");
-  result += _test_prop<ulong>                    ("prop_ulong_eval",         "1*11111");
+  result += _test_prop<_ulong>                   ("prop_ulong",              "11111");
+  result += _test_prop<_ulong>                   ("prop_ulong_eval",         "1*11111");
   result += _test_prop<float>                    ("prop_float",              "1.11");
   result += _test_prop<float>                    ("prop_float_eval",         "1.11*GeV");
   result += _test_prop<double>                   ("prop_double",             "1.1111");
@@ -172,8 +189,8 @@ static int property_test(Detector& /* description */, int /* argc */, char** /* 
   result += _test_cont<vector<int> >             ("vector_int_eval",          "{1*11,                   2*111,           3*1111}");
   result += _test_cont<vector<long> >            ("vector_long_eval",         "{1*11,                   2*111,           3*1111}");
   result += _test_cont<vector<long> >            ("vector_long",              "{11,                     222,               3333}");
-  result += _test_cont<vector<ulong> >           ("vector_ulong_eval",        "{1*11,                   2*111,           3*1111}");
-  result += _test_cont<vector<ulong> >           ("vector_ulong",             "{11,                     222,               3333}");
+  result += _test_cont<vector<_ulong> >          ("vector_ulong_eval",        "{1*11,                   2*111,           3*1111}");
+  result += _test_cont<vector<_ulong> >          ("vector_ulong",             "{11,                     222,               3333}");
   result += _test_cont<vector<float> >           ("vector_float",             "{1.11,                   22.22,             333.33}");
   result += _test_cont<vector<float> >           ("vector_float_eval",        "{1.11*GeV,               22.22*MeV,         333.3*TeV}");
   result += _test_cont<vector<double> >          ("vector_double",            "{1.11,                   22.22,             333.33}");
@@ -191,8 +208,8 @@ static int property_test(Detector& /* description */, int /* argc */, char** /* 
   result += _test_cont<list<int> >               ("list_int_eval",            "{1*11,                   2*111,           3*1111}");
   result += _test_cont<list<long> >              ("list_long_eval",           "{1*11,                   2*111,           3*1111}");
   result += _test_cont<list<long> >              ("list_long",                "{11,                     222,               3333}");
-  result += _test_cont<list<ulong> >             ("list_ulong_eval",          "{1*11,                   2*111,           3*1111}");
-  result += _test_cont<list<ulong> >             ("list_ulong",               "{11,                     222,               3333}");
+  result += _test_cont<list<_ulong> >            ("list_ulong_eval",          "{1*11,                   2*111,           3*1111}");
+  result += _test_cont<list<_ulong> >            ("list_ulong",               "{11,                     222,               3333}");
   result += _test_cont<list<float> >             ("list_float",               "{1.11,                   22.22,             333.33}");
   result += _test_cont<list<float> >             ("list_float_eval",          "{1.11*GeV,               22.22*MeV,         333.3*TeV}");
   result += _test_cont<list<double> >            ("list_double",              "{1.11,                   22.22,             333.33}");
