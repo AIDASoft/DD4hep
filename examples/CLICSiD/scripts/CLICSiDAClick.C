@@ -56,6 +56,7 @@ int setupG4_CINT(bool interactive)  {
   kernel.loadGeometry(("file:"+det_dir+"/DDDetectors/compact/SiD.xml").c_str());
   kernel.loadXML(("file:"+install_dir+"/examples/CLICSiD/sim/field.xml").c_str());
 
+  kernel.property("NumEvents") = 10;
   if ( interactive )   {
     kernel.property("UI") = "UI";
     setPrintLevel(DEBUG);

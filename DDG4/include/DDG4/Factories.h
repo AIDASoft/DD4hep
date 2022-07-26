@@ -85,7 +85,8 @@ namespace {
 
   DD4HEP_PLUGIN_FACTORY_ARGS_3(long, dd4hep::Detector*, const _ns::GH*, const _ns::STRM*)   {
     static long ret;
-    ret = dd4hep::Geant4SetupAction<P>::create(*a0, *a1, *a2);
+    long result = dd4hep::Geant4SetupAction<P>::create(*a0, *a1, *a2);
+    ret = result;
     return long(&ret);
   }
   /// Factory to create Geant4 sensitive detectors
