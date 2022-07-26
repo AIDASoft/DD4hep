@@ -262,7 +262,7 @@ static int ddcond_detelement_dump(Detector& description, int argc, char** argv) 
   Actor actor(printer);
   int ret = actor.process(description.world(),0,true);
   slice->manager.clean(pool->validity().iovType, 20);
-  return ret;
+  return ret > 0 ? 1 : 0;
 }
 DECLARE_APPLY(DD4hep_DetElementConditionsDump,ddcond_detelement_dump)
   
@@ -324,7 +324,7 @@ static int ddcond_detelement_processor(Detector& description, int argc, char** a
   processor->setPool(pool);
   int ret = Actor(processor).process(description.world(),0,true);
   slice->manager.clean(pool->validity().iovType, 20);
-  return ret;
+  return ret > 0 ? 1 : 0;
 }
 DECLARE_APPLY(DD4hep_DetElementConditionsProcessor,ddcond_detelement_processor)
 #endif
