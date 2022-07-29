@@ -40,6 +40,7 @@ using namespace dd4hep;
 using namespace dd4hep::detail;
 
 namespace   {
+
   /// Set true for backwards compatibility
   static bool s_allow_variable_redefine = true;
 
@@ -49,7 +50,6 @@ namespace   {
       throw runtime_error("dd4hep: "+err.str()+" : value="+value+" [Evaluation error]");
     }
   }
-  
 }
 
 namespace dd4hep  {
@@ -60,14 +60,14 @@ namespace dd4hep  {
     s_allow_variable_redefine = value;
     return tmp;
   }
-  
+
   std::pair<int, double> _toFloatingPoint(const string& value)   {
     stringstream err;
     auto result = eval.evaluate(value, err);
     check_evaluation(value, result, err);
     return result;
   }
-  
+
   std::pair<int, double> _toInteger(const string& value)    {
     string s(value);
     size_t idx = s.find("(int)");
@@ -85,12 +85,24 @@ namespace dd4hep  {
     return (short) _toInteger(value).second;
   }
 
+  unsigned short _toUShort(const string& value) {
+    return (unsigned short) _toInteger(value).second;
+  }
+
   int _toInt(const string& value) {
     return (int) _toInteger(value).second;
   }
 
+  unsigned int _toUInt(const string& value) {
+    return (unsigned int) _toInteger(value).second;
+  }
+
   long _toLong(const string& value) {
     return (long) _toInteger(value).second;
+  }
+
+  unsigned long _toULong(const string& value) {
+    return (unsigned long) _toInteger(value).second;
   }
 
   bool _toBool(const string& value) {
