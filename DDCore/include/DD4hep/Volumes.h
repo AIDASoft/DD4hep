@@ -253,6 +253,14 @@ namespace dd4hep {
     PlacedVolume& operator=(PlacedVolume&& v)  = default;
     /// Assignment operator (must match copy constructor)
     PlacedVolume& operator=(const PlacedVolume& v)  = default;
+    /// Equality operator
+    template <typename T> bool operator ==(const Handle<T>& e) const {
+      return ptr() == e.ptr();
+    }
+    /// Non-Equality operator
+    template <typename T> bool operator !=(const Handle<T>& e) const {
+      return ptr() != e.ptr();
+    }
 
     /// Check if placement is properly instrumented
     Object* data() const;
@@ -410,6 +418,14 @@ namespace dd4hep {
     Volume& operator=(Volume&& a)  = default;
     /// Assignment operator (must match copy constructor)
     Volume& operator=(const Volume& a)  = default;
+    /// Equality operator
+    template <typename T> bool operator ==(const Handle<T>& e) const {
+      return ptr() == e.ptr();
+    }
+    /// Non-Equality operator
+    template <typename T> bool operator !=(const Handle<T>& e) const {
+      return ptr() != e.ptr();
+    }
 
     /// Set flag to enable copy number checks when inserting new nodes
     /** By default checks are enabled. If you want to disable, call this function */
