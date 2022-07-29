@@ -163,9 +163,9 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_VolMgr2_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
-  -plugin    DD4hep_VolumeMgrTest SiTrackerBarrel
+  -plugin    DD4hep_DetectorCheck -name SiTrackerBarrel -geometry -structure -volmgr -sensitive
   DEPENDS    Persist_CLICSiD_Save_LONGTEST
-  REGEX_PASS "\\+\\+\\+ PASSED: Checked 81306 objects. Num.Errors:0"
+  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of     284572 elements. Num.Errors:0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #

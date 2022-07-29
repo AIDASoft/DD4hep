@@ -146,7 +146,7 @@ dd4hep_add_test_reg( ClientTests_MultiPlace
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
   -input file:${ClientTestsEx_INSTALL}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
-  -plugin DD4hep_VolumeMgrTest SiTrackerBarrel
+  -plugin DD4hep_DetectorCheck -name SiTrackerBarrel -geometry -structure -volmgr -sensitive
 
   REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001"
   REGEX_FAIL "FAILED: World transformation DIFFER"
@@ -157,7 +157,7 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_LongVoldID
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
   -input file:${ClientTestsEx_INSTALL}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
-  -plugin DD4hep_VolumeMgrTest SiTrackerBarrel
+  -plugin DD4hep_DetectorCheck -name SiTrackerBarrel -geometry -structure -volmgr -sensitive
 
   REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001"
   REGEX_FAIL "FAILED: World transformation DIFFER"
@@ -170,7 +170,7 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides
   -input file:${ClientTestsEx_INSTALL}/compact/Bitfield_SidesTest.xml -volmgr -destroy
   -plugin DD4hep_DetectorVolumeDump
   -plugin DD4hep_VolumeDump volids
-  -plugin DD4hep_VolumeMgrTest all
+  -plugin DD4hep_DetectorCheck -name all -geometry -structure -volmgr -sensitive
   REGEX_PASS "Volume:Shell_2                                            IDDesc:OK  \\[S\\]  vid:0000000000000102 system:0002 barrel:0001")
 #
 #  Test readout strings of the form: <id>system:16,barrel:16:-5</id>
@@ -180,7 +180,7 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides2
   -input file:${ClientTestsEx_INSTALL}/compact/Bitfield_SidesTest2.xml -volmgr -destroy
   -plugin DD4hep_DetectorVolumeDump
   -plugin DD4hep_VolumeDump volids
-  -plugin DD4hep_VolumeMgrTest all
+  -plugin DD4hep_DetectorCheck -name all -geometry -structure -volmgr -sensitive
   REGEX_PASS "Volume:Shell_2                                            IDDesc:OK  \\[S\\]  vid:0000000000010002 system:0002 barrel:0001")
 #
 #  Test handle casting procedures.
