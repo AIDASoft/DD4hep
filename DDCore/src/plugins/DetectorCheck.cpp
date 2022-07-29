@@ -25,6 +25,7 @@
 // C/C++ include files
 #include <stdexcept>
 #include <algorithm>
+#include <cstdlib>
 
 using namespace std;
 using namespace dd4hep;
@@ -611,7 +612,7 @@ void DetectorCheck::help(int argc,char** argv)   {
   for(int iarg=0; iarg<argc;++iarg)  {
     std::cout << "Argument[" << iarg << "]  = " << argv[iarg] << std::endl;
   }
-  ::_exit(EINVAL);
+  ::exit(EINVAL);
 }
 
 /// Action routine to execute the test
