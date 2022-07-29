@@ -240,7 +240,7 @@ namespace {
     
     size_t checkProperty(const std::pair<string,map<string,string> >& obj)  {
       if ( obj.first.empty() || obj.second.empty() )  {
-        printout(ERROR,"chkProperty","+++ Emptty property set: %s",obj.first.c_str());
+        printout(ERROR,"chkProperty","+++ Empty property set: %s",obj.first.c_str());
         ++errors;
         return 0;
       }
