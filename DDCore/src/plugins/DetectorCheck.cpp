@@ -594,6 +594,7 @@ void DetectorCheck::help(int argc,char** argv)   {
   std::cout
     << 
     "DD4hep_DetectorCheck -option [-option]                                         \n"
+    "  -help                        Print this help message                         \n"
     "  -name  <subdetector name>    Name of the subdetector to be checked           \n"
     "                               \"ALL\" or \"all\": loop over known subdetectors\n"
     "                               \"world\" start from the mother of all...       \n"
@@ -605,7 +606,6 @@ void DetectorCheck::help(int argc,char** argv)   {
     "                               sensitive volume placements.                  \n\n"
     "                               NOTE: Option requires proper PhysVolID setup    \n"
     "                               of the sensitive volume placements !            \n"
-    "  -help                        Print this help message                         \n"
     << std::endl;
   std::cout << "Arguments: " << std::endl;
   for(int iarg=0; iarg<argc;++iarg)  {
@@ -622,7 +622,7 @@ long DetectorCheck::run(Detector& description,int argc,char** argv)    {
   bool structure = false;
   bool sensitive = false;
   bool placements = false;
-  printout(ALWAYS, "DD4hepVolumeMgrTest", "++ Processing plugin...");
+  printout(ALWAYS, "DetectorCheck", "++ Processing plugin...");
   for(int iarg=0; iarg<argc;++iarg)  {
     if ( argv[iarg] == 0 ) break;
     if ( ::strncasecmp(argv[iarg], "-name",4) == 0 && (iarg+1) < argc )
@@ -647,7 +647,7 @@ long DetectorCheck::run(Detector& description,int argc,char** argv)    {
     DetectorCheck test(description);
     if ( name == "all" || name == "All" || name == "ALL" )  {
       for (const auto& det : description.detectors() )  {
-        printout(INFO, "DD4hepVolumeMgrTest", "++ Processing subdetector: %s", det.second.name());
+        printout(INFO, "DetectorCheck", "++ Processing subdetector: %s", det.second.name());
 	test.check_structure  = structure;
 	test.check_placements = placements;
 	test.check_volmgr     = volmgr;
@@ -659,7 +659,7 @@ long DetectorCheck::run(Detector& description,int argc,char** argv)    {
     }
     DetElement det = (::strcasecmp(name.c_str(), "world") == 0)
       ? description.world() : description.detector(name);
-    printout(INFO, "DD4hepVolumeMgrTest", "++ Processing subdetector: %s",name.c_str());
+    printout(INFO, "DetectorCheck", "++ Processing subdetector: %s",name.c_str());
     test.check_structure  = structure;
     test.check_placements = placements;
     test.check_volmgr     = volmgr;
