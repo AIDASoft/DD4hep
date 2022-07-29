@@ -390,14 +390,26 @@ getRelevant(set<int>& visited,
     bool rejectParticle = not p.definition()                    // completely unknown to geant4
       or (primaryConfig.m_rejectPDGs.count(abs(p->pdgID)) != 0) // quarks, gluon, "strings", W, Z etc.
       or (isProperTimeZero and p.definition()->GetPDGStable() ) // initial state electrons, etc.
-      or (isProperTimeZero and primaryConfig.m_zeroTimePDGs.count(abs(p->pdgID)) != 0 ) ; // charged 'documentation' leptons, e.g. in lepton pairs w/ FSR
+      or (isProperTimeZero and primaryConfig.m_zeroTimePDGs.count(abs(p->pdgID)) != 0 )  // charged 'documentation' leptons, e.g. in lepton pairs w/ FSR
+      or (status.isSet(G4PARTICLE_GEN_DOCUMENTATION) || status.isSet(G4PARTICLE_GEN_BEAM) || status.isSet(G4PARTICLE_GEN_OTHER))  // documentation generator status
+      or false;
+
     printout(dd4hep::DEBUG, "Input",
-	     "Checking rejection: PDG(%-*d), Definition(%s), isProperTimeZero(%s), stable(%s), reject(%s)",
-	     8, p->pdgID,
-	     p.definition() ? "true" : "false",
-	     isProperTimeZero ? "true" : "false",
-	     (bool(p.definition()) ? p.definition()->GetPDGStable() : false)  ? "true" : "false",
-	     rejectParticle ? "true" : "false");
+             "Checking rejection: PDG(%-10d), Definition(%s), isProperTimeZero(%s, %3.15f), stable(%s), doc(%s), reject(%s)",
+             p->pdgID,
+             p.definition() ? "true" : "false",
+             isProperTimeZero ? "true" : "false", proper_time,
+             (bool(p.definition()) ? p.definition()->GetPDGStable() : false)  ? "true" : "false",
+             status.isSet(G4PARTICLE_GEN_DOCUMENTATION) || status.isSet(G4PARTICLE_GEN_BEAM) || status.isSet(G4PARTICLE_GEN_OTHER) ? "true" : "false",
+             rejectParticle ? "true" : "false");
+    // end running simulation if we have a really inconsistent record, that is unrejected stable particle with children
+    bool failStableWithChildren = (not rejectParticle and p.definition()->GetPDGStable());
+    if (failStableWithChildren) {
+      printout(FATAL,"Input",
+               "+++ Stable particle (PDG: %-10d) with daughters! check your MC record, adapt particle.tbl file...",
+               p->pdgID);
+      throw std::runtime_error("Cannot Simmulate this MC Record");
+    }
     if (not rejectParticle) {
       map<int,G4PrimaryParticle*>::iterator ip4 = prim.find(p->id);
       G4PrimaryParticle* p4 = (ip4 == prim.end()) ? 0 : (*ip4).second;
