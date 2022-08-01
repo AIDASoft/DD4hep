@@ -272,6 +272,15 @@ dd4hep_add_test_reg( ClientTests_Check_reflection_matrices
   REGEX_PASS "Analysed 7 right handed and 10 left handed matrices"
   REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
 #
+#  Test DetectorCheck plugin
+dd4hep_add_test_reg( ClientTests_DetectorCheck_plugin
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -input file:${ClientTestsEx_INSTALL}/compact/IllDetector.xml
+  -volmgr -plugin DD4hep_DetectorCheck -name world -structure -geometry -sensitive -volmgr
+  REGEX_PASS "FAILED: Checked a total of         110 elements. Num.Errors:    77"
+  REGEX_FAIL "Exception;EXCEPTION;FATAL" )
+#
 # only if root version > 6.19: MaterialTester
 #
 foreach (test Assemblies BoxTrafos CaloEndcapReflection IronCylinder LheD_tracker MagnetFields  
