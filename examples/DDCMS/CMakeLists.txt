@@ -144,7 +144,7 @@ dd4hep_add_test_reg( DDCMS_VolumeMgrTest_PixelBarrel
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
   -destroy -print WARNING
   -plugin    DD4hep_DetectorCheck -name PixelBarrel_1 -geometry -structure -volmgr -sensitive
-  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of      46193 elements. Num.Errors:0"
+  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of       32141 elements. Num.Errors:     0"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
@@ -156,7 +156,7 @@ dd4hep_add_test_reg( DDCMS_VolumeMgrTest_TIB
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
   -destroy -print WARNING
   -plugin    DD4hep_DetectorCheck -name TIB_1 -geometry -structure -volmgr -sensitive
-  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of     168629 elements. Num.Errors:0"
+  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of      115218 elements. Num.Errors:     0"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
@@ -168,7 +168,7 @@ dd4hep_add_test_reg( DDCMS_VolumeMgrTest_TOB
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
   -destroy -print WARNING
   -plugin DD4hep_DetectorCheck -name TOB_1 -geometry -structure -volmgr -sensitive
-  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of     520446 elements. Num.Errors:0"
+  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of      354124 elements. Num.Errors:     0"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
@@ -220,7 +220,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_DetTest2_LONGTEST
   -plugin    DD4hep_RootLoader DDCMS_geometry.root
   -plugin    DD4hep_DetectorCheck -name PixelBarrel_1 -geometry -structure -volmgr -sensitive
   DEPENDS    DDCMS_Persist_Save_LONGTEST
-  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of      46193 elements. Num.Errors:0 "
+  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of       32141 elements. Num.Errors:     0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #

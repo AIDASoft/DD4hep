@@ -69,6 +69,16 @@ namespace  {
       FND(const string& c) : test(c) {}
       bool operator()(const VolIDs::value_type& c) const { return c.first == test; }
     };
+    struct counters  {
+      size_t elements { 0 };
+      size_t errors { 0 };
+      void reset() { elements = errors = 0; }
+      counters& operator+=(const counters& c)  {
+	elements += c.elements;
+	errors   += c.errors;
+	return *this;
+      }
+    };
 
     Detector&            description;
     AlignmentsNominalMap m_mapping;
@@ -79,16 +89,7 @@ namespace  {
     DetElement           m_det;
     std::string          m_name { "GeometryCheck" };
 
-    size_t               m_placement_errors = 0;
-    size_t               m_placement_elements = 0;
-
-    size_t               m_sensitive_errors = 0;
-    size_t               m_sensitive_elements = 0;
-
-    size_t               m_geometry_elements = 0;
-    size_t               m_geometry_errors = 0;
-
-    size_t               m_structure_errors = 0;
+    counters             m_place_counters, m_sens_counters, m_geo_counters, m_struct_counters;
     StructureElements    m_structure_elements;
 
     bool check_structure  { false };
@@ -102,7 +103,7 @@ namespace  {
     /// Initializing constructor
     DetectorCheck(Detector& description);
     /// Default destructor
-    virtual ~DetectorCheck();
+    virtual ~DetectorCheck() = default;
 
     /// Check single volume integrity
     void checkManagerSingleVolume(DetElement e, PlacedVolume pv, const VolIDs& child_ids, const Chain& chain);
@@ -148,8 +149,13 @@ SensitiveDetector DetectorCheck::get_current_sensitive_detector()  {
 }
 
 void DetectorCheck::execute(DetElement sdet, size_t depth)   {
+  const char* line = "============================";
+  struct counters count_volmgr_sens, count_volmgr_place;
+  struct counters total, count_sens, count_struct;
+  struct counters count_geo, count_geo_sens;
+
   if ( !sdet.isValid() )   {
-    ++m_placement_errors;
+    ++m_place_counters.errors;
     except("VolumeMgrTest", "The detector element is not known to the geometry.");
     return;
   }
@@ -174,72 +180,82 @@ void DetectorCheck::execute(DetElement sdet, size_t depth)   {
       m_current_iddesc = m_current_sensitive.readout().idSpec();
     }
   }
-  size_t total_elements = 0;
-  size_t total_errors = 0;
   /// Execute actions:
   if ( check_structure )   {
+    printout(ALWAYS, m_name, "%s%s  Executing STRUCTURE      test  %s%s", line, line, line, line);
     PlacedVolume pv  = m_det.placement();
     checkDetElementTree(m_det.path(), m_det, pv);
-    printout(m_structure_errors > 0 ? ERROR : ALWAYS, 
-	     m_name, "+++ %s: Checked %10ld structure elements.   Num.Errors:%ld (structure test)",
-	     tag_fail(m_structure_errors), m_structure_elements.size(), m_structure_errors);
-    total_elements += m_structure_elements.size();
-    total_errors += m_structure_errors;
+    count_struct.elements = m_structure_elements.size();
+    count_struct.errors   = m_struct_counters.errors;
+    total += count_struct;
     m_structure_elements.clear();
-    m_structure_errors = 0;
+    m_struct_counters.reset();
   }
-
   if ( check_geometry )   {
+    printout(ALWAYS, m_name, "%s%s  Executing GEOMETRY       test  %s%s", line, line, line, line);
     PlacedVolume pv  = m_det.placement();
     checkVolumeTree(m_det, pv);
-    if ( check_sensitive )  {
-      printout(m_sensitive_errors > 0 ? ERROR : ALWAYS,
-	       m_name, "+++ %s: Checked %10ld sensitive elements.   Num.Errors:%ld (geometry test)",
-	       tag_fail(m_sensitive_errors), m_sensitive_elements, m_sensitive_errors);
-    }
-    printout(m_geometry_errors > 0 ? ERROR : ALWAYS,
-	     m_name, "+++ %s: Checked %10ld placements.           Num.Errors:%ld (geometry test)",
-	     tag_fail(m_geometry_errors), m_geometry_elements, m_geometry_errors);
-    total_elements += m_sensitive_elements + m_geometry_elements;
-    total_errors += m_sensitive_errors + m_geometry_errors;
-    m_sensitive_errors   = 0;
-    m_sensitive_elements = 0;
-    m_geometry_errors    = 0;
-    m_geometry_elements  = 0;
+    count_geo      = m_geo_counters;
+    count_geo_sens = m_sens_counters;
+    total += count_geo_sens;
+    total += count_geo;
+    m_sens_counters.reset();
+    m_geo_counters.reset();
   }
 
   if ( check_volmgr )   {
     Chain chain;
     PlacedVolume pv  = m_det.placement();
-    VolIDs       ids = pv.volIDs();
+    VolIDs       ids;
+
+    printout(ALWAYS, m_name, "%s%s  Executing VOLUME MANAGER test  %s%s", line, line, line, line);
     chain.emplace_back(pv);
     m_volMgr = description.volumeManager();
     if ( !m_volMgr.isValid() )    {
       printout(ERROR, m_name, "Volume manager is not instantiated. Required for test!");
       return;
     }
-    m_sensitive_errors = 0;
-    m_sensitive_elements = 0;
-    checkManagerVolumeTree(m_det, pv, ids, chain, 1, depth);
-    if ( check_sensitive )  {
-      printout(m_sensitive_errors > 0 ? ERROR : ALWAYS,
-	       m_name, "+++ %s: Checked %10ld sensitive elements.   Num.Errors:%ld (phys.VolID test)",
-	       tag_fail(m_sensitive_errors), m_sensitive_elements, m_sensitive_errors);
+    if ( pv.volume() != description.worldVolume() )   {
+      ids = pv.volIDs();
     }
-    printout(m_placement_errors > 0 ? ERROR : ALWAYS,
-	     m_name, "+++ %s: Checked %10ld sensitive placements. Num.Errors:%ld (phys.VolID test)",
-	     tag_fail(m_placement_errors), m_sensitive_elements, m_placement_errors);
-    total_elements += m_sensitive_elements + m_placement_elements;
-    total_errors += m_sensitive_errors + m_placement_errors;
+    m_sens_counters.reset();
+    m_current_detector = m_det;
+    checkManagerVolumeTree(m_det, pv, ids, chain, 1, depth);
+    count_volmgr_place = m_place_counters;
+    count_volmgr_sens  = m_sens_counters;
+    total += count_volmgr_place;
+    total += count_volmgr_sens;
+    m_place_counters.reset();
+    m_sens_counters.reset();
   }
-  total_elements += m_sensitive_elements + m_placement_elements;
-  total_errors += m_sensitive_errors + m_placement_errors;
-  printout(ALWAYS, m_name, "+++ %s: Checked a total of %10ld elements. Num.Errors:%ld (Some elements checked twice)",
-	   tag_fail(total_errors), total_elements, total_errors);
-}
 
-/// Default destructor
-DetectorCheck::~DetectorCheck()   {
+  if ( check_structure )   {
+    printout(count_struct.errors > 0 ? ERROR : ALWAYS, 
+	     m_name, "+++ %s: Checked %10ld structure elements.   Num.Errors:%6ld (structure test)",
+	     tag_fail(count_struct.errors), count_struct.elements, count_struct.errors);
+  }
+  if ( check_geometry )   {
+    if ( check_sensitive )  {
+      printout(count_geo_sens.errors > 0 ? ERROR : ALWAYS,
+	       m_name, "+++ %s: Checked %10ld sensitive elements.   Num.Errors:%6ld (geometry test)",
+	       tag_fail(count_geo_sens.errors), count_geo_sens.elements, count_geo_sens.errors);
+    }
+    printout(count_geo.errors > 0 ? ERROR : ALWAYS,
+	     m_name, "+++ %s: Checked %10ld placements.           Num.Errors:%6ld (geometry test)",
+	     tag_fail(count_geo.errors), count_geo.elements, count_geo.errors);
+  }
+  if ( check_volmgr )   {
+    if ( check_sensitive )  {
+      printout(count_volmgr_sens.errors > 0 ? ERROR : ALWAYS,
+	       m_name, "+++ %s: Checked %10ld sensitive elements.   Num.Errors:%6ld (phys.VolID test)",
+	       tag_fail(count_volmgr_sens.errors), count_volmgr_sens.elements, count_volmgr_sens.errors);
+    }
+    printout(count_volmgr_place.errors > 0 ? ERROR : ALWAYS,
+	     m_name, "+++ %s: Checked %10ld sensitive placements. Num.Errors:%6ld (phys.VolID test)",
+	     tag_fail(count_volmgr_place.errors), count_volmgr_sens.elements, count_volmgr_place.errors);
+  }
+  printout(ALWAYS, m_name, "+++ %s: Checked a total of %11ld elements. Num.Errors:%6ld (Some elements checked twice)",
+	   tag_fail(total.errors), total.elements, total.errors);
 }
 
 /// Check DetElement integrity
@@ -249,37 +265,37 @@ bool DetectorCheck::checkDetElement(const std::string& path, DetElement detector
   bool place_valid = true;
   bool det_place_valid = true;
   bool vol_valid = true;
-  auto nerrs = m_structure_errors;
+  auto nerrs = m_struct_counters.errors;
   const char* de_path = detector.path().c_str();
 
   if ( !pv.isValid() )   {
     printout(ERROR, m_name, "Invalid DetElement placement: %s", de_path);
-    ++m_structure_errors;
+    ++m_struct_counters.errors;
     place_valid = false;
   }
   if ( detector.path() != path )    {
     printout(ERROR, m_name, "Invalid DetElement [path mismatch]: %s <> %s",
 	     de_path, path.c_str());
-    ++m_structure_errors;
+    ++m_struct_counters.errors;
   }
   if ( !detector.parent().isValid() && detector.world() != detector )   {
     printout(ERROR, m_name, "Invalid DetElement [No parent]:     %s", de_path);
-    ++m_structure_errors;
+    ++m_struct_counters.errors;
     parent_valid = false;
   }
   if ( !detector.placement().isValid() )   {
     printout(ERROR, m_name, "Invalid DetElement [No placement]:  %s", de_path);
-    ++m_structure_errors;
+    ++m_struct_counters.errors;
     det_place_valid = false;
   }
   else if ( !detector.volume().isValid() )   {
     printout(ERROR, m_name, "Invalid DetElement [No volume]:     %s", de_path);
-    ++m_structure_errors;
+    ++m_struct_counters.errors;
     vol_valid = false;
   }
   if ( detector.placement().isValid() && detector.placement() != pv )   {
     printout(ERROR, m_name, "Invalid DetElement [Mismatched placement]:  %s", de_path);
-    ++m_structure_errors;
+    ++m_struct_counters.errors;
     det_place_valid = false;
   }
   auto count = ++m_structure_elements[detector];
@@ -287,36 +303,36 @@ bool DetectorCheck::checkDetElement(const std::string& path, DetElement detector
     DetElement par = detector.parent();
     printout(ERROR, m_name, "DetElement %s parent: %s is placed %ld times! Only single placement allowed.", 
 	     de_path, par.isValid() ? par.path().c_str() : "", m_structure_elements[detector]);
-    ++m_structure_errors;
+    ++m_struct_counters.errors;
   }
   Alignment ideal = detector.nominal();
   if ( !ideal.isValid() )    {
     printout(ERROR, m_name, "Invalid DetElement [No ideal alignment]: %s", de_path);
-    ++m_structure_errors;
+    ++m_struct_counters.errors;
   }
   Alignment survey = detector.survey();
   if ( !survey.isValid() )    {
     printout(ERROR, m_name, "Invalid DetElement [No survey alignment]: %s", de_path);
-    ++m_structure_errors;
+    ++m_struct_counters.errors;
   }
   if ( ideal.isValid() )    {
     const TGeoHMatrix& m = ideal.worldTransformation();
     if ( m.IsIdentity() )  {
     }
   }
-  printout(nerrs != m_structure_errors ? ERROR : INFO, m_name, 
+  printout(nerrs != m_struct_counters.errors ? ERROR : INFO, m_name, 
 	   "DetElement %s [%s] parent: %s placement: %s [%s] volume: %s",
 	   path.c_str(), yes_no(det_valid), yes_no(parent_valid), yes_no(det_place_valid),
 	   yes_no(place_valid), yes_no(vol_valid));
-  return nerrs == m_structure_errors;
+  return nerrs == m_struct_counters.errors;
 }
 
 /// Check DetElement tree for integrity
 bool DetectorCheck::checkDetElementTree(const std::string& path, DetElement detector, PlacedVolume pv)   {
-  auto nerrs = m_structure_errors;
+  auto nerrs = m_struct_counters.errors;
   if ( !detector.isValid() )   {
     printout(ERROR, m_name, "Invalid DetElement seen: %s", path.c_str());
-    ++m_structure_errors;
+    ++m_struct_counters.errors;
     return false;
   }
   bool is_world = detector == detector.world();
@@ -334,72 +350,83 @@ bool DetectorCheck::checkDetElementTree(const std::string& path, DetElement dete
       printout(ERROR, m_name, "Invalid DetElement [Parent mismatch]:    %s", de.path().c_str());
       printout(ERROR, m_name, "        apparent parent: %s  structural parent: %s",
 	       de.parent().path().c_str(), detector.path().c_str());
-      ++m_structure_errors;
+      ++m_struct_counters.errors;
     }
     /// Invalid daughter elements will be detectoed in there:
     checkDetElementTree(path + "/" + c.first, de, de.placement());
   }
-  return nerrs == m_structure_errors;
+  return nerrs == m_struct_counters.errors;
 }
 
 /// Check single volume integrity
 void DetectorCheck::checkSingleVolume(DetElement e, PlacedVolume pv)   {
 
-  ++m_geometry_elements;
+  ++m_geo_counters.elements;
   /// Check DetElement validity
   if ( !e.isValid() )   {
     printout(ERROR, m_name, "Invalid DetElement [Invalid handle]");
-    ++m_geometry_errors;
+    ++m_geo_counters.errors;
   }
   /// Check placement validity
   if ( !pv.isValid() )   {
     printout(ERROR, m_name, "Invalid PlacedVolume [Invalid handle] DetElement: %s", e.path().c_str());
-    ++m_geometry_errors;
+    ++m_geo_counters.errors;
   }
   Volume vol = pv.volume();
   /// Check volume validity
   if ( !vol.isValid() )   {
     printout(ERROR, m_name, "Invalid Volume [Invalid handle] DetElement: %s", e.path().c_str());
-    ++m_geometry_errors;
+    ++m_geo_counters.errors;
     return;
   }
   /// Check sensitive settings for sensitive volumes
   if ( check_sensitive && vol.isSensitive() )    {
     SensitiveDetector sdv = vol.sensitiveDetector();
-    ++m_sensitive_elements;
+    ++m_sens_counters.elements;
     if ( !sdv.isValid() )   {
       printout(ERROR, m_name, "Invalid SensitiveDetector DetElement: %s", e.path().c_str());
-      ++m_sensitive_errors;
+      ++m_sens_counters.errors;
     } 
     SensitiveDetector sdd = get_current_sensitive_detector();
     if ( sdd != sdv )   {
       printout(ERROR, m_name, "Inconsistent sensitive detectors for DetElement: %s", e.path().c_str());
-      ++m_sensitive_errors;
+      ++m_sens_counters.errors;
     }
   }
 }
 
 /// Walk through tree of volume placements
-void DetectorCheck::checkVolumeTree(DetElement e, PlacedVolume pv)   {
+void DetectorCheck::checkVolumeTree(DetElement detector, PlacedVolume pv)   {
   const TGeoNode* current  = pv.ptr();
   TObjArray*  nodes        = current->GetNodes();
   int         num_children = nodes ? nodes->GetEntriesFast() : 0;
-  
+  bool        is_world     = detector == description.world();
+
   /// Check single volume object
-  checkSingleVolume(e, pv);
+  checkSingleVolume(detector, pv);
   /// Recurse the tree
-  for(int i=0; i<num_children; ++i)   {
+  for(int i=0; i < num_children; ++i)   {
     TGeoNode* node = (TGeoNode*)nodes->At(i);
     PlacedVolume place(node);
-    DetElement de = e;
+    DetElement de = detector;
+
+    if ( is_world )   {
+      m_current_detector = de;
+      get_current_sensitive_detector();
+    }
+
     /// Check if there is a new parent at the next level:
-    for ( const auto& c : e.children() )   {
+    for ( const auto& c : detector.children() )   {
       if ( c.second.placement() == place )   {
 	de = c.second;
 	break;
       }
     }
     checkVolumeTree(de, place);
+    if ( is_world )   {
+      m_current_sensitive = SensitiveDetector();
+      m_current_iddesc    = IDDescriptor();
+    }
   }
 }
 
@@ -411,7 +438,7 @@ void DetectorCheck::checkManagerSingleVolume(DetElement detector, PlacedVolume p
   DetElement   top_sdet, det_elem;
   VolumeManagerContext* mgr_ctxt = 0;
   
-  ++m_placement_elements;
+  ++m_place_counters.elements;
 
   try {
     vid       = m_current_iddesc.encode(child_ids);
@@ -421,13 +448,13 @@ void DetectorCheck::checkManagerSingleVolume(DetElement detector, PlacedVolume p
 
     if ( pv.volume().isSensitive() )  {
       PlacedVolume det_place = m_volMgr.lookupDetElementPlacement(vid);
-      ++m_sensitive_elements;
+      ++m_sens_counters.elements;
       if ( pv.ptr() != det_place.ptr() )   {
         err << "VolumeMgrTest: Wrong placement "
             << " got "        << det_place.name() << " (" << (void*)det_place.ptr() << ")"
             << " instead of " << pv.name()        << " (" << (void*)pv.ptr()        << ") "
             << " vid:" << volumeID(vid);
-        ++m_placement_errors;
+        ++m_place_counters.errors;
       }
       else if ( top_sdet.ptr() != detector.ptr() )   {
         top_sdet  = m_volMgr.lookupDetector(vid);
@@ -435,7 +462,7 @@ void DetectorCheck::checkManagerSingleVolume(DetElement detector, PlacedVolume p
             << " got "        << top_sdet.path() << " (" << (void*)top_sdet.ptr() << ") "
             << " instead of " << detector.path() << " (" << (void*)detector.ptr() << ")"
             << " vid:" << volumeID(vid);
-        ++m_placement_errors;
+        ++m_place_counters.errors;
       }
       else if ( !detail::tools::isParentElement(detector,det_elem) )   {
       // This is sort of a bit wischi-waschi.... 
@@ -443,19 +470,19 @@ void DetectorCheck::checkManagerSingleVolume(DetElement detector, PlacedVolume p
             << " got "        << det_elem.path() << " (" << (void*)det_elem.ptr() << ") "
             << " instead of " << detector.path() << " (" << (void*)detector.ptr() << ")"
             << " vid:" << volumeID(vid);
-        ++m_placement_errors;
+        ++m_place_counters.errors;
       }
       else if ( top_sdet.ptr() != m_det.ptr() )   {
         err << "VolumeMgrTest: Wrong associated detector "
             << " vid:" << volumeID(vid);
-        ++m_placement_errors;
+        ++m_place_counters.errors;
       }
     }
   }
   catch(const exception& ex) {
     err << "Lookup " << pv.name() << " id:" << volumeID(vid)
         << " path:" << detector.path() << " error:" << ex.what();
-    ++m_placement_errors;
+    ++m_place_counters.errors;
   }
 
   if ( pv.volume().isSensitive() || (0 != det_vol_id) )  {
@@ -464,7 +491,7 @@ void DetectorCheck::checkManagerSingleVolume(DetElement detector, PlacedVolume p
     if ( pv.volume().isSensitive() )  {
       IDDescriptor dsc = SensitiveDetector(pv.volume().sensitiveDetector()).readout().idSpec();
       log << " IDDesc:" << (char*)(dsc.ptr() == m_current_iddesc.ptr() ? "OK " : "BAD");
-      if ( dsc.ptr() != m_current_iddesc.ptr() ) ++m_placement_errors;
+      if ( dsc.ptr() != m_current_iddesc.ptr() ) ++m_place_counters.errors;
     }
     else  {
       log << setw(11) << " ";
@@ -515,14 +542,14 @@ void DetectorCheck::checkManagerSingleVolume(DetElement detector, PlacedVolume p
         if ( 0 == mgr_ctxt )  {
           printout(ERROR, m_det.name(), "VOLUME_MANAGER FAILED: Could not find entry for vid:%s.",
                    volumeID(vid).c_str());
-          ++m_placement_errors;
+          ++m_place_counters.errors;
         }
 
         /// Check nominal and DetElement trafos for pointer equality:
         if ( &det_elem.nominal().worldTransformation() != &m_volMgr.worldTransformation(m_mapping,det_elem.volumeID()) )
         {
             printout(ERROR, m_det.name(), "DETELEMENT_PERSISTENCY FAILED: World transformation have DIFFERET pointer!");
-          ++m_placement_errors;
+          ++m_place_counters.errors;
         }
         
         if ( pv.ptr() == det_elem.placement().ptr() )   {
@@ -532,7 +559,7 @@ void DetectorCheck::checkManagerSingleVolume(DetElement detector, PlacedVolume p
           int res2 = detail::matrix::_matrixEqual(trafo, m_volMgr.worldTransformation(m_mapping,vid));
           if ( res1 != detail::matrix::MATRICES_EQUAL || res2 != detail::matrix::MATRICES_EQUAL )  {
             printout(ERROR, m_det.name(), "DETELEMENT_PLACEMENT FAILED: World transformation DIFFER.");
-            ++m_placement_errors;
+            ++m_place_counters.errors;
           }
           else  {
             printout(INFO, m_det.name(), "DETELEMENT_PLACEMENT: PASSED. All matrices equal: %s",
@@ -546,7 +573,7 @@ void DetectorCheck::checkManagerSingleVolume(DetElement detector, PlacedVolume p
           int res2 = detail::matrix::_matrixEqual(trafo, m_volMgr.worldTransformation(m_mapping,vid));
           if ( res2 != detail::matrix::MATRICES_EQUAL )  {
             printout(ERROR, m_det.name(), "VOLUME_PLACEMENT FAILED: World transformation DIFFER.");
-            ++m_placement_errors;
+            ++m_place_counters.errors;
           }
           else  {
             printout(INFO, m_det.name(), "VOLUME_PLACEMENT: PASSED. All matrices equal: %s",
@@ -558,7 +585,7 @@ void DetectorCheck::checkManagerSingleVolume(DetElement detector, PlacedVolume p
     catch(const exception& ex) {
       err << "Matrix " << pv.name() << " id:" << volumeID(vid)
           << " path:" << detector.path() << " error:" << ex.what();
-      ++m_placement_errors;
+      ++m_place_counters.errors;
     }
     
   }
@@ -572,21 +599,30 @@ void DetectorCheck::checkManagerVolumeTree(DetElement detector, PlacedVolume pv,
     const TGeoNode* current  = pv.ptr();
     TObjArray*  nodes        = current->GetNodes();
     int         num_children = nodes ? nodes->GetEntriesFast() : 0;
+    bool        is_world     = detector == description.world();
 
     for(int i=0; i<num_children; ++i)   {
       TGeoNode* node = (TGeoNode*)nodes->At(i);
       PlacedVolume place(node);
       VolIDs child_ids(ids);
       Chain  child_chain(chain);
-
+      DetElement de = detector;
+      if ( is_world )  {
+	/// Check if there is a new parent at the next level:
+	for ( const auto& c : detector.children() )   {
+	  if ( c.second.placement() == place )   {
+	    de = c.second;
+	    break;
+	  }
+	}
+	m_current_detector = de;
+	get_current_sensitive_detector();
+      }
       place.access(); // Test validity
       child_chain.emplace_back(place);
       child_ids.insert(child_ids.end(), place.volIDs().begin(), place.volIDs().end());
-      //bool is_sensitive = place.volume().isSensitive();
-      //if ( is_sensitive || !child_ids.empty() )  {
-      checkManagerSingleVolume(detector, place, child_ids, child_chain);
-      //}
-      checkManagerVolumeTree(detector, place, child_ids, child_chain, depth+1, mx_depth);
+      checkManagerSingleVolume(de, place, child_ids, child_chain);
+      checkManagerVolumeTree(de, place, child_ids, child_chain, depth+1, mx_depth);
     }
   }
 }

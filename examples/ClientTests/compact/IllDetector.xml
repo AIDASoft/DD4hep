@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+  
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+
+  <info name="alignment_boxes"
+	title="Alignment test with 2 simple boxes"
+	author="Markus Frank"
+	url="http://www.cern.ch/lhcb"
+	status="development"
+	version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $">
+    <comment>Alignment test with 2 simple boxes</comment>        
+  </info>
+  
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+  
+  <define>
+    <constant name="world_side" value="30000"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="world_side"/>
+  </define>
+
+  <display>
+    <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
+    <vis name="B1_vis" alpha="0.3" r="1" g="0" b="0" showDaughters="true" visible="true"/>
+    <vis name="B2_vis" alpha="0.3" r="0" g="1" b="0" showDaughters="true" visible="true"/>
+    <vis name="B3_vis" alpha="1.0" r="0" g="0" b="1" showDaughters="true" visible="true"/>
+  </display>
+
+  <detectors>
+    <comment>Boxes</comment>
+    <detector id="1" name="IllDetector" type="DD4hep_IllDetector" readout="Hits" vis="B1_vis">
+      <station vis="B1_vis">
+	<box      x="50"  y="50"   z="100"/>
+	<position x="0"    y="0"     z="120"/>
+	<module x="30"   y="30"    z="1" vis="B3_vis">
+	  <position x="0"    y="0"     z="-50"/>
+	</module>
+	<module x="30"   y="30"    z="1" vis="B3_vis">
+	  <position x="0"    y="0"     z="-40"/>
+	</module>
+	<module x="30"   y="30"    z="1" vis="B3_vis">
+	  <position x="0"    y="0"     z="-30"/>
+	</module>
+	<module x="30"   y="30"    z="1" vis="B3_vis">
+	  <position x="0"    y="0"     z="-20"/>
+	</module>
+	<module x="30"   y="30"    z="1" vis="B3_vis">
+	  <position x="0"    y="0"     z="-10"/>
+	</module>
+	<module x="30"   y="30"    z="1" vis="B3_vis">
+	  <position x="0"    y="0"     z="0"/>
+	</module>
+	<module x="30"   y="30"    z="1" vis="B3_vis">
+	  <position x="0"    y="0"     z="10"/>
+	</module>
+	<module x="30"   y="30"    z="1" vis="B3_vis">
+	  <position x="0"    y="0"     z="20"/>
+	</module>
+	<module x="30"   y="30"    z="1" vis="B3_vis">
+	  <position x="0"    y="0"     z="30"/>
+	</module>
+	<module x="30"   y="30"    z="1" vis="B3_vis">
+	  <position x="0"    y="0"     z="40"/>
+	</module>
+	<module x="30"   y="30"    z="1" vis="B3_vis">
+	  <position x="0"    y="0"     z="50"/>
+	</module>
+      </station>
+    </detector>
+  </detectors>
+  <!--  Definition of the readout segmentation/definition  -->
+  <readouts>
+    <readout name="Hits">
+      <segmentation type="CartesianGridXY" grid_size_x="3.5" grid_size_y="3.5" />
+      <id>system:8,station:3,module:6,x:32:-16,y:-16</id>
+    </readout>
+  </readouts>
+
+</lccdd>
