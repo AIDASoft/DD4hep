@@ -19,6 +19,7 @@ from DDSim.Helper.Filter import Filter
 from DDSim.Helper.Random import Random
 from DDSim.Helper.Action import Action
 from DDSim.Helper.OutputConfig import OutputConfig
+from DDSim.Helper.InputConfig import InputConfig
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from DDSim.Helper.MagneticField import MagneticField
 from DDSim.Helper.ParticleHandler import ParticleHandler
@@ -95,6 +96,7 @@ class DD4hepSimulation(object):
     self.field = MagneticField()
     self.action = Action()
     self.outputConfig = OutputConfig()
+    self.inputConfig = InputConfig()
     self.guineapig = GuineaPig()
     self.lcio = LCIO()
     self.hepmc3 = HepMC3()
@@ -390,6 +392,10 @@ class DD4hepSimulation(object):
       self._g4gps.Mask = 3
       logger.info("++++ Adding Geant4 General Particle Source ++++")
       actionList.append(self._g4gps)
+
+    if self.inputConfig.userInputPlugin:
+      gen = self.inputConfig.userInputPlugin(self)
+      actionList.append(gen)
 
     for index, inputFile in enumerate(self.inputFiles, start=4):
       if inputFile.endswith(".slcio"):
