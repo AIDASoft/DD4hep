@@ -7,9 +7,10 @@ Based on M. Frank and F. Gaede runSim.py
 
 """
 from __future__ import absolute_import, unicode_literals, division, print_function
-__RCSID__ = "$Id$"
-import sys
+
 import os
+import sys
+import traceback
 from DDSim.Helper.Meta import Meta
 from DDSim.Helper.LCIO import LCIO
 from DDSim.Helper.HepMC3 import HepMC3
@@ -249,6 +250,9 @@ class DD4hepSimulation(object):
     self.vertexSigma = parsed.vertexSigma
 
     self._consistencyChecks()
+
+    if self.printLevel <= 2:  # VERBOSE or DEBUG
+      logger.setLevel(logging.DEBUG)
 
     # self.__treatUnknownArgs( parsed, unknown )
     self.__parseAllHelper(parsed)
@@ -570,6 +574,8 @@ class DD4hepSimulation(object):
               obj.setOption(var, parsedDict[key])
             except RuntimeError as e:
               self._errorMessages.append("ERROR: %s " % e)
+              if logger.level <= logging.DEBUG:
+                self._errorMessages.append(traceback.format_exc())
 
   def __checkOutputLevel(self, level):
     """return outputlevel as int so we don't have to import anything for faster startup"""
