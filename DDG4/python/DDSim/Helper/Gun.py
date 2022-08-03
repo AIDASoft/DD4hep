@@ -14,7 +14,6 @@ class Gun(ConfigHelper):
 
   def __init__(self):
     super(Gun, self).__init__()
-    self.energy = 10 * GeV
     self.particle = "mu-"
     self.multiplicity = 1
     self._position = (0.0, 0.0, 0.0)
@@ -28,7 +27,7 @@ class Gun(ConfigHelper):
     self.thetaMax = None
     self._momentumMin_EXTRA = {'help': "Minimal momentum when using distribution (default = 0.0)"}
     self.momentumMin = None
-    self.momentumMax = None
+    self.momentumMax = 10 * GeV
 
     self._distribution_EXTRA = {'choices': ['uniform', 'cos(theta)',
                                             'eta', 'pseudorapidity',
@@ -114,9 +113,6 @@ class Gun(ConfigHelper):
   def setOptions(self, ddg4Gun):
     """set the starting properties of the DDG4 particle gun"""
     try:
-      ddg4Gun.energy = self.energy  # ddg4Gun.energy actually sets momentum
-      ddg4Gun.MomentumMin = 0.0
-      ddg4Gun.MomentumMax = self.energy
       ddg4Gun.particle = self.particle
       ddg4Gun.multiplicity = self.multiplicity
       ddg4Gun.position = self.position
@@ -135,10 +131,10 @@ class Gun(ConfigHelper):
       if self.phiMax is not None:
         ddg4Gun.PhiMax = self.phiMax
         ddg4Gun.isotrop = True
+      ddg4Gun.MomentumMin = 0.0
       if self.momentumMin is not None:
         ddg4Gun.MomentumMin = self.momentumMin
-      if self.momentumMax is not None:
-        ddg4Gun.MomentumMax = self.momentumMax
+      ddg4Gun.MomentumMax = self.momentumMax
     except Exception as e:  # pylint: disable=W0703
       logger.error("parsing gun options:\n%s\nException: %s " % (self, e))
       exit(1)
