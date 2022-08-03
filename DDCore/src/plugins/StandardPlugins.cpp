@@ -872,7 +872,8 @@ DECLARE_APPLY(DD4hep_RootLoader,load_geometryFromroot)
  */
 static long check_detectors(Detector& description, int /* argc */, char** /* argv */) {
   DD4hepRootCheck check(&description);
-  return check.checkDetectors();
+  auto ret = check.checkDetectors();
+  return ret.first > 0 && ret.second == 0 ? 1 : 0;
 }
 DECLARE_APPLY(DD4hep_CheckDetectors,check_detectors)
 
@@ -886,7 +887,8 @@ DECLARE_APPLY(DD4hep_CheckDetectors,check_detectors)
  */
 static long check_sensitives(Detector& description, int /* argc */, char** /* argv */) {
   DD4hepRootCheck check(&description);
-  return check.checkSensitives();
+  auto ret = check.checkSensitives();
+  return ret.first > 0 && ret.second == 0 ? 1 : 0;
 }
 DECLARE_APPLY(DD4hep_CheckSensitives,check_sensitives)
 
@@ -900,7 +902,8 @@ DECLARE_APPLY(DD4hep_CheckSensitives,check_sensitives)
  */
 static long check_segmentations(Detector& description, int /* argc */, char** /* argv */) {
   DD4hepRootCheck check(&description);
-  return check.checkSegmentations();
+  auto ret = check.checkSegmentations();
+  return ret.first > 0 && ret.second == 0 ? 1 : 0;
 }
 DECLARE_APPLY(DD4hep_CheckSegmentations,check_segmentations)
 
@@ -914,7 +917,8 @@ DECLARE_APPLY(DD4hep_CheckSegmentations,check_segmentations)
  */
 static long check_readouts(Detector& description, int /* argc */, char** /* argv */) {
   DD4hepRootCheck check(&description);
-  return check.checkReadouts();
+  auto ret = check.checkReadouts();
+  return ret.first > 0 && ret.second == 0 ? 1 : 0;
 }
 DECLARE_APPLY(DD4hep_CheckReadouts,check_readouts)
 
@@ -928,7 +932,8 @@ DECLARE_APPLY(DD4hep_CheckReadouts,check_readouts)
  */
 static long check_idspecs(Detector& description, int /* argc */, char** /* argv */) {
   DD4hepRootCheck check(&description);
-  return check.checkIdSpecs();
+  auto ret = check.checkIdSpecs();
+  return ret.first > 0 && ret.second == 0 ? 1 : 0;
 }
 DECLARE_APPLY(DD4hep_CheckIdspecs,check_idspecs)
 
@@ -942,7 +947,8 @@ DECLARE_APPLY(DD4hep_CheckIdspecs,check_idspecs)
  */
 static long check_volumemanager(Detector& description, int /* argc */, char** /* argv */) {
   DD4hepRootCheck check(&description);
-  return check.checkVolManager();
+  auto ret = check.checkVolManager();
+  return ret.first > 0 && ret.second == 0 ? 1 : 0;
 }
 DECLARE_APPLY(DD4hep_CheckVolumeManager,check_volumemanager)
 
@@ -956,7 +962,8 @@ DECLARE_APPLY(DD4hep_CheckVolumeManager,check_volumemanager)
  */
 static long check_nominals(Detector& description, int /* argc */, char** /* argv */) {
   DD4hepRootCheck check(&description);
-  return check.checkNominals();
+  auto ret = check.checkNominals();
+  return ret.first > 0 && ret.second == 0 ? 1 : 0;
 }
 DECLARE_APPLY(DD4hep_CheckNominals,check_nominals)
 
@@ -1269,7 +1276,7 @@ static int detelement_processor(Detector& description, int argc, char** argv)   
       except("DetElementProcessor","++ Unknown plugin argument: %s",argv[i]);
     }
   }
-  return DetectorScanner().scan(*proc, det, 0, recursive);
+  return DetectorScanner().scan(*proc, det, 0, recursive) > 0 ? 1 : 0;
 }
 DECLARE_APPLY(DD4hep_DetElementProcessor,detelement_processor)
 
@@ -1319,7 +1326,7 @@ static int placed_volume_processor(Detector& description, int argc, char** argv)
       except("PlacedVolumeProcessor","++ Unknown plugin argument: %s",argv[i]);
     }
   }
-  return PlacedVolumeScanner().scanPlacements(*proc, pv, 0, recursive);
+  return PlacedVolumeScanner().scanPlacements(*proc, pv, 0, recursive) > 0 ? 1 : 0;
 }
 DECLARE_APPLY(DD4hep_PlacedVolumeProcessor,placed_volume_processor)
 

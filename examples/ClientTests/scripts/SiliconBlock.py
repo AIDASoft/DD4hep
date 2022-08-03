@@ -12,7 +12,6 @@
 #
 from __future__ import absolute_import, unicode_literals
 import os
-import sys
 import time
 import DDG4
 from DDG4 import OutputLevel as Output
@@ -30,6 +29,7 @@ from g4units import GeV, MeV, m
 
 
 def run():
+  args = DDG4.CommandLine()
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/examples/ClientTests/compact/SiliconBlock.xml"))
@@ -38,10 +38,12 @@ def run():
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()
   # Configure UI
-  if len(sys.argv) > 1:
-    geant4.setupCshUI(macro=sys.argv[1])
+  if args.macro:
+    ui = geant4.setupCshUI(macro=args.macro)
   else:
-    geant4.setupCshUI()
+    ui = geant4.setupCshUI()
+  if args.batch:
+    ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
 
   # Configure field
   geant4.setupTrackingField(prt=True)

@@ -17,6 +17,7 @@
 #include "DDG4/Geant4Random.h"
 
 #include "CLHEP/Random/EngineFactory.h"
+#include "CLHEP/Random/RandGamma.h"
 #include "CLHEP/Random/Random.h"
 
 // ROOT include files
@@ -324,3 +325,20 @@ void   Geant4Random::sphere(double &x, double &y, double &z, double r)  {
   gRandom->Sphere(x,y,z,r);
 }
 
+/// Create poisson distributed random numbers
+double Geant4Random::poisson(double mean)   {
+  if ( !m_inited ) initialize();
+  return gRandom->PoissonD(mean);
+}
+
+/// Create breit wigner distributed random numbers
+double Geant4Random::breit_wigner(double mean, double gamma)   {
+  if ( !m_inited ) initialize();
+  return gRandom->BreitWigner(mean, gamma);
+}
+
+/// Create gamma distributed random numbers
+double Geant4Random::gamma(double k, double lambda)    {
+  if ( !m_inited ) initialize();
+  return CLHEP::RandGamma::shoot(this->m_engine, k, lambda);
+}

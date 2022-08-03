@@ -18,7 +18,7 @@
 #include "DDG4/Geant4Mapping.h"
 #include "DDG4/Geant4StepHandler.h"
 #include "DDG4/Geant4VolumeManager.h"
-#include "DDG4/Geant4GFlashSpotHandler.h"
+#include "DDG4/Geant4FastSimHandler.h"
 #include "DDG4/Geant4ReadoutVolumeFilter.h"
 
 using namespace dd4hep::sim;
@@ -59,9 +59,9 @@ bool Geant4ReadoutVolumeFilter::operator()(const G4Step* step) const    {
   return false;
 }
 
-/// Filter action. Return true if hits should be processed
-bool Geant4ReadoutVolumeFilter::operator()(const G4GFlashSpot* spot) const    {
-  Geant4GFlashSpotHandler spotH(spot);
+/// GFLASH/FastSim interface: Filter action. Return true if hits should be processed
+bool Geant4ReadoutVolumeFilter::operator()(const Geant4FastSimSpot* spot) const    {
+  Geant4FastSimHandler spotH(spot);
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
   VolumeID id  = volMgr.volumeID(spotH.touchable());
   long64   key = m_key->value(id);

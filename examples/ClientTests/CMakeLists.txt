@@ -146,7 +146,7 @@ dd4hep_add_test_reg( ClientTests_MultiPlace
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
   -input file:${ClientTestsEx_INSTALL}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
-  -plugin DD4hep_VolumeMgrTest SiTrackerBarrel
+  -plugin DD4hep_DetectorCheck -name SiTrackerBarrel -geometry -structure -volmgr -sensitive
 
   REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001"
   REGEX_FAIL "FAILED: World transformation DIFFER"
@@ -157,7 +157,7 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_LongVoldID
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun
   -input file:${ClientTestsEx_INSTALL}/compact/SiBarrelMultiSensitiveLongVolID.xml -volmgr -destroy
-  -plugin DD4hep_VolumeMgrTest SiTrackerBarrel
+  -plugin DD4hep_DetectorCheck -name SiTrackerBarrel -geometry -structure -volmgr -sensitive
 
   REGEX_PASS "Volume:component1_1                                       IDDesc:OK  \\[S\\]  vid:00200668000000ff system:00ff barrel:0000 layer:0001 module:0033 sensor:0001"
   REGEX_FAIL "FAILED: World transformation DIFFER"
@@ -170,7 +170,7 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides
   -input file:${ClientTestsEx_INSTALL}/compact/Bitfield_SidesTest.xml -volmgr -destroy
   -plugin DD4hep_DetectorVolumeDump
   -plugin DD4hep_VolumeDump volids
-  -plugin DD4hep_VolumeMgrTest all
+  -plugin DD4hep_DetectorCheck -name all -geometry -structure -volmgr -sensitive
   REGEX_PASS "Volume:Shell_2                                            IDDesc:OK  \\[S\\]  vid:0000000000000102 system:0002 barrel:0001")
 #
 #  Test readout strings of the form: <id>system:16,barrel:16:-5</id>
@@ -180,7 +180,7 @@ dd4hep_add_test_reg( ClientTests_Bitfield64_BarrelSides2
   -input file:${ClientTestsEx_INSTALL}/compact/Bitfield_SidesTest2.xml -volmgr -destroy
   -plugin DD4hep_DetectorVolumeDump
   -plugin DD4hep_VolumeDump volids
-  -plugin DD4hep_VolumeMgrTest all
+  -plugin DD4hep_DetectorCheck -name all -geometry -structure -volmgr -sensitive
   REGEX_PASS "Volume:Shell_2                                            IDDesc:OK  \\[S\\]  vid:0000000000010002 system:0002 barrel:0001")
 #
 #  Test handle casting procedures.
@@ -272,10 +272,20 @@ dd4hep_add_test_reg( ClientTests_Check_reflection_matrices
   REGEX_PASS "Analysed 7 right handed and 10 left handed matrices"
   REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
 #
+#  Test DetectorCheck plugin
+dd4hep_add_test_reg( ClientTests_DetectorCheck_plugin
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun
+  -input file:${ClientTestsEx_INSTALL}/compact/IllDetector.xml
+  -volmgr -plugin DD4hep_DetectorCheck -name world -structure -geometry -sensitive -volmgr
+  REGEX_PASS "FAILED: Checked a total of         110 elements. Num.Errors:    77"
+  REGEX_FAIL "Exception;EXCEPTION;FATAL" )
+#
 # only if root version > 6.19: MaterialTester
 #
 foreach (test Assemblies BoxTrafos CaloEndcapReflection IronCylinder LheD_tracker MagnetFields  
     MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors 
+    ParamVolume1D ParamVolume2D ParamVolume3D
     MultiCollections MultiSegmentations )
 
   # Test materials in volumes. Test here the proper access to the materials from the volumes,
@@ -310,6 +320,7 @@ endforeach()
 # MaterialTester no geometry
 # SectorBarrelCalorimeter is bad
 foreach (test Assemblies BoxTrafos CaloEndcapReflection LheD_tracker MagnetFields MiniTel SiliconBlock 
+	 ParamVolume1D ParamVolume2D ParamVolume3D
          NestedSimple NestedDetectors MultiCollections )
   #
   # Test material scans in [origine to 10 meters in y]
@@ -429,5 +440,29 @@ if (DD4HEP_USE_GEANT4)
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   endforeach(script)
-
+  #
+  if(Geant4_VERSION VERSION_LESS 10.7)
+    dd4hep_print("|++> Geant4 fast simulation not supported for Geant4 ${Geant4_VERSION}")
+  else()
+    # Geant4 full simulation checks of multi-collection/segmentation detectors
+    dd4hep_print("|++> Geant4 fast simulation tests enabled for Geant4 ${Geant4_VERSION}")
+    foreach(script SiliconBlockGFlash SiliconBlockFastSim)
+      dd4hep_add_test_reg( ClientTests_sim_${script}_LONGTEST
+        COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+        EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/${script}.py -batch -events 2
+		   -geometry ${ClientTestsEx_INSTALL}/compact/SiliconBlock.xml -batch -events 2
+        REGEX_PASS "Event 1 Begin event action. Access event related information"
+        REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+    endforeach(script)
+  endif()
+  #
+  foreach(script ParamVolume1D ParamVolume2D ParamVolume3D)
+    dd4hep_add_test_reg( ClientTests_sim_${script}_LONGTEST
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+      EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/ParamVolume.py
+      		 -geometry ${script}.xml -batch -events 2
+      REGEX_PASS "Event 1 Begin event action. Access event related information"
+      REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+  endforeach(script)
+  #
 endif(DD4HEP_USE_GEANT4)

@@ -14,7 +14,7 @@
 #define DD4HEP_BITFIELD64_H
 
 // Framework include files
-#include "DDSegmentation/BitField64.h"
+#include <DDSegmentation/BitField64.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

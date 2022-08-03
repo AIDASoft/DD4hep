@@ -14,7 +14,7 @@
 #define DD4HEP_DD4HEPROOTPERSISTENCY_H
 
 // Framework include files
-#include "DD4hep/DetectorData.h"
+#include <DD4hep/DetectorData.h>
 
 
 /// Helper class to support ROOT persistency of Detector objects
@@ -120,23 +120,23 @@ public:
   /// Call to theck the DD4hep fields
   size_t checkFields()   const;
   /// Call to check a Region object
-  size_t checkRegions()   const;
+  std::pair<std::size_t, std::size_t> checkRegions()   const;
   /// Call to check a Readout object
-  size_t checkReadouts()   const;
+  std::pair<std::size_t, std::size_t> checkReadouts()   const;
   /// Call to check an ID specification
-  size_t checkIdSpecs()   const;
+  std::pair<std::size_t, std::size_t> checkIdSpecs()   const;
   /// Call to check a sensitive detector
-  size_t checkSensitives()   const;
+  std::pair<std::size_t, std::size_t> checkSensitives()   const;
   /// Call to check a limit-set object
-  size_t checkLimitSets()   const;
+  std::pair<std::size_t, std::size_t> checkLimitSets()   const;
   /// Call to check the volume manager hierarchy
-  size_t checkVolManager()   const;
+  std::pair<std::size_t, std::size_t> checkVolManager()   const;
   /// Call to check the nominal alignments in the DetElement hierarchy
-  size_t checkNominals()   const;
+  std::pair<std::size_t, std::size_t> checkNominals()   const;
   /// Call to check a top level Detector element (subdetector)
-  size_t checkDetectors()  const;
+  std::pair<std::size_t, std::size_t> checkDetectors()  const;
   /// Call to check segmentations starting from the top level Detector element
-  size_t checkSegmentations()  const;
+  std::pair<std::size_t, std::size_t> checkSegmentations()  const;
   /// Check all of the above
   size_t checkAll()   const;
 };

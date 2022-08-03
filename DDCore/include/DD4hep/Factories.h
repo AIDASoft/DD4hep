@@ -14,9 +14,9 @@
 #define DD4HEP_FACTORIES_H
 
 // Framework include files
-#include "DD4hep/Plugins.h"
-#include "DD4hep/DetElement.h"
-#include "DD4hep/NamedObject.h"
+#include <DD4hep/Plugins.h>
+#include <DD4hep/DetElement.h>
+#include <DD4hep/NamedObject.h>
 
 // C/C++ include files
 #include <cstdarg>
@@ -218,8 +218,12 @@ namespace {
   DD4HEP_PLUGIN_FACTORY_ARGS_3(void*,dd4hep::Detector*,int,char**)
   {    return dd4hep::DetectorConstructionFactory<P>::create(*a0,a1,a2);                }
 
-  DD4HEP_PLUGIN_FACTORY_ARGS_3(long,dd4hep::Detector*,int,char**)
-  {    return make_return<long>(dd4hep::ApplyFactory<P>::create(*a0,a1,a2));            }
+  DD4HEP_PLUGIN_FACTORY_ARGS_3(long,dd4hep::Detector*,int,char**)  {
+    static long ret;
+    long result = dd4hep::ApplyFactory<P>::create(*a0,a1,a2);
+    ret = result;
+    return long(&ret);
+  }
 
   DD4HEP_PLUGIN_FACTORY_ARGS_2(ns::Named*,dd4hep::Detector*,ns::xml_h*)
   {    return dd4hep::XMLElementFactory<P>::create(*a0,*a1).ptr();                      }
@@ -227,8 +231,12 @@ namespace {
   DD4HEP_PLUGIN_FACTORY_ARGS_2(TObject*,dd4hep::Detector*,ns::xml_h*)
   {    return dd4hep::XMLObjectFactory<P>::create(*a0,*a1).ptr();                       }
 
-  DD4HEP_PLUGIN_FACTORY_ARGS_2(long,dd4hep::Detector*,ns::xml_h*)
-  {    return make_return<long>(dd4hep::XMLDocumentReaderFactory<P>::create(*a0,*a1));  }
+  DD4HEP_PLUGIN_FACTORY_ARGS_2(long,dd4hep::Detector*,ns::xml_h*)    {
+    static long ret;
+    long result = dd4hep::XMLDocumentReaderFactory<P>::create(*a0,*a1);
+    ret = result;
+    return long(&ret);
+  }
 
   DD4HEP_PLUGIN_FACTORY_ARGS_3(ns::Named*,dd4hep::Detector*,ns::xml_h*,ns::ref_t*)
   {    return dd4hep::XmlDetElementFactory<P>::create(*a0,*a1,*a2).ptr();               }

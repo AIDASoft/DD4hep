@@ -48,9 +48,9 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4ReadoutVolumeFilter();
       /// Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4Step* step) const;
-      /// GFLASH interface: Filter action. Return true if hits should be processed.
-      virtual bool operator()(const G4GFlashSpot* step) const;
+      virtual bool operator()(const G4Step* step) const  override;
+      /// GFLASH/FastSim interface: Filter action. Return true if hits should be processed.
+      virtual bool operator()(const Geant4FastSimSpot* step) const  override;
     };
   }    // End namespace sim
 }      // End namespace dd4hep

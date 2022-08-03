@@ -25,7 +25,6 @@
 // Forward declarations
 class G4Step;
 class G4StepPoint;
-class G4GFlashSpot;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -36,6 +35,9 @@ namespace dd4hep {
   
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim {
+
+    // Forward declarations
+    class Geant4FastSimSpot;
 
     /// Simple run description structure. Used in the default I/O mechanism.
     /**
@@ -209,8 +211,8 @@ namespace dd4hep {
       static Contribution extractContribution(const G4Step* step);
       /// Extract the MC contribution for a given hit from the step information with BirksLaw option
       static Contribution extractContribution(const G4Step* step, bool ApplyBirksLaw);
-      /// Extract the MC contribution for a given hit from the GFlash spot information
-      static Contribution extractContribution(const G4GFlashSpot* spot);
+      /// Extract the MC contribution for a given hit from the GFlash/FastSim spot information
+      static Contribution extractContribution(const Geant4FastSimSpot* spot);
     };
 
     /// Helper class to define structures used by the generic DDG4 tracker sensitive detector
@@ -264,7 +266,7 @@ namespace dd4hep {
         /// Store Geant4 point and step information into tracker hit structure.
         Hit& storePoint(const G4Step* step, const G4StepPoint* point);
 	/// Store Geant4 spot information into tracker hit structure.
-	Hit& storePoint(const G4GFlashSpot* spot);
+	Hit& storePoint(const Geant4FastSimSpot* spot);
       };
     };
 

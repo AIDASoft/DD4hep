@@ -364,6 +364,33 @@ _props('UserInitializationSequenceHandle')
 _props('Geant4PhysicsListActionSequence')
 
 
+class CommandLine:
+  """
+  Helper to ease parsing the command line.
+  Any argument given in the command line is accessible
+  from the object. If no value is supplied, the returned
+  value is True. If the argument is not present None is returned.
+
+  \author  M.Frank
+  \version 1.0
+  """
+  def __init__(self):
+    import sys
+    self.data = {}
+    for i in range(len(sys.argv)):
+      if sys.argv[i][0] == '-':
+        key = sys.argv[i][1:]
+        val = True
+        if i + 1 < len(sys.argv):
+          val = sys.argv[i + 1]
+        self.data[key] = val
+
+  def __getattr__(self, attr):
+    if self.data.get(attr):
+      return self.data.get(attr)
+    return None
+
+
 class Geant4:
   """
   Helper object to perform stuff, which occurs very often.

@@ -19,6 +19,7 @@ from g4units import GeV
 
 
 def run():
+  args = DDG4.CommandLine()
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/examples/ClientTests/compact/SiliconBlock.xml"))
@@ -27,10 +28,15 @@ def run():
   # ===> This is actually the ONLY difference to ClientTests/scripts/SiliconBlock.py
   # =======================================================================================
   geant4 = DDG4.Geant4(kernel, tracker='MyTrackerSDAction')
-
   geant4.printDetectors()
-  kernel.NumEvents = 5
-  kernel.UI = ''
+
+  # Configure UI
+  if args.macro:
+    ui = geant4.setupCshUI(macro=args.macro)
+  else:
+    ui = geant4.setupCshUI()
+  if args.batch:
+    ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
 
   # Configure field
   geant4.setupTrackingField(prt=True)

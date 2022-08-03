@@ -13,22 +13,22 @@
 #ifndef DD4HEP_DETECTOR_H
 #define DD4HEP_DETECTOR_H
 
-#include "DD4hep/Version.h"
+#include <DD4hep/Version.h>
 
 // Framework includes
-#include "DD4hep/Handle.h"
-#include "DD4hep/Fields.h"
-#include "DD4hep/Objects.h"
-#include "DD4hep/Shapes.h"
-#include "DD4hep/Volumes.h"
-#include "DD4hep/Readout.h"
-#include "DD4hep/DetElement.h"
-#include "DD4hep/NamedObject.h"
-#include "DD4hep/Segmentations.h"
-#include "DD4hep/VolumeManager.h"
-#include "DD4hep/OpticalSurfaceManager.h"
-#include "DD4hep/ExtensionEntry.h"
-#include "DD4hep/BuildType.h"
+#include <DD4hep/Handle.h>
+#include <DD4hep/Fields.h>
+#include <DD4hep/Objects.h>
+#include <DD4hep/Shapes.h>
+#include <DD4hep/Volumes.h>
+#include <DD4hep/Readout.h>
+#include <DD4hep/DetElement.h>
+#include <DD4hep/NamedObject.h>
+#include <DD4hep/Segmentations.h>
+#include <DD4hep/VolumeManager.h>
+#include <DD4hep/OpticalSurfaceManager.h>
+#include <DD4hep/ExtensionEntry.h>
+#include <DD4hep/BuildType.h>
 
 // C/C++ include files
 #include <map>

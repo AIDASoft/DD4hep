@@ -43,7 +43,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4EscapeCounter();
       /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
-      virtual bool process(G4Step* step, G4TouchableHistory* history)  override;
+      virtual bool process(const G4Step* step, G4TouchableHistory* history)  override;
     };
 
   }    // End namespace sim
@@ -96,7 +96,7 @@ Geant4EscapeCounter::~Geant4EscapeCounter() {
 }
 
 /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
-bool Geant4EscapeCounter::process(G4Step* step, G4TouchableHistory* /* history */)   {
+bool Geant4EscapeCounter::process(const G4Step* step, G4TouchableHistory* /* history */)   {
   Geant4StepHandler  h(step);
   Geant4TrackHandler th(h.track);
   Geant4TouchableHandler handler(step);
@@ -116,7 +116,7 @@ bool Geant4EscapeCounter::process(G4Step* step, G4TouchableHistory* /* history *
         h.trkID(),h.trkEnergy()/CLHEP::MeV,th.name().c_str(),
         th.creatorName().c_str(),hdlr_path.c_str());
   // Kill track, so that it does no longer participate in the propagation
-  h.track->SetTrackStatus(fStopAndKill);
+  step->GetTrack()->SetTrackStatus(fStopAndKill);
   return true;
 }
 

@@ -11,7 +11,6 @@
 //
 //==========================================================================
 
-
 // Framework include files
 #include <DD4hep/Detector.h>
 #include <DD4hep/Plugins.h>
@@ -25,20 +24,20 @@
 #include <DD4hep/detail/DetectorInterna.h>
 
 #include <DDG4/Geant4Field.h>
+#include <DDG4/Geant4Helpers.h>
 #include <DDG4/Geant4Converter.h>
 #include <DDG4/Geant4UserLimits.h>
+#include <DDG4/Geant4PlacementParameterisation.h>
 #include "Geant4ShapeConverter.h"
 
 // ROOT includes
-#include <TMath.h>
-#include <TROOT.h>
-//#include <TColor.h>
-//#include <TGeoManager.h>
+#include <TClass.h>
 #include <TGeoBoolNode.h>
 
 // Geant4 include files
 #include <G4Version.hh>
 #include <G4VisAttributes.hh>
+#include <G4PVParameterised.hh>
 #include <G4ProductionCuts.hh>
 #include <G4VUserRegionInformation.hh>
 
@@ -52,7 +51,6 @@
 #include <G4VSensitiveDetector.hh>
 
 #include <G4Region.hh>
-#include <G4Element.hh>
 #include <G4Element.hh>
 #include <G4Isotope.hh>
 #include <G4Material.hh>
@@ -68,9 +66,7 @@
 #if G4VERSION_NUMBER >= 1040
 #include <G4MaterialPropertiesIndex.hh>
 #endif
-#if G4VERSION_NUMBER >= 1030
 #include <G4ScaledSolid.hh>
-#endif
 #include <CLHEP/Units/SystemOfUnits.h>
 
 // C/C++ include files
@@ -92,18 +88,6 @@ static constexpr const char* GEANT4_TAG_IGNORE = "Geant4-ignore";
 
 namespace {
   static string indent = "";
-  static Double_t s_identity_rot[] = { 1., 0., 0., 0., 1., 0., 0., 0., 1. };
-  struct MyTransform3D : public G4Transform3D {
-    MyTransform3D(double XX, double XY, double XZ, double DX, double YX, double YY, double YZ, double DY, double ZX, double ZY,
-                  double ZZ, double DZ)
-      : G4Transform3D(XX, XY, XZ, DX, YX, YY, YZ, DY, ZX, ZY, ZZ, DZ) {
-    }
-    MyTransform3D(const double* t, const double* r = s_identity_rot)
-      : G4Transform3D(r[0],r[1],r[2],t[0]*CM_2_MM,r[3],r[4],r[5],t[1]*CM_2_MM,r[6],r[7],r[8],t[2]*CM_2_MM)  {
-    }
-    MyTransform3D(Transform3D&& copy) : Transform3D(copy) {}
-  };
-
   bool is_left_handed(const TGeoMatrix* m)   {
     const Double_t* r = m->GetRotationMatrix();
     if ( r )    {
@@ -130,7 +114,6 @@ namespace {
         printout(DEBUG, "Region", "Name:%s", region.name());
     }
   };
-
 
   pair<double,double> g4PropertyConversion(int index)   {
 #if G4VERSION_NUMBER >= 1040
@@ -420,7 +403,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       // We need to convert the property from TGeo units to Geant4 units
       auto conv = g4PropertyConversion(idx);
       vector<double> bins(v->bins), vals(v->values);
-      for(size_t i=0, count=bins.size(); i<count; ++i)
+      for(std::size_t i=0, count=bins.size(); i<count; ++i)
         bins[i] *= conv.first, vals[i] *= conv.second;
 
       G4MaterialPropertyVector* vec =
@@ -428,7 +411,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       tab->AddProperty(named->GetName(), vec);
       printout(lvl, name, "++      Property: %-20s [%ld x %ld] -> %s ",
                named->GetName(), matrix->GetRows(), matrix->GetCols(), named->GetTitle());
-      for(size_t i=0, count=v->bins.size(); i<count; ++i)
+      for(std::size_t i=0, count=v->bins.size(); i<count; ++i)
         printout(lvl, name, "  Geant4: %s %8.3g [MeV]  TGeo: %8.3g [GeV] Conversion: %8.3g",
                  named->GetName(), bins[i], v->bins[i], conv.first);
     }
@@ -556,7 +539,6 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       solid = convertShape<TGeoTessellated>(shape);
 #endif
     else if (isa == TGeoScaledShape::Class())  {
-#if G4VERSION_NUMBER >= 1030
       TGeoScaledShape* sh   = (TGeoScaledShape*) shape;
       TGeoShape*       sol  = sh->GetShape();
       const double*    vals = sh->GetScale()->GetScale();
@@ -566,9 +548,6 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
         solid = new G4ScaledSolid(sh->GetName(), g4solid, scal);
       else
         solid = new G4ReflectedSolid(g4solid->GetName()+"_refl", g4solid, scal);
-#else
-      except("Geant4Converter","++ TGeoScaledShape are only supported by Geant4 for versions >= 10.3");
-#endif
     }
     else if ( isa == TGeoCompositeShape::Class() )   {
       const TGeoCompositeShape* sh = (const TGeoCompositeShape*) shape;
@@ -585,10 +564,6 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
         except("Geant4Converter","++ No right Geant4 Solid present for composite shape: %s",name.c_str());
       }
 
-      //specific case!
-      //Ellipsoid tag preparing
-      //if left == TGeoScaledShape AND right  == TGeoBBox
-      //   AND if TGeoScaledShape->GetShape == TGeoSphere
       TGeoShape* ls = boolean->GetLeftShape();
       TGeoShape* rs = boolean->GetRightShape();
       if (strcmp(ls->ClassName(), "TGeoScaledShape") == 0 &&
@@ -617,7 +592,8 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       }
 
       if ( matrix->IsRotation() ) {
-        MyTransform3D transform(matrix->GetTranslation(),matrix->GetRotationMatrix());
+        G4Transform3D transform;
+	g4Transform(matrix, transform);
         if (oper == TGeoBoolNode::kGeoSubtraction)
           solid = new G4SubtractionSolid(name, left, right, transform);
         else if (oper == TGeoBoolNode::kGeoUnion)
@@ -655,7 +631,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
   Volume     _v(volume);
   if ( _v.testFlagBit(Volume::VETO_SIMU) )  {
     printout(lvl, "Geant4Converter", "++ Volume %s not converted [Veto'ed for simulation]",volume->GetName());
-    return 0;
+    return nullptr;
   }
   else if (volIt == info.g4Volumes.end() ) {
     string      n       = volume->GetName();
@@ -733,12 +709,12 @@ void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) 
   TGeoVolume* mot_vol = node->GetVolume();
   PrintLevel lvl = debugVolumes ? ALWAYS : outputLevel;
   if ( mot_vol->IsA() != TGeoVolumeAssembly::Class() )    {
-    return 0;
+    return nullptr;
   }
   Volume _v(mot_vol);
   if ( _v.testFlagBit(Volume::VETO_SIMU) )  {
     printout(lvl, "Geant4Converter", "++ AssemblyNode %s not converted [Veto'ed for simulation]",node->GetName());
-    return 0;
+    return nullptr;
   }
   Geant4GeometryInfo& info = data();
   Geant4AssemblyVolume* g4 = info.g4AssemblyVolumes[node];
@@ -751,8 +727,9 @@ void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) 
       TGeoNode*     dau     = mot_vol->GetNode(i);
       TGeoVolume*   dau_vol = dau->GetVolume();
       TGeoMatrix*   tr      = dau->GetMatrix();
-      MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
+      G4Transform3D transform;
 
+      g4Transform(tr, transform);
       if ( is_left_handed(tr) )   {
         G4Scale3D     scale;
         G4Rotate3D    rot;
@@ -772,7 +749,7 @@ void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) 
           printout(FATAL, "Geant4Converter", "+++ Invalid child assembly at %s : %d  parent: %s child:%s",
                    __FILE__, __LINE__, name.c_str(), dau->GetName());
           delete g4;
-          return 0;
+          return nullptr;
         }
         g4->placeAssembly(dau, (*ia).second, transform);
         printout(lvl, "Geant4Converter", "+++ Assembly: AddPlacedAssembly : dau:%s "
@@ -811,7 +788,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 
   if ( _v.testFlagBit(Volume::VETO_SIMU) )  {
     printout(lvl, "Geant4Converter", "++ Placement %s not converted [Veto'ed for simulation]",node->GetName());
-    return 0;
+    return nullptr;
   }
   //g4 = nullptr;
   if ( !g4 ) {
@@ -831,9 +808,10 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
       bool          node_is_reflected  = is_left_handed(tr);
       bool          node_is_assembly   = vol->IsA() == TGeoVolumeAssembly::Class();
       bool          mother_is_assembly = mot_vol ? mot_vol->IsA() == TGeoVolumeAssembly::Class() : false;
-      MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
+      G4Transform3D transform;
       Geant4GeometryMaps::VolumeMap::const_iterator volIt = info.g4Volumes.find(mot_vol);
 
+      g4Transform(tr, transform);
       if ( mother_is_assembly )   {
         //
         // Mother is an assembly:
@@ -871,16 +849,77 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
       else if ( node != info.manager->GetTopNode() && volIt == info.g4Volumes.end() )  {
         throw logic_error("Geant4Converter: Invalid mother volume found!");
       }
+      PlacedVolume pv(node);
+      const auto*  pv_data = pv.data();
       G4LogicalVolume* g4vol = info.g4Volumes[vol];
       G4LogicalVolume* g4mot = info.g4Volumes[mot_vol];
-      G4PhysicalVolumesPair pvPlaced =
-        G4ReflectionFactory::Instance()->Place(transform, // no rotation
-                                               name,      // its name
-                                               g4vol,     // its logical volume
-                                               g4mot,     // its mother (logical) volume
-                                               false,     // no boolean operations
-                                               copy,      // its copy number
-                                               checkOverlaps);
+      G4PhysicalVolumesPair pvPlaced  { nullptr, nullptr };
+
+      if ( pv_data && pv_data->params && (pv_data->params->flags&Volume::REPLICATED) )   {
+	EAxis  axis = kUndefined;
+	double width = 0e0, offset = 0e0;
+	auto flags = pv_data->params->flags;
+	auto count = pv_data->params->trafo1D.second;
+	const auto& start = pv_data->params->start.Translation().Vect();
+	const auto& delta = pv_data->params->trafo1D.first.Translation().Vect();
+
+	if ( flags&Volume::X_axis )
+	  { axis = kXAxis; width = delta.X(); offset = start.X(); }
+	else if ( flags&Volume::Y_axis )
+	  { axis = kYAxis; width = delta.Y(); offset = start.Y(); }
+	else if ( flags&Volume::Z_axis )
+	  { axis = kZAxis; width = delta.Z(); offset = start.Z(); }
+	else
+	  except("Geant4Converter",
+		 "++ Replication around unknown axis is not implemented. flags: %16X", flags);
+	printout(INFO,"Geant4Converter","++ Replicate: Axis: %ld Count: %ld offset: %f width: %f",
+		 axis, count, offset, width);
+	auto* g4pv = new G4PVReplica(name,      // its name
+				     g4vol,     // its logical volume
+				     g4mot,     // its mother (logical) volume
+				     axis,      // its replication axis
+				     count,     // Number of replicas
+				     width,     // Distance between 2 replicas
+				     offset);   // Placement offset in axis direction
+	pvPlaced = { g4pv, nullptr };
+#if 0
+	pvPlaced =
+	  G4ReflectionFactory::Instance()->Replicate(name,      // its name
+						     g4vol,     // its logical volume
+						     g4mot,     // its mother (logical) volume
+						     axis,      // its replication axis
+						     count,     // Number of replicas
+						     width,     // Distance between 2 replicas
+						     offset);   // Placement offset in axis direction
+	/// Update replica list to avoid additional conversions...
+	auto* g4pv = pvPlaced.second ? pvPlaced.second : pvPlaced.first;
+#endif
+	for( auto& handle : pv_data->params->placements )
+	  info.g4Placements[handle.ptr()] = g4pv;
+      }
+      else if ( pv_data && pv_data->params )   {
+	auto*  g4par = new Geant4PlacementParameterisation(pv);
+	auto*  g4pv  = new G4PVParameterised(name,              // its name
+					     g4vol,             // its logical volume
+					     g4mot,             // its mother (logical) volume
+					     g4par->axis(),     // its replication axis
+					     g4par->count(),    // Number of replicas
+					     g4par);            // G4 parametrization
+	pvPlaced = { g4pv, nullptr };
+	/// Update replica list to avoid additional conversions...
+	for( auto& handle : pv_data->params->placements )
+	  info.g4Placements[handle.ptr()] = g4pv;
+      }
+      else    {
+	pvPlaced =
+	  G4ReflectionFactory::Instance()->Place(transform,     // no rotation
+						 name,          // its name
+						 g4vol,         // its logical volume
+						 g4mot,         // its mother (logical) volume
+						 false,         // no boolean operations
+						 copy,          // its copy number
+						 checkOverlaps);
+      }
       printout(debugReflections||debugPlacements ? ALWAYS : lvl, "Geant4Converter",
                "++ Place %svolume %-12s in mother %-12s "
                "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f",
@@ -1101,12 +1140,12 @@ void* Geant4Converter::handleMaterialProperties(TObject* mtx) const    {
   if ( !g4 )  {
     PrintLevel lvl = debugMaterials ? ALWAYS : outputLevel;
     g4 = new Geant4GeometryInfo::PropertyVector();
-    size_t rows = matrix->GetRows();
+    std::size_t rows = matrix->GetRows();
     g4->name    = matrix->GetName();
     g4->title   = matrix->GetTitle();
     g4->bins.reserve(rows);
     g4->values.reserve(rows);
-    for( size_t i=0; i<rows; ++i )   {
+    for( std::size_t i=0; i<rows; ++i )   {
       g4->bins.emplace_back(matrix->Get(i,0)  /*   *CLHEP::eV/units::eV   */);
       g4->values.emplace_back(matrix->Get(i,1));
     }
@@ -1267,7 +1306,7 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
       // We need to convert the property from TGeo units to Geant4 units
       auto conv = g4PropertyConversion(idx);
       vector<double> bins(v->bins), vals(v->values);
-      for(size_t i=0, count=v->bins.size(); i<count; ++i)
+      for(std::size_t i=0, count=v->bins.size(); i<count; ++i)
         bins[i] *= conv.first, vals[i] *= conv.second;
       G4MaterialPropertyVector* vec = new G4MaterialPropertyVector(&bins[0], &vals[0], bins.size());
       tab->AddProperty(named->GetName(), vec);
@@ -1275,7 +1314,7 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
       printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
                "++       Property: %-20s [%ld x %ld] -->  %s",
                named->GetName(), matrix->GetRows(), matrix->GetCols(), named->GetTitle());
-      for(size_t i=0, count=v->bins.size(); i<count; ++i)
+      for(std::size_t i=0, count=v->bins.size(); i<count; ++i)
         printout(debugSurfaces ? ALWAYS : DEBUG, named->GetName(),
                  "  Geant4: %8.3g [MeV]  TGeo: %8.3g [GeV] Conversion: %8.3g",
                  bins[i], v->bins[i], conv.first);

@@ -143,8 +143,8 @@ dd4hep_add_test_reg( DDCMS_VolumeMgrTest_PixelBarrel
   EXEC_ARGS  geoPluginRun
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
   -destroy -print WARNING
-  -plugin DD4hep_VolumeMgrTest PixelBarrel_1
-  REGEX_PASS "PASSED: Checked 10981 objects. Num.Errors:0"
+  -plugin    DD4hep_DetectorCheck -name PixelBarrel_1 -geometry -structure -volmgr -sensitive
+  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of       32141 elements. Num.Errors:     0"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
@@ -155,8 +155,8 @@ dd4hep_add_test_reg( DDCMS_VolumeMgrTest_TIB
   EXEC_ARGS  geoPluginRun
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
   -destroy -print WARNING
-  -plugin DD4hep_VolumeMgrTest TIB_1
-  REGEX_PASS "PASSED: Checked 47964 objects. Num.Errors:0"
+  -plugin    DD4hep_DetectorCheck -name TIB_1 -geometry -structure -volmgr -sensitive
+  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of      115218 elements. Num.Errors:     0"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
@@ -167,8 +167,8 @@ dd4hep_add_test_reg( DDCMS_VolumeMgrTest_TOB
   EXEC_ARGS  geoPluginRun
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
   -destroy -print WARNING
-  -plugin DD4hep_VolumeMgrTest TOB_1
-  REGEX_PASS "PASSED: Checked 150699 objects. Num.Errors:0"
+  -plugin DD4hep_DetectorCheck -name TOB_1 -geometry -structure -volmgr -sensitive
+  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of      354124 elements. Num.Errors:     0"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
   )
@@ -203,7 +203,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_LONGTEST
   )
 #
 #  Test restoring geometry from ROOT file: Volume Manager loading+nominals
-dd4hep_add_test_reg( DDCMS_Persist_Restore_VolMgr1_LONGTEST
+dd4hep_add_test_reg( DDCMS_Persist_Restore_DetTest1_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader DDCMS_geometry.root
@@ -214,13 +214,13 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_VolMgr1_LONGTEST
   )
 #
 #  Test restoring geometry from ROOT file: Test Volume Manager results
-dd4hep_add_test_reg( DDCMS_Persist_Restore_VolMgr2_LONGTEST
+dd4hep_add_test_reg( DDCMS_Persist_Restore_DetTest2_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader DDCMS_geometry.root
-  -plugin    DD4hep_VolumeMgrTest PixelBarrel_1
+  -plugin    DD4hep_DetectorCheck -name PixelBarrel_1 -geometry -structure -volmgr -sensitive
   DEPENDS    DDCMS_Persist_Save_LONGTEST
-  REGEX_PASS "\\+\\+\\+ PASSED: Checked 10981 objects. Num.Errors:0"
+  REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of       32141 elements. Num.Errors:     0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #

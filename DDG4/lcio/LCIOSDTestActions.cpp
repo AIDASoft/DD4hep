@@ -64,21 +64,25 @@ namespace  Tests {
       InstanceCount::decrement(this);
     }
     /// Define collections created by this sensitivie action object
-    virtual void defineCollections() {}
+    virtual void defineCollections()   override   {}
     /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
-    virtual void begin(G4HCofThisEvent* hce) {
+    virtual void begin(G4HCofThisEvent* hce)   override   {
       Base::begin(hce);
     }
     /// G4VSensitiveDetector interface: Method invoked at the end of each event.
-    virtual void end(G4HCofThisEvent* hce) {
+    virtual void end(G4HCofThisEvent* hce)   override   {
       Base::end(hce);
     }
     /// G4VSensitiveDetector interface: Method for generating hit(s) using the G4Step object.
-    virtual bool process(G4Step* step,G4TouchableHistory* history)  {
+    virtual bool process(const G4Step* step, G4TouchableHistory* history)  override   {
       return Base::process(step,history);
     }
+    /// GFlash/FastSim interface: Method for generating hit(s) using the G4Step object.
+    virtual bool processFastSim(const Geant4FastSimSpot* spot, G4TouchableHistory* history)  override {
+      return Base::processFastSim(spot,history);
+    }
     /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
-    virtual void clear(G4HCofThisEvent* hce) {
+    virtual void clear(G4HCofThisEvent* hce)  override   {
       Base::clear(hce);
     }
   };
@@ -102,7 +106,7 @@ namespace  Tests {
   }
 
   /// Method for generating hit(s) using the information of G4Step object.
-  template <> bool Geant4SensitiveAction<LcioTestTracker>::process(G4Step* step,G4TouchableHistory* /*hist*/ ) {
+  template <> bool Geant4SensitiveAction<LcioTestTracker>::process(const G4Step* step,G4TouchableHistory* /*hist*/ ) {
     Geant4StepHandler h(step);
 
     Position prePos    = h.prePos();
@@ -142,6 +146,16 @@ namespace  Tests {
     return true;
   }
 
+  /// Method for generating hit(s) using the information of G4Step object.
+  template <> bool 
+  Geant4SensitiveAction<LcioTestTracker>::processFastSim(const Geant4FastSimSpot*  /* spot */,
+							 G4TouchableHistory* /*hist*/ )
+  {
+    except("Not implemented");
+    return true;
+  }
+
+  
   typedef Geant4SensitiveAction<LcioTestTracker> LcioTestTrackerAction;
 } // namespace
 

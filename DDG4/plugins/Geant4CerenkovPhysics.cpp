@@ -92,7 +92,7 @@ namespace dd4hep {
         process->SetMaxNumPhotonsPerStep(m_maxNumPhotonsPerStep);
         process->SetMaxBetaChangePerStep(m_maxBetaChangePerStep);
         process->SetTrackSecondariesFirst(m_trackSecondariesFirst);
-#if G4VERSION_NUMBER>1030
+#if G4VERSION_NUMBER > 1030
         process->SetStackPhotons(m_stackPhotons);
 #endif
 #endif

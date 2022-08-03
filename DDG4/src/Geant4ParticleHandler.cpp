@@ -12,27 +12,27 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Primitives.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4StepHandler.h"
-#include "DDG4/Geant4TrackHandler.h"
-#include "DDG4/Geant4EventAction.h"
-#include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4TrackingAction.h"
-#include "DDG4/Geant4SteppingAction.h"
-#include "DDG4/Geant4ParticleHandler.h"
-#include "DDG4/Geant4UserParticleHandler.h"
+#include <DD4hep/Primitives.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4StepHandler.h>
+#include <DDG4/Geant4TrackHandler.h>
+#include <DDG4/Geant4EventAction.h>
+#include <DDG4/Geant4SensDetAction.h>
+#include <DDG4/Geant4TrackingAction.h>
+#include <DDG4/Geant4SteppingAction.h>
+#include <DDG4/Geant4ParticleHandler.h>
+#include <DDG4/Geant4UserParticleHandler.h>
 
 // Geant4 include files
-#include "G4Step.hh"
-#include "G4Track.hh"
-#include "G4Event.hh"
-#include "G4TrackStatus.hh"
-#include "G4PrimaryVertex.hh"
-#include "G4PrimaryParticle.hh"
-#include "G4TrackingManager.hh"
-#include "G4ParticleDefinition.hh"
-#include "CLHEP/Units/SystemOfUnits.h"
+#include <G4Step.hh>
+#include <G4Track.hh>
+#include <G4Event.hh>
+#include <G4TrackStatus.hh>
+#include <G4PrimaryVertex.hh>
+#include <G4PrimaryParticle.hh>
+#include <G4TrackingManager.hh>
+#include <G4ParticleDefinition.hh>
+#include <CLHEP/Units/SystemOfUnits.h>
 
 // C/C++ include files
 #include <set>
@@ -490,7 +490,8 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
   //     Processing by Geant4 to establish mother daughter relationships.
   //     == > use finalParticles map and NOT m_particleMap.
   int equiv_id = -1;
-  for( auto& [idx, p] : finalParticles )  {
+  for( auto& part : finalParticles )  {
+    auto& p = part.second;
     if ( p->g4Parent > 0 )  {
       TrackEquivalents::iterator iequ = equivalents.find(p->g4Parent);
       if ( iequ != equivalents.end() )  {
@@ -656,7 +657,8 @@ void Geant4ParticleHandler::checkConsistency()  const   {
   int num_errors = 0;
 
   /// First check the consistency of the particle map itself
-  for(const auto& [idx, particle] : m_particleMap )  {
+  for(const auto& part : m_particleMap )  {
+    Geant4Particle* particle = part.second;
     Geant4ParticleHandle p(particle);
     PropertyMask mask(p->reason);
     PropertyMask status(p->status);
@@ -698,7 +700,8 @@ void Geant4ParticleHandler::checkConsistency()  const   {
 }
 
 void Geant4ParticleHandler::setVertexEndpointBit() {
-  for( auto& [idx, p] : m_particleMap )   {
+  for( auto& part : m_particleMap )   {
+    auto* p = part.second;
     if( !p->parents.empty() )   {
       Geant4Particle *parent(m_particleMap[ *p->parents.begin() ]);
       const double X( parent->vex - p->vsx );

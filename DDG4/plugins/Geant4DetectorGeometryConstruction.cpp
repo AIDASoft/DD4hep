@@ -319,9 +319,9 @@ int Geant4DetectorGeometryConstruction::printVolumeObj(const char* vol_path, Pla
 /// Print geant4 volume
 int Geant4DetectorGeometryConstruction::printVolume(const char* vol_path)  {
   if ( vol_path )   {
-    auto [p, pv] = resolve_path(vol_path);
-    if ( pv.isValid() )    {
-      return printVolumeObj(vol_path, pv, ~0x0);
+    auto physVol = resolve_path(vol_path);
+    if ( physVol.second.isValid() )    {
+      return printVolumeObj(vol_path, physVol.second, ~0x0);
     }
   }
   warning("+++ printVolume: Property VolumePath not set. [Ignored]");
@@ -372,7 +372,8 @@ int Geant4DetectorGeometryConstruction::printVolTree(const char* vol_path)  {
 /// Check geant4 volume
 int Geant4DetectorGeometryConstruction::checkVolume(const char* vol_path)  {
   if ( vol_path )   {
-    auto [p, pv] = resolve_path(vol_path);
+    auto physVol = resolve_path(vol_path);
+    auto pv = physVol.second;
     if ( pv.isValid() )   {
       auto& g4map = Geant4Mapping::instance().data().g4Volumes;
       auto it = g4map.find(pv.volume());

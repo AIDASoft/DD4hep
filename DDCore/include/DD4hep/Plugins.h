@@ -55,7 +55,6 @@ namespace dd4hep {
     template <typename T> static T  val(const T* _p)     { return T(*_p);  }
     template <typename T> static T value(const void* _p) { return (T)_p;   }
     static const char*  value(const void* _p) { return (const char*)(_p);  }
-    template <typename T> static T make_return(const T& _p) { return _p;      }
   };
   template <> inline int PluginFactoryBase::value<int>(const void* _p) { return *(int*)(_p); }
   template <> inline long PluginFactoryBase::value<long>(const void* _p) { return *(long*)(_p); }
@@ -99,7 +98,8 @@ namespace dd4hep {
           return (*fptr.fcn)(std::forward<Args>(args)...);
 #elif DD4HEP_PLUGINSVC_VERSION==2
         f = getCreator(id,typeid(R(Args...)));
-        return std::any_cast<func>(f)(std::forward<Args>(args)...);
+        if ( std::any_cast<func>(f) )
+	  return std::any_cast<func>(f)(std::forward<Args>(args)...);
 #endif
       }
       catch(const std::bad_any_cast& e)   {
@@ -142,10 +142,6 @@ namespace {
   template <typename P, typename S> class Factory {};
 }
 
-namespace dd4hep {
-  template <> inline long PluginFactoryBase::make_return(const long& value)
-  { static long stored=value; return (long)&stored; }  
-}
 #define DD4HEP_FACTORY_CALL(type,name,signature) dd4hep::PluginRegistry<signature>::add(name,Factory<type,signature>::call)
 #define DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(X,Y)
 

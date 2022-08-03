@@ -14,7 +14,7 @@
 #define DDG4_GEANT4STEPHANDLER_H
 
 // Framework include files
-#include "DDG4/Defs.h"
+#include <DDG4/Geant4HitHandler.h>
 
 // Geant4 include files
 #include "G4Step.hh"
@@ -43,20 +43,21 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4StepHandler {
+    class Geant4StepHandler : public Geant4HitHandler  {
     public:
       const G4Step* step;
-      G4StepPoint* pre;
-      G4StepPoint* post;
-      G4Track* track;
+      G4StepPoint*  pre;
+      G4StepPoint*  post;
       bool applyBirksLaw;
       /// Inhibit default constructor
       Geant4StepHandler() = delete;
       /// Initializing constructor
-      Geant4StepHandler(const G4Step* s) : step(s) {
+      Geant4StepHandler(const G4Step* s)
+	: Geant4HitHandler(s->GetTrack(), (s->GetPreStepPoint()->GetTouchableHandle())()),
+	step(s)
+      {
         pre = s->GetPreStepPoint();
         post = s->GetPostStepPoint();
-        track = s->GetTrack();
         applyBirksLaw = false;
       }
       /// No copy constructor
@@ -68,12 +69,6 @@ namespace dd4hep {
       /// Move operator inhibited. Should not be copied
       Geant4StepHandler& operator=(Geant4StepHandler&& copy) = delete;
       
-      G4ParticleDefinition* trackDef() const {
-        return track->GetDefinition();
-      }
-      int trkPdgID() const {
-        return track->GetDefinition()->GetPDGEncoding();
-      }
       /// Returns the step status (argument) in form of a string
       static const char* stepStatus(G4StepStatus status);
       /// Returns the pre-step status in form of a string
@@ -106,6 +101,13 @@ namespace dd4hep {
         return post->GetPosition();
       }
       /// Average position vector of the step.
+      G4ThreeVector avgPositionG4() const  {
+        const G4ThreeVector& p1 = pre->GetPosition();
+        const G4ThreeVector& p2 = post->GetPosition();
+        G4ThreeVector r = 0.5*(p2+p1);
+        return r;
+      }
+      /// Average position vector of the step.
       Position avgPosition() const  {
         const G4ThreeVector& p1 = pre->GetPosition();
         const G4ThreeVector& p2 = post->GetPosition();
@@ -132,39 +134,11 @@ namespace dd4hep {
         const G4ThreeVector& p = post->GetMomentum();
         return Momentum(p.x(), p.y(), p.z());
       }
-      Momentum trkMom() const {
-        const G4ThreeVector& p = track->GetMomentum();
-        return Momentum(p.x(), p.y(), p.z());
-      }
       double deposit() const  {
         return step->GetTotalEnergyDeposit();
       }
       double stepLength() const  {
         return step->GetStepLength();
-      }
-      int trkID() const  {
-        return track->GetTrackID();
-      }
-      int parentID() const  {
-        return track->GetParentID();
-      }
-      double trkTime() const  {
-        return track->GetGlobalTime();
-      }
-      double trkEnergy() const  {
-        return track->GetTotalEnergy();
-      }
-      double trkKineEnergy() const  {
-        return track->GetKineticEnergy();
-      }
-      int trkStatus()  const  {
-        return track->GetTrackStatus();
-      }
-      bool trkAlive() const  {
-        return track->GetTrackStatus() == fAlive;
-      }
-      const G4VProcess* trkProcess()  const  {
-        return track->GetCreatorProcess();
       }
       const G4VTouchable* preTouchable() const {
         return pre->GetTouchable();
@@ -197,14 +171,8 @@ namespace dd4hep {
         G4VSensitiveDetector* s = sd(p);
         return s ? s->GetName().c_str() : undefined;
       }
-      bool isSensitive(const G4LogicalVolume* lv) const {
-        return lv ? (0 != lv->GetSensitiveDetector()) : false;
-      }
-      bool isSensitive(const G4VPhysicalVolume* pv) const {
-        return pv ? isSensitive(pv->GetLogicalVolume()) : false;
-      }
       bool isSensitive(const G4StepPoint* point) const {
-        return point ? isSensitive(volume(point)) : false;
+        return point ? this->Geant4HitHandler::isSensitive(volume(point)) : false;
       }
       G4VPhysicalVolume* preVolume() const {
         return volume(pre);
@@ -224,28 +192,6 @@ namespace dd4hep {
       bool lastInVolume() const  {
         return step->IsLastStepInVolume();
       }
-      /// Coordinate transformation to global coordinates.
-      /** Note: Positions are in units of MM! */
-      Position localToGlobal(const Position& local)  const;
-      /// Coordinate transformation to global coordinates.
-      /** Note: DDSegmentation points are units in CM! Conversion done inside! */
-      Position localToGlobal(const DDSegmentation::Vector3D& local)  const;
-      /// Coordinate transformation to global coordinates in MM
-      Position localToGlobal(const G4ThreeVector& local)  const;
-      /// Coordinate transformation to global coordinates in MM
-      Position localToGlobal(double x, double y, double z)  const;
-
-      /// Coordinate transformation to local coordinates
-      Position globalToLocal(double x, double y, double z)  const;
-      /// Coordinate transformation to local coordinates
-      Position globalToLocal(const Position& global)  const;
-      /// Coordinate transformation to local coordinates
-      Position globalToLocal(const G4ThreeVector& global)  const;
-      /// Coordinate transformation to local coordinates
-      G4ThreeVector globalToLocalG4(double x, double y, double z)  const;
-      /// Coordinate transformation to local coordinates with G4 objects
-      G4ThreeVector globalToLocalG4(const G4ThreeVector& loc)  const;
-
       /// Apply BirksLaw
       double birkAttenuation() const;
       /// Set applyBirksLaw to ture

@@ -102,13 +102,13 @@ namespace dd4hep {
       double gamma() const;
       /// Access rotation constants: angle
       double gamma(double default_value) const;
-      /// Access rotation constants: angle
+      /// Access rotation constants: delta
       double delta() const;
-      /// Access rotation constants: angle
+      /// Access rotation constants: delta
       double delta(double default_value) const;
-      /// Access rotation constants: angle
+      /// Access rotation constants: epsilon
       double epsilon() const;
-      /// Access rotation constants: angle
+      /// Access rotation constants: epsilon
       double epsilon(double default_value) const;
       /// Access rotation constants: theta
       double theta() const;
@@ -191,9 +191,13 @@ namespace dd4hep {
       double c() const;
       /// Access parameters: c
       double c(double default_value) const;
-      ///Access parameters: distance
+      /// Access rotation constants: dist
+      double dist() const;
+      /// Access rotation constants: dist
+      double dist(double default_value) const;
+      /// Access parameters: distance
       double distance() const;
-      ///Access parameters: distance
+      /// Access parameters: distance
       double distance(double default_value) const;
       /// Access parameters: fraction
       double fraction()  const;
@@ -525,6 +529,8 @@ namespace dd4hep {
       /// Access attribute values: offset
       double offset(double default_value) const;
 
+      /// Access attribute values: count
+      int count() const;
       /// Access attribute values: item
       int item() const;
       /// Access attribute values: items
@@ -575,6 +581,8 @@ namespace dd4hep {
       double phi_tilt() const;
       /// Access attribute values: nphi
       int    nphi() const;
+      /// Access attribute values: replicate
+      int    replicate() const;
       /// Access attribute values: rc
       double rc() const;
 
@@ -685,6 +693,10 @@ namespace dd4hep {
       Dimension position(bool throw_if_not_present = true) const;
       /// Access child element with tag "rotation" as Dimension object
       Dimension rotation(bool throw_if_not_present = true) const;
+      /// Access child element with tag "transformation" as Dimension object
+      Dimension transformation(bool throw_if_not_present = true) const;
+      /// Access child element with tag "transform" as Dimension object
+      Dimension transform(bool throw_if_not_present = true) const;
       /// Access child element with tag "cone" as Dimension object
       Dimension cone(bool throw_if_not_present = true) const;
       /// Access child element with tag "sphere" as Dimension object

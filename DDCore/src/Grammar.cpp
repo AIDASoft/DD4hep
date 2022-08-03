@@ -38,10 +38,11 @@
 #endif
 
 namespace dd4hep {
+  const dd4hep::tools::Evaluator& evaluator();
   const dd4hep::tools::Evaluator& g4Evaluator();
 }
 namespace {
-  static const dd4hep::tools::Evaluator& s__eval(dd4hep::g4Evaluator());
+  static const dd4hep::tools::Evaluator* s__eval(&dd4hep::g4Evaluator());
 }
 
 
@@ -76,7 +77,20 @@ namespace dd4hep {
     /// Helper to parse single item
     std::pair<int,double> grammar_evaluate_item(std::string val);
   }
+
+  /// Set grammar evaluator
+  void setGrammarEvaluator(const std::string& type)    {
+    if ( type == "TGeo" )
+      s__eval = &evaluator();
+    else if ( type == "Geant4" || type == "G4" )
+      s__eval = &g4Evaluator();
+    else if ( type == "CGS" )
+      s__eval = &g4Evaluator();
+    else
+      except("Grammar","++ Undefined evaluator type: "+type);
+  }
 }
+
 
 /// Equality operator
 bool dd4hep::BasicGrammar::specialization_t::operator==(const specialization_t& cp)  const  {
@@ -238,7 +252,7 @@ std::pair<int,double> dd4hep::detail::grammar_evaluate_item(std::string val)   {
     val.erase(idx, 5);
   while (val[0] == ' ')
     val.erase(0, 1);
-  auto result = s__eval.evaluate(val.c_str());
+  auto result = s__eval->evaluate(val.c_str());
   return result;
 }
 
