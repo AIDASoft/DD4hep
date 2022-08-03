@@ -1947,8 +1947,6 @@ namespace dd4hep {
     UnionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
     /// Constructor to create a new object. Placement by a generic transformation within the mother
     UnionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& pos);
-    /// Constructor to create a new object. Placement by 2 generic transformations 
-    UnionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& pos1, const Transform3D& pos2);
 
     /// Constructor to create a new identified object. Position is identity, Rotation is identity-rotation!
     UnionSolid(const std::string& name, const Solid& shape1, const Solid& shape2);
