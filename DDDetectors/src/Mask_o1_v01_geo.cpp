@@ -70,8 +70,6 @@ static Ref_t create_detector(Detector& description,
     rotationX = xmlParameter.attr< bool >(_Unicode(rotationX));
 
   int counter = 0; 
-  Solid FinalSolid; 
-  Solid tempFinalSolid; 
   Material sectionMat;
   bool isSensitive = false;
   for(xml_coll_t c( xmlMask ,Unicode("section")); c; ++c) {
@@ -135,7 +133,6 @@ static Ref_t create_detector(Detector& description,
     const double mirrorAngle = M_PI - rotateAngle; // for the "mirrored" placement at -z
     // the "mirroring" in fact is done by a rotation of (almost) 180 degrees around the y-axis
 
-    Solid temptempFinalSolid;
     
     switch (crossType) {
     case ODH::kCenter:
@@ -154,11 +151,31 @@ static Ref_t create_detector(Detector& description,
 	transmirror = Transform3D(RotationY(mirrorAngle), RotateY( Position(0, 0, zPosition), mirrorAngle) );
       }
       
+      // solid for the tube (including vacuum and wall): a solid cone
+      // ConeSegment tubeSolid( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);
       ConeSegment tubeSolid0( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);
-      ConeSegment tubeSolid1( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);
+      ConeSegment tubeSolid1( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);      
       
-      temptempFinalSolid = UnionSolid( tubeSolid0, tubeSolid1, transformer, transmirror);
+      // tube consists of vacuum
+      // Volume tubeLog( volName, tubeSolid, sectionMat ) ;
+      Volume tubeLog0( volName, tubeSolid0, sectionMat ) ;
+      Volume tubeLog1( volName, tubeSolid1, sectionMat ) ;
+      if (isSensitive) tubeLog0.setSensitiveDetector(sens);
+      if (isSensitive) tubeLog1.setSensitiveDetector(sens);
+      // tubeLog.setVisAttributes(description, xmlMask.visStr() );
+      tubeLog0.setVisAttributes(description, xmlMask.visStr() );
+      tubeLog1.setVisAttributes(description, xmlMask.visStr() );
 
+      // placement of the tube in the world, both at +z and -z
+      PlacedVolume placed0 = envelope.placeVolume( tubeLog0,  transformer );
+      PlacedVolume placed1 = envelope.placeVolume( tubeLog1,  transmirror );
+
+      placed0.addPhysVolID("side",1);
+      placed0.addPhysVolID("layer",counter);
+      placed1.addPhysVolID("side",-1);
+      placed1.addPhysVolID("layer",counter);
+      ++counter;
+      
     }
       break;
 
@@ -202,8 +219,25 @@ static Ref_t create_detector(Detector& description,
 	finalSolid1 = tmpSolid1;
       }
 
-      temptempFinalSolid = UnionSolid( finalSolid0, finalSolid1, placementTransformer, placementTransmirror);//carcange
+      // tube consists of vacuum (will later have two different daughters)
+      Volume tubeLog0( volName + "_0", finalSolid0, sectionMat );
+      Volume tubeLog1( volName + "_1", finalSolid1, sectionMat );
+      if (isSensitive) tubeLog0.setSensitiveDetector(sens);
+      if (isSensitive) tubeLog1.setSensitiveDetector(sens);
+
+      tubeLog0.setVisAttributes(description, xmlMask.visStr() );
+      tubeLog1.setVisAttributes(description, xmlMask.visStr() );
+
+      // placement of the tube in the world, both at +z and -z
+      PlacedVolume placed0 = envelope.placeVolume( tubeLog0, placementTransformer );
+      PlacedVolume placed1 = envelope.placeVolume( tubeLog1, placementTransmirror );
       
+      placed0.addPhysVolID("side",  1);
+      placed1.addPhysVolID("side", -1);
+      placed0.addPhysVolID("layer", counter);
+      placed1.addPhysVolID("layer", counter);
+      counter++;
+
       break;
     }
 
@@ -233,8 +267,24 @@ static Ref_t create_detector(Detector& description,
       SubtractionSolid finalSolid0( wholeSolid, punchSolid, punchTransformer);
       SubtractionSolid finalSolid1( wholeSolid, punchSolid, punchTransmirror);
 
-      temptempFinalSolid = UnionSolid( finalSolid0, finalSolid1, placementTransformer, placementTransmirror);
-      
+      // tube consists of vacuum (will later have two different daughters)
+      Volume tubeLog0( volName + "_0", finalSolid0, sectionMat );
+      Volume tubeLog1( volName + "_1", finalSolid1, sectionMat );
+      if (isSensitive) tubeLog0.setSensitiveDetector(sens);
+      if (isSensitive) tubeLog1.setSensitiveDetector(sens);
+      tubeLog0.setVisAttributes(description, xmlMask.visStr() );
+      tubeLog1.setVisAttributes(description, xmlMask.visStr() );
+
+      // placement of the tube in the world, both at +z and -z
+      PlacedVolume placed0 = envelope.placeVolume( tubeLog0, placementTransformer );
+      PlacedVolume placed1 = envelope.placeVolume( tubeLog1, placementTransmirror );
+
+      placed0.addPhysVolID("side",  1);
+      placed1.addPhysVolID("side", -1);
+      placed0.addPhysVolID("layer", counter);
+      placed1.addPhysVolID("layer", counter);
+      counter++;
+
       break;
     }
     default: {
@@ -242,22 +292,9 @@ static Ref_t create_detector(Detector& description,
     }
 
     }//end switch
-
-    if(counter>0) tempFinalSolid = UnionSolid(FinalSolid,temptempFinalSolid);
-    else tempFinalSolid = temptempFinalSolid;
-    FinalSolid = tempFinalSolid;
-    counter++;
     
   }//for all xmlSections
 
-  //Assembly does not like adding different sensitive volumes
-  //so I merge them before and assign sens to the total
-   Volume tubeLog( "TubeMerge", FinalSolid, sectionMat );
-   tubeLog.setVisAttributes(description, xmlMask.visStr() );
-
-   if (isSensitive) tubeLog.setSensitiveDetector(sens);  //assigning to the volume vol the handle "sens"
-   envelope.placeVolume( tubeLog );
-  
   //--------------------------------------
   Volume mother =  description.pickMotherVolume( tube ) ;
   PlacedVolume pv(mother.placeVolume(envelope));
