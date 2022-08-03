@@ -215,7 +215,7 @@ void Geant4TestSensitive::end(G4HCofThisEvent* hce) {
 }
 
 /// Method for generating hit(s) using the information of G4Step object.
-bool Geant4TestSensitive::process(G4Step* step, G4TouchableHistory*) {
+bool Geant4TestSensitive::process(const G4Step* step, G4TouchableHistory*) {
   Geant4HitCollection* c = collection(m_collectionID);
   PRINT("%s> calling process(track=%d, dE=%f, dT=%f len=%f, First,last in Vol=(%c,%c), coll=%s Context: run=%p evt=%p)",
         m_type.c_str(), step->GetTrack()->GetTrackID(),

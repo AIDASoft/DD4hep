@@ -1,3 +1,243 @@
+# v01-21
+
+* 2022-07-19 Markus Frank ([PR#933](https://github.com/aidasoft/DD4hep/pull/933))
+  The fast simulation handling in Geant4 includes the GFlash interface
+  as implemented in `<geant40-source>/source/parameterisations/gflash`
+  and a fast simulation interface as provided by 
+  `<geant40-source>/source/processes/parameterisation`
+  
+  This MR allows to handle both mechanisms using the same callbacks 
+  in the Geant4SensitiveActions using the callback specialization:
+  ```
+        /// GFLASH/FastSim interface: Method for generating hit(s) using the information of the fast simulation spot object.
+        virtual bool processFastSim(const Geant4FastSimSpot* spot, G4TouchableHistory* history)  final;
+  ```
+  in addition to the regular callback for full simulation:
+  ```
+        /// G4VSensitiveDetector interface: Method for generating hit(s) using the G4Step object.
+        virtual bool process(const G4Step* step,G4TouchableHistory* history)  final;
+  ```
+  The `Geant4FastSimSpot` is inspired by the `G4GFlashSpot`, but avoids the specialization towards GFlash
+  given that the `G4FastHit` and the `G4GFlashEnergySpot` are equivalent.
+  Together with the helper class `Geant4FastSimHandler` simple sensitive detector callbacks
+  can be implemented like:
+  ```
+      /// GFlash/FastSim interface: Method for generating hit(s) using the information of Geant4FastSimSpot object.
+      template <> bool
+      Geant4SensitiveAction<Geant4Tracker>::processFastSim(const Geant4FastSimSpot* spot,
+  							 G4TouchableHistory* /* hist */)
+      {
+        typedef Geant4Tracker::Hit Hit;
+        Geant4FastSimHandler h(spot);
+        Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime());
+        hit->cellID        = cellID(h.touchable(), h.avgPositionG4());
+        hit->energyDeposit = h.deposit();
+        hit->position      = h.avgPosition();
+        hit->momentum      = h.momentum();
+        hit->length        = 0e0;
+        collection(m_collectionID)->add(hit);
+        return true;
+      }
+  ```
+  Callbacks with this signature are called both for GFlash and the G4 fast simulation.
+  
+  To simplify the user defined construction of fast simulation shower models
+  the helper class `Geant4FastSimShowerModel` is implemented as a `Geant4Action`
+  and hence allows to have options to be set by the user (including python).
+  
+  As an illustration two fast simulation shower models were implemented in
+  `<dd4hep>/DDG4/plugins/Geant4P1ShowerModel.cpp` which were directly deduced
+  from the Geant4 example `<geant4-source>/examples/extended/parameterisations/Par01`.
+  Please see the source files for details.
+  
+  To execute GFlash or fast simulation to simple python examples are provided
+  using simple silicon blocks as sensitive volumes:
+  - GFlash `<dd4hep-dir>/examples/ClientTests/scripts/SiliconBlockGFlash.py`
+  - Fast simulation `<dd4hep-dir>/examples/ClientTests/scripts/SiliconBlockFastSim.py`
+  
+  To enable either the following actions are required:
+  1. Enable fast simulation for certain particles in the physics list:
+  ```  # Build the physics list:
+    phys = geant4.setupPhysics('FTFP_BERT')
+    ph = DDG4.PhysicsList(kernel, str('Geant4FastPhysics/FastPhysicsList'))
+    ph.EnabledParticles = ['e+', 'e-']
+    ph.enableUI()
+    phys.adopt(ph)
+  ```
+  This step is identical for GFlash and fast simulation physics.
+  2. Enable the shower mode:
+  ```  model = DDG4.DetectorConstruction(kernel, str('Geant4Par01EMShowerModel/ShowerModel'))
+    # Mandatory model parameters
+    model.RegionName = 'SiRegion'
+    model.Material = 'Silicon'
+    model.ApplicableParticles = ['e+', 'e-']
+    model.Etrigger = {'e+': 0.1 * GeV, 'e-': 0.1 * GeV}
+    model.Enable = True
+    model.enableUI()
+  ```
+  Here the options must be set according to the parameters required by the shower models.
+  
+  The G4 fast simulation interface is only functional for Geant4 version >= 10.07.
+  For lower versions of Geant4 missing classes are stubbed to allow the compilation.
+
+* 2022-07-18 Paul Gessinger ([PR#931](https://github.com/aidasoft/DD4hep/pull/931))
+  - Update `VariantParameters`: `value_or` is const (returns by value anyway), add non-const `get` method
+
+* 2022-07-15 Markus Frank ([PR#930](https://github.com/aidasoft/DD4hep/pull/930))
+  - Fix some handler
+  - Add 2 examples to test the functionality
+
+* 2022-07-14 Markus Frank ([PR#929](https://github.com/aidasoft/DD4hep/pull/929))
+  - First attempt to implement GFlash parametrization for DDG4
+  - Example is in examples/ClientTests/scripts/SiliconBlockGFlash.py
+    Relevant code changes are for the detector construction:
+    ```
+    seq, act = geant4.addDetectorConstruction('Geant4DetectorGeometryConstruction/ConstructGeo')
+    ....
+    # Enable GFlash shower model
+    model = DDG4.DetectorConstruction(kernel, str('Geant4GFlashShowerModel/ShowerModel'))
+    model.Parametrization = 'GFlashHomoShowerParameterisation'
+    # Mandatory model parameters
+    model.RegionName = 'SiRegion'
+    model.Material = 'Silicon'
+    model.Enable = True
+    # Energy boundaries are optional
+    model.Emin  = {'e+': 0.1*GeV, 'e-': 0.1*GeV }  # Units in GeV
+    model.Ekill = {'e+': 0.1*MeV, 'e-': 0.1*MeV }
+    model.enableUI()
+    seq.adopt(model)
+    ```
+    and the physics list.
+    ```
+    # Now build the physics list:
+    phys = geant4.setupPhysics('FTFP_BERT')
+    ph = DDG4.PhysicsList(kernel, str('Geant4FastPhysics/FastPhysicsList'))
+    ph.EnabledParticles = ['e+', 'e-']
+    ph.BeVerbose = True
+    ph.enableUI()
+    phys.adopt(ph)
+    ```
+  The setup of the regions is crucial for GFlash to work, because it applies to regions.
+  For concrete detector constructors the proper regional setting are mandatory, but do not affect
+  this implementation.
+
+* 2022-07-12 Andre Sailer ([PR#928](https://github.com/aidasoft/DD4hep/pull/928))
+  - CI: Due to incompatibilities we can no longer test macOS on github
+
+* 2022-07-12 Markus Frank ([PR#927](https://github.com/aidasoft/DD4hep/pull/927))
+  Easy possibility to store condition payloads as std::any.
+  - Use of specialized handle class `dd4hep::ConditionAny` to support the functionality.
+    The payload is automatically bound to an object of type std::any.
+    Example code of constructor and how to access data:
+     ```
+    /// Emplacement construction
+    std::vector<int> value;
+    ... // fill data
+    ConditionAny c2("name", "type", std::move(value));
+  
+    /// Construct conditions object with empty std::any	 
+    ConditionAny c2("name", "type");
+    /// Assign data (empty vector<int>) to the payload:
+    c2.get() = vector<int>();
+  
+    /// Access data:
+    vector<int>& data = c2.as<vector<int> >();
+       ```
+     as a corollary to this approach these conditions can only be stored and retrieved from ROOT storage 
+     if the requirement for ROOT are satisfied. Otherwise no other restrictions are imposed. 
+     The corresponding grammar instance is part of the library.
+  
+  - Add example to illustrate the functionality in example/conditions:
+     o   examples/Conditions/src/ConditionAnyExampleObjects.cpp
+     o   examples/Conditions/src/ConditionAnyExampleObjects.h
+     o   plugin: examples/Conditions/src/ConditionAnyExample_populate.cpp
+         Invocation:
+  ```
+     $> geoPluginRun  -destroy -plugin DD4hep_ConditionAnyExample_populate \
+          -input ../../DD4hep/examples/AlignDet/compact/Telescope.xml -iovs 1
+     ```
+  
+  - Plugin example to test basic functionality and verify proper assignment works
+     o   examples/Conditions/src/Conditions_any_basic.cpp
+         Invocation:
+  ```
+  $> geoPluginRun -destroy -volmgr -plugin DD4hep_Conditions_any_basic
+  
+  ```
+  - Add 2 tests illustrating this functionality.
+
+* 2022-07-09 Markus Frank ([PR#925](https://github.com/aidasoft/DD4hep/pull/925))
+  Easy possibility to store condition payloads as std::any.
+  - Use of specialized handle class `dd4hep::ConditionAny` to support the functionality.
+    The payload is automatically bound to an object of type std::any.
+    Example code of constructor and how to access data:
+     ```
+    /// Emplacement construction
+    std::vector<int> value;
+    ... // fill data
+    ConditionAny c2("name", "type", std::move(value));
+  
+    /// Construct conditions object with empty std::any	 
+    ConditionAny c2("name", "type");
+    /// Assign data (empty vector<int>) to the payload:
+    c2.get() = vector<int>();
+  
+    /// Access data:
+    vector<int>& data = c2.as<vector<int> >();
+       ```
+     as a corollary to this approach these conditions can only be stored and retrieved from ROOT storage 
+     if the requirement for ROOT are satisfied. Otherwise no other restrictions are imposed. 
+     The corresponding grammar instance is part of the library.
+  
+  - Add example to illustrate the functionality in example/conditions:
+     o   examples/Conditions/src/ConditionAnyExampleObjects.cpp
+     o   examples/Conditions/src/ConditionAnyExampleObjects.h
+     o   plugin: examples/Conditions/src/ConditionAnyExample_populate.cpp
+         Invocation:
+  ```
+     $> geoPluginRun  -destroy -plugin DD4hep_ConditionAnyExample_populate \
+          -input ../../DD4hep/examples/AlignDet/compact/Telescope.xml -iovs 1
+     ```
+  
+  - Plugin example to test basic functionality and verify proper assignment works
+     o   examples/Conditions/src/Conditions_any_basic.cpp
+         Invocation:
+  ```
+  $> geoPluginRun -destroy -volmgr -plugin DD4hep_Conditions_any_basic
+  
+  ```
+
+* 2022-07-07 Andre Sailer ([PR#922](https://github.com/aidasoft/DD4hep/pull/922))
+  - LCIOOutput: Fix exception when trying to use a readout for different sub-detectors
+  - EDM4hepOutput: Fix memory leak when re-using readouts for different sub-detectors
+
+* 2022-06-16 Markus Frank ([PR#917](https://github.com/aidasoft/DD4hep/pull/917))
+  -- Improve error reporting if derived condition dependencies cannot be resolved 
+  -- Add illustrating example
+
+* 2022-06-14 Paul Gessinger ([PR#911](https://github.com/aidasoft/DD4hep/pull/911))
+  - Add `VariantParameters` extension + plugin to assign parameters to it by name.
+
+* 2022-06-08 Andre Sailer ([PR#914](https://github.com/aidasoft/DD4hep/pull/914))
+  - DDSim: add possibility to use individual compact files, e.g.:
+      ddsim --compactFile $DD4hep/examples/CLICSiD/compact/SiD_multiple_inputs.xml $DD4hep/examples/CLICSiD/compact/SiD_detectors_1.xml  $DD4hep/examples/CLICSiD/compact/SiD_detectors_2.xml $DD4hep/examples/CLICSiD/compact/SiD_close.xml --runType shell
+
+* 2022-05-18 Andre Sailer ([PR#912](https://github.com/aidasoft/DD4hep/pull/912))
+  - Detector: some corrections to the function docstrings
+
+* 2022-05-09 Marco Clemencic ([PR#910](https://github.com/aidasoft/DD4hep/pull/910))
+  - Plugin Service: check that the `LD_LIBRARY_PATH` (or `PATH` or `DYLD_LIBRAY_PATH`) are actually set before trying to use them (to avoid a crash)
+
+* 2022-04-29 Andre Sailer ([PR#908](https://github.com/aidasoft/DD4hep/pull/908))
+  -  CMake: add a message about how to avoid errors when manuals cannot be build, fixes #907
+
+* 2022-04-28 Juraj Smiesko ([PR#906](https://github.com/aidasoft/DD4hep/pull/906))
+  - bootstrap script runs all tests
+
+* 2022-04-28 Andre Sailer ([PR#905](https://github.com/aidasoft/DD4hep/pull/905))
+  - SegmentationInterna: fix shadow warning for `s`
+  - DDEve: fix shadow warnings for menuBar (bar), s
+
 # v01-20-02
 
 * 2022-04-04 Sanghyun Ko ([PR#902](https://github.com/aidasoft/dd4hep/pull/902))

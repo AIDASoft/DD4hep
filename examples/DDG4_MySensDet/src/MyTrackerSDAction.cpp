@@ -54,7 +54,7 @@ namespace dd4hep {
     }
 
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<MyTrackerSD>::process(G4Step* step,G4TouchableHistory* /*hist*/ ) {
+    template <> bool Geant4SensitiveAction<MyTrackerSD>::process(const G4Step* step,G4TouchableHistory* /*hist*/ ) {
       Geant4StepHandler h(step);
       Position prePos    = h.prePos();
       Position postPos   = h.postPos();

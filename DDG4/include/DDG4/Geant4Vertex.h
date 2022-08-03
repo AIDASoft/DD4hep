@@ -14,7 +14,7 @@
 #define DDG4_GEANT4VERTEX_H
 
 // Framework include files
-#include "DD4hep/Memory.h"
+#include <DD4hep/Memory.h>
 
 // C/C++ include files
 #include <set>

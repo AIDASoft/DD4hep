@@ -1,0 +1,11 @@
+#
+#/vis/open OGLSX
+#
+/vis/open OGLIX
+/vis/scene/create
+/vis/viewer/set/background white
+/vis/viewer/set/autoRefresh true
+/vis/sceneHandler/attach
+
+/vis/viewer/set/viewpointVector 1 1 1
+/vis/scene/add/axes 0 0 0 3 m

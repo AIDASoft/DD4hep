@@ -258,12 +258,18 @@ namespace dd4hep {
   
   /// String conversions: string to boolean value  \ingroup DD4HEP_CORE
   bool   _toBool(const std::string& value);
-  /// String conversions: string to integer value  \ingroup DD4HEP_CORE
+  /// String conversions: string to short value  \ingroup DD4HEP_CORE
   short  _toShort(const std::string& value);
   /// String conversions: string to integer value  \ingroup DD4HEP_CORE
   int    _toInt(const std::string& value);
   /// String conversions: string to long integer value  \ingroup DD4HEP_CORE
   long   _toLong(const std::string& value);
+  /// String conversions: string to unsigned short value  \ingroup DD4HEP_CORE
+  unsigned short _toUShort(const std::string& value);
+  /// String conversions: string to unsigned integer value  \ingroup DD4HEP_CORE
+  unsigned int   _toUInt(const std::string& value);
+  /// String conversions: string to long integer value  \ingroup DD4HEP_CORE
+  unsigned long  _toULong(const std::string& value);
   /// String conversions: string to float value  \ingroup DD4HEP_CORE
   float  _toFloat(const std::string& value);
   /// String conversions: string to double value  \ingroup DD4HEP_CORE

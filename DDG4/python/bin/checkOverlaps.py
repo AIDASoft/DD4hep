@@ -13,35 +13,35 @@
 from __future__ import absolute_import, unicode_literals
 import sys
 import errno
-import optparse
+import argparse
 import logging
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-parser = optparse.OptionParser()
-parser.formatter.width = 132
+parser = argparse.ArgumentParser()
 parser.description = "Check TGeo geometries for overlaps."
-parser.add_option("-c", "--compact", dest="compact", default=None,
-                  help="Define LCCDD style compact xml input",
-                  metavar="<FILE>")
-parser.add_option("-p", "--print",
-                  dest="print_overlaps", default=True,
-                  help="Print overlap information to standard output (default:True)",
-                  metavar="<boolean>")
-parser.add_option("-q", "--quiet",
-                  action="store_false", dest="print_overlaps",
-                  help="Do not print (disable --print)")
-parser.add_option("-t", "--tolerance", dest="tolerance", default=0.1,
-                  help="Overlap checking tolerance. Unit is in [mm]. (default:0.1 mm)",
-                  metavar="<double number>")
-parser.add_option("-o", "--option", dest="option", default='',
-                  help="Overlap checking option ('' or 's')",
-                  metavar="<string>")
+parser.add_argument("-c", "--compact", dest="compact", default=None, nargs='+',
+                    help="Define LCCDD style compact xml input",
+                    metavar="<FILE>")
+parser.add_argument("-p", "--print",
+                    dest="print_overlaps", default=True,
+                    help="Print overlap information to standard output (default:True)",
+                    metavar="<boolean>")
+parser.add_argument("-q", "--quiet",
+                    action="store_false", dest="print_overlaps",
+                    help="Do not print (disable --print)")
+parser.add_argument("-t", "--tolerance", dest="tolerance", default=0.1,
+                    type=float,
+                    help="Overlap checking tolerance. Unit is in [mm]. (default:0.1 mm)",
+                    metavar="<double number>")
+parser.add_argument("-o", "--option", dest="option", default='',
+                    help="Overlap checking option ('' or 's')",
+                    metavar="<string>")
 
-(opts, args) = parser.parse_args()
+args = parser.parse_args()
 
-if opts.compact is None:
+if args.compact is None:
   logger.info("    %s", parser.format_help())
   sys.exit(1)
 
@@ -61,18 +61,28 @@ except ImportError as X:
   sys.exit(errno.ENOENT)
 #
 #
-opts.tolerance = float(opts.tolerance)
 dd4hep.setPrintLevel(dd4hep.OutputLevel.ERROR)
-logger.info('+++%s\n+++ Loading compact geometry:%s\n+++%s', 120 * '=', opts.compact, 120 * '=')
+logger.info('+++%s', 120 * '=')
+logger.info('+++ Loading compact geometry:')
+for xmlfile in args.compact:
+  logger.info('+++ ' + xmlfile)
+logger.info('+++ tolerance: %f, option: %s', args.tolerance, args.option)
+logger.info('+++%s\n', 120 * '=')
 description = dd4hep.Detector.getInstance()
-description.fromXML(opts.compact)
-logger.info('+++%s\n+++ Checking overlaps of geometry:%s tolerance:%f option:%s\n+++%s',
-            120 * '=', opts.compact, opts.tolerance, opts.option, 120 * '=')
-description.manager().CheckOverlaps(opts.tolerance, opts.option)
+for xmlfile in args.compact:
+  description.fromXML(xmlfile)
+
+print(description.constants())
+
+description.manager().CheckOverlaps(args.tolerance, args.option)
 #
 #
-if opts.print_overlaps:
-  logger.info('+++%s\n+++ Printing overlaps of geometry:%s\n+++%s', 120 * '=', opts.compact, 120 * '=')
+if args.print_overlaps:
+  logger.info('+++%s', 120 * '=')
+  logger.info('+++ Printing overlaps of geometry:')
+  for xmlfile in args.compact:
+    logger.info('+++ %s', xmlfile)
+  logger.info('+++%s\n', 120 * '=')
   description.manager().PrintOverlaps()
 #
 #

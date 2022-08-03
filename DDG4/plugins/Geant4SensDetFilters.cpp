@@ -13,10 +13,9 @@
 
 /// Framework include files
 #include "DDG4/Geant4SensDetAction.h"
+#include "DDG4/Geant4FastSimSpot.h"
 
 /// Geant4 include files
-#include "G4GFlashSpot.hh"
-
 
 /// Forward declarations
 class G4ParticleDefinition;
@@ -55,8 +54,12 @@ namespace dd4hep {
 	return step->GetTrack();
       }
       /// Access to the track from step
-      const G4Track* getTrack(const G4GFlashSpot* spot)   const   {
-	return spot->GetOriginatorTrack()->GetPrimaryTrack();
+      const G4Track* getTrack(const Geant4FastSimSpot* spot)   const   {
+	return spot->primary;
+      }
+      /// Access originator track from G4 fast track
+      const G4Track* getTrack(const G4FastTrack* fast)   const   {
+	return fast->GetPrimaryTrack();
       }
     };
 
@@ -72,11 +75,11 @@ namespace dd4hep {
       /// Standard destructor
       virtual ~ParticleRejectFilter();
       /// Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4Step* step) const  final   {
+      virtual bool operator()(const G4Step* step) const  override  final   {
 	return !isSameType(getTrack(step));
       }
-      /// GFLASH interface: Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4GFlashSpot* spot) const  final   {
+      /// GFlash/FastSim interface: Filter action. Return true if hits should be processed
+      virtual bool operator()(const Geant4FastSimSpot* spot) const  override  final   {
 	return !isSameType(getTrack(spot));
       }
     };
@@ -93,11 +96,11 @@ namespace dd4hep {
       /// Standard destructor
       virtual ~ParticleSelectFilter();
       /// Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4Step* step) const  final   {
+      virtual bool operator()(const G4Step* step) const  override  final   {
 	return isSameType(getTrack(step));
       }
-      /// GFLASH interface: Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4GFlashSpot* spot) const  final   {
+      /// GFlash/FastSim interface: Filter action. Return true if hits should be processed
+      virtual bool operator()(const Geant4FastSimSpot* spot) const  override  final   {
 	return isSameType(getTrack(spot));
       }
     };
@@ -114,11 +117,11 @@ namespace dd4hep {
       /// Standard destructor
       virtual ~GeantinoRejectFilter();
       /// Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4Step* step) const  final   {
+      virtual bool operator()(const G4Step* step) const  override  final   {
 	return !isGeantino(getTrack(step));
       }
-      /// GFLASH interface: Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4GFlashSpot* spot) const  final   {
+      /// GFlash/FastSim interface: Filter action. Return true if hits should be processed
+      virtual bool operator()(const Geant4FastSimSpot* spot) const  override  final   {
 	return !isGeantino(getTrack(spot));
       }
     };
@@ -138,12 +141,12 @@ namespace dd4hep {
       /// Standard destructor
       virtual ~EnergyDepositMinimumCut();
       /// Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4Step* step) const  final  {
+      virtual bool operator()(const G4Step* step) const  override  final  {
 	return step->GetTotalEnergyDeposit() > m_energyCut;
       }
-      /// GFLASH interface: Filter action. Return true if hits should be processed
-      virtual bool operator()(const G4GFlashSpot* spot) const  final  {
-	return spot->GetEnergySpot()->GetEnergy() > m_energyCut;
+      /// GFlash/FastSim interface: Filter action. Return true if hits should be processed
+      virtual bool operator()(const Geant4FastSimSpot* spot) const  override  final  {
+	return spot->energy() > m_energyCut;
       }
     };
   }

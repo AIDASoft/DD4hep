@@ -65,57 +65,6 @@ const char* Geant4StepHandler::postStepStatus() const {
   return stepStatus(post ? post->GetStepStatus() : fUndefined);
 }
 
-/// Coordinate transformation to global coordinate.
-Position Geant4StepHandler::localToGlobal(const DDSegmentation::Vector3D& local)  const   {
-  return localToGlobal(G4ThreeVector(local.X / dd4hep::mm,local.Y / dd4hep::mm,local.Z / dd4hep::mm));
-}
-
-/// Coordinate transformation to global coordinates.
-Position Geant4StepHandler::localToGlobal(const Position& local)  const   {
-  return localToGlobal(G4ThreeVector(local.X(),local.Y(),local.Z()));
-}
-
-/// Coordinate transformation to global coordinates
-Position Geant4StepHandler::localToGlobal(double x, double y, double z)  const    {
-  return localToGlobal(G4ThreeVector(x,y,z));
-}
-
-/// Coordinate transformation to global coordinates
-Position Geant4StepHandler::localToGlobal(const G4ThreeVector& loc)  const    {
-  G4TouchableHandle t = step->GetPreStepPoint()->GetTouchableHandle();
-  G4ThreeVector p = t->GetHistory()->GetTopTransform().Inverse().TransformPoint(loc);
-  return Position(p.x(),p.y(),p.z());
-}
-
-/// Coordinate transformation to local coordinates
-Position Geant4StepHandler::globalToLocal(double x, double y, double z)  const    {
-  G4ThreeVector p = globalToLocalG4(G4ThreeVector(x,y,z));
-  return Position(p.x(),p.y(),p.z());
-}
-
-/// Coordinate transformation to local coordinates
-Position Geant4StepHandler::globalToLocal(const Position& global)  const    {
-  G4ThreeVector p = globalToLocalG4(G4ThreeVector(global.X(),global.Y(),global.Z()));
-  return Position(p.x(),p.y(),p.z());
-}
-
-/// Coordinate transformation to local coordinates
-Position Geant4StepHandler::globalToLocal(const G4ThreeVector& global)  const    {
-  G4ThreeVector p = globalToLocalG4(global);
-  return Position(p.x(),p.y(),p.z());
-}
-
-/// Coordinate transformation to local coordinates
-G4ThreeVector Geant4StepHandler::globalToLocalG4(double x, double y, double z)  const    {
-  return globalToLocalG4(G4ThreeVector(x,y,z));
-}
-
-/// Coordinate transformation to local coordinates
-G4ThreeVector Geant4StepHandler::globalToLocalG4(const G4ThreeVector& global)  const    {
-  G4TouchableHandle t = step->GetPreStepPoint()->GetTouchableHandle();
-  return t->GetHistory()->GetTopTransform().TransformPoint(global);
-}
-
 /// Apply BirksLaw
 double Geant4StepHandler::birkAttenuation() const    {
 #if G4VERSION_NUMBER >= 1001

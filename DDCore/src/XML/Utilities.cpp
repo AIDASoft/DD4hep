@@ -219,13 +219,15 @@ void  dd4hep::xml::setDetectorTypeFlag( dd4hep::xml::Handle_t e, dd4hep::DetElem
   try{
     xml_comp_t  x_dettype = x_det.child( dd4hep::xml::Strng_t("type_flags") ) ;
     unsigned int typeFlag = x_dettype.type() ;
-    printout(DEBUG,"Utilities","+++ setDetectorTypeFlags for detector :%s set to 0x%x", det_name.c_str(), typeFlag ) ; 
+    printout(DEBUG,"Utilities","+++ setDetectorTypeFlags for detector: %s set to 0x%x", det_name.c_str(), typeFlag ) ;
     sdet.setTypeFlag( typeFlag ) ;
   }
-  catch(const std::runtime_error& )   {
+  catch(const std::runtime_error& err)   {
     printout(INFO,"Utilities",
-             "+++ setDetectorTypeFlags for detector :%s no xml element <type_flags/> found - nothing to set ",
-             det_name.c_str() ) ; 
+             "+++ setDetectorTypeFlags for detector: %s not set.",
+             det_name.c_str() );
+    printout(DEBUG, "Utilities",
+             "+++ setDetectorTypeFlags encountered an error:\n%s", err.what());
   }
 }
 #endif

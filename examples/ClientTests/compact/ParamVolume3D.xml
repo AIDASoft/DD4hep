@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+  <!-- #==========================================================================
+       #  AIDA Detector description implementation 
+       #==========================================================================
+       # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+       # All rights reserved.
+       #
+       # For the licensing terms see $DD4hepINSTALL/LICENSE.
+       # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+       #
+       #==========================================================================
+  -->
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="30*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="VisibleRed"    r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="VisibleBlue"   r="0.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+    <vis name="VisibleYellow" r="1.0" g="1.0" b="0.0" showDaughters="false" visible="true"/>
+    <vis name="VisibleViolet" r="1.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+    <vis name="VisibleGreen" alpha="0.1" r="0.0" g="1.0" b="0.0" drawingStyle="solid" lineStyle="solid" showDaughters="true" visible="true"/>
+  </display>
+
+  <limits>
+    <limitset name="param_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+
+  <detectors>
+    <detector id="1" name="Param3D_1" type="DD4hep_ParamVolume" vis="VisibleGreen" readout="Hits3D" limits="param_limits">
+      <!-- Mother volume dimensions  -->
+      <box x="120*cm" y="120*cm" z="120*cm" material="Air"/>
+      <!-- Mother volume placement in the world -->
+      <position x="-60*cm" y="-60*cm" z="-60*cm"/>
+      <rotation x="0" y="0" z="0"/>
+
+      <!-- Parameterisation arguments -->
+      <param x="2*cm" y="2*cm" z="2*cm" material="Iron" vis="VisibleRed" limits="param_limits">
+	<start>
+	  <!-- Parameterisation start position in the mother volume frame  -->
+	  <position x="-100*cm" y="-100*cm" z="-100*cm"/>
+	  <rotation x="0" y="0" z="0"/>
+	</start>
+	<transformation>
+	  <!-- Parameterisation in dimension 1 with 20 placements -->
+	  <dim_x repeat="20">
+	    <position x="10*cm" y="0*cm" z="0*cm"/>
+	    <rotation x="0"     y="0"    z="0"/>
+	  </dim_x>
+	  <!-- Parameterisation in dimension 2 with 20 placements -->
+	  <dim_y repeat="20">
+	    <position x="0*cm" y="10*cm" z="0*cm"/>
+	    <rotation x="0"    y="0"     z="0"/>
+	  </dim_y>
+	  <!-- Parameterisation in dimension 3 with 20 placements -->
+	  <dim_z repeat="20">
+	    <position x="0*cm" y="0*cm" z="10*cm"/>
+	    <rotation x="0"    y="0"    z="0"/>
+	  </dim_z>
+	</transformation>
+      </param>
+    </detector>
+  </detectors>
+  
+  <readouts>
+    <readout name="Hits3D">
+      <segmentation type="CartesianGridXY" grid_size_x="1*mm" grid_size_y="1*mm"/>
+      <id>system:6,volume:16,x:32:-6,y:48:-6</id> 
+    </readout>
+  </readouts>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="2*m"
+	   outer_radius="3*m">
+    </field>
+  </fields>
+
+</lccdd>

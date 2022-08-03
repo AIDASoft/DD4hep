@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+  <!-- #==========================================================================
+       #  AIDA Detector description implementation 
+       #==========================================================================
+       # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+       # All rights reserved.
+       #
+       # For the licensing terms see $DD4hepINSTALL/LICENSE.
+       # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+       #
+       #==========================================================================
+  -->
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="30*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="VisibleRed"    r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="VisibleBlue"   r="0.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+    <vis name="VisibleYellow" r="1.0" g="1.0" b="0.0" showDaughters="false" visible="true"/>
+    <vis name="VisibleViolet" r="1.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+    <vis name="VisibleGreen" alpha="0.1" r="0.0" g="1.0" b="0.0" drawingStyle="solid" lineStyle="solid" showDaughters="true" visible="true"/>
+  </display>
+
+  <limits>
+    <limitset name="param_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+
+  <detectors>
+    <detector id="1" name="Param1D_1" type="DD4hep_ParamVolume" vis="VisibleGreen" readout="Hits1" limits="param_limits">
+      <box x="20*cm" y="15*cm" z="150*cm" material="Air"/>
+      <param x="15*cm" y="10*cm" z="2*cm" material="Iron" vis="VisibleRed" limits="param_limits">
+	<transformation>
+	  <dim_x repeat="20">
+	    <position x="0*cm" y="0*cm" z="10*cm"/>
+	    <rotation x="0" y="0" z="0"/>
+	  </dim_x>
+	</transformation>
+	<start>
+	  <position x="0*cm" y="0*cm" z="-120*cm"/>
+	  <rotation x="0" y="0" z="0"/>
+	</start>
+      </param>
+      <position x="0" y="0" z="175*cm"/>
+      <rotation x="0" y="0" z="0"/>
+    </detector>
+
+    <detector id="2" name="Param1D_2" type="DD4hep_ParamVolume" vis="VisibleGreen" readout="Hits2" limits="param_limits">
+      <box x="20*cm" y="100*cm" z="15*cm" material="Air"/>
+      <param x="15*cm" y="2*cm" z="10*cm" material="Iron" vis="VisibleBlue" limits="param_limits">
+	<transformation>
+	  <dim_x  repeat="12">
+	    <position x="0*cm" y="10*cm" z="0*cm"/>
+	    <rotation x="0" y="0" z="0"/>
+	  </dim_x>
+	</transformation>
+	<start>
+	  <position x="0*cm" y="-50*cm" z="0*cm"/>
+	  <rotation x="0" y="0" z="0"/>
+	</start>
+      </param>
+      <position x="0" y="130*cm" z="0*cm"/>
+      <rotation x="0" y="0" z="0"/>
+    </detector>
+
+    <detector id="3" name="Param1D_3" type="DD4hep_ParamVolume" vis="VisibleGreen" readout="Hits3" limits="param_limits">
+      <box x="100*cm" y="20*cm"  z="15*cm" material="Air"/>
+      <param x="2*cm" y="15*cm" z="10*cm" material="Iron" vis="VisibleYellow" limits="param_limits">
+	<transformation>
+	  <dim_x  repeat="9">
+	    <position x="10*cm" y="0*cm" z="0*cm"/>
+	    <rotation x="0" y="0" z="0"/>
+	  </dim_x>
+	</transformation>
+	<start>
+	  <position x="0*cm" y="0*cm" z="0*cm"/>
+	  <rotation x="0" y="0" z="0"/>
+	</start>
+      </param>
+      <position x="130*cm" y="0*cm" z="0*cm"/>
+      <rotation x="0" y="0" z="0"/>
+    </detector>
+
+    <detector id="4" name="Param1D_4" type="DD4hep_ParamVolume" vis="VisibleGreen" readout="Hits4" limits="param_limits">
+      <box x="100*cm" y="20*cm"  z="15*cm" material="Air"/>
+      <param x="2*cm" y="15*cm" z="10*cm" material="Iron" vis="VisibleViolet" limits="param_limits">
+	<transformation>
+	  <dim_x  repeat="8">
+	    <position x="-10*cm" y="0*cm" z="0*cm"/>
+	    <rotation x="0" y="0" z="0"/>
+	  </dim_x>
+	</transformation>
+	<start>
+	  <position x="0*cm" y="0*cm" z="0*cm"/>
+	  <rotation x="0" y="0" z="0"/>
+	</start>
+      </param>
+      <position x="-130*cm" y="0*cm" z="0*cm"/>
+      <rotation x="0" y="0" z="0"/>
+    </detector>
+
+    <detector id="5" name="Param1D_5" type="DD4hep_ParamVolume" vis="VisibleGreen" limits="param_limits">
+      <box x="100*cm" y="100*cm"  z="140*cm" material="Air"/>
+      <param x="2*cm" y="15*cm" z="10*cm" material="Iron" vis="VisibleViolet" limits="param_limits">
+	<transformation>
+	  <dim_x  repeat="100">
+	    <position x="10*cm" y="25*cm" z="2.5*cm"/>
+	    <rotation x="pi/8" y="0" z="0"/>
+	  </dim_x>
+	</transformation>
+	<start>
+	  <position x="40*cm" y="-40*cm" z="-130*cm"/>
+	  <rotation x="0" y="0" z="0"/>
+	</start>
+      </param>
+      <position x="150*cm" y="150*cm" z="170*cm"/>
+      <rotation x="0" y="pi/4*0" z="0"/>
+    </detector>
+
+  </detectors>
+  
+  <readouts>
+    <readout name="Hits1">
+      <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm"/>
+      <id>system:6,volume:16,x:32:-6,y:48:-6</id> 
+    </readout>
+    <readout name="Hits2">
+      <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm"/>
+      <id>system:6,volume:16,x:32:-6,y:48:-6</id> 
+    </readout>
+    <readout name="Hits3">
+      <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm"/>
+      <id>system:6,volume:16,x:32:-6,y:48:-6</id> 
+    </readout>
+    <readout name="Hits4">
+      <segmentation type="CartesianGridXY" grid_size_x="1*cm" grid_size_y="1*cm"/>
+      <id>system:6,volume:16,x:32:-6,y:48:-6</id> 
+    </readout>
+  </readouts>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="2*m"
+	   outer_radius="3*m">
+    </field>
+  </fields>
+
+</lccdd>

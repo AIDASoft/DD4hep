@@ -127,9 +127,9 @@ namespace dd4hep {
         /// Default destructor
         virtual ~Geant4TestTrackAction();
         /// Begin-of-tracking callback
-        virtual void begin(const G4Track*);
+        virtual void begin(const G4Track*)  override;
         /// End-of-tracking callback
-        virtual void end(const G4Track*);
+        virtual void end(const G4Track*)  override;
       };
 
       /// Example stepping action doing nothing, but print
@@ -145,7 +145,7 @@ namespace dd4hep {
         /// Default destructor
         virtual ~Geant4TestStepAction();
         /// User stepping callback
-        void operator()(const G4Step*, G4SteppingManager*);
+        void operator()(const G4Step*, G4SteppingManager*)  override;
       };
 
       /// Example sensitve detector action doing nothing, but print
@@ -163,11 +163,11 @@ namespace dd4hep {
         /// Default destructor
         virtual ~Geant4TestSensitive();
         /// Begin-of-tracking callback
-        virtual void begin(G4HCofThisEvent*);
+        virtual void begin(G4HCofThisEvent*)  override;
         /// End-of-tracking callback
-        virtual void end(G4HCofThisEvent*);
+        virtual void end(G4HCofThisEvent*)  override;
         /// Method for generating hit(s) using the information of G4Step object.
-        virtual bool process(G4Step*, G4TouchableHistory*);
+        virtual bool process(const G4Step*, G4TouchableHistory*)  override;
       };
     }   // End namespace Test
   }    // End namespace sim

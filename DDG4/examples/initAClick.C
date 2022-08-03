@@ -84,21 +84,22 @@ int initAClick(const char* command=0)  {
 #ifndef __APPLE__
   libs += " -lCore -lMathCore -pthread -lm -ldl -rdynamic";
 #endif
-  libs += " " +dd4hep+"/lib/libDD4hepGaudiPluginMgr." + ext;
-  libs += " " +dd4hep+"/lib/libDDCore."+ ext;
-  libs += " " +dd4hep+"/lib/libDDG4."+ ext;
+  //libs += " " +dd4hep+"/lib/libDD4hepGaudiPluginMgr." + ext;
+  //libs += " " +dd4hep+"/lib/libDDCore."+ ext;
+  //libs += " " +dd4hep+"/lib/libDDG4."+ ext;
+  libs += " -L" +dd4hep+"/lib ";  // -lDD4hepGaudiPluginMgr -lDDCore -lDDG4";
 #ifdef __APPLE__
-  gSystem->Load("libDD4hepGaudiPluginMgr");
+  int ret = gSystem->Load("libDD4hepGaudiPluginMgr");
+#else
+  //int ret = gSystem->Load("libDDG4Plugins");
+  int ret = gSystem->Load("libDD4hepGaudiPluginMgr");
 #endif
   gSystem->AddIncludePath(inc.c_str());
   gSystem->AddLinkedLibs(libs.c_str());
   std::cout << "+++ Includes:   " << gSystem->GetIncludePath() << std::endl;
   std::cout << "+++ Linked libs:" << gSystem->GetLinkedLibs()  << std::endl;
-  int ret = 0;  // gSystem->Load("libDDG4Plugins");
-  if ( 0 == ret )   {
-    if ( command )  {
-      processCommand(command, true);
-    }
+  if ( command )  {
+    processCommand(command, true);
   }
   return ret;
 }

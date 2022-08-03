@@ -12,43 +12,40 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Shapes.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/detail/ShapesInterna.h"
+#include <DD4hep/Shapes.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/detail/ShapesInterna.h>
 
 #include "Geant4ShapeConverter.h"
 
 // ROOT includes
-#include "TClass.h"
-#include "TGeoMatrix.h"
-#include "TGeoBoolNode.h"
-#include "TGeoScaledShape.h"
+#include <TClass.h>
+#include <TGeoMatrix.h>
+#include <TGeoBoolNode.h>
+#include <TGeoScaledShape.h>
 
 // Geant4 include files
-#include "G4Box.hh"
-#include "G4Trd.hh"
-#include "G4Tubs.hh"
-#include "G4Trap.hh"
-#include "G4Cons.hh"
-#include "G4Hype.hh"
-#include "G4Torus.hh"
-#include "G4Sphere.hh"
-#include "G4CutTubs.hh"
-#include "G4Polycone.hh"
-#include "G4Polyhedra.hh"
-#include "G4Ellipsoid.hh"
-#include "G4Paraboloid.hh"
-#include "G4TwistedTubs.hh"
-#include "G4GenericTrap.hh"
-#include "G4ExtrudedSolid.hh"
-#include "G4EllipticalTube.hh"
+#include <G4Box.hh>
+#include <G4Trd.hh>
+#include <G4Tubs.hh>
+#include <G4Trap.hh>
+#include <G4Cons.hh>
+#include <G4Hype.hh>
+#include <G4Torus.hh>
+#include <G4Sphere.hh>
+#include <G4CutTubs.hh>
+#include <G4Polycone.hh>
+#include <G4Polyhedra.hh>
+#include <G4Ellipsoid.hh>
+#include <G4Paraboloid.hh>
+#include <G4TwistedTubs.hh>
+#include <G4GenericTrap.hh>
+#include <G4ExtrudedSolid.hh>
+#include <G4EllipticalTube.hh>
 
 // C/C++ include files
 
-using namespace std;
 using namespace dd4hep::detail;
-namespace units = dd4hep;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -61,9 +58,9 @@ namespace dd4hep {
     /// Convert a specific TGeo shape into the geant4 equivalent
     template <typename T> G4VSolid* convertShape(const TGeoShape* shape)    {
       if ( shape )   {
-        dd4hep::except("convertShape","Unsupported shape: %s",shape->IsA()->GetName());
+        except("convertShape","Unsupported shape: %s",shape->IsA()->GetName());
       }
-      dd4hep::except("convertShape","Invalid shape conversion requested.");
+      except("convertShape","Invalid shape conversion requested.");
       return 0;
     }
 
@@ -135,26 +132,26 @@ namespace dd4hep {
     }
 
     template <> G4VSolid* convertShape<TGeoArb8>(const TGeoShape* shape)  {
-      vector<G4TwoVector> vertices;
+      std::vector<G4TwoVector> vertices;
       TGeoArb8* sh = (TGeoArb8*) shape;
       Double_t* vtx_xy = sh->GetVertices();
-      for ( size_t i=0; i<8; ++i, vtx_xy +=2 )
+      for ( std::size_t i=0; i<8; ++i, vtx_xy +=2 )
         vertices.emplace_back(vtx_xy[0] * CM_2_MM, vtx_xy[1] * CM_2_MM);
       return new G4GenericTrap(sh->GetName(), sh->GetDz() * CM_2_MM, vertices);
     }
 
     template <> G4VSolid* convertShape<TGeoXtru>(const TGeoShape* shape)  {
       const TGeoXtru* sh = (const TGeoXtru*) shape;
-      size_t nz = sh->GetNz();
-      vector<G4ExtrudedSolid::ZSection> z;
+      std::size_t nz = sh->GetNz();
+      std::vector<G4ExtrudedSolid::ZSection> z;
       z.reserve(nz);
-      for(size_t i=0; i<nz; ++i)   {
+      for(std::size_t i=0; i<nz; ++i)   {
         z.emplace_back(G4ExtrudedSolid::ZSection(sh->GetZ(i) * CM_2_MM, {sh->GetXOffset(i), sh->GetYOffset(i)}, sh->GetScale(i)));
       }
-      size_t np = sh->GetNvert();
-      vector<G4TwoVector> polygon;
+      std::size_t np = sh->GetNvert();
+      std::vector<G4TwoVector> polygon;
       polygon.reserve(np);
-      for(size_t i=0; i<np; ++i) {
+      for(std::size_t i=0; i<np; ++i) {
         polygon.emplace_back(sh->GetX(i) * CM_2_MM,sh->GetY(i) * CM_2_MM);
       }
       return new G4ExtrudedSolid(sh->GetName(), polygon, z);
@@ -162,7 +159,7 @@ namespace dd4hep {
 
     template <> G4VSolid* convertShape<TGeoPgon>(const TGeoShape* shape)  {
       const TGeoPgon* sh = (const TGeoPgon*) shape;
-      vector<double> rmin, rmax, z;
+      std::vector<double> rmin, rmax, z;
       for (Int_t i = 0; i < sh->GetNz(); ++i) {
         rmin.emplace_back(sh->GetRmin(i) * CM_2_MM);
         rmax.emplace_back(sh->GetRmax(i) * CM_2_MM);
@@ -174,7 +171,7 @@ namespace dd4hep {
 
     template <> G4VSolid* convertShape<TGeoPcon>(const TGeoShape* shape)  {
       const TGeoPcon* sh = (const TGeoPcon*) shape;
-      vector<double> rmin, rmax, z;
+      std::vector<double> rmin, rmax, z;
       for (Int_t i = 0; i < sh->GetNz(); ++i) {
         rmin.emplace_back(sh->GetRmin(i) * CM_2_MM);
         rmax.emplace_back(sh->GetRmax(i) * CM_2_MM);
@@ -224,10 +221,10 @@ namespace dd4hep {
     }
 
     template <> G4VSolid* convertShape<G4GenericTrap>(const TGeoShape* shape)  {
-      vector<G4TwoVector> vertices;
+      std::vector<G4TwoVector> vertices;
       TGeoTrap* sh = (TGeoTrap*) shape;
       Double_t* vtx_xy = sh->GetVertices();
-      for ( size_t i=0; i<8; ++i, vtx_xy +=2 )
+      for ( std::size_t i=0; i<8; ++i, vtx_xy +=2 )
         vertices.emplace_back(vtx_xy[0] * CM_2_MM, vtx_xy[1] * CM_2_MM);
       return new G4GenericTrap(sh->GetName(), sh->GetDz() * CM_2_MM, vertices);
     }
@@ -235,9 +232,9 @@ namespace dd4hep {
 }      // End namespace dd4hep
 
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
-#include "G4TessellatedSolid.hh"
-#include "G4TriangularFacet.hh"
-#include "G4QuadrangularFacet.hh"
+#include <G4TessellatedSolid.hh>
+#include <G4TriangularFacet.hh>
+#include <G4QuadrangularFacet.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -282,4 +279,5 @@ namespace dd4hep {
     
   }    // End namespace sim
 }      // End namespace dd4hep
-#endif
+#endif // ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
+

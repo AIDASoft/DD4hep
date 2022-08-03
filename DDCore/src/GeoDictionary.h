@@ -55,6 +55,8 @@ template vector<pair<string, int> >::iterator;
 #pragma link C++ class vector<pair<string, int> >+;
 #pragma link C++ class vector<pair<string, int> >::iterator;
 #pragma link C++ class dd4hep::PlacedVolumeExtension::VolIDs+;
+#pragma link C++ class dd4hep::PlacedVolumeExtension::Parameterisation+;
+#pragma link C++ class dd4hep::PlacedVolumeExtension::Parameterisation::Dimension+;
 #pragma link C++ class dd4hep::PlacedVolumeExtension+;
 #pragma link C++ class vector<dd4hep::PlacedVolume>+;
 #pragma link C++ class dd4hep::Handle<TGeoNode>+;

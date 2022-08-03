@@ -344,7 +344,6 @@ int DDCMSDetElementCreator::process(PlacedVolume pv, int level, bool recursive) 
   if ( stack.size() == 3 )  {
     current_sensitive = SensitiveDetector();
     current_detector = DetElement();
-    ret = 0;
   }
   stack.pop_back();
   return ret;

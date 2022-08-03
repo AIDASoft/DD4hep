@@ -11,12 +11,10 @@
 #
 #
 from __future__ import absolute_import, unicode_literals
-import os
-import sys
-import time
-import DDG4
-from DDG4 import OutputLevel as Output
-from g4units import GeV, MeV, m
+import logging
+#
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 #
 #
 """
@@ -35,18 +33,42 @@ from g4units import GeV, MeV, m
 
 
 def run():
+  import os
+  import time
+  import DDG4
+  args = DDG4.CommandLine()
+  if args.help:
+    import sys
+    logger.info("""
+          python <dir>/ParamValue.py -option [-option]
+              -geometry <geometry file>       Geometry with full path
+              -vis                            Enable visualization
+              -macro                          Pass G4 macro file to UI executive
+              -batch                          Run in batch mode for unit testing
+              -event <number>                 Run geant4 for specified number of events
+                                              (batch mode only)
+    """)
+    sys.exit(0)
+
+  from DDG4 import OutputLevel as Output
+  from g4units import GeV, MeV, m
   kernel = DDG4.Kernel()
-  install_dir = os.environ['DD4hepExamplesINSTALL']
-  kernel.loadGeometry(str("file:" + install_dir + "/examples/ClientTests/compact/SiliconBlock.xml"))
+  if args.geometry:
+    kernel.loadGeometry(str("file:" + args.geometry))
+  else:
+    install_dir = os.environ['DD4hepExamplesINSTALL']
+    kernel.loadGeometry(str("file:" + install_dir + "/examples/ClientTests/compact/SiliconBlock.xml"))
 
   DDG4.importConstants(kernel.detectorDescription(), debug=False)
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction', calo='Geant4CalorimeterAction')
   geant4.printDetectors()
   # Configure UI
-  if len(sys.argv) > 1:
-    geant4.setupCshUI(macro=sys.argv[1])
+  if args.macro:
+    ui = geant4.setupCshUI(macro=args.macro, vis=args.vis)
   else:
-    geant4.setupCshUI()
+    ui = geant4.setupCshUI()
+  if args.batch:
+    ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
 
   # Configure field
   geant4.setupTrackingField(prt=True)
@@ -83,7 +105,7 @@ def run():
   seq.adopt(model)
 
   # Configure I/O
-  geant4.setupROOTOutput('RootOutput', 'SiliconBlock_' + time.strftime('%Y-%m-%d_%H-%M'))
+  geant4.setupROOTOutput('RootOutput', 'SiliconBlock_GFlash_' + time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
   gun = geant4.setupGun("Gun", particle='e+', energy=50 * GeV, multiplicity=1)

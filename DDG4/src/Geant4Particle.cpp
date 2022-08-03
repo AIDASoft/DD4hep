@@ -12,17 +12,17 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4Particle.h"
-#include "TDatabasePDG.h"
-#include "TParticlePDG.h"
-#include "G4ParticleTable.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4VProcess.hh"
-#include "G4ChargedGeantino.hh"
-#include "G4Geantino.hh"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4Particle.h>
+#include <TDatabasePDG.h>
+#include <TParticlePDG.h>
+#include <G4ParticleTable.hh>
+#include <G4ParticleDefinition.hh>
+#include <G4VProcess.hh>
+#include <G4ChargedGeantino.hh>
+#include <G4Geantino.hh>
 
 #include <sstream>
 #include <iostream>

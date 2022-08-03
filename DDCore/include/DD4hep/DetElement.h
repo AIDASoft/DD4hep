@@ -78,6 +78,15 @@ namespace dd4hep {
     /// Assignment copy operator
     SensitiveDetector& operator=(const SensitiveDetector& sd)  = default;
 
+    /// Equality operator
+    template <typename T> bool operator ==(const Handle<T>& e) const {
+      return ptr() == e.ptr();
+    }
+    /// Non-Equality operator
+    template <typename T> bool operator !=(const Handle<T>& e) const {
+      return ptr() != e.ptr();
+    }
+
     /// Access the type of the sensitive detector
     std::string type() const;
 
@@ -313,10 +322,13 @@ namespace dd4hep {
     bool operator <(const DetElement e) const {
       return ptr() < e.ptr();
     }
-
     /// Equality operator
-    bool operator ==(const DetElement e) const {
+    template <typename T> bool operator ==(const Handle<T>& e) const {
       return ptr() == e.ptr();
+    }
+    /// Non-Equality operator
+    template <typename T> bool operator !=(const Handle<T>& e) const {
+      return ptr() != e.ptr();
     }
 
     /// Clone (Deep copy) the DetElement structure

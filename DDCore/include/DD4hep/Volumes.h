@@ -14,20 +14,19 @@
 #define DD4HEP_VOLUMES_H
 
 // Framework include files
-#include "DD4hep/Handle.h"
-#include "DD4hep/Shapes.h"
-#include "DD4hep/Objects.h"
+#include <DD4hep/Handle.h>
+#include <DD4hep/Shapes.h>
+#include <DD4hep/Objects.h>
+#include <DD4hep/BitField64.h>
 
 // C/C++ include files
 #include <map>
 #include <memory>
 
 // ROOT include file (includes TGeoVolume + TGeoShape)
-#include "TGeoNode.h"
-#include "TGeoPatternFinder.h"
-
-// Recent ROOT versions
-#include "TGeoExtension.h"
+#include <TGeoNode.h>
+#include <TGeoPatternFinder.h>
+#include <TGeoExtension.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -116,12 +115,64 @@ namespace dd4hep {
       /// String representation for debugging
       std::string str()  const;
     };
+    /// Optional parameters to implement special features such as parametrization
+    /**
+     *
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \ingroup DD4HEP_CORE
+     */
+    class Parameterisation   {
+    public:
+      /** Feature: Geant4 parameterised volumes  */
+      using Dimension = std::pair<Transform3D, size_t>;
+      /// Reference to the starting point of the parameterisation
+      Transform3D   start    {   };
+      /// Reference to the parameterised transformation for dimension 1
+      Dimension     trafo1D  { {}, 0UL };
+      /// Reference to the parameterised transformation for dimension 2
+      Dimension     trafo2D  { {}, 0UL };
+      /// Reference to the parameterised transformation for dimension 3
+      Dimension     trafo3D  { {}, 0UL };
+      /// Number of entries for the parameterisation in dimension 2
+      unsigned long flags    { 0 };
+      /// Number of entries for the parameterisation in dimension 2
+      unsigned long refCount { 0 };
+      /// Reference to the placements of this volume
+      std::vector<PlacedVolume> placements {  };
+      /// Bitfield from sensitive detector to encode the volume ID on the fly
+      const detail::BitFieldElement* field { nullptr };
+
+    public:
+      /// Default constructor
+      Parameterisation() = default;
+      /// Default move
+      Parameterisation(Parameterisation&& copy) = default;
+      /// Copy constructor
+      Parameterisation(const Parameterisation& c) = default;
+      /// Default destructor
+      virtual ~Parameterisation() = default;
+      /// Move assignment
+      Parameterisation& operator=(Parameterisation&& copy) = default;
+      /// Assignment operator
+      Parameterisation& operator=(const Parameterisation& copy) = default;
+      /// Increase ref count
+      Parameterisation* addref();
+      /// Decrease ref count
+      void release();
+      /// Enable ROOT persistency
+      ClassDef(Parameterisation,200);
+    };
     /// Magic word to detect memory corruptions
-    unsigned long magic = 0;
+    unsigned long magic { 0 };
     /// Reference count on object (used to implement Grab/Release)
-    long   refCount     = 0;
+    long   refCount     { 0 };
+    /// Reference to the parameterised transformation
+    Parameterisation* params   { nullptr };
     /// ID container
     VolIDs volIDs;
+
+  public:
     /// Default constructor
     PlacedVolumeExtension();
     /// Default move
@@ -133,13 +184,15 @@ namespace dd4hep {
     /// Move assignment
     PlacedVolumeExtension& operator=(PlacedVolumeExtension&& copy)  {
       magic  = std::move(copy.magic);
+      params = std::move(copy.params);
       volIDs = std::move(copy.volIDs);
       return *this;
     }
     /// Assignment operator
-    PlacedVolumeExtension& operator=(const PlacedVolumeExtension& c) {
-      magic  = c.magic;
-      volIDs = c.volIDs;
+    PlacedVolumeExtension& operator=(const PlacedVolumeExtension& copy) {
+      magic  = copy.magic;
+      params = copy.params;
+      volIDs = copy.volIDs;
       return *this;
     }
     /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
@@ -148,6 +201,10 @@ namespace dd4hep {
     virtual void Release() const  override;
     /// Enable ROOT persistency
     ClassDefOverride(PlacedVolumeExtension,200);
+  };
+  class PlacedVolumeFeatureExtension : public  PlacedVolumeExtension {
+  public:
+  public:
   };
 
   /// Handle class holding a placed volume (also called physical volume)
@@ -196,11 +253,21 @@ namespace dd4hep {
     PlacedVolume& operator=(PlacedVolume&& v)  = default;
     /// Assignment operator (must match copy constructor)
     PlacedVolume& operator=(const PlacedVolume& v)  = default;
+    /// Equality operator
+    template <typename T> bool operator ==(const Handle<T>& e) const {
+      return ptr() == e.ptr();
+    }
+    /// Non-Equality operator
+    template <typename T> bool operator !=(const Handle<T>& e) const {
+      return ptr() != e.ptr();
+    }
 
     /// Check if placement is properly instrumented
     Object* data() const;
     /// Access the copy number of this placement within its mother
     int copyNumber() const;
+    /// Access placed volume flags
+    long flags() const;
     /// Volume material
     Material material() const;
     /// Logical volume of this placement
@@ -311,8 +378,19 @@ namespace dd4hep {
       VETO_SIMU     = 1,
       VETO_RECO     = 2,
       VETO_DISPLAY  = 3,
-      REFLECTED     = 10
+      REFLECTED     = 10,
     };
+    enum ReplicationAxis  {
+      REPLICATED    = 1UL << 4,
+      PARAMETERIZED = 1UL << 5,
+      Undefined     = 1UL << 7,
+      X_axis        = 1UL << 8,
+      Y_axis        = 1UL << 9,
+      Z_axis        = 1UL << 10,
+      Rho_axis      = 1UL << 11,
+      Phi_axis      = 1UL << 12
+    };
+  
   public:
     /// Default constructor
     Volume() = default;
@@ -340,6 +418,14 @@ namespace dd4hep {
     Volume& operator=(Volume&& a)  = default;
     /// Assignment operator (must match copy constructor)
     Volume& operator=(const Volume& a)  = default;
+    /// Equality operator
+    template <typename T> bool operator ==(const Handle<T>& e) const {
+      return ptr() == e.ptr();
+    }
+    /// Non-Equality operator
+    template <typename T> bool operator !=(const Handle<T>& e) const {
+      return ptr() != e.ptr();
+    }
 
     /// Set flag to enable copy number checks when inserting new nodes
     /** By default checks are enabled. If you want to disable, call this function */
@@ -388,35 +474,162 @@ namespace dd4hep {
     PlacedVolume placeVolume(const Volume& volume, TGeoMatrix* tr) const;
     /// Place daughter volume with generic TGeo matrix
     PlacedVolume placeVolume(const Volume& volume, int copy_nr, TGeoMatrix* tr) const;
-    /// Parametrized volume implementation
-    /** Embedding parametrized daughter placements in a mother volume
+    /// 1D volume replication implementation
+    /** Embedding parameterised daughter placements in a mother volume
+     *  @param entity Daughter volume to be placed
+     *  @param axis   Replication axis direction in the frame of the mother
+     *  @param count  Number of entities to be placed
+     *  @param inc    Transformation increment for each iteration
      *  @param start  start transormation for the first placement
-     *  @param count  Number of entities to be placed
+     */
+    PlacedVolume replicate(const Volume entity, ReplicationAxis axis, size_t count, double inc, double start=0e0);
+    /// 1D Parameterised volume implementation
+    /** Embedding parameterised daughter placements in a mother volume
+     *  @param start  start transormation for the first placement
      *  @param entity Daughter volume to be placed
+     *  @param count  Number of entities to be placed
      *  @param inc    Transformation increment for each iteration
      */
-    void paramVolume1D(const Transform3D& start, size_t count, Volume entity, const Transform3D& inc);
-    /// Parametrized volume implementation
-    /** Embedding parametrized daughter placements in a mother volume
-     *  @param count  Number of entities to be placed
+    PlacedVolume paramVolume1D(const Transform3D& start, Volume entity, size_t count, const Transform3D& inc);
+    /// 1D Parameterised volume implementation
+    /** Embedding parameterised daughter placements in a mother volume
      *  @param entity Daughter volume to be placed
+     *  @param count  Number of entities to be placed
      *  @param inc    Transformation increment for each iteration
      */
-    void paramVolume1D(size_t count, Volume entity, const Transform3D& trafo);
-    /// Parametrized volume implementation
-    /** Embedding parametrized daughter placements in a mother volume
-     *  @param count  Number of entities to be placed
+    PlacedVolume paramVolume1D(Volume entity, size_t count, const Transform3D& trafo);
+    /// 1D Parameterised volume implementation
+    /** Embedding parameterised daughter placements in a mother volume
      *  @param entity Daughter volume to be placed
+     *  @param count  Number of entities to be placed
      *  @param inc    Transformation increment for each iteration
      */
-    void paramVolume1D(size_t count, Volume entity, const Position& inc);
-    /// Parametrized volume implementation
-    /** Embedding parametrized daughter placements in a mother volume
-     *  @param count  Number of entities to be placed
+    PlacedVolume paramVolume1D(Volume entity, size_t count, const Position& inc);
+    /// 1D Parameterised volume implementation
+    /** Embedding parameterised daughter placements in a mother volume
      *  @param entity Daughter volume to be placed
+     *  @param count  Number of entities to be placed
      *  @param inc    Transformation increment for each iteration
      */
-    void paramVolume1D(size_t count, Volume entity, const RotationZYX& inc);
+    PlacedVolume paramVolume1D(Volume entity, size_t count, const RotationZYX& inc);
+
+    /// 2D Parameterised volume implementation
+    /** Embedding parameterised daughter placements in a mother volume
+     *  @param entity   Daughter volume to be placed
+     *  @param count_1  Number of entities to be placed in dimension 1
+     *  @param inc_1    Transformation increment for each iteration in dimension 1
+     *  @param count_2  Number of entities to be placed in dimension 2
+     *  @param inc_2    Transformation increment for each iteration in dimension 2
+     */
+    PlacedVolume paramVolume2D(Volume entity, 
+			       size_t count_1, const Transform3D& inc_1,
+			       size_t count_2, const Transform3D& inc_2);
+
+    /// Constructor to be used when creating a new parameterised volume object
+    /** Embedding parameterised daughter placements in a mother volume
+     *  @param start    start transormation for the first placement
+     *  @param entity   Daughter volume to be placed
+     *  @param count_1  Number of entities to be placed in dimension 1
+     *  @param inc_1    Transformation increment for each iteration in dimension 1
+     *  @param count_2  Number of entities to be placed in dimension 2
+     *  @param inc_2    Transformation increment for each iteration in dimension 2
+     */
+    PlacedVolume paramVolume2D(const Transform3D& start,
+			       Volume entity,
+			       size_t count_1,
+			       const Position& inc_1,
+			       size_t count_2,
+			       const Position& inc_2);
+
+    /// Constructor to be used when creating a new parameterised volume object
+    /** Embedding parameterised daughter placements in a mother volume
+     *  @param start    start transormation for the first placement
+     *  @param entity   Daughter volume to be placed
+     *  @param count_1  Number of entities to be placed in dimension 1
+     *  @param inc_1    Transformation increment for each iteration in dimension 1
+     *  @param count_2  Number of entities to be placed in dimension 2
+     *  @param inc_2    Transformation increment for each iteration in dimension 2
+     */
+    PlacedVolume paramVolume2D(Volume entity,
+			       size_t count_1,
+			       const Position& inc_1,
+			       size_t count_2,
+			       const Position& inc_2);
+
+    /// 2D Parameterised volume implementation
+    /** Embedding parameterised daughter placements in a mother volume
+     *  @param start    start transormation for the first placement
+     *  @param entity   Daughter volume to be placed
+     *  @param count_1  Number of entities to be placed in dimension 1
+     *  @param inc_1    Transformation increment for each iteration in dimension 1
+     *  @param count_2  Number of entities to be placed in dimension 2
+     *  @param inc_2    Transformation increment for each iteration in dimension 2
+     */
+    PlacedVolume paramVolume2D(const Transform3D& start, Volume entity, 
+			       size_t count_1, const Transform3D& inc_1,
+			       size_t count_2, const Transform3D& inc_2);
+
+    /// 3D Parameterised volume implementation
+    /** Embedding parameterised daughter placements in a mother volume
+     *  @param entity   Daughter volume to be placed
+     *  @param count_1  Number of entities to be placed in dimension 1
+     *  @param inc_1    Transformation increment for each iteration in dimension 1
+     *  @param count_2  Number of entities to be placed in dimension 2
+     *  @param inc_2    Transformation increment for each iteration in dimension 2
+     *  @param count_3  Number of entities to be placed in dimension 3
+     *  @param inc_3    Transformation increment for each iteration in dimension 3
+     */
+    PlacedVolume paramVolume3D(Volume entity, 
+			       size_t count_1, const Transform3D& inc_1,
+			       size_t count_2, const Transform3D& inc_2,
+			       size_t count_3, const Transform3D& inc_3);
+
+    /// 3D Parameterised volume implementation
+    /** Embedding parameterised daughter placements in a mother volume
+     *  @param start    start transormation for the first placement
+     *  @param entity   Daughter volume to be placed
+     *  @param count_1  Number of entities to be placed in dimension 1
+     *  @param inc_1    Transformation increment for each iteration in dimension 1
+     *  @param count_2  Number of entities to be placed in dimension 2
+     *  @param inc_2    Transformation increment for each iteration in dimension 2
+     *  @param count_3  Number of entities to be placed in dimension 3
+     *  @param inc_3    Transformation increment for each iteration in dimension 3
+     */
+    PlacedVolume paramVolume3D(const Transform3D& start, Volume entity, 
+			       size_t count_1, const Transform3D& inc_1,
+			       size_t count_2, const Transform3D& inc_2,
+			       size_t count_3, const Transform3D& inc_3);
+
+    /// 3D Parameterised volume implementation
+    /** Embedding parameterised daughter placements in a mother volume
+     *  @param entity   Daughter volume to be placed
+     *  @param count_1  Number of entities to be placed in dimension 1
+     *  @param inc_1    Transformation increment for each iteration in dimension 1
+     *  @param count_2  Number of entities to be placed in dimension 2
+     *  @param inc_2    Transformation increment for each iteration in dimension 2
+     *  @param count_3  Number of entities to be placed in dimension 3
+     *  @param inc_3    Transformation increment for each iteration in dimension 3
+     */
+    PlacedVolume paramVolume3D(Volume entity, 
+			       size_t count_1, const Position& inc_1,
+			       size_t count_2, const Position& inc_2,
+			       size_t count_3, const Position& inc_3);
+
+    /// 3D Parameterised volume implementation
+    /** Embedding parameterised daughter placements in a mother volume
+     *  @param start    start transormation for the first placement
+     *  @param entity   Daughter volume to be placed
+     *  @param count_1  Number of entities to be placed in dimension 1
+     *  @param inc_1    Transformation increment for each iteration in dimension 1
+     *  @param count_2  Number of entities to be placed in dimension 2
+     *  @param inc_2    Transformation increment for each iteration in dimension 2
+     *  @param count_3  Number of entities to be placed in dimension 3
+     *  @param inc_3    Transformation increment for each iteration in dimension 3
+     */
+    PlacedVolume paramVolume3D(const Transform3D& start, Volume entity, 
+			       size_t count_1, const Position& inc_1,
+			       size_t count_2, const Position& inc_2,
+			       size_t count_3, const Position& inc_3);
 
     /// Set user flags in bit-field
     void setFlagBit(unsigned int bit);
@@ -427,7 +640,7 @@ namespace dd4hep {
     bool isReflected()   const;
     
     /// Set the volume's option value
-    void setOption(const std::string& opt) const;
+    const Volume& setOption(const std::string& opt) const;
     /// Access the volume's option value
     std::string option() const;
 

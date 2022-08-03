@@ -91,7 +91,9 @@ namespace dd4hep {
       void stop();
       /// Force exiting this process without calling atexit handlers
       void forceExit();
-     /// Run UI
+      /// Regularly exiting this process without calling atexit handlers
+      void regularExit();
+	/// Run UI
       virtual void operator()(void* param);
     };
 
