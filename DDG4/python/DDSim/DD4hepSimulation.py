@@ -393,11 +393,16 @@ class DD4hepSimulation(object):
       logger.info("++++ Adding Geant4 General Particle Source ++++")
       actionList.append(self._g4gps)
 
-    if self.inputConfig.userInputPlugin:
-      gen = self.inputConfig.userInputPlugin(self)
+    start = 4
+    for index, plugin in enumerate(self.inputConfig.userInputPlugin, start=start):
+      gen = plugin(self)
+      gen.Mask = index
+      start = index + 1
       actionList.append(gen)
+      self.__applyBoostOrSmear(kernel, actionList, index)
+      logger.info("++++ Adding User Plugin %s ++++", gen.Name)
 
-    for index, inputFile in enumerate(self.inputFiles, start=4):
+    for index, inputFile in enumerate(self.inputFiles, start=start):
       if inputFile.endswith(".slcio"):
         gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/LCIO%d" % index)
         gen.Parameters = self.lcio.getParameters()

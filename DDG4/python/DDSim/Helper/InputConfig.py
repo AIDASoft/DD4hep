@@ -9,13 +9,13 @@ class InputConfig(ConfigHelper):
 
   def __init__(self):
     super(InputConfig, self).__init__()
-    self._userPlugin = None
+    self._userPlugin = []
 
   @property
   def userInputPlugin(self):
-    """Set a function to configure an inputStep.
+    """Set one or more functions to configure input steps.
 
-    The function must take a ``DD4hepSimulation`` object as its only argument and return the created generatorAction
+    The functions must take a ``DD4hepSimulation`` object as their only argument and return the created generatorAction
     ``gen`` (for example).
 
     For example one can add this to the ddsim steering file:
@@ -37,13 +37,24 @@ class InputConfig(ConfigHelper):
         return gen
 
       SIM.inputConfig.userInputPlugin = exampleUserPlugin
+
+    Repeat function definition and assignment to add multiple input steps
+
     """
     return self._userPlugin
 
   @userInputPlugin.setter
   def userInputPlugin(self, userInputPluginConfig):
-    if userInputPluginConfig is None:
+    if not userInputPluginConfig:
       return
+
+    if isinstance(userInputPluginConfig, list):
+      if not all(callable(func) for func in userInputPluginConfig):
+        raise RuntimeError("Some provided userPlugins are not a callable function")
+      self._userPlugin = userInputPluginConfig
+      return
+
     if not callable(userInputPluginConfig):
-      raise RuntimeError("The provided userPlugin is not a callable function.")
-    self._userPlugin = userInputPluginConfig
+      raise RuntimeError("The provided userPlugin is not a callable function: %s, %s" % (type(userInputPluginConfig),
+                                                                                         repr(userInputPluginConfig)))
+    self._userPlugin.append(userInputPluginConfig)
