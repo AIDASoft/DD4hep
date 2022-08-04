@@ -3,61 +3,17 @@ name: linux
 on: [push, pull_request]
 
 jobs:
-  old:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        LCG: ["LCG_97a/x86_64-centos7-gcc8-opt",
-              "LCG_98python3/x86_64-centos7-gcc10-opt",
-              "LCG_98python3/x86_64-ubuntu1804-gcc7-opt"]
-    steps:
-    - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - uses: aidasoft/run-lcg-view@v1
-      with:
-        release-platform: ${{ matrix.LCG }}
-        run: |
-          mkdir build
-          cd build
-          unset CPATH
-          cmake -GNinja \
-            -DDD4HEP_USE_GEANT4=ON \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_LCIO=ON \
-            -DDD4HEP_USE_EDM4HEP=OFF \
-            -DDD4HEP_USE_TBB=OFF \
-            -DDD4HEP_USE_HEPMC3=OFF \
-            -DDD4HEP_BUILD_DEBUG=OFF \
-            -DBUILD_TESTING=ON \
-            -DDD4HEP_DEBUG_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
-            -DCMAKE_CXX_STANDARD=17 ..
-          ninja install
-          . ../bin/thisdd4hep.sh
-          ctest --output-on-failure -j4
-          cd ../examples/
-          mkdir build
-          cd build
-          cmake -GNinja \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_STANDARD=17 ..
-          ninja install
-          ctest --output-on-failure -j2
 
-  new:
+  default:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_99/x86_64-centos7-clang10-opt",
-              "LCG_99/x86_64-centos7-gcc10-opt",
-              "LCG_99/x86_64-centos8-gcc10-opt",
-              "LCG_99/x86_64-ubuntu2004-gcc9-opt",
-              "dev3/x86_64-centos7-clang12-opt",
+        LCG: ["LCG_100/x86_64-centos7-gcc10-opt",    # g4 10.7
+              "LCG_101/x86_64-centos7-gcc11-opt",    # g4 10.7
+              "LCG_102/x86_64-centos7-clang12-opt",  # g4 11
+              "LCG_102/x86_64-ubuntu2004-gcc9-opt",  # g4 11
+              "dev3/x86_64-centos7-gcc11-opt",
               "dev4/x86_64-centos7-gcc11-opt"]
     steps:
     - uses: actions/checkout@v2
@@ -69,6 +25,7 @@ jobs:
           mkdir build
           cd build
           unset CPATH
+          echo "::group::CMakeConfig"
           cmake -GNinja \
             -DDD4HEP_USE_GEANT4=ON \
             -DBoost_NO_BOOST_CMAKE=ON \
@@ -83,9 +40,12 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
             -DCMAKE_CXX_STANDARD=17 ..
+          echo "::group::Compile"
           ninja install
           . ../bin/thisdd4hep.sh
+          echo "::group::Test"
           ctest --output-on-failure -j4
+          echo "::group::CMakeExamples"
           cd ../examples/
           mkdir build
           cd build
@@ -93,7 +53,9 @@ jobs:
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_CXX_STANDARD=17 ..
+          echo "::group::CompileExamples"
           ninja install
+          echo "::group::TestExamples"
           ctest --output-on-failure -j2
 
   non-shared:
@@ -101,7 +63,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_99/x86_64-centos7-gcc10-opt"]
+        LCG: ["LCG_102/x86_64-centos7-gcc11-opt"]
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
@@ -112,6 +74,7 @@ jobs:
           mkdir build
           cd build
           unset CPATH
+          echo "::group::CMakeConfig"
           cmake -GNinja \
             -DDD4HEP_USE_GEANT4=ON \
             -DBoost_NO_BOOST_CMAKE=ON \
@@ -127,4 +90,55 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
             -DCMAKE_CXX_STANDARD=17 ..
+          echo "::group::Compile"
           ninja
+
+  g4units:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        LCG: ["dev3/x86_64-centos7-gcc11-opt"]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
+    - uses: aidasoft/run-lcg-view@v1
+      with:
+        release-platform: ${{ matrix.LCG }}
+        run: |
+          mkdir build
+          cd build
+          unset CPATH
+          echo "::group::CMakeConfig"
+          cmake -GNinja \
+            -DDD4HEP_USE_GEANT4_UNITS=ON \
+            -DDD4HEP_USE_GEANT4=ON \
+            -DBoost_NO_BOOST_CMAKE=ON \
+            -DDD4HEP_USE_LCIO=ON \
+            -DDD4HEP_USE_EDM4HEP=ON \
+            -DDD4HEP_USE_TBB=ON \
+            -DDD4HEP_USE_HEPMC3=ON \
+            -DDD4HEP_BUILD_DEBUG=OFF \
+            -DBUILD_TESTING=ON \
+            -DDD4HEP_DEBUG_CMAKE=ON \
+            -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
+            -DCMAKE_CXX_STANDARD=17 ..
+          echo "::group::Compile"
+          ninja install
+          . ../bin/thisdd4hep.sh
+          echo "::group::Test"
+          ctest --output-on-failure -j4
+          echo "::group::CMakeExamples"
+          cd ../examples/
+          mkdir build
+          cd build
+          cmake -GNinja \
+            -DBoost_NO_BOOST_CMAKE=ON \
+            -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_CXX_STANDARD=17 ..
+          echo "::group::CompileExamples"
+          ninja install
+          echo "::group::TestExamples"
+          ctest --output-on-failure -j2
