@@ -149,7 +149,7 @@ static Ref_t create_detector(Detector& description,
       
       // solid for the tube (including vacuum and wall): a solid cone
       ConeSegment tubeSolid( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);
-      
+
       // tube consists of vacuum
       Volume tubeLog0( volName, tubeSolid, material ) ;
       Volume tubeLog1( volName, tubeSolid, material ) ;
