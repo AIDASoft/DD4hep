@@ -28,7 +28,6 @@ using dd4hep::RotateY;
 using dd4hep::RotateX;
 using dd4hep::ConeSegment;
 using dd4hep::SubtractionSolid;
-using dd4hep::UnionSolid;
 using dd4hep::Material;
 using dd4hep::Volume;
 using dd4hep::Solid;
@@ -47,8 +46,6 @@ static Ref_t create_detector(Detector& description,
 			     SensitiveDetector sens) {
 
   printout(dd4hep::DEBUG,"DD4hep_Mask", "Creating Mask" ) ;
-  std::cout << " and this is the sensitive detector: " << &sens  << std::endl;
-  std::cout << " and the type is: " << sens.type()  << std::endl;
 
   //Access to the XML File
   xml_det_t xmlMask = xmlHandle;
@@ -70,12 +67,10 @@ static Ref_t create_detector(Detector& description,
     rotationX = xmlParameter.attr< bool >(_Unicode(rotationX));
 
   int counter = 0; 
-  Material sectionMat;
-  bool isSensitive = false;
-  for(xml_coll_t c( xmlMask ,Unicode("section")); c; ++c) {
+  for(xml_coll_t c( xmlMask ,Unicode("section")); c; ++c, counter++) {
 
     xml_comp_t xmlSection( c );
-
+    bool isSensitive = false;
     ODH::ECrossType crossType = ODH::getCrossType(xmlSection.attr< std::string >(_Unicode(type)));
     const double zStart       = xmlSection.attr< double > (_Unicode(start));
     const double zEnd         = xmlSection.attr< double > (_Unicode(end));
@@ -84,7 +79,7 @@ static Ref_t create_detector(Detector& description,
     const double rOuterStart  = xmlSection.attr< double > (_Unicode(rMax1));
     const double rOuterEnd    = xmlSection.attr< double > (_Unicode(rMax2));
     const double thickness    = rOuterStart - rInnerStart;
-    sectionMat  = description.material(xmlSection.materialStr());
+    Material sectionMat  = description.material(xmlSection.materialStr());
     const std::string volName      = "tube_" + xmlSection.nameStr();
 
     double phi1 = 0 ;
@@ -97,10 +92,10 @@ static Ref_t create_detector(Detector& description,
     std::string ssensitive = "none";
     if (xmlSection.hasAttr(_U(sensitive))){
       isSensitive = true;
-        ssensitive = xmlSection.attr< std::string > (_U(sensitive));
-	sens.setType( xmlSection.attr< std::string > (_U(sensitive))  );  //decide the type of SD (tracker / calorimeter) check for k4run
-	printout(dd4hep::DEBUG, "sensitive in sens ", ssensitive);
-      }
+      ssensitive = xmlSection.attr< std::string > (_U(sensitive));
+      sens.setType( xmlSection.attr< std::string > (_U(sensitive))  );  //decide the type of SD (tracker / calorimeter) check for k4run
+      printout(dd4hep::DEBUG, "sensitive in sens ", ssensitive);
+    }
 
 
     std::stringstream pipeInfo;
@@ -123,7 +118,8 @@ static Ref_t create_detector(Detector& description,
     // things which can be calculated immediately
     const double zHalf       = fabs(zEnd - zStart) * 0.5; // half z length of the cone
     const double zPosition   = fabs(zEnd + zStart) * 0.5; // middle z position
-   
+    Material material    = sectionMat;
+
     // this could mess up your geometry, so better check it
     if (not ODH::checkForSensibleGeometry(crossingAngle, crossType)){
       throw std::runtime_error( " Mask_o1_v01_geo.cpp : checkForSensibleGeometry() failed " ) ;
@@ -152,17 +148,15 @@ static Ref_t create_detector(Detector& description,
       }
       
       // solid for the tube (including vacuum and wall): a solid cone
-      // ConeSegment tubeSolid( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);
-      ConeSegment tubeSolid0( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);
-      ConeSegment tubeSolid1( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);      
+      ConeSegment tubeSolid( zHalf, rInnerStart, rOuterStart, rInnerEnd, rOuterEnd , phi1, phi2);
       
       // tube consists of vacuum
-      // Volume tubeLog( volName, tubeSolid, sectionMat ) ;
-      Volume tubeLog0( volName, tubeSolid0, sectionMat ) ;
-      Volume tubeLog1( volName, tubeSolid1, sectionMat ) ;
-      if (isSensitive) tubeLog0.setSensitiveDetector(sens);
-      if (isSensitive) tubeLog1.setSensitiveDetector(sens);
-      // tubeLog.setVisAttributes(description, xmlMask.visStr() );
+      Volume tubeLog0( volName, tubeSolid, material ) ;
+      Volume tubeLog1( volName, tubeSolid, material ) ;
+      if (isSensitive) {
+	tubeLog0.setSensitiveDetector(sens);
+	tubeLog1.setSensitiveDetector(sens);
+      }
       tubeLog0.setVisAttributes(description, xmlMask.visStr() );
       tubeLog1.setVisAttributes(description, xmlMask.visStr() );
 
@@ -174,7 +168,6 @@ static Ref_t create_detector(Detector& description,
       placed0.addPhysVolID("layer",counter);
       placed1.addPhysVolID("side",-1);
       placed1.addPhysVolID("layer",counter);
-      ++counter;
       
     }
       break;
@@ -220,11 +213,12 @@ static Ref_t create_detector(Detector& description,
       }
 
       // tube consists of vacuum (will later have two different daughters)
-      Volume tubeLog0( volName + "_0", finalSolid0, sectionMat );
-      Volume tubeLog1( volName + "_1", finalSolid1, sectionMat );
-      if (isSensitive) tubeLog0.setSensitiveDetector(sens);
-      if (isSensitive) tubeLog1.setSensitiveDetector(sens);
-
+      Volume tubeLog0( volName + "_0", finalSolid0, material );
+      Volume tubeLog1( volName + "_1", finalSolid1, material );
+      if (isSensitive) {
+	tubeLog0.setSensitiveDetector(sens);
+	tubeLog1.setSensitiveDetector(sens);
+      }
       tubeLog0.setVisAttributes(description, xmlMask.visStr() );
       tubeLog1.setVisAttributes(description, xmlMask.visStr() );
 
@@ -236,7 +230,6 @@ static Ref_t create_detector(Detector& description,
       placed1.addPhysVolID("side", -1);
       placed0.addPhysVolID("layer", counter);
       placed1.addPhysVolID("layer", counter);
-      counter++;
 
       break;
     }
@@ -268,10 +261,12 @@ static Ref_t create_detector(Detector& description,
       SubtractionSolid finalSolid1( wholeSolid, punchSolid, punchTransmirror);
 
       // tube consists of vacuum (will later have two different daughters)
-      Volume tubeLog0( volName + "_0", finalSolid0, sectionMat );
-      Volume tubeLog1( volName + "_1", finalSolid1, sectionMat );
-      if (isSensitive) tubeLog0.setSensitiveDetector(sens);
-      if (isSensitive) tubeLog1.setSensitiveDetector(sens);
+      Volume tubeLog0( volName + "_0", finalSolid0, material );
+      Volume tubeLog1( volName + "_1", finalSolid1, material );
+      if (isSensitive) {
+	tubeLog0.setSensitiveDetector(sens);
+	tubeLog1.setSensitiveDetector(sens);
+      }
       tubeLog0.setVisAttributes(description, xmlMask.visStr() );
       tubeLog1.setVisAttributes(description, xmlMask.visStr() );
 
@@ -283,7 +278,6 @@ static Ref_t create_detector(Detector& description,
       placed1.addPhysVolID("side", -1);
       placed0.addPhysVolID("layer", counter);
       placed1.addPhysVolID("layer", counter);
-      counter++;
 
       break;
     }
