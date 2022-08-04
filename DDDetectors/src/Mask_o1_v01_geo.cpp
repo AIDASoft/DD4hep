@@ -154,8 +154,8 @@ static Ref_t create_detector(Detector& description,
       Volume tubeLog0( volName, tubeSolid, material ) ;
       Volume tubeLog1( volName, tubeSolid, material ) ;
       if (isSensitive) {
-	tubeLog0.setSensitiveDetector(sens);
-	tubeLog1.setSensitiveDetector(sens);
+        tubeLog0.setSensitiveDetector(sens);
+        tubeLog1.setSensitiveDetector(sens);
       }
       tubeLog0.setVisAttributes(description, xmlMask.visStr() );
       tubeLog1.setVisAttributes(description, xmlMask.visStr() );
@@ -216,8 +216,8 @@ static Ref_t create_detector(Detector& description,
       Volume tubeLog0( volName + "_0", finalSolid0, material );
       Volume tubeLog1( volName + "_1", finalSolid1, material );
       if (isSensitive) {
-	tubeLog0.setSensitiveDetector(sens);
-	tubeLog1.setSensitiveDetector(sens);
+        tubeLog0.setSensitiveDetector(sens);
+        tubeLog1.setSensitiveDetector(sens);
       }
       tubeLog0.setVisAttributes(description, xmlMask.visStr() );
       tubeLog1.setVisAttributes(description, xmlMask.visStr() );
@@ -264,8 +264,8 @@ static Ref_t create_detector(Detector& description,
       Volume tubeLog0( volName + "_0", finalSolid0, material );
       Volume tubeLog1( volName + "_1", finalSolid1, material );
       if (isSensitive) {
-	tubeLog0.setSensitiveDetector(sens);
-	tubeLog1.setSensitiveDetector(sens);
+        tubeLog0.setSensitiveDetector(sens);
+        tubeLog1.setSensitiveDetector(sens);
       }
       tubeLog0.setVisAttributes(description, xmlMask.visStr() );
       tubeLog1.setVisAttributes(description, xmlMask.visStr() );
