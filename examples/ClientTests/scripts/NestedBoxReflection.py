@@ -112,7 +112,7 @@ def run():
   gen.mask = 4
   gen.isotrop = True
   gen.particle = 'e+'
-  gen.energy = 100 * GeV
+  gen.Energy = 100 * GeV
   gen.multiplicity = 200
   gen.position = (0 * m, 0 * m, 0 * m)
   gen.direction = (0, 0, 1.)
