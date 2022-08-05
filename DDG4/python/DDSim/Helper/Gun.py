@@ -27,7 +27,11 @@ class Gun(ConfigHelper):
     self.thetaMax = None
     self._momentumMin_EXTRA = {'help': "Minimal momentum when using distribution (default = 0.0)"}
     self.momentumMin = None
+    self._momentumMax_EXTRA = {'help': "Maximal momentum when using distribution (default = 0.0)"}
     self.momentumMax = 10 * GeV
+    self._energy_EXTRA = {'help': "The kinetic energy for the particle gun.\n\n"
+                          "If not None, it will overwrite the setting of momentumMin and momentumMax"}
+    self.energy = None
 
     self._distribution_EXTRA = {'choices': ['uniform', 'cos(theta)',
                                             'eta', 'pseudorapidity',
@@ -113,6 +117,8 @@ class Gun(ConfigHelper):
   def setOptions(self, ddg4Gun):
     """set the starting properties of the DDG4 particle gun"""
     try:
+      if self.energy:
+        ddg4Gun.Energy = self.energy
       ddg4Gun.particle = self.particle
       ddg4Gun.multiplicity = self.multiplicity
       ddg4Gun.position = self.position

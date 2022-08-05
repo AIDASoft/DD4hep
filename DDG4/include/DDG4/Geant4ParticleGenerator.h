@@ -46,8 +46,12 @@ namespace dd4hep {
       std::string m_particleName;
       /// Pointer to geant4 particle definition
       G4ParticleDefinition* m_particle;
-      /// Property: Particle energy
+      /// Property: Fixed momentum value, overwrites momentumMin and momentumMax if set
       double m_energy;
+      /// Property: Minimal momentum value
+      double m_momentumMin;
+      /// Property: Maximal momentum value
+      double m_momentumMax;
       /// Property: Desired multiplicity of the particles to be shot
       int m_multiplicity;
       /// Property: User mask passed to all particles in the generated interaction
@@ -64,6 +68,8 @@ namespace dd4hep {
           User must return a UNIT vector, which gets scaled with momentum.
       */
       virtual void getParticleDirection(int num, ROOT::Math::XYZVector& direction, double& momentum) const;
+      /// Uniform particle momentum
+      void getParticleMomentumUniform(double& momentum) const;
 
       /// Print single particle interaction identified by its mask
       virtual void printInteraction(int mask)  const;

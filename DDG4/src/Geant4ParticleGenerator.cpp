@@ -17,6 +17,7 @@
 #include "DDG4/Geant4Context.h"
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4ParticleGenerator.h"
+#include "DDG4/Geant4Random.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 // Geant4 include files
@@ -37,7 +38,10 @@ Geant4ParticleGenerator::Geant4ParticleGenerator(Geant4Context* ctxt, const stri
   InstanceCount::increment(this);
   m_needsControl = true;
   declareProperty("Particle",      m_particleName = "e-");
-  declareProperty("Energy",        m_energy = 50 * CLHEP::MeV);
+  declareProperty("Energy",        m_energy = -1);
+  declareProperty("energy",        m_energy = -1);
+  declareProperty("MomentumMin",   m_momentumMin = 0.0);
+  declareProperty("MomentumMax",   m_momentumMax = 50 * CLHEP::MeV);
   declareProperty("Multiplicity",  m_multiplicity = 1);
   declareProperty("Mask",          m_mask = 0);
   declareProperty("Position",      m_position = ROOT::Math::XYZVector(0.,0.,0.));
@@ -49,8 +53,24 @@ Geant4ParticleGenerator::~Geant4ParticleGenerator() {
   InstanceCount::decrement(this);
 }
 
-/// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = m_energy)
-void Geant4ParticleGenerator::getParticleDirection(int , ROOT::Math::XYZVector& , double& ) const   {
+/// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = [mMin, mMax])
+void Geant4ParticleGenerator::getParticleDirection(int , ROOT::Math::XYZVector& , double& momentum) const {
+  getParticleMomentumUniform(momentum);
+}
+
+/// Uniform momentum distribution
+void Geant4ParticleGenerator::getParticleMomentumUniform(double& momentum) const {
+  if (m_energy != -1) {
+    momentum = m_energy;
+    return;
+  }
+  Geant4Event&  evt = context()->event();
+  Geant4Random& rnd = evt.random();
+  if (m_momentumMax < m_momentumMin)
+    // We no longer set m_momentumMax to -1 so, not entirely sure a) this will still happen, b) actually work
+    momentum = m_momentumMin+(momentum-m_momentumMin)*rnd.rndm();
+  else
+    momentum = m_momentumMin+(m_momentumMax-m_momentumMin)*rnd.rndm();
 }
 
 /// Particle modification. Caller presets defaults to: (multiplicity=m_multiplicity)
@@ -85,8 +105,8 @@ void Geant4ParticleGenerator::printInteraction(Geant4PrimaryInteraction* inter) 
   }
   for(const auto& iv : inter->vertices )   {
     for( Geant4Vertex* v : iv.second ){
-      print("+-> Interaction [%d] %.3f GeV %s pos:(%.3f %.3f %.3f)[mm]",
-            count, m_energy/CLHEP::GeV, m_particleName.c_str(),
+      print("+-> Interaction [%d] [%.3f , %.3f] GeV %s pos:(%.3f %.3f %.3f)[mm]",
+            count, m_momentumMin/CLHEP::GeV, m_momentumMax/CLHEP::GeV, m_particleName.c_str(),
             v->x/CLHEP::mm, v->y/CLHEP::mm, v->z/CLHEP::mm);
       ++count;
       for ( int i : v->out )  {
@@ -124,7 +144,7 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
   vtx->z = position.Z();
   inter->vertices[m_mask].emplace_back( vtx );
   for(int i=0; i<m_multiplicity; ++i)   {
-    double momentum = m_energy;
+    double momentum = 0.0;
     ROOT::Math::XYZVector direction = m_direction;
     Particle* p = new Particle();
     getParticleDirection(i, direction, momentum);
