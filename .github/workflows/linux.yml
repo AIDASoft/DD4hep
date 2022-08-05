@@ -30,8 +30,60 @@ jobs:
             -DDD4HEP_USE_GEANT4=ON \
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_LCIO=ON \
-            -DDD4HEP_USE_EDM4HEP=ON \
+            -DDD4HEP_USE_EDM4HEP=OFF \
             -DDD4HEP_USE_TBB=ON \
+            -DDD4HEP_USE_HEPMC3=ON \
+            -DDD4HEP_BUILD_DEBUG=OFF \
+            -DBUILD_TESTING=ON \
+            -DDD4HEP_DEBUG_CMAKE=ON \
+            -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
+            -DCMAKE_CXX_STANDARD=17 ..
+          echo "::group::Compile"
+          ninja install
+          . ../bin/thisdd4hep.sh
+          echo "::group::Test"
+          ctest --output-on-failure -j4
+          echo "::group::CMakeExamples"
+          cd ../examples/
+          mkdir build
+          cd build
+          cmake -GNinja \
+            -DBoost_NO_BOOST_CMAKE=ON \
+            -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_CXX_STANDARD=17 ..
+          echo "::group::CompileExamples"
+          ninja install
+          echo "::group::TestExamples"
+          ctest --output-on-failure -j2
+
+
+  key4hep:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        view-path: ["/cvmfs/sw.hsf.org/key4hep/",
+                    "/cvmfs/sw-nightlies.hsf.org/key4hep/"]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
+    - uses: aidasoft/run-lcg-view@v1
+      with:
+        container: centos7
+        view-path: ${{ matrix.view-path }}
+        run: |
+          mkdir build
+          cd build
+          unset CPATH
+          echo "::group::CMakeConfig"
+          cmake -GNinja \
+            -DDD4HEP_USE_GEANT4=ON \
+            -DBoost_NO_BOOST_CMAKE=ON \
+            -DDD4HEP_USE_LCIO=ON \
+            -DDD4HEP_USE_EDM4HEP=ON \
+            -DDD4HEP_USE_TBB=OFF \
             -DDD4HEP_USE_HEPMC3=ON \
             -DDD4HEP_BUILD_DEBUG=OFF \
             -DBUILD_TESTING=ON \
@@ -115,7 +167,7 @@ jobs:
             -DDD4HEP_USE_GEANT4=ON \
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_LCIO=ON \
-            -DDD4HEP_USE_EDM4HEP=ON \
+            -DDD4HEP_USE_EDM4HEP=OFF \
             -DDD4HEP_USE_TBB=ON \
             -DDD4HEP_USE_HEPMC3=ON \
             -DDD4HEP_BUILD_DEBUG=OFF \
