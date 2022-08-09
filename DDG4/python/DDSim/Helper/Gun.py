@@ -26,7 +26,7 @@ class Gun(ConfigHelper):
     self.thetaMin = None
     self.thetaMax = None
     self._momentumMin_EXTRA = {'help': "Minimal momentum when using distribution (default = 0.0)"}
-    self.momentumMin = None
+    self.momentumMin = 0 * GeV
     self._momentumMax_EXTRA = {'help': "Maximal momentum when using distribution (default = 0.0)"}
     self.momentumMax = 10 * GeV
     self._energy_EXTRA = {'help': "The kinetic energy for the particle gun.\n\n"
@@ -137,9 +137,8 @@ class Gun(ConfigHelper):
       if self.phiMax is not None:
         ddg4Gun.PhiMax = self.phiMax
         ddg4Gun.isotrop = True
-      ddg4Gun.MomentumMin = 0.0
-      if self.momentumMin is not None:
-        ddg4Gun.MomentumMin = self.momentumMin
+      # this avoids issues if momentumMin is None because of previous default
+      ddg4Gun.MomentumMin = self.momentumMin if self.momentumMin else 0.0
       ddg4Gun.MomentumMax = self.momentumMax
     except Exception as e:  # pylint: disable=W0703
       logger.error("parsing gun options:\n%s\nException: %s " % (self, e))
