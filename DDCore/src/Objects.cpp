@@ -266,6 +266,31 @@ Material::Property Material::property(const char* nam)  const    {
 Material::Property Material::property(const std::string& nam)  const   {
   return access()->GetMaterial()->GetProperty(nam.c_str());
 }
+
+/// Access string property value from the material table
+std::string Material::propertyRef(const std::string& name, const std::string& default_value)    {
+  auto* o = access()->GetMaterial();
+  const char* p = o->GetPropertyRef(name.c_str());
+  if ( p ) return p;
+  return default_value;
+}
+
+/// Access to tabular properties of the optical surface
+double Material::constProperty(const std::string& nam)  const   {
+  Bool_t err = kFALSE;
+  auto* o = access()->GetMaterial();
+  double value = o->GetConstProperty(nam.c_str(), &err);
+  if ( err != kTRUE ) return value;
+  throw runtime_error("Attempt to access non existing material const property: "+nam);
+}
+
+/// Access string property value from the material table
+std::string Material::constPropertyRef(const std::string& name, const std::string& default_value)    {
+  auto* o = access()->GetMaterial();
+  const char* p = o->GetConstPropertyRef(name.c_str());
+  if ( p ) return p;
+  return default_value;
+}
 #endif
 
 /// String representation of this object

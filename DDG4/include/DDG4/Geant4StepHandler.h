@@ -54,10 +54,8 @@ namespace dd4hep {
       /// Initializing constructor
       Geant4StepHandler(const G4Step* s)
 	: Geant4HitHandler(s->GetTrack(), (s->GetPreStepPoint()->GetTouchableHandle())()),
-	step(s)
+	step(s), pre(s->GetPreStepPoint()), post(s->GetPostStepPoint())
       {
-        pre = s->GetPreStepPoint();
-        post = s->GetPostStepPoint();
         applyBirksLaw = false;
       }
       /// No copy constructor

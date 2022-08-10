@@ -309,6 +309,12 @@ namespace dd4hep {
     Property property(const char* name)  const;
     /// Access to tabular properties of the material
     Property property(const std::string& name)  const;
+    /// Access string property value from the material table
+    std::string propertyRef(const std::string& name, const std::string& default_value="");
+    /// Access to tabular properties of the material
+    double constProperty(const std::string& name)  const;
+    /// Access string property value from the material table
+    std::string constPropertyRef(const std::string& name, const std::string& default_value="");
 #endif
   };
 

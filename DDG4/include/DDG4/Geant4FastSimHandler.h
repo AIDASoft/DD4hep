@@ -48,9 +48,9 @@ namespace dd4hep {
       Geant4FastSimHandler() = delete;
       /// Initializing constructor
       Geant4FastSimHandler(const Geant4FastSimSpot* sp)
-	: Geant4HitHandler(sp->primary, sp->touchable), spot(sp) 
-	{
-	}
+	: Geant4HitHandler(sp->primary, sp->touchable), spot(sp)
+      {
+      }
       /// No copy constructor
       Geant4FastSimHandler(const Geant4FastSimHandler& copy) = delete;
       /// No move constructor
