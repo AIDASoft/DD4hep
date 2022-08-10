@@ -72,7 +72,7 @@ description = dd4hep.Detector.getInstance()
 for xmlfile in args.compact:
   description.fromXML(xmlfile)
 
-print(description.constants())
+logger.info(str(description.constants()))
 
 description.manager().CheckOverlaps(args.tolerance, args.option)
 #
