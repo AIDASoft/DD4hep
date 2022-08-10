@@ -91,7 +91,7 @@ def run():
   # Now build the physics list:
   phys = geant4.setupPhysics('QGSP_BERT')
   ph = DDG4.PhysicsList(kernel, 'Channeling')
-  ph.addPhysicsConstructor('Geant4ChannelingPhysics')
+  ph.addPhysicsConstructor(str('Geant4ChannelingPhysics'))
   ph.enableUI()
   phys.adopt(ph)
   phys.dump()
