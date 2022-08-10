@@ -86,6 +86,9 @@ using namespace std;
 static constexpr const double CM_2_MM = (CLHEP::centimeter/dd4hep::centimeter);
 static constexpr const char* GEANT4_TAG_IGNORE = "Geant4-ignore";
 static constexpr const char* GEANT4_TAG_PLUGIN = "Geant4-plugin";
+static constexpr const char* GEANT4_TAG_BIRKSCONSTANT    = "BirksConstant";
+static constexpr const char* GEANT4_TAG_MEE              = "MeanExcitationEnergy";
+static constexpr const char* GEANT4_TAG_ENE_PER_ION_PAIR = "MeanEnergyPerIonPair";
 
 namespace {
   static string indent = "";
@@ -354,7 +357,13 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       mat = new G4Material(name, z, a, density, state, 
                            material->GetTemperature(), material->GetPressure());
     }
+
     string plugin_name;
+    double value;
+    double ionisation_mee = -2e100;
+    double ionisation_birks_constant = -2e100;
+    double ionisation_ene_per_ion_pair = -2e100;
+
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     /// Attach the material properties if any
     G4MaterialPropertiesTable* tab = 0;
@@ -444,12 +453,33 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
 	plugin_name = named->GetTitle();
         continue;
       }
+      cptr = ::strstr(named->GetName(), GEANT4_TAG_BIRKSCONSTANT);
+      if ( 0 != cptr )   {
+	err = kFALSE;
+	value = material->GetConstProperty(GEANT4_TAG_BIRKSCONSTANT,&err);
+	if ( err == kFALSE ) ionisation_birks_constant = value * (CLHEP::mm/CLHEP::MeV)/(units::mm/units::MeV);
+        continue;
+      }
+      cptr = ::strstr(named->GetName(), GEANT4_TAG_MEE);
+      if ( 0 != cptr )   {
+	err = kFALSE;
+	value = material->GetConstProperty(GEANT4_TAG_MEE,&err);
+	if ( err == kFALSE ) ionisation_mee = value * (CLHEP::MeV/units::MeV);
+        continue;
+      }
+      cptr = ::strstr(named->GetName(), GEANT4_TAG_ENE_PER_ION_PAIR);
+      if ( 0 != cptr )   {
+	err = kFALSE;
+	value = material->GetConstProperty(GEANT4_TAG_ENE_PER_ION_PAIR,&err);
+	if ( err == kFALSE ) ionisation_ene_per_ion_pair = value * (CLHEP::MeV/units::MeV);
+        continue;
+      }
 
-      double v = info.manager->GetProperty(named->GetTitle(),&err);
+      err = kFALSE;
+      value = info.manager->GetProperty(named->GetTitle(),&err);
       if ( err != kFALSE )   {
         except(name,
-               "++ FAILED to create G4 material %s "
-               "[Cannot convert const property: %s]",
+               "++ FAILED to create G4 material %s [Cannot convert const property: %s]",
                material->GetName(), named->GetName());
       }
       if ( 0 == tab )  {
@@ -475,20 +505,37 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       }
       // We need to convert the property from TGeo units to Geant4 units
       double conv = g4ConstPropertyConversion(idx);
-      printout(lvl, name, "++      CONST Property: %-20s %g ", named->GetName(), v);
-      tab->AddConstProperty(named->GetName(), v * conv);
+      printout(lvl, name, "++      CONST Property: %-20s %g ", named->GetName(), value);
+      tab->AddConstProperty(named->GetName(), value * conv);
     }
 #endif
-    auto* ionization = mat->GetIonisation();
+    // Set Birk's constant if it was supplied in the material table of the TGeoMaterial
+    auto* ionisation = mat->GetIonisation();
     stringstream str;
-    str << (*mat) << endl;
-    if ( ionization )
-      str << "              log(MEE): " << ionization->GetLogMeanExcEnergy();
-    else
-      str << "              log(MEE): UNKNOWN";
+    if ( ionisation )   {
+      if ( ionisation_birks_constant > 0e0 )   {
+	ionisation->SetBirksConstant(ionisation_birks_constant);
+      }
+      if ( ionisation_mee > -1e100 )   {
+	ionisation->SetMeanExcitationEnergy(ionisation_mee);
+      }
+      if ( ionisation_ene_per_ion_pair > 0e0 )   {
+	ionisation->SetMeanEnergyPerIonPair(ionisation_ene_per_ion_pair);
+      }
+      str << (*mat);
+      str << "          log(MEE): " << std::setprecision(4) << ionisation->GetLogMeanExcEnergy();
+      if ( ionisation_birks_constant > 0e0 )
+	str << "  Birk's constant: " << std::setprecision(4) << ionisation->GetBirksConstant() << " [MeV/mm]";
+      if ( ionisation_ene_per_ion_pair > 0e0 )
+	str << "  Mean Energy Per Ion Pair: " << std::setprecision(4) << ionisation->GetMeanEnergyPerIonPair()/CLHEP::eV << " [eV]";
+    }
+    else  {
+      str << "          No ionisation parameters availible.";
+    }
     printout(lvl, name, "++ Created G4 material %s", str.str().c_str());
+
     if ( !plugin_name.empty() )    {
-      /// Call plugin to create extended material if requested
+      // Call plugin to create extended material if requested
       Detector* det = const_cast<Detector*>(&m_detDesc);
       G4Material* extended_mat = PluginService::Create<G4Material*>(plugin_name, det, medium, mat);
       if ( !extended_mat )   {
