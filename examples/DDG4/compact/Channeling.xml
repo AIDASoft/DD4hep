@@ -55,6 +55,9 @@
       <constant name="Geant4-plugin:material"            option="ChannelingCrystalMaterial"/>
       <constant name="Geant4-ignore:crystal_data"        option="${DD4hepExamplesINSTALL}/examples/DDG4/data/Si220pl/Si220pl"/>
       <constant name="Geant4-ignore:crystal_orientation" option="(1,0,0)"/>
+      <constant name="BirksConstant"        value="123.456*mm/MeV"/>
+      <constant name="MeanExcitationEnergy" value="79.7*eV"/>
+      <constant name="MeanEnergyPerIonPair" value="50*eV"/>
     </material>
   </materials>
 
