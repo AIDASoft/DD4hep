@@ -175,6 +175,7 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::VolumeManagerContext+;
 #pragma link C++ class dd4hep::detail::VolumeManagerContextExtension+;
 #pragma link C++ class dd4hep::Handle<dd4hep::detail::VolumeManagerObject>+;
+#pragma link C++ class pair<Long64_t,dd4hep::VolumeManager>+;
 #pragma link C++ class map<dd4hep::DetElement,dd4hep::VolumeManager>+;
 #pragma link C++ class map<dd4hep::VolumeID,dd4hep::VolumeManager>+;
 #pragma link C++ class map<dd4hep::VolumeID,dd4hep::VolumeManagerContext*>+;
@@ -262,6 +263,7 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::AlignmentCondition+;
 #pragma link C++ class dd4hep::detail::AlignmentObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::detail::AlignmentObject>+;
+#pragma link C++ class pair<dd4hep::DetElement,dd4hep::AlignmentCondition>+;
 //#pragma link C++ class dd4hep::Grammar<dd4hep::detail::AlignmentObject>+;
 
 #pragma link C++ class dd4hep::align::GlobalAlignment+;
@@ -293,6 +295,8 @@ template class dd4hep::Handle<TNamed>;
 
 #pragma link C++ class dd4hep::DetectorProcessor+;
 #pragma link C++ class dd4hep::DetectorScanner+;
+
+#pragma link C++ class pair<dd4hep::DetElement,dd4hep::VolumeManager>+;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
