@@ -525,7 +525,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       str << (*mat);
       str << "          log(MEE): " << std::setprecision(4) << ionisation->GetLogMeanExcEnergy();
       if ( ionisation_birks_constant > 0e0 )
-	str << "  Birk's constant: " << std::setprecision(4) << ionisation->GetBirksConstant() << " [MeV/mm]";
+	str << "  Birk's constant: " << std::setprecision(4) << ionisation->GetBirksConstant() << " [mm/MeV]";
       if ( ionisation_ene_per_ion_pair > 0e0 )
 	str << "  Mean Energy Per Ion Pair: " << std::setprecision(4) << ionisation->GetMeanEnergyPerIonPair()/CLHEP::eV << " [eV]";
     }
