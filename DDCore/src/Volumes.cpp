@@ -521,6 +521,7 @@ VolumeExtension::VolumeExtension()
 
 /// Default destructor
 VolumeExtension::~VolumeExtension() {
+  detail::deletePtr(properties);
   region.clear();
   limits.clear();
   vis.clear();
@@ -548,8 +549,13 @@ void VolumeExtension::copy(const VolumeExtension& c) {
     vis        = c.vis;
     sens_det   = c.sens_det;
     referenced = c.referenced;
-    if ( c.properties )  {
-      properties = std::make_unique<Properties>(*c.properties);
+    detail::deletePtr(properties);
+    if ( c.properties )    {
+      properties = new TList();
+      properties->SetOwner();
+      TIter next(properties);
+      TNamed *property;
+      while ((property = (TNamed*)next())) properties->Add(new TNamed(*property));
     }
   }
 }
@@ -1257,18 +1263,19 @@ bool Volume::isSensitive() const {
 
 /// Check for existence of properties
 bool Volume::hasProperties()  const   {
-  return _data(*this)->properties.get() != nullptr;
+  return _data(*this)->properties != nullptr;
 }
 
 /// Add Volume property (name-value pair)
 void Volume::addProperty(const string& nam, const string& val) const  {
   auto* o = _data(*this);
-  if ( !o->properties.get() )   {
-    o->properties = make_unique<VolumeExtension::Properties>();
+  if ( !o->properties )   {
+    o->properties = new TList();
+    o->properties->SetOwner();
   }
-  auto ip = o->properties->find(nam);
-  if ( ip == o->properties->end() )   {
-    o->properties->emplace(nam, val);
+  TNamed *prop = (TNamed*)o->properties->FindObject(nam.c_str());
+  if ( !prop )   {
+    o->properties->Add(new TNamed(nam.c_str(), val.c_str()));
     return;
   }
   except("Volume::addProperty", "Volume: '%s' Property '%s' is already set!",
@@ -1278,14 +1285,12 @@ void Volume::addProperty(const string& nam, const string& val) const  {
 /// Access property value. Returns default_value if the property is not present
 string Volume::getProperty(const string& nam, const string& default_val)   const {
   const auto* o = _data(*this);
-  if ( !o->properties.get() )   {
+  if ( !o->properties )   {
     return default_val;
   }
-  auto ip = o->properties->find(nam);
-  if ( ip == o->properties->end() )   {
-    return default_val;
-  }
-  return (*ip).second;
+  TNamed *prop = (TNamed*)o->properties->FindObject(nam.c_str());
+  if ( prop ) return prop->GetTitle();
+  return default_val;
 }
 
 /// Constructor to be used when creating a new assembly object

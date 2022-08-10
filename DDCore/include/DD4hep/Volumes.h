@@ -318,8 +318,7 @@ namespace dd4hep {
     /// Reference to the reflected volume (or to the original volume for reflections)
     Handle<TGeoVolume>  reflected;
     /// Reference to properties
-    using Properties = std::map<std::string, std::string>;
-    std::unique_ptr<Properties> properties;
+    TList* properties  { nullptr };
 
     /// Default destructor
     virtual ~VolumeExtension();
