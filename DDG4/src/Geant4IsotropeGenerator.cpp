@@ -29,24 +29,12 @@ Geant4IsotropeGenerator::Geant4IsotropeGenerator(Geant4Context* ctxt, const stri
   declareProperty("PhiMax", m_phiMax = 2.0*M_PI);
   declareProperty("ThetaMin", m_thetaMin = 0.0);
   declareProperty("ThetaMax", m_thetaMax = M_PI);
-  declareProperty("MomentumMin", m_momentumMin =  0.0);
-  declareProperty("MomentumMax", m_momentumMax = -1.0);
   declareProperty("Distribution", m_distribution = "uniform" );
 }
 
 /// Default destructor
 Geant4IsotropeGenerator::~Geant4IsotropeGenerator() {
   InstanceCount::decrement(this);
-}
-
-/// Uniform momentum distribution
-void Geant4IsotropeGenerator::getParticleMomentumUniform(double& momentum) const  {
-  Geant4Event&  evt = context()->event();
-  Geant4Random& rnd = evt.random();
-  if (m_momentumMax < m_momentumMin)
-    momentum = m_momentumMin+(momentum-m_momentumMin)*rnd.rndm();
-  else
-    momentum = m_momentumMin+(m_momentumMax-m_momentumMin)*rnd.rndm();
 }
 
 /// Uniform particle distribution
@@ -128,7 +116,7 @@ void Geant4IsotropeGenerator::getParticleDirectionFFbar(int, ROOT::Math::XYZVect
   }
 }
 
-/// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = m_energy)
+/// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = [mMin, mMax])
 void Geant4IsotropeGenerator::getParticleDirection(int num, ROOT::Math::XYZVector& direction, double& momentum) const   {
   switch(::toupper(m_distribution[0]))  {
   case 'C':  // cos(theta)

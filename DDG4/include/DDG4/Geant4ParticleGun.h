@@ -63,7 +63,7 @@ namespace dd4hep {
       bool m_print;
       /// Shot number in sequence
       int m_shotNo;
-      /// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = m_energy)
+      /// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = [m_momentumMin, m_momentumMax])
       virtual void getParticleDirection(int, ROOT::Math::XYZVector& direction, double& momentum) const;
     public:
       /// Standard constructor

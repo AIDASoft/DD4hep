@@ -763,7 +763,7 @@ class Geant4:
     gun = GeneratorAction(self.kernel(), typ + "/" + name, True)
     for i in args.items():
       setattr(gun, i[0], i[1])
-    gun.energy = energy
+    gun.Energy = energy
     gun.particle = particle
     gun.multiplicity = multiplicity
     gun.position = position

@@ -597,7 +597,7 @@ def run():
 
   # Setup particle gun
   gun = DDG4.GeneratorAction(kernel,"Geant4ParticleGun/Gun")
-  gun.energy   = 0.5*GeV
+  gun.Energy   = 0.5*GeV
   gun.particle = 'e-'
   gun.multiplicity = 1
   gun.enableUI()
