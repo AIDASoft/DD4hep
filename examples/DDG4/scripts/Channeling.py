@@ -33,6 +33,7 @@ def run():
   from g4units import keV
 
   args = DDG4.CommandLine()
+  install_dir = os.environ['DD4hepExamplesINSTALL']
   if args.help:
     import sys
     logger.info("""
@@ -48,9 +49,7 @@ def run():
     """)
     sys.exit(0)
 
-
   kernel = DDG4.Kernel()
-  install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/examples/DDG4/compact/Channeling.xml"))
 
   DDG4.importConstants(kernel.detectorDescription(), debug=False)
