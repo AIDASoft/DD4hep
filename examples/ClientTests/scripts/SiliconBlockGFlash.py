@@ -45,7 +45,7 @@ def run():
               -vis                            Enable visualization
               -macro                          Pass G4 macro file to UI executive
               -batch                          Run in batch mode for unit testing
-              -event <number>                 Run geant4 for specified number of events
+              -events <number>                Run geant4 for specified number of events
                                               (batch mode only)
     """)
     sys.exit(0)
