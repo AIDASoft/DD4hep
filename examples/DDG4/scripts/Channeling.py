@@ -10,11 +10,10 @@
 # ==========================================================================
 #
 from __future__ import absolute_import, unicode_literals
-import os
-import sys
-import DDG4
-from DDG4 import OutputLevel as Output
-from g4units import keV
+import logging
+#
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 #
 #
 """
@@ -28,6 +27,28 @@ from g4units import keV
 
 
 def run():
+  import os
+  import DDG4
+  from DDG4 import OutputLevel as Output
+  from g4units import keV
+
+  args = DDG4.CommandLine()
+  if args.help:
+    import sys
+    logger.info("""
+         python <dir>/Channeling.py -option [-option]
+              -geometry <geometry file name>  File is expected in the examples
+                                              install area:
+                                              """ + install_dir + """
+              -vis                            Enable visualization
+              -macro                          Pass G4 macro file to UI executive
+              -batch                          Run in batch mode for unit testing
+              -events <number>                Run geant4 for specified number of events
+                                              (batch mode only)
+    """)
+    sys.exit(0)
+
+
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/examples/DDG4/compact/Channeling.xml"))
@@ -36,10 +57,13 @@ def run():
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()
   # Configure UI
-  if len(sys.argv) > 1:
-    geant4.setupCshUI(macro=sys.argv[1])
+  if args.macro:
+    ui = geant4.setupCshUI(macro=args.macro, vis=args.vis)
   else:
-    geant4.setupCshUI()
+    ui = geant4.setupCshUI(vis=args.vis)
+
+  if args.batch:
+    ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
 
   # Configure field
   geant4.setupTrackingField(prt=True)
@@ -71,6 +95,7 @@ def run():
   ph.addPhysicsConstructor('Geant4ChannelingPhysics')
   ph.enableUI()
   phys.adopt(ph)
+  phys.dump()
 
   phys.dump()
 
