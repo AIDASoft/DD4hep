@@ -1,0 +1,87 @@
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+
+  <info name="TestMaterialProperties"
+    title="Test reading of TGeo's Material Properties"
+    author="Markus Frank"
+    url="None"
+    status="development"
+    version="1.0">
+    <comment>Test reading of TGeo's Material Properties</comment>
+  </info>
+
+  <define>
+    <constant name="world_side" value="1*m"/>
+    <constant name="world_x"    value="world_side/2"/>
+    <constant name="world_y"    value="world_side/2"/>
+    <constant name="world_z"    value="world_side/2"/>
+  </define>
+  <debug>
+    <type name="surface" value="1"/>
+  </debug>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+  </includes>
+
+  <materials>
+    <material name="Air">
+      <D type="density" unit="g/cm3" value="0.0012"/>
+      <fraction n="0.754" ref="N"/>
+      <fraction n="0.234" ref="O"/>
+      <fraction n="0.012" ref="Ar"/>
+    </material>
+    <!-- We model vakuum just as very thin air -->
+    <material name="Vacuum">  
+      <D type="density" unit="g/cm3" value="0.0000000001" />
+      <fraction n="0.754" ref="N"/>
+      <fraction n="0.234" ref="O"/>
+      <fraction n="0.012" ref="Ar"/>
+    </material>
+    <material name="Ice">
+      <D type="density" value="1.0" unit="g/cm3"/>
+      <composite n="2" ref="H"/>
+      <composite n="1" ref="O"/>
+      <constant name="Geant4-plugin:material"            option="ChannelingCrystalMaterial"/>
+      <constant name="Geant4-ignore:crystal_data"        option="${DD4hepExamplesINSTALL}/examples/DDG4/data/Si220pl/Si220pl"/>
+      <constant name="Geant4-ignore:crystal_orientation" option="(1,0,0)"/>
+    </material>
+  </materials>
+
+  <display>
+    <vis name="EnvelopeVis"     alpha="0.1"   r="0"   g="0.0" b="1.0"  showDaughters="true"  visible="true"/>
+    <vis name="CrystalVis"  alpha="0.3"   r="1"   g="0.0" b="0.0"  showDaughters="true"  visible="true"/>
+  </display>
+
+  <detectors>
+    <detector id ="1" name="ChannelingDevice" type="DD4hep_SingleShape" vis="CrystalVis" sensitive="true" readout="ChannelingDeviceHits">
+      <box   x="1.3*m" y="1.3*m" z="1.3*m" vis="EnvelopeVis"/>
+      <shape type="Box" dx="50*cm" dy="50*cm" dz="20*cm">
+	<position x="0" y="0" z="-100*cm"/>
+	<position x="0" y="0" z="-50*cm"/>
+	<position x="0" y="0" z="0*cm"/>
+	<position x="0" y="0" z="50*cm"/>
+	<position x="0" y="0" z="100*cm"/>
+	<property name="Geant4-plugin" value="ChannelingCrystalVolume"/>
+      </shape>
+      <position x="0" y="0" z="0"/>
+      <material name="Ice"/>
+    </detector>
+  </detectors>
+
+  <readouts>
+    <readout name="ChannelingDeviceHits">
+      <id>system:8,module:8,x:32:-16,y:-16</id>
+    </readout>
+  </readouts>
+</lccdd>
