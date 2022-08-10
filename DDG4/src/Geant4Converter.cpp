@@ -512,6 +512,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
     // Set Birk's constant if it was supplied in the material table of the TGeoMaterial
     auto* ionisation = mat->GetIonisation();
     stringstream str;
+    str << (*mat);
     if ( ionisation )   {
       if ( ionisation_birks_constant > 0e0 )   {
 	ionisation->SetBirksConstant(ionisation_birks_constant);
@@ -522,7 +523,6 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       if ( ionisation_ene_per_ion_pair > 0e0 )   {
 	ionisation->SetMeanEnergyPerIonPair(ionisation_ene_per_ion_pair);
       }
-      str << (*mat);
       str << "          log(MEE): " << std::setprecision(4) << ionisation->GetLogMeanExcEnergy();
       if ( ionisation_birks_constant > 0e0 )
 	str << "  Birk's constant: " << std::setprecision(4) << ionisation->GetBirksConstant() << " [mm/MeV]";
