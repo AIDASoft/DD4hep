@@ -509,6 +509,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       tab->AddConstProperty(named->GetName(), value * conv);
     }
 #endif
+
     // Set Birk's constant if it was supplied in the material table of the TGeoMaterial
     auto* ionisation = mat->GetIonisation();
     stringstream str;
