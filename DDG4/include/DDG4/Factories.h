@@ -25,6 +25,10 @@
 #include <map>
 
 // Forward declarations
+class TGeoVolume;
+class G4VSolid;
+class G4Material;
+class G4LogicalVolume;
 class G4ParticleDefinition;
 class G4VSensitiveDetector;
 class G4MagIntegratorStepper;
@@ -40,6 +44,8 @@ class G4VProcess;
 namespace dd4hep {
 
   class DetElement;
+  class Material;
+  class Volume;
   class Detector;
 
   /// Namespace for implementation details of the AIDA detector description toolkit
@@ -69,6 +75,18 @@ namespace dd4hep {
     static G4VSensitiveDetector* create(const str_t& name, dd4hep::Detector& description);
   };
 
+  /// Templated factory method to G4ExtendedMaterial objects
+  template <typename T> class Geant4MaterialFactory : public PluginFactoryBase {
+  public:
+    static G4Material* create(dd4hep::Detector& description, dd4hep::Material mat, G4Material* base_material);
+  };
+
+  /// Templated factory method to G4ExtendedMaterial objects
+  template <typename T> class Geant4LogicalVolumeFactory : public PluginFactoryBase {
+  public:
+    static G4LogicalVolume* create(dd4hep::Detector& description, dd4hep::Volume vol, G4VSolid* sol, G4Material* mat);
+  };
+
 }
 
 namespace {
@@ -89,13 +107,22 @@ namespace {
     ret = result;
     return long(&ret);
   }
+
+  /// Factory to create "special" Geant4 logical volumes
+  DD4HEP_PLUGIN_FACTORY_ARGS_4(G4LogicalVolume*,dd4hep::Detector*,dd4hep::Volume,G4VSolid*,G4Material*)
+  {    return dd4hep::Geant4LogicalVolumeFactory<P>::create(*a0, a1, a2, a3);  }
+
+  /// Factory to create Geant4 extended materials
+  DD4HEP_PLUGIN_FACTORY_ARGS_3(G4Material*,dd4hep::Detector*,dd4hep::Material,G4Material*)
+  {    return dd4hep::Geant4MaterialFactory<P>::create(*a0,a1,a2);             }
+
   /// Factory to create Geant4 sensitive detectors
   DD4HEP_PLUGIN_FACTORY_ARGS_2(G4VSensitiveDetector*,std::string,dd4hep::Detector*)
-  {    return dd4hep::Geant4SensitiveDetectorFactory<P>::create(a0,*a1);  }
+  {    return dd4hep::Geant4SensitiveDetectorFactory<P>::create(a0,*a1);       }
 
   /// Factory to create Geant4 sensitive detectors
   DD4HEP_PLUGIN_FACTORY_ARGS_4(DS::Geant4Sensitive*,_ns::CT*,std::string,dd4hep::DetElement*,dd4hep::Detector*)
-  {    return new P(a0, a1, *a2, *a3);  }
+  {    return new P(a0, a1, *a2, *a3);                                         }
 
   /// Factory to create Geant4 action objects
   DD4HEP_PLUGIN_FACTORY_ARGS_2(DS::Geant4Action*,_ns::CT*, std::string)
@@ -158,9 +185,22 @@ namespace {
 #define DECLARE_GEANT4SENSITIVEDETECTOR(id)               __IMPLEMENT_GEANT4SENSDET(id,new id)
 #define DECLARE_GEANT4SENSITIVEDETECTOR_NS(ns,id)         __IMPLEMENT_GEANT4SENSDET(id,new ns::id)
 
+#define DECLARE_GEANT4EXTENDEDMATERIAL(name)               \
+  DD4HEP_PLUGINSVC_FACTORY(name,name,G4Material*(dd4hep::Detector*,dd4hep::Material,G4Material*),__LINE__)
 
-#define DECLARE_GEANT4SENSITIVE_NS(name_space,name) using name_space::name; \
+#define DECLARE_GEANT4EXTENDEDMATERIAL_NS(ns,name)    using name_space::name; \
+  DD4HEP_PLUGINSVC_FACTORY(name,name,G4Material*(dd4hep::Detector*,dd4hep::Material,G4Material*),__LINE__)
+
+#define DECLARE_GEANT4LOGICALVOLUME(name)               \
+  DD4HEP_PLUGINSVC_FACTORY(name,name,G4LogicalVolume*(dd4hep::Detector*,dd4hep::Volume,G4VSolid*,G4Material*),__LINE__)
+
+#define DECLARE_GEANT4LOGICALVOLUME_NS(ns,name)    using name_space::name; \
+  DD4HEP_PLUGINSVC_FACTORY(name,name,G4LogicalVolume*(dd4hep::Detector*,dd4hep::Volume,G4VSolid*,G4Material*),__LINE__)
+
+
+#define DECLARE_GEANT4SENSITIVE_NS(name_space,name)  using name_space::name; \
   DD4HEP_PLUGINSVC_FACTORY(name,name,DS::Geant4Sensitive*(_ns::CT*,std::string,dd4hep::DetElement*,dd4hep::Detector*),__LINE__)
+
 #define DECLARE_GEANT4SENSITIVE(name)      DECLARE_GEANT4SENSITIVE_NS(dd4hep::sim,name)
 
 /// Plugin defintion to create Geant4Action objects

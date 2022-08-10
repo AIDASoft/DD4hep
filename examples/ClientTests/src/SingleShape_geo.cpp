@@ -23,7 +23,6 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   xml_comp_t xshape (x_det.child(_U(shape)));
   xml_dim_t  xpos   (x_det.child(_U(position), false));
   xml_elt_t  xmat   (x_det.child(_U(material)));
-  xml_dim_t  xshpos (xshape.child(_U(position)));
   xml_dim_t  xbox   (x_det.child(_U(box)));
   DetElement d_det(x_det.nameStr(),x_det.id());
   Volume assembly(x_det.nameStr()+"_vol", Box(xbox.x(), xbox.y(), xbox.z()), description.air());
@@ -34,12 +33,24 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   Volume vol = Volume(x_det.nameStr()+"_vol", sh, mat);
   PlacedVolume pv;
 
+  for(xml_coll_t c(xshape,_U(property)); c; ++c)   {
+    xml_elt_t ec = c;
+    vol.addProperty(ec.attr<std::string>(_U(name)), ec.attr<std::string>(_U(value)));
+  }
+
   sens.setType("calorimeter");
   vol.setVisAttributes(description, x_det.visStr());
   vol.setSensitiveDetector(sens);
-  
+
+  int ipos = 0;
+  for(xml_coll_t c(xshape, _U(position)); c; ++c)   {
+    xml_dim_t  xp = c;
+    Position   vol_pos(xp.x(), xp.y(), xp.z());
+    pv = assembly.placeVolume(vol, vol_pos);
+    pv.addPhysVolID("module", ++ipos);
+  }
+
   assembly.setVisAttributes(description, xbox.attr<std::string>(_U(vis)));
-  assembly.placeVolume(vol,Position(xshpos.x(),xshpos.y(),xshpos.z()));
   pv = description.pickMotherVolume(d_det).placeVolume(assembly, pos);
   pv.addPhysVolID("system",x_det.id());
   d_det.setPlacement(pv);

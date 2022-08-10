@@ -518,6 +518,14 @@ template <> void Converter<Material>::operator()(xml_h e) const {
                  "++            material %-16s  add constant property: %s  ->  %s.",
                  mat->GetName(), prop_nam.c_str(), ref.c_str());
       }
+      else if ( p.hasAttr(_U(option)) )   {
+        string prop_nam = p.attr<string>(_U(name));
+	string prop_typ = p.attr<string>(_U(option));
+        mat->AddConstProperty(prop_nam.c_str(), prop_typ.c_str());
+        printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
+                 "++            material %-16s  add constant property: %s  ->  %s.",
+                 mat->GetName(), prop_nam.c_str(), prop_typ.c_str());
+      }
     }
     /// In case there were material properties specified: convert them here
     for(xml_coll_t properties(x_mat, _U(property)); properties; ++properties) {

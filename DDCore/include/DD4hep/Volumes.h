@@ -317,28 +317,24 @@ namespace dd4hep {
     Handle<NamedObject> sens_det;
     /// Reference to the reflected volume (or to the original volume for reflections)
     Handle<TGeoVolume>  reflected;
-    
+    /// Reference to properties
+    using Properties = std::map<std::string, std::string>;
+    std::unique_ptr<Properties> properties;
+
     /// Default destructor
     virtual ~VolumeExtension();
     /// Default constructor
     VolumeExtension();
     /// No move
     VolumeExtension(VolumeExtension&& copy) = delete;
-    /// No copy
-    VolumeExtension(const VolumeExtension& copy) = default;
+    /// Copy constructor
+    VolumeExtension(const VolumeExtension& copy);
     /// No move assignment
     VolumeExtension& operator=(VolumeExtension&& copy) = delete;
-    /// No copy assignment
-    VolumeExtension& operator=(const VolumeExtension& copy) = default;
+    /// Copy assignment
+    VolumeExtension& operator=(const VolumeExtension& copy);
     /// Copy the object
-    void copy(const VolumeExtension& c) {
-      magic      = c.magic;
-      region     = c.region;
-      limits     = c.limits;
-      vis        = c.vis;
-      sens_det   = c.sens_det;
-      referenced = c.referenced;
-    }
+    void copy(const VolumeExtension& c);
     /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
     virtual TGeoExtension *Grab()  override;
     /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
@@ -687,6 +683,15 @@ namespace dd4hep {
     const Volume& setMaterial(const Material& m) const;
     /// Access to the Volume material
     Material material() const;
+
+    /// Check for existence of properties
+    bool hasProperties()  const;
+
+    /// Add Volume property (name-value pair)
+    void addProperty(const std::string& nam, const std::string& val)  const;
+
+    /// Access property value. Returns default_value if the property is not present
+    std::string getProperty(const std::string& nam, const std::string& default_val="")  const;
 
     /// Auto conversion to underlying ROOT object
     operator TGeoVolume*() const {

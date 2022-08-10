@@ -45,6 +45,7 @@ if (DD4HEP_USE_GEANT4)
   #
   #
   dd4hep_install_dir(data    DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDG4 )
+  dd4hep_install_dir(compact DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDG4 )
   dd4hep_install_dir(scripts DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDG4 )
   #
   dd4hep_configure_scripts (DDG4 DEFAULT_SETUP WITH_TESTS)

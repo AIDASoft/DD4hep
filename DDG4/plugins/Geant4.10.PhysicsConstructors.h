@@ -111,4 +111,38 @@ DECLARE_GEANT4_PHYSICS(G4OpticalPhysics)
 #include <G4FastSimulationPhysics.hh>
 DECLARE_GEANT4_PHYSICS(G4FastSimulationPhysics)
 
+// Channeling physics 
+#include <G4Channeling.hh>
+#include <G4ProcessManager.hh>
+namespace {
+
+  /// Channeling physics 
+  /** Channeling physicsconstructor
+   *  (taken from <Geant4>examples/extended/exoticphysics/channeling)
+   *  \author  M.Frank
+   *  \version 1.0
+   */
+  class Geant4ChannelingPhysics : public G4VPhysicsConstructor  {
+  public:
+    Geant4ChannelingPhysics() = default;
+    virtual ~Geant4ChannelingPhysics() = default;
+    virtual void ConstructParticle()  {}
+    virtual void ConstructProcess()   {
+      G4Channeling* channeling = new G4Channeling();
+      auto* iter = G4ParticleTable::GetParticleTable()->GetIterator();
+      iter->reset();
+    
+      while( (*iter)() ){
+        G4ParticleDefinition* p = iter->value();
+        G4double charge = p->GetPDGCharge();
+        if (charge != 0) {
+	  G4ProcessManager* m = p->GetProcessManager();
+	  m->AddDiscreteProcess(channeling);
+        }
+      }
+    }
+  };
+}
+DECLARE_GEANT4_PHYSICS(Geant4ChannelingPhysics)
+
 #endif
