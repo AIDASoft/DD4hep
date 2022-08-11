@@ -21,6 +21,7 @@
 // C/C++ include files
 #include <stdexcept>
 #include <clocale>
+#include <cstring>
 
 #ifndef __TIXML__
 #include "xercesc/dom/DOMException.hpp"
