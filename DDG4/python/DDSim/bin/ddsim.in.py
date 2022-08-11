@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env @PYTHON_INTERPRETER_BINARY@
 """
 
 DD4hep simulation with some argument parsing
