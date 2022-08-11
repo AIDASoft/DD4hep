@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - uses: aidasoft/run-lcg-view@v1
+    - uses: aidasoft/run-lcg-view@v3
       with:
         release-platform: ${{ matrix.LCG }}
         run: |
@@ -70,7 +70,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - uses: aidasoft/run-lcg-view@v1
+    - uses: aidasoft/run-lcg-view@v3
       with:
         container: centos7
         view-path: ${{ matrix.view-path }}
@@ -120,7 +120,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - uses: aidasoft/run-lcg-view@v1
+    - uses: aidasoft/run-lcg-view@v3
       with:
         release-platform: ${{ matrix.LCG }}
         run: |
