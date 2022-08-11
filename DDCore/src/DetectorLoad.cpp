@@ -13,6 +13,7 @@
 
 // Framework include files
 #include "DD4hep/DetectorLoad.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Plugins.h"
 #include "XML/XMLElements.h"
@@ -20,7 +21,6 @@
 
 // C/C++ include files
 #include <stdexcept>
-#include <clocale>
 
 #ifndef __TIXML__
 #include "xercesc/dom/DOMException.hpp"
@@ -32,20 +32,7 @@ namespace dd4hep {
 #endif
 
 using namespace dd4hep;
-
-namespace  {
-  bool verify_locale()   {
-    /// We want reasonable parsing with XercesC.
-    /// If the geometry is opened, set the locale to standard "C" if not yet already done.
-    if ( std::strcmp(std::setlocale(LC_NUMERIC, ""), "C") != 0 ||
-	 std::strcmp(std::setlocale(LC_TIME,    ""), "C") != 0 ||
-	 std::strcmp(std::setlocale(LC_CTYPE,   ""), "C") != 0 )   {
-      std::setlocale(LC_ALL,"C");
-      printout(ALWAYS,"DetectorLoad","++ Setting locale to \"C\".");
-    }
-    return true;
-  }
-}
+using namespace std;
 
 /// Default constructor (protected, for sub-classes)
 DetectorLoad::DetectorLoad(Detector* description) : m_detDesc(description)  {
@@ -60,8 +47,7 @@ DetectorLoad::~DetectorLoad() {
 }
 
 /// Process XML unit and adopt all data from source structure.
-void DetectorLoad::processXML(const std::string& xmlfile, xml::UriReader* entity_resolver) {
-  verify_locale();
+void DetectorLoad::processXML(const string& xmlfile, xml::UriReader* entity_resolver) {
   try {
     xml::DocumentHolder doc(xml::DocumentHandler().load(xmlfile,entity_resolver));
     if ( doc )   {
@@ -71,22 +57,21 @@ void DetectorLoad::processXML(const std::string& xmlfile, xml::UriReader* entity
         return;
       }
     }
-    except("DetectorLoad","Failed to parse the XML file %s [Invalid XML ROOT handle]", xmlfile.c_str());
+    throw runtime_error("dd4hep: Failed to parse the XML file " + xmlfile + " [Invalid XML ROOT handle]");
   }
   catch (const xml::XmlException& e) {
-    except("DetectorLoad","%s\ndd4hep: XML-DOM Exception while parsing %s", xml::_toString(e.msg).c_str(), xmlfile.c_str());
+    throw runtime_error(xml::_toString(e.msg) + "\ndd4hep: XML-DOM Exception while parsing " + xmlfile);
   }
-  catch (const std::exception& e) {
-    except("DetectorLoad","%s\ndd4hep: Exception while parsing %s", e.what(), xmlfile.c_str());
+  catch (const exception& e) {
+    throw runtime_error(string(e.what()) + "\ndd4hep: while parsing " + xmlfile);
   }
   catch (...) {
-    except("DetectorLoad","dd4hep: UNKNOWN exception while parsing %s", xmlfile.c_str());
+    throw runtime_error("dd4hep: UNKNOWN exception while parsing " + xmlfile);
   }
 }
 
 /// Process XML unit and adopt all data from source structure.
-void DetectorLoad::processXML(const xml::Handle_t& base, const std::string& xmlfile, xml::UriReader* entity_resolver) {
-  verify_locale();
+void DetectorLoad::processXML(const xml::Handle_t& base, const string& xmlfile, xml::UriReader* entity_resolver) {
   try {
     xml::Strng_t xml(xmlfile);
     xml::DocumentHolder doc(xml::DocumentHandler().load(base,xml,entity_resolver));
@@ -97,16 +82,16 @@ void DetectorLoad::processXML(const xml::Handle_t& base, const std::string& xmlf
         return;
       }
     }
-    except("DetectorLoad","Failed to parse the XML file %s [Invalid XML ROOT handle]", xmlfile.c_str());
+    throw runtime_error("dd4hep: Failed to parse the XML file " + xmlfile + " [Invalid XML ROOT handle]");
   }
   catch (const xml::XmlException& e) {
-    except("DetectorLoad","%s\ndd4hep: XML-DOM Exception while parsing %s.", xml::_toString(e.msg).c_str(), xmlfile.c_str());
+    throw runtime_error(xml::_toString(e.msg) + "\ndd4hep: XML-DOM Exception while parsing " + xmlfile);
   }
-  catch (const std::exception& e) {
-    except("DetectorLoad","%s\ndd4hep: Exception while parsing %s.", e.what(), xmlfile.c_str());
+  catch (const exception& e) {
+    throw runtime_error(string(e.what()) + "\ndd4hep: while parsing " + xmlfile);
   }
   catch (...) {
-    except("DetectorLoad","dd4hep: UNKNOWN exception while parsing %s.", xmlfile.c_str());
+    throw runtime_error("dd4hep: UNKNOWN exception while parsing " + xmlfile);
   }
 }
 
@@ -118,7 +103,7 @@ void DetectorLoad::processXMLString(const char* xmldata)   {
 /// Process XML unit and adopt all data from source string in momory. Subsequent parsers may use the entity resolver.
 void DetectorLoad::processXMLString(const char* xmldata, xml::UriReader* entity_resolver) {
   try {
-    if ( xmldata && verify_locale() )   {
+    if ( xmldata)   {
       xml::DocumentHolder doc(xml::DocumentHandler().parse(xmldata,::strlen(xmldata),"In-Memory",entity_resolver));
       if ( doc )   {
         xml::Handle_t handle = doc.root();
@@ -128,68 +113,65 @@ void DetectorLoad::processXMLString(const char* xmldata, xml::UriReader* entity_
         }
       }
     }
-    except("DetectorLoad","processXMLString: Invalid XML In-memory source [NULL]");
+    throw runtime_error("DetectorLoad::processXMLString: Invalid XML In-memory source [NULL]");
   }
   catch (const xml::XmlException& e) {
-    except("DetectorLoad","%s\ndd4hep: XML-DOM Exception while parsing XML in-memory string.", xml::_toString(e.msg).c_str());
+    throw runtime_error(xml::_toString(e.msg) + "\ndd4hep: XML-DOM Exception while parsing XML in-memory string.");
   }
-  catch (const std::exception& e) {
-    except("DetectorLoad","%s\ndd4hep: Exception while parsing XML in-memory string.", e.what());
+  catch (const exception& e) {
+    throw runtime_error(string(e.what()) + "\ndd4hep: while parsing XML in-memory string.");
   }
   catch (...) {
-    except("DetectorLoad","dd4hep: UNKNOWN exception while parsing XML in-memory string.");
+    throw runtime_error("dd4hep: UNKNOWN exception while parsing XML in-memory string.");
   }
 }
 
 /// Process a given DOM (sub-) tree
 void DetectorLoad::processXMLElement(const std::string& xmlfile, const xml::Handle_t& xml_root) {
-  if ( xml_root.ptr() && verify_locale() )   {
-    std::string tag = xml_root.tag();
-    std::string type = tag + "_XML_reader";
+  if ( xml_root.ptr() )   {
+    string tag = xml_root.tag();
+    string type = tag + "_XML_reader";
     xml::Handle_t handle = xml_root;
     long result = PluginService::Create<long>(type, m_detDesc, &handle);
     if (0 == result) {
       PluginDebug dbg;
       result = PluginService::Create<long>(type, m_detDesc, &handle);
       if ( 0 == result )  {
-	except("DetectorLoad",
-	       "Failed to locate plugin to interprete files of type \"%s\"  - no factory: %s. %s",
-	       tag.c_str(), type.c_str(), dbg.missingFactory(type).c_str());
+        throw runtime_error("dd4hep: Failed to locate plugin to interprete files of type"
+                            " \"" + tag + "\" - no factory:" + type + ". " + dbg.missingFactory(type));
       }
     }
     result = *(long*) result;
     if (result != 1) {
-      except("DetectorLoad",
-	     "Failed to parse the XML file %s with the plugin %s.", xmlfile.c_str(), type.c_str());
+      throw runtime_error("dd4hep: Failed to parse the XML file " + xmlfile + " with the plugin " + type);
     }
     return;
   }
-  except("DetectorLoad",
-	 "Failed to parse the XML file %s [Invalid XML ROOT handle].", xmlfile.c_str());
+  throw runtime_error("dd4hep: Failed to parse the XML file " + xmlfile + " [Invalid XML ROOT handle]");
 }
 
 /// Process a given DOM (sub-) tree
 void DetectorLoad::processXMLElement(const xml::Handle_t& xml_root, DetectorBuildType /* type */) {
-  if ( xml_root.ptr() && verify_locale() )   {
-    std::string tag = xml_root.tag();
-    std::string type = tag + "_XML_reader";
+  if ( xml_root.ptr() )   {
+    string tag = xml_root.tag();
+    string type = tag + "_XML_reader";
     xml::Handle_t handle = xml_root;
     long result = PluginService::Create<long>(type, m_detDesc, &handle);
     if (0 == result) {
       PluginDebug dbg;
       result = PluginService::Create<long>(type, m_detDesc, &handle);
       if ( 0 == result )  {
-	except("DetectorLoad",
-	       "Failed to locate plugin to interprete files of type \"%s\"  - no factory: %s. %s",
-	       tag.c_str(), type.c_str(), dbg.missingFactory(type).c_str());
+        throw runtime_error("dd4hep: Failed to locate plugin to interprete files of type"
+                            " \"" + tag + "\" - no factory:" 
+                            + type + ". " + dbg.missingFactory(type));
       }
     }
     result = *(long*) result;
     if (result != 1)   {
-      except("DetectorLoad",
-	     "Failed to parse the XML element with tag %s with the plugin %s.", tag.c_str(), type.c_str());
+      throw runtime_error("dd4hep: Failed to parse the XML element with tag " 
+                          + tag + " with the plugin " + type);
     }
     return;
   }
-  except("DetectorLoad", "Failed to parse the XML file [Invalid XML ROOT handle].");
+  throw runtime_error("dd4hep: Failed to parse the XML file [Invalid XML ROOT handle]");
 }
