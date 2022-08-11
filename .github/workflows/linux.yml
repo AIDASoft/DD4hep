@@ -11,6 +11,7 @@ jobs:
       matrix:
         LCG: ["LCG_100/x86_64-centos7-gcc10-opt",    # g4 10.7
               "LCG_101/x86_64-centos7-gcc11-opt",    # g4 10.7
+              "LCG_102/x86_64-centos9-gcc11-opt",    # g4 11
               "LCG_102/x86_64-centos7-clang12-opt",  # g4 11
               "LCG_102/x86_64-ubuntu2004-gcc9-opt",  # g4 11
               "dev3/x86_64-centos7-gcc11-opt",
