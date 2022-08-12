@@ -27,6 +27,7 @@ project( DD4hep_Examples )
 
 include(CTest)
 option(BUILD_TESTING "Enable and build tests" ON)
+option(DD4HEP_SET_RPATH "Link libraries with built-in RPATH (run-time search path)" ON)
 
 SET( ENV{DD4hepExamplesINSTALL} ${CMAKE_INSTALL_PREFIX} )
 
