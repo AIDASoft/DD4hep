@@ -34,7 +34,8 @@ dd4hep_set_compiler_flags()
 set(DDCAD_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/DDCAD)
 dd4hep_install_dir( compact models ref DESTINATION ${DDCAD_INSTALL} )
 #--------------------------------------------------------------------------
-
+find_package(assimp QUIET)
+MESSAGE(STATUS "ASSIMP VERSION IS ${assimp_VERSION}")
 #--------------------------------------------------------------------------
 dd4hep_configure_scripts( DDCAD DEFAULT_SETUP WITH_TESTS)
 enable_testing ()
@@ -49,6 +50,12 @@ set(CLICSiDEx_INSTALL     ${CMAKE_INSTALL_PREFIX}/examples/CLICSiD)
 set(ClientTestsEx_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
 #
 # Single shape tests:
+
+#Reference for test depends on assimp version
+configure_file(${CMAKE_CURRENT_LIST_DIR}/compact/Check_Shape_Collada_duck.xml.in
+  ${CMAKE_CURRENT_LIST_DIR}/compact/Check_Shape_Collada_duck.xml @ONLY
+)
+
 list(APPEND DDCAD_Tests BHV_Boxing_Toes Collada_duck PLY_Wuson)
 foreach (test ${DDCAD_Tests})
   dd4hep_add_test_reg( DDCAD_Check_Shape_${test}
