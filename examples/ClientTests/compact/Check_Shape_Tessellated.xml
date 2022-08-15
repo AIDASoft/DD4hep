@@ -24,7 +24,7 @@
       <check vis="Shape1_vis">
         <shape type="TessellatedSolid">
           <vertex x="0 * cm" y="0.5 * (1 + sqrt5) * cm" z="-1*cm"/>
-          <vertex x="0 * cm" y="0.5 * (-1 + sqrt5)" z="0.5 * (-1 - sqrt5) * cm"/>
+          <vertex x="0 * cm" y="0.5 * (-1 + sqrt5) * cm" z="0.5 * (-1 - sqrt5) * cm"/>
           <vertex x="-1 * cm" y="0 * cm" z="0.5 * (-1 - sqrt5) * cm"/>
           <vertex x="-1 * cm" y="1 * cm" z="-1 * cm"/>
 
