@@ -27,6 +27,8 @@
 // Framework include files
 #include "DDG4/Geant4GeneratorAction.h"
 
+#include <set>
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 

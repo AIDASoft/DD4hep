@@ -13,7 +13,10 @@
 #ifndef DDG4_GEANT4PLACEMENTPARAMETERISATION_H
 #define DDG4_GEANT4PLACEMENTPARAMETERISATION_H
 
+#include <DD4hep/Volumes.h>
+
 /// Geant4 include files
+#include <G4Transform3D.hh>
 #include <G4PVParameterised.hh>
 #include <G4VPVParameterisation.hh>
 

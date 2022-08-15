@@ -8,6 +8,8 @@
 #ifndef DDSEGMENTATION_SEGMENTATIONUTIL_H
 #define DDSEGMENTATION_SEGMENTATIONUTIL_H
 
+#include "DDSegmentation/Segmentation.h"
+
 #include <cmath>
 #include <vector>
 
