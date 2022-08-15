@@ -18,8 +18,8 @@
 // sufficient for all practical purposes.
 //
 //==========================================================================
-#ifndef DD4HEP_DDCORE_GRAMMARPARSED_H
-#define DD4HEP_DDCORE_GRAMMARPARSED_H
+#ifndef DD4HEP_GRAMMARPARSED_H
+#define DD4HEP_GRAMMARPARSED_H
 
 #if defined(DD4HEP_DDCORE_GRAMMARUNPARSED_H)
 #pragma error "The header files GrammarParsed.h and GrammarUnparsed.h may not be included in the same compilation unit!"
@@ -341,4 +341,4 @@ namespace dd4hep {
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL(xx,eval_func)  DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL_SERIAL(__LINE__,xx,eval_func)
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_DUMMY(xx,func)         DD4HEP_DEFINE_PARSER_GRAMMAR_DUMMY_SERIAL(__LINE__,xx,func)
 
-#endif // DD4HEP_DDCORE_GRAMMARPARSED_H
+#endif // DD4HEP_GRAMMARPARSED_H

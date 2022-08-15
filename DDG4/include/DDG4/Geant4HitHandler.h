@@ -132,4 +132,4 @@ namespace dd4hep {
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#endif // DDG4_GEANT4GFLASHSPOTHANDLER_H
+#endif // DDG4_GEANT4HITHANDLER_H

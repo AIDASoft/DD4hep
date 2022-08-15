@@ -115,4 +115,4 @@ namespace dd4hep {
 
   }    // End namespace sim
 }      // End namespace dd4hep
-#endif // DDG4_GEANT4FASTSIMSPOTHANDLER_H
+#endif // DDG4_GEANT4FASTSIMHANDLER_H

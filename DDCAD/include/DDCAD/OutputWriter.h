@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDCAD_INPUTWRITER_H
-#define DDCAD_INPUTWRITER_H
+#ifndef DDCAD_OUTPUTWRITER_H
+#define DDCAD_OUTPUTWRITER_H
 
 // Framework include files
 #include <DD4hep/config.h>
@@ -64,4 +64,5 @@ namespace dd4hep {
     
   }        /* End namespace cad                      */
 }          /* End namespace dd4hep                   */
-#endif // DDCAD_INPUTWRITER_H
+
+#endif // DDCAD_OUTPUTWRITER_H
