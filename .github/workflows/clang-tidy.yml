@@ -1,0 +1,45 @@
+name: clang-tidy-guards
+
+on: [push, pull_request]
+
+jobs:
+  default:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        LCG: ["LCG_102/x86_64-centos7-clang12-opt"]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
+    - uses: aidasoft/run-lcg-view@v3
+      with:
+        release-platform: ${{ matrix.LCG }}
+        run: |
+          mkdir build
+          cd build
+          unset CPATH
+          echo "::group::CMakeConfig"
+          cmake -GNinja \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DDD4HEP_USE_GEANT4=ON \
+            -DBoost_NO_BOOST_CMAKE=ON \
+            -DDD4HEP_USE_LCIO=ON \
+            -DDD4HEP_USE_EDM4HEP=ON \
+            -DDD4HEP_USE_TBB=ON \
+            -DDD4HEP_USE_HEPMC3=ON \
+            -DDD4HEP_BUILD_DEBUG=OFF \
+            -DBUILD_TESTING=ON \
+            -DDD4HEP_DEBUG_CMAKE=ON \
+            -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
+            -DCMAKE_CXX_STANDARD=17 ..
+          echo "::group::Tidy"
+          cd ..
+          HEADER_FILES=$(find */include/* -name "*.h" | grep -v "/detail/\|/src/")
+          clang-tidy -p build \
+          --extra-arg "-DDD4HEP_MUST_USE_DETECTORIMP_H" \
+          --warnings-as-errors=".*" \
+          -checks=-*,llvm-header-guard \
+          ${HEADER_FILES}
