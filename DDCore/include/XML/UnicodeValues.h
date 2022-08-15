@@ -627,4 +627,4 @@ UNICODE (zmax);
 UNICODE (zplane);
 UNICODE (zstart);
 
-#endif
+#endif // XML_UNICODEVALUES_H

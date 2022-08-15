@@ -11,8 +11,8 @@
 // -*- C++ -*-
 // ---------------------------------------------------------------------------
 
-#ifndef EVALUATOR_DETAIL_EVALUATOROBJECT_H
-#define EVALUATOR_DETAIL_EVALUATOROBJECT_H
+#ifndef EVALUATOR_DETAIL_EVALUATOR_H
+#define EVALUATOR_DETAIL_EVALUATOR_H
 
 #include <ostream>
 
@@ -322,4 +322,4 @@ namespace dd4hep  {
   }   // namespace tools
 }  // namespace dd4hep
 
-#endif // EVALUATOR_DETAIL_EVALUATOROBJECT_H
+#endif // EVALUATOR_DETAIL_EVALUATOR_H
