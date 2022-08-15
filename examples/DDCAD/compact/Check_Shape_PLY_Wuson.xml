@@ -19,7 +19,7 @@
     <detector id="1" name="Shape_PLY_Wuson" type="DD4hep_TestShape_Creator">
       <check vis="Shape1_vis">
         <shape type="CAD_Shape" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/PLY/Wuson.ply"/>
-        <position x="30" y="30" z="30"/>
+        <position x="30 * cm" y="30 * cm" z="30 * cm"/>
         <rotation x="0"  y="0"  z="0"/>
       </check>
       <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/ref/Ref_PLY_Wuson.txt" create="CheckShape_create"/>
