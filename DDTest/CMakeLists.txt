@@ -96,3 +96,19 @@ if (DD4HEP_USE_GEANT4)
 
 endif()
 install(DIRECTORY include/DD4hep DESTINATION include)
+
+
+# Test that GrammarUnparsed and GrammarParsed fail to be compiled
+add_executable(test_failToCompile src/test_failToCompileGrammar.cc)
+target_link_libraries(test_failToCompile DD4hep::DDCore)
+# Avoid building these targets normally
+set_target_properties(test_failToCompile PROPERTIES
+  EXCLUDE_FROM_ALL TRUE
+  EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+
+add_test(NAME TestFailToCompile
+  COMMAND ${CMAKE_COMMAND} --build . --target test_failToCompile --config $<CONFIGURATION>
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+set_tests_properties(TestFailToCompile
+  PROPERTIES
+  PASS_REGULAR_EXPRESSION "The header files GrammarParsed.h and GrammarUnparsed.h may not be included in the same compilation unit")
