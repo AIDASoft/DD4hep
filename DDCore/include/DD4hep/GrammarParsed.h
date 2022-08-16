@@ -22,7 +22,7 @@
 #define DD4HEP_GRAMMARPARSED_H
 
 #if defined(DD4HEP_GRAMMARUNPARSED_H)
-#pragma error "The header files GrammarParsed.h and GrammarUnparsed.h may not be included in the same compilation unit!"
+#error "The header files GrammarParsed.h and GrammarUnparsed.h may not be included in the same compilation unit!"
 #endif
 
 /// Framework include files
