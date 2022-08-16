@@ -45,7 +45,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiAttenuator();
       /// Callback to read event attenuator
-      virtual double operator()(const DigiCellData& data)  const  override {
+      virtual double operator()(const DigiCellData& data) const {
         return processor(data);
       }
     };
