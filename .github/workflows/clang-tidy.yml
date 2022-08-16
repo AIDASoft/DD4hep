@@ -37,7 +37,7 @@ jobs:
             -DCMAKE_CXX_STANDARD=17 ..
           echo "::group::Tidy"
           cd ..
-          HEADER_FILES=$(find */include/* -name "*.h" | grep -v "/detail/\|/src/")
+          HEADER_FILES=$(find */include/* -name "*.h" | grep -v "/detail/\|/src/\|DDGear.h")
           clang-tidy -p build \
           --extra-arg "-DDD4HEP_MUST_USE_DETECTORIMP_H" \
           --warnings-as-errors=".*" \
