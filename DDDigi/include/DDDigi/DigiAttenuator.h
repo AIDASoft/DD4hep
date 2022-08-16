@@ -14,6 +14,7 @@
 #define DDDIGI_DIGIATTENUATOR_H
 
 /// Framework include files
+#include "DDDigi/DigiAction.h"
 #include "DDDigi/DigiSignalProcessor.h"
 
 /// C/C++ include files
