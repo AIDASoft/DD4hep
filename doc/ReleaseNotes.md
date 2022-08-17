@@ -1,3 +1,201 @@
+# v01-22
+
+* 2022-08-16 Andre Sailer ([PR#957](https://github.com/aidasoft/dd4hep/pull/957))
+  - CI: add check for header guards
+
+* 2022-08-15 Andre Sailer ([PR#956](https://github.com/aidasoft/dd4hep/pull/956))
+  - CI: Add test with Geant4Units enabled
+
+* 2022-08-15 Andre Sailer ([PR#946](https://github.com/aidasoft/dd4hep/pull/946))
+  - CI changes, for discussion
+
+* 2022-08-11 Markus Frank ([PR#954](https://github.com/aidasoft/dd4hep/pull/954))
+  Before starting to parse XML files, programatically set the locale to "C" if any of the three
+  - LC_NUMERIC,
+  - LC_TIME,
+  - LC_CTYPE
+  Is not set to "C".
+  
+  Addresses issue https://github.com/AIDASoft/DD4hep/issues/913.
+
+* 2022-08-11 Andre Sailer ([PR#953](https://github.com/aidasoft/dd4hep/pull/953))
+  - DDSim: find the python executable used during build and set that for the hashbang, e.g. python3.9 instead of python. Fixes #952
+
+* 2022-08-10 Markus Frank ([PR#951](https://github.com/aidasoft/dd4hep/pull/951))
+  - Allow to set MeanExcEnergy, MeanEnergyPerIonPair and BirksConstant in G4Materials ionisation parameters.
+    Specify values in the compact description of the materials:
+  ```
+      <material name="Ice">
+        <D type="density" value="1.0" unit="g/cm3"/>
+        <composite n="2" ref="H"/>
+        <composite n="1" ref="O"/>
+        <constant name="BirksConstant"        value="123.456*mm/MeV"/>
+        <constant name="MeanExcitationEnergy" value="79.7*eV"/>
+        <constant name="MeanEnergyPerIonPair" value="50*eV"/>
+      </material>
+  ```
+  Units will be converted to Geant4 units in the converter.
+  See issue https://github.com/AIDASoft/DD4hep/issues/890 for details.
+  
+  If in DDG4 the the material debugging is enabled:
+  ```
+    # Configure G4 geometry setup
+    seq, act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
+    act.DebugMaterials = True
+  ```
+  this gives the following output:
+  ```
+  Ice                    ++ Created G4 material  Material:      Ice    density:  1.000 g/cm3   RadL:  36.083 cm   Nucl.Int.Length:  75.375 cm 
+                        Imean:  79.700 eV   temperature: 293.15 K  pressure:   1.00 atm
+  
+     --->  Element: H (H)   Z =  1.0   N =     1   A =  1.008 g/mole
+           --->  Isotope:    H1   Z =  1   N =   1   A =   1.01 g/mole   abundance: 99.989 %
+           --->  Isotope:    H2   Z =  1   N =   2   A =   2.01 g/mole   abundance:  0.011 %
+            ElmMassFraction:  11.19 %  ElmAbundance  66.67 % 
+  
+     --->  Element: O (O)   Z =  8.0   N =    16   A = 15.999 g/mole
+           --->  Isotope:   O16   Z =  8   N =  16   A =  15.99 g/mole   abundance: 99.757 %
+           --->  Isotope:   O17   Z =  8   N =  17   A =  17.00 g/mole   abundance:  0.038 %
+           --->  Isotope:   O18   Z =  8   N =  18   A =  18.00 g/mole   abundance:  0.205 %
+            ElmMassFraction:  88.81 %  ElmAbundance  33.33 % 
+            log(MEE): -9.437  Birk's constant: 123.5 [mm/MeV]  Mean Energy Per Ion Pair: 50 [eV]
+  ```
+
+* 2022-08-10 Markus Frank ([PR#950](https://github.com/aidasoft/dd4hep/pull/950))
+  On request from out LHC colleagues DD4hep supports channeling physics in Geant4.
+  To support channeling physics in Geant4 it is necessary to enable the transparent 
+  creation of G4ExtendedMaterial and G4LogicalCrystalVolume instances.
+  This can be done in DD4hep with the supply of material and volume properties in DD4hep.
+  
+  Material properties can be supplied in the compact description like here:
+  ```
+      <material name="Ice">
+        <D type="density" value="1.0" unit="g/cm3"/>
+        <composite n="2" ref="H"/>
+        <composite n="1" ref="O"/>
+        <constant name="Geant4-plugin:material"            option="ChannelingCrystalMaterial"/>
+        <constant name="Geant4-ignore:crystal_data"        option="${DD4hepExamplesINSTALL}/examples/DDG4/data/Si220pl/Si220pl"/>
+        <constant name="Geant4-ignore:crystal_orientation" option="(1,0,0)"/>
+      </material>
+  ```
+  The property starting with the tag `Geant4-plugin` is used to determine the proper plugin
+  preparing the G4ExtendedMaterial instance.
+  All properties with tags `Geant4-ignore` are not passed as material properties to Geant4.
+  Properties starting with this tag can be used by users to configure the G4ExtendedMaterial instance.
+  
+  Volumes can as well have properties as this C++ example shows:
+  ```
+    Volume vol = Volume("Volume", solid, material);
+    xml_elt_t ec = ...;
+    vol.addProperty(ec.attr<std::string>(_U(name)), ec.attr<std::string>(_U(value)));
+  ```
+  with values supplied by XML:
+  ```
+    <property name="Geant4-plugin" value="ChannelingCrystalVolume"/>
+  ```
+  For more details see the example `<DD4hep>/examples/DDG4/compact/Channeling.xml`.
+  Again the property `Geant4-plugin` is used to call a plugin to create sub-classes
+  of G4LogicalVolume like G4LogicalCrystalVolume. 
+  
+  An example was prepared in `<DD4hep>/examples/DDG4` containing:
+  - a compact description: `compact/Channeling.xml`
+  - an example factory for the G4ExtendedMaterial: `src/ChannelingCrystalMaterial.cpp`
+  - an example factory for the G4LogicalCrystalVolume: `src/ChannelingCrystalVolume.cpp`
+  - A script invoking Geant4 to test this setup: `scripts/Channeling.py`
+
+* 2022-08-09 Dmitry Kalinkin ([PR#949](https://github.com/aidasoft/dd4hep/pull/949))
+  - DDSim: restore the fixed momentum behaviour of `--gun.energy`, independent of the isotrop setting for the particle gun. If gun.energy is set, the momentum will have this value. If it is not set, momentumMin and momentumMax will be used to pick a value.
+
+* 2022-08-05 Andre Sailer ([PR#942](https://github.com/aidasoft/dd4hep/pull/942))
+  - DDSim: add option to set userInputPlugin for simulation by adding a plugin for themselves, and this to the ddsim steering file (for #940)
+     ```python
+        def exampleUserPlugin(dd4hepSimulation):
+          '''Example code for user created plugin.
+  
+          :param DD4hepSimulation dd4hepSimulation: The DD4hepSimulation instance, so all parameters can be accessed
+          :return: GeneratorAction
+          '''
+          from DDG4 import GeneratorAction, Kernel
+          # Geant4InputAction is the type of plugin, Cry1 just an identifier
+          gen = GeneratorAction(Kernel(), 'Geant4InputAction/Cry1' , True)
+          # CRYEventReader is the actual plugin, steeringFile its constructor parameter
+          gen.Input = 'CRYEventReader|' + 'steeringFile'
+          # we can give a dictionary of Parameters that has to be interpreted by the setParameters function of the plugin
+          gen.Parameters = {'DataFilePath': '/path/to/files/data'}
+          gen.enableUI()
+          return gen
+  
+        SIM.inputConfig.userInputPlugin = exampleUserPlugin
+     ```
+
+* 2022-08-04 Andrea Ciarma ([PR#944](https://github.com/aidasoft/dd4hep/pull/944))
+  * Mask_o1: Added the possibility to have sensitive elements of type Mask_o1_v01_geo by adding a `sensitive="sensitiveType"` attribute
+
+* 2022-08-02 Juraj Smiesko ([PR#941](https://github.com/aidasoft/dd4hep/pull/941))
+  * checkOverlaps.py: Adding possibility to provide multiple compact files
+  * checkOverlaps.py: replace optparse by argparse for up-to-date python
+
+* 2022-08-01 Markus Frank ([PR#939](https://github.com/aidasoft/dd4hep/pull/939))
+  - Follow up of https://github.com/AIDASoft/DD4hep/pull/938. 
+    Improves the DetectorCheck plugin.
+  - Add example with an "ill" detector description that triggers the DetectorCheck plugin
+    to complain and to eject pathes to problematic detector elements ect.
+
+* 2022-07-29 Markus Frank ([PR#938](https://github.com/aidasoft/dd4hep/pull/938))
+  - Fix type in DDCore/src/DD4hepRootPersistency.cpp
+  - Add operator== and operator != to handles of DetElement, SensitiveDetector
+    Volume and PlacedVolume. Check pointer values for equality.
+  - Add plugin DD4hep_DetectorCheck. Improves and replaces DD4hep_VolumeMgrTest.
+    o Test checks the strutural tree of a given top element
+    o Test checks the geometry tree of a given top element
+    o If physical volume ids are properly placed these can also be checked.
+  ```
+  DD4hep_DetectorCheck -option [-option]                                         
+    -help                        Print this help message                         
+    -name  <subdetector name>    Name of the subdetector to be checked           
+                                 "ALL" or "all": loop over known subdetectors
+                                 "world" start from the mother of all...       
+    -structure                   Check structural tree consistency               
+    -geometry                    Check geometry tree consistency                 
+    -sensitve                    Check consistency between detector and volume   
+                                 settings of sensitive detectors.                
+    -volmgr                      Check volume manager entries against volIDs of  
+                                 sensitive volume placements.                  
+  
+                                 NOTE: Option requires proper PhysVolID setup    
+                                 of the sensitive volume placements !
+  ```
+
+* 2022-07-27 Juraj Smiesko ([PR#937](https://github.com/aidasoft/dd4hep/pull/937))
+  - Improving error message when setting detector type flags
+
+* 2022-07-27 Andre Sailer ([PR#935](https://github.com/aidasoft/dd4hep/pull/935))
+  - ddsim: Fix setting of zeroTimePDGs, previously this value was not forwarded from config to the program
+  - particle.tbl: change 523 to unstable (fixes #909)
+  - Geant4InputHandling: add exception when encountering stable particles with daughters that are marked for simulation (implements feature of #909)
+  - Geant4InputHandling: reject particles with GEN_DOC, GEN_BEAM, GEN_OTHER (fixes part of #918)
+
+* 2022-07-26 Markus Frank ([PR#936](https://github.com/aidasoft/dd4hep/pull/936))
+  - Recursive calls to apply-plugins overwrote the return code.
+  - This MR fixes issue https://github.com/AIDASoft/DD4hep/issues/875
+  
+  - Support for 1D, 2D and 3D parameterised volumes.
+    (Outstanding request by S.Ko)
+    1. TGeo does not support parametrized volumes intrinsically.
+      On the dd4hep/TGeo side these are implemented by multiple placements 
+      according to the user supplied transformation matrices.
+      For details see the calls in `dd4hep::Volume::paramVolume<dim>D(...)`
+    2. When translated to Geant4, the structures are identified and
+      the proper Geant4 parameterisation is created.
+    3. An example can be found in:
+      - `examples/ClientTests/src/ParamVolume_geo.cpp`
+      - to display: `geoDisplay examples/ClientTests/compact/ParamVolume<dim>D.xml`
+      - the Geant4 conversion is excercised with the scripts:
+        ```
+        python examples/ClientTests/scripts/ParamVolume.py \
+           -geometry examples/ClientTests/compact/ParamVolume<dim>D.xml \
+           -vis -macro examples/ClientTests/compact/ParamVolume.mac ```
+
 # v01-21
 
 * 2022-07-19 Markus Frank ([PR#933](https://github.com/aidasoft/DD4hep/pull/933))
