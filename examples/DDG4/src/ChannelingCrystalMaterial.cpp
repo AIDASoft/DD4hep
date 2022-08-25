@@ -64,7 +64,7 @@ namespace dd4hep   {
     channelingData->SetFilename(crystal_data);
 
     /// Set crystal orientation
-    orientation = mat.propertyRef("Geant4-ignore:crystal_orientation");
+    orientation = mat.constPropertyRef("Geant4-ignore:crystal_orientation");
     if ( !orientation.empty() )   {
       Direction direction;
       Property  prop(direction);
