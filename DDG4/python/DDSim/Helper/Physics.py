@@ -148,7 +148,7 @@ class Physics(ConfigHelper):
 
     The function must take the DDG4.Kernel() object as the only argument.
 
-    For example::
+    For example, add a function definition and the call to a steering file::
 
       def setupCerenkov(kernel):
         from DDG4 import PhysicsList
@@ -159,6 +159,12 @@ class Physics(ConfigHelper):
         cerenkov.TrackSecondariesFirst = True
         cerenkov.VerboseLevel = 2
         cerenkov.enableUI()
+        seq.adopt(cerenkov)
+        ph = PhysicsList(kernel, 'Geant4OpticalPhotonPhysics/OpticalGammaPhys')
+        ph.addParticleConstructor('G4OpticalPhoton')
+        ph.VerboseLevel = 2
+        ph.enableUI()
+        seq.adopt(ph)
         return None
 
       SIM.physics.setupUserPhysics(setupCerenkov)
