@@ -368,12 +368,12 @@ template <> void Converter<Constant>::operator()(xml_h e) const {
  */
 template <> void Converter<Header>::operator()(xml_h e) const {
   xml_comp_t c(e);
-  Header h(e.attr<string>(_U(name)), e.attr<string>(_U(title)));
-  h.setUrl(e.attr<string>(_U(url)));
-  h.setAuthor(e.attr<string>(_U(author)));
-  h.setStatus(e.attr<string>(_U(status)));
-  h.setVersion(e.attr<string>(_U(version)));
-  h.setComment(e.child(_U(comment)).text());
+  Header h(e.attr<string>(_U(name)), e.attr<string>(_U(title), "Undefined"));
+  h.setUrl(e.attr<string>(_U(url), "Undefined"));
+  h.setAuthor(e.attr<string>(_U(author), "Undefined"));
+  h.setStatus(e.attr<string>(_U(status), "development"));
+  h.setVersion(e.attr<string>(_U(version), "Undefined"));
+  h.setComment(e.hasChild(_U(comment)) ? e.child(_U(comment)).text() : "No Comment");
   description.setHeader(h);
 }
 
