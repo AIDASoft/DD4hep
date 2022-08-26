@@ -144,6 +144,90 @@ namespace dd4hep {
     typedef Geant4SensitiveAction<Geant4Tracker> Geant4TrackerAction;
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //               Geant4SensitiveAction<Geant4PhotonCounter>
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    /** \addtogroup Geant4SDActionPlugin
+     *
+     * @{
+     * \package Geant4OpticalTrackerAction
+     * \brief Sensitive detector meant for photon detectors, will produce one hit per step
+     *        for regular particles, but absorb optical photons fully on their first hit
+     *
+     * @}
+     */
+
+    /// Helper class to define properties of optical trackers. UNTESTED
+    struct Geant4OpticalTracker {};
+
+    /// Define collections created by this sensitivie action object
+    template <> void Geant4SensitiveAction<Geant4OpticalTracker>::defineCollections()    {
+      m_collectionID = declareReadoutFilteredCollection<Geant4Tracker::Hit>();
+    }
+
+    /// Method for generating hit(s) using the information of G4Step object.
+    template <> bool
+    Geant4SensitiveAction<Geant4OpticalTracker>::process(const G4Step* step,G4TouchableHistory* /* hist */) {
+      G4Track * track =  step->GetTrack();
+      typedef Geant4Tracker::Hit Hit;
+      Geant4StepHandler h(step);
+      Position prePos    = h.prePos();
+      Position postPos   = h.postPos();
+      Position direction = postPos - prePos;
+      Position position  = mean_direction(prePos,postPos);
+      double   hit_len   = direction.R();
+
+      Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime());
+      HitContribution contrib = Hit::extractContribution(step);
+      hit->cellID        = cellID(step);
+      hit->energyDeposit = contrib.deposit;
+      hit->position      = position;
+      hit->momentum      = 0.5*( h. preMom() + h.postMom() ) ;
+      hit->length        = hit_len;
+      if (track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) {
+        track->SetTrackStatus(fStopAndKill);
+      }
+      collection(m_collectionID)->add(hit);
+      mark(h.track);
+      if ( 0 == hit->cellID )  {
+        hit->cellID      = volumeID( step ) ;
+        except("+++ Invalid CELL ID for hit!");
+      }
+      print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
+            step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
+            (void*)hit->cellID);
+      Geant4TouchableHandler handler(step);
+      print("    Geant4 path:%s",handler.path().c_str());
+      return true;
+    }
+
+    /// GFlash/FastSim interface: Method for generating hit(s) using the information of G4Step object.
+    template <> bool
+    Geant4SensitiveAction<Geant4OpticalTracker>::processFastSim(const Geant4FastSimSpot* spot,
+							        G4TouchableHistory* /* hist */)
+    {
+      typedef Geant4Tracker::Hit Hit;
+      Geant4FastSimHandler h(spot);
+      Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime());
+      hit->cellID        = cellID(h.touchable(), h.avgPositionG4());
+      hit->energyDeposit = h.deposit();
+      hit->position      = h.avgPosition();
+      hit->momentum      = h.momentum();
+      hit->length        = 0e0;
+      collection(m_collectionID)->add(hit);
+      mark(h.track);
+      if ( 0 == hit->cellID )  {
+        hit->cellID      = volumeID(h.touchable());
+        except("+++ Invalid CELL ID for hit!");
+      }
+      print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
+            h.deposit(),hit->position.X(),hit->position.Y(),hit->position.Z(),(void*)hit->cellID);
+      Geant4TouchableHandler handler(h.touchable());
+      print("    Geant4 path:%s",handler.path().c_str());
+      return true;
+    }
+    typedef Geant4SensitiveAction<Geant4OpticalTracker> Geant4OpticalTrackerAction;
+
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     //               Geant4SensitiveAction<Calorimeter>
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     /** \addtogroup Geant4SDActionPlugin
@@ -720,6 +804,7 @@ using namespace dd4hep::sim;
 DECLARE_GEANT4SENSITIVE(Geant4VoidSensitiveAction)
 // Standard factories used for simulation
 DECLARE_GEANT4SENSITIVE(Geant4TrackerAction)
+DECLARE_GEANT4SENSITIVE(Geant4OpticalTrackerAction)
 DECLARE_GEANT4SENSITIVE(Geant4TrackerCombineAction)
 DECLARE_GEANT4SENSITIVE(Geant4CalorimeterAction)
 DECLARE_GEANT4SENSITIVE(Geant4OpticalCalorimeterAction)
