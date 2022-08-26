@@ -1,6 +1,7 @@
 ---
 name: Bug Report
 about: Use this template for reporting Bugs
+labels: bug
 ---
 
 !!!IMPORTANT!!!: To facilitate faster and easier response to your issue please provide in addition to the description of the issue also the following information
