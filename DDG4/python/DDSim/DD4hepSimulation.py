@@ -108,9 +108,6 @@ class DD4hepSimulation(object):
 
     self._argv = None
 
-    # use TCSH geant UI instead of QT
-    os.environ['G4UI_USE_TCSH'] = "1"
-
   def readSteeringFile(self):
     """Reads a steering file and sets the parameters to that of the
     DD4hepSimulation object present in the steering file.
@@ -152,10 +149,11 @@ class DD4hepSimulation(object):
                         default=ConfigHelper.makeList(self.compactFile), type=str,
                         help="The compact XML file, or multiple compact files, if the last one is the closer.")
 
-    parser.add_argument("--runType", action="store", choices=("batch", "vis", "run", "shell"), default=self.runType,
+    parser.add_argument("--runType", action="store", choices=("batch", "vis", "run", "shell", "qt"), default=self.runType,
                         help="The type of action to do in this invocation"  # Note: implicit string concatenation
                         "\nbatch: just simulate some events, needs numberOfEvents, and input file or gun"
                         "\nvis: enable visualisation, run the macroFile if it is set"
+                        "\nqt: enable visualisation in Qt shell, run the macroFile if it is set"
                         "\nrun: run the macroFile and exit"
                         "\nshell: enable interactive session")
 
@@ -324,6 +322,8 @@ class DD4hepSimulation(object):
 
     if self.runType == "vis":
       simple.setupUI(typ="csh", vis=True, macro=self.macroFile)
+    elif self.runType == "qt":
+      simple.setupUI(typ="qt", vis=True, macro=self.macroFile)
     elif self.runType == "run":
       simple.setupUI(typ="csh", vis=False, macro=self.macroFile, ui=False)
     elif self.runType == "shell":
