@@ -149,7 +149,8 @@ class DD4hepSimulation(object):
                         default=ConfigHelper.makeList(self.compactFile), type=str,
                         help="The compact XML file, or multiple compact files, if the last one is the closer.")
 
-    parser.add_argument("--runType", action="store", choices=("batch", "vis", "run", "shell", "qt"), default=self.runType,
+    parser.add_argument("--runType", action="store", choices=("batch", "vis", "run", "shell", "qt"),
+                        default=self.runType,
                         help="The type of action to do in this invocation"  # Note: implicit string concatenation
                         "\nbatch: just simulate some events, needs numberOfEvents, and input file or gun"
                         "\nvis: enable visualisation, run the macroFile if it is set"
