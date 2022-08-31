@@ -322,20 +322,19 @@ class DD4hepSimulation(object):
     simple.printDetectors()
 
     if self.runType == "vis":
-      simple.setupUI(typ="csh", vis=True, macro=self.macroFile)
+      simple.setupUI(typ="tcsh", vis=True, macro=self.macroFile)
     elif self.runType == "qt":
       simple.setupUI(typ="qt", vis=True, macro=self.macroFile)
     elif self.runType == "run":
-      simple.setupUI(typ="csh", vis=False, macro=self.macroFile, ui=False)
+      simple.setupUI(typ="tcsh", vis=False, macro=self.macroFile, ui=False)
     elif self.runType == "shell":
-      simple.setupUI(typ="csh", vis=False, macro=None, ui=True)
+      simple.setupUI(typ="tcsh", vis=False, macro=None, ui=True)
     elif self.runType == "batch":
-      simple.setupUI(typ="csh", vis=False, macro=None, ui=False)
+      simple.setupUI(typ="tcsh", vis=False, macro=None, ui=False)
     else:
       logger.error("unknown runType")
       exit(1)
 
-    # kernel.UI="csh"
     kernel.NumEvents = self.numberOfEvents
 
     # -----------------------------------------------------------------------------------
