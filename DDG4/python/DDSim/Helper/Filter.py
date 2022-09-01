@@ -156,5 +156,10 @@ class Filter(ConfigHelper):
           logger.info("Adding filter '%s' matched with '%s' to sensitive detector for '%s' " % (filt, pattern, det))
           seq.add(self.filters[filt]['filter'])
 
-    if not foundFilter and defaultFilter:
+    if foundFilter:
+      return
+    if defaultFilter:
+      logger.info("Adding default filter '%s' to sensitive detector for '%s' " % (defaultFilter, det))
       seq.add(self.filters[defaultFilter]['filter'])
+      return
+    logger.info("Not adding any filter to sensitive detector for '%s' " % det)
