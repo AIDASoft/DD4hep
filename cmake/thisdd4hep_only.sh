@@ -12,8 +12,8 @@
 #
 #-----------------------------------------------------------------------------
 dd4hep_parse_this()   {
-    SOURCE=${1}
-    package=${2};
+    local SOURCE=${1}
+    local package=${2};
     if [ "x${SOURCE}" = "x" ]; then
         if [ -f bin/this${package}_only.sh ]; then
             THIS="$PWD"; export THIS
@@ -26,34 +26,32 @@ dd4hep_parse_this()   {
         fi
     else
         # get param to "."
-        thisroot=$(dirname ${SOURCE})
+        local thisroot=$(dirname ${SOURCE})
         THIS=$(cd ${thisroot}/.. > /dev/null;pwd); export THIS
     fi
-    unset SOURCE package thisroot
 }
 #-----------------------------------------------------------------------------
 dd4hep_add_path()   {
-    path_name=${1}
-    path_prefix=${2}
+    local path_name=${1}
+    local path_prefix=${2}
     eval path_value=\$$path_name
     # Prevent duplicates
     path_value=`echo ${path_value} | tr : '\n' | grep -v "${path_prefix}" | tr '\n' : | sed 's|:$||'`
     path_value="${path_prefix}${path_value:+:${path_value}}"
     eval export ${path_name}='${path_value}'
-    unset path_name path_prefix path_value
+    unset path_value
 }
 #-----------------------------------------------------------------------------
 dd4hep_add_library_path()    {
-    p=${1};
+    local p=${1};
     if [ @APPLE@ ]; then
         # Do not prepend system library locations on macOS. Stuff will break.
-        [[ "$p" = "/usr/lib" || "$p" = "/usr/local/lib" ]] && unset p && return
+        [[ "$p" = "/usr/lib" || "$p" = "/usr/local/lib" ]] && return
         dd4hep_add_path DYLD_LIBRARY_PATH     "$p"
         dd4hep_add_path DD4HEP_LIBRARY_PATH   "$p"
     else
         dd4hep_add_path LD_LIBRARY_PATH       "$p"
     fi
-    unset p
 }
 #-----------------------------------------------------------------------------
 #
