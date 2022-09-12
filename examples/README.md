@@ -11,9 +11,9 @@ The subfolders in this directory contain several examples on how to use DD4hep. 
    make install
    ctest --output-on-failure
    ```
-    or to build a subset, use the variable `DD4HEP_BUILD_EXAMPLES` e.g.
+    or to build a subset, use the variable `DD4HEP_EXAMPLES` e.g.
       ```
-   cmake -DDD4HEP_BUILD_EXAMPLES="OpticalSurfaces DDG4" ..
+   cmake -DDD4HEP_EXAMPLES="OpticalSurfaces DDG4" ..
    make
    make install
    ctest --output-on-failure
