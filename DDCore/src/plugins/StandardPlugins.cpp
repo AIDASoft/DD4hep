@@ -829,6 +829,41 @@ static long dump_geometry2root(Detector& description, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hep_Geometry2ROOT,dump_geometry2root)
 
+/// Basic entry point to dump a dd4hep geometry as TGeo to a ROOT file
+/**
+ *  Factory: DD4hep_Geometry2TGeo
+ *
+ *  \author  W.Deconinck
+ *  \version 1.0
+ *  \date    14/09/2022
+ */
+static long dump_geometry2tgeo(Detector& description, int argc, char** argv) {
+  if ( argc > 0 )   {
+    string output( argc == 1 ? argv[0] : "" );
+    printout(INFO,"Geometry2TGeo","+++ output: %d %s", argc, output.c_str());
+    for(int i = 0; i < argc && argv[i]; ++i)  {
+      if ( 0 == ::strncmp("-output",argv[i],4) )
+        output = argv[++i];
+    }
+    if ( output.empty() )   {
+      cout <<
+        "Usage: -plugin <name> -arg [-arg]                                             \n"
+        "     name:   factory name     DD4hepGeometry2TGeo                             \n"
+        "     -output <string>         Output file name.                               \n"
+        "\tArguments given: " << arguments(argc,argv) << endl << flush;
+      ::exit(EINVAL);
+    }
+    printout(INFO,"Geometry2TGeo","+++ Dump geometry to root file:%s",output.c_str());
+    if ( description.manager().Export(output.c_str()) > 1 ) {
+      return 1;
+    }
+  }
+  printout(ERROR,"Geometry2TGeo","+++ No output file name given.");
+  return 0;
+}
+DECLARE_APPLY(DD4hep_Geometry2TGeo,dump_geometry2tgeo)
+DECLARE_APPLY(DD4hepGeometry2TGeo,dump_geometry2tgeo)
+
 /// Basic entry point to load a dd4hep geometry directly from the ROOT file
 /**
  *  Factory: DD4hep_RootLoader

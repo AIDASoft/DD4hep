@@ -23,9 +23,10 @@ namespace {
     std::cout <<
       "geoConverter -opt [-opt]                                                        \n"
       "        Action flags:               Usage is exclusive, 1 required!             \n"
-      "        -compact2description               Convert compact xml geometry to description.     \n"
+      "        -compact2description        Convert compact xml geometry to description.\n"
       "        -compact2gdml               Convert compact xml geometry to gdml.       \n"
-      "        -compact2pandora            Convert compact xml to pandora xml          \n"
+      "        -compact2pandora            Convert compact xml to pandora xml.         \n"
+      "        -compact2tgeo               Convert compact xml to TGeo in ROOT file.   \n"
       "        -compact2vis                Convert compact xml to visualisation attrs\n\n"
       "        -input  <file>  [REQUIRED]  Specify input file.                         \n"
       "        -output <file>  [OPTIONAL]  Specify output file.                        \n"
@@ -50,6 +51,7 @@ namespace {
     bool compact2description = false;
     bool compact2gdml = false;
     bool compact2pand = false;
+    bool compact2tgeo = false;
     bool compact2vis  = false;
     int output = 0;
     std::vector<char*> geo_files;
@@ -61,6 +63,8 @@ namespace {
           compact2gdml = true;
         else if ( strncmp(argv[i],"-compact2pandora",12)==0 )
           compact2pand = true;
+        else if ( strncmp(argv[i],"-compact2tgeo",12)==0 )
+          compact2tgeo = true;
         else if ( strncmp(argv[i],"-compact2vis",12)==0 )
           compact2vis = true;
         else if ( strncmp(argv[i],"-input",2)==0 )
@@ -80,7 +84,7 @@ namespace {
         usage();
       }
     }
-    if ( geo_files.empty() || (!compact2description && !compact2gdml && !compact2pand && !compact2vis))
+    if ( geo_files.empty() || (!compact2description && !compact2gdml && !compact2pand && !compact2tgeo && !compact2vis))
       usage();
 
     dd4hep::Detector& description = dd4hep_instance();
@@ -98,6 +102,8 @@ namespace {
       run_plugin(description,"DD4hepGeometry2GDML",output,&argv[output]);
     else if ( compact2pand )
       run_plugin(description,"DD4hepGeometry2PANDORA",output,&argv[output]);
+    else if ( compact2tgeo )
+      run_plugin(description,"DD4hepGeometry2TGeo",argc-output,&argv[output]);
     else if ( compact2vis && ascii )
       run_plugin(description,"DD4hepGeometry2VISASCII",output,&argv[output]);
     else if ( compact2vis )
