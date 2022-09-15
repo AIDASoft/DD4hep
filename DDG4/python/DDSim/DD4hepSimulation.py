@@ -588,7 +588,7 @@ class DD4hepSimulation(object):
       self._errorMessages.append("ERROR: printLevel '%s' unknown" % level)
       return -1
 
-  def __setupSensitiveDetectors(self, detectors, setupFuction, defaultFilter=None,
+  def __setupSensitiveDetectors(self, detectors, setupFunction, defaultFilter=None,
                                 abortForMissingAction=False,
                                 ):
     """Attach sensitive detector actions for all subdetectors.
@@ -611,7 +611,7 @@ class DD4hepSimulation(object):
       if abortForMissingAction and action is None:
         logger.error('Cannot find Action for detector %s. You have to extend "action.mapAction"', det)
         raise RuntimeError("Cannot find Action")
-      seq, act = setupFuction(det, type=action)
+      seq, act = setupFunction(det, action)
       self.filter.applyFilters(seq, det, defaultFilter)
 
       # set detailed hit creation mode for this
