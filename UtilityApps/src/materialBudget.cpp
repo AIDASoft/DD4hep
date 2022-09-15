@@ -247,7 +247,7 @@ int main_wrapper(int argc, char** argv)   {
       }
 
 
-      double binX = ( etaMax > 0. ? (etaMin + (0.5+i)*dEta) : -(thetaMin + theta)/M_PI*180. ) ;
+      double binX = ( etaMax > 0. ? (etaMin + (0.5+i)*dEta) : -theta/M_PI*180. ) ;
 
       det.hx->Fill( binX , sum_x0 ) ;
       det.hl->Fill( binX , sum_lambda ) ;
