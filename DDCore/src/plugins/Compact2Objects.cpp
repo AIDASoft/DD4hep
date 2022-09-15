@@ -1116,7 +1116,7 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
       else   {
         stringstream tree;
         xml::dump_tree(e,tree);
-        throw_print("Reaout: Invalid specificatrion for multiple hit collections."+tree.str());
+        throw_print("Readout: Invalid specification for multiple hit collections."+tree.str());
       }
       printout(s_debug.readout ? ALWAYS : DEBUG,"Compact",
                "++ Readout[%s]: Add hit collection %s [%s]  %d-%d",
