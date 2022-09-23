@@ -35,8 +35,6 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-using namespace std;
-
 #pragma link C++ namespace dd4hep;
 
 // Volume.h
@@ -49,19 +47,19 @@ using namespace std;
 #pragma link C++ class dd4hep::PlacedVolume::Processor+;
 
 #ifndef __ROOTCLING__
-template vector<pair<string, int> >;
-template vector<pair<string, int> >::iterator;
+template std::vector<std::pair<std::string, int> >;
+template std::vector<std::pair<std::string, int> >::iterator;
 #endif
-#pragma link C++ class vector<pair<string, int> >+;
-#pragma link C++ class vector<pair<string, int> >::iterator;
+#pragma link C++ class std::vector<std::pair<std::string, int> >+;
+#pragma link C++ class std::vector<std::pair<std::string, int> >::iterator;
 #pragma link C++ class dd4hep::PlacedVolumeExtension::VolIDs+;
 #pragma link C++ class dd4hep::PlacedVolumeExtension::Parameterisation+;
 #pragma link C++ class dd4hep::PlacedVolumeExtension::Parameterisation::Dimension+;
 #pragma link C++ class dd4hep::PlacedVolumeExtension+;
-#pragma link C++ class vector<dd4hep::PlacedVolume>+;
+#pragma link C++ class std::vector<dd4hep::PlacedVolume>+;
 #pragma link C++ class dd4hep::Handle<TGeoNode>+;
-#pragma link C++ class vector<TGeoNode*>+;
-#pragma link C++ class vector<TGeoVolume*>+;
+#pragma link C++ class std::vector<TGeoNode*>+;
+#pragma link C++ class std::vector<TGeoVolume*>+;
 
 
 // Shapes.h

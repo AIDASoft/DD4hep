@@ -52,8 +52,6 @@ namespace { class DDG4Dict {};   }
 #pragma link off all classes;
 #pragma link off all functions;
 
-using namespace std;
-
 /// Define namespaces
 #pragma link C++ namespace dd4hep;
 #pragma link C++ namespace dd4hep::sim;
@@ -72,34 +70,34 @@ using namespace std;
 #pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::ParticleExtension>;
 
 #pragma link C++ class dd4hep::sim::Geant4Particle+;
-#pragma link C++ class vector<dd4hep::sim::Geant4Particle*>+;
-#pragma link C++ class map<int,dd4hep::sim::Geant4Particle*>+;
-#pragma link C++ class map<int,dd4hep::sim::Geant4Particle*>::iterator;
-#pragma link C++ class map<int,dd4hep::sim::Geant4Particle*>::const_iterator;
+#pragma link C++ class std::vector<dd4hep::sim::Geant4Particle*>+;
+#pragma link C++ class std::map<int,dd4hep::sim::Geant4Particle*>+;
+#pragma link C++ class std::map<int,dd4hep::sim::Geant4Particle*>::iterator;
+#pragma link C++ class std::map<int,dd4hep::sim::Geant4Particle*>::const_iterator;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<int,dd4hep::sim::Geant4Particle*>::iterator&, const map<int,dd4hep::sim::Geant4Particle*>::iterator& );
-#pragma link C++ function operator!=( const map<int,dd4hep::sim::Geant4Particle*>::iterator&, const map<int,dd4hep::sim::Geant4Particle*>::iterator& );
+#pragma link C++ function operator==( const std::map<int,dd4hep::sim::Geant4Particle*>::iterator&, const std::map<int,dd4hep::sim::Geant4Particle*>::iterator& );
+#pragma link C++ function operator!=( const std::map<int,dd4hep::sim::Geant4Particle*>::iterator&, const std::map<int,dd4hep::sim::Geant4Particle*>::iterator& );
 #endif
 
 //#pragma link C++ class type_info;
 
 /// Dictionaires for basic Hit data structures
 #pragma link C++ class dd4hep::sim::Geant4HitData+;
-#pragma link C++ class vector<dd4hep::sim::Geant4HitData*>+;
+#pragma link C++ class std::vector<dd4hep::sim::Geant4HitData*>+;
 #pragma link C++ class dd4hep::sim::Geant4HitData::Contribution+;
 #pragma link C++ class dd4hep::sim::Geant4HitData::Contributions+;
 
 /// Dictionaires for Tracker Hit data structures
 #pragma link C++ class dd4hep::sim::Geant4Tracker+;
 #pragma link C++ class dd4hep::sim::Geant4Tracker::Hit+;
-#pragma link C++ class vector<dd4hep::sim::Geant4Tracker::Hit*>+;
+#pragma link C++ class std::vector<dd4hep::sim::Geant4Tracker::Hit*>+;
 
 /// Dictionaires for Calorimeter Hit data structures
 #pragma link C++ class dd4hep::sim::Geant4Calorimeter+;
 #pragma link C++ class dd4hep::sim::Geant4Calorimeter::Hit+;
-#pragma link C++ class vector<dd4hep::sim::Geant4Calorimeter::Hit*>+;
+#pragma link C++ class std::vector<dd4hep::sim::Geant4Calorimeter::Hit*>+;
 
 #endif
 

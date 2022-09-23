@@ -39,8 +39,6 @@ namespace dd4hep {
 #pragma link off all classes;
 #pragma link off all functions;
 
-using namespace std;
-
 #pragma link C++ class dd4hep::Property;
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
 template class dd4hep::PropertyValue<char>;
