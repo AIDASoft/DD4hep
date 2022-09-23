@@ -188,8 +188,8 @@ namespace dd4hep {
 	}
 	if ( sc )   {
 	  for(const auto& _o : map_buff )    {
-	    typename TYPE::key_type _k;
-	    typename TYPE::mapped_type _v;
+	    typename TYPE::key_type    _k  {};
+	    typename TYPE::mapped_type _v  {};
 	    eval_item(&_k, _o.first);
 	    eval_item(&_v, _o.second);
 	    p->emplace(_k,_v);
