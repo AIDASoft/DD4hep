@@ -98,8 +98,6 @@ namespace dd4hep   {   namespace Parsers   {
 #pragma link off all classes;
 #pragma link off all functions;
 
-using namespace std;
-
 #pragma link C++ namespace dd4hep;
 
 #pragma link C++ namespace dd4hep::tools;
@@ -115,32 +113,32 @@ using namespace std;
 #pragma link C++ enum dd4hep::PrintLevel;
 
 #ifndef __ROOTCLING__
-template pair<unsigned int, string>;
+template std::pair<unsigned int, std::string>;
 template class dd4hep::Handle<dd4hep::NamedObject>;
-template class pair< string, dd4hep::Handle<dd4hep::NamedObject> >;
-template class map< string, dd4hep::Handle<dd4hep::NamedObject> >;
-template class pair<dd4hep::Callback,unsigned long>;
+template class std::pair< string, dd4hep::Handle<dd4hep::NamedObject> >;
+template class std::map< string, dd4hep::Handle<dd4hep::NamedObject> >;
+template class std::pair<dd4hep::Callback,unsigned long>;
 #endif
 
 #pragma link C++ class DD4hepRootPersistency+;
 #pragma link C++ class DD4hepRootCheck+;
 
-#pragma link C++ class pair<unsigned int,string>+;
+#pragma link C++ class std::pair<unsigned int,std::string>+;
 //#pragma link C++ class dd4hep::Callback+;
-#pragma link C++ class pair<dd4hep::Callback,unsigned long>+;
+#pragma link C++ class std::pair<dd4hep::Callback,unsigned long>+;
 #pragma link C++ class dd4hep::NamedObject+;
 #pragma link C++ class dd4hep::Ref_t+;
 #pragma link C++ class dd4hep::Handle<dd4hep::NamedObject>+;
-#pragma link C++ class pair<string, dd4hep::Handle<dd4hep::NamedObject> >+;
-#pragma link C++ class map<string, dd4hep::Handle<dd4hep::NamedObject> >+;
-#pragma link C++ class map<string, dd4hep::Handle<dd4hep::NamedObject> >::iterator;
-#pragma link C++ class map<string, dd4hep::Handle<dd4hep::NamedObject> >::const_iterator;
+#pragma link C++ class std::pair<std::string, dd4hep::Handle<dd4hep::NamedObject> >+;
+#pragma link C++ class std::map<std::string, dd4hep::Handle<dd4hep::NamedObject> >+;
+#pragma link C++ class std::map<std::string, dd4hep::Handle<dd4hep::NamedObject> >::iterator;
+#pragma link C++ class std::map<std::string, dd4hep::Handle<dd4hep::NamedObject> >::const_iterator;
 #pragma link C++ class dd4hep::detail::DD4hepUI;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<string, dd4hep::Handle<dd4hep::NamedObject> >::iterator&,const map<string, dd4hep::Handle<dd4hep::NamedObject> >::iterator& );
-#pragma link C++ function operator!=( const map<string, dd4hep::Handle<dd4hep::NamedObject> >::iterator&,const map<string, dd4hep::Handle<dd4hep::NamedObject> >::iterator& );
+#pragma link C++ function operator==( const std::map<std::string, dd4hep::Handle<dd4hep::NamedObject> >::iterator&,const std::map<std::string, dd4hep::Handle<dd4hep::NamedObject> >::iterator& );
+#pragma link C++ function operator!=( const std::map<std::string, dd4hep::Handle<dd4hep::NamedObject> >::iterator&,const std::map<std::string, dd4hep::Handle<dd4hep::NamedObject> >::iterator& );
 #endif
 
 #pragma link C++ class dd4hep::BasicGrammar+;
@@ -160,8 +158,8 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::DetectorData::ObjectHandleMap+;
 #pragma link C++ class dd4hep::Detector::PropertyValues+;
 #pragma link C++ class dd4hep::Detector::Properties+;
-#pragma link C++ class pair<dd4hep::IDDescriptor,dd4hep::DDSegmentation::Segmentation*>+;
-#pragma link C++ class map<dd4hep::Readout,pair<dd4hep::IDDescriptor,dd4hep::DDSegmentation::Segmentation*> >+;
+#pragma link C++ class std::pair<dd4hep::IDDescriptor,dd4hep::DDSegmentation::Segmentation*>+;
+#pragma link C++ class std::map<dd4hep::Readout,pair<dd4hep::IDDescriptor,dd4hep::DDSegmentation::Segmentation*> >+;
 
 // These below are the Namedobject instances to be generated ....
 //#pragma link C++ class dd4hep::Detector::HandleMap+;
@@ -175,10 +173,10 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::VolumeManagerContext+;
 #pragma link C++ class dd4hep::detail::VolumeManagerContextExtension+;
 #pragma link C++ class dd4hep::Handle<dd4hep::detail::VolumeManagerObject>+;
-#pragma link C++ class pair<Long64_t,dd4hep::VolumeManager>+;
-#pragma link C++ class map<dd4hep::DetElement,dd4hep::VolumeManager>+;
-#pragma link C++ class map<dd4hep::VolumeID,dd4hep::VolumeManager>+;
-#pragma link C++ class map<dd4hep::VolumeID,dd4hep::VolumeManagerContext*>+;
+#pragma link C++ class std::pair<Long64_t,dd4hep::VolumeManager>+;
+#pragma link C++ class std::map<dd4hep::DetElement,dd4hep::VolumeManager>+;
+#pragma link C++ class std::map<dd4hep::VolumeID,dd4hep::VolumeManager>+;
+#pragma link C++ class std::map<dd4hep::VolumeID,dd4hep::VolumeManagerContext*>+;
 
 #pragma link C++ class dd4hep::CartesianField+;
 #pragma link C++ class dd4hep::CartesianField::Object+;
@@ -201,7 +199,7 @@ template class dd4hep::Handle<TNamed>;
 
 // Objects.h
 #pragma link C++ class dd4hep::Author+;
-#pragma link C++ class vector<dd4hep::Author>+;
+#pragma link C++ class std::vector<dd4hep::Author>+;
 
 #pragma link C++ class dd4hep::Header+;
 #pragma link C++ class dd4hep::HeaderObject+;
@@ -210,35 +208,35 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::Constant+;
 #pragma link C++ class dd4hep::ConstantObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::ConstantObject>+;
-#pragma link C++ class vector<dd4hep::Constant>+;
+#pragma link C++ class std::vector<dd4hep::Constant>+;
 
 #pragma link C++ class dd4hep::Atom+;
-#pragma link C++ class vector<dd4hep::Atom>+;
+#pragma link C++ class std::vector<dd4hep::Atom>+;
 #pragma link C++ class dd4hep::Handle<TGeoElement>+;
 
 #pragma link C++ class dd4hep::Material+;
-#pragma link C++ class vector<dd4hep::Material>+;
+#pragma link C++ class std::vector<dd4hep::Material>+;
 #pragma link C++ class dd4hep::Handle<TGeoMedium>+;
 
 #pragma link C++ class dd4hep::VisAttr+;
-#pragma link C++ class vector<dd4hep::VisAttr>+;
+#pragma link C++ class std::vector<dd4hep::VisAttr>+;
 #pragma link C++ class dd4hep::VisAttrObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::VisAttrObject>+;
 
 #pragma link C++ class dd4hep::Limit+;
-#pragma link C++ class set<dd4hep::Limit>+;
-#pragma link C++ class vector<dd4hep::Limit>+;
+#pragma link C++ class std::set<dd4hep::Limit>+;
+#pragma link C++ class std::vector<dd4hep::Limit>+;
 #pragma link C++ class dd4hep::LimitSet+;
-#pragma link C++ class vector<dd4hep::LimitSet>+;
+#pragma link C++ class std::vector<dd4hep::LimitSet>+;
 #pragma link C++ class dd4hep::LimitSetObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::LimitSetObject>+;
 #pragma link C++ class dd4hep::Region+;
 #pragma link C++ class dd4hep::RegionObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::RegionObject>+;
-#pragma link C++ class vector<dd4hep::Region>+;
+#pragma link C++ class std::vector<dd4hep::Region>+;
 
 // Readout.h
-#pragma link C++ class vector<pair<size_t,string> >+;
+#pragma link C++ class std::vector<pair<size_t,string> >+;
 #pragma link C++ class dd4hep::Segmentation+;
 #pragma link C++ class dd4hep::SegmentationObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::SegmentationObject>+;
@@ -247,11 +245,11 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::HitCollection+;
 #pragma link C++ class dd4hep::ReadoutObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::ReadoutObject>+;
-#pragma link C++ class vector<dd4hep::HitCollection>+;
-#pragma link C++ class vector<dd4hep::Readout>+;
-#pragma link C++ class vector<dd4hep::HitCollection*>+;
-#pragma link C++ class vector<const dd4hep::HitCollection*>+;
-#pragma link C++ class vector<dd4hep::IDDescriptor>+;
+#pragma link C++ class std::vector<dd4hep::HitCollection>+;
+#pragma link C++ class std::vector<dd4hep::Readout>+;
+#pragma link C++ class std::vector<dd4hep::HitCollection*>+;
+#pragma link C++ class std::vector<const dd4hep::HitCollection*>+;
+#pragma link C++ class std::vector<dd4hep::IDDescriptor>+;
 
 // Alignment stuff
 #pragma link C++ class dd4hep::Delta+;
@@ -263,7 +261,7 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::AlignmentCondition+;
 #pragma link C++ class dd4hep::detail::AlignmentObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::detail::AlignmentObject>+;
-#pragma link C++ class pair<dd4hep::DetElement,dd4hep::AlignmentCondition>+;
+#pragma link C++ class std::pair<dd4hep::DetElement,dd4hep::AlignmentCondition>+;
 //#pragma link C++ class dd4hep::Grammar<dd4hep::detail::AlignmentObject>+;
 
 #pragma link C++ class dd4hep::align::GlobalAlignment+;
@@ -271,9 +269,9 @@ template class dd4hep::Handle<TNamed>;
 
 // Conditions stuff
 #pragma link C++ class dd4hep::Condition+;
-#pragma link C++ class vector<dd4hep::Condition>+;
+#pragma link C++ class std::vector<dd4hep::Condition>+;
 #pragma link C++ class dd4hep::ConditionKey+;
-#pragma link C++ class vector<dd4hep::ConditionKey>+;
+#pragma link C++ class std::vector<dd4hep::ConditionKey>+;
 #pragma link C++ class dd4hep::detail::ConditionObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::detail::ConditionObject>+;
 #pragma link C++ class dd4hep::OpaqueData+;
@@ -287,21 +285,21 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::DetElement::Processor+;
 #pragma link C++ class dd4hep::DetElementObject+;
 #pragma link C++ class dd4hep::Handle<dd4hep::DetElementObject>+;
-#pragma link C++ class vector<dd4hep::DetElement>+;
-#pragma link C++ class pair<string,dd4hep::DetElement>+;
-#pragma link C++ class map<string,dd4hep::DetElement>+;
-#pragma link C++ class map<string,dd4hep::DetElement>::iterator;
-#pragma link C++ class map<string,dd4hep::DetElement>::const_iterator;
+#pragma link C++ class std::vector<dd4hep::DetElement>+;
+#pragma link C++ class std::pair<std::string,dd4hep::DetElement>+;
+#pragma link C++ class std::map<std::string,dd4hep::DetElement>+;
+#pragma link C++ class std::map<std::string,dd4hep::DetElement>::iterator;
+#pragma link C++ class std::map<std::string,dd4hep::DetElement>::const_iterator;
 
 #pragma link C++ class dd4hep::DetectorProcessor+;
 #pragma link C++ class dd4hep::DetectorScanner+;
 
-#pragma link C++ class pair<dd4hep::DetElement,dd4hep::VolumeManager>+;
+#pragma link C++ class std::pair<dd4hep::DetElement,dd4hep::VolumeManager>+;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<string, dd4hep::DetElement >::iterator&,const map<string, dd4hep::DetElement >::iterator& );
-#pragma link C++ function operator!=( const map<string, dd4hep::DetElement >::iterator&,const map<string, dd4hep::DetElement >::iterator& );
+#pragma link C++ function operator==( const std::map<std::string, dd4hep::DetElement >::iterator&,const std::map<std::string, dd4hep::DetElement >::iterator& );
+#pragma link C++ function operator!=( const std::map<std::string, dd4hep::DetElement >::iterator&,const std::map<std::string, dd4hep::DetElement >::iterator& );
 #endif
 
 #pragma link C++ class dd4hep::SensitiveDetector+;
@@ -309,26 +307,26 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::Handle<dd4hep::SensitiveDetectorObject>+;
 #pragma link C++ class vector<dd4hep::SensitiveDetector>+;
 
-#pragma link C++ class pair<string, string>+;
-#pragma link C++ class map<string, string>+;
-#pragma link C++ class map<string, string>::iterator;
-#pragma link C++ class map<string, string>::const_iterator;
+#pragma link C++ class std::pair<std::string, std::string>+;
+#pragma link C++ class std::map<std::string, std::string>+;
+#pragma link C++ class std::map<std::string, std::string>::iterator;
+#pragma link C++ class std::map<std::string, std::string>::const_iterator;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<string, string>::iterator&, const map<string, string>::iterator& );
-#pragma link C++ function operator!=( const map<string, string>::iterator&, const map<string, string>::iterator& );
+#pragma link C++ function operator==( const std::map<std::string, std::string>::iterator&, const std::map<std::string, std::string>::iterator& );
+#pragma link C++ function operator!=( const std::map<std::string, std::string>::iterator&, const std::map<std::string, std::string>::iterator& );
 #endif
 
-#pragma link C++ class pair<string, map<string, string> >+;
-#pragma link C++ class map<string, map<string, string> >+;
-#pragma link C++ class map<string, map<string,string>>::iterator;
-#pragma link C++ class map<string, map<string,string>>::const_iterator;
+#pragma link C++ class std::pair<std::string, std::map<std::string, std::string> >+;
+#pragma link C++ class std::map<std::string, std::map<std::string, std::string> >+;
+#pragma link C++ class std::map<std::string, std::map<std::string,std::string>>::iterator;
+#pragma link C++ class std::map<std::string, std::map<std::string,std::string>>::const_iterator;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<string, map<string,string>>::iterator&, const map<string, map<string,string>>::iterator& );
-#pragma link C++ function operator!=( const map<string, map<string,string>>::iterator&, const map<string, map<string,string>>::iterator& );
+#pragma link C++ function operator==( const std::map<std::string, std::map<std::string,std::string>>::iterator&, const std::map<std::string, std::map<std::string,std::string>>::iterator& );
+#pragma link C++ function operator!=( const std::map<std::string, std::map<std::string,std::string>>::iterator&, const std::map<std::string, std::map<std::string,std::string>>::iterator& );
 #endif
 
 #pragma link C++ class dd4hep::Detector+;
@@ -336,8 +334,8 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::detail::interp;
 #pragma link C++ class dd4hep::detail::eval;
 
-#pragma link C++ function dd4hep::run_interpreter(const string& name);
-#pragma link C++ function dd4hep::_toDictionary(const string&, const string&);
+#pragma link C++ function dd4hep::run_interpreter(const std::string& name);
+#pragma link C++ function dd4hep::_toDictionary(const std::string&, const std::string&);
 #pragma link C++ function dd4hep::toStringSolid(const TGeoShape*, int);
 #pragma link C++ function dd4hep::toStringMesh(const TGeoShape*, int);
 #pragma link C++ function dd4hep::toStringMesh(dd4hep::PlacedVolume, int);

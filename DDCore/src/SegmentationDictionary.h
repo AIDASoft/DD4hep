@@ -57,15 +57,15 @@ typedef dd4hep::DDSegmentation::CellID CellID;
 #pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<float>+;
 #pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<double>+;
 #pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<string>+;
-#pragma link C++ class map<string,dd4hep::DDSegmentation::TypedSegmentationParameter<string>* >+;
-#pragma link C++ class map<string,dd4hep::DDSegmentation::TypedSegmentationParameter<double>* >+;
-#pragma link C++ class map<string,dd4hep::DDSegmentation::TypedSegmentationParameter<float>* >+;
+#pragma link C++ class std::map<std::string,dd4hep::DDSegmentation::TypedSegmentationParameter<string>* >+;
+#pragma link C++ class std::map<std::string,dd4hep::DDSegmentation::TypedSegmentationParameter<double>* >+;
+#pragma link C++ class std::map<std::string,dd4hep::DDSegmentation::TypedSegmentationParameter<float>* >+;
 
 /// Severe problem due to template specialization!
-#pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<vector<int> >+;
-#pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<vector<float> >+;
-#pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<vector<double> >+;
-#pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<vector<string> >+;
+#pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<std::vector<int> >+;
+#pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<std::vector<float> >+;
+#pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<std::vector<double> >+;
+#pragma link C++ class dd4hep::DDSegmentation::TypedSegmentationParameter<std::vector<std::string> >+;
 
 #pragma link C++ class dd4hep::DDSegmentation::Segmentation+;
 #pragma link C++ class dd4hep::DDSegmentation::CartesianGrid+;
