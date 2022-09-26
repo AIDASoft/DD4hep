@@ -76,8 +76,8 @@ void Geant4IsotropeGenerator::getParticleDirectionEta(int, ROOT::Math::XYZVector
   // See https://en.wikipedia.org/wiki/Pseudorapidity
   const double dmin = std::numeric_limits<double>::epsilon();
   double phi        = m_phiMin+(m_phiMax-m_phiMin)*rnd.rndm();
-  double eta_min    = Distribution::eta(m_thetaMin>dmin ? m_thetaMin : dmin);
-  double eta_max    = Distribution::eta(m_thetaMax>(M_PI-dmin) ? m_thetaMax : M_PI-dmin);
+  double eta_max    = Distribution::eta(m_thetaMin>dmin ? m_thetaMin : dmin);
+  double eta_min    = Distribution::eta(m_thetaMax>(M_PI-dmin) ? M_PI-dmin : m_thetaMax);
   double eta        = eta_min + (eta_max-eta_min)*rnd.rndm();
   double x1         = std::cos(phi);
   double x2         = std::sin(phi);
