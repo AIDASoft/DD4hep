@@ -1,3 +1,56 @@
+# v01-23
+
+* 2022-09-28 Wouter Deconinck ([PR#982](https://github.com/aidasoft/dd4hep/pull/982))
+  - ddsim: set eta_min, eta_max correctly for `ddsim --gun.distribution eta`
+
+* 2022-09-23 Markus Frank ([PR#980](https://github.com/aidasoft/dd4hep/pull/980))
+  Remove using declarations in root-cling dictionary files to avoid interpreter clashes with the global namespace
+  
+  Affected files:
+  -   DDCore/src/GeoDictionary.h
+  -   DDCore/src/PropertyDictionary.h
+  -   DDCore/src/RootDictionary.h
+  -   DDCore/src/SegmentationDictionary.h
+  -   DDEve/include/DDEve/Dictionary.h
+  -   DDG4/include/DDG4/DDG4Dict.h
+
+* 2022-09-23 Marco Clemencic ([PR#979](https://github.com/aidasoft/dd4hep/pull/979))
+  - Use explicit namespaces in DDCond dictionary
+
+* 2022-09-19 Wouter Deconinck ([PR#976](https://github.com/aidasoft/dd4hep/pull/976))
+  - `geoConverter -compact2tgeo` to write TGeo geometry to ROOT file
+
+* 2022-09-19 Christopher Dilks ([PR#974](https://github.com/aidasoft/dd4hep/pull/974))
+  - add example RICH detector, demonstrating and testing `Geant4OpticalTrackerAction`
+
+* 2022-09-16 Wouter Deconinck ([PR#975](https://github.com/aidasoft/dd4hep/pull/975))
+  - materialBudget: enable use with asymmetric detectors: adding thetaMin/thetaMax/etaMin to the steering file
+
+* 2022-09-15 Wouter Deconinck ([PR#967](https://github.com/aidasoft/dd4hep/pull/967))
+  - Geant4OpticalTrackerAction which stops-and-kills optical photons for e.g. SiPM sensor planes
+
+* 2022-09-12 Christopher Dilks ([PR#973](https://github.com/aidasoft/dd4hep/pull/973))
+  - fix typo in `examples/README.md`: `cmake` option `DD4HEP_BUILD_EXAMPLES` should be `DD4HEP_EXAMPLES`
+
+* 2022-09-07 Dmitry Kalinkin ([PR#972](https://github.com/aidasoft/dd4hep/pull/972))
+  - Refactor thisdd4hep.sh to use local variables where possible to prevent user environment corruption.
+
+* 2022-09-01 Andre Sailer ([PR#969](https://github.com/aidasoft/dd4hep/pull/969))
+  - DDSim: ddsim now prints out if the defaultFilter or if no filter is used for a sensitive detector
+
+* 2022-09-01 Wouter Deconinck ([PR#968](https://github.com/aidasoft/dd4hep/pull/968))
+  - ddsin: Add `--runType qt` support for enabling the graphical Qt interface for geant4
+  - ddsim: change shell type to tcsh: enabling tab completion when Geant4 offers it
+
+* 2022-08-26 Andre Sailer ([PR#962](https://github.com/aidasoft/dd4hep/pull/962))
+  - DDCore: DetectorInfo: make INFO attributes optional, fixes #960
+
+* 2022-08-25 Andre Sailer ([PR#963](https://github.com/aidasoft/dd4hep/pull/963))
+  - ChannelingCrystalMaterial: fix crystal_orientation to be constPropertyRef
+
+* 2022-08-25 Andre Sailer ([PR#961](https://github.com/aidasoft/dd4hep/pull/961))
+  - DDSim: fix example for adding user physics list extension
+
 # v01-22
 
 * 2022-08-16 Andre Sailer ([PR#957](https://github.com/aidasoft/dd4hep/pull/957))
