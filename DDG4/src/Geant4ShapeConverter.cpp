@@ -274,6 +274,7 @@ namespace dd4hep {
         }
         g4->AddFacet(g4f);
       }
+      g4->SetSolidClosed(sh->IsClosedBody());
       return g4;
     }
     
