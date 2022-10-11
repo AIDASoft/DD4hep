@@ -18,6 +18,7 @@
 
 #include "DDDigi/DigiHandle.h"
 #include "DDDigi/DigiKernel.h"
+#include "DDDigi/DigiInputAction.h"
 #include "DDDigi/DigiEventAction.h"
 #include "DDDigi/DigiSignalProcessor.h"
 
@@ -62,12 +63,15 @@ namespace dd4hep {
       DigiEventAction* object = PluginService::Create<DigiEventAction*>(t, &kernel, n);
       return object ? dynamic_cast<T*>(object) : nullptr;
     }
+
     template <> DigiAction* _raw_create<DigiAction>(const std::string& t, const DigiKernel& kernel, const std::string& n)    {
       return PluginService::Create<DigiAction*>(t, &kernel, n);
     }
+
     template <> DigiSignalProcessor* _raw_create<DigiSignalProcessor>(const std::string& t, const DigiKernel& kernel, const std::string& n)    {
       return PluginService::Create<DigiSignalProcessor*>(t, &kernel, n);
     }
+
     template <typename TYPE> TYPE* _create_object(const DigiKernel& kernel, const TypeName& typ)    {
       TYPE* object = _raw_create<TYPE>(typ.first, kernel, typ.second);
       if (!object && typ.first == typ.second) {
@@ -177,6 +181,7 @@ namespace dd4hep {
     KernelHandle::KernelHandle()  {
       value = &DigiKernel::instance(Detector::getInstance());
     }
+
     KernelHandle::KernelHandle(DigiKernel* k) : value(k)  {
     }
   }
@@ -190,6 +195,7 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
     template class DigiHandle<DigiAction>;
+    template class DigiHandle<DigiInputAction>;
     template class DigiHandle<DigiEventAction>;
     template class DigiHandle<DigiSynchronize>;
     template class DigiHandle<DigiActionSequence>;

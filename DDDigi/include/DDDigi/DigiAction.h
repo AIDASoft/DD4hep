@@ -99,6 +99,11 @@ namespace dd4hep {
       /// Reference to the Digi context
 #if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
       const DigiKernel*  m_kernel;
+    public:
+      const DigiKernel*  kernel()  const   {
+	return m_kernel;
+      }
+    protected:
 #else
       const DigiKernel&  m_kernel;
 #endif
@@ -282,6 +287,8 @@ namespace dd4hep {
       /// Support for messages with variable output level using output level+2
       void printP2(const char* fmt, ...) const;
 
+      /// Support for building formatted messages
+      std::string format(const char* fmt, ...) const;
       /// Support of debug messages.
       void debug(const char* fmt, ...) const;
       /// Support of info messages.

@@ -18,7 +18,7 @@
 
 // C/C++ include files
 #include <mutex>
-#include <atomic>
+#include <memory>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -48,20 +48,20 @@ namespace dd4hep {
       class Wrapper;
 
       /// Internal only data structures;
-      Internals*            internals = 0;
+      Internals*            internals   { nullptr };
       
     protected:
       /// Detector description object
-      Detector*             m_detDesc = 0;
+      Detector*             m_detDesc         { nullptr };
       /// Reference to the user framework
       mutable UserFramework m_userFramework;
       
       /// Execute one single event
-      virtual void executeEvent(DigiContext* context);
+      virtual void executeEvent(std::unique_ptr<DigiContext>&& context);
       /// Notify kernel that the execution of one single event finished
-      void notify(DigiContext* context);
+      void notify(std::unique_ptr<DigiContext>&& context);
       /// Notify kernel that the execution of one single event finished
-      void notify(DigiContext* context, const std::exception& e);
+      void notify(std::unique_ptr<DigiContext>&&, const std::exception& e);
       
     protected:
       /// Define standard assignments and constructors
@@ -87,6 +87,15 @@ namespace dd4hep {
       template <typename T> void setUserFramework(T* object)   {
         m_userFramework = UserFramework(object,&typeid(T));
       }
+
+      /// Have a shared initializer lock
+      std::mutex& initializer_lock()  const;
+
+      /// Have a global I/O lock (e.g. for ROOT)
+      std::mutex& global_io_lock()   const;
+
+      /// Have a global output log lock
+      std::mutex& global_output_lock()   const;
       
       /** Property access                            */
       /// Access to the properties of the object
@@ -111,6 +120,13 @@ namespace dd4hep {
       void setOutputLevel(const std::string object, PrintLevel new_level);
       /// Retrieve the global output level of a named object.
       PrintLevel getOutputLevel(const std::string object) const;
+
+      /// Access current number of events still to process
+      std::size_t events_todo()  const;
+      /// Access current number of events already processed
+      std::size_t events_done()  const;
+      /// Access current number of events processing (events in flight)
+      std::size_t events_processing()  const;
 
       /// Construct detector geometry using description plugin
       virtual void loadGeometry(const std::string& compact_file);

@@ -31,7 +31,7 @@ namespace dd4hep {
     class DigiContext;
     class DigiSegmentation;
     template <typename SEGMENTATION> class cell_data;
-    template <typename SEGMENTATION> class segmentation_data;    
+    template <typename SEGMENTATION> class segmentation_data;
     
     /// 
     /*
@@ -59,7 +59,7 @@ namespace dd4hep {
       /// Default move assignment
       DigiCellData& operator=(DigiCellData&& copy) = delete;
       /// Default copy assignment
-      DigiCellData& operator=(const DigiCellData& copy) = delete;      
+      DigiCellData& operator=(const DigiCellData& copy) = delete;
     };
 
     template <typename SEGMENTATION> 

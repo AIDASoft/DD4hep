@@ -72,7 +72,6 @@ def import_namespace_item(ns, nam):
 def import_root(nam):
   setattr(name_space, nam, getattr(ROOT, nam))
 
-
 # ---------------------------------------------------------------------------
 #
 try:
@@ -97,6 +96,29 @@ class _Levels:
     self.FATAL = 6
     self.ALWAYS = 7
 
+# ---------------------------------------------------------------------------
+def unicode_2_string(value):
+  """Turn any unicode literal into str, needed when passing to c++.
+
+  Recursively transverses dicts, lists, sets, tuples
+
+  :return: always a str
+  """
+  import ddsix as six
+  if isinstance(value, (bool, float, six.integer_types)):
+    value = value
+  elif isinstance(value, six.string_types):
+    value = str(value)
+  elif isinstance(value, (list, set, tuple)):
+    value = [unicode_2_string(x) for x in value]
+  elif isinstance(value, dict):
+    tempDict = {}
+    for key, val in value.items():
+      key = unicode_2_string(key)
+      val = unicode_2_string(val)
+      tempDict[key] = val
+    value = tempDict
+  return str(value)
 
 OutputLevel = _Levels()
 # ------------------------Generic STL stuff can be accessed using std:  -----
@@ -125,21 +147,30 @@ import_namespace_item('core', 'run_interpreter')
 #
 import_namespace_item('detail', 'interp')
 import_namespace_item('detail', 'eval')
+
 # ---------------------------------------------------------------------------
 # def run_interpreter(name):   detail.interp.run(name)
 # def evaluator():     return eval.instance()
 # def g4Evaluator():   return eval.g4instance()
+
 # ---------------------------------------------------------------------------
-
-
 def import_detail():
   import_namespace_item('detail', 'DD4hepUI')
 
-
+# ---------------------------------------------------------------------------
 def import_geometry():
   import_namespace_item('core', 'setPrintLevel')
   import_namespace_item('core', 'setPrintFormat')
   import_namespace_item('core', 'printLevel')
+  import_namespace_item('core', 'PrintLevel')
+
+  import_namespace_item('core', 'debug')
+  import_namespace_item('core', 'info')
+  import_namespace_item('core', 'warning')
+  import_namespace_item('core', 'error')
+  import_namespace_item('core', 'fatal')
+  import_namespace_item('core', 'exception')
+
   import_namespace_item('core', 'Detector')
   import_namespace_item('core', 'evaluator')
   import_namespace_item('core', 'g4Evaluator')
@@ -157,10 +188,16 @@ def import_geometry():
   import_namespace_item('core', 'VisAttr')
   import_namespace_item('core', 'Limit')
   import_namespace_item('core', 'LimitSet')
+  import_namespace_item('core', 'LimitSetObject')
   import_namespace_item('core', 'Region')
+  import_namespace_item('core', 'RegionObject')
+  import_namespace_item('core', 'HitCollection')
 
   # // Readout.h
+  import_namespace_item('core', 'Segmentation')
+  import_namespace_item('core', 'SegmentationObject')
   import_namespace_item('core', 'Readout')
+  import_namespace_item('core', 'ReadoutObject')
 
   # // Alignments.h
   import_namespace_item('core', 'Alignment')
@@ -206,7 +243,7 @@ def import_geometry():
   import_namespace_item('core', 'UnionSolid')
   import_namespace_item('core', 'IntersectionSolid')
 
-
+# ---------------------------------------------------------------------------
 def import_tgeo():
   import_root('TGeoManager')
   import_root('TGeoNode')
@@ -259,6 +296,55 @@ def import_tgeo():
 import_tgeo()
 import_geometry()
 import_detail()
+
+# ---------------------------------------------------------------------------
+class Logger:
+  """
+  Helper class to use the dd4hep printout functions from python
+  
+  \author  M.Frank
+  \version 1.0
+  """
+
+  def __init__(self, name):
+    "Logger constructor"
+    self.name = name
+
+  def always(self, msg):
+    "Call dd4hep printout function with level ALWAYS"
+    dd4hep.always(self.name, msg)
+
+  def verbose(self, msg):
+    "Call dd4hep printout function with level VERBOSE"
+    dd4hep.verbose(self.name, msg)
+
+  def debug(self, msg):
+    "Call dd4hep printout function with level DEBUG"
+    dd4hep.debug(self.name, msg)
+
+  def info(self, msg):
+    "Call dd4hep printout function with level INFO"
+    dd4hep.info(self.name, msg)
+
+  def warning(self, msg):
+    "Call dd4hep printout function with level WARNING"
+    dd4hep.warning(self.name, msg)
+
+  def error(self, msg):
+    "Call dd4hep printout function with level ERROR"
+    dd4hep.error(self.name, msg)
+
+  def fatal(self, msg):
+    "Call dd4hep printout function with level FATAL"
+    dd4hep.fatal(self.name, msg)
+
+  def exception(self, msg):
+    "Call dd4hep exception function"
+    dd4hep.exception(self.name, msg)
+
+dd4hep_logger = Logger
+
+# ---------------------------------------------------------------------------
 #
 #  Import units from TGeo.
 #  Calling import_units makes all the units local to the dd4hep module.

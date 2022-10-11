@@ -103,6 +103,6 @@ DigiTestAction::~DigiTestAction() {
 /// Pre-track action callback
 void DigiTestAction::execute(DigiContext& context)  const   {
   debug("+++ Event: %8d (DigiTestAction)  %d msec",
-       context.event().eventNumber, m_sleep);
+       context.event->eventNumber, m_sleep);
   if ( m_sleep > 0 ) ::usleep(1000*m_sleep);
 }

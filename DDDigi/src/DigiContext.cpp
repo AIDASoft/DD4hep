@@ -12,25 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiContext.h"
-#include "DDDigi/DigiKernel.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDDigi/DigiContext.h>
+#include <DDDigi/DigiKernel.h>
 
 // C/C++ include files
 #include <algorithm>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::digi;
 
 /// Default constructor
-DigiContext::DigiContext(const DigiKernel* k, DigiEvent* e)
-  : m_kernel(k), m_event(e)
+DigiContext::DigiContext(const DigiKernel& k, std::unique_ptr<DigiEvent>&& e)
+  : kernel(k), event(std::move(e))
 {
-  if ( !m_kernel )    {
-    except("DigiContext","Cannot initialize Digitization context with invalid DigiKernel!");
-  }
   InstanceCount::increment(this);
 }
 
@@ -40,40 +35,43 @@ DigiContext::~DigiContext() {
   InstanceCount::decrement(this);
 }
 
-/// Set the geant4 event reference
-void DigiContext::setEvent(DigiEvent* new_event)   {
-  m_event = new_event;
+/// Have a shared initializer lock
+std::mutex& DigiContext::initializer_lock()  const  {
+  return kernel.initializer_lock();
 }
 
-/// Access the geant4 event -- valid only between BeginEvent() and EndEvent()!
-DigiEvent& DigiContext::event()  const   {
-  if ( m_event ) return *m_event;
-  invalidHandleError<DigiEvent>();
-  return *m_event;
+/// Have a global I/O lock (e.g. for ROOT)
+std::mutex& DigiContext::global_io_lock()   const  {
+  return kernel.global_io_lock();
+}
+
+/// Have a global output log lock
+std::mutex& DigiContext::global_output_lock()   const  {
+  return kernel.global_output_lock();
 }
 
 /// Access to detector description
-Detector& DigiContext::detectorDescription()  const {
-  return m_kernel->detectorDescription();
+dd4hep::Detector& DigiContext::detectorDescription()  const {
+  return kernel.detectorDescription();
 }
 
 /// Generic framework access
 DigiContext::UserFramework& DigiContext::userFramework()  const  {
-  return m_kernel->userFramework();
+  return kernel.userFramework();
 }
 
 /// Access to the main input action sequence from the kernel object
 DigiActionSequence& DigiContext::inputAction() const    {
-  return m_kernel->inputAction();
+  return kernel.inputAction();
 }
 
 /// Access to the main event action sequence from the kernel object
 DigiActionSequence& DigiContext::eventAction()  const  {
-  return m_kernel->eventAction();
+  return kernel.eventAction();
 }
 
 /// Access to the main output action sequence from the kernel object
 DigiActionSequence& DigiContext::outputAction() const    {
-  return m_kernel->outputAction();
+  return kernel.outputAction();
 }
 

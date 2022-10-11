@@ -24,14 +24,16 @@
 #include "DDDigi/DigiInputAction.h"
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiInputAction)
 
-#include "DDDigi/DigiDDG4Input.h"
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiDDG4Input)
+#include "DDDigi/DigiROOTInput.h"
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiROOTInput)
 
 #include "DDDigi/DigiSynchronize.h"
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSynchronize)
 
 #include "DDDigi/DigiActionSequence.h"
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiActionSequence)
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiParallelActionSequence)
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSequentialActionSequence)
 
 #include "DDDigi/DigiSubdetectorSequence.h"
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSubdetectorSequence)
@@ -41,6 +43,19 @@ DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiLockedAction)
 
 #include "DDDigi/DigiSignalProcessorSequence.h"
 DECLARE_DIGISIGNALPROCESSOR_NS(dd4hep::digi,DigiSignalProcessorSequence)
+
+#include "DDDigi/DigiStoreDump.h"
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiStoreDump)
+
+#include "DDDigi/DigiHitAttenuatorExp.h"
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiHitAttenuatorExp)
+
+#include "DDDigi/DigiContainerCombine.h"
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiContainerCombine)
+
+#include "DDDigi/DigiSegmentationSplitter.h"
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSegmentationSplitter)
+
 
 
 using namespace std;

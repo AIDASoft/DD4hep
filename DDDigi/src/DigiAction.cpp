@@ -12,33 +12,31 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiAction.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDDigi/DigiAction.h>
 
 // C/C++ include files
 #include <algorithm>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::digi;
 
-TypeName TypeName::split(const string& type_name, const string& delim) {
-  size_t idx = type_name.find(delim);
-  string typ = type_name, nam = type_name;
-  if (idx != string::npos) {
+TypeName TypeName::split(const std::string& type_name, const std::string& delim) {
+  std::size_t idx = type_name.find(delim);
+  std::string typ = type_name, nam = type_name;
+  if (idx != std::string::npos) {
     typ = type_name.substr(0, idx);
     nam = type_name.substr(idx + 1);
   }
   return TypeName(typ, nam);
 }
 
-TypeName TypeName::split(const string& type_name) {
+TypeName TypeName::split(const std::string& type_name) {
   return split(type_name,"/");
 }
 
 /// Standard constructor
-DigiAction::DigiAction(const DigiKernel& krnl, const string& nam)
+DigiAction::DigiAction(const DigiKernel& krnl, const std::string& nam)
   : m_kernel(krnl), m_name(nam), m_outputLevel(INFO)
 {
   InstanceCount::increment(this);
@@ -69,25 +67,25 @@ long DigiAction::release() {
 }
 
 /// Set the output level; returns previous value
-PrintLevel DigiAction::setOutputLevel(PrintLevel new_level)  {
+dd4hep::PrintLevel DigiAction::setOutputLevel(PrintLevel new_level)  {
   int old = m_outputLevel;
   m_outputLevel = new_level;
   return (PrintLevel)old;
 }
 
 /// Check property for existence
-bool DigiAction::hasProperty(const string& nam) const    {
+bool DigiAction::hasProperty(const std::string& nam) const    {
   return m_properties.exists(nam);
 }
 
 /// Access single property
-Property& DigiAction::property(const string& nam)   {
+dd4hep::Property& DigiAction::property(const std::string& nam)   {
   return properties()[nam];
 }
 
 /// Support for messages with variable output level using output level
 void DigiAction::print(const char* fmt, ...) const   {
-  int level = max(int(outputLevel()),(int)VERBOSE);
+  int level = std::max(int(outputLevel()),(int)VERBOSE);
   if ( level >= printLevel() )  {
     va_list args;
     va_start(args, fmt);
@@ -98,7 +96,7 @@ void DigiAction::print(const char* fmt, ...) const   {
 
 /// Support for messages with variable output level using output level-1
 void DigiAction::printM1(const char* fmt, ...) const   {
-  int level = max(outputLevel()-1,(int)VERBOSE);
+  int level = std::max(outputLevel()-1,(int)VERBOSE);
   if ( level >= printLevel() )  {
     va_list args;
     va_start(args, fmt);
@@ -109,7 +107,7 @@ void DigiAction::printM1(const char* fmt, ...) const   {
 
 /// Support for messages with variable output level using output level-2
 void DigiAction::printM2(const char* fmt, ...) const   {
-  int level = max(outputLevel()-2,(int)VERBOSE);
+  int level = std::max(outputLevel()-2,(int)VERBOSE);
   if ( level >= printLevel() )  {
     va_list args;
     va_start(args, fmt);
@@ -120,7 +118,7 @@ void DigiAction::printM2(const char* fmt, ...) const   {
 
 /// Support for messages with variable output level using output level-1
 void DigiAction::printP1(const char* fmt, ...) const   {
-  int level = min(outputLevel()+1,(int)FATAL);
+  int level = std::min(outputLevel()+1,(int)FATAL);
   if ( level >= printLevel() )  {
     va_list args;
     va_start(args, fmt);
@@ -131,13 +129,22 @@ void DigiAction::printP1(const char* fmt, ...) const   {
 
 /// Support for messages with variable output level using output level-2
 void DigiAction::printP2(const char* fmt, ...) const   {
-  int level = min(outputLevel()+2,(int)FATAL);
+  int level = std::min(outputLevel()+2,(int)FATAL);
   if ( level >= printLevel() )  {
     va_list args;
     va_start(args, fmt);
     dd4hep::printout((PrintLevel)level, m_name.c_str(), fmt, args);
     va_end(args);
   }
+}
+
+/// Support of debug messages.
+std::string DigiAction::format(const char* fmt, ...) const {
+  va_list args;
+  va_start(args, fmt);
+  std::string str = dd4hep::format(nullptr, fmt, args);
+  va_end(args);
+  return str;
 }
 
 /// Support of debug messages.
@@ -193,10 +200,10 @@ void DigiAction::fatal(const char* fmt, ...) const {
 void DigiAction::except(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
-  string err = dd4hep::format(m_name, fmt, args);
+  std::string err = dd4hep::format(m_name, fmt, args);
   dd4hep::printout(dd4hep::FATAL, m_name, err.c_str());
   va_end(args);
-  throw runtime_error(err);
+  throw std::runtime_error(err);
 }
 
 /// Optional action initialization if required

@@ -51,7 +51,7 @@ void DigiSynchronize::execute(DigiContext& context)  const   {
     m_kernel.execute(m_actors, context);
   chrono::duration<double> secs = chrono::high_resolution_clock::now() - start;
   debug("+++ Event: %8d (DigiSynchronize) Parallel: %-4s  %3ld actions [%8.3g sec]",
-        context.event().eventNumber, yes_no(m_parallel), m_actors.size(),
+        context.event->eventNumber, yes_no(m_parallel), m_actors.size(),
         secs.count());
 }
 

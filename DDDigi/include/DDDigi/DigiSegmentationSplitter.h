@@ -10,20 +10,17 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDDIGI_DIGIEVENTACTION_H
-#define DDDIGI_DIGIEVENTACTION_H
+#ifndef DDDIGI_DIGISEGMENTATIONSPLITTER_H
+#define DDDIGI_DIGISEGMENTATIONSPLITTER_H
 
 // Framework include files
-#include <DDDigi/DigiAction.h>
+#include <DDDigi/DigiEventAction.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
-
-    /// Forward declarations
-    class DigiEvent;
 
     /// Default base class for all Digitizer actions and derivates thereof.
     /**
@@ -34,32 +31,31 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class DigiEventAction : public DigiAction   {
-      friend class DigiKernel;
-
+    class DigiSegmentationSplitter : public DigiEventAction   {
     protected:
-      /// Property: Support parallel execution
-      bool               m_parallel    = false;
+      /// Implementation declaration
+      class internals_t;
+
+      /// Reference to the implementation
+      std::unique_ptr<internals_t> internals;
 
     protected:
       /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiEventAction);
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiSegmentationSplitter);
 
       /// Default destructor
-      virtual ~DigiEventAction();
+      virtual ~DigiSegmentationSplitter();
+
+      /// Split actions according to the segmentation
+      void split_segments(DigiEvent& event, DigiEvent::container_map_t& data)  const;
 
     public:
       /// Standard constructor
-      DigiEventAction(const DigiKernel& kernel, const std::string& nam);
-      /// Access parallization flag
-      bool executeParallel()  const  {
-        return m_parallel;
-      }      
-      /// Set the parallization flag; returns previous value
-      bool setExecuteParallel(bool new_value);
+      DigiSegmentationSplitter(const DigiKernel& kernel, const std::string& name);
+
       /// Main functional callback
-      virtual void execute(DigiContext& context)   const = 0;
+      virtual void execute(DigiContext& context)  const;
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DDDIGI_DIGIEVENTACTION_H
+#endif // DDDIGI_DIGISEGMENTATIONSPLITTER_H

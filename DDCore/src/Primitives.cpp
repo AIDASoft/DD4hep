@@ -165,6 +165,50 @@ unsigned long long int dd4hep::detail::hash64(const std::string& key)  {
   return std::accumulate(begin(key),end(key),FNV1a_64::hashinit,FNV1a_64::doByte);
 }
 
+/// Replace all occurrencies of a string
+std::string dd4hep::detail::str_replace(const std::string& str,
+					const std::string& pattern,
+					const std::string& replacement)   {
+  std::string res = str;
+  for(size_t id=res.find(pattern); id != std::string::npos; id = res.find(pattern) )
+    res.replace(id, pattern.length(), replacement);
+  return res;
+}
+
+/// Replace all occurrencies of a string
+std::string dd4hep::detail::str_replace(const std::string& str,
+					char  pattern,
+					const std::string& replacement)   {
+  std::string res = str;
+  for(size_t id=res.find(pattern); id != std::string::npos; id = res.find(pattern) )
+    res.replace(id, 1, replacement);
+  return res;
+}
+
+/// Replace all occurrencies of a string
+std::string dd4hep::detail::str_replace(const std::string& str,
+					char  pattern,
+				        char  replacement)   {
+  std::string res = str;
+  for(size_t id=res.find(pattern); id != std::string::npos; id = res.find(pattern) )
+    res.replace(id, 1, 1, replacement);
+  return res;
+}
+
+/// C++ version to convert a string to lower case
+std::string dd4hep::detail::str_lower(const std::string& str) {
+  std::string res = str.c_str();
+  std::transform(res.begin(), res.end(), res.begin(), ::tolower);
+  return res;
+}
+
+/// C++ version to convert a string to upper case
+std::string dd4hep::detail::str_upper(const std::string& str) {
+  std::string res = str.c_str();
+  std::transform(res.begin(), res.end(), res.begin(), ::toupper);
+  return res;
+}
+
 long int dd4hep::detail::makeTime(int year, int month, int day,
                           int hour, int minutes, int seconds)
 {
