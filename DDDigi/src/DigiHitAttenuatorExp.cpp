@@ -12,11 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
+#include <DD4hep/InstanceCount.h>
 
-#include "DDDigi/DigiData.h"
-#include "DDDigi/DigiContext.h"
-#include "DDDigi/DigiHitAttenuatorExp.h"
+#include <DDDigi/DigiData.h>
+#include <DDDigi/DigiContext.h>
+#include <DDDigi/DigiHitAttenuatorExp.h>
 
 class dd4hep::digi::DigiHitAttenuatorExp::internals_t   {
 public:

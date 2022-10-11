@@ -14,8 +14,8 @@
 #define DDDIGI_DIGISIGNALPROCESSOR_H
 
 /// Framework include files
-#include "DDDigi/DigiAction.h"
-#include "DDDigi/DigiData.h"
+#include <DDDigi/DigiAction.h>
+#include <DDDigi/DigiData.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

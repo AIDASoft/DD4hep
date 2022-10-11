@@ -12,11 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
+#include <DD4hep/InstanceCount.h>
 
-#include "DDDigi/DigiData.h"
-#include "DDDigi/DigiContext.h"
-#include "DDDigi/DigiContainerCombine.h"
+#include <DDDigi/DigiData.h>
+#include <DDDigi/DigiContext.h>
+#include <DDDigi/DigiContainerCombine.h>
 
 using dd4hep::digi::DigiContainerCombine;
 

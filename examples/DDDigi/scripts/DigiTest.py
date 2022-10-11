@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 """
   00C7A3C1 SiVertexEndcapHits               : map<long long, EnergyDeposit>
   00D16F45 EcalBarrelHits                   : map<long long, EnergyDeposit>
-  0D3C3803 MCParticles                      : 
+  0D3C3803 MCParticles                      :
   2E9082A9 HcalPlugHits                     : map<long long, EnergyDeposit>
   3A89E02E HcalEndcapHits                   : map<long long, EnergyDeposit>
   569C1C49 HcalBarrelHits                   : map<long long, EnergyDeposit>
@@ -66,8 +66,7 @@ class Test(dddigi.Digitize):
         'CLICSiD_2022-10-05_13-21.root',
         'CLICSiD_2022-10-05_13-52.root',
         'CLICSiD_2022-10-05_14-16.root',
-        'CLICSiD_2022-10-05_14-40.root'
-    ]
+        'CLICSiD_2022-10-05_14-40.root']
     self.used_inputs = []
 
   def check_creation(self, objs):
@@ -88,11 +87,9 @@ class Test(dddigi.Digitize):
     return next
 
   def run_checked(self, num_events=5, num_threads=5, parallel=3):
-    evt_todo = num_events
-    evt_done = digi.run(num_events=evt_todo, num_threads=num_threads, parallel=parallel)
-    if evt_done == evt_todo:
+    result = "FAILED"
+    evt_done = self.run(num_events=num_events, num_threads=num_threads, parallel=parallel)
+    if evt_done == num_events:
         result = "PASSED"
-    else:
-        result = "FAILED"
-    self.always('%s Test finished after processing %d events.'%(result, digi.events_done(),))
+    self.always('%s Test finished after processing %d events.'%(result, evt_done,))
     self.always('Test done. Exiting')

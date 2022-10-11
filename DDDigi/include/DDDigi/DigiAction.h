@@ -14,10 +14,10 @@
 #define DDDIGI_DIGIACTION_H
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Callback.h"
-#include "DD4hep/ComponentProperties.h"
-#include "DDDigi/DigiContext.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Callback.h>
+#include <DD4hep/ComponentProperties.h>
+#include <DDDigi/DigiContext.h>
 
 // C/C++ include files
 #include <string>

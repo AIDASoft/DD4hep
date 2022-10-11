@@ -12,8 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiSignalProcessor.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDDigi/DigiSignalProcessor.h>
 
 /// Standard constructor
 dd4hep::digi::DigiSignalProcessor::DigiSignalProcessor(const DigiKernel& krnl, const std::string& nam)

@@ -11,9 +11,9 @@
 //
 //==========================================================================
 
-// Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiActionSequence.h"
+/// Framework include files
+#include <DD4hep/InstanceCount.h>
+#include <DDDigi/DigiActionSequence.h>
 
 // C/C++ include files
 #include <stdexcept>

@@ -13,8 +13,8 @@
 #ifndef DDDIGI_DIGISYNCHRONIZE_H
 #define DDDIGI_DIGISYNCHRONIZE_H
 
-// Framework incloude files
-#include "DDDigi/DigiEventAction.h"
+/// Framework incloude files
+#include <DDDigi/DigiEventAction.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

@@ -14,11 +14,11 @@
 #define DDDIGI_DIGIDATA_H
 
 /// Framework include files
-#include "DD4hep/config.h"
-#include "DD4hep/Objects.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/ObjectExtensions.h"
+#include <DD4hep/config.h>
+#include <DD4hep/Objects.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/ObjectExtensions.h>
 
 /// C/C++ include files
 #include <functional>
@@ -240,7 +240,7 @@ namespace dd4hep {
 /// <any> is not properly processed by cling.
 /// We need to exclude any reference to it.
 #if !defined(DD4HEP_INTERPRETER_MODE)
-#include "DD4hep/Any.h"
+#include <DD4hep/Any.h>
 #endif
 
 /// Namespace for the AIDA detector description toolkit

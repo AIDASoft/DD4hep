@@ -24,10 +24,10 @@ def run():
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
   combine = event.adopt_action('DigiContainerCombine/Combine', masks=[0x0, 0x1, 0x2, 0x3], deposit_mask=0xFEED)
   combine.erase_combined = True  # Not thread-safe! only do in SequentialActionSequence
-  splitter = event.adopt_action('DigiSegmentationSplitter/Splitter', 
+  splitter = event.adopt_action('DigiSegmentationSplitter/Splitter',
                                 input='deposits',
                                 masks=[0xFEED],
-                                detector='SiTrackerBarrel');
+                                detector='SiTrackerBarrel')
   dump = event.adopt_action('DigiStoreDump/StoreDump')
   digi.check_creation([combine, dump, splitter])
   digi.info('Created event.dump')

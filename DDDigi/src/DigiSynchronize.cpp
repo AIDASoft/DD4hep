@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiKernel.h"
-#include "DDDigi/DigiContext.h"
-#include "DDDigi/DigiSynchronize.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDDigi/DigiKernel.h>
+#include <DDDigi/DigiContext.h>
+#include <DDDigi/DigiSynchronize.h>
 
 // C/C++ include files
 #include <stdexcept>

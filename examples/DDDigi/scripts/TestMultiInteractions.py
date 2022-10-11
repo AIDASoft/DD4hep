@@ -14,7 +14,6 @@ from __future__ import absolute_import
 def run():
   import DigiTest
   digi = DigiTest.Test(geometry=None)
-  attenuation = digi.attenuation
 
   input = digi.input_action('DigiParallelActionSequence/READER')
   # ========================================================================================================
