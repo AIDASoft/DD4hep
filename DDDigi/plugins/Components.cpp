@@ -12,48 +12,48 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Factories.h"
-#include "DDDigi/DigiFactories.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Factories.h>
+#include <DDDigi/DigiFactories.h>
 
 // C/C++ include files
 #include <cerrno>
 #include <cstdlib>
 #include <sstream>
 
-#include "DDDigi/DigiInputAction.h"
+#include <DDDigi/DigiInputAction.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiInputAction)
 
-#include "DDDigi/DigiROOTInput.h"
+#include <DDDigi/DigiROOTInput.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiROOTInput)
 
-#include "DDDigi/DigiSynchronize.h"
+#include <DDDigi/DigiSynchronize.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSynchronize)
 
-#include "DDDigi/DigiActionSequence.h"
+#include <DDDigi/DigiActionSequence.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiActionSequence)
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiParallelActionSequence)
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSequentialActionSequence)
 
-#include "DDDigi/DigiSubdetectorSequence.h"
+#include <DDDigi/DigiSubdetectorSequence.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSubdetectorSequence)
 
-#include "DDDigi/DigiLockedAction.h"
+#include <DDDigi/DigiLockedAction.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiLockedAction)
 
-#include "DDDigi/DigiSignalProcessorSequence.h"
+#include <DDDigi/DigiSignalProcessorSequence.h>
 DECLARE_DIGISIGNALPROCESSOR_NS(dd4hep::digi,DigiSignalProcessorSequence)
 
-#include "DDDigi/DigiStoreDump.h"
+#include <DDDigi/DigiStoreDump.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiStoreDump)
 
-#include "DDDigi/DigiHitAttenuatorExp.h"
+#include <DDDigi/DigiHitAttenuatorExp.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiHitAttenuatorExp)
 
-#include "DDDigi/DigiContainerCombine.h"
+#include <DDDigi/DigiContainerCombine.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiContainerCombine)
 
-#include "DDDigi/DigiSegmentationSplitter.h"
+#include <DDDigi/DigiSegmentationSplitter.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSegmentationSplitter)
 
 

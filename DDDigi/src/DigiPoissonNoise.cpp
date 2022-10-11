@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiPoissonNoise.h"
-#include "DDDigi/DigiSegmentation.h"
-#include "DDDigi/DigiRandomGenerator.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDDigi/DigiPoissonNoise.h>
+#include <DDDigi/DigiSegmentation.h>
+#include <DDDigi/DigiRandomGenerator.h>
 
 using namespace dd4hep::digi;
 

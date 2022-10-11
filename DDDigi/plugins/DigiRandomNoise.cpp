@@ -75,10 +75,10 @@ namespace dd4hep {
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiFactories.h"
-//#include "DDDigi/DigiRandomNoise.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDDigi/DigiFactories.h>
+//#include <DDDigi/DigiRandomNoise.h>
 
 // C/C++ include files
 

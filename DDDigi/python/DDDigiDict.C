@@ -31,16 +31,16 @@
 #pragma clang diagnostic ignored "-Woverlength-strings"
 #endif
 
-#include "DDDigi/DigiData.h"
-#include "DDDigi/DigiHandle.h"
-#include "DDDigi/DigiKernel.h"
-#include "DDDigi/DigiContext.h"
-#include "DDDigi/DigiAction.h"
-#include "DDDigi/DigiSynchronize.h"
-#include "DDDigi/DigiEventAction.h"
-#include "DDDigi/DigiInputAction.h"
-#include "DDDigi/DigiActionSequence.h"
-#include "DDDigi/DigiSignalProcessor.h"
+#include <DDDigi/DigiData.h>
+#include <DDDigi/DigiHandle.h>
+#include <DDDigi/DigiKernel.h>
+#include <DDDigi/DigiContext.h>
+#include <DDDigi/DigiAction.h>
+#include <DDDigi/DigiSynchronize.h>
+#include <DDDigi/DigiEventAction.h>
+#include <DDDigi/DigiInputAction.h>
+#include <DDDigi/DigiActionSequence.h>
+#include <DDDigi/DigiSignalProcessor.h>
 
 struct DDDigiDict  {};
 

@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiLockedAction.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDDigi/DigiLockedAction.h>
 
 // C/C++ include files
 
