@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiData.h"
-#include "DDDigi/DigiContext.h"
-#include "DDDigi/DigiEventAction.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDDigi/DigiData.h>
+#include <DDDigi/DigiContext.h>
+#include <DDDigi/DigiEventAction.h>
 
 
 /// Namespace for the AIDA detector description toolkit
@@ -84,5 +84,5 @@ namespace dd4hep {
 }      // End namespace dd4hep
 
 
-#include "DDDigi/DigiFactories.h"
+#include <DDDigi/DigiFactories.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiHitHistoryDrop)

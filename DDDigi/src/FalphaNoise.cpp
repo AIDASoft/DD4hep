@@ -63,7 +63,7 @@ using namespace dd4hep::detail;
 * 
 */
 
-//#include "cnoise.h"
+//#include <cnoise.h>
 #ifndef __CNOISE_H
 #define __CNOISE_H
 

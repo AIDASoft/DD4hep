@@ -24,10 +24,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DDDigi/DigiRandomGenerator.h"
+#include <DDDigi/DigiRandomGenerator.h>
 #include <Math/ProbFuncMathCore.h>
 #include <Math/SpecFuncMathCore.h>
-#include "Math/QuantFuncMathCore.h"
+#include <Math/QuantFuncMathCore.h>
 #include <cmath>
 
 

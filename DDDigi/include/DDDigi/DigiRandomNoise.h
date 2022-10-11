@@ -14,8 +14,8 @@
 #define DDDIGI_DIGIRANDOMNOISE_H
 
 /// Framework include files
-#include "DDDigi/DigiSignalProcessor.h"
-#include "DDDigi/FalphaNoise.h"
+#include <DDDigi/DigiSignalProcessor.h>
+#include <DDDigi/FalphaNoise.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

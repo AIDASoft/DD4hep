@@ -9,7 +9,8 @@
 #
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
-from dd4hep_base import *  # noqa: F403
+from dd4hep_base import *  # noqa: F401
+
 
 logger = None
 
@@ -285,4 +286,4 @@ try:
   import digitize
   Digitize = digitize.Digitize
 except Exception as X:
-  logger.error('Failed to import digitize: '+str(X))
+  logger.error('Failed to import digitize: ' + str(X))
