@@ -8,10 +8,11 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 # ==========================================================================
-
+from __future__ import absolute_import
 import dddigi
 import logging
 from g4units import ns
+
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 

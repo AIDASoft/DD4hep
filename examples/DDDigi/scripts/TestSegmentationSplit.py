@@ -8,7 +8,7 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 # ==========================================================================
-from g4units import ns
+from __future__ import absolute_import
 
 def run():
   import DigiTest
