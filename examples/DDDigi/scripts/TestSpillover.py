@@ -11,6 +11,7 @@
 from __future__ import absolute_import
 from g4units import ns
 
+
 def run():
   import DigiTest
   digi = DigiTest.Test(geometry=None)

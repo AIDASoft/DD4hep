@@ -10,14 +10,17 @@
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
 from dd4hep_base import *  # noqa: F403
-import dd4hep_base
 
-logger = dd4hep_base.dd4hep_logger('dddigi')
+logger = None
 
 
 def loadDDDigi():
+  global logger
   import ROOT
+  import dd4hep_base
   from ROOT import gSystem
+
+  logger = dd4hep_base.dd4hep_logger('dddigi')
 
   # Try to load libglapi to avoid issues with TLS Static
   # Turn off all errors from ROOT about the library missing
@@ -80,10 +83,10 @@ Detector.globalVal = _constant
 # ---------------------------------------------------------------------------
 
 
-"""
-  Import the Detector constants into the dddigi namespace
-"""
 def importConstants(description, namespace=None, debug=False):
+  """
+  Import the Detector constants into the dddigi namespace
+  """
   ns = current
   if namespace is not None and not hasattr(current, namespace):
     import imp
@@ -282,4 +285,4 @@ try:
   import digitize
   Digitize = digitize.Digitize
 except Exception as X:
-  pass
+  logger.error('Failed to import digitize: '+str(X))
