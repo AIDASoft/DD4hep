@@ -12,6 +12,7 @@ from __future__ import absolute_import, unicode_literals
 import dddigi
 import os
 
+
 def make_input(kernel):
   input_1 = dddigi.TestAction(kernel, 'input_01', 100)
   input_2 = dddigi.TestAction(kernel, 'input_02', 200)

@@ -12,7 +12,9 @@ from __future__ import absolute_import
 import dd4hep
 import dddigi
 
-"""
+
+class Digitize(dd4hep.Logger):
+  """
    Helper object to perform stuff, which occurs very often.
    I am sick of typing the same over and over again.
    Hence, I grouped often used python fragments to this small
@@ -27,8 +29,7 @@ import dddigi
     #import pdb
     #pdb.set_trace()
 
-"""
-class Digitize(dd4hep.Logger):
+  """
   def __init__(self, kernel=None):
     dd4hep.Logger.__init__(self, 'dddigi')
     self._kernel = kernel
@@ -122,8 +123,6 @@ class Digitize(dd4hep.Logger):
     """
     return self.kernel().events_processing()
 
-  
-
   """
      Execute the Geant 4 program with all steps.
 
@@ -147,31 +146,10 @@ class Digitize(dd4hep.Logger):
     return detectors
 
   def printDetectors(self):
-    logger.info('+++  List of sensitive detectors:')
+    self.info('+++  List of sensitive detectors:')
     dets = self.activeDetectors()
     for d in dets:
-      logger.info('+++  %-32s ---> type:%-12s', d['name'], d['type'])
-
-  def setupDetector(self, name, collections=None, modules=None):
-    seq = ActionSequence(self.kernel(), 'DigiActionSequence/' + name)
-    actions = []
-    if isinstance(modules, tuple) or isinstance(modules, list):
-      for m in modules:
-        if isinstance(m, str):
-          a = Action(self.kernel(), m)
-          actions.append(a)
-        elif isinstance(m, tuple) or isinstance(m, list):
-          a = Action(self.kernel(), m[0])
-          actions.append(a)
-          if len(m) > 1:
-            params = m[1]
-            for k, v in params.items():
-              setattr(a, k, v)
-        else:
-          actions.append(m)
-    for a in actions:
-      seq.adopt(a)
-    return (seq, actions)
+      self.info('+++  %-32s ---> type:%-12s', d['name'], d['type'])
 
   """
      Configure ROOT output for the event digitization
@@ -179,7 +157,7 @@ class Digitize(dd4hep.Logger):
      \author  M.Frank
   """
   def setupROOTOutput(self, name, output, mc_truth=True):
-    evt_root = EventAction(self.kernel(), 'DigiOutput2ROOT/' + name, True)  # noqa: F405
+    evt_root = dddigi.EventAction(self.kernel(), 'DigiOutput2ROOT/' + name, True)  # noqa: F405
     evt_root.HandleMCTruth = mc_truth
     evt_root.Control = True
     if not output.endswith('.root'):

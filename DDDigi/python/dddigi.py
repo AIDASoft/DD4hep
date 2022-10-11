@@ -10,8 +10,10 @@
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
 from dd4hep_base import *  # noqa: F403
+import dd4hep_base.dd4hep_logger as dd4hep_logger
 
 logger = dd4hep_logger('dddigi')
+
 
 def loadDDDigi():
   import ROOT
@@ -41,12 +43,14 @@ def loadDDDigi():
   from ROOT import dd4hep as module
   return module
 
+
 # We are nearly there ....
 current = __import__(__name__)
 
 def _import_class(ns, nam):
   scope = getattr(current, ns)
   setattr(current, nam, getattr(scope, nam))
+
 
 # ---------------------------------------------------------------------------
 #
@@ -64,11 +68,10 @@ digi = dd4hep.digi
 Kernel = digi.KernelHandle
 Interface = digi.DigiActionCreation
 Detector  = core.Detector
-#
-#
 # ---------------------------------------------------------------------------
 def _constant(self, name):
   return self.constantAsString(name)
+
 
 Detector.globalVal = _constant
 # ---------------------------------------------------------------------------
@@ -120,6 +123,7 @@ def importConstants(description, namespace=None, debug=False):
   if cnt < 100:
     logger.info('+++ Imported %d global values to namespace:%s', num, ns.__name__,)
 
+
 # ---------------------------------------------------------------------------
 def _getKernelProperty(self, name):
   ret = Interface.getPropertyKernel(self.get(), name)
@@ -132,12 +136,14 @@ def _getKernelProperty(self, name):
   msg = 'DigiKernel::GetProperty [Unhandled]: Cannot access Kernel.' + name
   raise KeyError(msg)
 
+
 # ---------------------------------------------------------------------------
 def _setKernelProperty(self, name, value):
   if Interface.setPropertyKernel(self.get(), str(name), str(value)):
     return
   msg = 'DigiKernel::SetProperty [Unhandled]: Cannot set Kernel.' + name + ' = ' + str(value)
   raise KeyError(msg)
+
 
 # ---------------------------------------------------------------------------
 def _kernel_terminate(self):
@@ -155,9 +161,9 @@ def Action(kernel, nam, parallel=False):
   obj = Interface.createAction(kernel, str(nam))
   obj.parallel = parallel
   return obj
+
+
 # ---------------------------------------------------------------------------
-
-
 def EventAction(kernel, nam, parallel=False):
   obj = Interface.createEventAction(kernel, str(nam))
   obj.parallel = parallel
@@ -197,6 +203,7 @@ def _setup(obj):
   # setattr(cls,'add',_adopt)
   return cls
 
+
 def _get(self, name):
   a = Interface.toAction(self)
   ret = Interface.getProperty(a, name)
@@ -208,6 +215,7 @@ def _get(self, name):
     return getattr(a, name)
   msg = 'DDDigiAction::GetProperty [Unhandled]: Cannot access property ' + a.name() + '.' + name
   raise KeyError(msg)
+
 
 def _set(self, name, value):
   """This function is called when properties are passed to the c++ objects."""
@@ -228,6 +236,7 @@ def _props(obj, **extensions):
   cls.__setattr__ = _set
   return cls
 
+
 _setup('DigiActionSequence')
 _setup('DigiSynchronize')
 
@@ -243,6 +252,7 @@ _props('InputActionHandle')
 _props('ActionSequenceHandle')
 _props('SynchronizeHandle')
 
+
 def adopt_sequence_action(self, name, **options):
   kernel = Interface.createKernel(Interface.toAction(self))
   action = EventAction(kernel, name)
@@ -250,6 +260,7 @@ def adopt_sequence_action(self, name, **options):
     setattr(action, option[0], option[1])
   self.adopt(action)
   return action
+
 
 _props('DigiSynchronize')
 _props('DigiActionSequence', adopt_action = adopt_sequence_action)

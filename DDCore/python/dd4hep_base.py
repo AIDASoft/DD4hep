@@ -72,6 +72,7 @@ def import_namespace_item(ns, nam):
 def import_root(nam):
   setattr(name_space, nam, getattr(ROOT, nam))
 
+
 # ---------------------------------------------------------------------------
 #
 try:
@@ -96,6 +97,7 @@ class _Levels:
     self.FATAL = 6
     self.ALWAYS = 7
 
+
 # ---------------------------------------------------------------------------
 def unicode_2_string(value):
   """Turn any unicode literal into str, needed when passing to c++.
@@ -119,6 +121,7 @@ def unicode_2_string(value):
       tempDict[key] = val
     value = tempDict
   return str(value)
+
 
 OutputLevel = _Levels()
 # ------------------------Generic STL stuff can be accessed using std:  -----
@@ -156,6 +159,7 @@ import_namespace_item('detail', 'eval')
 # ---------------------------------------------------------------------------
 def import_detail():
   import_namespace_item('detail', 'DD4hepUI')
+
 
 # ---------------------------------------------------------------------------
 def import_geometry():
@@ -242,6 +246,7 @@ def import_geometry():
   import_namespace_item('core', 'SubtractionSolid')
   import_namespace_item('core', 'UnionSolid')
   import_namespace_item('core', 'IntersectionSolid')
+
 
 # ---------------------------------------------------------------------------
 def import_tgeo():
@@ -341,6 +346,7 @@ class Logger:
   def exception(self, msg):
     "Call dd4hep exception function"
     dd4hep.exception(self.name, msg)
+
 
 dd4hep_logger = Logger
 
