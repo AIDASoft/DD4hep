@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDDIGI_GRAMMARS_H
-#define DDDIGI_GRAMMARS_H
+#ifndef DDDIGI_DIGIGRAMMARS_H
+#define DDDIGI_DIGIGRAMMARS_H
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -22,4 +22,4 @@ namespace dd4hep {
 
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DDDIGI_GRAMMARS_H
+#endif // DDDIGI_DIGIGRAMMARS_H

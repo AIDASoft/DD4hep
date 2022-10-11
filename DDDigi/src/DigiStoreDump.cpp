@@ -12,12 +12,12 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
+#include <DD4hep/InstanceCount.h>
 
-#include "DDDigi/DigiData.h"
-#include "DDDigi/DigiKernel.h"
-#include "DDDigi/DigiContext.h"
-#include "DDDigi/DigiStoreDump.h"
+#include <DDDigi/DigiData.h>
+#include <DDDigi/DigiKernel.h>
+#include <DDDigi/DigiContext.h>
+#include <DDDigi/DigiStoreDump.h>
 
 /// Standard constructor
 dd4hep::digi::DigiStoreDump::DigiStoreDump(const DigiKernel& krnl, const std::string& nam)

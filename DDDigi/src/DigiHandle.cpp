@@ -12,15 +12,15 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Printout.h>
 
-#include "DDDigi/DigiHandle.h"
-#include "DDDigi/DigiKernel.h"
-#include "DDDigi/DigiInputAction.h"
-#include "DDDigi/DigiEventAction.h"
-#include "DDDigi/DigiSignalProcessor.h"
+#include <DDDigi/DigiHandle.h>
+#include <DDDigi/DigiKernel.h>
+#include <DDDigi/DigiInputAction.h>
+#include <DDDigi/DigiEventAction.h>
+#include <DDDigi/DigiSignalProcessor.h>
 
 // C/C++ include files
 #include <stdexcept>
@@ -187,8 +187,8 @@ namespace dd4hep {
   }
 }
 
-#include "DDDigi/DigiSynchronize.h"
-#include "DDDigi/DigiActionSequence.h"
+#include <DDDigi/DigiSynchronize.h>
+#include <DDDigi/DigiActionSequence.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

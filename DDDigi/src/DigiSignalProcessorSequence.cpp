@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiSegmentation.h"
-#include "DDDigi/DigiSignalProcessorSequence.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDDigi/DigiSegmentation.h>
+#include <DDDigi/DigiSignalProcessorSequence.h>
 
 // C/C++ include files
 #include <stdexcept>

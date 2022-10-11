@@ -14,7 +14,7 @@
 #define DDDIGI_DIGIHITATTENUATOREXP_H
 
 // Framework include files
-#include "DDDigi/DigiEventAction.h"
+#include <DDDigi/DigiEventAction.h>
 
 
 /// Namespace for the AIDA detector description toolkit

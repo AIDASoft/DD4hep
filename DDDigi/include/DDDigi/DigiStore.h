@@ -14,8 +14,8 @@
 #define DDDIGI_DIGISTORE_H
 
 // Framework incloude files
-#include "DDDigi/DigiAction.h"
-#include "DDDigi/DigiData.h"
+#include <DDDigi/DigiAction.h>
+#include <DDDigi/DigiData.h>
 
 #include <mutex>
 

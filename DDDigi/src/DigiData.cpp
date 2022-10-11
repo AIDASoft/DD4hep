@@ -12,11 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/InstanceCount.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/InstanceCount.h>
 #define  G__ROOT
-#include "DDDigi/DigiData.h"
+#include <DDDigi/DigiData.h>
 
 // C/C++ include files
 #include <mutex>
@@ -152,8 +152,16 @@ dd4hep::digi::DigiEvent::get_segment(const std::string& name)   {
   case 'I':
     return this->inputs;
   case 'D':
-    return this->deposits;
+    switch(::toupper(name[1]))   {
+    case 'E':
+      return this->deposits;
+    default:
+      return this->data;
+    }
+    break;
   case 'O':
+    return this->data;
+  default:
     return this->data;
   }
   throw std::runtime_error("Invalid segment name: "+name);

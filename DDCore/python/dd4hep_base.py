@@ -156,6 +156,7 @@ import_namespace_item('detail', 'eval')
 # def evaluator():     return eval.instance()
 # def g4Evaluator():   return eval.g4instance()
 
+
 # ---------------------------------------------------------------------------
 def import_detail():
   import_namespace_item('detail', 'DD4hepUI')
@@ -302,11 +303,12 @@ import_tgeo()
 import_geometry()
 import_detail()
 
+
 # ---------------------------------------------------------------------------
 class Logger:
   """
   Helper class to use the dd4hep printout functions from python
-  
+
   \author  M.Frank
   \version 1.0
   """

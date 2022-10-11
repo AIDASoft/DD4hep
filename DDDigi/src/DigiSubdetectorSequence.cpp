@@ -12,14 +12,14 @@
 //==========================================================================
 
 // Framework include files
-#include "DDDigi/DigiSubdetectorSequence.h"
-#include "DDDigi/DigiSegmentation.h"
-#include "DDDigi/DigiKernel.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/IDDescriptor.h"
-#include "DD4hep/detail/VolumeManagerInterna.h"
-#include "TClass.h"
+#include <DDDigi/DigiSubdetectorSequence.h>
+#include <DDDigi/DigiSegmentation.h>
+#include <DDDigi/DigiKernel.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/IDDescriptor.h>
+#include <DD4hep/detail/VolumeManagerInterna.h>
+#include <TClass.h>
 
 // C/C++ include files
 #include <stdexcept>

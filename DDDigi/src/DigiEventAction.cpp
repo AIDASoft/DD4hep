@@ -12,8 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiEventAction.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDDigi/DigiEventAction.h>
 
 /// Standard constructor
 dd4hep::digi::DigiEventAction::DigiEventAction(const DigiKernel& krnl, const std::string& nam)

@@ -138,7 +138,7 @@ class Digitize(dd4hep.Logger):
   def activeDetectors(self):
     detectors = []
     for i in self.description.detectors():
-      o = DetElement(i.second.ptr())  # noqa: F405
+      o = dd4hep.DetElement(i.second.ptr())  # noqa: F405
       sd = self.description.sensitiveDetector(o.name())
       if sd.isValid():
         d = {'name': o.name(), 'type': sd.type(), 'detector': o, 'sensitive': sd}

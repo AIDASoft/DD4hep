@@ -12,8 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDDigi/DigiRandomNoise.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDDigi/DigiRandomNoise.h>
 
 using namespace dd4hep::digi;
 

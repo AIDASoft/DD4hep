@@ -14,9 +14,9 @@
 #define DDDIGI_DIGIFACTORIES_H
 
 // Framework include files
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/Primitives.h"
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/Primitives.h>
 
 // C/C++ include files
 #include <string>

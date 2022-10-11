@@ -10,9 +10,9 @@
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
 from dd4hep_base import *  # noqa: F403
-import dd4hep_base.dd4hep_logger as dd4hep_logger
+import dd4hep_base
 
-logger = dd4hep_logger('dddigi')
+logger = dd4hep_base.dd4hep_logger('dddigi')
 
 
 def loadDDDigi():
@@ -47,6 +47,7 @@ def loadDDDigi():
 # We are nearly there ....
 current = __import__(__name__)
 
+
 def _import_class(ns, nam):
   scope = getattr(current, ns)
   setattr(current, nam, getattr(scope, nam))
@@ -67,7 +68,9 @@ core = dd4hep
 digi = dd4hep.digi
 Kernel = digi.KernelHandle
 Interface = digi.DigiActionCreation
-Detector  = core.Detector
+Detector = core.Detector
+
+
 # ---------------------------------------------------------------------------
 def _constant(self, name):
   return self.constantAsString(name)
@@ -75,6 +78,7 @@ def _constant(self, name):
 
 Detector.globalVal = _constant
 # ---------------------------------------------------------------------------
+
 
 """
   Import the Detector constants into the dddigi namespace
@@ -156,6 +160,8 @@ Kernel.__setattr__ = _setKernelProperty
 Kernel.terminate = _kernel_terminate
 # ---------------------------------------------------------------------------
 ActionHandle = digi.ActionHandle
+
+
 # ---------------------------------------------------------------------------
 def Action(kernel, nam, parallel=False):
   obj = Interface.createAction(kernel, str(nam))
@@ -219,13 +225,15 @@ def _get(self, name):
 
 def _set(self, name, value):
   """This function is called when properties are passed to the c++ objects."""
+  import dd4hep as dd4hep
   a = Interface.toAction(self)
-  name  = unicode_2_string(name)
-  value = unicode_2_string(value)
+  name = dd4hep.unicode_2_string(name)
+  value = dd4hep.unicode_2_string(value)
   if Interface.setProperty(a, name, value):
     return
   msg = 'DDDigiAction::SetProperty [Unhandled]: Cannot set ' + a.name() + '.' + name + ' = ' + value
   raise KeyError(msg)
+
 
 def _props(obj, **extensions):
   _import_class('digi', obj)
@@ -263,9 +271,15 @@ def adopt_sequence_action(self, name, **options):
 
 
 _props('DigiSynchronize')
-_props('DigiActionSequence', adopt_action = adopt_sequence_action)
-_props('DigiParallelActionSequence', adopt_action = adopt_sequence_action)
-_props('DigiSequentialActionSequence', adopt_action = adopt_sequence_action)
+_props('DigiActionSequence', adopt_action=adopt_sequence_action)
+_props('DigiParallelActionSequence', adopt_action=adopt_sequence_action)
+_props('DigiSequentialActionSequence', adopt_action=adopt_sequence_action)
 
-import digitize
-Digitize = digitize.Digitize
+
+# Need to import digitize late, since it cross includes dddigi
+Digitize = None
+try:
+  import digitize
+  Digitize = digitize.Digitize
+except Exception as X:
+  pass

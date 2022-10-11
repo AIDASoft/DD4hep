@@ -14,9 +14,9 @@
 #define DDDIGI_DIGICONTEXT_H
 
 // Framework incloude files
-#include "DD4hep/Primitives.h"
-#include "DDDigi/DigiRandomGenerator.h"
-#include "DDDigi/DigiData.h"
+#include <DD4hep/Primitives.h>
+#include <DDDigi/DigiData.h>
+#include <DDDigi/DigiRandomGenerator.h>
 
 /// C/C++ include files
 #include <memory>

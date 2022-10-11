@@ -14,7 +14,7 @@
 #define DDDIGI_DIGISTOREDUMP_H
 
 /// Framework include files
-#include "DDDigi/DigiEventAction.h"
+#include <DDDigi/DigiEventAction.h>
 
 /// C/C++ include files
 #include <mutex>

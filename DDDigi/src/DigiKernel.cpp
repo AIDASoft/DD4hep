@@ -12,19 +12,19 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Memory.h"
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/InstanceCount.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Memory.h>
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/InstanceCount.h>
 
-#include "DDDigi/DigiKernel.h"
-#include "DDDigi/DigiContext.h"
-#include "DDDigi/DigiActionSequence.h"
+#include <DDDigi/DigiKernel.h>
+#include <DDDigi/DigiContext.h>
+#include <DDDigi/DigiActionSequence.h>
 
 #ifdef DD4HEP_USE_TBB
-#include "tbb/tbb.h"
+#include <tbb/tbb.h>
 #endif
 
 // C/C++ include files
