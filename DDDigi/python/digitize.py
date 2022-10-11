@@ -149,7 +149,7 @@ class Digitize(dd4hep.Logger):
     self.info('+++  List of sensitive detectors:')
     dets = self.activeDetectors()
     for d in dets:
-      self.info('+++  %-32s ---> type:%-12s', d['name'], d['type'])
+      self.info('+++  %-32s ---> type:%-12s' % (d['name'], d['type'],))
 
   """
      Configure ROOT output for the event digitization
