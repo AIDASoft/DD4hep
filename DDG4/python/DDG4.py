@@ -279,6 +279,7 @@ _import_class('Sim', 'Geant4Random')
 _import_class('CLHEP', 'HepRandom')
 _import_class('CLHEP', 'HepRandomEngine')
 
+
 def _get(self, name):
   a = Interface.toAction(self)
   ret = Interface.getProperty(a, name)
@@ -291,21 +292,25 @@ def _get(self, name):
   msg = 'Geant4Action::GetProperty [Unhandled]: Cannot access property ' + a.name() + '.' + name
   raise KeyError(msg)
 
+
 def _set(self, name, value):
   """This function is called when properties are passed to the c++ objects."""
+  from dd4hep_base import unicode_2_string
   a = Interface.toAction(self)
-  name  = unicode_2_string(name)
+  name = unicode_2_string(name)
   value = unicode_2_string(value)
   if Interface.setProperty(a, name, value):
     return
   msg = 'Geant4Action::SetProperty [Unhandled]: Cannot set ' + a.name() + '.' + name + ' = ' + value
   raise KeyError(msg)
 
+
 def _props(obj):
   _import_class('Sim', obj)
   cl = getattr(current, obj)
   cl.__getattr__ = _get
   cl.__setattr__ = _set
+
 
 _props('FilterHandle')
 _props('ActionHandle')

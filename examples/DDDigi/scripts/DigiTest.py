@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 """
   00C7A3C1 SiVertexEndcapHits               : map<long long, EnergyDeposit>
   00D16F45 EcalBarrelHits                   : map<long long, EnergyDeposit>
-  0D3C3803 MCParticles                      : vector<shared_ptr<dd4hep::sim::Geant4Particle>, allocator<shared_ptr<dd4hep::sim::Geant4Particle> > >
+  0D3C3803 MCParticles                      : 
   2E9082A9 HcalPlugHits                     : map<long long, EnergyDeposit>
   3A89E02E HcalEndcapHits                   : map<long long, EnergyDeposit>
   569C1C49 HcalBarrelHits                   : map<long long, EnergyDeposit>
@@ -34,20 +34,20 @@ logger = logging.getLogger(__name__)
   F4183035 SiTrackerEndcapHits              : map<long long, EnergyDeposit>
 """
 
-attenuation = { 'SiVertexEndcapHits': 15 * ns,
-                'SiVertexBarrelHits': 15 * ns,
-                'SiTrackerForwardHits': 15 * ns,
-                'SiTrackerEndcapHits': 15 * ns,
-                'SiTrackerBarrelHits': 15 * ns,
-                'HcalPlugHits': 15 * ns,
-                'HcalEndcapHits': 15 * ns,
-                'HcalBarrelHits': 15 * ns,
-                'EcalEndcapHits': 15 * ns,
-                'MuonEndcapHits': 15 * ns,
-                'MuonBarrelHits': 15 * ns,
-                'BeamCalHits': 15 * ns,
-                'LumiCalHits': 15 * ns,
-}
+attenuation = {'SiVertexEndcapHits': 15 * ns,
+               'SiVertexBarrelHits': 15 * ns,
+               'SiTrackerForwardHits': 15 * ns,
+               'SiTrackerEndcapHits': 15 * ns,
+               'SiTrackerBarrelHits': 15 * ns,
+               'HcalPlugHits': 15 * ns,
+               'HcalEndcapHits': 15 * ns,
+               'HcalBarrelHits': 15 * ns,
+               'EcalEndcapHits': 15 * ns,
+               'MuonEndcapHits': 15 * ns,
+               'MuonBarrelHits': 15 * ns,
+               'BeamCalHits': 15 * ns,
+               'LumiCalHits': 15 * ns,
+           }
 
 
 class Test(dddigi.Digitize):
@@ -70,6 +70,11 @@ class Test(dddigi.Digitize):
     ]
     self.used_inputs = []
 
+  def check_creation(self, objs):
+    for o in objs:
+      if o is None:
+        self.error('FAILED  Failed to create object')
+
   def declare_input(self, name, input, parallel=True):
     if not self.input:
       self.input = dddigi.Synchronize(self.kernel(), 'DigiParallelActionSequence/READER')
@@ -81,3 +86,13 @@ class Test(dddigi.Digitize):
     next = self.inputs[len(self.used_inputs)]
     self.used_inputs.append(next)
     return next
+
+  def run_checked(self, num_events=5, num_threads=5, parallel=3):
+    evt_todo = num_events
+    evt_done = digi.run(num_events=evt_todo, num_threads=num_threads, parallel=parallel)
+    if evt_done == evt_todo:
+        result = "PASSED"
+    else:
+        result = "FAILED"
+    self.always('%s Test finished after processing %d events.'%(result, digi.events_done(),))
+    self.always('Test done. Exiting')
