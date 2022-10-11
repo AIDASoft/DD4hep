@@ -234,6 +234,8 @@ namespace dd4hep {
        */
       class Hit : public Geant4HitData {
       public:
+        typedef Geant4HitData base_t;
+
         /// Hit position
         Position      position;
         /// Hit direction
@@ -290,6 +292,8 @@ namespace dd4hep {
        */
       class Hit : public Geant4HitData {
       public:
+        typedef Geant4HitData base_t;
+
         /// Hit position
         Position      position;
         /// Hit contributions by individual particles

@@ -54,6 +54,10 @@ namespace dd4hep {
    *  \date    2012/07/31
    *  \ingroup DD4HEP_CORE
    */
+  template <typename T> class SimpleConstructionFactory {
+  public:
+    static void* create();
+  };
   template <typename T> class ConstructionFactory {
   public:
     static void* create(const char* arg);
@@ -206,6 +210,9 @@ namespace {
     typedef dd4hep::DDSegmentation::BitFieldCoder   BitFieldCoder;
   }
 
+  DD4HEP_PLUGIN_FACTORY_ARGS_0(void*)  
+  {    return dd4hep::SimpleConstructionFactory<P>::create();                           }
+
   DD4HEP_PLUGIN_FACTORY_ARGS_1(void*,const char*)  
   {    return dd4hep::ConstructionFactory<P>::create(a0);                               }
 
@@ -264,6 +271,11 @@ namespace {
       SegmentationFactory<name>::create(const DDSegmentation::BitFieldCoder* d) { return func(d); } \
     DD4HEP_PLUGINSVC_FACTORY(name,segmentation_constructor__##name,     \
                              SegmentationObject*(const DDSegmentation::BitFieldCoder*),__LINE__)}
+
+// Call function of the type [void* (*func)()]
+#define DECLARE_CREATE(name,func)        DD4HEP_OPEN_PLUGIN(dd4hep,name)   { \
+    template <> void* SimpleConstructionFactory<name>::create() { return func(); } \
+    DD4HEP_PLUGINSVC_FACTORY(name,name,void*(),__LINE__)}
 
 // Call function of the type [long (*func)(const char* arg)]
 #define DECLARE_APPLY(name,func)        DD4HEP_OPEN_PLUGIN(dd4hep,name)   { \

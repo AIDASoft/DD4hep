@@ -35,7 +35,10 @@
 #include "DDDigi/DigiHandle.h"
 #include "DDDigi/DigiKernel.h"
 #include "DDDigi/DigiContext.h"
+#include "DDDigi/DigiAction.h"
 #include "DDDigi/DigiSynchronize.h"
+#include "DDDigi/DigiEventAction.h"
+#include "DDDigi/DigiInputAction.h"
 #include "DDDigi/DigiActionSequence.h"
 #include "DDDigi/DigiSignalProcessor.h"
 
@@ -57,11 +60,16 @@ namespace dd4hep {
       operator dd4hep::digi::Digi##x* () const         { return action;                 } \
       Digi##x* operator->() const                      { return action;                 } \
       Digi##x* get() const                             { return action;                 } \
+      KernelHandle kernel()  const                     {		\
+	auto* k = const_cast<DigiKernel*>(action->kernel());		\
+	return KernelHandle(k);						\
+      }									\
     }
 
     ACTIONHANDLE(SignalProcessor);
     ACTIONHANDLE(Action);
     ACTIONHANDLE(EventAction);
+    ACTIONHANDLE(InputAction);
     ACTIONHANDLE(ActionSequence);
     ACTIONHANDLE(Synchronize);
 
@@ -81,21 +89,35 @@ namespace dd4hep {
         H handle(action.get());
         return handle;
       }
+      static KernelHandle createKernel(DigiAction* action)   {
+	auto* k = const_cast<DigiKernel*>(action->kernel());
+	return KernelHandle(k);
+      }
       static ActionHandle createAction(KernelHandle& kernel, const std::string& name_type)   
       { return cr<ActionHandle,DigiHandle<DigiAction> >(kernel,name_type);                           }
+
       static EventActionHandle createEventAction(KernelHandle& kernel, const std::string& name_type)   
       { return cr<EventActionHandle,DigiHandle<DigiEventAction> >(kernel,name_type);                 }
+
+      static InputActionHandle createInputAction(KernelHandle& kernel, const std::string& name_type)   
+      { return cr<InputActionHandle,DigiHandle<DigiInputAction> >(kernel,name_type);                 }
+
       static ActionSequenceHandle createSequence(KernelHandle& kernel, const std::string& name_type)   
       { return cr<ActionSequenceHandle,DigiHandle<DigiActionSequence> >(kernel,name_type);           }
+
       static SynchronizeHandle createSync(KernelHandle& kernel, const std::string& name_type)
       { return cr<SynchronizeHandle,DigiHandle<DigiSynchronize> >(kernel,name_type);                 }
 
       static DigiAction* toAction(DigiAction* f)                   { return f;                       }
+      static DigiAction* toAction(DigiEventAction* f)              { return f;                       }
+      static DigiAction* toAction(DigiInputAction* f)              { return f;                       }
       static DigiAction* toAction(DigiActionSequence* f)           { return f;                       }
       static DigiAction* toAction(DigiSynchronize* f)              { return f;                       }
       static DigiAction* toAction(DigiSignalProcessor* f)          { return f;                       }
 
       static DigiAction* toAction(ActionHandle f)                  { return f.action;                }
+      static DigiAction* toAction(EventActionHandle f)             { return f.action;                }
+      static DigiAction* toAction(InputActionHandle f)             { return f.action;                }
       static DigiAction* toAction(ActionSequenceHandle f)          { return f.action;                }
       static DigiAction* toAction(SynchronizeHandle f)             { return f.action;                }
       static DigiAction* toAction(SignalProcessorHandle f)         { return f.action;                }
@@ -154,6 +176,9 @@ using namespace std;
 #pragma link C++ class dd4hep::digi::DigiEventAction;
 #pragma link C++ class dd4hep::digi::EventActionHandle;
 
+#pragma link C++ class dd4hep::digi::DigiInputAction;
+#pragma link C++ class dd4hep::digi::InputActionHandle;
+
 #pragma link C++ class dd4hep::digi::DigiActionSequence;
 #pragma link C++ class dd4hep::digi::ActionSequenceHandle;
 
@@ -165,7 +190,7 @@ using namespace std;
 
 /// Digi data item wrappers
 #pragma link C++ class dd4hep::digi::DigiEvent;
-#pragma link C++ class dd4hep::digi::DigiEnergyDeposits+;
-#pragma link C++ class dd4hep::digi::DigiCounts+;
+#pragma link C++ class dd4hep::digi::EnergyDeposit+;
+#pragma link C++ class dd4hep::digi::DepositMapping+;
 
 #endif

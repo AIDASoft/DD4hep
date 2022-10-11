@@ -9,11 +9,9 @@
 #
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
-import logging
 from dd4hep_base import *  # noqa: F403
 
-logger = logging.getLogger(__name__)
-
+logger = dd4hep_logger('dddigi')
 
 def loadDDDigi():
   import ROOT
@@ -27,26 +25,28 @@ def loadDDDigi():
     gSystem.Load("libglapi")
     ROOT.gErrorIgnoreLevel = orgLevel
 
-  import platform
   import os
+  import platform
   if platform.system() == "Darwin":
     gSystem.SetDynamicPath(os.environ['DD4HEP_LIBRARY_PATH'])
 
   result = gSystem.Load("libDDDigiPlugins")
   if result < 0:
     raise Exception('DDDigi.py: Failed to load the DDDigi library libDDDigiPlugins: ' + gSystem.GetErrorStr())
+  logger.info('DDDigi.py: Successfully loaded DDDigi plugin library libDDDigiPlugins!')
+  result = gSystem.Load("libDDG4Plugins")
+  if result < 0:
+    raise Exception('DDDigi.py: Failed to load the DDG4 library libDDG4Plugins: ' + gSystem.GetErrorStr())
+  logger.info('DDDigi.py: Successfully loaded DDG4 plugin library libDDG4Plugins!')
   from ROOT import dd4hep as module
   return module
-
 
 # We are nearly there ....
 current = __import__(__name__)
 
-
 def _import_class(ns, nam):
   scope = getattr(current, ns)
   setattr(current, nam, getattr(scope, nam))
-
 
 # ---------------------------------------------------------------------------
 #
@@ -63,29 +63,24 @@ core = dd4hep
 digi = dd4hep.digi
 Kernel = digi.KernelHandle
 Interface = digi.DigiActionCreation
-Detector = core.Detector
+Detector  = core.Detector
 #
 #
 # ---------------------------------------------------------------------------
-
-
 def _constant(self, name):
   return self.constantAsString(name)
-
 
 Detector.globalVal = _constant
 # ---------------------------------------------------------------------------
 
 """
-  Import the Detector constants into the DDDigi namespace
+  Import the Detector constants into the dddigi namespace
 """
-
-
 def importConstants(description, namespace=None, debug=False):
   ns = current
   if namespace is not None and not hasattr(current, namespace):
     import imp
-    m = imp.new_module('DDDigi.' + namespace)
+    m = imp.new_module('dddigi.' + namespace)
     setattr(current, namespace, m)
     ns = m
   evaluator = dd4hep.g4Evaluator()
@@ -126,8 +121,6 @@ def importConstants(description, namespace=None, debug=False):
     logger.info('+++ Imported %d global values to namespace:%s', num, ns.__name__,)
 
 # ---------------------------------------------------------------------------
-
-
 def _getKernelProperty(self, name):
   ret = Interface.getPropertyKernel(self.get(), name)
   if ret.status > 0:
@@ -140,8 +133,6 @@ def _getKernelProperty(self, name):
   raise KeyError(msg)
 
 # ---------------------------------------------------------------------------
-
-
 def _setKernelProperty(self, name, value):
   if Interface.setPropertyKernel(self.get(), str(name), str(value)):
     return
@@ -149,8 +140,6 @@ def _setKernelProperty(self, name, value):
   raise KeyError(msg)
 
 # ---------------------------------------------------------------------------
-
-
 def _kernel_terminate(self):
   return self.get().terminate()
 
@@ -162,8 +151,6 @@ Kernel.terminate = _kernel_terminate
 # ---------------------------------------------------------------------------
 ActionHandle = digi.ActionHandle
 # ---------------------------------------------------------------------------
-
-
 def Action(kernel, nam, parallel=False):
   obj = Interface.createAction(kernel, str(nam))
   obj.parallel = parallel
@@ -204,23 +191,13 @@ def _setup(obj):
   def _adopt(self, action):
     self.__adopt(action.get())
   _import_class('digi', obj)
-  o = getattr(current, obj)
-  setattr(o, '__adopt', getattr(o, 'adopt'))
-  setattr(o, 'adopt', _adopt)
-  # setattr(o,'add',_adopt)
+  cls = getattr(current, obj)
+  setattr(cls, '__adopt', getattr(cls, 'adopt'))
+  setattr(cls, 'adopt', _adopt)
+  # setattr(cls,'add',_adopt)
+  return cls
 
-
-# ---------------------------------------------------------------------------
-_setup('DigiActionSequence')
-_setup('DigiSynchronize')
-_import_class('digi', 'DigiKernel')
-_import_class('digi', 'DigiContext')
-_import_class('digi', 'DigiAction')
-
-
-# ---------------------------------------------------------------------------
 def _get(self, name):
-  # import traceback
   a = Interface.toAction(self)
   ret = Interface.getProperty(a, name)
   if ret.status > 0:
@@ -229,188 +206,55 @@ def _get(self, name):
     return getattr(self.action, name)
   elif hasattr(a, name):
     return getattr(a, name)
-  # elif hasattr(self,name):
-  #  return getattr(self,name)
-  # traceback.print_stack()
-  msg = 'DigiAction::GetProperty [Unhandled]: Cannot access property ' + a.name() + '.' + name
+  msg = 'DDDigiAction::GetProperty [Unhandled]: Cannot access property ' + a.name() + '.' + name
   raise KeyError(msg)
-
 
 def _set(self, name, value):
+  """This function is called when properties are passed to the c++ objects."""
   a = Interface.toAction(self)
-  if Interface.setProperty(a, name, str(value)):
+  name  = unicode_2_string(name)
+  value = unicode_2_string(value)
+  if Interface.setProperty(a, name, value):
     return
-  msg = 'DigiAction::SetProperty [Unhandled]: Cannot set ' + a.name() + '.' + name + ' = ' + str(value)
+  msg = 'DDDigiAction::SetProperty [Unhandled]: Cannot set ' + a.name() + '.' + name + ' = ' + value
   raise KeyError(msg)
 
-
-def _props(obj):
+def _props(obj, **extensions):
   _import_class('digi', obj)
-  cl = getattr(current, obj)
-  cl.__getattr__ = _get
-  cl.__setattr__ = _set
+  cls = getattr(current, obj)
+  for extension in extensions.items():
+    setattr(cls, extension[0], extension[1])
+  cls.__getattr__ = _get
+  cls.__setattr__ = _set
+  return cls
 
+_setup('DigiActionSequence')
+_setup('DigiSynchronize')
+
+_import_class('digi', 'DigiKernel')
+_import_class('digi', 'DigiContext')
+_import_class('digi', 'DigiAction')
+_import_class('digi', 'DigiEventAction')
+_import_class('digi', 'DigiInputAction')
 
 _props('ActionHandle')
+_props('EventActionHandle')
+_props('InputActionHandle')
 _props('ActionSequenceHandle')
 _props('SynchronizeHandle')
 
-"""
-   Helper object to perform stuff, which occurs very often.
-   I am sick of typing the same over and over again.
-   Hence, I grouped often used python fragments to this small
-   class to re-usage.
+def adopt_sequence_action(self, name, **options):
+  kernel = Interface.createKernel(Interface.toAction(self))
+  action = EventAction(kernel, name)
+  for option in options.items():
+    setattr(action, option[0], option[1])
+  self.adopt(action)
+  return action
 
-   Long live laziness!
+_props('DigiSynchronize')
+_props('DigiActionSequence', adopt_action = adopt_sequence_action)
+_props('DigiParallelActionSequence', adopt_action = adopt_sequence_action)
+_props('DigiSequentialActionSequence', adopt_action = adopt_sequence_action)
 
-
-   \author  M.Frank
-   \version 1.0
-
-"""
-
-
-class Digitize:
-  def __init__(self, kernel=None):
-    kernel.printProperties()
-    self._kernel = kernel
-    if kernel is None:
-      self._kernel = Kernel()
-    self.description = self._kernel.detectorDescription()
-
-  """
-     Access the worker kernel object.
-
-     \author  M.Frank
-  """
-
-  def kernel(self):
-    return self._kernel
-
-  """
-     Execute the Geant 4 program with all steps.
-
-     \author  M.Frank
-  """
-
-  def execute(self):
-    self.kernel().configure()
-    self.kernel().initialize()
-    self.kernel().run()
-    self.kernel().terminate()
-    return self
-
-  def activeDetectors(self):
-    detectors = []
-    for i in self.description.detectors():
-      o = DetElement(i.second.ptr())  # noqa: F405
-      sd = self.description.sensitiveDetector(o.name())
-      if sd.isValid():
-        d = {'name': o.name(), 'type': sd.type(), 'detector': o, 'sensitive': sd}
-        detectors.append(d)
-    return detectors
-
-  def printDetectors(self):
-    logger.info('+++  List of sensitive detectors:')
-    dets = self.activeDetectors()
-    for d in dets:
-      logger.info('+++  %-32s ---> type:%-12s', d['name'], d['type'])
-
-  def setupDetector(self, name, collections=None, modules=None):
-    seq = ActionSequence(self.kernel(), 'DigiActionSequence/' + name)
-    actions = []
-    if isinstance(modules, tuple) or isinstance(modules, list):
-      for m in modules:
-        if isinstance(m, str):
-          a = Action(self.kernel(), m)
-          actions.append(a)
-        elif isinstance(m, tuple) or isinstance(m, list):
-          a = Action(self.kernel(), m[0])
-          actions.append(a)
-          if len(m) > 1:
-            params = m[1]
-            for k, v in params.items():
-              setattr(a, k, v)
-        else:
-          actions.append(m)
-    for a in actions:
-      seq.adopt(a)
-    return (seq, actions)
-
-  """
-     Configure ROOT output for the event digitization
-
-     \author  M.Frank
-  """
-
-  def setupROOTOutput(self, name, output, mc_truth=True):
-    evt_root = EventAction(self.kernel(), 'DigiOutput2ROOT/' + name, True)  # noqa: F405
-    evt_root.HandleMCTruth = mc_truth
-    evt_root.Control = True
-    if not output.endswith('.root'):
-      output = output + '.root'
-    evt_root.Output = output
-    evt_root.enableUI()
-    self.kernel().eventAction().add(evt_root)
-    return evt_root
-
-  """
-     Generic build of the input stage with multiple input modules.
-
-     Actions executed are:
-     1) Register Generation initialization action
-     2) Append all modules to build the complete input record
-        These modules are readers/particle sources, boosters and/or smearing actions.
-     3) Merge all existing interaction records
-     4) Add the MC truth handler
-
-     \author  M.Frank
-  """
-
-  def buildInputStage(self, generator_input_modules, output_level=None, have_mctruth=True):
-    ga = self.kernel().generatorAction()
-    # Register Generation initialization action
-    gen = GeneratorAction(self.kernel(), "DigiGeneratorActionInit/GenerationInit")  # noqa: F405
-    if output_level is not None:
-      gen.OutputLevel = output_level
-    ga.adopt(gen)
-
-    # Now append all modules to build the complete input record
-    # These modules are readers/particle sources, boosters and/or smearing actions
-    for gen in generator_input_modules:
-      gen.enableUI()
-      if output_level is not None:
-        gen.OutputLevel = output_level
-      ga.adopt(gen)
-
-    # Merge all existing interaction records
-    gen = GeneratorAction(self.kernel(), "DigiInteractionMerger/InteractionMerger")  # noqa: F405
-    gen.enableUI()
-    if output_level is not None:
-      gen.OutputLevel = output_level
-    ga.adopt(gen)
-
-    # Finally generate Digi primaries
-    if have_mctruth:
-      gen = GeneratorAction(self.kernel(), "DigiPrimaryHandler/PrimaryHandler")  # noqa: F405
-      gen.RejectPDGs = "{1,2,3,4,5,6,21,23,24}"
-      gen.enableUI()
-      if output_level is not None:
-        gen.OutputLevel = output_level
-      ga.adopt(gen)
-    # Puuuhh! All done.
-    return self
-
-  """
-     Execute the main Digi action
-     \author  M.Frank
-  """
-
-  def run(self):
-    # self.kernel().configure()
-    # self.kernel().initialize()
-    # self.kernel().run()
-    # self.kernel().terminate()
-    from ROOT import PyDDDigi
-    PyDDDigi.run(self.kernel().get())
-    return self
+import digitize
+Digitize = digitize.Digitize

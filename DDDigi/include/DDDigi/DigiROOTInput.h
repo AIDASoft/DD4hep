@@ -10,14 +10,18 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDDIGI_DIGIINPUTACTION_H
-#define DDDIGI_DIGIINPUTACTION_H
+#ifndef DDDIGI_DIGIROOTINPUT_H
+#define DDDIGI_DIGIROOTINPUT_H
 
 /// Framework include files
-#include <DDDigi/DigiEventAction.h>
+#include <DDDigi/DigiInputAction.h>
 
-/// C/C++ include files
-#include <limits>
+// C/C++ include files
+#include <memory>
+#include <mutex>
+
+// Forward declarations
+class TClass;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -26,8 +30,7 @@ namespace dd4hep {
   namespace digi {
 
     // Forward declarations
-    class DigiAction;
-    class DigiInputAction;
+    class DigiROOTInput;
 
     /// Base class for input actions to the digitization
     /**
@@ -36,30 +39,36 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiInputAction : public DigiEventAction {
-    public:
-      enum { INPUT_START = -1  };
-      enum { NO_MASK     = 0x0 };
+    class DigiROOTInput : public DigiInputAction {
 
     protected:
-      /// Property: Input data specification
-      std::vector<std::string> m_inputs { };
-      /// Property: Mask to flag input source items
-      int                      m_mask   { NO_MASK };
+      /// Helper classes
+      class internals_t;
+      /// Property: Name of the tree to connect to
+      std::string                    m_tree_name   { };
+      /// Property: Container names to be loaded
+      std::vector<std::string>       m_containers  { };
+
+      mutable int                    m_curr_input  { 0 };
+      /// Connection parameters to the "current" input source
+      mutable std::unique_ptr<internals_t>   imp    { };
+
+      /// Open new input file
+      void open_new_file()  const;
 
     protected:
       /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiInputAction);
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiROOTInput);
 
     public:
       /// Standard constructor
-      DigiInputAction(const DigiKernel& kernel, const std::string& nam);
+      DigiROOTInput(const DigiKernel& kernel, const std::string& nam);
       /// Default destructor
-      virtual ~DigiInputAction();
+      virtual ~DigiROOTInput();
       /// Callback to read event input
       virtual void execute(DigiContext& context)  const override;
     };
 
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DDDIGI_DIGIINPUTACTION_H
+#endif // DDDIGI_DIGIROOTINPUT_H

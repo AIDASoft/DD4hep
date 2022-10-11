@@ -159,7 +159,7 @@ void DigiSubdetectorSequence::execute(DigiContext& context)  const   {
   }
   this->DigiSynchronize::execute(context);
   debug("+++ Event: %8d (DigiSubdetectorSequence) Parallel: %s Done.",
-        context.event().eventNumber, yes_no(m_parallel));
+        context.event->eventNumber, yes_no(m_parallel));
 }
 
 /// Access subdetector from the detector description

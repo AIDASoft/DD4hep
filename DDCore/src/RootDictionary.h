@@ -58,6 +58,15 @@ namespace dd4hep {
   tools::Evaluator& evaluator();
   tools::Evaluator& g4Evaluator();
 
+  std::size_t always (const std::string& src, const std::string& msg) { return printout(ALWAYS,  src, msg); }
+  std::size_t verbose(const std::string& src, const std::string& msg) { return printout(VERBOSE, src, msg); }
+  std::size_t debug  (const std::string& src, const std::string& msg) { return printout(DEBUG,   src, msg); }
+  std::size_t info   (const std::string& src, const std::string& msg) { return printout(INFO,    src, msg); }
+  std::size_t warning(const std::string& src, const std::string& msg) { return printout(WARNING, src, msg); }
+  std::size_t error  (const std::string& src, const std::string& msg) { return printout(ERROR,   src, msg); }
+  std::size_t fatal  (const std::string& src, const std::string& msg) { return printout(FATAL,   src, msg); }
+  void        exception(const std::string& src, const std::string& msg) { except(src, "%s", msg.c_str()); }
+
   namespace detail {
     /// Helper to invoke the ROOT interpreter
     struct interp  {
@@ -111,6 +120,16 @@ namespace dd4hep   {   namespace Parsers   {
 #pragma link C++ namespace dd4hep::DDSegmentation;
 
 #pragma link C++ enum dd4hep::PrintLevel;
+#pragma link C++ function dd4hep::always;
+#pragma link C++ function dd4hep::verbose;
+#pragma link C++ function dd4hep::debug;
+#pragma link C++ function dd4hep::info;
+#pragma link C++ function dd4hep::warning;
+#pragma link C++ function dd4hep::error;
+#pragma link C++ function dd4hep::fatal;
+#pragma link C++ function dd4hep::except;
+#pragma link C++ function dd4hep::printout;
+#pragma link C++ function dd4hep::exception;
 
 #ifndef __ROOTCLING__
 template std::pair<unsigned int, std::string>;

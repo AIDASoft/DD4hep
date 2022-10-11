@@ -64,4 +64,3 @@ install(TARGETS DDDigi DDDigiPlugins EXPORT DD4hep
   LIBRARY DESTINATION lib
   )
 install(DIRECTORY include/DDDigi DESTINATION include)
-

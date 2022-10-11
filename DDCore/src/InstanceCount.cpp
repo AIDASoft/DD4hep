@@ -21,6 +21,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <mutex>
 #include <map>
 
 using namespace std;
@@ -45,6 +46,7 @@ namespace {
   }
   int s_global = 1;
   struct _Global {
+    std::mutex lock;
     _Global() {}
     ~_Global() { s_global = 0; }
   } s_globalObj;
@@ -97,34 +99,44 @@ InstanceCount::Counter* InstanceCount::getCounter(const std::string& typ) {
   return (0 != cnt) ? cnt : strings()[&typ] = new Counter();
 }
 
+#define COUNTER_LOCK std::lock_guard<std::mutex> _counter_lock(s_globalObj.lock);
+
 /// Increment count according to string information
 void InstanceCount::increment(const std::string& typ) {
-  if ( s_global )
+  if ( s_global )   {
+    COUNTER_LOCK
     getCounter(typ)->increment();
+  }
   else
     on_exit_destructors();
 }
 
 /// Decrement count according to string information
 void InstanceCount::decrement(const std::string& typ) {
-  if ( s_global )
+  if ( s_global )   {
+    COUNTER_LOCK
     getCounter(typ)->decrement();
+  }
   else
     on_exit_destructors();
 }
 
 /// Increment count according to type information
 void InstanceCount::increment(const std::type_info& typ) {
-  if ( s_global )
+  if ( s_global )    {
+    COUNTER_LOCK
     getCounter(typ)->increment();
+  }
   else
     on_exit_destructors();
 }
 
 /// Decrement count according to type information
 void InstanceCount::decrement(const std::type_info& typ) {
-  if ( s_global )
+  if ( s_global )   {
+    COUNTER_LOCK
     getCounter(typ)->decrement();
+  }
   else
     on_exit_destructors();
 }

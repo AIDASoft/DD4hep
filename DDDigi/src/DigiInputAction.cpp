@@ -26,7 +26,8 @@ using namespace dd4hep::digi;
 DigiInputAction::DigiInputAction(const DigiKernel& kernel, const string& nam)
   : DigiEventAction(kernel, nam)
 {
-  declareProperty("Input", m_input);
+  declareProperty("input",  m_inputs);
+  declareProperty("mask",   m_mask);
   InstanceCount::increment(this);
 }
 
@@ -37,8 +38,6 @@ DigiInputAction::~DigiInputAction()   {
 
 /// Pre-track action callback
 void DigiInputAction::execute(DigiContext& /* context */)  const   {
+  info("+++ Virtual method execute() --- Should not be called");
   ::sleep(1);
-  info("+++ Virtual method execute()");
-  return;
-  //except("DigiInputAction","+++ Virtual method execute() MUST be overloaded!");
 }

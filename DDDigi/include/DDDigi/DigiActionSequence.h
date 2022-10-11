@@ -72,6 +72,36 @@ namespace dd4hep {
       virtual void execute(DigiContext& context)  const override;
     };
 
+    /// Definitiaon of the sequential action sequence
+    /** Definitiaon of the sequential action sequence
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class DigiSequentialActionSequence : public DigiActionSequence {
+    public:
+      /// Standard constructor
+      DigiSequentialActionSequence(const DigiKernel& kernel, const std::string& nam);
+      /// Default destructor
+      virtual ~DigiSequentialActionSequence();
+    };
+
+    /// Definitiaon of the parallel action sequence
+    /** Definitiaon of the parallel action sequence
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class DigiParallelActionSequence : public DigiActionSequence {
+    public:
+      /// Standard constructor
+      DigiParallelActionSequence(const DigiKernel& kernel, const std::string& nam);
+      /// Default destructor
+      virtual ~DigiParallelActionSequence();
+    };
+
   }    // End namespace digi
 }      // End namespace dd4hep
 #endif // DDDIGI_DIGIACTIONSEQUENCE_H

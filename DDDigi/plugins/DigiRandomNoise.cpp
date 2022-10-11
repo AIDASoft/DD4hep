@@ -14,7 +14,7 @@
 #define DD4HEP_DDDIGI_DIGIRANDOMNOISE_H
 
 // Framework include files
-#include "DDDigi/DigiEventAction.h"
+#include <DDDigi/DigiEventAction.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

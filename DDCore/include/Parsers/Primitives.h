@@ -143,6 +143,17 @@ namespace dd4hep {
       return reverse_num; 
     }
 
+    /// C++ version to convert a string to lower case
+    std::string str_lower(const std::string& str);
+    /// C++ version to convert a string to upper case
+    std::string str_upper(const std::string& str);
+    /// Replace all occurrencies of a string
+    std::string str_replace(const std::string& source, const std::string& pattern, const std::string& replacement);
+    /// Replace all occurrencies of a string
+    std::string str_replace(const std::string& source, char pattern, const std::string& replacement);
+    /// Replace all occurrencies of a string
+    std::string str_replace(const std::string& source, char pattern, char replacement);
+
     /// Convert date into epoch time (seconds since 1970)
     long int makeTime(int year, int month, int day,
                       int hour=0, int minutes=0, int seconds=0);

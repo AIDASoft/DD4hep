@@ -10,16 +10,12 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDDIGI_DIGIDDG4INPUT_H
-#define DDDIGI_DIGIDDG4INPUT_H
+#ifndef DDDIGI_DIGIHITATTENUATOREXP_H
+#define DDDIGI_DIGIHITATTENUATOREXP_H
 
-/// Framework include files
-#include "DDDigi/DigiInputAction.h"
+// Framework include files
+#include "DDDigi/DigiEventAction.h"
 
-// Forward declarations
-class TFile;
-class TTree;
-class TBranch;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -27,36 +23,35 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
-    // Forward declarations
-    class DigiDDG4Input;
-
-    /// Base class for input actions to the digitization
+    /// Default base class for all Digitizer actions and derivates thereof.
     /**
+     *  This is a utility class supporting properties, output and access to
+     *  event and run objects through the context.
      *
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_DIGITIZATION
+     *  \ingroup DD4HEP_SIMULATION
      */
-    class DigiDDG4Input : public DigiInputAction {
+    class DigiHitAttenuatorExp : public DigiEventAction   {
     protected:
-      /// Reference to the current ROOT file to be read
-      TFile*                   m_current   { nullptr };
-      /// List of input sources to be worked down
-      std::vector<std::string> m_todo      {  };
+      /// Implementation declaration
+      class internals_t;
+      /// Reference to the actual implementation
+      std::unique_ptr<internals_t> internals;
 
     protected:
       /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiDDG4Input);
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiHitAttenuatorExp);
+
+      /// Default destructor
+      virtual ~DigiHitAttenuatorExp();
 
     public:
       /// Standard constructor
-      DigiDDG4Input(const DigiKernel& kernel, const std::string& nam);
-      /// Default destructor
-      virtual ~DigiDDG4Input();
-      /// Callback to read event input
-      virtual void execute(DigiContext& context)  const override;
+      DigiHitAttenuatorExp(const DigiKernel& kernel, const std::string& nam);
+      /// Main functional callback
+      virtual void execute(DigiContext& context)  const;
     };
-
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DDDIGI_DIGIDDG4INPUT_H
+#endif // DDDIGI_DIGIHITATTENUATOREXP_H

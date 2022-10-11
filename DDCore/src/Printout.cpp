@@ -371,7 +371,8 @@ string dd4hep::format(const string& src, const string& fmt, va_list& args) {
  */
 string dd4hep::format(const char* src, const char* fmt, va_list& args) {
   char str[4096];
-  size_t len1 = ::snprintf(str, sizeof(str), "%s: ", src);
+  size_t len1 = 0;
+  if ( src && *src ) ::snprintf(str, sizeof(str), "%s: ", src);
   size_t len2 = ::vsnprintf(str + len1, sizeof(str) - len1, fmt, args);
   if ( len2 > sizeof(str) - len1 )  {
     len2 = sizeof(str) - len1 - 1;
