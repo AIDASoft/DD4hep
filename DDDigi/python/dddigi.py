@@ -9,7 +9,7 @@
 #
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
-from dd4hep_base import *  # noqa: F401
+from dd4hep_base import *  # noqa: F401, F403
 
 
 logger = None
