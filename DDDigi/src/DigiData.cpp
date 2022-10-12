@@ -114,7 +114,12 @@ std::size_t dd4hep::digi::ParticleMapping::merge(ParticleMapping&& updates)    {
 }
 
 void dd4hep::digi::ParticleMapping::push(Key::key_type k, Particle&& part)  {
-  auto ret = this->emplace(k, std::move(part)).second;
+#if defined(__GNUC__) && (__GNUC__ < 10)
+  /// Lower compiler version have a bad implementation of std::any
+  bool ret = false;
+#else
+  bool ret = this->emplace(k, std::move(part)).second;
+#endif
   if ( !ret )   {
     Key key(k);
     except("ParticleMapping","Error in particle map. Duplicate ID: mask:%04X Number:%d",

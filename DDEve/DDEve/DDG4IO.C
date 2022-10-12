@@ -29,8 +29,8 @@
 #endif
 
 // C/C++ include files
-#include "DDG4/DDG4Dict.h"
-#include "DDEve/DDEveEventData.h"
+#include <DDG4/DDG4Dict.h>
+#include <DDEve/DDEveEventData.h>
 
 namespace { class DDG4IO {}; }
 
@@ -48,8 +48,8 @@ namespace dd4hep { namespace sim {
 #include <typeinfo>
 
 // ROOT include files
-#include "TROOT.h"
-#include "TClass.h"
+#include <TROOT.h>
+#include <TClass.h>
 
 namespace {
   template <typename T> T* _fill(dd4hep::sim::Geant4HitData* ptr, dd4hep::DDEveHit* target)   {
@@ -119,7 +119,7 @@ namespace {
 
 }
 
-#include "DD4hep/Factories.h"
+#include <DD4hep/Factories.h>
 DECLARE_CONSTRUCTOR(DD4hep_DDEve_DDG4HitAccess,_convertHit)
 DECLARE_CONSTRUCTOR(DD4hep_DDEve_DDG4ParticleAccess,_convertParticle)
 #endif
