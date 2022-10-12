@@ -53,13 +53,30 @@ dd4hep_add_plugin(DDDigiPlugins
   USES           DD4hep::DDDigi
   )
 
+#---------------------------  Plugin library to read input from DDG4  --------------
+if (DD4HEP_USE_GEANT4)
+  dd4hep_add_dictionary(G__DDDigi_DDG4_IO
+    SOURCES ../DDCore/include/ROOT/Warnings.h ddg4/IO.cpp
+    LINKDEF ../DDCore/include/ROOT/LinkDef.h
+    USES    DD4hep::DDG4 
+    )
+
+  dd4hep_add_plugin(DDDigi_DDG4_IO
+    SOURCES        ddg4/*.cpp
+    GENERATED      G__DDDigi_DDG4_IO.cxx
+    USES           DD4hep::DDDigi
+    )
+else()
+  dd4hep_print( "|++> Geant4 not used. DDDigi will not be able to read DDG4 output.")
+endif()
+
 #---Package installation procedure(s) ----------------------------------------------
 
-set_target_properties(DDDigi DDDigiPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+set_target_properties(DDDigi DDDigiPlugins DDDigi_DDG4_IO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 file(GLOB DDigi_python python/*.py python/*.C)
 install(FILES ${DDigi_python} DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
-install(TARGETS DDDigi DDDigiPlugins EXPORT DD4hep
+install(TARGETS DDDigi DDDigiPlugins DDDigi_DDG4_IO EXPORT DD4hep
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   )

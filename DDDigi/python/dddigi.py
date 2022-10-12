@@ -40,10 +40,10 @@ def loadDDDigi():
   if result < 0:
     raise Exception('DDDigi.py: Failed to load the DDDigi library libDDDigiPlugins: ' + gSystem.GetErrorStr())
   logger.info('DDDigi.py: Successfully loaded DDDigi plugin library libDDDigiPlugins!')
-  result = gSystem.Load("libDDG4Plugins")
+  result = gSystem.Load("libDDDigi_DDG4_IO")
   if result < 0:
-    raise Exception('DDDigi.py: Failed to load the DDG4 library libDDG4Plugins: ' + gSystem.GetErrorStr())
-  logger.info('DDDigi.py: Successfully loaded DDG4 plugin library libDDG4Plugins!')
+    raise Exception('DDDigi.py: Failed to load the DDG4 IO library libDDDigi_DDG4_IO: ' + gSystem.GetErrorStr())
+  logger.info('DDDigi.py: Successfully loaded DDG4 IO plugin library libDDDigi_DDG4_IO!')
   from ROOT import dd4hep as module
   return module
 
