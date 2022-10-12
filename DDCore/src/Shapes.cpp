@@ -611,21 +611,21 @@ Trap::Trap(const string& nam,
 /// Constructor to be used when creating a new anonymous object with attribute initialization
 void Trap::make(const string& nam, double pZ, double pY, double pX, double pLTX) {
   double fDz  = 0.5*pZ;
-  double fTthetaCphi = 0;
-  double fTthetaSphi = 0;
+  double fTheta = 0;
+  double fPhi = 0;
   double fDy1 = 0.5*pY;
   double fDx1 = 0.5*pX;
   double fDx2 = 0.5*pLTX;
-  double fTalpha1 = 0.5*(pLTX - pX)/pY;
+  double fAlpha1 = atan(0.5*(pLTX - pX)/pY);
   double fDy2 = fDy1;
   double fDx3 = fDx1;
   double fDx4 = fDx2;
-  double fTalpha2 = fTalpha1;
+  double fAlpha2 = fAlpha1;
 
   _assign(new TGeoTrap(nam.c_str(),
-		       fDz,  fTthetaCphi /* = 0 */,  fTthetaSphi /* = 0 */,
-                       fDy1, fDx1, fDx2, fTalpha1/units::deg,
-                       fDy2, fDx3, fDx4, fTalpha2/units::deg), "", TRAP_TAG, true);
+		       fDz,  fTheta /* = 0 */,  fPhi /* = 0 */,
+                       fDy1, fDx1, fDx2, fAlpha1/units::deg,
+                       fDy2, fDx3, fDx4, fAlpha2/units::deg), "", TRAP_TAG, true);
 }
 
 /// Set the trap dimensions
