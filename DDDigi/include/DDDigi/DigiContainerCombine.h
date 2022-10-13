@@ -49,8 +49,8 @@ namespace dd4hep {
       /// Combine selected containers to one single deposit container
       template <typename PREDICATE> 
 	std::size_t combine_containers(DigiEvent& event,
-				       DigiEvent::container_map_t& inputs,
-				       DigiEvent::container_map_t& outputs,
+				       DataSegment& inputs,
+				       DataSegment& outputs,
 				       const PREDICATE& predicate)  const;
 
     public:

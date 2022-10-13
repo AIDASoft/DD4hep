@@ -35,14 +35,14 @@ DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiActionSequence)
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiParallelActionSequence)
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSequentialActionSequence)
 
-#include <DDDigi/DigiSubdetectorSequence.h>
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSubdetectorSequence)
+//#include <DDDigi/DigiSubdetectorSequence.h>
+// DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSubdetectorSequence)
 
 #include <DDDigi/DigiLockedAction.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiLockedAction)
 
-#include <DDDigi/DigiSignalProcessorSequence.h>
-DECLARE_DIGISIGNALPROCESSOR_NS(dd4hep::digi,DigiSignalProcessorSequence)
+//#include <DDDigi/DigiSignalProcessorSequence.h>
+// DECLARE_DIGISIGNALPROCESSOR_NS(dd4hep::digi,DigiSignalProcessorSequence)
 
 #include <DDDigi/DigiStoreDump.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiStoreDump)
@@ -54,25 +54,11 @@ DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiHitAttenuatorExp)
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiContainerCombine)
 
 #include <DDDigi/DigiSegmentationSplitter.h>
+DECLARE_DIGISEGMENTACTION_NS(dd4hep::digi,DigiSegmentAction)
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSegmentationSplitter)
 
-
-
-using namespace std;
-using namespace dd4hep;
-using namespace dd4hep::detail;
-
-
-
 /// Basic entry point 
-/**
- *  Factory: DD4hep_GeometryDisplay
- *
- *  \author  M.Frank
- *  \version 1.0
- *  \date    01/04/2014
- */
-static long dummy(Detector&, int, char**) {
+static long dummy(dd4hep::Detector&, int, char**) {
   return 0;
 }
 DECLARE_APPLY(DDDigi_dummy,dummy)

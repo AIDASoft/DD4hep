@@ -14,22 +14,13 @@
 #define DDDIGI_DIGIDATA_H
 
 /// Framework include files
-#include <DD4hep/config.h>
-#include <DD4hep/Objects.h>
-#include <DD4hep/Printout.h>
 #include <DD4hep/Primitives.h>
-#include <DD4hep/ObjectExtensions.h>
 
 /// C/C++ include files
-#include <functional>
-#include <stdexcept>
 #include <cstdint>
 #include <memory>
 #include <mutex>
 #include <map>
-#include <set>
-#include <unordered_map>
-#include <unordered_set>
 #include <any>
 
 /// Namespace for the AIDA detector description toolkit
@@ -39,11 +30,13 @@ namespace dd4hep {
   namespace digi {
 
     /// Forward declarations
-    class DigiEvent;
+    union Key;
     class Particle;
-    class ParticleMapping;
     class EnergyDeposit;
+    class ParticleMapping;
     class DepositMapping;
+    class DigiEvent;
+    class DataSegment;
 
     ///  Key defintion to access the event data
     /**
@@ -58,19 +51,43 @@ namespace dd4hep {
       typedef std::uint32_t itemkey_type;
       typedef std::uint16_t mask_type;
       
+      /// First union entry used for fast initialization
       key_type key;
+      /// Second union entry to use for discrimination
       struct {
         itemkey_type item;
         mask_type    mask;
         mask_type    spare;
       } values;
+
+      /// Default constructor
       Key();
+      /// Move constructor
+      Key(Key&&);
+      /// Copy constructor
       Key(const Key&);
+      /// Initializaing constructor (fast)
       Key(key_type full_mask);
+      /// Initializaing constructor with key generation using hash algorithm
       Key(mask_type mask, const std::string& item);
-      Key& operator=(const Key&);
-      key_type toLong()  const  {  return key; }
+      /// Assignment operator
+      Key& operator = (const Key&);
+      /// Move assignment operator
+      Key& operator = (Key&& copy);
+      /// Equality operator
+      bool operator == (const Key&)   const;
+      /// Operator less
+      bool operator < (const Key&)   const;
+      /// Operator greator
+      bool operator > (const Key&)   const;
+
+      /// Conversion to uint64
+      key_type toLong()  const  {
+	return key;
+      }
+      /// Generate key using hash algorithm
       void set(const std::string& name, int mask);
+      
       /// Project the mask part of the key
       static itemkey_type item(key_type k)  {
 	return Key(k).values.item;
@@ -82,6 +99,58 @@ namespace dd4hep {
       /// Access key name (if registered properly)
       static std::string key_name(const Key& key);
     };
+
+    /// Default constructor
+    inline Key::Key()    {
+      this->key = 0;
+    }
+
+    /// Move constructor
+    inline Key::Key(Key&& copy)   {
+      this->key = copy.key;
+    }
+
+    /// Copy constructor
+    inline Key::Key(const Key& copy)   {
+      this->key = copy.key;
+    }
+
+    /// Initializaing constructor (fast)
+    inline Key::Key(key_type full_mask)   {
+      this->key = full_mask;
+    }
+
+    /// Initializaing constructor with key generation using hash algorithm
+    inline Key::Key(mask_type mask, const std::string& item)  {
+      this->set(item, mask);
+    }
+
+    /// Move assignment operator
+    inline Key& Key::operator = (Key&& copy)   {
+      this->key = copy.key;
+      return *this;
+    }
+
+    /// Assignment operator
+    inline Key& Key::operator = (const Key& copy)   {
+      this->key = copy.key;
+      return *this;
+    }
+
+    /// Equality operator
+    inline bool Key::operator == (const Key& other)   const    {
+      return this->key == other.key;
+    }
+
+    /// Operator less
+    inline bool Key::operator < (const Key& other)   const    {
+      return this->key < other.key;
+    }
+
+    /// Operator greator
+    inline bool Key::operator > (const Key& other)   const    {
+      return this->key > other.key;
+    }
 
     /// Particle definition for digitization
     /** Particle definition for digitization
@@ -146,8 +215,9 @@ namespace dd4hep {
       /// Disable copy assignment
       ParticleMapping& operator=(const ParticleMapping& copy) = default;
 
-      /// Merge new deposit map onto existing map
+      /// Merge new deposit map onto existing map (not thread safe!)
       std::size_t merge(ParticleMapping&& updates);
+      /// Add new entry to the particle mapping (not thread safe!)
       void push(Key::key_type key, Particle&& particle);
     };
 
@@ -223,7 +293,7 @@ namespace dd4hep {
       /// Disable copy assignment
       DepositMapping& operator=(const DepositMapping& copy) = default;      
 
-      /// Merge new deposit map onto existing map
+      /// Merge new deposit map onto existing map (not thread safe!)
       std::size_t merge(DepositMapping&& updates);
     };
 
@@ -233,21 +303,113 @@ namespace dd4hep {
     {
     }
 
-  }    // End namespace digi
-}      // End namespace dd4hep
-    
+    ///  Data segment definition (locked map)
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class DataSegment   {
+    public:
+      using key_type = Key::key_type;
+      using container_map_t = std::map<key_type, std::any>;
+      using iterator = container_map_t::iterator;
+      using const_iterator = container_map_t::const_iterator;
 
-/// <any> is not properly processed by cling.
-/// We need to exclude any reference to it.
-#if !defined(DD4HEP_INTERPRETER_MODE)
-#include <DD4hep/Any.h>
-#endif
+    private:
+      /// Call on failed any-casts
+      std::string invalid_cast(key_type key, const std::type_info& type)  const;
+      /// Call on failed data requests during data requests
+      std::string invalid_request(key_type key)  const;
 
-/// Namespace for the AIDA detector description toolkit
-namespace dd4hep {
+      /// Access data item by key
+      std::any* get_item(key_type key, bool exc);
+      /// Access data item by key  (CONST)
+      const std::any* get_item(key_type key, bool exc)  const;
 
-  /// Namespace for the Digitization part of the AIDA detector description toolkit
-  namespace digi {
+    public:
+      container_map_t data;
+      std::mutex&     lock;
+
+    public:
+      /// Initializing constructor
+      DataSegment(std::mutex& lock);
+      /// Default constructor
+      DataSegment() = delete;
+      /// Disable move constructor
+      DataSegment(DataSegment&& copy) = delete;
+      /// Disable copy constructor
+      DataSegment(const DataSegment& copy) = delete;      
+      /// Default destructor
+      virtual ~DataSegment() = default;
+      /// Disable move assignment
+      DataSegment& operator=(DataSegment&& copy) = delete;
+      /// Disable copy assignment
+      DataSegment& operator=(const DataSegment& copy) = delete;      
+
+      /** Locked operations */
+      /// Emplace data item (locked)
+      bool emplace(key_type key, std::any&& data);
+      /// Remove data item from segment (locked)
+      bool erase(key_type key);
+      /// Remove data items from segment (locked)
+      std::size_t erase(const std::vector<key_type>& keys);
+      
+      /** Unlocked operations */
+      /// Access data as reference by key. If not existing, an exception is thrown
+      template<typename T> T& get(key_type key);
+      /// Access data as reference by key. If not existing, an exception is thrown
+      template<typename T> const T& get(key_type key)  const;
+
+      /// Access data as pointers by key. If not existing, nullptr is returned
+      template<typename T> T* pointer(key_type key);
+      /// Access data as pointers by key. If not existing, nullptr is returned
+      template<typename T> const T* pointer(key_type key)  const;
+
+      /// Access container size
+      std::size_t size()  const               { return this->data.size();    }
+      /// Check container if empty
+      bool        empty() const               { return this->data.empty();   }
+      /// Begin iteration
+      iterator begin()                        { return this->data.begin();   }
+      /// End iteration
+      iterator end()                          { return this->data.end();     }
+      /// Find entry by key
+      iterator find(key_type key)             { return this->data.find(key); }
+      /// Begin iteration (CONST)
+      const_iterator begin() const            { return this->data.begin();   }
+      /// End iteration (CONST)
+      const_iterator end()   const            { return this->data.end();     }
+      /// Find entry by key
+      const_iterator find(key_type key) const { return this->data.find(key); }
+    };
+
+    /// Access data as reference by key. If not existing, an exception is thrown
+    template<typename T> inline T& DataSegment::get(key_type key)     {
+      if ( T* ptr = std::any_cast<T>(this->get_item(key, true)) )
+	return *ptr;
+      throw std::runtime_error(this->invalid_cast(key, typeid(T)));
+    }
+    /// Access data as reference by key. If not existing, an exception is thrown
+    template<typename T> inline const T& DataSegment::get(key_type key)  const   {
+      if ( const T* ptr = std::any_cast<T>(this->get_item(key, true)) )
+	return *ptr;
+      throw std::runtime_error(this->invalid_cast(key, typeid(T)));
+    }
+
+    /// Access data as pointers by key. If not existing, nullptr is returned
+    template<typename T> inline T* DataSegment::pointer(key_type key)     {
+      if ( T* ptr = std::any_cast<T>(this->get_item(key, false)) )
+	return ptr;
+      return nullptr;
+    }
+    /// Access data as pointers by key. If not existing, nullptr is returned
+    template<typename T> inline const T* DataSegment::pointer(key_type key)  const   {
+      if ( const T* ptr = std::any_cast<T>(this->get_item(key, false)) )
+	return ptr;
+      return nullptr;
+    }
 
     ///  User event data for DDDigi
     /**
@@ -256,26 +418,17 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class  DigiEvent : public ObjectExtensions  {
+    class  DigiEvent  {
     private:
       std::mutex  m_lock;
       std::string m_id;
-    public:
-      /// Forward definition of the key type
-      typedef Key::key_type key_type;
+      DataSegment m_data        { this->m_lock };
+      DataSegment m_inputs      { this->m_lock };
+      DataSegment m_deposits    { this->m_lock };
 
-      int eventNumber = 0;
-#if defined(DD4HEP_INTERPRETER_MODE)
-      std::map<key_type, long>  data;
-      std::map<key_type, long>  inputs;
-      std::map<key_type, long>  deposits;
-#else
-      typedef std::map<key_type, dd4hep::any> container_map_t;
-    protected:
-      container_map_t data;
-      container_map_t inputs;
-      container_map_t deposits;
-#endif
+    public:
+      int eventNumber  { 0 };
+
     public:
 #if defined(DD4HEP_INTERPRETER_MODE) || defined(G__ROOT)
       /// Inhibit default constructor
@@ -289,67 +442,10 @@ namespace dd4hep {
       DigiEvent(int num);
       /// Default destructor
       virtual ~DigiEvent();
-
       /// String identifier of this event
       const char* id()   const    {   return this->m_id.c_str();   }
-
-#if !defined(DD4HEP_INTERPRETER_MODE)
-      /// Add item by key to the data segment
-      bool put_data(unsigned long key, std::any&& object);
-
-      /// Add item by key to the input segment
-      bool put_input(unsigned long key, std::any&& object);
-
       /// Retrieve data segment from the event structure
-      container_map_t& get_segment(const std::string& name);
-
-      /// Add item by key to the data 
-      template<typename T> bool put(const Key& key, T&& object)     {
-        bool ret = this->inputs.emplace(key.toLong(),make_any<T>(object)).second;
-        if ( ret ) return ret;
-        except("DigiEvent","Invalid requested to store data in event container. Key:%ld",key.toLong());
-        throw std::runtime_error("DigiEvent"); // Will never get here!
-      }
-
-      /// Retrieve item by key from the event data container
-      template<typename T> T& get(const Key& key)     {
-        auto iter = data.find(key.toLong());
-        if ( iter != data.end() )  {
-          T* ptr = dd4hep::any_cast<T>(&(*iter).second);
-          if ( ptr ) return *ptr;
-          except("DigiEvent","Invalid data requested from event container [cast failed]. Key:%ld",key.toLong());
-        }
-        except("DigiEvent","Invalid data requested from event container. Key:%ld",key.toLong());
-        throw std::runtime_error("DigiEvent"); // Will never get here!
-      }
-
-      /// Retrieve item by key from the event data container
-      template<typename T> const T& get(const Key& key)  const    {
-        std::map<key_type, dd4hep::any>::const_iterator iter = data.find(key.toLong());
-        if ( iter != data.end() )  {
-          const T* ptr = dd4hep::any_cast<T>(&(*iter).second);
-          if ( ptr ) return *ptr;
-          except("DigiEvent","Invalid data requested from event container [cast failed]. Key:%ld",key.toLong());
-        }
-        except("DigiEvent","Invalid data requested from event container. Key:%ld",key.toLong());
-        throw std::runtime_error("DigiEvent"); // Will never get here!
-      }
-#endif
-      /// Add an extension object to the detector element
-      void* addExtension(unsigned long long int k, ExtensionEntry* e)  {
-        return ObjectExtensions::addExtension(k, e);
-      }
-      /// Add user extension object. Ownership is transferred and object deleted at the end of the event.
-      template <typename T> T* addExtension(T* ptr, bool take_ownership=true)   {
-        ExtensionEntry* e = take_ownership
-          ? (ExtensionEntry*)new detail::DeleteExtension<T,T>(ptr)
-          : (ExtensionEntry*)new detail::SimpleExtension<T,T>(ptr);
-        return (T*)ObjectExtensions::addExtension(detail::typeHash64<T>(),e);
-      }
-      /// Access to type safe extension object. Exception is thrown if the object is invalid
-      template <typename T> T* extension(bool alert=true) {
-        return (T*)ObjectExtensions::extension(detail::typeHash64<T>(),alert);
-      }
+      DataSegment& get_segment(const std::string& name);
     };
   }    // End namespace digi
 }      // End namespace dd4hep

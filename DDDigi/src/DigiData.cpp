@@ -32,33 +32,9 @@ namespace   {
   }
 }
 
-dd4hep::digi::Key::Key()    {
-  this->key = 0;
-}
+using namespace dd4hep::digi;
 
-dd4hep::digi::Key::Key(const Key& copy)   {
-  this->key = copy.key;
-}
-
-dd4hep::digi::Key::Key(key_type full_mask)   {
-  this->key = full_mask;
-}
-
-dd4hep::digi::Key::Key(mask_type mask, const std::string& item)  {
-  auto& _k = keys();
-  this->key = 0;
-  this->values.mask = mask;
-  this->values.item = detail::hash32(item);
-  std::lock_guard<std::mutex> lock(_k.lock);
-  _k.map[key] = item;
-}
-
-dd4hep::digi::Key& dd4hep::digi::Key::operator=(const Key& copy)   {
-  this->key = copy.key;
-  return *this;
-}
-
-void dd4hep::digi::Key::set(const std::string& name, int mask)    {
+void Key::set(const std::string& name, int mask)    {
   auto& _k = keys();
   if ( name.empty() )   {
     std::lock_guard<std::mutex> lock(_k.lock);
@@ -71,7 +47,7 @@ void dd4hep::digi::Key::set(const std::string& name, int mask)    {
 }
 
 /// Access key name (if registered properly)
-std::string dd4hep::digi::Key::key_name(const Key& k)    {
+std::string Key::key_name(const Key& k)    {
   auto& _k = keys();
   std::lock_guard<std::mutex> lock(_k.lock);
   std::map<unsigned long, std::string>::const_iterator it = _k.map.find(k.key);
@@ -86,7 +62,7 @@ std::string dd4hep::digi::Key::key_name(const Key& k)    {
 }
 
 /// Merge new deposit map onto existing map
-std::size_t dd4hep::digi::DepositMapping::merge(DepositMapping&& updates)    {
+std::size_t DepositMapping::merge(DepositMapping&& updates)    {
   std::size_t update_size = updates.size();
   for( auto& c : updates )    {
     CellID         cell = c.first;
@@ -104,7 +80,7 @@ std::size_t dd4hep::digi::DepositMapping::merge(DepositMapping&& updates)    {
 }
 
 /// Merge new deposit map onto existing map
-std::size_t dd4hep::digi::ParticleMapping::merge(ParticleMapping&& updates)    {
+std::size_t ParticleMapping::merge(ParticleMapping&& updates)    {
   std::size_t update_size = updates.size();
   for( ParticleMapping::value_type& c : updates )    {
     Particle part(std::move(c.second));
@@ -113,10 +89,11 @@ std::size_t dd4hep::digi::ParticleMapping::merge(ParticleMapping&& updates)    {
   return update_size;
 }
 
-void dd4hep::digi::ParticleMapping::push(Key::key_type k, Particle&& part)  {
+void ParticleMapping::push(Key::key_type k, Particle&& part)  {
 #if defined(__GNUC__) && (__GNUC__ < 10)
   /// Lower compiler version have a bad implementation of std::any
   bool ret = false;
+  if ( part.history.has_value() ) {}
 #else
   bool ret = this->emplace(k, std::move(part)).second;
 #endif
@@ -127,16 +104,89 @@ void dd4hep::digi::ParticleMapping::push(Key::key_type k, Particle&& part)  {
   }
 }
 
+/// Initializing constructor
+DataSegment::DataSegment(std::mutex& l) : lock(l)
+{
+}
+
+/// Remove data item from segment
+bool DataSegment::emplace(key_type key, std::any&& item)    {
+  std::lock_guard<std::mutex> l(lock);
+#if defined(__GNUC__) && (__GNUC__ < 10)
+  /// Lower compiler version have a bad implementation of std::any
+  bool ret = false;
+  if ( item.has_value() ) {}
+#else
+  bool ret = data.emplace(key, std::move(item)).second;
+#endif
+  if ( !ret )   {
+    Key k(key);
+    except("DataSegment","Error in DataSegment map. Duplicate ID: mask:%04X Number:%d",
+	   k.values.mask, k.values.item);
+  }
+  return ret;
+}
+
+/// Remove data item from segment
+bool DataSegment::erase(key_type key)    {
+  std::lock_guard<std::mutex> l(lock);
+  auto iter = data.find(key);
+  if ( iter != data.end() )   {
+    data.erase(iter);
+    return true;
+  }
+  return false;
+}
+
+/// Remove data items from segment (locked)
+std::size_t DataSegment::erase(const std::vector<key_type>& keys)   {
+  std::size_t count = 0;
+  std::lock_guard<std::mutex> l(lock);
+  for(auto key : keys)   {
+    auto iter = data.find(key);
+    if ( iter != data.end() )   {
+      data.erase(iter);
+      ++count;
+    }
+  }
+  return count;
+}
+
+/// Call on failed any-casts during data requests
+std::string DataSegment::invalid_cast(key_type key, const std::type_info& type)  const   {
+  return dd4hep::format(0, "Invalid segment data cast. Key:%ld type:%s",
+			key, typeName(type).c_str());
+}
+
+/// Call on failed data requests during data requests
+std::string DataSegment::invalid_request(key_type key)  const   {
+  return dd4hep::format(0, "Invalid segment data requested. Key:%ld",key);
+}
+
+/// Access data item by key
+std::any* DataSegment::get_item(key_type key, bool exc)   {
+  auto it = this->data.find(key);
+  if (it != this->data.end()) return &it->second;
+  if ( exc ) throw std::runtime_error(invalid_request(key));
+  return nullptr;
+}
+
+/// Access data item by key  (CONST)
+const std::any* DataSegment::get_item(key_type key, bool exc)  const   {
+  auto it = this->data.find(key);
+  if (it != this->data.end()) return &it->second;
+  if ( exc ) throw std::runtime_error(invalid_request(key));
+  return nullptr;
+}
+
 /// Intializing constructor
-dd4hep::digi::DigiEvent::DigiEvent()
-  : ObjectExtensions(typeid(DigiEvent))
+DigiEvent::DigiEvent()
 {
   InstanceCount::increment(this);
 }
 
 /// Intializing constructor
-dd4hep::digi::DigiEvent::DigiEvent(int ev_num)
-  : ObjectExtensions(typeid(DigiEvent)), eventNumber(ev_num)
+DigiEvent::DigiEvent(int ev_num) : eventNumber(ev_num)
 {
   char text[32];
   ::snprintf(text, sizeof(text), "Ev:%06d ", ev_num);
@@ -145,56 +195,26 @@ dd4hep::digi::DigiEvent::DigiEvent(int ev_num)
 }
 
 /// Default destructor
-dd4hep::digi::DigiEvent::~DigiEvent()
+DigiEvent::~DigiEvent()
 {
   InstanceCount::decrement(this);
 }
 
 /// Retrieve data segment from the event structure
-dd4hep::digi::DigiEvent::container_map_t& 
-dd4hep::digi::DigiEvent::get_segment(const std::string& name)   {
+DataSegment& DigiEvent::get_segment(const std::string& name)   {
   switch(::toupper(name[0]))   {
   case 'I':
-    return this->inputs;
+    return this->m_inputs;
   case 'D':
     switch(::toupper(name[1]))   {
     case 'E':
-      return this->deposits;
+      return this->m_deposits;
     default:
-      return this->data;
+      return this->m_data;
     }
     break;
-  case 'O':
-    return this->data;
   default:
-    return this->data;
+    break;
   }
   throw std::runtime_error("Invalid segment name: "+name);
 }
-
-/// Add item by key to the data 
-bool dd4hep::digi::DigiEvent::put_data(unsigned long key, std::any&& object)     {
-  std::lock_guard<std::mutex> lock(m_lock);
-  bool ret = data.emplace(key,object).second;
-  if ( ret ) return ret;
-
-  std::string name = Key::key_name(key);
-  uint32_t    mask = Key::mask(key);
-  except("DigiEvent","%s+++ Invalid requested to store object in data  container [key present]."
-	 " Key:%ld [Mask:%04X, name:%s]", this->id(), key, mask, name.c_str());
-  throw std::runtime_error("DigiEvent"); // Will never get here!
-}
-
-/// Add item by key to the data 
-bool dd4hep::digi::DigiEvent::put_input(unsigned long key, std::any&& object)     {
-  std::lock_guard<std::mutex> lock(m_lock);
-  bool ret = inputs.emplace(key,object).second;
-  if ( ret ) return ret;
-
-  std::string name = Key::key_name(key);
-  uint32_t    mask = Key::mask(key);
-  except("DigiEvent","%s+++ Invalid requested to store object in input container [key present]."
-	 " Key:%ld [Mask:%04X, name:%s]", this->id(), key, mask, name.c_str());
-  throw std::runtime_error("DigiEvent"); // Will never get here!
-}
-

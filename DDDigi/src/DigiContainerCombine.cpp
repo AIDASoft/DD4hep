@@ -18,6 +18,9 @@
 #include <DDDigi/DigiContext.h>
 #include <DDDigi/DigiContainerCombine.h>
 
+/// C/C++ include files
+#include <set>
+
 using dd4hep::digi::DigiContainerCombine;
 
 class DigiContainerCombine::internals_t   {
@@ -103,8 +106,8 @@ dd4hep::digi::DigiContainerCombine::~DigiContainerCombine() {
 /// Combine selected containers to one single deposit container
 template <typename PREDICATE> std::size_t 
 dd4hep::digi::DigiContainerCombine::combine_containers(DigiEvent& event,
-						       DigiEvent::container_map_t& inputs,
-						       DigiEvent::container_map_t& outputs,
+						       DataSegment& inputs,
+						       DataSegment& outputs,
 						       const PREDICATE& predicate)  const
 {
   std::size_t cnt_depos = 0;
@@ -171,12 +174,7 @@ dd4hep::digi::DigiContainerCombine::combine_containers(DigiEvent& event,
     }
   }
   if ( this->internals->erase_combined )   {
-    for(auto key : to_erase)   {
-      auto iter = inputs.find(key);
-      if ( iter != inputs.end() )   {
-	inputs.erase(iter);
-      }
-    }
+    inputs.erase(to_erase);
   }
   this->info("%s+++ Merged %ld particles and %ld deposits from %ld containers",
 	     event.id(), cnt_parts, cnt_depos, cnt_conts);

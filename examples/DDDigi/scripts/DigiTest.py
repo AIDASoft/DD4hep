@@ -9,6 +9,7 @@
 #
 # ==========================================================================
 from __future__ import absolute_import
+import os
 import dddigi
 import logging
 from g4units import ns
@@ -68,6 +69,12 @@ class Test(dddigi.Digitize):
         'CLICSiD_2022-10-05_14-16.root',
         'CLICSiD_2022-10-05_14-40.root']
     self.used_inputs = []
+
+  def load_geo(self):
+    install_dir = os.environ['DD4hepINSTALL']
+    fname = "file:" + install_dir + "/DDDetectors/compact/SiD.xml"
+    self.kernel().loadGeometry(str(fname))
+    self.printDetectors()
 
   def check_creation(self, objs):
     for o in objs:

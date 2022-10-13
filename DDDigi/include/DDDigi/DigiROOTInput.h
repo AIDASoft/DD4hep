@@ -48,10 +48,13 @@ namespace dd4hep {
       std::string                    m_tree_name   { };
       /// Property: Container names to be loaded
       std::vector<std::string>       m_containers  { };
+      /// Property: Segment name to place input data default: inputs
+      std::string                    m_location    { };
 
+      /// Current input id
       mutable int                    m_curr_input  { 0 };
       /// Connection parameters to the "current" input source
-      mutable std::unique_ptr<internals_t>   imp    { };
+      mutable std::unique_ptr<internals_t> imp     { };
 
       /// Open new input file
       void open_new_file()  const;
