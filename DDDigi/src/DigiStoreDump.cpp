@@ -46,6 +46,7 @@ void dd4hep::digi::DigiStoreDump::dump(const std::string& tag,
   std::vector<std::string> records;
   using detail::str_replace;
   info("%s+---- %s segment: %ld entries", event.id(), tag.c_str(), data_segment.size());
+  std::lock_guard<std::mutex> lock(data_segment.lock);
   for ( const auto& e : data_segment )     {
     Key key {e.first};
     const std::any& data = e.second;

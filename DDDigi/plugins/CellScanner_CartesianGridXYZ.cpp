@@ -16,6 +16,8 @@
 #include <DDDigi/segmentations/CartesianGridXYZ.h>
 #include <DDDigi/segmentations/SegmentationScanner.h>
 
+
+#if 0
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
@@ -125,4 +127,5 @@ namespace dd4hep  {
 DECLARE_DIGICELLSCANNER(DigiCellScanner,CartesianGridXYZ,Intersection)
 DECLARE_DIGICELLSCANNER(DigiCellScanner,CartesianGridXYZ,Subtraction)
 DECLARE_DIGICELLSCANNER(DigiCellScanner,CartesianGridXYZ,Union)
+#endif
 

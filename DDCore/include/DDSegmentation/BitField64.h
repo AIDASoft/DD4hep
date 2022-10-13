@@ -21,11 +21,13 @@
 
 #include "DDSegmentation/BitFieldCoder.h"
 
+/// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
   
   typedef long long int long64 ;
   typedef unsigned long long ulong64 ;
   
+  /// DDSegmentation namespace declaration
   namespace DDSegmentation {
     
     /// Lightweight helper class for BitField64 that corresponds to one field value.

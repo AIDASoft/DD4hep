@@ -35,15 +35,20 @@ def loadDDDigi():
   import platform
   if platform.system() == "Darwin":
     gSystem.SetDynamicPath(os.environ['DD4HEP_LIBRARY_PATH'])
-
+  #
+  # load with ROOT the DDDigi plugin library, which in turn loads the DDigi module
   result = gSystem.Load("libDDDigiPlugins")
   if result < 0:
     raise Exception('DDDigi.py: Failed to load the DDDigi library libDDDigiPlugins: ' + gSystem.GetErrorStr())
   logger.info('DDDigi.py: Successfully loaded DDDigi plugin library libDDDigiPlugins!')
+  #
+  # import with ROOT the I/O module to read DDG4 output
   result = gSystem.Load("libDDDigi_DDG4_IO")
   if result < 0:
     raise Exception('DDDigi.py: Failed to load the DDG4 IO library libDDDigi_DDG4_IO: ' + gSystem.GetErrorStr())
   logger.info('DDDigi.py: Successfully loaded DDG4 IO plugin library libDDDigi_DDG4_IO!')
+  #
+  # import the main dd4hep module from ROOT
   from ROOT import dd4hep as module
   return module
 
@@ -62,10 +67,10 @@ def _import_class(ns, nam):
 try:
   dd4hep = loadDDDigi()
 except Exception as X:
-  logger.error('+--%-100s--+', 100 * '-')
-  logger.error('|  %-100s  |', 'Failed to load DDDigi library:')
-  logger.error('|  %-100s  |', str(X))
-  logger.error('+--%-100s--+', 100 * '-')
+  logger.error('+--%-100s--+' % (100 * '-',))
+  logger.error('|  %-100s  |' % ('Failed to load DDDigi library:',))
+  logger.error('|  %-100s  |' % (str(X),))
+  logger.error('+--%-100s--+' % (100 * '-',))
   exit(1)
 
 core = dd4hep
@@ -107,15 +112,15 @@ def importConstants(description, namespace=None, debug=False):
   while len(todo) and cnt < 100:
     cnt = cnt + 1
     if cnt == 100:
-      logger.info('%s %d out of %d %s "%s": [%s]\n+++ %s',
-                  '+++ FAILED to import',
-                  len(todo), len(todo) + num,
-                  'global values into namespace',
-                  ns.__name__, 'Try to continue anyway', 100 * '=')
+      logger.info('%s %d out of %d %s "%s": [%s]\n+++ %s' %
+                  ('+++ FAILED to import',
+                   len(todo), len(todo) + num,
+                   'global values into namespace',
+                   ns.__name__, 'Try to continue anyway', 100 * '=',))
       for k, v in todo.items():
         if not hasattr(ns, k):
           logger.info('+++ FAILED to import: "' + k + '" = "' + str(v) + '"')
-      logger.info('+++ %s', 100 * '=')
+      logger.info('+++ %s' % (100 * '=',))
 
     for k, v in todo.items():
       if not hasattr(ns, k):
@@ -129,7 +134,7 @@ def importConstants(description, namespace=None, debug=False):
           del todo[k]
           num = num + 1
   if cnt < 100:
-    logger.info('+++ Imported %d global values to namespace:%s', num, ns.__name__,)
+    logger.info('+++ Imported %d global values to namespace:%s' % (num, ns.__name__),)
 
 
 # ---------------------------------------------------------------------------

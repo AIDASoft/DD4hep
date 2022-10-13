@@ -18,6 +18,11 @@
 #include <DDDigi/DigiContext.h>
 #include <DDDigi/DigiHitAttenuatorExp.h>
 
+/// C/C++ include files
+#include <cmath>
+
+
+
 class dd4hep::digi::DigiHitAttenuatorExp::internals_t   {
 public:
   /// Property: Input data segment name
@@ -70,27 +75,22 @@ dd4hep::digi::DigiHitAttenuatorExp::~DigiHitAttenuatorExp() {
 void dd4hep::digi::DigiHitAttenuatorExp::execute(DigiContext& context)  const    {
   internals->initialize(context);
   std::size_t count = 0;
-  auto& event  = context.event;
-  auto& inputs = event->get_segment(internals->input);
+  auto& event  = *context.event;
+  auto& inputs = event.get_segment(internals->input);
   for ( const auto& k : internals->attenuation )     {
-    auto iter = inputs.find(k.first);
-    if ( iter != inputs.end() )   {
-      std::any& obj = (*iter).second;
-      DepositMapping* m = std::any_cast<DepositMapping>(&obj);
+    DepositMapping* m = inputs.pointer<DepositMapping>(k.first);
+    if ( m )    {
       double factor = k.second;
-      if ( m )    {
-	for( auto& c : *m )    {
-	  c.second.deposit *= factor;
-	}
-	count += m->size();
-	std::string nam = Key::key_name(k.first)+":";
-	debug("%s+++ %-32s Mask: %06X Attenuated exponentially %6ld hits by %8.5f",
-	      event->id(), nam.c_str(), m->mask, m->size(), factor); 
-	continue;
+      for( auto& c : *m )    {
+	c.second.deposit *= factor;
       }
-      error("Invalid data type in container");
+      count += m->size();
+      std::string nam = Key::key_name(k.first)+":";
+      debug("%s+++ %-32s Mask: %06X Attenuated exponentially %6ld hits by %8.5f",
+	    event.id(), nam.c_str(), m->mask, m->size(), factor); 
+      continue;
     }
   }
-  info("%s+++ Attenuated exponentially %6ld hits", event->id(), count);
+  info("%s+++ Attenuated exponentially %6ld hits", event.id(), count);
 }
 

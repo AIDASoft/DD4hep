@@ -42,12 +42,15 @@ namespace dd4hep {
      */
     class DigiCellData   {
     public:
+#if 0
       PlacedVolume  placement  { };
       Volume        volume     { };
       Solid         solid      { };
       CellID        cell_id    { 0 };
+#endif
       double        signal     { 0.0 };
       mutable bool  kill       { false };
+
       /// Default constructor
       DigiCellData() = default;
       /// Default move constructor

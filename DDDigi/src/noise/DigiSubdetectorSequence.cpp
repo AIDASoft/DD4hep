@@ -106,7 +106,7 @@ void DigiSubdetectorSequence::scan_detector(DetElement de, VolumeID vid, VolumeI
 }
 
 
-void DigiSubdetectorSequence::process_cell(DigiContext&, const DigiCellScanner& , const DigiCellData& data)  const   {
+void DigiSubdetectorSequence::process_cell(DigiContext&, const DigiCellScanner& , const DigiCellData& /* data */)  const   {
 #if 0
   Segmentation seg  = m_sensDet.readout().segmentation();
     string       desc = m_idDesc.str(data.cell_id);
@@ -115,9 +115,9 @@ void DigiSubdetectorSequence::process_cell(DigiContext&, const DigiCellScanner& 
          seg.type().c_str(),
          volumeID(data.cell_id).c_str(),
          desc.c_str());
-#endif
   if ( data.cell_id )  {
   }
+#endif
 }
 
 void DigiSubdetectorSequence::process_context(DigiContext& context,

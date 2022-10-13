@@ -89,6 +89,7 @@ DigiROOTInput::DigiROOTInput(const DigiKernel& kernel, const std::string& nam)
   : DigiInputAction(kernel, nam)
 {
   declareProperty("tree", m_tree_name = "EVENT");
+  declareProperty("location", m_location = "inputs");
   declareProperty("containers", m_containers);
   InstanceCount::increment(this);
 }
@@ -189,6 +190,7 @@ void DigiROOTInput::execute(DigiContext& context)  const   {
     void* obj = br.second.cls->New();
     br.second.branch->SetAddress(&obj);
   }
+  DataSegment& segment = event->get_segment(this->m_location);
   for( const auto& br : imp->branches )    {
     TBranch* b = br.second.branch;
     int nb = b->GetEntry( imp->entry );
@@ -200,7 +202,7 @@ void DigiROOTInput::execute(DigiContext& context)  const   {
     const auto&  func = *br.second.call;
     void** addr = (void**)b->GetAddress();
     auto data = func(this->m_mask, b->GetName(), *addr);
-    event->put_input(br.first, std::move(data));
+    segment.emplace(br.first, std::move(data));
   }
   info("%s+++ Read event %6ld [%ld bytes] from tree %s file: %s",
        event->id(), imp->entry, input_len, imp->tree->GetName(), imp->file->GetName());
