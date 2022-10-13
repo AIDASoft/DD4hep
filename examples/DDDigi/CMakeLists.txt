@@ -52,4 +52,3 @@ dd4hep_add_test_reg(DDDigi_colored_noise
   REGEX_FAIL "Error;ERROR;Exception"
   )
 #
-

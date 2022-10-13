@@ -210,7 +210,7 @@ def Synchronize(kernel, nam, parallel=False):
 
 def _setup(obj):
   def _adopt(self, action):
-    self.__adopt(action.get())
+    getattr(self,'__adopt')(action.get())
   _import_class('digi', obj)
   cls = getattr(current, obj)
   setattr(cls, '__adopt', getattr(cls, 'adopt'))

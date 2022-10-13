@@ -86,8 +86,9 @@ void dd4hep::digi::DigiHitAttenuatorExp::execute(DigiContext& context)  const   
       }
       count += m->size();
       std::string nam = Key::key_name(k.first)+":";
-      debug("%s+++ %-32s Mask: %06X Attenuated exponentially %6ld hits by %8.5f",
-	    event.id(), nam.c_str(), m->mask, m->size(), factor); 
+      debug("%s+++ %-32s mask:%04X item: %08X Attenuated exponentially %6ld hits by %8.5f",
+	    event.id(), nam.c_str(), m->key.values.mask, m->key.values.item, 
+	    m->size(), factor); 
       continue;
     }
   }

@@ -15,6 +15,9 @@
 #include <DDDigi/DigiSubdetectorSequence.h>
 #include <DDDigi/DigiSegmentation.h>
 #include <DDDigi/DigiKernel.h>
+#include <DDDigi/DigiContext.h>
+#include <DDDigi/DigiData.h>
+
 #include <DD4hep/InstanceCount.h>
 #include <DD4hep/Detector.h>
 #include <DD4hep/IDDescriptor.h>

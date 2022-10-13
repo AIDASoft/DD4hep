@@ -14,51 +14,21 @@
 #define DDDIGI_DIGISEGMENTATIONSPLITTER_H
 
 // Framework include files
-#include <DDDigi/DigiActionSequence.h>
 #include <DDDigi/DigiData.h>
+#include <DDDigi/DigiEventAction.h>
+#include <DDDigi/DigiActionSequence.h>
+#include <DDDigi/DigiSegmentationTool.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
-  /// DDSegmentation namespace declaration
-  namespace DDSegmentation {
-    class BitFieldElement;
-  }
-
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
-    class DigiSegmentContext;
+    /// Forward declarations
     class DigiSegmentAction;
+    class DigiSegmentContext;
     class DigiSegmentationSplitter;
-
-    class DigiSegmentContext  {
-    public:
-      DetElement             detector   { };
-      IDDescriptor           idspec     { };
-      const BitFieldElement* field      { nullptr };
-      uint64_t               cell_mask  { ~0x0UL };
-      uint64_t               det_mask   { 0UL };
-      uint64_t               split_mask { 0UL };
-      int32_t                offset     { 0 };
-      int32_t                width      { 0 };
-      int32_t                max_split  { 0 };
-      uint32_t               id         { 0 };
-
-    public:
-      uint32_t split_id(uint64_t cell_id)  const  {  
-	return int( (cell_id & this->split_mask) >> this->offset );
-      }
-      uint64_t cell_id(uint64_t cell_id)  const  {  
-	return (cell_id & this->cell_mask) >> this->offset;
-      }
-      const std::string& name()  const  {
-	return this->field->name();
-      }
-      const char* cname()  const  {
-	return this->field->name().c_str();
-      }
-    };
 
     /// Default base class for all Digitizer actions and derivates thereof.
     /**
@@ -78,21 +48,19 @@ namespace dd4hep {
       /// Reference to the implementation
       std::unique_ptr<internals_t> internals;
 
-      /// Main functional callback
-      virtual void execute(DigiContext& context)  const  final;
-
       /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiSegmentAction);
 
     public:
       /// Standard constructor
       DigiSegmentAction(const DigiKernel& kernel, const std::string& name);
-
       /// Default destructor
       virtual ~DigiSegmentAction();
 
       /// Main functional callback
-      std::map<Key::key_type, std::any> 
+      virtual void execute(DigiContext& context)  const  final;
+      /// Main functional callback
+      std::vector<std::pair<Key::key_type, std::any> >
 	handleSegment(DigiContext&              context,
 		      const DigiSegmentContext& segment,
 		      const DepositMapping&     deposits)  const;
@@ -108,25 +76,44 @@ namespace dd4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class DigiSegmentationSplitter : public DigiActionSequence   {
+
     protected:
       /// Implementation declaration
       class internals_t;
       /// Reference to the implementation
       std::unique_ptr<internals_t> internals;
 
-    public:
+      /// Property: Identifier of the input repository
+      std::string m_input_id;
+      /// Property: Split element of the ID descriptor
+      std::string m_processor_type;
+      /// Name of the subdetector to be handed
+      std::string m_detector_name;
+      /// Splitter field in the segmentation description
+      std::string m_split_by;
+      /// Property: Flag if processors should be shared
+      bool        m_share_processor   { true };
+      /// Property: Input mask in the repository
+      int         m_input_mask;
+
+      /// Segmentation too instance
+      DigiSegmentationTool  m_split_tool;
+      /// Segmentation split context
+      DigiSegmentContext    m_split_context;
+
+      /// Split elements used to parallelize the processing
+      std::map<VolumeID, std::pair<DetElement, VolumeID> > m_splits;
+      /// Input data keys: depend on dd4hep::Readout and the input mask(s)
+      std::vector<Key> m_data_keys;
 
     protected:
       /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiSegmentationSplitter);
-
       /// Default destructor
       virtual ~DigiSegmentationSplitter();
 
-      /// Split actions according to the segmentation
-      //void split_segments(DigiEvent& event, DataSegment& data)  const;
-
-      void init_processors();
+      /// Initialization function
+      void initialize();
 
     public:
       /// Standard constructor

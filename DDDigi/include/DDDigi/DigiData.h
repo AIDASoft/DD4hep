@@ -218,7 +218,7 @@ namespace dd4hep {
       /// Merge new deposit map onto existing map (not thread safe!)
       std::size_t merge(ParticleMapping&& updates);
       /// Add new entry to the particle mapping (not thread safe!)
-      void push(Key::key_type key, Particle&& particle);
+      void push(Key key, Particle&& particle);
     };
 
     /// Initializing constructor
@@ -275,7 +275,7 @@ namespace dd4hep {
     class DepositMapping : public std::map<CellID, EnergyDeposit>   {
     public: 
       std::string    name { };
-      Key::mask_type mask { 0x0 };
+      Key            key  { 0x0 };
 
     public: 
       /// Initializing constructor
@@ -298,8 +298,8 @@ namespace dd4hep {
     };
 
     /// Initializing constructor
-    inline DepositMapping::DepositMapping(const std::string& n, Key::mask_type m)
-      : name(n), mask(m)
+    inline DepositMapping::DepositMapping(const std::string& n, Key::mask_type mask)
+      : name(n), key(mask, n)
     {
     }
 
@@ -312,21 +312,20 @@ namespace dd4hep {
      */
     class DataSegment   {
     public:
-      using key_type = Key::key_type;
-      using container_map_t = std::map<key_type, std::any>;
+      using container_map_t = std::map<Key::key_type, std::any>;
       using iterator = container_map_t::iterator;
       using const_iterator = container_map_t::const_iterator;
 
     private:
       /// Call on failed any-casts
-      std::string invalid_cast(key_type key, const std::type_info& type)  const;
+      std::string invalid_cast(Key key, const std::type_info& type)  const;
       /// Call on failed data requests during data requests
-      std::string invalid_request(key_type key)  const;
+      std::string invalid_request(Key key)  const;
 
       /// Access data item by key
-      std::any* get_item(key_type key, bool exc);
+      std::any* get_item(Key key, bool exc);
       /// Access data item by key  (CONST)
-      const std::any* get_item(key_type key, bool exc)  const;
+      const std::any* get_item(Key key, bool exc)  const;
 
     public:
       container_map_t data;
@@ -350,62 +349,64 @@ namespace dd4hep {
 
       /** Locked operations */
       /// Emplace data item (locked)
-      bool emplace(key_type key, std::any&& data);
+      bool emplace(Key key, std::any&& data);
       /// Remove data item from segment (locked)
-      bool erase(key_type key);
+      bool erase(Key key);
       /// Remove data items from segment (locked)
-      std::size_t erase(const std::vector<key_type>& keys);
+      std::size_t erase(const std::vector<Key>& keys);
+      /// Print segment keys
+      void print_keys()   const;
       
       /** Unlocked operations */
       /// Access data as reference by key. If not existing, an exception is thrown
-      template<typename T> T& get(key_type key);
+      template<typename T> T& get(Key key);
       /// Access data as reference by key. If not existing, an exception is thrown
-      template<typename T> const T& get(key_type key)  const;
+      template<typename T> const T& get(Key key)  const;
 
       /// Access data as pointers by key. If not existing, nullptr is returned
-      template<typename T> T* pointer(key_type key);
+      template<typename T> T* pointer(Key key);
       /// Access data as pointers by key. If not existing, nullptr is returned
-      template<typename T> const T* pointer(key_type key)  const;
+      template<typename T> const T* pointer(Key key)  const;
 
       /// Access container size
-      std::size_t size()  const               { return this->data.size();    }
+      std::size_t size()  const           { return this->data.size();        }
       /// Check container if empty
-      bool        empty() const               { return this->data.empty();   }
+      bool        empty() const           { return this->data.empty();       }
       /// Begin iteration
-      iterator begin()                        { return this->data.begin();   }
+      iterator begin()                    { return this->data.begin();       }
       /// End iteration
-      iterator end()                          { return this->data.end();     }
+      iterator end()                      { return this->data.end();         }
       /// Find entry by key
-      iterator find(key_type key)             { return this->data.find(key); }
+      iterator find(Key key)              { return this->data.find(key.key); }
       /// Begin iteration (CONST)
-      const_iterator begin() const            { return this->data.begin();   }
+      const_iterator begin() const        { return this->data.begin();       }
       /// End iteration (CONST)
-      const_iterator end()   const            { return this->data.end();     }
+      const_iterator end()   const        { return this->data.end();         }
       /// Find entry by key
-      const_iterator find(key_type key) const { return this->data.find(key); }
+      const_iterator find(Key key) const  { return this->data.find(key.key); }
     };
 
     /// Access data as reference by key. If not existing, an exception is thrown
-    template<typename T> inline T& DataSegment::get(key_type key)     {
+    template<typename T> inline T& DataSegment::get(Key key)     {
       if ( T* ptr = std::any_cast<T>(this->get_item(key, true)) )
 	return *ptr;
       throw std::runtime_error(this->invalid_cast(key, typeid(T)));
     }
     /// Access data as reference by key. If not existing, an exception is thrown
-    template<typename T> inline const T& DataSegment::get(key_type key)  const   {
+    template<typename T> inline const T& DataSegment::get(Key key)  const   {
       if ( const T* ptr = std::any_cast<T>(this->get_item(key, true)) )
 	return *ptr;
       throw std::runtime_error(this->invalid_cast(key, typeid(T)));
     }
 
     /// Access data as pointers by key. If not existing, nullptr is returned
-    template<typename T> inline T* DataSegment::pointer(key_type key)     {
+    template<typename T> inline T* DataSegment::pointer(Key key)     {
       if ( T* ptr = std::any_cast<T>(this->get_item(key, false)) )
 	return ptr;
       return nullptr;
     }
     /// Access data as pointers by key. If not existing, nullptr is returned
-    template<typename T> inline const T* DataSegment::pointer(key_type key)  const   {
+    template<typename T> inline const T* DataSegment::pointer(Key key)  const   {
       if ( const T* ptr = std::any_cast<T>(this->get_item(key, false)) )
 	return ptr;
       return nullptr;

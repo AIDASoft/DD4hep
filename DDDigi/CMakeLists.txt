@@ -10,23 +10,16 @@
 #==========================================================================
 SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDDigi)
 file(GLOB DDDigi_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+                         ${CMAKE_CURRENT_SOURCE_DIR}/src/noise/*.cpp
                          ${CMAKE_CURRENT_SOURCE_DIR}/src/segmentations/*.cpp)
 add_library(DDDigi ${DDDigi_SOURCES})
 add_library(DD4hep::DDDigi ALIAS DDDigi)
 
-## FIND_PACKAGE(GSL REQUIRED  QUIET)
-if(GSL_FOUND)
-  dd4hep_print( "|++> GSL_INCLUDE_DIR -->  ${GSL_INCLUDE_DIR}")
-  dd4hep_print( "|++> GSL_LIBRARY     -->  ${GSL_LIBRARY}")
-  dd4hep_print( "|++> GSL found. DDDigi will run multi threaded.")
-endif()
-
 target_link_libraries(DDDigi PUBLIC
-  DD4hep::DDCore Boost::boost ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO ${GSL_LIBRARY})
+  DD4hep::DDCore Boost::boost ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO)
 
 target_include_directories(DDDigi
   PUBLIC
-  ${GSL_INCLUDE_DIR}
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   )

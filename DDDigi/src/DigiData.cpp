@@ -40,6 +40,7 @@ void Key::set(const std::string& name, int mask)    {
     std::lock_guard<std::mutex> lock(_k.lock);
     except("DDDigi::Key", "+++ No key name was specified  --  this is illegal!");
   }
+  this->key = 0;
   this->values.mask = (unsigned char)(0xFF&mask);
   this->values.item = detail::hash32(name);
   std::lock_guard<std::mutex> lock(_k.lock);
@@ -89,16 +90,15 @@ std::size_t ParticleMapping::merge(ParticleMapping&& updates)    {
   return update_size;
 }
 
-void ParticleMapping::push(Key::key_type k, Particle&& part)  {
+void ParticleMapping::push(Key key, Particle&& part)  {
 #if defined(__GNUC__) && (__GNUC__ < 10)
   /// Lower compiler version have a bad implementation of std::any
   bool ret = false;
   if ( part.history.has_value() ) {}
 #else
-  bool ret = this->emplace(k, std::move(part)).second;
+  bool ret = this->emplace(key.key, std::move(part)).second;
 #endif
   if ( !ret )   {
-    Key key(k);
     except("ParticleMapping","Error in particle map. Duplicate ID: mask:%04X Number:%d",
 	   key.values.mask, key.values.item);
   }
@@ -110,14 +110,14 @@ DataSegment::DataSegment(std::mutex& l) : lock(l)
 }
 
 /// Remove data item from segment
-bool DataSegment::emplace(key_type key, std::any&& item)    {
+bool DataSegment::emplace(Key key, std::any&& item)    {
   std::lock_guard<std::mutex> l(lock);
 #if defined(__GNUC__) && (__GNUC__ < 10)
   /// Lower compiler version have a bad implementation of std::any
   bool ret = false;
   if ( item.has_value() ) {}
 #else
-  bool ret = data.emplace(key, std::move(item)).second;
+  bool ret = data.emplace(key.key, std::move(item)).second;
 #endif
   if ( !ret )   {
     Key k(key);
@@ -128,9 +128,9 @@ bool DataSegment::emplace(key_type key, std::any&& item)    {
 }
 
 /// Remove data item from segment
-bool DataSegment::erase(key_type key)    {
+bool DataSegment::erase(Key key)    {
   std::lock_guard<std::mutex> l(lock);
-  auto iter = data.find(key);
+  auto iter = data.find(key.key);
   if ( iter != data.end() )   {
     data.erase(iter);
     return true;
@@ -139,11 +139,11 @@ bool DataSegment::erase(key_type key)    {
 }
 
 /// Remove data items from segment (locked)
-std::size_t DataSegment::erase(const std::vector<key_type>& keys)   {
+std::size_t DataSegment::erase(const std::vector<Key>& keys)   {
   std::size_t count = 0;
   std::lock_guard<std::mutex> l(lock);
   for(auto key : keys)   {
-    auto iter = data.find(key);
+    auto iter = data.find(key.key);
     if ( iter != data.end() )   {
       data.erase(iter);
       ++count;
@@ -152,28 +152,40 @@ std::size_t DataSegment::erase(const std::vector<key_type>& keys)   {
   return count;
 }
 
+/// Print segment keys
+void DataSegment::print_keys()   const   {
+  size_t count = 0;
+  for( const auto& e : this->data )   {
+    Key k(e.first);
+    printout(INFO, "DataSegment", "Key No.%4: %16lX <> %16lX -> %04X %10ld",
+	     count, e.first, k.key, k.values.mask, k.values.item, 
+	     typeName(e.second.type()).c_str());
+    ++count;
+  }
+}
+
 /// Call on failed any-casts during data requests
-std::string DataSegment::invalid_cast(key_type key, const std::type_info& type)  const   {
+std::string DataSegment::invalid_cast(Key key, const std::type_info& type)  const   {
   return dd4hep::format(0, "Invalid segment data cast. Key:%ld type:%s",
 			key, typeName(type).c_str());
 }
 
 /// Call on failed data requests during data requests
-std::string DataSegment::invalid_request(key_type key)  const   {
+std::string DataSegment::invalid_request(Key key)  const   {
   return dd4hep::format(0, "Invalid segment data requested. Key:%ld",key);
 }
 
 /// Access data item by key
-std::any* DataSegment::get_item(key_type key, bool exc)   {
-  auto it = this->data.find(key);
+std::any* DataSegment::get_item(Key key, bool exc)   {
+  auto it = this->data.find(key.key);
   if (it != this->data.end()) return &it->second;
   if ( exc ) throw std::runtime_error(invalid_request(key));
   return nullptr;
 }
 
 /// Access data item by key  (CONST)
-const std::any* DataSegment::get_item(key_type key, bool exc)  const   {
-  auto it = this->data.find(key);
+const std::any* DataSegment::get_item(Key key, bool exc)  const   {
+  auto it = this->data.find(key.key);
   if (it != this->data.end()) return &it->second;
   if ( exc ) throw std::runtime_error(invalid_request(key));
   return nullptr;
