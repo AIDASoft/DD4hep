@@ -92,12 +92,12 @@ std::size_t DepositMapping::merge(DepositMapping&& updates)    {
 /// Merge new deposit map onto existing map
 std::size_t ParticleMapping::merge(ParticleMapping&& updates)    {
   std::size_t update_size = updates.size();
+#if defined(__GNUC__) && (__GNUC__ >= 10)
   for( ParticleMapping::value_type& c : updates )    {
     Particle part(std::move(c.second));
-#if defined(__GNUC__) && (__GNUC__ >= 10)
     this->push(c.first, std::move(part));
-#endif
   }
+#endif
   return update_size;
 }
 
@@ -105,13 +105,12 @@ void ParticleMapping::push(Key key, Particle&& part)  {
 #if defined(__GNUC__) && (__GNUC__ < 10)
   /// Lower compiler version have a bad implementation of std::any
   bool ret = false;
-  if ( part.history.has_value() ) {}
 #else
   bool ret = this->emplace(key.key, std::move(part)).second;
 #endif
   if ( !ret )   {
-    except("ParticleMapping","Error in particle map. Duplicate ID: mask:%04X Number:%d",
-	   key.values.mask, key.values.item);
+    except("ParticleMapping","Error in particle map. Duplicate ID: mask:%04X Number:%d History:%s",
+	   key.values.mask, key.values.item, yes_no(part.history.has_value()));
   }
 }
 
@@ -126,14 +125,13 @@ bool DataSegment::emplace(Key key, std::any&& item)    {
 #if defined(__GNUC__) && (__GNUC__ < 10)
   /// Lower compiler version have a bad implementation of std::any
   bool ret = false;
-  if ( item.has_value() ) {}
 #else
   bool ret = data.emplace(key.key, std::move(item)).second;
 #endif
   if ( !ret )   {
     Key k(key);
-    except("DataSegment","Error in DataSegment map. Duplicate ID: mask:%04X Number:%d",
-	   k.values.mask, k.values.item);
+    except("DataSegment","Error in DataSegment map. Duplicate ID: mask:%04X Number:%d Value:%s",
+	   k.values.mask, k.values.item, yes_no(item.has_value()));
   }
   return ret;
 }

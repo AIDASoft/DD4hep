@@ -24,13 +24,10 @@ def run():
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
   proc = event.adopt_action('DigiMultiContainerProcessor/ContainerProc',
                             input_masks=[0x0, 0x1, 0x2, 0x3])
-  cont = digi.data_containers()
-  num = int((len(cont)+2)/3)
-  for i in range(num):
-    #merge = digi.event_action('DigiSegmentDepositPrint/SegmentPrint_%03d'%(i,), register=None)
+  conts = digi.containers(3)
+  for i in range(len(conts)):
     merge = dddigi.Action(digi.kernel(), 'DigiContainerProcessor/SegmentPrint_%03d'%(i,));
-    conts = digi.containers(i*3,(i+1)*3)
-    proc.adopt_processor(merge, conts)
+    proc.adopt_processor(merge, conts[i])
 
   #dump = event.adopt_action('DigiStoreDump/StoreDump')
   #digi.check_creation([combine, dump, splitter])
