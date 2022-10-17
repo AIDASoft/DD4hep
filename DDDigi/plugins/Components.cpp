@@ -53,9 +53,9 @@ DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiHitAttenuatorExp)
 #include <DDDigi/DigiContainerCombine.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiContainerCombine)
 
-#include <DDDigi/DigiSegmentationSplitter.h>
+#include <DDDigi/DigiSegmentSplitter.h>
 DECLARE_DIGISEGMENTACTION_NS(dd4hep::digi,DigiSegmentAction)
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSegmentationSplitter)
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSegmentSplitter)
 
 #include <DDDigi/DigiMultiContainerProcessor.h>
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiMultiContainerProcessor)

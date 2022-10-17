@@ -51,13 +51,13 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_dictionary(G__DDDigi_DDG4_IO
     SOURCES ../DDCore/include/ROOT/Warnings.h ddg4/IO.cpp
     LINKDEF ../DDCore/include/ROOT/LinkDef.h
-    USES    DD4hep::DDG4 
+    USES    DD4hep::DDG4 DD4hep::DDCore
     )
 
   dd4hep_add_plugin(DDDigi_DDG4_IO
     SOURCES        ddg4/*.cpp
     GENERATED      G__DDDigi_DDG4_IO.cxx
-    USES           DD4hep::DDDigi
+    USES           DD4hep::DDDigi DD4hep::DDG4 DD4hep::DDCore
     )
 else()
   dd4hep_print( "|++> Geant4 not used. DDDigi will not be able to read DDG4 output.")

@@ -83,17 +83,15 @@ class Test(dddigi.Digitize):
     return list(self.attenuation.keys())
 
   def containers(self, count):
-    keys = list(self.attenuation.keys())
     conts = []
     result = []
-    cnt = 0
-    for i in range(count):
-      if cnt > count:
-        result.append(cont)
-        cont = []
-        cnt = 0
-      cont.append(keys[i])
-      cnt = cnt + 1
+    for key in list(self.attenuation.keys()):
+      conts.append(key)
+      if len(conts) == count:
+        result.append(conts)
+        conts = []
+    if len(conts) > 0:
+      result.append(conts)
     return result
 
   def check_creation(self, objs):

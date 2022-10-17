@@ -16,6 +16,7 @@
 // Framework include files
 #include <DDDigi/DigiData.h>
 #include <DDDigi/DigiEventAction.h>
+#include <DDDigi/DigiSegmentationTool.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -26,7 +27,7 @@ namespace dd4hep {
     /// Forward declarations
     class DigiSegmentAction;
     class DigiSegmentContext;
-    class DigiSegmentationSplitter;
+    class DigiSegmentSplitter;
 
     /// Default base class for all Digitizer actions and derivates thereof.
     /**
@@ -37,19 +38,13 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class DigiSegmentAction : public DigiEventAction   {
-    private:
-      friend class DigiSegmentationSplitter;
+    class DigiSegmentAction : virtual public DigiAction   {
+    protected:
+      friend class DigiSegmentSplitter;
 
-      /// Implementation declaration
-#if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
-      typedef long internals_t;
-#else
-      class internals_t;
-#endif
-      /// Reference to the implementation
-      std::unique_ptr<internals_t> internals;
-
+      /// Segmentation split context
+      DigiSegmentContext    segment  { };
+  
       /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiSegmentAction);
 
@@ -58,11 +53,8 @@ namespace dd4hep {
       DigiSegmentAction(const DigiKernel& kernel, const std::string& name);
       /// Default destructor
       virtual ~DigiSegmentAction();
-      /// Main functional callback
-      virtual void execute(DigiContext& context)  const  final;
       /// Main functional callback. Default implementnation is noop.
       virtual DepositVector handleSegment(DigiContext&              context,
-					  const DigiSegmentContext& segment,
 					  const DepositMapping&     deposits)  const;
     };
   }    // End namespace digi

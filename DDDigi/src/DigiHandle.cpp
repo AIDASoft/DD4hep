@@ -20,8 +20,8 @@
 #include <DDDigi/DigiKernel.h>
 #include <DDDigi/DigiInputAction.h>
 #include <DDDigi/DigiEventAction.h>
+#include <DDDigi/DigiSegmentAction.h>
 #include <DDDigi/DigiSignalProcessor.h>
-#include <DDDigi/DigiSegmentationSplitter.h>
 
 // C/C++ include files
 #include <stdexcept>

@@ -84,36 +84,46 @@ namespace dd4hep {
       /// Operator greator
       bool operator > (const Key&)   const;
 
+      /// Generate key using hash algorithm
+      void set(const std::string& name, int mask);
+
       /// Conversion to uint64
       key_type toLong()  const  {
 	return key;
       }
-      /// Project the mask part of the key
-      itemkey_type item()  {
-	return this->values.item;
-      }
+
       /// Project the item part of the key
       mask_type mask()  {
 	return this->values.mask;
       }
-      /// Generate key using hash algorithm
-      void set(const std::string& name, int mask);
-      
-      /// Project the mask part of the key
-      static itemkey_type item(key_type k)  {
-	return Key(k).values.item;
+      /// Set key mask
+      void set_mask(Key k)  {
+	this->values.mask = k.values.mask;
+      }
+      /// Set key mask
+      void set_mask(mask_type m)  {
+	this->values.mask = m;
       }
       /// Project the item part of the key
       static mask_type mask(key_type k)  {
 	return Key(k).values.mask;
       }
-      /// Project the mask part of the key
-      static itemkey_type item(Key k)  {
-	return k.values.item;
-      }
       /// Project the item part of the key
       static mask_type mask(Key k)  {
 	return k.values.mask;
+      }
+
+      /// Project the mask part of the key
+      itemkey_type item()  {
+	return this->values.item;
+      }
+      /// Project the mask part of the key
+      static itemkey_type item(key_type k)  {
+	return Key(k).values.item;
+      }
+      /// Project the mask part of the key
+      static itemkey_type item(Key k)  {
+	return k.values.item;
       }
       /// Access key name (if registered properly)
       static std::string key_name(const Key& key);
@@ -350,6 +360,8 @@ namespace dd4hep {
       DepositMapping& operator=(const DepositMapping& copy) = default;      
       /// Merge new deposit map onto existing map (not thread safe!)
       std::size_t merge(DepositMapping&& updates);
+      /// Merge new deposit map onto existing map (not thread safe!)
+      std::size_t merge(DepositVector&& updates);
     };
 
     /// Initializing constructor
