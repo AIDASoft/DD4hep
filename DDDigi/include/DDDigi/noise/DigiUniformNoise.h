@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDDIGI_DIGIUNIFORMNOISE_H
-#define DDDIGI_DIGIUNIFORMNOISE_H
+#ifndef DDDIGI_NOISE_DIGIUNIFORMNOISE_H
+#define DDDIGI_NOISE_DIGIUNIFORMNOISE_H
 
 /// Framework include files
 #include <DDDigi/DigiSignalProcessor.h>
@@ -49,4 +49,4 @@ namespace dd4hep {
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DDDIGI_DIGIUNIFORMNOISE_H
+#endif // DDDIGI_NOISE_DIGIUNIFORMNOISE_H

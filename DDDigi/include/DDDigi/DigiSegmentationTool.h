@@ -14,6 +14,7 @@
 #define DDDIGI_DIGISEGMENTATIONTOOL_H
 
 // Framework include files
+#include <DDDigi/DigiData.h>
 #include <DD4hep/Detector.h>
 #include <DD4hep/DetElement.h>
 
@@ -55,16 +56,20 @@ namespace dd4hep {
       /// Split field name
       const char* cname()  const;
       /// Get the identifier of the cell to be split
-      uint32_t split_id(uint64_t cell_id)  const  {  
-	return int( (cell_id & this->split_mask) >> this->offset );
+      uint32_t split_id(uint64_t cell)  const  {
+	return int( (cell & this->split_mask) >> this->offset );
       }
       /// The CELL ID part of the identifier
-      uint64_t cell_id(uint64_t cell_id)  const  {  
-	return ( (cell_id & this->cell_mask) >> (this->offset + width) );
+      uint64_t cell_id(uint64_t cell)  const  {
+	return ( (cell & this->cell_mask) >> (this->offset + width) );
       }
       /// The identifier of the parent detector
-      uint64_t detector_id(uint64_t cell_id)  const  {  
-	return (cell_id & this->det_mask);
+      uint64_t detector_id(uint64_t cell)  const  {
+	return (cell & this->det_mask);
+      }
+      /// Check a given cell id if it matches this selection
+      bool matches(uint64_t cell)  const  {
+	return this->split_id(cell) == this->id;
       }
     };
 

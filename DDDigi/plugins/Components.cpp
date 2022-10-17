@@ -57,6 +57,10 @@ DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiContainerCombine)
 DECLARE_DIGISEGMENTACTION_NS(dd4hep::digi,DigiSegmentAction)
 DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSegmentationSplitter)
 
+#include <DDDigi/DigiMultiContainerProcessor.h>
+DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiMultiContainerProcessor)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerProcessor)
+
 /// Basic entry point 
 static long dummy(dd4hep::Detector&, int, char**) {
   return 0;

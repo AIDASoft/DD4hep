@@ -42,6 +42,20 @@ namespace dd4hep {
       typedef std::map<std::string,int>                 ClientOutputLevels;
       typedef std::pair<void*, const std::type_info*>   UserFramework;
 
+      class CallWrapper     {
+      public:
+	CallWrapper* worker { nullptr };
+      public:
+	CallWrapper(CallWrapper* worker);
+        CallWrapper() = default;
+	CallWrapper(CallWrapper&& copy) = default;
+	CallWrapper(const CallWrapper& copy) = default;
+	CallWrapper& operator=(CallWrapper&& copy) = delete;
+	CallWrapper& operator=(const CallWrapper& copy) = delete;
+	virtual ~CallWrapper() = default;
+	virtual void operator()() const;
+      };
+
     private:
       class Internals;
       class Processor;
@@ -148,20 +162,40 @@ namespace dd4hep {
       DigiActionSequence& eventAction() const;
       /// Access to the main output action sequence from the kernel object
       DigiActionSequence& outputAction() const;
+
+      /// Submit a bunch of actions to be executed in parallel
+      virtual void submit (const std::vector<CallWrapper*>& algorithms)  const;
+      /// Submit a bunch of actions to be executed serially
+      virtual void execute(const std::vector<CallWrapper*>& algorithms)  const;
+
       /// Submit a bunch of actions to be executed in parallel
       virtual void submit (const DigiAction::Actors<DigiEventAction>& algorithms, DigiContext& context)  const;
       /// Submit a bunch of actions to be executed serially
       virtual void execute(const DigiAction::Actors<DigiEventAction>& algorithms, DigiContext& context)  const;
+      /// If running multithreaded: wait until the thread-group finished execution
       virtual void wait(DigiContext& context)   const;
+
     };
+  
+    inline DigiKernel::CallWrapper::CallWrapper(CallWrapper* w)
+      : worker(w)
+    {
+    }
+
+    inline void DigiKernel::CallWrapper::operator()() const   {
+      if ( this->worker )   {
+	(*this->worker)();
+      }
+    }
+
     /// Declare property
-    template <typename T> DigiKernel& DigiKernel::declareProperty(const std::string& nam, T& val) {
+    template <typename T> inline DigiKernel& DigiKernel::declareProperty(const std::string& nam, T& val) {
       properties().add(nam, val);
       return *this;
     }
 
     /// Declare property
-    template <typename T> DigiKernel& DigiKernel::declareProperty(const char* nam, T& val) {
+    template <typename T> inline DigiKernel& DigiKernel::declareProperty(const char* nam, T& val) {
       properties().add(nam, val);
       return *this;
     }

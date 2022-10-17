@@ -76,7 +76,9 @@ def run():
   digi.info('Created input.spillover75')
   # ========================================================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
-  combine = event.adopt_action('DigiContainerCombine/Combine', masks=[0x0, 0x1, 0x2, 0x3], deposit_mask=0xFEED)
+  combine = event.adopt_action('DigiContainerCombine/Combine',
+                               input_masks=[0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6],
+                               deposit_mask=0xFEED)
   combine.erase_combined = True  # Not thread-safe! only do in SequentialActionSequence
   evtdump = event.adopt_action('DigiStoreDump/StoreDump')
   digi.check_creation([combine, evtdump])

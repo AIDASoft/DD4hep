@@ -23,9 +23,9 @@ using namespace dd4hep::digi;
 
 class DigiSegmentAction::internals_t  {
 public:
-  DigiSegmentContext split { };
-  std::vector<std::pair<Key::key_type, std::any> > output;
-  const DepositMapping*    input { nullptr };
+  DigiSegmentContext    split  { };
+  DepositVector         output { };
+  const DepositMapping* input  { nullptr };
 };
 
 class DigiSegmentationSplitter::internals_t   {
@@ -49,8 +49,9 @@ public:
 };
 
 /// Standard constructor
-DigiSegmentationSplitter::DigiSegmentationSplitter(const DigiKernel& krnl, const std::string& nam)
-  : DigiActionSequence(krnl, nam), m_split_tool(krnl.detectorDescription())
+DigiSegmentationSplitter::DigiSegmentationSplitter(const DigiKernel& kernel, const std::string& nam)
+  : DigiActionSequence(kernel, nam),
+    m_split_tool(kernel.detectorDescription())
 {
   this->internals = std::make_unique<internals_t>(this);
   declareProperty("detector",        this->m_detector_name);
@@ -72,7 +73,6 @@ DigiSegmentationSplitter::~DigiSegmentationSplitter() {
 void DigiSegmentationSplitter::initialize()   {
   char text[256];
   std::size_t count = 0;
-  DigiSegmentAction* proc;
 
   this->m_split_tool.set_detector(this->m_detector_name);
   this->m_split_context = this->m_split_tool.split_context(this->m_split_by);
@@ -83,7 +83,15 @@ void DigiSegmentationSplitter::initialize()   {
   for( auto& p : this->m_splits )   {
     ::snprintf(text, sizeof(text), "_%05X", m_split_context.split_id(p.first));
     std::string nam = this->name() + text;
-    proc = PluginService::Create<DigiSegmentAction*>(m_processor_type, &m_kernel, nam);
+    auto* eproc = PluginService::Create<DigiEventAction*>(m_processor_type, &m_kernel, nam);
+    if ( !eproc )   {
+      except("+++ Failed to create split worker: %s/%s", m_processor_type.c_str(), nam.c_str());
+    }
+    auto* proc = dynamic_cast<DigiSegmentAction*>(eproc);
+    if ( !proc )   {
+      except("+++ Split worker: %s/%s is not of type DigiSegmentAction!",
+	     m_processor_type.c_str(), nam.c_str());
+    }
     proc->internals = std::make_unique<DigiSegmentAction::internals_t>();
     proc->internals->split          = this->m_split_context;
     proc->internals->split.detector = p.second.first;
@@ -102,6 +110,8 @@ void DigiSegmentationSplitter::execute(DigiContext& context)  const    {
     auto* hits = input.pointer<DepositMapping>(k);
     if ( hits )    {
       /// prepare processors for execution
+      info("+++ Got hit collection %04X %08X. Prepare processors.",
+	   Key::mask(k), Key::item(k));
       for ( auto* a : this->m_actors )   {
 	auto* proc  = (DigiSegmentAction*)a;
 	proc->internals->input = hits;
@@ -127,23 +137,13 @@ DigiSegmentAction::~DigiSegmentAction() {
 
 void DigiSegmentAction::execute(DigiContext& context)  const  {
   auto& imp = *this->internals;
-  auto ret = this->handleSegment(context, imp.split, *imp.input);
-  imp.output = std::move(ret);
+  imp.output = this->handleSegment(context, imp.split, *imp.input);
 }
 
 /// Main functional callback
-std::vector<std::pair<Key::key_type, std::any> >
-DigiSegmentAction::handleSegment(DigiContext&              context,
-				 const DigiSegmentContext& segment,
-				 const DepositMapping&     deposits)  const   {
-  for( const auto& depo : deposits )   {
-    if ( segment.split_id(depo.first) == segment.id )   {
-      auto cell = depo.first;
-      const auto& d = depo.second;
-      info("%s[%s] %s-id: %d [processor:%d] Cell: %016lX mask: %016lX  hist:%4ld entries deposit: %f", 
-	   context.event->id(), segment.idspec.name(), segment.cname(), 
-	   segment.split_id(cell), segment.id, cell, segment.split_mask, d.history.size(), d.deposit);
-    }
-  }
+DepositVector
+DigiSegmentAction::handleSegment(DigiContext&              /* context */,
+				 const DigiSegmentContext& /* segment */,
+				 const DepositMapping&     /* depos   */) const {
   return {};
 }

@@ -56,6 +56,7 @@ namespace dd4hep {
       DigiInputAction(const DigiKernel& kernel, const std::string& nam);
       /// Default destructor
       virtual ~DigiInputAction();
+
       /// Callback to read event input
       virtual void execute(DigiContext& context)  const override;
     };

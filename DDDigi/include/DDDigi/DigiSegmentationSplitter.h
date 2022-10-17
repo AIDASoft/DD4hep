@@ -14,8 +14,7 @@
 #define DDDIGI_DIGISEGMENTATIONSPLITTER_H
 
 // Framework include files
-#include <DDDigi/DigiData.h>
-#include <DDDigi/DigiEventAction.h>
+#include <DDDigi/DigiSegmentAction.h>
 #include <DDDigi/DigiActionSequence.h>
 #include <DDDigi/DigiSegmentationTool.h>
 
@@ -24,47 +23,6 @@ namespace dd4hep {
 
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
-
-    /// Forward declarations
-    class DigiSegmentAction;
-    class DigiSegmentContext;
-    class DigiSegmentationSplitter;
-
-    /// Default base class for all Digitizer actions and derivates thereof.
-    /**
-     *  This is a utility class supporting properties, output and access to
-     *  event and run objects through the context.
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_SIMULATION
-     */
-    class DigiSegmentAction : public DigiEventAction   {
-    private:
-      friend class DigiSegmentationSplitter;
-
-      /// Implementation declaration
-      class internals_t;
-      /// Reference to the implementation
-      std::unique_ptr<internals_t> internals;
-
-      /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiSegmentAction);
-
-    public:
-      /// Standard constructor
-      DigiSegmentAction(const DigiKernel& kernel, const std::string& name);
-      /// Default destructor
-      virtual ~DigiSegmentAction();
-
-      /// Main functional callback
-      virtual void execute(DigiContext& context)  const  final;
-      /// Main functional callback
-      std::vector<std::pair<Key::key_type, std::any> >
-	handleSegment(DigiContext&              context,
-		      const DigiSegmentContext& segment,
-		      const DepositMapping&     deposits)  const;
-    };
 
     /// Default base class for all Digitizer actions and derivates thereof.
     /**
@@ -107,8 +65,6 @@ namespace dd4hep {
       std::vector<Key> m_data_keys;
 
     protected:
-      /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiSegmentationSplitter);
       /// Default destructor
       virtual ~DigiSegmentationSplitter();
 

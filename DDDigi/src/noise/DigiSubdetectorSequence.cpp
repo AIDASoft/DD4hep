@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include <DDDigi/DigiSubdetectorSequence.h>
+#include <DDDigi/noise/DigiSubdetectorSequence.h>
 #include <DDDigi/DigiSegmentation.h>
 #include <DDDigi/DigiKernel.h>
 #include <DDDigi/DigiContext.h>

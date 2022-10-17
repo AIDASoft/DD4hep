@@ -15,7 +15,7 @@
 #include <DD4hep/InstanceCount.h>
 #include <DDDigi/DigiSegmentation.h>
 #include <DDDigi/DigiRandomGenerator.h>
-#include <DDDigi/DigiGaussianNoise.h>
+#include <DDDigi/noise/DigiGaussianNoise.h>
 
 using namespace dd4hep::digi;
 
