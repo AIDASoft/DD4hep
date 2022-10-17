@@ -27,6 +27,7 @@ namespace dd4hep {
   namespace digi {
 
     /// Forward declarations
+    class DigiAction;
     class DigiActionSequence;
     
     /// Class, which allows all DigiAction derivatives to access the DDG4 kernel structures.
@@ -42,24 +43,22 @@ namespace dd4hep {
       typedef std::map<std::string,int>                 ClientOutputLevels;
       typedef std::pair<void*, const std::type_info*>   UserFramework;
 
-      class CallWrapper     {
+      class ParallelCall     {
       public:
-	CallWrapper* worker { nullptr };
-      public:
-	CallWrapper(CallWrapper* worker);
-        CallWrapper() = default;
-	CallWrapper(CallWrapper&& copy) = default;
-	CallWrapper(const CallWrapper& copy) = default;
-	CallWrapper& operator=(CallWrapper&& copy) = delete;
-	CallWrapper& operator=(const CallWrapper& copy) = delete;
-	virtual ~CallWrapper() = default;
-	virtual void operator()() const;
+        ParallelCall(ParallelCall* p, void* a);
+        ParallelCall() = default;
+	ParallelCall(ParallelCall&& copy) = default;
+	ParallelCall(const ParallelCall& copy) = default;
+	ParallelCall& operator=(ParallelCall&& copy) = default;
+	ParallelCall& operator=(const ParallelCall& copy) = default;
+	virtual ~ParallelCall() = default;
+	virtual void execute(void* args) const = 0;
       };
 
     private:
       class Internals;
       class Processor;
-      class Wrapper;
+      template <typename ACTION, typename ARGUMENT> class Wrapper;
 
       /// Internal only data structures;
       Internals*            internals   { nullptr };
@@ -164,29 +163,19 @@ namespace dd4hep {
       DigiActionSequence& outputAction() const;
 
       /// Submit a bunch of actions to be executed in parallel
-      virtual void submit (const std::vector<CallWrapper*>& algorithms)  const;
+      virtual void submit (const std::vector<ParallelCall*>& algorithms, void* data)  const;
       /// Submit a bunch of actions to be executed serially
-      virtual void execute(const std::vector<CallWrapper*>& algorithms)  const;
-
+      virtual void execute(const std::vector<ParallelCall*>& algorithms, void* data)  const;
+#if 0
       /// Submit a bunch of actions to be executed in parallel
       virtual void submit (const DigiAction::Actors<DigiEventAction>& algorithms, DigiContext& context)  const;
       /// Submit a bunch of actions to be executed serially
       virtual void execute(const DigiAction::Actors<DigiEventAction>& algorithms, DigiContext& context)  const;
+#endif
       /// If running multithreaded: wait until the thread-group finished execution
       virtual void wait(DigiContext& context)   const;
 
     };
-  
-    inline DigiKernel::CallWrapper::CallWrapper(CallWrapper* w)
-      : worker(w)
-    {
-    }
-
-    inline void DigiKernel::CallWrapper::operator()() const   {
-      if ( this->worker )   {
-	(*this->worker)();
-      }
-    }
 
     /// Declare property
     template <typename T> inline DigiKernel& DigiKernel::declareProperty(const std::string& nam, T& val) {

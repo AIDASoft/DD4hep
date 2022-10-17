@@ -100,12 +100,11 @@ public:
  *  \version 1.0
  *  \ingroup DD4HEP_DIGITIZATION
  */
-class DigiKernel::Wrapper : public CallWrapper {
+template<typename ACTION, typename ARG> class DigiKernel::Wrapper  {
 public:
-  DigiContext& context;
-  DigiEventAction*  action = 0;
-  Wrapper(DigiContext& c, DigiEventAction* a)
-    : context(c), action(a) {}
+  ACTION*  action = 0;
+  ARG   context;
+  Wrapper(ACTION* a, ARG c) : action(a), context(c) {}
   Wrapper(Wrapper&& copy) = default;
   Wrapper(const Wrapper& copy) = default;
   Wrapper& operator=(Wrapper&& copy) = delete;
@@ -146,7 +145,6 @@ public:
     }
   }
 };
-
 
 /// Standard constructor
 DigiKernel::DigiKernel(Detector& description_ref)
@@ -318,27 +316,28 @@ DigiActionSequence& DigiKernel::outputAction() const    {
 }
 
 /// Submit a bunch of actions to be executed in parallel
-void DigiKernel::submit (const std::vector<CallWrapper*>& actions)  const    {
+void DigiKernel::submit (const std::vector<ParallelCall*>& algorithms, void* context)  const    {
 #ifdef DD4HEP_USE_TBB
   bool parallel = 0 != internals->tbbInit && internals->numThreads>0;
   if ( parallel )   {
     tbb::task_group que;
-    for ( auto* algo : actions )
-      que.run( *algo );
+    for( auto* algo : algorithms )
+      que.run( Wrapper<ParallelCall,void*>(algo, context) );
     que.wait();
     return;
   }
 #endif
-  for ( auto* algo : actions )
-    (*algo)();
+  for( auto* algo : algorithms )
+    algo->execute(context);
 }
 
 /// Submit a bunch of actions to be executed serially
-void DigiKernel::execute(const std::vector<CallWrapper*>& actions)  const    {
-  for ( auto* algo : actions )
-    (*algo)();
+void DigiKernel::execute(const std::vector<ParallelCall*>& algorithms, void* context)  const   {
+  for( auto* algo : algorithms )
+    algo->execute(context);
 }
 
+#if 0
 void DigiKernel::submit(const DigiAction::Actors<DigiEventAction>& actions, DigiContext& context)   const  {
   std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
   bool parallel = 0 != internals->tbbInit && internals->numThreads>0;
@@ -346,7 +345,7 @@ void DigiKernel::submit(const DigiAction::Actors<DigiEventAction>& actions, Digi
   if ( parallel )   {
     tbb::task_group que;
     for ( auto* i : actions )
-      que.run( Wrapper(context, i) );
+      que.run( Wrapper<DigiEventAction,DigiContext&>(i, context) );
     que.wait();
     goto print_stamp;
   }
@@ -364,6 +363,7 @@ void DigiKernel::submit(const DigiAction::Actors<DigiEventAction>& actions, Digi
 void DigiKernel::execute(const DigiAction::Actors<DigiEventAction>& actions, DigiContext& context)   const  {
   actions(&DigiEventAction::execute,context);
 }
+#endif
 
 void DigiKernel::wait(DigiContext& context)   const  {
   if ( context.event ) {}

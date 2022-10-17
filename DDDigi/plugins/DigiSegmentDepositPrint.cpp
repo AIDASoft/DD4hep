@@ -13,7 +13,7 @@
 
 // Framework include files
 #include <DDDigi/DigiContext.h>
-#include <DDDigi/DigiSegmentationSplitter.h>
+#include <DDDigi/DigiSegmentSplitter.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -28,15 +28,15 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class DigiSegmentDepositPrint : public DigiSegmentAction   {
+    class DigiSegmentDepositPrint : virtual public DigiSegmentAction   {
     public:
-      /// Constructors used of base class
-      using DigiSegmentAction::DigiSegmentAction;
+      /// Standard constructor
+      DigiSegmentDepositPrint(const DigiKernel& kernel, const std::string& nam)
+	: DigiAction(kernel, nam), DigiSegmentAction(kernel, nam) {}
 
       /// Main functional callback
       virtual DepositVector 
       handleSegment(DigiContext&              context,
-		    const DigiSegmentContext& segment,
 		    const DepositMapping&     deposits)  const override final   {
 	char format[256];
 	::snprintf(format, sizeof(format), 

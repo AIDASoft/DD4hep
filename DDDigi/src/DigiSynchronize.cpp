@@ -23,6 +23,13 @@
 using namespace std;
 using namespace dd4hep::digi;
 
+
+template <> void 
+DigiParallelWorker<DigiEventAction, DigiContext, int>::execute(void* data) const  {
+  calldata_t* args = reinterpret_cast<calldata_t*>(data);
+  action->execute(*args);
+}
+
 /// Standard constructor
 DigiSynchronize::DigiSynchronize(const DigiKernel& kernel, const string& nam)
   : DigiEventAction(kernel, nam)
@@ -32,23 +39,18 @@ DigiSynchronize::DigiSynchronize(const DigiKernel& kernel, const string& nam)
 
 /// Default destructor
 DigiSynchronize::~DigiSynchronize() {
-  m_actors(&DigiEventAction::release);
+  for(auto* w : m_actors ) detail::deletePtr(w);
   m_actors.clear();
   InstanceCount::decrement(this);
-}
-
-/// Get an action sequence member by name
-DigiEventAction* DigiSynchronize::get(const string& nam) const   {
-  return m_actors.get(FindByName(TypeName::split(nam).second));
 }
 
 /// Pre-track action callback
 void DigiSynchronize::execute(DigiContext& context)  const   {
   auto start = chrono::high_resolution_clock::now();
   if ( m_parallel )
-    m_kernel.submit(m_actors, context);
+    m_kernel.submit(m_actors, &context);
   else
-    m_kernel.execute(m_actors, context);
+    m_kernel.execute(m_actors, &context);
   chrono::duration<double> secs = chrono::high_resolution_clock::now() - start;
   debug("+++ Event: %8d (DigiSynchronize) Parallel: %-4s  %3ld actions [%8.3g sec]",
         context.event->eventNumber, yes_no(m_parallel), m_actors.size(),
@@ -58,14 +60,8 @@ void DigiSynchronize::execute(DigiContext& context)  const   {
 /// Add an actor responding to all callbacks. Sequence takes ownership.
 void DigiSynchronize::adopt(DigiEventAction* action) {
   if (action)    {
-    action->addRef();
-    m_actors.add(action);
+    m_actors.emplace_back(new Worker(action, 0));
     return;
   }
   except("DigiSynchronize","++ Attempt to add invalid actor!");
-}
-
-/// Add an actor responding to all callbacks. Sequence takes ownership.
-void DigiSynchronize::analyze() {
-  info("+++ Analyzing the algorithm sequence. Parallel: %s",yes_no(m_parallel));
 }

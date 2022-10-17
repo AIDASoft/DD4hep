@@ -72,6 +72,24 @@ std::size_t DepositVector::merge(DepositVector&& updates)    {
 }
 
 /// Merge new deposit map onto existing map
+std::size_t DepositMapping::merge(DepositVector&& updates)    {
+  std::size_t update_size = updates.size();
+  for( auto& c : updates )    {
+    CellID         cell = c.first;
+    EnergyDeposit& depo = c.second;
+    auto iter = this->find(cell);
+    if ( iter == this->end() )   {
+      this->emplace(cell, std::move(depo));
+      continue;
+    }
+    auto& to_update = iter->second;
+    to_update.deposit += depo.deposit;
+    to_update.history.insert(to_update.history.end(), depo.history.begin(), depo.history.end());
+  }
+  return update_size;
+}
+
+/// Merge new deposit map onto existing map
 std::size_t DepositMapping::merge(DepositMapping&& updates)    {
   std::size_t update_size = updates.size();
   for( auto& c : updates )    {

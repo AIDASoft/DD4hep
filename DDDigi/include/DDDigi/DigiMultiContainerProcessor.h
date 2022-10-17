@@ -15,8 +15,8 @@
 
 // Framework include files
 #include <DDDigi/DigiData.h>
-#include <DDDigi/DigiKernel.h>
-#include <DDDigi/DigiActionSequence.h>
+#include <DDDigi/DigiEventAction.h>
+#include <DDDigi/DigiParallelWorker.h>
 
 /// C/C++ include files
 #include <set>
@@ -27,47 +27,6 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
-    /// Wrapper class to submit bulk actions
-    /**
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_SIMULATION
-     */
-    template <typename ACTION_TYPE, typename OPTIONS> 
-      class DigiParallelWorker : public DigiKernel::CallWrapper   {
-      ACTION_TYPE* processor  { nullptr };
-    public:
-      OPTIONS options;
-
-    public:
-      DigiParallelWorker(ACTION_TYPE* p, const OPTIONS& opts);
-      DigiParallelWorker() = default;
-      DigiParallelWorker(DigiParallelWorker&& copy) = default;
-      DigiParallelWorker(const DigiParallelWorker& copy) = delete;
-      DigiParallelWorker& operator=(DigiParallelWorker&& copy) = delete;
-      DigiParallelWorker& operator=(const DigiParallelWorker& copy) = delete;
-      virtual ~DigiParallelWorker();
-      const char* name()  const {  return processor->name().c_str(); }
-      virtual void operator()() const override final;
-    };
-
-    template <typename ACTION_TYPE, typename OPTIONS>
-      DigiParallelWorker<ACTION_TYPE, OPTIONS>::DigiParallelWorker(ACTION_TYPE* p, const OPTIONS& opts)
-      : processor(p), options(opts)
-    {
-      processor->addRef();
-    }
-
-    template <typename ACTION_TYPE, typename OPTIONS>
-      DigiParallelWorker<ACTION_TYPE, OPTIONS>::~DigiParallelWorker()   {
-      if ( processor )  {
-	processor->release();
-	processor = nullptr;
-      }
-    }
-
-
     /// Worker base class to analyse containers from the input segment in parallel
     class DigiContainerProcessor : public DigiAction   {
 
@@ -76,19 +35,20 @@ namespace dd4hep {
       
     public:
       /// Property: Input data segment name
-      std::string      m_input_segment { "inputs" };
+      std::string      m_input_segment   { "inputs" };
       /// Property: event masks to be handled
-      std::vector<int> m_input_masks  { };
+      std::vector<int> m_input_masks     { };
       /// Item keys required by this worker
-      std::vector<Key> m_work_keys;
+      std::vector<Key> m_container_keys  { };
 
     public:
       /// Standard constructor
       DigiContainerProcessor(const DigiKernel& kernel, const std::string& name);
       /// Main functional callback if specific work is known
       virtual void execute(DigiContext& context, WorkItems& work)  const;
+      /// Check if the work item is for us
+      bool use_container(Key key)  const;
     };
-
 
     /// Sequencer class to analyse containers from the input segment in parallel
     /**
@@ -100,26 +60,22 @@ namespace dd4hep {
     class DigiMultiContainerProcessor : public DigiEventAction   {
     public:
       using WorkItems = DigiContainerProcessor::WorkItems;
-      struct ProcessorOptions  {
-	DigiContext*     context { nullptr };
-	WorkItems*       work    { nullptr };
-	std::vector<Key> keys    { };
+      struct CallData  {
+	DigiContext& context;
+	WorkItems&   work;
       };
-      using Worker  = DigiParallelWorker<DigiContainerProcessor,ProcessorOptions>;
-      using Workers = std::vector<std::unique_ptr<Worker> >;
-      using Callers = std::vector<DigiKernel::CallWrapper*>;
+      using Worker    = DigiParallelWorker<DigiContainerProcessor,CallData,int>;
+      using Workers   = std::vector<DigiKernel::ParallelCall*>;
 
     protected:
       /// Property: Input data segment name
       std::string       m_input_segment { "inputs" };
       /// Property: event masks to be handled
       std::vector<int>  m_input_masks  { };
-      /// Property: Allow for multiple workers accessing same container
-      bool              m_allow_duplicates   { true };
 
       std::set<Key>     m_work_items;
+      /// Array of sub-workers
       Workers           m_workers;
-      Callers           m_callers;
 
     protected:
        /// Define standard assignments and constructors

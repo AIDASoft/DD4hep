@@ -22,11 +22,13 @@ def run():
   digi.check_creation([signal])
   # ========================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
-  combine = event.adopt_action('DigiContainerCombine/Combine', input_masks=[0x0, 0x1, 0x2, 0x3], deposit_mask=0xFEED)
+  combine = event.adopt_action('DigiContainerCombine/Combine', input_masks=[0x0], deposit_mask=0xFEED)
   combine.erase_combined = True  # Not thread-safe! only do in SequentialActionSequence
-  splitter = event.adopt_action('DigiSegmentationSplitter/Splitter',
-                                input='deposits',
-                                mask=0xFEED,
+  splitter = event.adopt_action('DigiSegmentSplitter/Splitter',
+                                input_segment='deposits',
+                                input_mask=0xFEED,
+                                output_segment='',
+                                output_mask=0xBABE,
                                 detector='SiTrackerBarrel',
                                 split_by='layer',
                                 processor_type='DigiSegmentDepositPrint')

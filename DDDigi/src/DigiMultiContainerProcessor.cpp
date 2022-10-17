@@ -24,8 +24,11 @@
 
 using namespace dd4hep::digi;
 
-template <> void DigiParallelWorker<DigiContainerProcessor, DigiMultiContainerProcessor::ProcessorOptions>::operator()() const  {
-  processor->execute(*options.context, *options.work);
+template <> void DigiParallelWorker<DigiContainerProcessor,
+				    DigiMultiContainerProcessor::CallData,
+				    int>::execute(void* data) const  {
+  calldata_t* args = reinterpret_cast<calldata_t*>(data);
+  action->execute(args->context, args->work);
 }
 
 /// Standard constructor
@@ -34,12 +37,13 @@ DigiMultiContainerProcessor::DigiMultiContainerProcessor(const DigiKernel& krnl,
 {
   this->declareProperty("input_masks",      m_input_masks);
   this->declareProperty("input_segment",    m_input_segment);
-  this->declareProperty("allow_duplicates", m_allow_duplicates);
   InstanceCount::increment(this);
 }
 
 /// Default destructor
 DigiMultiContainerProcessor::~DigiMultiContainerProcessor() {
+  for(auto* w : m_workers ) detail::deletePtr(w);
+  m_workers.clear();
   InstanceCount::decrement(this);
 }
 
@@ -55,23 +59,12 @@ void DigiMultiContainerProcessor::adopt_processor(DigiContainerProcessor* action
   std::vector<Key> keys;
   for(const auto& c : containers)    {
     Key key(0x0, c);
-    if ( !m_allow_duplicates )    {
-      for(const auto& w : m_workers)   {
-	if ( std::find(m_work_items.begin(), m_work_items.end(), key.item()) != m_work_items.end() )   {
-	  error("+++ Container %s has already a worker action attached: %s",
-		c.c_str(), w->name());
-	  except("+++ Need to set property allow_duplicates=True to allow such behavior.");
-	}
-      }
-    }
     keys.push_back(key);
     m_work_items.insert(key.item());
     str << c << " ";
   }
-  action->m_work_keys = keys;
-  Worker* w = new Worker(action, {nullptr, nullptr, keys});
-  m_callers.emplace_back(new DigiKernel::CallWrapper(w));
-  m_workers.emplace_back(std::unique_ptr<Worker>(w));
+  action->m_container_keys = keys;
+  m_workers.emplace_back(new Worker(action, 0));
   info("+++ Use processor: %-32s for processing: %s", aname, str.str().c_str());
 }
 
@@ -94,11 +87,8 @@ void DigiMultiContainerProcessor::execute(DigiContext& context)  const    {
     }
   }
   if ( !work_items.empty() )   {
-    for(std::size_t i=0; i < m_workers.size(); ++i)   {
-      m_workers[i]->options.context = &context;
-      m_workers[i]->options.work = &work_items;
-    }
-    m_kernel.submit(m_callers);
+    CallData data { context, work_items };
+    m_kernel.submit(m_workers, &data);
   }
 }
 
@@ -110,7 +100,23 @@ DigiContainerProcessor::DigiContainerProcessor(const DigiKernel& kernel, const s
   this->declareProperty("input_segment",    m_input_segment);
 }
 
+/// Check if the work item is for us
+bool DigiContainerProcessor::use_container(Key key)   const    {
+  auto key_iter = std::find(m_container_keys.begin(), m_container_keys.end(), Key(key.item()));
+  if ( m_container_keys.empty() || key_iter != m_container_keys.end() )    {
+    auto mask_iter = std::find(m_input_masks.begin(), m_input_masks.end(), key.mask());
+    return m_input_masks.empty() || mask_iter != m_input_masks.end();
+  }
+  return false;
+}
+
 /// Main functional callback if specific work is known
-void DigiContainerProcessor::execute(DigiContext& context, WorkItems& data)  const    {
-  info("Hello there [Context:%p]  %p", (void*)&context, (void*)&data);
+void DigiContainerProcessor::execute(DigiContext& context, WorkItems& work)  const    {
+  for( const auto& item : work )  {
+    if ( use_container(item.first) )   {
+      Key key = item.first;
+      info("%s+++ %p Using container: %016lX  --> %04X %08X %s",
+	   context.event->id(), (void*)this, key.key, key.mask(), key.item(), Key::key_name(key).c_str());
+    }
+  }
 }
