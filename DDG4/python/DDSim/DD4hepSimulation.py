@@ -39,7 +39,7 @@ try:
 except ImportError:
   ARGCOMPLETEENABLED = False
 
-POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".pairs")
+POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".hepmc3", ".pairs")
 
 
 class DD4hepSimulation(object):
@@ -411,6 +411,13 @@ class DD4hepSimulation(object):
         else:
           gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
           gen.Input = "Geant4EventReaderHepMC|" + inputFile
+      elif inputFile.endswith(".hepmc3"):
+        if self.hepmc3.useHepMC3:
+          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
+          gen.Parameters = self.hepmc3.getParameters()
+          gen.Input = "HEPMC3FileReader|" + inputFile
+        else:
+          raise RuntimeError("HepMC3 input file support not enabled")
       elif inputFile.endswith(".pairs"):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index)
         gen.Input = "Geant4EventReaderGuineaPig|" + inputFile
