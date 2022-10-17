@@ -221,7 +221,7 @@ def _default_adopt(self, action):
 def _setup(obj, call='adopt', py_call=_default_adopt):
   _import_class('digi', obj)
   cls = getattr(current, obj)
-  setattr(cls, '__'+call, getattr(cls, call))
+  setattr(cls, '__' + call, getattr(cls, call))
   setattr(cls, call, py_call)
   return cls
 
