@@ -112,5 +112,5 @@ DigiContainerProcessor::DigiContainerProcessor(const DigiKernel& kernel, const s
 
 /// Main functional callback if specific work is known
 void DigiContainerProcessor::execute(DigiContext& context, WorkItems& data)  const    {
-  info("Hello there %p", (void*)&data);
+  info("Hello there [Context:%p]  %p", (void*)&context, (void*)&data);
 }

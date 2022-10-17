@@ -82,9 +82,19 @@ class Test(dddigi.Digitize):
   def data_containers(self):
     return list(self.attenuation.keys())
 
-  def containers(self, first, last):
+  def containers(self, count):
     keys = list(self.attenuation.keys())
-    return keys[first:last]
+    conts = []
+    result = []
+    cnt = 0
+    for i in range(count):
+      if cnt > count:
+        result.append(cont)
+        cont = []
+        cnt = 0
+      cont.append(keys[i])
+      cnt = cnt + 1
+    return result
 
   def check_creation(self, objs):
     for o in objs:

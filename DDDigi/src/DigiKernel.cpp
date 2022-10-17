@@ -319,8 +319,8 @@ DigiActionSequence& DigiKernel::outputAction() const    {
 
 /// Submit a bunch of actions to be executed in parallel
 void DigiKernel::submit (const std::vector<CallWrapper*>& actions)  const    {
-  bool parallel = 0 != internals->tbbInit && internals->numThreads>0;
 #ifdef DD4HEP_USE_TBB
+  bool parallel = 0 != internals->tbbInit && internals->numThreads>0;
   if ( parallel )   {
     tbb::task_group que;
     for ( auto* algo : actions )
