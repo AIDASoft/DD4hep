@@ -14,7 +14,7 @@
 /// Framework include files
 #include <DD4hep/Factories.h>
 #include <DD4hep/Printout.h>
-#include <DDDigi/FalphaNoise.h>
+#include <DDDigi/noise/FalphaNoise.h>
 
 /// C/C++ include files
 #include <random>

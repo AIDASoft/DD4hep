@@ -54,7 +54,6 @@ void DigiMultiContainerProcessor::adopt_processor(DigiContainerProcessor* action
   else if ( containers.empty() )   {
     except("+++ Processor %s is defined, but no workload was assigned. Request FAILED.");
   }
-  const char* aname = action->name().c_str();
   std::stringstream str;
   std::vector<Key> keys;
   for(const auto& c : containers)    {
@@ -63,9 +62,9 @@ void DigiMultiContainerProcessor::adopt_processor(DigiContainerProcessor* action
     m_work_items.insert(key.item());
     str << c << " ";
   }
-  action->m_container_keys = keys;
+  action->m_container_keys = std::move(keys);
   m_workers.emplace_back(new Worker(action, 0));
-  info("+++ Use processor: %-32s for processing: %s", aname, str.str().c_str());
+  info("+++ Use processor: %-32s for processing: %s", action->c_name(), str.str().c_str());
 }
 
 /// Main functional callback
