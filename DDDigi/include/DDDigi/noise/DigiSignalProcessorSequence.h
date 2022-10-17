@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDDIGI_DIGISIGNALPROCESSORSEQUENCE_H
-#define DDDIGI_DIGISIGNALPROCESSORSEQUENCE_H
+#ifndef DDDIGI_NOISE_DIGISIGNALPROCESSORSEQUENCE_H
+#define DDDIGI_NOISE_DIGISIGNALPROCESSORSEQUENCE_H
 
 // Framework include files
 #include <DDDigi/DigiSignalProcessor.h>
@@ -62,4 +62,4 @@ namespace dd4hep {
 
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DDDIGI_DIGISIGNALPROCESSORSEQUENCE_H
+#endif // DDDIGI_NOISE_DIGISIGNALPROCESSORSEQUENCE_H

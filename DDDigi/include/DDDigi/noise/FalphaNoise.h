@@ -47,8 +47,8 @@
 //
 //==========================================================================
 
-#ifndef DDDIGI_FALPHANOISE_H
-#define DDDIGI_FALPHANOISE_H
+#ifndef DDDIGI_NOISE_FALPHANOISE_H
+#define DDDIGI_NOISE_FALPHANOISE_H
 
 /// C/C++ include files
 #include <vector>
@@ -171,4 +171,4 @@ namespace dd4hep {
     }
   }    // End namespace detail
 }      // End namespace dd4hep
-#endif // DDDIGI_FALPHANOISE_H
+#endif // DDDIGI_NOISE_FALPHANOISE_H

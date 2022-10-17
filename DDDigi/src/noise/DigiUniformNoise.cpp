@@ -14,7 +14,7 @@
 // Framework include files
 #include <DD4hep/InstanceCount.h>
 #include <DDDigi/DigiRandomGenerator.h>
-#include <DDDigi/DigiUniformNoise.h>
+#include <DDDigi/noise/DigiUniformNoise.h>
 
 using namespace dd4hep::digi;
 

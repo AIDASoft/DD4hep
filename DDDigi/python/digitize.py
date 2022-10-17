@@ -54,6 +54,12 @@ class Digitize(dd4hep.Logger):
       self._main_processor.parallel = self._parallel
     return self._main_processor
 
+  def create_action(self, name, **options):
+    action = dddigi.Action(self._kernel, name)
+    for option in options.items():
+      setattr(action, option[0], option[1])
+    return action
+
   def new_action(self, name, **options):
     action = dddigi.EventAction(self._kernel, name)
     for option in options.items():
@@ -75,7 +81,7 @@ class Digitize(dd4hep.Logger):
     self._input_processor.adopt(act)
     return act
 
-  def event_action(self, name=None, **options):
+  def event_action(self, name=None, register=True, **options):
     """
     Append a new action to the kernel's main event action sequence
     """
@@ -87,7 +93,8 @@ class Digitize(dd4hep.Logger):
       return self._event_processor
 
     action = self.new_action(name, **options)
-    self._event_processor.adopt(action)
+    if register:
+      self._event_processor.adopt(action)
     return action
 
   def output_action(self, name=None, **options):

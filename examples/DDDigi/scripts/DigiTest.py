@@ -70,11 +70,21 @@ class Test(dddigi.Digitize):
         'CLICSiD_2022-10-05_14-40.root']
     self.used_inputs = []
 
+  def segment_action(self, nam, **options):
+    obj = dddigi.Interface.createSegmentAction(self.kernel(), str(nam))
+    return obj
+
   def load_geo(self):
-    install_dir = os.environ['DD4hepINSTALL']
-    fname = "file:" + install_dir + "/DDDetectors/compact/SiD.xml"
+    fname = "file:" + os.environ['DD4hepINSTALL'] + "/DDDetectors/compact/SiD.xml"
     self.kernel().loadGeometry(str(fname))
     self.printDetectors()
+
+  def data_containers(self):
+    return list(self.attenuation.keys())
+
+  def containers(self, first, last):
+    keys = list(self.attenuation.keys())
+    return keys[first:last]
 
   def check_creation(self, objs):
     for o in objs:

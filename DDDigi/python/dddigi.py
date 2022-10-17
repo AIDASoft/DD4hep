@@ -172,13 +172,20 @@ ActionHandle = digi.ActionHandle
 
 
 # ---------------------------------------------------------------------------
-def Action(kernel, nam, parallel=False):
-  obj = Interface.createAction(kernel, str(nam))
-  obj.parallel = parallel
+def TestAction(kernel, nam, sleep=0):
+  obj = Interface.createEventAction(kernel, str('DigiTestAction/' + nam))
+  if sleep != 0:
+    obj.sleep = sleep
   return obj
-
-
 # ---------------------------------------------------------------------------
+
+
+def Action(kernel, nam):
+  obj = Interface.createAction(kernel, str(nam))
+  return obj
+# ---------------------------------------------------------------------------
+
+
 def EventAction(kernel, nam, parallel=False):
   obj = Interface.createEventAction(kernel, str(nam))
   obj.parallel = parallel
@@ -186,10 +193,9 @@ def EventAction(kernel, nam, parallel=False):
 # ---------------------------------------------------------------------------
 
 
-def TestAction(kernel, nam, sleep=0):
-  obj = Interface.createEventAction(kernel, str('DigiTestAction/' + nam))
-  if sleep != 0:
-    obj.sleep = sleep
+def SegmentAction(kernel, nam, parallel=False):
+  obj = Interface.createSegmentAction(kernel, str(nam))
+  obj.parallel = parallel
   return obj
 # ---------------------------------------------------------------------------
 
@@ -208,14 +214,14 @@ def Synchronize(kernel, nam, parallel=False):
 # ---------------------------------------------------------------------------
 
 
-def _setup(obj):
-  def _adopt(self, action):
-    getattr(self,'__adopt')(action.get())
+def _default_adopt(self, action):
+  getattr(self, '__adopt')(action.get())
+
+def _setup(obj, call='adopt', py_call=_default_adopt):
   _import_class('digi', obj)
   cls = getattr(current, obj)
-  setattr(cls, '__adopt', getattr(cls, 'adopt'))
-  setattr(cls, 'adopt', _adopt)
-  # setattr(cls,'add',_adopt)
+  setattr(cls, '__'+call, getattr(cls, call))
+  setattr(cls, call, py_call)
   return cls
 
 
@@ -279,10 +285,17 @@ def adopt_sequence_action(self, name, **options):
   return action
 
 
+def _adopt_processor(self, action, containers):
+  getattr(self, '__adopt_processor')(action.get(), containers)
+
+
 _props('DigiSynchronize')
 _props('DigiActionSequence', adopt_action=adopt_sequence_action)
 _props('DigiParallelActionSequence', adopt_action=adopt_sequence_action)
 _props('DigiSequentialActionSequence', adopt_action=adopt_sequence_action)
+
+
+_setup('DigiMultiContainerProcessor', call='adopt_processor', py_call=_adopt_processor)
 
 
 # Need to import digitize late, since it cross includes dddigi

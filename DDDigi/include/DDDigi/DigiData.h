@@ -55,6 +55,9 @@ namespace dd4hep {
       key_type key;
       /// Second union entry to use for discrimination
       struct {
+	// Ordering is important here: 
+	// We want to group the containers by item ie. by container name
+	// and not by mask
         itemkey_type item;
         mask_type    mask;
         mask_type    spare;
@@ -85,6 +88,14 @@ namespace dd4hep {
       key_type toLong()  const  {
 	return key;
       }
+      /// Project the mask part of the key
+      itemkey_type item()  {
+	return this->values.item;
+      }
+      /// Project the item part of the key
+      mask_type mask()  {
+	return this->values.mask;
+      }
       /// Generate key using hash algorithm
       void set(const std::string& name, int mask);
       
@@ -95,6 +106,14 @@ namespace dd4hep {
       /// Project the item part of the key
       static mask_type mask(key_type k)  {
 	return Key(k).values.mask;
+      }
+      /// Project the mask part of the key
+      static itemkey_type item(Key k)  {
+	return k.values.item;
+      }
+      /// Project the item part of the key
+      static mask_type mask(Key k)  {
+	return k.values.mask;
       }
       /// Access key name (if registered properly)
       static std::string key_name(const Key& key);
@@ -265,6 +284,43 @@ namespace dd4hep {
     {
     }
 
+    /// Energy deposit vector definition for digitization
+    /** Energy deposit vector definition for digitization
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class DepositVector : public std::vector<std::pair<CellID, EnergyDeposit> >  {
+    public: 
+      std::string    name { };
+      Key            key  { 0x0 };
+
+    public: 
+      /// Initializing constructor
+      DepositVector(const std::string& name, Key::mask_type mask);
+      /// Default constructor
+      DepositVector() = default;
+      /// Disable move constructor
+      DepositVector(DepositVector&& copy) = default;
+      /// Disable copy constructor
+      DepositVector(const DepositVector& copy) = default;      
+      /// Default destructor
+      virtual ~DepositVector() = default;
+      /// Disable move assignment
+      DepositVector& operator=(DepositVector&& copy) = default;
+      /// Disable copy assignment
+      DepositVector& operator=(const DepositVector& copy) = default;      
+      /// Merge new deposit map onto existing map (not thread safe!)
+      std::size_t merge(DepositVector&& updates);
+    };
+
+    /// Initializing constructor
+    inline DepositVector::DepositVector(const std::string& n, Key::mask_type mask)
+      : name(n), key(mask, n)
+    {
+    }
+
     /// Energy deposit mapping definition for digitization
     /** Energy deposit mapping definition for digitization
      *
@@ -292,7 +348,6 @@ namespace dd4hep {
       DepositMapping& operator=(DepositMapping&& copy) = default;
       /// Disable copy assignment
       DepositMapping& operator=(const DepositMapping& copy) = default;      
-
       /// Merge new deposit map onto existing map (not thread safe!)
       std::size_t merge(DepositMapping&& updates);
     };

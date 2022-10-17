@@ -41,7 +41,7 @@ void Key::set(const std::string& name, int mask)    {
     except("DDDigi::Key", "+++ No key name was specified  --  this is illegal!");
   }
   this->key = 0;
-  this->values.mask = (unsigned char)(0xFF&mask);
+  this->values.mask = (Key::mask_type)(0xFFFF&mask);
   this->values.item = detail::hash32(name);
   std::lock_guard<std::mutex> lock(_k.lock);
   _k.map[this->key] = name;
@@ -60,6 +60,15 @@ std::string Key::key_name(const Key& k)    {
       return e.second;
   }
   return "UNKNOWN";
+}
+
+/// Merge new deposit map onto existing map
+std::size_t DepositVector::merge(DepositVector&& updates)    {
+  std::size_t update_size = updates.size();
+  for( auto& c : updates )    {
+    this->emplace_back(c);
+  }
+  return update_size;
 }
 
 /// Merge new deposit map onto existing map
@@ -85,7 +94,9 @@ std::size_t ParticleMapping::merge(ParticleMapping&& updates)    {
   std::size_t update_size = updates.size();
   for( ParticleMapping::value_type& c : updates )    {
     Particle part(std::move(c.second));
+#if defined(__GNUC__) && (__GNUC__ >= 10)
     this->push(c.first, std::move(part));
+#endif
   }
   return update_size;
 }
@@ -167,12 +178,12 @@ void DataSegment::print_keys()   const   {
 /// Call on failed any-casts during data requests
 std::string DataSegment::invalid_cast(Key key, const std::type_info& type)  const   {
   return dd4hep::format(0, "Invalid segment data cast. Key:%ld type:%s",
-			key, typeName(type).c_str());
+			key.key, typeName(type).c_str());
 }
 
 /// Call on failed data requests during data requests
 std::string DataSegment::invalid_request(Key key)  const   {
-  return dd4hep::format(0, "Invalid segment data requested. Key:%ld",key);
+  return dd4hep::format(0, "Invalid segment data requested. Key:%ld",key.key);
 }
 
 /// Access data item by key

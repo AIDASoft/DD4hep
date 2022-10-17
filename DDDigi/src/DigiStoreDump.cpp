@@ -55,10 +55,15 @@ void dd4hep::digi::DigiStoreDump::dump(const std::string& tag,
     std::size_t idx = typ.find(", std::less<long long>, std::allocator<std::pair");
     if ( idx != std::string::npos ) typ = str_replace(typ, typ.substr(idx), ">");
     typ = str_replace(str_replace(typ,"std::",""),"dd4hep::digi::","");
-    if ( const auto* hits = std::any_cast<DepositMapping>(&data) )   {
+    if ( const auto* mapping = std::any_cast<DepositMapping>(&data) )   {
       str = this->format("%s|---- %4X %08X %-32s: %6ld hits      [%s]", 
 			 event.id(), key.values.mask, key.values.item,
-			 nam.c_str(), hits->size(), typ.c_str());
+			 nam.c_str(), mapping->size(), typ.c_str());
+    }
+    else if ( const auto* vector = std::any_cast<DepositVector>(&data) )   {
+      str = this->format("%s|---- %4X %08X %-32s: %6ld hits      [%s]", 
+			 event.id(), key.values.mask, key.values.item,
+			 nam.c_str(), vector->size(), typ.c_str());
     }
     else if ( const auto* parts = std::any_cast<ParticleMapping>(&data) )   {
       str = this->format("%s|---- %4X %08X %-32s: %6ld particles [%s]", 

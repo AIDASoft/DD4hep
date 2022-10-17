@@ -28,7 +28,7 @@ public:
   /// Property: Container names to be loaded
   std::vector<std::string>       containers { };
   /// Property: event masks to be handled
-  std::vector<int>               masks  { };
+  std::vector<int>               input_masks  { };
   /// Property: Output container dressing
   std::string                    output_name_flag;
   /// Property: Input data segment name
@@ -59,18 +59,18 @@ public:
 	for ( const auto& c : this->containers )   {
 	  Key key(0x0, c);
 	  this->cont_keys.emplace(key.key);
-	  if ( this->masks.empty() )   {
+	  if ( this->input_masks.empty() )   {
 	    this->keys.emplace(key.key);
 	    continue;
 	  }
-	  for ( int m : this->masks )    {
+	  for ( int m : this->input_masks )    {
 	    key.values.mask = m;
 	    this->keys.emplace(key.key);
 	  }
 	}
 
 	this->container_selector = [this](Key::key_type k)  {
-	  const auto& m = this->masks;
+	  const auto& m = this->input_masks;
 	  bool use = m.empty() || this->keys.empty();
 	  if ( !use )  {
 	    if ( !this->cont_keys.empty() )
@@ -90,7 +90,7 @@ dd4hep::digi::DigiContainerCombine::DigiContainerCombine(const DigiKernel& krnl,
 {
   this->internals = std::make_unique<internals_t>();
   this->declareProperty("containers",       this->internals->containers);
-  this->declareProperty("masks",            this->internals->masks);
+  this->declareProperty("input_masks",      this->internals->input_masks);
   this->declareProperty("input_segment",    this->internals->input  = "inputs");
   this->declareProperty("output_segment",   this->internals->output = "deposits");
   this->declareProperty("deposit_mask",     this->internals->deposit_mask);
@@ -104,6 +104,29 @@ dd4hep::digi::DigiContainerCombine::~DigiContainerCombine() {
   InstanceCount::decrement(this);
 }
 
+struct work_definition  {
+  using Key = dd4hep::digi::Key;
+  using DigiEvent = dd4hep::digi::DigiEvent;
+  using DataSegment = dd4hep::digi::DataSegment;
+  std::size_t cnt_depos = 0;
+  std::size_t cnt_parts = 0;
+  std::size_t cnt_conts = 0;
+  std::vector<Key> keys;
+  std::vector<std::any*> work;
+  std::set<Key::itemkey_type> items;
+  Key depo_key;
+  char format[128];
+  DigiEvent& event;
+  DataSegment& inputs;
+  DataSegment& outputs;
+  work_definition(DigiEvent& e, DataSegment& i, DataSegment& o)
+    : event(e), inputs(i), outputs(o) {}
+};
+struct DigiCombineAction : public dd4hep::digi::DigiEventAction   {
+public:
+  work_definition work;
+};
+
 /// Combine selected containers to one single deposit container
 template <typename PREDICATE> std::size_t 
 dd4hep::digi::DigiContainerCombine::combine_containers(DigiEvent&   event,
@@ -111,89 +134,83 @@ dd4hep::digi::DigiContainerCombine::combine_containers(DigiEvent&   event,
 						       DataSegment& outputs,
 						       const PREDICATE& predicate)  const
 {
-  std::size_t cnt_depos = 0;
-  std::size_t cnt_parts = 0;
-  std::size_t cnt_conts = 0;
-  std::vector<Key> keys;
-  std::vector<std::any*> work;
   std::set<Key::itemkey_type> items;
-
-  keys.reserve(inputs.size());
-  work.reserve(inputs.size());
-  for( auto& i : inputs )   {
+  work_definition def(event, inputs, outputs);
+  def.depo_key.values.mask = internals->deposit_mask;
+  def.keys.reserve(inputs.size());
+  def.work.reserve(inputs.size());
+  for( auto& i : def.inputs )   {
     if ( predicate(i.first) )   {
-      keys.emplace_back(i.first);
-      work.emplace_back(&i.second);
+      def.keys.emplace_back(i.first);
+      def.work.emplace_back(&i.second);
       items.insert(Key(i.first).values.item);
     }
   }
-  Key depo_key;
-  depo_key.values.mask = internals->deposit_mask;
+
+  ::snprintf(def.format, sizeof(def.format),
+	     "%s+++ %%-32s Mask: $%04X Input: $%%04X Merged %%6ld %%s",
+	     event.id(), def.depo_key.values.mask);
+
   for(auto itm : items)   {
-    for( std::size_t i=0; i < keys.size(); ++i )   {
-      if ( keys[i].values.item != itm )
+    for( std::size_t i=0; i < def.keys.size(); ++i )   {
+      if ( def.keys[i].values.item != itm )
 	continue;
-      auto* output = work[i];
-      depo_key.values.item = itm;
+      auto* output = def.work[i];
+      def.depo_key.values.item = itm;
 
       /// Merge deposit mapping
       if ( DepositMapping* depos = std::any_cast<DepositMapping>(output) )   {
 	if ( !internals->output_name_flag.empty() )
 	  depos->name = depos->name+"/"+internals->output_name_flag;
-	cnt_depos += depos->size();
-	cnt_conts++;
-	this->info("%s+++ %-32s Mask: $%04X Input: $%04X Merged %6ld deposits",
-		   event.id(), depos->name.c_str(), depo_key.values.mask, 
-		   keys[i].values.mask, depos->size()); 
-	for( std::size_t j=i+1; j < keys.size(); ++j )   {
-	  if ( keys[j].values.item == itm )   {
-	    DepositMapping* next = std::any_cast<DepositMapping>(work[j]);
-	    cnt_depos += next->size();
-	    cnt_conts++;
+	def.cnt_depos += depos->size();
+	def.cnt_conts++;
+	this->info(def.format, depos->name.c_str(), 
+		   def.keys[i].values.mask, depos->size(), "deposits"); 
+	for( std::size_t j=i+1; j < def.keys.size(); ++j )   {
+	  if ( def.keys[j].values.item == itm )   {
+	    DepositMapping* next = std::any_cast<DepositMapping>(def.work[j]);
 	    std::size_t cnt = depos->merge(std::move(*next));
-	    this->info("%s+++ %-32s Mask: $%04X Input: $%04X Merged %6ld deposits",
-		       event.id(), depos->name.c_str(), depo_key.values.mask, 
-		       keys[j].values.mask, cnt); 
-	    cnt_depos += cnt;
-	    cnt_conts++;
-	    work[j]->reset();
+	    this->info(def.format, next->name.c_str(), 
+		       def.keys[j].values.mask, cnt, "deposits"); 
+	    def.cnt_depos += cnt;
+	    def.cnt_conts++;
+	    def.work[j]->reset();
 	  }
 	}
-	outputs.emplace(depo_key, std::move(*output));
+	def.outputs.emplace(def.depo_key, std::move(*output));
 	break;
       }
+      /// Merge particle container
       else if ( ParticleMapping* parts = std::any_cast<ParticleMapping>(output) )   {
 	if ( !internals->output_name_flag.empty() )
 	  parts->name = parts->name+"/"+internals->output_name_flag;
-	cnt_parts += parts->size();
-	cnt_conts++;
+	def.cnt_parts += parts->size();
+	def.cnt_conts++;
 
-	this->info("%s+++ %-32s Mask: $%04X Input: $%04X Merged %6ld particles",
-		   event.id(), parts->name.c_str(), depo_key.values.mask, 
-		   keys[i].values.mask, parts->size()); 
-	for( std::size_t j=i+1; j < keys.size(); ++j )   {
-	  if ( keys[j].values.item == itm )   {
-	    ParticleMapping* next = std::any_cast<ParticleMapping>(work[j]);
+	this->info(def.format, parts->name.c_str(), 
+		   def.keys[i].values.mask, parts->size(), "particles"); 
+	for( std::size_t j=i+1; j < def.keys.size(); ++j )   {
+	  if ( def.keys[j].values.item == itm )   {
+	    ParticleMapping* next = std::any_cast<ParticleMapping>(def.work[j]);
 	    std::size_t cnt = parts->merge(std::move(*next));
-	    this->info("%s+++ %-32s Mask: $%04X Input: $%04X Merged %6ld particles",
-		       event.id(), parts->name.c_str(), depo_key.values.mask, 
-		       keys[j].values.mask, cnt); 
-	    cnt_parts += cnt;
-	    cnt_conts++;
-	    work[j]->reset();
+	    this->info(def.format, next->name.c_str(), 
+		       def.keys[j].values.mask, cnt, "particles"); 
+	    def.cnt_parts += cnt;
+	    def.cnt_conts++;
+	    def.work[j]->reset();
 	  }
 	}
-	outputs.emplace(depo_key, std::move(*output));
+	def.outputs.emplace(def.depo_key, std::move(*output));
 	break;
       }
     }
   }
   if ( this->internals->erase_combined )   {
-    inputs.erase(keys);
+    inputs.erase(def.keys);
   }
   this->info("%s+++ Merged %ld particles and %ld deposits from %ld containers",
-	     event.id(), cnt_parts, cnt_depos, cnt_conts);
-  return cnt_depos;
+	     event.id(), def.cnt_parts, def.cnt_depos, def.cnt_conts);
+  return def.cnt_depos;
 }
 
 /// Main functional callback

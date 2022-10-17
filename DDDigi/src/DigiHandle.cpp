@@ -21,6 +21,7 @@
 #include <DDDigi/DigiInputAction.h>
 #include <DDDigi/DigiEventAction.h>
 #include <DDDigi/DigiSignalProcessor.h>
+#include <DDDigi/DigiSegmentationSplitter.h>
 
 // C/C++ include files
 #include <stdexcept>
@@ -66,6 +67,10 @@ namespace dd4hep {
 
     template <> DigiAction* _raw_create<DigiAction>(const std::string& t, const DigiKernel& kernel, const std::string& n)    {
       return PluginService::Create<DigiAction*>(t, &kernel, n);
+    }
+
+    template <> DigiSegmentAction* _raw_create<DigiSegmentAction>(const std::string& t, const DigiKernel& kernel, const std::string& n)    {
+      return PluginService::Create<DigiSegmentAction*>(t, &kernel, n);
     }
 
     template <> DigiSignalProcessor* _raw_create<DigiSignalProcessor>(const std::string& t, const DigiKernel& kernel, const std::string& n)    {
@@ -197,6 +202,7 @@ namespace dd4hep {
     template class DigiHandle<DigiAction>;
     template class DigiHandle<DigiInputAction>;
     template class DigiHandle<DigiEventAction>;
+    template class DigiHandle<DigiSegmentAction>;
     template class DigiHandle<DigiSynchronize>;
     template class DigiHandle<DigiActionSequence>;
     template class DigiHandle<DigiSignalProcessor>;

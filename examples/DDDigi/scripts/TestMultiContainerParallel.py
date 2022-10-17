@@ -9,12 +9,12 @@
 #
 # ==========================================================================
 from __future__ import absolute_import
-
+import dddigi
 
 def run():
   import DigiTest
   digi = DigiTest.Test(geometry=None)
-  digi.load_geo()
+  #digi.load_geo()
   input = digi.input_action('DigiParallelActionSequence/READER')
   # ========================================================================
   digi.info('Created SIGNAL input')
@@ -22,18 +22,19 @@ def run():
   digi.check_creation([signal])
   # ========================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
-  combine = event.adopt_action('DigiContainerCombine/Combine', input_masks=[0x0, 0x1, 0x2, 0x3], deposit_mask=0xFEED)
-  combine.erase_combined = True  # Not thread-safe! only do in SequentialActionSequence
-  splitter = event.adopt_action('DigiSegmentationSplitter/Splitter',
-                                input='deposits',
-                                mask=0xFEED,
-                                detector='SiTrackerBarrel',
-                                split_by='layer',
-                                processor_type='DigiSegmentDepositPrint')
-  splitter.parallel = True
-  dump = event.adopt_action('DigiStoreDump/StoreDump')
-  digi.check_creation([combine, dump, splitter])
-  digi.info('Created event.dump')
+  proc = event.adopt_action('DigiMultiContainerProcessor/ContainerProc',
+                            input_masks=[0x0, 0x1, 0x2, 0x3])
+  cont = digi.data_containers()
+  num = int((len(cont)+2)/3)
+  for i in range(num):
+    #merge = digi.event_action('DigiSegmentDepositPrint/SegmentPrint_%03d'%(i,), register=None)
+    merge = dddigi.Action(digi.kernel(), 'DigiContainerProcessor/SegmentPrint_%03d'%(i,));
+    conts = digi.containers(i*3,(i+1)*3)
+    proc.adopt_processor(merge, conts)
+
+  #dump = event.adopt_action('DigiStoreDump/StoreDump')
+  #digi.check_creation([combine, dump, splitter])
+  #digi.info('Created event.dump')
   # ========================================================================
   digi.run_checked(num_events=1, num_threads=5, parallel=3)
 

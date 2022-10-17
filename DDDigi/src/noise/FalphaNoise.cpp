@@ -12,7 +12,7 @@
 //==========================================================================
 
 /// Framework include files
-#include <DDDigi/FalphaNoise.h>
+#include <DDDigi/noise/FalphaNoise.h>
 
 /// C/C++ include files
 #include <cmath>
