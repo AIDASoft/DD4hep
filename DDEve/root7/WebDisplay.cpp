@@ -17,8 +17,13 @@
 
 // ROOT includes
 #include "ROOT/RDirectory.hxx"
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,27,00)
+#include "ROOT/RGeomViewer.hxx"
+using GEOM_VIEWER = ROOT::Experimental::RGeomViewer;
+#else
 #include "ROOT/REveGeomViewer.hxx"
-
+using GEOM_VIEWER = ROOT::Experimental::REveGeomViewer;
+#endif
 
 // C/C++ include files
 #include <cerrno>
@@ -76,7 +81,7 @@ static long webdisplay(Detector& description, int argc, char** argv) {
   }
 
   if (vol) {
-    auto viewer = std::make_shared<ROOT::Experimental::REveGeomViewer>(&mgr);
+    auto viewer = std::make_shared<GEOM_VIEWER>(&mgr);
     viewer->SelectVolume(vol->GetName());
     viewer->SetLimits();
     viewer->SetDrawOptions(opt);
