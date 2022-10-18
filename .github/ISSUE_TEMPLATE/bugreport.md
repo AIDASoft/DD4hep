@@ -1,6 +1,6 @@
 ---
-name: Bug Report
-about: Use this template for reporting Bugs
+name: Bug or Error Report
+about: Use this template for reporting Bugs or Errors
 labels: bug
 ---
 
