@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/PluginCreators.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Plugins.h"
+#include <DD4hep/PluginCreators.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Plugins.h>
 
 // C/C++ include files
 #include <cstring>
@@ -73,7 +73,7 @@ namespace dd4hep {
       PluginDebug dbg;
       object = PluginService::Create<void*>(factory, &description, argc, argv);
       if ( !object )  {
-        except("ConditionsManager","dd4hep-plugins: Failed to locate plugin %s. \n%s.",
+        except("createPlugin","dd4hep-plugins: Failed to locate plugin %s. \n%s.",
                factory.c_str(), dbg.missingFactory(factory).c_str());
       }
     }

@@ -36,13 +36,8 @@
 #include <DDDigi/DigiKernel.h>
 #include <DDDigi/DigiContext.h>
 #include <DDDigi/DigiAction.h>
-#include <DDDigi/DigiSynchronize.h>
 #include <DDDigi/DigiEventAction.h>
-#include <DDDigi/DigiInputAction.h>
-#include <DDDigi/DigiSegmentAction.h>
-#include <DDDigi/DigiActionSequence.h>
-#include <DDDigi/DigiMultiContainerProcessor.h>
-#include <DDDigi/DigiSignalProcessor.h>
+#include <DDDigi/DigiContainerProcessor.h>
 
 struct DDDigiDict  {};
 
@@ -62,20 +57,14 @@ namespace dd4hep {
       operator dd4hep::digi::Digi##x* () const         { return action;                 } \
       Digi##x* operator->() const                      { return action;                 } \
       Digi##x* get() const                             { return action;                 } \
+      Digi##x* I_am_a_ROOT_interface_handle() const    { return action;                 } \
       KernelHandle kernel()  const                     {		\
 	auto* k = const_cast<DigiKernel*>(action->kernel());		\
 	return KernelHandle(k);						\
       }									\
     }
 
-    ACTIONHANDLE(SignalProcessor);
     ACTIONHANDLE(Action);
-    ACTIONHANDLE(EventAction);
-    ACTIONHANDLE(InputAction);
-    ACTIONHANDLE(SegmentAction);
-    ACTIONHANDLE(ContainerProcessor);
-    ACTIONHANDLE(ActionSequence);
-    ACTIONHANDLE(Synchronize);
 
     struct PropertyResult  {
       std::string data;
@@ -93,45 +82,16 @@ namespace dd4hep {
         H handle(action.get());
         return handle;
       }
-      static KernelHandle createKernel(DigiAction* action)   {
-	auto* k = const_cast<DigiKernel*>(action->kernel());
-	return KernelHandle(k);
+      template <typename T,typename H> static H* cst(T* in)  {
+	auto* out = dynamic_cast<H*>(in);
+	if ( out ) return out;
+	if ( in )
+	  except("DigiAction","Invalid cast of action '%s' [type:%s] to type %s!",
+		 in->c_name(), typeName(typeid(T)).c_str(), typeName(typeid(H)).c_str());
+	except("DigiAction","Invalid cast of NULL [type:%s] to type %s!",
+	       typeName(typeid(T)).c_str(), typeName(typeid(H)).c_str());
+	return nullptr;
       }
-      static ActionHandle createAction(KernelHandle& kernel, const std::string& name_type)   
-      { return cr<ActionHandle,DigiHandle<DigiAction> >(kernel,name_type);                           }
-
-      static EventActionHandle createEventAction(KernelHandle& kernel, const std::string& name_type)   
-      { return cr<EventActionHandle,DigiHandle<DigiEventAction> >(kernel,name_type);                 }
-
-      static InputActionHandle createInputAction(KernelHandle& kernel, const std::string& name_type)   
-      { return cr<InputActionHandle,DigiHandle<DigiInputAction> >(kernel,name_type);                 }
-
-      static SegmentActionHandle createSegmentAction(KernelHandle& kernel, const std::string& name_type)   
-      { return cr<SegmentActionHandle,DigiHandle<DigiSegmentAction> >(kernel,name_type);              }
-
-      static ActionSequenceHandle createSequence(KernelHandle& kernel, const std::string& name_type)   
-      { return cr<ActionSequenceHandle,DigiHandle<DigiActionSequence> >(kernel,name_type);           }
-
-      static SynchronizeHandle createSync(KernelHandle& kernel, const std::string& name_type)
-      { return cr<SynchronizeHandle,DigiHandle<DigiSynchronize> >(kernel,name_type);                 }
-
-      static DigiAction* toAction(DigiAction* f)                   { return f;                       }
-#if 0
-      static DigiAction* toAction(DigiEventAction* f)              { return f;                       }
-      static DigiAction* toAction(DigiInputAction* f)              { return f;                       }
-      static DigiAction* toAction(DigiSegmentAction* f)            { return f;                       }
-      static DigiAction* toAction(DigiContainerProcessor* f)       { return f;                       }
-      static DigiAction* toAction(DigiActionSequence* f)           { return f;                       }
-      static DigiAction* toAction(DigiSynchronize* f)              { return f;                       }
-      static DigiAction* toAction(DigiSignalProcessor* f)          { return f;                       }
-#endif
-      static DigiAction* toAction(ActionHandle f)                  { return f.action;                }
-      static DigiAction* toAction(EventActionHandle f)             { return f.action;                }
-      static DigiAction* toAction(InputActionHandle f)             { return f.action;                }
-      static DigiAction* toAction(SegmentActionHandle f)           { return f.action;                }
-      static DigiAction* toAction(ActionSequenceHandle f)          { return f.action;                }
-      static DigiAction* toAction(SynchronizeHandle f)             { return f.action;                }
-      static DigiAction* toAction(SignalProcessorHandle f)         { return f.action;                }
 
       static PropertyResult getProperty(DigiAction* action, const std::string& name)  {
         if ( action->hasProperty(name) )  {
@@ -159,9 +119,68 @@ namespace dd4hep {
         }
         return 0;
       }
+
+      static KernelHandle createKernel(DigiAction* action)   {
+	auto* k = const_cast<DigiKernel*>(action->kernel());
+	return KernelHandle(k);
+      }
+      static ActionHandle createAction(KernelHandle& kernel, const std::string& name_type)   
+      { return cr<ActionHandle,DigiHandle<DigiAction> >(kernel,name_type);                           }
+      static DigiAction* toAction(DigiAction* f)                   { return f;                       }
+      static DigiAction* toAction(ActionHandle f)                  { return f.action;                }
+
+      static DigiEventAction* toEventAction(DigiAction* a)        { return cst<DigiAction,DigiEventAction>(a); }
+      static DigiContainerProcessor* toContainerProcessor(DigiAction* a) { return cst<DigiAction,DigiContainerProcessor>(a); }
+
+#if 0
+      static DigiEventAction* toEventAction(DigiEventAction* a)   { return a; }
+      ACTIONHANDLE(SignalProcessor);
+      ACTIONHANDLE(EventAction);
+      ACTIONHANDLE(InputAction);
+      ACTIONHANDLE(SegmentProcessor);
+      ACTIONHANDLE(ContainerProcessor);
+      ACTIONHANDLE(ActionSequence);
+      ACTIONHANDLE(Synchronize);
+
+      static EventActionHandle createEventAction(KernelHandle& kernel, const std::string& name_type)   
+      { return cr<EventActionHandle,DigiHandle<DigiEventAction> >(kernel,name_type);                 }
+
+      static InputActionHandle createInputAction(KernelHandle& kernel, const std::string& name_type)   
+      { return cr<InputActionHandle,DigiHandle<DigiInputAction> >(kernel,name_type);                 }
+
+      static SegmentProcessorHandle createSegmentProcessor(KernelHandle& kernel, const std::string& name_type)   
+      { return cr<SegmentProcessorHandle,DigiHandle<DigiSegmentProcessor> >(kernel,name_type);              }
+
+      static ActionSequenceHandle createSequence(KernelHandle& kernel, const std::string& name_type)   
+      { return cr<ActionSequenceHandle,DigiHandle<DigiActionSequence> >(kernel,name_type);           }
+
+      static SynchronizeHandle createSync(KernelHandle& kernel, const std::string& name_type)
+      { return cr<SynchronizeHandle,DigiHandle<DigiSynchronize> >(kernel,name_type);                 }
+
+      static DigiAction* toAction(DigiEventAction* f)              { return f;                       }
+      static DigiAction* toAction(DigiInputAction* f)              { return f;                       }
+      static DigiAction* toAction(DigiSegmentProcessor* f)            { return f;                       }
+      static DigiAction* toAction(DigiContainerProcessor* f)       { return f;                       }
+      static DigiAction* toAction(DigiActionSequence* f)           { return f;                       }
+      static DigiAction* toAction(DigiSynchronize* f)              { return f;                       }
+      static DigiAction* toAction(DigiSignalProcessor* f)          { return f;                       }
+
+      static DigiAction* toAction(EventActionHandle f)             { return f.action;                }
+      static DigiAction* toAction(InputActionHandle f)             { return f.action;                }
+      static DigiAction* toAction(SegmentProcessorHandle f)           { return f.action;                }
+      static DigiAction* toAction(ActionSequenceHandle f)          { return f.action;                }
+      static DigiAction* toAction(SynchronizeHandle f)             { return f.action;                }
+      static DigiAction* toAction(SignalProcessorHandle f)         { return f.action;                }
+#endif
     };
   }
 }
+
+#include <DDDigi/DigiSynchronize.h>
+#include <DDDigi/DigiInputAction.h>
+#include <DDDigi/DigiSegmentProcessor.h>
+#include <DDDigi/DigiActionSequence.h>
+#include <DDDigi/DigiSignalProcessor.h>
 
 // CINT configuration
 #if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
@@ -175,39 +194,37 @@ using namespace std;
 #pragma link C++ namespace dd4hep;
 #pragma link C++ namespace dd4hep::digi;
 
-#pragma link C++ class dd4hep::digi::DigiActionCreation;
-#pragma link C++ class dd4hep::digi::DigiContext;
-
-#pragma link C++ class dd4hep::digi::DigiKernel;
 #pragma link C++ class dd4hep::digi::KernelHandle;
-
-#pragma link C++ class dd4hep::digi::DigiAction;
 #pragma link C++ class dd4hep::digi::ActionHandle;
 
+#pragma link C++ class dd4hep::digi::DigiActionCreation;
+#pragma link C++ class dd4hep::digi::DigiContext;
+#pragma link C++ class dd4hep::digi::DigiKernel;
+#pragma link C++ class dd4hep::digi::DigiAction;
 #pragma link C++ class dd4hep::digi::DigiEventAction;
-#pragma link C++ class dd4hep::digi::EventActionHandle;
-
 #pragma link C++ class dd4hep::digi::DigiInputAction;
-#pragma link C++ class dd4hep::digi::InputActionHandle;
-
-#pragma link C++ class dd4hep::digi::DigiSegmentAction;
-#pragma link C++ class dd4hep::digi::SegmentActionHandle;
-
+#pragma link C++ class dd4hep::digi::DigiSegmentProcessor;
 #pragma link C++ class dd4hep::digi::DigiActionSequence;
-#pragma link C++ class dd4hep::digi::ActionSequenceHandle;
-
 #pragma link C++ class dd4hep::digi::DigiSynchronize;
-#pragma link C++ class dd4hep::digi::SynchronizeHandle;
-
 #pragma link C++ class dd4hep::digi::DigiSignalProcessor;
-#pragma link C++ class dd4hep::digi::SignalProcessorHandle;
-
 #pragma link C++ class dd4hep::digi::DigiContainerProcessor;
+#pragma link C++ class dd4hep::digi::DigiContainerSequence;
 #pragma link C++ class dd4hep::digi::DigiMultiContainerProcessor;
 
 /// Digi data item wrappers
-#pragma link C++ class dd4hep::digi::DigiEvent;
+#pragma link C++ class dd4hep::digi::Particle+;
 #pragma link C++ class dd4hep::digi::EnergyDeposit+;
+#pragma link C++ class dd4hep::digi::ParticleMapping+;
 #pragma link C++ class dd4hep::digi::DepositMapping+;
+#pragma link C++ class dd4hep::digi::DepositVector+;
+
+#pragma link C++ class dd4hep::digi::DigiEvent;
+
+//#pragma link C++ class dd4hep::digi::EventActionHandle;
+//#pragma link C++ class dd4hep::digi::InputActionHandle;
+//#pragma link C++ class dd4hep::digi::SegmentProcessorHandle;
+//#pragma link C++ class dd4hep::digi::ActionSequenceHandle;
+//#pragma link C++ class dd4hep::digi::SignalProcessorHandle;
+//#pragma link C++ class dd4hep::digi::SynchronizeHandle;
 
 #endif

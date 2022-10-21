@@ -34,10 +34,9 @@ namespace dd4hep {
      */
     class DigiSynchronize : public DigiEventAction {
     protected:
-      /// The list of action objects to be called
-      //Actors<DigiEventAction> m_actors;
       using Worker    = DigiParallelWorker<DigiEventAction,DigiContext,int>;
-      using Workers   = std::vector<DigiKernel::ParallelCall*>;
+      using Workers   = DigiParallelWorkers<Worker>;
+      /// The list of action objects to be called
       Workers m_actors;
 
     protected:

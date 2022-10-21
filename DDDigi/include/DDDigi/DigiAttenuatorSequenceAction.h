@@ -10,20 +10,17 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDDIGI_DIGIEVENTACTION_H
-#define DDDIGI_DIGIEVENTACTION_H
+#ifndef DDDIGI_DIGIATTENUATORSEQUENCEACTION_H
+#define DDDIGI_DIGIATTENUATORSEQUENCEACTION_H
 
 // Framework include files
-#include <DDDigi/DigiAction.h>
+#include <DDDigi/DigiEventAction.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
-
-    /// Forward declarations
-    class DigiEvent;
 
     /// Default base class for all Digitizer actions and derivates thereof.
     /**
@@ -34,32 +31,36 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiEventAction : public DigiAction   {
-      friend class DigiKernel;
-
+    class DigiAttenuatorSequenceAction : public DigiEventAction   {
     protected:
-      /// Property: Support parallel execution
-      bool               m_parallel    = false;
+      /// Property: Input data segment name
+      std::string                    m_processor_name { };
+      /// Property: Input data segment name
+      std::string                    m_input_segment  { };
+      /// Property: Container names to be loaded
+      std::map<std::string, double>  m_container_attenuation  { };
+      /// Property: event mask to be handled
+      int                            m_mask   { 0 };
+      /// Property: T0 with respect to central crossing
+      double                         m_t0     { 0e0 };
+
+      /// Keys of all containers to be manipulated
+      std::map<Key, double> m_attenuation  { };
 
     protected:
       /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiEventAction);
-
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiAttenuatorSequenceAction);
       /// Default destructor
-      virtual ~DigiEventAction();
+      virtual ~DigiAttenuatorSequenceAction();
 
     public:
       /// Standard constructor
-      DigiEventAction(const DigiKernel& kernel, const std::string& nam);
-      /// Access parallization flag
-      bool executeParallel()  const  {
-        return m_parallel;
-      }      
-      /// Set the parallization flag; returns previous value
-      bool setExecuteParallel(bool new_value);
+      DigiAttenuatorSequenceAction(const DigiKernel& kernel, const std::string& nam);
+      /// Initialization callback
+      virtual void initialize();
       /// Main functional callback
-      virtual void execute(DigiContext& context)   const = 0;
+      virtual void execute(DigiContext& context)  const;
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DDDIGI_DIGIEVENTACTION_H
+#endif // DDDIGI_DIGIATTENUATORSEQUENCEACTION_H

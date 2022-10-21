@@ -36,9 +36,10 @@ namespace dd4hep {
     class DigiAction;
     class DigiInputAction;
     class DigiEventAction;
-    class DigiSegmentAction;
     class DigiCellScanner;
     class DigiSignalProcessor;
+    class DigiSegmentProcessor;
+    class DigiContainerProcessor;
   }
 }
 
@@ -48,12 +49,15 @@ namespace {
   /// Factory to create Digi action objects
   DD4HEP_PLUGIN_FACTORY_ARGS_2(DS::DigiAction*,const DS::DigiKernel*, std::string)
   {    return new P(*a0,a1);  }
+#if 0
   /// Factory to create Digi action objects
   DD4HEP_PLUGIN_FACTORY_ARGS_2(DS::DigiEventAction*,const DS::DigiKernel*, std::string)
   {    return new P(*a0,a1);  }
   /// Factory to create Digi action objects
-  DD4HEP_PLUGIN_FACTORY_ARGS_2(DS::DigiSegmentAction*,const DS::DigiKernel*, std::string)
+  DD4HEP_PLUGIN_FACTORY_ARGS_2(DS::DigiSegmentProcessor*,const DS::DigiKernel*, std::string)
   {    return new P(*a0,a1);  }
+#endif
+
   /// Factory to create Digi signal processor objects
   DD4HEP_PLUGIN_FACTORY_ARGS_2(DS::DigiSignalProcessor*,const DS::DigiKernel*, std::string)
   {    return new P(*a0,a1);  }
@@ -69,6 +73,8 @@ namespace {
 /// Plugin defintion to create DigiAction objects
 #define DECLARE_DIGIACTION(name)   DECLARE_DIGIACTION_NS(dd4hep::digi,name)
 
+
+#if 0
 /// Plugin defintion to create DigiAction objects
 #define DECLARE_DIGIEVENTACTION_NS(name_space,name)  namespace {\
   using name_space::name;                                               \
@@ -77,11 +83,14 @@ namespace {
 #define DECLARE_DIGIEVENTACTION(name)     DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,name)
 
 /// Plugin defintion to create DigiAction objects
-#define DECLARE_DIGISEGMENTACTION_NS(name_space,name)  namespace {\
+#define DECLARE_DIGISEGMENTPROCESSOR_NS(name_space,name)  namespace {\
   using name_space::name;                                               \
-  DD4HEP_PLUGINSVC_FACTORY(name,name,dd4hep::digi::DigiSegmentAction*(const DS::DigiKernel*,std::string),__LINE__) }
+  DD4HEP_PLUGINSVC_FACTORY(name,name,dd4hep::digi::DigiSegmentProcessor*(const DS::DigiKernel*,std::string),__LINE__) }
 /// Plugin defintion to create DigiAction objects
-#define DECLARE_DIGISEGMENTACTION(name)   DECLARE_DIGISEGMENTACTION_NS(dd4hep::digi,name)
+#define DECLARE_DIGISEGMENTPROCESSOR(name)   DECLARE_DIGISEGMENTPROCESSOR_NS(dd4hep::digi,name)
+#endif
+
+
 
 #define DECLARE_DIGISIGNALPROCESSOR_NS(name_space,name)  namespace {     \
   using name_space::name;                                               \

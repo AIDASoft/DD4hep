@@ -32,7 +32,7 @@ namespace dd4hep {
      *
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_SIMULATION
+     *  \ingroup DD4HEP_DIGITIZATION
      */
     class DigiStoreDump : public DigiEventAction   {
     protected:

@@ -103,7 +103,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiSubdetectorSequence();
       /// Iniitalize subdetector sequencer
-      virtual void initialize()  override;
+      virtual void initialize();
       /// Begin-of-event callback
       virtual void execute(DigiContext& context)  const override;
     };

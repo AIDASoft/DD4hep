@@ -22,44 +22,49 @@
 #include <sstream>
 
 #include <DDDigi/DigiInputAction.h>
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiInputAction)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiInputAction)
 
 #include <DDDigi/DigiROOTInput.h>
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiROOTInput)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiROOTInput)
 
 #include <DDDigi/DigiSynchronize.h>
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSynchronize)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSynchronize)
 
 #include <DDDigi/DigiActionSequence.h>
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiActionSequence)
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiParallelActionSequence)
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSequentialActionSequence)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiActionSequence)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiParallelActionSequence)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSequentialActionSequence)
 
 //#include <DDDigi/DigiSubdetectorSequence.h>
 // DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSubdetectorSequence)
 
 #include <DDDigi/DigiLockedAction.h>
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiLockedAction)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiLockedAction)
 
 //#include <DDDigi/DigiSignalProcessorSequence.h>
 // DECLARE_DIGISIGNALPROCESSOR_NS(dd4hep::digi,DigiSignalProcessorSequence)
 
 #include <DDDigi/DigiStoreDump.h>
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiStoreDump)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiStoreDump)
 
 #include <DDDigi/DigiHitAttenuatorExp.h>
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiHitAttenuatorExp)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiHitAttenuatorExp)
 
 #include <DDDigi/DigiContainerCombine.h>
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiContainerCombine)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerCombine)
+
+#include <DDDigi/DigiSegmentProcessor.h>
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSegmentProcessor)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSegmentSequence)
 
 #include <DDDigi/DigiSegmentSplitter.h>
-DECLARE_DIGISEGMENTACTION_NS(dd4hep::digi,DigiSegmentAction)
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiSegmentSplitter)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSegmentSplitter)
 
-#include <DDDigi/DigiMultiContainerProcessor.h>
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiMultiContainerProcessor)
+#include <DDDigi/DigiContainerProcessor.h>
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiMultiContainerProcessor)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerSequence)
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerProcessor)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerSequenceAction)
 
 /// Basic entry point 
 static long dummy(dd4hep::Detector&, int, char**) {

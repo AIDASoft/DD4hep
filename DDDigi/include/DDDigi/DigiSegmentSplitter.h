@@ -15,7 +15,7 @@
 
 // Framework include files
 #include <DDDigi/DigiEventAction.h>
-#include <DDDigi/DigiSegmentAction.h>
+#include <DDDigi/DigiSegmentProcessor.h>
 #include <DDDigi/DigiSegmentationTool.h>
 #include <DDDigi/DigiParallelWorker.h>
 
@@ -32,28 +32,20 @@ namespace dd4hep {
      *
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_SIMULATION
+     *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiSegmentSplitter : public DigiEventAction   {
-    public:
-
-      struct CallData  {
-	DigiContext&    context;
-	DepositMapping& input;
-	DepositMapping* output;
-	const DigiSegmentSplitter* parent;
-      };
-
-      using Worker  = DigiParallelWorker<DigiSegmentAction,CallData,int>;
-      using Workers = std::vector<DigiKernel::ParallelCall*>;
-      using Splits  = std::map<VolumeID, std::pair<DetElement, VolumeID> >;
+    class DigiSegmentSplitter : public DigiContainerSequence   {
+    protected:
+      using self_t      = DigiSegmentSplitter;
+      using processor_t = DigiSegmentProcessor;
+      using work_t      = processor_t::work_t;
+      using worker_t    = DigiParallelWorker<processor_t, work_t, VolumeID>;
+      using workers_t   = DigiParallelWorkers<worker_t>;
+      using split_t     = std::pair<DetElement, VolumeID>;
+      using splits_t    = std::map<VolumeID, split_t>;
+      friend class DigiParallelWorker<processor_t, work_t, VolumeID>;
       
     protected:
-      /// Implementation declaration
-      class internals_t;
-      /// Reference to the implementation
-      std::unique_ptr<internals_t> internals;
-
       /// Property: Split element of the ID descriptor
       std::string          m_processor_type;
       /// Name of the subdetector to be handed
@@ -63,43 +55,34 @@ namespace dd4hep {
       /// Property: Flag if processors should be shared
       bool                 m_share_processor   { true };
 
-      /// Property: Identifier of the input repository
-      std::string          m_input_id;
-      /// Property: Input mask in the repository
-      int                  m_input_mask;
-      /// Property: Identifier of the input repository
-      std::string          m_output_id;
-      /// Property: Input mask in the repository
-      int                  m_output_mask;
-
+      /**  Member variables  */
       /// Segmentation too instance
       DigiSegmentationTool m_split_tool;
       /// Segmentation split context
       DigiSegmentContext   m_split_context;
-
+      /// Data keys from the readout collection names
+      std::vector<Key>     m_keys;
       /// Split elements used to parallelize the processing
-      Splits               m_splits;
-      /// Input data keys: depend on dd4hep::Readout and the input mask(s)
-      std::vector<Key>     m_data_keys;
-
+      splits_t             m_splits;
       /// Array of sub-workers
-      Workers              m_workers;
-
+      workers_t            m_workers;
+      /// Need a lock for possible output merging
       mutable std::mutex   m_output_lock;
 
     protected:
       /// Default destructor
       virtual ~DigiSegmentSplitter();
+
       /// Initialization function
       void initialize();
+      /// Adopt new parallel worker: INHIBITED: will throw exception
+      virtual void adopt_processor(DigiContainerProcessor* action) override final;
 
     public:
       /// Standard constructor
       DigiSegmentSplitter(const DigiKernel& kernel, const std::string& name);
-      /// Handle result from segment callbacks
-      void register_output(DepositMapping& result, DepositVector&& output)  const;
       /// Main functional callback
-      virtual void execute(DigiContext& context)  const;
+      virtual void execute(DigiContext& context, work_t& work)  const  override;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

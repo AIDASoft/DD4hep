@@ -37,7 +37,7 @@ using namespace dd4hep::digi;
  */
 class DigiROOTInput::internals_t   {
 public:
-  typedef std::function<std::any(int, const char*, void*)> func_t;
+  typedef std::function<void(DataSegment&, int, const char*, void*)> func_t;
 
   class converter_t   {
   public:
@@ -48,6 +48,8 @@ public:
 
   /// Mutex to allow re-use of a single source for multiple input streams
   std::mutex m_lock        { };
+
+  /// Branches present in the current file
   std::map<unsigned long, converter_t>  branches;
   /// Reference to the current ROOT file to be read
   TFile*     file   { };
@@ -127,7 +129,7 @@ void DigiROOTInput::open_new_file()   const  {
 	TClass* cls = gROOT->GetClass( b->GetClassName(), kTRUE );
 	/// If there are no required branches, we convert everything
 	if ( this->m_containers.empty() )    {
-	  Key key(this->m_mask, b->GetName());
+	  Key key(b->GetName(), this->m_mask);
 	  b->SetAutoDelete( kFALSE );
 	  imp->branches[key.key] = {b, cls, imp->input_converter(cls)};
 	  continue;
@@ -135,7 +137,7 @@ void DigiROOTInput::open_new_file()   const  {
 	/// Otherwise only the entities asked for
 	for( const auto& bname : this->m_containers )    {
 	  if ( bname == b->GetName() )   {
-	    Key key(this->m_mask, b->GetName());
+	    Key key(b->GetName(), this->m_mask);
 	    b->SetAutoDelete( kFALSE );
 	    imp->branches[key.key] = {b, cls, imp->input_converter(cls)};
 	    break;
@@ -201,8 +203,7 @@ void DigiROOTInput::execute(DigiContext& context)  const   {
     input_len += nb;
     const auto&  func = *br.second.call;
     void** addr = (void**)b->GetAddress();
-    auto data = func(this->m_mask, b->GetName(), *addr);
-    segment.emplace(br.first, std::move(data));
+    func(segment, this->m_mask, b->GetName(), *addr);
   }
   info("%s+++ Read event %6ld [%ld bytes] from tree %s file: %s",
        event->id(), imp->entry, input_len, imp->tree->GetName(), imp->file->GetName());

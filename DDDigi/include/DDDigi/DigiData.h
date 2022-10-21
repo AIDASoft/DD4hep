@@ -14,7 +14,7 @@
 #define DDDIGI_DIGIDATA_H
 
 /// Framework include files
-#include <DD4hep/Primitives.h>
+#include <DD4hep/Objects.h>
 
 /// C/C++ include files
 #include <cstdint>
@@ -37,6 +37,9 @@ namespace dd4hep {
     class DepositMapping;
     class DigiEvent;
     class DataSegment;
+
+    using Position = dd4hep::Position;
+    using Direction = dd4hep::Direction;
 
     ///  Key defintion to access the event data
     /**
@@ -71,8 +74,10 @@ namespace dd4hep {
       Key(const Key&);
       /// Initializaing constructor (fast)
       Key(key_type full_mask);
-      /// Initializaing constructor with key generation using hash algorithm
-      Key(mask_type mask, const std::string& item);
+      /// Initializing constructor with key generation using hash algorithm
+      Key(const char* item, mask_type mask);
+      /// Initializing constructor with key generation using hash algorithm
+      Key(const std::string& item, mask_type mask);
       /// Assignment operator
       Key& operator = (const Key&);
       /// Move assignment operator
@@ -117,6 +122,10 @@ namespace dd4hep {
       itemkey_type item()  {
 	return this->values.item;
       }
+      /// Set key item identifier
+      void set_item(itemkey_type i)  {
+	this->values.item = i;
+      }
       /// Project the mask part of the key
       static itemkey_type item(key_type k)  {
 	return Key(k).values.item;
@@ -150,7 +159,12 @@ namespace dd4hep {
     }
 
     /// Initializaing constructor with key generation using hash algorithm
-    inline Key::Key(mask_type mask, const std::string& item)  {
+    inline Key::Key(const char* item, mask_type mask)  {
+      this->set(item, mask);
+    }
+
+    /// Initializaing constructor with key generation using hash algorithm
+    inline Key::Key(const std::string& item, mask_type mask)  {
       this->set(item, mask);
     }
 
@@ -181,6 +195,34 @@ namespace dd4hep {
       return this->key > other.key;
     }
 
+    class SegmentEntry   {
+    public:
+      std::string      name { };
+      Key              key  { 0x0 };
+    public:
+      /// Initializing constructor
+      SegmentEntry(const std::string& name, Key::mask_type mask);
+      /// Default constructor
+      SegmentEntry() = default;
+      /// Disable move constructor
+      SegmentEntry(SegmentEntry&& copy) = default;
+      /// Disable copy constructor
+      SegmentEntry(const SegmentEntry& copy) = default;      
+      /// Default destructor
+      virtual ~SegmentEntry() = default;
+      /// Disable move assignment
+      SegmentEntry& operator=(SegmentEntry&& copy) = default;
+      /// Disable copy assignment
+      SegmentEntry& operator=(const SegmentEntry& copy) = default;      
+    };
+
+    /// Initializing constructor
+    inline SegmentEntry::SegmentEntry(const std::string& nam, Key::mask_type msk)
+      : name(nam)
+    {
+      key.set_mask(msk);
+    }
+
     /// Particle definition for digitization
     /** Particle definition for digitization
      *
@@ -190,6 +232,11 @@ namespace dd4hep {
      */
     class Particle   {
     public:
+      Position  start_position { };
+      Position  end_position   { };
+      Direction momentum       { };
+      double    mass           { 0e0 };
+      char      charge         { 0 };
       /// Source contributing
       std::any history;
 
@@ -223,10 +270,15 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class ParticleMapping : public std::map<Key::key_type, Particle>   {
-    public:
-      std::string      name { };
-      Key::mask_type   mask { 0x0 };
+    class ParticleMapping : public SegmentEntry   {
+      using container_t = std::map<Key::key_type, Particle>;
+      using value_type = container_t::value_type;
+      using mapped_type = container_t::mapped_type;
+      using key_type = container_t::key_type;
+      using iterator = container_t::iterator;
+      using const_iterator = container_t::const_iterator;
+
+      container_t data;
 
     public: 
       /// Initializing constructor
@@ -248,11 +300,29 @@ namespace dd4hep {
       std::size_t merge(ParticleMapping&& updates);
       /// Add new entry to the particle mapping (not thread safe!)
       void push(Key key, Particle&& particle);
+
+      /// Access container size
+      std::size_t size()  const           { return this->data.size();        }
+      /// Check container if empty
+      bool        empty() const           { return this->data.empty();       }
+      /// Insert new entry
+      //std::pair<iterator, bool> emplace(key_type entry_key, mapped_type&& entry_data);
+      void emplace(Key entry_key, Particle&& entry_data);
+
+      /** Iteration support */
+      /// Begin iteration
+      iterator begin()                    { return this->data.begin();       }
+      /// End iteration
+      iterator end()                      { return this->data.end();         }
+      /// Begin iteration (CONST)
+      const_iterator begin() const        { return this->data.begin();       }
+      /// End iteration (CONST)
+      const_iterator end()   const        { return this->data.end();         }
     };
 
     /// Initializing constructor
-    inline ParticleMapping::ParticleMapping(const std::string& n, Key::mask_type m)
-      : name(n), mask(m)
+    inline ParticleMapping::ParticleMapping(const std::string& nam, Key::mask_type msk)
+      : SegmentEntry(nam, msk)
     {
     }
 
@@ -265,14 +335,23 @@ namespace dd4hep {
      */
     class EnergyDeposit   {
     public:
+      /// Hit position
+      Position       position    { };
+      /// Hit direction
+      Direction      momentum    { };
+      /// Length of the track segment contributing to this hit
+      double         length      { 0 };
       /// Total energy deposit
-      double deposit  { 0 };
+      double         deposit     { 0 };
+
+      long           flag        { 0 };
+      Key::mask_type mask        { 0 };
+
       /// Sources contributing to this deposit
-      std::vector<std::pair<std::any, Key::mask_type> > history;
+      std::vector<std::pair<Key, double> > hit_history;
+      std::vector<std::pair<Key, double> > particle_history;
 
     public:
-      /// Initializing constructor
-      EnergyDeposit(double ene);
       /// Default constructor
       EnergyDeposit() = default;
       /// Disable move constructor
@@ -288,12 +367,6 @@ namespace dd4hep {
     };
 
 
-    /// Initializing constructor
-    inline EnergyDeposit::EnergyDeposit(double ene)
-      : deposit(ene)
-    {
-    }
-
     /// Energy deposit vector definition for digitization
     /** Energy deposit vector definition for digitization
      *
@@ -301,10 +374,13 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DepositVector : public std::vector<std::pair<CellID, EnergyDeposit> >  {
+    class DepositVector : public SegmentEntry  {
     public: 
-      std::string    name { };
-      Key            key  { 0x0 };
+      using container_t = std::vector<std::pair<CellID, EnergyDeposit> >;
+      using iterator = container_t::iterator;
+      using const_iterator = container_t::const_iterator;
+
+      container_t    data { };
 
     public: 
       /// Initializing constructor
@@ -323,12 +399,36 @@ namespace dd4hep {
       DepositVector& operator=(const DepositVector& copy) = default;      
       /// Merge new deposit map onto existing map (not thread safe!)
       std::size_t merge(DepositVector&& updates);
+      /// Merge new deposit map onto existing map (keep inputs. not thread safe!)
+      std::size_t insert(const DepositVector& updates);
+      /// Emplace entry
+      void emplace(CellID cell, EnergyDeposit&& deposit);
+
+      /// Access container size
+      std::size_t size()  const           { return this->data.size();        }
+      /// Check container if empty
+      bool        empty() const           { return this->data.empty();       }
+
+      /** Iteration support */
+      /// Begin iteration
+      iterator begin()                    { return this->data.begin();       }
+      /// End iteration
+      iterator end()                      { return this->data.end();         }
+      /// Begin iteration (CONST)
+      const_iterator begin() const        { return this->data.begin();       }
+      /// End iteration (CONST)
+      const_iterator end()   const        { return this->data.end();         }
     };
 
     /// Initializing constructor
-    inline DepositVector::DepositVector(const std::string& n, Key::mask_type mask)
-      : name(n), key(mask, n)
+    inline DepositVector::DepositVector(const std::string& nam, Key::mask_type msk)
+      : SegmentEntry(nam, msk)
     {
+    }
+
+    /// Emplace entry
+    inline void DepositVector::emplace(CellID cell, EnergyDeposit&& deposit)   {
+      this->data.emplace_back(cell, std::move(deposit));
     }
 
     /// Energy deposit mapping definition for digitization
@@ -338,10 +438,13 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DepositMapping : public std::map<CellID, EnergyDeposit>   {
+    class DepositMapping : public SegmentEntry  {
     public: 
-      std::string    name { };
-      Key            key  { 0x0 };
+      using container_t = std::multimap<CellID, EnergyDeposit>;
+      using iterator = container_t::iterator;
+      using const_iterator = container_t::const_iterator;
+
+      container_t    data { };
 
     public: 
       /// Initializing constructor
@@ -362,11 +465,36 @@ namespace dd4hep {
       std::size_t merge(DepositMapping&& updates);
       /// Merge new deposit map onto existing map (not thread safe!)
       std::size_t merge(DepositVector&& updates);
+      /// Merge new deposit map onto existing map (not thread safe!)
+      std::size_t insert(const DepositMapping& updates);
+      /// Merge new deposit map onto existing map (not thread safe!)
+      std::size_t insert(const DepositVector& updates);
+
+      /// Access container size
+      std::size_t size()  const           { return this->data.size();        }
+      /// Check container if empty
+      bool        empty() const           { return this->data.empty();       }
+
+      /** Iteration support */
+      /// Begin iteration
+      iterator begin()                    { return this->data.begin();       }
+      /// End iteration
+      iterator end()                      { return this->data.end();         }
+      /// Begin iteration (CONST)
+      const_iterator begin() const        { return this->data.begin();       }
+      /// End iteration (CONST)
+      const_iterator end()   const        { return this->data.end();         }
+
+      /** Direct element access by key */
+      /// Find entry by cell
+      //iterator find(CellID cell)          { return this->data.find(cell);    }
+      /// Find entry by cell
+      //const_iterator find(CellID cell) const { return this->data.find(cell); }
     };
 
     /// Initializing constructor
-    inline DepositMapping::DepositMapping(const std::string& n, Key::mask_type mask)
-      : name(n), key(mask, n)
+    inline DepositMapping::DepositMapping(const std::string& nam, Key::mask_type msk)
+      : SegmentEntry(nam, msk)
     {
     }
 
@@ -425,6 +553,11 @@ namespace dd4hep {
       void print_keys()   const;
       
       /** Unlocked operations */
+      /// Access data by key. If not existing, nullptr is returned
+      std::any* entry(Key key)              { return this->get_item(key, false); }
+      /// Access data by key. If not existing, nullptr is returned
+      const std::any* entry(Key key)  const { return this->get_item(key, false); }
+
       /// Access data as reference by key. If not existing, an exception is thrown
       template<typename T> T& get(Key key);
       /// Access data as reference by key. If not existing, an exception is thrown

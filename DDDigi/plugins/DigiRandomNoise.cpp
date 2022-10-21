@@ -85,7 +85,7 @@ namespace dd4hep {
 using namespace std;
 using namespace dd4hep::digi;
 
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiRandomNoise)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiRandomNoise)
 
 /// Standard constructor
 DigiRandomNoise::DigiRandomNoise(const DigiKernel& kernel, const string& nam)

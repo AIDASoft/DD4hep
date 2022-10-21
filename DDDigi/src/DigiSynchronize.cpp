@@ -39,18 +39,15 @@ DigiSynchronize::DigiSynchronize(const DigiKernel& kernel, const string& nam)
 
 /// Default destructor
 DigiSynchronize::~DigiSynchronize() {
-  for(auto* w : m_actors ) detail::deletePtr(w);
-  m_actors.clear();
   InstanceCount::decrement(this);
 }
 
 /// Pre-track action callback
 void DigiSynchronize::execute(DigiContext& context)  const   {
   auto start = chrono::high_resolution_clock::now();
-  if ( m_parallel )
-    m_kernel.submit(m_actors, &context);
-  else
-    m_kernel.execute(m_actors, &context);
+  if ( !m_actors.empty() )   {
+    m_kernel.submit(m_actors.get_group(), m_actors.size(), &context, m_parallel);
+  }
   chrono::duration<double> secs = chrono::high_resolution_clock::now() - start;
   debug("+++ Event: %8d (DigiSynchronize) Parallel: %-4s  %3ld actions [%8.3g sec]",
         context.event->eventNumber, yes_no(m_parallel), m_actors.size(),
@@ -60,7 +57,7 @@ void DigiSynchronize::execute(DigiContext& context)  const   {
 /// Add an actor responding to all callbacks. Sequence takes ownership.
 void DigiSynchronize::adopt(DigiEventAction* action) {
   if (action)    {
-    m_actors.emplace_back(new Worker(action, 0));
+    m_actors.insert(new Worker(action, 0));
     return;
   }
   except("DigiSynchronize","++ Attempt to add invalid actor!");

@@ -37,7 +37,7 @@ namespace dd4hep {
     /**
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_SIMULATION
+     *  \ingroup DD4HEP_DIGITIZATION
      */
     class KernelHandle {
     public:
@@ -67,7 +67,7 @@ namespace dd4hep {
     /**
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_SIMULATION
+     *  \ingroup DD4HEP_DIGITIZATION
      */
     template <typename TYPE> class DigiHandle {
     protected:

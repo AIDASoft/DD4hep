@@ -85,7 +85,7 @@ static void noop(int) {}
 using namespace std;
 using namespace dd4hep::digi;
 
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiTestAction)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiTestAction)
 
 /// Standard constructor
 DigiTestAction::DigiTestAction(const DigiKernel& kernel, const string& nam)

@@ -14,6 +14,7 @@
 #define DDDIGI_DIGIACTIONSEQUENCE_H
 
 // Framework include files
+#include <DD4hep/Callback.h>
 #include <DDDigi/DigiSynchronize.h>
 
 /// Namespace for the AIDA detector description toolkit

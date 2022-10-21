@@ -16,7 +16,7 @@
 #define DD4HEP_PLUGINCREATORS_H 1
 
 // Framework include files
-#include "DD4hep/Primitives.h"
+#include <DD4hep/Primitives.h>
 
 // C/C++ include files
 #include <string>
