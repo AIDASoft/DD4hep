@@ -41,6 +41,17 @@ except ImportError:
 POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".pairs")
 
 
+def outputLevelType(level):
+  """Return verbosity level as integer if possible.
+
+  Still benefit from argparsers list of possible choices
+  """
+  try:
+    return int(level)
+  except:
+    return str(level)
+
+
 def outputLevel(level):
   """return INT for outputlevel"""
   if isinstance(level, int):
@@ -168,6 +179,7 @@ class DD4hepSimulation(object):
     parser.add_argument("-v", "--printLevel", action="store", default=self.printLevel, dest="printLevel",
                         choices=(1, 2, 3, 4, 5, 6, 7, 'VERBOSE', 'DEBUG',
                                  'INFO', 'WARNING', 'ERROR', 'FATAL', 'ALWAYS'),
+                        type=outputLevelType,
                         help="Verbosity use integers from 1(most) to 7(least) verbose"
                         "\nor strings: VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL, ALWAYS")
 
