@@ -14,7 +14,7 @@
 #define DD4HEP_PLUGINS_H
 
 // Framework include files
-#include "DD4hep/config.h"
+#include <DD4hep/config.h>
 
 // ROOT include files
 #ifndef __CINT__
@@ -36,7 +36,7 @@ namespace std {
 #endif
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
-#include "RVersion.h"
+#include <RVersion.h>
 #endif
 
 /// Namespace for the AIDA detector description toolkit

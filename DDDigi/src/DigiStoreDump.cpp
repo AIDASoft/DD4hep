@@ -52,9 +52,10 @@ void dd4hep::digi::DigiStoreDump::dump(const std::string& tag,
     const std::any& data = e.second;
     std::string nam = Key::key_name(key);
     std::string typ = typeName(data.type());
-    std::size_t idx = typ.find(", std::less<long long>, std::allocator<std::pair");
+    std::size_t idx = typ.find(", std::allocator<std::");
     if ( idx != std::string::npos ) typ = str_replace(typ, typ.substr(idx), ">");
-    typ = str_replace(str_replace(typ,"std::",""),"dd4hep::digi::","");
+    typ = str_replace(str_replace(typ,"std::",""),"dd4hep::","");
+    typ = str_replace(str_replace(typ,"sim::",""),"digi::","");
     if ( const auto* mapping = std::any_cast<DepositMapping>(&data) )   {
       str = this->format("%s|---- %4X %08X %-32s: %6ld hits      [%s]", 
 			 event.id(), key.values.mask, key.values.item,

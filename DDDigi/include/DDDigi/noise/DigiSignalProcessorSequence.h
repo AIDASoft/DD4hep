@@ -14,6 +14,7 @@
 #define DDDIGI_NOISE_DIGISIGNALPROCESSORSEQUENCE_H
 
 // Framework include files
+#include <DDDigi/DigiParallelWorker.h>
 #include <DDDigi/DigiSignalProcessor.h>
 
 /// Namespace for the AIDA detector description toolkit
@@ -41,9 +42,16 @@ namespace dd4hep {
      *  \ingroup DD4HEP_DIGITIZATION
      */
     class DigiSignalProcessorSequence : public DigiSignalProcessor {
+    public:
+      struct CallData {
+	DigiCellContext& context;
+	double value;
+      };
     protected:
+      using Worker    = DigiParallelWorker<DigiSignalProcessor,CallData,int>;
+      using Workers   = DigiParallelWorkers<Worker>;
       /// The list of action objects to be called
-      Actors<DigiSignalProcessor> m_actors;
+      Workers m_actors;
 
     protected:
       /// Define standard assignments and constructors

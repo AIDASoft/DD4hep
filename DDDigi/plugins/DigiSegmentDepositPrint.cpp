@@ -13,7 +13,7 @@
 
 // Framework include files
 #include <DDDigi/DigiContext.h>
-#include <DDDigi/DigiSegmentSplitter.h>
+#include <DDDigi/DigiSegmentProcessor.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -28,32 +28,43 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class DigiSegmentDepositPrint : virtual public DigiSegmentAction   {
+    class DigiSegmentDepositPrint : public DigiSegmentProcessor   {
     public:
       /// Standard constructor
       DigiSegmentDepositPrint(const DigiKernel& kernel, const std::string& nam)
-	: DigiAction(kernel, nam), DigiSegmentAction(kernel, nam) {}
+	: DigiSegmentProcessor(kernel, nam) {}
 
+      void print_deposit(const char* format, CellID cell, const EnergyDeposit& depo)  const   {
+	info(format, segment.split_id(cell), cell,
+	     depo.hit_history.size(), 
+	     depo.particle_history.size(),
+	     depo.deposit);
+      }
       /// Main functional callback
-      virtual DepositVector 
-      handleSegment(DigiContext&              context,
-		    const DepositMapping&     deposits)  const override final   {
+      virtual void handle_segment(DigiContext& context, work_t& work)  const override final  {
 	char format[256];
 	::snprintf(format, sizeof(format), 
-		   "%s[%s] %s-id: %%d [processor:%d] Cell: %%016lX mask: %016lX  hist:%%4ld entries deposit: %%f", 
+		   "%s[%s] %s-id: %%d [processor:%d] Cell: %%016lX mask: %016lX  hist:%%4ld hits %%4ld parts. entries deposit: %%f", 
 		   context.event->id(), segment.idspec.name(), segment.cname(), segment.id, segment.split_mask);
-	for( const auto& d : deposits )   {
-	  if ( segment.matches(d.first) )   {
-	    auto  cell = d.first;
-	    auto& depo = d.second;
-	    info(format, segment.split_id(cell), cell, depo.history.size(), depo.deposit);
+	if ( const auto* m = std::any_cast<DepositMapping>(&work.input) )   {
+	  for( const auto& d : *m )   {
+	    if ( segment.matches(d.first) )
+	      print_deposit(format, d.first, d.second);
 	  }
 	}
-	return {};
+	else if ( const auto* v = std::any_cast<DepositVector>(&work.input) )   {
+	  for( const auto& d : *v )   {
+	    if ( segment.matches(d.first) )
+	      print_deposit(format, d.first, d.second);
+	  }
+	}
+	else   {
+	  error("+++ Request to dump an invalid container %s", Key::key_name(work.key.item()));
+	}
       }
     };
   }    // End namespace digi
 }      // End namespace dd4hep
 
 #include <DDDigi/DigiFactories.h>
-DECLARE_DIGISEGMENTACTION_NS(dd4hep::digi,DigiSegmentDepositPrint)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSegmentDepositPrint)

@@ -14,7 +14,9 @@
 #define DDDIGI_DIGIKERNEL_H
 
 // Framework include files
+#include <DD4hep/Callback.h>
 #include <DDDigi/DigiEventAction.h>
+#include <DDDigi/DigiParallelWorker.h>
 
 // C/C++ include files
 #include <mutex>
@@ -42,18 +44,6 @@ namespace dd4hep {
     public:
       typedef std::map<std::string,int>                 ClientOutputLevels;
       typedef std::pair<void*, const std::type_info*>   UserFramework;
-
-      class ParallelCall     {
-      public:
-        ParallelCall(ParallelCall* p, void* a);
-        ParallelCall() = default;
-	ParallelCall(ParallelCall&& copy) = default;
-	ParallelCall(const ParallelCall& copy) = default;
-	ParallelCall& operator=(ParallelCall&& copy) = default;
-	ParallelCall& operator=(const ParallelCall& copy) = default;
-	virtual ~ParallelCall() = default;
-	virtual void execute(void* args) const = 0;
-      };
 
     private:
       class Internals;
@@ -141,18 +131,29 @@ namespace dd4hep {
       /// Access current number of events processing (events in flight)
       std::size_t events_processing()  const;
 
+      /// Register configure callback. Signature:   (function)()
+      void register_configure(const Callback& callback)   const;
+      /// Register initialize callback. Signature:  (function)()
+      void register_initialize(const Callback& callback)   const;
+      /// Register terminate callback. Signature:   (function)()
+      void register_terminate(const Callback& callback)   const;
+      /// Register start event callback. Signature: (function)(DigiContext*)
+      void register_start_event(const Callback& callback)   const;
+      /// Register end event callback. Signature:   (function)(DigiContext*)
+      void register_end_event(const Callback& callback)   const;
+
       /// Construct detector geometry using description plugin
       virtual void loadGeometry(const std::string& compact_file);
       /// Load XML file 
       virtual void loadXML(const char* fname);
 
-      /// Run the simulation: Configure Digi
+      /// Configure the digitization: call all registered configurators
       virtual int configure();
-      /// Run the simulation: Initialize Digi
+      /// Initialize the digitization: call all registered initializers
       virtual int initialize();
-      /// Run the simulation: Simulate the number of events given by the property "NumEvents"
+      /// Run the digitization sequence over the requested number of events
       virtual int run();
-      /// Run the simulation: Terminate Digi
+      /// Terminate the digitization: call all registered terminators and release the allocated resources
       virtual int terminate();
 
       /// Access to the main input action sequence from the kernel object
@@ -163,15 +164,11 @@ namespace dd4hep {
       DigiActionSequence& outputAction() const;
 
       /// Submit a bunch of actions to be executed in parallel
-      virtual void submit (const std::vector<ParallelCall*>& algorithms, void* data)  const;
-      /// Submit a bunch of actions to be executed serially
-      virtual void execute(const std::vector<ParallelCall*>& algorithms, void* data)  const;
-#if 0
+      virtual void submit (ParallelCall*const algorithms[], std::size_t count, void* data, bool parallel=true)  const;
+
       /// Submit a bunch of actions to be executed in parallel
-      virtual void submit (const DigiAction::Actors<DigiEventAction>& algorithms, DigiContext& context)  const;
-      /// Submit a bunch of actions to be executed serially
-      virtual void execute(const DigiAction::Actors<DigiEventAction>& algorithms, DigiContext& context)  const;
-#endif
+      virtual void submit (const std::vector<ParallelCall*>& algorithms, void* data, bool parallel=true)  const;
+
       /// If running multithreaded: wait until the thread-group finished execution
       virtual void wait(DigiContext& context)   const;
 

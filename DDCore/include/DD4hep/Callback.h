@@ -365,6 +365,10 @@ namespace dd4hep {
       else
         callbacks.insert(callbacks.end(),cb);
     }
+    /// Generically Add a new callback to the sequence depending on the location arguments
+    void add(const Callback& cb) {
+      callbacks.insert(callbacks.end(),cb);
+    }
     /// Execution overload for callbacks with no arguments
     void operator()() const;
     /// Execution overload for callbacks with 1 argument

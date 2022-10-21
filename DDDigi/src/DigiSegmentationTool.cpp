@@ -89,10 +89,10 @@ vector<Key> DigiSegmentationTool::collection_keys(Key::mask_type mask)   const  
   vector<Key> keys;
   if ( this->sensitive.isValid() )    {
     Readout rd = this->sensitive.readout();
-    auto colls = rd.collectionNames();
-    if ( colls.empty() ) colls.emplace_back(rd.name());
-    for( const auto& c : colls )
-      keys.emplace_back(Key(mask, c));
+    auto collection_names = rd.collectionNames();
+    if ( collection_names.empty() ) collection_names.emplace_back(rd.name());
+    for( const auto& collection : collection_names )
+      keys.emplace_back(Key(collection, mask));
     return keys;
   }
   except("DigiSegmentationTool",

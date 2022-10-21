@@ -11,56 +11,49 @@
 //
 //==========================================================================
 
+
+///             TODO !
+
+
 // Framework include files
 #include <DD4hep/InstanceCount.h>
 
 #include <DDDigi/DigiData.h>
 #include <DDDigi/DigiKernel.h>
 #include <DDDigi/DigiContext.h>
-#include <DDDigi/DigiHitAttenuatorExp.h>
+#include <DDDigi/DigiAttenuatorSequenceAction.h>
 
 /// C/C++ include files
 #include <cmath>
 
 /// Standard constructor
-dd4hep::digi::DigiHitAttenuatorExp::DigiHitAttenuatorExp(const DigiKernel& krnl, const std::string& nam)
+dd4hep::digi::DigiAttenuatorSequenceAction::DigiAttenuatorSequenceAction(const DigiKernel& krnl, const std::string& nam)
   : DigiEventAction(krnl, nam)
 {
   declareProperty("input",      m_input_segment = "inputs");
+  declareProperty("processor",  m_processor_name);
   declareProperty("containers", m_container_attenuation);
-  declareProperty("masks",      m_masks);
+  declareProperty("mask",       m_mask);
   declareProperty("t0",         m_t0);
-  m_kernel.register_initialize(Callback(this).make(&DigiHitAttenuatorExp::initialize));
+  m_kernel.register_initialize(Callback(this).make(&DigiAttenuatorSequenceAction::initialize));
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-dd4hep::digi::DigiHitAttenuatorExp::~DigiHitAttenuatorExp() {
+dd4hep::digi::DigiAttenuatorSequenceAction::~DigiAttenuatorSequenceAction() {
   InstanceCount::decrement(this);
 }
 
 /// Initialization callback
-void dd4hep::digi::DigiHitAttenuatorExp::initialize()   {
+void dd4hep::digi::DigiAttenuatorSequenceAction::initialize()   {
   for ( const auto& c : m_container_attenuation )   {
-    Key key(c.first, 0x0);
-    for ( int m : m_masks )    {
-      double factor = std::exp(-1e0 * m_t0/c.second);
-      key.set_mask(m);
-      m_attenuation.emplace(key.key, factor);
-    }
+    double factor = std::exp(-1e0 * m_t0/c.second);
+    m_attenuation.emplace(Key(c.first, m_mask), factor);
   }
 }
 
-/// Attenuator callback for single container
-template <typename T> std::size_t 
-dd4hep::digi::DigiHitAttenuatorExp::attenuate(T* cont, double factor) const {
-  for( auto& c : *cont )
-    c.second.deposit *= factor;
-  return cont->size();
-}
-
 /// Main functional callback
-void dd4hep::digi::DigiHitAttenuatorExp::execute(DigiContext& context)  const    {
+void dd4hep::digi::DigiAttenuatorSequenceAction::execute(DigiContext& context)  const    {
   std::size_t count = 0, cnt = 0, cont = 0;
   auto& event  = *context.event;
   auto& inputs = event.get_segment(m_input_segment);
@@ -68,9 +61,9 @@ void dd4hep::digi::DigiHitAttenuatorExp::execute(DigiContext& context)  const   
     Key key = k.first;
     auto* data = inputs.entry(key);
     if ( auto* m = std::any_cast<DepositMapping>(data) )
-      cnt += this->attenuate(m, k.second), ++cont;
+      ++cont;
     else if ( auto* v = std::any_cast<DepositVector>(data) )
-      cnt += this->attenuate(v, k.second), ++cont;
+      cnt++, ++cont;
     count += cnt;
     std::string nam = Key::key_name(key)+":";
     debug("%s+++ %-32s mask:%04X item: %08X Attenuated exponentially %6ld hits by %8.5f",

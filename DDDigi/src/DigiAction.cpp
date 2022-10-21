@@ -59,8 +59,8 @@ long DigiAction::addRef() {
 long DigiAction::release() {
   long count = --m_refCount;
   if (m_refCount <= 0) {
-    printM1("DigiAction: Deleting object %s of type %s Pointer:%p",
-            m_name.c_str(),typeName(typeid(*this)).c_str(),(void*)this);
+    info("Deleting object %s of type %s Pointer:%p",
+	 m_name.c_str(),typeName(typeid(*this)).c_str(),(void*)this);
     delete this;
   }
   return count;
@@ -86,50 +86,6 @@ dd4hep::Property& DigiAction::property(const std::string& nam)   {
 /// Support for messages with variable output level using output level
 void DigiAction::print(const char* fmt, ...) const   {
   int level = std::max(int(outputLevel()),(int)VERBOSE);
-  if ( level >= printLevel() )  {
-    va_list args;
-    va_start(args, fmt);
-    dd4hep::printout((PrintLevel)level, m_name.c_str(), fmt, args);
-    va_end(args);
-  }
-}
-
-/// Support for messages with variable output level using output level-1
-void DigiAction::printM1(const char* fmt, ...) const   {
-  int level = std::max(outputLevel()-1,(int)VERBOSE);
-  if ( level >= printLevel() )  {
-    va_list args;
-    va_start(args, fmt);
-    dd4hep::printout((PrintLevel)level, m_name.c_str(), fmt, args);
-    va_end(args);
-  }
-}
-
-/// Support for messages with variable output level using output level-2
-void DigiAction::printM2(const char* fmt, ...) const   {
-  int level = std::max(outputLevel()-2,(int)VERBOSE);
-  if ( level >= printLevel() )  {
-    va_list args;
-    va_start(args, fmt);
-    dd4hep::printout((PrintLevel)level, m_name.c_str(), fmt, args);
-    va_end(args);
-  }
-}
-
-/// Support for messages with variable output level using output level-1
-void DigiAction::printP1(const char* fmt, ...) const   {
-  int level = std::min(outputLevel()+1,(int)FATAL);
-  if ( level >= printLevel() )  {
-    va_list args;
-    va_start(args, fmt);
-    dd4hep::printout((PrintLevel)level, m_name.c_str(), fmt, args);
-    va_end(args);
-  }
-}
-
-/// Support for messages with variable output level using output level-2
-void DigiAction::printP2(const char* fmt, ...) const   {
-  int level = std::min(outputLevel()+2,(int)FATAL);
   if ( level >= printLevel() )  {
     va_list args;
     va_start(args, fmt);
@@ -205,8 +161,3 @@ void DigiAction::except(const char* fmt, ...) const {
   va_end(args);
   throw std::runtime_error(err);
 }
-
-/// Optional action initialization if required
-void DigiAction::initialize()   {
-}
-

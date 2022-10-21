@@ -66,7 +66,16 @@ std::string Key::key_name(const Key& k)    {
 std::size_t DepositVector::merge(DepositVector&& updates)    {
   std::size_t update_size = updates.size();
   for( auto& c : updates )    {
-    this->emplace_back(c);
+    data.emplace_back(c);
+  }
+  return update_size;
+}
+
+/// Merge new deposit map onto existing map (keep inputs)
+std::size_t DepositVector::insert(const DepositVector& updates)    {
+  std::size_t update_size = updates.size();
+  for( const auto& c : updates )    {
+    data.emplace_back(c);
   }
   return update_size;
 }
@@ -75,16 +84,24 @@ std::size_t DepositVector::merge(DepositVector&& updates)    {
 std::size_t DepositMapping::merge(DepositVector&& updates)    {
   std::size_t update_size = updates.size();
   for( auto& c : updates )    {
+    data.emplace(std::move(c));
+#if 0
     CellID         cell = c.first;
     EnergyDeposit& depo = c.second;
-    auto iter = this->find(cell);
-    if ( iter == this->end() )   {
-      this->emplace(cell, std::move(depo));
+    auto iter = data.find(cell);
+    if ( iter == data.end() )   {
+      data.emplace(cell, std::move(depo));
       continue;
     }
     auto& to_update = iter->second;
     to_update.deposit += depo.deposit;
-    to_update.history.insert(to_update.history.end(), depo.history.begin(), depo.history.end());
+    to_update.hit_history.insert(to_update.hit_history.end(),
+				 depo.hit_history.begin(),
+				 depo.hit_history.end());
+    to_update.particle_history.insert(to_update.particle_history.end(),
+				      depo.particle_history.begin(),
+				      depo.particle_history.end());
+#endif
   }
   return update_size;
 }
@@ -93,16 +110,42 @@ std::size_t DepositMapping::merge(DepositVector&& updates)    {
 std::size_t DepositMapping::merge(DepositMapping&& updates)    {
   std::size_t update_size = updates.size();
   for( auto& c : updates )    {
+    data.emplace(std::move(c));
+#if 0
     CellID         cell = c.first;
     EnergyDeposit& depo = c.second;
-    auto iter = this->find(cell);
-    if ( iter == this->end() )   {
-      this->emplace(cell, std::move(depo));
+    auto iter = data.find(cell);
+    if ( iter == data.end() )   {
+      data.emplace(cell, std::move(depo));
       continue;
     }
     auto& to_update = iter->second;
     to_update.deposit += depo.deposit;
-    to_update.history.insert(to_update.history.end(), depo.history.begin(), depo.history.end());
+    to_update.hit_history.insert(to_update.hit_history.end(),
+				 depo.hit_history.begin(),
+				 depo.hit_history.end());
+    to_update.particle_history.insert(to_update.particle_history.end(),
+				      depo.particle_history.begin(),
+				      depo.particle_history.end());
+#endif
+  }
+  return update_size;
+}
+
+/// Merge new deposit map onto existing map (keep inputs)
+std::size_t DepositMapping::insert(const DepositVector& updates)    {
+  std::size_t update_size = updates.size();
+  for( const auto& c : updates )    {
+    data.emplace(c);
+  }
+  return update_size;
+}
+
+/// Merge new deposit map onto existing map (keep inputs)
+std::size_t DepositMapping::insert(const DepositMapping& updates)    {
+  std::size_t update_size = updates.size();
+  for( const auto& c : updates )    {
+    data.emplace(c);
   }
   return update_size;
 }
@@ -119,17 +162,26 @@ std::size_t ParticleMapping::merge(ParticleMapping&& updates)    {
   return update_size;
 }
 
-void ParticleMapping::push(Key key, Particle&& part)  {
+void ParticleMapping::push(Key particle_key, Particle&& particle_data)  {
 #if defined(__GNUC__) && (__GNUC__ < 10)
   /// Lower compiler version have a bad implementation of std::any
   bool ret = false;
 #else
-  bool ret = this->emplace(key.key, std::move(part)).second;
+  bool ret = data.emplace(particle_key.key, std::move(particle_data)).second;
 #endif
   if ( !ret )   {
     except("ParticleMapping","Error in particle map. Duplicate ID: mask:%04X Number:%d History:%s",
-	   key.values.mask, key.values.item, yes_no(part.history.has_value()));
+	   particle_key.mask(), particle_key.item(), yes_no(particle_data.history.has_value()));
   }
+}
+
+/// Insert new entry
+void ParticleMapping::emplace(Key particle_key, Particle&& particle_data)  {
+#if defined(__GNUC__) && (__GNUC__ < 10)
+  //return std::make_pair(false);
+#else
+  data.emplace(particle_key.key, std::move(particle_data)).second;
+#endif
 }
 
 /// Initializing constructor

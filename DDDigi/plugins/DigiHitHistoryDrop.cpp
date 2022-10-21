@@ -31,7 +31,7 @@ namespace dd4hep {
      *
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_SIMULATION
+     *  \ingroup DD4HEP_DIGITIZATION
      */
     class DigiHitHistoryDrop : public DigiEventAction   {
     protected:
@@ -62,27 +62,36 @@ namespace dd4hep {
       /// Main functional callback
       virtual void execute(DigiContext& context)  const  final  {
 	auto& inputs = context.event->get_segment(m_input);
-	std::size_t num_drop = 0;
+	std::size_t num_drop_hit = 0;
+	std::size_t num_drop_particle = 0;
 	for ( auto& i : inputs )     {
 	  Key key(i.first);
-	  auto im = std::find(m_masks.begin(), m_masks.end(), key.values.mask);
+	  auto im = std::find(m_masks.begin(), m_masks.end(), key.mask());
 	  if ( im != m_masks.end() )   {
-	    std::any& obj = i.second;
-	    DepositMapping* m = std::any_cast<DepositMapping>(&obj);
-	    if ( m )    {
+	    if ( DepositMapping* m = std::any_cast<DepositMapping>(&i.second) )    {
 	      for( auto& c : *m )    {
-		num_drop += c.second.history.size();
-		c.second.history.clear();
+		num_drop_hit += c.second.hit_history.size();
+		c.second.hit_history.clear();
+		num_drop_particle += c.second.particle_history.size();
+		c.second.particle_history.clear();
+	      }
+	    }
+	    if ( DepositVector* m = std::any_cast<DepositVector>(&i.second) )    {
+	      for( auto& c : *m )    {
+		num_drop_hit += c.second.hit_history.size();
+		c.second.hit_history.clear();
+		num_drop_particle += c.second.particle_history.size();
+		c.second.particle_history.clear();
 	      }
 	    }
 	  }
 	}
-	info("%s+++ Dropped history of %6ld hits", context.event->id(), num_drop);
+	info("%s+++ Dropped history of %6ld hits %6ld particles", 
+	     context.event->id(), num_drop_hit, num_drop_particle);
       }
     };
   }    // End namespace digi
 }      // End namespace dd4hep
 
-
 #include <DDDigi/DigiFactories.h>
-DECLARE_DIGIEVENTACTION_NS(dd4hep::digi,DigiHitHistoryDrop)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiHitHistoryDrop)

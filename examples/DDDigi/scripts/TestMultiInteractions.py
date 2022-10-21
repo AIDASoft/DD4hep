@@ -42,7 +42,11 @@ def run():
   digi.info('Created input.overlay75')
   # ========================================================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
-  combine = event.adopt_action('DigiContainerCombine/Combine', input_masks=[0x0, 0x1, 0x2, 0x3], deposit_mask=0xFEED)
+  combine = event.adopt_action('DigiContainerCombine/Combine',
+                               parallel=True,
+                               input_masks=[0x0, 0x1, 0x2, 0x3],
+                               deposit_mask=0xFEED,
+                               erase_combined=False)
   combine.erase_combined = True  # Not thread-safe! only do in SequentialActionSequence
   dump = event.adopt_action('DigiStoreDump/StoreDump')
   digi.check_creation([combine, dump])

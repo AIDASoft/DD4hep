@@ -71,14 +71,25 @@ public:
   /// Lock for global output logging
   std::mutex            global_output_lock  { };
 
+  /// Configure callbacks
+  CallbackSequence      configurators       { };
+  /// Initialize callbacks
+  CallbackSequence      initializers        { };
+  //// Termination callback
+  CallbackSequence      terminators         { };
+      /// Register start event callback
+  CallbackSequence      start_event         { };
+  /// Register end event callback
+  CallbackSequence      end_event           { };
+
   /// The main data input action sequence
-  DigiActionSequence*   inputAction = 0;
+  DigiActionSequence*   inputAction         { nullptr };
   /// The main event action sequence
-  DigiActionSequence*   eventAction = 0;
+  DigiActionSequence*   eventAction         { nullptr };
   /// The main data output action sequence
-  DigiActionSequence*   outputAction = 0;
+  DigiActionSequence*   outputAction        { nullptr };
   /// TBB initializer (If TBB is used)
-  void*                 tbbInit = 0;
+  void*                 tbbInit             { nullptr };
   /// Property: Output level
   int                   outputLevel;
   /// Property: maximum number of events to be processed (if < 0: infinite)
@@ -292,12 +303,44 @@ void DigiKernel::loadXML(const char* fname) {
   m_detDesc->apply("DD4hep_XMLLoader", 1, (char**) args);
 }
 
+/// Configure the digitization: call all registered configurators
 int DigiKernel::configure()   {
-  return 1;//DigiExec::configure(*this);
+  internals->configurators();
+  return 1;
 }
 
+/// Initialize the digitization: call all registered initializers
 int DigiKernel::initialize()   {
-  return 1;//DigiExec::initialize(*this);
+  internals->initializers();
+  return 1;
+}
+
+/// Register configure callback
+void DigiKernel::register_configure(const Callback& callback)   const  {
+  std::lock_guard<std::mutex> lock(initializer_lock());
+  internals->configurators.add(callback);
+}
+
+/// Register initialize callback
+void DigiKernel::register_initialize(const Callback& callback)   const  {
+  std::lock_guard<std::mutex> lock(initializer_lock());
+  internals->initializers.add(callback);
+}
+
+/// Register terminate callback
+void DigiKernel::register_terminate(const Callback& callback)   const  {
+  std::lock_guard<std::mutex> lock(initializer_lock());
+  internals->terminators.add(callback);
+}
+
+/// Register start event callback
+void DigiKernel::register_start_event(const Callback& callback)   const  {
+  internals->start_event.add(callback);
+}
+
+/// Register end event callback
+void DigiKernel::register_end_event(const Callback& callback)   const  {
+  internals->end_event.add(callback);
 }
 
 /// Access to the main input action sequence from the kernel object
@@ -316,54 +359,27 @@ DigiActionSequence& DigiKernel::outputAction() const    {
 }
 
 /// Submit a bunch of actions to be executed in parallel
-void DigiKernel::submit (const std::vector<ParallelCall*>& algorithms, void* context)  const    {
+void DigiKernel::submit (ParallelCall*const algorithms[], std::size_t count, void* context, bool parallel)  const    {
 #ifdef DD4HEP_USE_TBB
-  bool parallel = 0 != internals->tbbInit && internals->numThreads>0;
-  if ( parallel )   {
+  bool para = parallel && (0 != internals->tbbInit && internals->numThreads>0);
+  if ( para )   {
     tbb::task_group que;
-    for( auto* algo : algorithms )
-      que.run( Wrapper<ParallelCall,void*>(algo, context) );
+    printout(INFO,"DigiKernel","+++ Executing chunk of %ld execution entries in parallel", count);
+    for( std::size_t i=0; i<count; ++i)
+      que.run( Wrapper<ParallelCall,void*>(algorithms[i], context) );
     que.wait();
     return;
   }
 #endif
-  for( auto* algo : algorithms )
-    algo->execute(context);
+  printout(INFO,"DigiKernel","+++ Executing chunk of %ld execution entries sequentially", count);
+  for( std::size_t i=0; i<count; ++i)
+    algorithms[i]->execute(context);
 }
 
-/// Submit a bunch of actions to be executed serially
-void DigiKernel::execute(const std::vector<ParallelCall*>& algorithms, void* context)  const   {
-  for( auto* algo : algorithms )
-    algo->execute(context);
+/// Submit a bunch of actions to be executed in parallel
+void DigiKernel::submit (const std::vector<ParallelCall*>& algorithms, void* data, bool parallel)  const  {
+  this->submit(&algorithms[0], algorithms.size(), data, parallel);
 }
-
-#if 0
-void DigiKernel::submit(const DigiAction::Actors<DigiEventAction>& actions, DigiContext& context)   const  {
-  std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
-  bool parallel = 0 != internals->tbbInit && internals->numThreads>0;
-#ifdef DD4HEP_USE_TBB
-  if ( parallel )   {
-    tbb::task_group que;
-    for ( auto* i : actions )
-      que.run( Wrapper<DigiEventAction,DigiContext&>(i, context) );
-    que.wait();
-    goto print_stamp;
-  }
-#endif
-  actions(&DigiEventAction::execute,context);
-  goto print_stamp;
-
- print_stamp:
-  std::chrono::duration<double> secs = std::chrono::system_clock::now() - start;
-  printout(DEBUG, "DigiKernel", "+++ Event: %8d Executed %s task group with %3ld members [%8.3g sec]",
-           context.event->eventNumber, parallel ? "parallel" : "serial", actions.size(),
-           secs.count());
-}
-
-void DigiKernel::execute(const DigiAction::Actors<DigiEventAction>& actions, DigiContext& context)   const  {
-  actions(&DigiEventAction::execute,context);
-}
-#endif
 
 void DigiKernel::wait(DigiContext& context)   const  {
   if ( context.event ) {}
@@ -373,9 +389,11 @@ void DigiKernel::wait(DigiContext& context)   const  {
 void DigiKernel::executeEvent(std::unique_ptr<DigiContext>&& context)    {
   DigiContext& refContext = *context;
   try {
+    internals->start_event(&refContext);
     inputAction().execute(refContext);
     eventAction().execute(refContext);
     outputAction().execute(refContext);
+    internals->end_event(&refContext);
     notify(std::move(context));
   }
   catch(const std::exception& e)   {
@@ -383,6 +401,7 @@ void DigiKernel::executeEvent(std::unique_ptr<DigiContext>&& context)    {
   }
 }
 
+/// Notify kernel that the execution of one single event finished
 void DigiKernel::notify(std::unique_ptr<DigiContext>&& context)   {
   if ( context )   {
     context->event.reset();
@@ -391,6 +410,7 @@ void DigiKernel::notify(std::unique_ptr<DigiContext>&& context)   {
   ++internals->eventsFinished;
 }
 
+/// Notify kernel that the execution of one single event finished
 void DigiKernel::notify(std::unique_ptr<DigiContext>&& context, const std::exception& e)   {
   internals->stop = true;
   printout(ERROR,"DigiKernel","+++ Exception during event processing [Shall stop the event loop]");
@@ -398,6 +418,7 @@ void DigiKernel::notify(std::unique_ptr<DigiContext>&& context, const std::excep
   notify(std::move(context));
 }
 
+/// Run the digitization sequence over the requested number of events
 int DigiKernel::run()   {
   std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
   internals->stop = false;
@@ -438,8 +459,10 @@ int DigiKernel::run()   {
   return 1;
 }
 
+/// Terminate the digitization: call all registered terminators and release the allocated resources
 int DigiKernel::terminate() {
   printout(INFO, "DigiKernel", "++ Terminate Digi and delete associated actions.");
+  internals->terminators();
   m_detDesc->destroyInstance();
   m_detDesc = 0;
   return 1;

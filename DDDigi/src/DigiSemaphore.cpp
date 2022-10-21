@@ -12,26 +12,25 @@
 //==========================================================================
 
 // Framework include files
-#include <DD4hep/InstanceCount.h>
-#include <DDDigi/DigiSegmentAction.h>
+#include <DDDigi/DigiSemaphore.h>
 
 using namespace dd4hep::digi;
 
-/// Standard constructor
-DigiSegmentAction::DigiSegmentAction(const DigiKernel& krnl, const std::string& nam)
-  : DigiAction(krnl, nam)
-{
-  InstanceCount::increment(this);
+/// Wait until reference count is NULL
+std::unique_lock<std::mutex> DigiSemaphore::wait_null()  {
+  std::unique_lock<std::mutex> protect(this->lock);
+  this->reference_count_is_null.wait(protect, [this] { return this->reference_count == 0; } );
+  return protect;
 }
 
-/// Default destructor
-DigiSegmentAction::~DigiSegmentAction() {
-  InstanceCount::decrement(this);
+/// Aquire semaphore count
+void DigiSemaphore::aquire()   {
+  std::lock_guard guard(this->lock);
+  ++this->reference_count;
 }
 
-/// Main functional callback
-DepositVector
-DigiSegmentAction::handleSegment(DigiContext&              /* context */,
-				 const DepositMapping&     /* depos   */) const {
-  return {};
+/// Release semaphore count
+void DigiSemaphore::release()  {
+  if ( --this->reference_count == 0 )
+    this->reference_count_is_null.notify_one();
 }

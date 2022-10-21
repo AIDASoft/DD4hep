@@ -48,23 +48,20 @@ class Digitize(dd4hep.Logger):
   def kernel(self):
     return self._kernel
 
-  def main_sequencer(self):
-    if not self._main_processor:
-      self._main_processor = dddigi.Synchronize(self._kernel, 'DigiSynchronize/MainDigitizer', self._parallel)
-      self._main_processor.parallel = self._parallel
-    return self._main_processor
-
   def create_action(self, name, **options):
     action = dddigi.Action(self._kernel, name)
     for option in options.items():
       setattr(action, option[0], option[1])
     return action
 
-  def new_action(self, name, **options):
-    action = dddigi.EventAction(self._kernel, name)
-    for option in options.items():
-      setattr(action, option[0], option[1])
-    return action
+  def main_sequencer(self):
+    """
+    Create main digitization sequencer
+    """
+    if not self._main_processor:
+      self._main_processor = self.create_action('DigiSynchronize/MainDigitizer', parallel=self._parallel)
+      self._main_processor.parallel = self._parallel
+    return self._main_processor
 
   def input_action(self, name=None, **options):
     """
@@ -77,7 +74,7 @@ class Digitize(dd4hep.Logger):
     if not name:
       return self._input_processor
 
-    act = self.new_action(name, **options)
+    act = self.create_action(name, **options)
     self._input_processor.adopt(act)
     return act
 
@@ -92,7 +89,7 @@ class Digitize(dd4hep.Logger):
     if not name:
       return self._event_processor
 
-    action = self.new_action(name, **options)
+    action = self.create_action(name, **options)
     if register:
       self._event_processor.adopt(action)
     return action
@@ -108,7 +105,7 @@ class Digitize(dd4hep.Logger):
     if not name:
       return self._output_processor
 
-    act = self.new_action(name, **options)
+    act = self.create_action(name, **options)
     self._output_processor.adopt(act)
     return act
 
@@ -139,8 +136,9 @@ class Digitize(dd4hep.Logger):
     self.kernel().configure()
     self.kernel().initialize()
     self.kernel().run()
+    done = krnl.events_done()
     self.kernel().terminate()
-    return self
+    return done
 
   def activeDetectors(self):
     detectors = []
@@ -183,5 +181,7 @@ class Digitize(dd4hep.Logger):
     krnl.numEvents = num_events
     krnl.numThreads = num_threads   # = number of concurrent threads
     krnl.maxEventsParallel = parallel
+    krnl.configure()
+    krnl.initialize()
     krnl.run()
     return krnl.events_done()
