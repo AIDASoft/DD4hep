@@ -2,7 +2,33 @@
 
 from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
-from DDSim.DD4hepSimulation import outputLevel, outputLevelType
+
+
+def outputLevelType(level):
+  """Return verbosity level as integer if possible.
+
+  Still benefit from argparsers list of possible choices
+  """
+  try:
+    return int(level)
+  except ValueError:
+    return str(level)
+
+
+def outputLevel(level):
+  """return INT for outputlevel"""
+  if isinstance(level, int):
+    if level < 1 or 7 < level:
+      raise KeyError
+    return level
+  outputlevels = {"VERBOSE": 1,
+                  "DEBUG": 2,
+                  "INFO": 3,
+                  "WARNING": 4,
+                  "ERROR": 5,
+                  "FATAL": 6,
+                  "ALWAYS": 7}
+  return outputlevels[level.upper()]
 
 
 class Output(ConfigHelper):

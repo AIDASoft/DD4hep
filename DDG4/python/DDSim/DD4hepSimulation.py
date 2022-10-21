@@ -19,6 +19,7 @@ from DDSim.Helper.Physics import Physics
 from DDSim.Helper.Filter import Filter
 from DDSim.Helper.Random import Random
 from DDSim.Helper.Action import Action
+from DDSim.Helper.Output import Output, outputLevel, outputLevelType
 from DDSim.Helper.OutputConfig import OutputConfig
 from DDSim.Helper.InputConfig import InputConfig
 from DDSim.Helper.ConfigHelper import ConfigHelper
@@ -39,36 +40,6 @@ except ImportError:
   ARGCOMPLETEENABLED = False
 
 POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".pairs")
-
-
-def outputLevelType(level):
-  """Return verbosity level as integer if possible.
-
-  Still benefit from argparsers list of possible choices
-  """
-  try:
-    return int(level)
-  except:
-    return str(level)
-
-
-def outputLevel(level):
-  """return INT for outputlevel"""
-  if isinstance(level, int):
-    if level < 1 or 7 < level:
-      raise KeyError
-    return level
-  outputlevels = {"VERBOSE": 1,
-                  "DEBUG": 2,
-                  "INFO": 3,
-                  "WARNING": 4,
-                  "ERROR": 5,
-                  "FATAL": 6,
-                  "ALWAYS": 7}
-  return outputlevels[level.upper()]
-
-
-from DDSim.Helper.Output import Output  # noqa
 
 
 class DD4hepSimulation(object):
@@ -592,16 +563,10 @@ class DD4hepSimulation(object):
   def __checkOutputLevel(self, level):
     """return outputlevel as int so we don't have to import anything for faster startup"""
     try:
-      level = int(level)
-      if level < 1 or 7 < level:
-        raise KeyError
-      return level
+      return outputLevel(level)
     except ValueError:
-      try:
-        return outputLevel(level.upper())
-      except ValueError:
-        self._errorMessages.append("ERROR: printLevel is neither integer nor string")
-        return -1
+      self._errorMessages.append("ERROR: printLevel is neither integer nor string")
+      return -1
     except KeyError:
       self._errorMessages.append("ERROR: printLevel '%s' unknown" % level)
       return -1
