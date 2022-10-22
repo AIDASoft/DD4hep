@@ -98,7 +98,7 @@ namespace dd4hep {
       }
 
       /// Project the item part of the key
-      mask_type mask()  {
+      mask_type mask()  const {
 	return this->values.mask;
       }
       /// Set key mask
@@ -119,7 +119,7 @@ namespace dd4hep {
       }
 
       /// Project the mask part of the key
-      itemkey_type item()  {
+      itemkey_type item()  const  {
 	return this->values.item;
       }
       /// Set key item identifier
@@ -376,8 +376,8 @@ namespace dd4hep {
      */
     class DepositVector : public SegmentEntry  {
     public: 
-      using container_t = std::vector<std::pair<CellID, EnergyDeposit> >;
-      using iterator = container_t::iterator;
+      using container_t    = std::vector<std::pair<CellID, EnergyDeposit> >;
+      using iterator       = container_t::iterator;
       using const_iterator = container_t::const_iterator;
 
       container_t    data { };
@@ -397,10 +397,14 @@ namespace dd4hep {
       DepositVector& operator=(DepositVector&& copy) = default;
       /// Disable copy assignment
       DepositVector& operator=(const DepositVector& copy) = default;      
-      /// Merge new deposit map onto existing map (not thread safe!)
+      /// Merge new deposit map onto existing vector (destroys inputs. not thread safe!)
       std::size_t merge(DepositVector&& updates);
-      /// Merge new deposit map onto existing map (keep inputs. not thread safe!)
+      /// Merge new deposit map onto existing map (destroys inputs. not thread safe!)
+      std::size_t merge(DepositMapping&& updates);
+      /// Merge new deposit map onto existing vector (keep inputs. not thread safe!)
       std::size_t insert(const DepositVector& updates);
+      /// Merge new deposit map onto existing map (keep inputs. not thread safe!)
+      std::size_t insert(const DepositMapping& updates);
       /// Emplace entry
       void emplace(CellID cell, EnergyDeposit&& deposit);
 
@@ -440,8 +444,8 @@ namespace dd4hep {
      */
     class DepositMapping : public SegmentEntry  {
     public: 
-      using container_t = std::multimap<CellID, EnergyDeposit>;
-      using iterator = container_t::iterator;
+      using container_t    = std::multimap<CellID, EnergyDeposit>;
+      using iterator       = container_t::iterator;
       using const_iterator = container_t::const_iterator;
 
       container_t    data { };
@@ -508,8 +512,8 @@ namespace dd4hep {
     class DataSegment   {
     public:
       using container_map_t = std::map<Key::key_type, std::any>;
-      using iterator = container_map_t::iterator;
-      using const_iterator = container_map_t::const_iterator;
+      using iterator        = container_map_t::iterator;
+      using const_iterator  = container_map_t::const_iterator;
 
     private:
       /// Call on failed any-casts
@@ -545,6 +549,8 @@ namespace dd4hep {
       /** Locked operations */
       /// Emplace data item (locked)
       bool emplace(Key key, std::any&& data);
+      /// Move data items other than std::any to the data segment
+      template <typename DATA> bool put(Key key, DATA&& data);
       /// Remove data item from segment (locked)
       bool erase(Key key);
       /// Remove data items from segment (locked)
@@ -621,13 +627,27 @@ namespace dd4hep {
      */
     class  DigiEvent  {
     private:
+      using segment_t = std::unique_ptr<DataSegment>;
+      /// Event lock
       std::mutex  m_lock;
+      /// String identifier of this event (for debug printouts)
       std::string m_id;
-      DataSegment m_data        { this->m_lock };
-      DataSegment m_inputs      { this->m_lock };
-      DataSegment m_deposits    { this->m_lock };
+      /// Reference to the general purpose data segment
+      segment_t m_data;
+      /// Reference to the counts data segment
+      segment_t m_counts;
+      /// Reference to the input data segment
+      segment_t m_inputs;
+      /// Reference to the output data segment
+      segment_t m_outputs;
+      /// Reference to the deposit data segment
+      segment_t m_deposits;
+
+      /// Helper: Save access with segment creation if it does not exist
+      DataSegment& access_segment(segment_t& seg);
 
     public:
+      /// Current event number
       int eventNumber  { 0 };
 
     public:

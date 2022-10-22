@@ -39,6 +39,18 @@ DigiSegmentSplitter::~DigiSegmentSplitter() {
   InstanceCount::decrement(this);
 }
 
+/// Retrieve the names of all collection to be accessed
+std::vector<std::string> DigiSegmentSplitter::collection_names()  const   {
+  if ( !m_detector_name.empty() )   {
+    if ( m_splits.empty() )  {
+      m_split_tool.set_detector(m_detector_name);
+    }
+    return m_split_tool.collection_names();
+  }
+  except("+++ collection_names: The detector name is not set. Unable to access readout properties.");
+  return {};
+}
+
 /// Initialization function
 void DigiSegmentSplitter::initialize()   {
   char text[256];
@@ -58,7 +70,7 @@ void DigiSegmentSplitter::initialize()   {
       auto split_id = p.second.second;
       bool ok = false;
       for( const auto* w : workers )   {
-	if ( w->options == split_id )  { ok = true; break; }
+	if ( VolumeID(w->options) == split_id )  { ok = true; break; }
       }
       if ( !ok )   {
 	error("+++ Missing processor for plit ID: %08ld", split_id);
@@ -106,10 +118,10 @@ void DigiSegmentSplitter::adopt_processor(DigiContainerProcessor* action)   {
 
 /// Main functional callback
 void DigiSegmentSplitter::execute(DigiContext& /* context */, work_t& work)  const    {
-  Key unmasked_key(work.key.item());
+  Key key = work.input_key();
+  Key unmasked_key(key.item());
   if ( std::find(m_keys.begin(), m_keys.end(), unmasked_key) != m_keys.end() )   {
-    if ( work.input.has_value() )   {
-      Key key = work.key;
+    if ( work.has_input() )   {
       info("+++ Got hit collection %04X %08X. Prepare processors for %sparallel execution.",
 	   key.mask(), key.item(), m_parallel ? "" : "NON-");
       m_kernel.submit(m_workers.get_group(), m_workers.size(), &work, m_parallel);

@@ -14,8 +14,10 @@
 #define DDDIGI_DIGIPARALLELWORKERGROUP_H
 
 /// Framework include files
+#include <DDDigi/DigiParallelWorker.h>
 
 /// C/C++ include files
+#include <cstdint>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -52,7 +54,7 @@ namespace dd4hep {
       /// Default destructor. Releasing semaphore
       ~DigiParallelWorkerGroup();
       /// Access the worker array. As long as the object persists it shall not be altered
-      operator ParallelCall*const* ();
+      operator ParallelWorker*const* ();
     };
     
     /// Initializin constructor: aquire worker's semaphore
@@ -69,8 +71,8 @@ namespace dd4hep {
     }
 
     /// Access the worker array. As long as the object persists the array stays intact
-    template <typename T> inline DigiParallelWorkerGroup<T>::operator ParallelCall*const* ()   {
-      return (ParallelCall**)&this->workers.actors.at(0);
+    template <typename T> inline DigiParallelWorkerGroup<T>::operator ParallelWorker*const* ()   {
+      return (ParallelWorker**)&this->workers.actors.at(0);
     }
 
   }    // End namespace digi

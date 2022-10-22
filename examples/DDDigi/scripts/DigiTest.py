@@ -35,19 +35,19 @@ logger = logging.getLogger(__name__)
   F4183035 SiTrackerEndcapHits              : map<long long, EnergyDeposit>
 """
 
-attenuation = {'SiVertexEndcapHits': 15 * ns,
-               'SiVertexBarrelHits': 15 * ns,
-               'SiTrackerForwardHits': 15 * ns,
-               'SiTrackerEndcapHits': 15 * ns,
-               'SiTrackerBarrelHits': 15 * ns,
-               'HcalPlugHits': 15 * ns,
-               'HcalEndcapHits': 15 * ns,
-               'HcalBarrelHits': 15 * ns,
-               'EcalEndcapHits': 15 * ns,
-               'MuonEndcapHits': 15 * ns,
-               'MuonBarrelHits': 15 * ns,
-               'BeamCalHits': 15 * ns,
-               'LumiCalHits': 15 * ns,
+attenuation = {'SiVertexEndcapHits': 50 * ns,
+               'SiVertexBarrelHits': 50 * ns,
+               'SiTrackerForwardHits': 50 * ns,
+               'SiTrackerEndcapHits': 50 * ns,
+               'SiTrackerBarrelHits': 50 * ns,
+               'HcalPlugHits': 50 * ns,
+               'HcalEndcapHits': 50 * ns,
+               'HcalBarrelHits': 50 * ns,
+               'EcalEndcapHits': 50 * ns,
+               'MuonEndcapHits': 50 * ns,
+               'MuonBarrelHits': 50 * ns,
+               'BeamCalHits': 50 * ns,
+               'LumiCalHits': 50 * ns,
            }
 
 
@@ -82,16 +82,19 @@ class Test(dddigi.Digitize):
   def data_containers(self):
     return list(self.attenuation.keys())
 
-  def containers(self, count):
-    conts = []
-    result = []
-    for key in list(self.attenuation.keys()):
-      conts.append(key)
-      if len(conts) == count:
+  def containers(self, count=None):
+    if count:
+      conts = []
+      result = []
+      for key in list(self.attenuation.keys()):
+        conts.append(key)
+        if len(conts) == count:
+          result.append(conts)
+          conts = []
+      if len(conts) > 0:
         result.append(conts)
-        conts = []
-    if len(conts) > 0:
-      result.append(conts)
+    else:
+      result = list(self.attenuation.keys())
     return result
 
   def check_creation(self, objs):

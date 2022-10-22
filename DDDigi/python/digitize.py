@@ -136,7 +136,7 @@ class Digitize(dd4hep.Logger):
     self.kernel().configure()
     self.kernel().initialize()
     self.kernel().run()
-    done = krnl.events_done()
+    done = self.kernel().events_done()
     self.kernel().terminate()
     return done
 

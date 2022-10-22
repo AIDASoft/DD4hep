@@ -13,6 +13,9 @@
 #ifndef DDDIGI_DIGIPARALLELWORKER_H
 #define DDDIGI_DIGIPARALLELWORKER_H
 
+/// C/C++ include files
+#include <cstdint>
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 

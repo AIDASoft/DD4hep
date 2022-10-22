@@ -27,24 +27,28 @@ def run():
   # ========================================================================================================
   spillover = input.adopt_action('DigiSequentialActionSequence/Spillover-25')
   evtreader = spillover.adopt_action('DigiROOTInput/Reader-25ns', mask=0x1, input=[digi.next_input()])
-  attenuate = spillover.adopt_action('DigiHitAttenuatorExp/Attenuator-25ns',
-                                     t0=-25 * ns, masks=[evtreader.mask], containers=attenuation)
+  attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att-25ns',
+                                     t0=-25 * ns, 
+                                     signal_decay='exponential',
+                                     processor_type='DigiAttenuator',
+                                     mask=evtreader.mask,
+                                     containers=attenuation)
   hist_drop = spillover.adopt_action('DigiHitHistoryDrop/Drop-25ns', masks=[evtreader.mask])
   digi.check_creation([spillover, evtreader, attenuate, hist_drop])
   digi.info('Created input.spillover25')
   # ========================================================================================================
   spillover = input.adopt_action('DigiSequentialActionSequence/Spillover-50')
   evtreader = spillover.adopt_action('DigiROOTInput/Reader-50ns', mask=0x2, input=[digi.next_input()])
-  attenuate = spillover.adopt_action('DigiHitAttenuatorExp/Attenuator-50ns',
-                                     t0=-50 * ns, masks=[evtreader.mask], containers=attenuation)
+  attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att-50ns',
+                                     t0=-50 * ns, mask=evtreader.mask, containers=attenuation)
   hist_drop = spillover.adopt_action('DigiHitHistoryDrop/Drop-50ns', masks=[evtreader.mask])
   digi.check_creation([spillover, evtreader, attenuate, hist_drop])
   digi.info('Created input.spillover50')
   # ========================================================================================================
   spillover = input.adopt_action('DigiSequentialActionSequence/Spillover-75')
   evtreader = spillover.adopt_action('DigiROOTInput/Reader-75ns', mask=0x3, input=[digi.next_input()])
-  attenuate = spillover.adopt_action('DigiHitAttenuatorExp/Attenuator-75ns',
-                                     t0=-75 * ns, masks=[evtreader.mask], containers=attenuation)
+  attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att-75ns',
+                                     t0=-75 * ns, mask=evtreader.mask, containers=attenuation)
   hist_drop = spillover.adopt_action('DigiHitHistoryDrop/Drop-75ns', masks=[evtreader.mask])
   digi.check_creation([spillover, evtreader, attenuate, hist_drop])
   digi.info('Created input.spillover75')
@@ -53,24 +57,24 @@ def run():
   # ========================================================================================================
   spillover = input.adopt_action('DigiSequentialActionSequence/Spillover+25')
   evtreader = spillover.adopt_action('DigiROOTInput/Reader+25ns', mask=0x4, input=[digi.next_input()])
-  attenuate = spillover.adopt_action('DigiHitAttenuatorExp/Attenuator+25ns',
-                                     t0=25 * ns, masks=[evtreader.mask], containers=attenuation)
+  attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att+25ns',
+                                     t0=25 * ns, mask=evtreader.mask, containers=attenuation)
   hist_drop = spillover.adopt_action('DigiHitHistoryDrop/Drop+25ns', masks=[evtreader.mask])
   digi.check_creation([spillover, evtreader, attenuate, hist_drop])
   digi.info('Created input.spillover25')
   # ========================================================================================================
   spillover = input.adopt_action('DigiSequentialActionSequence/Spillover+50')
   evtreader = spillover.adopt_action('DigiROOTInput/Reader+50ns', mask=0x5, input=[digi.next_input()])
-  attenuate = spillover.adopt_action('DigiHitAttenuatorExp/Attenuator+50ns',
-                                     t0=50 * ns, masks=[evtreader.mask], containers=attenuation)
+  attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att+50ns',
+                                     t0=50 * ns, mask=evtreader.mask, containers=attenuation)
   hist_drop = spillover.adopt_action('DigiHitHistoryDrop/Drop_50ns', masks=[evtreader.mask])
   digi.check_creation([spillover, evtreader, attenuate, hist_drop])
   digi.info('Created input.spillover50')
   # ========================================================================================================
   spillover = input.adopt_action('DigiSequentialActionSequence/Spillover+75')
   evtreader = spillover.adopt_action('DigiROOTInput/Reader+75ns', mask=0x6, input=[digi.next_input()])
-  attenuate = spillover.adopt_action('DigiHitAttenuatorExp/Attenuator+75ns',
-                                     t0=75 * ns, masks=[evtreader.mask], containers=attenuation)
+  attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att+75ns',
+                                     t0=75 * ns, mask=evtreader.mask, containers=attenuation)
   hist_drop = spillover.adopt_action('DigiHitHistoryDrop/Drop+75ns', masks=[evtreader.mask])
   digi.check_creation([spillover, evtreader, attenuate, hist_drop])
   digi.info('Created input.spillover75')
@@ -78,7 +82,8 @@ def run():
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
   combine = event.adopt_action('DigiContainerCombine/Combine',
                                input_masks=[0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6],
-                               deposit_mask=0xFEED)
+                               output_mask=0xFEED,
+                               output_segment='deposits')
   combine.erase_combined = True  # Not thread-safe! only do in SequentialActionSequence
   evtdump = event.adopt_action('DigiStoreDump/StoreDump')
   digi.check_creation([combine, evtdump])

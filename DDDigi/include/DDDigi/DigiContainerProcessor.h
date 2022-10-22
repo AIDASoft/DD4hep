@@ -42,22 +42,57 @@ namespace dd4hep {
      */
     class DigiContainerProcessor : public DigiAction   {
     public:
-      struct work_t  {
-	/// Event processing context
-	DigiContext&    context;
+      using segment_t = DataSegment;
+      struct input_t  {
 	/// Input data key
 	Key             key;
 	/// Input deposits
-	std::any&       input;
+	std::any&       data;
+      };
+      struct output_t  {
 	/// Lock for secure output merging
-	std::mutex&     output_lock;
+	//std::mutex&     lock;
 	/// Handle to output 
-	std::any&       output;
+	//std::any&       data;
+	int             mask;
+	segment_t&      data;
+      };
+
+      struct work_t  {
+	/// Event processing context
+	DigiContext&    context;
+	/// Input data
+	input_t         input;
+	/// Output data
+	output_t&       output;
+
+	/// Basic check if input data are present
+	bool has_input()  const    {  return this->input.data.has_value();  }
+	/// Access key of input data
+	Key  input_key()  const    {  return this->input.key;               }
+	/// Access the input data type
+	const std::type_info& input_type()  const;
+	/// String form of the input data type
+	std::string input_type_name()  const;
+	/// Access input data by type
+	template <typename DATA> DATA* get_input(bool exc=false);
+	/// Access input data by type
+	template <typename DATA> const DATA* get_input(bool exc=false)  const;
+#if 0
+	/// Basic check if input data are present
+	bool has_output()  const   {  return this->output.data.has_value();  }
+	/// String form of the output data type
+	std::string output_type_name()  const;
+	/// Access the output data type
+	const std::type_info& output_type()  const;
+	/// Access output data by type
+	template <typename DATA> DATA* get_output();
 
 	/// Merge output data (thread safe, locked)
 	void merge_output(DepositVector&& data);
 	/// Merge output data (thread safe, locked)
 	void emplace_output(CellID cell, EnergyDeposit&& deposit);
+#endif
       };
     protected:
       /// Define standard assignments and constructors
@@ -86,21 +121,20 @@ namespace dd4hep {
      */
     class DigiContainerSequence : public DigiContainerProcessor  {
     protected:
+      using self_t      = DigiContainerSequence;
+      using processor_t = DigiContainerProcessor;
+      using worker_t    = DigiParallelWorker<processor_t,work_t>;
+      using workers_t   = DigiParallelWorkers<worker_t>;
+      friend class DigiParallelWorker<processor_t,work_t>;
+
+    protected:
       /// Property to steer parallel processing
       bool m_parallel { false };
 
-    protected:
-      using self_t = DigiContainerSequence;
-      using processor_t = DigiContainerProcessor;
-      using worker_t  = DigiParallelWorker<processor_t,work_t>;
-      using workers_t = DigiParallelWorkers<worker_t>;
-      friend class DigiParallelWorker<processor_t,work_t>;
-
       /// Array of sub-workers
-      workers_t         m_workers;
-
+      workers_t          m_workers;
       /// Lock for output merging
-      mutable std::mutex        m_output_lock;
+      mutable std::mutex m_output_lock;
 
     protected:
       /// Define standard assignments and constructors
@@ -130,8 +164,9 @@ namespace dd4hep {
 
     protected:
       /// Argument structure for client calls
-      using self_t = DigiContainerSequenceAction;
+      using self_t      = DigiContainerSequenceAction;
       using processor_t = DigiContainerProcessor;
+      using output_t    = processor_t::output_t;
       struct work_item_t  {
 	Key key;
 	std::any* data;
@@ -139,9 +174,7 @@ namespace dd4hep {
       struct work_t  {
 	DigiContext&             context;
 	std::vector<work_item_t> input_items;
-	/// Lock for secure output merging
-	std::mutex&              output_lock;
-	std::any                 output;
+	output_t&                output;
 	const self_t*            parent;
       };
       using worker_t         = DigiParallelWorker<processor_t, work_t>;
@@ -151,19 +184,23 @@ namespace dd4hep {
       friend class DigiParallelWorker<processor_t, work_t>;
 
       /// Array of sub-workers
-      workers_t         m_workers;
+      workers_t          m_workers;
       /// Registered action map
-      reg_processors_t  m_registered_processors;
+      reg_processors_t   m_registered_processors;
       /// Registered worker map
-      reg_workers_t     m_registered_workers;
+      reg_workers_t      m_registered_workers;
 
       /// Property: Input data segment name
-      std::string       m_input_segment { "inputs" };
+      std::string        m_input_segment  { "inputs" };
       /// Property: Input mask to be handled
-      int               m_mask { 0x0 };
+      int                m_input_mask     { 0x0 };
+      /// Property: Input data segment name
+      std::string        m_output_segment { "outputs" };
+      /// Property: event mask for output data
+      int                m_output_mask   { 0x0 };
 
       /// Lock for output merging
-      mutable std::mutex        m_output_lock;
+      mutable std::mutex m_output_lock;
 
     protected:
       /// Define standard assignments and constructors
@@ -172,13 +209,15 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiContainerSequenceAction();
       /// Initialization callback
-      void initialize();
+      virtual void initialize();
 
     public:
       /// Standard constructor
       DigiContainerSequenceAction(const DigiKernel& kernel, const std::string& name);
-      /// Adopt new parallel worker
+      /// Adopt new parallel worker acting on one single container
       void adopt_processor(DigiContainerProcessor* action, const std::string& container);
+      /// Adopt new parallel worker acting on multiple containers
+      void adopt_processor(DigiContainerProcessor* action, const std::vector<std::string>& containers);
       /// Main functional callback if specific work is known
       virtual void execute(DigiContext& context)  const override;
     };
@@ -192,36 +231,41 @@ namespace dd4hep {
      */
     class DigiMultiContainerProcessor : virtual public DigiEventAction   {
     protected:
-      using self_t       = DigiMultiContainerProcessor;
-      using processor_t  = DigiContainerProcessor;
-      using work_items_t = std::vector<std::pair<Key, std::any*> >;
-      /// Argument structure for client calls
+      using self_t        = DigiMultiContainerProcessor;
+      using processor_t   = DigiContainerProcessor;
+      using worker_keys_t = std::vector<std::vector<Key> >;
+      using work_items_t  = std::vector<std::pair<Key, std::any*> >;
+      using output_t      = processor_t::output_t;
+
+      /// Argument structure required to support multiple client calls
       struct work_t  {
 	DigiContext&    context;
 	work_items_t&   items;
-	std::mutex&     output_lock;
-	std::any        output;
-	const self_t*   parent;
+	output_t&       output;
+	const self_t&   parent;
       };
-      using worker_t  = DigiParallelWorker<processor_t, work_t>;
-      using workers_t = DigiParallelWorkers<worker_t>;
+      using worker_t      = DigiParallelWorker<processor_t, work_t>;
+      using workers_t     = DigiParallelWorkers<worker_t>;
       friend class DigiParallelWorker<processor_t, work_t>;
 
     protected:
       /// Property: Input data segment name
-      std::string       m_input_segment { "inputs" };
+      std::string        m_input_segment { "inputs" };
       /// Property: event masks to be handled
-      std::vector<int>  m_input_masks  { };
+      std::vector<int>   m_input_masks  { };
+      /// Property: Input data segment name
+      std::string        m_output_segment { "outputs" };
+      /// Property: event mask for output data
+      int                m_output_mask  { 0x0 };
 
       /// Set of work items to be processed and passed to clients
-      std::set<Key>     m_work_items;
-
-      std::vector<std::vector<Key> > m_worker_keys;
+      std::set<Key>      m_work_items;
+      /// Set of keys required by each worker
+      worker_keys_t      m_worker_keys;
       /// Array of sub-workers
-      workers_t         m_workers;
-
+      workers_t          m_workers;
       /// Lock for output merging
-      mutable std::mutex        m_output_lock;
+      mutable std::mutex m_output_lock;
 
     protected:
        /// Define standard assignments and constructors

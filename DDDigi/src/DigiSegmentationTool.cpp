@@ -80,6 +80,19 @@ void DigiSegmentationTool::set_detector(const string& det_name)    {
 }
 
 /// Access the readout collection keys
+vector<string> DigiSegmentationTool::collection_names()   const   {
+  if ( this->sensitive.isValid() )    {
+    Readout rd = this->sensitive.readout();
+    vector<string> names = rd.collectionNames();
+    if ( names.empty() ) names.emplace_back(rd.name());
+    return names;
+  }
+  except("DigiSegmentationTool",
+	 "+++ collection_names: Readout not valid. Is the proper detector set ?");
+  return {};
+}
+
+/// Access the readout collection keys
 vector<Key> DigiSegmentationTool::collection_keys()   const   {
   return collection_keys(0x0);
 }
@@ -87,16 +100,9 @@ vector<Key> DigiSegmentationTool::collection_keys()   const   {
 /// Access the readout collection keys
 vector<Key> DigiSegmentationTool::collection_keys(Key::mask_type mask)   const   {
   vector<Key> keys;
-  if ( this->sensitive.isValid() )    {
-    Readout rd = this->sensitive.readout();
-    auto collection_names = rd.collectionNames();
-    if ( collection_names.empty() ) collection_names.emplace_back(rd.name());
-    for( const auto& collection : collection_names )
-      keys.emplace_back(Key(collection, mask));
-    return keys;
-  }
-  except("DigiSegmentationTool",
-	 "+++ collection_keys: Readout not valid. Is the proper detector set ?");
+  vector<string> names = collection_names();
+  for( const auto& collection : names )
+    keys.emplace_back(Key(collection, mask));
   return keys;
 }
 
@@ -175,11 +181,12 @@ DigiSegmentationTool::split_segmentation(const string& split_by)  const
 
   ::scan_detector(*this, split_by, segmentation_splits, this->detector, vid, msk);
   printout(INFO,"DigiSegmentationTool",
-	   "%-24s has %ld parallel entries in when splitting by \"%s\"",
+	   "%-24s has %ld parallel entries when splitting by \"%s\"",
 	   det, segmentation_splits.size(), split_by.c_str());
   stringstream str;
   for( auto id : segmentation_splits )
     str << setw(16) << hex << setfill('0') << id.first << " ";
-  printout(INFO,"DigiSegmentationTool","%-24s --> Parallel Entries: %s", det, str.str().c_str());
+  printout(INFO,"DigiSegmentationTool","%-24s --> Parallel Entries: %s",
+	   det, str.str().c_str());
   return segmentation_splits;
 }

@@ -13,7 +13,7 @@
 
 // Framework include files
 #include <DDDigi/DigiContext.h>
-#include <DDDigi/DigiSegmentProcessor.h>
+#include <DDDigi/DigiContainerProcessor.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -31,35 +31,38 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiSegmentDepositExtractor : public DigiSegmentProcessor   {
+    class DigiDepositMapCreator : public DigiContainerProcessor   {
     public:
       /// Standard constructor
-      DigiSegmentDepositExtractor(const DigiKernel& kernel, const std::string& nam)
-	: DigiSegmentProcessor(kernel, nam) {}
+      using DigiContainerProcessor::DigiContainerProcessor;
 
-      template <typename T> void copy_deposits(const T& cont, work_t& work)  const  {
-	DepositVector deposits(cont.name, work.output.mask);
-	for( const auto& dep : cont )   {
-	  CellID        cell = dep.first;
-	  EnergyDeposit depo = dep.second;
-	  deposits.data.emplace_back(cell, std::move(depo));
+      template <typename T> void create_deposits(const T& cont, work_t& work)  const  {
+	Key key(cont.name, work.output.mask);
+	DepositMapping* mapping = work.output.data.pointer<DepositMapping>(key);
+	if ( !mapping )   {
+	  DepositMapping m(cont.name, work.output.mask);
+	  work.output.data.put(m.key, std::move(m));
+	  mapping = work.output.data.pointer<DepositMapping>(key);
 	}
-        work.output.data.put(deposits.key, std::move(deposits));
+	std::size_t start = mapping->size();
+	for( const auto& dep : cont )
+	  mapping->data.emplace(dep.first, EnergyDeposit());
+	std::size_t end   = mapping->size();
+	info("+++ %-32s added %6ld entries (now: %6ld) from mask: %04X to mask: %04X",
+	     cont.name.c_str(), end-start, end, cont.key.mask(), mapping->key.mask());
       }
       /// Main functional callback
-      virtual void handle_segment(DigiContext&, work_t& work)  const override final  {
-	if ( segment.matches(work.input.key.key) )   {
-	  if ( const auto* m = work.get_input<DepositMapping>() )
-	    copy_deposits(*m, work);
-	  else if ( const auto* v = work.get_input<DepositVector>() )
-	    copy_deposits(*v, work);
-	  else
-	    except("Request to handle unknown data type: %s", work.input_type_name().c_str());
-	}
+      virtual void execute(DigiContext&, work_t& work)  const override final  {
+	if ( const auto* m = work.get_input<DepositMapping>() )
+	  create_deposits(*m, work);
+	else if ( const auto* v = work.get_input<DepositVector>() )
+	  create_deposits(*v, work);
+	else
+	  except("Request to handle unknown data type: %s", work.input_type_name().c_str());
       }
     };
   }    // End namespace digi
 }      // End namespace dd4hep
 
 #include <DDDigi/DigiFactories.h>
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSegmentDepositExtractor)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositMapCreator)

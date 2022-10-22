@@ -60,7 +60,7 @@ public:
     format[sizeof(format)-1] = 0;
   }
 
-  template<typename T> void merge_depos(DepositMapping& output, T& input, int thr)  {
+  template<typename T> void merge_depos(DepositVector& output, T& input, int thr)  {
     std::size_t cnt = 0;
     if ( combine->m_erase_combined )
       cnt = output.merge(std::move(input));
@@ -73,7 +73,7 @@ public:
 
   void merge(const std::string& nam, size_t start, int thr)  {
     Key key = keys[start];
-    DepositMapping out(nam, combine->m_deposit_mask);
+    DepositVector out(nam, combine->m_deposit_mask);
     for( std::size_t j = start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
 	if ( DepositMapping* m = std::any_cast<DepositMapping>(work[j]) )
@@ -157,7 +157,7 @@ DigiContainerCombine::DigiContainerCombine(const DigiKernel& krnl, const std::st
   declareProperty("input_masks",      m_input_masks);
   declareProperty("input_segment",    m_input  = "inputs");
   declareProperty("output_segment",   m_output = "deposits");
-  declareProperty("deposit_mask",     m_deposit_mask);
+  declareProperty("output_mask",      m_deposit_mask);
   declareProperty("output_name_flag", m_output_name_flag);
   declareProperty("erase_combined",   m_erase_combined);
   m_kernel.register_initialize(Callback(this).make(&DigiContainerCombine::initialize));

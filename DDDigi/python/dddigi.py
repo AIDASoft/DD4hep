@@ -201,13 +201,14 @@ def _adopt_processor_action(self, action, container):
   " Helper to convert DigiActions objects to DigiEventAction "
   print(str(action.__class__))
   attr = getattr(self, 'adopt_processor')
-  if hasattr(action,'I_am_a_ROOT_interface_handle'):
-    print('Entering handle branch')
+  if hasattr(action, 'I_am_a_ROOT_interface_handle'):
     proc = Interface.toContainerProcessor(action.get())
     attr(proc, container)
   else:
-    attr(action, container)
-  print('ContainerProcessor succesfully adopted')
+    proc = action ##Interface.toContainerProcessor(action)
+    print(str(proc.__class__))
+  attr(proc, container)
+  # print('ContainerProcessor succesfully adopted')
 # ---------------------------------------------------------------------------
 
 
