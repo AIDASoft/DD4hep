@@ -47,8 +47,9 @@ DECLARE_DIGIACTION_NS(dd4hep::digi,DigiLockedAction)
 #include <DDDigi/DigiStoreDump.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiStoreDump)
 
-#include <DDDigi/DigiHitAttenuatorExp.h>
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiHitAttenuatorExp)
+#include <DDDigi/DigiAttenuator.h>
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiAttenuator)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiAttenuatorSequence)
 
 #include <DDDigi/DigiContainerCombine.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerCombine)

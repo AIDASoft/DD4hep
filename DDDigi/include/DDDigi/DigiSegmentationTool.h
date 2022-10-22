@@ -98,6 +98,8 @@ namespace dd4hep {
       /// Setup tool to handle a given detector of the geometry
       void set_detector(const std::string& det_name);
 
+      /// Access the readout collection keys
+      std::vector<std::string> collection_names()   const;
       /// Access the readout collection keys (mask is empty!)
       std::vector<Key> collection_keys()   const;
       /// Access the readout collection keys with predefined mask

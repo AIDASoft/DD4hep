@@ -178,6 +178,7 @@ namespace dd4hep {
 
 #include <DDDigi/DigiSynchronize.h>
 #include <DDDigi/DigiInputAction.h>
+#include <DDDigi/DigiSegmentSplitter.h>
 #include <DDDigi/DigiSegmentProcessor.h>
 #include <DDDigi/DigiActionSequence.h>
 #include <DDDigi/DigiSignalProcessor.h>
@@ -203,13 +204,18 @@ using namespace std;
 #pragma link C++ class dd4hep::digi::DigiAction;
 #pragma link C++ class dd4hep::digi::DigiEventAction;
 #pragma link C++ class dd4hep::digi::DigiInputAction;
-#pragma link C++ class dd4hep::digi::DigiSegmentProcessor;
 #pragma link C++ class dd4hep::digi::DigiActionSequence;
 #pragma link C++ class dd4hep::digi::DigiSynchronize;
 #pragma link C++ class dd4hep::digi::DigiSignalProcessor;
+
 #pragma link C++ class dd4hep::digi::DigiContainerProcessor;
 #pragma link C++ class dd4hep::digi::DigiContainerSequence;
+#pragma link C++ class dd4hep::digi::DigiContainerSequenceAction;
 #pragma link C++ class dd4hep::digi::DigiMultiContainerProcessor;
+
+#pragma link C++ class dd4hep::digi::DigiSegmentProcessor;
+#pragma link C++ class dd4hep::digi::DigiSegmentSequence;
+#pragma link C++ class dd4hep::digi::DigiSegmentSplitter;
 
 /// Digi data item wrappers
 #pragma link C++ class dd4hep::digi::Particle+;

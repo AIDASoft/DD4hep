@@ -46,21 +46,17 @@ namespace dd4hep {
 	::snprintf(format, sizeof(format), 
 		   "%s[%s] %s-id: %%d [processor:%d] Cell: %%016lX mask: %016lX  hist:%%4ld hits %%4ld parts. entries deposit: %%f", 
 		   context.event->id(), segment.idspec.name(), segment.cname(), segment.id, segment.split_mask);
-	if ( const auto* m = std::any_cast<DepositMapping>(&work.input) )   {
-	  for( const auto& d : *m )   {
-	    if ( segment.matches(d.first) )
-	      print_deposit(format, d.first, d.second);
-	  }
-	}
-	else if ( const auto* v = std::any_cast<DepositVector>(&work.input) )   {
-	  for( const auto& d : *v )   {
-	    if ( segment.matches(d.first) )
-	      print_deposit(format, d.first, d.second);
-	  }
-	}
-	else   {
-	  error("+++ Request to dump an invalid container %s", Key::key_name(work.key.item()));
-	}
+	auto call = [this, format](const std::pair<CellID,EnergyDeposit>& d)   {
+	  if( this->segment.matches(d.first) )
+	    this->print_deposit(format, d.first, d.second); 
+	};
+	if ( const auto* m = work.get_input<DepositMapping>() )
+	  std::for_each(m->begin(), m->end(), call);
+	else if ( const auto* v = work.get_input<DepositVector>() )
+	  std::for_each(v->begin(), v->end(), call);
+	else
+	  error("+++ Request to dump an invalid container %s",
+		Key::key_name(work.input.key.item()));
       }
     };
   }    // End namespace digi

@@ -23,11 +23,13 @@
 dd4hep::digi::DigiStoreDump::DigiStoreDump(const DigiKernel& krnl, const std::string& nam)
   : DigiEventAction(krnl, nam)
 {
-  declareProperty("history",       this->m_dump_history  = false);
-  declareProperty("data_segments", this->m_data_segments);
-  this->m_data_segments.push_back("input");
-  this->m_data_segments.push_back("deposits");
-  this->m_data_segments.push_back("data");
+  declareProperty("history",       m_dump_history  = false);
+  declareProperty("data_segments", m_data_segments);
+  m_data_segments.push_back("input");
+  m_data_segments.push_back("deposits");
+  m_data_segments.push_back("data");
+  m_data_segments.push_back("counts");
+  m_data_segments.push_back("output");
   InstanceCount::increment(this);
 }
 
@@ -80,7 +82,7 @@ void dd4hep::digi::DigiStoreDump::dump(const std::string& tag,
   }
   std::lock_guard<std::mutex> record_lock(m_kernel.global_output_lock());
   for(const auto& s : records)
-    this->info(s.c_str());
+    info(s.c_str());
 }
 
 /// Main functional callback
@@ -88,6 +90,6 @@ void dd4hep::digi::DigiStoreDump::execute(DigiContext& context)  const    {
   const auto& event = context.event;
   for(const auto& segment : this->m_data_segments)   {
     std::string seg = detail::str_upper(segment);
-    this->dump(seg, *event, event->get_segment(segment));
+    dump(seg, *event, event->get_segment(segment));
   }
 }

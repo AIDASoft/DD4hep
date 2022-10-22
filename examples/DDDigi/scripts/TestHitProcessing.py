@@ -24,22 +24,16 @@ def run():
   digi.info('Creating collision overlays....')
   # ========================================================================================================
   overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-1')
-  evtreader = overlay.adopt_action('DigiROOTInput/Reader-1', mask=0x1, input=[digi.next_input()])
+  evtreader = overlay.adopt_action('DigiROOTInput/Read-1', mask=0x1, input=[digi.next_input()])
   hist_drop = overlay.adopt_action('DigiHitHistoryDrop/Drop-1', masks=[evtreader.mask])
   digi.check_creation([overlay, evtreader, hist_drop])
-  digi.info('Created input.overlay25')
+  digi.info('Created input.overlay-1')
   # ========================================================================================================
   overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-2')
-  evtreader = overlay.adopt_action('DigiROOTInput/Reader-2', mask=0x2, input=[digi.next_input()])
+  evtreader = overlay.adopt_action('DigiROOTInput/Read-2', mask=0x2, input=[digi.next_input()])
   hist_drop = overlay.adopt_action('DigiHitHistoryDrop/Drop-2', masks=[evtreader.mask])
   digi.check_creation([overlay, evtreader, hist_drop])
-  digi.info('Created input.overlay50')
-  # ========================================================================================================
-  overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-3')
-  evtreader = overlay.adopt_action('DigiROOTInput/Reader-3', mask=0x3, input=[digi.next_input()])
-  hist_drop = overlay.adopt_action('DigiHitHistoryDrop/Drop-3', masks=[evtreader.mask])
-  digi.check_creation([overlay, evtreader, hist_drop])
-  digi.info('Created input.overlay75')
+  digi.info('Created input.overlay-2')
   # ========================================================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
   combine = event.adopt_action('DigiContainerCombine/Combine',
@@ -48,9 +42,20 @@ def run():
                                output_mask=0xFEED,
                                output_segment='deposits',
                                erase_combined=False)
-  combine.erase_combined = True  # Not thread-safe! only do in SequentialActionSequence
+  combine.erase_combined = True
   dump = event.adopt_action('DigiStoreDump/StoreDump')
-  digi.check_creation([combine, dump])
+  proc = event.adopt_action('DigiContainerSequenceAction/HitP1', parallel=True, input_mask=0xFEED, input_segment='deposits')
+  count = digi.create_action('DigiCellMultiplicityCounter/CellCounter')
+  proc.adopt_container_processor(count, digi.containers())
+  proc = event.adopt_action('DigiContainerSequenceAction/HitP2', parallel=True,
+                            input_mask=0xFEED,
+                            input_segment='deposits',
+                            output_mask = 0x0,
+                            output_segment='output')
+  count = digi.create_action('DigiDepositMapCreator/CellCreator')
+  proc.adopt_container_processor(count, digi.containers())
+
+  digi.check_creation([combine, dump, proc])
   digi.info('Created event.dump')
 
   # ========================================================================================================

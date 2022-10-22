@@ -29,10 +29,6 @@ def run():
   for i in range(len(conts)):
     merge = dddigi.Action(digi.kernel(), 'DigiContainerProcessor/SegmentPrint_%03d' % (i,))
     proc.adopt_processor(merge, conts[i])
-
-  # dump = event.adopt_action('DigiStoreDump/StoreDump')
-  # digi.check_creation([combine, dump, splitter])
-  # digi.info('Created event.dump')
   # ========================================================================
   digi.run_checked(num_events=5, num_threads=15, parallel=3)
 

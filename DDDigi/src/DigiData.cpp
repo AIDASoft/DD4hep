@@ -65,7 +65,18 @@ std::string Key::key_name(const Key& k)    {
 /// Merge new deposit map onto existing map
 std::size_t DepositVector::merge(DepositVector&& updates)    {
   std::size_t update_size = updates.size();
+  data.reserve(data.size()+updates.size());
   for( auto& c : updates )    {
+    data.emplace_back(c);
+  }
+  return update_size;
+}
+
+/// Merge new deposit map onto existing map (keep inputs)
+std::size_t DepositVector::merge(DepositMapping&& updates)    {
+  std::size_t update_size = updates.size();
+  data.reserve(data.size()+updates.size());
+  for( const auto& c : updates )    {
     data.emplace_back(c);
   }
   return update_size;
@@ -74,6 +85,17 @@ std::size_t DepositVector::merge(DepositVector&& updates)    {
 /// Merge new deposit map onto existing map (keep inputs)
 std::size_t DepositVector::insert(const DepositVector& updates)    {
   std::size_t update_size = updates.size();
+  data.reserve(data.size()+updates.size());
+  for( const auto& c : updates )    {
+    data.emplace_back(c);
+  }
+  return update_size;
+}
+
+/// Merge new deposit map onto existing map (keep inputs)
+std::size_t DepositVector::insert(const DepositMapping& updates)    {
+  std::size_t update_size = updates.size();
+  data.reserve(data.size()+updates.size());
   for( const auto& c : updates )    {
     data.emplace_back(c);
   }
@@ -85,7 +107,6 @@ std::size_t DepositMapping::merge(DepositVector&& updates)    {
   std::size_t update_size = updates.size();
   for( auto& c : updates )    {
     data.emplace(std::move(c));
-#if 0
     CellID         cell = c.first;
     EnergyDeposit& depo = c.second;
     auto iter = data.find(cell);
@@ -101,7 +122,6 @@ std::size_t DepositMapping::merge(DepositVector&& updates)    {
     to_update.particle_history.insert(to_update.particle_history.end(),
 				      depo.particle_history.begin(),
 				      depo.particle_history.end());
-#endif
   }
   return update_size;
 }
@@ -206,6 +226,16 @@ bool DataSegment::emplace(Key key, std::any&& item)    {
   return ret;
 }
 
+/// Move data items other than std::any to the data segment
+template <typename DATA> bool DataSegment::put(Key key, DATA&& value)   {
+  std::any item = std::make_any<DATA>(std::move(value));
+  return this->emplace(key, std::move(item));
+}
+
+template bool DataSegment::put(Key key, DepositVector&& data);
+template bool DataSegment::put(Key key, DepositMapping&& data);
+template bool DataSegment::put(Key key, ParticleMapping&& data);
+
 /// Remove data item from segment
 bool DataSegment::erase(Key key)    {
   std::lock_guard<std::mutex> l(lock);
@@ -291,19 +321,35 @@ DigiEvent::~DigiEvent()
   InstanceCount::decrement(this);
 }
 
+DataSegment& DigiEvent::access_segment(std::unique_ptr<DataSegment>& segment)   {
+  if ( segment )   {
+    return *segment;
+  }
+  std::lock_guard<std::mutex> guard(m_lock);
+  /// Check again after holding the lock:
+  if ( !segment )   {
+    segment = std::make_unique<DataSegment>(this->m_lock);
+  }
+  return *segment;
+}
+
 /// Retrieve data segment from the event structure
 DataSegment& DigiEvent::get_segment(const std::string& name)   {
   switch(::toupper(name[0]))   {
   case 'I':
-    return this->m_inputs;
+    return access_segment(m_inputs);
+  case 'C':
+    return access_segment(m_counts);
   case 'D':
     switch(::toupper(name[1]))   {
     case 'E':
-      return this->m_deposits;
+      return access_segment(m_deposits);
     default:
-      return this->m_data;
+      return access_segment(m_data);
     }
     break;
+  case 'O':
+    return access_segment(m_outputs);
   default:
     break;
   }

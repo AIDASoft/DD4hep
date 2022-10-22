@@ -18,6 +18,8 @@
 #include <DDDigi/DigiParallelWorkerGroup.h>
 
 /// C/C++ include files
+#include <vector>
+#include <cstdint>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -73,7 +75,7 @@ namespace dd4hep {
       std::size_t size()  const;
       bool empty()  const;
       bool insert(worker_t* entry)  const;
-      ParallelCall*const* get_calls()   const;
+      ParallelWorker*const* get_calls()   const;
     };
 
     template <typename T> inline

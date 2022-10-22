@@ -18,28 +18,6 @@
 
 using namespace dd4hep::digi;
 
-void DigiSegmentProcessor::work_t::merge_output(DepositVector&& data)   {
-  std::lock_guard<std::mutex> lock(output_lock);
-#if 0
-  if ( !output.get() )   {
-    output.reset(new DepositVector(std::move(data)));
-  }
-  else   {
-    output->merge(std::move(data));
-  }
-#endif
-}
-
-void DigiSegmentProcessor::work_t::emplace_output(CellID cell, EnergyDeposit&& data)   {
-  std::lock_guard<std::mutex> lock(output_lock);
-#if 0
-  if ( !output.get() )   {
-    output.reset(new DepositVector());
-  }
-  output->emplace(cell, std::move(data));
-#endif
-}
-
 /// Standard constructor
 DigiSegmentProcessor::DigiSegmentProcessor(const DigiKernel& krnl, const std::string& nam)
   : DigiContainerProcessor(krnl, nam)

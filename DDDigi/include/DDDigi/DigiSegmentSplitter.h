@@ -37,10 +37,6 @@ namespace dd4hep {
     class DigiSegmentSplitter : public DigiContainerSequence   {
     protected:
       using self_t      = DigiSegmentSplitter;
-      using processor_t = DigiSegmentProcessor;
-      using work_t      = processor_t::work_t;
-      using worker_t    = DigiParallelWorker<processor_t, work_t, VolumeID>;
-      using workers_t   = DigiParallelWorkers<worker_t>;
       using split_t     = std::pair<DetElement, VolumeID>;
       using splits_t    = std::map<VolumeID, split_t>;
       friend class DigiParallelWorker<processor_t, work_t, VolumeID>;
@@ -57,17 +53,13 @@ namespace dd4hep {
 
       /**  Member variables  */
       /// Segmentation too instance
-      DigiSegmentationTool m_split_tool;
+      mutable DigiSegmentationTool m_split_tool;
       /// Segmentation split context
       DigiSegmentContext   m_split_context;
       /// Data keys from the readout collection names
       std::vector<Key>     m_keys;
       /// Split elements used to parallelize the processing
       splits_t             m_splits;
-      /// Array of sub-workers
-      workers_t            m_workers;
-      /// Need a lock for possible output merging
-      mutable std::mutex   m_output_lock;
 
     protected:
       /// Default destructor
@@ -81,6 +73,8 @@ namespace dd4hep {
     public:
       /// Standard constructor
       DigiSegmentSplitter(const DigiKernel& kernel, const std::string& name);
+      /// Access the readout collection keys
+      std::vector<std::string> collection_names()   const;
       /// Main functional callback
       virtual void execute(DigiContext& context, work_t& work)  const  override;
     };
