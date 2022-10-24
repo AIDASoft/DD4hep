@@ -32,6 +32,7 @@ set ( DD4HEP_USE_LCIO                          @DD4HEP_USE_LCIO@ )
 set ( DD4HEP_USE_XERCESC                       @DD4HEP_USE_XERCESC@ )
 set ( DD4HEP_USE_TBB                           @DD4HEP_USE_TBB@ )
 set ( DD4HEP_USE_GEANT4_UNITS                  @DD4HEP_USE_GEANT4_UNITS@ )
+set ( DD4HEP_RELAX_PYVER                       @DD4HEP_RELAX_PYVER@ )
 set ( @CMAKE_PROJECT_NAME@_BUILD_CXX_STANDARD  @CMAKE_CXX_STANDARD@ )
 
 include ( ${@CMAKE_PROJECT_NAME@_DIR}/cmake/DD4hep.cmake )
