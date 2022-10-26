@@ -32,7 +32,7 @@ def make_subdetector(kernel, name):
   action_3 = dddigi.TestAction(kernel, name + '_deadChan', 100)
   action_4 = dddigi.TestAction(kernel, name + '_noiseChan', 50)
   action_5 = dddigi.TestAction(kernel, name + '_merge', 200)
-  seq = dddigi.ActionSequence(kernel, 'DigiActionSequence/' + name + '_sequence', True)
+  seq = dddigi.Action(kernel, 'DigiActionSequence/' + name + '_sequence', parallel=True)
   seq.adopt(action_1)
   seq.adopt(action_2)
   seq.adopt(action_3)
@@ -53,7 +53,7 @@ def run():
   digi = dddigi.Digitize(kernel)
   digi.printDetectors()
 
-  event_processor = dddigi.Synchronize(kernel, 'DigiSynchronize/MainDigitizer', True)
+  event_processor = dddigi.Action(kernel, 'DigiSynchronize/MainDigitizer')
   event_processor.parallel = True
   # input
   make_input(kernel)

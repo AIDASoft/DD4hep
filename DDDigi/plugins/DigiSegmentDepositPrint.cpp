@@ -54,8 +54,7 @@ namespace dd4hep {
 	else if ( const auto* v = work.get_input<DepositVector>() )
 	  std::for_each(v->begin(), v->end(), call);
 	else
-	  error("+++ Request to dump an invalid container %s",
-		Key::key_name(work.input.key.item()));
+	  error("+++ Request to dump an invalid container %s", Key::key_name(work.input.key.item()).c_str());
       }
     };
   }    // End namespace digi
