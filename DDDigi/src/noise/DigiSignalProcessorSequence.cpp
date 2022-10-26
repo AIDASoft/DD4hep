@@ -55,7 +55,8 @@ void DigiSignalProcessorSequence::adopt(DigiSignalProcessor* action)    {
 double DigiSignalProcessorSequence::operator()(DigiCellContext& context)  const   {
   CallData args { context, 0e0 };
   double result = context.data.signal;
-  for ( const auto* p : m_actors.get() )  {
+  auto group = m_actors.get_group();
+  for ( const auto* p : group.actors() )  {
     args.value = 0e0;
     p->execute(&args);
     result += args.value;

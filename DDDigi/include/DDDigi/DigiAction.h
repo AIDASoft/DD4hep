@@ -105,7 +105,9 @@ namespace dd4hep {
       long               m_refCount    = 1;
       /// Default property: Output level
       int                m_outputLevel = 3;
-
+      ///
+      std::vector<void*> m_opt_properties;
+      
     protected:
       /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiAction);
@@ -133,7 +135,11 @@ namespace dd4hep {
         m_name = new_name;
       }
       /// Access to the properties of the object
-      PropertyManager& properties() {
+      PropertyManager& properties()  {
+        return m_properties;
+      }
+      /// Access to the properties of the object (CONST)
+      const PropertyManager& properties()   const  {
         return m_properties;
       }
       /// Access the output level
@@ -147,10 +153,16 @@ namespace dd4hep {
       template <typename T> DigiAction& declareProperty(const std::string& nam, T& val);
       /// Declare property
       template <typename T> DigiAction& declareProperty(const char* nam, T& val);
+      /// Declare property
+      template <typename T> DigiAction& addProperty(const std::string& nam, T& val);
+      /// Declare property
+      template <typename T> DigiAction& addProperty(const char* nam, T& val);
       /// Check property for existence
       bool hasProperty(const std::string& name) const;
       /// Access single property
       Property& property(const std::string& name);
+      /// Access single property (CONST)
+      const Property& property(const std::string& name)  const;
 
       /// Support for messages with variable output level using output level
       void print(const char* fmt, ...) const;
@@ -181,6 +193,23 @@ namespace dd4hep {
     /// Declare property
     template <typename T> DigiAction& DigiAction::declareProperty(const char* nam, T& val) {
       m_properties.add(nam, val);
+      return *this;
+    }
+    /// Declare property
+    template <typename T> DigiAction& DigiAction::addProperty(const std::string& nam, T& val) {
+      void* ptr = ::operator new(sizeof(T));
+      T* prop = new(ptr) T(val);
+      m_properties.add(nam, *prop);
+      m_opt_properties.emplace_back(ptr);
+      return *this;
+    }
+
+    /// Declare property
+    template <typename T> DigiAction& DigiAction::addProperty(const char* nam, T& val) {
+      void* ptr = ::operator new(sizeof(T));
+      T* prop = new(ptr) T(val);
+      m_properties.add(nam, *prop);
+      m_opt_properties.emplace_back(ptr);
       return *this;
     }
   }    // End namespace digi

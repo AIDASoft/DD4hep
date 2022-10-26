@@ -66,7 +66,7 @@ public:
       cnt = output.merge(std::move(input));
     else
       cnt = output.insert(input);
-    combine->info(this->format, thr, input.name.c_str(), input.key.values.mask, cnt, "deposits"); 
+    combine->debug(this->format, thr, input.name.c_str(), input.key.values.mask, cnt, "deposits"); 
     this->cnt_depos += cnt;
     this->cnt_conts++;
   }
@@ -96,7 +96,7 @@ public:
       if ( keys[j].item() == key.item() )   {
 	ParticleMapping* next = std::any_cast<ParticleMapping>(work[j]);
 	std::size_t cnt = out.merge(std::move(*next));
-	combine->info(format, thr, next->name.c_str(), keys[j].mask(), cnt, "particles"); 
+	combine->debug(format, thr, next->name.c_str(), keys[j].mask(), cnt, "particles"); 
 	cnt_parts += cnt;
 	cnt_conts++;
 	work[j]->reset();
@@ -190,7 +190,7 @@ void DigiContainerCombine::initialize()    {
 /// Initializing function: compute values which depend on properties
 void DigiContainerCombine::have_workers(size_t count)  const   {
   if ( m_workers.size() < count )   {
-    auto lock = m_workers.can_modify();
+    auto group = m_workers.get_group(); // Lock worker group
     for(size_t i=m_workers.size(); i <= count; ++i)
       m_workers.insert(new Worker(nullptr, i));
   }

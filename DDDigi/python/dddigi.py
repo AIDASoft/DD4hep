@@ -159,6 +159,36 @@ def _setKernelProperty(self, name, value):
 
 
 # ---------------------------------------------------------------------------
+def _add_property(self, name, value):
+  Interface.addProperty(self.get(), str(name), value)
+
+
+# ---------------------------------------------------------------------------
+def _add_position_property(self, name, value):
+  Interface.addPositionProperty(self.get(), str(name), str(value))
+
+
+# ---------------------------------------------------------------------------
+def _add_set_property(self, name, value):
+  Interface.addSetProperty(self.get(), str(name), value)
+
+
+# ---------------------------------------------------------------------------
+def _add_list_property(self, name, value):
+  Interface.addListProperty(self.get(), str(name), value)
+
+
+# ---------------------------------------------------------------------------
+def _add_vector_property(self, name, value):
+  Interface.addVectorProperty(self.get(), str(name), value)
+
+
+# ---------------------------------------------------------------------------
+def _add_mapped_property(self, name, value):
+  Interface.addMappedProperty(self.get(), str(name), value)
+
+
+# ---------------------------------------------------------------------------
 def _kernel_terminate(self):
   return self.get().terminate()
 
@@ -169,7 +199,12 @@ Kernel.__setattr__ = _setKernelProperty
 Kernel.terminate = _kernel_terminate
 # ---------------------------------------------------------------------------
 ActionHandle = digi.ActionHandle
-
+ActionHandle.add_property = _add_property
+ActionHandle.add_position_property = _add_position_property
+ActionHandle.add_set_property = _add_set_property
+ActionHandle.add_list_property = _add_list_property
+ActionHandle.add_vector_property = _add_vector_property
+ActionHandle.add_mapped_property = _add_mapped_property
 
 # ---------------------------------------------------------------------------
 def TestAction(kernel, nam, sleep=0):
@@ -205,8 +240,8 @@ def _adopt_processor_action(self, action, container):
     proc = Interface.toContainerProcessor(action.get())
     attr(proc, container)
   else:
-    proc = action ##Interface.toContainerProcessor(action)
-    print(str(proc.__class__))
+    proc = action
+    # print(str(proc.__class__))
   attr(proc, container)
   # print('ContainerProcessor succesfully adopted')
 # ---------------------------------------------------------------------------

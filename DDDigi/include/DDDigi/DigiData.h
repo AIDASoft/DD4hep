@@ -220,7 +220,7 @@ namespace dd4hep {
     inline SegmentEntry::SegmentEntry(const std::string& nam, Key::mask_type msk)
       : name(nam)
     {
-      key.set_mask(msk);
+      key.set(nam, msk);
     }
 
     /// Particle definition for digitization
@@ -343,8 +343,9 @@ namespace dd4hep {
       double         length      { 0 };
       /// Total energy deposit
       double         deposit     { 0 };
-
+      /// Optional flag for user masks
       long           flag        { 0 };
+      /// Source mask of this deposit
       Key::mask_type mask        { 0 };
 
       /// Sources contributing to this deposit

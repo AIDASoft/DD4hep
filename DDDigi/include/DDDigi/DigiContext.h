@@ -95,7 +95,10 @@ namespace dd4hep {
     protected:
       /// Reference to the random engine for this event
       std::shared_ptr<DigiRandomGenerator> m_random;
-
+      /// Set the random generator
+      void set_random_generator(std::shared_ptr<DigiRandomGenerator>& rndm)   {
+	m_random = rndm;
+      }
 
     protected:
       /// Inhibit default constructor

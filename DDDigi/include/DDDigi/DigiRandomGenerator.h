@@ -67,8 +67,8 @@ namespace dd4hep {
       double landau  (double mean = 0.0, double sigma = 1.0)  const;
       double breitWigner(double mean = 0.0, double gamma = 1.0)  const;
       double poisson(double mean)  const;
-      void	 rannor(float& a, float& b)   const;
-      void	 rannor(double& a, double& b)   const;
+      void   rannor(float& a, float& b)   const;
+      void   rannor(double& a, double& b)   const;
       void   sphere(double& x, double& y, double& z, double r)   const;
       void   circle(double &x, double &y, double r)  const;
     };

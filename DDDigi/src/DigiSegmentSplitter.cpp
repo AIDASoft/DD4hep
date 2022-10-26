@@ -64,7 +64,8 @@ void DigiSegmentSplitter::initialize()   {
   /// 1) Check if the workers were pre-configured
   if ( !m_workers.empty() )    {
     bool bad = false;
-    const auto& workers = m_workers.get();
+    auto group = m_workers.get_group();
+    const auto& workers = group.actors();
     /// Create the processors:
     for( auto& p : m_splits )   {
       auto split_id = p.second.second;

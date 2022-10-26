@@ -10,8 +10,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDDIGI_DIGIMULTICONTAINERPROCESSOR_H
-#define DDDIGI_DIGIMULTICONTAINERPROCESSOR_H
+#ifndef DDDIGI_DIGICONTAINERPROCESSOR_H
+#define DDDIGI_DIGICONTAINERPROCESSOR_H
 
 // Framework include files
 #include <DDDigi/DigiData.h>
@@ -42,7 +42,10 @@ namespace dd4hep {
      */
     class DigiContainerProcessor : public DigiAction   {
     public:
-      using segment_t = DataSegment;
+      using segment_t  = DataSegment;
+      using context_t  = DigiContext;
+      using action_t   = DigiAction;
+      using property_t = PropertyManager;
       struct input_t  {
 	/// Input data key
 	Key             key;
@@ -50,21 +53,18 @@ namespace dd4hep {
 	std::any&       data;
       };
       struct output_t  {
-	/// Lock for secure output merging
-	//std::mutex&     lock;
-	/// Handle to output 
-	//std::any&       data;
 	int             mask;
 	segment_t&      data;
       };
-
       struct work_t  {
 	/// Event processing context
-	DigiContext&    context;
+	context_t&  context;
 	/// Input data
-	input_t         input;
+	input_t     input;
 	/// Output data
-	output_t&       output;
+	output_t&   output;
+	/// Optional properties
+	const property_t& properties;
 
 	/// Basic check if input data are present
 	bool has_input()  const    {  return this->input.data.has_value();  }
@@ -78,22 +78,8 @@ namespace dd4hep {
 	template <typename DATA> DATA* get_input(bool exc=false);
 	/// Access input data by type
 	template <typename DATA> const DATA* get_input(bool exc=false)  const;
-#if 0
-	/// Basic check if input data are present
-	bool has_output()  const   {  return this->output.data.has_value();  }
-	/// String form of the output data type
-	std::string output_type_name()  const;
-	/// Access the output data type
-	const std::type_info& output_type()  const;
-	/// Access output data by type
-	template <typename DATA> DATA* get_output();
-
-	/// Merge output data (thread safe, locked)
-	void merge_output(DepositVector&& data);
-	/// Merge output data (thread safe, locked)
-	void emplace_output(CellID cell, EnergyDeposit&& deposit);
-#endif
       };
+
     protected:
       /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiContainerProcessor);
@@ -129,18 +115,21 @@ namespace dd4hep {
 
     protected:
       /// Property to steer parallel processing
-      bool m_parallel { false };
+      bool               m_parallel { false };
 
-      /// Array of sub-workers
-      workers_t          m_workers;
       /// Lock for output merging
       mutable std::mutex m_output_lock;
+      /// Array of sub-workers
+      workers_t          m_workers;
 
     protected:
       /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiContainerSequence);
       /// Default destructor
       virtual ~DigiContainerSequence();
+
+      /// Get hold of the registered processor for a given container
+      worker_t* need_registered_worker(Key item_key)  const;
 
     public:
       /// Standard constructor
@@ -164,9 +153,11 @@ namespace dd4hep {
 
     protected:
       /// Argument structure for client calls
+      using action_t    = DigiAction;
       using self_t      = DigiContainerSequenceAction;
       using processor_t = DigiContainerProcessor;
       using output_t    = processor_t::output_t;
+      using property_t  = processor_t::property_t;
       struct work_item_t  {
 	Key key;
 	std::any* data;
@@ -175,7 +166,8 @@ namespace dd4hep {
 	DigiContext&             context;
 	std::vector<work_item_t> input_items;
 	output_t&                output;
-	const self_t*            parent;
+	const property_t&        properties;
+	const self_t&            parent;
       };
       using worker_t         = DigiParallelWorker<processor_t, work_t>;
       using workers_t        = DigiParallelWorkers<worker_t>;
@@ -197,11 +189,11 @@ namespace dd4hep {
       /// Property: Input data segment name
       std::string        m_output_segment { "outputs" };
       /// Property: event mask for output data
-      int                m_output_mask   { 0x0 };
+      int                m_output_mask    { 0x0 };
 
       /// Lock for output merging
       mutable std::mutex m_output_lock;
-
+      
     protected:
       /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiContainerSequenceAction);
@@ -210,6 +202,9 @@ namespace dd4hep {
       virtual ~DigiContainerSequenceAction();
       /// Initialization callback
       virtual void initialize();
+
+      /// Get hold of the registered processor for a given container
+      worker_t* need_registered_worker(Key item_key)  const;
 
     public:
       /// Standard constructor
@@ -236,13 +231,15 @@ namespace dd4hep {
       using worker_keys_t = std::vector<std::vector<Key> >;
       using work_items_t  = std::vector<std::pair<Key, std::any*> >;
       using output_t      = processor_t::output_t;
+      using property_t    = processor_t::property_t;
 
       /// Argument structure required to support multiple client calls
       struct work_t  {
-	DigiContext&    context;
-	work_items_t&   items;
-	output_t&       output;
-	const self_t&   parent;
+	DigiContext&      context;
+	work_items_t&     items;
+	output_t&         output;
+	const property_t& properties;
+	const self_t&     parent;
       };
       using worker_t      = DigiParallelWorker<processor_t, work_t>;
       using workers_t     = DigiParallelWorkers<worker_t>;
@@ -262,10 +259,11 @@ namespace dd4hep {
       std::set<Key>      m_work_items;
       /// Set of keys required by each worker
       worker_keys_t      m_worker_keys;
-      /// Array of sub-workers
-      workers_t          m_workers;
       /// Lock for output merging
       mutable std::mutex m_output_lock;
+
+      /// Array of sub-workers
+      workers_t          m_workers;
 
     protected:
        /// Define standard assignments and constructors
@@ -289,4 +287,4 @@ namespace dd4hep {
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DDDIGI_DIGIMULTICONTAINERPROCESSOR_H
+#endif // DDDIGI_DIGICONTAINERPROCESSOR_H
