@@ -23,20 +23,20 @@ def run():
   # ========================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
   seq = event.adopt_action('DigiContainerSequenceAction/ResegmentSeq',
-                           parallel=True, 
+                           parallel=True,
                            input_mask=0x0, input_segment='inputs',
                            output_mask=0xFEED, output_segment='outputs')
   resegment = digi.create_action('DigiResegment/Resegment')
   resegment.detector = 'EcalBarrel'
-  resegment.readout  = 'NewEcalBarrelHits'
+  resegment.readout = 'NewEcalBarrelHits'
   resegment.descriptor = """
   <readout name="NewEcalBarrelHits">
-    <segmentation type="CartesianGridXY" grid_size_x="10" grid_size_y="10" />
+    <segmentation type="CartesianGridXY" grid_size_x="10" grid_size_y="10"/>
     <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
-  </readout>        
+  </readout>
   """
-  seq.adopt_container_processor(resegment,'EcalBarrelHits')
-  dump = event.adopt_action('DigiStoreDump/StoreDump')
+  seq.adopt_container_processor(resegment, 'EcalBarrelHits')
+  event.adopt_action('DigiStoreDump/StoreDump')
 
   digi.info('Created event.dump')
   # ========================================================================

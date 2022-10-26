@@ -19,10 +19,10 @@ def run():
   # ========================================================================================================
   digi.info('Created SIGNAL input')
   signal = input.adopt_action('DigiSequentialActionSequence/Signal')
-  reader = signal.adopt_action('DigiROOTInput/SignalReader', mask=0x0, input=[digi.next_input()])
+  signal.adopt_action('DigiROOTInput/SignalReader', mask=0x0, input=[digi.next_input()])
   set_ip = signal.adopt_action('DigiIPCreate/SignalIP')
   set_ip.offset_ip = [1, 2, 3]
-  set_ip.sigma_ip  = [.5, .5, 3.0]
+  set_ip.sigma_ip = [.5, .5, 3.0]
   move_seq = signal.adopt_action('DigiContainerSequenceAction/MoveSignal',
                                  parallel=True, input_mask=0x0, input_segment='inputs')
   mover = digi.create_action('DigiIPMover/MoveIPSignal')

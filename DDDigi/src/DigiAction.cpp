@@ -69,6 +69,23 @@ long DigiAction::release() {
   return count;
 }
 
+/// Adopt named property of another action for data processing
+void DigiAction::adopt_property(DigiAction* action, const std::string& foreign_name, const std::string& local_name)   {
+  if ( action )    {
+    PropertyManager& mgr = action->properties();
+    Property& prop = mgr.property(foreign_name);
+    properties().add(local_name, prop);
+    return;
+  }
+  except("+++ adoptProperty: Invalid source action to access property %s", foreign_name.c_str());
+}
+
+/// Adopt named tool to delegate actions
+void DigiAction::adopt_tool(DigiAction* /* action */, const std::string& typ)    {
+  except("+++ adoptTool: Invalid call: A tool type %s is not useful for action %s",
+	 typ.c_str(), c_name());
+}
+
 /// Set the output level; returns previous value
 dd4hep::PrintLevel DigiAction::setOutputLevel(PrintLevel new_level)  {
   int old = m_outputLevel;
