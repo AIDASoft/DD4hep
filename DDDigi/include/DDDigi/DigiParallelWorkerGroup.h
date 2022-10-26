@@ -18,6 +18,7 @@
 
 /// C/C++ include files
 #include <cstdint>
+#include <vector>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

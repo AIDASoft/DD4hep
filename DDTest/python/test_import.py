@@ -13,7 +13,7 @@ parametrize = pytest.mark.parametrize
 moduleNames = [
     'dd4hep',
     'DDRec',
-    'DDDigi',
+    'dddigi',
     ]
 
 # List here the modules that are allowed to Fail.

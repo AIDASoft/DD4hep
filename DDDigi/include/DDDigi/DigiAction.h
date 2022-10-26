@@ -164,6 +164,12 @@ namespace dd4hep {
       /// Access single property (CONST)
       const Property& property(const std::string& name)  const;
 
+      /// Adopt named property of another action for data processing
+      virtual void adopt_property(DigiAction* action, const std::string& foreign_name, const std::string& local_name);
+
+      /// Adopt named tool to delegate actions
+      virtual void adopt_tool(DigiAction* action, const std::string& typ);
+
       /// Support for messages with variable output level using output level
       void print(const char* fmt, ...) const;
       /// Support for building formatted messages

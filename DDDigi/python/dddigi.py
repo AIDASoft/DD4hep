@@ -159,6 +159,11 @@ def _setKernelProperty(self, name, value):
 
 
 # ---------------------------------------------------------------------------
+def _adopt_property(self, action, foreign_name, local_name):
+  Interface.adoptProperty(self.get(), action, str(foreign_name), str(local_name))
+
+
+# ---------------------------------------------------------------------------
 def _add_property(self, name, value):
   Interface.addProperty(self.get(), str(name), value)
 
@@ -199,14 +204,30 @@ Kernel.__setattr__ = _setKernelProperty
 Kernel.terminate = _kernel_terminate
 # ---------------------------------------------------------------------------
 ActionHandle = digi.ActionHandle
+ActionHandle.adopt_property = _adopt_property
 ActionHandle.add_property = _add_property
 ActionHandle.add_position_property = _add_position_property
 ActionHandle.add_set_property = _add_set_property
 ActionHandle.add_list_property = _add_list_property
 ActionHandle.add_vector_property = _add_vector_property
 ActionHandle.add_mapped_property = _add_mapped_property
-
 # ---------------------------------------------------------------------------
+
+
+def _get_action(self):
+  if hasattr(self, 'I_am_a_ROOT_interface_handle'):
+    return Interface.toAction(self.get())
+  return self
+# ---------------------------------------------------------------------------
+
+
+def _get_container_action(self):
+  if hasattr(self, 'I_am_a_ROOT_interface_handle'):
+    return Interface.toContainerAction(self.get())
+  return self
+# ---------------------------------------------------------------------------
+
+
 def TestAction(kernel, nam, sleep=0):
   obj = Interface.createEventAction(kernel, str('DigiTestAction/' + nam))
   if sleep != 0:
@@ -234,14 +255,8 @@ def _adopt_event_action(self, action):
 
 def _adopt_processor_action(self, action, container):
   " Helper to convert DigiActions objects to DigiEventAction "
-  print(str(action.__class__))
   attr = getattr(self, 'adopt_processor')
-  if hasattr(action, 'I_am_a_ROOT_interface_handle'):
-    proc = Interface.toContainerProcessor(action.get())
-    attr(proc, container)
-  else:
-    proc = action
-    # print(str(proc.__class__))
+  proc = _get_container_action(self)
   attr(proc, container)
   # print('ContainerProcessor succesfully adopted')
 # ---------------------------------------------------------------------------
