@@ -229,16 +229,18 @@ def _get_container_action(self):
 
 
 def TestAction(kernel, nam, sleep=0):
-  obj = Interface.createEventAction(kernel, str('DigiTestAction/' + nam))
+  obj = Interface.createAction(kernel, str('DigiTestAction/' + nam))
   if sleep != 0:
     obj.sleep = sleep
   return obj
 # ---------------------------------------------------------------------------
 
 
-def Action(kernel, nam):
-  obj = Interface.createAction(kernel, str(nam))
-  return obj
+def Action(kernel, nam, **options):
+  action = Interface.createAction(kernel, str(nam))
+  for option in options.items():
+    setattr(action, option[0], option[1])
+  return action
 # ---------------------------------------------------------------------------
 
 
@@ -335,8 +337,8 @@ def _props2(obj, **extensions):
 # ---------------------------------------------------------------------------
 
 
-_setup('DigiSynchronize', py_call=_adopt_event_action)
-_setup('DigiActionSequence', py_call=_adopt_event_action)
+_setup('DigiSynchronize', call='adopt', py_call=_adopt_event_action)
+_setup('DigiActionSequence', call='adopt', py_call=_adopt_event_action)
 
 _import_class('digi', 'DigiKernel')
 _import_class('digi', 'DigiContext')
