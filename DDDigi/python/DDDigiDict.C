@@ -47,6 +47,9 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
+    template <typename VAL>
+    int add_action_property(DigiAction* action, const std::string& name, VAL value);
+
 #define ACTIONHANDLE(x)                                                                   \
     struct x##Handle  {                                                                   \
       Digi##x* action;                                                                    \
@@ -106,6 +109,35 @@ namespace dd4hep {
         }
         return 0;
       }
+
+#define MKVAL auto val = value
+
+#define ADD_PROPERTY(n,X)						\
+      static int add##n       (DigiAction* action, const std::string& name, const X value) \
+      {	return add_action_property(action, name, value); }		\
+      static int addVector##n (DigiAction* action, const std::string& name, std::vector<X> value) \
+      {	MKVAL; return add_action_property(action, name, val); }	\
+      static int addList##n   (DigiAction* action, const std::string& name, std::list<X> value) \
+      {	MKVAL; return add_action_property(action, name, val); }		\
+      static int addSet##n    (DigiAction* action, const std::string& name, std::set<X> value) \
+      {	MKVAL; return add_action_property(action, name, val); }		\
+      static int addMapped##n (DigiAction* action, const std::string& name, std::map<std::string,X> value) \
+      {	MKVAL; return add_action_property(action, name, val); }
+      ADD_PROPERTY(Property,int)
+      ADD_PROPERTY(Property,short)
+      ADD_PROPERTY(Property,size_t)
+      ADD_PROPERTY(Property,double)
+
+      ADD_PROPERTY(Property,std::string)
+
+      static int addPositionProperty(DigiAction* action, const std::string& name, const std::string value)     {
+	Position pos;
+	Property pr(pos);
+	pr.str(value);
+	return add_action_property(action, name, pos);
+      }
+      //ADD_PROPERTY(PositionProperty,dd4hep::Position)
+
       static PropertyResult getPropertyKernel(DigiKernel* kernel, const std::string& name)  {
         if ( kernel->hasProperty(name) )  {
           return PropertyResult(kernel->property(name).str(),1);

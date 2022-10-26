@@ -25,14 +25,12 @@ def run():
   # ========================================================================================================
   overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-1')
   evtreader = overlay.adopt_action('DigiROOTInput/Read-1', mask=0x1, input=[digi.next_input()])
-  hist_drop = overlay.adopt_action('DigiHitHistoryDrop/Drop-1', masks=[evtreader.mask])
-  digi.check_creation([overlay, evtreader, hist_drop])
+  digi.check_creation([overlay, evtreader])
   digi.info('Created input.overlay-1')
   # ========================================================================================================
   overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-2')
   evtreader = overlay.adopt_action('DigiROOTInput/Read-2', mask=0x2, input=[digi.next_input()])
-  hist_drop = overlay.adopt_action('DigiHitHistoryDrop/Drop-2', masks=[evtreader.mask])
-  digi.check_creation([overlay, evtreader, hist_drop])
+  digi.check_creation([overlay, evtreader])
   digi.info('Created input.overlay-2')
   # ========================================================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
@@ -43,17 +41,21 @@ def run():
                                output_segment='deposits',
                                erase_combined=False)
   combine.erase_combined = True
-  dump = event.adopt_action('DigiStoreDump/StoreDump')
-  proc = event.adopt_action('DigiContainerSequenceAction/HitP1', parallel=True, input_mask=0xFEED, input_segment='deposits')
+  proc = event.adopt_action('DigiContainerSequenceAction/HitP1',
+                            parallel=True,
+                            input_mask=0xFEED,
+                            input_segment='deposits')
   count = digi.create_action('DigiCellMultiplicityCounter/CellCounter')
   proc.adopt_container_processor(count, digi.containers())
-  proc = event.adopt_action('DigiContainerSequenceAction/HitP2', parallel=True,
+  proc = event.adopt_action('DigiContainerSequenceAction/HitP2',
+                            parallel=True,
                             input_mask=0xFEED,
                             input_segment='deposits',
-                            output_mask = 0x0,
+                            output_mask=0x0,
                             output_segment='output')
-  count = digi.create_action('DigiDepositMapCreator/CellCreator')
+  count = digi.create_action('DigiDepositWeightedPosition/CellCreator')
   proc.adopt_container_processor(count, digi.containers())
+  dump = event.adopt_action('DigiStoreDump/StoreDump')
 
   digi.check_creation([combine, dump, proc])
   digi.info('Created event.dump')

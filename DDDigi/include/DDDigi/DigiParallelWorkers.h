@@ -51,6 +51,7 @@ namespace dd4hep {
     private:
       mutable std::vector<worker_t*>   actors;
       mutable DigiSemaphore            semaphore;
+      std::unique_lock<std::mutex> can_modify()  const;
 
     public:
       /// Default constructor
@@ -66,16 +67,12 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiParallelWorkers();
 
-      std::unique_lock<std::mutex> can_modify()  const;
       /// Return array protected worker group
       group_t get_group()  const;
 
-      /// NOT thread-safe stuff. Do not use during event processing unless you are sequential
-      const std::vector<worker_t*>& get() const { return actors; }
       std::size_t size()  const;
       bool empty()  const;
       bool insert(worker_t* entry)  const;
-      ParallelWorker*const* get_calls()   const;
     };
 
     template <typename T> inline
@@ -108,12 +105,6 @@ namespace dd4hep {
       bool DigiParallelWorkers<T>::empty() const   {
       return actors.empty();
     }
-
-    template <typename T> inline
-      ParallelWorker*const* DigiParallelWorkers<T>::get_calls()  const  {
-      return (ParallelWorker**)&this->actors.at(0);
-    }
-
     template <typename T> inline typename DigiParallelWorkers<T>::group_t
       DigiParallelWorkers<T>::get_group()  const  {
       return group_t(*this);

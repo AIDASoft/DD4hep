@@ -31,7 +31,7 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiDepositMapCreator : public DigiContainerProcessor   {
+    class DigiDepositWeightedPosition : public DigiContainerProcessor   {
     public:
       /// Standard constructor
       using DigiContainerProcessor::DigiContainerProcessor;
@@ -61,4 +61,4 @@ namespace dd4hep {
 }      // End namespace dd4hep
 
 #include <DDDigi/DigiFactories.h>
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositMapCreator)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositWeightedPosition)

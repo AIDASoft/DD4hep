@@ -82,12 +82,12 @@ namespace  {
 static void* convert_sim_geant4calorimeter_hits()     {
   return ddg4_hit_convert_function<sim::Geant4Calorimeter::Hit>("DDG4 calorimeter hits");
 }
-DECLARE_CREATE(DD4hep_DDDigiConverter_vector_dd4hep_sim_Geant4Calorimeter_Hit_,convert_sim_geant4calorimeter_hits);
+DECLARE_CREATE(DD4hep_DDDigiConverter_vector_dd4hep_sim_Geant4Calorimeter_Hit_,convert_sim_geant4calorimeter_hits)
 
 static void* convert_sim_geant4tracker_hits()     {
   return ddg4_hit_convert_function<sim::Geant4Tracker::Hit>("DDG4 tracker hits");
 }
-DECLARE_CREATE(DD4hep_DDDigiConverter_vector_dd4hep_sim_Geant4Tracker_Hit_,convert_sim_geant4tracker_hits);
+DECLARE_CREATE(DD4hep_DDDigiConverter_vector_dd4hep_sim_Geant4Tracker_Hit_,convert_sim_geant4tracker_hits)
 
 static void* convert_sim_geant4particles()     {
   func_t* cnv = new func_t([] (DataSegment& segment, int mask, const char* name, void* ptr)  {
@@ -118,4 +118,4 @@ static void* convert_sim_geant4particles()     {
     });
   return cnv;
 }
-DECLARE_CREATE(DD4hep_DDDigiConverter_vector_dd4hep_sim_Geant4Particle_,convert_sim_geant4particles);
+DECLARE_CREATE(DD4hep_DDDigiConverter_vector_dd4hep_sim_Geant4Particle_,convert_sim_geant4particles)

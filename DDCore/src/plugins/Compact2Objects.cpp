@@ -1098,6 +1098,14 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
   description.addReadout(ro);
 }
 
+static long load_readout(Detector& description, xml_h element) {
+  Converter<Readout> converter(description);
+  converter(element);
+  return 1;
+}
+DECLARE_XML_DOC_READER(readout,load_readout)
+
+
 /** Specialized converter for compact LimitSet objects.
  *
  *      <limitset name="....">

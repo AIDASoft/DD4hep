@@ -17,7 +17,6 @@
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
-
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 

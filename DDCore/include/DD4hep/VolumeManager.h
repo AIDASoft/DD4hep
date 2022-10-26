@@ -76,6 +76,14 @@ namespace dd4hep {
     PlacedVolume elementPlacement()  const;
     /// Access the transformation to the closest detector element
     const TGeoHMatrix& toElement()  const;
+    /// Transform local coordinates to the DetElement coordinates
+    Position localToElement(const double local[3])  const;
+    /// Transform local coordinates to the DetElement coordinates
+    Position localToElement(const Position& local)  const;
+    /// Transform local coordinates to the world coordinates
+    Position localToWorld(const double local[3])  const;
+    /// Transform local coordinates to the world coordinates
+    Position localToWorld(const Position& local)  const;
   };
 
   /// Class to support the retrieval of detector elements and volumes given a valid identifier

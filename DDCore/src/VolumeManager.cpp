@@ -327,6 +327,34 @@ const TGeoHMatrix& VolumeManagerContext::toElement()  const   {
   return ext->toElement;
 }
 
+/// Transform local coordinates to the DetElement coordinates
+Position VolumeManagerContext::localToElement(const double local[3])  const   {
+  double elt[3];
+  toElement().LocalToMaster(local, elt);
+  return { elt[0], elt[1], elt[2] };
+}
+
+/// Transform local coordinates to the DetElement coordinates
+Position VolumeManagerContext::localToElement(const Position& local)  const   {
+  double loc[3];
+  local.GetCoordinates(loc);
+  return localToElement(loc);
+}
+
+/// Transform local coordinates to the world coordinates
+Position VolumeManagerContext::localToWorld(const double local[3])  const   {
+  double elt[3];
+  toElement().LocalToMaster(local, elt);
+  return element.nominal().localToWorld(elt);
+}
+
+/// Transform local coordinates to the world coordinates
+Position VolumeManagerContext::localToWorld(const Position& local)  const   {
+  double l[3];
+  local.GetCoordinates(l);
+  return localToWorld(l);
+}
+
 /// Initializing constructor to create a new object
 VolumeManager::VolumeManager(const Detector& description, const string& nam, DetElement elt, Readout ro, int flags) {
   printout(INFO, "VolumeManager", " - populating volume ids - be patient ..."  );

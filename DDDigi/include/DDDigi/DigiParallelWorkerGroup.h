@@ -55,6 +55,10 @@ namespace dd4hep {
       ~DigiParallelWorkerGroup();
       /// Access the worker array. As long as the object persists it shall not be altered
       operator ParallelWorker*const* ();
+      /// Access specific worker array from group: actors are locked while group exists
+      std::vector<typename DigiParallelWorkers<T>::worker_t*>   actors()    {
+	return workers.actors;
+      }
     };
     
     /// Initializin constructor: aquire worker's semaphore

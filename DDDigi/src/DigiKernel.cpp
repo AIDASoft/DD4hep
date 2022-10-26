@@ -27,6 +27,8 @@
 #include <tbb/tbb.h>
 #endif
 
+#include <TRandom.h>
+
 // C/C++ include files
 #include <stdexcept>
 #include <algorithm>
@@ -88,6 +90,10 @@ public:
   DigiActionSequence*   eventAction         { nullptr };
   /// The main data output action sequence
   DigiActionSequence*   outputAction        { nullptr };
+
+  /// Random generator
+  TRandom* root_random;
+  std::shared_ptr<DigiRandomGenerator> random  {};
   /// TBB initializer (If TBB is used)
   void*                 tbbInit             { nullptr };
   /// Property: Output level
@@ -151,6 +157,7 @@ public:
         int ev_num = kernel.internals->numEvents - todo;
 	std::unique_ptr<DigiContext> context = 
 	  std::make_unique<DigiContext>(this->kernel,std::make_unique<DigiEvent>(ev_num));
+	context->set_random_generator(this->kernel.internals->random);
         kernel.executeEvent(std::move(context));
       }
     }
@@ -179,6 +186,9 @@ DigiKernel::DigiKernel(Detector& description_ref)
   internals->inputAction->setExecuteParallel(false);
   internals->eventAction->setExecuteParallel(false);
   internals->outputAction->setExecuteParallel(false);
+  internals->root_random = new TRandom();
+  internals->random = std::make_shared<DigiRandomGenerator>();
+  internals->random->engine = [this] {  return this->internals->root_random->Uniform(1.0);  };
   InstanceCount::increment(this);
 }
 
