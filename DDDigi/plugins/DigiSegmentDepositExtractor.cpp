@@ -46,7 +46,7 @@ namespace dd4hep {
         work.output.data.put(deposits.key, std::move(deposits));
       }
       /// Main functional callback
-      virtual void handle_segment(DigiContext&, work_t& work)  const override final  {
+      virtual void execute(DigiContext&, work_t& work)  const override final  {
 	if ( segment.matches(work.input.key.key) )   {
 	  if ( const auto* m = work.get_input<DepositMapping>() )
 	    copy_deposits(*m, work);

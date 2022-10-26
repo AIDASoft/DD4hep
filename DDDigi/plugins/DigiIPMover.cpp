@@ -22,30 +22,33 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
+    /// Actor to move the IP of one single container
+    /**
+     *  Note: in place movement. Not thread safe for the containers!
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
     class DigiIPMover : public DigiContainerProcessor  {
-      DigiAction* m_ip_creator { nullptr };
-      std::string m_ip_property;
-
     public:
       /// Standard constructor
       DigiIPMover(const DigiKernel& krnl, const std::string& nam)
 	: DigiContainerProcessor(krnl, nam)
       {
-	declareProperty("ip_property", m_ip_property);
-	declareProperty("ip_creator", m_ip_creator);
       }
       /// Move IP location of deposits
-      template <typename T> std::size_t move_deposits(T& cont, const Position& delta)  const  {
-	info("+++ %-32s [%6ld] IP: x:%7.3f y:%7.3f z:%7.3f", 
-	     cont.name.c_str(), cont.size(), delta.X(), delta.Y(), delta.Z());
+      template <typename T> std::size_t move_deposits(const char* tag, T& cont, const Position& delta)  const  {
+	info("%s+++ %-32s [%6ld] IP: x:%7.3f y:%7.3f z:%7.3f", 
+	     tag, cont.name.c_str(), cont.size(), delta.X(), delta.Y(), delta.Z());
 	for( auto& dep : cont )
 	  dep.second.position += delta;
 	return cont.size();
       }
       /// Move IP location of MC particles
-      template <typename T> std::size_t move_particles(T& cont, const Position& delta)  const  {
-	info("+++ %-32s [%6ld] IP: x:%7.3f y:%7.3f z:%7.3f", 
-	     cont.name.c_str(), cont.size(), delta.X(), delta.Y(), delta.Z());
+      template <typename T> std::size_t move_particles(const char* tag, T& cont, const Position& delta)  const  {
+	info("%s+++ %-32s [%6ld] IP: x:%7.3f y:%7.3f z:%7.3f", 
+	     tag, cont.name.c_str(), cont.size(), delta.X(), delta.Y(), delta.Z());
 	for( auto& p : cont )   {
 	  auto& part = p.second;
 	  part.end_position   += delta;
@@ -54,21 +57,18 @@ namespace dd4hep {
 	return cont.size();
       }
       /// Main functional callback
-      virtual void execute(DigiContext&, work_t& work)  const  override  {
-	Position delta;
-	if ( m_ip_creator )   {
-	  m_ip_creator->property(m_ip_property).value(delta);
-	  if ( auto* m = work.get_input<DepositMapping>() )
-	    move_deposits(*m, delta);
-	  else if ( auto* v = work.get_input<DepositVector>() )
-	    move_deposits(*v, delta);
-	  else if ( auto* p = work.get_input<ParticleMapping>() )
-	    move_particles(*p, delta);
-	  else
-	    except("Request to handle unknown data type: %s", work.input_type_name().c_str());
-	  return;
-	}
-	except("+++ No IP creator action known. Did you set the properties: ip_creator and ip_property?");
+      virtual void execute(DigiContext& context, work_t& work)  const  override  {
+	const char* tag = context.event->id();
+	Position  delta = property("interaction_point").value<Position>();
+	if ( auto* m = work.get_input<DepositMapping>() )
+	  move_deposits(tag, *m, delta);
+	else if ( auto* v = work.get_input<DepositVector>() )
+	  move_deposits(tag, *v, delta);
+	else if ( auto* p = work.get_input<ParticleMapping>() )
+	  move_particles(tag, *p, delta);
+	else
+	  except("%s+++ Request to handle unknown data type: %s", tag, work.input_type_name().c_str());
+	return;
       }
     };
   }    // End namespace digi

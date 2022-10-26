@@ -35,21 +35,21 @@ namespace dd4hep {
       /// Standard constructor
       using DigiContainerProcessor::DigiContainerProcessor;
 
-      template <typename T> void count_deposits(const T& cont)  const  {
+      template <typename T> void count_deposits(const char* tag, const T& cont)  const  {
 	std::map<CellID, std::size_t> entries;
 	for( const auto& dep : cont )   {
 	  CellID        cell = dep.first;
 	  entries[cell] += 1;
 	}
-	info("+++ %-32s has %6ld entries and %6ld unique cells",
-	     cont.name.c_str(), cont.size(), entries.size());
+	info("%s+++ %-32s has %6ld entries and %6ld unique cells",
+	     tag, cont.name.c_str(), cont.size(), entries.size());
       }
       /// Main functional callback
-      virtual void execute(DigiContext&, work_t& work)  const override final  {
+      virtual void execute(DigiContext& context, work_t& work)  const override final  {
 	if ( const auto* m = work.get_input<DepositMapping>() )
-	  count_deposits(*m);
+	  count_deposits(context.event->id(), *m);
 	else if ( const auto* v = work.get_input<DepositVector>() )
-	  count_deposits(*v);
+	  count_deposits(context.event->id(), *v);
 	else
 	  except("Request to handle unknown data type: %s", work.input_type_name().c_str());
       }

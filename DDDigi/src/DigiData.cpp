@@ -62,6 +62,30 @@ std::string Key::key_name(const Key& k)    {
   return "UNKNOWN";
 }
 
+/// Update the deposit using deposit weighting
+void EnergyDeposit::update_deposit_weighted(const EnergyDeposit& upda)  {
+  double    sum = deposit + upda.deposit;
+  Position  pos = ((deposit / sum) * position) + ((upda.deposit / sum) * upda.position);
+  Direction mom = ((deposit / sum) * momentum) + ((upda.deposit / sum) * upda.momentum);
+  position = pos;
+  momentum = mom;
+  deposit  = sum;
+  hit_history.insert(hit_history.end(), upda.hit_history.begin(), upda.hit_history.end());
+  particle_history.insert(particle_history.end(), upda.particle_history.begin(), upda.particle_history.end());
+}
+
+/// Update the deposit using deposit weighting
+void EnergyDeposit::update_deposit_weighted(EnergyDeposit&& upda)  {
+  double    sum = deposit + upda.deposit;
+  Position  pos = ((deposit / sum) * position) + ((upda.deposit / sum) * upda.position);
+  Direction mom = ((deposit / sum) * momentum) + ((upda.deposit / sum) * upda.momentum);
+  position = pos;
+  momentum = mom;
+  deposit  = sum;
+  hit_history.insert(hit_history.end(), upda.hit_history.begin(), upda.hit_history.end());
+  particle_history.insert(particle_history.end(), upda.particle_history.begin(), upda.particle_history.end());
+}
+
 /// Merge new deposit map onto existing map
 std::size_t DepositVector::merge(DepositVector&& updates)    {
   std::size_t update_size = updates.size();
@@ -105,23 +129,14 @@ std::size_t DepositVector::insert(const DepositMapping& updates)    {
 /// Merge new deposit map onto existing map
 std::size_t DepositMapping::merge(DepositVector&& updates)    {
   std::size_t update_size = updates.size();
-  for( auto& c : updates )    {
-    data.emplace(std::move(c));
-    CellID         cell = c.first;
-    EnergyDeposit& depo = c.second;
-    auto iter = data.find(cell);
-    if ( iter == data.end() )   {
-      data.emplace(cell, std::move(depo));
-      continue;
-    }
-    auto& to_update = iter->second;
-    to_update.deposit += depo.deposit;
-    to_update.hit_history.insert(to_update.hit_history.end(),
-				 depo.hit_history.begin(),
-				 depo.hit_history.end());
-    to_update.particle_history.insert(to_update.particle_history.end(),
-				      depo.particle_history.begin(),
-				      depo.particle_history.end());
+  for( auto& dep : updates )    {
+    EnergyDeposit& depo = dep.second;
+    CellID cell = dep.first;
+    auto   iter = data.find(cell);
+    if ( iter == data.end() )
+      data.emplace(dep.first, std::move(depo));
+    else
+      iter->second.update_deposit_weighted(std::move(depo));
   }
   return update_size;
 }
@@ -129,25 +144,14 @@ std::size_t DepositMapping::merge(DepositVector&& updates)    {
 /// Merge new deposit map onto existing map
 std::size_t DepositMapping::merge(DepositMapping&& updates)    {
   std::size_t update_size = updates.size();
-  for( auto& c : updates )    {
-    data.emplace(std::move(c));
-#if 0
-    CellID         cell = c.first;
-    EnergyDeposit& depo = c.second;
-    auto iter = data.find(cell);
-    if ( iter == data.end() )   {
-      data.emplace(cell, std::move(depo));
-      continue;
-    }
-    auto& to_update = iter->second;
-    to_update.deposit += depo.deposit;
-    to_update.hit_history.insert(to_update.hit_history.end(),
-				 depo.hit_history.begin(),
-				 depo.hit_history.end());
-    to_update.particle_history.insert(to_update.particle_history.end(),
-				      depo.particle_history.begin(),
-				      depo.particle_history.end());
-#endif
+  for( auto& dep : updates )    {
+    const EnergyDeposit& depo = dep.second;
+    CellID cell = dep.first;
+    auto   iter = data.find(cell);
+    if ( iter == data.end() )
+      data.emplace(dep.first, std::move(depo));
+    else
+      iter->second.update_deposit_weighted(std::move(depo));
   }
   return update_size;
 }
@@ -235,6 +239,7 @@ template <typename DATA> bool DataSegment::put(Key key, DATA&& value)   {
 template bool DataSegment::put(Key key, DepositVector&& data);
 template bool DataSegment::put(Key key, DepositMapping&& data);
 template bool DataSegment::put(Key key, ParticleMapping&& data);
+template bool DataSegment::put(Key key, DetectorResponse&& data);
 
 /// Remove data item from segment
 bool DataSegment::erase(Key key)    {

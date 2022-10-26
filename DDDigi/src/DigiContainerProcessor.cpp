@@ -124,8 +124,8 @@ void DigiContainerSequence::adopt_processor(DigiContainerProcessor* action)   {
 }
 
 /// Main functional callback if specific work is known
-void DigiContainerSequence::execute(DigiContext& /* context */, work_t& work)  const   {
-  m_kernel.submit(m_workers.get_group(), m_workers.size(), &work, m_parallel);
+void DigiContainerSequence::execute(DigiContext& context, work_t& work)  const   {
+  m_kernel.submit(context, m_workers.get_group(), m_workers.size(), &work, m_parallel);
 }
 
 /// Worker adaptor for caller DigiContainerSequence
@@ -155,12 +155,10 @@ DigiContainerSequenceAction::~DigiContainerSequenceAction() {
 
 /// Initialization callback
 void dd4hep::digi::DigiContainerSequenceAction::initialize()   {
-  size_t count = 0;
   for( auto& ent : m_registered_processors )   {
     Key key = ent.first;
-    key.set_mask(m_input_mask);
-    worker_t* w = new worker_t(ent.second, count++);
-    m_registered_workers.emplace(key, w);
+    worker_t* w = new worker_t(ent.second, m_registered_workers.size());
+    m_registered_workers.emplace(key.item(), w);
     m_workers.insert(w);
   }
 }
@@ -170,7 +168,7 @@ void DigiContainerSequenceAction::adopt_processor(DigiContainerProcessor* action
 						  const std::string& container)
 {
   Key key(container, 0x0);
-  auto it = m_registered_processors.find(key);
+  auto it = m_registered_processors.find(key.item());
   if ( it != m_registered_processors.end() )   {
     if ( action != it->second )   {
       except("+++ The action %s was already registered to mask:%04X container:%s!",
@@ -183,9 +181,9 @@ void DigiContainerSequenceAction::adopt_processor(DigiContainerProcessor* action
     return;
   }
   action->addRef();
-  m_registered_processors.emplace(key, action);
-  info("+++ Adding processor: %s for container: [%016lX] %s",
-       action->c_name(), key.key, container.c_str());
+  m_registered_processors.emplace(key.item(), action);
+  info("+++ Adding processor: %s for container: [%08X] %s",
+       action->c_name(), key.item(), container.c_str());
 }
 
 /// Adopt new parallel worker acting on multiple containers
@@ -200,14 +198,16 @@ void DigiContainerSequenceAction::adopt_processor(DigiContainerProcessor* action
 
 /// Get hold of the registered processor for a given container
 DigiContainerSequenceAction::worker_t*
-DigiContainerSequenceAction::need_registered_worker(Key item_key)   const  {
+DigiContainerSequenceAction::need_registered_worker(Key item_key, bool exc)   const  {
   Key key;
   key.set_item(item_key.item());
-  auto it = m_registered_workers.find(key.item());
+  auto it = m_registered_workers.find(item_key.item());
   if ( it != m_registered_workers.end() )  {
     return it->second;
   }
-  except("No worker registered for input: %016lX", key.key);
+  if ( exc )   {
+    except("No worker registered for input: %08X", item_key.item());
+  }
   return nullptr;
 }
 
@@ -225,16 +225,14 @@ void DigiContainerSequenceAction::execute(DigiContext& context)  const   {
   for( auto& i : inputs )   {
     Key key(i.first);
     if ( key.mask() == m_input_mask )   {
-      auto it = m_registered_workers.find(key.item());
-      if ( it != m_registered_workers.end() )  {
-	worker_t* w = it->second;
+      if ( worker_t* w = need_registered_worker(key, false) )  {
 	event_workers.emplace_back(w);
-	args.input_items[w->options] = { key, &(i.second) };
+	args.input_items[w->options] = { key, &i.second };
       }
     }
   }
   if ( !event_workers.empty() )   {
-    m_kernel.submit(&event_workers.at(0), event_workers.size(), &args, m_parallel);
+    m_kernel.submit(context, &event_workers.at(0), event_workers.size(), &args, m_parallel);
   }
 }
 
@@ -308,7 +306,7 @@ void DigiMultiContainerProcessor::execute(DigiContext& context)  const  {
     auto& outputs = event.get_segment(m_output_segment);
     output_t   output { m_output_mask, outputs };
     work_t     args   { context, work_items, output, properties(), *this };
-    m_kernel.submit(m_workers.get_group(), m_workers.size(), &args, m_parallel);
+    m_kernel.submit(context, m_workers.get_group(), m_workers.size(), &args, m_parallel);
   }
 }
 

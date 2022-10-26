@@ -48,9 +48,17 @@ namespace  {
 const string& DigiSegmentContext::name()  const  {
   return this->field->name();
 }
+
 /// Split field name
 const char* DigiSegmentContext::cname()  const  {
   return this->field->name().c_str();
+}
+
+/// Full identifier (field + id)
+string DigiSegmentContext::identifier()  const  {
+  std::stringstream str;
+  str << this->field->name() << "." << this->id;
+  return str.str();
 }
 
 /// Initializing constructor

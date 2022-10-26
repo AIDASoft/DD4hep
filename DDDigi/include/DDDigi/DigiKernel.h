@@ -164,10 +164,10 @@ namespace dd4hep {
       DigiActionSequence& outputAction() const;
 
       /// Submit a bunch of actions to be executed in parallel
-      virtual void submit (ParallelCall*const algorithms[], std::size_t count, void* data, bool parallel=true)  const;
+      virtual void submit (DigiContext& context, ParallelCall*const algorithms[], std::size_t count, void* data, bool parallel=true)  const;
 
       /// Submit a bunch of actions to be executed in parallel
-      virtual void submit (const std::vector<ParallelCall*>& algorithms, void* data, bool parallel=true)  const;
+      virtual void submit (DigiContext& context, const std::vector<ParallelCall*>& algorithms, void* data, bool parallel=true)  const;
 
       /// If running multithreaded: wait until the thread-group finished execution
       virtual void wait(DigiContext& context)   const;

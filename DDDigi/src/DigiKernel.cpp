@@ -365,26 +365,27 @@ DigiActionSequence& DigiKernel::outputAction() const    {
 }
 
 /// Submit a bunch of actions to be executed in parallel
-void DigiKernel::submit (ParallelCall*const algorithms[], std::size_t count, void* context, bool parallel)  const    {
+void DigiKernel::submit (DigiContext& context, ParallelCall*const algorithms[], std::size_t count, void* data, bool parallel)  const    {
+  const char* tag = context.event->id();
 #ifdef DD4HEP_USE_TBB
   bool para = parallel && (internals->tbb_init && internals->num_threads > 0);
   if ( para )   {
     tbb::task_group que;
-    printout(INFO,"DigiKernel","+++ Executing chunk of %ld execution entries in parallel", count);
+    printout(INFO,"DigiKernel","%s+++ Executing chunk of %ld execution entries in parallel", tag, count);
     for( std::size_t i=0; i<count; ++i)
-      que.run( Wrapper<ParallelCall,void*>(algorithms[i], context) );
+      que.run( Wrapper<ParallelCall,void*>(algorithms[i], data) );
     que.wait();
     return;
   }
 #endif
-  printout(INFO,"DigiKernel","+++ Executing chunk of %ld execution entries sequentially", count);
+  printout(INFO,"DigiKernel","%s+++ Executing chunk of %ld execution entries sequentially", tag, count);
   for( std::size_t i=0; i<count; ++i)
-    algorithms[i]->execute(context);
+    algorithms[i]->execute(data);
 }
 
 /// Submit a bunch of actions to be executed in parallel
-void DigiKernel::submit (const std::vector<ParallelCall*>& algorithms, void* data, bool parallel)  const  {
-  this->submit(&algorithms[0], algorithms.size(), data, parallel);
+void DigiKernel::submit (DigiContext& context, const std::vector<ParallelCall*>& algorithms, void* data, bool parallel)  const  {
+  this->submit(context, &algorithms[0], algorithms.size(), data, parallel);
 }
 
 void DigiKernel::wait(DigiContext& context)   const  {
@@ -418,9 +419,10 @@ void DigiKernel::notify(std::unique_ptr<DigiContext>&& context)   {
 
 /// Notify kernel that the execution of one single event finished
 void DigiKernel::notify(std::unique_ptr<DigiContext>&& context, const std::exception& e)   {
+  const char* tag = context->event->id();
   internals->stop = true;
-  printout(ERROR,"DigiKernel","+++ Exception during event processing [Shall stop the event loop]");
-  printout(ERROR,"DigiKernel"," -> %s", e.what());
+  printout(ERROR,"DigiKernel","%s+++ Exception during event processing [Shall stop the event loop]", tag);
+  printout(ERROR,"DigiKernel","%s -> %s", tag, e.what());
   notify(std::move(context));
 }
 
@@ -431,8 +433,7 @@ int DigiKernel::run()   {
   internals->events_finished = 0;
   internals->events_submitted = 0;
   internals->events_todo = internals->numEvents;
-  printout(INFO,
-           "DigiKernel","+++ Total number of events:    %d",internals->numEvents);
+  printout(INFO,"DigiKernel","+++ Total number of events:    %d",internals->numEvents);
 #ifdef DD4HEP_USE_TBB
   if ( !internals->tbb_init && internals->num_threads>=0 )   {
     using ctrl_t = tbb::global_control;

@@ -80,7 +80,8 @@ namespace dd4hep {
       void have_workers(size_t len)  const;
 
       /// Combine selected containers to one single deposit container
-      std::size_t combine_containers(DigiEvent& event,
+      std::size_t combine_containers(DigiContext& context,
+				     DigiEvent& event,
 				     DataSegment& inputs,
 				     DataSegment& outputs)  const;
 

@@ -209,14 +209,15 @@ bool DigiContainerCombine::use_key(Key key)  const   {
 }
 
 /// Combine selected containers to one single deposit container
-std::size_t DigiContainerCombine::combine_containers(DigiEvent&   event,
+std::size_t DigiContainerCombine::combine_containers(DigiContext& context,
+						     DigiEvent&   event,
 						     DataSegment& inputs,
 						     DataSegment& outputs)  const
 {
   work_definition_t def(this, event, inputs, outputs);
   if ( m_parallel )  {
     have_workers(def.items.size());
-    m_kernel.submit(m_workers.get_group(), def.items.size(), &def);
+    m_kernel.submit(context, m_workers.get_group(), def.items.size(), &def);
   }
   else  {
     def.merge_all();
@@ -234,5 +235,5 @@ void DigiContainerCombine::execute(DigiContext& context)  const    {
   auto& event    = *context.event;
   auto& inputs   = event.get_segment(m_input);
   auto& outputs  = event.get_segment(m_output);
-  combine_containers(event, inputs, outputs);
+  combine_containers(context, event, inputs, outputs);
 }
