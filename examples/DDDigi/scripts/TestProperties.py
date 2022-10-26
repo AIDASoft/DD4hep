@@ -16,6 +16,7 @@ def yes_no(val):
     return "YES"
   return "NO "
 
+
 def run():
   import DigiTest
   digi = DigiTest.Test(geometry=None)

@@ -24,7 +24,7 @@ def run():
                                  parallel=True, input_mask=0x0, input_segment='inputs')
   count = digi.create_action('DigiCellMultiplicityCounter/CellCounter')
   sequence.adopt_container_processor(count, digi.containers())
-  digi.check_creation([reader,signal,sequence,count])
+  digi.check_creation([reader, signal, sequence, count])
   # ========================================================================================================
   digi.run_checked(num_events=7, num_threads=7, parallel=3)
 
