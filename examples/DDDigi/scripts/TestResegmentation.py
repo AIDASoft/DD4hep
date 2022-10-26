@@ -35,6 +35,7 @@ def run():
     <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
   </readout>
   """
+  resegment.debug = False
   seq.adopt_container_processor(resegment, 'EcalBarrelHits')
   event.adopt_action('DigiStoreDump/StoreDump')
 

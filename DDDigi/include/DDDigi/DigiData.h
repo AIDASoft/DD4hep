@@ -358,13 +358,17 @@ namespace dd4hep {
       /// Disable move constructor
       EnergyDeposit(EnergyDeposit&& copy) = default;
       /// Disable copy constructor
-      EnergyDeposit(const EnergyDeposit& copy) = default;      
+      EnergyDeposit(const EnergyDeposit& copy) = default;
       /// Default destructor
       virtual ~EnergyDeposit() = default;
       /// Disable move assignment
       EnergyDeposit& operator=(EnergyDeposit&& copy) = default;
       /// Disable copy assignment
-      EnergyDeposit& operator=(const EnergyDeposit& copy) = default;      
+      EnergyDeposit& operator=(const EnergyDeposit& copy) = default;
+      /// Update the deposit using deposit weighting
+      void update_deposit_weighted(EnergyDeposit&& update);
+      /// Update the deposit using deposit weighting
+      void update_deposit_weighted(const EnergyDeposit& update);
     };
 
 
@@ -489,18 +493,82 @@ namespace dd4hep {
       const_iterator begin() const        { return this->data.begin();       }
       /// End iteration (CONST)
       const_iterator end()   const        { return this->data.end();         }
-
-      /** Direct element access by key */
-      /// Find entry by cell
-      //iterator find(CellID cell)          { return this->data.find(cell);    }
-      /// Find entry by cell
-      //const_iterator find(CellID cell) const { return this->data.find(cell); }
     };
 
     /// Initializing constructor
     inline DepositMapping::DepositMapping(const std::string& nam, Key::mask_type msk)
       : SegmentEntry(nam, msk)
     {
+    }
+
+    class ADCValue   {
+    public:
+      using value_t = uint32_t;
+      using address_t = uint64_t;
+    public:
+      value_t    value;
+      address_t  address;
+    };
+    
+    /// Energy deposit vector definition for digitization
+    /** Energy deposit vector definition for digitization
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class DetectorResponse : public SegmentEntry  {
+    public: 
+      using container_t    = std::vector<std::pair<CellID, ADCValue> >;
+      using iterator       = container_t::iterator;
+      using const_iterator = container_t::const_iterator;
+
+      container_t    data { };
+
+    public: 
+      /// Initializing constructor
+      DetectorResponse(const std::string& name, Key::mask_type mask);
+      /// Default constructor
+      DetectorResponse() = default;
+      /// Disable move constructor
+      DetectorResponse(DetectorResponse&& copy) = default;
+      /// Disable copy constructor
+      DetectorResponse(const DetectorResponse& copy) = default;      
+      /// Default destructor
+      virtual ~DetectorResponse() = default;
+      /// Disable move assignment
+      DetectorResponse& operator=(DetectorResponse&& copy) = default;
+      /// Disable copy assignment
+      DetectorResponse& operator=(const DetectorResponse& copy) = default;      
+      /// Emplace entry
+      void emplace(CellID cell, ADCValue&& value);
+
+      /// Access container size
+      std::size_t size()  const           { return this->data.size();        }
+      /// Check container if empty
+      bool        empty() const           { return this->data.empty();       }
+
+      /** Iteration support */
+      /// Begin iteration
+      iterator begin()                    { return this->data.begin();       }
+      /// End iteration
+      iterator end()                      { return this->data.end();         }
+      /// Begin iteration (CONST)
+      const_iterator begin() const        { return this->data.begin();       }
+      /// End iteration (CONST)
+      const_iterator end()   const        { return this->data.end();         }
+    };
+
+    /// Initializing constructor
+    inline DetectorResponse::DetectorResponse(const std::string& nam, Key::mask_type msk)
+      : SegmentEntry(nam, msk)
+    {
+    }
+
+
+    /// Emplace entry
+    inline void DetectorResponse::emplace(CellID cell, ADCValue&& value)   {
+      this->data.emplace_back(cell, std::move(value));
     }
 
     ///  Data segment definition (locked map)

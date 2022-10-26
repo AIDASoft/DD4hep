@@ -26,8 +26,7 @@ def run():
   move_seq = signal.adopt_action('DigiContainerSequenceAction/MoveSignal',
                                  parallel=True, input_mask=0x0, input_segment='inputs')
   mover = digi.create_action('DigiIPMover/MoveIPSignal')
-  mover.ip_property = 'interaction_point'
-  mover.ip_creator = set_ip.get()
+  mover.adopt_property(set_ip, "interaction_point", "interaction_point");
   conts = [c for c in digi.containers()]
   conts.append('MCParticles')
   move_seq.adopt_container_processor(mover, conts)

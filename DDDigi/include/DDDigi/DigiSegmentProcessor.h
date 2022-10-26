@@ -42,7 +42,25 @@ namespace dd4hep {
     class DigiSegmentProcessor : public DigiContainerProcessor   {
     public:
       /// Segmentation split context
-      DigiSegmentContext    segment  { };
+      using segment_t = DigiSegmentContext;
+      using deposit_cell_t = std::pair<CellID,EnergyDeposit>;
+      using predicate_t = std::unary_function<deposit_cell_t, bool>;
+
+      struct accept_all_t : public predicate_t  {
+	accept_all_t() = default;
+	inline bool operator()(const deposit_cell_t& ) const  {
+	  return true;
+	}
+      };
+      struct accept_segment_t : public predicate_t  {
+	const segment_t& segment;
+        accept_segment_t(const segment_t& s) : segment(s) {}
+	inline bool operator()(const deposit_cell_t& depo) const  {
+	  return this->segment.matches(depo.first);
+	}
+      };
+
+      segment_t  segment  { };
 
     protected:
       /// Define standard assignments and constructors
@@ -54,7 +72,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiSegmentProcessor();
       /// Main functional callback if specific work is known
-      virtual void handle_segment(DigiContext& context, work_t& data)  const;
+      virtual void execute(DigiContext& context, work_t& data)  const override;
     };
 
     /// Sequencer class to process parts of a subdetector segmentation data
@@ -97,7 +115,7 @@ namespace dd4hep {
       /// Adopt new parallel worker
       virtual void adopt_processor(DigiContainerProcessor* action);
       /// Main functional callback if specific work is known
-      virtual void handle_segment(DigiContext& context, work_t& work)  const;
+      virtual void execute(DigiContext& context, work_t& work)  const  override;
     };
 
   }    // End namespace digi

@@ -156,41 +156,50 @@ def _setKernelProperty(self, name, value):
     return
   msg = 'DigiKernel::SetProperty [Unhandled]: Cannot set Kernel.' + name + ' = ' + str(value)
   raise KeyError(msg)
-
-
 # ---------------------------------------------------------------------------
+
+
+def _get_action(self):
+  return Interface.toAction(self)
+  #if hasattr(self, 'I_am_a_ROOT_interface_handle'):
+  #  return Interface.toAction(self.get())
+  #return self
+# ---------------------------------------------------------------------------
+
+
 def _adopt_property(self, action, foreign_name, local_name):
-  Interface.adoptProperty(self.get(), action, str(foreign_name), str(local_name))
+  proc = _get_action(action)
+  _get_action(self).adopt_property(proc, str(foreign_name), str(local_name))
 
 
 # ---------------------------------------------------------------------------
 def _add_property(self, name, value):
-  Interface.addProperty(self.get(), str(name), value)
+  Interface.addProperty(_get_action(self), str(name), value)
 
 
 # ---------------------------------------------------------------------------
 def _add_position_property(self, name, value):
-  Interface.addPositionProperty(self.get(), str(name), str(value))
+  Interface.addPositionProperty(_get_action(self), str(name), str(value))
 
 
 # ---------------------------------------------------------------------------
 def _add_set_property(self, name, value):
-  Interface.addSetProperty(self.get(), str(name), value)
+  Interface.addSetProperty(_get_action(self), str(name), value)
 
 
 # ---------------------------------------------------------------------------
 def _add_list_property(self, name, value):
-  Interface.addListProperty(self.get(), str(name), value)
+  Interface.addListProperty(_get_action(self), str(name), value)
 
 
 # ---------------------------------------------------------------------------
 def _add_vector_property(self, name, value):
-  Interface.addVectorProperty(self.get(), str(name), value)
+  Interface.addVectorProperty(_get_action(self), str(name), value)
 
 
 # ---------------------------------------------------------------------------
 def _add_mapped_property(self, name, value):
-  Interface.addMappedProperty(self.get(), str(name), value)
+  Interface.addMappedProperty(_get_action(self), str(name), value)
 
 
 # ---------------------------------------------------------------------------
@@ -203,44 +212,12 @@ Kernel.__getattr__ = _getKernelProperty
 Kernel.__setattr__ = _setKernelProperty
 Kernel.terminate = _kernel_terminate
 # ---------------------------------------------------------------------------
-ActionHandle = digi.ActionHandle
-ActionHandle.adopt_property = _adopt_property
-ActionHandle.add_property = _add_property
-ActionHandle.add_position_property = _add_position_property
-ActionHandle.add_set_property = _add_set_property
-ActionHandle.add_list_property = _add_list_property
-ActionHandle.add_vector_property = _add_vector_property
-ActionHandle.add_mapped_property = _add_mapped_property
-# ---------------------------------------------------------------------------
 
 
-def _get_action(self):
+def _get_container_processor(self):
   if hasattr(self, 'I_am_a_ROOT_interface_handle'):
-    return Interface.toAction(self.get())
+    return Interface.toContainerProcessor(self.get())
   return self
-# ---------------------------------------------------------------------------
-
-
-def _get_container_action(self):
-  if hasattr(self, 'I_am_a_ROOT_interface_handle'):
-    return Interface.toContainerAction(self.get())
-  return self
-# ---------------------------------------------------------------------------
-
-
-def TestAction(kernel, nam, sleep=0):
-  obj = Interface.createAction(kernel, str('DigiTestAction/' + nam))
-  if sleep != 0:
-    obj.sleep = sleep
-  return obj
-# ---------------------------------------------------------------------------
-
-
-def Action(kernel, nam, **options):
-  action = Interface.createAction(kernel, str(nam))
-  for option in options.items():
-    setattr(action, option[0], option[1])
-  return action
 # ---------------------------------------------------------------------------
 
 
@@ -258,7 +235,7 @@ def _adopt_event_action(self, action):
 def _adopt_processor_action(self, action, container):
   " Helper to convert DigiActions objects to DigiEventAction "
   attr = getattr(self, 'adopt_processor')
-  proc = _get_container_action(self)
+  proc = _get_container_processor(action)
   attr(proc, container)
   # print('ContainerProcessor succesfully adopted')
 # ---------------------------------------------------------------------------
@@ -298,7 +275,7 @@ def _get(self, name):
     return getattr(self.action, name)
   elif a.__class__ != self.__class__ and hasattr(a, name):
     return getattr(a, name)
-  msg = 'DDDigiAction::GetProperty [Unhandled]: Cannot access property ' + a.name() + '.' + name
+  msg = 'DigiAction::GetProperty [Unhandled]: Cannot access property ' + a.name() + '.' + name
   raise KeyError(msg)
 # ---------------------------------------------------------------------------
 
@@ -311,7 +288,7 @@ def _set(self, name, value):
   value = dd4hep.unicode_2_string(value)
   if Interface.setProperty(a, name, value):
     return
-  msg = 'DDDigiAction::SetProperty [Unhandled]: Cannot set ' + a.name() + '.' + name + ' = ' + value
+  msg = 'DigiAction::SetProperty [Unhandled]: Cannot set ' + a.name() + '.' + name + ' = ' + value
   raise KeyError(msg)
 # ---------------------------------------------------------------------------
 
@@ -327,13 +304,19 @@ def _props(obj, **extensions):
 # ---------------------------------------------------------------------------
 
 
-def _props2(obj, **extensions):
-  cls = getattr(current, obj)
-  for extension in extensions.items():
-    setattr(cls, extension[0], extension[1])
-  cls.__getattr__ = _get
-  cls.__setattr__ = _set
-  return cls
+def TestAction(kernel, nam, sleep=0):
+  obj = Interface.createAction(kernel, str('DigiTestAction/' + nam))
+  if sleep != 0:
+    obj.sleep = sleep
+  return obj
+# ---------------------------------------------------------------------------
+
+
+def Action(kernel, nam, **options):
+  action = Interface.createAction(kernel, str(nam))
+  for option in options.items():
+    setattr(action, option[0], option[1])
+  return action
 # ---------------------------------------------------------------------------
 
 
@@ -345,7 +328,14 @@ _import_class('digi', 'DigiContext')
 _import_class('digi', 'DigiAction')
 _import_class('digi', 'DigiEventAction')
 _import_class('digi', 'DigiInputAction')
-_props('ActionHandle')
+_props('ActionHandle',
+       adopt_property=_adopt_property,
+       add_property=_add_property,
+       add_position_property=_add_position_property,
+       add_set_property=_add_set_property,
+       add_list_property=_add_list_property,
+       add_vector_property=_add_vector_property,
+       add_mapped_property=_add_mapped_property)
 _props('DigiSynchronize', adopt_action=_adopt_sequence_action)
 _props('DigiActionSequence', adopt_action=_adopt_sequence_action)
 _props('DigiParallelActionSequence', adopt_action=_adopt_sequence_action)

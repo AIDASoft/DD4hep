@@ -40,7 +40,7 @@ namespace dd4hep {
 	     depo.deposit);
       }
       /// Main functional callback
-      virtual void handle_segment(DigiContext& context, work_t& work)  const override final  {
+      virtual void execute(DigiContext& context, work_t& work)  const override final  {
 	char format[256];
 	::snprintf(format, sizeof(format), 
 		   "%s[%s] %s-id: %%d [processor:%d] Cell: %%016lX mask: %016lX  hist:%%4ld hits %%4ld parts. entries deposit: %%f", 

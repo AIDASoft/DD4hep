@@ -171,8 +171,8 @@ namespace dd4hep {
       };
       using worker_t         = DigiParallelWorker<processor_t, work_t>;
       using workers_t        = DigiParallelWorkers<worker_t>;
-      using reg_workers_t    = std::map<Key, worker_t*>;
-      using reg_processors_t = std::map<Key, processor_t*>;
+      using reg_workers_t    = std::map<Key::itemkey_type, worker_t*>;
+      using reg_processors_t = std::map<Key::itemkey_type, processor_t*>;
       friend class DigiParallelWorker<processor_t, work_t>;
 
       /// Array of sub-workers
@@ -204,7 +204,7 @@ namespace dd4hep {
       virtual void initialize();
 
       /// Get hold of the registered processor for a given container
-      worker_t* need_registered_worker(Key item_key)  const;
+      worker_t* need_registered_worker(Key item_key, bool exc=true)  const;
 
     public:
       /// Standard constructor

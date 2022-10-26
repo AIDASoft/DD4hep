@@ -59,19 +59,24 @@ void dd4hep::digi::DigiStoreDump::dump(const std::string& tag,
     typ = str_replace(str_replace(typ,"std::",""),"dd4hep::","");
     typ = str_replace(str_replace(typ,"sim::",""),"digi::","");
     if ( const auto* mapping = std::any_cast<DepositMapping>(&data) )   {
-      str = this->format("%s|----  %4X %08X %-32s: %6ld hits      [%s]", 
+      str = this->format("%s|----  %4X %08X %-32s: %6ld deposits   [%s]", 
 			 event.id(), key.values.mask, key.values.item,
 			 nam.c_str(), mapping->size(), typ.c_str());
     }
     else if ( const auto* vector = std::any_cast<DepositVector>(&data) )   {
-      str = this->format("%s|----  %4X %08X %-32s: %6ld hits      [%s]", 
+      str = this->format("%s|----  %4X %08X %-32s: %6ld deposits   [%s]", 
 			 event.id(), key.values.mask, key.values.item,
 			 nam.c_str(), vector->size(), typ.c_str());
     }
     else if ( const auto* parts = std::any_cast<ParticleMapping>(&data) )   {
-      str = this->format("%s|----  %4X %08X %-32s: %6ld particles [%s]", 
+      str = this->format("%s|----  %4X %08X %-32s: %6ld particles  [%s]", 
 			 event.id(), key.values.mask, key.values.item,
 			 nam.c_str(), parts->size(), typ.c_str());
+    }
+    else if ( const auto* adcs = std::any_cast<DetectorResponse>(&data) )   {
+      str = this->format("%s|----  %4X %08X %-32s: %6ld ADC values [%s]", 
+			 event.id(), key.values.mask, key.values.item,
+			 nam.c_str(), adcs->size(), typ.c_str());
     }
     else   {
       str = this->format("%s|----  %4X %08X %-32s: %s", 

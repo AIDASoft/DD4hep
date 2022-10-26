@@ -31,14 +31,14 @@ DigiSegmentProcessor::~DigiSegmentProcessor() {
 }
 
 /// Main functional callback if specific work is known
-void DigiSegmentProcessor::handle_segment(DigiContext& /* context */, work_t& /* args */)  const   {
+void DigiSegmentProcessor::execute(DigiContext& /* context */, work_t& /* args */)  const   {
 }
 
 template <> void DigiParallelWorker<DigiSegmentProcessor,
 				    DigiSegmentSequence::work_t,
 				    dd4hep::VolumeID>::execute(void* args) const  {
   calldata_t* work = reinterpret_cast<calldata_t*>(args);
-  action->handle_segment(work->context, *work);
+  action->execute(work->context, *work);
 }
 
 /// Standard constructor
@@ -69,6 +69,6 @@ void DigiSegmentSequence::adopt_processor(DigiContainerProcessor* action)   {
 }
 
 /// Main functional callback
-void DigiSegmentSequence::handle_segment(DigiContext& /* context */, work_t& work) const {
-  m_kernel.submit(m_workers.get_group(), m_workers.size(), &work, m_parallel);
+void DigiSegmentSequence::execute(DigiContext& context, work_t& work) const {
+  m_kernel.submit(context, m_workers.get_group(), m_workers.size(), &work, m_parallel);
 }

@@ -55,6 +55,9 @@ namespace dd4hep {
       const std::string& name()  const;
       /// Split field name
       const char* cname()  const;
+      /// Full identifier (field + id)
+      std::string identifier()  const;
+      
       /// Get the identifier of the cell to be split
       uint32_t split_id(uint64_t cell)  const  {
 	return int( (cell & this->split_mask) >> this->offset );
