@@ -37,6 +37,9 @@ int setupG4_XML(bool interactive)  {
   if ( interactive )  {
     kernel.property("UI") = "UI";
   }
+  else  {
+    kernel.property("NumEvents") = 3;
+  }
   kernel.configure();
   kernel.initialize();
   kernel.run();

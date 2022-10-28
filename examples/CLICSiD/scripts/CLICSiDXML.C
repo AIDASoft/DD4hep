@@ -40,9 +40,11 @@ int setupG4_XML(bool interactive)  {
   kernel.loadXML((prefix+"CLICSiD/sim/field.xml").c_str());
   kernel.loadXML((prefix+"CLICSiD/sim/sequences.xml").c_str());
   kernel.loadXML((prefix+"CLICSiD/sim/physics.xml").c_str());
-  kernel.property("NumEvents") = 10;
   if ( interactive )  {
     kernel.property("UI") = "UI";
+  }
+  else   {
+    kernel.property("NumEvents") = 3;
   }
   kernel.configure();
   kernel.initialize();
