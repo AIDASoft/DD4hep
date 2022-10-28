@@ -62,7 +62,7 @@ if __name__ == "__main__":
     SIM.part.userParticleHandler = ""
 
     # Particle gun settings: pions with fixed energy and theta, varying phi
-    SIM.numberOfEvents = 500
+    SIM.numberOfEvents = 100
     SIM.enableGun = True
     SIM.gun.energy = "40*GeV"
     SIM.gun.particle = "pi+"

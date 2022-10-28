@@ -59,7 +59,9 @@ int setupG4_CINT(bool interactive)  {
     ui["SessionType"] = "csh";
     kernel.registerGlobalAction(ui);
   }
-
+  else   {
+    kernel.property("NumEvents") = 3;
+  }
   GenAction gun(kernel,"Geant4ParticleGun/Gun");
   gun["energy"]       = 10*CLHEP::GeV;
   gun["particle"]     = "e-";
