@@ -13,8 +13,14 @@
 #ifndef DDG4_GEANT4STACKINGACTION_H
 #define DDG4_GEANT4STACKINGACTION_H
 
-// Framework include files
-#include "DDG4/Geant4Action.h"
+/// Framework include files
+#include <DDG4/Geant4Action.h>
+
+/// Geant4 include files
+#include <G4ClassificationOfNewTrack.hh>
+
+/// Forward declarations
+class G4StackManager;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -27,6 +33,16 @@ namespace dd4hep {
     class Geant4SharedStackingAction;
     class Geant4StackingActionSequence;
 
+    enum Geant4StackingActionTrackClassification {
+      NoTrackClassification = 0xFEED
+    };
+    union TrackClassification {
+      G4ClassificationOfNewTrack value;
+      int                        type;
+      TrackClassification() { type = NoTrackClassification; }
+      TrackClassification(G4ClassificationOfNewTrack val) { value = val; }
+    };
+
     /// Concrete implementation of the Geant4 stacking action base class
     /**
      *  \author  M.Frank
@@ -35,21 +51,26 @@ namespace dd4hep {
      */
     class Geant4StackingAction: public Geant4Action {
     public:
+      friend class Geant4StackingActionSequence;
       typedef Geant4SharedStackingAction shared_type;
     public:
       /// Define standard assignments and constructors
       DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4StackingAction);
+
     public:
       /// Standard constructor
       Geant4StackingAction(Geant4Context* ctxt, const std::string& name);
       /// Default destructor
       virtual ~Geant4StackingAction();
       /// New-stage callback
-      virtual void newStage() {
+      virtual void newStage(G4StackManager* /* stackManager */)   {
       }
       /// Preparation callback
-      virtual void prepare() {
+      virtual void prepare(G4StackManager* /* stackManager */)   {
       }
+      /// Return TrackClassification with enum G4ClassificationOfNewTrack or NoTrackClassification
+      virtual TrackClassification 
+	classifyNewTrack(G4StackManager* /* stackManager */, const G4Track* track);
     };
 
     /// Implementation of the Geant4 shared stacking action
@@ -81,9 +102,12 @@ namespace dd4hep {
       /// Underlying object to be used during the execution of this thread
       virtual void use(Geant4StackingAction* action);
       /// New-stage callback
-      virtual void newStage();
+      virtual void newStage(G4StackManager* stackManager)  override;
       /// Preparation callback
-      virtual void prepare();
+      virtual void prepare(G4StackManager* stackManager)  override;
+      /// Return TrackClassification with enum G4ClassificationOfNewTrack or NoTrackClassification
+      virtual TrackClassification 
+	classifyNewTrack(G4StackManager* stackManager, const G4Track* track)  override;
     };
 
     /// Concrete implementation of the Geant4 stacking action sequence
@@ -124,22 +148,24 @@ namespace dd4hep {
       /// Get an action by name
       Geant4StackingAction* get(const std::string& name) const;
       /// Register begin-of-event callback. Types Q and T must be polymorph!
-      template <typename T> void callAtNewStage(T* p, void (T::*f)()) {
+      template <typename T> void callAtNewStage(T* p, void (T::*f)(G4StackManager*)) {
         m_newStage.add(p, f);
       }
       /// Register end-of-event callback. Types Q and T must be polymorph!
-      template <typename T> void callAtPrepare(T* p, void (T::*f)()) {
+      template <typename T> void callAtPrepare(T* p, void (T::*f)(G4StackManager*)) {
         m_prepare.add(p, f);
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4StackingAction* action);
       /// New-stage callback
-      virtual void newStage();
+      virtual void newStage(G4StackManager* stackManager);
       /// Preparation callback
-      virtual void prepare();
+      virtual void prepare(G4StackManager* stackManager);
+      /// Classify new track: The first call in the sequence returning non-null pointer wins!
+      virtual TrackClassification 
+	classifyNewTrack(G4StackManager* stackManager, const G4Track* track);
     };
 
   }    // End namespace sim
 }      // End namespace dd4hep
-
 #endif // DDG4_GEANT4STACKINGACTION_H
