@@ -264,7 +264,8 @@ def _adopt_sequence_action(self, name, **options):
 
 def _adopt_processor(self, action, containers):
   proc = Interface.toContainerProcessor(_get_action(action))
-  attr = getattr(_get_action(self), '__adopt_processor')(proc, containers)
+  attr = getattr(_get_action(self), '__adopt_processor')
+  attr(proc, containers)
 # ---------------------------------------------------------------------------
 
 

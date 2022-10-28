@@ -99,9 +99,7 @@ def run():
   ph.enableUI()
   phys.adopt(ph)
   phys.dump()
-
-  phys.dump()
-
+  # Start the engine...
   geant4.execute()
 
 
