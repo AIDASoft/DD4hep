@@ -227,7 +227,11 @@ void ParticleMapping::push(Key particle_key, Particle&& particle_data)  {
 }
 
 void ParticleMapping::insert(Key particle_key, const Particle& particle_data)  {
+#if defined(__GNUC__) && (__GNUC__ < 10)
+  bool ret = false;
+#else
   bool ret = data.emplace(particle_key, particle_data).second;
+#endif
   if ( !ret )   {
     except("ParticleMapping","Error in particle map. Duplicate ID: mask:%04X Number:%d History:%s",
 	   particle_key.mask(), particle_key.item(), yes_no(particle_data.history.has_value()));
@@ -336,7 +340,7 @@ void DataSegment::print_keys()   const   {
   for( const auto& e : this->data )   {
     Key k(e.first);
     printout(INFO, "DataSegment", "Key No.%4: %16lX <> %16lX -> %04X %10ld",
-	     count, e.first, k.value(), k.mask(), k.item(),
+	     count, e.first.value(), k.value(), k.mask(), k.item(),
 	     typeName(e.second.type()).c_str());
     ++count;
   }
