@@ -25,6 +25,7 @@
 #include <string_view>
 #endif
 #include <limits>
+#include <cstdint>
 
 #include <typeinfo>
 #include <algorithm>
@@ -105,15 +106,28 @@ namespace dd4hep {
   /// DD4hep internal namespace declaration for utilities and implementation details
   namespace detail  {
     
-    /// We need it so often: one-at-time 64 bit hash function
+    /// 64 bit hash function
+    unsigned long long int hash64(const void* key, std::size_t len);
+    /// 64 bit hash function
     unsigned long long int hash64(const char* key);
+    /// 64 bit hash function
     unsigned long long int hash64(const std::string& key);
-    template <typename T> unsigned long long int typeHash64()   {
-      static unsigned long long int code = hash64(typeid(T).name());
-      return code;
-    }
   
-    /// We need it so often: one-at-time 32 bit hash function
+    /// 32 bit hash function
+    inline unsigned int hash32(const void* key, std::size_t len) {
+      unsigned int hash = 0;
+      const unsigned char* k = (const unsigned char*)key;
+      for (; --len; k++) {
+        hash += *k;
+        hash += (hash << 10);
+        hash ^= (hash >> 6);
+      }
+      hash += (hash << 3);
+      hash ^= (hash >> 11);
+      hash += (hash << 15);
+      return hash;
+    }
+    /// 32 bit hash function
     inline unsigned int hash32(const char* key) {
       unsigned int hash = 0;
       const char* k = key;
@@ -123,12 +137,35 @@ namespace dd4hep {
         hash ^= (hash >> 6);
       }
       hash += (hash << 3);
-      hash ^= (hash >> 11); hash += (hash << 15);
+      hash ^= (hash >> 11);
+      hash += (hash << 15);
       return hash;
     }
-
+    /// 32 bit hash function
     inline unsigned int hash32(const std::string& key) {
       return hash32(key.c_str());
+    }
+
+    /// 16 bit hash function
+    unsigned short hash16(const void* key, std::size_t len);
+    /// 16 bit hash function
+    inline unsigned short hash16(const std::string& key) {
+      return hash16(key.c_str(), key.length());
+    }
+
+    /// 8 bit hash function
+    unsigned char hash8(const char* key);
+    /// 8 bit hash function
+    unsigned char hash8(const void* key, std::size_t len);
+    /// 8 bit hash function
+    inline unsigned short hash8(const std::string& key) {
+      return hash8(key.c_str(), key.length());
+    }
+
+    /// 64 bit type hash function
+    template <typename T> unsigned long long int typeHash64()   {
+      static unsigned long long int code = hash64(typeid(T).name());
+      return code;
     }
 
     template <typename T> T reverseBits(T num)     {
