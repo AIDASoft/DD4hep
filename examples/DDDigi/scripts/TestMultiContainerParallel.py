@@ -24,7 +24,7 @@ def run():
   # ========================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
   proc = event.adopt_action('DigiMultiContainerProcessor/ContainerProc',
-                            input_masks=[0x0, 0x1, 0x2, 0x3, 0xFEED])
+                            parallel=True, input_masks=[0x0, 0x1, 0x2, 0x3, 0xFEED])
   conts = digi.containers(2)
   for i in range(len(conts)):
     merge = dddigi.Action(digi.kernel(), 'DigiContainerProcessor/SegmentPrint_%03d' % (i,))

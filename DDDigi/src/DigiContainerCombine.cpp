@@ -47,7 +47,7 @@ public:
     keys.reserve(inputs.size());
     work.reserve(inputs.size());
     for( auto& i : inputs )   {
-      Key  key = i.first;
+      Key  key(i.first);
       if ( combine->use_key(key) )   {
 	keys.emplace_back(key);
 	work.emplace_back(&i.second);
@@ -60,15 +60,84 @@ public:
     format[sizeof(format)-1] = 0;
   }
 
-  template<typename T> void merge_depos(DepositVector& output, T& input, int thr)  {
+  template<typename OUT, typename IN> void merge_depos(OUT& output, IN& input, int thr)  {
     std::size_t cnt = 0;
     if ( combine->m_erase_combined )
       cnt = output.merge(std::move(input));
     else
       cnt = output.insert(input);
-    combine->debug(this->format, thr, input.name.c_str(), input.key.values.mask, cnt, "deposits"); 
+    combine->debug(this->format, thr, input.name.c_str(), input.key.mask(), cnt, "deposits"); 
     this->cnt_depos += cnt;
     this->cnt_conts++;
+  }
+
+  void merge_hist(const std::string& nam, size_t start, int thr)  {
+    std::size_t cnt;
+    Key key = keys[start];
+    DetectorHistory out(nam, combine->m_deposit_mask);
+    for( std::size_t j=start; j < keys.size(); ++j )   {
+      if ( keys[j].item() == key.item() )   {
+	DetectorHistory* next = std::any_cast<DetectorHistory>(work[j]);
+	if ( combine->m_erase_combined )   {
+	  cnt = out.merge(std::move(*next));
+	  work[j]->reset();
+	}
+	else   {
+	  cnt = out.insert(*next);
+	}
+	combine->debug(format, thr, next->name.c_str(), keys[j].mask(), cnt, "histories"); 
+	cnt_parts += cnt;
+	cnt_conts++;
+      }
+    }
+    key.set_mask(combine->m_deposit_mask);
+    outputs.emplace(key, std::move(out));
+  }
+
+  void merge_response(const std::string& nam, size_t start, int thr)  {
+    std::size_t cnt;
+    Key key = keys[start];
+    DetectorResponse out(nam, combine->m_deposit_mask);
+    for( std::size_t j=start; j < keys.size(); ++j )   {
+      if ( keys[j].item() == key.item() )   {
+	DetectorResponse* next = std::any_cast<DetectorResponse>(work[j]);
+	if ( combine->m_erase_combined )   {
+	  cnt = out.merge(std::move(*next));
+	  work[j]->reset();
+	}
+	else   {
+	  cnt = out.insert(*next);
+	}
+	combine->debug(format, thr, next->name.c_str(), keys[j].mask(), cnt, "histories"); 
+	cnt_parts += cnt;
+	cnt_conts++;
+      }
+    }
+    key.set_mask(combine->m_deposit_mask);
+    outputs.emplace(key, std::move(out));
+  }
+
+  void merge_parts(const std::string& nam, size_t start, int thr)  {
+    std::size_t cnt;
+    Key key = keys[start];
+    ParticleMapping out(nam, combine->m_deposit_mask);
+    for( std::size_t j=start; j < keys.size(); ++j )   {
+      if ( keys[j].item() == key.item() )   {
+	ParticleMapping* next = std::any_cast<ParticleMapping>(work[j]);
+	if ( combine->m_erase_combined )   {
+	  cnt = out.merge(std::move(*next));
+	  work[j]->reset();
+	}
+	else   {
+	  cnt = out.insert(*next);
+	}
+	combine->debug(format, thr, next->name.c_str(), keys[j].mask(), cnt, "particles"); 
+	cnt_parts += cnt;
+	cnt_conts++;
+      }
+    }
+    key.set_mask(combine->m_deposit_mask);
+    outputs.emplace(key, std::move(out));
   }
 
   void merge(const std::string& nam, size_t start, int thr)  {
@@ -80,26 +149,11 @@ public:
 	  merge_depos(out, *m, thr);
 	else if ( DepositVector* v = std::any_cast<DepositVector>(work[j]) )
 	  merge_depos(out, *v, thr);
-	else 
-	  continue;
-	this->work[j]->reset();
-      }
-    }
-    key.set_mask(combine->m_deposit_mask);
-    outputs.emplace(key, std::move(out));
-  }
-
-  void merge_parts(const std::string& nam, size_t start, int thr)  {
-    Key key = keys[start];
-    ParticleMapping out(nam, combine->m_deposit_mask);
-    for( std::size_t j=start; j < keys.size(); ++j )   {
-      if ( keys[j].item() == key.item() )   {
-	ParticleMapping* next = std::any_cast<ParticleMapping>(work[j]);
-	std::size_t cnt = out.merge(std::move(*next));
-	combine->debug(format, thr, next->name.c_str(), keys[j].mask(), cnt, "particles"); 
-	cnt_parts += cnt;
-	cnt_conts++;
-	work[j]->reset();
+	else
+	  break;
+	if ( combine->m_erase_combined )
+	  this->work[j]->reset();
+	break;
       }
     }
     key.set_mask(combine->m_deposit_mask);
@@ -109,23 +163,29 @@ public:
   void merge_one(Key::itemkey_type itm, int thr)   {
     const std::string& opt = combine->m_output_name_flag;
     for( std::size_t i=0; i < keys.size(); ++i )   {
-      if ( keys[i].values.item != itm )
+      if ( keys[i].item() != itm )
 	continue;
       /// Merge deposit mapping
       if ( DepositMapping* depom = std::any_cast<DepositMapping>(work[i]) )   {
 	merge(depom->name+opt, i, thr);
-	break;
       }
       /// Merge deposit vector
       else if ( DepositVector* depov = std::any_cast<DepositVector>(work[i]) )   {
 	merge(depov->name+opt, i, thr);
-	break;
+      }
+      /// Merge detector response
+      else if ( DetectorResponse* resp = std::any_cast<DetectorResponse>(work[i]) )   {
+	merge_response(resp->name+opt, i, thr);
+      }
+      /// Merge response history
+      else if ( DetectorHistory* hist = std::any_cast<DetectorHistory>(work[i]) )   {
+	merge_hist(hist->name+opt, i, thr);
       }
       /// Merge particle container
       else if ( ParticleMapping* parts = std::any_cast<ParticleMapping>(work[i]) )   {
 	merge_parts(parts->name+opt, i, thr);
-	break;
       }
+      break;
     }
   }
 
@@ -173,14 +233,14 @@ DigiContainerCombine::~DigiContainerCombine() {
 void DigiContainerCombine::initialize()    {
   for ( const auto& cont : m_containers )   {
     Key key(cont, 0x0);
-    m_cont_keys.emplace(key.key);
+    m_cont_keys.emplace(key.item());
     if ( m_input_masks.empty() )   {
-      m_keys.emplace(key.key);
+      m_keys.emplace(key.value());
       continue;
     }
     for ( int m : m_input_masks )    {
-      key.values.mask = m;
-      m_keys.emplace(key.key);
+      key.set_mask(m);
+      m_keys.emplace(key.value());
     }
   }
   if ( !m_output_name_flag.empty() )
@@ -201,8 +261,10 @@ bool DigiContainerCombine::use_key(Key key)  const   {
   const auto& m = m_input_masks;
   bool use = m.empty() || m_keys.empty();
   if ( !use )  {
-    if ( !m_cont_keys.empty() )
-      return m_cont_keys.find(key.item()) != m_cont_keys.end();
+    if ( !m_cont_keys.empty() )  {
+      key.set_mask(0);
+      return m_cont_keys.find(key.value()) != m_cont_keys.end();
+    }
     return std::find(m.begin(), m.end(), key.mask()) != m.end();
   }
   return true;

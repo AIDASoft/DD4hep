@@ -73,6 +73,7 @@ namespace dd4hep {
       std::size_t size()  const;
       bool empty()  const;
       bool insert(worker_t* entry)  const;
+      void clear();
     };
 
     template <typename T> inline
@@ -105,6 +106,13 @@ namespace dd4hep {
       bool DigiParallelWorkers<T>::empty() const   {
       return actors.empty();
     }
+
+    template <typename T> inline
+      void DigiParallelWorkers<T>::clear()    {
+      auto group = get_group(); // Lock worker array until no clients present
+      actors.clear();
+    }
+
     template <typename T> inline typename DigiParallelWorkers<T>::group_t
       DigiParallelWorkers<T>::get_group()  const  {
       return group_t(*this);

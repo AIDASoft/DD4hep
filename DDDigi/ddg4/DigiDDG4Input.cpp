@@ -50,6 +50,7 @@ namespace  {
 	if ( ptr )   {
 	  Key history_key;
 	  input_data<T> data(ptr);
+	  history_key.set_segment(segment.id);
 	  history_key.set_mask(Key::mask_type(mask));
 	  for(size_t i=0; i < data.items->size(); ++i)   {
 	    auto* p = (*data.items)[i];
@@ -57,11 +58,10 @@ namespace  {
 	    dep.flag = p->flag;
 	    dep.deposit = p->energyDeposit;
 	    dep.position = p->position;
-
 	    history_key.set_item(i);
-	    dep.hit_history.emplace_back(history_key, 1.0);
+	    dep.history.hits.emplace_back(history_key, 1.0);
 	    history_key.set_item(p->g4ID);
-	    dep.particle_history.emplace_back(history_key, 1.0);
+	    dep.history.particles.emplace_back(history_key, 1.0);
 	    out.emplace(p->cellID, std::move(dep));
 	    particles.emplace_back(wrap_t(p));
 	  }
@@ -97,18 +97,17 @@ static void* convert_sim_geant4particles()     {
 	using wrap_t = std::shared_ptr<sim::Geant4Particle>;
 	auto* items = (std::vector<sim::Geant4Particle*>*)ptr;
 	for( auto* p : *items )   {
-	  Key key(0);
+	  Key key;
 	  Particle part;
-	  key.set_mask(mask);
-	  key.set_item(out->size());
-	  p->mask = mask;
+	  key.set_mask(mask).set_item(out->size()).set_segment(segment.id);
+	  p->mask             = mask;
 	  part.start_position = Position(p->vsx, p->vsy, p->vsz);
 	  part.end_position   = Position(p->vex, p->vey, p->vez);
 	  part.momentum       = Direction(p->psx, p->psy, p->psz);
 	  part.charge         = p->charge;
 	  part.mass           = p->mass;
 	  part.history        = std::make_any<wrap_t>(p);
-	  out->push(key.key, std::move(part));
+	  out->push(key, std::move(part));
 	}
 	items->clear();
       }

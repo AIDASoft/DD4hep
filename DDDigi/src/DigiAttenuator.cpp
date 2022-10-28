@@ -44,8 +44,12 @@ DigiAttenuator::~DigiAttenuator() {
 
 /// Attenuator callback for single container
 template <typename T> std::size_t DigiAttenuator::attenuate(T& cont) const {
-  for( auto& c : cont )
-    c.second.deposit *= m_factor;
+  for( auto& c : cont )   {
+    auto& depo = c.second;
+    depo.deposit *= m_factor;
+    for( auto& h : depo.history.hits ) h.weight *= m_factor;
+    for( auto& h : depo.history.particles ) h.weight *= m_factor;
+  }
   return cont.size();
 }
 

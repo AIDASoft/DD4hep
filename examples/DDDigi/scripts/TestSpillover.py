@@ -19,8 +19,7 @@ def run():
 
   input = digi.input_action('DigiParallelActionSequence/READER')
   # ========================================================================================================
-  signal = input.adopt_action('DigiROOTInput/SignalReader', mask=0x0, input=[digi.next_input()])
-  digi.check_creation([signal])
+  input.adopt_action('DigiROOTInput/SignalReader', mask=0x0, input=[digi.next_input()])
   digi.info('Created input.signal')
   # ========================================================================================================
   digi.info('Creating spillover sequence for EARLIER bunch crossings.....')

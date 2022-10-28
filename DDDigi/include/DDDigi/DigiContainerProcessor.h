@@ -171,8 +171,8 @@ namespace dd4hep {
       };
       using worker_t         = DigiParallelWorker<processor_t, work_t>;
       using workers_t        = DigiParallelWorkers<worker_t>;
-      using reg_workers_t    = std::map<Key::itemkey_type, worker_t*>;
-      using reg_processors_t = std::map<Key::itemkey_type, processor_t*>;
+      using reg_workers_t    = std::map<Key, worker_t*>;
+      using reg_processors_t = std::map<Key, processor_t*>;
       friend class DigiParallelWorker<processor_t, work_t>;
 
       /// Array of sub-workers
@@ -255,12 +255,18 @@ namespace dd4hep {
       /// Property: event mask for output data
       int                m_output_mask  { 0x0 };
 
+      /// Set of container names to be used by this processor
+      std::map<std::string, std::vector<processor_t*> >    m_processors;
+      std::map<Key::itemkey_type, std::vector<worker_t*> > m_worker_map;
+
       /// Set of work items to be processed and passed to clients
-      std::set<Key>      m_work_items;
+      std::set<Key>             m_work_items;
       /// Set of keys required by each worker
-      worker_keys_t      m_worker_keys;
+      worker_keys_t             m_worker_keys;
+      /// Ordered list of actions registered
+      std::vector<processor_t*> m_actions;
       /// Lock for output merging
-      mutable std::mutex m_output_lock;
+      mutable std::mutex        m_output_lock;
 
       /// Array of sub-workers
       workers_t          m_workers;
@@ -270,6 +276,8 @@ namespace dd4hep {
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiMultiContainerProcessor);
       /// Default destructor
       virtual ~DigiMultiContainerProcessor();
+      /// Initialize action object
+      void initialize();
 
     public:
       /// Standard constructor

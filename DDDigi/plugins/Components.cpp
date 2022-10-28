@@ -27,6 +27,12 @@ DECLARE_DIGIACTION_NS(dd4hep::digi,DigiInputAction)
 #include <DDDigi/DigiROOTInput.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiROOTInput)
 
+#include <DDDigi/DigiOutputAction.h>
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiOutputAction)
+
+#include <DDDigi/DigiROOTOutput.h>
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiROOTOutput)
+
 #include <DDDigi/DigiSynchronize.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSynchronize)
 
@@ -53,6 +59,9 @@ DECLARE_DIGIACTION_NS(dd4hep::digi,DigiAttenuatorSequence)
 
 #include <DDDigi/DigiContainerCombine.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerCombine)
+
+#include <DDDigi/DigiContainerDrop.h>
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerDrop)
 
 #include <DDDigi/DigiSegmentProcessor.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSegmentProcessor)

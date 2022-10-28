@@ -131,7 +131,7 @@ void DigiROOTInput::open_new_file()   const  {
 	if ( this->m_containers.empty() )    {
 	  Key key(b->GetName(), this->m_mask);
 	  b->SetAutoDelete( kFALSE );
-	  imp->branches[key.key] = {b, cls, imp->input_converter(cls)};
+	  imp->branches[key.value()] = {b, cls, imp->input_converter(cls)};
 	  continue;
 	}
 	/// Otherwise only the entities asked for
@@ -139,7 +139,7 @@ void DigiROOTInput::open_new_file()   const  {
 	  if ( bname == b->GetName() )   {
 	    Key key(b->GetName(), this->m_mask);
 	    b->SetAutoDelete( kFALSE );
-	    imp->branches[key.key] = {b, cls, imp->input_converter(cls)};
+	    imp->branches[key.value()] = {b, cls, imp->input_converter(cls)};
 	    break;
 	  }
 	}

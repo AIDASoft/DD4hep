@@ -120,7 +120,8 @@ void DigiSegmentSplitter::adopt_processor(DigiContainerProcessor* action)   {
 /// Main functional callback
 void DigiSegmentSplitter::execute(DigiContext& context, work_t& work)  const    {
   Key key = work.input_key();
-  Key unmasked_key(key.item());
+  Key unmasked_key;
+  unmasked_key.set_item(key.item());
   if ( std::find(m_keys.begin(), m_keys.end(), unmasked_key) != m_keys.end() )   {
     if ( work.has_input() )   {
       info("+++ Got hit collection %04X %08X. Prepare processors for %sparallel execution.",
