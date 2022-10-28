@@ -10,14 +10,20 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DDDIGI_DIGIROOTINPUT_H
-#define DDDIGI_DIGIROOTINPUT_H
+#ifndef DDDIGI_DIGIROOTOUTPUT_H
+#define DDDIGI_DIGIROOTOUTPUT_H
 
 /// Framework include files
-#include <DDDigi/DigiInputAction.h>
+#include <DDDigi/DigiOutputAction.h>
 
-// C/C++ include files
+/// C/C++ include files
 #include <memory>
+
+/// Forward declarations
+class TFile;
+class TTree;
+class TBranch;
+
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -26,48 +32,48 @@ namespace dd4hep {
   namespace digi {
 
     // Forward declarations
-    class DigiROOTInput;
+    class DigiROOTOutput;
 
-    /// Base class for input actions to the digitization
+    /// Base class for output actions to the digitization
     /**
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiROOTInput : public DigiInputAction {
+    class DigiROOTOutput : public DigiOutputAction {
 
     protected:
       /// Helper classes
       class internals_t;
       /// Property: Name of the tree to connect to
-      std::string                    m_tree_name   { };
-      /// Property: Container names to be loaded
-      std::vector<std::string>       m_containers  { };
-      /// Property: Segment name to place input data default: inputs
-      std::string                    m_location    { };
+      std::string m_tree_name       { };
+      /// Property: Segment name to place output data default: outputs
+      std::string m_location        { };
+      /// Property: name of the event tree
+      std::string m_section         { };
+      /// Property: File size limit
+      std::size_t m_max_file_size   { std::numeric_limits<std::size_t>::max() };
+      /// Property: vector with disabled collections
+      std::vector<std::string> m_disabledCollections { };
+      /// Property: vector with disabled collections
+      bool  m_disableParticles      { false };
 
-      /// Current input id
-      mutable int                    m_curr_input  { 0 };
-      /// Connection parameters to the "current" input source
-      mutable std::unique_ptr<internals_t> imp     { };
-
-      /// Open new input file
-      void open_new_file()  const;
+      /// Connection parameters to the "current" output source
+      std::unique_ptr<internals_t> imp     { };
 
     protected:
       /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiROOTInput);
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiROOTOutput);
 
     public:
       /// Standard constructor
-      DigiROOTInput(const DigiKernel& kernel, const std::string& nam);
+      DigiROOTOutput(const DigiKernel& kernel, const std::string& nam);
       /// Default destructor
-      virtual ~DigiROOTInput();
-      /// Callback to read event input
+      virtual ~DigiROOTOutput();
+      /// Callback to read event output
       virtual void execute(DigiContext& context)  const override;
     };
-
   }    // End namespace digi
 }      // End namespace dd4hep
-#endif // DDDIGI_DIGIROOTINPUT_H
+#endif // DDDIGI_DIGIROOTOUTPUT_H

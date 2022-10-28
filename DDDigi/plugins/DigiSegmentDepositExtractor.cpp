@@ -47,7 +47,7 @@ namespace dd4hep {
       }
       /// Main functional callback
       virtual void execute(DigiContext&, work_t& work)  const override final  {
-	if ( segment.matches(work.input.key.key) )   {
+	if ( segment.matches(work.input.key.value()) )   {
 	  if ( const auto* m = work.get_input<DepositMapping>() )
 	    copy_deposits(*m, work);
 	  else if ( const auto* v = work.get_input<DepositVector>() )

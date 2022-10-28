@@ -159,11 +159,27 @@ def _setKernelProperty(self, name, value):
 # ---------------------------------------------------------------------------
 
 
+def TestAction(kernel, nam, sleep=0):
+  obj = Interface.createAction(kernel, str('DigiTestAction/' + nam))
+  if sleep != 0:
+    obj.sleep = sleep
+  return obj
+# ---------------------------------------------------------------------------
+
+
+def Action(kernel, nam, **options):
+  action = Interface.createAction(kernel, str(nam))
+  for option in options.items():
+    setattr(action, option[0], option[1])
+  return action
+# ---------------------------------------------------------------------------
+
+
 def _get_action(self):
   return Interface.toAction(self)
-  #if hasattr(self, 'I_am_a_ROOT_interface_handle'):
-  #  return Interface.toAction(self.get())
-  #return self
+  # if hasattr(self, 'I_am_a_ROOT_interface_handle'):
+  #   return Interface.toAction(self.get())
+  # return self
 # ---------------------------------------------------------------------------
 
 
@@ -214,13 +230,6 @@ Kernel.terminate = _kernel_terminate
 # ---------------------------------------------------------------------------
 
 
-def _get_container_processor(self):
-  if hasattr(self, 'I_am_a_ROOT_interface_handle'):
-    return Interface.toContainerProcessor(self.get())
-  return self
-# ---------------------------------------------------------------------------
-
-
 def _default_adopt(self, action):
   getattr(self, '__adopt')(action.get())
 # ---------------------------------------------------------------------------
@@ -228,22 +237,23 @@ def _default_adopt(self, action):
 
 def _adopt_event_action(self, action):
   " Helper to convert DigiActions objects to DigiEventAction "
-  getattr(self, '__adopt')(Interface.toEventAction(action.get()))
+  proc = Interface.toEventAction(_get_action(action))
+  attr = getattr(self, '__adopt')
+  attr(proc)
 # ---------------------------------------------------------------------------
 
 
-def _adopt_processor_action(self, action, container):
+def _adopt_container_processor(self, action, container):
   " Helper to convert DigiActions objects to DigiEventAction "
-  attr = getattr(self, 'adopt_processor')
-  proc = _get_container_processor(action)
+  attr = getattr(_get_action(self), 'adopt_processor')
+  proc = Interface.toContainerProcessor(_get_action(action))
   attr(proc, container)
-  # print('ContainerProcessor succesfully adopted')
 # ---------------------------------------------------------------------------
 
 
 def _adopt_sequence_action(self, name, **options):
   " Helper to adopt DigiAction objects for DigiSynchronize "
-  kernel = Interface.createKernel(Interface.toAction(self))
+  kernel = Interface.createKernel(_get_action(self))
   action = Action(kernel, name)
   for option in options.items():
     setattr(action, option[0], option[1])
@@ -253,16 +263,8 @@ def _adopt_sequence_action(self, name, **options):
 
 
 def _adopt_processor(self, action, containers):
-  getattr(self, '__adopt_processor')(action.get(), containers)
-# ---------------------------------------------------------------------------
-
-
-def _setup(obj, call='adopt', py_call=_default_adopt):
-  _import_class('digi', obj)
-  cls = getattr(current, obj)
-  setattr(cls, '__' + call, getattr(cls, call))
-  setattr(cls, call, py_call)
-  return cls
+  proc = Interface.toContainerProcessor(_get_action(action))
+  attr = getattr(_get_action(self), '__adopt_processor')(proc, containers)
 # ---------------------------------------------------------------------------
 
 
@@ -283,12 +285,12 @@ def _get(self, name):
 def _set(self, name, value):
   """This function is called when properties are passed to the c++ objects."""
   import dd4hep as dd4hep
-  a = Interface.toAction(self)
+  action = _get_action(self)
   name = dd4hep.unicode_2_string(name)
   value = dd4hep.unicode_2_string(value)
-  if Interface.setProperty(a, name, value):
+  if Interface.setProperty(action, name, value):
     return
-  msg = 'DigiAction::SetProperty [Unhandled]: Cannot set ' + a.name() + '.' + name + ' = ' + value
+  msg = 'DigiAction::SetProperty [Unhandled]: Cannot set ' + action.name() + '.' + name + ' = ' + value
   raise KeyError(msg)
 # ---------------------------------------------------------------------------
 
@@ -297,37 +299,25 @@ def _props(obj, **extensions):
   _import_class('digi', obj)
   cls = getattr(current, obj)
   for extension in extensions.items():
-    setattr(cls, extension[0], extension[1])
+    call = extension[0]
+    if hasattr(cls, call):
+      setattr(cls, '__' + call, getattr(cls, call))
+    setattr(cls, call, extension[1])
   cls.__getattr__ = _get
   cls.__setattr__ = _set
   return cls
 # ---------------------------------------------------------------------------
 
 
-def TestAction(kernel, nam, sleep=0):
-  obj = Interface.createAction(kernel, str('DigiTestAction/' + nam))
-  if sleep != 0:
-    obj.sleep = sleep
-  return obj
-# ---------------------------------------------------------------------------
-
-
-def Action(kernel, nam, **options):
-  action = Interface.createAction(kernel, str(nam))
-  for option in options.items():
-    setattr(action, option[0], option[1])
-  return action
-# ---------------------------------------------------------------------------
-
-
-_setup('DigiSynchronize', call='adopt', py_call=_adopt_event_action)
-_setup('DigiActionSequence', call='adopt', py_call=_adopt_event_action)
-
+#
+# Import unmodified classes from C++
 _import_class('digi', 'DigiKernel')
 _import_class('digi', 'DigiContext')
 _import_class('digi', 'DigiAction')
 _import_class('digi', 'DigiEventAction')
 _import_class('digi', 'DigiInputAction')
+#
+# Import classes with specialized python extensions
 _props('ActionHandle',
        adopt_property=_adopt_property,
        add_property=_add_property,
@@ -336,15 +326,13 @@ _props('ActionHandle',
        add_list_property=_add_list_property,
        add_vector_property=_add_vector_property,
        add_mapped_property=_add_mapped_property)
-_props('DigiSynchronize', adopt_action=_adopt_sequence_action)
-_props('DigiActionSequence', adopt_action=_adopt_sequence_action)
+_props('DigiSynchronize', adopt=_adopt_event_action, adopt_action=_adopt_sequence_action)
+_props('DigiActionSequence', adopt=_adopt_event_action, adopt_action=_adopt_sequence_action)
 _props('DigiParallelActionSequence', adopt_action=_adopt_sequence_action)
 _props('DigiSequentialActionSequence', adopt_action=_adopt_sequence_action)
-_props('DigiContainerSequenceAction', adopt_container_processor=_adopt_processor_action)
-
-_setup('DigiMultiContainerProcessor', call='adopt_processor', py_call=_adopt_processor)
-
-
+_props('DigiContainerSequenceAction', adopt_container_processor=_adopt_container_processor)
+_props('DigiMultiContainerProcessor', adopt_processor=_adopt_processor)
+#
 # Need to import digitize late, since it cross includes dddigi
 Digitize = None
 try:

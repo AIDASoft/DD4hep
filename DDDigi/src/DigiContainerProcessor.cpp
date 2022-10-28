@@ -98,7 +98,7 @@ void DigiContainerProcessor::execute(DigiContext& context, work_t& work)  const 
 /// Main functional callback if specific work is known
 void DigiContainerProcessor::execute(DigiContext& context, Key key, std::any& /* data */)  const    {
   info("%s+++ %p Using container: %016lX  --> %04X %08X %s",
-       context.event->id(), (void*)this, key.key, key.mask(), key.item(), Key::key_name(key).c_str());
+       context.event->id(), (void*)this, key.value(), key.mask(), key.item(), Key::key_name(key).c_str());
 }
 
 /// Standard constructor
@@ -156,9 +156,8 @@ DigiContainerSequenceAction::~DigiContainerSequenceAction() {
 /// Initialization callback
 void dd4hep::digi::DigiContainerSequenceAction::initialize()   {
   for( auto& ent : m_registered_processors )   {
-    Key key = ent.first;
     worker_t* w = new worker_t(ent.second, m_registered_workers.size());
-    m_registered_workers.emplace(key.item(), w);
+    m_registered_workers.emplace(ent.first, w);
     m_workers.insert(w);
   }
 }
@@ -168,7 +167,7 @@ void DigiContainerSequenceAction::adopt_processor(DigiContainerProcessor* action
 						  const std::string& container)
 {
   Key key(container, 0x0);
-  auto it = m_registered_processors.find(key.item());
+  auto it = m_registered_processors.find(key);
   if ( it != m_registered_processors.end() )   {
     if ( action != it->second )   {
       except("+++ The action %s was already registered to mask:%04X container:%s!",
@@ -181,7 +180,7 @@ void DigiContainerSequenceAction::adopt_processor(DigiContainerProcessor* action
     return;
   }
   action->addRef();
-  m_registered_processors.emplace(key.item(), action);
+  m_registered_processors.emplace(key, action);
   info("+++ Adding processor: %s for container: [%08X] %s",
        action->c_name(), key.item(), container.c_str());
 }
@@ -199,9 +198,8 @@ void DigiContainerSequenceAction::adopt_processor(DigiContainerProcessor* action
 /// Get hold of the registered processor for a given container
 DigiContainerSequenceAction::worker_t*
 DigiContainerSequenceAction::need_registered_worker(Key item_key, bool exc)   const  {
-  Key key;
-  key.set_item(item_key.item());
-  auto it = m_registered_workers.find(item_key.item());
+  item_key.set_mask(0);
+  auto it = m_registered_workers.find(item_key);
   if ( it != m_registered_workers.end() )  {
     return it->second;
   }
@@ -218,9 +216,9 @@ void DigiContainerSequenceAction::execute(DigiContext& context)  const   {
   auto& outputs = event.get_segment(m_output_segment);
   std::vector<ParallelWorker*> event_workers;
   output_t output { m_output_mask, outputs };
-  work_t   args   { context, {}, output, m_properties, *this };
+  work_t   args   { context, { }, output, m_properties, *this };
 
-  args.input_items.resize(m_workers.size(), {0, nullptr});
+  args.input_items.resize(m_workers.size(), { { }, nullptr });
   event_workers.reserve(inputs.size());
   for( auto& i : inputs )   {
     Key key(i.first);
@@ -254,6 +252,7 @@ DigiMultiContainerProcessor::DigiMultiContainerProcessor(const DigiKernel& krnl,
   this->declareProperty("input_segment",    m_input_segment);
   this->declareProperty("output_mask",      m_output_mask);
   this->declareProperty("output_segment",   m_output_segment);
+  m_kernel.register_initialize(Callback(this).make(&DigiMultiContainerProcessor::initialize));
   InstanceCount::increment(this);
 }
 
@@ -262,6 +261,58 @@ DigiMultiContainerProcessor::~DigiMultiContainerProcessor() {
   InstanceCount::decrement(this);
 }
 
+/// Initialize action object
+void DigiMultiContainerProcessor::initialize()   {
+  std::map<processor_t*,worker_t*> action_workers;
+  std::map<processor_t*,std::vector<Key> > keys;
+  std::map<processor_t*,std::vector<std::string> > action_containers;
+
+  m_worker_keys.clear();
+  m_worker_map.clear();
+  m_work_items.clear();
+  m_workers.clear();
+  for( auto& proc : m_processors )    {
+    Key key(proc.first, 0x0);
+    m_work_items.insert(key);
+    for ( auto* action : proc.second )   {
+      keys[action].push_back(key);
+      action_containers[action].push_back(proc.first);
+    }
+  }
+  /// We need to preserve the order the actions were submitted
+  /// and remove later added duplicates (for different containers)
+  for( auto* action : m_actions )   {
+    auto worker_keys = keys[action];
+    worker_t* w = nullptr;
+    auto iw = action_workers.find(action);
+    if ( iw != action_workers.end() )   {
+      w = iw->second;
+    }
+    else   {
+      w = new worker_t(action, m_workers.size());
+      m_worker_keys.emplace_back(worker_keys);
+      m_workers.insert(w);
+      action_workers[action] = w;
+    }
+    for( auto key : worker_keys )
+      m_worker_map[key.item()].push_back(w);
+  }
+  /// Add some printout about the configuration
+  for(auto* action : m_actions )   {
+    auto conts = action_containers[action];
+    std::stringstream str;
+    str << "[ ";
+    for( const auto& cont : conts )
+      str << cont << " ";
+    str << "]";
+    info("+++ Use processor: %-32s for processing: %s", action->c_name(), str.str().c_str());
+  }
+  /// All done: release reference count aquired in adopt_processor
+  for(auto* action : m_actions )
+    action->release();
+}
+
+/// Adopt new parallel worker
 void DigiMultiContainerProcessor::adopt_processor(DigiContainerProcessor* action, const std::vector<std::string>& containers)    {
   if ( !action )   {
     except("+++ Attempt to use invalid processor. Request FAILED.");
@@ -269,19 +320,13 @@ void DigiMultiContainerProcessor::adopt_processor(DigiContainerProcessor* action
   else if ( containers.empty() )   {
     except("+++ Processor %s is defined, but no workload was assigned. Request FAILED.");
   }
-  std::stringstream str;
-  std::vector<Key> keys;
-  str << "[ ";
   for(const auto& cont : containers)    {
-    Key key(cont, 0x0);
-    keys.push_back(key);
-    m_work_items.insert(key.item());
-    str << cont << " ";
+    m_processors[cont].push_back(action);
   }
-  str << " ";
-  m_workers.insert(new worker_t(action, m_workers.size()));
-  m_worker_keys.emplace_back(std::move(keys));
-  info("+++ Use processor: %-32s for processing: %s", action->c_name(), str.str().c_str());
+  if ( std::find(m_actions.begin(), m_actions.end(), action) == m_actions.end() )   {
+    m_actions.emplace_back(action);
+    action->addRef();
+  }
 }
 
 /// Main functional callback
@@ -293,10 +338,11 @@ void DigiMultiContainerProcessor::execute(DigiContext& context)  const  {
 
   work_items.reserve(inputs.size());
   for( auto& i : inputs )   {
-    Key in_key(i.first);
-    bool use = msk.empty() || std::find(msk.begin(), msk.end(), in_key.mask()) != msk.end();
+    Key  key(i.first);
+    key.set_mask(0);
+    bool use = msk.empty() || std::find(msk.begin(), msk.end(), key.mask()) != msk.end();
     if ( use )   {
-      use = m_work_items.empty() || m_work_items.find(in_key.item()) != m_work_items.end();
+      use = m_work_items.empty() || m_work_items.find(key) != m_work_items.end();
       if ( use )   {
 	work_items.emplace_back(std::make_pair(i.first, &i.second));
       }
@@ -319,17 +365,28 @@ template <> void DigiParallelWorker<DigiContainerProcessor,
   const auto& keys  = par.worker_keys(this->options);
   const auto& masks = par.input_masks();
   for( const auto& item : arg->items )  {
-    Key key = item.first;
+    Key key(item.first);
+    key.set_mask(0);
+    const char* tag = "";
     if ( masks.empty() || std::find(masks.begin(), masks.end(), key.mask()) != masks.end() )  {
+      tag = "mask accepted";
       if ( keys.empty() )  {
 	DigiContainerProcessor::work_t  work {arg->context, {key, *item.second }, arg->output, arg->properties };
 	action->execute(work.context, work);
+	continue;
       }
-      else if ( std::find(keys.begin(), keys.end(), Key(key.item())) != keys.end() )    {
+      else if ( std::find(keys.begin(), keys.end(), key) != keys.end() )    {
 	DigiContainerProcessor::work_t  work {arg->context, {key, *item.second }, arg->output, arg->properties };
 	action->execute(work.context, work);
+	continue;
       }
+      tag = "no keys matching";
     }
+    if ( tag )  {}
+#if 0
+    par.info("%s+++ Ignore container: %016lX  --> %04X %08X %s [%s]",
+	     arg->context.event->id(), key.value(), key.mask(), key.item(), Key::key_name(key).c_str(), tag);
+#endif
   }
 }
 

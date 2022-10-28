@@ -53,7 +53,10 @@ namespace dd4hep {
       typedef std::uint64_t key_type;
       typedef std::uint32_t itemkey_type;
       typedef std::uint16_t mask_type;
-      
+      typedef std::uint8_t  segment_type;
+      typedef std::uint8_t  submask_type;
+
+    private:      
       /// First union entry used for fast initialization
       key_type key;
       /// Second union entry to use for discrimination
@@ -61,11 +64,12 @@ namespace dd4hep {
 	// Ordering is important here: 
 	// We want to group the containers by item ie. by container name
 	// and not by mask
-        itemkey_type item;
+	segment_type segment;
+	submask_type submask;
         mask_type    mask;
-        mask_type    spare;
+        itemkey_type item;
       } values;
-
+    public:
       /// Default constructor
       Key();
       /// Move constructor
@@ -73,11 +77,13 @@ namespace dd4hep {
       /// Copy constructor
       Key(const Key&);
       /// Initializaing constructor (fast)
-      Key(key_type full_mask);
+      Key(key_type full_mask) = delete;
       /// Initializing constructor with key generation using hash algorithm
-      Key(const char* item, mask_type mask);
+      explicit Key(const char* item, mask_type mask);
       /// Initializing constructor with key generation using hash algorithm
-      Key(const std::string& item, mask_type mask);
+      explicit Key(const std::string& item, mask_type mask);
+      /// Assignment operator
+      Key& operator = (const Key::key_type) = delete;
       /// Assignment operator
       Key& operator = (const Key&);
       /// Move assignment operator
@@ -92,47 +98,51 @@ namespace dd4hep {
       /// Generate key using hash algorithm
       void set(const std::string& name, int mask);
 
-      /// Conversion to uint64
-      key_type toLong()  const  {
-	return key;
+      /// Set key mask
+      Key& set_mask(mask_type m)  {
+	this->values.mask = m;
+	return *this;
       }
-
+      /// Set key submask
+      Key& set_submask(submask_type m)  {
+	this->values.submask = m;
+	return *this;
+      }
+      /// Set key submask
+      Key& set_submask(const char* opt_tag);
+      /// Set key item identifier
+      Key& set_item(itemkey_type i)  {
+	this->values.item = i;
+	return *this;
+      }
+      /// Set key mask
+      Key& set_segment(segment_type seg)  {
+	this->values.segment = seg;
+	return *this;
+      }
       /// Project the item part of the key
       mask_type mask()  const {
 	return this->values.mask;
       }
-      /// Set key mask
-      void set_mask(Key k)  {
-	this->values.mask = k.values.mask;
-      }
-      /// Set key mask
-      void set_mask(mask_type m)  {
-	this->values.mask = m;
-      }
-      /// Project the item part of the key
-      static mask_type mask(key_type k)  {
-	return Key(k).values.mask;
-      }
-      /// Project the item part of the key
-      static mask_type mask(Key k)  {
-	return k.values.mask;
-      }
-
       /// Project the mask part of the key
       itemkey_type item()  const  {
 	return this->values.item;
       }
-      /// Set key item identifier
-      void set_item(itemkey_type i)  {
-	this->values.item = i;
+      /// Project the segment part of the key
+      segment_type segment()  const  {
+        return this->values.segment;
       }
-      /// Project the mask part of the key
-      static itemkey_type item(key_type k)  {
-	return Key(k).values.item;
+      /// Access key as long integer
+      key_type value()  const {
+	return this->key;
       }
       /// Project the mask part of the key
       static itemkey_type item(Key k)  {
 	return k.values.item;
+      }
+      /// Project the item part of the key
+      static mask_type mask(Key k)  {
+	return k.values.mask;
       }
       /// Access key name (if registered properly)
       static std::string key_name(const Key& key);
@@ -152,12 +162,6 @@ namespace dd4hep {
     inline Key::Key(const Key& copy)   {
       this->key = copy.key;
     }
-
-    /// Initializaing constructor (fast)
-    inline Key::Key(key_type full_mask)   {
-      this->key = full_mask;
-    }
-
     /// Initializaing constructor with key generation using hash algorithm
     inline Key::Key(const char* item, mask_type mask)  {
       this->set(item, mask);
@@ -198,7 +202,7 @@ namespace dd4hep {
     class SegmentEntry   {
     public:
       std::string      name { };
-      Key              key  { 0x0 };
+      Key              key  { };
     public:
       /// Initializing constructor
       SegmentEntry(const std::string& name, Key::mask_type mask);
@@ -238,7 +242,7 @@ namespace dd4hep {
       double    mass           { 0e0 };
       char      charge         { 0 };
       /// Source contributing
-      std::any history;
+      std::any  history;
 
     public:
       /// Initializing constructor
@@ -264,18 +268,18 @@ namespace dd4hep {
     }
 
     /// Particle mapping definition for digitization
-    /** Particle mapping definition for digitization
+    /**
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
     class ParticleMapping : public SegmentEntry   {
-      using container_t = std::map<Key::key_type, Particle>;
-      using value_type = container_t::value_type;
-      using mapped_type = container_t::mapped_type;
-      using key_type = container_t::key_type;
-      using iterator = container_t::iterator;
+      using container_t    = std::map<Key, Particle>;
+      using value_type     = container_t::value_type;
+      using mapped_type    = container_t::mapped_type;
+      using key_type       = container_t::key_type;
+      using iterator       = container_t::iterator;
       using const_iterator = container_t::const_iterator;
 
       container_t data;
@@ -300,6 +304,11 @@ namespace dd4hep {
       std::size_t merge(ParticleMapping&& updates);
       /// Add new entry to the particle mapping (not thread safe!)
       void push(Key key, Particle&& particle);
+
+      /// Merge new deposit map onto existing map (not thread safe!) (CONST)
+      std::size_t insert(const ParticleMapping& updates);
+      /// Add new entry to the particle mapping (not thread safe!) (CONST)
+      void insert(Key key, const Particle& particle);
 
       /// Access container size
       std::size_t size()  const           { return this->data.size();        }
@@ -326,8 +335,56 @@ namespace dd4hep {
     {
     }
 
+    ///  Class to hold the processing history of the detector response
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class History   {
+    public:
+      struct hist_entry_t   {
+	Key    source { };
+	double weight { 0e0 };
+	hist_entry_t(Key s, double w);
+	hist_entry_t() = default;
+	hist_entry_t(hist_entry_t&& copy) = default;
+	hist_entry_t(const hist_entry_t& copy) = default;
+	hist_entry_t& operator=(hist_entry_t&& copy) = default;
+	hist_entry_t& operator=(const hist_entry_t& copy) = default;
+	~hist_entry_t() = default;
+      };
+      /// Sources contributing to the deposit indexed by the cell identifier
+      std::vector<hist_entry_t> hits;
+      std::vector<hist_entry_t> particles;
+
+    public:
+      /// Default constructor
+      History() = default;
+      /// Disable move constructor
+      History(History&& copy) = default;
+      /// Disable copy constructor
+      History(const History& copy) = default;
+      /// Default destructor
+      virtual ~History() = default;
+      /// Disable move assignment
+      History& operator=(History&& copy) = default;
+      /// Disable copy assignment
+      History& operator=(const History& copy) = default;
+
+      /// Update history
+      void update(const History& upda);
+      /// Drop history information
+      std::pair<std::size_t,std::size_t> drop();
+    };
+
+    inline History::hist_entry_t::hist_entry_t(Key s, double w)
+      : source(s), weight(w)  {
+    }
+
     /// Energy deposit definition for digitization
-    /** Energy deposit definition for digitization
+    /**
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -349,8 +406,7 @@ namespace dd4hep {
       Key::mask_type mask        { 0 };
 
       /// Sources contributing to this deposit
-      std::vector<std::pair<Key, double> > hit_history;
-      std::vector<std::pair<Key, double> > particle_history;
+      History        history;
 
     public:
       /// Default constructor
@@ -373,7 +429,7 @@ namespace dd4hep {
 
 
     /// Energy deposit vector definition for digitization
-    /** Energy deposit vector definition for digitization
+    /**
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -404,8 +460,12 @@ namespace dd4hep {
       DepositVector& operator=(const DepositVector& copy) = default;      
       /// Merge new deposit map onto existing vector (destroys inputs. not thread safe!)
       std::size_t merge(DepositVector&& updates);
+      /// Merge new deposit map onto existing vector (destroys inputs. not thread safe!)
+      std::size_t merge(const DepositVector& updates);
       /// Merge new deposit map onto existing map (destroys inputs. not thread safe!)
       std::size_t merge(DepositMapping&& updates);
+      /// Merge new deposit map onto existing map (destroys inputs. not thread safe!)
+      std::size_t merge(const DepositMapping& updates);
       /// Merge new deposit map onto existing vector (keep inputs. not thread safe!)
       std::size_t insert(const DepositVector& updates);
       /// Merge new deposit map onto existing map (keep inputs. not thread safe!)
@@ -441,7 +501,7 @@ namespace dd4hep {
     }
 
     /// Energy deposit mapping definition for digitization
-    /** Energy deposit mapping definition for digitization
+    /**
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -470,12 +530,14 @@ namespace dd4hep {
       DepositMapping& operator=(DepositMapping&& copy) = default;
       /// Disable copy assignment
       DepositMapping& operator=(const DepositMapping& copy) = default;      
+
       /// Merge new deposit map onto existing map (not thread safe!)
       std::size_t merge(DepositMapping&& updates);
       /// Merge new deposit map onto existing map (not thread safe!)
-      std::size_t merge(DepositVector&& updates);
-      /// Merge new deposit map onto existing map (not thread safe!)
       std::size_t insert(const DepositMapping& updates);
+
+      /// Merge new deposit map onto existing map (not thread safe!)
+      std::size_t merge(DepositVector&& updates);
       /// Merge new deposit map onto existing map (not thread safe!)
       std::size_t insert(const DepositVector& updates);
 
@@ -510,8 +572,8 @@ namespace dd4hep {
       address_t  address;
     };
     
-    /// Energy deposit vector definition for digitization
-    /** Energy deposit vector definition for digitization
+    /// Detector response vector definition for digitization
+    /**
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -540,6 +602,11 @@ namespace dd4hep {
       DetectorResponse& operator=(DetectorResponse&& copy) = default;
       /// Disable copy assignment
       DetectorResponse& operator=(const DetectorResponse& copy) = default;      
+
+      /// Merge new deposit map onto existing map (not thread safe!)
+      std::size_t merge(DetectorResponse&& updates);
+      /// Merge new deposit map onto existing map (not thread safe!)
+      std::size_t insert(const DetectorResponse& updates);
       /// Emplace entry
       void emplace(CellID cell, ADCValue&& value);
 
@@ -571,6 +638,80 @@ namespace dd4hep {
       this->data.emplace_back(cell, std::move(value));
     }
 
+    /// Detector history vector definition for digitization
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class DetectorHistory : public SegmentEntry  {
+    public: 
+      using container_t    = std::vector<std::pair<CellID, History> >;
+      using iterator       = container_t::iterator;
+      using const_iterator = container_t::const_iterator;
+
+      container_t    data { };
+
+    public: 
+      /// Initializing constructor
+      DetectorHistory(const std::string& name, Key::mask_type mask);
+      /// Default constructor
+      DetectorHistory() = default;
+      /// Disable move constructor
+      DetectorHistory(DetectorHistory&& copy) = default;
+      /// Disable copy constructor
+      DetectorHistory(const DetectorHistory& copy) = default;      
+      /// Default destructor
+      virtual ~DetectorHistory() = default;
+      /// Disable move assignment
+      DetectorHistory& operator=(DetectorHistory&& copy) = default;
+      /// Disable copy assignment
+      DetectorHistory& operator=(const DetectorHistory& copy) = default;      
+
+      /// Merge new deposit map onto existing map (not thread safe!)
+      std::size_t merge(DetectorHistory&& updates);
+      /// Merge new deposit map onto existing map (not thread safe!)
+      std::size_t insert(const DetectorHistory& updates);
+
+      /// Insert new entry
+      void insert(CellID cell, const History& value);
+      /// Emplace new entry
+      void emplace(CellID cell, History&& value);
+
+      /// Access container size
+      std::size_t size()  const           { return this->data.size();        }
+      /// Check container if empty
+      bool        empty() const           { return this->data.empty();       }
+
+      /** Iteration support */
+      /// Begin iteration
+      iterator begin()                    { return this->data.begin();       }
+      /// End iteration
+      iterator end()                      { return this->data.end();         }
+      /// Begin iteration (CONST)
+      const_iterator begin() const        { return this->data.begin();       }
+      /// End iteration (CONST)
+      const_iterator end()   const        { return this->data.end();         }
+    };
+
+    /// Initializing constructor
+    inline DetectorHistory::DetectorHistory(const std::string& nam, Key::mask_type msk)
+      : SegmentEntry(nam, msk)
+    {
+    }
+
+    /// Emplace new entry
+    inline void DetectorHistory::emplace(CellID cell, History&& value)   {
+      this->data.emplace_back(cell, std::move(value));
+    }
+
+    /// Insert new entry
+    inline void DetectorHistory::insert(CellID cell, const History& value)   {
+      this->data.emplace_back(cell, value);
+    }
+
+
     ///  Data segment definition (locked map)
     /**
      *
@@ -580,7 +721,8 @@ namespace dd4hep {
      */
     class DataSegment   {
     public:
-      using container_map_t = std::map<Key::key_type, std::any>;
+      using key_t = Key::key_type;
+      using container_map_t = std::map<Key, std::any>;
       using iterator        = container_map_t::iterator;
       using const_iterator  = container_map_t::const_iterator;
 
@@ -598,10 +740,10 @@ namespace dd4hep {
     public:
       container_map_t data;
       std::mutex&     lock;
-
+      uint32_t        id  { 0 };
     public:
       /// Initializing constructor
-      DataSegment(std::mutex& lock);
+      DataSegment(std::mutex& lock, int id);
       /// Default constructor
       DataSegment() = delete;
       /// Disable move constructor
@@ -652,13 +794,13 @@ namespace dd4hep {
       /// End iteration
       iterator end()                      { return this->data.end();         }
       /// Find entry by key
-      iterator find(Key key)              { return this->data.find(key.key); }
+      iterator find(Key key)              { return this->data.find(key);     }
       /// Begin iteration (CONST)
       const_iterator begin() const        { return this->data.begin();       }
       /// End iteration (CONST)
       const_iterator end()   const        { return this->data.end();         }
       /// Find entry by key
-      const_iterator find(Key key) const  { return this->data.find(key.key); }
+      const_iterator find(Key key) const  { return this->data.find(key);     }
     };
 
     /// Access data as reference by key. If not existing, an exception is thrown
@@ -713,7 +855,7 @@ namespace dd4hep {
       segment_t m_deposits;
 
       /// Helper: Save access with segment creation if it does not exist
-      DataSegment& access_segment(segment_t& seg);
+      DataSegment& access_segment(segment_t& seg, uint32_t id);
 
     public:
       /// Current event number

@@ -22,18 +22,14 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
-    /// Actor to merge energy deposits weighted with their energy deposit
+    /// Actor to smear geographically energy deposits
     /**
-     *  The selected deposits are placed in the output container
-     *  supplied by the arguments. Multiple CellIDs will be merged to one single 
-     *  deposit, where the merge computes the resulting position and
-     *  momentum according to the contribution of the hits.
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiDepositWeightedPosition : public DigiContainerProcessor   {
+    class DigiDepositSmearing : public DigiContainerProcessor   {
     protected:
       /// Property: Energy cutoff. No hits will be merged with a deposit smaller
       double m_cutoff { std::numeric_limits<double>::epsilon() };
@@ -42,7 +38,7 @@ namespace dd4hep {
 
     public:
       /// Standard constructor
-      DigiDepositWeightedPosition(const DigiKernel& krnl, const std::string& nam)
+      DigiDepositSmearing(const DigiKernel& krnl, const std::string& nam)
 	: DigiContainerProcessor(krnl, nam)
       {
 	declareProperty("deposit_cutoff", m_cutoff);
@@ -88,4 +84,4 @@ namespace dd4hep {
 }      // End namespace dd4hep
 
 #include <DDDigi/DigiFactories.h>
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositWeightedPosition)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositSmearing)

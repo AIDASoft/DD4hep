@@ -16,16 +16,19 @@ def run():
   digi = DigiTest.Test(geometry=None)
 
   # ========================================================================================================
-  input = digi.input_action('DigiParallelActionSequence/READER')
+  input = digi.input_action('DigiSequentialActionSequence/READER')
   input.adopt_action('DigiROOTInput/SignalReader', mask=0x0, input=[digi.next_input()])
   # ========================================================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
+  event.adopt_action('DigiStoreDump/DumpInput')
   proc = event.adopt_action('DigiContainerCombine/Combine',
                             parallel=True,
-                            input_masks=[0x0, 0x1, 0x2, 0x3],
+                            input_masks=[0x0],
+                            input_segment='inputs',
                             output_mask=0xFEED,
                             output_segment='deposits',
-                            erase_combined=True)
+                            erase_combined=False)
+  event.adopt_action('DigiStoreDump/DumpCombine')
   proc = event.adopt_action('DigiContainerSequenceAction/ADCsequence',
                             parallel=True,
                             input_mask=0xFEED,
@@ -34,12 +37,15 @@ def run():
                             output_segment='output')
   count = digi.create_action('DigiSimpleADCResponse/ADCCreate')
   proc.adopt_container_processor(count, digi.containers())
-
-  event.adopt_action('DigiStoreDump/StoreDump')
+  event.adopt_action('DigiContainerDrop/DropCombine',
+                     parallel=True,
+                     input_masks=[0xFEED],
+                     input_segment='deposits')
+  event.adopt_action('DigiStoreDump/DumpOutput')
   digi.info('Created event.dump')
 
   # ========================================================================================================
-  digi.run_checked(num_events=5, num_threads=5, parallel=3)
+  digi.run_checked(num_events=5, num_threads=1, parallel=3)
 
 
 if __name__ == '__main__':

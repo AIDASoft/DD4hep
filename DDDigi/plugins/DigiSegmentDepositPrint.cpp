@@ -35,8 +35,8 @@ namespace dd4hep {
 
       void print_deposit(const char* format, CellID cell, const EnergyDeposit& depo)  const   {
 	info(format, segment.split_id(cell), cell,
-	     depo.hit_history.size(), 
-	     depo.particle_history.size(),
+	     depo.history.hits.size(), 
+	     depo.history.particles.size(),
 	     depo.deposit);
       }
       /// Main functional callback
@@ -54,7 +54,7 @@ namespace dd4hep {
 	else if ( const auto* v = work.get_input<DepositVector>() )
 	  std::for_each(v->begin(), v->end(), call);
 	else
-	  error("+++ Request to dump an invalid container %s", Key::key_name(work.input.key.item()).c_str());
+	  error("+++ Request to dump an invalid container %s", Key::key_name(work.input.key).c_str());
       }
     };
   }    // End namespace digi

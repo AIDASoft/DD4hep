@@ -59,6 +59,18 @@ namespace dd4hep {
 	InstanceCount::increment(this);
       }
 
+      template <typename T>
+      std::pair<std::size_t, std::size_t> drop_history(T& cont)  const  {
+	std::size_t num_drop_hit = 0;
+	std::size_t num_drop_particle = 0;
+	for( auto& c : cont )    {
+	  auto ret = c.second.history.drop();
+	  num_drop_hit += ret.first;
+	  num_drop_particle += ret.second;
+	}
+	return std::make_pair(num_drop_hit,num_drop_particle);
+      }
+
       /// Main functional callback
       virtual void execute(DigiContext& context)  const  final  {
 	auto& inputs = context.event->get_segment(m_input);
@@ -69,20 +81,14 @@ namespace dd4hep {
 	  auto im = std::find(m_masks.begin(), m_masks.end(), key.mask());
 	  if ( im != m_masks.end() )   {
 	    if ( DepositMapping* m = std::any_cast<DepositMapping>(&i.second) )    {
-	      for( auto& c : *m )    {
-		num_drop_hit += c.second.hit_history.size();
-		c.second.hit_history.clear();
-		num_drop_particle += c.second.particle_history.size();
-		c.second.particle_history.clear();
-	      }
+	      auto ret = drop_history(*m);
+	      num_drop_hit += ret.first;
+	      num_drop_particle += ret.second;
 	    }
 	    if ( DepositVector* m = std::any_cast<DepositVector>(&i.second) )    {
-	      for( auto& c : *m )    {
-		num_drop_hit += c.second.hit_history.size();
-		c.second.hit_history.clear();
-		num_drop_particle += c.second.particle_history.size();
-		c.second.particle_history.clear();
-	      }
+	      auto ret = drop_history(*m);
+	      num_drop_hit += ret.first;
+	      num_drop_particle += ret.second;
 	    }
 	  }
 	}
