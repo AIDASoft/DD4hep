@@ -83,11 +83,9 @@ namespace { class DDG4Dict {};   }
 
 /// Dictionaires for basic Hit data structures
 #pragma link C++ class dd4hep::sim::Geant4HitData+;
-
 namespace dd4hep { namespace sim { typedef Geant4HitData* Geant4HitData_ptr_t; }}
 #pragma link C++ typedef dd4hep::sim::Geant4HitData_ptr_t;
 #pragma link C++ class std::vector<dd4hep::sim::Geant4HitData_ptr_t>+;
-#pragma link C++ class std::vector<dd4hep::sim::Geant4HitData*>+;
 #pragma link C++ class dd4hep::sim::Geant4HitData::Contribution+;
 #pragma link C++ class dd4hep::sim::Geant4HitData::Contributions+;
 
