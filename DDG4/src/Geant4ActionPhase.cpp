@@ -96,12 +96,17 @@ class G4TouchableHistory;
 #include "DDG4/Geant4EventAction.h"
 #include "DDG4/Geant4TrackingAction.h"
 #include "DDG4/Geant4SteppingAction.h"
+#include "DDG4/Geant4StackingAction.h"
 #include "DDG4/Geant4GeneratorAction.h"
 namespace dd4hep {
   namespace sim {
     /// Callback in Begin stacking action
     void Geant4ActionPhase::call() {
       this->execute(0);
+    }
+    /// Callback in Begin stacking action
+    template <> void Geant4ActionPhase::call(G4StackManager* stackManager) {
+      this->execute((const void**) &stackManager);
     }
     /// Callback in BeginRun/EndRun
     template <> void Geant4ActionPhase::call<const G4Run*>(const G4Run* run) {

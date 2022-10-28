@@ -250,12 +250,18 @@ namespace dd4hep {
       virtual ~Geant4UserStackingAction() {
       }
       /// New-stage callback
-      virtual void NewStage()  final  {
-        m_sequence->newStage();
+      virtual void NewStage()  override final  {
+        m_sequence->newStage(stackManager);
       }
       /// Preparation callback
-      virtual void PrepareNewEvent()  final  {
-        m_sequence->prepare();
+      virtual void PrepareNewEvent() override final  {
+        m_sequence->prepare(stackManager);
+      }
+      virtual G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* track)  override final {
+	auto ret = m_sequence->classifyNewTrack(stackManager, track);
+	if ( ret.type != NoTrackClassification )
+	  return ret.value;
+	return this->G4UserStackingAction::ClassifyNewTrack(track);
       }
     };
 
