@@ -151,7 +151,7 @@ SensitiveDetector DetectorCheck::get_current_sensitive_detector()  {
 void DetectorCheck::execute(DetElement sdet, size_t depth)   {
   const char* line = "============================";
   struct counters count_volmgr_sens, count_volmgr_place;
-  struct counters total, count_sens, count_struct;
+  struct counters total, count_struct;
   struct counters count_geo, count_geo_sens;
 
   if ( !sdet.isValid() )   {
@@ -316,8 +316,8 @@ bool DetectorCheck::checkDetElement(const std::string& path, DetElement detector
     ++m_struct_counters.errors;
   }
   if ( ideal.isValid() )    {
-    const TGeoHMatrix& m = ideal.worldTransformation();
-    if ( m.IsIdentity() )  {
+    const TGeoHMatrix& matrix = ideal.worldTransformation();
+    if ( matrix.IsIdentity() )  {
     }
   }
   printout(nerrs != m_struct_counters.errors ? ERROR : INFO, m_name, 

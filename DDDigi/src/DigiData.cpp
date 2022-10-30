@@ -222,7 +222,7 @@ void ParticleMapping::push(Key particle_key, Particle&& particle_data)  {
 #endif
   if ( !ret )   {
     except("ParticleMapping","Error in particle map. Duplicate ID: mask:%04X Number:%d History:%s",
-	   particle_key.mask(), particle_key.item(), yes_no(particle_data.history.has_value()));
+	   particle_key.mask(), particle_key.item(), yes_no(1/*particle_data.history.has_value()*/));
   }
 }
 
@@ -234,7 +234,7 @@ void ParticleMapping::insert(Key particle_key, const Particle& particle_data)  {
 #endif
   if ( !ret )   {
     except("ParticleMapping","Error in particle map. Duplicate ID: mask:%04X Number:%d History:%s",
-	   particle_key.mask(), particle_key.item(), yes_no(particle_data.history.has_value()));
+	   particle_key.mask(), particle_key.item(), yes_no(1/*particle_data.history.has_value()*/));
   }
 }
 
