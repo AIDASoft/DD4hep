@@ -242,11 +242,11 @@ namespace dd4hep {
       double    mass           { 0e0 };
       char      charge         { 0 };
       /// Source contributing
-      std::any  history;
+      Key       history;
 
     public:
       /// Initializing constructor
-      Particle(std::any&& history);
+      Particle(Key history);
       /// Default constructor
       Particle() = default;
       /// Disable move constructor
@@ -262,7 +262,7 @@ namespace dd4hep {
     };
 
     /// Initializing constructor
-    inline Particle::Particle(std::any&& h)
+    inline Particle::Particle(Key h)
       : history(h)
     {
     }

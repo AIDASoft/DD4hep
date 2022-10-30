@@ -94,7 +94,7 @@ static void* convert_sim_geant4particles()     {
       std::any res = std::make_any<ParticleMapping>(name, mask);
       ParticleMapping* out = std::any_cast<ParticleMapping>(&res);
       if ( ptr )   {
-	using wrap_t = std::shared_ptr<sim::Geant4Particle>;
+	//using wrap_t = std::shared_ptr<sim::Geant4Particle>;
 	auto* items = (std::vector<sim::Geant4Particle*>*)ptr;
 	for( auto* p : *items )   {
 	  Key key;
@@ -106,7 +106,7 @@ static void* convert_sim_geant4particles()     {
 	  part.momentum       = Direction(p->psx, p->psy, p->psz);
 	  part.charge         = p->charge;
 	  part.mass           = p->mass;
-	  part.history        = std::make_any<wrap_t>(p);
+	  part.history        = key;// std::make_any<wrap_t>(p);
 	  out->push(key, std::move(part));
 	}
 	items->clear();
