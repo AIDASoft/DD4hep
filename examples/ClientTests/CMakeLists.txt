@@ -213,13 +213,16 @@ if( ${ROOT_VERSION} VERSION_GREATER 6.21.00 )
 else()
   message(STATUS "++ ROOT version: ${ROOT_VERSION} ... NO version specific tests for ROOT>6.21...")
 endif()
-if( ${Geant4_VERSION} VERSION_GREATER 10.2.99 )
-  # message(STATUS "++ Geant4 version: ${Geant4_VERSION} ... adding tests...")
-  list(APPEND ClientTests_ShapeTests Scaled_Cone)
-else()
-  message(STATUS "++ Geant4 version: ${Geant4_VERSION} ... NO version specific tests for G4>=10.3...")
+#
+if (DD4HEP_USE_GEANT4)
+  if( ${Geant4_VERSION} VERSION_GREATER 10.2.99 )
+    # message(STATUS "++ Geant4 version: ${Geant4_VERSION} ... adding tests...")
+    list(APPEND ClientTests_ShapeTests Scaled_Cone)
+  else()
+    message(STATUS "++ Geant4 version: ${Geant4_VERSION} ... NO version specific tests for G4>=10.3...")
+  endif()
 endif()
-
+#
 foreach (test ${ClientTests_ShapeTests})
   dd4hep_add_test_reg( ClientTests_Check_Shape_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
