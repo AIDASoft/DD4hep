@@ -34,7 +34,8 @@ namespace dd4hep {
       typedef std::vector<std::string> StringV;
       StringV m_requiredProcs;
       StringV m_ignoredProcs;
-      bool m_storeMarkedTracks;
+      bool    m_storeMarkedTracks;
+
     public:
       /// Standard constructor
       Geant4TrackingPostAction(Geant4Context* context, const std::string& name = "");
@@ -45,9 +46,9 @@ namespace dd4hep {
       void saveTrack(const G4Track* track);
 
       /// Begin-of-tracking callback
-      virtual void begin(const G4Track* track);
+      virtual void begin(const G4Track* track)  override;
       /// End-of-tracking callback
-      virtual void end(const G4Track* track);
+      virtual void end(const G4Track* track)  override;
     };
   }    // End namespace sim
 }      // End namespace dd4hep

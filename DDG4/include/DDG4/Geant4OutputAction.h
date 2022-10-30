@@ -68,12 +68,12 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4OutputAction();
       /// Set or update client for the use in a new thread fiber
-      virtual void configureFiber(Geant4Context* ctxt);
+      virtual void configureFiber(Geant4Context* ctxt)  override;
 
       /// begin-of-event callback
-      virtual void begin(const G4Event* event);
+      virtual void begin(const G4Event* event)  override;
       /// End-of-event callback
-      virtual void end(const G4Event* event);
+      virtual void end(const G4Event* event)  override;
       /// Callback to initialize storing the Geant4 information
       virtual void beginRun(const G4Run* run);
       /// Callback to store the Geant4 run information

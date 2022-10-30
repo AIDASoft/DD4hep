@@ -79,11 +79,11 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4SharedSteppingAction();
       /// Set or update client for the use in a new thread fiber
-      virtual void configureFiber(Geant4Context* thread_context);
+      virtual void configureFiber(Geant4Context* thread_context)  override;
       /// Underlying object to be used during the execution of this thread
       virtual void use(Geant4SteppingAction* action);
       /// User stepping callback
-      virtual void operator()(const G4Step* step, G4SteppingManager* mgr);
+      virtual void operator()(const G4Step* step, G4SteppingManager* mgr)  override;
     };
 
     /// Concrete implementation of the Geant4 stepping action sequence
@@ -117,9 +117,9 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4SteppingActionSequence();
       /// Set or update client context
-      virtual void updateContext(Geant4Context* ctxt);
+      virtual void updateContext(Geant4Context* ctxt)  override;
       /// Set or update client for the use in a new thread fiber
-      virtual void configureFiber(Geant4Context* thread_context);
+      virtual void configureFiber(Geant4Context* thread_context)  override;
       /// Get an action by name
       Geant4SteppingAction* get(const std::string& name) const;
       /// Register stepping action callback. Types Q and T must be polymorph!
