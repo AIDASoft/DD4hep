@@ -367,7 +367,7 @@ namespace dd4hep {
       }
 
       /// Set or update client context
-      virtual void updateContext(Geant4Context* ctxt);
+      virtual void updateContext(Geant4Context* ctxt)  override;
 
       /// Called at construction time of the sensitive detector to declare all hit collections
       std::size_t defineCollections(Geant4ActionSD* sens_det);

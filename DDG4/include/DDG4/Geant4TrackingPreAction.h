@@ -35,9 +35,9 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4TrackingPreAction();
       /// Begin-of-tracking callback
-      virtual void begin(const G4Track* track);
+      virtual void begin(const G4Track* track)  override;
       /// End-of-tracking callback
-      virtual void end(const G4Track* track);
+      virtual void end(const G4Track* track)  override;
     };
   }    // End namespace sim
 }      // End namespace dd4hep

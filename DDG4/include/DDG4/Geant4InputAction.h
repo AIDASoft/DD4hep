@@ -189,7 +189,7 @@ namespace dd4hep  {
       /// Create particle vector
       Particles* new_particles() const { return new Particles; }
       /// Callback to generate primary particles
-      virtual void operator()(G4Event* event);
+      virtual void operator()(G4Event* event)   override;
     };
   }     /* End namespace sim   */
 }       /* End namespace dd4hep */
