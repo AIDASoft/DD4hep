@@ -214,12 +214,7 @@ std::size_t ParticleMapping::merge(ParticleMapping&& updates)    {
 }
 
 void ParticleMapping::push(Key particle_key, Particle&& particle_data)  {
-#if defined(__GNUC__) && (__GNUC__ < 10)
-  /// Lower compiler version have a bad implementation of std::any
-  bool ret = false;
-#else
   bool ret = data.emplace(particle_key, std::move(particle_data)).second;
-#endif
   if ( !ret )   {
     except("ParticleMapping","Error in particle map. Duplicate ID: mask:%04X Number:%d History:%s",
 	   particle_key.mask(), particle_key.item(), yes_no(1/*particle_data.history.has_value()*/));
@@ -227,11 +222,7 @@ void ParticleMapping::push(Key particle_key, Particle&& particle_data)  {
 }
 
 void ParticleMapping::insert(Key particle_key, const Particle& particle_data)  {
-#if defined(__GNUC__) && (__GNUC__ < 10)
-  bool ret = false;
-#else
   bool ret = data.emplace(particle_key, particle_data).second;
-#endif
   if ( !ret )   {
     except("ParticleMapping","Error in particle map. Duplicate ID: mask:%04X Number:%d History:%s",
 	   particle_key.mask(), particle_key.item(), yes_no(1/*particle_data.history.has_value()*/));
@@ -240,11 +231,7 @@ void ParticleMapping::insert(Key particle_key, const Particle& particle_data)  {
 
 /// Insert new entry
 void ParticleMapping::emplace(Key particle_key, Particle&& particle_data)  {
-#if defined(__GNUC__) && (__GNUC__ < 10)
-  //return std::make_pair(false);
-#else
   data.emplace(particle_key, std::move(particle_data)).second;
-#endif
 }
 
 /// Merge new deposit map onto existing map (not thread safe!)
