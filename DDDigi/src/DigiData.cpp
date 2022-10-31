@@ -270,16 +270,12 @@ DataSegment::DataSegment(std::mutex& l, int i) : lock(l), id(i)
 /// Remove data item from segment
 bool DataSegment::emplace(Key key, std::any&& item)    {
   std::lock_guard<std::mutex> l(lock);
-#if defined(__GNUC__) && (__GNUC__ < 10)
-  /// Lower compiler version have a bad implementation of std::any
-  bool ret = false;
-#else
+  bool has_value = item.has_value();
   bool ret = data.emplace(key, std::move(item)).second;
-#endif
   if ( !ret )   {
     Key k(key);
     except("DataSegment","Error in DataSegment map. Duplicate ID: mask:%04X Number:%d Value:%s",
-	   k.mask(), k.item(), yes_no(item.has_value()));
+	   k.mask(), k.item(), yes_no(has_value));
   }
   return ret;
 }
