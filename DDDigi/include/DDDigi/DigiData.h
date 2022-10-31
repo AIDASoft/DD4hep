@@ -99,51 +99,35 @@ namespace dd4hep {
       void set(const std::string& name, int mask);
 
       /// Set key mask
-      Key& set_mask(mask_type m)  {
-	this->values.mask = m;
-	return *this;
-      }
+      Key& set_mask(mask_type m);
+      /// Set key item identifier
+      Key& set_item(itemkey_type i);
+      /// Set key mask
+      Key& set_segment(segment_type seg);
       /// Set key submask
-      Key& set_submask(submask_type m)  {
-	this->values.submask = m;
-	return *this;
-      }
+      Key& set_submask(submask_type m);
       /// Set key submask
       Key& set_submask(const char* opt_tag);
-      /// Set key item identifier
-      Key& set_item(itemkey_type i)  {
-	this->values.item = i;
-	return *this;
-      }
-      /// Set key mask
-      Key& set_segment(segment_type seg)  {
-	this->values.segment = seg;
-	return *this;
-      }
+
       /// Project the item part of the key
-      mask_type mask()  const {
-	return this->values.mask;
-      }
+      mask_type mask()  const;
       /// Project the mask part of the key
-      itemkey_type item()  const  {
-	return this->values.item;
-      }
+      itemkey_type item()  const;
       /// Project the segment part of the key
-      segment_type segment()  const  {
-        return this->values.segment;
-      }
-      /// Access key as long integer
-      key_type value()  const {
-	return this->key;
-      }
-      /// Project the mask part of the key
-      static itemkey_type item(Key k)  {
-	return k.values.item;
-      }
+      segment_type segment()  const;
       /// Project the item part of the key
-      static mask_type mask(Key k)  {
-	return k.values.mask;
-      }
+      submask_type submask()  const;
+      /// Access key as long integer
+      key_type value()  const;
+
+      /// Project the mask part of the key
+      static itemkey_type item(Key k);
+      /// Project the item part of the key
+      static mask_type mask(Key k);
+      /// Project the item part of the key
+      static segment_type segment(Key k);
+      /// Project the item part of the key
+      static submask_type submask(Key k);
       /// Access key name (if registered properly)
       static std::string key_name(const Key& key);
     };
@@ -199,6 +183,75 @@ namespace dd4hep {
       return this->key > other.key;
     }
 
+    /// Set key mask
+    inline Key& Key::set_mask(mask_type m)  {
+      this->values.mask = m;
+      return *this;
+    }
+    
+    /// Set key submask
+    inline Key& Key::set_submask(submask_type m)  {
+      this->values.submask = m;
+      return *this;
+    }
+
+    /// Set key item identifier
+    inline Key& Key::set_item(itemkey_type i)  {
+      this->values.item = i;
+      return *this;
+    }
+
+    /// Set key mask
+    inline Key& Key::set_segment(segment_type seg)  {
+      this->values.segment = seg;
+      return *this;
+    }
+
+    /// Access key as long integer
+    inline Key::key_type Key::value()  const {
+      return this->key;
+    }
+    /// Project the item part of the key
+    inline Key::mask_type Key::mask()  const {
+      return this->values.mask;
+    }
+    /// Project the mask part of the key
+    inline Key::itemkey_type Key::item()  const  {
+      return this->values.item;
+    }
+    /// Project the segment part of the key
+    inline Key::segment_type Key::segment()  const  {
+      return this->values.segment;
+    }
+    /// Project the item part of the key
+    inline Key::submask_type Key::submask()  const {
+      return this->values.submask;
+    }
+
+    /// Project the mask part of the key
+    inline Key::itemkey_type Key::item(Key k)  {
+      return k.values.item;
+    }
+    /// Project the item part of the key
+    inline Key::mask_type Key::mask(Key k)  {
+      return k.values.mask;
+    }
+    /// Project the item part of the key
+    inline Key::segment_type Key::segment(Key k)  {
+      return k.values.segment;
+    }
+    /// Project the item part of the key
+    inline Key::submask_type Key::submask(Key k)  {
+      return k.values.submask;
+    }
+    
+    /// Base class for objects in a DataSegment 
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
     class SegmentEntry   {
     public:
       std::string      name { };
