@@ -352,16 +352,23 @@ class CommandLine:
   \author  M.Frank
   \version 1.0
   """
-  def __init__(self):
+  def __init__(self, help=None):
     import sys
     self.data = {}
+    have_help = False
     for i in range(len(sys.argv)):
       if sys.argv[i][0] == '-':
         key = sys.argv[i][1:]
         val = True
         if i + 1 < len(sys.argv):
-          val = sys.argv[i + 1]
+          v = sys.argv[i + 1]
+          if v[0] != '-':
+            val = v
         self.data[key] = val
+        if key.upper() == 'HELP' or key.upper() == '?':
+         have_help = True
+    if have_help and help_call:
+      help_call()
 
   def __getattr__(self, attr):
     if self.data.get(attr):

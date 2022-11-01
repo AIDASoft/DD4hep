@@ -34,7 +34,21 @@ namespace   {
 
 using namespace dd4hep::digi;
 
-void Key::set(const std::string& name, int mask)    {
+std::string dd4hep::digi::digiTypeName(const std::type_info& info)    {
+  using detail::str_replace;
+  std::string typ = typeName(info);
+  std::size_t idx = typ.find(", std::allocator<std::");
+  if ( idx != std::string::npos ) typ = str_replace(typ, typ.substr(idx), ">");
+  typ = str_replace(str_replace(typ,"std::",""),"dd4hep::","");
+  typ = str_replace(str_replace(typ,"sim::",""),"digi::","");
+  return typ;
+}
+
+std::string dd4hep::digi::digiTypeName(const std::any& data)    {
+  return digiTypeName(data.type());
+}
+
+Key& Key::set(const std::string& name, int mask)    {
   auto& _k = keys();
   if ( name.empty() )   {
     std::lock_guard<std::mutex> lock(_k.lock);
@@ -44,7 +58,8 @@ void Key::set(const std::string& name, int mask)    {
   this->set_mask(Key::mask_type(0xFFFF&mask));
   this->set_item(detail::hash32(name));
   std::lock_guard<std::mutex> lock(_k.lock);
-  _k.map[this->key] = name;
+  _k.map[this->item()] = name;
+  return *this;
 }
 
 /// Set key submask
@@ -58,15 +73,34 @@ Key& Key::set_submask(const char* opt_tag)   {
 std::string Key::key_name(const Key& k)    {
   auto& _k = keys();
   std::lock_guard<std::mutex> lock(_k.lock);
-  std::map<unsigned long, std::string>::const_iterator it = _k.map.find(k.value());
+  std::map<unsigned long, std::string>::const_iterator it = _k.map.find(k.item());
   if ( it != _k.map.end() ) return it->second;
-  Key kk;
-  kk.set_item(~0x0);
   for( const auto& e : _k.map )   {
-    if ( (e.first & kk.value()) == k.values.item )
+    if ( e.first == k.values.item )
       return e.second;
   }
   return "UNKNOWN";
+}
+
+const Particle& dd4hep::digi::get_history_particle(DigiEvent& event, Key history_key)   {
+  static Key item_key("MCParticles",0x0);
+  Key key;
+  const auto& segment = event.get_segment(history_key.segment());
+  key.set_segment(history_key.segment());
+  key.set_mask(history_key.mask());
+  key.set_item(item_key.item());
+  const auto& particles = segment.get<ParticleMapping>(key);
+  return particles.get(history_key);
+}
+
+const EnergyDeposit& dd4hep::digi::get_history_deposit(DigiEvent& event, Key::itemkey_type container_item, Key history_key)   {
+  Key key;
+  const auto& segment = event.get_segment(history_key.segment());
+  key.set_segment(history_key.segment());
+  key.set_item(container_item);
+  key.set_mask(history_key.mask());
+  const auto& hits = segment.get<DepositVector>(key);
+  return hits.at(history_key.item());
 }
 
 /// Update history
@@ -81,6 +115,21 @@ std::pair<std::size_t,std::size_t> History::drop()   {
   hits.clear();
   particles.clear();
   return ret;
+}
+
+const Particle& History::hist_entry_t::get_particle(DigiEvent& event)  const  {
+  static Key item_key("MCParticles",0x0);
+  Key key(this->source);
+  const auto& segment = event.get_segment(this->source.segment());
+  const auto& particles = segment.get<ParticleMapping>(key.set_item(item_key.item()));
+  return particles.get(this->source);
+}
+
+const EnergyDeposit& History::hist_entry_t::get_deposit(DigiEvent& event, Key::itemkey_type container_item)  const {
+  Key key(this->source);
+  const auto& segment = event.get_segment(this->source.segment());
+  const auto& hits = segment.get<DepositVector>(key.set_item(container_item));
+  return hits.at(this->source.item());
 }
 
 /// Update the deposit using deposit weighting
@@ -145,6 +194,22 @@ std::size_t DepositVector::insert(const DepositMapping& updates)    {
   return update_size;
 }
 
+/// Access energy deposit by key
+const EnergyDeposit& DepositVector::get(CellID cell)   const    {
+  for( const auto& c : data )    {
+    if ( c.first == cell )   {
+      return c.second;
+    }
+  }
+  except("DepositVector","Failed to access deposit by CellID. UNKNOWN ID: %016X", cell);
+  throw std::runtime_error("Attempt to access non-existing CellID");
+}
+
+/// Access energy deposit by key
+const EnergyDeposit& DepositVector::at(std::size_t cell)   const    {
+  return data.at(cell).second;
+}
+
 /// Merge new deposit map onto existing map
 std::size_t DepositMapping::merge(DepositVector&& updates)    {
   std::size_t update_size = updates.size();
@@ -193,6 +258,15 @@ std::size_t DepositMapping::insert(const DepositMapping& updates)    {
   return update_size;
 }
 
+/// Access energy deposit by key
+const EnergyDeposit& DepositMapping::get(CellID cell)   const    {
+  auto   iter = data.find(cell);
+  if ( iter != data.end() )
+    return iter->second;
+  except("DepositMapping","Failed to access deposit by CellID. UNKNOWN ID: %016X", cell);
+  throw std::runtime_error("Failed to access deposit by CellID");
+}
+
 /// Merge new deposit map onto existing map
 std::size_t ParticleMapping::insert(const ParticleMapping& updates)    {
   std::size_t update_size = updates.size();
@@ -204,12 +278,10 @@ std::size_t ParticleMapping::insert(const ParticleMapping& updates)    {
 /// Merge new deposit map onto existing map
 std::size_t ParticleMapping::merge(ParticleMapping&& updates)    {
   std::size_t update_size = updates.size();
-#if defined(__GNUC__) && (__GNUC__ >= 10)
   for( ParticleMapping::value_type& c : updates )    {
     Particle part(std::move(c.second));
     this->push(Key(c.first), std::move(part));
   }
-#endif
   return update_size;
 }
 
@@ -232,6 +304,16 @@ void ParticleMapping::insert(Key particle_key, const Particle& particle_data)  {
 /// Insert new entry
 void ParticleMapping::emplace(Key particle_key, Particle&& particle_data)  {
   data.emplace(particle_key, std::move(particle_data)).second;
+}
+
+/// Access particle by key
+const Particle& ParticleMapping::get(Key particle_key)   const    {
+  auto iter = data.find(particle_key);
+  if ( iter != data.end() )
+    return iter->second;
+  except("ParticleMapping","Error in particle map. UNKNOWN ID: %016X segment:%04X mask:%04X Number:%d",
+	 particle_key.value(), particle_key.segment(), particle_key.mask(), particle_key.item());
+  return iter->second;
 }
 
 /// Merge new deposit map onto existing map (not thread safe!)
@@ -263,19 +345,24 @@ std::size_t DetectorHistory::insert(const DetectorHistory& updates)   {
 }
 
 /// Initializing constructor
-DataSegment::DataSegment(std::mutex& l, int i) : lock(l), id(i)
+DataSegment::DataSegment(std::mutex& l, Key::segment_type i)
+  : data(), lock(l), id(i)
 {
 }
 
 /// Remove data item from segment
 bool DataSegment::emplace(Key key, std::any&& item)    {
-  std::lock_guard<std::mutex> l(lock);
   bool has_value = item.has_value();
+#if 0
+  printout(INFO, "DataSegment", "PUT Key No.%4d: %-32s %016lX -> %04X %04X %08Xld   %s",
+	   data.size(), Key::key_name(key).c_str(), key.value(), key.segment(), key.mask(), key.item(),
+	   digiTypeName(item.type()).c_str());
+#endif
+  std::lock_guard<std::mutex> l(lock);
   bool ret = data.emplace(key, std::move(item)).second;
   if ( !ret )   {
-    Key k(key);
-    except("DataSegment","Error in DataSegment map. Duplicate ID: mask:%04X Number:%d Value:%s",
-	   k.mask(), k.item(), yes_no(has_value));
+    except("DataSegment","Error in DataSegment map. Duplicate ID: segment:%04X mask:%04X Number:%d Value:%s",
+	   key.mask(), key.item(), yes_no(has_value));
   }
   return ret;
 }
@@ -321,18 +408,20 @@ std::size_t DataSegment::erase(const std::vector<Key>& keys)   {
 void DataSegment::print_keys()   const   {
   size_t count = 0;
   for( const auto& e : this->data )   {
-    Key k(e.first);
-    printout(INFO, "DataSegment", "Key No.%4: %16lX <> %16lX -> %04X %10ld",
-	     count, e.first.value(), k.value(), k.mask(), k.item(),
-	     typeName(e.second.type()).c_str());
+    Key key(e.first);
+    printout(INFO, "DataSegment", "Key No.%4d: %-32s %016lX -> %04X %04X %08Xld   %s",
+	     count, Key::key_name(key).c_str(), key.value(), key.segment(), key.mask(), key.item(),
+	     digiTypeName(e.second.type()).c_str());
     ++count;
   }
 }
 
 /// Call on failed any-casts during data requests
 std::string DataSegment::invalid_cast(Key key, const std::type_info& type)  const   {
-  return dd4hep::format(0, "Invalid segment data cast. Key:%ld type:%s",
-			key.value(), typeName(type).c_str());
+  return dd4hep::format(0, "Invalid segment data cast. Key:%-32s %016lX -> %04X %04X %10ld type:%s",
+			Key::key_name(key).c_str(), key.value(), 
+			key.segment(), key.mask(), key.item(),
+			typeName(type).c_str());
 }
 
 /// Call on failed data requests during data requests
@@ -344,6 +433,10 @@ std::string DataSegment::invalid_request(Key key)  const   {
 std::any* DataSegment::get_item(Key key, bool exc)   {
   auto it = this->data.find(key);
   if (it != this->data.end()) return &it->second;
+  key.set_segment(0x0);
+  it = this->data.find(key);
+  if (it != this->data.end()) return &it->second;
+
   if ( exc ) throw std::runtime_error(invalid_request(key));
   return nullptr;
 }
@@ -352,6 +445,10 @@ std::any* DataSegment::get_item(Key key, bool exc)   {
 const std::any* DataSegment::get_item(Key key, bool exc)  const   {
   auto it = this->data.find(key);
   if (it != this->data.end()) return &it->second;
+  key.set_segment(0x0);
+  it = this->data.find(key);
+  if (it != this->data.end()) return &it->second;
+
   if ( exc ) throw std::runtime_error(invalid_request(key));
   return nullptr;
 }
@@ -377,7 +474,7 @@ DigiEvent::~DigiEvent()
   InstanceCount::decrement(this);
 }
 
-DataSegment& DigiEvent::access_segment(std::unique_ptr<DataSegment>& segment, uint32_t id)   {
+DataSegment& DigiEvent::access_segment(std::unique_ptr<DataSegment>& segment, Key::segment_type id)   {
   if ( segment )   {
     return *segment;
   }
@@ -401,7 +498,7 @@ DataSegment& DigiEvent::get_segment(const std::string& name)   {
     case 'E':
       return access_segment(m_deposits,3);
     default:
-      return access_segment(m_data,0xFEED);
+      return access_segment(m_data,0xAB);
     }
     break;
   case 'O':
@@ -409,5 +506,27 @@ DataSegment& DigiEvent::get_segment(const std::string& name)   {
   default:
     break;
   }
-  throw std::runtime_error("Invalid segment name: "+name);
+  except("DigiEvent", "Invalid segment name: %s", name.c_str());
+  throw std::runtime_error("Invalid segment name");
 }
+
+/// Retrieve data segment from the event structure by identifier
+DataSegment& DigiEvent::get_segment(Key::segment_type id)   {
+  switch(id)   {
+  case 1:
+    return access_segment(m_inputs,1);
+  case 2:
+    return access_segment(m_counts,2);
+  case 3:
+    return access_segment(m_deposits,3);
+  case 4:
+    return access_segment(m_outputs,4);
+  case 0xAB:
+    return access_segment(m_data,0xAB);
+  default:
+    break;
+  }
+  except("DigiEvent", "Invalid segment identifier: %d", id);
+  throw std::runtime_error("Invalid segment name");
+}
+

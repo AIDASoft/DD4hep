@@ -36,7 +36,7 @@ namespace dd4hep {
     class DigiDepositWeightedPosition : public DigiContainerProcessor   {
     protected:
       /// Property: Energy cutoff. No hits will be merged with a deposit smaller
-      double m_cutoff { std::numeric_limits<double>::epsilon() };
+      double m_cutoff { -std::numeric_limits<double>::epsilon() };
       /// Property: register empty containers
       bool   m_register_empty_containers { true };
 
@@ -50,7 +50,7 @@ namespace dd4hep {
       }
 
       /// Create deposit mapping with updates on same cellIDs
-      template <typename T> void create_deposits(const T& cont, work_t& work)  const  {
+      template <typename T> void create_deposits(const char* tag, const T& cont, work_t& work)  const  {
 	Key key(cont.name, work.output.mask);
 	DepositMapping m(cont.name, work.output.mask);
 	std::size_t dropped = 0UL, updated = 0UL, added = 0UL;
@@ -70,18 +70,19 @@ namespace dd4hep {
 	if ( m_register_empty_containers )   {
 	  work.output.data.put(m.key, std::move(m));
 	}
-	info("+++ %-32s added %6ld updated %6ld dropped %6ld entries (now: %6ld) from mask: %04X to mask: %04X",
-	     cont.name.c_str(), added, updated, dropped, m.size(), cont.key.mask(), m.key.mask());
+	info("%s+++ %-32s added %6ld updated %6ld dropped %6ld entries (now: %6ld) from mask: %04X to mask: %04X",
+	     tag, cont.name.c_str(), added, updated, dropped, m.size(), cont.key.mask(), m.key.mask());
       }
 
       /// Main functional callback
-      virtual void execute(DigiContext&, work_t& work)  const override final  {
+      virtual void execute(DigiContext& context, work_t& work)  const override final  {
 	if ( const auto* v = work.get_input<DepositVector>() )
-	  create_deposits(*v, work);
+	  create_deposits(context.event->id(), *v, work);
 	else if ( const auto* m = work.get_input<DepositMapping>() )
-	  create_deposits(*m, work);
+	  create_deposits(context.event->id(), *m, work);
 	else
-	  except("Request to handle unknown data type: %s", work.input_type_name().c_str());
+	  except("%s+++ Request to handle unknown data type: %s", 
+		 context.event->id(), work.input_type_name().c_str());
       }
     };
   }    // End namespace digi

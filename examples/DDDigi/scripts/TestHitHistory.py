@@ -18,38 +18,43 @@ def run():
   input = digi.input_action('DigiParallelActionSequence/READER')
   # ========================================================================================================
   digi.info('Created SIGNAL input')
-  input.adopt_action('DigiROOTInput/SignalReader', mask=0x0, input=[digi.next_input()])
+  input.adopt_action('DigiROOTInput/SignalReader', mask=0xCBAA, input=[digi.next_input()])
   # ========================================================================================================
-  digi.info('Creating collision overlays....')
+  digi.info('Creating collision overlay....')
   # ========================================================================================================
   overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-1')
-  overlay.adopt_action('DigiROOTInput/Read-1', mask=0x1, input=[digi.next_input()])
+  overlay.adopt_action('DigiROOTInput/Read-1', mask=0xCBEE, input=[digi.next_input()])
   digi.info('Created input.overlay-1')
   # ========================================================================================================
-  overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-2')
-  overlay.adopt_action('DigiROOTInput/Read-2', mask=0x2, input=[digi.next_input()])
-  digi.info('Created input.overlay-2')
-  # ========================================================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
-  event.adopt_action('DigiStoreDump/StoreDump')
   combine = event.adopt_action('DigiContainerCombine/Combine',
-                               parallel=True,
-                               input_masks=[0x0, 0x1, 0x2],
+                               parallel=False,
+                               input_masks=[0xCBAA,0xCBEE],
                                output_mask=0xAAA0,
-                               output_segment='inputs')
-  combine.erase_combined = True
+                               output_segment='deposits')
+  combine.erase_combined = False
   proc = event.adopt_action('DigiContainerSequenceAction/HitP2',
-                            parallel=True,
+                            parallel=False,
                             input_mask=0xAAA0,
-                            input_segment='inputs',
-                            output_mask=0xAAA1,
-                            output_segment='inputs')
-  count = digi.create_action('DigiDepositWeightedPosition/DepoCombine')
-  proc.adopt_container_processor(count, digi.containers())
-  event.adopt_action('DigiStoreDump/DumpWeighted')
+                            input_segment='deposits',
+                            output_mask=0xEEE5,
+                            output_segment='deposits')
+  combine = digi.create_action('DigiDepositWeightedPosition/DepoCombine')
+  proc.adopt_container_processor(combine, digi.containers())
+  conts = [c for c in digi.containers()]
+  event.adopt_action('DigiContainerDrop/Drop',
+                     containers=conts,
+                     input_segment='deposits',
+                     input_masks=[0xAAA0])
+  event.adopt_action('DigiStoreDump/HeaderDump')
+  event.adopt_action('DigiStoreDump/HistoryDump',
+                     dump_history=True,
+                     containers=['SiTrackerBarrelHits', 'MCParticles'],
+                     segments=['deposits'],
+                     masks=[0xAAA0,0xEEE5])
   # ========================================================================================================
   digi.info('Starting digitization core')
-  digi.run_checked(num_events=1, num_threads=25, parallel=5)
+  digi.run_checked(num_events=3, num_threads=1, parallel=5)
 
 
 if __name__ == '__main__':

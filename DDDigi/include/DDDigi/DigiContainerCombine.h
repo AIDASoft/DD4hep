@@ -18,6 +18,7 @@
 #include <DDDigi/DigiParallelWorker.h>
 
 /// C/C++ include files
+#include <mutex>
 #include <functional>
 
 /// Namespace for the AIDA detector description toolkit
@@ -63,6 +64,8 @@ namespace dd4hep {
       /// Container keys of all containers to be manipulated
       std::set<Key::key_type>        m_cont_keys  { };
 
+      /// Lock to properly accumulate keys which were already used
+      mutable std::mutex             m_used_keys_lock;
       /// Worker objects to be submitted to TBB each performing part of the job
       Workers m_workers;
 

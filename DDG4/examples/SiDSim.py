@@ -35,25 +35,18 @@ logger = logging.getLogger(__name__)
 
 def help():
   logging.info("SiDSim.py -option [-option]                           ")
-  logging.info("       -vis                     Enable visualization  ")
+  logging.info("       -vis   <file>            Enable visualization  ")
+  logging.info("                                Macro file is optional")
+  logging.info("       -macro <file>            Start G4 macro        ")
   logging.info("       -batch                   Batch execution       ")
+  logging.info("       -events <number>         If batch: number of events to be executed");
 
 
 def run():
-  hlp = False
-  vis = False
-  batch = False
+  args = DDG4.CommandLine()
   #
-  for i in list(range(len(sys.argv))):
-    c = sys.argv[i].upper()
-    if c.find('BATCH') < 2 and c.find('BATCH') >= 0:
-      batch = True
-    elif c[:4] == '-VIS':
-      vis = True
-    elif c[:2] == '-H':
-      hlp = True
 
-  if hlp:
+  if args.help:
     help()
     sys.exit(1)
 
@@ -66,12 +59,10 @@ def run():
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()
   logger.info("#  Configure UI")
-  ui = None
-  if batch:
-    geant4.setupCshUI(ui=None, vis=None)
-    kernel.UI = 'UI'
-  else:
-    ui = geant4.setupCshUI(vis=vis)
+  ui = geant4.setupCshUI(macro=args.macro, vis=args.vis)
+  kernel.UI = 'UI'
+  if args.batch:
+    ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
 
   logger.info("#  Configure G4 magnetic field tracking")
   geant4.setupTrackingField()
@@ -79,6 +70,8 @@ def run():
   logger.info("#  Setup random generator")
   rndm = DDG4.Action(kernel, 'Geant4Random/Random')
   rndm.Seed = 987654321
+  if args.seed_time:
+    rndm.Seed = int(time.time())
   rndm.initialize()
   # rndm.showStatus()
 
@@ -131,7 +124,7 @@ def run():
   logger.info("#  Second particle generator: e-")
   gen = DDG4.GeneratorAction(kernel, "Geant4IsotropeGenerator/IsotropE-")
   gen.Mask = 2
-  gen.Particle = 'e-'
+  gen.Particle = 'e+'
   gen.Energy = 25 * GeV
   gen.Multiplicity = 2
   gen.Distribution = 'uniform'
@@ -231,7 +224,7 @@ def run():
   phys.dump()
   #
   #
-  if ui and vis:
+  if ui and args.vis:
     cmds = []
     cmds.append('/control/verbose 2')
     cmds.append('/run/initialize')

@@ -136,6 +136,16 @@ namespace dd4hep {
       double time() const {
         return track->GetGlobalTime();
       }
+      /// Track charge
+      double charge() const {
+        G4ParticleDefinition* def = trackDef();
+        return def ? def->GetPDGCharge() : 0;
+      }
+      /// Track charge
+      double mass() const {
+        G4ParticleDefinition* def = trackDef();
+        return def ? def->GetPDGMass() : 0;
+      }
       /// Physical (original) volume of the track
       G4VPhysicalVolume* vol() const {
         return track->GetVolume();

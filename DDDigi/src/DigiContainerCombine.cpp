@@ -23,26 +23,42 @@
 
 using namespace dd4hep::digi;
 
+/// Worker class to combine items of identical types as given by the input definition
+/**
+ *  This is a utility class.
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \ingroup DD4HEP_DIGITIZATION
+ */
 class DigiContainerCombine::work_definition_t  {
 public:
+  /// reference to parent
   const DigiContainerCombine* combine;
-  std::size_t cnt_conts = 0;
-  std::size_t cnt_depos = 0;
-  std::size_t cnt_parts = 0;
   /// Printout format string
   char        format[128];
-
+  /// Local counters
+  std::size_t cnt_conts    = 0;
+  std::size_t cnt_depos    = 0;
+  std::size_t cnt_parts    = 0;
+  std::size_t cnt_hist     = 0;
+  std::size_t cnt_response = 0;
+  /// Work definition
   std::vector<Key>            keys;
   std::vector<std::any*>      work;
   std::set<Key::itemkey_type> items;
+  /// Work done
+  std::vector<Key>            used_keys;
 
+  /// Input arguments
   DigiEvent&                  event;
   DataSegment&                inputs;
   DataSegment&                outputs;
+  std::mutex&                 used_keys_lock;
 
   /// Initializing constructor
-  work_definition_t(const DigiContainerCombine* c, DigiEvent& ev, DataSegment& in, DataSegment& out)
-    : combine(c), event(ev), inputs(in), outputs(out)
+  work_definition_t(const DigiContainerCombine* c, DigiEvent& ev, DataSegment& in, DataSegment& out, std::mutex& used_lock)
+    : combine(c), event(ev), inputs(in), outputs(out), used_keys_lock(used_lock)
   {
     keys.reserve(inputs.size());
     work.reserve(inputs.size());
@@ -60,6 +76,12 @@ public:
     format[sizeof(format)-1] = 0;
   }
 
+  void used_keys_insert(Key key)   {
+    std::lock_guard<std::mutex> lock(used_keys_lock);
+    used_keys.emplace_back(key);
+  }
+
+  /// Specialized deposit merger: implicitly assume identical item types are mapped sequentially
   template<typename OUT, typename IN> void merge_depos(OUT& output, IN& input, int thr)  {
     std::size_t cnt = 0;
     if ( combine->m_erase_combined )
@@ -70,7 +92,7 @@ public:
     this->cnt_depos += cnt;
     this->cnt_conts++;
   }
-
+  /// Merge history records: implicitly assume identical item types are mapped sequentially
   void merge_hist(const std::string& nam, size_t start, int thr)  {
     std::size_t cnt;
     Key key = keys[start];
@@ -78,22 +100,17 @@ public:
     for( std::size_t j=start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
 	DetectorHistory* next = std::any_cast<DetectorHistory>(work[j]);
-	if ( combine->m_erase_combined )   {
-	  cnt = out.merge(std::move(*next));
-	  work[j]->reset();
-	}
-	else   {
-	  cnt = out.insert(*next);
-	}
+	cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
 	combine->debug(format, thr, next->name.c_str(), keys[j].mask(), cnt, "histories"); 
-	cnt_parts += cnt;
+	used_keys_insert(keys[j]);
+	cnt_hist += cnt;
 	cnt_conts++;
       }
     }
     key.set_mask(combine->m_deposit_mask);
     outputs.emplace(key, std::move(out));
   }
-
+  /// Merge detector rsponse records: implicitly assume identical item types are mapped sequentially
   void merge_response(const std::string& nam, size_t start, int thr)  {
     std::size_t cnt;
     Key key = keys[start];
@@ -101,22 +118,17 @@ public:
     for( std::size_t j=start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
 	DetectorResponse* next = std::any_cast<DetectorResponse>(work[j]);
-	if ( combine->m_erase_combined )   {
-	  cnt = out.merge(std::move(*next));
-	  work[j]->reset();
-	}
-	else   {
-	  cnt = out.insert(*next);
-	}
+	cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
 	combine->debug(format, thr, next->name.c_str(), keys[j].mask(), cnt, "histories"); 
-	cnt_parts += cnt;
+	used_keys_insert(keys[j]);
+	cnt_response += cnt;
 	cnt_conts++;
       }
     }
     key.set_mask(combine->m_deposit_mask);
     outputs.emplace(key, std::move(out));
   }
-
+  /// Merge particle objects: implicitly assume identical item types are mapped sequentially
   void merge_parts(const std::string& nam, size_t start, int thr)  {
     std::size_t cnt;
     Key key = keys[start];
@@ -124,14 +136,9 @@ public:
     for( std::size_t j=start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
 	ParticleMapping* next = std::any_cast<ParticleMapping>(work[j]);
-	if ( combine->m_erase_combined )   {
-	  cnt = out.merge(std::move(*next));
-	  work[j]->reset();
-	}
-	else   {
-	  cnt = out.insert(*next);
-	}
+	cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
 	combine->debug(format, thr, next->name.c_str(), keys[j].mask(), cnt, "particles"); 
+	used_keys_insert(keys[j]);
 	cnt_parts += cnt;
 	cnt_conts++;
       }
@@ -139,7 +146,7 @@ public:
     key.set_mask(combine->m_deposit_mask);
     outputs.emplace(key, std::move(out));
   }
-
+  /// Generic deposit merger: implicitly assume identical item types are mapped sequentially
   void merge(const std::string& nam, size_t start, int thr)  {
     Key key = keys[start];
     DepositVector out(nam, combine->m_deposit_mask);
@@ -151,15 +158,13 @@ public:
 	  merge_depos(out, *v, thr);
 	else
 	  break;
-	if ( combine->m_erase_combined )
-	  this->work[j]->reset();
-	break;
+	used_keys_insert(keys[j]);
       }
     }
     key.set_mask(combine->m_deposit_mask);
     outputs.emplace(key, std::move(out));
   }
-
+  /// Merge single item type
   void merge_one(Key::itemkey_type itm, int thr)   {
     const std::string& opt = combine->m_output_name_flag;
     for( std::size_t i=0; i < keys.size(); ++i )   {
@@ -276,7 +281,7 @@ std::size_t DigiContainerCombine::combine_containers(DigiContext& context,
 						     DataSegment& inputs,
 						     DataSegment& outputs)  const
 {
-  work_definition_t def(this, event, inputs, outputs);
+  work_definition_t def(this, event, inputs, outputs, m_used_keys_lock);
   if ( m_parallel )  {
     have_workers(def.items.size());
     m_kernel.submit(context, m_workers.get_group(), def.items.size(), &def);
@@ -285,7 +290,7 @@ std::size_t DigiContainerCombine::combine_containers(DigiContext& context,
     def.merge_all();
   }
   if ( m_erase_combined )   {
-    inputs.erase(def.keys);
+    inputs.erase(def.used_keys);
   }
   info("%s+++ Merged %ld particles and %ld deposits from segment '%s' to segment '%s'",
        event.id(), def.cnt_parts, def.cnt_depos, m_input.c_str(), m_output.c_str());

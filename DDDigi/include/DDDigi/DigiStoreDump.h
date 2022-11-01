@@ -25,6 +25,10 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
+    /// Forward declarations
+    class DigiEvent;
+    class DataSegment;
+
     /// Default base class for all Digitizer actions and derivates thereof.
     /**
      *  This is a utility class supporting properties, output and access to
@@ -39,7 +43,10 @@ namespace dd4hep {
       /// Property: Flag to check history record
       bool m_dump_history     { false };
       /// Property: Data segments to be dumped
-      std::vector<std::string> m_data_segments { };
+      std::vector<std::string>        m_segments   { };
+      std::vector<std::string>        m_containers { };
+      std::vector<int>                m_masks      { };
+      std::vector<Key::itemkey_type>  m_container_items { };
 
     protected:
       /// Define standard assignments and constructors
@@ -48,11 +55,28 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiStoreDump();
 
-      /// Dump hit container
-      template <typename CONTAINER> void dump(const std::string& tag,
-					      const DigiEvent& event,
-					      const CONTAINER& cont)  const;
+      template <typename T> std::string data_header(Key key, const std::string& tag, const T& data)  const;
+      template <typename T> std::vector<std::string> dump_history(DigiContext& context, Key key, const T& container)  const;
+      template <typename T> std::vector<std::string> dump_history(DigiContext& context, Key key, const T& item, std::size_t seq_no)  const;
 
+      std::vector<std::string>
+	dump_deposit_history(DigiContext& context, Key container_key, const DepositMapping& container)  const;
+
+      std::vector<std::string>
+	dump_deposit_history(DigiContext& context, Key container_key, const DepositVector& container)  const;
+
+      std::vector<std::string>
+	dump_particle_history(DigiContext& context, Key container_key, const ParticleMapping& container)  const;
+
+      /// Dump hit container
+      void dump_headers(const std::string& tag, const DigiEvent& event, const DataSegment& segment)  const;
+
+      /// Dump hit container
+      void dump_history(DigiContext& context, const std::string& tag, const DigiEvent& event, const DataSegment& cont)  const;
+
+      /// Initialize the action
+      virtual void initialize();
+      
     public:
       /// Standard constructor
       DigiStoreDump(const DigiKernel& kernel, const std::string& nam);
