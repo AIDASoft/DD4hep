@@ -234,6 +234,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
     m_currTrack.daughters    = prim_part->daughters;
     m_currTrack.pdgID        = prim_part->pdgID;
     m_currTrack.mass         = prim_part->mass;
+    m_currTrack.charge       = prim_part->charge;
   }
   else  {
     m_currTrack.id           = m_globalParticleID;
@@ -248,8 +249,9 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
     m_currTrack.colorFlow[1] = 0;
     m_currTrack.parents.clear();
     m_currTrack.daughters.clear();
-    m_currTrack.pdgID        = h.trackDef()->GetPDGEncoding();
-    m_currTrack.mass         = h.trackDef()->GetPDGMass();
+    m_currTrack.pdgID        = h.pdgID();
+    m_currTrack.mass         = h.mass();
+    m_currTrack.charge       = h.charge();
     ++m_globalParticleID;
   }
   m_currTrack.steps       = 0;

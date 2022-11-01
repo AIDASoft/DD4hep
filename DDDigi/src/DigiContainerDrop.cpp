@@ -98,7 +98,7 @@ DigiContainerDrop::DigiContainerDrop(const DigiKernel& krnl, const std::string& 
 {
   declareProperty("containers",       m_containers);
   declareProperty("input_masks",      m_input_masks);
-  declareProperty("input_segment",    m_input  = "inputs");
+  declareProperty("input_segment",    m_input_segment = "inputs");
   m_kernel.register_initialize(Callback(this).make(&DigiContainerDrop::initialize));
   InstanceCount::increment(this);
 }
@@ -112,9 +112,9 @@ DigiContainerDrop::~DigiContainerDrop() {
 void DigiContainerDrop::initialize()    {
   for ( const auto& cont : m_containers )   {
     Key key(cont, 0x0);
-    m_cont_keys.emplace(key.value());
+    m_cont_keys.emplace(key.item());
     if ( m_input_masks.empty() )   {
-      m_keys.emplace(key.value());
+      m_keys.emplace(key.item());
       continue;
     }
     for ( int m : m_input_masks )    {
@@ -129,9 +129,14 @@ bool DigiContainerDrop::use_key(Key key)  const   {
   const auto& m = m_input_masks;
   bool use = m.empty() || m_keys.empty();
   if ( !use )  {
-    if ( !m_cont_keys.empty() )
-      return m_cont_keys.find(key.item()) != m_cont_keys.end();
-    return std::find(m.begin(), m.end(), key.mask()) != m.end();
+    if ( m_cont_keys.empty() )   {
+      return m.empty() || std::find(m.begin(), m.end(), key.mask()) != m.end();
+    }
+    use = m_cont_keys.find(key.item()) != m_cont_keys.end();
+    if ( use )   {
+      return m.empty() || std::find(m.begin(), m.end(), key.mask()) != m.end();
+    }
+    return false;
   }
   return true;
 }
@@ -139,7 +144,7 @@ bool DigiContainerDrop::use_key(Key key)  const   {
 /// Main functional callback
 void DigiContainerDrop::execute(DigiContext& context)  const    {
   auto& event    = *context.event;
-  auto& inputs   = event.get_segment(m_input);
+  auto& inputs   = event.get_segment(m_input_segment);
   work_definition_t def(this, event, inputs);
   if ( m_parallel )  {
     size_t count = def.items.size();
@@ -153,6 +158,8 @@ void DigiContainerDrop::execute(DigiContext& context)  const    {
   else  {
     def.drop_all();
   }
-  inputs.erase(def.keys);
+  for( std::size_t i=0; i != def.work.size(); ++i )   {
+    if ( def.work[i]->type() == typeid(void) )
+      inputs.erase(def.keys[i]);
+  }
 }
-

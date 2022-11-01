@@ -43,13 +43,13 @@ namespace dd4hep {
       /// Property: Container names to be loaded
       std::vector<std::string>       m_containers   { };
       /// Property: Input data segment name
-      std::string                    m_input;
+      std::string                    m_input_segment;
       /// Property: event masks to be handled
       std::vector<int>               m_input_masks  { };
       /// Fully qualified keys of all containers to be manipulated
       std::set<Key::key_type>        m_keys  { };
       /// Container keys of all containers to be manipulated
-      std::set<Key::key_type>        m_cont_keys  { };
+      std::set<Key::itemkey_type>    m_cont_keys  { };
 
       /// Worker objects to be submitted to TBB each performing part of the job
       Workers m_workers;

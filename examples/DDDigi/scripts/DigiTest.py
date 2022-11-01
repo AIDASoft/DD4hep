@@ -17,24 +17,6 @@ from g4units import ns
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-"""
-  00C7A3C1 SiVertexEndcapHits               : map<long long, EnergyDeposit>
-  00D16F45 EcalBarrelHits                   : map<long long, EnergyDeposit>
-  0D3C3803 MCParticles                      :
-  2E9082A9 HcalPlugHits                     : map<long long, EnergyDeposit>
-  3A89E02E HcalEndcapHits                   : map<long long, EnergyDeposit>
-  569C1C49 HcalBarrelHits                   : map<long long, EnergyDeposit>
-  62AD0218 EcalEndcapHits                   : map<long long, EnergyDeposit>
-  7FBC6131 SiTrackerBarrelHits              : map<long long, EnergyDeposit>
-  A239CB2E LumiCalHits                      : map<long long, EnergyDeposit>
-  B5CD88D8 MuonBarrelHits                   : map<long long, EnergyDeposit>
-  BDB9AD3E SiVertexBarrelHits               : map<long long, EnergyDeposit>
-  C84DE2C2 MuonEndcapHits                   : map<long long, EnergyDeposit>
-  CB57C6D0 SiTrackerForwardHits             : map<long long, EnergyDeposit>
-  D108063E BeamCalHits                      : map<long long, EnergyDeposit>
-  F4183035 SiTrackerEndcapHits              : map<long long, EnergyDeposit>
-"""
-
 attenuation = {'SiVertexEndcapHits': 50 * ns,
                'SiVertexBarrelHits': 50 * ns,
                'SiTrackerForwardHits': 50 * ns,
@@ -43,13 +25,13 @@ attenuation = {'SiVertexEndcapHits': 50 * ns,
                'HcalPlugHits': 50 * ns,
                'HcalEndcapHits': 50 * ns,
                'HcalBarrelHits': 50 * ns,
+               'EcalBarrelHits': 50 * ns,
                'EcalEndcapHits': 50 * ns,
                'MuonEndcapHits': 50 * ns,
                'MuonBarrelHits': 50 * ns,
                'BeamCalHits': 50 * ns,
                'LumiCalHits': 50 * ns,
            }
-
 
 class Test(dddigi.Digitize):
 
@@ -64,10 +46,18 @@ class Test(dddigi.Digitize):
     self.main_sequencer()
     self.attenuation = attenuation
     self.inputs = [
-        'CLICSiD_2022-10-05_13-21.root',
-        'CLICSiD_2022-10-05_13-52.root',
-        'CLICSiD_2022-10-05_14-16.root',
-        'CLICSiD_2022-10-05_14-40.root']
+      'CLICSiD_2022-11-01_15-54.root',
+      'CLICSiD_2022-11-01_15-10.root',
+      'CLICSiD_2022-10-31_17-26.root',
+      'CLICSiD_2022-10-31_17-55.root',
+      'CLICSiD_2022-10-31_17-55.root',
+      'CLICSiD_2022-10-31_18-20.root',
+      'CLICSiD_2022-10-31_18-40.root',
+      'CLICSiD_2022-10-31_18-59.root',
+      'CLICSiD_2022-10-31_19-18.root',
+      'CLICSiD_2022-10-31_19-36.root',
+      'CLICSiD_2022-10-31_19-53.root',
+      'CLICSiD_2022-10-31_20-11.root']
     self.used_inputs = []
 
   def segment_action(self, nam, **options):

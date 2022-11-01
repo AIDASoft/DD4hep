@@ -33,37 +33,55 @@ typedef std::function<void(DataSegment& segment, int, const char*, void*)> func_
 
 namespace  {
 
+  double epsilon = std::numeric_limits<double>::epsilon();
+
   template <typename T> union input_data  {
     const void*      raw;
     std::vector<T*>* items;
     input_data(const void* p)   { this->raw = p; }
   };
 
+  template <typename T> void add_particle_history(const T* hit, Key key, History& hist);
+
+  template <> void add_particle_history(const sim::Geant4Calorimeter::Hit* hit, Key key, History& hist)   {
+    for( const auto& truth : hit->truth )   {
+      key.set_item(truth.trackID);
+      hist.particles.emplace_back(key, truth.deposit);
+    }
+  }
+  template <> void add_particle_history(const sim::Geant4Tracker::Hit* hit, Key key, History& hist)   {
+    key.set_item(hit->truth.trackID);
+    hist.particles.emplace_back(key, hit->truth.deposit);
+  }
   template <typename T> void* ddg4_hit_convert_function(const char* desc)   {
     std::string tag = desc;
     func_t* cnv = new func_t([tag] (DataSegment& segment, int mask, const char* name, void* ptr)  {
 	using wrap_t = std::shared_ptr<sim::Geant4HitData>;
 	std::size_t len = 0;
 	std::string nam = name;
-	std::vector<wrap_t> particles;
+	std::vector<wrap_t> geant4_hits;
 	DepositVector out(name, mask);
 	if ( ptr )   {
-	  Key history_key;
 	  input_data<T> data(ptr);
-	  history_key.set_segment(segment.id);
-	  history_key.set_mask(Key::mask_type(mask));
 	  for(size_t i=0; i < data.items->size(); ++i)   {
 	    auto* p = (*data.items)[i];
-	    EnergyDeposit dep { };
-	    dep.flag = p->flag;
-	    dep.deposit = p->energyDeposit;
-	    dep.position = p->position;
-	    history_key.set_item(i);
-	    dep.history.hits.emplace_back(history_key, 1.0);
-	    history_key.set_item(p->g4ID);
-	    dep.history.particles.emplace_back(history_key, 1.0);
-	    out.emplace(p->cellID, std::move(dep));
-	    particles.emplace_back(wrap_t(p));
+	    if ( p->energyDeposit > epsilon )   {
+	      Key history_key;
+	      EnergyDeposit dep { };
+	      dep.flag = p->flag;
+	      dep.deposit = p->energyDeposit;
+	      dep.position = p->position;
+
+	      history_key.set_mask(Key::mask_type(mask));
+	      history_key.set_item(geant4_hits.size());
+	      history_key.set_segment(segment.id);
+
+	      dep.history.hits.emplace_back(history_key, p->energyDeposit);
+	      add_particle_history(p, history_key, dep.history);
+
+	      out.emplace(p->cellID, std::move(dep));
+	      geant4_hits.emplace_back(wrap_t(p));
+	    }
 	  }
 	  len = data.items->size();
 	  data.items->clear();
@@ -73,7 +91,7 @@ namespace  {
 	Key depo_key(nam, mask);
 	segment.emplace(depo_key, std::make_any<DepositVector>(std::move(out)));
 	Key src_key(nam+".ddg4", mask);
-	segment.emplace(src_key, std::make_any<std::vector<wrap_t>>(std::move(particles)));
+	segment.emplace(src_key, std::make_any<std::vector<wrap_t>>(std::move(geant4_hits)));
       });
     return cnv;
   }
@@ -91,29 +109,37 @@ DECLARE_CREATE(DD4hep_DDDigiConverter_vector_dd4hep_sim_Geant4Tracker_Hit_,conve
 
 static void* convert_sim_geant4particles()     {
   func_t* cnv = new func_t([] (DataSegment& segment, int mask, const char* name, void* ptr)  {
-      std::any res = std::make_any<ParticleMapping>(name, mask);
-      ParticleMapping* out = std::any_cast<ParticleMapping>(&res);
+      using wrap_t  = std::shared_ptr<sim::Geant4Particle>;
+      ParticleMapping out(name, mask);
+      std::map<Key, wrap_t> source;
+      Key part_key(name, mask);
       if ( ptr )   {
-	//using wrap_t = std::shared_ptr<sim::Geant4Particle>;
 	auto* items = (std::vector<sim::Geant4Particle*>*)ptr;
+	Key key;
+	key.set_segment(segment.id);
+	key.set_mask(mask);
 	for( auto* p : *items )   {
-	  Key key;
 	  Particle part;
-	  key.set_mask(mask).set_item(out->size()).set_segment(segment.id);
 	  p->mask             = mask;
 	  part.start_position = Position(p->vsx, p->vsy, p->vsz);
 	  part.end_position   = Position(p->vex, p->vey, p->vez);
 	  part.momentum       = Direction(p->psx, p->psy, p->psz);
+	  part.pdgID          = p->pdgID;
 	  part.charge         = p->charge;
 	  part.mass           = p->mass;
-	  part.history        = key;// std::make_any<wrap_t>(p);
-	  out->push(key, std::move(part));
+
+	  part.history        = key.set_item(part_key.item());
+	  key.set_item(out.size());
+	  out.push(key, std::move(part));
+	  source[key] = wrap_t(p);
 	}
 	items->clear();
       }
-      printout(DEBUG,"DDG4Converter","++ Converted %ld DDG4 particles", out->size());
-      Key part_key(name, mask);
-      segment.emplace(part_key, std::move(res));
+      printout(DEBUG,"DDG4Converter","++ Converted %ld DDG4 particles", out.size());
+      std::string nam = name;
+      segment.emplace(part_key, std::make_any<ParticleMapping>(std::move(out)));
+      Key src_key(nam+".ddg4", mask);
+      segment.emplace(src_key, std::make_any<std::map<Key, wrap_t> >(std::move(source)));
     });
   return cnv;
 }

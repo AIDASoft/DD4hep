@@ -96,7 +96,7 @@ namespace dd4hep {
       bool operator > (const Key&)   const;
 
       /// Generate key using hash algorithm
-      void set(const std::string& name, int mask);
+      Key& set(const std::string& name, int mask);
 
       /// Set key mask
       Key& set_mask(mask_type m);
@@ -293,6 +293,7 @@ namespace dd4hep {
       Position  end_position   { };
       Direction momentum       { };
       double    mass           { 0e0 };
+      int       pdgID          { 0 };
       char      charge         { 0 };
       /// Source contributing
       Key       history;
@@ -380,6 +381,8 @@ namespace dd4hep {
       const_iterator begin() const        { return this->data.begin();       }
       /// End iteration (CONST)
       const_iterator end()   const        { return this->data.end();         }
+      /// Access particle by key
+      const Particle& get(Key key)   const;
     };
 
     /// Initializing constructor
@@ -407,6 +410,8 @@ namespace dd4hep {
 	hist_entry_t& operator=(hist_entry_t&& copy) = default;
 	hist_entry_t& operator=(const hist_entry_t& copy) = default;
 	~hist_entry_t() = default;
+	const Particle& get_particle(DigiEvent& event)  const;
+	const EnergyDeposit& get_deposit(DigiEvent& event, Key::itemkey_type container_item)  const;
       };
       /// Sources contributing to the deposit indexed by the cell identifier
       std::vector<hist_entry_t> hits;
@@ -490,7 +495,7 @@ namespace dd4hep {
      */
     class DepositVector : public SegmentEntry  {
     public: 
-      using container_t    = std::vector<std::pair<CellID, EnergyDeposit> >;
+      using container_t    = std::vector<std::pair<const CellID, EnergyDeposit> >;
       using iterator       = container_t::iterator;
       using const_iterator = container_t::const_iterator;
 
@@ -530,6 +535,10 @@ namespace dd4hep {
       std::size_t size()  const           { return this->data.size();        }
       /// Check container if empty
       bool        empty() const           { return this->data.empty();       }
+      /// Access energy deposit by key
+      const EnergyDeposit& get(CellID cell)   const;
+      /// Access energy deposit by key
+      const EnergyDeposit& at(std::size_t cell)   const;
 
       /** Iteration support */
       /// Begin iteration
@@ -598,6 +607,8 @@ namespace dd4hep {
       std::size_t size()  const           { return this->data.size();        }
       /// Check container if empty
       bool        empty() const           { return this->data.empty();       }
+      /// Access energy deposit by key
+      const EnergyDeposit& get(CellID cell)   const;
 
       /** Iteration support */
       /// Begin iteration
@@ -791,12 +802,12 @@ namespace dd4hep {
       const std::any* get_item(Key key, bool exc)  const;
 
     public:
-      container_map_t data;
-      std::mutex&     lock;
-      uint32_t        id  { 0 };
+      container_map_t   data;
+      std::mutex&       lock;
+      Key::segment_type id  { 0 };
     public:
       /// Initializing constructor
-      DataSegment(std::mutex& lock, int id);
+      DataSegment(std::mutex& lock, Key::segment_type id);
       /// Default constructor
       DataSegment() = delete;
       /// Disable move constructor
@@ -908,7 +919,7 @@ namespace dd4hep {
       segment_t m_deposits;
 
       /// Helper: Save access with segment creation if it does not exist
-      DataSegment& access_segment(segment_t& seg, uint32_t id);
+      DataSegment& access_segment(segment_t& seg, Key::segment_type id);
 
     public:
       /// Current event number
@@ -929,10 +940,18 @@ namespace dd4hep {
       virtual ~DigiEvent();
       /// String identifier of this event
       const char* id()   const    {   return this->m_id.c_str();   }
-      /// Retrieve data segment from the event structure
+      /// Retrieve data segment from the event structure by name
       DataSegment& get_segment(const std::string& name);
+      /// Retrieve data segment from the event structure by identifier
+      DataSegment& get_segment(Key::segment_type id);
     };
+
+    /// Static global functions
+    std::string digiTypeName(const std::type_info& info);
+    std::string digiTypeName(const std::any& data);
+    const Particle& get_history_particle(DigiEvent& event, Key history_key);
+    const EnergyDeposit& get_history_deposit(DigiEvent& event, Key::itemkey_type container_item, Key history_key);
+
   }    // End namespace digi
 }      // End namespace dd4hep
-
 #endif // DDDIGI_DIGIDATA_H
