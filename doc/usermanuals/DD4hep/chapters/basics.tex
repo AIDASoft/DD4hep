@@ -1663,12 +1663,12 @@ Magnetic Dipoles are defined as follows:
 Magnetic Multipole Fields are developed according to their  approximation using the multipole coefficients. The dipole is assumed to be horizontal as it is used for bending beams in large colliders
 i.e. the dipole field lines are vertical.
 
-The different momenta are given by:  
+The different field components are given by:  
 \begin{eqnarray*}
-B_n^{\mathrm{norm}}(x)&=& \frac{cp}{e} \sum_{m=1}^{\frac{n}{2}} \frac{(-1)^{m-1} C_n y^{2 m-1} x^{n-2 m}}{(2 m-1)! (n-2 m)!} \quad, \\
-B_n^{\mathrm{norm}}(y)&=& \frac{cp}{e} \sum_{m=0}^{\frac{n-1}{2}} \frac{(-1)^m y^{2 m} C_n x^{-2 m+n-1}}{(2 m)! (-2 m+n-1)!} \quad, \\
-B_n^{\mathrm{skew}}(x)&=& \frac{cp}{e} \sum_{m=0}^{\frac{n-1}{2}} \frac{(-1)^m y^{2 m} S_n x^{-2 m+n-1}}{(2 m)! (-2 m+n-1)!} \quad, \\
-B_n^{\mathrm{skew}}(y)&=& \frac{cp}{e} \sum_{m=1}^{\frac{n}{2}} \frac{(-1)^m y^{2 m-1} S_n x^{n-2 m}}{(2 m-1)! (n-2 m)!}\quad.
+B_{x}^{\mathrm{norm}} &=& \frac{cp}{e} \sum_{m=1}^{\frac{n}{2}} (-1)^{m-1} \; C_n \frac{ x^{n-2 m} \; y^{2 m-1} }{ (n-2 m)!(2 m-1)! } \quad, \\
+B_{y}^{\mathrm{norm}} &=& \frac{cp}{e} \sum_{m=0}^{\frac{n-1}{2}} (-1)^m \; C_n \frac{ x^{n-2 m-1} \; y^{2 m} }{ (n-2 m-1)! (2 m)! } \quad, \\
+B_{x}^{\mathrm{skew}} &=& \frac{cp}{e} \sum_{m=0}^{\frac{n-1}{2}} (-1)^m \; S_n \frac{ x^{n-2 m-1} \; y^{2 m} }{ (n-2 m-1)! (2 m)! } \quad, \\
+B_{y}^{\mathrm{skew}} &=& \frac{cp}{e} \sum_{m=1}^{\frac{n}{2}} (-1)^m \; S_n \frac{ x^{n-2 m} \; y^{2 m-1} }{ (n-2 m)! (2 m-1)! }\quad.
 \end{eqnarray*}
 With $C_n$ being ``normal multipole coefficients'' and $S_n$ the ``skew multipole coefficients''. The maximal moment used is the octopole moment. The lower four moments are used
 to describe the magnetic field:
