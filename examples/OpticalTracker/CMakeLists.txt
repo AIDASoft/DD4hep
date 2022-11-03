@@ -34,7 +34,7 @@ dd4hep_configure_output()
 
 set(OpticalTracker_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/OpticalTracker)
 dd4hep_add_plugin(OpticalTrackerExample SOURCES src/*.cpp
-  USES DD4hep::DDCore DD4hep::DDCond ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore)
+  USES DD4hep::DDCore DD4hep::DDRec DD4hep::DDCond ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore)
 install(TARGETS OpticalTrackerExample LIBRARY DESTINATION lib)
 install(DIRECTORY compact scripts DESTINATION ${OpticalTracker_INSTALL} )
 dd4hep_configure_scripts( OpticalTracker DEFAULT_SETUP WITH_TESTS)
