@@ -57,9 +57,7 @@ Python:
     - docker
   image: ghcr.io/aidasoft/centos7:latest
   script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98/x86_64-centos7-gcc10-opt/setup.sh
-    - echo "RUNNING PYLINT PY3K CHECK"
-    - find . -name "*.py" -and -not -name "ddsix.py" -exec pylint --rcfile=.github/scripts/DD4hep.pylint.py3k.rc --py3k {} +
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
     - echo "RUNNING FLAKE8 CHECK"
     - find . -name "*.py" -and -not -name 'ddsix.py' -exec flake8 {} +
 
@@ -73,12 +71,12 @@ Python:
 # Compile Doxygen reference
 doxygen:
     stage: documentation
-    needs: ["Python"]
+    needs: []
     tags:
         - docker
     image: ghcr.io/aidasoft/centos7:latest
     script:
-        - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-centos7-gcc10-opt/setup.sh
+        - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
         - mkdir -p public
         - mkdir build
         - cd build
@@ -93,13 +91,13 @@ doxygen:
 # Compile LaTeX user manual:
 usermanuals:
     stage: documentation
-    needs: ["Python"]
+    needs: []
     tags:
       - docker
     image: ghcr.io/aidasoft/centos7:latest
     script:
         - yum install -y ghostscript poppler-utils perl
-        - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-centos7-gcc10-opt/setup.sh
+        - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
         - export PATH=/cvmfs/sft.cern.ch/lcg/external/texlive/2017/bin/x86_64-linux:$PATH
         - export max_print_line=200
         - mkdir -p public/usermanuals
