@@ -1661,16 +1661,16 @@ Magnetic Dipoles are defined as follows:
 \end{minted}
 
 Magnetic Multipole Fields are developed according to their  approximation using the multipole coefficients. The dipole is assumed to be horizontal as it is used for bending beams in large colliders
-ie. the dipole field lines are vertical.
+i.e. the dipole field lines are vertical.
 
 The different momenta are given by:  
 \begin{eqnarray*}
 B_n^{\mathrm{norm}}(x)&=& \frac{cp}{e} \sum_{m=1}^{\frac{n}{2}} \frac{(-1)^{m-1} C_n y^{2 m-1} x^{n-2 m}}{(2 m-1)! (n-2 m)!} \quad, \\
-B_n^{\mathrm{norm}}(y)&=& \frac{cp}{e} \sum_{m=0}^{\frac{n-1}{2}} \frac{(-1)^m y^{2 m} S_n x^{-2 m+n-1}}{(2 m)! (-2 m+n-1)!} \quad, \\
+B_n^{\mathrm{norm}}(y)&=& \frac{cp}{e} \sum_{m=0}^{\frac{n-1}{2}} \frac{(-1)^m y^{2 m} C_n x^{-2 m+n-1}}{(2 m)! (-2 m+n-1)!} \quad, \\
 B_n^{\mathrm{skew}}(x)&=& \frac{cp}{e} \sum_{m=0}^{\frac{n-1}{2}} \frac{(-1)^m y^{2 m} S_n x^{-2 m+n-1}}{(2 m)! (-2 m+n-1)!} \quad, \\
 B_n^{\mathrm{skew}}(y)&=& \frac{cp}{e} \sum_{m=1}^{\frac{n}{2}} \frac{(-1)^m y^{2 m-1} S_n x^{n-2 m}}{(2 m-1)! (n-2 m)!}\quad.
 \end{eqnarray*}
-With $C_n$ being ``normal multipole coefficients'' and $S_n$ the ``skew multipole coefficients''. The maximal momentum used is the octopole momentum. The lower four momenta are used
+With $C_n$ being ``normal multipole coefficients'' and $S_n$ the ``skew multipole coefficients''. The maximal moment used is the octopole moment. The lower four moments are used
 to describe the magnetic field:
 \begin{itemize}
 \item Dipole (n=1):
@@ -1696,7 +1696,7 @@ to describe the magnetic field:
         B_y &=& \frac{C_4 x^3}{6}-\frac{1}{2} C_4 x y^2-\frac{1}{2} S_4 x^2 y+\frac{S_4 y^3}{6}\quad.
     \end{eqnarray*}
 \end{itemize}
-The defined field components only apply within the shape 'volume'. If 'volume' is an invalid shape (ie. not defined), then the field components are valied throughout the 'universe'.
+The defined field components only apply within the shape 'volume'. If 'volume' is an invalid shape (i.e. not defined), then the field components are valied throughout the 'universe'.
 
 The magnetic multipoles are defined as follows:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
@@ -1704,9 +1704,9 @@ The magnetic multipoles are defined as follows:
   <position x="0" y="0" z="0"/>
   <rotation x="pi" y="0" z="0"/>
   <shape type="shape-constructor-type" .... args .... >
-  <coeffizient coefficient="coeff(n=1)" skew="skew(n=1)"/>
+  <coefficient coefficient="coeff(n=1)" skew="skew(n=1)"/>
   .... maximum of 4 coefficients ....
-  <coeffizient coefficient="coeff(n=4)" skew="skew(n=4)"/>
+  <coefficient coefficient="coeff(n=4)" skew="skew(n=4)"/>
 </field>
 \end{minted}
 The shape defines the geometrical coverage of the multipole  field in the origin (See section~\ref{dd4hep-basic-shapes} for details).  This shape may then be transformed to the required location in the detector area using the position  and the rotation elements, which define this transformation.
