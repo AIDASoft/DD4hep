@@ -355,6 +355,43 @@ Position VolumeManagerContext::localToWorld(const Position& local)  const   {
   return localToWorld(l);
 }
 
+/// Transform world coordinates to the DetElement coordinates
+Position VolumeManagerContext::worldToElement(const double world[3])  const    {
+  return element.nominal().worldToLocal(world);
+}
+
+/// Transform world coordinates to the DetElement coordinates
+Position VolumeManagerContext::worldToElement(const Position& world)  const    {
+  return element.nominal().worldToLocal(world);
+}
+
+/// Transform world coordinates to the DetElement coordinates
+void VolumeManagerContext::worldToElement(const double world[3], double elt[3])  const    {
+  element.nominal().worldToLocal(world, elt);
+}
+
+/// Transform world coordinates to the local coordinates
+Position VolumeManagerContext::worldToLocal(const double world[3])  const    {
+  double elt[3], local[3];
+  worldToElement(world, elt);
+  toElement().MasterToLocal(elt, local);
+  return { local[0], local[1], local[2] };
+}
+
+/// Transform world coordinates to the local coordinates
+Position VolumeManagerContext::worldToLocal(const Position& world)  const    {
+  double global[3];
+  world.GetCoordinates(global);
+  return worldToLocal(global);
+}
+
+/// Transform world coordinates to the DetElement coordinates
+void VolumeManagerContext::worldToLocal(const double world[3], double local[3])  const    {
+  double elt[3];
+  worldToElement(world, elt);
+  toElement().MasterToLocal(elt, local);
+}
+
 /// Initializing constructor to create a new object
 VolumeManager::VolumeManager(const Detector& description, const string& nam, DetElement elt, Readout ro, int flags) {
   printout(INFO, "VolumeManager", " - populating volume ids - be patient ..."  );

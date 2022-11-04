@@ -84,6 +84,20 @@ namespace dd4hep {
     Position localToWorld(const double local[3])  const;
     /// Transform local coordinates to the world coordinates
     Position localToWorld(const Position& local)  const;
+
+    /// Transform world coordinates to the DetElement coordinates
+    Position worldToElement(const Position& world)  const;
+    /// Transform world coordinates to the DetElement coordinates
+    Position worldToElement(const double world[3])  const;
+    /// Transform world coordinates to the DetElement coordinates
+    void worldToElement(const double world[3], double element[3])  const;
+
+    /// Transform world coordinates to the local coordinates
+    Position worldToLocal(const Position& world)  const;
+    /// Transform world coordinates to the local coordinates
+    Position worldToLocal(const double world[3])  const;
+    /// Transform world coordinates to the local coordinates
+    void worldToLocal(const double world[3], double local[3])  const;
   };
 
   /// Class to support the retrieval of detector elements and volumes given a valid identifier
