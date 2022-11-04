@@ -355,6 +355,7 @@ class CommandLine:
   def __init__(self, help=None):
     import sys
     self.data = {}
+    help_call = help
     have_help = False
     for i in range(len(sys.argv)):
       if sys.argv[i][0] == '-':

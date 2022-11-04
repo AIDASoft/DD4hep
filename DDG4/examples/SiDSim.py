@@ -39,13 +39,12 @@ def help():
   logging.info("                                Macro file is optional")
   logging.info("       -macro <file>            Start G4 macro        ")
   logging.info("       -batch                   Batch execution       ")
-  logging.info("       -events <number>         If batch: number of events to be executed");
+  logging.info("       -events <number>         If batch: number of events to be executed")
 
 
 def run():
   args = DDG4.CommandLine()
   #
-
   if args.help:
     help()
     sys.exit(1)
