@@ -29,13 +29,13 @@ def run():
   #  sigma(E)[GeV]/E[GeV] = 0.02        (systematic) + 0.005 / sqrt(E[GeV]) (intrinsic) + 1keV/E[GeV] (instrumentation)
   #  sigma(E)[GeV]        = 0.02*E[GeV] (systematic) + 0.005 * sqrt(E[GeV]) (intrinsic) + 1keV (instrumentation)
   smear.intrinsic_fluctuation = 0.005 / math.sqrt(units.GeV)
-  smear.systematic_resolution = 0.02  / units.GeV
+  smear.systematic_resolution = 0.02 / units.GeV
   smear.instrumentation_resolution = 1 * units.keV
   smear.pair_ionisation_energy = 10 * units.eV
   smear.ionization_fluctuation = True
   smear.update_in_place = False
   # proc.adopt_container_processor(smear, conts)
-  proc.adopt_container_processor(smear, ['EcalBarrelHits','EcalEndcapHits','HcalBarrelHits'])
+  proc.adopt_container_processor(smear, ['EcalBarrelHits', 'EcalEndcapHits', 'HcalBarrelHits'])
 
   event.adopt_action('DigiStoreDump/HeaderDump')
   # ========================================================================================================

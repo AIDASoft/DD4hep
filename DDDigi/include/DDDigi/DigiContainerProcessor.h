@@ -116,11 +116,10 @@ namespace dd4hep {
     protected:
       /// Property to steer parallel processing
       bool               m_parallel { false };
-
-      /// Lock for output merging
-      mutable std::mutex m_output_lock;
       /// Array of sub-workers
       workers_t          m_workers;
+      /// Lock for output merging
+      mutable std::mutex m_output_lock;
 
     protected:
       /// Define standard assignments and constructors

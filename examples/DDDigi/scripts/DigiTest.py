@@ -10,27 +10,28 @@
 # ==========================================================================
 from __future__ import absolute_import
 import os
+import dd4hep
 import dddigi
 import logging
-from g4units import ns
+from dd4hep import units
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-attenuation = {'SiVertexEndcapHits': 50 * ns,
-               'SiVertexBarrelHits': 50 * ns,
-               'SiTrackerForwardHits': 50 * ns,
-               'SiTrackerEndcapHits': 50 * ns,
-               'SiTrackerBarrelHits': 50 * ns,
-               'HcalPlugHits': 50 * ns,
-               'HcalEndcapHits': 50 * ns,
-               'HcalBarrelHits': 50 * ns,
-               'EcalBarrelHits': 50 * ns,
-               'EcalEndcapHits': 50 * ns,
-               'MuonEndcapHits': 50 * ns,
-               'MuonBarrelHits': 50 * ns,
-               'BeamCalHits': 50 * ns,
-               'LumiCalHits': 50 * ns,
+attenuation = {'SiVertexEndcapHits': 50 * units.ns,
+               'SiVertexBarrelHits': 50 * units.ns,
+               'SiTrackerForwardHits': 50 * units.ns,
+               'SiTrackerEndcapHits': 50 * units.ns,
+               'SiTrackerBarrelHits': 50 * units.ns,
+               'HcalPlugHits': 50 * units.ns,
+               'HcalEndcapHits': 50 * units.ns,
+               'HcalBarrelHits': 50 * units.ns,
+               'EcalBarrelHits': 50 * units.ns,
+               'EcalEndcapHits': 50 * units.ns,
+               'MuonEndcapHits': 50 * units.ns,
+               'MuonBarrelHits': 50 * units.ns,
+               'BeamCalHits': 50 * units.ns,
+               'LumiCalHits': 50 * units.ns,
 }
 
 
@@ -77,7 +78,7 @@ class Test(dddigi.Digitize):
         </plugins>"""))
       self.volumeManager = self.description.volumeManager()
       if self.volumeManager.isValid():
-        self.info('+++ Successfully created DD4hep VolumeManager') 
+        self.info('+++ Successfully created DD4hep VolumeManager')
     return self
 
   def data_containers(self):
