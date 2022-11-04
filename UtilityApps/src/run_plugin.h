@@ -114,7 +114,7 @@ namespace {
       "                     [REQUIRED]     At least one compact geo file is required!     \n";
     print_default_args() <<
       "        -load_only   [OPTIONAL]     Dry-run to only load geometry without          \n"
-      "                                    starting the dispay.                           \n"
+      "                                    starting the display.                          \n"
                          << std::endl;
     std::exit(EINVAL);
   }
