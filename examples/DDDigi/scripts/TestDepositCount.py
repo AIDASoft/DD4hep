@@ -19,7 +19,7 @@ def run():
   # ========================================================================================================
   digi.info('Created SIGNAL input')
   signal = input.adopt_action('DigiSequentialActionSequence/Signal')
-  reader = signal.adopt_action('DigiROOTInput/SignalReader', mask=0x0, input=[digi.next_input()])
+  reader = signal.adopt_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()])
   sequence = signal.adopt_action('DigiContainerSequenceAction/Counter',
                                  parallel=True, input_mask=0x0, input_segment='inputs')
   count = digi.create_action('DigiCellMultiplicityCounter/CellCounter')

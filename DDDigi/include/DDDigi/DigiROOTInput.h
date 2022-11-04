@@ -19,6 +19,9 @@
 // C/C++ include files
 #include <memory>
 
+/// Forward declarations
+class TBranch;
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
@@ -37,18 +40,24 @@ namespace dd4hep {
      */
     class DigiROOTInput : public DigiInputAction {
 
-    protected:
+    public:
       /// Helper classes
       class internals_t;
+      class inputsource_t;
+
+      class work_t   {
+      public:
+	DataSegment& input_segment;
+	Key          input_key;
+	TBranch&     branch;
+	TClass&      cl;
+      };
+
+    protected:
       /// Property: Name of the tree to connect to
       std::string                    m_tree_name   { };
       /// Property: Container names to be loaded
       std::vector<std::string>       m_containers  { };
-      /// Property: Segment name to place input data default: inputs
-      std::string                    m_location    { };
-
-      /// Current input id
-      mutable int                    m_curr_input  { 0 };
       /// Connection parameters to the "current" input source
       mutable std::unique_ptr<internals_t> imp;
 
@@ -64,8 +73,20 @@ namespace dd4hep {
       DigiROOTInput(const DigiKernel& kernel, const std::string& nam);
       /// Default destructor
       virtual ~DigiROOTInput();
+
+      /// Access to tree name containing data
+      const std::string& tree_name()  const   {
+	return m_tree_name;
+      }
+      /// Access to container names containing data
+      const std::vector<std::string>& container_names()  const   {
+	return m_containers;
+      }
+
       /// Callback to read event input
       virtual void execute(DigiContext& context)  const override;
+      /// Callback to handle single branch
+      virtual void operator()(DigiContext& context, work_t& work)  const = 0;
     };
 
   }    // End namespace digi

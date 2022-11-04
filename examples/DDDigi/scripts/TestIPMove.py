@@ -19,7 +19,7 @@ def run():
   # ========================================================================================================
   digi.info('Created SIGNAL input')
   signal = input.adopt_action('DigiSequentialActionSequence/Signal')
-  signal.adopt_action('DigiROOTInput/SignalReader', mask=0x0, input=[digi.next_input()])
+  signal.adopt_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()])
   set_ip = signal.adopt_action('DigiIPCreate/SignalIP')
   set_ip.offset_ip = [1, 2, 3]
   set_ip.sigma_ip = [.5, .5, 3.0]

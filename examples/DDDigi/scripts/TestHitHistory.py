@@ -18,18 +18,18 @@ def run():
   input = digi.input_action('DigiParallelActionSequence/READER')
   # ========================================================================================================
   digi.info('Created SIGNAL input')
-  input.adopt_action('DigiROOTInput/SignalReader', mask=0xCBAA, input=[digi.next_input()])
+  input.adopt_action('DigiDDG4ROOT/SignalReader', mask=0xCBAA, input=[digi.next_input()])
   # ========================================================================================================
   digi.info('Creating collision overlay....')
   # ========================================================================================================
   overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-1')
-  overlay.adopt_action('DigiROOTInput/Read-1', mask=0xCBEE, input=[digi.next_input()])
+  overlay.adopt_action('DigiDDG4ROOT/Read-1', mask=0xCBEE, input=[digi.next_input()])
   digi.info('Created input.overlay-1')
   # ========================================================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
   combine = event.adopt_action('DigiContainerCombine/Combine',
                                parallel=False,
-                               input_masks=[0xCBAA,0xCBEE],
+                               input_masks=[0xCBAA, 0xCBEE],
                                output_mask=0xAAA0,
                                output_segment='deposits')
   combine.erase_combined = False
@@ -51,7 +51,7 @@ def run():
                      dump_history=True,
                      containers=['SiTrackerBarrelHits', 'MCParticles'],
                      segments=['deposits'],
-                     masks=[0xAAA0,0xEEE5])
+                     masks=[0xAAA0, 0xEEE5])
   # ========================================================================================================
   digi.info('Starting digitization core')
   digi.run_checked(num_events=3, num_threads=1, parallel=5)

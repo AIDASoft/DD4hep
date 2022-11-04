@@ -39,9 +39,13 @@ namespace dd4hep {
 
     protected:
       /// Property: Input data specification
-      std::vector<std::string> m_inputs { };
+      std::vector<std::string> m_input_sources { };
+      /// Property: Input data segment name
+      std::string              m_input_segment { "inputs" };
       /// Property: Mask to flag input source items
-      int                      m_mask   { NO_MASK };
+      int                      m_input_mask    { NO_MASK };
+      /// Property: Loop on inputs and restart at end
+      bool                     m_input_rescan { true };
 
     protected:
       /// Define standard assignments and constructors
@@ -53,6 +57,18 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiInputAction();
 
+      /// Access to container names containing data
+      const std::vector<std::string>& inputs()  const   {
+	return m_input_sources;
+      }
+      /// Access to container names containing data
+      const std::string& input_segment()  const   {
+	return m_input_segment;
+      }
+      /// Access to container names containing data
+      int input_mask()  const   {
+	return m_input_mask;
+      }
       /// Callback to read event input
       virtual void execute(DigiContext& context)  const override;
     };

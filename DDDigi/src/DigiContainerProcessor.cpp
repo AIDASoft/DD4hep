@@ -159,6 +159,7 @@ void dd4hep::digi::DigiContainerSequenceAction::initialize()   {
     worker_t* w = new worker_t(ent.second, m_registered_workers.size());
     m_registered_workers.emplace(ent.first, w);
     m_workers.insert(w);
+    ent.second->release();
   }
 }
 
@@ -294,7 +295,7 @@ void DigiMultiContainerProcessor::initialize()   {
       m_workers.insert(w);
       action_workers[action] = w;
     }
-    for( auto key : worker_keys )
+    for( const auto& key : worker_keys )
       m_worker_map[key.item()].push_back(w);
   }
   /// Add some printout about the configuration

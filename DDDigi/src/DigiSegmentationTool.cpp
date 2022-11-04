@@ -192,7 +192,7 @@ DigiSegmentationTool::split_segmentation(const string& split_by)  const
 	   "%-24s has %ld parallel entries when splitting by \"%s\"",
 	   det, segmentation_splits.size(), split_by.c_str());
   stringstream str;
-  for( auto id : segmentation_splits )
+  for( const auto& id : segmentation_splits )
     str << setw(16) << hex << setfill('0') << id.first << " ";
   printout(INFO,"DigiSegmentationTool","%-24s --> Parallel Entries: %s",
 	   det, str.str().c_str());

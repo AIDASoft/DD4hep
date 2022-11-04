@@ -13,6 +13,7 @@
 
 // Framework include files
 #include <DDDigi/DigiContainerProcessor.h>
+#include <DD4hep/InstanceCount.h>
 
 /// C/C++ include files
 #include <limits>
@@ -37,8 +38,6 @@ namespace dd4hep {
     protected:
       /// Property: Energy cutoff. No hits will be merged with a deposit smaller
       double m_cutoff { -std::numeric_limits<double>::epsilon() };
-      /// Property: register empty containers
-      bool   m_register_empty_containers { true };
 
     public:
       /// Standard constructor
@@ -46,7 +45,12 @@ namespace dd4hep {
 	: DigiContainerProcessor(krnl, nam)
       {
 	declareProperty("deposit_cutoff", m_cutoff);
-	declareProperty("m_register_empty_containers", m_register_empty_containers);
+	InstanceCount::increment(this);
+      }
+
+      /// Default destructor
+      virtual ~DigiDepositWeightedPosition() {
+	InstanceCount::decrement(this);
       }
 
       /// Create deposit mapping with updates on same cellIDs
@@ -67,11 +71,9 @@ namespace dd4hep {
 	  }
 	  ++dropped;
 	}
-	if ( m_register_empty_containers )   {
-	  work.output.data.put(m.key, std::move(m));
-	}
 	info("%s+++ %-32s added %6ld updated %6ld dropped %6ld entries (now: %6ld) from mask: %04X to mask: %04X",
 	     tag, cont.name.c_str(), added, updated, dropped, m.size(), cont.key.mask(), m.key.mask());
+	work.output.data.put(m.key, std::move(m));
       }
 
       /// Main functional callback

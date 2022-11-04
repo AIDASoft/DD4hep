@@ -435,7 +435,7 @@ int DigiKernel::run()   {
   internals->events_todo = internals->numEvents;
   printout(INFO,"DigiKernel","+++ Total number of events:    %d",internals->numEvents);
 #ifdef DD4HEP_USE_TBB
-  if ( !internals->tbb_init && internals->num_threads>=0 )   {
+  if ( !internals->tbb_init && internals->num_threads > 0 )   {
     using ctrl_t = tbb::global_control;
     if ( 0 == internals->num_threads )  {
       internals->num_threads = ctrl_t::max_allowed_parallelism;
@@ -443,22 +443,25 @@ int DigiKernel::run()   {
     printout(INFO, "DigiKernel", "+++ Number of TBB threads to:  %d",internals->num_threads);
     printout(INFO, "DigiKernel", "+++ Number of parallel events: %d",internals->maxEventsParallel);
     internals->tbb_init = std::make_unique<ctrl_t>(ctrl_t::max_allowed_parallelism,internals->num_threads+1);
-    if ( internals->maxEventsParallel > 1 )   {
+    if ( internals->maxEventsParallel >= 0 )   {
       int todo_evt = internals->events_todo;
       int num_proc = std::min(todo_evt,internals->maxEventsParallel);
       tbb::task_group main_group;
       for(int i=0; i < num_proc; ++i)
         main_group.run(Processor(*this));
       main_group.wait();
-      printout(DEBUG, "DigiKernel", "+++ All event processing threads Synchronized --- Done!");
     }
+    printout(DEBUG, "DigiKernel", "+++ All event processing threads Synchronized --- Done!");
   }
+  else
 #endif
-  while ( internals->events_todo > 0 && !internals->stop )   {
-    Processor proc(*this);
-    proc();
-    ++internals->events_submitted;
-  }
+    {
+      while ( internals->events_todo > 0 && !internals->stop )   {
+	Processor proc(*this);
+	proc();
+	++internals->events_submitted;
+      }
+    }
   std::chrono::duration<double> duration = std::chrono::system_clock::now() - start;
   double sec = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
   printout(DEBUG, "DigiKernel", "+++ %d Events out of %d processed. "

@@ -31,8 +31,10 @@ attenuation = {'SiVertexEndcapHits': 50 * ns,
                'MuonBarrelHits': 50 * ns,
                'BeamCalHits': 50 * ns,
                'LumiCalHits': 50 * ns,
-           }
+}
 
+
+# ==========================================================================================================
 class Test(dddigi.Digitize):
 
   def __init__(self, geometry=None):
@@ -45,29 +47,38 @@ class Test(dddigi.Digitize):
     self.input = None
     self.main_sequencer()
     self.attenuation = attenuation
-    self.inputs = [
-      'CLICSiD_2022-11-01_15-54.root',
-      'CLICSiD_2022-11-01_15-10.root',
-      'CLICSiD_2022-10-31_17-26.root',
-      'CLICSiD_2022-10-31_17-55.root',
-      'CLICSiD_2022-10-31_17-55.root',
-      'CLICSiD_2022-10-31_18-20.root',
-      'CLICSiD_2022-10-31_18-40.root',
-      'CLICSiD_2022-10-31_18-59.root',
-      'CLICSiD_2022-10-31_19-18.root',
-      'CLICSiD_2022-10-31_19-36.root',
-      'CLICSiD_2022-10-31_19-53.root',
-      'CLICSiD_2022-10-31_20-11.root']
     self.used_inputs = []
+    self.inputs = ['CLICSiD_2022-11-01_15-54.root',
+                   'CLICSiD_2022-11-01_15-10.root',
+                   'CLICSiD_2022-10-31_17-26.root',
+                   'CLICSiD_2022-10-31_17-55.root',
+                   'CLICSiD_2022-10-31_17-55.root',
+                   'CLICSiD_2022-10-31_18-20.root',
+                   'CLICSiD_2022-10-31_18-40.root',
+                   'CLICSiD_2022-10-31_18-59.root',
+                   'CLICSiD_2022-10-31_19-18.root',
+                   'CLICSiD_2022-10-31_19-36.root',
+                   'CLICSiD_2022-10-31_19-53.root',
+                   'CLICSiD_2022-10-31_20-11.root']
 
   def segment_action(self, nam, **options):
     obj = dddigi.Interface.createSegmentAction(self.kernel(), str(nam))
     return obj
 
-  def load_geo(self):
+  def load_geo(self, volume_manager=None):
     fname = "file:" + os.environ['DD4hepINSTALL'] + "/DDDetectors/compact/SiD.xml"
     self.kernel().loadGeometry(str(fname))
     self.printDetectors()
+    if volume_manager:
+      vm = self.description.volumeManager()
+      if not vm.isValid():
+        self.description.processXMLString(str("""<plugins>
+          <plugin name="DD4hep_VolumeManager"/>
+        </plugins>"""))
+      self.volumeManager = self.description.volumeManager()
+      if self.volumeManager.isValid():
+        self.info('+++ Successfully created DD4hep VolumeManager') 
+    return self
 
   def data_containers(self):
     return list(self.attenuation.keys())
@@ -112,3 +123,46 @@ class Test(dddigi.Digitize):
         result = "PASSED"
     self.always('%s Test finished after processing %d events.' % (result, evt_done,))
     self.always('Test done. Exiting')
+
+
+# ==========================================================================================================
+def test_setup_1(digi):
+  """
+      Create default setup for tests. Simply too bad to repeat the same lines over and over again.
+
+      \author  M.Frank
+      \version 1.0
+  """
+  # ========================================================================================================
+  digi.info('Created SIGNAL input')
+  input = digi.input_action('DigiParallelActionSequence/READER')
+  input.adopt_action('DigiDDG4ROOT/SignalReader', mask=0xCBAA, input=[digi.next_input()])
+  # ========================================================================================================
+  digi.info('Creating collision overlay....')
+  # ========================================================================================================
+  overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-1')
+  overlay.adopt_action('DigiDDG4ROOT/Read-1', mask=0xCBEE, input=[digi.next_input()])
+  digi.info('Created input.overlay-1')
+  # ========================================================================================================
+  event = digi.event_action('DigiSequentialActionSequence/EventAction')
+  combine = event.adopt_action('DigiContainerCombine/Combine',
+                               parallel=False,
+                               input_masks=[0xCBAA, 0xCBEE],
+                               output_mask=0xAAA0,
+                               output_segment='deposits')
+  combine.erase_combined = False
+  proc = event.adopt_action('DigiContainerSequenceAction/HitP2',
+                            parallel=False,
+                            input_mask=0xAAA0,
+                            input_segment='deposits',
+                            output_mask=0xEEE5,
+                            output_segment='deposits')
+  combine = digi.create_action('DigiDepositWeightedPosition/DepoCombine')
+  proc.adopt_container_processor(combine, digi.containers())
+  conts = [c for c in digi.containers()]
+  event.adopt_action('DigiContainerDrop/Drop',
+                     containers=conts,
+                     input_segment='deposits',
+                     input_masks=[0xAAA0])
+
+  return event

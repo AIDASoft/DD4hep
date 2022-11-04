@@ -18,16 +18,16 @@ def run():
   input = digi.input_action('DigiParallelActionSequence/READER')
   # ========================================================================================================
   digi.info('Created SIGNAL input')
-  input.adopt_action('DigiROOTInput/SignalReader', mask=0x0, input=[digi.next_input()])
+  input.adopt_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()])
   # ========================================================================================================
   digi.info('Creating collision overlays....')
   # ========================================================================================================
   overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-1')
-  overlay.adopt_action('DigiROOTInput/Read-1', mask=0x1, input=[digi.next_input()])
+  overlay.adopt_action('DigiDDG4ROOT/Read-1', mask=0x1, input=[digi.next_input()])
   digi.info('Created input.overlay-1')
   # ========================================================================================================
   overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-2')
-  overlay.adopt_action('DigiROOTInput/Read-2', mask=0x2, input=[digi.next_input()])
+  overlay.adopt_action('DigiDDG4ROOT/Read-2', mask=0x2, input=[digi.next_input()])
   digi.info('Created input.overlay-2')
   # ========================================================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
