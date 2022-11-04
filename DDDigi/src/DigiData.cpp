@@ -82,7 +82,7 @@ std::string Key::key_name(const Key& k)    {
   return "UNKNOWN";
 }
 
-const Particle& dd4hep::digi::get_history_particle(DigiEvent& event, Key history_key)   {
+const Particle& dd4hep::digi::get_history_particle(const DigiEvent& event, Key history_key)   {
   static Key item_key("MCParticles",0x0);
   Key key;
   const auto& segment = event.get_segment(history_key.segment());
@@ -93,7 +93,7 @@ const Particle& dd4hep::digi::get_history_particle(DigiEvent& event, Key history
   return particles.get(history_key);
 }
 
-const EnergyDeposit& dd4hep::digi::get_history_deposit(DigiEvent& event, Key::itemkey_type container_item, Key history_key)   {
+const EnergyDeposit& dd4hep::digi::get_history_deposit(const DigiEvent& event, Key::itemkey_type container_item, Key history_key)   {
   Key key;
   const auto& segment = event.get_segment(history_key.segment());
   key.set_segment(history_key.segment());
@@ -117,7 +117,7 @@ std::pair<std::size_t,std::size_t> History::drop()   {
   return ret;
 }
 
-const Particle& History::hist_entry_t::get_particle(DigiEvent& event)  const  {
+const Particle& History::hist_entry_t::get_particle(const DigiEvent& event)  const  {
   static Key item_key("MCParticles",0x0);
   Key key(this->source);
   const auto& segment = event.get_segment(this->source.segment());
@@ -125,11 +125,26 @@ const Particle& History::hist_entry_t::get_particle(DigiEvent& event)  const  {
   return particles.get(this->source);
 }
 
-const EnergyDeposit& History::hist_entry_t::get_deposit(DigiEvent& event, Key::itemkey_type container_item)  const {
+const EnergyDeposit& History::hist_entry_t::get_deposit(const DigiEvent& event, Key::itemkey_type container_item)  const {
   Key key(this->source);
   const auto& segment = event.get_segment(this->source.segment());
   const auto& hits = segment.get<DepositVector>(key.set_item(container_item));
   return hits.at(this->source.item());
+}
+
+/// Retrieve the weighted momentum of all contributing particles
+Direction History::average_particle_momentum(const DigiEvent& event)  const   {
+  Direction momentum;
+  if ( !particles.empty() )    {
+    double weight = 0e0;
+    for( const auto& p : particles )   {
+      const Particle&  par = p.get_particle(event);
+      momentum += par.momentum * p.weight;
+      weight   += p.weight;
+    }
+    momentum /= std::max(weight, detail::numeric_epsilon);
+  }
+  return momentum;
 }
 
 /// Update the deposit using deposit weighting
@@ -157,7 +172,8 @@ void EnergyDeposit::update_deposit_weighted(EnergyDeposit&& upda)  {
 /// Merge new deposit map onto existing map
 std::size_t DepositVector::merge(DepositVector&& updates)    {
   std::size_t update_size = updates.size();
-  data.reserve(data.size()+updates.size());
+  std::size_t newlen = std::max(2*data.size(), data.size()+updates.size());
+  data.reserve(newlen);
   for( auto& c : updates )    {
     data.emplace_back(c);
   }
@@ -167,7 +183,8 @@ std::size_t DepositVector::merge(DepositVector&& updates)    {
 /// Merge new deposit map onto existing map (keep inputs)
 std::size_t DepositVector::merge(DepositMapping&& updates)    {
   std::size_t update_size = updates.size();
-  data.reserve(data.size()+updates.size());
+  std::size_t newlen = std::max(2*data.size(), data.size()+updates.size());
+  data.reserve(newlen);
   for( const auto& c : updates )    {
     data.emplace_back(c);
   }
@@ -177,7 +194,8 @@ std::size_t DepositVector::merge(DepositMapping&& updates)    {
 /// Merge new deposit map onto existing map (keep inputs)
 std::size_t DepositVector::insert(const DepositVector& updates)    {
   std::size_t update_size = updates.size();
-  data.reserve(data.size()+updates.size());
+  std::size_t newlen = std::max(2*data.size(), data.size()+updates.size());
+  data.reserve(newlen);
   for( const auto& c : updates )    {
     data.emplace_back(c);
   }
@@ -187,7 +205,8 @@ std::size_t DepositVector::insert(const DepositVector& updates)    {
 /// Merge new deposit map onto existing map (keep inputs)
 std::size_t DepositVector::insert(const DepositMapping& updates)    {
   std::size_t update_size = updates.size();
-  data.reserve(data.size()+updates.size());
+  std::size_t newlen = std::max(2*data.size(), data.size()+updates.size());
+  data.reserve(newlen);
   for( const auto& c : updates )    {
     data.emplace_back(c);
   }
@@ -208,6 +227,11 @@ const EnergyDeposit& DepositVector::get(CellID cell)   const    {
 /// Access energy deposit by key
 const EnergyDeposit& DepositVector::at(std::size_t cell)   const    {
   return data.at(cell).second;
+}
+
+/// Remove entry
+void DepositVector::remove(iterator position)   {
+  //data.erase(position);
 }
 
 /// Merge new deposit map onto existing map
@@ -258,6 +282,11 @@ std::size_t DepositMapping::insert(const DepositMapping& updates)    {
   return update_size;
 }
 
+/// Emplace entry
+void DepositMapping::emplace(CellID cell, EnergyDeposit&& deposit)    {
+  data.emplace(cell, std::move(deposit));
+}
+
 /// Access energy deposit by key
 const EnergyDeposit& DepositMapping::get(CellID cell)   const    {
   auto   iter = data.find(cell);
@@ -265,6 +294,11 @@ const EnergyDeposit& DepositMapping::get(CellID cell)   const    {
     return iter->second;
   except("DepositMapping","Failed to access deposit by CellID. UNKNOWN ID: %016X", cell);
   throw std::runtime_error("Failed to access deposit by CellID");
+}
+
+/// Remove entry
+void DepositMapping::remove(iterator position)   {
+  data.erase(position);
 }
 
 /// Merge new deposit map onto existing map
@@ -353,10 +387,10 @@ DataSegment::DataSegment(std::mutex& l, Key::segment_type i)
 /// Remove data item from segment
 bool DataSegment::emplace(Key key, std::any&& item)    {
   bool has_value = item.has_value();
-#if 0
-  printout(INFO, "DataSegment", "PUT Key No.%4d: %-32s %016lX -> %04X %04X %08Xld   %s",
+#if DD4HEP_DDDIGI_DEBUG
+  printout(INFO, "DataSegment", "PUT Key No.%4d: %-32s %016lX -> %04X %04X %08Xld Value:%s  %s",
 	   data.size(), Key::key_name(key).c_str(), key.value(), key.segment(), key.mask(), key.item(),
-	   digiTypeName(item.type()).c_str());
+	   yes_no(has_value), digiTypeName(item.type()).c_str());
 #endif
   std::lock_guard<std::mutex> l(lock);
   bool ret = data.emplace(key, std::move(item)).second;
@@ -394,7 +428,7 @@ bool DataSegment::erase(Key key)    {
 std::size_t DataSegment::erase(const std::vector<Key>& keys)   {
   std::size_t count = 0;
   std::lock_guard<std::mutex> l(lock);
-  for(auto key : keys)   {
+  for(const auto& key : keys)   {
     auto iter = data.find(key);
     if ( iter != data.end() )   {
       data.erase(iter);
@@ -510,6 +544,30 @@ DataSegment& DigiEvent::get_segment(const std::string& name)   {
   throw std::runtime_error("Invalid segment name");
 }
 
+/// Retrieve data segment from the event structure
+const DataSegment& DigiEvent::get_segment(const std::string& name)   const  {
+  switch(::toupper(name[0]))   {
+  case 'I':
+    return *m_inputs;
+  case 'C':
+    return *m_counts;
+  case 'D':
+    switch(::toupper(name[1]))   {
+    case 'E':
+      return *m_deposits;
+    default:
+      return *m_data;
+    }
+    break;
+  case 'O':
+    return *m_outputs;
+  default:
+    break;
+  }
+  except("DigiEvent", "Invalid segment name: %s", name.c_str());
+  throw std::runtime_error("Invalid segment name");
+}
+
 /// Retrieve data segment from the event structure by identifier
 DataSegment& DigiEvent::get_segment(Key::segment_type id)   {
   switch(id)   {
@@ -523,6 +581,26 @@ DataSegment& DigiEvent::get_segment(Key::segment_type id)   {
     return access_segment(m_outputs,4);
   case 0xAB:
     return access_segment(m_data,0xAB);
+  default:
+    break;
+  }
+  except("DigiEvent", "Invalid segment identifier: %d", id);
+  throw std::runtime_error("Invalid segment name");
+}
+
+/// Retrieve data segment from the event structure by identifier
+const DataSegment& DigiEvent::get_segment(Key::segment_type id)  const  {
+  switch(id)   {
+  case 1:
+    return *m_inputs;
+  case 2:
+    return *m_counts;
+  case 3:
+    return *m_deposits;
+  case 4:
+    return *m_outputs;
+  case 0xAB:
+    return *m_data;
   default:
     break;
   }

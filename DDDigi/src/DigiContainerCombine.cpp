@@ -84,14 +84,17 @@ public:
   /// Specialized deposit merger: implicitly assume identical item types are mapped sequentially
   template<typename OUT, typename IN> void merge_depos(OUT& output, IN& input, int thr)  {
     std::size_t cnt = 0;
+    std::string nam = input.name;
+    auto mask = input.key.mask();
     if ( combine->m_erase_combined )
       cnt = output.merge(std::move(input));
     else
       cnt = output.insert(input);
-    combine->debug(this->format, thr, input.name.c_str(), input.key.mask(), cnt, "deposits"); 
+    combine->debug(this->format, thr, nam.c_str(), mask, cnt, "deposits"); 
     this->cnt_depos += cnt;
     this->cnt_conts++;
   }
+
   /// Merge history records: implicitly assume identical item types are mapped sequentially
   void merge_hist(const std::string& nam, size_t start, int thr)  {
     std::size_t cnt;
@@ -100,8 +103,9 @@ public:
     for( std::size_t j=start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
 	DetectorHistory* next = std::any_cast<DetectorHistory>(work[j]);
+	std::string next_name = next->name;
 	cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
-	combine->debug(format, thr, next->name.c_str(), keys[j].mask(), cnt, "histories"); 
+	combine->debug(format, thr, next_name.c_str(), keys[j].mask(), cnt, "histories"); 
 	used_keys_insert(keys[j]);
 	cnt_hist += cnt;
 	cnt_conts++;
@@ -118,8 +122,9 @@ public:
     for( std::size_t j=start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
 	DetectorResponse* next = std::any_cast<DetectorResponse>(work[j]);
+	std::string next_name = next->name;
 	cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
-	combine->debug(format, thr, next->name.c_str(), keys[j].mask(), cnt, "histories"); 
+	combine->debug(format, thr, next_name.c_str(), keys[j].mask(), cnt, "histories"); 
 	used_keys_insert(keys[j]);
 	cnt_response += cnt;
 	cnt_conts++;
@@ -136,8 +141,9 @@ public:
     for( std::size_t j=start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
 	ParticleMapping* next = std::any_cast<ParticleMapping>(work[j]);
+	std::string next_name = next->name;
 	cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
-	combine->debug(format, thr, next->name.c_str(), keys[j].mask(), cnt, "particles"); 
+	combine->debug(format, thr, next_name.c_str(), keys[j].mask(), cnt, "particles"); 
 	used_keys_insert(keys[j]);
 	cnt_parts += cnt;
 	cnt_conts++;

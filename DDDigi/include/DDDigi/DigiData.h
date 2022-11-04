@@ -19,12 +19,17 @@
 /// C/C++ include files
 #include <cstdint>
 #include <memory>
+#include <limits>
 #include <mutex>
 #include <map>
 #include <any>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
+
+  namespace detail  {
+    static constexpr double numeric_epsilon = 10.0 * std::numeric_limits<double>::epsilon();
+  }
 
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
@@ -410,8 +415,8 @@ namespace dd4hep {
 	hist_entry_t& operator=(hist_entry_t&& copy) = default;
 	hist_entry_t& operator=(const hist_entry_t& copy) = default;
 	~hist_entry_t() = default;
-	const Particle& get_particle(DigiEvent& event)  const;
-	const EnergyDeposit& get_deposit(DigiEvent& event, Key::itemkey_type container_item)  const;
+	const Particle& get_particle(const DigiEvent& event)  const;
+	const EnergyDeposit& get_deposit(const DigiEvent& event, Key::itemkey_type container_item)  const;
       };
       /// Sources contributing to the deposit indexed by the cell identifier
       std::vector<hist_entry_t> hits;
@@ -435,6 +440,17 @@ namespace dd4hep {
       void update(const History& upda);
       /// Drop history information
       std::pair<std::size_t,std::size_t> drop();
+
+      /// Number of hits contributing to history entry
+      std::size_t num_hits()   const   {
+	return hits.size();
+      }
+      /// Number of particles contributing to history entry
+      std::size_t num_particles()   const   {
+	return particles.size();
+      }
+      /// Retrieve the weighted momentum of all contributing particles
+      Direction average_particle_momentum(const DigiEvent& event)  const;
     };
 
     inline History::hist_entry_t::hist_entry_t(Key s, double w)
@@ -450,6 +466,12 @@ namespace dd4hep {
      */
     class EnergyDeposit   {
     public:
+      enum { 
+	KILLED             = 1 << 0,
+	ENERGY_SMEARED     = 1 << 1,
+	POSITION_SMEARED   = 1 << 2
+      };
+
       /// Hit position
       Position       position    { };
       /// Hit direction
@@ -549,6 +571,8 @@ namespace dd4hep {
       const_iterator begin() const        { return this->data.begin();       }
       /// End iteration (CONST)
       const_iterator end()   const        { return this->data.end();         }
+      /// Remove entry
+      void remove(iterator position);
     };
 
     /// Initializing constructor
@@ -602,6 +626,8 @@ namespace dd4hep {
       std::size_t merge(DepositVector&& updates);
       /// Merge new deposit map onto existing map (not thread safe!)
       std::size_t insert(const DepositVector& updates);
+      /// Emplace entry
+      void emplace(CellID cell, EnergyDeposit&& deposit);
 
       /// Access container size
       std::size_t size()  const           { return this->data.size();        }
@@ -619,6 +645,8 @@ namespace dd4hep {
       const_iterator begin() const        { return this->data.begin();       }
       /// End iteration (CONST)
       const_iterator end()   const        { return this->data.end();         }
+      /// Remove entry
+      void remove(iterator position);
     };
 
     /// Initializing constructor
@@ -942,15 +970,19 @@ namespace dd4hep {
       const char* id()   const    {   return this->m_id.c_str();   }
       /// Retrieve data segment from the event structure by name
       DataSegment& get_segment(const std::string& name);
+      /// Retrieve data segment from the event structure by name (CONST)
+      const DataSegment& get_segment(const std::string& name)  const;
       /// Retrieve data segment from the event structure by identifier
       DataSegment& get_segment(Key::segment_type id);
+      /// Retrieve data segment from the event structure by identifier (CONST)
+      const DataSegment& get_segment(Key::segment_type id)  const;
     };
 
     /// Static global functions
     std::string digiTypeName(const std::type_info& info);
     std::string digiTypeName(const std::any& data);
-    const Particle& get_history_particle(DigiEvent& event, Key history_key);
-    const EnergyDeposit& get_history_deposit(DigiEvent& event, Key::itemkey_type container_item, Key history_key);
+    const Particle& get_history_particle(const DigiEvent& event, Key history_key);
+    const EnergyDeposit& get_history_deposit(const DigiEvent& event, Key::itemkey_type container_item, Key history_key);
 
   }    // End namespace digi
 }      // End namespace dd4hep

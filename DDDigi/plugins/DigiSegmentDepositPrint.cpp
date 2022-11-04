@@ -33,11 +33,16 @@ namespace dd4hep {
       DigiSegmentDepositPrint(const DigiKernel& kernel, const std::string& nam)
 	: DigiSegmentProcessor(kernel, nam) {}
 
-      void print_deposit(const char* format, CellID cell, const EnergyDeposit& depo)  const   {
-	info(format, segment.split_id(cell), cell,
-	     depo.history.hits.size(), 
-	     depo.history.particles.size(),
-	     depo.deposit);
+      /// Single container printout
+      template <typename T> void print_deposits(const char* fmt, const T& cont)  const   {
+	for(const auto& dep : cont)   {
+	  if( this->segment.matches(dep.first) )   {
+	    info(fmt, segment.split_id(dep.first), dep.first,
+		 dep.second.history.hits.size(), 
+		 dep.second.history.particles.size(),
+		 dep.second.deposit);
+	  }
+	}
       }
       /// Main functional callback
       virtual void execute(DigiContext& context, work_t& work)  const override final  {
@@ -45,14 +50,10 @@ namespace dd4hep {
 	::snprintf(format, sizeof(format), 
 		   "%s[%s] %s-id: %%d [processor:%d] Cell: %%016lX mask: %016lX  hist:%%4ld hits %%4ld parts. entries deposit: %%f", 
 		   context.event->id(), segment.idspec.name(), segment.cname(), segment.id, segment.split_mask);
-	auto call = [this, format](const std::pair<CellID,EnergyDeposit>& d)   {
-	  if( this->segment.matches(d.first) )
-	    this->print_deposit(format, d.first, d.second); 
-	};
 	if ( const auto* m = work.get_input<DepositMapping>() )
-	  std::for_each(m->begin(), m->end(), call);
+	  print_deposits(format, *m);
 	else if ( const auto* v = work.get_input<DepositVector>() )
-	  std::for_each(v->begin(), v->end(), call);
+	  print_deposits(format, *v);
 	else
 	  error("+++ Request to dump an invalid container %s", Key::key_name(work.input.key).c_str());
       }

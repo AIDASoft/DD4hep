@@ -84,9 +84,9 @@ DigiStoreDump::dump_history(DigiContext& context,
   Key history_key  = item.history;
   std::vector<std::string> records;
   History::hist_entry_t hist { particle_key, 1.0 };
-  const Particle& p = hist.get_particle(ev);
-  const Direction& mom = p.momentum;
-  const Position&  vtx = p.start_position;
+  const Particle&  par = hist.get_particle(ev);
+  const Direction& mom = par.momentum;
+  const Position&  vtx = par.start_position;
 
   str << Key::key_name(key) << "[" << seq_no << "]:";
   std::string line =
@@ -96,7 +96,7 @@ DigiStoreDump::dump_history(DigiContext& context,
 	   long(&data.second));
   records.emplace_back(line);
   line = format("|        PDG:%6d Charge:%-2d Mass:%7.2f v:%7.5g %7.5g %7.5g  p:%10g %10g %10g            %016lX",
-		p.pdgID, int(p.charge), p.mass, vtx.X(), vtx.Y(), vtx.Z(), mom.X(), mom.Y(), mom.Z(), long(&p));
+		par.pdgID, int(par.charge), par.mass, vtx.X(), vtx.Y(), vtx.Z(), mom.X(), mom.Y(), mom.Z(), long(&par));
   records.emplace_back(line);
   return records;
 }
@@ -120,30 +120,30 @@ DigiStoreDump::dump_history(DigiContext& context,
 		cell, item.history.hits.size(), item.history.particles.size());
   records.emplace_back(line);
   for( std::size_t i=0; i<item.history.hits.size(); ++i )   {
-    const auto& e = item.history.hits[i];
-    const EnergyDeposit&  dep = e.get_deposit(ev, container_key.item());
-    const Position& p = dep.position;
-    const Position& m = dep.momentum;
-    Key k = e.source;
+    const auto& entry = item.history.hits[i];
+    const EnergyDeposit&  dep = entry.get_deposit(ev, container_key.item());
+    const Position& pos = dep.position;
+    const Position& mom = dep.momentum;
+    Key k = entry.source;
     str.str("");
     str << "|        Hit-history[" << i << "]:";
     line = format("%-30s Segment:%04X Mask:%04X Cell:%08X  %.8g",
-		  str.str().c_str(), k.segment(), k.mask(), k.item(), e.weight);
+		  str.str().c_str(), k.segment(), k.mask(), k.item(), entry.weight);
     records.emplace_back(line);
     line = format("|              pos: %7.3f %7.3f %7.3f   p: %7.3f %7.3f %7.3f deposit: %7.3f",
-		  p.X(), p.Y(), p.Z(), m.X(), m.Y(), m.Z(), dep.deposit);
+		  pos.X(), pos.Y(), pos.Z(), mom.X(), mom.Y(), mom.Z(), dep.deposit);
     records.emplace_back(line);
   }
   for( std::size_t i=0; i<item.history.particles.size(); ++i )   {
-    const auto& e = item.history.particles[i];
-    const Particle&  par = e.get_particle(ev);
+    const auto&      ent = item.history.particles[i];
+    const Particle&  par = ent.get_particle(ev);
     const Direction& mom = par.momentum;
     const Position&  vtx = par.start_position;
-    Key k = e.source;
+    Key key = ent.source;
     str.str("");
     str << "|        Part-history[" << i << "]:";
     line = format("%-30s Segment:%04X Mask:%04X Key: %08X  %.8g",
-		  str.str().c_str(), k.segment(), k.mask(), k.item(), e.weight);
+		  str.str().c_str(), key.segment(), key.mask(), key.item(), ent.weight);
     records.emplace_back(line);
     line = format("|              PDG:%6d Charge:%-2d Mass:%7.3f v:%7.3f %7.3f %7.3f   p:%7.3f %7.3f %7.3f",
 		  par.pdgID, int(par.charge), par.mass, vtx.X(), vtx.Y(), vtx.Z(), mom.X(), mom.Y(), mom.Z());
@@ -212,9 +212,9 @@ void DigiStoreDump::dump_history(DigiContext& context,
   std::lock_guard<std::mutex> lock(segment.lock);
 
   records.emplace_back(format("+--- %-12s segment: %ld entries", tag.c_str(), segment.size()));
-  for ( const auto& e : segment )     {
-    Key key {e.first};
-    const std::any& data = e.second;
+  for ( const auto& entry : segment )     {
+    Key key {entry.first};
+    const std::any& data = entry.second;
     bool use = m_containers.empty() ||
       std::find(m_container_items.begin(), m_container_items.end(), key.item()) != m_container_items.end();
     use &= m_masks.empty() || 
@@ -257,9 +257,9 @@ void DigiStoreDump::dump_headers(const std::string& tag,
   std::vector<std::string> records;
   info("%s+--- %-12s segment: %ld entries", event.id(), tag.c_str(), segment.size());
   std::lock_guard<std::mutex> lock(segment.lock);
-  for ( const auto& e : segment )     {
-    Key key {e.first};
-    const std::any& data = e.second;
+  for ( const auto& entry : segment )     {
+    Key key {entry.first};
+    const std::any& data = entry.second;
     if ( const auto* mapping = std::any_cast<DepositMapping>(&data) )
       str = data_header(key, "deposits", *mapping);
     else if ( const auto* vector = std::any_cast<DepositVector>(&data) )

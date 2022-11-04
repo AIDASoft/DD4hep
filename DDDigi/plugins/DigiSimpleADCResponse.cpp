@@ -29,6 +29,7 @@ namespace dd4hep {
       double      m_use_segmentation   { false  };
       double      m_signal_cutoff      { std::numeric_limits<double>::epsilon() };
       double      m_signal_saturation  { std::numeric_limits<double>::max() };
+      double      m_adc_offset         { 0e0  };
       std::size_t m_adc_resolution     { 1024 };
 
     public:
@@ -47,15 +48,17 @@ namespace dd4hep {
       template <typename T, typename P>
       void create_adc_counts(const char* tag, const T& input, work_t& work, const P& predicate)  const  {
 	std::string postfix = m_use_segmentation ? "."+segment.identifier() : std::string();
-	std::string response_name = input.name + postfix + m_response_postfix;
 	std::string history_name  = input.name + postfix + m_history_postfix;
-	DetectorResponse response(response_name, work.output.mask);
+	std::string response_name = input.name + postfix + m_response_postfix;
 	DetectorHistory  history (history_name, work.output.mask);
+	DetectorResponse response(response_name, work.output.mask);
 	for( const auto& dep : input )   {
 	  if ( predicate(dep) )   {
 	    CellID      cell = dep.first;
 	    const auto& depo = dep.second;
-	    ADCValue::value_t adc_count = std::round((depo.deposit * m_adc_resolution) / m_signal_saturation);
+	    double offset_ene = depo.deposit-m_adc_offset;
+	    ADCValue::value_t adc_count = std::round(((offset_ene) * m_adc_resolution) / m_signal_saturation);
+	    adc_count = std::min(adc_count, ADCValue::value_t(m_adc_resolution));
 	    response.emplace(cell, {adc_count, ADCValue::address_t(cell)});
 	    history.insert(cell, depo.history);
 	  }

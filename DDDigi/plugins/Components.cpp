@@ -24,9 +24,6 @@
 #include <DDDigi/DigiInputAction.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiInputAction)
 
-#include <DDDigi/DigiROOTInput.h>
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiROOTInput)
-
 #include <DDDigi/DigiOutputAction.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiOutputAction)
 
