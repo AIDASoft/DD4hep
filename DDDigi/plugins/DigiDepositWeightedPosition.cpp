@@ -54,22 +54,25 @@ namespace dd4hep {
       }
 
       /// Create deposit mapping with updates on same cellIDs
-      template <typename T> void create_deposits(const char* tag, const T& cont, work_t& work)  const  {
+      template <typename T> void
+      create_deposits(const char* tag, const T& cont, work_t& work, const predicate_t& predicate)  const  {
 	Key key(cont.name, work.output.mask);
 	DepositMapping m(cont.name, work.output.mask);
 	std::size_t dropped = 0UL, updated = 0UL, added = 0UL;
 	for( const auto& dep : cont )    {
-	  const EnergyDeposit& depo = dep.second;
-	  if ( depo.deposit >= m_cutoff )   {
-	    CellID cell = dep.first;
-	    auto   iter = m.data.find(cell);
-	    if ( iter == m.data.end() )
-	      m.data.emplace(dep.first, depo), ++added;
-	    else
-	      iter->second.update_deposit_weighted(depo), ++updated;
-	    continue;
+	  if ( predicate(dep) )   {
+	    const EnergyDeposit& depo = dep.second;
+	    if ( depo.deposit >= m_cutoff )   {
+	      CellID cell = dep.first;
+	      auto   iter = m.data.find(cell);
+	      if ( iter == m.data.end() )
+		m.data.emplace(dep.first, depo), ++added;
+	      else
+		iter->second.update_deposit_weighted(depo), ++updated;
+	      continue;
+	    }
+	    ++dropped;
 	  }
-	  ++dropped;
 	}
 	info("%s+++ %-32s added %6ld updated %6ld dropped %6ld entries (now: %6ld) from mask: %04X to mask: %04X",
 	     tag, cont.name.c_str(), added, updated, dropped, m.size(), cont.key.mask(), m.key.mask());
@@ -77,11 +80,11 @@ namespace dd4hep {
       }
 
       /// Main functional callback
-      virtual void execute(DigiContext& context, work_t& work)  const override final  {
+      virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const override final  {
 	if ( const auto* v = work.get_input<DepositVector>() )
-	  create_deposits(context.event->id(), *v, work);
+	  create_deposits(context.event->id(), *v, work, predicate);
 	else if ( const auto* m = work.get_input<DepositMapping>() )
-	  create_deposits(context.event->id(), *m, work);
+	  create_deposits(context.event->id(), *m, work, predicate);
 	else
 	  except("%s+++ Request to handle unknown data type: %s", 
 		 context.event->id(), work.input_type_name().c_str());

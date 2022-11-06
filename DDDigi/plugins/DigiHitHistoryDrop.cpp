@@ -63,8 +63,8 @@ namespace dd4hep {
       std::pair<std::size_t, std::size_t> drop_history(T& cont)  const  {
 	std::size_t num_drop_hit = 0;
 	std::size_t num_drop_particle = 0;
-	for( auto& c : cont )    {
-	  auto ret = c.second.history.drop();
+	for( auto& dep : cont )    {
+	  auto ret = dep.second.history.drop();
 	  num_drop_hit += ret.first;
 	  num_drop_particle += ret.second;
 	}
@@ -76,16 +76,16 @@ namespace dd4hep {
 	auto& inputs = context.event->get_segment(m_input);
 	std::size_t num_drop_hit = 0;
 	std::size_t num_drop_particle = 0;
-	for ( auto& i : inputs )     {
+	for( auto& i : inputs )     {
 	  Key key(i.first);
 	  auto im = std::find(m_masks.begin(), m_masks.end(), key.mask());
-	  if ( im != m_masks.end() )   {
-	    if ( DepositMapping* m = std::any_cast<DepositMapping>(&i.second) )    {
+	  if( im != m_masks.end() )   {
+	    if( DepositMapping* m = std::any_cast<DepositMapping>(&i.second) )    {
 	      auto ret = drop_history(*m);
 	      num_drop_hit += ret.first;
 	      num_drop_particle += ret.second;
 	    }
-	    if ( DepositVector* m = std::any_cast<DepositVector>(&i.second) )    {
+	    if( DepositVector* m = std::any_cast<DepositVector>(&i.second) )    {
 	      auto ret = drop_history(*m);
 	      num_drop_hit += ret.first;
 	      num_drop_particle += ret.second;

@@ -469,7 +469,9 @@ namespace dd4hep {
       enum { 
 	KILLED             = 1 << 0,
 	ENERGY_SMEARED     = 1 << 1,
-	POSITION_SMEARED   = 1 << 2
+	POSITION_SMEARED   = 1 << 2,
+	TIME_SMEARED       = 1 << 3,
+        RECALIBRATED       = 1 << 4
       };
 
       /// Hit position
@@ -480,6 +482,8 @@ namespace dd4hep {
       double         length      { 0 };
       /// Total energy deposit
       double         deposit     { 0 };
+      /// Proper creation time of the deposit with rescpect to beam crossing
+      double         time        { 0 };
       /// Optional flag for user masks
       long           flag        { 0 };
       /// Source mask of this deposit

@@ -213,6 +213,12 @@ namespace dd4hep {
       /// Definition of the vector type
       typedef std::vector<value_t>              vector_t;
 
+      /// Definition of the bool mapped type
+      typedef std::pair<bool,value_t>           bool_pair_t;
+      /// Definition of the char mapped type
+      typedef std::pair<char,value_t>           char_pair_t;
+      /// Definition of the unsigned char mapped type
+      typedef std::pair<unsigned char,value_t>  uchar_pair_t;
       /// Definition of the short integer mapped type
       typedef std::pair<short,value_t>          short_pair_t;
       /// Definition of the unsigned short integer mapped type
@@ -225,6 +231,10 @@ namespace dd4hep {
       typedef std::pair<long,value_t>           long_pair_t;
       /// Definition of the unsigned long integer mapped type
       typedef std::pair<unsigned long,value_t>  ulong_pair_t;
+      /// Definition of the size_t mapped type
+      typedef std::pair<float,value_t>          float_pair_t;
+      /// Definition of the size_t mapped type
+      typedef std::pair<double,value_t>         double_pair_t;
       /// Definition of the size_t mapped type
       typedef std::pair<size_t,value_t>         size_pair_t;
       /// Definition of the string mapped type

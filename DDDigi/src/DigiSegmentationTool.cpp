@@ -46,19 +46,15 @@ namespace  {
 
 /// Split field name
 const string& DigiSegmentContext::name()  const  {
-  return this->field->name();
+  if ( this->field )  {
+    return this->field->name();
+  }
+  throw std::runtime_error("Invalid field name!");
 }
 
 /// Split field name
 const char* DigiSegmentContext::cname()  const  {
-  return this->field->name().c_str();
-}
-
-/// Full identifier (field + id)
-string DigiSegmentContext::identifier()  const  {
-  std::stringstream str;
-  str << this->field->name() << "." << this->id;
-  return str.str();
+  return this->field ? this->field->name().c_str() : "";
 }
 
 /// Initializing constructor
@@ -185,16 +181,25 @@ DigiSegmentationTool::split_segmentation(const string& split_by)  const
   const auto& ids = this->detector.placement().volIDs();
   VolumeID    vid = this->iddescriptor.encode(ids);
   VolumeID    msk = this->iddescriptor.get_mask(ids);
+  const auto* fld = this->iddescriptor.field(split_by);
   const char* det = this->detector.name();
 
+  if ( !fld )   {
+    except("DigiSegmentationTool","Field discriminator %s does not exist in ID descriptor %s",
+	   split_by.c_str(), this->iddescriptor.name());
+  }
   ::scan_detector(*this, split_by, segmentation_splits, this->detector, vid, msk);
   printout(INFO,"DigiSegmentationTool",
 	   "%-24s has %ld parallel entries when splitting by \"%s\"",
 	   det, segmentation_splits.size(), split_by.c_str());
-  stringstream str;
-  for( const auto& id : segmentation_splits )
-    str << setw(16) << hex << setfill('0') << id.first << " ";
+  stringstream str1, str2;
+  for( const auto& id : segmentation_splits )  {
+    str1 << setw(16) << hex << setfill('0') << id.first << " ";
+    str2 << setw(16) << hex << setfill(' ') << ((id.first&fld->mask())>>fld->offset()) << " ";
+  }
   printout(INFO,"DigiSegmentationTool","%-24s --> Parallel Entries: %s",
-	   det, str.str().c_str());
+	   det, str1.str().c_str());
+  printout(INFO,"DigiSegmentationTool","%-24s --> %-12s ids: %s",
+	   "", split_by.c_str(), str2.str().c_str());
   return segmentation_splits;
 }

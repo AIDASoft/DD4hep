@@ -243,11 +243,19 @@ def _adopt_event_action(self, action):
 # ---------------------------------------------------------------------------
 
 
-def _adopt_container_processor(self, action, container):
+def _adopt_container_processor(self, action, processor_argument):
   " Helper to convert DigiActions objects to DigiEventAction "
   attr = getattr(_get_action(self), 'adopt_processor')
   proc = Interface.toContainerProcessor(_get_action(action))
-  attr(proc, container)
+  attr(proc, processor_argument)
+# ---------------------------------------------------------------------------
+
+
+def _adopt_segment_processor(self, action, processor_argument):
+  " Helper to convert DigiActions objects to DigiEventAction "
+  attr = getattr(_get_action(self), '__adopt_segment_processor')
+  proc = Interface.toContainerProcessor(_get_action(action))
+  attr(proc, processor_argument)
 # ---------------------------------------------------------------------------
 
 
@@ -301,8 +309,12 @@ def _props(obj, **extensions):
   cls = getattr(current, obj)
   for extension in extensions.items():
     call = extension[0]
+    # print('TRY: Overloading: '+str(cls)+' '+call+' to __'+call+' '+str(hasattr(cls, call)))
     if hasattr(cls, call):
+      # print('Overloading: '+str(cls)+' '+call+' to __'+call)
       setattr(cls, '__' + call, getattr(cls, call))
+    else:
+      print('FAILED: Overloading: '+str(cls)+' '+call+' to __'+call+' '+str(hasattr(cls, call)))
     setattr(cls, call, extension[1])
   cls.__getattr__ = _get
   cls.__setattr__ = _set
@@ -333,6 +345,7 @@ _props('DigiParallelActionSequence', adopt_action=_adopt_sequence_action)
 _props('DigiSequentialActionSequence', adopt_action=_adopt_sequence_action)
 _props('DigiContainerSequenceAction', adopt_container_processor=_adopt_container_processor)
 _props('DigiMultiContainerProcessor', adopt_processor=_adopt_processor)
+_props('DigiSegmentSplitter', adopt_segment_processor=_adopt_segment_processor)
 #
 # Need to import digitize late, since it cross includes dddigi
 Digitize = None

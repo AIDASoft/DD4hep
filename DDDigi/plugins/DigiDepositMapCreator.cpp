@@ -35,23 +35,27 @@ namespace dd4hep {
       /// Standard constructor
       using DigiContainerProcessor::DigiContainerProcessor;
 
-      template <typename T> void create_deposits(const char* tag, const T& cont, work_t& work)  const  {
+      template <typename T> void
+      create_deposits(const char* tag, const T& cont, work_t& work, const predicate_t& predicate)  const  {
 	Key key(cont.name, work.output.mask);
 	DepositMapping m(cont.name, work.output.mask);
 	std::size_t start = m.size();
-	for( const auto& dep : cont )
-	  m.data.emplace(dep.first, EnergyDeposit());
+	for( const auto& dep : cont )   {
+	  if ( predicate(dep) )    {
+	    m.data.emplace(dep.first, EnergyDeposit());
+	  }
+	}
 	std::size_t end   = m.size();
 	work.output.data.put(m.key, std::move(m));
 	info("%s+++ %-32s added %6ld entries (now: %6ld) from mask: %04X to mask: %04X",
 	     tag, cont.name.c_str(), end-start, end, cont.key.mask(), m.key.mask());
       }
       /// Main functional callback
-      virtual void execute(DigiContext& context, work_t& work)  const override final  {
+      virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const override final  {
 	if ( const auto* m = work.get_input<DepositMapping>() )
-	  create_deposits(context.event->id(), *m, work);
+	  create_deposits(context.event->id(), *m, work, predicate);
 	else if ( const auto* v = work.get_input<DepositVector>() )
-	  create_deposits(context.event->id(), *v, work);
+	  create_deposits(context.event->id(), *v, work, predicate);
 	else
 	  except("Request to handle unknown data type: %s", work.input_type_name().c_str());
       }

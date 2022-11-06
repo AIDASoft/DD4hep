@@ -75,8 +75,6 @@ namespace dd4hep {
       double m_pair_ionization_energy     { 0e0 };
       /// Property: Flag to use ionization fluctuation smearing (poisson ~ # e-ion-pairs)
       bool   m_ionization_fluctuation     { false };
-      /// Property: Flag to drop killed entries from the deposits
-      bool   m_drop_killed                { false };
       /// Property: Flag to update existing container in-place or create a new container
       bool   m_update_in_place            { true  };
 
@@ -85,7 +83,6 @@ namespace dd4hep {
       DigiDepositSmearEnergy(const DigiKernel& krnl, const std::string& nam)
 	: DigiContainerProcessor(krnl, nam)
       {
-	declareProperty("drop_killed",                m_drop_killed = false);
 	declareProperty("deposit_cutoff",             m_deposit_cutoff);
 	declareProperty("intrinsic_fluctuation",      m_intrinsic_fluctuation = 0e0);
 	declareProperty("instrumentation_resolution", m_instrumentation_resolution = 0e0);
@@ -101,24 +98,9 @@ namespace dd4hep {
 	InstanceCount::decrement(this);
       }
 
-      template <typename T> std::size_t drop_killed_entries(T& cont)   const  {
-	//CellID last_cell = 0UL;
-	std::size_t killed = 0;
-	for( auto iter = cont.begin(); iter != cont.end(); ++iter )   {
-	  auto& dep = iter->second;
-	  if ( dep.flag&EnergyDeposit::KILLED )   {
-	    cont.remove(iter);
-	    iter = cont.begin(); // (last_cell != 0UL) ? cont.find(last_cell) : cont.begin();
-	    ++killed;
-	    continue;
-	  }
-	  //last_cell = iter->first;
-	}
-	return killed;
-      }
-
       /// Create deposit mapping with updates on same cellIDs
-      template <typename T> void smear_deposit_energy(DigiContext& context, T& cont, work_t& work)  const  {
+      template <typename T> void
+      smear(DigiContext& context, T& cont, work_t& work, const predicate_t& predicate)  const  {
 	auto& random = context.randomGenerator();
 	T output_cont(cont.name, work.output.mask);
 	std::size_t killed = 0UL;
@@ -130,80 +112,76 @@ namespace dd4hep {
 		context.event->id(), cont.name.c_str(), cont.size());
 	}
 	for( auto& dep : cont )    {
-	  CellID cell = dep.first;
-	  const EnergyDeposit& depo = dep.second;
-	  double deposit = depo.deposit;
-	  if ( deposit >= m_deposit_cutoff )   {
-	    double delta_E = 0e0;
-	    double energy  = deposit / dd4hep::GeV; // E in units of GeV
-	    double sigma_E_systematic   = m_systematic_resolution * energy;
-	    double sigma_E_intrin_fluct = m_intrinsic_fluctuation * std::sqrt(energy);
-	    double sigma_E_instrument   = m_instrumentation_resolution / dd4hep::GeV;
-	    double delta_ion = 0e0, num_pairs = 0e0;
-	    constexpr static double eps = std::numeric_limits<double>::epsilon();
-	    if ( sigma_E_systematic > eps )   {
-	      delta_E += sigma_E_systematic * random.gaussian(0e0, 1e0);
-	    }
-	    if ( sigma_E_intrin_fluct > eps )   {
-	      delta_E += sigma_E_intrin_fluct * random.gaussian(0e0, 1e0);
-	    }
-	    if ( sigma_E_instrument > eps )   {
-	      delta_E += sigma_E_instrument * random.gaussian(0e0, 1e0);
-	    }
-	    if ( m_ionization_fluctuation )   {
-	      num_pairs = energy / (m_pair_ionization_energy/dd4hep::GeV);
-	      delta_ion = energy * (random.poisson(num_pairs)/num_pairs);
-	      delta_E += delta_ion;
-	    }
-	    if ( dd4hep::isActivePrintLevel(outputLevel()) )   {
-	      print("+++ %016lX [GeV] E:%9.2e [%9.2e %9.2e] intrin_fluct:%9.2e systematic:%9.2e instrument:%9.2e ioni:%9.2e/%.0f %s",
-		    cell, energy, deposit/dd4hep::GeV, delta_E,
-		    sigma_E_intrin_fluct, sigma_E_systematic, sigma_E_instrument, delta_ion, num_pairs,
-		    deposit < m_deposit_cutoff ? "KILLED" : "");
-	    }
-	    /// delta_E is in GeV
-	    if ( deposit > m_deposit_cutoff )  {
-	      if ( m_update_in_place )   {
-		EnergyDeposit& d = dep.second;
-		d.deposit = deposit + (delta_E * dd4hep::GeV);
-		d.flag |= EnergyDeposit::ENERGY_SMEARED;
-		++updated;
+	  if ( predicate(dep) )   {
+	    CellID cell = dep.first;
+	    const EnergyDeposit& depo = dep.second;
+	    double deposit = depo.deposit;
+	    if ( deposit >= m_deposit_cutoff )   {
+	      double delta_E = 0e0;
+	      double energy  = deposit / dd4hep::GeV; // E in units of GeV
+	      double sigma_E_systematic   = m_systematic_resolution * energy;
+	      double sigma_E_intrin_fluct = m_intrinsic_fluctuation * std::sqrt(energy);
+	      double sigma_E_instrument   = m_instrumentation_resolution / dd4hep::GeV;
+	      double delta_ion = 0e0, num_pairs = 0e0;
+	      constexpr static double eps = std::numeric_limits<double>::epsilon();
+	      if ( sigma_E_systematic > eps )   {
+		delta_E += sigma_E_systematic * random.gaussian(0e0, 1e0);
 	      }
-	      else   {
-		EnergyDeposit d(depo);
-		d.deposit = deposit + (delta_E * dd4hep::GeV);
-		d.flag |= EnergyDeposit::ENERGY_SMEARED;	
-		output_cont.emplace(cell, EnergyDeposit(depo));
-		++created;
+	      if ( sigma_E_intrin_fluct > eps )   {
+		delta_E += sigma_E_intrin_fluct * random.gaussian(0e0, 1e0);
 	      }
-	      continue;
+	      if ( sigma_E_instrument > eps )   {
+		delta_E += sigma_E_instrument * random.gaussian(0e0, 1e0);
+	      }
+	      if ( m_ionization_fluctuation )   {
+		num_pairs = energy / (m_pair_ionization_energy/dd4hep::GeV);
+		delta_ion = energy * (random.poisson(num_pairs)/num_pairs);
+		delta_E += delta_ion;
+	      }
+	      if ( dd4hep::isActivePrintLevel(outputLevel()) )   {
+		print("+++ %016lX [GeV] E:%9.2e [%9.2e %9.2e] intrin_fluct:%9.2e systematic:%9.2e instrument:%9.2e ioni:%9.2e/%.0f %s",
+		      cell, energy, deposit/dd4hep::GeV, delta_E,
+		      sigma_E_intrin_fluct, sigma_E_systematic, sigma_E_instrument, delta_ion, num_pairs,
+		      deposit < m_deposit_cutoff ? "KILLED" : "");
+	      }
+	      /// delta_E is in GeV
+	      if ( deposit > m_deposit_cutoff )  {
+		if ( m_update_in_place )   {
+		  EnergyDeposit& d = dep.second;
+		  d.deposit = deposit + (delta_E * dd4hep::GeV);
+		  d.flag |= EnergyDeposit::ENERGY_SMEARED;
+		  ++updated;
+		}
+		else   {
+		  EnergyDeposit d(depo);
+		  d.deposit = deposit + (delta_E * dd4hep::GeV);
+		  d.flag |= EnergyDeposit::ENERGY_SMEARED;	
+		  output_cont.emplace(cell, EnergyDeposit(depo));
+		  ++created;
+		}
+		continue;
+	      }
 	    }
-	  }
-	  else if ( !m_update_in_place )   {
-	    EnergyDeposit& d = dep.second;
-	    d.flag |= EnergyDeposit::KILLED;
-	    ++killed;
+	    else if ( !m_update_in_place )   {
+	      EnergyDeposit& d = dep.second;
+	      d.flag |= EnergyDeposit::KILLED;
+	      ++killed;
+	    }
 	  }
 	}
-
 	if ( !m_update_in_place )   {
 	  work.output.data.put(output_cont.key, std::move(output_cont));
 	}
-
-	killed = (m_drop_killed && m_update_in_place && killed > 0) 
-	  ? drop_killed_entries(cont)
-	  : killed;
-
 	info("%s+++ %-32s Smearing: created %6ld updated %6ld killed %6ld entries from mask: %04X",
 	     context.event->id(), cont.name.c_str(), created, updated, killed, cont.key.mask());
       }
 
       /// Main functional callback
-      virtual void execute(DigiContext& context, work_t& work)  const override final  {
+      virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const override final  {
 	if ( auto* v = work.get_input<DepositVector>() )
-	  smear_deposit_energy(context, *v, work);
+	  smear(context, *v, work, predicate);
 	else if ( auto* m = work.get_input<DepositMapping>() )
-	  smear_deposit_energy(context, *m, work);
+	  smear(context, *m, work, predicate);
 	else
 	  except("Request to handle unknown data type: %s", work.input_type_name().c_str());
       }

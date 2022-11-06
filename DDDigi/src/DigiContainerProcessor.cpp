@@ -17,6 +17,7 @@
 #include <DDDigi/DigiKernel.h>
 #include <DDDigi/DigiContext.h>
 #include <DDDigi/DigiContainerProcessor.h>
+#include <DDDigi/DigiSegmentSplitter.h>
 
 /// C/C++ include files
 #include <sstream>
@@ -78,6 +79,25 @@ std::string DigiContainerProcessor::work_t::input_type_name()  const   {
   return typeName(input.data.type());
 }
 
+/// Access to default callback 
+const DigiContainerProcessor::predicate_t& DigiContainerProcessor::accept_all()  {
+  struct true_t  {
+    bool use(const std::pair<const CellID, EnergyDeposit>&)  const {
+      return true;
+    }
+  };
+  static true_t s_y { };
+  static segmentation_t s_seg {};
+  static predicate_t   s_true { Callback(&s_y).make(&true_t::use), s_seg };
+  return s_true;
+}
+
+/// Check if a deposit should be processed
+bool DigiContainerProcessor::predicate_t::operator()(const std::pair<const CellID, EnergyDeposit>& deposit)   const   {
+  const void* args[] = { &deposit };
+  return this->callback.execute(args);
+}
+
 /// Standard constructor
 DigiContainerProcessor::DigiContainerProcessor(const DigiKernel& kernel, const std::string& name)   
   : DigiAction(kernel, name)
@@ -90,15 +110,10 @@ DigiContainerProcessor::~DigiContainerProcessor() {
   InstanceCount::decrement(this);
 }
 
-/// Main functional callback 
-void DigiContainerProcessor::execute(DigiContext& context, work_t& work)  const  {
-  this->execute(context, work.input.key, work.input.data);
-}
-
 /// Main functional callback if specific work is known
-void DigiContainerProcessor::execute(DigiContext& context, Key key, std::any& /* data */)  const    {
-  info("%s+++ %p Using container: %016lX  --> %04X %08X %s",
-       context.event->id(), (void*)this, key.value(), key.mask(), key.item(), Key::key_name(key).c_str());
+void DigiContainerProcessor::execute(DigiContext&       /* context   */,
+				     work_t&            /* work      */,
+				     const predicate_t& /* predicate */)  const   {
 }
 
 /// Standard constructor
@@ -124,8 +139,9 @@ void DigiContainerSequence::adopt_processor(DigiContainerProcessor* action)   {
 }
 
 /// Main functional callback if specific work is known
-void DigiContainerSequence::execute(DigiContext& context, work_t& work)  const   {
-  m_kernel.submit(context, m_workers.get_group(), m_workers.size(), &work, m_parallel);
+void DigiContainerSequence::execute(DigiContext& context, work_t& work, const predicate_t& /* predicate */)  const   {
+  auto group = m_workers.get_group();
+  m_kernel.submit(context, group, m_workers.size(), &work, m_parallel);
 }
 
 /// Worker adaptor for caller DigiContainerSequence
@@ -133,7 +149,7 @@ template <> void DigiParallelWorker<DigiContainerProcessor,
 				    DigiContainerSequence::work_t,
 				    std::size_t>::execute(void* data) const  {
   calldata_t* args  = reinterpret_cast<calldata_t*>(data);
-  action->execute(args->context, *args);
+  action->execute(args->context, *args, action->accept_all());
 }
 
 /// Standard constructor
@@ -242,7 +258,7 @@ template <> void DigiParallelWorker<DigiContainerProcessor,
   calldata_t* args  = reinterpret_cast<calldata_t*>(data);
   auto& item = args->input_items[this->options];
   DigiContainerProcessor::work_t work {args->context, {item.key, *item.data}, args->output, args->properties};
-  action->execute(args->context, work);
+  action->execute(args->context, work, action->accept_all());
 }
 
 /// Standard constructor
@@ -373,12 +389,12 @@ template <> void DigiParallelWorker<DigiContainerProcessor,
       tag = "mask accepted";
       if ( keys.empty() )  {
 	DigiContainerProcessor::work_t  work {arg->context, {key, *item.second }, arg->output, arg->properties };
-	action->execute(work.context, work);
+	action->execute(work.context, work, action->accept_all());
 	continue;
       }
       else if ( std::find(keys.begin(), keys.end(), key) != keys.end() )    {
 	DigiContainerProcessor::work_t  work {arg->context, {key, *item.second }, arg->output, arg->properties };
-	action->execute(work.context, work);
+	action->execute(work.context, work, action->accept_all());
 	continue;
       }
       tag = "no keys matching";

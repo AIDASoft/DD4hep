@@ -21,9 +21,39 @@
 
 using namespace dd4hep::digi;
 
+/// Default copy constructor
+DigiSegmentProcessContext::DigiSegmentProcessContext(const DigiSegmentContext& copy)
+  : DigiSegmentContext(copy)
+{
+}
+
+/// Full identifier (field + id)
+std::string DigiSegmentProcessContext::identifier()  const   {
+  std::stringstream str;
+  if ( this->field )   {
+    str << this->field->name() << "." << this->id;
+  }
+  return str.str();
+}
+
+/// Default move assignment
+DigiSegmentProcessContext&
+DigiSegmentProcessContext::operator=(const DigiSegmentContext& copy)   {
+  this->DigiSegmentContext::operator=(copy);
+  return *this;
+}
+
+/// Worker adaptor for caller DigiContainerSequence
+template <> void DigiParallelWorker<DigiContainerProcessor,
+				    DigiContainerProcessor::work_t,
+				    DigiSegmentProcessContext>::execute(void* ptr) const  {
+  calldata_t* args  = reinterpret_cast<calldata_t*>(ptr);
+  action->execute(args->context, *args, this->options.predicate);
+}
+
 /// Standard constructor
 DigiSegmentSplitter::DigiSegmentSplitter(const DigiKernel& kernel, const std::string& nam)
-  : DigiContainerSequence(kernel, nam),
+  : DigiContainerProcessor(kernel, nam),
     m_split_tool(kernel.detectorDescription())
 {
   declareProperty("detector",        m_detector_name);
@@ -70,11 +100,17 @@ void DigiSegmentSplitter::initialize()   {
     for( auto& p : m_splits )   {
       auto split_id = p.second.second;
       bool ok = false;
-      for( const auto* w : workers )   {
-	if ( VolumeID(w->options) == split_id )  { ok = true; break; }
+      for( auto* w : workers )   {
+	if ( w->options.id == split_id )  {
+	  auto& segment    = w->options;
+          segment          = m_split_context;
+	  segment.id       = p.second.second;
+	  ok = true;
+	  break;
+	}
       }
       if ( !ok )   {
-	error("+++ Missing processor for plit ID: %08ld", split_id);
+	error("+++ Missing processor for split ID: %08ld", split_id);
 	bad = true;
       }
     }
@@ -88,37 +124,43 @@ void DigiSegmentSplitter::initialize()   {
   /// IF NOT:
   /// 2) Create the processors using the 'processor_type' option
   for( auto& p : m_splits )   {
-    ::snprintf(text, sizeof(text), "_%05X", m_split_context.split_id(p.first));
+    ::snprintf(text, sizeof(text), "_%05X",
+	       m_split_context.split_id(p.first));
     std::string nam = this->name() + text;
-    auto* proc = createAction<DigiSegmentProcessor>(m_processor_type, m_kernel, nam);
+    auto* proc = createAction<DigiContainerProcessor>(m_processor_type, m_kernel, nam);
     if ( !proc )   {
-      except("+++ Failed to create split worker: %s/%s", m_processor_type.c_str(), nam.c_str());
+      except("+++ Failed to create split worker: %s/%s",
+	     m_processor_type.c_str(), nam.c_str());
     }
-    proc->segment          = m_split_context;
-    proc->segment.detector = p.second.first;
-    proc->segment.id       = p.second.second;
-    m_workers.insert(new worker_t(proc, proc->segment.id));
+    auto* w = new worker_t(proc, m_split_context);
+    auto& segment    = w->options;
+    segment.detector = p.second.first;
+    segment.id       = p.second.second;
+    m_workers.insert(w);
     ++count;
   }
   info("+++ Detector splitter is now fully initialized!");
 }
 
-/// Adopt new parallel worker
-void DigiSegmentSplitter::adopt_processor(DigiContainerProcessor* action)   {
+/// Adopt new parallel worker handling a single split identifier
+void DigiSegmentSplitter::adopt_segment_processor(DigiContainerProcessor* action, int split_id)   {
   if ( !action )  {
     except("+++ FAILED: attempt to add invalid processor!");
   }
-  auto* proc = dynamic_cast<DigiSegmentProcessor*>(action);
-  if ( !proc )   {
-    error("+++ FAILED: Attempt to add processor %s of type %s",
-	  action->c_name(), typeName(typeid(*action)).c_str());
-    except("+++ DigiSegmentSplitter do ONLY accept processors of type DigiSegmentProcessor!");
+  auto* w = new worker_t(action, m_split_context);
+  w->options.id = split_id;
+  m_workers.insert(w);
+}
+
+/// Adopt new parallel worker handling multiple split-identifiers
+void DigiSegmentSplitter::adopt_segment_processor(DigiContainerProcessor* action, const std::vector<int>&  ids)   {
+  for( int split_id : ids )   {
+    adopt_segment_processor(action, split_id);
   }
-  m_workers.insert(new worker_t(proc, m_workers.size()));
 }
 
 /// Main functional callback
-void DigiSegmentSplitter::execute(DigiContext& context, work_t& work)  const    {
+void DigiSegmentSplitter::execute(DigiContext& context, work_t& work, const predicate_t& /* predicate */)  const    {
   Key key = work.input_key();
   Key unmasked_key;
   unmasked_key.set_item(key.item());

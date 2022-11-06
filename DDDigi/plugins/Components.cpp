@@ -60,10 +60,6 @@ DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerCombine)
 #include <DDDigi/DigiContainerDrop.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerDrop)
 
-#include <DDDigi/DigiSegmentProcessor.h>
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSegmentProcessor)
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSegmentSequence)
-
 #include <DDDigi/DigiSegmentSplitter.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSegmentSplitter)
 

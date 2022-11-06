@@ -10,14 +10,18 @@
 //==========================================================================
 #include "Parsers/spirit/ParsersStandardMiscCommon.h"
 
+PARSERS_DEF_FOR_PAIR(bool,bool)
+PARSERS_DEF_FOR_PAIR(float,float)
+PARSERS_DEF_FOR_PAIR(double,double)
+PARSERS_DEF_FOR_PAIR(double,int)
+PARSERS_DEF_FOR_PAIR(double,long)
+PARSERS_DEF_FOR_PAIR(double,size_t)
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
+
   /// Namespace for the AIDA detector for utilities using boost::spirit parsers
   namespace Parsers {
-
-    template <> int parse(std::pair<double,double>& result, const std::string& input) {
-      return parse_(result, input);
-    }
 
     template <> int parse(std::vector<std::pair<double, double> >& result, const std::string& input) {
       return parse_(result, input);

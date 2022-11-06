@@ -76,11 +76,19 @@ namespace dd4hep {
 // ============================================================================
 #define PARSERS_DEF_FOR_SINGLE(Type)                                    \
   namespace dd4hep  {                                                   \
-  namespace Parsers  {                                                  \
-    template <> int parse(Type& result, const std::string& input)       \
-    {  return parse_(result, input);  }                                 \
-    template <> std::ostream& toStream(const Type& obj, std::ostream& s) \
-    {  return toStream_(obj, s); }}}
+    namespace Parsers  {						\
+      template <> int parse(Type& result, const std::string& input)	\
+	{  return parse_(result, input);  }				\
+      template <> std::ostream& toStream(const Type& obj, std::ostream& s) \
+	{  return toStream_(obj, s); }}}
+// ============================================================================
+#define PARSERS_DEF_FOR_PAIR(First,Second)				\
+  namespace dd4hep  {                                                   \
+    namespace Parsers  {						\
+      template <> int parse(std::pair<First,Second>& result, const std::string& input) \
+	{  return parse_(result, input);  }				\
+      template <> std::ostream& toStream(const std::pair<First,Second>& obj, std::ostream& s) \
+	{  return toStream_(obj, s); }}}
 // ============================================================================
 
 #endif // PARSERS_SPIRIT_PARSERSFACTORY_H
