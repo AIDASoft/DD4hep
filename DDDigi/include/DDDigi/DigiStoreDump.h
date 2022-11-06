@@ -48,6 +48,8 @@ namespace dd4hep {
       std::vector<int>                m_masks      { };
       std::vector<Key::itemkey_type>  m_container_items { };
 
+      using records_t = std::vector<std::string>;
+
     protected:
       /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiStoreDump);
@@ -56,23 +58,23 @@ namespace dd4hep {
       virtual ~DigiStoreDump();
 
       template <typename T> std::string data_header(Key key, const std::string& tag, const T& data)  const;
-      template <typename T> std::vector<std::string> dump_history(DigiContext& context, Key key, const T& container)  const;
-      template <typename T> std::vector<std::string> dump_history(DigiContext& context, Key key, const T& item, std::size_t seq_no)  const;
+      template <typename T> records_t dump_history(context_t& context, Key key, const T& container)  const;
+      template <typename T> records_t dump_history(context_t& context, Key key, const T& item, std::size_t seq_no)  const;
 
-      std::vector<std::string>
-	dump_deposit_history(DigiContext& context, Key container_key, const DepositMapping& container)  const;
+      records_t
+	dump_deposit_history(context_t& context, Key container_key, const DepositMapping& container)  const;
 
-      std::vector<std::string>
-	dump_deposit_history(DigiContext& context, Key container_key, const DepositVector& container)  const;
+      records_t
+	dump_deposit_history(context_t& context, Key container_key, const DepositVector& container)  const;
 
-      std::vector<std::string>
-	dump_particle_history(DigiContext& context, Key container_key, const ParticleMapping& container)  const;
+      records_t
+	dump_particle_history(context_t& context, Key container_key, const ParticleMapping& container)  const;
 
       /// Dump hit container
       void dump_headers(const std::string& tag, const DigiEvent& event, const DataSegment& segment)  const;
 
       /// Dump hit container
-      void dump_history(DigiContext& context, const std::string& tag, const DigiEvent& event, const DataSegment& cont)  const;
+      void dump_history(context_t& context, const std::string& tag, const DigiEvent& event, const DataSegment& cont)  const;
 
       /// Initialize the action
       virtual void initialize();
@@ -81,7 +83,7 @@ namespace dd4hep {
       /// Standard constructor
       DigiStoreDump(const DigiKernel& kernel, const std::string& nam);
       /// Main functional callback
-      virtual void execute(DigiContext& context)  const;
+      virtual void execute(context_t& context)  const;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

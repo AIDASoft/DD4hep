@@ -29,9 +29,9 @@ namespace dd4hep {
   namespace digi {
 
     /// Forward declarations
+    class DigiSegmentContext;
     class DigiContainerSequence;
     class DigiContainerProcessor;
-    class DigiSegmentProcessContext;
     class DigiContainerSequenceAction;
     class DigiMultiContainerProcessor;
     
@@ -44,11 +44,11 @@ namespace dd4hep {
      */
     class DigiContainerProcessor : public DigiAction   {
     public:
-      using segment_t      = DataSegment;
-      using context_t      = DigiContext;
+      /// Structure imports
       using action_t       = DigiAction;
+      using segment_t      = DataSegment;
       using property_t     = PropertyManager;
-      using segmentation_t = DigiSegmentProcessContext;
+      using segmentation_t = DigiSegmentContext;
 
       /// Input definition
       struct input_t  {
@@ -66,23 +66,30 @@ namespace dd4hep {
 
       /// Hit processing predicate
       struct predicate_t  {
-	Callback              callback;
-	const segmentation_t& segmentation;
-	predicate_t(const segmentation_t& s) : segmentation(s) {}
-	predicate_t(const Callback& cb, const segmentation_t& s) : callback(cb), segmentation(s) {}
+	Callback callback                   { };
+	uint32_t id                         { 0 };
+	const segmentation_t* segmentation  { nullptr };
+	predicate_t() = default;
+	predicate_t(predicate_t&& copy) = default;
+	predicate_t(const predicate_t& copy) = default;
+	predicate_t(const Callback& c, uint32_t i, const segmentation_t* s)
+	  : callback(c), id(i), segmentation(s) {}
+	predicate_t& operator = (predicate_t&& copy) = default;
+	predicate_t& operator = (const predicate_t& copy) = default;
 	/// Check if a deposit should be processed
 	bool operator()(const std::pair<const CellID, EnergyDeposit>& deposit)   const;
       };
 
+      /// Work definition
       struct work_t  {
 	/// Event processing context
-	context_t&      context;
+	context_t&        context;
 	/// Input data
-	input_t         input;
+	input_t           input;
 	/// Output data
-	output_t&       output;
+	output_t&         output;
 	/// Optional properties
-	const property_t&  properties;
+	const property_t& properties;
 
 	/// Basic check if input data are present
 	bool has_input()  const    {  return this->input.data.has_value();  }
@@ -107,12 +114,18 @@ namespace dd4hep {
       static const predicate_t& accept_all();
 
       /// Standard constructor
-      DigiContainerProcessor(const DigiKernel& kernel, const std::string& name);
+      DigiContainerProcessor(const kernel_t& kernel, const std::string& name);
       /// Default destructor
       virtual ~DigiContainerProcessor();
       /// Main functional callback adapter
-      virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const;
+      virtual void execute(context_t& context, work_t& work, const predicate_t& predicate)  const;
     };
+
+    /// Check if a deposit should be processed
+    inline bool DigiContainerProcessor::predicate_t::operator()(const std::pair<const CellID, EnergyDeposit>& deposit)   const   {
+      const void* args[] = { &deposit };
+      return this->callback.execute(args);
+    }
 
     /// Worker class act on containers in an event identified by input masks and container name
     /**
@@ -124,6 +137,7 @@ namespace dd4hep {
      */
     class DigiContainerSequence : public DigiContainerProcessor  {
     protected:
+      /// Structure imports
       using self_t      = DigiContainerSequence;
       using processor_t = DigiContainerProcessor;
       using worker_t    = DigiParallelWorker<processor_t,work_t>;
@@ -150,11 +164,11 @@ namespace dd4hep {
 
     public:
       /// Standard constructor
-      DigiContainerSequence(const DigiKernel& kernel, const std::string& name);
+      DigiContainerSequence(const kernel_t& kernel, const std::string& name);
       /// Adopt new parallel worker
       virtual void adopt_processor(DigiContainerProcessor* action);
       /// Main functional callback adapter
-      virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const;
+      virtual void execute(context_t& context, work_t& work, const predicate_t& predicate)  const;
     };
 
     /// Worker base class to analyse containers from the input segment in parallel
@@ -169,23 +183,28 @@ namespace dd4hep {
     class DigiContainerSequenceAction : public DigiEventAction  {
 
     protected:
-      /// Argument structure for client calls
+      /// Structure imports
       using action_t    = DigiAction;
       using self_t      = DigiContainerSequenceAction;
       using processor_t = DigiContainerProcessor;
       using output_t    = processor_t::output_t;
       using property_t  = processor_t::property_t;
+
+      /// Single worker work item definition
       struct work_item_t  {
 	Key key;
 	std::any* data;
       };
+      /// Work definition structure
+      /// Argument structure for client calls
       struct work_t  {
-	DigiContext&             context;
+	context_t&             context;
 	std::vector<work_item_t> input_items;
 	output_t&                output;
 	const property_t&        properties;
 	const self_t&            parent;
       };
+
       using worker_t         = DigiParallelWorker<processor_t, work_t>;
       using workers_t        = DigiParallelWorkers<worker_t>;
       using reg_workers_t    = std::map<Key, worker_t*>;
@@ -225,13 +244,13 @@ namespace dd4hep {
 
     public:
       /// Standard constructor
-      DigiContainerSequenceAction(const DigiKernel& kernel, const std::string& name);
+      DigiContainerSequenceAction(const kernel_t& kernel, const std::string& name);
       /// Adopt new parallel worker acting on one single container
       void adopt_processor(DigiContainerProcessor* action, const std::string& container);
       /// Adopt new parallel worker acting on multiple containers
       void adopt_processor(DigiContainerProcessor* action, const std::vector<std::string>& containers);
       /// Main functional callback if specific work is known
-      virtual void execute(DigiContext& context)  const override;
+      virtual void execute(context_t& context)  const override;
     };
 
     /// Sequencer class to analyse containers from the input segment in parallel
@@ -252,7 +271,7 @@ namespace dd4hep {
 
       /// Argument structure required to support multiple client calls
       struct work_t  {
-	DigiContext&      context;
+	context_t&        context;
 	work_items_t&     items;
 	output_t&         output;
 	const property_t& properties;
@@ -298,7 +317,7 @@ namespace dd4hep {
 
     public:
       /// Standard constructor
-      DigiMultiContainerProcessor(const DigiKernel& kernel, const std::string& name);
+      DigiMultiContainerProcessor(const kernel_t& kernel, const std::string& name);
       const std::vector<Key>& worker_keys(size_t worker_id)  const  {
 	return this->m_worker_keys.at(worker_id);
       }
@@ -308,7 +327,7 @@ namespace dd4hep {
       /// Adopt new parallel worker
       void adopt_processor(DigiContainerProcessor* action, const std::vector<std::string>& containers);
       /// Main functional callback
-      virtual void execute(DigiContext& context)  const;
+      virtual void execute(context_t& context)  const;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

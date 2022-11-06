@@ -58,6 +58,11 @@ namespace dd4hep {
       : par(p), call(0) {
       func.first = func.second = 0;
     }
+    /// Constructor with object initialization
+    Callback(const void* p)
+      : par((void*)p), call(0) {
+      func.first = func.second = 0;
+    }
     /// Initializing constructor
     Callback(void* p, void* mf, func_t c)
       : par(p), call(c) {

@@ -63,9 +63,9 @@ namespace dd4hep {
 
     public:
       /// Standard constructor
-      DigiAttenuator(const DigiKernel& kernel, const std::string& nam);
+      DigiAttenuator(const kernel_t& kernel, const std::string& nam);
       /// Main functional callback adapter
-      virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const override;
+      virtual void execute(context_t& context, work_t& work, const predicate_t& predicate)  const override;
     };
 
     /// Default base class for all Digitizer actions and derivates thereof.
@@ -96,11 +96,11 @@ namespace dd4hep {
 
     public:
       /// Standard constructor
-      DigiAttenuatorSequence(const DigiKernel& kernel, const std::string& nam);
+      DigiAttenuatorSequence(const kernel_t& kernel, const std::string& nam);
       /// Initialization callback
       virtual void initialize();
       /// Main functional callback
-      virtual void execute(DigiContext& context)  const;
+      virtual void execute(context_t& context)  const;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

@@ -40,7 +40,7 @@ namespace dd4hep {
       print(const char* fmt, const T& cont, const predicate_t& predicate)  const   {
 	for( const auto& dep : cont )   {
 	  if( predicate(dep) )   {
-	    info(fmt, predicate.segmentation.split_id(dep.first), dep.first,
+	    info(fmt, predicate.segmentation->split_id(dep.first), dep.first,
 		 dep.second.history.hits.size(), 
 		 dep.second.history.particles.size(),
 		 dep.second.deposit);
@@ -55,8 +55,8 @@ namespace dd4hep {
 		   "%s[%s] %s-id: %%d [processor:%d] Cell: %%016lX mask: %016lX  "
 		   "hist:%%4ld hits %%4ld parts. entries deposit: %%f", 
 		   context.event->id(),
-		   predicate.segmentation.idspec.name(), predicate.segmentation.cname(),
-		   predicate.segmentation.id, predicate.segmentation.split_mask);
+		   predicate.segmentation->idspec.name(), predicate.segmentation->cname(),
+		   predicate.id, predicate.segmentation->split_mask);
 	if ( const auto* m = work.get_input<DepositMapping>() )
 	  print(format, *m, predicate);
 	else if ( const auto* v = work.get_input<DepositVector>() )
@@ -67,6 +67,6 @@ namespace dd4hep {
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-
+//        Factory definition
 #include <DDDigi/DigiFactories.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSegmentDepositPrint)

@@ -34,8 +34,8 @@ namespace dd4hep {
      */
     class DigiSynchronize : public DigiEventAction {
     protected:
-      using Worker    = DigiParallelWorker<DigiEventAction,DigiContext,int>;
-      using Workers   = DigiParallelWorkers<Worker>;
+      using Worker  = DigiParallelWorker<DigiEventAction,context_t,int>;
+      using Workers = DigiParallelWorkers<Worker>;
       /// The list of action objects to be called
       Workers m_actors;
 
@@ -45,13 +45,13 @@ namespace dd4hep {
 
     public:
       /// Standard constructor
-      DigiSynchronize(const DigiKernel& kernel, const std::string& nam);
+      DigiSynchronize(const kernel_t& kernel, const std::string& nam);
       /// Default destructor
       virtual ~DigiSynchronize();
       /// Adopt a new action as part of the sequence. Sequence takes ownership.
       virtual void adopt(DigiEventAction* action);
       /// Begin-of-event callback
-      virtual void execute(DigiContext& context)  const override;
+      virtual void execute(context_t& context)  const override;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

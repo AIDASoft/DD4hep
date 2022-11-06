@@ -54,23 +54,23 @@ namespace dd4hep {
 
     public:
       /// Standard constructor
-      DigiActionSequence(const DigiKernel& kernel, const std::string& nam);
+      DigiActionSequence(const kernel_t& kernel, const std::string& nam);
       /// Default destructor
       virtual ~DigiActionSequence();
       /// Adopt a new action as part of the sequence. Sequence takes ownership.
       virtual void adopt(DigiEventAction* action)  override;
       /// Register external listener callbacks before starting the sequence
       template <typename Q, typename T>
-      void begin(Q* p, void (T::*f)(DigiContext* context)) {
+      void begin(Q* p, void (T::*f)(context_t* context)) {
         m_begin.add(p, f);
       }
       /// Register external listener callbacks after finishing the sequence
       template <typename Q, typename T>
-      void end(Q* p, void (T::*f)(DigiContext* context))  {
+      void end(Q* p, void (T::*f)(context_t* context))  {
         m_end.add(p, f);
       }
       /// Begin-of-event callback
-      virtual void execute(DigiContext& context)  const override;
+      virtual void execute(context_t& context)  const override;
     };
 
     /// Definitiaon of the sequential action sequence
@@ -83,7 +83,7 @@ namespace dd4hep {
     class DigiSequentialActionSequence : public DigiActionSequence {
     public:
       /// Standard constructor
-      DigiSequentialActionSequence(const DigiKernel& kernel, const std::string& nam);
+      DigiSequentialActionSequence(const kernel_t& kernel, const std::string& nam);
       /// Default destructor
       virtual ~DigiSequentialActionSequence();
     };
@@ -98,7 +98,7 @@ namespace dd4hep {
     class DigiParallelActionSequence : public DigiActionSequence {
     public:
       /// Standard constructor
-      DigiParallelActionSequence(const DigiKernel& kernel, const std::string& nam);
+      DigiParallelActionSequence(const kernel_t& kernel, const std::string& nam);
       /// Default destructor
       virtual ~DigiParallelActionSequence();
     };

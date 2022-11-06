@@ -309,12 +309,12 @@ def _props(obj, **extensions):
   cls = getattr(current, obj)
   for extension in extensions.items():
     call = extension[0]
-    # print('TRY: Overloading: '+str(cls)+' '+call+' to __'+call+' '+str(hasattr(cls, call)))
+    # print('TRY: Overloading: ' + str(cls) + ' ' + call + ' to __' + call + ' ' + str(hasattr(cls, call)))
     if hasattr(cls, call):
-      # print('Overloading: '+str(cls)+' '+call+' to __'+call)
+      # print('Overloading: ' + str(cls) + ' ' + call + ' to __' + call)
       setattr(cls, '__' + call, getattr(cls, call))
     else:
-      print('FAILED: Overloading: '+str(cls)+' '+call+' to __'+call+' '+str(hasattr(cls, call)))
+      print('FAILED: Overloading: ' + str(cls) + ' '+call + ' to __' + call + ' ' + str(hasattr(cls, call)))
     setattr(cls, call, extension[1])
   cls.__getattr__ = _get
   cls.__setattr__ = _set

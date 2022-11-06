@@ -57,6 +57,15 @@ const char* DigiSegmentContext::cname()  const  {
   return this->field ? this->field->name().c_str() : "";
 }
 
+/// Full identifier (field + id)
+std::string DigiSegmentContext::identifier(uint32_t id)  const   {
+  std::stringstream str;
+  if ( this->field )   {
+    str << this->field->name() << "." << id;
+  }
+  return str.str();
+}
+
 /// Initializing constructor
 DigiSegmentationTool::DigiSegmentationTool(Detector& desc)
   : description(desc)
