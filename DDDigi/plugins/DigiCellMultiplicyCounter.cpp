@@ -45,7 +45,7 @@ namespace dd4hep {
 	     tag, cont.name.c_str(), cont.size(), entries.size());
       }
       /// Main functional callback
-      virtual void execute(DigiContext& context, work_t& work)  const override final  {
+      virtual void execute(DigiContext& context, work_t& work, const predicate_t&)  const override final  {
 	if ( const auto* m = work.get_input<DepositMapping>() )
 	  count_deposits(context.event->id(), *m);
 	else if ( const auto* v = work.get_input<DepositVector>() )

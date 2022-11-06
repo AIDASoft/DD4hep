@@ -58,13 +58,14 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiAttenuator();
       /// Attenuator callback for single container
-      template <typename T> std::size_t attenuate(T& cont) const;
+      template <typename DEPOSITS> std::size_t
+      attenuate(DEPOSITS& cont, const predicate_t& predicate) const;
 
     public:
       /// Standard constructor
       DigiAttenuator(const DigiKernel& kernel, const std::string& nam);
       /// Main functional callback adapter
-      virtual void execute(DigiContext& context, work_t& work)  const override;
+      virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const override;
     };
 
     /// Default base class for all Digitizer actions and derivates thereof.

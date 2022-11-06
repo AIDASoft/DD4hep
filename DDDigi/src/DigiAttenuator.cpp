@@ -43,23 +43,26 @@ DigiAttenuator::~DigiAttenuator() {
 }
 
 /// Attenuator callback for single container
-template <typename T> std::size_t DigiAttenuator::attenuate(T& cont) const {
-  for( auto& c : cont )   {
-    auto& depo = c.second;
-    depo.deposit *= m_factor;
-    for( auto& h : depo.history.hits ) h.weight *= m_factor;
-    for( auto& h : depo.history.particles ) h.weight *= m_factor;
+template <typename T> std::size_t
+DigiAttenuator::attenuate(T& cont, const predicate_t& predicate) const {
+  for( auto& dep : cont )   {
+    if ( predicate(dep) )   {
+      auto& depo = dep.second;
+      depo.deposit *= m_factor;
+      for( auto& h : depo.history.hits ) h.weight *= m_factor;
+      for( auto& h : depo.history.particles ) h.weight *= m_factor;
+    }
   }
   return cont.size();
 }
 
 /// Main functional callback adapter
-void DigiAttenuator::execute(DigiContext& context, work_t& work)  const   {
+void DigiAttenuator::execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const   {
   std::size_t count = 0;
   if ( auto* m = work.get_input<DepositMapping>() )
-    count = this->attenuate(*m);
+    count = this->attenuate(*m, predicate);
   else if ( auto* v = work.get_input<DepositVector>() )
-    count = this->attenuate(*v);
+    count = this->attenuate(*v, predicate);
   Key key { work.input.key };
   std::string nam = Key::key_name(key)+":";
   info("%s+++ %-32s mask:%04X item: %08X Attenuated %6ld hits by %8.5f",

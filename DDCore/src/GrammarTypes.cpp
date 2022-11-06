@@ -60,3 +60,7 @@ DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(bool,eval_item)
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(float,eval_item)
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(double,eval_item)
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(std::string,eval_item)
+
+DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(__LINE__,1,dd4hep::detail::Primitive<bool>::bool_pair_t,eval_pair)
+DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(__LINE__,2,dd4hep::detail::Primitive<float>::float_pair_t,eval_pair)
+DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(__LINE__,5,dd4hep::detail::Primitive<double>::double_pair_t,eval_pair)

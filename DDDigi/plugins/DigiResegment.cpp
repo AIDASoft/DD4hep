@@ -103,35 +103,38 @@ namespace dd4hep {
 	info("+++ Successfully initialized resegmentation action.");
       }
 
-      template <typename T> void resegment_deposits(const T& cont, work_t& work)  const  {
+      template <typename T> void
+      resegment_deposits(const T& cont, work_t& work, const predicate_t& predicate)  const  {
 	Key key(cont.name, work.output.mask);
 	DepositVector m(cont.name, work.output.mask);
 	std::size_t start = m.size();
 	for( const auto& dep : cont )   {
-	  CellID cell = dep.first;
-	  auto*  ctxt = m_volmgr.lookupContext(cell);
-	  if ( !ctxt )   {
-	    error("+++ Cannot locate volume context for cell %016lX", cell);
-	  }
-	  else   {
-	    VolumeID volID     = m_org_segment.volumeID(cell);
-	    Position org_local = m_org_segment.position(cell);
-	    Position global    = ctxt->localToWorld(org_local);
-	    CellID   new_cell  = m_new_segment.cellID(org_local, global, volID);
-	    Position new_local = m_new_segment.position(new_cell);
-	    if ( m_debug )   {
-	      info("+++ Cell: %016lX -> %016lX DE: %-20s "
-		   "Pos global: %8.2f %8.2f %8.2f  local: %8.2f %8.2f %8.2f -> %8.2f %8.2f %8.2f",
-		   cell, new_cell, ctxt->element.name(), 
-		   global.X(), global.Y(), global.Z(),
-		   org_local.X(), org_local.Y(), org_local.Z(),
-		   new_local.X(), new_local.Y(), new_local.Z()
-		   );
+	  if( predicate(dep) )   {
+	    CellID cell = dep.first;
+	    auto*  ctxt = m_volmgr.lookupContext(cell);
+	    if ( !ctxt )   {
+	      error("+++ Cannot locate volume context for cell %016lX", cell);
 	    }
-	    EnergyDeposit d(dep.second);
-	    d.position = global;
-	    d.momentum = dep.second.momentum;
-	    m.emplace(new_cell, std::move(d));
+	    else   {
+	      VolumeID volID     = m_org_segment.volumeID(cell);
+	      Position org_local = m_org_segment.position(cell);
+	      Position global    = ctxt->localToWorld(org_local);
+	      CellID   new_cell  = m_new_segment.cellID(org_local, global, volID);
+	      Position new_local = m_new_segment.position(new_cell);
+	      if ( m_debug )   {
+		info("+++ Cell: %016lX -> %016lX DE: %-20s "
+		     "Pos global: %8.2f %8.2f %8.2f  local: %8.2f %8.2f %8.2f -> %8.2f %8.2f %8.2f",
+		     cell, new_cell, ctxt->element.name(), 
+		     global.X(), global.Y(), global.Z(),
+		     org_local.X(), org_local.Y(), org_local.Z(),
+		     new_local.X(), new_local.Y(), new_local.Z()
+		     );
+	      }
+	      EnergyDeposit d(dep.second);
+	      d.position = global;
+	      d.momentum = dep.second.momentum;
+	      m.emplace(new_cell, std::move(d));
+	    }
 	  }
 	}
 	std::size_t end   = m.size();
@@ -141,11 +144,11 @@ namespace dd4hep {
       }
 
       /// Main functional callback
-      virtual void execute(DigiContext&, work_t& work)  const override final  {
+      virtual void execute(DigiContext&, work_t& work, const predicate_t& predicate)  const override final  {
 	if ( const auto* m = work.get_input<DepositMapping>() )
-	  resegment_deposits(*m, work);
+	  resegment_deposits(*m, work, predicate);
 	else if ( const auto* v = work.get_input<DepositVector>() )
-	  resegment_deposits(*v, work);
+	  resegment_deposits(*v, work, predicate);
 	else
 	  except("Request to handle unknown data type: %s", work.input_type_name().c_str());
       }

@@ -48,15 +48,25 @@ namespace dd4hep {
       int32_t                offset     { 0 };
       int32_t                width      { 0 };
       int32_t                max_split  { 0 };
-      uint32_t               id         { 0 };
 
     public:
+      /// Default constructor
+      DigiSegmentContext() = default;
+      /// Default move constructor
+      DigiSegmentContext(DigiSegmentContext&& copy) = default;
+      /// Default copy constructor
+      DigiSegmentContext(const DigiSegmentContext& copy) = default;
+      /// Default destructor
+      virtual ~DigiSegmentContext() = default;
+      /// Default move assignment
+      DigiSegmentContext& operator=(DigiSegmentContext&& copy) = default;
+      /// Default copy assignment
+      DigiSegmentContext& operator=(const DigiSegmentContext& copy) = default;
+
       /// Split field name
       const std::string& name()  const;
       /// Split field name
       const char* cname()  const;
-      /// Full identifier (field + id)
-      std::string identifier()  const;
       
       /// Get the identifier of the cell to be split
       uint32_t split_id(uint64_t cell)  const  {
@@ -69,10 +79,6 @@ namespace dd4hep {
       /// The identifier of the parent detector
       uint64_t detector_id(uint64_t cell)  const  {
 	return (cell & this->det_mask);
-      }
-      /// Check a given cell id if it matches this selection
-      bool matches(uint64_t cell)  const  {
-	return this->split_id(cell) == this->id;
       }
     };
 

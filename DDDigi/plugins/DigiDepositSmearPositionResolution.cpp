@@ -65,7 +65,8 @@ namespace dd4hep {
       }
 
       /// Create deposit mapping with updates on same cellIDs
-      template <typename T> void smear_deposit_position(DigiContext& context, T& cont, work_t& work)  const  {
+      template <typename T> void
+      smear(DigiContext& context, T& cont, work_t& work, const predicate_t& predicate)  const  {
 	T output_cont(cont.name, work.output.mask);
 	auto& random = context.randomGenerator();
 	std::size_t killed = 0UL;
@@ -78,45 +79,46 @@ namespace dd4hep {
 	}
 	VolumeManager volMgr = m_kernel.detectorDescription().volumeManager();
 	for( auto& dep : cont )    {
-	  CellID cell = dep.first;
-	  const EnergyDeposit& depo = dep.second;
-	  double deposit = depo.deposit;
-	  if ( deposit >= m_deposit_cutoff )   {
-	    auto*     ctxt = volMgr.lookupContext(cell);
-	    Position  local_pos = ctxt->worldToLocal(depo.position);
-	    double    delta_u   = m_resolution_u * random.gaussian();
-	    double    delta_v   = m_resolution_v * random.gaussian();
-	    Position  delta_pos(delta_u, delta_v, 0e0);
-	    Position  oldpos = depo.position;
-	    Position  newpos = ctxt->localToWorld(local_pos + delta_pos);
+	  if ( predicate(dep) )   {
+	    CellID cell = dep.first;
+	    const EnergyDeposit& depo = dep.second;
+	    double deposit = depo.deposit;
+	    if ( deposit >= m_deposit_cutoff )   {
+	      auto*     ctxt = volMgr.lookupContext(cell);
+	      Position  local_pos = ctxt->worldToLocal(depo.position);
+	      double    delta_u   = m_resolution_u * random.gaussian();
+	      double    delta_v   = m_resolution_v * random.gaussian();
+	      Position  delta_pos(delta_u, delta_v, 0e0);
+	      Position  oldpos = depo.position;
+	      Position  newpos = ctxt->localToWorld(local_pos + delta_pos);
 
-	    delta_pos = newpos - oldpos;
-	    info("+++ %016lX Smeared position [%9.2e %9.2e %9.2e] by [%9.2e %9.2e %9.2e] to [%9.2e %9.2e %9.2e] [mm]",
-		 oldpos.X(), oldpos.Y(), oldpos.Z(), delta_pos.X(), delta_pos.Y(), delta_pos.Z(),
-		 newpos.X(), newpos.Y(), newpos.Z());
+	      delta_pos = newpos - oldpos;
+	      info("+++ %016lX Smeared position [%9.2e %9.2e %9.2e] by [%9.2e %9.2e %9.2e] to [%9.2e %9.2e %9.2e] [mm]",
+		   oldpos.X(), oldpos.Y(), oldpos.Z(), delta_pos.X(), delta_pos.Y(), delta_pos.Z(),
+		   newpos.X(), newpos.Y(), newpos.Z());
 
-	    /// Update / create deposit with smeared position
-	    if ( m_update_in_place )   {
+	      /// Update / create deposit with smeared position
+	      if ( m_update_in_place )   {
+		EnergyDeposit& d = dep.second;
+		d.position = newpos;
+		d.flag |= EnergyDeposit::POSITION_SMEARED;
+		++updated;
+	      }
+	      else   {
+		EnergyDeposit d(depo);
+		d.position = newpos;
+		d.flag |= EnergyDeposit::POSITION_SMEARED;
+		output_cont.emplace(cell, std::move(d));
+		++created;
+	      }
+	    }
+	    else if ( !m_update_in_place )   {
 	      EnergyDeposit& d = dep.second;
-	      d.position = newpos;
-	      d.flag |= EnergyDeposit::POSITION_SMEARED;
-	      ++updated;
+	      d.flag |= EnergyDeposit::KILLED;
+	      ++killed;
 	    }
-	    else   {
-	      EnergyDeposit d(depo);
-	      d.position = newpos;
-	      d.flag |= EnergyDeposit::POSITION_SMEARED;
-	      output_cont.emplace(cell, std::move(d));
-	      ++created;
-	    }
-	  }
-	  else if ( !m_update_in_place )   {
-	    EnergyDeposit& d = dep.second;
-	    d.flag |= EnergyDeposit::KILLED;
-	    ++killed;
 	  }
 	}
-
 	if ( !m_update_in_place )   {
 	  work.output.data.put(output_cont.key, std::move(output_cont));
 	}
@@ -125,11 +127,11 @@ namespace dd4hep {
       }
 
       /// Main functional callback
-      virtual void execute(DigiContext& context, work_t& work)  const override final  {
+      virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const override final  {
 	if ( auto* v = work.get_input<DepositVector>() )
-	  smear_deposit_position(context, *v, work);
+	  smear(context, *v, work, predicate);
 	else if ( auto* m = work.get_input<DepositMapping>() )
-	  smear_deposit_position(context, *m, work);
+	  smear(context, *m, work, predicate);
 	else
 	  except("Request to handle unknown data type: %s", work.input_type_name().c_str());
       }
