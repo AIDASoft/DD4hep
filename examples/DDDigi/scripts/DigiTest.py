@@ -10,7 +10,6 @@
 # ==========================================================================
 from __future__ import absolute_import
 import os
-import dd4hep
 import dddigi
 import logging
 from dd4hep import units

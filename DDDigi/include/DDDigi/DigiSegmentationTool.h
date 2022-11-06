@@ -30,8 +30,6 @@ namespace dd4hep {
 
     /// Segmentation split context
     /**
-     *  
-     *  
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -39,15 +37,16 @@ namespace dd4hep {
      */
     class DigiSegmentContext  {
     public:
-      DetElement             detector   { };
-      IDDescriptor           idspec     { };
-      const BitFieldElement* field      { nullptr };
-      uint64_t               cell_mask  { ~0x0UL };
-      uint64_t               det_mask   { 0UL };
-      uint64_t               split_mask { 0UL };
-      int32_t                offset     { 0 };
-      int32_t                width      { 0 };
-      int32_t                max_split  { 0 };
+      using field_t = const BitFieldElement;
+      DetElement   detector   { };
+      IDDescriptor idspec     { };
+      field_t*     field      { nullptr };
+      uint64_t     cell_mask  { ~0x0UL };
+      uint64_t     det_mask   { 0UL };
+      uint64_t     split_mask { 0UL };
+      int32_t      offset     { 0 };
+      int32_t      width      { 0 };
+      int32_t      max_split  { 0 };
 
     public:
       /// Default constructor
@@ -67,18 +66,20 @@ namespace dd4hep {
       const std::string& name()  const;
       /// Split field name
       const char* cname()  const;
+      /// Full identifier (field + id)
+      std::string identifier(uint32_t id)  const;
       
       /// Get the identifier of the cell to be split
       uint32_t split_id(uint64_t cell)  const  {
-	return int( (cell & this->split_mask) >> this->offset );
+	return uint32_t( (cell & this->split_mask) >> this->offset );
       }
       /// The CELL ID part of the identifier
       uint64_t cell_id(uint64_t cell)  const  {
-	return ( (cell & this->cell_mask) >> (this->offset + width) );
+	return uint64_t( uint64_t(cell & this->cell_mask) >> (this->offset + width) );
       }
       /// The identifier of the parent detector
       uint64_t detector_id(uint64_t cell)  const  {
-	return (cell & this->det_mask);
+	return uint64_t(cell & this->det_mask);
       }
     };
 

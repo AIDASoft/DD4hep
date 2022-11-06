@@ -83,19 +83,26 @@ namespace dd4hep {
      *  \ingroup DD4HEP_DIGITIZATION
      */
     class DigiAction {
+
       friend class DigiKernel;
+
+    public:
+      using context_t = DigiContext;
+      using kernel_t  = DigiKernel;
 
     protected:
       /// Reference to the Digi context
 #if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
-      const DigiKernel*  m_kernel;
+      const kernel_t*  m_kernel;
+
     public:
-      const DigiKernel*  kernel()  const   {
+      const kernel_t*  kernel()  const   {
 	return m_kernel;
       }
+
     protected:
 #else
-      const DigiKernel&  m_kernel;
+      const kernel_t&  m_kernel;
 #endif
       /// Action name
       std::string        m_name;
@@ -117,7 +124,7 @@ namespace dd4hep {
 
     public:
       /// Standard constructor
-      DigiAction(const DigiKernel& kernel, const std::string& nam);
+      DigiAction(const kernel_t& kernel, const std::string& nam);
       /// Increase reference count
       long addRef();
       /// Decrease reference count. Implicit destruction

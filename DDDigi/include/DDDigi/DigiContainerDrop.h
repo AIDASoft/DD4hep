@@ -41,15 +41,15 @@ namespace dd4hep {
 
     protected:
       /// Property: Container names to be loaded
-      std::vector<std::string>       m_containers   { };
+      std::vector<std::string>    m_containers   { };
       /// Property: Input data segment name
-      std::string                    m_input_segment;
+      std::string                 m_input_segment;
       /// Property: event masks to be handled
-      std::vector<int>               m_input_masks  { };
+      std::vector<int>            m_input_masks  { };
       /// Fully qualified keys of all containers to be manipulated
-      std::set<Key::key_type>        m_keys  { };
+      std::set<Key::key_type>     m_keys  { };
       /// Container keys of all containers to be manipulated
-      std::set<Key::itemkey_type>    m_cont_keys  { };
+      std::set<Key::itemkey_type> m_cont_keys  { };
 
       /// Worker objects to be submitted to TBB each performing part of the job
       Workers m_workers;
@@ -69,10 +69,10 @@ namespace dd4hep {
 
     public:
       /// Standard constructor
-      DigiContainerDrop(const DigiKernel& kernel, const std::string& name);
+      DigiContainerDrop(const kernel_t& kernel, const std::string& name);
 
       /// Main functional callback
-      virtual void execute(DigiContext& context)  const;
+      virtual void execute(context_t& context)  const;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

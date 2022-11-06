@@ -43,7 +43,7 @@ def run():
   event.adopt_action('DigiStoreDump/StoreDump')
   digi.info('Created event.dump')
   # ========================================================================
-  digi.run_checked(num_events=1, num_threads=10, parallel=3)
+  digi.run_checked(num_events=5, num_threads=10, parallel=3)
 
 
 if __name__ == '__main__':

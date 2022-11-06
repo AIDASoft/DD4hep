@@ -49,13 +49,13 @@ namespace dd4hep {
       
     public:
       /// Standard constructor
-      DigiLockedAction(const DigiKernel& kernel, const std::string& nam);
+      DigiLockedAction(const kernel_t& kernel, const std::string& nam);
       /// Default destructor
       virtual ~DigiLockedAction();
       /// Underlying object to be used during the locked execution
       void use(DigiEventAction* action);
       /// Callback to read event locked
-      virtual void execute(DigiContext& context)  const override;
+      virtual void execute(context_t& context)  const override;
     };
 
   }    // End namespace digi

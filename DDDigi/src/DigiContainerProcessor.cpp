@@ -85,21 +85,13 @@ const DigiContainerProcessor::predicate_t& DigiContainerProcessor::accept_all() 
     bool use(const std::pair<const CellID, EnergyDeposit>&)  const {
       return true;
     }
-  };
-  static true_t s_y { };
-  static segmentation_t s_seg {};
-  static predicate_t   s_true { Callback(&s_y).make(&true_t::use), s_seg };
-  return s_true;
-}
-
-/// Check if a deposit should be processed
-bool DigiContainerProcessor::predicate_t::operator()(const std::pair<const CellID, EnergyDeposit>& deposit)   const   {
-  const void* args[] = { &deposit };
-  return this->callback.execute(args);
+  } s_true;
+  static predicate_t s_pred { Callback(&s_true).make(&true_t::use), 0, nullptr };
+  return s_pred;
 }
 
 /// Standard constructor
-DigiContainerProcessor::DigiContainerProcessor(const DigiKernel& kernel, const std::string& name)   
+DigiContainerProcessor::DigiContainerProcessor(const kernel_t& kernel, const std::string& name)   
   : DigiAction(kernel, name)
 {
   InstanceCount::increment(this);
@@ -111,13 +103,13 @@ DigiContainerProcessor::~DigiContainerProcessor() {
 }
 
 /// Main functional callback if specific work is known
-void DigiContainerProcessor::execute(DigiContext&       /* context   */,
+void DigiContainerProcessor::execute(context_t&       /* context   */,
 				     work_t&            /* work      */,
 				     const predicate_t& /* predicate */)  const   {
 }
 
 /// Standard constructor
-DigiContainerSequence::DigiContainerSequence(const DigiKernel& krnl, const std::string& nam)
+DigiContainerSequence::DigiContainerSequence(const kernel_t& krnl, const std::string& nam)
   : DigiContainerProcessor(krnl, nam)
 {
   declareProperty("parallel", m_parallel = false);
@@ -139,7 +131,7 @@ void DigiContainerSequence::adopt_processor(DigiContainerProcessor* action)   {
 }
 
 /// Main functional callback if specific work is known
-void DigiContainerSequence::execute(DigiContext& context, work_t& work, const predicate_t& /* predicate */)  const   {
+void DigiContainerSequence::execute(context_t& context, work_t& work, const predicate_t& /* predicate */)  const   {
   auto group = m_workers.get_group();
   m_kernel.submit(context, group, m_workers.size(), &work, m_parallel);
 }
@@ -148,12 +140,12 @@ void DigiContainerSequence::execute(DigiContext& context, work_t& work, const pr
 template <> void DigiParallelWorker<DigiContainerProcessor,
 				    DigiContainerSequence::work_t,
 				    std::size_t>::execute(void* data) const  {
-  calldata_t* args  = reinterpret_cast<calldata_t*>(data);
-  action->execute(args->context, *args, action->accept_all());
+  calldata_t* arg  = reinterpret_cast<calldata_t*>(data);
+  action->execute(arg->context, *arg, action->accept_all());
 }
 
 /// Standard constructor
-DigiContainerSequenceAction::DigiContainerSequenceAction(const DigiKernel& krnl, const std::string& nam)
+DigiContainerSequenceAction::DigiContainerSequenceAction(const kernel_t& krnl, const std::string& nam)
   : DigiEventAction(krnl, nam)
 {
   declareProperty("input_mask",     m_input_mask);
@@ -227,27 +219,27 @@ DigiContainerSequenceAction::need_registered_worker(Key item_key, bool exc)   co
 }
 
 /// Main functional callback if specific work is known
-void DigiContainerSequenceAction::execute(DigiContext& context)  const   {
-  auto& event   = *context.event;
-  auto& inputs  = event.get_segment(m_input_segment);
-  auto& outputs = event.get_segment(m_output_segment);
+void DigiContainerSequenceAction::execute(context_t& context)  const   {
   std::vector<ParallelWorker*> event_workers;
-  output_t output { m_output_mask, outputs };
-  work_t   args   { context, { }, output, m_properties, *this };
+  auto& event  = *context.event;
+  auto& input  = event.get_segment(m_input_segment);
+  auto& output = event.get_segment(m_output_segment);
+  output_t out { m_output_mask, output };
+  work_t   arg { context, { }, out, m_properties, *this };
 
-  args.input_items.resize(m_workers.size(), { { }, nullptr });
-  event_workers.reserve(inputs.size());
-  for( auto& i : inputs )   {
+  arg.input_items.resize(m_workers.size(), { { }, nullptr });
+  event_workers.reserve(input.size());
+  for( auto& i : input )   {
     Key key(i.first);
     if ( key.mask() == m_input_mask )   {
       if ( worker_t* w = need_registered_worker(key, false) )  {
 	event_workers.emplace_back(w);
-	args.input_items[w->options] = { key, &i.second };
+	arg.input_items[w->options] = { key, &i.second };
       }
     }
   }
   if ( !event_workers.empty() )   {
-    m_kernel.submit(context, &event_workers.at(0), event_workers.size(), &args, m_parallel);
+    m_kernel.submit(context, &event_workers.at(0), event_workers.size(), &arg, m_parallel);
   }
 }
 
@@ -255,20 +247,20 @@ void DigiContainerSequenceAction::execute(DigiContext& context)  const   {
 template <> void DigiParallelWorker<DigiContainerProcessor,
 				    DigiContainerSequenceAction::work_t,
 				    std::size_t>::execute(void* data) const  {
-  calldata_t* args  = reinterpret_cast<calldata_t*>(data);
-  auto& item = args->input_items[this->options];
-  DigiContainerProcessor::work_t work {args->context, {item.key, *item.data}, args->output, args->properties};
+  calldata_t* args = reinterpret_cast<calldata_t*>(data);
+  auto&       item = args->input_items[this->options];
+  DigiContainerProcessor::work_t work { args->context, { item.key, *item.data }, args->output, args->properties };
   action->execute(args->context, work, action->accept_all());
 }
 
 /// Standard constructor
-DigiMultiContainerProcessor::DigiMultiContainerProcessor(const DigiKernel& krnl, const std::string& nam)
+DigiMultiContainerProcessor::DigiMultiContainerProcessor(const kernel_t& krnl, const std::string& nam)
   : DigiEventAction(krnl, nam)
 {
-  this->declareProperty("input_masks",      m_input_masks);
-  this->declareProperty("input_segment",    m_input_segment);
-  this->declareProperty("output_mask",      m_output_mask);
-  this->declareProperty("output_segment",   m_output_segment);
+  declareProperty("input_masks",    m_input_masks);
+  declareProperty("input_segment",  m_input_segment);
+  declareProperty("output_mask",    m_output_mask);
+  declareProperty("output_segment", m_output_segment);
   m_kernel.register_initialize(Callback(this).make(&DigiMultiContainerProcessor::initialize));
   InstanceCount::increment(this);
 }
@@ -347,17 +339,17 @@ void DigiMultiContainerProcessor::adopt_processor(DigiContainerProcessor* action
 }
 
 /// Main functional callback
-void DigiMultiContainerProcessor::execute(DigiContext& context)  const  {
+void DigiMultiContainerProcessor::execute(context_t& context)  const  {
   work_items_t work_items;
-  auto& msk    = m_input_masks;
-  auto& event  = *context.event;
-  auto& inputs = event.get_segment(m_input_segment);
+  auto& mask  = m_input_masks;
+  auto& event = *context.event;
+  auto& input = event.get_segment(m_input_segment);
 
-  work_items.reserve(inputs.size());
-  for( auto& i : inputs )   {
-    Key  key(i.first);
+  work_items.reserve(input.size());
+  for( auto& i : input )   {
+    Key key(i.first);
     key.set_mask(0);
-    bool use = msk.empty() || std::find(msk.begin(), msk.end(), key.mask()) != msk.end();
+    bool use = mask.empty() || std::find(mask.begin(), mask.end(), key.mask()) != mask.end();
     if ( use )   {
       use = m_work_items.empty() || m_work_items.find(key) != m_work_items.end();
       if ( use )   {
@@ -366,10 +358,10 @@ void DigiMultiContainerProcessor::execute(DigiContext& context)  const  {
     }
   }
   if ( !work_items.empty() )   {
-    auto& outputs = event.get_segment(m_output_segment);
-    output_t   output { m_output_mask, outputs };
-    work_t     args   { context, work_items, output, properties(), *this };
-    m_kernel.submit(context, m_workers.get_group(), m_workers.size(), &args, m_parallel);
+    auto& output = event.get_segment(m_output_segment);
+    output_t out { m_output_mask, output };
+    work_t   arg { context, work_items, out, properties(), *this };
+    m_kernel.submit(context, m_workers.get_group(), m_workers.size(), &arg, m_parallel);
   }
 }
 
@@ -406,4 +398,3 @@ template <> void DigiParallelWorker<DigiContainerProcessor,
 #endif
   }
 }
-

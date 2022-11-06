@@ -53,7 +53,7 @@ namespace dd4hep {
 
     public:
       /// Standard constructor
-      DigiInputAction(const DigiKernel& kernel, const std::string& nam);
+      DigiInputAction(const kernel_t& kernel, const std::string& nam);
       /// Default destructor
       virtual ~DigiInputAction();
 
@@ -70,7 +70,7 @@ namespace dd4hep {
 	return m_input_mask;
       }
       /// Callback to read event input
-      virtual void execute(DigiContext& context)  const override;
+      virtual void execute(context_t& context)  const override;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

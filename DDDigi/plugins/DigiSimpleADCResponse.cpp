@@ -21,6 +21,7 @@
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
+
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
@@ -28,7 +29,6 @@ namespace dd4hep {
       using segmentation_t = DigiSegmentProcessContext;
       std::string    m_response_postfix   { ".adc" };
       std::string    m_history_postfix    { ".hist" };
-      double         m_use_segmentation   { false  };
       double         m_signal_cutoff      { std::numeric_limits<double>::epsilon() };
       double         m_signal_saturation  { std::numeric_limits<double>::max() };
       double         m_adc_offset         { 0e0  };
@@ -49,7 +49,7 @@ namespace dd4hep {
       /// Create container with ADC counts and register it to the output segment
       template <typename T, typename P>
       void emulate_adc(const char* tag, const T& input, work_t& work, const P& predicate)  const  {
-	std::string postfix = m_use_segmentation ? "."+predicate.segmentation.identifier() : std::string();
+	std::string postfix = predicate.segmentation ? "."+predicate.segmentation->identifier(predicate.id) : std::string();
 	std::string history_name  = input.name + postfix + m_history_postfix;
 	std::string response_name = input.name + postfix + m_response_postfix;
 	DetectorHistory  history (history_name, work.output.mask);
@@ -86,14 +86,12 @@ namespace dd4hep {
 
       /// Main functional callback
       virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const final  {
-	if ( !m_use_segmentation )
-	  emulate_adc(context, work, accept_all());
-	else if ( predicate.segmentation.matches(work.input.key.value()) )
-	  emulate_adc(context, work, accept_segment_t(predicate.segmentation));
+	emulate_adc(context, work, predicate);
       }
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-
+//        Factory definition
 #include <DDDigi/DigiFactories.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSimpleADCResponse)
+

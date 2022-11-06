@@ -83,7 +83,7 @@ namespace dd4hep {
       void have_workers(size_t len)  const;
 
       /// Combine selected containers to one single deposit container
-      std::size_t combine_containers(DigiContext& context,
+      std::size_t combine_containers(context_t& context,
 				     DigiEvent& event,
 				     DataSegment& inputs,
 				     DataSegment& outputs)  const;
@@ -93,10 +93,10 @@ namespace dd4hep {
 
     public:
       /// Standard constructor
-      DigiContainerCombine(const DigiKernel& kernel, const std::string& name);
+      DigiContainerCombine(const kernel_t& kernel, const std::string& name);
 
       /// Main functional callback
-      virtual void execute(DigiContext& context)  const;
+      virtual void execute(context_t& context)  const;
     };
   }    // End namespace digi
 }      // End namespace dd4hep
