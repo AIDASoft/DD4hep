@@ -69,8 +69,8 @@ namespace dd4hep {
       }
 
       /// Check if a deposit should be processed
-      bool use_depo(const std::pair<const CellID, EnergyDeposit>* deposit)   const   {
-	return this->matches(deposit->first);
+      bool use_depo(const std::pair<const CellID, EnergyDeposit>& deposit)   const   {
+	return this->matches(deposit.first);
       }
       void enable(uint32_t split_id);
     };
@@ -84,12 +84,11 @@ namespace dd4hep {
      */
     struct accept_segment_t : public DigiContainerProcessor::predicate_t  {
       accept_segment_t(const DigiSegmentContext* s, uint32_t i)
-	: predicate_t( {}, i, s)      {
-	callback = Callback(this).make(&accept_segment_t::use_depo);
+	: predicate_t(std::bind(&accept_segment_t::use_depo, this, std::placeholders::_1), i, s) {
       }
       /// Check if a deposit should be processed
-      bool use_depo(const std::pair<const CellID, EnergyDeposit>* deposit)   const   {
-	return this->segmentation->split_id(deposit->first) == this->id;
+      bool use_depo(const deposit_t& deposit)   const   {
+	return this->segmentation->split_id(deposit.first) == this->id;
       }
     };
 
@@ -108,8 +107,7 @@ namespace dd4hep {
       /**  Local use definitions                      */
       using self_t      = DigiSegmentSplitter;
       using tool_t      = DigiSegmentationTool;
-      using split_t     = std::pair<DetElement, VolumeID>;
-      using splits_t    = std::map<VolumeID, split_t>;
+      using splits_t    = std::set<uint32_t>;
       using segment_t   = DigiSegmentProcessContext;
       using processor_t = DigiContainerProcessor;
 

@@ -99,7 +99,7 @@ DigiContainerDrop::DigiContainerDrop(const DigiKernel& krnl, const std::string& 
   declareProperty("containers",       m_containers);
   declareProperty("input_masks",      m_input_masks);
   declareProperty("input_segment",    m_input_segment = "inputs");
-  m_kernel.register_initialize(Callback(this).make(&DigiContainerDrop::initialize));
+  m_kernel.register_initialize(std::bind(&DigiContainerDrop::initialize,this));
   InstanceCount::increment(this);
 }
 

@@ -76,16 +76,18 @@ public:
   /// Lock for global output logging
   std::mutex            global_output_lock  { };
 
+  using callbacks_t = std::vector<std::function<void()> >;
+  using ev_callbacks_t = std::vector<std::function<void(DigiContext&)> >;
   /// Configure callbacks
-  CallbackSequence      configurators       { };
+  callbacks_t           configurators       { };
   /// Initialize callbacks
-  CallbackSequence      initializers        { };
+  callbacks_t           initializers        { };
   //// Termination callback
-  CallbackSequence      terminators         { };
+  callbacks_t           terminators         { };
       /// Register start event callback
-  CallbackSequence      start_event         { };
+  ev_callbacks_t        start_event         { };
   /// Register end event callback
-  CallbackSequence      end_event           { };
+  ev_callbacks_t        end_event           { };
 
   /// The main data input action sequence
   DigiActionSequence*   input_action         { nullptr };
@@ -311,42 +313,42 @@ void DigiKernel::loadXML(const char* fname) {
 
 /// Configure the digitization: call all registered configurators
 int DigiKernel::configure()   {
-  internals->configurators();
+  for(auto& call : internals->configurators) call();
   return 1;
 }
 
 /// Initialize the digitization: call all registered initializers
 int DigiKernel::initialize()   {
-  internals->initializers();
+  for(auto& call : internals->initializers) call();
   return 1;
 }
 
 /// Register configure callback
-void DigiKernel::register_configure(const Callback& callback)   const  {
+void DigiKernel::register_configure(const std::function<void()>& callback)   const  {
   std::lock_guard<std::mutex> lock(initializer_lock());
-  internals->configurators.add(callback);
+  internals->configurators.push_back(callback);
 }
 
 /// Register initialize callback
-void DigiKernel::register_initialize(const Callback& callback)   const  {
+void DigiKernel::register_initialize(const std::function<void()>& callback)   const  {
   std::lock_guard<std::mutex> lock(initializer_lock());
-  internals->initializers.add(callback);
+  internals->initializers.push_back(callback);
 }
 
 /// Register terminate callback
-void DigiKernel::register_terminate(const Callback& callback)   const  {
+void DigiKernel::register_terminate(const std::function<void()>& callback)   const  {
   std::lock_guard<std::mutex> lock(initializer_lock());
-  internals->terminators.add(callback);
+  internals->terminators.push_back(callback);
 }
 
 /// Register start event callback
-void DigiKernel::register_start_event(const Callback& callback)   const  {
-  internals->start_event.add(callback);
+void DigiKernel::register_start_event(const std::function<void(DigiContext&)>& callback)   const  {
+  internals->start_event.push_back(callback);
 }
 
 /// Register end event callback
-void DigiKernel::register_end_event(const Callback& callback)   const  {
-  internals->end_event.add(callback);
+void DigiKernel::register_end_event(const std::function<void(DigiContext&)>& callback)   const  {
+  internals->end_event.push_back(callback);
 }
 
 /// Access to the main input action sequence from the kernel object
@@ -396,11 +398,11 @@ void DigiKernel::wait(DigiContext& context)   const  {
 void DigiKernel::executeEvent(std::unique_ptr<DigiContext>&& context)    {
   DigiContext& refContext = *context;
   try {
-    internals->start_event(&refContext);
+    for(auto& call : internals->start_event) call(refContext);
     inputAction().execute(refContext);
     eventAction().execute(refContext);
     outputAction().execute(refContext);
-    internals->end_event(&refContext);
+    for(auto& call : internals->end_event) call(refContext);
     notify(std::move(context));
   }
   catch(const std::exception& e)   {
@@ -474,7 +476,7 @@ int DigiKernel::run()   {
 /// Terminate the digitization: call all registered terminators and release the allocated resources
 int DigiKernel::terminate() {
   printout(INFO, "DigiKernel", "++ Terminate Digi and delete associated actions.");
-  internals->terminators();
+  for(auto& call : internals->terminators) call();
   m_detDesc->destroyInstance();
   m_detDesc = 0;
   return 1;

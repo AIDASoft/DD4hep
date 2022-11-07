@@ -123,8 +123,7 @@ namespace dd4hep {
       DigiSegmentContext split_context(const std::string& split_by)  const;
 
       /// Create full set of detector segments which can be split according to the context
-      std::map<VolumeID, std::pair<DetElement, VolumeID> > 
-	split_segmentation(const std::string& split_by)  const;
+      std::set<uint32_t> split_segmentation(const std::string& split_by)  const;
     };
   }    // End namespace digi
 }      // End namespace dd4hep

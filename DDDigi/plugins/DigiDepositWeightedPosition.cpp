@@ -20,6 +20,7 @@
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
+
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
@@ -34,28 +35,15 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiDepositWeightedPosition : public DigiContainerProcessor   {
+    class DigiDepositWeightedPosition : public DigiDepositsProcessor   {
     protected:
       /// Property: Energy cutoff. No hits will be merged with a deposit smaller
       double m_cutoff { -std::numeric_limits<double>::epsilon() };
 
     public:
-      /// Standard constructor
-      DigiDepositWeightedPosition(const DigiKernel& krnl, const std::string& nam)
-	: DigiContainerProcessor(krnl, nam)
-      {
-	declareProperty("deposit_cutoff", m_cutoff);
-	InstanceCount::increment(this);
-      }
-
-      /// Default destructor
-      virtual ~DigiDepositWeightedPosition() {
-	InstanceCount::decrement(this);
-      }
-
       /// Create deposit mapping with updates on same cellIDs
       template <typename T> void
-      create_deposits(const char* tag, const T& cont, work_t& work, const predicate_t& predicate)  const  {
+      create_deposits(context_t& context, const T& cont, work_t& work, const predicate_t& predicate)  const  {
 	Key key(cont.name, work.output.mask);
 	DepositMapping m(cont.name, work.output.mask);
 	std::size_t dropped = 0UL, updated = 0UL, added = 0UL;
@@ -75,19 +63,22 @@ namespace dd4hep {
 	  }
 	}
 	info("%s+++ %-32s added %6ld updated %6ld dropped %6ld entries (now: %6ld) from mask: %04X to mask: %04X",
-	     tag, cont.name.c_str(), added, updated, dropped, m.size(), cont.key.mask(), m.key.mask());
+	     context.event->id(), cont.name.c_str(), added, updated, dropped, m.size(), cont.key.mask(), m.key.mask());
 	work.output.data.put(m.key, std::move(m));
       }
 
-      /// Main functional callback
-      virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const override final  {
-	if ( const auto* v = work.get_input<DepositVector>() )
-	  create_deposits(context.event->id(), *v, work, predicate);
-	else if ( const auto* m = work.get_input<DepositMapping>() )
-	  create_deposits(context.event->id(), *m, work, predicate);
-	else
-	  except("%s+++ Request to handle unknown data type: %s", 
-		 context.event->id(), work.input_type_name().c_str());
+      /// Standard constructor
+      DigiDepositWeightedPosition(const DigiKernel& krnl, const std::string& nam)
+	: DigiDepositsProcessor(krnl, nam)
+      {
+	InstanceCount::increment(this);
+	declareProperty("deposit_cutoff", m_cutoff);
+	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositWeightedPosition::create_deposits)
+      }
+
+      /// Default destructor
+      virtual ~DigiDepositWeightedPosition() {
+	InstanceCount::decrement(this);
       }
     };
   }    // End namespace digi

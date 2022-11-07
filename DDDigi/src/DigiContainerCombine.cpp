@@ -231,7 +231,7 @@ DigiContainerCombine::DigiContainerCombine(const DigiKernel& krnl, const std::st
   declareProperty("output_mask",      m_deposit_mask);
   declareProperty("output_name_flag", m_output_name_flag);
   declareProperty("erase_combined",   m_erase_combined);
-  m_kernel.register_initialize(Callback(this).make(&DigiContainerCombine::initialize));
+  m_kernel.register_initialize(std::bind(&DigiContainerCombine::initialize,this));
   InstanceCount::increment(this);
 }
 

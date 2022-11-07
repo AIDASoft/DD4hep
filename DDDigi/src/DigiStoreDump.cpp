@@ -34,7 +34,7 @@ DigiStoreDump::DigiStoreDump(const DigiKernel& krnl, const std::string& nam)
   m_segments.push_back("output");
   declareProperty("containers", m_containers);
   declareProperty("masks",      m_masks);
-  m_kernel.register_initialize(Callback(this).make(&DigiStoreDump::initialize));
+  m_kernel.register_initialize(std::bind(&DigiStoreDump::initialize,this));
   InstanceCount::increment(this);
 }
 

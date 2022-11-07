@@ -471,7 +471,8 @@ namespace dd4hep {
 	ENERGY_SMEARED     = 1 << 1,
 	POSITION_SMEARED   = 1 << 2,
 	TIME_SMEARED       = 1 << 3,
-        RECALIBRATED       = 1 << 4
+	ZERO_SUPPRESSED    = 1 << 4,
+        RECALIBRATED       = 1 << 5
       };
 
       /// Hit position
