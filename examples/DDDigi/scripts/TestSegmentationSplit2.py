@@ -31,13 +31,13 @@ def run():
   splitter = digi.create_action('DigiSegmentSplitter/Splitter',
                                 parallel=True,
                                 split_by='layer',
-                                detector='SiTrackerBarrel')
+                                detector='SiTrackerEndcap')
   printer = digi.create_action('DigiSegmentDepositPrint/P1')
   splitter.get().adopt_segment_processor(printer, 1)
   printer = digi.create_action('DigiSegmentDepositPrint/P2')
-  splitter.adopt_segment_processor(printer, [2, 3, 4])
+  splitter.adopt_segment_processor(printer, [2, 3])
   printer = digi.create_action('DigiSegmentDepositPrint/P3')
-  splitter.adopt_segment_processor(printer, [5])
+  splitter.adopt_segment_processor(printer, [4])
   split_action.adopt_container_processor(splitter, splitter.collection_names())
 
   event.adopt_action('DigiStoreDump/StoreDump')

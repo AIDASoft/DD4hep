@@ -63,7 +63,7 @@ namespace dd4hep {
 	declareProperty("detector",   m_detector_name);
 	declareProperty("readout",    m_readout_name);
 	declareProperty("descriptor", m_readout_descriptor);
-	m_kernel.register_initialize(Callback(this).make(&DigiResegment::initialize));
+	m_kernel.register_initialize(std::bind(&DigiResegment::initialize, this));
       }
 
       void initialize()   {

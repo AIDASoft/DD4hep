@@ -314,7 +314,7 @@ def _props(obj, **extensions):
       # print('Overloading: ' + str(cls) + ' ' + call + ' to __' + call)
       setattr(cls, '__' + call, getattr(cls, call))
     else:
-      print('FAILED: Overloading: ' + str(cls) + ' '+call + ' to __' + call + ' ' + str(hasattr(cls, call)))
+      print('FAILED: Overloading: ' + str(cls) + ' ' + call + ' to __' + call + ' ' + str(hasattr(cls, call)))
     setattr(cls, call, extension[1])
   cls.__getattr__ = _get
   cls.__setattr__ = _set

@@ -14,7 +14,6 @@
 #define DDDIGI_DIGIKERNEL_H
 
 // Framework include files
-#include <DD4hep/Callback.h>
 #include <DDDigi/DigiEventAction.h>
 #include <DDDigi/DigiParallelWorker.h>
 
@@ -132,15 +131,15 @@ namespace dd4hep {
       std::size_t events_processing()  const;
 
       /// Register configure callback. Signature:   (function)()
-      void register_configure(const Callback& callback)   const;
+      void register_configure(const std::function<void()>& callback)   const;
       /// Register initialize callback. Signature:  (function)()
-      void register_initialize(const Callback& callback)   const;
+      void register_initialize(const std::function<void()>& callback)   const;
       /// Register terminate callback. Signature:   (function)()
-      void register_terminate(const Callback& callback)   const;
+      void register_terminate(const std::function<void()>& callback)   const;
       /// Register start event callback. Signature: (function)(DigiContext*)
-      void register_start_event(const Callback& callback)   const;
+      void register_start_event(const std::function<void(DigiContext&)>& callback)   const;
       /// Register end event callback. Signature:   (function)(DigiContext*)
-      void register_end_event(const Callback& callback)   const;
+      void register_end_event(const std::function<void(DigiContext&)>& callback)   const;
 
       /// Construct detector geometry using description plugin
       virtual void loadGeometry(const std::string& compact_file);

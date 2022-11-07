@@ -81,12 +81,7 @@ std::string DigiContainerProcessor::work_t::input_type_name()  const   {
 
 /// Access to default callback 
 const DigiContainerProcessor::predicate_t& DigiContainerProcessor::accept_all()  {
-  struct true_t  {
-    bool use(const std::pair<const CellID, EnergyDeposit>&)  const {
-      return true;
-    }
-  } s_true;
-  static predicate_t s_pred { Callback(&s_true).make(&true_t::use), 0, nullptr };
+  static predicate_t s_pred { std::bind(predicate_t::always_true, std::placeholders::_1), 0, nullptr };
   return s_pred;
 }
 
@@ -106,6 +101,16 @@ DigiContainerProcessor::~DigiContainerProcessor() {
 void DigiContainerProcessor::execute(context_t&       /* context   */,
 				     work_t&            /* work      */,
 				     const predicate_t& /* predicate */)  const   {
+}
+
+/// Main functional callback adapter
+void DigiDepositsProcessor::execute(context_t& context, work_t& work, const predicate_t& predicate)  const   {
+  if ( auto* v = work.get_input<DepositVector>() )
+    m_handleVector(context,  *v, work, predicate);
+  else if ( auto* m = work.get_input<DepositMapping>() )
+    m_handleMapping(context, *m, work, predicate);
+  else
+    except("Request to handle unknown data type: %s", work.input_type_name().c_str());
 }
 
 /// Standard constructor
@@ -152,7 +157,7 @@ DigiContainerSequenceAction::DigiContainerSequenceAction(const kernel_t& krnl, c
   declareProperty("input_segment",  m_input_segment);
   declareProperty("output_mask",    m_output_mask);
   declareProperty("output_segment", m_output_segment);
-  m_kernel.register_initialize(Callback(this).make(&DigiContainerSequenceAction::initialize));
+  m_kernel.register_initialize(std::bind(&DigiContainerSequenceAction::initialize,this));
   InstanceCount::increment(this);
 }
 
@@ -261,7 +266,7 @@ DigiMultiContainerProcessor::DigiMultiContainerProcessor(const kernel_t& krnl, c
   declareProperty("input_segment",  m_input_segment);
   declareProperty("output_mask",    m_output_mask);
   declareProperty("output_segment", m_output_segment);
-  m_kernel.register_initialize(Callback(this).make(&DigiMultiContainerProcessor::initialize));
+  m_kernel.register_initialize(std::bind(&DigiMultiContainerProcessor::initialize,this));
   InstanceCount::increment(this);
 }
 

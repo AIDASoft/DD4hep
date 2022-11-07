@@ -42,7 +42,7 @@ DigiSegmentProcessContext::operator=(const DigiSegmentContext& copy)   {
 void DigiSegmentProcessContext::enable(uint32_t split_id)  {
   this->predicate.id = split_id;
   this->predicate.segmentation = this;
-  this->predicate.callback = Callback(this).make(&DigiSegmentProcessContext::use_depo);
+  this->predicate.callback = std::bind(&DigiSegmentProcessContext::use_depo, this, std::placeholders::_1);
 }
 
 /// Worker adaptor for caller DigiContainerSequence
@@ -63,7 +63,7 @@ DigiSegmentSplitter::DigiSegmentSplitter(const kernel_t& kernel, const std::stri
   declareProperty("split_by",        m_split_by);
   declareProperty("processor_type",  m_processor_type);
   declareProperty("share_processor", m_share_processor = false);
-  m_kernel.register_initialize(Callback(this).make(&DigiSegmentSplitter::initialize));
+  m_kernel.register_initialize(std::bind(&DigiSegmentSplitter::initialize,this));
   InstanceCount::increment(this);
 }
 
@@ -100,9 +100,8 @@ void DigiSegmentSplitter::initialize()   {
     auto group = m_workers.get_group();
     const auto& workers = group.actors();
     /// Create the processors:
-    for( auto& p : m_splits )   {
+    for( auto split_id : m_splits )   {
       bool ok = false;
-      auto split_id = p.second.second;
       for( auto* w : workers )   {
 	if ( w->options.predicate.id == split_id )  {
 	  w->options = m_split_context;
@@ -125,15 +124,14 @@ void DigiSegmentSplitter::initialize()   {
   }
   /// IF NOT:
   /// 2) Create the processors using the 'processor_type' option
-  for( auto& p : m_splits )   {
-    uint32_t id = m_split_context.split_id(p.first);
+  for( auto id : m_splits )   {
     ::snprintf(text, sizeof(text), "_%05X", id);
     std::string nam = this->name() + text;
     auto* proc = createAction<DigiContainerProcessor>(m_processor_type, m_kernel, nam);
     if ( !proc )   {
       except("+++ Failed to create split worker: %s/%s", m_processor_type.c_str(), nam.c_str());
     }
-    info("+++ Created worker: %s layer: %d %d", nam.c_str(), p.first, id);
+    info("+++ Created worker: %s layer: %d", nam.c_str(), id);
     auto* w = new worker_t(proc, m_split_context);
     w->options.enable(id);
     m_workers.insert(w);
@@ -165,8 +163,8 @@ void DigiSegmentSplitter::execute(context_t& context, work_t& work, const predic
   unmasked_key.set_item(key.item());
   if ( std::find(m_keys.begin(), m_keys.end(), unmasked_key) != m_keys.end() )   {
     if ( work.has_input() )   {
-      info("+++ Got hit collection %04X %08X. Prepare processors for %sparallel execution.",
-	   key.mask(), key.item(), m_parallel ? "" : "NON-");
+      info("%s+++ Got hit collection %04X %08X. Prepare processors for %sparallel execution.",
+	   context.event->id(), key.mask(), key.item(), m_parallel ? "" : "NON-");
       m_kernel.submit(context, m_workers.get_group(), m_workers.size(), &work, m_parallel);
     }
   }

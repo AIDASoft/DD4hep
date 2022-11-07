@@ -183,9 +183,7 @@ DigiSegmentationTool::split_context(const string& split_by)  const {
 }
 
 /// Create full set of detector segments which can be split according to the context
-map<dd4hep::VolumeID, pair<dd4hep::DetElement, dd4hep::VolumeID> >
-DigiSegmentationTool::split_segmentation(const string& split_by)  const
-{
+set<uint32_t> DigiSegmentationTool::split_segmentation(const string& split_by)  const  {
   map<VolumeID, pair<DetElement, VolumeID> > segmentation_splits;
   const auto& ids = this->detector.placement().volIDs();
   VolumeID    vid = this->iddescriptor.encode(ids);
@@ -198,17 +196,19 @@ DigiSegmentationTool::split_segmentation(const string& split_by)  const
 	   split_by.c_str(), this->iddescriptor.name());
   }
   ::scan_detector(*this, split_by, segmentation_splits, this->detector, vid, msk);
-  printout(INFO,"DigiSegmentationTool",
-	   "%-24s has %ld parallel entries when splitting by \"%s\"",
-	   det, segmentation_splits.size(), split_by.c_str());
-  stringstream str1, str2;
+  stringstream str;
+  set<uint32_t> splits;
   for( const auto& id : segmentation_splits )  {
-    str1 << setw(16) << hex << setfill('0') << id.first << " ";
-    str2 << setw(16) << hex << setfill(' ') << ((id.first&fld->mask())>>fld->offset()) << " ";
+    auto val = ((id.first&fld->mask())>>fld->offset());
+    splits.insert(val);
   }
-  printout(INFO,"DigiSegmentationTool","%-24s --> Parallel Entries: %s",
-	   det, str1.str().c_str());
+  for( const auto& id : splits )  {
+    str << setw(16) << hex << setfill(' ') << id << " ";
+  }
+  printout(INFO,"DigiSegmentationTool",
+	   "%-24s has %ld entries and %ld parallel entries when splitting by \"%s\"",
+	   det, segmentation_splits.size(), splits.size(), split_by.c_str());
   printout(INFO,"DigiSegmentationTool","%-24s --> %-12s ids: %s",
-	   "", split_by.c_str(), str2.str().c_str());
-  return segmentation_splits;
+	   "", split_by.c_str(), str.str().c_str());
+  return splits;
 }

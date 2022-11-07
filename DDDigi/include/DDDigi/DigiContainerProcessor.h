@@ -66,18 +66,21 @@ namespace dd4hep {
 
       /// Hit processing predicate
       struct predicate_t  {
-	Callback callback                   { };
-	uint32_t id                         { 0 };
+	using deposit_t = std::pair<const CellID, EnergyDeposit>;
+	using callback_t = std::function<bool(const deposit_t&)>;
+	callback_t            callback      { };
+	uint32_t              id            { 0 };
 	const segmentation_t* segmentation  { nullptr };
 	predicate_t() = default;
+	predicate_t(std::function<bool(const deposit_t&)> func, uint32_t i, const segmentation_t* s)
+	: callback(func), id(i), segmentation(s) {}
 	predicate_t(predicate_t&& copy) = default;
 	predicate_t(const predicate_t& copy) = default;
-	predicate_t(const Callback& c, uint32_t i, const segmentation_t* s)
-	  : callback(c), id(i), segmentation(s) {}
 	predicate_t& operator = (predicate_t&& copy) = default;
 	predicate_t& operator = (const predicate_t& copy) = default;
 	/// Check if a deposit should be processed
-	bool operator()(const std::pair<const CellID, EnergyDeposit>& deposit)   const;
+	bool operator()(const deposit_t& deposit)   const;
+	static bool always_true(const deposit_t&)   { return true; }
       };
 
       /// Work definition
@@ -122,10 +125,35 @@ namespace dd4hep {
     };
 
     /// Check if a deposit should be processed
-    inline bool DigiContainerProcessor::predicate_t::operator()(const std::pair<const CellID, EnergyDeposit>& deposit)   const   {
-      const void* args[] = { &deposit };
-      return this->callback.execute(args);
+    inline bool DigiContainerProcessor::predicate_t::operator()(const deposit_t& deposit)   const   {
+      return this->callback(deposit);
     }
+
+    /// Worker class act on ONLY act on energy deposit containers in an event
+    /**
+     *  Worker class act on ONLY act on energy deposit containers in an event.
+     *  The deposit containers are identified by input masks and container name.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class DigiDepositsProcessor : public DigiContainerProcessor  {
+    protected:
+      std::function<void(context_t& context, DepositVector& cont,  work_t& work, const predicate_t& predicate)>	m_handleVector;
+      std::function<void(context_t& context, DepositMapping& cont, work_t& work, const predicate_t& predicate)>	m_handleMapping;
+
+    public:
+      /// Standard constructor
+      using DigiContainerProcessor::DigiContainerProcessor;
+
+      /// Main functional callback adapter
+      virtual void execute(context_t& context, work_t& work, const predicate_t& predicate)  const;
+    };
+
+#define DEPOSIT_PROCESSOR_BIND_HANDLERS(X)   {     using namespace std::placeholders; \
+	this->m_handleVector  = std::bind( &X<DepositVector>,  this, _1, _2, _3, _4); \
+	this->m_handleMapping = std::bind( &X<DepositMapping>, this, _1, _2, _3, _4); }
 
     /// Worker class act on containers in an event identified by input masks and container name
     /**
