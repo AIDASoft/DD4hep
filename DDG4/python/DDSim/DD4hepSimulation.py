@@ -403,7 +403,7 @@ class DD4hepSimulation(object):
       elif inputFile.endswith(".hepevt"):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepevt%d" % index)
         gen.Input = "Geant4EventReaderHepEvtLong|" + inputFile
-      elif inputFile.endswith(".hepmc"):
+      elif inputFile.endswith((".hepmc", ".hepmc3")):
         if self.hepmc3.useHepMC3:
           gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
           gen.Parameters = self.hepmc3.getParameters()
@@ -411,13 +411,6 @@ class DD4hepSimulation(object):
         else:
           gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
           gen.Input = "Geant4EventReaderHepMC|" + inputFile
-      elif inputFile.endswith(".hepmc3"):
-        if self.hepmc3.useHepMC3:
-          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
-          gen.Parameters = self.hepmc3.getParameters()
-          gen.Input = "HEPMC3FileReader|" + inputFile
-        else:
-          raise RuntimeError("HepMC3 input file support not enabled")
       elif inputFile.endswith(".pairs"):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index)
         gen.Input = "Geant4EventReaderGuineaPig|" + inputFile
@@ -534,6 +527,8 @@ class DD4hepSimulation(object):
       fileNames = [fileNames]
     if not all(fileName.endswith(extensions) for fileName in fileNames):
       self._errorMessages.append("ERROR: Unknown fileformat for file: %s" % fileNames)
+    if not self.hepmc3.useHepMC3 and fileName.endswith(".hepmc3"):
+      self._errorMessages.append("ERROR: HepMC3 files require the use of HepMC3 library")
     return fileNames
 
   def __applyBoostOrSmear(self, kernel, actionList, mask):
