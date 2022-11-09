@@ -39,7 +39,7 @@ try:
 except ImportError:
   ARGCOMPLETEENABLED = False
 
-POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".hepmc3", ".pairs")
+POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".hepmc3", ".hepmc3.tree.root", ".pairs")
 
 
 class DD4hepSimulation(object):
@@ -403,7 +403,7 @@ class DD4hepSimulation(object):
       elif inputFile.endswith(".hepevt"):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepevt%d" % index)
         gen.Input = "Geant4EventReaderHepEvtLong|" + inputFile
-      elif inputFile.endswith((".hepmc", ".hepmc3")):
+      elif inputFile.endswith((".hepmc", ".hepmc3", ".hepmc3.tree.root")):
         if self.hepmc3.useHepMC3:
           gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
           gen.Parameters = self.hepmc3.getParameters()
@@ -527,7 +527,7 @@ class DD4hepSimulation(object):
       fileNames = [fileNames]
     if not all(fileName.endswith(extensions) for fileName in fileNames):
       self._errorMessages.append("ERROR: Unknown fileformat for file: %s" % fileNames)
-    if not self.hepmc3.useHepMC3 and any(fileName.endswith(".hepmc3") for fileName in fileNames):
+    if not self.hepmc3.useHepMC3 and any(fileName.endswith((".hepmc3", ".hepmc3.tree.root")) for fileName in fileNames):
       self._errorMessages.append("ERROR: HepMC3 files require the use of HepMC3 library")
     return fileNames
 
