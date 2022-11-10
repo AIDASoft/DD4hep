@@ -43,7 +43,7 @@ namespace dd4hep {
      * @version 1.0
      */
     class Geant4TCUserParticleHandler : public Geant4UserParticleHandler  {
-      double m_zTracker, m_rTracker;
+      double m_zTrackerMin, m_zTrackerMax, m_rTracker;
     public:
       /// Standard constructor
       Geant4TCUserParticleHandler(Geant4Context* context, const std::string& nam);
@@ -91,7 +91,8 @@ DECLARE_GEANT4ACTION(Geant4TCUserParticleHandler)
 Geant4TCUserParticleHandler::Geant4TCUserParticleHandler(Geant4Context* ctxt, const std::string& nam)
 : Geant4UserParticleHandler(ctxt,nam)
 {
-  declareProperty("TrackingVolume_Zmax",m_zTracker=1e100);
+  declareProperty("TrackingVolume_Zmin",m_zTrackerMin=1e100);
+  declareProperty("TrackingVolume_Zmax",m_zTrackerMax=1e100);
   declareProperty("TrackingVolume_Rmax",m_rTracker=1e100);
 }
 
@@ -99,8 +100,11 @@ Geant4TCUserParticleHandler::Geant4TCUserParticleHandler(Geant4Context* ctxt, co
 void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  {
 
   double r_prod = std::sqrt(p.vsx*p.vsx + p.vsy*p.vsy);
-  double z_prod = std::fabs(p.vsz);
-  bool starts_in_trk_vol = ( r_prod <= m_rTracker && z_prod <= m_zTracker )  ;
+  double z_prod = p.vsz;
+  bool starts_in_trk_vol = ( r_prod <= m_rTracker
+    && z_prod >= (m_zTrackerMin == 1e100? -m_zTrackerMax : -m_zTrackerMin)
+    && z_prod <= m_zTrackerMax
+  )  ;
 
   dd4hep::detail::ReferenceBitMask<int> reason(p.reason);
 
@@ -113,8 +117,11 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
   }
 
   double r_end  = std::sqrt(p.vex*p.vex + p.vey*p.vey);
-  double z_end  = std::fabs(p.vez);
-  bool ends_in_trk_vol =  ( r_end <= m_rTracker && z_end <= m_zTracker ) ;
+  double z_end  = p.vez;
+  bool ends_in_trk_vol =  ( r_end <= m_rTracker
+     && z_end >= (m_zTrackerMin == 1e100? -m_zTrackerMax : -m_zTrackerMin)
+     && z_end <= m_zTrackerMax
+  ) ;
 
   // created and ended in calo but not primary particle
   //
