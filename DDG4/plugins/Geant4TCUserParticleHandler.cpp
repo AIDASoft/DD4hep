@@ -102,7 +102,7 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
   double r_prod = std::sqrt(p.vsx*p.vsx + p.vsy*p.vsy);
   double z_prod = p.vsz;
   bool starts_in_trk_vol = ( r_prod <= m_rTracker
-    && z_prod >= (m_zTrackerMin == -1e100? m_zTrackerMax : m_zTrackerMin)
+    && z_prod >= (m_zTrackerMin == -1e100? -m_zTrackerMax : m_zTrackerMin)
     && z_prod <= m_zTrackerMax
   )  ;
 
@@ -119,7 +119,7 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
   double r_end  = std::sqrt(p.vex*p.vex + p.vey*p.vey);
   double z_end  = p.vez;
   bool ends_in_trk_vol =  ( r_end <= m_rTracker
-     && z_end >= (m_zTrackerMin == -1e100? m_zTrackerMax : m_zTrackerMin)
+     && z_end >= (m_zTrackerMin == -1e100? -m_zTrackerMax : m_zTrackerMin)
      && z_end <= m_zTrackerMax
   ) ;
 
