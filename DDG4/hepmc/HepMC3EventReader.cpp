@@ -140,23 +140,18 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
       // Therefore, p->vsx etc. is not suitable to cover situations with multiple
       // particles coming from different vertices.
       // Intuitively, one should add vertices for all particles that have a parent,
-      // but this heritage is handled differently in other places so the
-      // fix is to use this parentless particles's end vertices.
+      // but heritage is handled differently in other places so the
+      // fix is to use these parentless particles' end vertices.
+      // Note that for a particle without end vertex (such as in a particle gun),
+      // it defaults to (0,0,0). This cannot be fixed, the information simply isn't in the HepMC file
+      // Having a parent enforces a vertex, having none forbids one.
+
       Geant4Vertex* vtx = new Geant4Vertex ;
       vertices.emplace_back( vtx );
-      auto x = p->vex;
-      auto y = p->vey;
-      auto z = p->vez;
-      // For a particle without end vertex (such as in a particle gun),
-      // it defaults to (0,0,0) so we need to catch that situation
-      if ( x==0E0 && y==0E0 && z==0E0 ){
-	x = p->vsx;
-	y = p->vsy;
-	z = p->vsz;
-      }
-      vtx->x = x;
-      vtx->y = y;
-      vtx->z = z;
+
+      vtx->x = p->vex;
+      vtx->y = p->vey;
+      vtx->z = p->vez
       vtx->time = p->time;
 
       vtx->out.insert(p->id) ;
