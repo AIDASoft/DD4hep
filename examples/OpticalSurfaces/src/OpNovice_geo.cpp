@@ -32,7 +32,8 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector /
   xml_det_t x_tank   = x_det.child(_Unicode(tank));
   xml_det_t x_bubble = x_det.child(_Unicode(bubble));
 
-  Assembly hall_vol("Hall");
+  Volume world = description.pickMotherVolume(sdet);
+
   Box    encl_box(_toDouble("world_x-2*cm"),_toDouble("world_y-2*cm"),_toDouble("world_z-2*cm"));
   Volume encl_vol("Enclosure",encl_box,description.air());
   Box    tank_box(x_tank.x(), x_tank.y(), x_tank.z());
@@ -48,10 +49,9 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector /
   bubblePlace.addPhysVolID("bubble",1);
   PlacedVolume tankPlace   = encl_vol.placeVolume(tank_vol);
   tankPlace.addPhysVolID("tank",1);
-  PlacedVolume enclPlace   = hall_vol.placeVolume(encl_vol);
-  PlacedVolume hallPlace   = description.pickMotherVolume(sdet).placeVolume(hall_vol);
-  hallPlace.addPhysVolID("system",x_det.id());
-  sdet.setPlacement(hallPlace);
+  PlacedVolume enclPlace   = world.placeVolume(encl_vol);
+  enclPlace.addPhysVolID("system",x_det.id());
+  sdet.setPlacement(enclPlace);
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   // Now attach the surface
