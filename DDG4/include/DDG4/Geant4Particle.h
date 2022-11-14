@@ -273,13 +273,13 @@ namespace dd4hep {
       return ROOT::Math::PxPyPzM4D<double>(p->psx,p->psy,p->psz,p->mass);
     }
 
-    /// Access patricle momentum, energy as 4 vector
+    /// Access start vertex as 3-vector
     inline ROOT::Math::Cartesian3D<double> Geant4ParticleHandle::startVertex() const {
       const Geant4Particle* p = particle;
       return ROOT::Math::Cartesian3D<double>(p->vsx,p->vsy,p->vsz);
     }
 
-    /// Access patricle momentum, energy as 4 vector
+    /// Access end start vertex as 3-vector
     inline ROOT::Math::Cartesian3D<double> Geant4ParticleHandle::endVertex()  const {
       const Geant4Particle* p = particle;
       return ROOT::Math::Cartesian3D<double>(p->vex,p->vey,p->vez);
