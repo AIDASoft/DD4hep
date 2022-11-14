@@ -134,12 +134,29 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
     p->genStatus = genStatus&G4PARTICLE_GEN_STATUS_MASK;
 
     if ( p->parents.size() == 0 )  {
-
+      // This is a bit unintuitive. A particle without a parent in HepMC
+      // can only be (something like) a beam particle, and it is attached
+      // to the root vertex, by default (0,0,0) and equal for all parent-less particles.
+      // Therefore, p->vsx etc. is not suitable to cover situations with multiple
+      // particles coming from different vertices.
+      // Intuitively, one should add vertices for all particles that have a parent,
+      // but this heritage is handled differently in other places so the
+      // fix is to use this parentless particles's end vertices.
       Geant4Vertex* vtx = new Geant4Vertex ;
       vertices.emplace_back( vtx );
-      vtx->x = p->vsx;
-      vtx->y = p->vsy;
-      vtx->z = p->vsz;
+      auto x = p->vex;
+      auto y = p->vey;
+      auto z = p->vez;
+      // For a particle without end vertex (such as in a particle gun),
+      // it defaults to (0,0,0) so we need to catch that situation
+      if ( x==0E0 && y==0E0 && z==0E0 ){
+	x = p->vsx;
+	y = p->vsy;
+	z = p->vsz;
+      }
+      vtx->x = x;
+      vtx->y = y;
+      vtx->z = z;
       vtx->time = p->time;
 
       vtx->out.insert(p->id) ;
