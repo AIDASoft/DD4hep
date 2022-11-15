@@ -151,7 +151,7 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
 
       vtx->x = p->vex;
       vtx->y = p->vey;
-      vtx->z = p->vez
+      vtx->z = p->vez;
       vtx->time = p->time;
 
       vtx->out.insert(p->id) ;
