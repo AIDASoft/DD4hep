@@ -50,7 +50,7 @@ namespace dd4hep {
       /// Current input id
       mutable int                    m_curr_input  { 0 };
       /// Connection parameters to the "current" input source
-      mutable std::unique_ptr<internals_t> imp     { };
+      mutable std::unique_ptr<internals_t> imp;
 
       /// Open new input file
       void open_new_file()  const;
