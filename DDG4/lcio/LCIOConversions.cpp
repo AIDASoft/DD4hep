@@ -179,13 +179,21 @@ namespace dd4hep {
                          Geant4Calorimeter::Hit>::operator()(const arg_t& args)  const  {
       typedef Geant4HitData::Contributions Contributions;
       Geant4HitCollection*   coll     = args.second;
+      string                 hc_nam   = coll->GetName();
       Geant4Sensitive*       sd       = coll->sensitive();
       size_t                 nhits    = coll->GetSize();
       string                 dsc      = encoding(sd->sensitiveDetector());
       Geant4ParticleMap*     pm       = args.first->event().extension<Geant4ParticleMap>();
       lcio::LCEventImpl*     lc_evt   = args.first->event().extension<lcio::LCEventImpl>();
       EVENT::LCCollection*   lc_parts = lc_evt->getCollection(lcio::LCIO::MCPARTICLE);
-      lcio::LCCollectionVec* lc_coll  = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);
+      lcio::LCCollectionVec* lc_coll  = nullptr;
+      bool isNewCollection            = false;
+      try {
+        lc_coll = static_cast<lcio::LCCollectionVec*>(lc_evt->getCollection(hc_nam));
+      } catch (lcio::DataNotAvailableException &e) {
+        lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);
+        isNewCollection = true;
+      }
       UTIL::CellIDEncoder<SimCalorimeterHit> decoder(dsc,lc_coll);
       int hit_creation_mode = sd->hitCreationMode();
 
@@ -194,7 +202,7 @@ namespace dd4hep {
       else
         lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_ID1));
 
-      lc_coll->reserve(nhits);
+      lc_coll->reserve(nhits + lc_coll->getNumberOfElements());
       if ( sd->hasProperty("HitCreationMode") )  {
         hit_creation_mode = sd->property("HitCreationMode").value<int>();
       }
@@ -224,6 +232,9 @@ namespace dd4hep {
             lc_hit->addMCParticleContribution(lc_mcp, c.deposit/CLHEP::GeV, c.time/CLHEP::ns);
           }
         }
+      }
+      if(isNewCollection) {
+        lc_evt->addCollection(lc_coll, hc_nam);
       }
       return lc_coll;
     }
