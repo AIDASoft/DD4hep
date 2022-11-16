@@ -60,7 +60,7 @@ namespace dd4hep {
       bool  m_disableParticles      { false };
 
       /// Connection parameters to the "current" output source
-      std::unique_ptr<internals_t> imp     { };
+      std::unique_ptr<internals_t> imp;
 
     protected:
       /// Define standard assignments and constructors
