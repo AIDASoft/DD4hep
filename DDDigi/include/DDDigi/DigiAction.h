@@ -172,7 +172,7 @@ namespace dd4hep {
       /// Access single property (CONST)
       const Property& property(const std::string& name)  const;
       /// Print the property values
-      virtual int printProperties() const;
+      virtual void printProperties() const;
 
       /// Adopt named property of another action for data processing
       virtual void adopt_property(DigiAction* action, const std::string& foreign_name, const std::string& local_name);

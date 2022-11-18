@@ -104,7 +104,7 @@ namespace dd4hep {
       
       /** Property access                            */
       /// Print the property values
-      virtual int printProperties() const  override;
+      virtual void printProperties() const  override;
 
       /** Client output level settings               */
       /// Fill cache with the global output level of a named object. Must be set before instantiation
