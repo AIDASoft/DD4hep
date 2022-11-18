@@ -34,10 +34,14 @@ namespace dd4hep {
      */
     class DigiSynchronize : public DigiEventAction {
     protected:
-      using Worker  = DigiParallelWorker<DigiEventAction,context_t,int>;
-      using Workers = DigiParallelWorkers<Worker>;
+      using work_t    = context_t;
+      using self_t    = DigiSynchronize;
+      using worker_t  = DigiParallelWorker<DigiEventAction, work_t, std::size_t, self_t&>;
+      using workers_t = DigiParallelWorkers<worker_t>;
+      friend class DigiParallelWorker<DigiEventAction, work_t, std::size_t, self_t&>;
+
       /// The list of action objects to be called
-      Workers m_actors;
+      workers_t m_actors;
 
     protected:
       /// Define standard assignments and constructors

@@ -29,7 +29,6 @@ namespace dd4hep {
 
     /// Forward declarations
     class ParallelWorker;
-    template <typename T, typename A, typename O> class DigiParallelWorker;
     template <typename T> class DigiParallelWorkers;
     template <typename T> class DigiParallelWorkerGroup;
 

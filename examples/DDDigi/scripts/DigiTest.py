@@ -13,6 +13,7 @@ import os
 import dddigi
 import logging
 from dd4hep import units
+from dddigi import DEBUG, INFO, WARNING, ERROR
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -126,7 +127,7 @@ class Test(dddigi.Digitize):
 
 
 # ==========================================================================================================
-def test_setup_1(digi):
+def test_setup_1(digi, print_level=WARNING, parallel=True):
   """
       Create default setup for tests. Simply too bad to repeat the same lines over and over again.
 
@@ -136,28 +137,29 @@ def test_setup_1(digi):
   # ========================================================================================================
   digi.info('Created SIGNAL input')
   input = digi.input_action('DigiParallelActionSequence/READER')
-  input.adopt_action('DigiDDG4ROOT/SignalReader', mask=0xCBAA, input=[digi.next_input()])
+  input.adopt_action('DigiDDG4ROOT/SignalReader', mask=0xCBAA, input=[digi.next_input()], OutputLevel=print_level, keep_raw=False)
   # ========================================================================================================
   digi.info('Creating collision overlay....')
   # ========================================================================================================
   overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-1')
-  overlay.adopt_action('DigiDDG4ROOT/Read-1', mask=0xCBEE, input=[digi.next_input()])
+  overlay.adopt_action('DigiDDG4ROOT/Read-1', mask=0xCBEE, input=[digi.next_input()], OutputLevel=print_level, keep_raw=False)
   digi.info('Created input.overlay-1')
   # ========================================================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
   combine = event.adopt_action('DigiContainerCombine/Combine',
-                               parallel=False,
+                               OutputLevel=print_level,
+                               parallel=parallel,
                                input_masks=[0xCBAA, 0xCBEE],
                                output_mask=0xAAA0,
                                output_segment='deposits')
-  combine.erase_combined = False
-  proc = event.adopt_action('DigiContainerSequenceAction/HitP2',
-                            parallel=False,
+  combine.erase_combined = True
+  proc = event.adopt_action('DigiContainerSequenceAction/HitP1',
+                            parallel=parallel,
                             input_mask=0xAAA0,
                             input_segment='deposits',
                             output_mask=0xEEE5,
                             output_segment='deposits')
-  combine = digi.create_action('DigiDepositWeightedPosition/DepoCombine')
+  combine = digi.create_action('DigiDepositWeightedPosition/WeightedPosition', OutputLevel=print_level)
   proc.adopt_container_processor(combine, digi.containers())
   conts = [c for c in digi.containers()]
   event.adopt_action('DigiContainerDrop/Drop',

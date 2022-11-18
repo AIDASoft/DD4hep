@@ -131,14 +131,27 @@ def _registerGlobalFilter(self, filter):
   self.get().registerGlobalFilter(Interface.toAction(filter))
 
 
+def _evalProperty(data):
+  """
+    Function necessary to extract real strings from the property value.
+    Strings may be emraced by quotes: '<value>'
+  """
+  try:
+    if isinstance(data,str):
+      return eval(data)
+  except:
+    pass
+  return data
+
+
 def _getKernelProperty(self, name):
   ret = Interface.getPropertyKernel(self.get(), name)
   if ret.status > 0:
-    return ret.data
+    return _evalProperty(ret.data)
   elif hasattr(self.get(), name):
-    return getattr(self.get(), name)
+    return _evalProperty(getattr(self.get(), name))
   elif hasattr(self, name):
-    return getattr(self, name)
+    return _evalProperty(getattr(self, name))
   msg = 'Geant4Kernel::GetProperty [Unhandled]: Cannot access Kernel.' + name
   raise KeyError(msg)
 
@@ -446,6 +459,15 @@ class Geant4:
     \author  M.Frank
     """
     return self.setupUI(typ='csh', vis=vis, ui=ui, macro=macro)
+
+  def ui(self):
+    """
+    Access UI manager action from the kernel object
+
+    \author  M.Frank
+    """
+    ui_name = getattr(self.master(),'UI')
+    return self.master().globalAction(ui_name)
 
   def addUserInitialization(self, worker, worker_args=None, master=None, master_args=None):
     """

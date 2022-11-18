@@ -84,8 +84,8 @@ namespace dd4hep {
 
     struct PropertyResult  {
     public:
-      std::string data  {};
-      int status  { 0 };
+      std::string data   {   };
+      int status         { 0 };
       PropertyResult() = default;
       PropertyResult(const std::string& d, int s);
       PropertyResult(const PropertyResult& c) = default;
@@ -118,28 +118,14 @@ namespace dd4hep {
         DigiHandle<DigiAction> action(*kernel.get(),name_type);
         return ActionHandle(action.get());
       }
+      static DigiAction* toAction(DigiKernel* f)    { return f;        }
       static DigiAction* toAction(DigiAction* f)    { return f;        }
+      static DigiAction* toAction(KernelHandle f)   { return f.value;  }
       static DigiAction* toAction(ActionHandle f)   { return f.action; }
 
       static DigiEventAction*        toEventAction(DigiAction* a) { return cst<DigiEventAction>(a); }
+      static DigiDepositMonitor*     toDepositMonitor(DigiAction* a) { return cst<DigiDepositMonitor>(a); }
       static DigiContainerProcessor* toContainerProcessor(DigiAction* a) { return cst<DigiContainerProcessor>(a); }
-
-      /// Access kernel property
-      static PropertyResult getPropertyKernel(DigiKernel* kernel, const std::string& name)  {
-        if ( kernel->hasProperty(name) )  {
-          return PropertyResult(kernel->property(name).str(),1);
-        }
-        return PropertyResult("",0);
-      }
-
-      /// Set kernel property
-      static int setPropertyKernel(DigiKernel* kernel, const std::string& name, const std::string& value)  {
-        if ( kernel->hasProperty(name) )  {
-          kernel->property(name).str(value);
-          return 1;
-        }
-        return 0;
-      }
 
       /// Access DigiAction property
       static PropertyResult getProperty(DigiAction* action, const std::string& name)  {
@@ -193,6 +179,7 @@ namespace dd4hep {
 #include <DDDigi/DigiSegmentSplitter.h>
 #include <DDDigi/DigiActionSequence.h>
 #include <DDDigi/DigiSignalProcessor.h>
+#include <DDDigi/DigiDepositMonitor.h>
 
 // CINT configuration
 #if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
@@ -225,6 +212,8 @@ using namespace std;
 #pragma link C++ class dd4hep::digi::DigiMultiContainerProcessor;
 
 #pragma link C++ class dd4hep::digi::DigiSegmentSplitter;
+
+#pragma link C++ class dd4hep::digi::DigiDepositMonitor;
 
 /// Digi data item wrappers
 #pragma link C++ class dd4hep::digi::Particle+;

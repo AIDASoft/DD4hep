@@ -25,7 +25,7 @@ using namespace dd4hep::digi;
 
 
 template <> void 
-DigiParallelWorker<DigiEventAction, DigiContext, int>::execute(void* data) const  {
+DigiParallelWorker<DigiEventAction, DigiSynchronize::work_t, std::size_t, DigiSynchronize&>::execute(void* data) const  {
   calldata_t* args = reinterpret_cast<calldata_t*>(data);
   action->execute(*args);
 }
@@ -58,7 +58,7 @@ void DigiSynchronize::execute(DigiContext& context)  const   {
 /// Add an actor responding to all callbacks. Sequence takes ownership.
 void DigiSynchronize::adopt(DigiEventAction* action) {
   if (action)    {
-    m_actors.insert(new Worker(action, 0));
+    m_actors.insert(new worker_t(action, m_actors.size(), *this));
     return;
   }
   except("DigiSynchronize","++ Attempt to add invalid actor!");

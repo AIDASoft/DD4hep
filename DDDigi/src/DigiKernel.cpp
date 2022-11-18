@@ -22,6 +22,7 @@
 #include <DDDigi/DigiKernel.h>
 #include <DDDigi/DigiContext.h>
 #include <DDDigi/DigiActionSequence.h>
+#include <DDDigi/DigiMonitorHandler.h>
 
 #ifdef DD4HEP_USE_TBB
 #include <tbb/task_group.h>
@@ -53,8 +54,6 @@ namespace  {
  */
 class DigiKernel::Internals   {
 public:
-  /// Property pool
-  PropertyManager       properties;
   /// Property: Client output levels
   ClientOutputLevels    clientLevels;
   /// Atomic counter: Number of events still to be processed in this run
@@ -76,15 +75,16 @@ public:
   /// Lock for global output logging
   std::mutex            global_output_lock  { };
 
-  using callbacks_t = std::vector<std::function<void()> >;
+  using callbacks_t    = std::vector<std::function<void()> >;
   using ev_callbacks_t = std::vector<std::function<void(DigiContext&)> >;
+
   /// Configure callbacks
   callbacks_t           configurators       { };
   /// Initialize callbacks
   callbacks_t           initializers        { };
-  //// Termination callback
+  /// Termination callback
   callbacks_t           terminators         { };
-      /// Register start event callback
+  /// Register start event callback
   ev_callbacks_t        start_event         { };
   /// Register end event callback
   ev_callbacks_t        end_event           { };
@@ -95,9 +95,12 @@ public:
   DigiActionSequence*   event_action         { nullptr };
   /// The main data output action sequence
   DigiActionSequence*   output_action        { nullptr };
+  /// The histogram handler entity
+  DigiMonitorHandler*   monitor_handler    { nullptr };
 
   /// Random generator
   TRandom* root_random;
+  /// Shared random number generator
   std::shared_ptr<DigiRandomGenerator> random  { };
   /// TBB initializer (If TBB is used)
   std::unique_ptr<tbb::global_control> tbb_init { };
@@ -111,7 +114,11 @@ public:
   int                   num_threads;
   /// Property: Allow to stop execution from interactive prompt
   bool                  stop = false;
+
+public:
+  /// Default constructor
   Internals() = default;
+  /// Default destructor
   ~Internals() = default;
 };
 
@@ -171,7 +178,7 @@ public:
 
 /// Standard constructor
 DigiKernel::DigiKernel(Detector& description_ref)
-  : m_detDesc(&description_ref)
+  : DigiAction(*this, "DigiKernel"), m_detDesc(&description_ref)
 {
   internals = new Internals();
   internals->num_threads = tbb::global_control::max_allowed_parallelism;
@@ -179,8 +186,11 @@ DigiKernel::DigiKernel(Detector& description_ref)
   declareProperty("numThreads",       internals->num_threads);
   declareProperty("numEvents",        internals->numEvents = 10);
   declareProperty("stop",             internals->stop = false);
-  declareProperty("OutputLevel",      internals->outputLevel = DEBUG);
   declareProperty("OutputLevels",     internals->clientLevels);
+  auto* h = new DigiMonitorHandler(*this, "MonitorData");
+  properties().add("MonitorOutput", h->property("MonitorOutput"));
+  internals->monitor_handler = h;
+
   internals->input_action  = new DigiActionSequence(*this, "InputAction");
   internals->event_action  = new DigiActionSequence(*this, "EventAction");
   internals->output_action = new DigiActionSequence(*this, "OutputAction");
@@ -189,7 +199,7 @@ DigiKernel::DigiKernel(Detector& description_ref)
   internals->output_action->setExecuteParallel(false);
   internals->root_random = new TRandom();
   internals->random = std::make_shared<DigiRandomGenerator>();
-  internals->random->engine = [this] {  return this->internals->root_random->Uniform(1.0);  };
+  internals->random->engine = [this] {  return internals->root_random->Uniform(1.0);  };
   InstanceCount::increment(this);
 }
 
@@ -197,9 +207,12 @@ DigiKernel::DigiKernel(Detector& description_ref)
 DigiKernel::~DigiKernel() {
   std::lock_guard<std::mutex> lock(kernel_mutex);
   internals->tbb_init.reset();
+  detail::releasePtr(internals->monitor_handler);
   detail::releasePtr(internals->output_action);
   detail::releasePtr(internals->event_action);
   detail::releasePtr(internals->input_action);
+  detail::deletePtr(internals->root_random);
+  internals->random.reset();
   detail::deletePtr(internals);
   InstanceCount::decrement(this);
 }
@@ -231,32 +244,14 @@ std::mutex& DigiKernel::global_io_lock()   const  {
   return internals->global_io_lock;
 }
 
-/// Access to the properties of the object
-PropertyManager& DigiKernel::properties()   {
-  return internals->properties;
-}
-
 /// Print the property values
-void DigiKernel::printProperties()  const  {
-  printout(ALWAYS, "DigiKernel", "OutputLevel:  %d", internals->outputLevel);
+std::size_t DigiKernel::printProperties()  const  {
+  std::size_t count = this->DigiAction::printProperties();
   for( const auto& cl : internals->clientLevels )  {
-    printout(ALWAYS, "DigiKernel", "OutputLevel[%s]:  %d", cl.first.c_str(), cl.second);
+    always("OutputLevel[%s]:  %d", cl.first.c_str(), cl.second);
+    ++count;
   }
-}
-
-/// Check property for existence
-bool DigiKernel::hasProperty(const std::string& name) const    {
-  return internals->properties.exists(name);
-}
-
-/// Access single property
-dd4hep::Property& DigiKernel::property(const std::string& name)   {
-  return internals->properties[name];
-}
-
-/// Access the output level
-PrintLevel DigiKernel::outputLevel() const  {
-  return (PrintLevel)internals->outputLevel;
+  return count;
 }
 
 /// Fill cache with the global output level of a named object. Must be set before instantiation
@@ -271,31 +266,24 @@ dd4hep::PrintLevel DigiKernel::getOutputLevel(const std::string object) const   
   return dd4hep::PrintLevel(dd4hep::printLevel()-1);
 }
 
-/// Set the output level; returns previous value
-dd4hep::PrintLevel DigiKernel::setOutputLevel(PrintLevel new_level)  {
-  int old = internals->outputLevel;
-  internals->outputLevel = new_level;
-  return (PrintLevel)old;
-}
-
 /// Access current number of events still to process
 std::size_t DigiKernel::events_todo()  const   {
-  std::lock_guard<std::mutex> lock(this->internals->counter_lock);
-  std::size_t evts = this->internals->events_todo;
+  std::lock_guard<std::mutex> lock(internals->counter_lock);
+  std::size_t evts = internals->events_todo;
   return evts;
 }
 
 /// Access current number of events already processed
 std::size_t DigiKernel::events_done()  const   {
-  std::lock_guard<std::mutex> lock(this->internals->counter_lock);
-  std::size_t evts = this->internals->numEvents - this->internals->events_todo;
+  std::lock_guard<std::mutex> lock(internals->counter_lock);
+  std::size_t evts = internals->numEvents - internals->events_todo;
   return evts;
 }
 
 /// Access current number of events processing (events in flight)
 std::size_t DigiKernel::events_processing()  const   {
-  std::lock_guard<std::mutex> lock(this->internals->counter_lock);
-  std::size_t evts = this->internals->events_submitted - this->internals->events_finished;
+  std::lock_guard<std::mutex> lock(internals->counter_lock);
+  std::size_t evts = internals->events_submitted - internals->events_finished;
   return evts;
 }
 
@@ -323,6 +311,21 @@ int DigiKernel::initialize()   {
   return 1;
 }
 
+/// Access to the main input action sequence from the kernel object
+DigiActionSequence& DigiKernel::inputAction() const    {
+  return *internals->input_action;
+}
+
+/// Access to the main event action sequence from the kernel object
+DigiActionSequence& DigiKernel::eventAction() const    {
+  return *internals->event_action;
+}
+
+/// Access to the main output action sequence from the kernel object
+DigiActionSequence& DigiKernel::outputAction() const    {
+  return *internals->output_action;
+}
+
 /// Register configure callback
 void DigiKernel::register_configure(const std::function<void()>& callback)   const  {
   std::lock_guard<std::mutex> lock(initializer_lock());
@@ -330,7 +333,7 @@ void DigiKernel::register_configure(const std::function<void()>& callback)   con
 }
 
 /// Register initialize callback
-void DigiKernel::register_initialize(const std::function<void()>& callback)   const  {
+void DigiKernel::register_initialize(const std::function<void()>& callback)  const  {
   std::lock_guard<std::mutex> lock(initializer_lock());
   internals->initializers.push_back(callback);
 }
@@ -351,19 +354,17 @@ void DigiKernel::register_end_event(const std::function<void(DigiContext&)>& cal
   internals->end_event.push_back(callback);
 }
 
-/// Access to the main input action sequence from the kernel object
-DigiActionSequence& DigiKernel::inputAction() const    {
-  return *internals->input_action;
-}
-
-/// Access to the main event action sequence from the kernel object
-DigiActionSequence& DigiKernel::eventAction() const    {
-  return *internals->event_action;
-}
-
-/// Access to the main output action sequence from the kernel object
-DigiActionSequence& DigiKernel::outputAction() const    {
-  return *internals->output_action;
+/// Registration of monitoring objects eventually saved by the handler
+void DigiKernel::register_monitor(DigiAction* action, TNamed* object)  const    {
+  if ( action && object )  {
+    std::lock_guard<std::mutex> lock(internals->counter_lock);
+    internals->monitor_handler->adopt(action, object);
+    return;
+  }
+  except("DigiKernel","+++ Invalid monitor request from action %s with object %s: %s",
+	 action ? action->name().c_str() : "[Invalid]",
+	 object ? object->GetName() : "[Invalid]",
+	 object ? object->GetTitle() : "");
 }
 
 /// Submit a bunch of actions to be executed in parallel
@@ -373,21 +374,21 @@ void DigiKernel::submit (DigiContext& context, ParallelCall*const algorithms[], 
   bool para = parallel && (internals->tbb_init && internals->num_threads > 0);
   if ( para )   {
     tbb::task_group que;
-    printout(INFO,"DigiKernel","%s+++ Executing chunk of %ld execution entries in parallel", tag, count);
+    info("%s+++ Executing chunk of %3ld execution entries in parallel", tag, count);
     for( std::size_t i=0; i<count; ++i)
       que.run( Wrapper<ParallelCall,void*>(algorithms[i], data) );
     que.wait();
     return;
   }
 #endif
-  printout(INFO,"DigiKernel","%s+++ Executing chunk of %ld execution entries sequentially", tag, count);
+  info("%s+++ Executing chunk of %3ld execution entries sequentially", tag, count);
   for( std::size_t i=0; i<count; ++i)
     algorithms[i]->execute(data);
 }
 
 /// Submit a bunch of actions to be executed in parallel
 void DigiKernel::submit (DigiContext& context, const std::vector<ParallelCall*>& algorithms, void* data, bool parallel)  const  {
-  this->submit(context, &algorithms[0], algorithms.size(), data, parallel);
+  submit(context, &algorithms[0], algorithms.size(), data, parallel);
 }
 
 void DigiKernel::wait(DigiContext& context)   const  {
@@ -423,8 +424,8 @@ void DigiKernel::notify(std::unique_ptr<DigiContext>&& context)   {
 void DigiKernel::notify(std::unique_ptr<DigiContext>&& context, const std::exception& e)   {
   const char* tag = context->event->id();
   internals->stop = true;
-  printout(ERROR,"DigiKernel","%s+++ Exception during event processing [Shall stop the event loop]", tag);
-  printout(ERROR,"DigiKernel","%s -> %s", tag, e.what());
+  error("%s+++ Exception during event processing [Shall stop the event loop]", tag);
+  error("%s -> %s", tag, e.what());
   notify(std::move(context));
 }
 
@@ -435,15 +436,15 @@ int DigiKernel::run()   {
   internals->events_finished = 0;
   internals->events_submitted = 0;
   internals->events_todo = internals->numEvents;
-  printout(INFO,"DigiKernel","+++ Total number of events:    %d",internals->numEvents);
+  info("+++ Total number of events:    %d",internals->numEvents);
 #ifdef DD4HEP_USE_TBB
   if ( !internals->tbb_init && internals->num_threads > 0 )   {
     using ctrl_t = tbb::global_control;
     if ( 0 == internals->num_threads )  {
       internals->num_threads = ctrl_t::max_allowed_parallelism;
     }
-    printout(INFO, "DigiKernel", "+++ Number of TBB threads to:  %d",internals->num_threads);
-    printout(INFO, "DigiKernel", "+++ Number of parallel events: %d",internals->maxEventsParallel);
+    info("+++ Number of TBB threads to:  %d",internals->num_threads);
+    info("+++ Number of parallel events: %d",internals->maxEventsParallel);
     internals->tbb_init = std::make_unique<ctrl_t>(ctrl_t::max_allowed_parallelism,internals->num_threads+1);
     if ( internals->maxEventsParallel >= 0 )   {
       int todo_evt = internals->events_todo;
@@ -453,7 +454,7 @@ int DigiKernel::run()   {
         main_group.run(Processor(*this));
       main_group.wait();
     }
-    printout(DEBUG, "DigiKernel", "+++ All event processing threads Synchronized --- Done!");
+    debug("+++ All event processing threads Synchronized --- Done!");
   }
   else
 #endif
@@ -466,16 +467,18 @@ int DigiKernel::run()   {
     }
   std::chrono::duration<double> duration = std::chrono::system_clock::now() - start;
   double sec = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
-  printout(DEBUG, "DigiKernel", "+++ %d Events out of %d processed. "
-           "Total: %7.1f seconds %7.3f seconds/event",
-           internals->numEvents-int(internals->events_todo), internals->numEvents,
-           sec, sec/double(std::max(1,internals->numEvents)));
+  debug("+++ %d Events out of %d processed. "
+	"Total: %7.1f seconds %7.3f seconds/event",
+	internals->numEvents-int(internals->events_todo), internals->numEvents,
+	sec, sec/double(std::max(1,internals->numEvents)));
   return 1;
 }
 
 /// Terminate the digitization: call all registered terminators and release the allocated resources
 int DigiKernel::terminate() {
-  printout(INFO, "DigiKernel", "++ Terminate Digi and delete associated actions.");
+  info("++ Saving monitoring quantities.");
+  internals->monitor_handler->save();
+  info("++ Terminate Digi and delete associated actions.");
   for(auto& call : internals->terminators) call();
   m_detDesc->destroyInstance();
   m_detDesc = 0;

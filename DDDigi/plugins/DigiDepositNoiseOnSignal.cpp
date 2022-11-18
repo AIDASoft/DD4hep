@@ -27,56 +27,48 @@ namespace dd4hep {
     /// Actor to smear timing information of energy deposits
     /**
      *
-     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiDepositSmearTime : public DigiDepositsProcessor  {
+    class DigiDepositNoiseOnSignal : public DigiDepositsProcessor  {
     protected:
-      using limit_t = std::numeric_limits<double>;
-      /// Property: Intrinsic energy resolution constant (gaussian ~ std::sqrt(energy))
-      double m_resolution_time                { 0e0 };
-      /// Property: Time window within the smeared deposits shall be accepted
-      std::pair<double, double> m_window_time { limit_t::min(), limit_t::max() };
+      /// Property: Mean of the added noise on signal in absolute values 
+      double m_mean                { 0e0 };
+      /// Property: Sigma of the noise in absolute values
+      double m_sigma               { 0e0 };
 
     public:
       /// Create deposit mapping with updates on same cellIDs
       template <typename T> void
-      smear(DigiContext& context, T& cont, work_t& /* work */, const predicate_t& predicate)  const  {
+      create_noise(DigiContext& context, T& cont, work_t& /* work */, const predicate_t& predicate)  const  {
 	auto& random = context.randomGenerator();
-	std::size_t killed  = 0UL;
 	std::size_t updated = 0UL;
 	for( auto& dep : cont )  {
 	  if ( predicate(dep) )  {
-	    int flag = EnergyDeposit::TIME_SMEARED;
-	    double delta_T = m_resolution_time * random.gaussian();
-	    if ( delta_T < m_window_time.first || delta_T > m_window_time.second )   {
-	      flag |= EnergyDeposit::KILLED;
-	      ++killed;
-	    }
-	    if ( m_monitor ) m_monitor->time_shift(dep, delta_T);
-	    dep.second.time += delta_T;
+	    int flag = EnergyDeposit::DEPOSIT_NOISE;
+	    double delta_E = random.gaussian(m_mean, m_sigma);
+	    if ( m_monitor ) m_monitor->energy_shift(dep, delta_E);
+	    dep.second.deposit += delta_E;
 	    dep.second.flag |= flag;
 	    ++updated;
 	  }
 	}
-	if ( m_monitor ) m_monitor->count_shift(cont.size(), -killed);
-	info("%s+++ %-32s Smeared time resolution: %6ld entries, updated %6ld killed %6ld entries from mask: %04X",
-	     context.event->id(), cont.name.c_str(), cont.size(), updated, killed, cont.key.mask());
+	info("%s+++ %-32s Noise on signal: %6ld entries, updated %6ld entries. mask: %04X",
+	     context.event->id(), cont.name.c_str(), cont.size(), updated, cont.key.mask());
       }
 
       /// Standard constructor
-      DigiDepositSmearTime(const DigiKernel& krnl, const std::string& nam)
+      DigiDepositNoiseOnSignal(const DigiKernel& krnl, const std::string& nam)
 	: DigiDepositsProcessor(krnl, nam)
       {
-	declareProperty("resolution_time", m_resolution_time);
-	declareProperty("window_time",     m_window_time);
-	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositSmearTime::smear)
+	declareProperty("mean",  m_mean);
+	declareProperty("sigma", m_sigma);
+	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositNoiseOnSignal::create_noise)
       }
     };
   }    // End namespace digi
 }      // End namespace dd4hep
 
 #include <DDDigi/DigiFactories.h>
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositSmearTime)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositNoiseOnSignal)

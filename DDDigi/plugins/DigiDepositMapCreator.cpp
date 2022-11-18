@@ -37,8 +37,8 @@ namespace dd4hep {
 
       template <typename T> void
       create_deposits(const char* tag, const T& cont, work_t& work, const predicate_t& predicate)  const  {
-	Key key(cont.name, work.output.mask);
-	DepositMapping m(cont.name, work.output.mask);
+	Key key(cont.name, work.environ.output.mask);
+	DepositMapping m(cont.name, work.environ.output.mask);
 	std::size_t start = m.size();
 	for( const auto& dep : cont )   {
 	  if ( predicate(dep) )    {
@@ -46,7 +46,7 @@ namespace dd4hep {
 	  }
 	}
 	std::size_t end   = m.size();
-	work.output.data.put(m.key, std::move(m));
+	work.environ.output.data.put(m.key, std::move(m));
 	info("%s+++ %-32s added %6ld entries (now: %6ld) from mask: %04X to mask: %04X",
 	     tag, cont.name.c_str(), end-start, end, cont.key.mask(), m.key.mask());
       }

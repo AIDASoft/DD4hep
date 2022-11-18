@@ -38,7 +38,7 @@ namespace dd4hep {
 	: DigiContainerProcessor(kernel, nam) {}
 
       template <typename T> void copy_deposits(const T& cont, work_t& work, const predicate_t& predicate)  const  {
-	DepositVector deposits(cont.name, work.output.mask);
+	DepositVector deposits(cont.name, work.environ.output.mask);
 	for( const auto& dep : cont )   {
 	  if( predicate(dep) )   {
 	    CellID        cell = dep.first;
@@ -46,7 +46,7 @@ namespace dd4hep {
 	    deposits.data.emplace_back(cell, std::move(depo));
 	  }
 	}
-        work.output.data.put(deposits.key, std::move(deposits));
+        work.environ.output.data.put(deposits.key, std::move(deposits));
       }
       /// Main functional callback
       virtual void execute(DigiContext&, work_t& work, const predicate_t& predicate)  const override final  {

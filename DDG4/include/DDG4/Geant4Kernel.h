@@ -19,6 +19,7 @@
 // C/C++ include files
 #include <map>
 #include <typeinfo>
+#include <functional>
 
 class DD4hep_End_Of_File : public std::exception {
 public:
@@ -56,6 +57,7 @@ namespace dd4hep {
       typedef std::map<std::string, Geant4Action*>      GlobalActions;
       typedef std::map<std::string,int>                 ClientOutputLevels;
       typedef std::pair<void*, const std::type_info*>   UserFramework;
+      using UserCallbacks = std::vector<std::function<void()> >;
 
     protected:
       /// Reference to the run manager
@@ -100,6 +102,15 @@ namespace dd4hep {
       //bool        m_multiThreaded;
       /// Master property: Number of execution threads in multi threaded mode.
       int         m_numThreads;
+
+      /// Registered action callbacks on configure
+      UserCallbacks m_actionConfigure;
+      /// Registered action callbacks on initialize
+      UserCallbacks m_actionInitialize;
+      /// Registered action callbacks on terminate
+      UserCallbacks m_actionTerminate;
+
+
       /// Flag: Master instance (id<0) or worker (id >= 0)
       unsigned long      m_id, m_ident;
       /// Access to geometry world
@@ -222,6 +233,13 @@ namespace dd4hep {
       void setOutputLevel(const std::string object, PrintLevel new_level);
       /// Retrieve the global output level of a named object.
       PrintLevel getOutputLevel(const std::string object) const;
+
+      /// Register configure callback. Signature:   (function)()
+      void register_configure(const std::function<void()>& callback);
+      /// Register initialize callback. Signature:  (function)()
+      void register_initialize(const std::function<void()>& callback);
+      /// Register terminate callback. Signature:   (function)()
+      void register_terminate(const std::function<void()>& callback);
 
       /// Register action by name to be retrieved when setting up and connecting action objects
       /** Note: registered actions MUST be unique.

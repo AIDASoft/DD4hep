@@ -57,6 +57,8 @@ namespace dd4hep {
       DigiKernel* get() const        { return value; }
       /// Access to the underlying object
       DigiKernel* operator->() const { return value; }
+      /// Property accessor
+      Property& operator[](const std::string& property_name) const;
       /// Access to worker thread
       KernelHandle worker();
       /// Destroy referenced object (program termination)

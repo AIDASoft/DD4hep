@@ -44,7 +44,19 @@ namespace dd4hep {
     WARNING  = 4,
     ERROR    = 5,
     FATAL    = 6,
-    ALWAYS   = 7
+    ALWAYS   = 7,
+
+    /// Forced printout levels if the output level is handled
+    /// e.g. by a Geant4Action or DigiAction. These always pass
+    /// The default DD4hep print level restrictions.
+    FORCE_LEVEL    = 0x10,
+    FORCE_VERBOSE  = FORCE_LEVEL + 1,
+    FORCE_DEBUG    = FORCE_LEVEL + 2,
+    FORCE_INFO     = FORCE_LEVEL + 3,
+    FORCE_WARNING  = FORCE_LEVEL + 4,
+    FORCE_ERROR    = FORCE_LEVEL + 5,
+    FORCE_FATAL    = FORCE_LEVEL + 6,
+    FORCE_ALWAYS   = FORCE_LEVEL + 7
   };
 
 #ifndef __CINT__

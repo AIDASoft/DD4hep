@@ -151,7 +151,7 @@ void DigiContainerDrop::execute(DigiContext& context)  const    {
     if ( m_workers.size() < count )   {
       auto group = m_workers.get_group(); // Lock worker group
       for(size_t i=m_workers.size(); i <= count; ++i)
-	m_workers.insert(new Worker(nullptr, i));
+	m_workers.insert(new worker_t(nullptr, i));
     }
     m_kernel.submit(context, m_workers.get_group(), def.items.size(), &def);
   }

@@ -124,6 +124,14 @@ def unicode_2_string(value):
 
 
 OutputLevel = _Levels()
+VERBOSE = OutputLevel.VERBOSE
+DEBUG = OutputLevel.DEBUG
+INFO = OutputLevel.INFO
+WARNING = OutputLevel.WARNING
+ERROR = OutputLevel.ERROR
+FATAL = OutputLevel.FATAL
+
+
 # ------------------------Generic STL stuff can be accessed using std:  -----
 #
 # -- e.g. Create an instance of std::vector<dd4hep::sim::Geant4Vertex*>:
@@ -149,7 +157,8 @@ import_namespace_item('core', 'NamedObject')
 import_namespace_item('core', 'run_interpreter')
 #
 import_namespace_item('detail', 'interp')
-import_namespace_item('detail', 'eval')
+# No: This inhibits the usage of native python eval!
+# import_namespace_item('detail', 'eval')
 
 # ---------------------------------------------------------------------------
 # def run_interpreter(name):   detail.interp.run(name)

@@ -472,7 +472,8 @@ namespace dd4hep {
 	POSITION_SMEARED   = 1 << 2,
 	TIME_SMEARED       = 1 << 3,
 	ZERO_SUPPRESSED    = 1 << 4,
-        RECALIBRATED       = 1 << 5
+	DEPOSIT_NOISE      = 1 << 5,
+        RECALIBRATED       = 1 << 6
       };
 
       /// Hit position
@@ -489,9 +490,6 @@ namespace dd4hep {
       long           flag        { 0 };
       /// Source mask of this deposit
       Key::mask_type mask        { 0 };
-
-      /// Sources contributing to this deposit
-      History        history;
 
     public:
       /// Default constructor
@@ -807,6 +805,7 @@ namespace dd4hep {
     inline void DetectorHistory::insert(CellID cell, const History& value)   {
       this->data.emplace_back(cell, value);
     }
+    typedef DetectorHistory DepositsHistory;
 
 
     ///  Data segment definition (locked map)

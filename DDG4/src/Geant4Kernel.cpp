@@ -307,14 +307,44 @@ void Geant4Kernel::loadXML(const char* fname) {
   m_detDesc->apply("DD4hep_XMLLoader", 1, (char**) args);
 }
 
+/// Register configure callback
+void Geant4Kernel::register_configure(const std::function<void()>& callback)  {
+  m_actionConfigure.push_back(callback);
+}
+
+/// Register initialize callback
+void Geant4Kernel::register_initialize(const std::function<void()>& callback)  {
+  m_actionInitialize.push_back(callback);
+}
+
+/// Register terminate callback
+void Geant4Kernel::register_terminate(const std::function<void()>& callback)  {
+  m_actionTerminate.push_back(callback);
+}
+
+/// Configure Geant4 kernel object
 int Geant4Kernel::configure() {
-  return Geant4Exec::configure(*this);
+  int status = Geant4Exec::configure(*this);
+  if ( status )   {
+    for(auto& call : m_actionConfigure) call();
+    return status;
+  }
+  except("Geant4Kernel","++ FAILED to configure DDG4 executive");
+  return status;
 }
 
+/// Initialize Geant4 kernel object
 int Geant4Kernel::initialize() {
-  return Geant4Exec::initialize(*this);
+  int status = Geant4Exec::initialize(*this);
+  if ( status )   {
+    for(auto& call : m_actionInitialize) call();
+    return status;
+  }
+  except("Geant4Kernel","++ FAILED to initialize DDG4 executive");
+  return status;
 }
 
+/// Run Geant4
 int Geant4Kernel::run() {
   try  {
     auto result = Geant4Exec::run(*this);
@@ -340,7 +370,10 @@ int Geant4Kernel::terminate() {
   const Geant4Kernel* ptr = s_main_instance.get();
   printout(INFO,"Geant4Kernel","++ Terminate Geant4 and delete associated actions.");
   if ( ptr == this )  {
+    auto calls = std::move(m_actionTerminate);
+    for(auto& call : calls) call();
     Geant4Exec::terminate(*this);
+    m_actionTerminate = std::move(calls);
   }
   destroyPhases();
   detail::releaseObjects(m_globalFilters);

@@ -16,16 +16,16 @@ def run():
   import DigiTest
   digi = DigiTest.Test(geometry=None)
   attenuation = digi.attenuation
-
+  rdr_output = DigiTest.DEBUG
   input = digi.input_action('DigiParallelActionSequence/READER')
   # ========================================================================================================
-  input.adopt_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()])
+  input.adopt_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()], OutputLevel=rdr_output)
   digi.info('Created input.signal')
   # ========================================================================================================
   digi.info('Creating spillover sequence for EARLIER bunch crossings.....')
   # ========================================================================================================
   spillover = input.adopt_action('DigiSequentialActionSequence/Spillover-25')
-  evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader-25ns', mask=0x1, input=[digi.next_input()])
+  evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader-25ns', mask=0x1, input=[digi.next_input()], OutputLevel=rdr_output)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att-25ns',
                                      t0=-25 * ns,
                                      signal_decay='exponential',
@@ -38,17 +38,17 @@ def run():
   digi.info('Created input.spillover-25')
   # ========================================================================================================
   spillover = input.adopt_action('DigiSequentialActionSequence/Spillover-50')
-  evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader-50ns', mask=0x2, input=[digi.next_input()])
+  evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader-50ns', mask=0x2, input=[digi.next_input()], OutputLevel=rdr_output)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att-50ns',
-                                     t0=-50 * ns, input_mask=evtreader.mask, containers=attenuation)
+                                     t0=-50 * ns, input_mask=evtreader.mask, containers=attenuation, OutputLevel=rdr_output)
   hist_drop = spillover.adopt_action('DigiHitHistoryDrop/Drop-50ns', masks=[evtreader.mask])
   digi.check_creation([spillover, evtreader, attenuate, hist_drop])
   digi.info('Created input.spillover-50')
   # ========================================================================================================
   spillover = input.adopt_action('DigiSequentialActionSequence/Spillover-75')
-  evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader-75ns', mask=0x3, input=[digi.next_input()])
+  evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader-75ns', mask=0x3, input=[digi.next_input()], OutputLevel=rdr_output)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att-75ns',
-                                     t0=-75 * ns, input_mask=evtreader.mask, containers=attenuation)
+                                     t0=-75 * ns, input_mask=evtreader.mask, containers=attenuation, OutputLevel=rdr_output)
   hist_drop = spillover.adopt_action('DigiHitHistoryDrop/Drop-75ns', masks=[evtreader.mask])
   digi.check_creation([spillover, evtreader, attenuate, hist_drop])
   digi.info('Created input.spillover-75')
@@ -56,25 +56,25 @@ def run():
   digi.info('Creating spillover sequence for LATER bunch crossings.....')
   # ========================================================================================================
   spillover = input.adopt_action('DigiSequentialActionSequence/Spillover+25')
-  evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader+25ns', mask=0x4, input=[digi.next_input()])
+  evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader+25ns', mask=0x4, input=[digi.next_input()], OutputLevel=rdr_output)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att+25ns',
-                                     t0=25 * ns, input_mask=evtreader.mask, containers=attenuation)
+                                     t0=25 * ns, input_mask=evtreader.mask, containers=attenuation, OutputLevel=rdr_output)
   hist_drop = spillover.adopt_action('DigiHitHistoryDrop/Drop+25ns', masks=[evtreader.mask])
   digi.check_creation([spillover, evtreader, attenuate, hist_drop])
   digi.info('Created input.spillover+25')
   # ========================================================================================================
   spillover = input.adopt_action('DigiSequentialActionSequence/Spillover+50')
-  evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader+50ns', mask=0x5, input=[digi.next_input()])
+  evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader+50ns', mask=0x5, input=[digi.next_input()], OutputLevel=rdr_output)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att+50ns',
-                                     t0=50 * ns, input_mask=evtreader.mask, containers=attenuation)
+                                     t0=50 * ns, input_mask=evtreader.mask, containers=attenuation, OutputLevel=rdr_output)
   hist_drop = spillover.adopt_action('DigiHitHistoryDrop/Drop_50ns', masks=[evtreader.mask])
   digi.check_creation([spillover, evtreader, attenuate, hist_drop])
   digi.info('Created input.spillover+50')
   # ========================================================================================================
   spillover = input.adopt_action('DigiSequentialActionSequence/Spillover+75')
-  evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader+75ns', mask=0x6, input=[digi.next_input()])
+  evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader+75ns', mask=0x6, input=[digi.next_input()], OutputLevel=rdr_output)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att+75ns',
-                                     t0=75 * ns, input_mask=evtreader.mask, containers=attenuation)
+                                     t0=75 * ns, input_mask=evtreader.mask, containers=attenuation, OutputLevel=rdr_output)
   hist_drop = spillover.adopt_action('DigiHitHistoryDrop/Drop+75ns', masks=[evtreader.mask])
   digi.check_creation([spillover, evtreader, attenuate, hist_drop])
   digi.info('Created input.spillover+75')

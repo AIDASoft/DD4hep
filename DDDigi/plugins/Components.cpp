@@ -69,6 +69,11 @@ DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerSequence)
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerProcessor)
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiContainerSequenceAction)
 
+#include <DDDigi/DigiDepositMonitor.h>
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositTimeMonitor)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositEnergyMonitor)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositPositionMonitor)
+
 /// Basic entry point 
 static long dummy(dd4hep::Detector&, int, char**) {
   return 0;

@@ -70,7 +70,6 @@ template <> std::string DigiStoreDump::data_header(Key key, const std::string& t
   return data_header(key, tag, data.type());
 }
 
-
 template <> std::vector<std::string>
 DigiStoreDump::dump_history(DigiContext& context, 
 			    Key key,
@@ -101,6 +100,7 @@ DigiStoreDump::dump_history(DigiContext& context,
   return records;
 }
 
+#ifdef DDDIGI_INPLACE_HISTORY
 template <> std::vector<std::string> 
 DigiStoreDump::dump_history(DigiContext& context,
 			    Key container_key,
@@ -151,13 +151,65 @@ DigiStoreDump::dump_history(DigiContext& context,
   }
   return records;
 }
+#endif
+
+template <> std::vector<std::string> 
+DigiStoreDump::dump_history(DigiContext& context,
+			    Key container_key,
+			    const std::pair<const CellID, History>& data,
+			    std::size_t seq_no)  const
+{
+  std::string line;
+  std::stringstream str;
+  auto& ev = *(context.event);
+  const auto& history = data.second;
+  const CellID cell = data.first;
+  std::vector<std::string> records;
+
+  str << Key::key_name(container_key) << "[" << seq_no << "]:";
+  line = format("+----- %-30s Container: Segment:%04X Mask:%04X Item:%08X Cell:%016X Hist: Hits:%ld Parts:%ld",
+		str.str().c_str(), container_key.segment(), container_key.mask(), container_key.item(),
+		cell, history.hits.size(), history.particles.size());
+  records.emplace_back(line);
+  for( std::size_t i=0; i<history.hits.size(); ++i )   {
+    const auto& entry = history.hits[i];
+    const EnergyDeposit&  dep = entry.get_deposit(ev, container_key.item());
+    const Position& pos = dep.position;
+    const Position& mom = dep.momentum;
+    Key k = entry.source;
+    str.str("");
+    str << "|        Hit-history[" << i << "]:";
+    line = format("%-30s Segment:%04X Mask:%04X Cell:%08X  %.8g",
+		  str.str().c_str(), k.segment(), k.mask(), k.item(), entry.weight);
+    records.emplace_back(line);
+    line = format("|              pos: %7.3f %7.3f %7.3f   p: %7.3f %7.3f %7.3f deposit: %7.3f",
+		  pos.X(), pos.Y(), pos.Z(), mom.X(), mom.Y(), mom.Z(), dep.deposit);
+    records.emplace_back(line);
+  }
+  for( std::size_t i=0; i<history.particles.size(); ++i )   {
+    const auto&      ent = history.particles[i];
+    const Particle&  par = ent.get_particle(ev);
+    const Direction& mom = par.momentum;
+    const Position&  vtx = par.start_position;
+    Key key = ent.source;
+    str.str("");
+    str << "|        Part-history[" << i << "]:";
+    line = format("%-30s Segment:%04X Mask:%04X Key: %08X  %.8g",
+		  str.str().c_str(), key.segment(), key.mask(), key.item(), ent.weight);
+    records.emplace_back(line);
+    line = format("|              PDG:%6d Charge:%-2d Mass:%7.3f v:%7.3f %7.3f %7.3f   p:%7.3f %7.3f %7.3f",
+		  par.pdgID, int(par.charge), par.mass, vtx.X(), vtx.Y(), vtx.Z(), mom.X(), mom.Y(), mom.Z());
+    records.emplace_back(line);
+  }
+  return records;
+}
 
 template <typename T> std::vector<std::string>
 DigiStoreDump::dump_history(DigiContext& context, Key container_key, const T& container)  const {
   std::size_t count = 0;
   std::vector<std::string> records;
   for( const auto& item : container )  {
-    auto rec = ump_history(context, container_key, item, count++);
+    auto rec = dump_history(context, container_key, item, count++);
     records.insert(records.end(), rec.begin(), rec.end());
   }
   return records;
@@ -169,10 +221,12 @@ DigiStoreDump::dump_deposit_history(DigiContext& context, Key container_key, con
   std::vector<std::string> records;
   auto line = format("|----  %s", data_header(container_key, "deposits", container).c_str());
   records.emplace_back(line);
+#ifdef DDDIGI_INPLACE_HISTORY
   for( const auto& item : container )   {
     auto rec = dump_history(context, container_key, item, count++);
     records.insert(records.end(), rec.begin(), rec.end());
   }
+#endif
   return records;
 }
 
@@ -182,10 +236,12 @@ DigiStoreDump::dump_deposit_history(DigiContext& context, Key container_key, con
   std::vector<std::string> records;
   auto line = format("|----  %s", data_header(container_key, "deposits", container).c_str());
   records.emplace_back(line);
+#ifdef DDDIGI_INPLACE_HISTORY
   for( const auto& item : container )   {
     auto rec = dump_history(context, container_key, item, count++);
     records.insert(records.end(), rec.begin(), rec.end());
   }
+#endif
   return records;
 }
 

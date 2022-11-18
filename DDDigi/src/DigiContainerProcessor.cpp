@@ -31,8 +31,8 @@ namespace dd4hep {
   namespace digi {
 
     template <typename T> T* DigiContainerProcessor::work_t::get_input(bool exc)   {
-      if ( input.data.has_value() )  {
-	T* object = std::any_cast<T>(&input.data);
+      if ( input.data->has_value() )  {
+	T* object = std::any_cast<T>(input.data);
 	if ( object )   {
 	  return object;
 	}
@@ -46,8 +46,8 @@ namespace dd4hep {
     }
 
     template <typename T> const T* DigiContainerProcessor::work_t::get_input(bool exc)  const  {
-      if ( input.data.has_value() )  {
-	const T* object = std::any_cast<T>(&input.data);
+      if ( input.data->has_value() )  {
+	const T* object = std::any_cast<T>(input.data);
 	if ( object )   {
 	  return object;
 	}
@@ -62,26 +62,47 @@ namespace dd4hep {
   }    // End namespace digi
 }      // End namespace dd4hep
 
-template       DepositVector*   DigiContainerProcessor::work_t::get_input(bool exc);
-template const DepositVector*   DigiContainerProcessor::work_t::get_input(bool exc)  const;
-template       DepositMapping*  DigiContainerProcessor::work_t::get_input(bool exc);
-template const DepositMapping*  DigiContainerProcessor::work_t::get_input(bool exc)  const;
-template       ParticleMapping* DigiContainerProcessor::work_t::get_input(bool exc);
-template const ParticleMapping* DigiContainerProcessor::work_t::get_input(bool exc)  const;
+template       DepositVector*    DigiContainerProcessor::work_t::get_input(bool exc);
+template const DepositVector*    DigiContainerProcessor::work_t::get_input(bool exc)  const;
+template       DepositMapping*   DigiContainerProcessor::work_t::get_input(bool exc);
+template const DepositMapping*   DigiContainerProcessor::work_t::get_input(bool exc)  const;
+template       ParticleMapping*  DigiContainerProcessor::work_t::get_input(bool exc);
+template const ParticleMapping*  DigiContainerProcessor::work_t::get_input(bool exc)  const;
+template       DetectorHistory*  DigiContainerProcessor::work_t::get_input(bool exc);
+template const DetectorHistory*  DigiContainerProcessor::work_t::get_input(bool exc)  const;
+template       DetectorResponse* DigiContainerProcessor::work_t::get_input(bool exc);
+template const DetectorResponse* DigiContainerProcessor::work_t::get_input(bool exc)  const;
+
+/// Access the deposit history of a deposit container
+const DepositsHistory* 
+DigiContainerProcessor::work_t::get_history(const std::string& container, bool exc)  const  {
+  std::string hist_name = container+".hist";
+  if ( exc )   {
+    dd4hep::except("DigiContainerProcessor", "+++ Cannot access history %s.", hist_name.c_str());
+  }
+  return nullptr;
+}
+
 
 /// input data type
 const std::type_info& DigiContainerProcessor::work_t::input_type()  const   {
-  return input.data.type();
+  return input.data->type();
 }
 
 /// String form of the input data type
 std::string DigiContainerProcessor::work_t::input_type_name()  const   {
-  return typeName(input.data.type());
+  return typeName(input.data->type());
 }
 
 /// Access to default callback 
 const DigiContainerProcessor::predicate_t& DigiContainerProcessor::accept_all()  {
   static predicate_t s_pred { std::bind(predicate_t::always_true, std::placeholders::_1), 0, nullptr };
+  return s_pred;
+}
+
+/// Access to default callback 
+const DigiContainerProcessor::predicate_t& DigiContainerProcessor::accept_not_killed()  {
+  static predicate_t s_pred { std::bind(predicate_t::not_killed, std::placeholders::_1), 0, nullptr };
   return s_pred;
 }
 
@@ -97,8 +118,15 @@ DigiContainerProcessor::~DigiContainerProcessor() {
   InstanceCount::decrement(this);
 }
 
+/// Adopt monitoring action
+void DigiContainerProcessor::adopt_monitor(DigiDepositMonitor* monitor)    {
+  if ( monitor ) monitor->addRef();
+  if ( m_monitor ) m_monitor->release();
+  m_monitor = monitor;
+}
+
 /// Main functional callback if specific work is known
-void DigiContainerProcessor::execute(context_t&       /* context   */,
+void DigiContainerProcessor::execute(context_t&         /* context   */,
 				     work_t&            /* work      */,
 				     const predicate_t& /* predicate */)  const   {
 }
@@ -132,7 +160,7 @@ void DigiContainerSequence::adopt_processor(DigiContainerProcessor* action)   {
     except("+++ FAILED: attempt to add invalid processor!");
     return;
   }
-  m_workers.insert(new worker_t(action, m_workers.size()));
+  m_workers.insert(new worker_t(action, m_workers.size(), *this));
 }
 
 /// Main functional callback if specific work is known
@@ -144,9 +172,10 @@ void DigiContainerSequence::execute(context_t& context, work_t& work, const pred
 /// Worker adaptor for caller DigiContainerSequence
 template <> void DigiParallelWorker<DigiContainerProcessor,
 				    DigiContainerSequence::work_t,
-				    std::size_t>::execute(void* data) const  {
+				    std::size_t,
+				    DigiContainerSequence&>::execute(void* data) const  {
   calldata_t* arg  = reinterpret_cast<calldata_t*>(data);
-  action->execute(arg->context, *arg, action->accept_all());
+  action->execute(arg->environ.context, *arg, predicate.m_worker_predicate);
 }
 
 /// Standard constructor
@@ -169,11 +198,16 @@ DigiContainerSequenceAction::~DigiContainerSequenceAction() {
 /// Initialization callback
 void dd4hep::digi::DigiContainerSequenceAction::initialize()   {
   for( auto& ent : m_registered_processors )   {
-    worker_t* w = new worker_t(ent.second, m_registered_workers.size());
+    worker_t* w = new worker_t(ent.second, m_registered_workers.size(), *this);
     m_registered_workers.emplace(ent.first, w);
     m_workers.insert(w);
     ent.second->release();
   }
+}
+
+/// Set the default predicate
+void DigiContainerSequenceAction::set_predicate(const predicate_t& predicate)   {
+  m_worker_predicate = predicate;
 }
 
 /// Adopt new parallel worker
@@ -230,16 +264,19 @@ void DigiContainerSequenceAction::execute(context_t& context)  const   {
   auto& input  = event.get_segment(m_input_segment);
   auto& output = event.get_segment(m_output_segment);
   output_t out { m_output_mask, output };
-  work_t   arg { context, { }, out, m_properties, *this };
+  env_t    env { context, m_properties, out };
+  work_items_t items;
+  work_t   arg { env, items, *this };
+  work_item_t itm { nullptr, { }, nullptr };
 
-  arg.input_items.resize(m_workers.size(), { { }, nullptr });
+  arg.input_items.resize(m_workers.size(), itm);
   event_workers.reserve(input.size());
   for( auto& i : input )   {
     Key key(i.first);
     if ( key.mask() == m_input_mask )   {
       if ( worker_t* w = need_registered_worker(key, false) )  {
 	event_workers.emplace_back(w);
-	arg.input_items[w->options] = { key, &i.second };
+	arg.input_items[w->options] = { &input, key, &i.second };
       }
     }
   }
@@ -251,11 +288,12 @@ void DigiContainerSequenceAction::execute(context_t& context)  const   {
 /// Worker adaptor for caller DigiContainerSequenceAction
 template <> void DigiParallelWorker<DigiContainerProcessor,
 				    DigiContainerSequenceAction::work_t,
-				    std::size_t>::execute(void* data) const  {
-  calldata_t* args = reinterpret_cast<calldata_t*>(data);
-  auto&       item = args->input_items[this->options];
-  DigiContainerProcessor::work_t work { args->context, { item.key, *item.data }, args->output, args->properties };
-  action->execute(args->context, work, action->accept_all());
+				    std::size_t,
+				    DigiContainerSequenceAction&>::execute(void* data) const  {
+  auto* args = reinterpret_cast<calldata_t*>(data);
+  auto& item = args->input_items[this->options];
+  DigiContainerProcessor::work_t work { args->environ, item };
+  action->execute(args->environ.context, work, predicate.m_worker_predicate);
 }
 
 /// Standard constructor
@@ -303,7 +341,7 @@ void DigiMultiContainerProcessor::initialize()   {
       w = iw->second;
     }
     else   {
-      w = new worker_t(action, m_workers.size());
+      w = new worker_t(action, m_workers.size(), *this);
       m_worker_keys.emplace_back(worker_keys);
       m_workers.insert(w);
       action_workers[action] = w;
@@ -326,6 +364,11 @@ void DigiMultiContainerProcessor::initialize()   {
     action->release();
 }
 
+/// Set the default predicate
+void DigiMultiContainerProcessor::set_predicate(const predicate_t& predicate)   {
+  m_worker_predicate = predicate;
+}
+
 /// Adopt new parallel worker
 void DigiMultiContainerProcessor::adopt_processor(DigiContainerProcessor* action, const std::vector<std::string>& containers)    {
   if ( !action )   {
@@ -345,12 +388,12 @@ void DigiMultiContainerProcessor::adopt_processor(DigiContainerProcessor* action
 
 /// Main functional callback
 void DigiMultiContainerProcessor::execute(context_t& context)  const  {
-  work_items_t work_items;
+  work_items_t items;
   auto& mask  = m_input_masks;
   auto& event = *context.event;
   auto& input = event.get_segment(m_input_segment);
 
-  work_items.reserve(input.size());
+  items.reserve(input.size());
   for( auto& i : input )   {
     Key key(i.first);
     key.set_mask(0);
@@ -358,14 +401,15 @@ void DigiMultiContainerProcessor::execute(context_t& context)  const  {
     if ( use )   {
       use = m_work_items.empty() || m_work_items.find(key) != m_work_items.end();
       if ( use )   {
-	work_items.emplace_back(std::make_pair(i.first, &i.second));
+	items.push_back({ &input, i.first, &i.second});
       }
     }
   }
-  if ( !work_items.empty() )   {
+  if ( !items.empty() )   {
     auto& output = event.get_segment(m_output_segment);
     output_t out { m_output_mask, output };
-    work_t   arg { context, work_items, out, properties(), *this };
+    env_t    env { context, properties(), out };
+    work_t   arg { env, items, *this };
     m_kernel.submit(context, m_workers.get_group(), m_workers.size(), &arg, m_parallel);
   }
 }
@@ -373,25 +417,26 @@ void DigiMultiContainerProcessor::execute(context_t& context)  const  {
 /// Worker adaptor for caller DigiMultiContainerProcessor
 template <> void DigiParallelWorker<DigiContainerProcessor,
 				    DigiMultiContainerProcessor::work_t,
-				    std::size_t>::execute(void* data) const  {
+				    std::size_t,
+				    DigiMultiContainerProcessor&>::execute(void* data) const  {
   calldata_t* arg   = reinterpret_cast<calldata_t*>(data);
   const auto& par   = arg->parent;
   const auto& keys  = par.worker_keys(this->options);
   const auto& masks = par.input_masks();
   for( const auto& item : arg->items )  {
-    Key key(item.first);
+    Key key(item.key);
     key.set_mask(0);
     const char* tag = "";
     if ( masks.empty() || std::find(masks.begin(), masks.end(), key.mask()) != masks.end() )  {
       tag = "mask accepted";
       if ( keys.empty() )  {
-	DigiContainerProcessor::work_t  work {arg->context, {key, *item.second }, arg->output, arg->properties };
-	action->execute(work.context, work, action->accept_all());
+	DigiContainerProcessor::work_t  work { arg->environ, item };
+	action->execute(work.environ.context, work, predicate.m_worker_predicate);
 	continue;
       }
       else if ( std::find(keys.begin(), keys.end(), key) != keys.end() )    {
-	DigiContainerProcessor::work_t  work {arg->context, {key, *item.second }, arg->output, arg->properties };
-	action->execute(work.context, work, action->accept_all());
+	DigiContainerProcessor::work_t work { arg->environ, item };
+	action->execute(work.environ.context, work, predicate.m_worker_predicate);
 	continue;
       }
       tag = "no keys matching";

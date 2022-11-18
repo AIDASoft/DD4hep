@@ -155,7 +155,6 @@ void EnergyDeposit::update_deposit_weighted(const EnergyDeposit& upda)  {
   position = pos;
   momentum = mom;
   deposit  = sum;
-  history.update(upda.history);
 }
 
 /// Update the deposit using deposit weighting
@@ -166,7 +165,6 @@ void EnergyDeposit::update_deposit_weighted(EnergyDeposit&& upda)  {
   position = pos;
   momentum = mom;
   deposit  = sum;
-  history.update(upda.history);
 }
 
 /// Merge new deposit map onto existing map
