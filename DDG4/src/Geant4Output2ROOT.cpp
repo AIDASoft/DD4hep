@@ -22,7 +22,7 @@
 
 // Geant4 include files
 #include <G4HCofThisEvent.hh>
-#include <G4ParticleDefinition.hh>
+#include <G4ParticleTable.hh>
 
 // ROOT include files
 #include <TFile.h>
@@ -151,11 +151,15 @@ void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
       typedef Geant4HitWrapper::HitManipulator Manip;
       typedef Geant4ParticleMap::ParticleMap ParticleMap;
       Manip* manipulator = Geant4HitWrapper::manipulator<Geant4Particle>();
+      G4ParticleTable* table = G4ParticleTable::GetParticleTable();
       const ParticleMap& pm = parts->particles();
       vector<void*> particles;
       particles.reserve(pm.size());
       for ( const auto& i : pm )   {
-        particles.emplace_back((ParticleMap::mapped_type*)i.second);
+	auto* p = i.second;
+	G4ParticleDefinition* def = table->FindParticle(p->pdgID);
+	p->charge = int(3.0 * (def ? def->GetPDGCharge() : -1.0)); // Assume e-/pi-
+        particles.emplace_back((ParticleMap::mapped_type*)p);
       }
       fill("MCParticles",manipulator->vec_type,&particles);
     }

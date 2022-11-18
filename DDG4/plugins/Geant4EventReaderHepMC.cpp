@@ -21,10 +21,6 @@
 @}
  */
 
-// Geant4 include files
-#include <G4GlobalConfig.hh>
-#include <G4ParticleTable.hh>
-
 // Framework include files
 #include <DDG4/IoStreams.h>
 #include <DDG4/Geant4InputAction.h>
@@ -447,8 +443,7 @@ int HepMC::read_particle(EventStream &info, istringstream& input, Geant4Particle
     cout << "Particle id: " << p->id << endl;
   }
 #endif
-  G4ParticleDefinition* def = G4ParticleTable::GetParticleTable()->FindParticle(p->pdgID);
-  p->charge = int(3.0 * (def ? def->GetPDGCharge() : -1.0)); // Assume e-/pi-
+  p->charge = 0;
   p->psx *= info.mom_unit;
   p->psy *= info.mom_unit;
   p->psz *= info.mom_unit;
