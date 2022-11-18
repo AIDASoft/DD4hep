@@ -41,9 +41,9 @@ def run():
     sys.exit(0)
 
   kernel = DDG4.Kernel()
-  kernel.loadGeometry(str("file:"
-                          + os.environ['DD4hepExamplesINSTALL']
-                          + "/examples/ClientTests/compact/BoxTrafos.xml"))
+  install = os.environ['DD4hepExamplesINSTALL']
+  geo_file = "file:" + install + "/examples/ClientTests/compact/BoxTrafos.xml"
+  kernel.loadGeometry(str(geo_file))
   geant4 = DDG4.Geant4(kernel)
   # Configure UI
   if args.macro:

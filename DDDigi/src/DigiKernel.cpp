@@ -245,8 +245,8 @@ std::mutex& DigiKernel::global_io_lock()   const  {
 }
 
 /// Print the property values
-std::size_t DigiKernel::printProperties()  const  {
-  std::size_t count = this->DigiAction::printProperties();
+int DigiKernel::printProperties()  const  {
+  int count = this->DigiAction::printProperties();
   for( const auto& cl : internals->clientLevels )  {
     always("OutputLevel[%s]:  %d", cl.first.c_str(), cl.second);
     ++count;

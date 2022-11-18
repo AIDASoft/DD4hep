@@ -23,7 +23,7 @@
 
 
 // Framework include files
-#include "DDG4/Geant4InputAction.h"
+#include <DDG4/Geant4InputAction.h>
 
 // C/C++ include files
 #include <fstream>
@@ -80,10 +80,14 @@ namespace dd4hep {
 // #include "DDG4/Geant4EventReaderHepEvt"
 
 // Framework include files
-#include "DDG4/Factories.h"
-#include "DD4hep/Printout.h"
-#include "CLHEP/Units/SystemOfUnits.h"
-#include "CLHEP/Units/PhysicalConstants.h"
+#include <DDG4/Factories.h>
+#include <DD4hep/Printout.h>
+#include <CLHEP/Units/SystemOfUnits.h>
+#include <CLHEP/Units/PhysicalConstants.h>
+
+// Geant4 include files
+#include <G4GlobalConfig.hh>
+#include <G4ParticleTable.hh>
 
 // C/C++ include files
 #include <cerrno>
@@ -237,6 +241,8 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     //
     //  PDGID
     p->pdgID = IDHEP;
+    auto* def = G4ParticleTable::GetParticleTable()->FindParticle(p->pdgID);
+    p->charge = int(3.0 * (def ? def->GetPDGCharge() : 1.0)); // Assume e-/pi-
     //
     //  Momentum vector
     p->pex = p->psx = PHEP1*CLHEP::GeV;

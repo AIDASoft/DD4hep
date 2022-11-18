@@ -224,11 +224,12 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
     PropertyMask status(p->status);
 
     //  PDGID: If Energy positive (negative) particle is electron (positron)
+    //         Remember: Geant4Particle charge is in units of 1/3 elementary/positron charge
     p->pdgID  = 11;
-    p->charge = -1;
+    p->charge = -1 * 3;
     if(Energy < 0.0) {
       p->pdgID = -11;
-      p->charge = +1;
+      p->charge = +1 * 3;
     }
 
     //  Momentum vector

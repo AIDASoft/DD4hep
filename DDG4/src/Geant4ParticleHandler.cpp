@@ -251,7 +251,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
     m_currTrack.daughters.clear();
     m_currTrack.pdgID        = h.pdgID();
     m_currTrack.mass         = h.mass();
-    m_currTrack.charge       = h.charge();
+    m_currTrack.charge       = int(3.0 * h.charge());
     ++m_globalParticleID;
   }
   m_currTrack.steps       = 0;

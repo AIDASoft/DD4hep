@@ -69,13 +69,15 @@ long DigiAction::release() {
 }
 
 /// Set DigiAction property
-std::size_t DigiAction::printProperties()   const {
+int DigiAction::printProperties()   const {
+  int count = 0;
   const auto& props = properties().properties();
   for( const auto& p : props )   {
     std::string pn = name()+"."+p.first;
     always("+++ %-32s = %-42s  [%s]", pn.c_str(), p.second.str().c_str(), p.second.type().c_str());
+    ++count;
   }
-  return props.size();
+  return count;
 }
 
 /// Adopt named property of another action for data processing
