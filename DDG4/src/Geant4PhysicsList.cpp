@@ -12,22 +12,22 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4PhysicsList.h"
-#include "DDG4/Geant4UIMessenger.h"
-#include "DDG4/Geant4Particle.h"
-#include "DDG4/Geant4Kernel.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Plugins.h"
+#include <DDG4/Geant4PhysicsList.h>
+#include <DDG4/Geant4UIMessenger.h>
+#include <DDG4/Geant4Particle.h>
+#include <DDG4/Geant4Kernel.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Plugins.h>
 
 // Geant4 include files
-#include "G4VPhysicsConstructor.hh"
-#include "G4PhysListFactory.hh"
-#include "G4ProcessManager.hh"
-#include "G4ParticleTable.hh"
-#include "G4RunManager.hh"
-#include "G4VProcess.hh"
-#include "G4Decay.hh"
+#include <G4VPhysicsConstructor.hh>
+#include <G4PhysListFactory.hh>
+#include <G4ProcessManager.hh>
+#include <G4ParticleTable.hh>
+#include <G4RunManager.hh>
+#include <G4VProcess.hh>
+#include <G4Decay.hh>
 
 // C/C++ include files
 #include <stdexcept>
@@ -333,7 +333,7 @@ Geant4PhysicsListActionSequence::~Geant4PhysicsListActionSequence()  {
   InstanceCount::decrement(this);
 }
 
-#include "G4FastSimulationPhysics.hh"
+#include <G4FastSimulationPhysics.hh>
 
 
 /// Extend physics list from factory:

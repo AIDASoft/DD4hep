@@ -54,17 +54,17 @@ namespace dd4hep {
 
     /// Track properties
     enum Geant4ParticleProperties {
-      G4PARTICLE_CREATED_HIT = 1<<1,
-      G4PARTICLE_PRIMARY = 1<<2,
-      G4PARTICLE_HAS_SECONDARIES = 1<<3,
+      G4PARTICLE_CREATED_HIT         = 1<<1,
+      G4PARTICLE_PRIMARY             = 1<<2,
+      G4PARTICLE_HAS_SECONDARIES     = 1<<3,
       G4PARTICLE_ABOVE_ENERGY_THRESHOLD = 1<<4,
-      G4PARTICLE_KEEP_PROCESS = 1<<5,
-      G4PARTICLE_KEEP_PARENT = 1<<6,
+      G4PARTICLE_KEEP_PROCESS        = 1<<5,
+      G4PARTICLE_KEEP_PARENT         = 1<<6,
       G4PARTICLE_CREATED_CALORIMETER_HIT = 1<<7,
       G4PARTICLE_CREATED_TRACKER_HIT = 1<<8,
-      G4PARTICLE_KEEP_USER = 1<<9,
-      G4PARTICLE_KEEP_ALWAYS = 1<<10,
-      G4PARTICLE_FORCE_KILL = 1<<11,
+      G4PARTICLE_KEEP_USER           = 1<<9,
+      G4PARTICLE_KEEP_ALWAYS         = 1<<10,
+      G4PARTICLE_FORCE_KILL          = 1<<11,
 
       // Generator status for a given particles: bit 0...4, agreed by many formats (HepMC, LCIO, ....):
       G4PARTICLE_GEN_EMPTY           = 1<<0,  // Empty line
@@ -111,11 +111,11 @@ namespace dd4hep {
       int originalG4ID = 0;  //! not persistent
       int g4Parent = 0, reason = 0, mask = 0;
       int steps  = 0, secondaries = 0, pdgID = 0;
-      int status = 0, colorFlow[2] {0,0};
-      unsigned short genStatus= 0;
-      char  charge = 0;
-      char  _spare[1] {0};
-      float spin[3] {0E0,0E0,0E0};
+      int status = 0, colorFlow[2] { 0, 0 };
+      unsigned short genStatus     { 0 };
+      char  charge                 { 0 };
+      char  _spare[1]              { 0 };
+      float spin[3]                { 0E0,0E0,0E0 };
       // 12 ints + 4 bytes + 3 floats should be aligned to 8 bytes....
       double vsx  = 0E0, vsy  = 0E0, vsz = 0E0;
       double vex  = 0E0, vey  = 0E0, vez = 0E0;

@@ -158,7 +158,7 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
     p->psy          = unit_direction.Y()*momentum;
     p->psz          = unit_direction.Z()*momentum;
     p->mass         = m_particle->GetPDGMass();
-    p->charge       = m_particle->GetPDGCharge();
+    p->charge       = 3 * m_particle->GetPDGCharge();
     p->spin[0]      = 0;
     p->spin[1]      = 0;
     p->spin[2]      = 0;

@@ -93,7 +93,7 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
     const int   pdg     = mcp->pid();
     PropertyMask status(p->status);
     p->pdgID        = pdg;
-    p->charge       = 0; // int(mcp->getCharge()*3.0); // FIXME
+    p->charge       = int(mcp->getCharge()*3.0);
     p->psx          = mom.get_component(0) * mom_unit;
     p->psy          = mom.get_component(1) * mom_unit;
     p->psz          = mom.get_component(2) * mom_unit;

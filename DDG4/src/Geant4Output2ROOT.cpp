@@ -12,21 +12,22 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4HitCollection.h"
-#include "DDG4/Geant4Output2ROOT.h"
-#include "DDG4/Geant4Particle.h"
-#include "DDG4/Geant4Data.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4HitCollection.h>
+#include <DDG4/Geant4Output2ROOT.h>
+#include <DDG4/Geant4Particle.h>
+#include <DDG4/Geant4Data.h>
+
 // Geant4 include files
-#include "G4HCofThisEvent.hh"
-#include "G4ParticleDefinition.hh"
+#include <G4HCofThisEvent.hh>
+#include <G4ParticleDefinition.hh>
 
 // ROOT include files
-#include "TFile.h"
-#include "TTree.h"
-#include "TBranch.h"
+#include <TFile.h>
+#include <TTree.h>
+#include <TBranch.h>
 
 using namespace dd4hep::sim;
 using namespace dd4hep;
@@ -154,9 +155,6 @@ void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
       vector<void*> particles;
       particles.reserve(pm.size());
       for ( const auto& i : pm )   {
-	const Geant4ParticleHandle p = i.second;
-	const G4ParticleDefinition* def = p.definition();
-	if ( def ) i.second->charge = 3.0*def->GetPDGCharge();
         particles.emplace_back((ParticleMap::mapped_type*)i.second);
       }
       fill("MCParticles",manipulator->vec_type,&particles);
