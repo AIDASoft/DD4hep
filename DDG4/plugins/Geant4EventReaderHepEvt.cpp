@@ -85,10 +85,6 @@ namespace dd4hep {
 #include <CLHEP/Units/SystemOfUnits.h>
 #include <CLHEP/Units/PhysicalConstants.h>
 
-// Geant4 include files
-#include <G4GlobalConfig.hh>
-#include <G4ParticleTable.hh>
-
 // C/C++ include files
 #include <cerrno>
 
@@ -241,8 +237,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     //
     //  PDGID
     p->pdgID = IDHEP;
-    auto* def = G4ParticleTable::GetParticleTable()->FindParticle(p->pdgID);
-    p->charge = int(3.0 * (def ? def->GetPDGCharge() : 1.0)); // Assume e-/pi-
+    p->charge = 0;
     //
     //  Momentum vector
     p->pex = p->psx = PHEP1*CLHEP::GeV;

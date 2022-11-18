@@ -234,7 +234,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
     m_currTrack.daughters    = prim_part->daughters;
     m_currTrack.pdgID        = prim_part->pdgID;
     m_currTrack.mass         = prim_part->mass;
-    m_currTrack.charge       = prim_part->charge;
+    m_currTrack.charge       = int(3.0 * h.charge());
   }
   else  {
     m_currTrack.id           = m_globalParticleID;
