@@ -11,8 +11,8 @@
 from __future__ import absolute_import, unicode_literals
 from dd4hep_base import *  # noqa: F401, F403
 
-
 logger = None
+
 
 def loadDDDigi():
   global logger
@@ -256,7 +256,9 @@ def _get(self, name):
     v = ret.data
     try:
       v = eval(v)
-    except:
+    except TypeError:
+      pass
+    finally:
       pass
     return v
   elif hasattr(a, name):
@@ -273,7 +275,7 @@ def _set(self, name, value):
   import dd4hep as dd4hep
   act = _get_action(self)
   nam = dd4hep.unicode_2_string(name)
-  if isinstance(value,str):
+  if isinstance(value, str):
     val = dd4hep.unicode_2_string(value)
   else:
     val = str(value)
@@ -285,6 +287,7 @@ def _set(self, name, value):
 
 
 def _props(obj, **extensions):
+  from dd4hep_base import debug as dd4hep_debug
   _import_class('digi', obj)
   cls = getattr(current, obj)
   for extension in extensions.items():
@@ -294,7 +297,7 @@ def _props(obj, **extensions):
       # print('Overloading: ' + str(cls) + ' ' + call + ' to __' + call)
       setattr(cls, '__' + call, getattr(cls, call))
     else:
-      debug('FAILED','Overloading: ' + str(cls) + ' ' + call + ' to __' + call + ' ' + str(hasattr(cls, call)))
+      dd4hep_debug('FAILED', 'Overloading: ' + str(cls) + ' ' + call + ' to __' + call + ' ' + str(hasattr(cls, call)))
     setattr(cls, call, extension[1])
   cls.__getattr__ = _get
   cls.__setattr__ = _set

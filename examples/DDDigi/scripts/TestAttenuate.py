@@ -39,7 +39,7 @@ def run():
                                output_mask=0xFEED,
                                output_segment='deposits')
   evtdump = event.adopt_action('DigiStoreDump/StoreDump')
-  digi.check_creation([evtdump])
+  digi.check_creation([evtdump, combine])
   digi.info('Created event.dump')
   # ========================================================================================================
   digi.run_checked(num_events=5, num_threads=5, parallel=3)

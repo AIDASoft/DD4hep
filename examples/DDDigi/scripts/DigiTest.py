@@ -13,7 +13,7 @@ import os
 import dddigi
 import logging
 from dd4hep import units
-from dddigi import DEBUG, INFO, WARNING, ERROR
+from dddigi import DEBUG, INFO, WARNING, ERROR  # noqa: F401
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ class Test(dddigi.Digitize):
     global attenuation
     dddigi.Digitize.__init__(self, dddigi.Kernel())
     dddigi.setPrintFormat(str('%-32s %5s %s'))
-    dddigi.setPrintLevel(dddigi.OutputLevel.INFO)
+    dddigi.setPrintLevel(INFO)
     self.kernel().printProperties()
     self.geometry = geometry
     self.input = None
@@ -137,12 +137,19 @@ def test_setup_1(digi, print_level=WARNING, parallel=True):
   # ========================================================================================================
   digi.info('Created SIGNAL input')
   input = digi.input_action('DigiParallelActionSequence/READER')
-  input.adopt_action('DigiDDG4ROOT/SignalReader', mask=0xCBAA, input=[digi.next_input()], OutputLevel=print_level, keep_raw=False)
+  input.adopt_action('DigiDDG4ROOT/SignalReader', 
+                     mask=0xCBAA,
+                     input=[digi.next_input()],
+                     OutputLevel=print_level, keep_raw=False)
   # ========================================================================================================
   digi.info('Creating collision overlay....')
   # ========================================================================================================
   overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-1')
-  overlay.adopt_action('DigiDDG4ROOT/Read-1', mask=0xCBEE, input=[digi.next_input()], OutputLevel=print_level, keep_raw=False)
+  overlay.adopt_action('DigiDDG4ROOT/Read-1',
+                       mask=0xCBEE,
+                       input=[digi.next_input()],
+                       OutputLevel=print_level,
+                       keep_raw=False)
   digi.info('Created input.overlay-1')
   # ========================================================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
