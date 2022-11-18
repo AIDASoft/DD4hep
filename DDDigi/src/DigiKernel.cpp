@@ -245,13 +245,11 @@ std::mutex& DigiKernel::global_io_lock()   const  {
 }
 
 /// Print the property values
-int DigiKernel::printProperties()  const  {
-  int count = this->DigiAction::printProperties();
+void DigiKernel::printProperties()  const  {
+  this->DigiAction::printProperties();
   for( const auto& cl : internals->clientLevels )  {
     always("OutputLevel[%s]:  %d", cl.first.c_str(), cl.second);
-    ++count;
   }
-  return count;
 }
 
 /// Fill cache with the global output level of a named object. Must be set before instantiation
