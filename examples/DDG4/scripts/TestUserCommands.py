@@ -41,8 +41,9 @@ def run():
     sys.exit(0)
 
   kernel = DDG4.Kernel()
-  kernel.loadGeometry(str("file:" + os.environ['DD4hepExamplesINSTALL'] +
-                          "/examples/ClientTests/compact/BoxTrafos.xml"))
+  kernel.loadGeometry(str("file:"
+                          + os.environ['DD4hepExamplesINSTALL']
+                          + "/examples/ClientTests/compact/BoxTrafos.xml"))
   geant4 = DDG4.Geant4(kernel)
   # Configure UI
   if args.macro:
@@ -52,33 +53,28 @@ def run():
 
   ui.HaveUI = False
 
-  ui.ConfigureCommands = [
-    '/ddg4/Print/param configure-command-1',
-    '/ddg4/Print/print_param',
-    '/ddg4/Print/param configure-command-2',
-    '/ddg4/Print/print_param']
-  ui.InitializeCommands = [
-    '/ddg4/Print/param initialize-command-1',
-    '/ddg4/Print/print_param',
-    '/ddg4/Print/param initialize-command-2',
-    '/ddg4/Print/print_param']
-  ui.PreRunCommands = [
-    '/ddg4/Print/param pre-run-command-1',
-    '/ddg4/Print/print_param',
-    '/ddg4/Print/param pre-run-command-2',
-    '/ddg4/Print/print_param']
-  ui.TerminateCommands = [
-    '/ddg4/Print/param terminate-command-1',
-    '/ddg4/Print/print_param',
-    '/ddg4/Print/param terminate-command-2',
-    '/ddg4/Print/print_param',
-    '/ddg4/UI/terminate']
+  ui.ConfigureCommands = ['/ddg4/Print/param configure-command-1',
+                          '/ddg4/Print/print_param',
+                          '/ddg4/Print/param configure-command-2',
+                          '/ddg4/Print/print_param']
+  ui.InitializeCommands = ['/ddg4/Print/param initialize-command-1',
+                           '/ddg4/Print/print_param',
+                           '/ddg4/Print/param initialize-command-2',
+                           '/ddg4/Print/print_param']
+  ui.PreRunCommands = ['/ddg4/Print/param pre-run-command-1',
+                       '/ddg4/Print/print_param',
+                       '/ddg4/Print/param pre-run-command-2',
+                       '/ddg4/Print/print_param']
+  ui.TerminateCommands = ['/ddg4/Print/param terminate-command-1',
+                          '/ddg4/Print/print_param',
+                          '/ddg4/Print/param terminate-command-2',
+                          '/ddg4/Print/print_param',
+                          '/ddg4/UI/terminate']
   # Post-run commands are only executed in interactive mode!
-  ui.PostRunCommands = [
-    '/ddg4/Print/param post-run-command-1',
-    '/ddg4/Print/print_param',
-    '/ddg4/Print/param post-run-command-2',
-    '/ddg4/Print/print_param']
+  ui.PostRunCommands = ['/ddg4/Print/param post-run-command-1',
+                        '/ddg4/Print/print_param',
+                        '/ddg4/Print/param post-run-command-2',
+                        '/ddg4/Print/print_param']
 
   prt = DDG4.Action(kernel, 'TestPrintAction/Print')
   prt.enableUI()

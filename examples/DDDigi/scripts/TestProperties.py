@@ -25,7 +25,7 @@ def run():
   histo = digi.create_action('DigiDepositEnergyMonitor/TestHisto')
   histo.histo1D_deposits = ("Energy", u"Some main deposit Title", 101, -0.5, 100.5)
   num_tests = num_tests + 1
-  histo.histo1D_delta    = ("Delta", u"Some delta Title", 50, -5, 5)
+  histo.histo1D_delta = ("Delta", u"Some delta Title", 50, -5, 5)
   num_tests = num_tests + 1
   histo.printProperties()
   info('property: histo1D_deposits =       %s [%s]' %

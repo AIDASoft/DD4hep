@@ -137,7 +137,7 @@ def test_setup_1(digi, print_level=WARNING, parallel=True):
   # ========================================================================================================
   digi.info('Created SIGNAL input')
   input = digi.input_action('DigiParallelActionSequence/READER')
-  input.adopt_action('DigiDDG4ROOT/SignalReader', 
+  input.adopt_action('DigiDDG4ROOT/SignalReader',
                      mask=0xCBAA,
                      input=[digi.next_input()],
                      OutputLevel=print_level, keep_raw=False)

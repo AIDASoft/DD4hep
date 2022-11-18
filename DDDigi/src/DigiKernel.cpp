@@ -443,7 +443,7 @@ int DigiKernel::run()   {
     if ( 0 == internals->num_threads )  {
       internals->num_threads = ctrl_t::max_allowed_parallelism;
     }
-    info("+++ Number of TBB threads to:  %d",internals->num_threads);
+    info("+++ Number of TBB threads:     %d",internals->num_threads);
     info("+++ Number of parallel events: %d",internals->maxEventsParallel);
     internals->tbb_init = std::make_unique<ctrl_t>(ctrl_t::max_allowed_parallelism,internals->num_threads+1);
     if ( internals->maxEventsParallel >= 0 )   {
