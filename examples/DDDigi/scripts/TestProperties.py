@@ -25,7 +25,7 @@ def run():
   histo = digi.create_action('DigiDepositEnergyMonitor/TestHisto')
   histo.histo1D_deposits = ("Energy", u"Some main deposit Title", 101, -0.5, 100.5)
   num_tests = num_tests + 1
-  histo.histo1D_delta    = ("Delta",  u"Some delta Title", 50, -5, 5)
+  histo.histo1D_delta    = ("Delta", u"Some delta Title", 50, -5, 5)
   num_tests = num_tests + 1
   histo.printProperties()
   info('property: histo1D_deposits =       %s [%s]' %
@@ -107,7 +107,7 @@ def run():
     num_tests = num_tests + 1
 
   input.add_property('property_string', "string_1")
-  info('property: has_property =           %s [%s]' % 
+  info('property: has_property =           %s [%s]' %
        (yes_no(input.hasProperty('property_string')), str(input.property_string.__class__),))
   info('property: property_string =        %s' % (input.property_string,))
   input.property_string = "string_1123456"
@@ -136,6 +136,7 @@ def run():
   info('We checked %d properties interactions.' % (num_tests,))
   if num_tests == 14:
     info('Property test PASSED')
+
 
 if __name__ == '__main__':
   run()

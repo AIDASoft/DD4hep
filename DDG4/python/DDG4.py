@@ -137,9 +137,11 @@ def _evalProperty(data):
     Strings may be emraced by quotes: '<value>'
   """
   try:
-    if isinstance(data,str):
+    if isinstance(data, str):
       return eval(data)
-  except:
+  except TypeError:
+    pass
+  finally:
     pass
   return data
 
@@ -466,7 +468,7 @@ class Geant4:
 
     \author  M.Frank
     """
-    ui_name = getattr(self.master(),'UI')
+    ui_name = getattr(self.master(), 'UI')
     return self.master().globalAction(ui_name)
 
   def addUserInitialization(self, worker, worker_args=None, master=None, master_args=None):

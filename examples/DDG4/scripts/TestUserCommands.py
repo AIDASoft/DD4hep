@@ -29,8 +29,6 @@ logger = logging.getLogger(__name__)
 def run():
   import os
   import DDG4
-  from DDG4 import OutputLevel as Output
-  from g4units import keV
 
   args = DDG4.CommandLine()
   if args.help:
@@ -42,9 +40,9 @@ def run():
     """)
     sys.exit(0)
 
-
   kernel = DDG4.Kernel()
-  kernel.loadGeometry(str("file:" + os.environ['DD4hepExamplesINSTALL'] + "/examples/ClientTests/compact/BoxTrafos.xml"))
+  kernel.loadGeometry(str("file:" + os.environ['DD4hepExamplesINSTALL'] +
+                          "/examples/ClientTests/compact/BoxTrafos.xml"))
   geant4 = DDG4.Geant4(kernel)
   # Configure UI
   if args.macro:
@@ -58,20 +56,17 @@ def run():
     '/ddg4/Print/param configure-command-1',
     '/ddg4/Print/print_param',
     '/ddg4/Print/param configure-command-2',
-    '/ddg4/Print/print_param'
-  ]
+    '/ddg4/Print/print_param']
   ui.InitializeCommands = [
     '/ddg4/Print/param initialize-command-1',
     '/ddg4/Print/print_param',
     '/ddg4/Print/param initialize-command-2',
-    '/ddg4/Print/print_param'
-  ]
+    '/ddg4/Print/print_param']
   ui.PreRunCommands = [
     '/ddg4/Print/param pre-run-command-1',
     '/ddg4/Print/print_param',
     '/ddg4/Print/param pre-run-command-2',
-    '/ddg4/Print/print_param'
-  ]
+    '/ddg4/Print/print_param']
   ui.TerminateCommands = [
     '/ddg4/Print/param terminate-command-1',
     '/ddg4/Print/print_param',
@@ -83,8 +78,7 @@ def run():
     '/ddg4/Print/param post-run-command-1',
     '/ddg4/Print/print_param',
     '/ddg4/Print/param post-run-command-2',
-    '/ddg4/Print/print_param'
-  ]
+    '/ddg4/Print/print_param']
 
   prt = DDG4.Action(kernel, 'TestPrintAction/Print')
   prt.enableUI()
@@ -94,7 +88,7 @@ def run():
   ui.applyCommand('/ddg4/Print/print_param')
 
   # Now build the physics list:
-  phys = geant4.setupPhysics('QGSP_BERT')
+  geant4.setupPhysics('QGSP_BERT')
   logger.info('# Execute some G4 action using the UI handle from DDG4....')
   geant4.ui().applyCommand('/ddg4/Print/param interactive-2')
   geant4.ui().applyCommand('/ddg4/Print/print_param')

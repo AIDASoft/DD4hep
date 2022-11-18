@@ -467,10 +467,10 @@ int DigiKernel::run()   {
     }
   std::chrono::duration<double> duration = std::chrono::system_clock::now() - start;
   double sec = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
-  debug("+++ %d Events out of %d processed. "
-	"Total: %7.1f seconds %7.3f seconds/event",
-	internals->numEvents-int(internals->events_todo), internals->numEvents,
-	sec, sec/double(std::max(1,internals->numEvents)));
+  info("+++ %d Events out of %d processed. "
+       "Total: %7.1f seconds %7.3f seconds/event",
+       internals->numEvents-int(internals->events_todo), internals->numEvents,
+       sec, sec/double(std::max(1,internals->numEvents)));
   return 1;
 }
 
