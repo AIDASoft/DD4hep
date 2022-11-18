@@ -242,7 +242,7 @@ int dd4hep::printout(PrintLevel severity, const string& src, const string& fmt, 
  */
 int dd4hep::printout(PrintLevel severity, const char* src, const char* fmt, va_list& args) {
   if (severity >= print_lvl) {
-    print_func_2(print_arg, severity,src,fmt,args);
+    print_func_2(print_arg, PrintLevel(severity&(~FORCE_LEVEL)), src, fmt, args);
   }
   return 1;
 }

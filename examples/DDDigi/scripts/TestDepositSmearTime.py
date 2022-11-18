@@ -15,6 +15,7 @@ def run():
   import DigiTest
   from dd4hep import units
   digi = DigiTest.Test(geometry=None)
+  digi.kernel().OutputLevel = DigiTest.INFO
   digi.load_geo(volume_manager=True)
 
   event = DigiTest.test_setup_1(digi)
@@ -26,8 +27,7 @@ def run():
   smear = digi.create_action('DigiDepositSmearTime/Smear',
                              resolution_time=1e-6 * units.second)
   proc.adopt_container_processor(smear, ['SiVertexEndcapHits', 'SiVertexBarrelHits'])
-
-  event.adopt_action('DigiStoreDump/HeaderDump')
+  event.adopt_action('DigiStoreDump/HeaderDump', OutputLevel=DigiTest.INFO)
   # ========================================================================================================
   digi.info('Starting digitization core')
   digi.run_checked(num_events=3, num_threads=10, parallel=5)

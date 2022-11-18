@@ -13,11 +13,6 @@
 
 // Framework include files
 #include <DDDigi/DigiContainerProcessor.h>
-#include <DD4hep/InstanceCount.h>
-#include <DD4hep/DD4hepUnits.h>
-
-/// C/C++ include files
-#include <limits>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -25,49 +20,34 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
-    /// Actor to drop energy deposits of a container having the "KILLED" flag
+    /// Actor to drop energy deposits of a container having deposits with the "KILLED" flag set
     /**
-     *
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
     class DigiDepositDropKilled : public DigiContainerProcessor   {
-    protected:
-      /// Property: Flag to update existing container in-place or create a new container
-      bool   m_update_in_place            { true  };
-
     public:
       /// Standard constructor
-      DigiDepositDropKilled(const DigiKernel& krnl, const std::string& nam)
-	: DigiContainerProcessor(krnl, nam)
-      {
-	declareProperty("update_in_place",            m_update_in_place = true);
-	InstanceCount::increment(this);
-      }
+      using DigiContainerProcessor::DigiContainerProcessor;
 
-      /// Default destructor
-      virtual ~DigiDepositDropKilled() {
-	InstanceCount::decrement(this);
-      }
-      template <typename T> std::size_t length(const T* m)  const {  return m->size(); }
       /// Main functional callback
       virtual void execute(DigiContext& context, work_t& work, const predicate_t&)  const override final  {
 	std::size_t killed = 0, total = 0, i = 0;
 	if ( auto* v = work.get_input<DepositVector>() )   {
-	  total = length(v);
+	  total = v->size();
 	  for( auto iter = v->begin(); iter != v->end(); ++iter, ++i )   {
 	    if ( v->at(i).flag&EnergyDeposit::KILLED )   {
 	      v->remove(iter);
 	      iter = v->begin() + (--i);
 	    }
 	  }
-	  killed = total - length(v);
+	  killed = total - v->size();
 	}
 	else if ( auto* m = work.get_input<DepositMapping>() )   {
 	  CellID last_cell = ~0x0LL;
-	  total = length(m);
+	  total = m->size();
 	  for( auto iter = m->begin(); iter != m->end(); ++iter )   {
 	    if ( iter->second.flag&EnergyDeposit::KILLED )   {
 	      m->remove(iter);
@@ -76,11 +56,12 @@ namespace dd4hep {
 	    }
 	    last_cell = iter->first;
 	  }
-	  killed = total - length(v);
+	  killed = total - m->size();
 	}
 	else   {
 	  except("Request to handle unknown data type: %s", work.input_type_name().c_str());
 	}
+	if ( m_monitor ) m_monitor->count_shift(total, killed);
 	info("%s+++ Killed %6ld out of %6ld deposit entries from container: %s",context.event->id(), killed, total);
       }
     };

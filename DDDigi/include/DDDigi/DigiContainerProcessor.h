@@ -17,6 +17,7 @@
 #include <DD4hep/Callback.h>
 #include <DDDigi/DigiData.h>
 #include <DDDigi/DigiEventAction.h>
+#include <DDDigi/DigiDepositMonitor.h>
 #include <DDDigi/DigiParallelWorker.h>
 
 /// C/C++ include files
@@ -29,6 +30,7 @@ namespace dd4hep {
   namespace digi {
 
     /// Forward declarations
+    class DigiDepositMonitor;
     class DigiSegmentContext;
     class DigiContainerSequence;
     class DigiContainerProcessor;
@@ -52,10 +54,12 @@ namespace dd4hep {
 
       /// Input definition
       struct input_t  {
+	/// Input segment reference
+	segment_t*      segment;
 	/// Input data key
 	Key             key;
 	/// Input deposits
-	std::any&       data;
+	std::any*       data;
       };
 
       /// Output handle definition
@@ -66,11 +70,12 @@ namespace dd4hep {
 
       /// Hit processing predicate
       struct predicate_t  {
-	using deposit_t = std::pair<const CellID, EnergyDeposit>;
+	using deposit_t  = std::pair<const CellID, EnergyDeposit>;
 	using callback_t = std::function<bool(const deposit_t&)>;
 	callback_t            callback      { };
 	uint32_t              id            { 0 };
 	const segmentation_t* segmentation  { nullptr };
+
 	predicate_t() = default;
 	predicate_t(std::function<bool(const deposit_t&)> func, uint32_t i, const segmentation_t* s)
 	: callback(func), id(i), segmentation(s) {}
@@ -80,22 +85,27 @@ namespace dd4hep {
 	predicate_t& operator = (const predicate_t& copy) = default;
 	/// Check if a deposit should be processed
 	bool operator()(const deposit_t& deposit)   const;
-	static bool always_true(const deposit_t&)   { return true; }
+	static bool always_true(const deposit_t&)        { return true; }
+	static bool not_killed (const deposit_t& depo)   { return 0 == (depo.second.flag&EnergyDeposit::KILLED); }
+      };
+
+      struct env_t   {
+	/// Event processing context
+	context_t&        context;
+	/// Optional properties
+	const property_t& properties;
+	/// Output data
+	output_t&         output;
       };
 
       /// Work definition
       struct work_t  {
-	/// Event processing context
-	context_t&        context;
+	env_t             environ;
 	/// Input data
 	input_t           input;
-	/// Output data
-	output_t&         output;
-	/// Optional properties
-	const property_t& properties;
 
 	/// Basic check if input data are present
-	bool has_input()  const    {  return this->input.data.has_value();  }
+	bool has_input()  const    {  return this->input.data->has_value();  }
 	/// Access key of input data
 	Key  input_key()  const    {  return this->input.key;               }
 	/// Access the input data type
@@ -106,20 +116,29 @@ namespace dd4hep {
 	template <typename DATA> DATA* get_input(bool exc=false);
 	/// Access input data by type
 	template <typename DATA> const DATA* get_input(bool exc=false)  const;
+	/// Access the deposit history of a deposit container
+	const DepositsHistory* get_history(const std::string& container, bool exc=false)  const;
       };
+
+      /// Monitoring object
+      DigiDepositMonitor* m_monitor { nullptr };
 
     protected:
       /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiContainerProcessor);
 
     public:
-      /// Access to default callback
+      /// Access to default deposit predicate accepting all
       static const predicate_t& accept_all();
+      /// Access to default deposit predicate accepting all
+      static const predicate_t& accept_not_killed();
 
       /// Standard constructor
       DigiContainerProcessor(const kernel_t& kernel, const std::string& name);
       /// Default destructor
       virtual ~DigiContainerProcessor();
+      /// Adopt monitoring action
+      void adopt_monitor(DigiDepositMonitor* monitor);
       /// Main functional callback adapter
       virtual void execute(context_t& context, work_t& work, const predicate_t& predicate)  const;
     };
@@ -168,9 +187,9 @@ namespace dd4hep {
       /// Structure imports
       using self_t      = DigiContainerSequence;
       using processor_t = DigiContainerProcessor;
-      using worker_t    = DigiParallelWorker<processor_t,work_t>;
+      using worker_t    = DigiParallelWorker<processor_t,work_t,std::size_t,self_t&>;
       using workers_t   = DigiParallelWorkers<worker_t>;
-      friend class DigiParallelWorker<processor_t,work_t>;
+      friend class DigiParallelWorker<processor_t,work_t,std::size_t,self_t&>;
 
     protected:
       /**  Member variables                           */
@@ -178,6 +197,9 @@ namespace dd4hep {
       bool               m_parallel { false };
       /// Array of sub-workers
       workers_t          m_workers;
+      /// Default Deposit predicate
+      predicate_t        m_worker_predicate = processor_t::accept_all();
+
       /// Lock for output merging
       mutable std::mutex m_output_lock;
 
@@ -193,10 +215,26 @@ namespace dd4hep {
     public:
       /// Standard constructor
       DigiContainerSequence(const kernel_t& kernel, const std::string& name);
+      /// Set the default predicate
+      void set_predicate(const predicate_t& predicate);
       /// Adopt new parallel worker
       virtual void adopt_processor(DigiContainerProcessor* action);
       /// Main functional callback adapter
       virtual void execute(context_t& context, work_t& work, const predicate_t& predicate)  const;
+    };
+
+
+    struct DigiMultiProcessorParent   {
+    public:
+      using action_t     = DigiAction;
+      using processor_t  = DigiContainerProcessor;
+      using env_t        = processor_t::env_t;
+      using segment_t    = processor_t::segment_t;
+      using predicate_t  = processor_t::predicate_t;
+      using output_t     = processor_t::output_t;
+      using property_t   = processor_t::property_t;
+      using work_item_t  = processor_t::input_t;
+      using work_items_t = std::vector<processor_t::input_t>;
     };
 
     /// Worker base class to analyse containers from the input segment in parallel
@@ -208,55 +246,45 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiContainerSequenceAction : public DigiEventAction  {
+    class DigiContainerSequenceAction : public DigiEventAction, public DigiMultiProcessorParent  {
 
     protected:
       /// Structure imports
-      using action_t    = DigiAction;
       using self_t      = DigiContainerSequenceAction;
-      using processor_t = DigiContainerProcessor;
-      using output_t    = processor_t::output_t;
-      using property_t  = processor_t::property_t;
-
-      /// Single worker work item definition
-      struct work_item_t  {
-	Key key;
-	std::any* data;
-      };
-      /// Work definition structure
-      /// Argument structure for client calls
+      /// Work definition structure: Argument structure for client calls
       struct work_t  {
-	context_t&             context;
-	std::vector<work_item_t> input_items;
-	output_t&                output;
-	const property_t&        properties;
-	const self_t&            parent;
+	env_t&              environ;
+	work_items_t&       input_items;
+	const self_t&       parent;
       };
 
-      using worker_t         = DigiParallelWorker<processor_t, work_t>;
+      using worker_t         = DigiParallelWorker<processor_t, work_t, std::size_t, self_t&>;
       using workers_t        = DigiParallelWorkers<worker_t>;
+      using predicate_t      = processor_t::predicate_t;
       using reg_workers_t    = std::map<Key, worker_t*>;
       using reg_processors_t = std::map<Key, processor_t*>;
-      friend class DigiParallelWorker<processor_t, work_t>;
+      friend class DigiParallelWorker<processor_t, work_t, std::size_t, self_t&>;
+
+      /// Property: Input data segment name
+      std::string              m_input_segment         { "inputs" };
+      /// Property: Input mask to be handled
+      int                      m_input_mask            { 0x0 };
+      /// Property: Input data segment name
+      std::string              m_output_segment        { "outputs" };
+      /// Property: event mask for output data
+      int                      m_output_mask           { 0x0 };
 
       /// Array of sub-workers
-      workers_t          m_workers;
+      workers_t                m_workers               { };
       /// Registered action map
-      reg_processors_t   m_registered_processors;
+      reg_processors_t         m_registered_processors { };
       /// Registered worker map
-      reg_workers_t      m_registered_workers;
-
-      /// Property: Input data segment name
-      std::string        m_input_segment  { "inputs" };
-      /// Property: Input mask to be handled
-      int                m_input_mask     { 0x0 };
-      /// Property: Input data segment name
-      std::string        m_output_segment { "outputs" };
-      /// Property: event mask for output data
-      int                m_output_mask    { 0x0 };
+      reg_workers_t            m_registered_workers    { };
+      /// Default Deposit predicate
+      predicate_t              m_worker_predicate      { processor_t::accept_all() };
 
       /// Lock for output merging
-      mutable std::mutex m_output_lock;
+      mutable std::mutex       m_output_lock           { };
       
     protected:
       /// Define standard assignments and constructors
@@ -273,6 +301,8 @@ namespace dd4hep {
     public:
       /// Standard constructor
       DigiContainerSequenceAction(const kernel_t& kernel, const std::string& name);
+      /// Set the default predicate
+      void set_predicate(const predicate_t& predicate);
       /// Adopt new parallel worker acting on one single container
       void adopt_processor(DigiContainerProcessor* action, const std::string& container);
       /// Adopt new parallel worker acting on multiple containers
@@ -288,36 +318,30 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiMultiContainerProcessor : virtual public DigiEventAction   {
+    class DigiMultiContainerProcessor : public DigiEventAction, public DigiMultiProcessorParent   {
     protected:
       using self_t        = DigiMultiContainerProcessor;
-      using processor_t   = DigiContainerProcessor;
       using worker_keys_t = std::vector<std::vector<Key> >;
-      using work_items_t  = std::vector<std::pair<Key, std::any*> >;
-      using output_t      = processor_t::output_t;
-      using property_t    = processor_t::property_t;
 
       /// Argument structure required to support multiple client calls
       struct work_t  {
-	context_t&        context;
-	work_items_t&     items;
-	output_t&         output;
-	const property_t& properties;
-	const self_t&     parent;
+	env_t&              environ;
+	work_items_t&       items;
+	const self_t&       parent;
       };
-      using worker_t      = DigiParallelWorker<processor_t, work_t>;
+      using worker_t      = DigiParallelWorker<processor_t, work_t, std::size_t, self_t&>;
       using workers_t     = DigiParallelWorkers<worker_t>;
-      friend class DigiParallelWorker<processor_t, work_t>;
+      friend class DigiParallelWorker<processor_t, work_t, std::size_t, self_t&>;
 
     protected:
       /// Property: Input data segment name
-      std::string        m_input_segment { "inputs" };
+      std::string        m_input_segment  { "inputs" };
       /// Property: event masks to be handled
-      std::vector<int>   m_input_masks  { };
+      std::vector<int>   m_input_masks    { };
       /// Property: Input data segment name
       std::string        m_output_segment { "outputs" };
       /// Property: event mask for output data
-      int                m_output_mask  { 0x0 };
+      int                m_output_mask    { 0x0 };
 
       /// Set of container names to be used by this processor
       std::map<std::string, std::vector<processor_t*> >    m_processors;
@@ -329,11 +353,13 @@ namespace dd4hep {
       worker_keys_t             m_worker_keys;
       /// Ordered list of actions registered
       std::vector<processor_t*> m_actions;
+      /// Default Deposit predicate
+      predicate_t               m_worker_predicate = processor_t::accept_all();
       /// Lock for output merging
       mutable std::mutex        m_output_lock;
 
       /// Array of sub-workers
-      workers_t          m_workers;
+      workers_t                 m_workers;
 
     protected:
        /// Define standard assignments and constructors
@@ -352,6 +378,8 @@ namespace dd4hep {
       const std::vector<int>& input_masks()  const   {
 	return this->m_input_masks;
       }
+      /// Set the default predicate
+      void set_predicate(const predicate_t& predicate);
       /// Adopt new parallel worker
       void adopt_processor(DigiContainerProcessor* action, const std::vector<std::string>& containers);
       /// Main functional callback

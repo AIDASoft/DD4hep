@@ -95,4 +95,12 @@ if (DD4HEP_USE_GEANT4)
     REGEX_PASS " \\[2\\] Calling classifyNewTrack. StackManager"
     REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
+  #
+  # Test G4 command UI
+  dd4hep_add_test_reg( DDG4_UIManager
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${DDG4examples_INSTALL}/scripts/TestUserCommands.py
+    REGEX_PASS " Parameter value at call 13 is 'terminate-command-2'"
+    REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
 endif()

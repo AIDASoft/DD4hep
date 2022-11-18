@@ -22,6 +22,9 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
+    /// Forward declarations
+    class WorkerPredicate;
+
     /// Wrapper class to submit bulk actions
     /**
      *
@@ -48,19 +51,21 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    template <typename ACTION_TYPE, typename CALLDATA, typename OPTIONS=std::size_t>
+    template <typename ACTION_TYPE, typename CALLDATA, typename OPTIONS=std::size_t, typename PREDICATE=std::size_t>
       class DigiParallelWorker : public ParallelWorker   {
     public:
     using action_t = ACTION_TYPE;
     using options_t = OPTIONS;
     using calldata_t = CALLDATA;
-    
-    action_t* action   { nullptr };
-    options_t options  { nullptr };
+    using predicate_t = PREDICATE;
+
+    action_t*        action    { nullptr };
+    options_t        options   { nullptr };
+    predicate_t      predicate { nullptr };
 
     public:
     /// Initializing constructor
-    DigiParallelWorker(ACTION_TYPE* p, const OPTIONS& opts);
+    DigiParallelWorker(action_t* a, const options_t& opts, const predicate_t& p={});
     /// Default constructor
     DigiParallelWorker() = delete;
     /// Move constructor
@@ -80,16 +85,16 @@ namespace dd4hep {
     };
 
     /// Initializing constructor
-    template <typename ACTION_TYPE, typename CALLDATA, typename OPTIONS>
-      DigiParallelWorker<ACTION_TYPE, CALLDATA, OPTIONS>::DigiParallelWorker(ACTION_TYPE* proc, const OPTIONS& opts)
-      : ParallelWorker(), action(proc), options(opts)
+    template <typename ACTION_TYPE, typename CALLDATA, typename OPTIONS, typename PREDICATE>
+      DigiParallelWorker<ACTION_TYPE, CALLDATA, OPTIONS, PREDICATE>::DigiParallelWorker(action_t* a, const options_t& o, const predicate_t& p)
+      : ParallelWorker(), action(a), options(o), predicate(p)
     {
       if ( action ) action->addRef();
     }
 
     /// Default destructor
-    template <typename ACTION_TYPE, typename CALLDATA, typename OPTIONS>
-      DigiParallelWorker<ACTION_TYPE, CALLDATA, OPTIONS>::~DigiParallelWorker()   {
+    template <typename ACTION_TYPE, typename CALLDATA, typename OPTIONS, typename PREDICATE>
+      DigiParallelWorker<ACTION_TYPE, CALLDATA, OPTIONS, PREDICATE>::~DigiParallelWorker()   {
       if ( action )   {
 	action->release();
 	action = nullptr;

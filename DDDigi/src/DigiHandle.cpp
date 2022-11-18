@@ -184,6 +184,12 @@ namespace dd4hep {
 
     KernelHandle::KernelHandle(DigiKernel* k) : value(k)  {
     }
+
+    Property& KernelHandle::operator[](const string& property_name) const {
+      PropertyManager& pm = checked_value(value)->properties();
+      return pm[property_name];
+    }
+
   }
 }
 

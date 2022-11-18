@@ -58,8 +58,14 @@ namespace dd4hep {
       std::string m_uiSetup;
       /// Property: Name of the visualization macro file
       std::string m_visSetup;
-      /// Property: Array of macro files to be chained
-      std::vector<std::string> m_commands;
+      /// Property: Array of macro files to be chained and executed when the Geant4Kernel gets configured
+      std::vector<std::string> m_configureCommands;
+      /// Property: Array of macro files to be chained and executed when the Geant4Kernel gets initialized
+      std::vector<std::string> m_initializeCommands;
+      /// Property: Array of macro files to be chained and executed when the Geant4Kernel gets terminated
+      std::vector<std::string> m_terminateCommands;
+      /// Property: Array of macro files to be chained and executed BEFORE running
+      std::vector<std::string> m_preRunCommands;
       /// Property: Array of macro files to be chained and executed AFTER running
       std::vector<std::string> m_postRunCommands;
       /// Property: Array of commands to be chained
@@ -74,11 +80,20 @@ namespace dd4hep {
       G4VisManager* m_vis;
       /// Reference to Geant4 UI manager
       G4UIExecutive*  m_ui;
+
     public:
       /// Initializing constructor
       Geant4UIManager(Geant4Context* context, const std::string& name);
       /// Default destructor
       virtual ~Geant4UIManager();
+
+      /// Configure the object. Callback registered to the Geant4Kernel.
+      void configure();
+      /// Initialize the object. Callback registered to the Geant4Kernel.
+      void initialize();
+      /// Callback on terminate. Callback registered to the Geant4Kernel.
+      void terminate();
+
       /// Install command control messenger to write GDML file from command prompt.
       void installCommandMessenger();
       /// Start visualization
@@ -93,7 +108,9 @@ namespace dd4hep {
       void forceExit();
       /// Regularly exiting this process without calling atexit handlers
       void regularExit();
-	/// Run UI
+      /// Apply single command
+      void applyCommand(const std::string& command);
+      /// Run UI
       virtual void operator()(void* param);
     };
 

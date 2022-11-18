@@ -17,14 +17,13 @@ def run():
   digi = DigiTest.Test(geometry=None)
   digi.load_geo(volume_manager=True)
 
-  event = DigiTest.test_setup_1(digi)
+  event = DigiTest.test_setup_1(digi, print_level=DigiTest.INFO, parallel=False)
   # ========================================================================================================
   proc = event.adopt_action('DigiContainerSequenceAction/Smearing',
                             parallel=False,
                             input_mask=0xEEE5,
                             input_segment='deposits')
   smear = digi.create_action('DigiDepositSmearPositionTrack/Smear',
-                             deposit_cutoff=1e-55 * units.MeV,
                              resolution_u=1e-2 * units.mm,
                              resolution_v=1e-2 * units.mm)
   proc.adopt_container_processor(smear, ['SiVertexEndcapHits', 'SiVertexBarrelHits',

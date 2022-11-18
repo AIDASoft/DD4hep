@@ -71,7 +71,7 @@ public:
       }
     }
     ::snprintf(format, sizeof(format),
-	       "%s+++%%2d++ %%-32s Mask: $%04X Input: $%%04X Merged %%6ld %%s",
+	       "%s Thread:%%2d+++ %%-32s Out-Mask: $%04X In-Mask: $%%04X Merged %%6ld %%s",
 	       event.id(), combine->m_deposit_mask);
     format[sizeof(format)-1] = 0;
   }
@@ -90,7 +90,7 @@ public:
       cnt = output.merge(std::move(input));
     else
       cnt = output.insert(input);
-    combine->debug(this->format, thr, nam.c_str(), mask, cnt, "deposits"); 
+    combine->info(this->format, thr, nam.c_str(), mask, cnt, "deposits"); 
     this->cnt_depos += cnt;
     this->cnt_conts++;
   }
@@ -105,7 +105,7 @@ public:
 	DetectorHistory* next = std::any_cast<DetectorHistory>(work[j]);
 	std::string next_name = next->name;
 	cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
-	combine->debug(format, thr, next_name.c_str(), keys[j].mask(), cnt, "histories"); 
+	combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "histories"); 
 	used_keys_insert(keys[j]);
 	cnt_hist += cnt;
 	cnt_conts++;
@@ -124,7 +124,7 @@ public:
 	DetectorResponse* next = std::any_cast<DetectorResponse>(work[j]);
 	std::string next_name = next->name;
 	cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
-	combine->debug(format, thr, next_name.c_str(), keys[j].mask(), cnt, "histories"); 
+	combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "responses"); 
 	used_keys_insert(keys[j]);
 	cnt_response += cnt;
 	cnt_conts++;
@@ -143,7 +143,7 @@ public:
 	ParticleMapping* next = std::any_cast<ParticleMapping>(work[j]);
 	std::string next_name = next->name;
 	cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
-	combine->debug(format, thr, next_name.c_str(), keys[j].mask(), cnt, "particles"); 
+	combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "particles"); 
 	used_keys_insert(keys[j]);
 	cnt_parts += cnt;
 	cnt_conts++;

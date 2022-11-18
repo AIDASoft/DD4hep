@@ -419,9 +419,9 @@ namespace dd4hep {
 
     /// Construct electro magnetic field entity from the dd4hep field
     G4VPhysicalVolume* Geant4UserDetectorConstruction::Construct()    {
-      // The G4TransportationManager is thread-local. 
-      // Thus, regardless of whether the field class object is global or local 
-      // to a certain volume, a field object must be assigned to G4FieldManager.
+      /// The G4TransportationManager is thread-local. 
+      /// Thus, regardless of whether the field class object is global or local 
+      /// to a certain volume, a field object must be assigned to G4FieldManager.
       G4AutoLock protection_lock(&action_mutex);
       updateContext(m_sequence->context());
       m_sequence->constructGeo(&m_ctxt);
@@ -447,33 +447,33 @@ namespace dd4hep {
         m_sequence->build();
         m_sequence->updateContext(old);
       }
-      // Set user generator action sequence. Not optional, since event context is defined inside
+      /// Set user generator action sequence. Not optional, since event context is defined inside
       Geant4UserGeneratorAction* gen_action = new Geant4UserGeneratorAction(ctx,krnl.generatorAction(false));
       SetUserAction(gen_action);
 
-      // Set the run action sequence. Not optional, since run context is defined/destroyed inside
+      /// Set the run action sequence. Not optional, since run context is defined/destroyed inside
       Geant4UserRunAction* run_action = new Geant4UserRunAction(ctx,krnl.runAction(false));
       SetUserAction(run_action);
 
-      // Set the event action sequence. Not optional, since event context is destroyed inside
+      /// Set the event action sequence. Not optional, since event context is destroyed inside
       Geant4UserEventAction* evt_action = new Geant4UserEventAction(ctx,krnl.eventAction(false));
       run_action->eventAction = evt_action;
       evt_action->runAction = run_action;
       SetUserAction(evt_action);
 
-      // Set the tracking action sequence
+      /// Set the tracking action sequence
       Geant4TrackingActionSequence* trk_action = krnl.trackingAction(false);
       if ( trk_action ) {
         Geant4UserTrackingAction* action = new Geant4UserTrackingAction(ctx, trk_action);
         SetUserAction(action);
       }
-      // Set the stepping action sequence
+      /// Set the stepping action sequence
       Geant4SteppingActionSequence* stp_action = krnl.steppingAction(false);
       if ( stp_action ) {
         Geant4UserSteppingAction* action = new Geant4UserSteppingAction(ctx, stp_action);
         SetUserAction(action);
       }
-      // Set the stacking action sequence
+      /// Set the stacking action sequence
       Geant4StackingActionSequence* stk_action = krnl.stackingAction(false);
       if ( stk_action ) {
         Geant4UserStackingAction* action = new Geant4UserStackingAction(ctx, stk_action);
@@ -530,14 +530,14 @@ Geant4DetectorConstructionSequence* Geant4Compatibility::buildDefaultDetectorCon
   Geant4DetectorConstructionSequence* seq = kernel.detectorConstruction(true);
   printout(WARNING, "Geant4Exec", "+++ Building default Geant4DetectorConstruction for single threaded compatibility.");
 
-  // Attach first the geometry converter from dd4hep to Geant4
+  /// Attach first the geometry converter from dd4hep to Geant4
   cr = PluginService::Create<Geant4Action*>("Geant4DetectorGeometryConstruction",ctx,string("ConstructGeometry"));
   det_cr = dynamic_cast<Geant4DetectorConstruction*>(cr);
   if ( det_cr ) 
     seq->adopt(det_cr);
   else
     throw runtime_error("Panic! Failed to build Geant4DetectorGeometryConstruction.");
-  // Attach the sensitive detector manipulator:
+  /// Attach the sensitive detector manipulator:
   cr = PluginService::Create<Geant4Action*>("Geant4DetectorSensitivesConstruction",ctx,string("ConstructSensitives"));
   det_cr = dynamic_cast<Geant4DetectorConstruction*>(cr);
   if ( det_cr )
@@ -561,17 +561,17 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   Geant4Random::setMainInstance(rndm);
   kernel.executePhase("configure",0);
 
-  // Construct the default run manager
+  /// Construct the default run manager
   G4RunManager& runManager = kernel.runManager();
 
-  // Check if the geometry was loaded
+  /// Check if the geometry was loaded
   if (description.sensitiveDetectors().size() <= 1) {
     printout(WARNING, "Geant4Exec", "+++ Only %d subdetectors present. "
              "You sure you loaded the geometry properly?",
              int(description.sensitiveDetectors().size()));
   }
 
-  // Get the detector constructed
+  /// Get the detector constructed
   Geant4DetectorConstructionSequence* user_det = kernel.detectorConstruction(false);
   if ( 0 == user_det && kernel.isMultiThreaded() )   {
     throw runtime_error("Panic! No valid detector construction sequencer present. [Mandatory MT]");
@@ -582,7 +582,7 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   Geant4UserDetectorConstruction* det_seq = new Geant4UserDetectorConstruction(ctx,user_det);
   runManager.SetUserInitialization(det_seq);
 
-  // Get the physics list constructed
+  /// Get the physics list constructed
   Geant4PhysicsListActionSequence* phys_seq = kernel.physicsList(false);
   if ( 0 == phys_seq )   {
     string phys_model = "QGSP_BERT";
@@ -603,13 +603,13 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   phys_seq->enable(physics);
   runManager.SetUserInitialization(physics);
 
-  // Construct the remaining user initialization in multi-threaded mode
+  /// Construct the remaining user initialization in multi-threaded mode
   Geant4UserInitializationSequence* user_init = kernel.userInitialization(false);
   if ( 0 == user_init && kernel.isMultiThreaded() )   {
     throw runtime_error("Panic! No valid user initialization sequencer present. [Mandatory MT]");
   }
   else if ( 0 == user_init && !kernel.isMultiThreaded() )  {
-    // Use default actions registered to the default kernel. Will do the right thing...
+    /// Use default actions registered to the default kernel. Will do the right thing...
     user_init = kernel.userInitialization(true);
   }
   Geant4UserActionInitialization* init = new Geant4UserActionInitialization(ctx,user_init);
@@ -619,11 +619,11 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
 
 /// Initialize the simulation
 int Geant4Exec::initialize(Geant4Kernel& kernel) {
-  // Construct the default run manager
+  /// Construct the default run manager
   G4RunManager& runManager = kernel.runManager();
-  //
-  // Initialize G4 engine
-  //
+  ///
+  /// Initialize G4 engine
+  ///
   kernel.executePhase("initialize",0);
   runManager.Initialize();
   return 1;
@@ -640,7 +640,7 @@ int Geant4Exec::run(Geant4Kernel& kernel) {
     if ( ui )  {
       Geant4Call* c = dynamic_cast<Geant4Call*>(ui);
       if ( c )  {
-        (*c)(0);
+        (*c)(nullptr);
         kernel.executePhase("stop",0);
         return 1;
       }

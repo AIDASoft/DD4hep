@@ -14,7 +14,6 @@ from dd4hep_base import *  # noqa: F401, F403
 
 logger = None
 
-
 def loadDDDigi():
   global logger
   import ROOT
@@ -137,28 +136,6 @@ def importConstants(description, namespace=None, debug=False):
     logger.info('+++ Imported %d global values to namespace:%s' % (num, ns.__name__),)
 
 
-# ---------------------------------------------------------------------------
-def _getKernelProperty(self, name):
-  ret = Interface.getPropertyKernel(self.get(), name)
-  if ret.status > 0:
-    return ret.data
-  elif hasattr(self.get(), name):
-    return getattr(self.get(), name)
-  elif hasattr(self, name):
-    return getattr(self, name)
-  msg = 'DigiKernel::GetProperty [Unhandled]: Cannot access Kernel.' + name
-  raise KeyError(msg)
-
-
-# ---------------------------------------------------------------------------
-def _setKernelProperty(self, name, value):
-  if Interface.setPropertyKernel(self.get(), str(name), str(value)):
-    return
-  msg = 'DigiKernel::SetProperty [Unhandled]: Cannot set Kernel.' + name + ' = ' + str(value)
-  raise KeyError(msg)
-# ---------------------------------------------------------------------------
-
-
 def TestAction(kernel, nam, sleep=0):
   obj = Interface.createAction(kernel, str('DigiTestAction/' + nam))
   if sleep != 0:
@@ -176,57 +153,51 @@ def Action(kernel, nam, **options):
 
 
 def _get_action(self):
+  " Convert handles to action references to access underlying properties provided a dictionary exists. "
   return Interface.toAction(self)
-  # if hasattr(self, 'I_am_a_ROOT_interface_handle'):
-  #   return Interface.toAction(self.get())
-  # return self
+
+
 # ---------------------------------------------------------------------------
-
-
-def _adopt_property(self, action, foreign_name, local_name):
+def _adopt_property(self, action, foreign_name, local_name=None):
   proc = _get_action(action)
+  if not local_name:
+    local_name = foreign_name
   _get_action(self).adopt_property(proc, str(foreign_name), str(local_name))
 
 
 # ---------------------------------------------------------------------------
-def _add_property(self, name, value):
+def _add_new_property(self, name, value):
   Interface.addProperty(_get_action(self), str(name), value)
 
 
 # ---------------------------------------------------------------------------
-def _add_position_property(self, name, value):
+def _add_new_position_property(self, name, value):
   Interface.addPositionProperty(_get_action(self), str(name), str(value))
 
 
 # ---------------------------------------------------------------------------
-def _add_set_property(self, name, value):
+def _add_new_set_property(self, name, value):
   Interface.addSetProperty(_get_action(self), str(name), value)
 
 
 # ---------------------------------------------------------------------------
-def _add_list_property(self, name, value):
+def _add_new_list_property(self, name, value):
   Interface.addListProperty(_get_action(self), str(name), value)
 
 
 # ---------------------------------------------------------------------------
-def _add_vector_property(self, name, value):
+def _add_new_vector_property(self, name, value):
   Interface.addVectorProperty(_get_action(self), str(name), value)
 
 
 # ---------------------------------------------------------------------------
-def _add_mapped_property(self, name, value):
+def _add_new_mapped_property(self, name, value):
   Interface.addMappedProperty(_get_action(self), str(name), value)
-
-
 # ---------------------------------------------------------------------------
+
+
 def _kernel_terminate(self):
   return self.get().terminate()
-
-
-# ---------------------------------------------------------------------------
-Kernel.__getattr__ = _getKernelProperty
-Kernel.__setattr__ = _setKernelProperty
-Kernel.terminate = _kernel_terminate
 # ---------------------------------------------------------------------------
 
 
@@ -281,11 +252,17 @@ def _get(self, name):
   a = Interface.toAction(self)
   ret = Interface.getProperty(a, name)
   if ret.status > 0:
-    return ret.data
-  elif hasattr(self.action, name):
-    return getattr(self.action, name)
-  elif a.__class__ != self.__class__ and hasattr(a, name):
+    # print('Property: %s = %s [%s]' % (name, str(ret.data), str(ret.data.__class__),))
+    v = ret.data
+    try:
+      v = eval(v)
+    except:
+      pass
+    return v
+  elif hasattr(a, name):
     return getattr(a, name)
+  # elif a.__class__ != self.__class__ and hasattr(a, name):
+  #   return getattr(a, name)
   msg = 'DigiAction::GetProperty [Unhandled]: Cannot access property ' + a.name() + '.' + name
   raise KeyError(msg)
 # ---------------------------------------------------------------------------
@@ -294,12 +271,15 @@ def _get(self, name):
 def _set(self, name, value):
   """This function is called when properties are passed to the c++ objects."""
   import dd4hep as dd4hep
-  action = _get_action(self)
-  name = dd4hep.unicode_2_string(name)
-  value = dd4hep.unicode_2_string(value)
-  if Interface.setProperty(action, name, value):
+  act = _get_action(self)
+  nam = dd4hep.unicode_2_string(name)
+  if isinstance(value,str):
+    val = dd4hep.unicode_2_string(value)
+  else:
+    val = str(value)
+  if Interface.setProperty(act, nam, val):
     return
-  msg = 'DigiAction::SetProperty [Unhandled]: Cannot set ' + action.name() + '.' + name + ' = ' + value
+  msg = 'DigiAction::SetProperty [Unhandled]: Cannot set ' + act.name() + '.' + name + ' = ' + value
   raise KeyError(msg)
 # ---------------------------------------------------------------------------
 
@@ -314,7 +294,7 @@ def _props(obj, **extensions):
       # print('Overloading: ' + str(cls) + ' ' + call + ' to __' + call)
       setattr(cls, '__' + call, getattr(cls, call))
     else:
-      print('FAILED: Overloading: ' + str(cls) + ' ' + call + ' to __' + call + ' ' + str(hasattr(cls, call)))
+      debug('FAILED','Overloading: ' + str(cls) + ' ' + call + ' to __' + call + ' ' + str(hasattr(cls, call)))
     setattr(cls, call, extension[1])
   cls.__getattr__ = _get
   cls.__setattr__ = _set
@@ -324,21 +304,25 @@ def _props(obj, **extensions):
 
 #
 # Import unmodified classes from C++
-_import_class('digi', 'DigiKernel')
 _import_class('digi', 'DigiContext')
-_import_class('digi', 'DigiAction')
+
+
+# ---------------------------------------------------------------------------
+Kernel = _props('KernelHandle')
+_props('DigiKernel')
+_props('DigiAction')
 _import_class('digi', 'DigiEventAction')
 _import_class('digi', 'DigiInputAction')
 #
 # Import classes with specialized python extensions
 _props('ActionHandle',
        adopt_property=_adopt_property,
-       add_property=_add_property,
-       add_position_property=_add_position_property,
-       add_set_property=_add_set_property,
-       add_list_property=_add_list_property,
-       add_vector_property=_add_vector_property,
-       add_mapped_property=_add_mapped_property)
+       add_property=_add_new_property,
+       add_position_property=_add_new_position_property,
+       add_set_property=_add_new_set_property,
+       add_list_property=_add_new_list_property,
+       add_vector_property=_add_new_vector_property,
+       add_mapped_property=_add_new_mapped_property)
 _props('DigiSynchronize', adopt=_adopt_event_action, adopt_action=_adopt_sequence_action)
 _props('DigiActionSequence', adopt=_adopt_event_action, adopt_action=_adopt_sequence_action)
 _props('DigiParallelActionSequence', adopt_action=_adopt_sequence_action)
@@ -346,11 +330,17 @@ _props('DigiSequentialActionSequence', adopt_action=_adopt_sequence_action)
 _props('DigiContainerSequenceAction', adopt_container_processor=_adopt_container_processor)
 _props('DigiMultiContainerProcessor', adopt_processor=_adopt_processor)
 _props('DigiSegmentSplitter', adopt_segment_processor=_adopt_segment_processor)
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
 #
 # Need to import digitize late, since it cross includes dddigi
+# ---------------------------------------------------------------------------
 Digitize = None
 try:
   import digitize
   Digitize = digitize.Digitize
 except Exception as X:
-  logger.error('Failed to import digitize: ' + str(X))
+  logger.error('Failed to import digitize application: ' + str(X))
+# ---------------------------------------------------------------------------

@@ -32,42 +32,27 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiDepositRecalibEnergy : public DigiContainerProcessor   {
+    class DigiDepositRecalibEnergy : public DigiDepositsProcessor   {
     protected:
       /// Property: Polynomial parameters to recalibrate the energy
       std::vector<double> m_polynomial        {  };
       /// Property: Energy base point to compute delta(energy)
       double              m_e0                { 0e0 };
-      /// Property: Flag to update existing container in-place or create a new container
-      bool                m_update_in_place   { true };
 
     public:
       /// Standard constructor
       DigiDepositRecalibEnergy(const DigiKernel& krnl, const std::string& nam)
-	: DigiContainerProcessor(krnl, nam)
+	: DigiDepositsProcessor(krnl, nam)
       {
 	declareProperty("e0", m_e0);
 	declareProperty("parameters" , m_polynomial);
-	InstanceCount::increment(this);
-      }
-
-      /// Default destructor
-      virtual ~DigiDepositRecalibEnergy() {
-	InstanceCount::decrement(this);
+	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositRecalibEnergy::recalibrate_deposit_energy)
       }
 
       /// Create deposit mapping with updates on same cellIDs
-      template <typename T> void recalibrate_deposit_energy(DigiContext& context,
-							    T& cont,
-							    work_t& work,
-							    const predicate_t& predicate)  const  {
-	T output_cont(cont.name, work.output.mask);
+      template <typename T> void 
+      recalibrate_deposit_energy(DigiContext& context, T& cont, work_t& /* work */, const predicate_t& predicate)  const  {
 	std::size_t updated = 0UL;
-	std::size_t created = 0UL;
-	std::size_t killed  = 0UL;
-
-	info("%s+++ Recalibrarting deposit container: %s %6ld entries",
-	     context.event->id(), cont.name.c_str(), cont.size());
 	for( auto& dep : cont )    {
 	  if ( predicate(dep) )   {
 	    double deposit = dep.second.deposit;
@@ -77,39 +62,14 @@ namespace dd4hep {
 	      deposit += param * fac;
 	      fac     *= delta_E;
 	    }
-	    if ( m_update_in_place )   {
-	      EnergyDeposit& d = dep.second;
-	      d.deposit = deposit;
-	      d.flag |= EnergyDeposit::RECALIBRATED;
-	      ++updated;
-	    }
-	    else if ( !(dep.second.flag&EnergyDeposit::KILLED) )  {
-	      EnergyDeposit d(dep.second);
-	      d.deposit = deposit;
-	      d.flag |= EnergyDeposit::RECALIBRATED;
-	      output_cont.emplace(dep.first, std::move(d));
-	      ++created;
-	    }
-	    else  {
-	      ++killed;
-	    }
+	    if ( m_monitor ) m_monitor->energy_shift(dep, delta_E);
+	    dep.second.deposit = deposit;
+	    dep.second.flag |= EnergyDeposit::RECALIBRATED;
+	    ++updated;
 	  }
 	}
-	if ( !m_update_in_place )   {
-	  work.output.data.put(output_cont.key, std::move(output_cont));
-	}
-	info("%s+++ %-32s Smearing: created %6ld updated %6ld killed %6ld entries from mask: %04X",
-	     context.event->id(), cont.name.c_str(), created, updated, killed, cont.key.mask());
-      }
-
-      /// Main functional callback
-      virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const override final  {
-	if ( auto* v = work.get_input<DepositVector>() )
-	  recalibrate_deposit_energy(context, *v, work, predicate);
-	else if ( auto* m = work.get_input<DepositMapping>() )
-	  recalibrate_deposit_energy(context, *m, work, predicate);
-	else
-	  except("Request to handle unknown data type: %s", work.input_type_name().c_str());
+	info("%s+++ %-32s Recalibrating: updated %6ld out of %6ld entries from mask: %04X",
+	     context.event->id(), cont.name.c_str(), updated, cont.size(), cont.key.mask());
       }
     };
   }    // End namespace digi

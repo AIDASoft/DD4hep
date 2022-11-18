@@ -102,7 +102,7 @@ namespace dd4hep {
 
     protected:
 #else
-      const kernel_t&  m_kernel;
+      const kernel_t&    m_kernel;
 #endif
       /// Action name
       std::string        m_name;
@@ -156,6 +156,7 @@ namespace dd4hep {
       /// Set the output level; returns previous value
       PrintLevel setOutputLevel(PrintLevel new_level);
       
+      /** Property access                            */
       /// Declare property
       template <typename T> DigiAction& declareProperty(const std::string& nam, T& val);
       /// Declare property
@@ -170,6 +171,8 @@ namespace dd4hep {
       Property& property(const std::string& name);
       /// Access single property (CONST)
       const Property& property(const std::string& name)  const;
+      /// Print the property values
+      virtual std::size_t printProperties() const;
 
       /// Adopt named property of another action for data processing
       virtual void adopt_property(DigiAction* action, const std::string& foreign_name, const std::string& local_name);
@@ -177,10 +180,13 @@ namespace dd4hep {
       /// Adopt named tool to delegate actions
       virtual void adopt_tool(DigiAction* action, const std::string& typ);
 
+      /** Support for output messages       */
       /// Support for messages with variable output level using output level
       void print(const char* fmt, ...) const;
       /// Support for building formatted messages
       std::string format(const char* fmt, ...) const;
+      /// Support of messages always printed.
+      void always(const char* fmt, ...) const;
       /// Support of debug messages.
       void debug(const char* fmt, ...) const;
       /// Support of info messages.

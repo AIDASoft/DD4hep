@@ -135,7 +135,7 @@ size_t PropertyManager::size()  const   {
   return m_properties.size();
 }
 
-/// Export properties of another instance
+/// Import properties of another instance
 void PropertyManager::adopt(const PropertyManager& copy)   {
   m_properties = copy.m_properties;
 }

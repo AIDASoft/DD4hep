@@ -17,13 +17,13 @@
 //====================================================================
 
 // Framework include files
-#include "DDG4/DDG4Dict.h"
-#include "DDG4/Geant4Config.h"
-#include "DDG4/Geant4Primary.h"
-#include "DDG4/Geant4Random.h"
-#include "DDG4/Geant4DataDump.h"
-#include "DDG4/Geant4InputAction.h"
-#include "DDG4/Geant4GeneratorWrapper.h"
+#include <DDG4/DDG4Dict.h>
+#include <DDG4/Geant4Config.h>
+#include <DDG4/Geant4Primary.h>
+#include <DDG4/Geant4Random.h>
+#include <DDG4/Geant4DataDump.h>
+#include <DDG4/Geant4InputAction.h>
+#include <DDG4/Geant4GeneratorWrapper.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -205,7 +205,8 @@ namespace dd4hep {
 
 typedef dd4hep::sim::Geant4ActionCreation Geant4ActionCreation;
 
-#include "DD4hep/detail/DetectorInterna.h"
+#include <DD4hep/detail/DetectorInterna.h>
+#include <DDG4/Geant4UIManager.h>
 
 // CINT configuration
 #if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
@@ -325,6 +326,7 @@ typedef dd4hep::sim::Geant4ActionCreation Geant4ActionCreation;
 #pragma link C++ class dd4hep::sim::Geant4DataDump;
 #pragma link C++ class dd4hep::sim::Geant4Random;
 #pragma link C++ class dd4hep::sim::Geant4ParticleHandler;
+#pragma link C++ class dd4hep::sim::Geant4UIManager;
 #pragma link C++ class dd4hep::sim::Geant4UserParticleHandler;
 
 
@@ -335,7 +337,7 @@ typedef dd4hep::sim::Geant4ActionCreation Geant4ActionCreation;
 #endif
 
 // CLHEP stuff
-#include "CLHEP/Random/Random.h"
+#include <CLHEP/Random/Random.h>
 #if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
 
 #pragma link C++ namespace CLHEP;

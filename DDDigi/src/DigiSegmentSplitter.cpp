@@ -50,7 +50,7 @@ template <> void DigiParallelWorker<DigiContainerProcessor,
 				    DigiContainerProcessor::work_t,
 				    DigiSegmentProcessContext>::execute(void* ptr) const  {
   calldata_t* args  = reinterpret_cast<calldata_t*>(ptr);
-  action->execute(args->context, *args, this->options.predicate);
+  action->execute(args->environ.context, *args, this->options.predicate);
 }
 
 /// Standard constructor

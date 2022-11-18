@@ -13,13 +13,16 @@
 #ifndef DDDIGI_DIGIKERNEL_H
 #define DDDIGI_DIGIKERNEL_H
 
-// Framework include files
-#include <DDDigi/DigiEventAction.h>
+/// Framework include files
+#include <DDDigi/DigiActionSequence.h>
 #include <DDDigi/DigiParallelWorker.h>
 
-// C/C++ include files
+/// C/C++ include files
 #include <mutex>
 #include <memory>
+
+/// Forward declarations
+class TH1;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -39,7 +42,7 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiKernel  {
+    class DigiKernel : public DigiAction   {
     public:
       typedef std::map<std::string,int>                 ClientOutputLevels;
       typedef std::pair<void*, const std::type_info*>   UserFramework;
@@ -100,24 +103,10 @@ namespace dd4hep {
       std::mutex& global_output_lock()   const;
       
       /** Property access                            */
-      /// Access to the properties of the object
-      PropertyManager& properties();
       /// Print the property values
-      void printProperties() const;
-      /// Declare property
-      template <typename T> DigiKernel& declareProperty(const std::string& nam, T& val);
-      /// Declare property
-      template <typename T> DigiKernel& declareProperty(const char* nam, T& val);
-      /// Check property for existence
-      bool hasProperty(const std::string& name) const;
-      /// Access single property
-      Property& property(const std::string& name);
+      virtual std::size_t printProperties() const  override;
 
-      /** Output level settings                       */
-      /// Access the output level
-      PrintLevel outputLevel() const;
-      /// Set the global output level of the kernel object; returns previous value
-      PrintLevel setOutputLevel(PrintLevel new_level);
+      /** Client output level settings               */
       /// Fill cache with the global output level of a named object. Must be set before instantiation
       void setOutputLevel(const std::string object, PrintLevel new_level);
       /// Retrieve the global output level of a named object.
@@ -140,6 +129,9 @@ namespace dd4hep {
       void register_start_event(const std::function<void(DigiContext&)>& callback)   const;
       /// Register end event callback. Signature:   (function)(DigiContext*)
       void register_end_event(const std::function<void(DigiContext&)>& callback)   const;
+
+      /// Registration of monitoring objects eventually saved by the handler
+      void register_monitor(DigiAction* action, TNamed* histo)  const;
 
       /// Construct detector geometry using description plugin
       virtual void loadGeometry(const std::string& compact_file);
@@ -172,18 +164,6 @@ namespace dd4hep {
       virtual void wait(DigiContext& context)   const;
 
     };
-
-    /// Declare property
-    template <typename T> inline DigiKernel& DigiKernel::declareProperty(const std::string& nam, T& val) {
-      properties().add(nam, val);
-      return *this;
-    }
-
-    /// Declare property
-    template <typename T> inline DigiKernel& DigiKernel::declareProperty(const char* nam, T& val) {
-      properties().add(nam, val);
-      return *this;
-    }
   }    // End namespace digi
 }      // End namespace dd4hep
 #endif // DDDIGI_DIGIKERNEL_H

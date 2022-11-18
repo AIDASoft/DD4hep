@@ -40,9 +40,8 @@ DigiAction::DigiAction(const DigiKernel& krnl, const std::string& nam)
   : m_kernel(krnl), m_name(nam), m_outputLevel(INFO)
 {
   InstanceCount::increment(this);
-  declareProperty("Name", m_name);
   declareProperty("name", m_name);
-  declareProperty("OutputLevel", m_outputLevel);
+  declareProperty("OutputLevel", m_outputLevel=printLevel());
 }
 
 /// Default destructor
@@ -62,11 +61,21 @@ long DigiAction::addRef() {
 long DigiAction::release() {
   long count = --m_refCount;
   if (m_refCount <= 0) {
-    info("Deleting object %s of type %s Pointer:%p",
-	 m_name.c_str(),typeName(typeid(*this)).c_str(),(void*)this);
+    debug("Deleting object %s of type %s Pointer:%p",
+	  m_name.c_str(),typeName(typeid(*this)).c_str(),(void*)this);
     delete this;
   }
   return count;
+}
+
+/// Set DigiAction property
+std::size_t DigiAction::printProperties()   const {
+  const auto& props = properties().properties();
+  for( const auto& p : props )   {
+    std::string pn = name()+"."+p.first;
+    always("+++ %-32s = %-42s  [%s]", pn.c_str(), p.second.str().c_str(), p.second.type().c_str());
+  }
+  return props.size();
 }
 
 /// Adopt named property of another action for data processing
@@ -108,6 +117,15 @@ const dd4hep::Property& DigiAction::property(const std::string& nam)   const  {
   return properties()[nam];
 }
 
+/// Support of debug messages.
+std::string DigiAction::format(const char* fmt, ...) const {
+  va_list args;
+  va_start(args, fmt);
+  std::string str = dd4hep::format(nullptr, fmt, args);
+  va_end(args);
+  return str;
+}
+
 /// Support for messages with variable output level using output level
 void DigiAction::print(const char* fmt, ...) const   {
   int level = std::max(int(outputLevel()),(int)VERBOSE);
@@ -120,60 +138,66 @@ void DigiAction::print(const char* fmt, ...) const   {
 }
 
 /// Support of debug messages.
-std::string DigiAction::format(const char* fmt, ...) const {
+void DigiAction::always(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
-  std::string str = dd4hep::format(nullptr, fmt, args);
+  dd4hep::printout(dd4hep::FORCE_ALWAYS, m_name, fmt, args);
   va_end(args);
-  return str;
 }
 
 /// Support of debug messages.
 void DigiAction::debug(const char* fmt, ...) const {
-  if ( std::max(int(outputLevel()),(int)VERBOSE) >= DEBUG )  {
+  int level = std::max(int(outputLevel()),(int)VERBOSE);
+  if ( level <= DEBUG )  {
     va_list args;
     va_start(args, fmt);
-    dd4hep::printout(dd4hep::DEBUG, m_name, fmt, args);
+    dd4hep::printout(dd4hep::FORCE_DEBUG, m_name, fmt, args);
     va_end(args);
   }
 }
 
 /// Support of info messages.
 void DigiAction::info(const char* fmt, ...) const {
-  if ( std::max(int(outputLevel()),(int)VERBOSE) >= INFO )  {
+  int level = std::max(int(outputLevel()),(int)VERBOSE);
+  if ( level <= INFO )  {
     va_list args;
     va_start(args, fmt);
-    dd4hep::printout(dd4hep::INFO, m_name, fmt, args);
+    dd4hep::printout(dd4hep::FORCE_INFO, m_name, fmt, args);
     va_end(args);
   }
 }
 
 /// Support of warning messages.
 void DigiAction::warning(const char* fmt, ...) const {
-  if ( std::max(int(outputLevel()),(int)VERBOSE) >= WARNING )  {
+  int level = std::max(int(outputLevel()),(int)VERBOSE);
+  if ( level <= WARNING )  {
     va_list args;
     va_start(args, fmt);
-    dd4hep::printout(dd4hep::WARNING, m_name, fmt, args);
+    dd4hep::printout(dd4hep::FORCE_WARNING, m_name, fmt, args);
     va_end(args);
   }
 }
 
 /// Action to support error messages.
 void DigiAction::error(const char* fmt, ...) const {
-  if ( std::max(int(outputLevel()),(int)VERBOSE) >= ERROR )  {
+  int level = std::max(int(outputLevel()),(int)VERBOSE);
+  if ( level <= ERROR )  {
     va_list args;
     va_start(args, fmt);
-    dd4hep::printout(dd4hep::ERROR, m_name, fmt, args);
+    dd4hep::printout(dd4hep::FORCE_ERROR, m_name, fmt, args);
     va_end(args);
   }
 }
 
 /// Action to support error messages.
 bool DigiAction::return_error(bool return_value, const char* fmt, ...) const {
-  va_list args;
-  va_start(args, fmt);
-  dd4hep::printout(dd4hep::ERROR, m_name, fmt, args);
-  va_end(args);
+  int level = std::max(int(outputLevel()),(int)VERBOSE);
+  if ( level <= ERROR )  {
+    va_list args;
+    va_start(args, fmt);
+    dd4hep::printout(dd4hep::FORCE_ERROR, m_name, fmt, args);
+    va_end(args);
+  }
   return return_value;
 }
 
@@ -181,7 +205,7 @@ bool DigiAction::return_error(bool return_value, const char* fmt, ...) const {
 void DigiAction::fatal(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
-  dd4hep::printout(dd4hep::FATAL, m_name, fmt, args);
+  dd4hep::printout(dd4hep::FORCE_FATAL, m_name, fmt, args);
   va_end(args);
 }
 
@@ -190,7 +214,7 @@ void DigiAction::except(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
   std::string err = dd4hep::format(m_name, fmt, args);
-  dd4hep::printout(dd4hep::FATAL, m_name, err.c_str());
+  dd4hep::printout(dd4hep::FORCE_FATAL, m_name, err.c_str());
   va_end(args);
   throw std::runtime_error(err);
 }
@@ -202,7 +226,8 @@ namespace dd4hep {
   namespace digi {
     template <typename VAL>
     int add_action_property(DigiAction* action, const std::string& name, VAL value)   {
-      action->addProperty(name, value);
+      VAL* new_val = new VAL(value);
+      action->addProperty(name, *(new_val));
       printout(INFO, "addProperty", "+++ Added property %s of type %s",
 	       name.c_str(), typeName(typeid(VAL)).c_str());
       return 1;

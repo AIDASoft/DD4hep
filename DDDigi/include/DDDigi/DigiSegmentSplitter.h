@@ -111,7 +111,7 @@ namespace dd4hep {
       using segment_t   = DigiSegmentProcessContext;
       using processor_t = DigiContainerProcessor;
 
-      using worker_t    = DigiParallelWorker<processor_t,work_t, segment_t>;
+      using worker_t    = DigiParallelWorker<processor_t, work_t, segment_t>;
       using workers_t   = DigiParallelWorkers<worker_t>;
       friend class DigiParallelWorker<processor_t, work_t, segment_t>;
 
@@ -138,6 +138,7 @@ namespace dd4hep {
       splits_t           m_splits;
       /// Array of sub-workers
       workers_t          m_workers;
+
       /// Lock for output merging
       mutable std::mutex m_output_lock;
       /// Segmentation too instance

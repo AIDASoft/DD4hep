@@ -35,9 +35,9 @@ namespace dd4hep {
     class DigiContainerDrop : public DigiEventAction   {
     public:
       class work_definition_t;
-      using self_t  = DigiContainerDrop;
-      using Worker  = DigiParallelWorker<self_t,work_definition_t>;
-      using Workers = DigiParallelWorkers<Worker>;
+      using self_t    = DigiContainerDrop;
+      using worker_t  = DigiParallelWorker<self_t,work_definition_t>;
+      using workers_t = DigiParallelWorkers<worker_t>;
 
     protected:
       /// Property: Container names to be loaded
@@ -52,7 +52,7 @@ namespace dd4hep {
       std::set<Key::itemkey_type> m_cont_keys  { };
 
       /// Worker objects to be submitted to TBB each performing part of the job
-      Workers m_workers;
+      workers_t m_workers;
 
     protected:
       /// Define standard assignments and constructors
