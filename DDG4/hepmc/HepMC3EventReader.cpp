@@ -10,6 +10,10 @@
 //
 //====================================================================
 
+// Geant4 include files
+#include <G4GlobalConfig.hh>
+#include <G4ParticleTable.hh>
+
 // Framework include files
 #include "HepMC3EventReader.h"
 #include "DD4hep/Printout.h"
@@ -93,7 +97,9 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
     const int   pdg     = mcp->pid();
     PropertyMask status(p->status);
     p->pdgID        = pdg;
-    p->charge       = int(mcp->getCharge()*3.0);
+    // p->charge       = int(mcp->getCharge()*3.0);
+    G4ParticleDefinition* def = G4ParticleTable::GetParticleTable()->FindParticle(p->pdgID);
+    p->charge = int(3.0 * (def ? def->GetPDGCharge() : -1.0)); // Assume e-/pi-
     p->psx          = mom.get_component(0) * mom_unit;
     p->psy          = mom.get_component(1) * mom_unit;
     p->psz          = mom.get_component(2) * mom_unit;
