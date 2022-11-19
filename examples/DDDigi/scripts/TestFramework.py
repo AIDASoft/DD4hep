@@ -49,7 +49,6 @@ def run():
   install_dir = os.environ['DD4hepExamplesINSTALL']
   fname = "file:" + install_dir + "/examples/ClientTests/compact/MiniTel.xml"
   kernel.loadGeometry(str(fname))
-  kernel.printProperties()
   digi = dddigi.Digitize(kernel)
   digi.printDetectors()
 
