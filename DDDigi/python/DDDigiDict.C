@@ -44,6 +44,8 @@ struct DDDigiDict  {};
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
+  int init_grammar_types();
+  
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
@@ -137,6 +139,7 @@ namespace dd4hep {
 
       /// Set DigiAction property
       static int setProperty(DigiAction* action, const std::string& name, const std::string& value)  {
+	init_grammar_types();
         if ( action->hasProperty(name) )  {
           action->property(name).str(value);
           return 1;
