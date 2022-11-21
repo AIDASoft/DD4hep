@@ -84,7 +84,8 @@ namespace dd4hep {
     }
 
     /// Item evaluator
-    template <typename T> inline int eval_item(T* ptr, std::string val)  {
+    template <typename T> inline int eval_item(T* ptr, const std::string& val)  {
+      /// First try to parse the value with spirit.
       try   {
 	T temp;
 	int sc = ::dd4hep::Parsers::parse(temp,val);
@@ -95,16 +96,18 @@ namespace dd4hep {
       }
       catch (...)  {
       }
+      /// If this failed: try to evaluate it with the expression parser
       auto result = grammar_evaluate_item(val);
-      if (result.first != tools::Evaluator::OK) {
-	return 0;
+      if (result.first == tools::Evaluator::OK) {
+	*ptr = (T)result.second;
+	return 1;
       }
-      *ptr = (T)result.second;
-      return 1;
+      /// This also failed: Return error.
+      return 0;
     }
 
-    /// String evaluator
-    template <> inline int eval_item<std::string>(std::string* ptr, std::string val)  {
+    /// String evaluator: Nothing to do!
+    template <> inline int eval_item<std::string>(std::string* ptr, const std::string& val)  {
       *ptr = val;
       return 1;
     }
@@ -280,18 +283,19 @@ namespace dd4hep {
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(xx,func)			\
   namespace dd4hep { namespace detail {					\
-      template<> int grammar_eval<xx>(const BasicGrammar&, void* _p, const std::string& _v) { return func ((xx*)_p,_v); }}}
+      template<> int grammar_eval<xx>(const BasicGrammar&, void* _p, const std::string& _v) {\
+	return func ((xx*)_p,_v);					\
+      }}}
 
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_INSTANCE(serial,xx)   \
   namespace dd4hep {							\
     template class Grammar< xx >; 					\
     template BasicGrammar const& BasicGrammar::instance< xx >();	\
-    template const GrammarRegistry& GrammarRegistry::pre_note<xx>();	\
     template const GrammarRegistry& GrammarRegistry::pre_note<xx>(int); \
   }									\
   namespace DD4HEP_PARSER_GRAMMAR_CNAME(serial,0) {			\
-    static auto s_reg = ::dd4hep::GrammarRegistry::pre_note< xx >();	\
+    static auto s_reg = ::dd4hep::GrammarRegistry::pre_note< xx >(1);	\
   }
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,ctxt,xx,func)	\
