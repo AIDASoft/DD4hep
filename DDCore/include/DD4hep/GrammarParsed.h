@@ -85,6 +85,16 @@ namespace dd4hep {
 
     /// Item evaluator
     template <typename T> inline int eval_item(T* ptr, std::string val)  {
+      try   {
+	T temp;
+	int sc = ::dd4hep::Parsers::parse(temp,val);
+	if ( sc )  {
+	  *ptr = temp;
+	  return 1;
+	}
+      }
+      catch (...)  {
+      }
       auto result = grammar_evaluate_item(val);
       if (result.first != tools::Evaluator::OK) {
 	return 0;
@@ -271,6 +281,7 @@ namespace dd4hep {
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(xx,func)			\
   namespace dd4hep { namespace detail {					\
       template<> int grammar_eval<xx>(const BasicGrammar&, void* _p, const std::string& _v) { return func ((xx*)_p,_v); }}}
+
 
 #define DD4HEP_DEFINE_PARSER_GRAMMAR_INSTANCE(serial,xx)   \
   namespace dd4hep {							\
