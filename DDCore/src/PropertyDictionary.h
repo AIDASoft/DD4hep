@@ -147,8 +147,6 @@ template class std::map<std::string, dd4hep::Property>;
 #pragma link C++ class std::map<std::string, dd4hep::Property>-;
 #pragma link C++ class dd4hep::PropertyManager-;
 #pragma link C++ class dd4hep::PropertyConfigurable-;
-#pragma link C++ class dd4hep::PropertyConfigurator-;
-#pragma link C++ class dd4hep::PropertyGrammar-;
 
 #endif  // __CINT__
 #endif // DDCORE_SRC_PROPERTYDICTIONARY_H

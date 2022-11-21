@@ -93,12 +93,6 @@ PrintLevel Geant4Action::setOutputLevel(PrintLevel new_level)  {
   return (PrintLevel)old;
 }
 
-/// Set object properties
-Geant4Action& Geant4Action::setProperties(PropertyConfigurator& setup) {
-  m_properties.set(m_name, setup);
-  return *this;
-}
-
 /// Check property for existence
 bool Geant4Action::hasProperty(const string& nam) const    {
   return m_properties.exists(nam);

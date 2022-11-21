@@ -308,9 +308,6 @@ namespace dd4hep {
       bool hasProperty(const std::string& name) const;
       /// Access single property
       Property& property(const std::string& name);
-      /// Set object properties
-      Geant4Action& setProperties(PropertyConfigurator& setup);
-
       /// Install property control messenger if wanted
       virtual void installMessengers();
       /// Install command control messenger if wanted

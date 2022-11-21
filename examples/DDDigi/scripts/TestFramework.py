@@ -14,10 +14,10 @@ import os
 
 
 def make_input(kernel):
-  input_1 = dddigi.TestAction(kernel, 'input_01', 100)
-  input_2 = dddigi.TestAction(kernel, 'input_02', 200)
-  input_3 = dddigi.TestAction(kernel, 'input_03', 150)
-  input_4 = dddigi.TestAction(kernel, 'input_04', 60)
+  input_1 = dddigi.TestAction(kernel, 'input_01', 50)
+  input_2 = dddigi.TestAction(kernel, 'input_02', 100)
+  input_3 = dddigi.TestAction(kernel, 'input_03', 75)
+  input_4 = dddigi.TestAction(kernel, 'input_04', 30)
   seq = kernel.inputAction()
   seq.adopt(input_1)
   seq.adopt(input_2)
@@ -27,11 +27,11 @@ def make_input(kernel):
 
 
 def make_subdetector(kernel, name):
-  action_1 = dddigi.TestAction(kernel, name + '_deposits', 150)
-  action_2 = dddigi.TestAction(kernel, name + '_rndmNoise', 100)
-  action_3 = dddigi.TestAction(kernel, name + '_deadChan', 100)
-  action_4 = dddigi.TestAction(kernel, name + '_noiseChan', 50)
-  action_5 = dddigi.TestAction(kernel, name + '_merge', 200)
+  action_1 = dddigi.TestAction(kernel, name + '_deposits', 75)
+  action_2 = dddigi.TestAction(kernel, name + '_rndmNoise', 50)
+  action_3 = dddigi.TestAction(kernel, name + '_deadChan', 50)
+  action_4 = dddigi.TestAction(kernel, name + '_noiseChan', 25)
+  action_5 = dddigi.TestAction(kernel, name + '_merge', 60)
   seq = dddigi.Action(kernel, 'DigiActionSequence/' + name + '_sequence', parallel=True)
   seq.adopt(action_1)
   seq.adopt(action_2)
@@ -63,12 +63,12 @@ def run():
     event_processor.adopt(seq)
   kernel.eventAction().adopt(event_processor)
   # Output
-  output = dddigi.TestAction(kernel, 'output_01', 200)
+  output = dddigi.TestAction(kernel, 'output_01', 50)
   kernel.outputAction().adopt(output)
 
   dddigi.setPrintLevel(dddigi.OutputLevel.DEBUG)
   kernel.numThreads = 0   # = number of concurrent threads
-  kernel.numEvents = 10
+  kernel.numEvents =  5
   kernel.maxEventsParallel = 3
   kernel.run()
   dddigi.setPrintLevel(dddigi.OutputLevel.INFO)

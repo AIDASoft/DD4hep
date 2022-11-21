@@ -91,7 +91,6 @@ namespace dd4hep {
   }
 }
 
-
 /// Equality operator
 bool dd4hep::BasicGrammar::specialization_t::operator==(const specialization_t& cp)  const  {
   return this->bind  == cp.bind &&
@@ -115,31 +114,68 @@ dd4hep::BasicGrammar::BasicGrammar(const std::string& typ)
 /// Default destructor
 dd4hep::BasicGrammar::~BasicGrammar()   {
 }
-
+#include <iostream>
 /// Prenote loadable grammar
 void dd4hep::BasicGrammar::pre_note(const std::type_info& info,
 				    const BasicGrammar& (*fcn)(),
 				    specialization_t specs)   {
   key_type hash = dd4hep::detail::hash64(typeName(info));
+#ifdef DD4HEP_DEBUG_PROPERTIES
+  std::cout << "pre_note(1) " << typeName(info) 
+	    << " " << (void*)specs.str
+	    << " " << (void*)specs.fromString
+	    << std::endl;
+#endif
   if ( !prenote_registry().emplace(hash, std::make_pair(fcn,specs)).second )  {
     auto j = prenote_registry().find(hash);
     const auto& entry = (*j).second;
+#ifdef DD4HEP_DEBUG_PROPERTIES
+    const auto& gramm = entry.first();
+    std::cout << "pre_note(2) " << typeName(info) 
+	      << " " << (void*)gramm.specialization.fromString
+	      << " " << (void*)entry.second.fromString
+	      << std::endl;
+#endif
     if ( !(entry.first == fcn && entry.second == specs) )   {
       // Error: Already existing grammar.
       dd4hep::except("BasicGrammar","FAILED to add existent registry: %s [%016llX]",
                      typeName(info).c_str(), hash);
     }
   }
+  /// If the grammer was instantiated before the pre-note: update the grammar...
+  auto i = active_registry().find(hash);
+  if ( i != active_registry().end() )   {
+    i->second->specialization = specs;
+  }
 }
 
 /// Lookup existing grammar using hash code (reading objects)
 const dd4hep::BasicGrammar& dd4hep::BasicGrammar::get(key_type hash)   {
   auto i = active_registry().find(hash);
-  if ( i != active_registry().end() )
+  if ( i != active_registry().end() )   {
+#ifdef DD4HEP_DEBUG_PROPERTIES
+    const auto& entry = (*i).second;
+    const auto& gramm = *entry;
+    std::cout << "get(1) " << hash
+	      << " grammar: " << (void*)&gramm
+	      << " " << (void*)gramm.specialization.fromString
+	      << " " << (void*)entry->specialization.fromString
+	      << std::endl;
+#endif
     return *(i->second);
+  }
   auto j = prenote_registry().find(hash);
-  if ( j != prenote_registry().end() )
+  if ( j != prenote_registry().end() )  {
+#ifdef DD4HEP_DEBUG_PROPERTIES
+    const auto& entry = (*j).second;
+    const auto& gramm = entry.first();
+    std::cout << "get(2) " << hash
+	      << " " << (void*)gramm.specialization.fromString
+	      << " " << (void*)entry.second.fromString
+	      << std::endl;
+#endif
     return (j->second.first)();
+  }
   dd4hep::except("BasicGrammar","FAILED to look up non existent registry: %016llX",hash);
   throw "Error";  // Not reachable anyhow. Simply to please the compiler!
 }
@@ -232,8 +268,9 @@ std::string dd4hep::BasicGrammar::str(const void* ptr) const    {
 /// Set value from serialized string. On successful data conversion TRUE is returned.
 bool dd4hep::BasicGrammar::fromString(void* ptr, const std::string& value) const    {
   if ( specialization.fromString )
-    return specialization.fromString(*this,ptr, value);
-  except("Grammar", "Cannot deserialize object with incomplete grammar: %s", type_name().c_str());
+    return specialization.fromString(*this, ptr, value);
+  except("Grammar", "Cannot deserialize object with incomplete grammar: %s [%s]  %p fromString: %s",
+	 type_name().c_str(), this->name.c_str(), (void*)this, (void*)specialization.fromString);
   return false;
 }
 

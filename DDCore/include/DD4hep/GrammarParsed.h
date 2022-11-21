@@ -54,17 +54,27 @@ namespace dd4hep {
     std::pair<int,double> grammar_evaluate_item(std::string val);
 
     /// PropertyGrammar overload: Retrieve value from string
-    template <typename TYPE> bool grammar_fromString(const BasicGrammar& gr, void* ptr, const std::string& string_val)   {
+    template <typename TYPE> bool grammar_fromString(const BasicGrammar& gr, void* ptr, const std::string& val)   {
       int sc = 0;
       TYPE temp;
       try   {
-	sc = ::dd4hep::Parsers::parse(temp,string_val);
+#ifdef DD4HEP_DEBUG_PROPERTIES
+	std::cout << "Parsing " << val << std::endl;
+#endif
+	sc = ::dd4hep::Parsers::parse(temp, val);
+	if ( sc )   {
+	  *(TYPE*)ptr = temp;
+	  return true;
+	}
       }
       catch (...)  {
       }
-      if ( !sc ) sc = gr.evaluate(&temp,string_val);
-#if 0
-      std::cout << "Sc=" << sc << "  Converting value: " << string_val 
+#ifdef DD4HEP_DEBUG_PROPERTIES
+      std::cout << "Parsing " << val << "FAILED" << std::endl;
+#endif
+      if ( !sc ) sc = gr.evaluate(&temp,val);
+#ifdef DD4HEP_DEBUG_PROPERTIES
+      std::cout << "Sc=" << sc << "  Converting value: " << val 
 		<< " to type " << typeid(TYPE).name() 
 		<< std::endl;
 #endif
@@ -72,7 +82,7 @@ namespace dd4hep {
 	*(TYPE*)ptr = temp;
 	return true;
       }
-      BasicGrammar::invalidConversion(string_val, typeid(TYPE));
+      BasicGrammar::invalidConversion(val, typeid(TYPE));
       return false;
     }
 
