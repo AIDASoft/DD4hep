@@ -68,7 +68,7 @@ def run():
 
   dddigi.setPrintLevel(dddigi.OutputLevel.DEBUG)
   kernel.numThreads = 0   # = number of concurrent threads
-  kernel.numEvents =  5
+  kernel.numEvents = 5
   kernel.maxEventsParallel = 3
   kernel.run()
   dddigi.setPrintLevel(dddigi.OutputLevel.INFO)
