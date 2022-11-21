@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <typeinfo>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <map>
@@ -29,53 +30,6 @@ namespace dd4hep {
 
   class Property;
   class BasicGrammar;
-  class PropertyGrammar;
-
-  /// Interface class to configure properties in components
-  /**
-   *  Placeholder interface.
-   *
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \ingroup DD4HEP_CORE
-   */
-  class PropertyConfigurator {
-  protected:
-    /// Default destructor
-    virtual ~PropertyConfigurator();
-  public:
-    virtual void set(const PropertyGrammar& setter, const std::string&, const std::string&, void* ptr) const = 0;
-  };
-
-
-  /// Class describing the grammar representation of a given data type
-  /**
-   *  Note: This class cannot be saved to a ROOT file!
-   *
-   *  \author  M.Frank
-   *  \version 1.0
-   *  \ingroup DD4HEP_CORE
-   */
-  class PropertyGrammar {
-  protected:
-    friend class Property;
-    const BasicGrammar& m_grammar;  //! This member is not ROOT persistent as the entire class is not.
-  public:
-    /// Default constructor
-    PropertyGrammar(const BasicGrammar& g);
-    /// Default destructor
-    virtual ~PropertyGrammar();
-    /// Error callback on invalid conversion
-    static void invalidConversion(const std::type_info& from, const std::type_info& to);
-    /// Error callback on invalid conversion
-    static void invalidConversion(const std::string& value, const std::type_info& to);
-    /// Access to the type information
-    virtual const std::type_info& type() const;
-    /// Serialize an opaque value to a string
-    virtual std::string str(const void* ptr) const;
-    /// Set value from serialized string. On successful data conversion TRUE is returned.
-    virtual bool fromString(void* ptr, const std::string& value) const;
-  };
 
   /// The property class to assign options to actions.
   /**
@@ -94,9 +48,9 @@ namespace dd4hep {
   class Property {
   protected:
     /// Pointer to the data location
-    void* m_par = 0;
+    void* m_par                { nullptr };
     /// Reference to the grammar of this property (extended type description)
-    const PropertyGrammar* m_hdl = 0;
+    const BasicGrammar* m_hdl  { nullptr };
 
   public:
     /// Default constructor
@@ -114,7 +68,7 @@ namespace dd4hep {
     /// Property type name
     std::string type() const;
     /// Access grammar object
-    const PropertyGrammar& grammar() const;
+    const BasicGrammar& grammar() const;
     /// Conversion to string value
     std::string str() const;
     /// Conversion from string value
@@ -138,18 +92,19 @@ namespace dd4hep {
   };
 
   /// User constructor
-  template <typename TYPE> Property::Property(TYPE& val) : m_par(&val), m_hdl(0) {
-    static PropertyGrammar grammar(BasicGrammar::instance<TYPE>());
-    m_hdl = &grammar;
-  }
+  template <typename TYPE> Property::Property(TYPE& val)
+    : m_par(&val), m_hdl(0)
+    {
+      m_hdl = &BasicGrammar::get(typeid(TYPE));
+    }
 
   /// Set value of this property
   template <typename TYPE> void Property::set(const TYPE& val) {
-    const PropertyGrammar& grm = grammar();
+    const auto& grm = grammar();
     if (grm.type() == typeid(TYPE))
       *(TYPE*) m_par = val;
     else if (!grm.fromString(m_par, BasicGrammar::instance< TYPE >().str(&val)))
-      PropertyGrammar::invalidConversion(typeid(TYPE), grm.type());
+      BasicGrammar::invalidConversion(typeid(TYPE), grm.type());
   }
 
   /// Assignment operator / set new balue
@@ -160,11 +115,11 @@ namespace dd4hep {
 
   /// Retrieve value from stack (large values e.g. vectors etc.)
   template <typename TYPE> void Property::value(TYPE& val) const {
-    const PropertyGrammar& grm = grammar();
+    const auto& grm = grammar();
     if (grm.type() == typeid(TYPE))
       val = *(TYPE*) m_par;
     else if (!BasicGrammar::instance< TYPE >().fromString(&val, this->str()))
-      PropertyGrammar::invalidConversion(grm.type(), typeid(TYPE));
+      BasicGrammar::invalidConversion(grm.type(), typeid(TYPE));
   }
 
   /// Retrieve value
@@ -196,7 +151,7 @@ namespace dd4hep {
     /// Equality operator
     bool operator==(const TYPE& val) const { return val == data;               }
     /// Access grammar object
-    const PropertyGrammar& grammar() const { return this->Property::grammar(); }
+    const BasicGrammar& grammar() const    { return this->Property::grammar(); }
     /// Conversion to string value
     std::string str() const                { return this->Property::str();     }
     /// Retrieve value with data conversion
@@ -258,8 +213,6 @@ namespace dd4hep {
     template <typename T> void add(const std::string& name, T& value)   {
       add(name, Property(value));
     }
-    /// Bulk set of all properties
-    void set(const std::string& component_name, PropertyConfigurator& setup);
     /// Apply functor on properties
     template <typename FUNCTOR> void for_each(FUNCTOR& func)   {
       std::for_each(m_properties.begin(), m_properties.end(), func);

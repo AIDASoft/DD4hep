@@ -24,47 +24,6 @@
 using namespace std;
 using namespace dd4hep;
 
-/// Default destructor
-PropertyConfigurator::~PropertyConfigurator()   {
-}
-
-/// Default constructor
-PropertyGrammar::PropertyGrammar(const BasicGrammar& g) : m_grammar(g) {
-}
-
-/// Default destructor
-PropertyGrammar::~PropertyGrammar() {
-}
-
-/// Error callback on invalid conversion
-void PropertyGrammar::invalidConversion(const std::type_info& from,
-                                        const std::type_info& to)
-{
-  BasicGrammar::invalidConversion(from,to);
-}
-
-/// Error callback on invalid conversion
-void PropertyGrammar::invalidConversion(const std::string& value,
-                                        const std::type_info& to)
-{
-  BasicGrammar::invalidConversion(value,to);
-}
-
-/// Access to the type information
-const std::type_info& PropertyGrammar::type() const  {
-  return m_grammar.type();
-}
-
-/// Serialize an opaque value to a string
-std::string PropertyGrammar::str(const void* ptr) const  {
-  return m_grammar.str(ptr);
-}
-
-/// Set value from serialized string. On successful data conversion TRUE is returned.
-bool PropertyGrammar::fromString(void* ptr, const std::string& value) const  {
-  return m_grammar.fromString(ptr,value);
-}
-
 /// Property type name
 string Property::type(const Property& property) {
   return type(property.grammar().type());
@@ -80,7 +39,7 @@ string Property::type() const {
   return Property::type(grammar().type());
 }
 
-const PropertyGrammar& Property::grammar() const {
+const BasicGrammar& Property::grammar() const {
   if ( m_hdl )
     return *m_hdl;
   throw runtime_error("Attempt to access property grammar from invalid object.");
@@ -196,12 +155,6 @@ const Property& PropertyManager::operator[](const string& name) const {
 void PropertyManager::add(const string& name, const Property& prop) {
   verifyNonExistence(name);
   m_properties.emplace(name, prop);
-}
-
-/// Bulk set of all properties
-void PropertyManager::set(const string& component_name, PropertyConfigurator& cfg) {
-  for (auto& i : m_properties )
-    cfg.set(i.second.grammar(), component_name, i.first, i.second.ptr());
 }
 
 /// Dump string values
