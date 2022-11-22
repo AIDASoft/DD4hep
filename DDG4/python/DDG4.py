@@ -134,11 +134,14 @@ def _registerGlobalFilter(self, filter):
 def _evalProperty(data):
   """
     Function necessary to extract real strings from the property value.
-    Strings may be emraced by quotes: '<value>'
+    Strings may be embraced by quotes: '<value>'
   """
   try:
     if isinstance(data, str):
-      return eval(data)
+      import ast
+      return ast.literal_eval(data)
+  except ValueError:
+    pass
   except TypeError:
     pass
   finally:
