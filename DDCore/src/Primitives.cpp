@@ -206,8 +206,8 @@ unsigned long long int dd4hep::detail::hash64(const std::string& key)  {
 
 /// 16 bit hash function
 unsigned short dd4hep::detail::hash16(const void* key, std::size_t len)   {
-  unsigned int value = hash32(key, len);
-  return *(unsigned short*)&value;
+  unsigned short value = (unsigned short)hash32(key, len);
+  return value;
 }
 
 /// 8 bit hash function
