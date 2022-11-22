@@ -12,22 +12,22 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Memory.h"
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/InstanceCount.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Memory.h>
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/InstanceCount.h>
 
-#include "DDG4/Geant4Kernel.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4ActionPhase.h"
+#include <DDG4/Geant4Kernel.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4ActionPhase.h>
 
 // Geant4 include files
-#include "G4RunManager.hh"
-#include "G4UIdirectory.hh"
-#include "G4Threading.hh"
-#include "G4AutoLock.hh"
+#include <G4RunManager.hh>
+#include <G4UIdirectory.hh>
+#include <G4Threading.hh>
+#include <G4AutoLock.hh>
 
 // C/C++ include files
 #include <stdexcept>

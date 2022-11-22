@@ -216,12 +216,12 @@ DigiStoreDump::dump_history(DigiContext& context, Key container_key, const T& co
 }
 
 std::vector<std::string>
-DigiStoreDump::dump_deposit_history(DigiContext& context, Key container_key, const DepositMapping& container)  const {
-  std::size_t count = 0;
+DigiStoreDump::dump_deposit_history(DigiContext& /*context*/, Key container_key, const DepositMapping& container)  const {
   std::vector<std::string> records;
   auto line = format("|----  %s", data_header(container_key, "deposits", container).c_str());
   records.emplace_back(line);
 #ifdef DDDIGI_INPLACE_HISTORY
+  std::size_t count = 0;
   for( const auto& item : container )   {
     auto rec = dump_history(context, container_key, item, count++);
     records.insert(records.end(), rec.begin(), rec.end());
@@ -231,12 +231,12 @@ DigiStoreDump::dump_deposit_history(DigiContext& context, Key container_key, con
 }
 
 std::vector<std::string>
-DigiStoreDump::dump_deposit_history(DigiContext& context, Key container_key, const DepositVector& container)  const {
-  std::size_t count = 0;
+DigiStoreDump::dump_deposit_history(DigiContext& /*context*/, Key container_key, const DepositVector& container)  const {
   std::vector<std::string> records;
   auto line = format("|----  %s", data_header(container_key, "deposits", container).c_str());
   records.emplace_back(line);
 #ifdef DDDIGI_INPLACE_HISTORY
+  std::size_t count = 0;
   for( const auto& item : container )   {
     auto rec = dump_history(context, container_key, item, count++);
     records.insert(records.end(), rec.begin(), rec.end());

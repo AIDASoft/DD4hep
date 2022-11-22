@@ -76,8 +76,11 @@ void Geant4UIManager::configure()   {
   }
   /// Execute the chained command statements
   for(const auto& c : m_configureCommands)  {
-    info("++ Executing configure command:%s",c.c_str());
-    mgr->ApplyCommand(c.c_str());
+    info("++ Executing configure command: %s",c.c_str());
+    G4int ret = mgr->ApplyCommand(c.c_str());
+    if ( ret != 0 )  {
+      except("Failed to execute command: %s",c.c_str());
+    }
   }
 }
 
@@ -87,8 +90,11 @@ void Geant4UIManager::initialize()   {
   G4UImanager* mgr = G4UImanager::GetUIpointer();
   /// Execute the chained command statements
   for(const auto& c : m_initializeCommands)  {
-    info("++ Executing initialization command:%s",c.c_str());
-    mgr->ApplyCommand(c.c_str());
+    info("++ Executing initialization command: %s",c.c_str());
+    G4int ret = mgr->ApplyCommand(c.c_str());
+    if ( ret != 0 )  {
+      except("Failed to execute command: %s",c.c_str());
+    }
   }
 }
 
@@ -98,8 +104,11 @@ void Geant4UIManager::terminate() {
   G4UImanager* mgr = G4UImanager::GetUIpointer();
   /// Execute the chained command statements
   for(const auto& c : m_terminateCommands)  {
-    info("++ Executing finalization command:%s",c.c_str());
-    mgr->ApplyCommand(c.c_str());
+    info("++ Executing finalization command: %s",c.c_str());
+    G4int ret = mgr->ApplyCommand(c.c_str());
+    if ( ret != 0 )  {
+      except("Failed to execute command: %s",c.c_str());
+    }
   }
 }
 
@@ -109,8 +118,11 @@ void Geant4UIManager::applyCommand(const string& command)   {
   G4UImanager* mgr = G4UImanager::GetUIpointer();
   if ( mgr )    {
     info("++ Executing G4 command: %s",command.c_str());
-    mgr->ApplyCommand(command.c_str());
-    return;
+    G4int ret = mgr->ApplyCommand(command.c_str());
+    if ( ret == 0 )  {
+      return;
+    }
+    except("Failed to execute command: %s",command.c_str());
   }
   except("No UI reference present. Too early to interact with Geant4!");
 }
@@ -180,24 +192,24 @@ void Geant4UIManager::start() {
   }
   /// Configure visualization instance
   if ( !m_visSetup.empty() ) {
-    info("++ Executing visualization setup:%s",m_visSetup.c_str());
+    info("++ Executing visualization setup: %s",m_visSetup.c_str());
     mgr->ApplyCommand(make_cmd(m_visSetup).c_str());
   }
   /// Configure UI instance
   if ( !m_uiSetup.empty() )   {
-    info("++ Executing UI setup:%s",m_uiSetup.c_str());
+    info("++ Executing UI setup: %s",m_uiSetup.c_str());
     mgr->ApplyCommand(make_cmd(m_uiSetup).c_str());
     executed_statements = true;
   }
   /// Execute the chained macro files
   for(const auto& m : m_macros)  {
-    info("++ Executing Macro file:%s",m.c_str());
+    info("++ Executing Macro file: %s",m.c_str());
     mgr->ApplyCommand(make_cmd(m.c_str()));
     executed_statements = true;
   }
   /// Execute the chained pre-run command statements
   for(const auto& c : m_preRunCommands)  {
-    info("++ Executing pre-run statement:%s",c.c_str());
+    info("++ Executing pre-run statement: %s",c.c_str());
     mgr->ApplyCommand(c.c_str());
     executed_statements = true;
   }
@@ -206,7 +218,7 @@ void Geant4UIManager::start() {
     m_ui->SessionStart();
     /// Execute the chained post-run command statements
     for(const auto& c : m_postRunCommands)  {
-      info("++ Executing post-run statement:%s",c.c_str());
+      info("++ Executing post-run statement: %s",c.c_str());
       mgr->ApplyCommand(c.c_str());
       executed_statements = true;
     }
@@ -219,7 +231,7 @@ void Geant4UIManager::start() {
   else if ( executed_statements )  {
     /// Execute the chained post-run command statements
     for(const auto& c : m_postRunCommands)  {
-      info("++ Executing post-run statement:%s",c.c_str());
+      info("++ Executing post-run statement: %s",c.c_str());
       mgr->ApplyCommand(c.c_str());
     }
     return;
