@@ -42,18 +42,22 @@ namespace dd4hep {
       Sections m_sections;
       /// Branches in the event tree
       Branches m_branches;
-      /// name of the event tree
-      std::string m_section;
       /// Reference to the ROOT file to open
       TFile* m_file;
       /// Reference to the event data tree
       TTree* m_tree;
-      /// Flag if Monte-Carlo truth should be followed and checked
-      bool m_handleMCTruth;
+      /// File sequence number
+      int    m_fseqNunmber  { 0 };
+      /// Property: name of the event tree
+      std::string m_section;
       /// Property: vector with disabled collections
       std::vector<std::string> m_disabledCollections;
       /// Property: vector with disabled collections
       bool  m_disableParticles = false;
+      /// Property: Flag if Monte-Carlo truth should be followed and checked
+      bool m_handleMCTruth;
+      /// Property: Flag if Monte-Carlo truth should be followed and checked
+      bool m_filesByRun;
       
     public:
       /// Standard constructor
@@ -65,6 +69,8 @@ namespace dd4hep {
       /// Fill single EVENT branch entry (Geant4 collection data)
       int fill(const std::string& nam, const ComponentCast& type, void* ptr);
 
+      /// Close current output file
+      virtual void closeOutput();
       /// Callback to store the Geant4 run information
       virtual void beginRun(const G4Run* run);
       /// Callback to store each Geant4 hit collection
