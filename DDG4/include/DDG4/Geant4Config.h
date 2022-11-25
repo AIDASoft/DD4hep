@@ -85,28 +85,35 @@ namespace dd4hep {
       typedef Geant4Handle<Geant4PhysicsListActionSequence>    PhysicsActionSeq;
       typedef Geant4Handle<Geant4UserInitializationSequence>   InitializationSeq;
       typedef Geant4Handle<Geant4DetectorConstructionSequence> DetectorConstructionSeq;
+      inline bool is_aclick()   {
+#if defined(G__DICTIONARY) || defined(__CLING__) || defined(__CINT__) || defined(__MAKECINT__)
+	return true;
+#else
+	return false;
+#endif
+      }
     }
 
   }    // End namespace sim
 }      // End namespace dd4hep
 
-#include "DDG4/Geant4Particle.h"
-#include "DDG4/Geant4Handle.h"
-#include "DDG4/Geant4Kernel.h"
-#include "DDG4/Geant4PhysicsList.h"
-#include "DDG4/Geant4GeneratorAction.h"
-#include "DDG4/Geant4RunAction.h"
-#include "DDG4/Geant4EventAction.h"
-#include "DDG4/Geant4TrackingAction.h"
-#include "DDG4/Geant4SteppingAction.h"
-#include "DDG4/Geant4StackingAction.h"
-#include "DDG4/Geant4DetectorConstruction.h"
-#include "DDG4/Geant4ActionPhase.h"
-#include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4ParticleHandler.h"
-#include "DDG4/Geant4UserInitialization.h"
-#include "DDG4/Geant4UserParticleHandler.h"
-#include "DDG4/ComponentUtils.h"
-#include "DD4hep/Detector.h"
+#include <DDG4/Geant4Particle.h>
+#include <DDG4/Geant4Handle.h>
+#include <DDG4/Geant4Kernel.h>
+#include <DDG4/Geant4PhysicsList.h>
+#include <DDG4/Geant4GeneratorAction.h>
+#include <DDG4/Geant4RunAction.h>
+#include <DDG4/Geant4EventAction.h>
+#include <DDG4/Geant4TrackingAction.h>
+#include <DDG4/Geant4SteppingAction.h>
+#include <DDG4/Geant4StackingAction.h>
+#include <DDG4/Geant4DetectorConstruction.h>
+#include <DDG4/Geant4ActionPhase.h>
+#include <DDG4/Geant4SensDetAction.h>
+#include <DDG4/Geant4ParticleHandler.h>
+#include <DDG4/Geant4UserInitialization.h>
+#include <DDG4/Geant4UserParticleHandler.h>
+#include <DDG4/ComponentUtils.h>
+#include <DD4hep/Detector.h>
 
 #endif // DDG4_GEANT4CONFIG_H
