@@ -550,9 +550,9 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
 
 /// Dump solid in GDML format to output stream
 void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) const {
-  G4VSolid* solid = 0;
+  G4VSolid* solid = nullptr;
   if ( shape ) {
-    if ( 0 != (solid = data().g4Solids[shape]) )   {
+    if ( nullptr != (solid = data().g4Solids[shape]) )   {
       return solid;
     }
     TClass*    isa = shape->IsA();
@@ -608,6 +608,9 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
     else if (isa == TGeoScaledShape::Class())  {
       TGeoScaledShape* sh   = (TGeoScaledShape*) shape;
       TGeoShape*       sol  = sh->GetShape();
+      if ( sol->IsA() == TGeoShapeAssembly::Class() )  {
+	return solid;
+      }
       const double*    vals = sh->GetScale()->GetScale();
       G4Scale3D        scal(vals[0], vals[1], vals[2]);
       G4VSolid* g4solid = (G4VSolid*)handleSolid(sol->GetName(), sol);
@@ -692,10 +695,10 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
 
 /// Dump logical volume in GDML format to output stream
 void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume) const {
+  Volume _v(volume);
   Geant4GeometryInfo& info = data();
   PrintLevel lvl = debugVolumes ? ALWAYS : outputLevel;
   Geant4GeometryMaps::VolumeMap::const_iterator volIt = info.g4Volumes.find(volume);
-  Volume     _v(volume);
   if ( _v.testFlagBit(Volume::VETO_SIMU) )  {
     printout(lvl, "Geant4Converter", "++ Volume %s not converted [Veto'ed for simulation]",volume->GetName());
     return nullptr;
