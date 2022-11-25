@@ -25,11 +25,12 @@
 //
 //==========================================================================
 
-#include "DDG4/Geant4Config.h"
-#include "DDG4/Geant4TestActions.h"
-#include "CLHEP/Units/SystemOfUnits.h"
-#include "TSystem.h"
+#include <DDG4/Geant4Config.h>
+#include <DDG4/Geant4TestActions.h>
+#include <CLHEP/Units/SystemOfUnits.h>
+#include <TSystem.h>
 #include <iostream>
+#include <ctime>
 
 using namespace std;
 using namespace dd4hep;
@@ -67,8 +68,12 @@ int setupG4_CINT(bool interactive)  {
     kernel.registerGlobalAction(ui);
   }
   else  {
-    kernel.property("NumEvents") = 3;
+    kernel.property("NumEvents") = 4;
   }
+
+  Action rndm(kernel, "Geant4Random/Random");
+  rndm["Seed"] = ::time(0);
+  kernel.registerGlobalAction(rndm);
 
   GenAction gun(kernel,"Geant4ParticleGun/Gun");
   gun["energy"]       = 10*CLHEP::GeV;
@@ -96,9 +101,14 @@ int setupG4_CINT(bool interactive)  {
   p = kernel.addPhase<const G4Run*>("EndRun");
   p->add(evt_1.get(),&Geant4TestEventAction::endRun);
   kernel.runAction().callAtEnd(p.get(),&Geant4ActionPhase::call<const G4Run*>);
+  p = nullptr;
 
   EventAction evt_2(kernel,"Geant4TestEventAction/UserEvent_2");
   kernel.eventAction().adopt(evt_2);
+ 
+  EventAction out(kernel,"Geant4Output2ROOT/RootOutput");
+  out["Output"] = is_aclick() ? "CLICSiD.aclick.root" : "CLICSiD.exe.root";
+  kernel.eventAction().adopt(out);
  
   setupDetector(kernel,"SiVertexBarrel");
   setupDetector(kernel,"SiVertexEndcap");
@@ -124,11 +134,13 @@ int setupG4_CINT(bool interactive)  {
   return 0;
 }
 
-#if defined(G__DICTIONARY) || defined(__CLING__) || defined(__CINT__) || defined(__MAKECINT__) // CINT script
-int CLICSiDAClick()
-#else
-int main(int, char**)                              // Main program if linked standalone
-#endif
-{
+int CLICSiDAClick()   {
   return setupG4_CINT(false);
 }
+
+#if not(defined(G__DICTIONARY) || defined(__CLING__) || defined(__CINT__) || defined(__MAKECINT__))
+int main(int, char**)      {                 // Main program if linked standalone
+  std::cout << "Running CLICSiDAClick as standalone executable...." << std::endl;
+  return CLICSiDAClick();
+}
+#endif

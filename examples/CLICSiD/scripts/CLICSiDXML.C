@@ -25,8 +25,9 @@
 //  Author     : M.Frank
 //
 //=====================================================------===============
-#include "DDG4/Geant4Config.h"
+#include <DDG4/Geant4Config.h>
 #include <iostream>
+#include <ctime>
 
 using namespace std;
 using namespace dd4hep::sim::Setup;
@@ -44,8 +45,16 @@ int setupG4_XML(bool interactive)  {
     kernel.property("UI") = "UI";
   }
   else   {
-    kernel.property("NumEvents") = 3;
+    kernel.property("NumEvents") = 4;
   }
+  Action rndm(kernel, "Geant4Random/Random");
+  rndm["Seed"] = ::time(0);
+  kernel.registerGlobalAction(rndm);
+
+  EventAction out(kernel,"Geant4Output2ROOT/RootOutput");
+  out["Output"] = is_aclick() ? "CLICSiD.xml_aclick.root" : "CLICSiD.xml_exe.root";
+  kernel.eventAction().adopt(out);
+
   kernel.configure();
   kernel.initialize();
   kernel.run();
@@ -55,11 +64,16 @@ int setupG4_XML(bool interactive)  {
   return 0;
 }
 
-#if defined(G__DICTIONARY) || defined(__CLING__) || defined(__CINT__) || defined(__MAKECINT__) // CINT script
-int CLICSiDXML()
-#else
-int main(int, char**)                              // Main program if linked standalone
-#endif
-{
+int CLICSiDXML()   {
   return setupG4_XML(false);
 }
+
+#if not(defined(G__DICTIONARY) || defined(__CLING__) || defined(__CINT__) || defined(__MAKECINT__))
+int main(int, char**)                              // Main program if linked standalone
+{
+  std::cout << "Running CLICSiDXML as standalone executable...." << std::endl;
+  return CLICSiDXML();
+}
+#endif
+
+

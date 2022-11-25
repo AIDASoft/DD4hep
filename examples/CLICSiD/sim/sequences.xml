@@ -127,9 +127,13 @@
 	<properties Control="true" Output="simple_lcio"/>
       </action>
 -->
+<!--  We need some simulation files to deal with DDDigi.
+      Hence this part is in the AClick....
+
       <action name="Geant4Output2ROOT/RootOutput">
-	<properties Control="true" Output="simple.root"/>
+	<properties Control="true" Output="CLICSiD.xml.root"/>
       </action>
+-->
     </sequence>
     <sequence name="Geant4GeneratorActionSequence/GeneratorAction">
       <action name="Geant4ParticleGun/Gun">
