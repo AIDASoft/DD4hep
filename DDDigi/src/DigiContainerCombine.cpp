@@ -103,12 +103,14 @@ public:
     for( std::size_t j=start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
 	DetectorHistory* next = std::any_cast<DetectorHistory>(work[j]);
-	std::string next_name = next->name;
-	cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
-	combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "histories"); 
-	used_keys_insert(keys[j]);
-	cnt_hist += cnt;
-	cnt_conts++;
+	if ( next )   {
+	  std::string next_name = next->name;
+	  cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
+	  combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "histories");
+	  used_keys_insert(keys[j]);
+	  cnt_hist += cnt;
+	  cnt_conts++;
+	}
       }
     }
     key.set_mask(combine->m_deposit_mask);
@@ -122,12 +124,14 @@ public:
     for( std::size_t j=start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
 	DetectorResponse* next = std::any_cast<DetectorResponse>(work[j]);
-	std::string next_name = next->name;
-	cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
-	combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "responses"); 
-	used_keys_insert(keys[j]);
-	cnt_response += cnt;
-	cnt_conts++;
+	if ( next )   {
+	  std::string next_name = next->name;
+	  cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
+	  combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "responses"); 
+	  used_keys_insert(keys[j]);
+	  cnt_response += cnt;
+	  cnt_conts++;
+	}
       }
     }
     key.set_mask(combine->m_deposit_mask);
