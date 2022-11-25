@@ -167,7 +167,7 @@ DigiStoreDump::dump_history(DigiContext& context,
   std::vector<std::string> records;
 
   str << Key::key_name(container_key) << "[" << seq_no << "]:";
-  line = format("+----- %-30s Container: Segment:%04X Mask:%04X Item:%08X Cell:%016X Hist: Hits:%ld Parts:%ld",
+  line = format("+----- %-30s Container: Segment:%04X Mask:%04X Item:%08X Cell:%016lX Hist: Hits:%ld Parts:%ld",
 		str.str().c_str(), container_key.segment(), container_key.mask(), container_key.item(),
 		cell, history.hits.size(), history.particles.size());
   records.emplace_back(line);

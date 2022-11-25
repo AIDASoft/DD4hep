@@ -450,7 +450,7 @@ void DataSegment::print_keys()   const   {
 
 /// Call on failed any-casts during data requests
 std::string DataSegment::invalid_cast(Key key, const std::type_info& type)  const   {
-  return dd4hep::format(0, "Invalid segment data cast. Key:%-32s %016lX -> %04X %04X %10ld type:%s",
+  return dd4hep::format(0, "Invalid segment data cast. Key:%-32s %016lX -> %04X %04X %08X type:%s",
 			Key::key_name(key).c_str(), key.value(), 
 			key.segment(), key.mask(), key.item(),
 			typeName(type).c_str());
