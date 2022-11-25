@@ -367,6 +367,7 @@ void DigiKernel::register_monitor(DigiAction* action, TNamed* object)  const    
 
 /// Submit a bunch of actions to be executed in parallel
 void DigiKernel::submit (DigiContext& context, ParallelCall*const algorithms[], std::size_t count, void* data, bool parallel)  const    {
+  (void)parallel; // Silence compiler warning when not using TBB
   const char* tag = context.event->id();
 #ifdef DD4HEP_USE_TBB
   bool para = parallel && (internals->tbb_init && internals->num_threads > 0);
