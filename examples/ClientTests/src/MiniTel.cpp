@@ -47,7 +47,7 @@ typedef MyDetExtension DetectorExtension;
 static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector sens)  {
   xml_det_t  x_det    = e;	//xml-detelemnt of the detector taken as an argument
   xml_comp_t det_dim  = x_det.child(_U(dimensions));
-  xml_comp_t dtc_mod  = x_det.child(_U(module));	    // considering the module-pixel of the detector
+  xml_comp_t det_mod  = x_det.child(_U(module));	    // considering the module-pixel of the detector
   string     det_name = x_det.nameStr();	//det_name is the name of the xml-detelement
   Assembly   assembly (det_name);
   DetElement sdet(det_name,x_det.id());        //sdet is the detelement of the detector!!(actually is a Handle,already a pointer to m_element)
@@ -60,14 +60,16 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
   ext->dimDX  = det_dim.x();    // det_x is the x dimension of  the xml-detelement
   ext->dimDY  = det_dim.y();    // det_y is the y dimension of the xml-detelement
   ext->dimDZ  = det_dim.z();    // det_z is the z dimension of the xml-detelement
-  ext->pixelX = dtc_mod.x();  // The x dimension of the module
-  ext->pixelY = dtc_mod.y();  // The y dimension of the module
-  ext->pixelZ = dtc_mod.z();  // The z dimension of the module
-  ext->Ni     = int(det_dim.x()/dtc_mod.x());
-  ext->Nj     = int(det_dim.y()/dtc_mod.y());
+  ext->pixelX = det_mod.x();  // The x dimension of the module
+  ext->pixelY = det_mod.y();  // The y dimension of the module
+  ext->pixelZ = det_mod.z();  // The z dimension of the module
+  ext->Ni     = int(det_dim.x()/det_mod.x());
+  ext->Nj     = int(det_dim.y()/det_mod.y());
+
+  assembly.setVisAttributes(description.visAttributes(x_det.visStr()));
 
   Volume sensor_vol(det_name, Box(det_dim.x(),det_dim.y(),det_dim.z()), mat);
-  sensor_vol.setVisAttributes(description.visAttributes(x_det.visStr()));
+  sensor_vol.setVisAttributes(description.visAttributes(det_mod.visStr()));
   sensor_vol.setLimitSet(description, x_det.limitsStr());
   sensor_vol.setRegion(description, x_det.regionStr());
   sensor_vol.setSensitiveDetector(sens);
@@ -79,7 +81,7 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
   PlacedVolume pv;
   DetElement   side_det;
   Assembly     side_vol;
-  Position     side_pos(0,0,3*dd4hep::cm);
+  Position     side_pos(0,0,30*dd4hep::mm);
 
   side_det = DetElement(sdet,"side_0", x_det.id());
   side_vol = Assembly("side_0");

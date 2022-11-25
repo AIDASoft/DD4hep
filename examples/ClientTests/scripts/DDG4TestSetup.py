@@ -29,15 +29,15 @@ logger = logging.getLogger(__name__)
 
 
 class Setup:
-  def __init__(self, geometry_file):
+  def __init__(self, geometry_file, macro=None, vis=None):
     self.kernel = DDG4.Kernel()
     self.kernel.setOutputLevel(str('Geant4Converter'), Output.DEBUG)
     self.kernel.setOutputLevel(str('Gun'), Output.INFO)
+    self.description = self.kernel.detectorDescription()
     self.kernel.loadGeometry(str(geometry_file))
-
     self.geant4 = DDG4.Geant4(self.kernel)
     self.geant4.printDetectors()
-    self.geant4.setupCshUI()
+    self.ui = self.geant4.setupCshUI(macro=macro, vis=vis)
 
   def configure(self):
     # Configure field
