@@ -26,18 +26,15 @@ using namespace dd4hep::detail;
 namespace  {
   struct MyDetExtension  {
     int idD, Ni, Nj;
-    double posDX, posDY, posDZ;
     double dimDX, dimDY, dimDZ;
     double pixelX, pixelY, pixelZ;
     DetElement detector;
 
     MyDetExtension(DetElement e) : idD(0), Ni(0), Nj(0),
-        posDX(0.0), posDY(0.0), posDZ(0.0),
         dimDX(0.0), dimDY(0.0), dimDZ(0.0),
         pixelX(0.0), pixelY(0.0), pixelZ(0.0), detector(e) {}
     MyDetExtension(const MyDetExtension& e, DetElement d) 
       : idD(e.idD), Ni(e.Ni), Nj(e.Nj),
-        posDX(e.posDX), posDY(e.posDY), posDZ(e.posDZ),
         dimDX(e.dimDX), dimDY(e.dimDY), dimDZ(e.dimDZ),
         pixelX(e.pixelX), pixelY(e.pixelY), pixelZ(e.pixelZ),
         detector(d)						       
@@ -48,94 +45,73 @@ namespace  {
 typedef MyDetExtension DetectorExtension;
 
 static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector sens)  {
-  xml_det_t x_det = e;	//xml-detelemnt of the detector taken as an argument
-  string det_name = x_det.nameStr();	//det_name is the name of the xml-detelement
-  Assembly assembly (det_name);
-  int detectors_id = x_det.id();
-
+  xml_det_t  x_det    = e;	//xml-detelemnt of the detector taken as an argument
+  xml_comp_t det_dim  = x_det.child(_U(dimensions));
+  xml_comp_t dtc_mod  = x_det.child(_U(module));	    // considering the module-pixel of the detector
+  string     det_name = x_det.nameStr();	//det_name is the name of the xml-detelement
+  Assembly   assembly (det_name);
   DetElement sdet(det_name,x_det.id());        //sdet is the detelement of the detector!!(actually is a Handle,already a pointer to m_element)
+  Volume     motherVol = description.pickMotherVolume(sdet); //the mothers volume of our detector
+  Material   mat = description.material("Silicon");
+
   DetectorExtension* ext = new MyDetExtension(sdet);
   sdet.addExtension<MyDetExtension>(ext);
-  ext->idD= detectors_id;
+  ext->idD    = x_det.id();
+  ext->dimDX  = det_dim.x();    // det_x is the x dimension of  the xml-detelement
+  ext->dimDY  = det_dim.y();    // det_y is the y dimension of the xml-detelement
+  ext->dimDZ  = det_dim.z();    // det_z is the z dimension of the xml-detelement
+  ext->pixelX = dtc_mod.x();  // The x dimension of the module
+  ext->pixelY = dtc_mod.y();  // The y dimension of the module
+  ext->pixelZ = dtc_mod.z();  // The z dimension of the module
+  ext->Ni     = int(det_dim.x()/dtc_mod.x());
+  ext->Nj     = int(det_dim.y()/dtc_mod.y());
 
-
-  xml_coll_t mip(x_det, _U(position));
-  xml_comp_t det_po = mip;
-
-  double det_y = det_po.y();     // det_y is the y dimension of the xml-detelement
-  double det_x = det_po.x();     // det_x is the x dimension of  the xml-detelement
-  double det_z = det_po.z();     // det_z is the z dimension of the xml-detelement
-  ext->posDY = det_y;
-  ext->posDX = det_x;
-  ext->posDZ = det_z;
-
-  xml_coll_t dim(x_det, _U(dimensions));
-  xml_comp_t det_dim = dim;
-  double dim_x = det_dim.x();    // det_x is the x dimension of  the xml-detelement
-  double dim_y = det_dim.y();    // det_y is the y dimension of the xml-detelement
-  double dim_z = det_dim.z();    // det_z is the z dimension of the xml-detelement
-
-  Material mat = description.material("Silicon");
-
-  Volume motherVol = description.pickMotherVolume(sdet); //the mothers volume of our detector
-
-  xml_coll_t mi(x_det, _U(module));
-  xml_comp_t dtc_mod = mi;	    // considering the module-pixel of the detector
-  double pixelX = dtc_mod.x();  // The x dimension of the module
-  double pixelY = dtc_mod.y();  // The y dimension of the module
-  double pixelZ = dtc_mod.z();  // The z dimension of the module
-
-  int Ni = dim_x/pixelX;         // how many pixels in the x dimension
-  int Nj = dim_y/pixelY;
-
-  ext->dimDX = dim_x;
-  ext->dimDY = dim_y;
-  ext->dimDZ = dim_z;
-  ext->pixelX = pixelX;
-  ext->pixelY = pixelY;
-  ext->pixelZ = pixelZ;
-  ext->Ni= Ni;
-  ext->Nj= Nj;
-
-
-  for (int i= 0; i<Ni; i++){	//lets start from 100 and when getting the x dimensions of the detector, use num_pixels
-    for (int j= 0; j<Nj; j++){
-      //Position ppxl = Position(pixelX*i, pixelY*j, pixelZ);	//The local position of its pixel
-      //mi_id = i+j +(Nj-1)*j ;   //finding the id of the pixel according to its' position
-      //printout(INFO,det_name,"Giving to this pixel with position (%7.3f, %7.3f, %7.3f) id:%d",ppxl.x(),ppxl.y(),ppxl.z(),mi_id);
-    }
-  }
-  Volume m_volume(det_name, Box(dim_x, dim_y, dim_z), mat);	//as parameters it needs name,solid,material
-  m_volume.setVisAttributes(description.visAttributes(x_det.visStr()));	//I DONT MIND ABOUT THIS!
-  m_volume.setLimitSet(description,x_det.limitsStr());
-  m_volume.setRegion(description,x_det.regionStr());
-  m_volume.setSensitiveDetector(sens);
-
-  PlacedVolume pv1, pv2;
-  // det_x,det_y,det_z are the dimensions of the detector in space
-  pv1 = assembly.placeVolume(m_volume,Transform3D(Position(det_x,det_y,det_z)));
-  if ( x_det.hasChild(_U(reflect)) )   {
-    /// Reflect in XY-plane
-    pv2 = assembly.placeVolume(m_volume,Transform3D(Rotation3D(1., 0., 0., 0., 1., 0., 0., 0., -1.),
-                                                    Position(det_x,det_y,-det_z)));
-  }
+  Volume sensor_vol(det_name, Box(det_dim.x(),det_dim.y(),det_dim.z()), mat);
+  sensor_vol.setVisAttributes(description.visAttributes(x_det.visStr()));
+  sensor_vol.setLimitSet(description, x_det.limitsStr());
+  sensor_vol.setRegion(description, x_det.regionStr());
+  sensor_vol.setSensitiveDetector(sens);
   if ( x_det.isSensitive() ) {
-    DetElement side_0(sdet,"side_0",x_det.id());
-    // Set volume attributes
     sens.setType("tracker");
-    pv1.addPhysVolID("side",0);
-    side_0.setPlacement(pv1);
-    if ( pv2.isValid() )  {
-      DetElement side_1(sdet,"side_1",x_det.id());
-      side_1.setPlacement(pv2);
-      pv2.addPhysVolID("side",1);
-    }
   }
-  auto pv = motherVol.placeVolume(assembly);
-  pv.addPhysVolID("system",detectors_id);
+
+  int count = 0;
+  PlacedVolume pv;
+  DetElement   side_det;
+  Assembly     side_vol;
+  Position     side_pos(0,0,3*dd4hep::cm);
+
+  side_det = DetElement(sdet,"side_0", x_det.id());
+  side_vol = Assembly("side_0");
+  if ( x_det.hasChild(_U(side_position)) )  {
+    xml_comp_t x_pos = x_det.child(_U(side_position));
+    side_pos = Position(x_pos.x(0), x_pos.y(0), x_pos.z(3*dd4hep::cm));
+  }
+  pv = assembly.placeVolume(side_vol, side_pos);
+  pv.addPhysVolID("side",0);
+  side_det.setPlacement(pv);
+  for( xml_coll_t m(x_det, _U(module_position)); m; m++ )    {
+    xml_comp_t x_pos = m;
+    DetElement module(side_det, _toString(count, "module_%d"), count);
+    pv = side_vol.placeVolume(sensor_vol,Transform3D(Position(x_pos.x(),x_pos.y(),x_pos.z())));
+    pv.addPhysVolID("module", ++count);
+    module.setPlacement(pv);
+  }
+
+  if ( x_det.hasChild(_U(reflect)) )   {
+    xml_comp_t x_pos = x_det.child(_U(reflect));
+    side_pos = Position(x_pos.x(-side_pos.x()), x_pos.y(-side_pos.y()), x_pos.z(-side_pos.z()));
+    auto [det, vol] = side_det.reflect("side_1", x_det.id(), sens);
+    pv = assembly.placeVolume(vol, Transform3D(RotationZ(M_PI),side_pos));
+    pv.addPhysVolID("side",1);
+    det.setPlacement(pv);
+    sdet.add(det);
+  }
+
+  pv = motherVol.placeVolume(assembly);
+  pv.addPhysVolID("system", x_det.id());
   sdet.setPlacement(pv);
-  // Support additional test if Detector_InhibitConstants is set to TRUE
-  description.constant<double>("world_side");
   return sdet;
 }
+
 DECLARE_DETELEMENT(MiniTelPixel,create_detector)
