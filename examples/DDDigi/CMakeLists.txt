@@ -65,8 +65,8 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg(DDDigi_generate_data
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/ClientTests/scripts/MiniTelGenerate.py
-         -batch -events 100 -runs 8
-    REGEX_PASS "\\+\\+\\+ Finished run 7 after 100 events \\(800 events in total\\)."
+         -batch -events 30 -runs 8
+    REGEX_PASS "\\+\\+\\+ Finished run 7 after 30 events \\(240 events in total\\)."
     REGEX_FAIL "Error;ERROR;Exception"
   )
   # Test basic input reading from DDG4
@@ -153,6 +153,38 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg(DDDigi_test_spillover
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestSpillover.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test container parellization
+  dd4hep_add_test_reg(DDDigi_test_containers_parallel
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestMultiContainerParallel.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test hit resegmentation
+  dd4hep_add_test_reg(DDDigi_test_detector_resegmentation
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestResegmentation.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test work splitting by segmentation
+  dd4hep_add_test_reg(DDDigi_test_segmentation_split_1
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestSegmentationSplit.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test work splitting by segmentation (2)
+  dd4hep_add_test_reg(DDDigi_test_segmentation_split_2
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestSegmentationSplit2.py
     DEPENDS    DDDigi_generate_data
     REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
     REGEX_FAIL "Error;ERROR;Exception"

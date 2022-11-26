@@ -12,6 +12,14 @@ from __future__ import absolute_import
 
 
 def run():
+  """
+    Small test for process splitting by segmentation.
+    Assigned parts of the segmentation are processed by a specified 
+    container action (here a DigiSegmentDepositPrint instance)
+
+    \author  M.Frank
+    \version 1.0
+  """
   import DigiTest
   digi = DigiTest.Test(geometry=None)
   digi.load_geo()
@@ -30,15 +38,15 @@ def run():
                                     output_mask=0xFEED)
   splitter = digi.create_action('DigiSegmentSplitter/Splitter',
                                 parallel=True,
-                                split_by='layer',
-                                detector='SiTrackerBarrel',
+                                split_by='module',
+                                detector='Minitel1',
                                 processor_type='DigiSegmentDepositPrint')
   split_action.adopt_container_processor(splitter, splitter.collection_names())
 
   event.adopt_action('DigiStoreDump/StoreDump')
   digi.info('Created event.dump')
   # ========================================================================
-  digi.run_checked(num_events=3, num_threads=10, parallel=3)
+  digi.run_checked(num_events=5, num_threads=10, parallel=3)
 
 
 if __name__ == '__main__':
