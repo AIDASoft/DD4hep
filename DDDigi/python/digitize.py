@@ -13,7 +13,7 @@ import dd4hep
 import dddigi
 
 
-class Digitize(dd4hep.Logger):
+class Digitize(dd4hep.Logger, dd4hep.CommandLine):
   """
    Helper object to perform stuff, which occurs very often.
    I am sick of typing the same over and over again.
