@@ -26,7 +26,7 @@ def run():
   from g4units import GeV
   from MiniTelSetup import Setup
   args = DDG4.CommandLine()
-  m = Setup(geometry="/examples/ClientTests/compact/MiniTel_ext.xml")
+  m = Setup(geometry="/examples/ClientTests/compact/MiniTelGenerate.xml")
   kernel = m.kernel
   if args.batch:
     run = '/run/beamOn ' + str(args.events)

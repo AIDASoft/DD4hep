@@ -31,7 +31,7 @@ def run():
   conts.append('MCParticles')
   move_seq.adopt_container_processor(mover, conts)
   # ========================================================================================================
-  digi.run_checked(num_events=7, num_threads=7, parallel=3)
+  digi.run_checked(num_events=5, num_threads=7, parallel=3)
 
 
 if __name__ == '__main__':

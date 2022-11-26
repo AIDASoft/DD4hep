@@ -33,12 +33,12 @@ def run():
   smear.pair_ionisation_energy = 10 * units.eV
   smear.ionization_fluctuation = True
   # proc.adopt_container_processor(smear, conts)
-  proc.adopt_container_processor(smear, ['EcalBarrelHits', 'EcalEndcapHits', 'HcalBarrelHits'])
+  proc.adopt_container_processor(smear, digi.containers())
 
   event.adopt_action('DigiStoreDump/HeaderDump')
   # ========================================================================================================
   digi.info('Starting digitization core')
-  digi.run_checked(num_events=3, num_threads=-1, parallel=5)
+  digi.run_checked(num_events=5, num_threads=7, parallel=5)
 
 
 if __name__ == '__main__':

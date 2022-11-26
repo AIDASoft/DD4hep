@@ -18,20 +18,9 @@ from dddigi import DEBUG, INFO, WARNING, ERROR  # noqa: F401
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-attenuation = {'SiVertexEndcapHits': 50 * units.ns,
-               'SiVertexBarrelHits': 50 * units.ns,
-               'SiTrackerForwardHits': 50 * units.ns,
-               'SiTrackerEndcapHits': 50 * units.ns,
-               'SiTrackerBarrelHits': 50 * units.ns,
-               'HcalPlugHits': 50 * units.ns,
-               'HcalEndcapHits': 50 * units.ns,
-               'HcalBarrelHits': 50 * units.ns,
-               'EcalBarrelHits': 50 * units.ns,
-               'EcalEndcapHits': 50 * units.ns,
-               'MuonEndcapHits': 50 * units.ns,
-               'MuonBarrelHits': 50 * units.ns,
-               'BeamCalHits': 50 * units.ns,
-               'LumiCalHits': 50 * units.ns,
+attenuation = {'MiniTel1Hits': 50 * units.ns,
+               'MiniTel2Hits': 50 * units.ns,
+               'MiniTel3Hits': 50 * units.ns,
 }
 
 
@@ -49,25 +38,22 @@ class Test(dddigi.Digitize):
     self.main_sequencer()
     self.attenuation = attenuation
     self.used_inputs = []
-    self.inputs = ['CLICSiD_2022-11-01_15-54.root',
-                   'CLICSiD_2022-11-01_15-10.root',
-                   'CLICSiD_2022-10-31_17-26.root',
-                   'CLICSiD_2022-10-31_17-55.root',
-                   'CLICSiD_2022-10-31_17-55.root',
-                   'CLICSiD_2022-10-31_18-20.root',
-                   'CLICSiD_2022-10-31_18-40.root',
-                   'CLICSiD_2022-10-31_18-59.root',
-                   'CLICSiD_2022-10-31_19-18.root',
-                   'CLICSiD_2022-10-31_19-36.root',
-                   'CLICSiD_2022-10-31_19-53.root',
-                   'CLICSiD_2022-10-31_20-11.root']
+    self.inputs = ['MiniTel.run00000000.root',
+                   'MiniTel.run00000001.root',
+                   'MiniTel.run00000002.root',
+                   'MiniTel.run00000003.root',
+                   'MiniTel.run00000004.root',
+                   'MiniTel.run00000005.root',
+                   'MiniTel.run00000006.root',
+                   'MiniTel.run00000007.root',
+                   'MiniTel.run00000008.root']
 
   def segment_action(self, nam, **options):
     obj = dddigi.Interface.createSegmentAction(self.kernel(), str(nam))
     return obj
 
   def load_geo(self, volume_manager=None):
-    fname = "file:" + os.environ['DD4hepINSTALL'] + "/DDDetectors/compact/SiD.xml"
+    fname = "file:" + os.environ['DD4hepExamplesINSTALL'] + "/examples/ClientTests/compact/MiniTelGenerate.xml"
     self.kernel().loadGeometry(str(fname))
     self.printDetectors()
     if volume_manager:
