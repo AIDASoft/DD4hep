@@ -18,7 +18,7 @@ int main(int /* argc */, char** /* argv */ ){
 
     // ----- example test for testing two expressions for equality:
 
-    test( "Example", "Example", "example test - string comparison " ); // this test will pass
+    test( std::string("Example"), std::string("Example"), "example test - string comparison " ); // this test will pass
 
     //test( "Example", "BadExample", "example test - string comparison " ); //  this test will fail
 

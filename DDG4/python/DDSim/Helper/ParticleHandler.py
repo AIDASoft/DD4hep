@@ -131,16 +131,26 @@ class ParticleHandler(ConfigHelper):
       try:
         user.TrackingVolume_Zmax = DDG4.tracker_region_zmax
         user.TrackingVolume_Rmax = DDG4.tracker_region_rmax
-        logger.info(" *** definition of tracker region *** ")
-        logger.info("    tracker_region_zmax = %s", user.TrackingVolume_Zmax)
-        logger.info("    tracker_region_rmax = %s", user.TrackingVolume_Rmax)
-        logger.info(" ************************************ ")
       except AttributeError as e:
         logger.error("Attribute of tracker region missing in detector model %s", e)
         logger.error("   make sure to specify the global constants tracker_region_zmax and tracker_region_rmax ")
         logger.error("   this is needed for the MC-truth link of created sim-hits  !  ")
         logger.error(" Or Disable the User Particle Handler with --part.userParticleHandler=''")
         exit(1)
+
+      try:
+        user.TrackingVolume_Zmin = DDG4.tracker_region_zmin
+      except AttributeError as e:
+        logger.debug("Attribute tracker_region_zmin for asymmetric tracker region missing %s", e)
+        logger.debug("  will use symmetric region defined by tracker_region_zmax")
+        user.TrackingVolume_Zmin = str(-float(user.TrackingVolume_Zmax))
+
+      logger.info(" *** definition of tracker region *** ")
+      logger.info("    tracker_region_zmin = %s", user.TrackingVolume_Zmin)
+      logger.info("    tracker_region_zmax = %s", user.TrackingVolume_Zmax)
+      logger.info("    tracker_region_rmax = %s", user.TrackingVolume_Rmax)
+      logger.info(" ************************************ ")
+
       part.adopt(user)
 
     return
