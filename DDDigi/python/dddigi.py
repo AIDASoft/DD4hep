@@ -265,7 +265,7 @@ def _get(self, name):
     return getattr(a, name)
   # elif a.__class__ != self.__class__ and hasattr(a, name):
   #   return getattr(a, name)
-  msg = 'DigiAction::GetProperty [Unhandled]: Cannot access property ' + a.name() + '.' + name
+  msg = 'DigiAction::GetProperty [Unhandled]: Cannot access property ' + a.name() + '.' + str(name)
   raise KeyError(msg)
 # ---------------------------------------------------------------------------
 
@@ -281,7 +281,7 @@ def _set(self, name, value):
     val = str(value)
   if Interface.setProperty(act, nam, val):
     return
-  msg = 'DigiAction::SetProperty [Unhandled]: Cannot set ' + act.name() + '.' + name + ' = ' + value
+  msg = 'DigiAction::SetProperty [Unhandled]: Cannot set ' + act.name() + '.' + str(name) + ' = ' + str(value)
   raise KeyError(msg)
 # ---------------------------------------------------------------------------
 

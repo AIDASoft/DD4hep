@@ -24,17 +24,13 @@ def run():
                             input_mask=0xEEE5,
                             input_segment='deposits')
   smear = digi.create_action('DigiDepositSmearPositionResolution/Smear',
-                             deposit_cutoff=1e-55 * units.MeV,
                              resolution_u=1e-2 * units.mm,
                              resolution_v=1e-2 * units.mm)
-  proc.adopt_container_processor(smear, ['SiVertexEndcapHits', 'SiVertexBarrelHits',
-                                         'SiTrackerEndcapHits', 'SiTrackerBarrelHits',
-                                         'SiTrackerForwardHits'])
-
+  proc.adopt_container_processor(smear, digi.containers())
   event.adopt_action('DigiStoreDump/HeaderDump')
   # ========================================================================================================
   digi.info('Starting digitization core')
-  digi.run_checked(num_events=3, num_threads=-1, parallel=5)
+  digi.run_checked(num_events=5, num_threads=10, parallel=5)
 
 
 if __name__ == '__main__':

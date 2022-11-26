@@ -26,7 +26,7 @@ def run():
   sequence.adopt_container_processor(count, digi.containers())
   digi.check_creation([reader, signal, sequence, count])
   # ========================================================================================================
-  digi.run_checked(num_events=7, num_threads=7, parallel=3)
+  digi.run_checked(num_events=5, num_threads=7, parallel=3)
 
 
 if __name__ == '__main__':

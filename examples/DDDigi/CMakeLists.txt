@@ -52,3 +52,119 @@ dd4hep_add_test_reg(DDDigi_colored_noise
   REGEX_FAIL "Error;ERROR;Exception"
   )
 #
+# Test new properties
+dd4hep_add_test_reg(DDDigi_properties
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+  EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestProperties.py
+  REGEX_PASS "roperty test PASSED"
+  REGEX_FAIL "Error;ERROR;Exception"
+)
+#
+if (DD4HEP_USE_GEANT4)
+  # Generate test data
+  dd4hep_add_test_reg(DDDigi_generate_data
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/ClientTests/scripts/MiniTelGenerate.py
+         -batch -events 100 -runs 8
+    REGEX_PASS "\\+\\+\\+ Finished run 7 after 100 events \\(800 events in total\\)."
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test basic input reading from DDG4
+  dd4hep_add_test_reg(DDDigi_test_input_reading
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestInput.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test signal attenuation for spillover
+  dd4hep_add_test_reg(DDDigi_test_attenuate
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestAttenuate.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test moving IP
+  dd4hep_add_test_reg(DDDigi_test_move_IP
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestIPMove.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test deposit count
+  dd4hep_add_test_reg(DDDigi_test_deposit_count
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestDepositCount.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test weighted deposit overlay
+  dd4hep_add_test_reg(DDDigi_test_weighted_deposit_overlay
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestDepositWeighted.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test deposit energy smearing
+  dd4hep_add_test_reg(DDDigi_test_deposit_smear_energy
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestDepositSmearEnergy.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test deposit time resolution smearing
+  dd4hep_add_test_reg(DDDigi_test_deposit_smear_time
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestDepositSmearTime.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test deposit position resolution smearing
+  dd4hep_add_test_reg(DDDigi_test_smear_position
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestPositionSmearResolution.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test deposit track position resolution smearing
+  dd4hep_add_test_reg(DDDigi_test_smear_track
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestPositionSmearTrack.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test multiple interaction input
+  dd4hep_add_test_reg(DDDigi_test_multi_interactions
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestMultiInteractions.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test spillover input (multi interactions with attenuation)
+  dd4hep_add_test_reg(DDDigi_test_spillover
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestSpillover.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test simple ADC response
+  dd4hep_add_test_reg(DDDigi_test_simple_adc_response
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestSimpleADCResponse.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+#
+endif()
+#
