@@ -14,7 +14,7 @@ from __future__ import absolute_import
 def run():
   """
     Small test for process splitting by segmentation.
-    Assigned parts of the segmentation are processed by a specified 
+    Assigned parts of the segmentation are processed by a specified
     container action (here a DigiSegmentDepositPrint instance)
 
     \author  M.Frank
