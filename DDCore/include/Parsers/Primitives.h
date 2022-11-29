@@ -112,6 +112,10 @@ namespace dd4hep {
     unsigned long long int hash64(const char* key);
     /// 64 bit hash function
     unsigned long long int hash64(const std::string& key);
+    /// 64 bit hash update function
+    unsigned long long int update_hash64(unsigned long long int hash, const void* key, std::size_t len);
+    /// 64 bit hash update function
+    unsigned long long int update_hash64(unsigned long long int hash, const char* key);
   
     /// 32 bit hash function
     inline unsigned int hash32(const void* key, std::size_t len) {
