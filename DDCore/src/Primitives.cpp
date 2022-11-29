@@ -199,6 +199,20 @@ unsigned long long int dd4hep::detail::hash64(const void* key, std::size_t len) 
   return hash;
 }
 
+/// 64 bit hash update function
+unsigned long long int dd4hep::detail::update_hash64(unsigned long long int hash, const char* key)  {
+  const unsigned char* str = (const unsigned char*)key;
+  for ( ; *str; ++str) hash = FNV1a_64::doByte(hash, *str);
+  return hash;
+}
+
+/// 64 bit hash update function
+unsigned long long int dd4hep::detail::update_hash64(unsigned long long int hash, const void* key, std::size_t len)  {
+  const unsigned char* str = (const unsigned char*)key;
+  for ( ; --len; ++str) hash = FNV1a_64::doByte(hash, *str);
+  return hash;
+}
+
 /// 64 bit hash function
 unsigned long long int dd4hep::detail::hash64(const std::string& key)  {
   return std::accumulate(begin(key),end(key),FNV1a_64::hashinit,FNV1a_64::doByte);
