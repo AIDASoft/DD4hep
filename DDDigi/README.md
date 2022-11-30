@@ -3,7 +3,7 @@
 DDDigi: The digitization tools of DD4hep
 ========================================
 
-`DDDigi` is supposed to interprete the results of the detector simulation phase
+DDDigi is supposed to interprete the results of the detector simulation phase
 e.g. using the simulation toolket [DDG4](../DDG4) with its command line interface
 [ddsim](../DDG4/python/DDSim).
 This is the final phase of data processing to obtain data from the simulation 
@@ -22,23 +22,32 @@ apparatus such as
 - conversion of the final signal data into the equivalent of ADC counts.
 - ...
 
+In addition these effects should be computed in the presence of
+
+- multiple interactions in the same beam-crossing
+- spillover signal from previous or following interactions due to the
+  relaxation time of the apparatus.
+
+DDDigi addresses these issues in a very modular way and implements a multi-threaded approach
+to perform such data processing.
+To support multi-threading and to avoid any complication for users due to data races 
+the following basic assumptions were made:
+
+- The signals from disjunct subdetectors are generally independent
+  This means the detector response of any tracking subdetector is uncorrelated with
+  the detector response of e.g. a calorimeter.
+- Within a subdetector the response of disjunct units are uncorrelated. This means that 
+  e.g. hits on one layer of a layered tracking device are uncorrelated 
+  with the hits produced in another layer.
+- Within one such a layered device the response of individual sensors is tyically uncorrelated.
+
+These assumptions however are not strict, but rather require input from the designer of such
+a digitization application for a given appratus. These basic assumption only show the maximal
+level of parallelization possible when processing data signals.
+The parallelization can be configured for each subdetector at each level according to 
+boundary conditions e.g. given by cross-talk or the data volume arising from the
+energy deposits of the simulation.
 
 
 
-This detector design has been pulled from , and was originally developed in
-[ATHENA](https://eicweb.phy.anl.gov/EIC/detectors/athena), for the Electron-Ion Collider.
-
-![PFRICH](doc/geometry.png)
-
-To use `ctest`, run:
-```bash
-cd ..  # `pwd` should now be `DD4hep/examples`
-mkdir build
-cd build
-cmake -DDD4HEP_EXAMPLES="OpticalTracker" .. && make && make install
-ctest --output-on-failure   # or use `--verbose` to see all output
-```
-
-
-
-![HORIZON2020](../doc/usermanuals/DDG4/setup/Horizon2020-grant-logo.png)
+![HORIZON2020](../doc/usermanuals/DD4hep/figures/AIDAinnova.png)
