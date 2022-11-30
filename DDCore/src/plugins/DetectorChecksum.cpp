@@ -15,10 +15,10 @@
 #include <DD4hep/Plugins.h>
 #include <DD4hep/Printout.h>
 #include <DD4hep/FieldTypes.h>
-#include <DD4hep/DD4hepUnits.h>
 #include <DD4hep/DetectorTools.h>
 #include <DD4hep/MatrixHelpers.h>
 #include <DD4hep/AlignmentData.h>
+#include <DD4hep/DetFactoryHelper.h>
 #include <DD4hep/detail/ObjectsInterna.h>
 #include <DD4hep/detail/DetectorInterna.h>
 #include "DetectorChecksum.h"
@@ -29,7 +29,7 @@
 #include <TColor.h>
 #include <TGeoBoolNode.h>
 
-#include <fstream>
+// C/C++ include files
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -72,12 +72,14 @@ void DetectorChecksum::configure()   {
   m_ene_unit = _toDouble(m_ene_unit_nam)/m_ene__def;
   m_densunit = _toDouble(m_densunit_nam)/m_dens_def;
   m_atomunit = _toDouble(m_atomunit_nam)/m_atom_def;
-  printout(INFO,"DetectorChecksum","+++ Float precision: %d", precision);
-  printout(INFO,"DetectorChecksum","+++ Unit of length:  %-12s -> %f", m_len_unit_nam.c_str(), m_len_unit);
-  printout(INFO,"DetectorChecksum","+++ Unit of angle:   %-12s -> %f", m_ang_unit_nam.c_str(), m_ang_unit);
-  printout(INFO,"DetectorChecksum","+++ Unit of energy:  %-12s -> %f", m_ene_unit_nam.c_str(), m_ene_unit);
-  printout(INFO,"DetectorChecksum","+++ Unit of density: %-12s -> %f", m_densunit_nam.c_str(), m_densunit);
-  printout(INFO,"DetectorChecksum","+++ Unit of density: %-12s -> %f", m_atomunit_nam.c_str(), m_atomunit);
+  if ( debug > 1 )   {
+    printout(INFO,"DetectorChecksum","+++ Float precision: %d", precision);
+    printout(INFO,"DetectorChecksum","+++ Unit of length:  %-12s -> %f", m_len_unit_nam.c_str(), m_len_unit);
+    printout(INFO,"DetectorChecksum","+++ Unit of angle:   %-12s -> %f", m_ang_unit_nam.c_str(), m_ang_unit);
+    printout(INFO,"DetectorChecksum","+++ Unit of energy:  %-12s -> %f", m_ene_unit_nam.c_str(), m_ene_unit);
+    printout(INFO,"DetectorChecksum","+++ Unit of density: %-12s -> %f", m_densunit_nam.c_str(), m_densunit);
+    printout(INFO,"DetectorChecksum","+++ Unit of density: %-12s -> %f", m_atomunit_nam.c_str(), m_atomunit);
+  }
 }
 
 std::stringstream DetectorChecksum::logger()   const    {
@@ -105,7 +107,7 @@ const std::string& DetectorChecksum::handleElement(Atom element) const {
 	  << "\" value=\""    << std::scientific << element->A()/m_atomunit << "\"/>" << newline
 	  << "</element>";
       iel = geo.emplace(element, log.str()).first;
-      if ( debug > 2 ) std::cout << log.str() << std::endl;
+      if ( debug > 3 ) std::cout << log.str() << std::endl;
     }
   }
   return iel->second;
@@ -140,7 +142,7 @@ const std::string& DetectorChecksum::handleMaterial(Material medium) const {
     log << " <D unit=\"" << m_densunit_nam << "\" value=\"" << mat->GetDensity()/m_densunit << "\"/>" << newline;
     log << "</material>";
     ima = geo.emplace(medium, log.str()).first;
-    if ( debug > 2 ) std::cout << log.str() << std::endl;
+    if ( debug > 3 ) std::cout << log.str() << std::endl;
   }
   return ima->second;
 }
@@ -510,7 +512,7 @@ const std::string& DetectorChecksum::handleSolid(Solid solid) const {
       log << "</" << str_oper << ">" << newline;
     }
     iso = geo.emplace(solid, log.str()).first;
-    if ( debug > 2 ) std::cout << log.str() << std::endl;
+    if ( debug > 3 ) std::cout << log.str() << std::endl;
   }
   return iso->second;
 }
@@ -528,7 +530,7 @@ const std::string& DetectorChecksum::handlePosition(const TGeoMatrix* trafo) con
 	<< " y=\"" << tr[1]/m_len_unit  << "\""
 	<< " z=\"" << tr[2]/m_len_unit  << "\"/>";
     ipo = geo.emplace(trafo, log.str()).first;
-    if ( debug > 2 ) std::cout << log.str() << std::endl;
+    if ( debug > 3 ) std::cout << log.str() << std::endl;
   }
   return ipo->second;
 }
@@ -546,7 +548,7 @@ const std::string& DetectorChecksum::handleRotation(const TGeoMatrix* trafo) con
 	<< " y=\"" << rot.Y()/m_ang_unit << "\""
 	<< " z=\"" << rot.Z()/m_ang_unit << "\"/>";
     iro = geo.emplace(trafo, log.str()).first;
-    if ( debug > 2 ) std::cout << log.str() << std::endl;
+    if ( debug > 3 ) std::cout << log.str() << std::endl;
   }
   return iro->second;
 }
@@ -581,7 +583,7 @@ const std::string& DetectorChecksum::handleVis(VisAttr attr) const {
 	<< " G=\""     << green  << "\"/>" << newline;
     log << "</vis>";
     ivi = geo.emplace(attr, log.str()).first;
-    if ( debug > 2 ) std::cout << log.str() << std::endl;
+    if ( debug > 3 ) std::cout << log.str() << std::endl;
   }
   return ivi->second;
 }
@@ -599,7 +601,7 @@ const std::string& DetectorChecksum::handleRegion(Region region) const {
 	<< " lunit=\""             << m_len_unit_nam << "\""
 	<< "/>";
     ire = geo.emplace(region, log.str()).first;
-    if ( debug > 2 ) std::cout << log.str() << std::endl;
+    if ( debug > 3 ) std::cout << log.str() << std::endl;
   }
   return ire->second;
 }
@@ -621,7 +623,7 @@ const std::string& DetectorChecksum::handleLimitSet(LimitSet lim) const {
     }
     log << "</limitSet>";
     ili = geo.emplace(lim, log.str()).first;
-    if ( debug > 2 ) std::cout << log.str() << std::endl;
+    if ( debug > 3 ) std::cout << log.str() << std::endl;
   }
   return ili->second;
 }
@@ -652,7 +654,7 @@ const std::string& DetectorChecksum::handleAlignment(Alignment alignment)  const
 	<< " psi=\""   << data.delta.rotation.Psi()/m_len_unit  << "\"/>" << newline;
     log << "</nominal>";
     ial = geo.emplace(alignment, log.str()).first;
-    if ( debug > 2 ) std::cout << log.str() << std::endl;
+    if ( debug > 3 ) std::cout << log.str() << std::endl;
   }
   return ial->second;
 }
@@ -727,7 +729,7 @@ const std::string& DetectorChecksum::handleVolume(Volume volume) const {
     }
     log << "</" << tag << ">";
     ivo = geo.emplace(volume, log.str()).first;
-    if ( debug > 2 ) std::cout << log.str() << std::endl;
+    if ( debug > 3 ) std::cout << log.str() << std::endl;
   }
   return ivo->second;
 }
@@ -758,7 +760,7 @@ const std::string& DetectorChecksum::handlePlacement(PlacedVolume node) const {
     }
     log << "</physvol>";
     ipl = geo.emplace(node, log.str()).first;
-    if ( debug > 2 ) std::cout << log.str() << std::endl;
+    if ( debug > 3 ) std::cout << log.str() << std::endl;
   }
   return ipl->second;
 }
@@ -781,7 +783,7 @@ const std::string& DetectorChecksum::handleDetElement(DetElement det)  const  {
 	<< " placement=\""     << det.placementPath()    << "\""
 	<< "/>";
     dit = geo.emplace(det, log.str()).first;
-    if ( debug > 2 ) std::cout << log.str() << std::endl;
+    if ( debug > 3 ) std::cout << log.str() << std::endl;
   }
   return dit->second;
 }
@@ -806,7 +808,7 @@ const std::string& DetectorChecksum::handleSensitive(SensitiveDetector sd) const
 	handleSegmentation(ro.segmentation());
       }
       isi = geo.emplace(sd, log.str()).first;
-      if ( debug > 2 ) std::cout << log.str() << std::endl;
+      if ( debug > 3 ) std::cout << log.str() << std::endl;
     }
     return isi->second;
   }
@@ -847,7 +849,7 @@ const std::string& DetectorChecksum::handleSegmentation(Segmentation seg) const 
       log << "</parameters>" << newline;
       log << "</segmentatoin>";
       ise = geo.emplace(seg, log.str()).first;
-      if ( debug > 2 ) std::cout << log.str() << std::endl;
+      if ( debug > 3 ) std::cout << log.str() << std::endl;
     }
     return ise->second;
   }
@@ -872,7 +874,7 @@ const std::string& DetectorChecksum::handleIdSpec(IDDescriptor id_spec) const {
       }
       log << "</id>";
       iid = geo.emplace(id_spec, log.str()).first;
-      if ( debug > 2 ) std::cout << log.str() << std::endl;
+      if ( debug > 3 ) std::cout << log.str() << std::endl;
     }
     return iid->second;
   }
@@ -903,7 +905,7 @@ const std::string& DetectorChecksum::handleField(OverlayedField f) const {
 #endif
     log << "</field>";
     ifd = geo.emplace(f, log.str()).first;
-    if ( debug > 2 ) std::cout << log.str() << std::endl;
+    if ( debug > 3 ) std::cout << log.str() << std::endl;
   }
   return ifd->second;
 }
@@ -946,19 +948,18 @@ void DetectorChecksum::collect_det_elements(DetElement top)  const  {
 }
 
 /// Create geometry conversion
-DetectorChecksum::checksum_t DetectorChecksum::analyzeDetector(DetElement top)      {
+void DetectorChecksum::analyzeDetector(DetElement top)      {
   Detector& description = m_detDesc;
   if (!top.isValid()) {
     throw std::runtime_error("Attempt to call analyzeDetector with an invalid geometry!");
   }
-
   GeometryInfo& geo = *(m_dataPtr = new GeometryInfo);
   m_data->clear();
   handleHeader();
   collect_det_elements(top);
   for (const auto& fld : description.fields() )
     handleField(fld.second);
-  if ( debug > 0 )  {
+  if ( debug > 1 )  {
     printout(ALWAYS,"DetectorChecksum","++ ==> Computing checksum for tree: %s", top.path().c_str());
     printout(ALWAYS,"DetectorChecksum","++ Handled %ld materials.", geo.mapOfMaterials.size());
     printout(ALWAYS,"DetectorChecksum","++ Handled %ld solids.", geo.mapOfSolids.size());
@@ -966,8 +967,6 @@ DetectorChecksum::checksum_t DetectorChecksum::analyzeDetector(DetElement top)  
     printout(ALWAYS,"DetectorChecksum","++ Handled %ld visualization attributes.", geo.mapOfVis.size());
     printout(ALWAYS,"DetectorChecksum","++ Handled %ld fields.", geo.mapOfFields.size());
   }
-  checksumDetElement(0, top, 0, true);
-  return 0;
 }
 
 std::vector<PlacedVolume> _get_path(PlacedVolume node, const std::set<PlacedVolume>& match)   {
@@ -1046,18 +1045,18 @@ DetectorChecksum::checksumDetElement(int lvl, DetElement top, unsigned long long
     }
 
     /// All done: Some debugging printout
-    if ( debug > 0 && lvl <= max_level )  {
+    if ( debug > 0 || lvl <= max_level )  {
       std::stringstream str;
       str << "+++ " << std::setw(4) << std::left << lvl
 	  << " " << std::setw(24) << std::left << top.name()
 	  << " " << std::setfill('0') << std::setw(16) << std::hex << de_hash;
-      str << " " << std::setfill(' ') << std::setw(10) << std::left << "+place"
+      str << " " << std::setfill(' ') << std::setw(7) << std::left << "+place"
 	  << " " << std::setfill('0') << std::setw(16) << std::hex << pv_hash;
       if ( !(child_places.empty() && hashed_places.empty()) )
 	str << " " << std::setfill(' ') << std::setw(10) << std::left << "+daughters"
 	    << " " << std::setfill('0') << std::setw(16) << std::hex << dau_hash;
       if ( !top.children().empty() )
-	str << " " << std::setfill(' ') << std::setw(10) << std::left << "+children"
+	str << " " << std::setfill(' ') << std::setw(9) << std::left << "+children"
 	    << " " << std::setfill('0') << std::setw(16) << std::hex << child_hash;
       std::cout << str.str() << std::endl;
     }
@@ -1154,72 +1153,7 @@ static long create_checksum(Detector& description, int argc, char** argv) {
   auto hash = detail::hash64("DD4hepGeometryChecksum");
   wr.analyzeDetector(description.world());
   wr.checksumDetElement(0, description.world(), hash, true);
-  //wr.gdml(description.world());
   return 1;
 }
 
 DECLARE_APPLY(DD4hepGeometryChecksum, create_checksum)
-
-#if 0
-
-      template <typename T> std::string attr_ref(T  handle)  const;
-      void gdmlDetElement(DetElement top, bool recursive)  const;
-      void gdmlReadout(SensitiveDetector sd)  const;
-      void gdml(DetElement top)   const;
-
-template <typename T> std::string DetectorChecksum::attr_ref(T handle)  const  {
-  char text[64];
-  ::snprintf(text, sizeof(text), "_%016lX\" ", (long)handle.ptr());
-  std::string n = " ref=\"" + refName(handle)+std::string(text);
-  return n;
-}
-
-void DetectorChecksum::gdmlDetElement(DetElement top, bool recursive)  const  {
-  auto& dat = data();
-  auto& geo = dat.mapOfDetElements;
-  auto it = geo.find(top);
-  if ( it != geo.end() )    {
-    std::cout << "<detelement" << attr_ref(top) << it->second << ">" << std::endl;
-    std::cout << "<children>" << std::endl;
-    for ( const auto& c : top.children() )
-      std::cout << "<child ref=\"" << attr_ref(c.second) << "\">" << std::endl;
-    std::cout << "</children>" << std::endl;
-    std::cout << "</detelement>" << std::endl;
-    if ( recursive )   {
-      /// Hash the structural children
-      for ( const auto& c : top.children() )
-	gdmlDetElement(c.second, recursive);
-    }
-    return;
-  }
-  except("DetectorChecksum","ERROR: Cannot checksum invalid DetElement");
-}
-
-void DetectorChecksum::gdmlReadout(SensitiveDetector sd)  const  {
-  auto& dat = data();
-  auto& geo = dat.mapOfSensDets;
-  auto it = geo.find(sd);
-  if ( it != geo.end() )    {
-    std::cout << "<sensitive_detector" << attr_ref(sd) << it->second << ">" << std::endl;
-    Readout ro = sd.readout();
-    if ( ro.isValid() ) {
-      Segmentation seg = ro.segmentation();
-      std::cout << "<readout>" << std::endl;
-      std::cout << handleIdSpec(ro.idSpec()) << std::endl;
-      if ( seg.isValid() )   {
-	std::cout << handleSegmentation(seg) << std::endl;
-      }
-      std::cout << "</readout>" << std::endl;
-    }
-    std::cout << "</sensitive_detector>" << std::endl;
-    return;
-  }
-  except("DetectorChecksum","ERROR: Cannot checksum invalid DetElement");
-}
-
-void DetectorChecksum::gdml(DetElement top)   const  {
-  std::cout << "<detector_elements>" << std::endl;
-  gdmlDetElement(top, true);
-  std::cout << "</detector_elements>" << std::endl;
-}
-#endif

@@ -10,38 +10,23 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DDCORE_SRC_PLUGINS_DETECTORCHECKSUM_H
 #define DDCORE_SRC_PLUGINS_DETECTORCHECKSUM_H
 
-// Framework include files
+/// Framework include files
 #include <DD4hep/Detector.h>
 #include <DD4hep/GeoHandler.h>
 #include <DD4hep/DD4hepUnits.h>
-#include <DD4hep/DetFactoryHelper.h>
 
-// C/C++ include files
-#include <set>
-#include <map>
-#include <sstream>
-#include <vector>
+/// C/C++ include files
 
-// Forward declarations
-class TGeoVolume;
-class TGeoElement;
-class TGeoShape;
-class TGeoMedium;
-class TGeoNode;
-class TGeoMatrix;
+/// Forward declarations
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
   /// Namespace for implementation details of the AIDA detector description toolkit
   namespace detail {
-
-    // Forward declarations
-    class SensitiveDetectorObject;
 
     /// Geometry converter from dd4hep to Geant 4 in Detector format.
     /**
@@ -51,22 +36,23 @@ namespace dd4hep {
      */
     class DetectorChecksum: public GeoHandler {
     public:
-      typedef uint64_t checksum_t;
+      using checksum_t       = uint64_t;
+      using ElementMap       = std::map<Atom,              std::string>;
+      using MaterialMap      = std::map<Material,          std::string>;
+      using LimitMap         = std::map<LimitSet,          std::string>;
+      using PlacementMap     = std::map<PlacedVolume,      std::string>;
+      using RegionMap        = std::map<Region,            std::string>;
+      using SensDetMap       = std::map<SensitiveDetector, std::string>;
+      using VolumeMap        = std::map<Volume,            std::string>;
+      using IdSpecMap        = std::map<IDDescriptor,      std::string>;
+      using SegmentationMap  = std::map<Segmentation,      std::string>;
+      using VisMap           = std::map<VisAttr,           std::string>;
+      using AlignmentMap     = std::map<Alignment,         std::string>;
+      using SolidMap         = std::map<const TGeoShape*,  std::string>;
+      using FieldMap         = std::map<OverlayedField,    std::string>;
+      using TrafoMap         = std::map<const TGeoMatrix*, std::string>;
+      using MapOfDetElements = std::map<DetElement,        std::string>;
 
-      typedef std::map<Atom,              std::string> ElementMap;
-      typedef std::map<Material,          std::string> MaterialMap;
-      typedef std::map<LimitSet,          std::string> LimitMap;
-      typedef std::map<PlacedVolume,      std::string> PlacementMap;
-      typedef std::map<Region,            std::string> RegionMap;
-      typedef std::map<SensitiveDetector, std::string> SensDetMap;
-      typedef std::map<Volume,            std::string> VolumeMap;
-      typedef std::map<IDDescriptor,      std::string> IdSpecMap;
-      typedef std::map<Segmentation,      std::string> SegmentationMap;
-      typedef std::map<VisAttr,           std::string> VisMap;
-      typedef std::map<Alignment,         std::string> AlignmentMap;
-      typedef std::map<const TGeoShape*,  std::string> SolidMap;
-      typedef std::map<OverlayedField,    std::string> FieldMap;
-      typedef std::map<const TGeoMatrix*, std::string> TrafoMap;
       /// Data structure of the geometry converter from dd4hep to Geant 4 in Detector format.
       /**
        *  \author  M.Frank
@@ -90,30 +76,21 @@ namespace dd4hep {
         TrafoMap        mapOfRotations;
         FieldMap        mapOfFields;
 	AlignmentMap    mapOfAlignments;
-	using MapOfDetElements = std::map<DetElement, std::string>;
 	MapOfDetElements mapOfDetElements;
-#if 0
-        std::set<SensitiveDetector> sensitives;
-        std::set<Region>            regions;
-        std::set<LimitSet>          limits;
-#endif
 	std::string  header;
 
         GeometryInfo() = default;
       };
-      typedef std::set<std::string> NameSet;
 
       /// Reference to detector description
       Detector& m_detDesc;
       GeometryInfo* m_dataPtr;
-      std::string  empty_string;
 
       std::string  m_len_unit_nam = "mm";
       std::string  m_ang_unit_nam = "deg";
       std::string  m_ene_unit_nam = "GeV";
       std::string  m_densunit_nam = "g/cm3";
       std::string  m_atomunit_nam = "g/mole";
-      std::string  newline   = "";
       double       m_len_unit = dd4hep::mm;
       double       m_ang_unit = dd4hep::deg;
       double       m_ene_unit = dd4hep::GeV;
@@ -126,11 +103,17 @@ namespace dd4hep {
       double       m_dens_def = dd4hep::g/dd4hep::cm3;
       double       m_atom_def = dd4hep::g/dd4hep::mole;
 
-      int precision     { 4 };
-      int debug         { 4 };
-      int make_gdml     { 0 };
+      std::string  empty_string;
+      std::string  newline = "";
+
+      /// Property: precision of hashed printouts
+      int precision     { 6 };
+      /// Property: Include readout property in detector hash
       int hash_readout  { 0 };
+      /// Property: maximum depth level for printouts
       int max_level     { 1 };
+      /// Property: debug level
+      int debug         { 4 };
 
       GeometryInfo& data() const {
         return *m_dataPtr;
@@ -149,7 +132,7 @@ namespace dd4hep {
       void collect_det_elements(DetElement top)  const;
 
       /// Create geometry conversion in Detector format
-      checksum_t analyzeDetector(DetElement top);
+      void analyzeDetector(DetElement top);
       checksum_t checksumPlacement(PlacedVolume pv, unsigned long long int hash, bool recursive)  const;
       checksum_t checksumDetElement(int level, DetElement det, unsigned long long int hash, bool recursive)  const;
 
