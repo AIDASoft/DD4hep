@@ -115,6 +115,8 @@ namespace dd4hep {
     /// 64 bit hash update function
     unsigned long long int update_hash64(unsigned long long int hash, const void* key, std::size_t len);
     /// 64 bit hash update function
+    unsigned long long int update_hash64(unsigned long long int hash, const std::string& key);
+    /// 64 bit hash update function
     unsigned long long int update_hash64(unsigned long long int hash, const char* key);
   
     /// 32 bit hash function

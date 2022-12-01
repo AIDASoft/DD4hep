@@ -634,6 +634,9 @@ namespace dd4hep {
     /// Test if this volume was reflected
     bool isReflected()   const;
     
+    /// Test if this volume is an assembly structure
+    bool isAssembly()   const;
+    
     /// Set the volume's option value
     const Volume& setOption(const std::string& opt) const;
     /// Access the volume's option value
