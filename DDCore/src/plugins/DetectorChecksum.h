@@ -19,6 +19,7 @@
 #include <DD4hep/DD4hepUnits.h>
 
 /// C/C++ include files
+#include <sstream>
 
 /// Forward declarations
 
@@ -36,22 +37,26 @@ namespace dd4hep {
      */
     class DetectorChecksum: public GeoHandler {
     public:
-      using checksum_t       = uint64_t;
-      using ElementMap       = std::map<Atom,              std::string>;
-      using MaterialMap      = std::map<Material,          std::string>;
-      using LimitMap         = std::map<LimitSet,          std::string>;
-      using PlacementMap     = std::map<PlacedVolume,      std::string>;
-      using RegionMap        = std::map<Region,            std::string>;
-      using SensDetMap       = std::map<SensitiveDetector, std::string>;
-      using VolumeMap        = std::map<Volume,            std::string>;
-      using IdSpecMap        = std::map<IDDescriptor,      std::string>;
-      using SegmentationMap  = std::map<Segmentation,      std::string>;
-      using VisMap           = std::map<VisAttr,           std::string>;
-      using AlignmentMap     = std::map<Alignment,         std::string>;
-      using SolidMap         = std::map<const TGeoShape*,  std::string>;
-      using FieldMap         = std::map<OverlayedField,    std::string>;
-      using TrafoMap         = std::map<const TGeoMatrix*, std::string>;
-      using MapOfDetElements = std::map<DetElement,        std::string>;
+      using hash_t       = uint64_t;
+      struct entry_t   {
+	hash_t   hash;
+	std::string  data;
+      };
+      using ElementMap       = std::map<Atom,              entry_t>;
+      using MaterialMap      = std::map<Material,          entry_t>;
+      using LimitMap         = std::map<LimitSet,          entry_t>;
+      using PlacementMap     = std::map<PlacedVolume,      entry_t>;
+      using RegionMap        = std::map<Region,            entry_t>;
+      using SensDetMap       = std::map<SensitiveDetector, entry_t>;
+      using VolumeMap        = std::map<Volume,            entry_t>;
+      using IdSpecMap        = std::map<IDDescriptor,      entry_t>;
+      using SegmentationMap  = std::map<Segmentation,      entry_t>;
+      using VisMap           = std::map<VisAttr,           entry_t>;
+      using AlignmentMap     = std::map<Alignment,         entry_t>;
+      using SolidMap         = std::map<Solid,             entry_t>;
+      using FieldMap         = std::map<OverlayedField,    entry_t>;
+      using TrafoMap         = std::map<const TGeoMatrix*, entry_t>;
+      using MapOfDetElements = std::map<DetElement,        entry_t>;
 
       /// Data structure of the geometry converter from dd4hep to Geant 4 in Detector format.
       /**
@@ -61,23 +66,23 @@ namespace dd4hep {
        */
       class GeometryInfo: public GeoHandler::GeometryInfo {
       public:
-        ElementMap      mapOfElements;
-        MaterialMap     mapOfMaterials;
-        SolidMap        mapOfSolids;
-        VolumeMap       mapOfVolumes;
-        PlacementMap    mapOfPlacements;
-        RegionMap       mapOfRegions;
-        VisMap          mapOfVis;
-        LimitMap        mapOfLimits;
-        IdSpecMap       mapOfIdSpecs;
-	SegmentationMap mapOfSegmentations;
-        SensDetMap      mapOfSensDets;
-        TrafoMap        mapOfPositions;
-        TrafoMap        mapOfRotations;
-        FieldMap        mapOfFields;
-	AlignmentMap    mapOfAlignments;
+        ElementMap       mapOfElements;
+        MaterialMap      mapOfMaterials;
+        SolidMap         mapOfSolids;
+        VolumeMap        mapOfVolumes;
+        PlacementMap     mapOfPlacements;
+        RegionMap        mapOfRegions;
+        VisMap           mapOfVis;
+        LimitMap         mapOfLimits;
+        IdSpecMap        mapOfIdSpecs;
+	SegmentationMap  mapOfSegmentations;
+        SensDetMap       mapOfSensDets;
+        TrafoMap         mapOfPositions;
+        TrafoMap         mapOfRotations;
+        FieldMap         mapOfFields;
+	AlignmentMap     mapOfAlignments;
 	MapOfDetElements mapOfDetElements;
-	std::string  header;
+	entry_t  header;
 
         GeometryInfo() = default;
       };
@@ -85,6 +90,7 @@ namespace dd4hep {
       /// Reference to detector description
       Detector& m_detDesc;
       GeometryInfo* m_dataPtr;
+      mutable std::stringstream debug_hash;
 
       std::string  m_len_unit_nam = "mm";
       std::string  m_ang_unit_nam = "deg";
@@ -103,11 +109,11 @@ namespace dd4hep {
       double       m_dens_def = dd4hep::g/dd4hep::cm3;
       double       m_atom_def = dd4hep::g/dd4hep::mole;
 
-      std::string  empty_string;
+      entry_t      empty_entry { 0UL, "" };
       std::string  newline = "";
 
       /// Property: precision of hashed printouts
-      int precision     { 6 };
+      mutable int precision     { 6 };
       /// Property: Include readout property in detector hash
       int hash_readout  { 0 };
       /// Property: maximum depth level for printouts
@@ -119,6 +125,8 @@ namespace dd4hep {
         return *m_dataPtr;
       }
       void configure();
+      void hash_debug(const std::string& prefix, const entry_t& str, int flag=0)  const;
+      entry_t make_entry(std::stringstream& log)  const;
       std::stringstream logger()   const;
 
       /// Initializing Constructor
@@ -133,65 +141,86 @@ namespace dd4hep {
 
       /// Create geometry conversion in Detector format
       void analyzeDetector(DetElement top);
-      checksum_t checksumPlacement(PlacedVolume pv, unsigned long long int hash, bool recursive)  const;
-      checksum_t checksumDetElement(int level, DetElement det, unsigned long long int hash, bool recursive)  const;
+      typedef std::vector<hash_t> hashes_t;
+      void checksumPlacement(PlacedVolume pv, hashes_t& hashes, bool recursive)  const;
+      void checksumDetElement(int level, DetElement det, hashes_t& hashes, bool recursive)  const;
 
       /// Add header information in Detector format
-      virtual const std::string& handleHeader() const;
+      virtual const entry_t& handleHeader() const;
 
       /// Convert the geometry type material into the corresponding gdml string
-      virtual const std::string& handleMaterial(Material medium) const;
+      virtual const entry_t& handleMaterial(Material medium) const;
 
       /// Convert the geometry type element into the corresponding gdml string
-      virtual const std::string& handleElement(Atom element) const;
+      virtual const entry_t& handleElement(Atom element) const;
 
       /// Convert the geometry type solid into the corresponding gdml string
-      virtual const std::string& handleSolid(Solid solid) const;
+      virtual const entry_t& handleSolid(Solid solid) const;
 
       /// Convert the geometry type logical volume into the corresponding gdml string
-      virtual const std::string& handleVolume(Volume volume) const;
+      virtual const entry_t& handleVolume(Volume volume) const;
       virtual void collectVolume(Volume volume) const;
 
       /// Convert the geometry type volume placement into the corresponding gdml string
-      virtual const std::string& handlePlacement(PlacedVolume node) const;
+      virtual const entry_t& handlePlacement(PlacedVolume node) const;
 
       /// Convert alignment entry into the corresponding gdml string
-      const std::string& handleAlignment(Alignment alignment)  const;
+      const entry_t& handleAlignment(Alignment alignment)  const;
 
       /// Convert the geometry type field into the corresponding gdml string
-      ///virtual const std::string& handleField(Ref_t field) const;
+      ///virtual const entry_t& handleField(Ref_t field) const;
 
       /// Convert the geometry type region into the corresponding gdml string
-      virtual const std::string& handleRegion(Region region) const;
+      virtual const entry_t& handleRegion(Region region) const;
 
       /// Convert the geometry visualisation attributes to the corresponding gdml string
-      virtual const std::string& handleVis(VisAttr vis) const;
+      virtual const entry_t& handleVis(VisAttr vis) const;
 
       /// Convert the geometry id dictionary entry to the corresponding gdml string
-      virtual const std::string& handleIdSpec(IDDescriptor idspec) const;
+      virtual const entry_t& handleIdSpec(IDDescriptor idspec) const;
 
       /// Convert the geometry type LimitSet into the corresponding gdml string
-      virtual const std::string& handleLimitSet(LimitSet limitset) const;
+      virtual const entry_t& handleLimitSet(LimitSet limitset) const;
 
-      virtual const std::string& handleDetElement(DetElement det)  const;
+      virtual const entry_t& handleDetElement(DetElement det)  const;
 
       /// Convert the geometry type SensitiveDetector into the corresponding gdml string
-      virtual const std::string& handleSensitive(SensitiveDetector sens_det) const;
+      virtual const entry_t& handleSensitive(SensitiveDetector sens_det) const;
 
       /// Convert the segmentation of a SensitiveDetector into the corresponding Detector object
-      virtual const std::string& handleSegmentation(Segmentation seg) const;
+      virtual const entry_t& handleSegmentation(Segmentation seg) const;
 
       /// Convert the Position into the corresponding gdml string
-      virtual const std::string& handlePosition(const TGeoMatrix* trafo) const;
+      virtual const entry_t& handlePosition(const TGeoMatrix* trafo) const;
 
       /// Convert the Rotation into the corresponding gdml string
-      virtual const std::string& handleRotation(const TGeoMatrix* trafo) const;
+      virtual const entry_t& handleRotation(const TGeoMatrix* trafo) const;
 
       /// Convert the electric or magnetic fields into the corresponding gdml string
-      virtual const std::string& handleField(OverlayedField field) const;
+      virtual const entry_t& handleField(OverlayedField field) const;
 
       /// Handle the geant 4 specific properties
-      const std::string& handleProperties(Detector::Properties& prp) const;
+      const entry_t& handleProperties(Detector::Properties& prp) const;
+
+      /// Dump elements used in this apparatus
+      void dump_elements()   const;
+      /// Dump materials used in this apparatus
+      void dump_materials()   const;
+      /// Dump solids used in this apparatus
+      void dump_solids()   const;
+      /// Dump volumes used in this apparatus
+      void dump_volumes()   const;
+      /// Dump placements used in this apparatus
+      void dump_placements()   const;
+      /// Dump detelements used in this apparatus
+      void dump_detelements()   const;
+      /// Dump iddescriptors used in this apparatus
+      void dump_iddescriptors()   const;
+      /// Dump segmentations used in this apparatus
+      void dump_segmentations()   const;
+      /// Dump sensitives used in this apparatus
+      void dump_sensitives()   const;
+
     };
   }    // End namespace xml
 }      // End namespace dd4hep

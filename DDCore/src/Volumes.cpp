@@ -678,6 +678,11 @@ bool Volume::isReflected()   const    {
   return testFlagBit(REFLECTED);
 }
 
+/// Test if this volume is an assembly structure
+bool Volume::isAssembly()   const   {
+  return m_element ? m_element->IsAssembly() : false;
+}    
+
 /// Divide volume into subsections (See the ROOT manuloa for details)
 Volume Volume::divide(const string& divname, int iaxis, int ndiv,
                       double start, double step, int numed, const char* option)   {
