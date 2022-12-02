@@ -1322,7 +1322,15 @@ static long create_checksum(Detector& description, int argc, char** argv) {
   wr.debug = debug;
   wr.configure();
 
+  bool make_dump = false;
+  if ( dump_elements || dump_materials || dump_solids || 
+       dump_volumes || dump_placements || dump_detelements ||
+       dump_sensitives || dump_iddesc || dump_segmentations )   {
+    make_dump = true;
+    wr.debug = 0;
+  }
   DetectorChecksum::hashes_t hash_vec;
+  DetectorChecksum::hash_t checksum = 0;
   if ( !detectors.empty() )  {
     for (const auto& det : detectors )   {
       de = detail::tools::findElement(description,det);
@@ -1333,36 +1341,36 @@ static long create_checksum(Detector& description, int argc, char** argv) {
 	std::cout << wr.debug_hash.str() << std::endl;
 	wr.debug_hash.str("");
       }
-      auto checksum = detail::hash64(&hash_vec[0], hash_vec.size()*sizeof(DetectorChecksum::hash_t));
+      checksum = detail::hash64(&hash_vec[0], hash_vec.size()*sizeof(DetectorChecksum::hash_t));
       printout(ALWAYS,"DetectorChecksum","+++ Checksum for %s 0x%016lx",
 	       de.path().c_str(), checksum);
+      if ( make_dump ) goto MakeDump;
     }
     return 1;
   }
   
-  if ( dump_elements || dump_materials || dump_solids || dump_volumes || dump_placements || dump_detelements )
-    wr.debug = 0;
-  else if ( dump_sensitives || dump_iddesc || dump_segmentations )
-    wr.debug = 0;
 
   wr.analyzeDetector(de);
   hash_vec.push_back(wr.handleHeader().hash);
   wr.checksumDetElement(0, description.world(), hash_vec, true);
-  auto checksum = detail::hash64(&hash_vec[0], hash_vec.size()*sizeof(DetectorChecksum::hash_t));
+  checksum = detail::hash64(&hash_vec[0], hash_vec.size()*sizeof(DetectorChecksum::hash_t));
   if ( wr.debug > 2 ) std::cout << wr.debug_hash.str() << std::endl;
   printout(ALWAYS,"DetectorChecksum","+++ Checksum for %s 0x%016lx",
 	   de.path().c_str(), checksum);
 
-  wr.debug = debug;
-  if ( dump_elements      ) wr.dump_elements();
-  if ( dump_materials     ) wr.dump_materials();
-  if ( dump_solids        ) wr.dump_solids();
-  if ( dump_volumes       ) wr.dump_volumes();
-  if ( dump_placements    ) wr.dump_placements();
-  if ( dump_detelements   ) wr.dump_detelements();
-  if ( dump_sensitives    ) wr.dump_sensitives();
-  if ( dump_segmentations ) wr.dump_segmentations();
-  if ( dump_iddesc        ) wr.dump_iddescriptors();
+ MakeDump:
+  if ( make_dump )   {
+    wr.debug = debug;
+    if ( dump_elements      ) wr.dump_elements();
+    if ( dump_materials     ) wr.dump_materials();
+    if ( dump_solids        ) wr.dump_solids();
+    if ( dump_volumes       ) wr.dump_volumes();
+    if ( dump_placements    ) wr.dump_placements();
+    if ( dump_detelements   ) wr.dump_detelements();
+    if ( dump_sensitives    ) wr.dump_sensitives();
+    if ( dump_segmentations ) wr.dump_segmentations();
+    if ( dump_iddesc        ) wr.dump_iddescriptors();
+  }
   return 1;
 }
 
