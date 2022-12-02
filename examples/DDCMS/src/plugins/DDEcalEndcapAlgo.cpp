@@ -40,7 +40,7 @@ namespace {
     DDEcalEndcapTrap() = delete;
 
     void rotate(const DDRotationMatrix& rot);
-    void rotate(const DDTranslation& frontCentre, const DDTranslation& rearCentre);
+    //void rotate(const DDTranslation& frontCentre, const DDTranslation& rearCentre);
     void translate(const DDTranslation& trans);
 
     void rotateX(const double angle);
@@ -59,7 +59,7 @@ namespace {
     void calculateCorners();
     void calculateCentres();
     DDRotationMatrix rotation() { return m_rotation; }
-    void print();
+    //void print();
 
   private:
     DDRotationMatrix m_rotation;
@@ -144,13 +144,13 @@ namespace {
 
     calculateCentres();
   }
-
+#if 0
   void DDEcalEndcapTrap::rotate(const DDTranslation& /* frontCentre */, const DDTranslation& /* rearCentre */) {
     //
     //  Rotate supercrystal to bring front and rear face centres to specified points
     //
   }
-
+#endif
   void DDEcalEndcapTrap::rotate(const DDRotationMatrix& rot) {
     //
     //  Rotate supercrystal by specified rotation about (0,0,0)
@@ -320,7 +320,7 @@ namespace {
     DDTranslation current = fcentrePos() - rcentrePos();
     return polarAngle(current);
   }
-
+#if 0
   void DDEcalEndcapTrap::print() {
     //
     //  Print SC coordinates for debugging
@@ -329,7 +329,7 @@ namespace {
       /* DDTranslation cc = */  cornerPos(ic);
     }
   }
-
+#endif
   namespace {
     struct Endcap {
       string mat;

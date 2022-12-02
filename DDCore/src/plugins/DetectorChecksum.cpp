@@ -1378,10 +1378,10 @@ static long create_checksum(Detector& description, int argc, char** argv) {
     wr.debug = debug;
     if ( dump_elements      ) wr.dump_elements();
     if ( dump_materials     ) wr.dump_materials();
-    if ( dump_solids        ) wr.dump_solids();
-    if ( dump_volumes       ) wr.dump_volumes();
-    if ( dump_placements    ) wr.dump_placements();
     if ( dump_detelements   ) wr.dump_detelements();
+    if ( dump_placements    ) wr.dump_placements();
+    if ( dump_volumes       ) wr.dump_volumes();
+    if ( dump_solids        ) wr.dump_solids();
     if ( dump_sensitives    ) wr.dump_sensitives();
     if ( dump_segmentations ) wr.dump_segmentations();
     if ( dump_iddesc        ) wr.dump_iddescriptors();
