@@ -228,7 +228,7 @@ const EnergyDeposit& DepositVector::at(std::size_t cell)   const    {
 }
 
 /// Remove entry
-void DepositVector::remove(iterator position)   {
+void DepositVector::remove(iterator /* position */)   {
   //data.erase(position);
 }
 

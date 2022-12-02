@@ -369,6 +369,23 @@ foreach (test BoxTrafos CaloEndcapReflection IronCylinder MiniTel SiliconBlock N
     REGEX_PASS " Execution finished..." )
 endforeach()
 #
+#
+# Checksum test of the Minitel3 sub-detector
+dd4hep_add_test_reg( MiniTel_check_checksum_Minitel3
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTelGenerate.xml -plugin DD4hepDetectorChecksum -newline -readout -detector Minitel3
+  REGEX_PASS "Combined hash code                      e577a7c2d045d8c3  \\(52 sub-codes\\)"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR"
+)
+#
+# Checksum test of the full detector
+dd4hep_add_test_reg( MiniTel_check_checksum_full
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTelGenerate.xml -plugin DD4hepDetectorChecksum -newline -readout
+  REGEX_PASS "Combined hash code                      458d9af534c44b90  \\(201 sub-codes\\)"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR"
+)
+#
 #      EXEC_ARGS  test_with_root.sh ${script}
 #
 if (DD4HEP_USE_GEANT4)
