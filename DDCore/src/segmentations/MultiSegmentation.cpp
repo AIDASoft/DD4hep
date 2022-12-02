@@ -5,11 +5,11 @@
  *      Author: Christian Grefe, CERN
  */
 
-#include "DDSegmentation/MultiSegmentation.h"
+#include <DDSegmentation/MultiSegmentation.h>
+#include <DD4hep/Printout.h>
 
 #include <iomanip>
 #include <stdexcept>
-#include <iostream>
 
 using namespace std;
 
@@ -71,12 +71,12 @@ namespace dd4hep {
           if ( e.key_min<= seg_id && e.key_max >= seg_id )   {
             Segmentation* s = e.segmentation;
             if ( m_debug > 0 )   {
-              cout << "MultiSegmentation: id:" << setw(4) << hex << seg_id << dec << "  " << s->name();
+              printout(ALWAYS,"MultiSegmentation","Id: %04X %s", seg_id, s->name().c_str());
               const Parameters& pars = s->parameters();
-              for(Parameters::const_iterator j=pars.begin(); j!=pars.end();++j)  {
-                cout << " " << (*j)->name() << "=" << (*j)->value();
+              for( const auto* p : pars )   {
+                printout(ALWAYS,"MultiSegmentation"," Param  %s = %s",
+			 p->name().c_str(), p->value().c_str());
               }
-              cout << endl;
             }
             return *s;
           }

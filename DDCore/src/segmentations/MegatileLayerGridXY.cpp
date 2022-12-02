@@ -6,13 +6,13 @@
  *              D Jeans UTokyo
  */
 
-#include "DDSegmentation/MegatileLayerGridXY.h"
+#include <DDSegmentation/MegatileLayerGridXY.h>
+#include <DD4hep/Printout.h>
 
 #undef NDEBUG
 #include <cmath>
 #include <cassert>
 #include <algorithm>
-#include <iostream>
 
 namespace dd4hep {
   namespace DDSegmentation {
@@ -76,9 +76,9 @@ namespace dd4hep {
       cellPosition.Y = ( cellIndexY + 0.5 ) * (_currentSegInfo.megaTileSizeY / _currentSegInfo.nCellsY ) + _currentSegInfo.megaTileOffsetY;
 
       if ( fabs( cellPosition.X )>10000e0 || fabs( cellPosition.Y )>10000e0 ) {
-        std::cout << "crazy cell position: " << cellPosition.X << " " << cellPosition.Y << std::endl;
-        std::cout << "layer, wafer, cellx,y indices: " << layerIndex << " " << waferIndex
-                  << " " << cellIndexX << " " << cellIndexY << std::endl;
+        printout(WARNING,"MegatileLayerGridXY", "crazy cell position: x: %f y: %f ", cellPosition.X, cellPosition.Y);
+        printout(WARNING,"MegatileLayerGridXY", "layer, wafer, cellx,y indices: %d %d %d %d",
+		 layerIndex, waferIndex, cellIndexX, cellIndexY);
         assert(0 && "crazy cell position?");
       }
 
