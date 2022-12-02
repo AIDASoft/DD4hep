@@ -19,6 +19,7 @@
 #include <cstring>
 #include <cstdarg>
 #include <sstream>
+#include <iostream>
 #include <stdexcept>
 // Disable some diagnostics for ROOT dictionaries
 #ifdef __GNUC__
