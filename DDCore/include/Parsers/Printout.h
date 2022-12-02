@@ -20,10 +20,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstdarg>
-#include <map>
 #include <string>
 #include <sstream>
-#include <iostream>
+//#include <iostream>
 
 /// Forward declarations
 class TNamed;
@@ -267,63 +266,6 @@ namespace dd4hep {
 
   /// Check if this print level would result in some output
   bool isActivePrintLevel(int severity);
-
-  /// Helper class template to implement ASCII object dumps
-  /** @class Printer Conversions.h  dd4hep/compact/Conversions.h
-   *
-   *  Small helper class to print objects
-   *
-   *  @author   M.Frank
-   *  @version  1.0
-   */
-  template <typename T> struct Printer {
-    /// Reference to the detector description object
-    const Detector* description;
-    /// Reference to the output stream object, the Printer object should write
-    std::ostream& os;
-    /// Optional text prefix when formatting the output
-    std::string prefix;
-    /// Initializing constructor of the functor
-    Printer(const Detector* l, std::ostream& stream, const std::string& p = "")
-      : description(l), os(stream), prefix(p) {
-    }
-    /// Callback operator to be specialized depending on the element type
-    void operator()(const T& value) const;
-  };
-
-  template <typename T> inline std::ostream& print(const T& object, std::ostream& os = std::cout,
-                                                   const std::string& indent = "") {
-    Printer<T>(0, os, indent)(object);
-    return os;
-  }
-
-  /// Helper class template to implement ASCII dumps of named objects maps
-  /** @class PrintMap Conversions.h  dd4hep/compact/Conversions.h
-   *
-   *  Small helper class to print maps of objects
-   *
-   *  @author   M.Frank
-   *  @version  1.0
-   */
-  template <typename T> struct PrintMap {
-    typedef T item_type;
-    typedef const std::map<std::string, Handle<NamedObject> > cont_type;
-
-    /// Reference to the detector description object
-    const Detector* description;
-    /// Reference to the output stream object, the Printer object should write
-    std::ostream& os;
-    /// Optional text prefix when formatting the output
-    std::string text;
-    /// Reference to the container data of the map.
-    cont_type& cont;
-    /// Initializing constructor of the functor
-    PrintMap(const Detector* l, std::ostream& stream, cont_type& c, const std::string& t = "")
-      : description(l), os(stream), text(t), cont(c) {
-    }
-    /// Callback operator to be specialized depending on the element type
-    void operator()() const;
-  };
 
   /// Helper function to print booleans in format YES/NO
   inline const char* yes_no(bool value) {

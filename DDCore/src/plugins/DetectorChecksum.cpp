@@ -1179,9 +1179,9 @@ void DetectorChecksum::dump_volumes()   const   {
 void DetectorChecksum::dump_placements()   const   {
   const auto& geo = data().mapOfPlacements;
   for(const auto& e : geo)   {
-    PlacedVolume v = e.first;
+    PlacedVolume pv = e.first;
     printout(ALWAYS, "DetectorChecksum", "+++ Placement %-32s    0x%016lx%s",
-	     v.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
+	     pv.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
   }
 }
 
@@ -1192,6 +1192,14 @@ void DetectorChecksum::dump_detelements()   const   {
     DetElement de = e.first;
     printout(ALWAYS, "DetectorChecksum", "+++ Detelement %-32s    0x%016lx%s",
 	     de.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
+    if ( de.path() == "/world" )   {
+      PlacedVolume pv = de.placement();
+      printout(ALWAYS, "DetectorChecksum", "    Placement %-32s    0x%016lx%s",
+	       pv.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
+      Volume v = pv.volume();
+      printout(ALWAYS, "DetectorChecksum", "    Volume    %-32s    0x%016lx%s",
+	       v.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
+    }
   }
 }
 

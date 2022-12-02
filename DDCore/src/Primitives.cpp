@@ -17,13 +17,7 @@
 #include "DD4hep/Printout.h"
 
 // C/C++ include files
-#include <algorithm>
-#include <functional>
-#include <numeric>
-#include <stdexcept>
-#include <cstdint>
 #include <cstring>
-#include <map>
 
 #if defined(__linux) || defined(__APPLE__) || defined(__powerpc64__)
 #include <cxxabi.h>
@@ -189,6 +183,11 @@ unsigned long long int dd4hep::detail::hash64(const char* key)   {
 }
 
 /// 64 bit hash function
+unsigned long long int dd4hep::detail::hash64(const std::string& key)  {
+  return update_hash64(FNV1a_64::hashinit, key.c_str(), key.length());
+}
+
+/// 64 bit hash function
 unsigned long long int dd4hep::detail::hash64(const void* key, std::size_t len)  {
   return update_hash64(FNV1a_64::hashinit, key, len);
 }
@@ -212,11 +211,6 @@ unsigned long long int dd4hep::detail::update_hash64(unsigned long long int hash
     for ( ; --len; ++str) hash = FNV1a_64::doByte(hash, *str);
   }
   return hash;
-}
-
-/// 64 bit hash function
-unsigned long long int dd4hep::detail::hash64(const std::string& key)  {
-  return std::accumulate(begin(key), end(key), FNV1a_64::hashinit, FNV1a_64::doByte);
 }
 
 /// 16 bit hash function
