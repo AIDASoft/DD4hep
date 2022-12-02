@@ -1194,11 +1194,17 @@ void DetectorChecksum::dump_detelements()   const   {
 	     de.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
     if ( de.path() == "/world" )   {
       PlacedVolume pv = de.placement();
-      printout(ALWAYS, "DetectorChecksum", "    Placement %-32s    0x%016lx%s",
-	       pv.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
-      Volume v = pv.volume();
+      Volume        v = pv.volume();
+      Solid         s = v.solid();
+      const auto&  es = handleSolid(s);
+      const auto&  ev = handleVolume(v);
+      const auto&  ep = handlePlacement(pv);
+      printout(ALWAYS, "DetectorChecksum", "    Solid     %-32s    0x%016lx%s",
+	       s.name(),  es.hash, debug > 2 ? ("\n"+es.data).c_str() : "");
       printout(ALWAYS, "DetectorChecksum", "    Volume    %-32s    0x%016lx%s",
-	       v.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
+	       v.name(),  ev.hash, debug > 2 ? ("\n"+ev.data).c_str() : "");
+      printout(ALWAYS, "DetectorChecksum", "    Placement %-32s    0x%016lx%s",
+	       pv.name(), ep.hash, debug > 2 ? ("\n"+ep.data).c_str() : "");
     }
   }
 }
