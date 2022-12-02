@@ -1199,6 +1199,7 @@ void DetectorChecksum::dump_detelements()   const   {
       const auto&  es = handleSolid(s);
       const auto&  ev = handleVolume(v);
       const auto&  ep = handlePlacement(pv);
+
       printout(ALWAYS, "DetectorChecksum", "    Solid     %-32s    0x%016lx%s",
 	       s.name(),  es.hash, debug > 2 ? ("\n"+es.data).c_str() : "");
       printout(ALWAYS, "DetectorChecksum", "    Volume    %-32s    0x%016lx%s",
