@@ -56,7 +56,7 @@ void Geant4Output2ROOT::closeOutput()   {
   if (m_file) {
     TDirectory::TContext ctxt(m_file);
     Sections::iterator i = m_sections.find(m_section);
-    info("+++ Closing ROOT ourpur file %s", m_file->GetName());
+    info("+++ Closing ROOT ourput file %s", m_file->GetName());
     if ( i != m_sections.end() )
       m_sections.erase(i);
     m_branches.clear();

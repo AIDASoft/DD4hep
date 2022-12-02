@@ -37,11 +37,11 @@
   <!--  Definition of the readout segmentation/definition  -->
   <readouts>
     <readout name="EcalBarrelHits">
-      <segmentation type="CartesianGridXY" grid_size_x="3.5" grid_size_y="3.5" />
+      <segmentation type="CartesianGridXY" grid_size_x="3.5*mm" grid_size_y="3.5*mm" />
       <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
     </readout>        
     <readout name="EcalEndcapHits">
-      <segmentation type="CartesianGridXY" grid_size_x="3.5" grid_size_y="3.5" />
+      <segmentation type="CartesianGridXY" grid_size_x="3.5*mm" grid_size_y="3.5*mm" />
       <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
     </readout>
   </readouts>
