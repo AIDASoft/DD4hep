@@ -173,10 +173,6 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSolid(Solid solid) cons
     const TGeoShape* shape = solid.ptr();
     auto  log = logger();
 
-    if ( strncmp(solid.name(), "LumiCal_envelope_shape_0x", strlen("LumiCal_envelope_shape_0x"))==0 )    {
-      printout(INFO, "DetectorChecksum","---> %s", solid.name());
-    }
-
     if ( !shape )  {
       log << "<shape type=\"INVALID\"></shape>)";
       iso = geo.emplace(solid, make_entry(log)).first;
@@ -1273,7 +1269,7 @@ void DetectorChecksum::dump_sensitives()   const   {
 
 static long create_checksum(Detector& description, int argc, char** argv) {
   std::vector<std::string> detectors;
-  int precision = 6, newline = 0, level = 1, readout = 0, debug = 0;
+  int precision = 6, newline = 1, level = 1, readout = 0, debug = 0;
   int dump_elements = 0, dump_materials = 0, dump_solids = 0, dump_volumes = 0;
   int dump_placements = 0, dump_detelements = 0, dump_sensitives = 0;
   int dump_iddesc = 0, dump_segmentations = 0;
@@ -1298,8 +1294,8 @@ static long create_checksum(Detector& description, int argc, char** argv) {
       level = ::atol(argv[++i]);
     else if ( 0 == ::strncmp("-debug", argv[i],5) && (i+1)<argc )
       debug = ::atol(argv[++i]);
-    else if ( 0 == ::strncmp("-newline",argv[i],5) )
-      newline = 1;
+    else if ( 0 == ::strncmp("+newline",argv[i],5) )
+      newline = 0;
     else if ( 0 == ::strncmp("-readout",argv[i],5) )
       readout = 1;
     else if ( 0 == ::strncmp("-dump_elements",argv[i],10) )

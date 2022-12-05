@@ -373,7 +373,7 @@ endforeach()
 # Checksum test of the Minitel3 sub-detector
 dd4hep_add_test_reg( MiniTel_check_checksum_Minitel3
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTelGenerate.xml -plugin DD4hepDetectorChecksum -newline -readout -detector Minitel3
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTelGenerate.xml -plugin DD4hepDetectorChecksum -readout -detector Minitel3
   REGEX_PASS "Combined hash code                      36773df7c4d6cf2b  \\(52 sub-codes\\)"
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
@@ -381,7 +381,7 @@ dd4hep_add_test_reg( MiniTel_check_checksum_Minitel3
 # Checksum test of the full detector
 dd4hep_add_test_reg( MiniTel_check_checksum_full
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTelGenerate.xml -plugin DD4hepDetectorChecksum -newline -readout
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTelGenerate.xml -plugin DD4hepDetectorChecksum -readout
   REGEX_PASS "Combined hash code                      99b55eb7a563d587  \\(201 sub-codes\\)"
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
