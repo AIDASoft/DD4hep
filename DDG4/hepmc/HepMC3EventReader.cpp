@@ -134,12 +134,18 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
     p->genStatus = genStatus&G4PARTICLE_GEN_STATUS_MASK;
 
     if ( p->parents.size() == 0 )  {
+      // A particle without a parent in HepMC3 can only be (something like) a beam particle, and it is attached to the
+      // root vertex, by default (0,0,0) and equal for all parent-less particles.  Therefore we can take the end vertex
+      // of the parentless particle as the start vertex for outgoing particles.  Note that for a particle without end
+      // vertex (such as in a particle gun), it defaults to (0,0,0). This cannot be fixed, the information simply isn't
+      // in the HepMC file. Having a parent enforces a vertex, having no parent forbids a vertex.
 
       Geant4Vertex* vtx = new Geant4Vertex ;
       vertices.emplace_back( vtx );
-      vtx->x = p->vsx;
-      vtx->y = p->vsy;
-      vtx->z = p->vsz;
+
+      vtx->x = p->vex;
+      vtx->y = p->vey;
+      vtx->z = p->vez;
       vtx->time = p->time;
 
       vtx->out.insert(p->id) ;
