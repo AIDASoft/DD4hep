@@ -172,6 +172,11 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSolid(Solid solid) cons
   if ( iso == geo.end() )   {
     const TGeoShape* shape = solid.ptr();
     auto  log = logger();
+
+    if ( strncmp(solid.name(), "LumiCal_envelope_shape_0x", strlen("LumiCal_envelope_shape_0x"))==0 )    {
+      printout(INFO, "DetectorChecksum","---> %s", solid.name());
+    }
+
     if ( !shape )  {
       log << "<shape type=\"INVALID\"></shape>)";
       iso = geo.emplace(solid, make_entry(log)).first;
@@ -490,20 +495,27 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSolid(Solid solid) cons
       log << "<" << str_oper << nam
 	  << " lunit=\"" << m_len_unit_nam << "\""
 	  << " aunit=\"" << m_ang_unit_nam << "\">" << newline
-	  << "<first ref=\"" << (void*)ent_left.hash << "\""
-	  << ">" << newline
-	  << " " << handlePosition(mat_left).data << newline
-	  << " " << handleRotation(mat_left).data << newline
-	  << "</first>" << newline
-	  << "<second ref=\"" << (void*)ent_right.hash  << "\""
-	  << ">" << newline
-	  << " " << handlePosition(mat_right).data << newline
-	  << " " << handleRotation(mat_right).data << newline
-	  << "</second>" << newline
+	  << " <first ref=\"" << (void*)ent_left.hash << "\""  << ">" << newline
+	  << "  " << handlePosition(mat_left).data << newline
+	  << "  " << handleRotation(mat_left).data << newline
+	  << " </first>" << newline
+	  << " <second ref=\"" << (void*)ent_right.hash << "\"" << ">" << newline
+	  << "  " << handlePosition(mat_right).data << newline
+	  << "  " << handleRotation(mat_right).data << newline
+	  << " </second>" << newline
 	  << "</" << str_oper << ">";
-      iso = geo.emplace(solid, make_entry(log)).first;
     }
-    iso = geo.emplace(solid, make_entry(log)).first;
+    else if ( shape->IsA() == TGeoShapeAssembly::Class() )   {
+      log << "<shape_assembly " << nam << "\"/>";
+    }
+    else   {
+      except("DetectorChecksum","+++ Unknown shape: %s", solid.name());
+    }
+    auto ins = geo.emplace(solid, make_entry(log));
+    if ( !ins.second )   {
+      except("DetectorChecksum", "+++ FAILED to register shape: %s", solid.name());
+    }
+    iso = ins.first;
   }
   return iso->second;
 }
@@ -674,24 +686,27 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleVolume(Volume volume) c
     std::string       sol;
     std::string       nam = attr_name(v);
     std::stringstream log = logger();
+    TGeoShape*  sh  = v->GetShape();
+    if ( !sh )
+      throw std::runtime_error("DetectorChecksum: No solid present for volume:" + nam);
 
     if (v->IsAssembly()) {
+      const auto& solid_ent = handleSolid(sh);
       tag = "assembly";
-      log << "<" << tag << nam;
+      log << "<" << tag << nam
+	  << " solid=\""         << refName(sh)           << "\""
+	  << " solid_hash=\""    << (void*)solid_ent.hash << "\"";
     }
     else {
       TGeoMedium*   med = v->GetMedium();
-      TGeoShape*    sh  = v->GetShape();
-      if ( !sh )
-        throw std::runtime_error("DetectorChecksum: No solid present for volume:" + nam);
-      else if ( !med )
+      if ( !med )
         throw std::runtime_error("DetectorChecksum: No material present for volume:" + nam);
       const auto& solid_ent = handleSolid(sh);
       tag = "volume";
       log << "<" << tag << nam
 	  << " material=\""      << refName(med)          << "\""
-	  << " solid=\""         << refName(sh)           << "\"";
-      log << " solid_hash=\""    << (void*)solid_ent.hash << "\"";
+	  << " solid=\""         << refName(sh)           << "\""
+	  << " solid_hash=\""    << (void*)solid_ent.hash << "\"";
     }
     collectVolume(volume);
     auto reg = volume.region();
@@ -719,7 +734,11 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleVolume(Volume volume) c
     else   {
       log << "/>";
     }
-    ivo = geo.emplace(volume, make_entry(log)).first;
+    auto ins = geo.emplace(volume, make_entry(log));
+    if ( !ins.second )   {
+      except("DetectorChecksum", "+++ FAILED to register volume: %s", volume.name());
+    }
+    ivo = ins.first;
   }
   return ivo->second;
 }
@@ -937,13 +956,13 @@ void DetectorChecksum::analyzeDetector(DetElement top)      {
   collect_det_elements(top);
   for (const auto& fld : description.fields() )
     handleField(fld.second);
-  if ( debug > 1 )  {
-    printout(ALWAYS,"DetectorChecksum","++ ==> Computing checksum for tree: %s", top.path().c_str());
-    printout(ALWAYS,"DetectorChecksum","++ Handled %ld materials.", geo.mapOfMaterials.size());
-    printout(ALWAYS,"DetectorChecksum","++ Handled %ld solids.", geo.mapOfSolids.size());
-    printout(ALWAYS,"DetectorChecksum","++ Handled %ld volumes.", geo.mapOfVolumes.size());
-    printout(ALWAYS,"DetectorChecksum","++ Handled %ld visualization attributes.", geo.mapOfVis.size());
-    printout(ALWAYS,"DetectorChecksum","++ Handled %ld fields.", geo.mapOfFields.size());
+  if ( debug > 1 )   {
+    printout(ALWAYS, "DetectorChecksum", "++ ==> Computing checksum for tree: %s", top.path().c_str());
+    printout(ALWAYS, "DetectorChecksum", "++ Handled %ld materials.",      geo.mapOfMaterials.size());
+    printout(ALWAYS, "DetectorChecksum", "++ Handled %ld solids.",         geo.mapOfSolids.size());
+    printout(ALWAYS, "DetectorChecksum", "++ Handled %ld volumes.",        geo.mapOfVolumes.size());
+    printout(ALWAYS, "DetectorChecksum", "++ Handled %ld vis.attributes.", geo.mapOfVis.size());
+    printout(ALWAYS, "DetectorChecksum", "++ Handled %ld fields.",         geo.mapOfFields.size());
   }
 }
 
@@ -1104,6 +1123,7 @@ void DetectorChecksum::checksumDetElement(int lvl, DetElement det, hashes_t& has
 }
 
 void DetectorChecksum::checksumPlacement(PlacedVolume pv, hashes_t& hashes, bool recursive)  const  {
+  handlePlacement(pv);
   auto& geo = data().mapOfPlacements;
   auto it = geo.find(pv);
   if ( it != geo.end() )    {
@@ -1342,7 +1362,7 @@ static long create_checksum(Detector& description, int argc, char** argv) {
        dump_volumes    || dump_placements || dump_detelements ||
        dump_sensitives || dump_iddesc     || dump_segmentations )   {
     make_dump = true;
-    wr.debug = 0;
+    wr.debug = 1;
   }
   DetectorChecksum::hashes_t hash_vec;
   DetectorChecksum::hash_t checksum = 0;
