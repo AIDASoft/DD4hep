@@ -140,7 +140,7 @@ dd4hep_add_test_reg( CLICSiD_check_checksum_EcalBarrel
 # Checksum test of the full detector
 dd4hep_add_test_reg( CLICSiD_check_checksum_full
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  geoPluginRun -input ${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -plugin DD4hepDetectorChecksum -newline -readout -dump_detelements -dump_placements -dump_solids -debug 3
+  EXEC_ARGS  geoPluginRun -input ${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -plugin DD4hepDetectorChecksum -newline -readout -dump_detelements -dump_placements -dump_volumes -dump_solids -debug 3
   REGEX_PASS "Combined hash code                      e81b6ea7e555a6ac  \\(3395674 sub-codes\\)"
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
