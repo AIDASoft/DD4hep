@@ -52,7 +52,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
       for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++im)  {
         xml_comp_t x_slice = l;
         double     w = x_slice.thickness();
-        string     slice_name = layer_name + _toString(m+1,"slice%d");
+        string     slice_name = layer_name + _toString(im+1,"slice%d");
         Material   slice_mat  = description.material(x_slice.materialStr());
         Volume     slice_vol (slice_name,Tube(rmin,rmax,w * 0.5),slice_mat);
 
