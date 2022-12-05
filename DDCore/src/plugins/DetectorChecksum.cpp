@@ -1338,9 +1338,9 @@ static long create_checksum(Detector& description, int argc, char** argv) {
   wr.configure();
 
   bool make_dump = false;
-  if ( dump_elements || dump_materials || dump_solids || 
-       dump_volumes || dump_placements || dump_detelements ||
-       dump_sensitives || dump_iddesc || dump_segmentations )   {
+  if ( dump_elements   || dump_materials  || dump_solids || 
+       dump_volumes    || dump_placements || dump_detelements ||
+       dump_sensitives || dump_iddesc     || dump_segmentations )   {
     make_dump = true;
     wr.debug = 0;
   }
