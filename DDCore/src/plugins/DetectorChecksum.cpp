@@ -505,6 +505,17 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSolid(Solid solid) cons
 	  << " </second>" << newline
 	  << "</" << str_oper << ">";
     }
+    else if ( shape->IsA() == TGeoScaledShape::Class() )   {
+      const TGeoScaledShape* sh  = (TGeoScaledShape*)shape;
+      const TGeoShape*       org = sh->GetShape();
+      const double*          scl = sh->GetScale()->GetScale();
+      log << "<scaled_shape" << nam
+	  << " sx=\"" << scl[0] << "\""
+	  << " sy=\"" << scl[1] << "\""
+	  << " sz=\"" << scl[2] << "\">" << newline
+	  << "  " << handleSolid(Solid(org)).data << newline
+	  << "</scaled_shape>";
+    }
     else if ( shape->IsA() == TGeoShapeAssembly::Class() )   {
       log << "<shape_assembly " << nam << "\"/>";
     }
