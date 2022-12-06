@@ -24,6 +24,7 @@
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
+
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
@@ -70,11 +71,7 @@ namespace dd4hep {
 	    CellID cell = dep.first;
 	    EnergyDeposit& depo = dep.second;
 	    auto*     ctxt = volMgr.lookupContext(cell);
-#ifdef DDDIGI_INPLACE_HISTORY
 	    Direction part_momentum = depo.history.average_particle_momentum(ev);
-#else
-	    Direction part_momentum = depo.momentum;
-#endif
 	    Position  local_pos = ctxt->worldToLocal(depo.position);
 	    Position  local_dir = ctxt->worldToLocal(part_momentum).unit();
 	    double    cos_u   = local_dir.Dot(Position(1,0,0));

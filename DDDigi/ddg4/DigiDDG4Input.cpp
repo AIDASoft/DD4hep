@@ -39,7 +39,6 @@ namespace dd4hep {
       static constexpr double epsilon = std::numeric_limits<double>::epsilon();
 
       /// Property to generate extra history records
-      bool m_seperate_history  { true };
       bool m_keep_raw          { false };
 
       mutable TClass* m_trackerHitClass { nullptr };
@@ -79,21 +78,18 @@ namespace dd4hep {
       DigiDDG4ROOT(const DigiKernel& krnl, const std::string& nam)
 	: DigiROOTInput(krnl, nam)
       {
-	declareProperty("seperate_history", m_seperate_history);
 	declareProperty("keep_raw", m_keep_raw);
       }
 
       template <typename T>
       void conv_hits(DigiContext& context, DataSegment& segment,
-		     const std::string& tag, int mask, const char* name, void* ptr)   const
+		     const std::string& tag, Key::mask_type mask, const char* name, void* ptr)   const
       {
 	using wrap_t = std::shared_ptr<sim::Geant4HitData>;
-        bool sep_history = m_seperate_history;
 	std::size_t len = 0;
 	std::string nam = name;
 	std::vector<wrap_t> geant4_hits;
 	DepositVector   out(nam, mask);
-	DetectorHistory hist(nam+".hist", mask);
 	if ( ptr )   {
 	  input_data<T> data(ptr);
 	  for(size_t i=0; i < data.items->size(); ++i)   {
@@ -110,16 +106,11 @@ namespace dd4hep {
 	      dep.deposit = p->energyDeposit;
 	      dep.position = pos;
 
-	      history_key.set_mask(Key::mask_type(mask));
+	      history_key.set_mask(mask);
 	      history_key.set_item(out.size());
 	      history_key.set_segment(segment.id);
-
-	      if ( sep_history )   {
-		History entry { };
-		entry.hits.emplace_back(history_key, dep.deposit);
-		add_particle_history(p, history_key, entry);
-		hist.emplace(cell, std::move(entry));
-	      }
+	      dep.history.hits.emplace_back(history_key, dep.deposit);
+	      add_particle_history(p, history_key, dep.history);
 	      out.emplace(cell, std::move(dep));
 	      if ( m_keep_raw )   {
 		geant4_hits.emplace_back(std::move(raw));
@@ -132,14 +123,10 @@ namespace dd4hep {
 	info("%s++ %-24s Converted %6ld DDG4 %-14s hits to %6ld cell deposits",
 	     context.event->id(), name, len, tag.c_str(), out.size());
 	Key depo_key(out.name, mask);
-	segment.emplace(depo_key, std::make_any<DepositVector>(std::move(out)));
+	segment.put(depo_key, std::move(out));
 	if ( m_keep_raw )   {
 	  Key src_key(nam+".ddg4", mask);
-	  segment.emplace(src_key, std::make_any<std::vector<wrap_t>>(std::move(geant4_hits)));
-	}
-	if ( sep_history )   {
-	  Key hist_key(hist.name, mask);
-	  segment.emplace(hist_key, std::make_any<DetectorHistory>(std::move(hist)));
+	  segment.emplace_any(src_key, std::make_any<std::vector<wrap_t> >(std::move(geant4_hits)));
 	}
       }
 
@@ -164,7 +151,6 @@ namespace dd4hep {
 	    part.pdgID          = p->pdgID;
 	    part.charge         = p->charge;
 	    part.mass           = p->mass;
-
 	    part.history        = key.set_item(part_key.item());
 	    key.set_item(out.size());
 	    out.push(key, std::move(part));
@@ -174,10 +160,10 @@ namespace dd4hep {
 	}
 	debug("%s++ Converted %ld DDG4 particles", context.event->id(), out.size());
 	std::string nam = name;
-	segment.emplace(part_key, std::make_any<ParticleMapping>(std::move(out)));
+	segment.put(part_key, std::move(out));
 	if ( m_keep_raw )   {
 	  Key src_key(nam+".ddg4", mask);
-	  segment.emplace(src_key, std::make_any<std::map<Key, wrap_t> >(std::move(source)));
+	  segment.emplace_any(src_key, std::make_any<std::map<Key,wrap_t> >(std::move(source)));
 	}
       }
 

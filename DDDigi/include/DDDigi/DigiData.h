@@ -490,6 +490,8 @@ namespace dd4hep {
       long           flag        { 0 };
       /// Source mask of this deposit
       Key::mask_type mask        { 0 };
+      /// Deposit history
+      History        history     { };
 
     public:
       /// Default constructor
@@ -855,7 +857,15 @@ namespace dd4hep {
 
       /** Locked operations */
       /// Emplace data item (locked)
-      bool emplace(Key key, std::any&& data);
+      bool emplace_any(Key key, std::any&& data);
+
+      template <typename T>
+	bool emplace(Key key, T&& data_item)   {
+	key.set_segment(this->id);
+	data_item.key.set_segment(this->id);
+	return this->emplace_any(key, std::move(data_item));
+      }
+
       /// Move data items other than std::any to the data segment
       template <typename DATA> bool put(Key key, DATA&& data);
       /// Remove data item from segment (locked)

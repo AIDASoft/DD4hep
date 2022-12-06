@@ -155,6 +155,7 @@ void EnergyDeposit::update_deposit_weighted(const EnergyDeposit& upda)  {
   position = pos;
   momentum = mom;
   deposit  = sum;
+  history.update(upda.history);
 }
 
 /// Update the deposit using deposit weighting
@@ -165,6 +166,7 @@ void EnergyDeposit::update_deposit_weighted(EnergyDeposit&& upda)  {
   position = pos;
   momentum = mom;
   deposit  = sum;
+  history.update(upda.history);
 }
 
 /// Merge new deposit map onto existing map
@@ -365,7 +367,13 @@ std::size_t DetectorResponse::insert(const DetectorResponse& updates)   {
 /// Merge new deposit map onto existing map (not thread safe!)
 std::size_t DetectorHistory::merge(DetectorHistory&& updates)   {
   std::size_t len = updates.size();
-  data.insert(data.end(), updates.data.begin(), updates.data.end());
+  if ( data.empty() )   {
+    data = std::move(updates.data);
+  }
+  else   {
+    for(auto& e : updates.data)
+      data.emplace(data.end(), std::move(e));
+  }
   return len;
 }
 
@@ -383,7 +391,7 @@ DataSegment::DataSegment(std::mutex& l, Key::segment_type i)
 }
 
 /// Remove data item from segment
-bool DataSegment::emplace(Key key, std::any&& item)    {
+bool DataSegment::emplace_any(Key key, std::any&& item)    {
   bool has_value = item.has_value();
 #if DD4HEP_DDDIGI_DEBUG
   printout(INFO, "DataSegment", "PUT Key No.%4d: %-32s %016lX -> %04X %04X %08Xld Value:%s  %s",
@@ -401,8 +409,10 @@ bool DataSegment::emplace(Key key, std::any&& item)    {
 
 /// Move data items other than std::any to the data segment
 template <typename DATA> bool DataSegment::put(Key key, DATA&& value)   {
+  key.set_segment(this->id);
+  value.key.set_segment(this->id);
   std::any item = std::make_any<DATA>(std::move(value));
-  return this->emplace(key, std::move(item));
+  return this->emplace_any(key, std::move(item));
 }
 
 template bool DataSegment::put(Key key, DepositVector&& data);

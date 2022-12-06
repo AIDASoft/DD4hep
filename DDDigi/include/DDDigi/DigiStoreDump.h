@@ -60,12 +60,7 @@ namespace dd4hep {
       template <typename T> std::string data_header(Key key, const std::string& tag, const T& data)  const;
       template <typename T> records_t dump_history(context_t& context, Key key, const T& container)  const;
       template <typename T> records_t dump_history(context_t& context, Key key, const T& item, std::size_t seq_no)  const;
-
-      records_t
-	dump_deposit_history(context_t& context, Key container_key, const DepositMapping& container)  const;
-
-      records_t
-	dump_deposit_history(context_t& context, Key container_key, const DepositVector& container)  const;
+      template <typename T> records_t dump_deposit_history(context_t& context, Key container_key, const T& container)  const;
 
       records_t
 	dump_particle_history(context_t& context, Key container_key, const ParticleMapping& container)  const;
