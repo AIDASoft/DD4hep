@@ -1,4 +1,10 @@
+<style>
+large { color: blue;font-weight: 700;font-size: 20px }
+</style>
+
+
 ![DDDigi](../doc/logo_small.png)
+
 
 DDDigi: The digitization tools of DD4hep
 ========================================
@@ -69,7 +75,7 @@ DDDigi Components Description
 
   Functionality: self explaining
 
-- DigiAttenuator
+- <large>DigiAttenuator</large>
 
   Deposit attenuator for energy deposits according to decay time constant. <br/>
   Properties: <br/>
