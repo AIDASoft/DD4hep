@@ -48,9 +48,9 @@ The parallelization can be configured for each subdetector at each level accordi
 boundary conditions e.g. given by cross-talk or the data volume arising from the
 energy deposits of the simulation.
 
-# DDDigi Components
+# DDDigi Components Description
 
-- DigiDDG4ROOT
+## DigiDDG4ROOT
 
   Reader for ROOT files produced with DDG4. <br/>
   Properties: <br/>
@@ -68,7 +68,7 @@ energy deposits of the simulation.
 
   Functionality: self explaining
 
-- DigiAttenuator
+## DigiAttenuator
 
   Deposit attenuator for energy deposits according to decay time constant. <br/>
   Properties: <br/>
