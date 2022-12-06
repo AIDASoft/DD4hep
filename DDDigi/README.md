@@ -1,7 +1,7 @@
 ![DDDigi](../doc/logo_small.png)
 
-# DDDigi: The digitization tools of DD4hep
-
+DDDigi: The digitization tools of DD4hep
+========================================
 
 DDDigi is supposed to interprete the results of the detector simulation phase
 e.g. using the simulation toolket [DDG4](../DDG4) with its command line interface
@@ -48,9 +48,11 @@ The parallelization can be configured for each subdetector at each level accordi
 boundary conditions e.g. given by cross-talk or the data volume arising from the
 energy deposits of the simulation.
 
-# DDDigi Components Description
+DDDigi Components Description
+=============================
 
-- DigiDDG4ROOT
+DigiDDG4ROOT
+------------
 
   Reader for ROOT files produced with DDG4. <br/>
   Properties: <br/>
@@ -68,7 +70,7 @@ energy deposits of the simulation.
 
   Functionality: self explaining
 
-- DigiAttenuator
+<h3>DigiAttenuator </h3>
 
   Deposit attenuator for energy deposits according to decay time constant. <br/>
   Properties: <br/>
