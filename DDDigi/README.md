@@ -1,7 +1,7 @@
 ![DDDigi](../doc/logo_small.png)
 
-DDDigi: The digitization tools of DD4hep
-========================================
+# DDDigi: The digitization tools of DD4hep
+
 
 DDDigi is supposed to interprete the results of the detector simulation phase
 e.g. using the simulation toolket [DDG4](../DDG4) with its command line interface
@@ -48,26 +48,30 @@ The parallelization can be configured for each subdetector at each level accordi
 boundary conditions e.g. given by cross-talk or the data volume arising from the
 energy deposits of the simulation.
 
-DDDigi Components
-=================
+# DDDigi Components
 
-- DigiDDG4ROOT Reader for ROOT files produced with DDG4. <br/>
+### DigiDDG4ROOT
+  Reader for ROOT files produced with DDG4. <br/>
   Properties: <br/>
-    |**Property**|**Data type   **|**Description**                                                  |
-    |:---        |:---            |:---                                                             |
-    |`input`     | vector<string> | List of input files to be processed                             |
-    |`tree`      | string         | Name of the main data tree. default: `EVENT`                    |
-    |`containers`| vector<string> | List of containers to be loaded to DDDigi.                      |
-    |            |                | If empty => all.                                                |
-    |`segment`   | string         | Name of the input segment. default: "inputs"                    |
-    |`mask`      | integer        | Mask of this input source in the store. default: NO_MASK (0x0)  |
-    |`rescan`    | boolean        | Rescan input sources for continuous execution. default: true    |
-    |`keep_raw`  | boolean        | Keep raw input as opaque objects in the DDDigi store.           |
+    |**Property**  |**Data type**    |**Description**                                                  |
+    |:---          |:---             |:---                                                             |
+    |`.input`      | vector<string>  | List of input files to be processed                             |
+    |`.tree`       | string          | Name of the main data tree. default: `EVENT`                    |
+    |`.containers` | vector<string>  | List of containers to be loaded to DDDigi.                      |
+    |              |                 | If empty => all.                                                |
+    |`.segment`    | string          | Name of the input segment. default: "inputs"                    |
+    |`.mask`       | integer         | Mask of this input source in the store. default: NO_MASK (0x0)  |
+    |`.rescan`     | boolean         | Rescan input sources for continuous execution. default: true    |
+    |`.keep_raw`   | boolean         | Keep raw input as opaque objects in the DDDigi store.           |
 
   Functionality: self explaining
 
-- DigiAttenuate: Deposit attenuator for energy deposits according to decay time constant. <br/>
+### DigiAttenuate
+  Deposit attenuator for energy deposits according to decay time constant. <br/>
   Properties: <br/>
+    |**Property**  |**Data type**    |**Description**                                                  |
+    |:---          |:---             |:---                                                             |
+    |`.input`      | vector<string>  | List of input files to be processed                             |
 
 
 ![HORIZON2020](../doc/usermanuals/DD4hep/figures/AIDAinnova.png)
