@@ -48,6 +48,9 @@ DigiAttenuator::attenuate(T& cont, const predicate_t& predicate) const {
   for( auto& dep : cont )   {
     if ( predicate(dep) )   {
       dep.second.deposit *= m_factor;
+      auto& e = dep.second.history;
+      for( auto& h : e.hits ) h.weight *= m_factor;
+      for( auto& h : e.particles ) h.weight *= m_factor;
     }
   }
   return cont.size();

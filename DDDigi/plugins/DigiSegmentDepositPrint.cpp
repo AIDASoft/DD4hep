@@ -41,10 +41,8 @@ namespace dd4hep {
 	for( const auto& dep : cont )   {
 	  if( predicate(dep) )   {
 	    info(fmt, predicate.segmentation->split_id(dep.first), dep.first,
-#ifdef DDDIGI_INPLACE_HISTORY
 		 dep.second.history.hits.size(), 
 		 dep.second.history.particles.size(),
-#endif
 		 dep.second.deposit);
 	  }
 	}
@@ -55,9 +53,7 @@ namespace dd4hep {
 	char format[256];
 	::snprintf(format, sizeof(format), 
 		   "%s[%s] %s-id: %%d [processor:%d] Cell: %%016lX mask: %016lX  "
-#ifdef DDDIGI_INPLACE_HISTORY
 		   "hist:%%4ld hits %%4ld parts. "
-#endif
 		   "entries deposit: %%f", 
 		   context.event->id(),
 		   predicate.segmentation->idspec.name(), predicate.segmentation->cname(),
@@ -72,6 +68,7 @@ namespace dd4hep {
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-//        Factory definition
+
+///        Factory definition
 #include <DDDigi/DigiFactories.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSegmentDepositPrint)

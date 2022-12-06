@@ -140,7 +140,7 @@ namespace dd4hep {
       /// Set DigiAction property
       static int setProperty(DigiAction* action, const std::string& name, const std::string& value)  {
 	init_grammar_types();
-	printout(INFO,"setProperty","Setting property: %s.%s = %s", action->name().c_str(), name.c_str(), value.c_str());
+	printout(DEBUG,"setProperty","Setting property: %s.%s = %s", action->name().c_str(), name.c_str(), value.c_str());
         if ( action->hasProperty(name) )  {
           action->property(name).str(value);
           return 1;

@@ -94,13 +94,12 @@ DigiStoreDump::dump_history(DigiContext& context,
 	   Key::key_name(history_key).c_str(), history_key.segment(), history_key.mask(), history_key.item(),
 	   long(&data.second));
   records.emplace_back(line);
-  line = format("|        PDG:%6d Charge:%-2d Mass:%7.2f v:%7.5g %7.5g %7.5g  p:%10g %10g %10g            %016lX",
+  line = format("|        PDG:%6d Charge:%-2d Mass:%7.2f v:%7.5g %7.5g %7.5g  p:%12g %12g %12g      %016lX",
 		par.pdgID, int(par.charge), par.mass, vtx.X(), vtx.Y(), vtx.Z(), mom.X(), mom.Y(), mom.Z(), long(&par));
   records.emplace_back(line);
   return records;
 }
 
-#ifdef DDDIGI_INPLACE_HISTORY
 template <> std::vector<std::string> 
 DigiStoreDump::dump_history(DigiContext& context,
 			    Key container_key,
@@ -127,7 +126,7 @@ DigiStoreDump::dump_history(DigiContext& context,
     Key k = entry.source;
     str.str("");
     str << "|        Hit-history[" << i << "]:";
-    line = format("%-30s Segment:%04X Mask:%04X Cell:%08X  %.8g",
+    line = format("%-30s Segment:%04X Mask:%04X Cell:%08X  Weight:%.8g",
 		  str.str().c_str(), k.segment(), k.mask(), k.item(), entry.weight);
     records.emplace_back(line);
     line = format("|              pos: %7.3f %7.3f %7.3f   p: %7.3f %7.3f %7.3f deposit: %7.3f",
@@ -151,7 +150,6 @@ DigiStoreDump::dump_history(DigiContext& context,
   }
   return records;
 }
-#endif
 
 template <> std::vector<std::string> 
 DigiStoreDump::dump_history(DigiContext& context,
@@ -179,7 +177,7 @@ DigiStoreDump::dump_history(DigiContext& context,
     Key k = entry.source;
     str.str("");
     str << "|        Hit-history[" << i << "]:";
-    line = format("%-30s Segment:%04X Mask:%04X Cell:%08X  %.8g",
+    line = format("%-30s Segment:%04X Mask:%04X Cell:%08X  Weight:%.8g",
 		  str.str().c_str(), k.segment(), k.mask(), k.item(), entry.weight);
     records.emplace_back(line);
     line = format("|              pos: %7.3f %7.3f %7.3f   p: %7.3f %7.3f %7.3f deposit: %7.3f",
@@ -215,35 +213,23 @@ DigiStoreDump::dump_history(DigiContext& context, Key container_key, const T& co
   return records;
 }
 
-std::vector<std::string>
-DigiStoreDump::dump_deposit_history(DigiContext& /*context*/, Key container_key, const DepositMapping& container)  const {
+template <typename T> std::vector<std::string>
+DigiStoreDump::dump_deposit_history(DigiContext& context, Key container_key, const T& container)  const {
   std::vector<std::string> records;
   auto line = format("|----  %s", data_header(container_key, "deposits", container).c_str());
   records.emplace_back(line);
-#ifdef DDDIGI_INPLACE_HISTORY
   std::size_t count = 0;
   for( const auto& item : container )   {
     auto rec = dump_history(context, container_key, item, count++);
     records.insert(records.end(), rec.begin(), rec.end());
   }
-#endif
   return records;
 }
+template std::vector<std::string>
+DigiStoreDump::dump_deposit_history(DigiContext& context, Key container_key, const DepositMapping& container)  const;
 
-std::vector<std::string>
-DigiStoreDump::dump_deposit_history(DigiContext& /*context*/, Key container_key, const DepositVector& container)  const {
-  std::vector<std::string> records;
-  auto line = format("|----  %s", data_header(container_key, "deposits", container).c_str());
-  records.emplace_back(line);
-#ifdef DDDIGI_INPLACE_HISTORY
-  std::size_t count = 0;
-  for( const auto& item : container )   {
-    auto rec = dump_history(context, container_key, item, count++);
-    records.insert(records.end(), rec.begin(), rec.end());
-  }
-#endif
-  return records;
-}
+template std::vector<std::string>
+DigiStoreDump::dump_deposit_history(DigiContext& context, Key container_key, const DepositVector& container)  const;
 
 std::vector<std::string>
 DigiStoreDump::dump_particle_history(DigiContext& context, Key container_key, const ParticleMapping& container)  const {

@@ -27,6 +27,7 @@ namespace dd4hep {
       Position  m_offset_ip;
       Position  m_sigma_ip;
       mutable Position m_interaction_point;
+
     public:
       /// Standard constructor
       DigiIPCreate(const DigiKernel& krnl, const std::string& nam)
@@ -36,6 +37,7 @@ namespace dd4hep {
 	declareProperty("sigma_ip",  m_sigma_ip);
 	declareProperty("interaction_point", m_interaction_point);
       }
+
       /// Main functional callback
       virtual void execute(DigiContext& context)   const  override final  {
 	auto& rndm = context.randomGenerator();

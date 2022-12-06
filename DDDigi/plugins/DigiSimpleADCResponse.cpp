@@ -62,16 +62,6 @@ namespace dd4hep {
 	    response.emplace(cell, {adc_count, ADCValue::address_t(cell)});
 	  }
 	}
-#ifdef DDDIGI_INPLACE_HISTORY
-	std::string history_name  = input.name + postfix + m_history_postfix;
-	DetectorHistory  history (history_name,  work.output.mask);
-	for( const auto& dep : input )   {
-	  if ( predicate(dep) )   {
-	    history.insert(dep.first, dep.second.history);
-	  }
-	}
-        work.output.data.put(history.key,  std::move(history));
-#endif
 	info("%s+++ %-32s %6ld ADC values. Input: %-32s %6ld deposits", tag,
 	     response_name.c_str(), response.size(), input.name.c_str(), input.size());
         work.environ.output.data.put(response.key, std::move(response));

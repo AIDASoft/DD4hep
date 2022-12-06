@@ -47,6 +47,12 @@ class Test(dddigi.Digitize):
                    'MiniTel.run00000006.root',
                    'MiniTel.run00000007.root',
                    'MiniTel.run00000008.root']
+    if not os.path.exists(self.inputs[0]):
+      if os.path.exists('DDDigi'):
+        os.chdir('DDDigi')
+    if not os.path.exists(self.inputs[0]):
+      # This will cause: FileNotFoundError: [Errno 2] No such file or directory: 'xxxxx'
+      open(self.inputs[0])
 
   def segment_action(self, nam, **options):
     obj = dddigi.Interface.createSegmentAction(self.kernel(), str(nam))

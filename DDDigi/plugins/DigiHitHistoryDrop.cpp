@@ -59,6 +59,17 @@ namespace dd4hep {
 	InstanceCount::increment(this);
       }
 
+      template <typename T>
+      std::pair<std::size_t, std::size_t> drop_history(T& cont)  const  {
+	std::size_t num_drop_hit = 0;
+	std::size_t num_drop_particle = 0;
+	for( auto& dep : cont )    {
+	  auto ret = dep.second.history.drop();
+	  num_drop_hit += ret.first;
+	  num_drop_particle += ret.second;
+	}
+	return std::make_pair(num_drop_hit,num_drop_particle);
+      }
       std::pair<std::size_t, std::size_t> drop_history(DetectorHistory& cont)  const  {
 	std::size_t num_drop_hit = 0;
 	std::size_t num_drop_particle = 0;
@@ -79,7 +90,17 @@ namespace dd4hep {
 	  Key key(i.first);
 	  auto im = std::find(m_masks.begin(), m_masks.end(), key.mask());
 	  if( im != m_masks.end() )   {
-	    if( DetectorHistory* h = std::any_cast<DetectorHistory>(&i.second) )    {
+	    if ( DepositMapping* m = std::any_cast<DepositMapping>(&i.second) )    {
+	      auto ret = drop_history(*m);
+	      num_drop_hit += ret.first;
+	      num_drop_particle += ret.second;
+	    }
+	    else if ( DepositVector* v = std::any_cast<DepositVector>(&i.second) )    {
+	      auto ret = drop_history(*v);
+	      num_drop_hit += ret.first;
+	      num_drop_particle += ret.second;
+	    }
+	    else if( DetectorHistory* h = std::any_cast<DetectorHistory>(&i.second) )    {
 	      auto [nhit, npart] = drop_history(*h);
 	      num_drop_hit += nhit;
 	      num_drop_particle += npart;	      
