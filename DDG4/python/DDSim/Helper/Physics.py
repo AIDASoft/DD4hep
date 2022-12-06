@@ -105,12 +105,12 @@ class Physics(ConfigHelper):
     self._decays = val
 
   @property
-  def list(self):
+  def list(self):  # noqa: A003
     """The name of the Geant4 Physics list."""
     return self._list
 
   @list.setter
-  def list(self, val):
+  def list(self, val):  # noqa: A003
     self._list = val
 
   def setupPhysics(self, kernel, name=None):

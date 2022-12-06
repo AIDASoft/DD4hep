@@ -111,7 +111,7 @@ class Factory(ctypes.Structure):
     return _lib.cgaudi_factory_get_library(self)
 
   @property
-  def type(self):
+  def type(self):  # noqa: A003
     return _lib.cgaudi_factory_get_type(self)
 
   @property
