@@ -53,7 +53,7 @@ energy deposits of the simulation.
 ### DigiDDG4ROOT
   Reader for ROOT files produced with DDG4. <br/>
   Properties: <br/>
-    |**Property**  |**Data type**    |**Description**                                                  |
+    |**Property**|**Data type**|**Description**|
     |:---          |:---             |:---                                                             |
     |`.input`      | vector<string>  | List of input files to be processed                             |
     |`.tree`       | string          | Name of the main data tree. default: `EVENT`                    |
