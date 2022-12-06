@@ -76,8 +76,8 @@ DDDigi Components Description
   Functionality: self explaining
 
 - <large>DigiAttenuator</large>
-
-  Deposit attenuator for energy deposits according to decay time constant. <br/>
+ 
+  <large>Deposit attenuator for energy deposits according to decay time constant. </large><br/>
   Properties: <br/>
     |**Property**     |**Data type**    |**Description**                                                  |
     |:---             |:---             |:---                                                             |
