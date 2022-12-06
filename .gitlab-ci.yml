@@ -4,7 +4,7 @@ stages:
 LCG-102-XercesC-centos7-gcc11-opt:
   stage: build
   tags:
-    - centos7
+    - cvmfs
   script:
     - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
     - export CXX=g++
