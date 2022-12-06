@@ -1,7 +1,30 @@
 stages:
     - build
-    - documentation
-    - deployment
+
+LCG-102-XercesC-centos7-gcc11-opt:
+  stage: build
+  tags:
+    - centos7
+  script:
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
+    - export CXX=g++
+    - export CC=gcc
+    - export FC=""
+    - mkdir build
+    - cd build
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DDD4HEP_USE_TBB=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
+    - ninja
+    - ninja install
+    - . ../bin/thisdd4hep.sh
+    - ctest --output-on-failure -j4
+    - cd ../examples/
+    - mkdir build
+    - cd build
+    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17 ..
+    - ninja
+    - ninja install
+    - ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement
+
 
 Python:
   stage: build
