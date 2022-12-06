@@ -53,12 +53,12 @@ def run():
   # First particle file reader
   gen = DDG4.GeneratorAction(kernel, "Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
-  input = DDG4.GeneratorAction(kernel, "Geant4InputAction/Input")
+  input_action = DDG4.GeneratorAction(kernel, "Geant4InputAction/Input")
   fname = os.environ['DD4hepExamplesINSTALL'] + '/examples/DDG4/data/hepmc_geant4.dat'
-  input.Input = "Geant4EventReaderHepMC|" + fname
-  input.MomentumScale = 1.0
-  input.Mask = 1
-  kernel.generatorAction().adopt(input)
+  input_action.Input = "Geant4EventReaderHepMC|" + fname
+  input_action.MomentumScale = 1.0
+  input_action.Mask = 1
+  kernel.generatorAction().adopt(input_action)
 
   # Merge all existing interaction records
   merger = DDG4.GeneratorAction(kernel, "Geant4InteractionMerger/InteractionMerger")
