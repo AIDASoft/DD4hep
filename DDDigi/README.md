@@ -68,13 +68,19 @@ energy deposits of the simulation.
 
   Functionality: self explaining
 
-- DigiAttenuate
+- DigiAttenuator
 
   Deposit attenuator for energy deposits according to decay time constant. <br/>
   Properties: <br/>
     |**Property**  |**Data type**    |**Description**                                                  |
     |:---          |:---             |:---                                                             |
     |`.input`      | vector<string>  | List of input files to be processed                             |
+    |`.attenuate_history`| boolean   | Propagate the weight also to the history entries. default: true |
+    |`.processor_type`| string       | Processor type used for single container attenuation default: `DigiAttenuator` |
+    |`.containers` | vector<string>  | List of containers to be attenuated.                            |
+    |`.signal_decay`| string         | Decay function. default: `exponential`                          |
+    |`.t0`         | double          | Time constant for exponential signal decay.                     |
+
 
 
 ![HORIZON2020](../doc/usermanuals/DD4hep/figures/AIDAinnova.png)
