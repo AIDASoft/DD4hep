@@ -70,9 +70,9 @@ def run():
     o = DDG4.DetElement(i.second.ptr())
     sd = geant4.description.sensitiveDetector(o.name())
     if sd.isValid():
-      type = geant4.sensitive_types[sd.type()]
-      logger.info('CMSTracker: Configure subdetector %-24s of type %s' % (o.name(), type,))
-      geant4.setupDetector(o.name(), type)
+      typ = geant4.sensitive_types[sd.type()]
+      logger.info('CMSTracker: Configure subdetector %-24s of type %s' % (o.name(), typ,))
+      geant4.setupDetector(o.name(), typ)
 
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
