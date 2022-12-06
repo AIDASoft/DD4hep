@@ -19,7 +19,10 @@ def run():
   input_action = digi.input_action('DigiParallelActionSequence/READER')
   # ========================================================================================================
   digi.info('Created SIGNAL input')
-  signal = input_action.adopt_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()], OutputLevel=rdr_output)
+  signal = input_action.adopt_action('DigiDDG4ROOT/SignalReader',
+                                     mask=0x0,
+                                     input=[digi.next_input()],
+                                     OutputLevel=rdr_output)
   digi.check_creation([signal])
   # ========================================================================================================
   digi.info('Creating collision overlays....')
