@@ -1,18 +1,20 @@
 stages:
     - build
+    - documentation
+    - deployment
 
-LCG-102-XercesC-centos7-gcc11-opt:
+mac1015-clang110-Geant10.6:
   stage: build
   tags:
-    - cvmfs
+    - mac
   script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
-    - export CXX=g++
-    - export CC=gcc
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-mac1015-clang110-opt/setup.sh
+    - export CXX=clang++
+    - export CC=clang
     - export FC=""
     - mkdir build
     - cd build
-    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DDD4HEP_USE_TBB=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
@@ -25,6 +27,29 @@ LCG-102-XercesC-centos7-gcc11-opt:
     - ninja install
     - ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement
 
+mac1015-clang110-Geant10.6-XERCESC:
+  stage: build
+  tags:
+    - mac
+  script:
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-mac1015-clang110-opt/setup.sh
+    - export CXX=clang++
+    - export CC=clang
+    - export FC=""
+    - mkdir build
+    - cd build
+    - cmake -GNinja -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 -DDD4HEP_USE_XERCESC=ON ..
+    - ninja
+    - ninja install
+    - . ../bin/thisdd4hep.sh
+    - ctest --output-on-failure -j4
+    - cd ../examples/
+    - mkdir build
+    - cd build
+    - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
+    - ninja
+    - ninja install
+    - ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement
 
 Python:
   stage: build
@@ -36,3 +61,82 @@ Python:
     - echo "RUNNING FLAKE8 CHECK"
     - find . -name "*.py" -and -not -name 'ddsix.py' -exec flake8 {} +
 
+
+
+#############################
+# Documentation Compilation #
+#############################
+
+
+# Compile Doxygen reference
+doxygen:
+    stage: documentation
+    needs: []
+    tags:
+        - docker
+    image: ghcr.io/aidasoft/centos7:latest
+    script:
+        - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
+        - mkdir -p public
+        - mkdir build
+        - cd build
+        - cmake -DBUILD_DOCS_ONLY=ON ..
+        - make reference
+        - mv reference/html ../public/reference
+    artifacts:
+        paths:
+            - public
+        expire_in: 3 hour
+
+# Compile LaTeX user manual:
+usermanuals:
+    stage: documentation
+    needs: []
+    tags:
+      - docker
+    image: ghcr.io/aidasoft/centos7:latest
+    script:
+        - yum install -y ghostscript poppler-utils perl
+        - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
+        - export PATH=/cvmfs/sft.cern.ch/lcg/external/texlive/2017/bin/x86_64-linux:$PATH
+        - export max_print_line=200
+        - mkdir -p public/usermanuals
+        - mkdir build
+        - cd build
+        - cmake -DBUILD_DOCS_ONLY=ON ..
+        - make pdf
+        - make html
+        - mv DD4hepManual ../public/usermanuals/.
+        - mv DDAlignManual ../public/usermanuals/.
+        - mv DDCondManual ../public/usermanuals/.
+        - mv DDEveManual ../public/usermanuals/.
+        - mv DDG4Manual ../public/usermanuals/.
+        - mv DDRecManual ../public/usermanuals/.
+    artifacts:
+        paths:
+          - public
+        expire_in: 3 hour
+
+############################
+# Documentation Deployment #
+############################
+
+# Automatically deploy documentation to the website
+# Deployment job only executed for new tag pushs, not for every commit.
+deploy-documentation:
+    variables:
+      EOS_PATH: "/eos/project/d/dd4hep/www/"
+    only:
+      - tags@CLICdp/DetectorSoftware/DD4hep
+      - master@CLICdp/DetectorSoftware/DD4hep
+    stage: deployment
+    tags:
+      - docker
+    needs: ["usermanuals", "doxygen"]
+    # Docker image with tools to deploy to EOS
+    image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
+    script:
+        - deploy-eos
+    # do not run any globally defined before_script or after_script for this step
+    before_script: []
+    after_script: []
