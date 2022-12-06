@@ -32,105 +32,105 @@ def run():
        (str(histo.histo1D_deposits), str(histo.histo1D_deposits.__class__),))
   num_tests = num_tests + 1
 
-  input = digi.input_action('DigiParallelActionSequence/Test')
+  action = digi.input_action('DigiParallelActionSequence/Test')
 
-  input.add_property('property_int', 1)
+  action.add_property('property_int', 1)
   info('property: has_property =           %s  [%s]' %
-       (yes_no(input.hasProperty('property_int')), str(input.property_int.__class__),))
-  info('property: property_int =           %s' % (str(input.property_int),))
-  input.property_int = 123456
-  info('property: property_int =           %s' % (str(input.property_int),))
-  if input.hasProperty('property_int'):
+       (yes_no(action.hasProperty('property_int')), str(action.property_int.__class__),))
+  info('property: property_int =           %s' % (str(action.property_int),))
+  action.property_int = 123456
+  info('property: property_int =           %s' % (str(action.property_int),))
+  if action.hasProperty('property_int'):
     num_tests = num_tests + 1
 
-  input.add_vector_property('property_vector_int', [1, 2, 3])
+  action.add_vector_property('property_vector_int', [1, 2, 3])
   info('property: has_property =           %s [%s]' %
-       (yes_no(input.hasProperty('property_vector_int')), str(input.property_vector_int.__class__), ))
-  info('property: property_vector_int =    %s' % (str(input.property_vector_int),))
-  input.property_vector_int = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
-  info('property: property_vector_int =    %s' % (str(input.property_vector_int),))
-  if input.hasProperty('property_vector_int'):
+       (yes_no(action.hasProperty('property_vector_int')), str(action.property_vector_int.__class__), ))
+  info('property: property_vector_int =    %s' % (str(action.property_vector_int),))
+  action.property_vector_int = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+  info('property: property_vector_int =    %s' % (str(action.property_vector_int),))
+  if action.hasProperty('property_vector_int'):
     num_tests = num_tests + 1
 
-  input.add_list_property('property_list_int', [1, 2, 3])
+  action.add_list_property('property_list_int', [1, 2, 3])
   info('property: has_property =           %s [%s]' %
-       (yes_no(input.hasProperty('property_list_int')), str(input.property_list_int.__class__),))
-  info('property: property_list_int =      %s' % (str(input.property_list_int),))
-  input.property_list_int = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
-  info('property: property_list_int =      %s' % (str(input.property_list_int),))
-  if input.hasProperty('property_list_int'):
+       (yes_no(action.hasProperty('property_list_int')), str(action.property_list_int.__class__),))
+  info('property: property_list_int =      %s' % (str(action.property_list_int),))
+  action.property_list_int = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+  info('property: property_list_int =      %s' % (str(action.property_list_int),))
+  if action.hasProperty('property_list_int'):
     num_tests = num_tests + 1
 
-  input.add_set_property('property_set_int', [1, 2, 3])
+  action.add_set_property('property_set_int', [1, 2, 3])
   info('property: has_property =           %s [%s]' %
-       (yes_no(input.hasProperty('property_set_int')), str(input.property_set_int.__class__),))
-  info('property: property_set_int =       %s' % (str(input.property_set_int),))
-  input.property_set_int = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
-  info('property: property_set_int =       %s' % (str(input.property_set_int),))
-  if input.hasProperty('property_set_int'):
+       (yes_no(action.hasProperty('property_set_int')), str(action.property_set_int.__class__),))
+  info('property: property_set_int =       %s' % (str(action.property_set_int),))
+  action.property_set_int = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+  info('property: property_set_int =       %s' % (str(action.property_set_int),))
+  if action.hasProperty('property_set_int'):
     num_tests = num_tests + 1
 
-  input.add_property('property_double', 1.0)
+  action.add_property('property_double', 1.0)
   info('property: has_property =           %s [%s]' %
-       (yes_no(input.hasProperty('property_double')), str(input.property_double.__class__),))
-  info('property: property_double =        %s' % (str(input.property_double),))
-  input.property_double = 123456.7
-  info('property: property_double =        %s' % (str(input.property_double),))
-  if input.hasProperty('property_double'):
+       (yes_no(action.hasProperty('property_double')), str(action.property_double.__class__),))
+  info('property: property_double =        %s' % (str(action.property_double),))
+  action.property_double = 123456.7
+  info('property: property_double =        %s' % (str(action.property_double),))
+  if action.hasProperty('property_double'):
     num_tests = num_tests + 1
 
-  input.add_vector_property('property_vector_double', [1.1, 2, 3])
+  action.add_vector_property('property_vector_double', [1.1, 2, 3])
   info('property: has_property =           %s [%s]' %
-       (yes_no(input.hasProperty('property_vector_double')), str(input.property_vector_double.__class__),))
-  info('property: property_vector_double = %s' % (str(input.property_vector_double),))
-  input.property_vector_double = [1.5, 2, 3, 4, 5, 6, 7, 8, 9, 0]
-  info('property: property_vector_double = %s' % (str(input.property_vector_double),))
-  if input.hasProperty('property_vector_double'):
+       (yes_no(action.hasProperty('property_vector_double')), str(action.property_vector_double.__class__),))
+  info('property: property_vector_double = %s' % (str(action.property_vector_double),))
+  action.property_vector_double = [1.5, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+  info('property: property_vector_double = %s' % (str(action.property_vector_double),))
+  if action.hasProperty('property_vector_double'):
     num_tests = num_tests + 1
 
-  input.add_list_property('property_list_double', [1.1, 2, 3])
+  action.add_list_property('property_list_double', [1.1, 2, 3])
   info('property: has_property =           %s [%s]' %
-       (yes_no(input.hasProperty('property_list_double')), str(input.property_list_double.__class__), ))
-  info('property: property_list_double =   %s' % (str(input.property_list_double),))
-  input.property_list_double = [1.5, 2, 3, 4, 5, 6, 7, 8, 9, 0]
-  info('property: property_list_double =   %s' % (str(input.property_list_double),))
-  if input.hasProperty('property_list_double'):
+       (yes_no(action.hasProperty('property_list_double')), str(action.property_list_double.__class__), ))
+  info('property: property_list_double =   %s' % (str(action.property_list_double),))
+  action.property_list_double = [1.5, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+  info('property: property_list_double =   %s' % (str(action.property_list_double),))
+  if action.hasProperty('property_list_double'):
     num_tests = num_tests + 1
 
-  input.add_set_property('property_set_double', [1.1, 2, 3])
+  action.add_set_property('property_set_double', [1.1, 2, 3])
   info('property: has_property =           %s [%s]' %
-       (yes_no(input.hasProperty('property_set_double')), str(input.property_set_double.__class__),))
-  info('property: property_set_double =    %s' % (str(input.property_set_double),))
-  input.property_set_double = [1.5, 2, 3, 4, 5, 6, 7, 8, 9, 0]
-  info('property: property_set_double =    %s' % (str(input.property_set_double),))
-  if input.hasProperty('property_set_double'):
+       (yes_no(action.hasProperty('property_set_double')), str(action.property_set_double.__class__),))
+  info('property: property_set_double =    %s' % (str(action.property_set_double),))
+  action.property_set_double = [1.5, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+  info('property: property_set_double =    %s' % (str(action.property_set_double),))
+  if action.hasProperty('property_set_double'):
     num_tests = num_tests + 1
 
-  input.add_property('property_string', "string_1")
+  action.add_property('property_string', "string_1")
   info('property: has_property =           %s [%s]' %
-       (yes_no(input.hasProperty('property_string')), str(input.property_string.__class__),))
-  info('property: property_string =        %s' % (input.property_string,))
-  input.property_string = "string_1123456"
-  info('property: property_string =        %s' % (input.property_string,))
-  if input.hasProperty('property_string'):
+       (yes_no(action.hasProperty('property_string')), str(action.property_string.__class__),))
+  info('property: property_string =        %s' % (action.property_string,))
+  action.property_string = "string_1123456"
+  info('property: property_string =        %s' % (action.property_string,))
+  if action.hasProperty('property_string'):
     num_tests = num_tests + 1
 
-  input.add_vector_property('property_vector_string', ["string1", "string2", "string3"])
+  action.add_vector_property('property_vector_string', ["string1", "string2", "string3"])
   info('property: has_property =           %s [%s]' %
-       (yes_no(input.hasProperty('property_vector_string')), str(input.property_vector_string.__class__),))
-  info('property: property_vector_string = %s' % (input.property_vector_string,))
-  input.property_vector_string = ["string1", "string2", "string3", "string4", "string5", "string6"]
-  info('property: property_vector_string = %s' % (input.property_vector_string,))
-  if input.hasProperty('property_vector_string'):
+       (yes_no(action.hasProperty('property_vector_string')), str(action.property_vector_string.__class__),))
+  info('property: property_vector_string = %s' % (action.property_vector_string,))
+  action.property_vector_string = ["string1", "string2", "string3", "string4", "string5", "string6"]
+  info('property: property_vector_string = %s' % (action.property_vector_string,))
+  if action.hasProperty('property_vector_string'):
     num_tests = num_tests + 1
 
-  input.add_position_property('property_position', (1., 2., 3.))
+  action.add_position_property('property_position', (1., 2., 3.))
   info('property: has_property =           %s [%s]' %
-       (yes_no(input.hasProperty('property_position')), str(input.property_position.__class__),))
-  info('property: property_position =      %s' % (input.property_position,))
-  input.property_position = (111.1, 222.2, 333.3)
-  info('property: property_position =      %s' % (input.property_position,))
-  if input.hasProperty('property_position'):
+       (yes_no(action.hasProperty('property_position')), str(action.property_position.__class__),))
+  info('property: property_position =      %s' % (action.property_position,))
+  action.property_position = (111.1, 222.2, 333.3)
+  info('property: property_position =      %s' % (action.property_position,))
+  if action.hasProperty('property_position'):
     num_tests = num_tests + 1
 
   info('We checked %d properties interactions.' % (num_tests,))

@@ -15,14 +15,14 @@ def run():
   import DigiTest
   digi = DigiTest.Test(geometry=None)
 
-  input = digi.input_action('DigiParallelActionSequence/READER')
+  input_action = digi.input_action('DigiParallelActionSequence/READER')
   # ========================================================================================================
   digi.info('Created SIGNAL input')
-  input.adopt_action('DigiDDG4ROOT/SignalReader', mask=0xCBAA, input=[digi.next_input()])
+  input_action.adopt_action('DigiDDG4ROOT/SignalReader', mask=0xCBAA, input=[digi.next_input()])
   # ========================================================================================================
   digi.info('Creating collision overlay....')
   # ========================================================================================================
-  overlay = input.adopt_action('DigiSequentialActionSequence/Overlay-1')
+  overlay = input_action.adopt_action('DigiSequentialActionSequence/Overlay-1')
   overlay.adopt_action('DigiDDG4ROOT/Read-1', mask=0xCBEE, input=[digi.next_input()])
   digi.info('Created input.overlay-1')
   # ========================================================================================================
