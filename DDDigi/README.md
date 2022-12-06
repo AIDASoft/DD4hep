@@ -156,5 +156,11 @@ DigiAttenuatorSequence
     |`.t0`            | double          | Time constant for exponential signal decay.                     |
 
 
+DigiDepositSmearPositionTrack
+-----------------------------
+
+- Smear energy deposit positions by an ellipse of the track passing in the
+  x-y plane.
+
 
 ![HORIZON2020](../doc/usermanuals/DD4hep/figures/AIDAinnova.png)
