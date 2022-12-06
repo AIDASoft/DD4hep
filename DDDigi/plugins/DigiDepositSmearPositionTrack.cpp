@@ -58,12 +58,11 @@ namespace dd4hep {
 
       /// Create deposit mapping with updates on same cellIDs
       template <typename T> void
-      smear(DigiContext& context, T& cont, work_t& work, const predicate_t& predicate)  const  {
+      smear(DigiContext& context, T& cont, work_t& /* work */, const predicate_t& predicate)  const  {
 	constexpr double eps = detail::numeric_epsilon;
 	auto& random = context.randomGenerator();
 	const auto& ev = *(context.event);
 	std::size_t updated = 0UL;
-	auto* h = work.get_history(cont.name);
 
 	VolumeManager volMgr = m_kernel.detectorDescription().volumeManager();
 	for( auto& dep : cont )    {

@@ -75,13 +75,72 @@ DDDigi Components Description
 
   Functionality: self explaining
 
-- <large>DigiAttenuator</large>
- 
-  <large>Deposit attenuator for energy deposits according to decay time constant. </large><br/>
+- DigiEventAction
+
+  Generic event level action which can execute workers in parallel
   Properties: <br/>
     |**Property**     |**Data type**    |**Description**                                                  |
     |:---             |:---             |:---                                                             |
-    |`.input`         | vector<string>  | List of input files to be processed                             |
+    |`.parallel`      | boolean         | Flag to indicate parallel action execution                      |
+
+- DigiContainerProcessor
+
+  Base class of all actors dealing with one of more containers sequentially.<br/>
+
+- DigiContainerSequence
+
+  Sequencer of `DigiContainerProcessor` entities with container based work load splitting.<br/>
+
+  Properties: <br/>
+    |**Property**     |**Data type**    |**Description**                                                  |
+    |:---             |:---             |:---                                                             |
+    |`.parallel`      | boolean         | Flag to indicate parallel action execution                      |
+
+- DigiContainerSequenceAction
+
+  Specialization of the `DigiEventAction`.
+  Process continers from the data store according to the `input_segment` and the `input_mask`.
+  Output of workers is delivered to the `output_segment` with mask `output_mask`.
+
+  Properties: Properties of the `DigiEventAction` apply!<br/>
+
+    |**Property**     |**Data type**    |**Description**                                                  |
+    |:---             |:---             |:---                                                             |
+    |`.input_segment` | string          | Name of the input data segment                                  |
+    |`.input_mask`    | integer         | Mask identifier of the input containers to be processed         |
+    |`.output_segment`| string          | Name of the output data segment                                 |
+    |`.output_mask`   | integer         | Mask identifier of the output containers                        |
+
+- DigiMultiContainerProcessor
+
+  Specialization of the `DigiEventAction`.
+  Process multiple containers from the data store according to the `input_segment` and the list of `input_masks`. Allows to re-use the same container action.
+  Output of workers is delivered to the `output_segment` with mask `output_mask`.
+
+  Properties: Properties of the `DigiEventAction` apply!<br/>
+
+    |**Property**     |**Data type**    |**Description**                                                  |
+    |:---             |:---             |:---                                                             |
+    |`.input_segment` | string          | Name of the input data segment                                  |
+    |`.input_mask`    | integer         | Mask identifier of the input containers to be processed         |
+    |`.output_segment`| string          | Name of the output data segment                                 |
+    |`.output_mask`   | integer         | Mask identifier of the output containers                        |
+
+- DigiAttenuator
+ 
+  Deposit attenuator for energy deposits according to decay time constant. <br/>
+  Action functor of the `DigiAttenuatorSequence` <br/>
+  Properties: Properties of the `DigiContainerSequenceProcessor` apply! <br/>
+    |**Property**     |**Data type**    |**Description**                                            |
+    |:---             |:---             |:---                                                       |
+    |`.factor`        | double          | Signal reduction factor applied to all entries processed  |
+
+- DigiAttenuatorSequence
+ 
+  Container sequencer to attenuate a list of containers.
+  Properties:  Properties of the `DigiContainerSequenceAction` apply! <br/>
+    |**Property**     |**Data type**    |**Description**                                                  |
+    |:---             |:---             |:---                                                             |
     |`.processor_type`| string          | Processor type used for single container attenuation.           |
     |                 |                 | default: `DigiAttenuator`                                       |
     |`.containers`    | vector<string>  | List of containers to be attenuated.                            |

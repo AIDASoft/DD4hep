@@ -73,17 +73,6 @@ template const DetectorHistory*  DigiContainerProcessor::work_t::get_input(bool 
 template       DetectorResponse* DigiContainerProcessor::work_t::get_input(bool exc);
 template const DetectorResponse* DigiContainerProcessor::work_t::get_input(bool exc)  const;
 
-/// Access the deposit history of a deposit container
-const DepositsHistory* 
-DigiContainerProcessor::work_t::get_history(const std::string& container, bool exc)  const  {
-  std::string hist_name = container+".hist";
-  if ( exc )   {
-    dd4hep::except("DigiContainerProcessor", "+++ Cannot access history %s.", hist_name.c_str());
-  }
-  return nullptr;
-}
-
-
 /// input data type
 const std::type_info& DigiContainerProcessor::work_t::input_type()  const   {
   return input.data->type();
