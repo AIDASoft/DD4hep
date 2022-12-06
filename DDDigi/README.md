@@ -57,9 +57,10 @@ energy deposits of the simulation.
 DDDigi Components Description
 =============================
 
-- DigiDDG4ROOT
+DigiDDG4ROOT
+------------
 
-  Reader for ROOT files produced with DDG4. <br/>
+- Reader for ROOT files produced with DDG4. <br/>
   Properties: <br/>
 
     |**Property**  |**Data type**    |**Description**                                                  |
