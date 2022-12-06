@@ -53,14 +53,16 @@ DDDigi Components
 
 - DigiDDG4ROOT Reader for ROOT files produced with DDG4. <br/>
   Properties: <br/>
-    `input`       vector<string> List of input files to be processed
-    `tree`        string         Name of the main data tree. default: `EVENT`
-    `containers`  vector<string> List of containers to be loaded to DDDigi.
-                                 If empty => all.
-    `segment`     string         Name of the input segment. default: "inputs"
-    `mask`        integer        Mask of this input source in the store. default: NO_MASK (0x0)
-    `rescan`      boolean        Rescan input sources for continuous execution. default: true
-    `keep_raw`    (true)         Keep raw input as opaque objects in the DDDigi store.
+    |**Property**|**Data type   **|**Description**                                                  |
+    |:---        |:---            |:---                                                             |
+    |`input`     | vector<string> | List of input files to be processed                             |
+    |`tree`      | string         | Name of the main data tree. default: `EVENT`                    |
+    |`containers`| vector<string> | List of containers to be loaded to DDDigi.                      |
+    |            |                | If empty => all.                                                |
+    |`segment`   | string         | Name of the input segment. default: "inputs"                    |
+    |`mask`      | integer        | Mask of this input source in the store. default: NO_MASK (0x0)  |
+    |`rescan`    | boolean        | Rescan input sources for continuous execution. default: true    |
+    |`keep_raw`  | boolean        | Keep raw input as opaque objects in the DDDigi store.           |
 
   Functionality: self explaining
 
