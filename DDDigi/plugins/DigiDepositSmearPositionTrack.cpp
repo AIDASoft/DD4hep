@@ -53,7 +53,12 @@ namespace dd4hep {
       {
 	declareProperty("resolution_u",               m_resolution_u);
 	declareProperty("resolution_v",               m_resolution_v);
+	m_kernel.register_initialize(std::bind(&DigiDepositSmearPositionTrack::initialize,this));
 	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositSmearPositionTrack::smear)
+      }
+
+      /// Processor initialization
+      void initialize()   {
       }
 
       /// Create deposit mapping with updates on same cellIDs
