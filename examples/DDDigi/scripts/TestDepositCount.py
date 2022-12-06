@@ -15,10 +15,10 @@ def run():
   import DigiTest
   digi = DigiTest.Test(geometry=None)
 
-  input = digi.input_action('DigiParallelActionSequence/Reader')
+  input_seq = digi.input_action('DigiParallelActionSequence/Reader')
   # ========================================================================================================
   digi.info('Created SIGNAL input')
-  signal = input.adopt_action('DigiSequentialActionSequence/Signal')
+  signal = input_seq.adopt_action('DigiSequentialActionSequence/Signal')
   reader = signal.adopt_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()])
   sequence = signal.adopt_action('DigiContainerSequenceAction/Counter',
                                  parallel=True, input_mask=0x0, input_segment='inputs')

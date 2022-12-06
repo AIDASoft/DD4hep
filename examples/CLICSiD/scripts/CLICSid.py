@@ -45,7 +45,7 @@ class CLICSid:
     return self.geant4.setupTrackingField(prt=True)
 
   # Example to show how to setup random generator
-  def setupRandom(self, name, type=None, seed=None, quiet=True):
+  def setupRandom(self, name, type=None, seed=None, quiet=True):  #  noqa: A002
     rndm = DDG4.Action(self.kernel, 'Geant4Random/' + name)
     if seed:
       rndm.Seed = seed
