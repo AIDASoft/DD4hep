@@ -116,8 +116,6 @@ namespace dd4hep {
 	template <typename DATA> DATA* get_input(bool exc=false);
 	/// Access input data by type
 	template <typename DATA> const DATA* get_input(bool exc=false)  const;
-	/// Access the deposit history of a deposit container
-	const DepositsHistory* get_history(const std::string& container, bool exc=false)  const;
       };
 
       /// Monitoring object
