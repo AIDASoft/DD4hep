@@ -54,7 +54,7 @@ energy deposits of the simulation.
   Reader for ROOT files produced with DDG4. <br/>
   Properties: <br/>
     |**Property**|**Data type**|**Description**|
-    |:---          |:---             |:---                                                             |
+    |:--- |:--- |:--- |
     |`.input`      | vector<string>  | List of input files to be processed                             |
     |`.tree`       | string          | Name of the main data tree. default: `EVENT`                    |
     |`.containers` | vector<string>  | List of containers to be loaded to DDDigi.                      |
