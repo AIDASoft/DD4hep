@@ -51,6 +51,7 @@ energy deposits of the simulation.
 # DDDigi Components
 
 ### DigiDDG4ROOT
+
   Reader for ROOT files produced with DDG4. <br/>
   Properties: <br/>
     |**Property**|**Data type**|**Description**|
@@ -67,6 +68,7 @@ energy deposits of the simulation.
   Functionality: self explaining
 
 ### DigiAttenuate
+
   Deposit attenuator for energy deposits according to decay time constant. <br/>
   Properties: <br/>
     |**Property**  |**Data type**    |**Description**                                                  |
