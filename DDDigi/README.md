@@ -51,8 +51,8 @@ energy deposits of the simulation.
 DDDigi Components
 =================
 
-- DigiDDG4ROOT Reader for ROOT files produced with DDG4.
-  Properties:
+- DigiDDG4ROOT Reader for ROOT files produced with DDG4. <br/>
+  Properties: <br/>
     `input`       vector<string> List of input files to be processed
     `tree`        string         Name of the main data tree. default: `EVENT`
     `containers`  vector<string> List of containers to be loaded to DDDigi.
@@ -62,7 +62,10 @@ DDDigi Components
     `rescan`      boolean        Rescan input sources for continuous execution. default: true
     `keep_raw`    (true)         Keep raw input as opaque objects in the DDDigi store.
 
+  Functionality: self explaining
 
+- DigiAttenuate: Deposit attenuator for energy deposits according to decay time constant. <br/>
+  Properties: <br/>
 
 
 ![HORIZON2020](../doc/usermanuals/DD4hep/figures/AIDAinnova.png)
