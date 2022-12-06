@@ -377,7 +377,7 @@ class CommandLine:
   \author  M.Frank
   \version 1.0
   """
-  def __init__(self, help=None):
+  def __init__(self, help=None):  # noqa: A002
     import sys
     self.data = {}
     help_call = help
