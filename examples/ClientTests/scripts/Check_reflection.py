@@ -29,7 +29,7 @@ logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def help():
+def show_help():
   logging.info("Check_shape.py -option [-option]                           ")
   logging.info("       -geometry   <geometry file>   Geometry file         ")
   logging.info("       -vis                          Enable visualization  ")
@@ -55,7 +55,7 @@ def run():
       dump = True
 
   if not geo:
-    help()
+    show_help()
     sys.exit(1)
 
   import DDG4

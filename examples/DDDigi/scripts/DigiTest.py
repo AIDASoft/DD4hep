@@ -96,7 +96,7 @@ class Test(dddigi.Digitize):
       if o is None:
         self.error('FAILED  Failed to create object')
 
-  def declare_input(self, name, input, parallel=True):  # noqa: A001
+  def declare_input(self, name, input, parallel=True):  # noqa: A002
     if not self.input:
       self.input = dddigi.Synchronize(self.kernel(), 'DigiParallelActionSequence/READER')
       self.input.parallel = True

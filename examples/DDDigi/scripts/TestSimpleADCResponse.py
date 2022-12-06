@@ -16,8 +16,8 @@ def run():
   digi = DigiTest.Test(geometry=None)
 
   # ========================================================================================================
-  input = digi.input_action('DigiSequentialActionSequence/READER')
-  input.adopt_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()])
+  input_action = digi.input_action('DigiSequentialActionSequence/READER')
+  input_action.adopt_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()])
   # ========================================================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')
   event.adopt_action('DigiStoreDump/DumpInput')
