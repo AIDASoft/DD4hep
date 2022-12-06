@@ -155,10 +155,8 @@ DigiAttenuatorSequence
     |`.signal_decay`  | string          | Decay function. default: `exponential`                          |
     |`.t0`            | double          | Time constant for exponential signal decay.                     |
 
-
 DigiDepositSmearPositionTrack
 -----------------------------
-
 - Smear energy deposit positions by an ellipse of the track passing in the
   x-y plane.
 
