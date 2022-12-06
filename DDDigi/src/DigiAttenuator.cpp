@@ -48,8 +48,6 @@ DigiAttenuator::attenuate(T& cont, const predicate_t& predicate) const {
   for( auto& dep : cont )   {
     if ( predicate(dep) )   {
       dep.second.deposit *= m_factor;
-      if ( !m_attenuate_history ) 
-	continue;
       auto& e = dep.second.history;
       for( auto& h : e.hits ) h.weight *= m_factor;
       for( auto& h : e.particles ) h.weight *= m_factor;
@@ -88,7 +86,6 @@ void DigiAttenuator::execute(DigiContext& context, work_t& work, const predicate
 DigiAttenuatorSequence::DigiAttenuatorSequence(const DigiKernel& krnl, const std::string& nam)
   : DigiContainerSequenceAction(krnl, nam)
 {
-  declareProperty("attenuate_history", m_attenuate_history);
   declareProperty("processor_type",    m_processor_type = "DigiAttenuator");
   declareProperty("containers",        m_container_attenuation);
   declareProperty("signal_decay",      m_signal_decay = "exponential");

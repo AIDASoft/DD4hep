@@ -87,10 +87,6 @@ namespace dd4hep {
       std::map<std::string, double>  m_container_attenuation  { };
       /// Property: T0 with respect to central crossing
       double                         m_t0     { 0e0 };
-      /// Property: Flag to act on hit input data
-      bool                           m_attenuate_data  { true };
-      /// Property: Flag to act on history objects as well
-      bool                           m_attenuate_history  { true };
 
     protected:
       /// Define standard assignments and constructors
