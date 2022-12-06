@@ -60,7 +60,7 @@ DDDigi Components Description
 DigiDDG4ROOT
 ------------
 
-- Reader for ROOT files produced with DDG4. <br/>
+  Reader for ROOT files produced with DDG4. <br/>
   Properties: <br/>
 
     |**Property**  |**Data type**    |**Description**                                                  |
@@ -76,7 +76,8 @@ DigiDDG4ROOT
 
   Functionality: self explaining
 
-- DigiEventAction
+DigiEventAction
+---------------
 
   Generic event level action which can execute workers in parallel
   Properties: <br/>
