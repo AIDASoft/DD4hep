@@ -60,8 +60,8 @@ DDDigi Components Description
 DigiDDG4ROOT
 ------------
 
-  Reader for ROOT files produced with DDG4. <br/>
-  Properties: <br/>
+- Reader for ROOT files produced with DDG4. <br/>
+  Properties:                                                                                        <br/>
 
     |**Property**|**Data type**|**Description**|
     |:--- |:--- |:--- |
@@ -79,47 +79,34 @@ DigiDDG4ROOT
 DigiEventAction
 ---------------
 
-  Generic event level action which can execute workers in parallel
-  Properties: <br/>
+- Generic event level action which can execute workers in parallel                                   <br/>
+  Properties:                                                                                        <br/>
     |**Property**     |**Data type**    |**Description**                                                  |
     |:---             |:---             |:---                                                             |
     |`.parallel`      | boolean         | Flag to indicate parallel action execution                      |
 
-- DigiContainerProcessor
+DigiContainerProcessor
+----------------------
 
-  Base class of all actors dealing with one of more containers sequentially.<br/>
+- Base class of all actors dealing with one of more containers sequentially.<br/>
 
-- DigiContainerSequence
+DigiContainerSequence
+---------------------
+- Sequencer of `DigiContainerProcessor` entities with container based work load splitting.<br/>
 
-  Sequencer of `DigiContainerProcessor` entities with container based work load splitting.<br/>
-
-  Properties: <br/>
+  Properties:                                                                                        <br/>
     |**Property**     |**Data type**    |**Description**                                                  |
     |:---             |:---             |:---                                                             |
     |`.parallel`      | boolean         | Flag to indicate parallel action execution                      |
 
-- DigiContainerSequenceAction
+DigiContainerSequenceAction
+---------------------------
 
-  Specialization of the `DigiEventAction`.
+- Specialization of the `DigiEventAction`.                                                           <br/>
   Process continers from the data store according to the `input_segment` and the `input_mask`.
-  Output of workers is delivered to the `output_segment` with mask `output_mask`.
+  Output of workers is delivered to the `output_segment` with mask `output_mask`.                    <br/>
 
-  Properties: Properties of the `DigiEventAction` apply!<br/>
-
-    |**Property**     |**Data type**    |**Description**                                                  |
-    |:---             |:---             |:---                                                             |
-    |`.input_segment` | string          | Name of the input data segment                                  |
-    |`.input_mask`    | integer         | Mask identifier of the input containers to be processed         |
-    |`.output_segment`| string          | Name of the output data segment                                 |
-    |`.output_mask`   | integer         | Mask identifier of the output containers                        |
-
-- DigiMultiContainerProcessor
-
-  Specialization of the `DigiEventAction`.
-  Process multiple containers from the data store according to the `input_segment` and the list of `input_masks`. Allows to re-use the same container action.
-  Output of workers is delivered to the `output_segment` with mask `output_mask`.
-
-  Properties: Properties of the `DigiEventAction` apply!<br/>
+  Properties: Properties of the `DigiEventAction` apply!                                             <br/>
 
     |**Property**     |**Data type**    |**Description**                                                  |
     |:---             |:---             |:---                                                             |
@@ -128,19 +115,38 @@ DigiEventAction
     |`.output_segment`| string          | Name of the output data segment                                 |
     |`.output_mask`   | integer         | Mask identifier of the output containers                        |
 
-- DigiAttenuator
- 
-  Deposit attenuator for energy deposits according to decay time constant. <br/>
-  Action functor of the `DigiAttenuatorSequence` <br/>
-  Properties: Properties of the `DigiContainerSequenceProcessor` apply! <br/>
-    |**Property**     |**Data type**    |**Description**                                            |
-    |:---             |:---             |:---                                                       |
-    |`.factor`        | double          | Signal reduction factor applied to all entries processed  |
+DigiMultiContainerProcessor
+---------------------------
 
-- DigiAttenuatorSequence
+- Specialization of the `DigiEventAction`.
+  Process multiple containers from the data store according to the `input_segment` 
+  and the list of `input_masks`. Allows to re-use the same container action.
+  Output of workers is delivered to the `output_segment` with mask `output_mask`.                    <br/>
+
+  Properties: Properties of the `DigiEventAction` apply!                                             <br/>
+
+    |**Property**     |**Data type**    |**Description**                                                  |
+    |:---             |:---             |:---                                                             |
+    |`.input_segment` | string          | Name of the input data segment                                  |
+    |`.input_mask`    | integer         | Mask identifier of the input containers to be processed         |
+    |`.output_segment`| string          | Name of the output data segment                                 |
+    |`.output_mask`   | integer         | Mask identifier of the output containers                        |
+
+DigiAttenuator
+--------------
  
-  Container sequencer to attenuate a list of containers.
-  Properties:  Properties of the `DigiContainerSequenceAction` apply! <br/>
+- Deposit attenuator for energy deposits according to decay time constant.                           <br/>
+  Action functor of the `DigiAttenuatorSequence`                                                     <br/>
+  Properties: Properties of the `DigiContainerSequenceProcessor` apply!                              <br/>
+    |**Property**     |**Data type**    |**Description**                                                  |
+    |:---             |:---             |:---                                                             |
+    |`.factor`        | double          | Signal reduction factor applied to all entries processed        |
+
+DigiAttenuatorSequence
+----------------------
+ 
+- Container sequencer to attenuate a list of containers.                                             <br/>
+  Properties:  Properties of the `DigiContainerSequenceAction` apply!                                <br/>
     |**Property**     |**Data type**    |**Description**                                                  |
     |:---             |:---             |:---                                                             |
     |`.processor_type`| string          | Processor type used for single container attenuation.           |
