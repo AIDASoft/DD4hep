@@ -425,7 +425,7 @@ namespace dd4hep {
       G4AutoLock protection_lock(&action_mutex);
       updateContext(m_sequence->context());
       m_sequence->constructGeo(&m_ctxt);
-      if ( 0 == m_ctxt.world )    {
+      if ( nullptr == m_ctxt.world )    {
         m_sequence->except("+++ Executing G4 detector construction did not result in a valid world volume!");
       }
       m_sequence->context()->kernel().setWorld(m_ctxt.world);
@@ -573,10 +573,10 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
 
   /// Get the detector constructed
   Geant4DetectorConstructionSequence* user_det = kernel.detectorConstruction(false);
-  if ( 0 == user_det && kernel.isMultiThreaded() )   {
+  if ( nullptr == user_det && kernel.isMultiThreaded() )   {
     throw runtime_error("Panic! No valid detector construction sequencer present. [Mandatory MT]");
   }
-  if ( 0 == user_det && !kernel.isMultiThreaded() )   {
+  if ( nullptr == user_det && !kernel.isMultiThreaded() )   {
     user_det = Geant4Compatibility().buildDefaultDetectorConstruction(kernel);
   }
   Geant4UserDetectorConstruction* det_seq = new Geant4UserDetectorConstruction(ctx,user_det);
@@ -584,13 +584,13 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
 
   /// Get the physics list constructed
   Geant4PhysicsListActionSequence* phys_seq = kernel.physicsList(false);
-  if ( 0 == phys_seq )   {
+  if ( nullptr == phys_seq )   {
     string phys_model = "QGSP_BERT";
     phys_seq = kernel.physicsList(true);
     phys_seq->property("extends").set(phys_model);
   }
   G4VUserPhysicsList* physics = phys_seq->extensionList();
-  if (0 == physics) {
+  if (nullptr == physics) {
     throw runtime_error("Panic! No valid user physics list present!");
   }
 #if 0
@@ -605,10 +605,10 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
 
   /// Construct the remaining user initialization in multi-threaded mode
   Geant4UserInitializationSequence* user_init = kernel.userInitialization(false);
-  if ( 0 == user_init && kernel.isMultiThreaded() )   {
+  if ( nullptr == user_init && kernel.isMultiThreaded() )   {
     throw runtime_error("Panic! No valid user initialization sequencer present. [Mandatory MT]");
   }
-  else if ( 0 == user_init && !kernel.isMultiThreaded() )  {
+  else if ( nullptr == user_init && !kernel.isMultiThreaded() )  {
     /// Use default actions registered to the default kernel. Will do the right thing...
     user_init = kernel.userInitialization(true);
   }

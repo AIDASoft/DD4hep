@@ -92,6 +92,13 @@ static constexpr const char* GEANT4_TAG_ENE_PER_ION_PAIR = "MeanEnergyPerIonPair
 
 namespace {
   static string indent = "";
+
+  string make_NCName(const string& in)   {
+    string res = detail::str_replace(in, "/", "_");
+    res = detail::str_replace(res, "#", "_");
+    return res;
+  }
+
   bool is_left_handed(const TGeoMatrix* m)   {
     const Double_t* r = m->GetRotationMatrix();
     if ( r )    {
@@ -373,24 +380,24 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       TNamed*      named  = (TNamed*)obj;
       TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
       const char*  cptr   = ::strstr(matrix->GetName(), GEANT4_TAG_IGNORE);
-      if ( 0 != cptr )   {
+      if ( nullptr != cptr )   {
         printout(INFO,name,"++ Ignore property %s [%s]. Not Suitable for Geant4.",
                  matrix->GetName(), matrix->GetTitle());
         continue;
       }
       cptr = ::strstr(matrix->GetTitle(), GEANT4_TAG_IGNORE);
-      if ( 0 != cptr )   {
+      if ( nullptr != cptr )   {
         printout(INFO,name,"++ Ignore property %s [%s]. Not Suitable for Geant4.",
                  matrix->GetName(), matrix->GetTitle());
         continue;
       }
       Geant4GeometryInfo::PropertyVector* v =
         (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
-      if ( 0 == v )   {
+      if ( nullptr == v )   {
         except("Geant4Converter", "++ FAILED to create G4 material %s [Cannot convert property:%s]",
                material->GetName(), named->GetName());
       }
-      if ( 0 == tab )  {
+      if ( nullptr == tab )  {
         tab = new G4MaterialPropertiesTable();
         mat->SetMaterialPropertiesTable(tab);
       }
@@ -435,40 +442,40 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       TNamed*  named = (TNamed*)obj;
 
       const char*  cptr = ::strstr(named->GetName(), GEANT4_TAG_IGNORE);
-      if ( 0 != cptr )   {
+      if ( nullptr != cptr )   {
         printout(INFO, name, "++ Ignore CONST property %s [%s].",
                  named->GetName(), named->GetTitle());
         continue;
       }
       cptr = ::strstr(named->GetTitle(), GEANT4_TAG_IGNORE);
-      if ( 0 != cptr )   {
+      if ( nullptr != cptr )   {
         printout(INFO, name,"++ Ignore CONST property %s [%s].",
                  named->GetName(), named->GetTitle());
         continue;
       }
       cptr = ::strstr(named->GetName(), GEANT4_TAG_PLUGIN);
-      if ( 0 != cptr )   {
+      if ( nullptr != cptr )   {
         printout(INFO, name, "++ Ignore CONST property %s [%s]  --> Plugin.",
                  named->GetName(), named->GetTitle());
 	plugin_name = named->GetTitle();
         continue;
       }
       cptr = ::strstr(named->GetName(), GEANT4_TAG_BIRKSCONSTANT);
-      if ( 0 != cptr )   {
+      if ( nullptr != cptr )   {
 	err = kFALSE;
 	value = material->GetConstProperty(GEANT4_TAG_BIRKSCONSTANT,&err);
 	if ( err == kFALSE ) ionisation_birks_constant = value * (CLHEP::mm/CLHEP::MeV)/(units::mm/units::MeV);
         continue;
       }
       cptr = ::strstr(named->GetName(), GEANT4_TAG_MEE);
-      if ( 0 != cptr )   {
+      if ( nullptr != cptr )   {
 	err = kFALSE;
 	value = material->GetConstProperty(GEANT4_TAG_MEE,&err);
 	if ( err == kFALSE ) ionisation_mee = value * (CLHEP::MeV/units::MeV);
         continue;
       }
       cptr = ::strstr(named->GetName(), GEANT4_TAG_ENE_PER_ION_PAIR);
-      if ( 0 != cptr )   {
+      if ( nullptr != cptr )   {
 	err = kFALSE;
 	value = material->GetConstProperty(GEANT4_TAG_ENE_PER_ION_PAIR,&err);
 	if ( err == kFALSE ) ionisation_ene_per_ion_pair = value * (CLHEP::MeV/units::MeV);
@@ -482,7 +489,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
                "++ FAILED to create G4 material %s [Cannot convert const property: %s]",
                material->GetName(), named->GetName());
       }
-      if ( 0 == tab )  {
+      if ( nullptr == tab )  {
         tab = new G4MaterialPropertiesTable();
         mat->SetMaterialPropertiesTable(tab);
       }
@@ -884,7 +891,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
              "++ Attempt to handle placement without transformation:%p %s of type %s vol:%p",
              node, node->GetName(), node->IsA()->GetName(), vol);
     }
-    else if (0 == vol) {
+    else if (nullptr == vol) {
       except("Geant4Converter", "++ Unknown G4 volume:%p %s of type %s ptr:%p",
              node, node->GetName(), node->IsA()->GetName(), vol);
     }
@@ -1210,13 +1217,13 @@ void* Geant4Converter::handleMaterialProperties(TObject* mtx) const    {
   const char*         cptr   = ::strstr(matrix->GetName(), GEANT4_TAG_IGNORE);
   Geant4GeometryInfo::PropertyVector* g4 = info.g4OpticalProperties[matrix];
 
-  if ( 0 != cptr )   {  // Check if the property should not be passed to Geant4
+  if ( nullptr != cptr )   {  // Check if the property should not be passed to Geant4
     printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
              matrix->GetName(), matrix->GetTitle());	     
     return nullptr;
   }
   cptr = ::strstr(matrix->GetTitle(), GEANT4_TAG_IGNORE);
-  if ( 0 != cptr )   {  // Check if the property should not be passed to Geant4
+  if ( nullptr != cptr )   {  // Check if the property should not be passed to Geant4
     printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
              matrix->GetName(), matrix->GetTitle());
     return nullptr;
@@ -1341,7 +1348,8 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
     G4SurfaceType          type   = geant4_surface_type(optSurf->GetType());
     G4OpticalSurfaceModel  model  = geant4_surface_model(optSurf->GetModel());
     G4OpticalSurfaceFinish finish = geant4_surface_finish(optSurf->GetFinish());
-    g4 = new G4OpticalSurface(optSurf->GetName(), model, finish, type, optSurf->GetValue());
+    string name = make_NCName(optSurf->GetName());
+    g4 = new G4OpticalSurface(name, model, finish, type, optSurf->GetValue());
     g4->SetSigmaAlpha(optSurf->GetSigmaAlpha());
     // not implemented: g4->SetPolish(s->GetPolish());
     printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
@@ -1350,17 +1358,17 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
              TGeoOpticalSurface::TypeToString(optSurf->GetType()),
              TGeoOpticalSurface::ModelToString(optSurf->GetModel()),
              TGeoOpticalSurface::FinishToString(optSurf->GetFinish()));
-    G4MaterialPropertiesTable* tab = 0;
+    G4MaterialPropertiesTable* tab = nullptr;
     TListIter it(&optSurf->GetProperties());
     for(TObject* obj = it.Next(); obj; obj = it.Next())  {
       string exc_str;
       TNamed*      named  = (TNamed*)obj;
       TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
       const char*  cptr   = ::strstr(matrix->GetName(), GEANT4_TAG_IGNORE);
-      if ( 0 != cptr )  // Check if the property should not be passed to Geant4
+      if ( nullptr != cptr )  // Check if the property should not be passed to Geant4
         continue;
 
-      if ( 0 == tab )  {
+      if ( nullptr == tab )  {
         tab = new G4MaterialPropertiesTable();
         g4->SetMaterialPropertiesTable(tab);
       }
@@ -1417,7 +1425,8 @@ void* Geant4Converter::handleSkinSurface(TObject* surface) const   {
   if ( !g4 ) {
     G4OpticalSurface* optSurf  = info.g4OpticalSurfaces[OpticalSurface(surf->GetSurface())];
     G4LogicalVolume*  v = info.g4Volumes[surf->GetVolume()];
-    g4 = new G4LogicalSkinSurface(surf->GetName(), v, optSurf);
+    string name = make_NCName(surf->GetName());
+    g4 = new G4LogicalSkinSurface(name, v, optSurf);
     printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
              "++ Created SkinSurface: %-18s  optical:%s",
              surf->GetName(), surf->GetSurface()->GetName());
@@ -1435,7 +1444,8 @@ void* Geant4Converter::handleBorderSurface(TObject* surface) const   {
     G4OpticalSurface*  optSurf = info.g4OpticalSurfaces[OpticalSurface(surf->GetSurface())];
     G4VPhysicalVolume* n1 = info.g4Placements[surf->GetNode1()];
     G4VPhysicalVolume* n2 = info.g4Placements[surf->GetNode2()];
-    g4 = new G4LogicalBorderSurface(surf->GetName(), n1, n2, optSurf);
+    string name = make_NCName(surf->GetName());
+    g4 = new G4LogicalBorderSurface(name, n1, n2, optSurf);
     printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
              "++ Created BorderSurface: %-18s  optical:%s",
              surf->GetName(), surf->GetSurface()->GetName());
