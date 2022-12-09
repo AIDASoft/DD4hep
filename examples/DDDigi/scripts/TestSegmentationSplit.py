@@ -23,10 +23,12 @@ def run():
   import DigiTest
   digi = DigiTest.Test(geometry=None)
   digi.load_geo()
-  input = digi.input_action('DigiParallelActionSequence/READER')
+  input_action = digi.input_action('DigiParallelActionSequence/READER')
   # ========================================================================
   digi.info('Created SIGNAL input')
-  signal = input.adopt_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()])
+  signal = input_action.adopt_action('DigiDDG4ROOT/SignalReader',
+                                     mask=0x0,
+                                     input=[digi.next_input()])
   digi.check_creation([signal])
   # ========================================================================
   event = digi.event_action('DigiSequentialActionSequence/EventAction')

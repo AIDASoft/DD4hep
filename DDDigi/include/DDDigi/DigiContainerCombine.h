@@ -57,7 +57,15 @@ namespace dd4hep {
       /// Property: mask of the deposit
       int                            m_deposit_mask { 0 };
       /// Property: Flag to erase already combined containers (not thread-safe!!!)
-      bool                           m_erase_combined { false };
+      bool                           m_erase_combined;
+      /// Property: Flag to indicate to merge 
+      bool                           m_merge_deposits;
+      /// Property: Flag to indicate to merge 
+      bool                           m_merge_response;
+      /// Property: Flag to indicate to merge 
+      bool                           m_merge_history;
+      /// Property: Flag to indicate to merge 
+      bool                           m_merge_particles;
 
       /// Fully qualified keys of all containers to be manipulated
       std::set<Key::key_type>        m_keys  { };

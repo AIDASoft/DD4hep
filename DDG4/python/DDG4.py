@@ -127,7 +127,7 @@ def _registerGlobalAction(self, action):
   self.get().registerGlobalAction(Interface.toAction(action))
 
 
-def _registerGlobalFilter(self, filter):
+def _registerGlobalFilter(self, filter):  # noqa: A002
   self.get().registerGlobalFilter(Interface.toAction(filter))
 
 
@@ -667,29 +667,31 @@ class Geant4:
       return (seq, acts)
     return (seq, acts[0])
 
-  def setupCalorimeter(self, name, type=None, collections=None):
+  def setupCalorimeter(self, name, type=None, collections=None):  # noqa: A002
     """
     Setup subdetector of type 'calorimeter' and assign the proper sensitive action
 
     \author  M.Frank
     """
+    typ = type    # noqa: A002
     self.description.sensitiveDetector(str(name))
     # sd.setType('calorimeter')
-    if type is None:
-      type = self.sensitive_types['calorimeter']
-    return self.setupDetector(name, type, collections)
+    if typ is None:
+      typ = self.sensitive_types['calorimeter']
+    return self.setupDetector(name, typ, collections)
 
-  def setupTracker(self, name, type=None, collections=None):
+  def setupTracker(self, name, type=None, collections=None):  # noqa: A002
     """
     Setup subdetector of type 'tracker' and assign the proper sensitive action
 
     \author  M.Frank
     """
+    typ = type
     self.description.sensitiveDetector(str(name))
     # sd.setType('tracker')
-    if type is None:
-      type = self.sensitive_types['tracker']
-    return self.setupDetector(name, type, collections)
+    if typ is None:
+      typ = self.sensitive_types['tracker']
+    return self.setupDetector(name, typ, collections)
 
   def _private_setupField(self, field, stepper, equation, prt):
     import g4units

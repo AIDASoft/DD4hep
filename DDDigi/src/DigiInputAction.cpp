@@ -26,10 +26,10 @@ using namespace dd4hep::digi;
 DigiInputAction::DigiInputAction(const DigiKernel& kernel, const string& nam)
   : DigiEventAction(kernel, nam)
 {
-  declareProperty("input",         m_input_sources);
-  declareProperty("segment",       m_input_segment);
-  declareProperty("mask",          m_input_mask);
-  declareProperty("rescan_inputs", m_input_rescan);
+  declareProperty("input",   m_input_sources);
+  declareProperty("segment", m_input_segment);
+  declareProperty("mask",    m_input_mask);
+  declareProperty("rescan",  m_input_rescan);
   InstanceCount::increment(this);
 }
 

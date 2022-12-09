@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 """
 
 
-def help():
+def show_help():
   logging.info("SiDSim.py -option [-option]                           ")
   logging.info("       -vis   <file>            Enable visualization  ")
   logging.info("                                Macro file is optional")
@@ -45,8 +45,8 @@ def help():
 def run():
   args = DDG4.CommandLine()
   #
-  if args.help:
-    help()
+  if args.help or args.h:
+    show_help()
     sys.exit(1)
 
   kernel = DDG4.Kernel()

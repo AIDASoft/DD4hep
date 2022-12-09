@@ -15,10 +15,10 @@ def run():
   import DigiTest
   digi = DigiTest.Test(geometry=None)
 
-  input = digi.input_action('DigiParallelActionSequence/READER')
+  input_action = digi.input_action('DigiParallelActionSequence/READER')
   # ========================================================================================================
   digi.info('Created SIGNAL input')
-  signal = input.adopt_action('DigiSequentialActionSequence/Signal')
+  signal = input_action.adopt_action('DigiSequentialActionSequence/Signal')
   signal.adopt_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()])
   set_ip = signal.adopt_action('DigiIPCreate/SignalIP')
   set_ip.offset_ip = [1, 2, 3]

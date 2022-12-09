@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 """
 
 
-def help():
+def show_help():
   logging.info("Check_shape.py -option [-option]                           ")
   logging.info("       -vis                          Enable visualization  ")
   logging.info("       -batch                        Batch execution       ")
@@ -57,7 +57,7 @@ def run():
       hlp = True
 
   if hlp:
-    help()
+    show_help()
     sys.exit(1)
 
   kernel = DDG4.Kernel()

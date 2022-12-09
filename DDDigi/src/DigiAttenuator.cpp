@@ -48,6 +48,9 @@ DigiAttenuator::attenuate(T& cont, const predicate_t& predicate) const {
   for( auto& dep : cont )   {
     if ( predicate(dep) )   {
       dep.second.deposit *= m_factor;
+      auto& e = dep.second.history;
+      for( auto& h : e.hits ) h.weight *= m_factor;
+      for( auto& h : e.particles ) h.weight *= m_factor;
     }
   }
   return cont.size();
@@ -83,8 +86,6 @@ void DigiAttenuator::execute(DigiContext& context, work_t& work, const predicate
 DigiAttenuatorSequence::DigiAttenuatorSequence(const DigiKernel& krnl, const std::string& nam)
   : DigiContainerSequenceAction(krnl, nam)
 {
-  declareProperty("attenuate_history", m_attenuate_history);
-  declareProperty("attenuate_data",    m_attenuate_data);
   declareProperty("processor_type",    m_processor_type = "DigiAttenuator");
   declareProperty("containers",        m_container_attenuation);
   declareProperty("signal_decay",      m_signal_decay = "exponential");
@@ -115,30 +116,16 @@ void DigiAttenuatorSequence::initialize()   {
 	     m_signal_decay.c_str());
       break;
     }
-    // First bunch of processors: Attenuate the signal
-    if ( m_attenuate_data )    {
-      std::string nam = name() + ".D." + c.first;
-      auto* att = createAction<DigiAttenuator>(m_processor_type, m_kernel, nam);
-      if ( !att )   {
-	except("+++ Failed to create signal attenuator: %s of type: %s",
-	       nam.c_str(), m_processor_type.c_str());
-      }
-      att->property("factor").set(factor);
-      att->property("OutputLevel").set(int(outputLevel()));
-      adopt_processor(att, c.first);
+    // Attenuate the signal
+    std::string nam = name() + ".D." + c.first;
+    auto* att = createAction<DigiAttenuator>(m_processor_type, m_kernel, nam);
+    if ( !att )   {
+      except("+++ Failed to create signal attenuator: %s of type: %s",
+	     nam.c_str(), m_processor_type.c_str());
     }
-    // Second bunch of processors: Attenuate the history weights accordingly
-    if ( m_attenuate_history )    {
-      std::string nam = name() + ".H." + c.first;
-      auto* att = createAction<DigiAttenuator>(m_processor_type, m_kernel, nam);
-      if ( !att )   {
-	except("+++ Failed to create signal attenuator: %s of type: %s",
-	       nam.c_str(), m_processor_type.c_str());
-      }
-      att->property("factor").set(factor);
-      adopt_processor(att, c.first+".hist");
-      att->property("OutputLevel").set(int(outputLevel()));
-    }
+    att->property("factor").set(factor);
+    att->property("OutputLevel").set(int(outputLevel()));
+    adopt_processor(att, c.first);
   }
   this->DigiContainerSequenceAction::initialize();
 }

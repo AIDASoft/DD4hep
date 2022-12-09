@@ -47,6 +47,12 @@ class Test(dddigi.Digitize):
                    'MiniTel.run00000006.root',
                    'MiniTel.run00000007.root',
                    'MiniTel.run00000008.root']
+    if not os.path.exists(self.inputs[0]):
+      if os.path.exists('DDDigi'):
+        os.chdir('DDDigi')
+    if not os.path.exists(self.inputs[0]):
+      # This will cause: FileNotFoundError: [Errno 2] No such file or directory: 'xxxxx'
+      open(self.inputs[0])
 
   def segment_action(self, nam, **options):
     obj = dddigi.Interface.createSegmentAction(self.kernel(), str(nam))
@@ -90,7 +96,7 @@ class Test(dddigi.Digitize):
       if o is None:
         self.error('FAILED  Failed to create object')
 
-  def declare_input(self, name, input, parallel=True):
+  def declare_input(self, name, input, parallel=True):  # noqa: A002
     if not self.input:
       self.input = dddigi.Synchronize(self.kernel(), 'DigiParallelActionSequence/READER')
       self.input.parallel = True
@@ -98,10 +104,10 @@ class Test(dddigi.Digitize):
   def next_input(self):
     if len(self.used_inputs) == len(self.inputs):
       self.used_inputs = []
-    next = self.inputs[len(self.used_inputs)]
-    self.used_inputs.append(next)
-    self.info('Prepariing next input file: ' + str(next))
-    return next
+    next_source = self.inputs[len(self.used_inputs)]
+    self.used_inputs.append(next_source)
+    self.info('Prepariing next input file: ' + str(next_source))
+    return next_source
 
   def run_checked(self, num_events=5, num_threads=5, parallel=3):
     result = "FAILED"
@@ -122,7 +128,7 @@ def test_setup_1(digi, print_level=WARNING, parallel=True):
   """
   # ========================================================================================================
   digi.info('Created SIGNAL input')
-  input = digi.input_action('DigiParallelActionSequence/READER')
+  input = digi.input_action('DigiParallelActionSequence/READER')  # noqa: A001
   input.adopt_action('DigiDDG4ROOT/SignalReader',
                      mask=0xCBAA,
                      input=[digi.next_input()],

@@ -24,6 +24,7 @@
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
+
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
@@ -52,17 +53,21 @@ namespace dd4hep {
       {
 	declareProperty("resolution_u",               m_resolution_u);
 	declareProperty("resolution_v",               m_resolution_v);
+	m_kernel.register_initialize(std::bind(&DigiDepositSmearPositionTrack::initialize,this));
 	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositSmearPositionTrack::smear)
+      }
+
+      /// Processor initialization
+      void initialize()   {
       }
 
       /// Create deposit mapping with updates on same cellIDs
       template <typename T> void
-      smear(DigiContext& context, T& cont, work_t& work, const predicate_t& predicate)  const  {
+      smear(DigiContext& context, T& cont, work_t& /* work */, const predicate_t& predicate)  const  {
 	constexpr double eps = detail::numeric_epsilon;
 	auto& random = context.randomGenerator();
 	const auto& ev = *(context.event);
 	std::size_t updated = 0UL;
-	auto* h = work.get_history(cont.name);
 
 	VolumeManager volMgr = m_kernel.detectorDescription().volumeManager();
 	for( auto& dep : cont )    {
@@ -70,11 +75,7 @@ namespace dd4hep {
 	    CellID cell = dep.first;
 	    EnergyDeposit& depo = dep.second;
 	    auto*     ctxt = volMgr.lookupContext(cell);
-#ifdef DDDIGI_INPLACE_HISTORY
 	    Direction part_momentum = depo.history.average_particle_momentum(ev);
-#else
-	    Direction part_momentum = depo.momentum;
-#endif
 	    Position  local_pos = ctxt->worldToLocal(depo.position);
 	    Position  local_dir = ctxt->worldToLocal(part_momentum).unit();
 	    double    cos_u   = local_dir.Dot(Position(1,0,0));

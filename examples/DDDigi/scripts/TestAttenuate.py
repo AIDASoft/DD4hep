@@ -17,9 +17,9 @@ def run():
   digi = DigiTest.Test(geometry=None)
   attenuation = digi.attenuation
 
-  input = digi.input_action('DigiParallelActionSequence/READER')
+  in_seq = digi.input_action('DigiParallelActionSequence/READER')
   # ========================================================================================================
-  spillover = input.adopt_action('DigiSequentialActionSequence/Spillover-25')
+  spillover = in_seq.adopt_action('DigiSequentialActionSequence/Spillover-25')
   evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader-25ns', mask=0x1, input=[digi.next_input()], keep_raw=False)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att-25ns',
                                      t0=-25 * ns,

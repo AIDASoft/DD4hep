@@ -84,15 +84,37 @@ public:
   /// Specialized deposit merger: implicitly assume identical item types are mapped sequentially
   template<typename OUT, typename IN> void merge_depos(OUT& output, IN& input, int thr)  {
     std::size_t cnt = 0;
-    std::string nam = input.name;
-    auto mask = input.key.mask();
-    if ( combine->m_erase_combined )
+    const auto& nam = input.name;
+    Key::mask_type mask = input.key.mask();
+
+    if ( combine->m_erase_combined )   {
       cnt = output.merge(std::move(input));
-    else
+    }
+    else   {
       cnt = output.insert(input);
+    }
     combine->info(this->format, thr, nam.c_str(), mask, cnt, "deposits"); 
     this->cnt_depos += cnt;
     this->cnt_conts++;
+  }
+
+  /// Generic deposit merger: implicitly assume identical item types are mapped sequentially
+  void merge(const std::string& nam, size_t start, int thr)  {
+    Key key = keys[start];
+    DepositVector out(nam, combine->m_deposit_mask);
+    for( std::size_t j = start; j < keys.size(); ++j )   {
+      if ( keys[j].item() == key.item() )   {
+	if ( DepositMapping* m = std::any_cast<DepositMapping>(work[j]) )
+	  merge_depos(out, *m, thr);
+	else if ( DepositVector* v = std::any_cast<DepositVector>(work[j]) )
+	  merge_depos(out, *v, thr);
+	else
+	  break;
+	used_keys_insert(keys[j]);
+      }
+    }
+    key.set_mask(combine->m_deposit_mask);
+    outputs.emplace(key, std::move(out));
   }
 
   /// Merge history records: implicitly assume identical item types are mapped sequentially
@@ -116,6 +138,7 @@ public:
     key.set_mask(combine->m_deposit_mask);
     outputs.emplace(key, std::move(out));
   }
+
   /// Merge detector rsponse records: implicitly assume identical item types are mapped sequentially
   void merge_response(const std::string& nam, size_t start, int thr)  {
     std::size_t cnt;
@@ -137,6 +160,7 @@ public:
     key.set_mask(combine->m_deposit_mask);
     outputs.emplace(key, std::move(out));
   }
+
   /// Merge particle objects: implicitly assume identical item types are mapped sequentially
   void merge_parts(const std::string& nam, size_t start, int thr)  {
     std::size_t cnt;
@@ -156,24 +180,7 @@ public:
     key.set_mask(combine->m_deposit_mask);
     outputs.emplace(key, std::move(out));
   }
-  /// Generic deposit merger: implicitly assume identical item types are mapped sequentially
-  void merge(const std::string& nam, size_t start, int thr)  {
-    Key key = keys[start];
-    DepositVector out(nam, combine->m_deposit_mask);
-    for( std::size_t j = start; j < keys.size(); ++j )   {
-      if ( keys[j].item() == key.item() )   {
-	if ( DepositMapping* m = std::any_cast<DepositMapping>(work[j]) )
-	  merge_depos(out, *m, thr);
-	else if ( DepositVector* v = std::any_cast<DepositVector>(work[j]) )
-	  merge_depos(out, *v, thr);
-	else
-	  break;
-	used_keys_insert(keys[j]);
-      }
-    }
-    key.set_mask(combine->m_deposit_mask);
-    outputs.emplace(key, std::move(out));
-  }
+
   /// Merge single item type
   void merge_one(Key::itemkey_type itm, int thr)   {
     const std::string& opt = combine->m_output_name_flag;
@@ -182,23 +189,23 @@ public:
 	continue;
       /// Merge deposit mapping
       if ( DepositMapping* depom = std::any_cast<DepositMapping>(work[i]) )   {
-	merge(depom->name+opt, i, thr);
+	if ( combine->m_merge_deposits  ) merge(depom->name+opt, i, thr);
       }
       /// Merge deposit vector
       else if ( DepositVector* depov = std::any_cast<DepositVector>(work[i]) )   {
-	merge(depov->name+opt, i, thr);
+	if ( combine->m_merge_deposits  ) merge(depov->name+opt, i, thr);
       }
       /// Merge detector response
       else if ( DetectorResponse* resp = std::any_cast<DetectorResponse>(work[i]) )   {
-	merge_response(resp->name+opt, i, thr);
+	if ( combine->m_merge_response  ) merge_response(resp->name+opt, i, thr);
       }
       /// Merge response history
       else if ( DetectorHistory* hist = std::any_cast<DetectorHistory>(work[i]) )   {
-	merge_hist(hist->name+opt, i, thr);
+	if ( combine->m_merge_history   ) merge_hist(hist->name+opt, i, thr);
       }
       /// Merge particle container
       else if ( ParticleMapping* parts = std::any_cast<ParticleMapping>(work[i]) )   {
-	merge_parts(parts->name+opt, i, thr);
+	if ( combine->m_merge_particles ) merge_parts(parts->name+opt, i, thr);
       }
       break;
     }
@@ -234,7 +241,11 @@ DigiContainerCombine::DigiContainerCombine(const DigiKernel& krnl, const std::st
   declareProperty("output_segment",   m_output = "deposits");
   declareProperty("output_mask",      m_deposit_mask);
   declareProperty("output_name_flag", m_output_name_flag);
-  declareProperty("erase_combined",   m_erase_combined);
+  declareProperty("erase_combined",   m_erase_combined  = false);
+  declareProperty("merge_deposits",   m_merge_deposits  = true);
+  declareProperty("merge_response",   m_merge_response  = true);
+  declareProperty("merge_history",    m_merge_history   = true);
+  declareProperty("merge_particles",  m_merge_particles = false);
   m_kernel.register_initialize(std::bind(&DigiContainerCombine::initialize,this));
   InstanceCount::increment(this);
 }

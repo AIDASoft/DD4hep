@@ -54,11 +54,11 @@ class Setup:
     return self.geant4.setupGun(name, particle=particle, energy=energy, multiplicity=multiplicity)
 
   def setupInput(self, spec, mask=1):
-    input = DDG4.GeneratorAction(self.kernel, "Geant4InputAction/Input")
-    input.Input = spec
-    input.MomentumScale = 1.0
-    input.Mask = mask
-    self.geant4.buildInputStage([input])
+    input_action = DDG4.GeneratorAction(self.kernel, "Geant4InputAction/Input")
+    input_action.Input = spec
+    input_action.MomentumScale = 1.0
+    input_action.Mask = mask
+    self.geant4.buildInputStage([input_action])
 
   def setupGenerator(self):
     # And handle the simulation particles.
