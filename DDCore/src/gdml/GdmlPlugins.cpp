@@ -181,10 +181,10 @@ static long gdml_extract(Detector& description, int argc, char** argv) {
       if ( de.isValid() )   {
         TGDMLWrite extract;
         TUri uri(output.c_str());
-        extract.SetFltPrecision(precision);
-#if   ROOT_VERSION_CODE >= ROOT_VERSION(6,27,1)
-        extract.SetIgnoreDummyMaterial(true);
         extract.SetNamingSpeed(TGDMLWrite::kfastButUglySufix);
+#if   ROOT_VERSION_CODE >= ROOT_VERSION(6,27,1)
+        extract.SetFltPrecision(precision);
+        extract.SetIgnoreDummyMaterial(true);
         extract.WriteGDMLfile(&description.manager(), de.placement().ptr(), uri.GetRelativePart());
 #elif ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
         extract.WriteGDMLfile(&description.manager(), de.placement().ptr(), uri.GetRelativePart());
@@ -234,10 +234,10 @@ static long gdml_extract(Detector& description, int argc, char** argv) {
       if ( a._node )    {
         TGDMLWrite extract;
         TUri uri(output.c_str());
-        extract.SetFltPrecision(precision);
-#if   ROOT_VERSION_CODE >= ROOT_VERSION(6,27,1)
-        extract.SetIgnoreDummyMaterial(true);
         extract.SetNamingSpeed(TGDMLWrite::kfastButUglySufix);
+#if   ROOT_VERSION_CODE >= ROOT_VERSION(6,27,1)
+        extract.SetFltPrecision(precision);
+        extract.SetIgnoreDummyMaterial(true);
         extract.WriteGDMLfile(&description.manager(), a._node, uri.GetRelativePart());
 #elif ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
         extract.WriteGDMLfile(&description.manager(), a._node, uri.GetRelativePart());
