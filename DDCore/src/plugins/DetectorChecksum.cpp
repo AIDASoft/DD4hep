@@ -1049,10 +1049,10 @@ void DetectorChecksum::checksumDetElement(int lvl, DetElement det, hashes_t& has
     /// Note: We only take into account the placements to the next DetElement (if any)
     /// On the fly we remember all placements already taken into account!
     std::size_t hash_idx_daughters = hashes.size();
-    for( auto pv : child_places )   {
+    for( const auto& pv : child_places )   {
       auto chain = _get_path(pv, child_places);
       for( std::size_t i=0; i < chain.size()-1; ++i )   {
-	checksumPlacement(det_pv, hashes, false);
+	checksumPlacement(chain[i], hashes, false);
 	hashed_places.insert(chain[i]);
       }
       if ( !chain.empty() ) hashed_places.insert(chain[chain.size()-1]);
