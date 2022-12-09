@@ -182,7 +182,7 @@ static long gdml_extract(Detector& description, int argc, char** argv) {
         TGDMLWrite extract;
         TUri uri(output.c_str());
         extract.SetNamingSpeed(TGDMLWrite::kfastButUglySufix);
-#if   ROOT_VERSION_CODE >= ROOT_VERSION(6,27,1)
+#if   ROOT_VERSION_CODE > ROOT_VERSION(6,27,1)
         extract.SetFltPrecision(precision);
         extract.SetIgnoreDummyMaterial(true);
         extract.WriteGDMLfile(&description.manager(), de.placement().ptr(), uri.GetRelativePart());
@@ -235,7 +235,7 @@ static long gdml_extract(Detector& description, int argc, char** argv) {
         TGDMLWrite extract;
         TUri uri(output.c_str());
         extract.SetNamingSpeed(TGDMLWrite::kfastButUglySufix);
-#if   ROOT_VERSION_CODE >= ROOT_VERSION(6,27,1)
+#if   ROOT_VERSION_CODE > ROOT_VERSION(6,27,1)
         extract.SetFltPrecision(precision);
         extract.SetIgnoreDummyMaterial(true);
         extract.WriteGDMLfile(&description.manager(), a._node, uri.GetRelativePart());
