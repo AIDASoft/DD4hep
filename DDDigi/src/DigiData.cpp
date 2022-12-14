@@ -121,15 +121,15 @@ const Particle& History::hist_entry_t::get_particle(const DigiEvent& event)  con
   static Key item_key("MCParticles",0x0);
   Key key(this->source);
   const auto& segment = event.get_segment(this->source.segment());
-  const auto& particles = segment.get<ParticleMapping>(key.set_item(item_key.item()));
-  return particles.get(this->source);
+  const auto& particle_data = segment.get<ParticleMapping>(key.set_item(item_key.item()));
+  return particle_data.get(this->source);
 }
 
 const EnergyDeposit& History::hist_entry_t::get_deposit(const DigiEvent& event, Key::itemkey_type container_item)  const {
   Key key(this->source);
   const auto& segment = event.get_segment(this->source.segment());
-  const auto& hits = segment.get<DepositVector>(key.set_item(container_item));
-  return hits.at(this->source.item());
+  const auto& hit_data = segment.get<DepositVector>(key.set_item(container_item));
+  return hit_data.at(this->source.item());
 }
 
 /// Retrieve the weighted momentum of all contributing particles
@@ -337,7 +337,7 @@ void ParticleMapping::insert(Key particle_key, const Particle& particle_data)  {
 
 /// Insert new entry
 void ParticleMapping::emplace(Key particle_key, Particle&& particle_data)  {
-  data.emplace(particle_key, std::move(particle_data)).second;
+  data.emplace(particle_key, std::move(particle_data));
 }
 
 /// Access particle by key
