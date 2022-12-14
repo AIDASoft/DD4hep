@@ -97,6 +97,11 @@ namespace dd4hep {
     /// Dump DOM tree of a document
     void dumpTree(XmlDocument* doc);
 
+    /// Change floating point precision on conversion to string
+    int set_float_precision(int precision);
+    /// Access floating point precision on conversion to string
+    int get_float_precision();
+
     /// Convert xml attribute to STL string  \ingroup DD4HEP_XML
     std::string _toString(const Attribute attr);
     /// Convert xml string to STL string  \ingroup DD4HEP_XML

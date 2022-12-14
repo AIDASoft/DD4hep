@@ -37,6 +37,7 @@
 using namespace std;
 using namespace dd4hep::xml;
 static const size_t INVALID_NODE = ~0U;
+static int          s_float_precision = -1;
 
 // Forward declarations
 namespace dd4hep {
@@ -218,6 +219,19 @@ namespace {
 #endif
 }
 
+/// Change floating point precision on conversion to string
+int dd4hep::xml::set_float_precision(int precision)    {
+  int tmp = s_float_precision;
+  s_float_precision = precision;
+  return tmp;
+}
+
+/// Access floating point precision on conversion to string
+int dd4hep::xml::get_float_precision()    {
+  return s_float_precision;
+}
+
+/// Convert attribute value to string
 string dd4hep::xml::_toString(Attribute attr) {
   if (attr)
     return _toString(attribute_value(attr));
@@ -266,11 +280,21 @@ string dd4hep::xml::_toString(long v, const char* fmt)   {
 
 /// Format single procision float number (32 bits) to string with arbitrary format
 string dd4hep::xml::_toString(float v, const char* fmt) {
+  if ( s_float_precision >= 0 )   {
+    char format[32];
+    ::snprintf(format, sizeof(format), "%%.%de", s_float_precision);
+    return __to_string(v, format);
+  }
   return __to_string(v, fmt);
 }
 
 /// Format double procision float number (64 bits) to string with arbitrary format
 string dd4hep::xml::_toString(double v, const char* fmt) {
+  if ( s_float_precision >= 0 )   {
+    char format[32];
+    ::snprintf(format, sizeof(format), "%%.%de", s_float_precision);
+    return __to_string(v, format);
+  }
   return __to_string(v, fmt);
 }
 
@@ -278,6 +302,7 @@ string dd4hep::xml::_toString(double v, const char* fmt) {
 string dd4hep::xml::_toString(const Strng_t& s)   {
   return _toString(Tag_t(s));
 }
+
 /// Convert Tag_t to std::string
 string dd4hep::xml::_toString(const Tag_t& s)     {
   return s.str();
