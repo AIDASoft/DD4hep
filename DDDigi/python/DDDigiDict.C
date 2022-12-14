@@ -197,6 +197,10 @@ namespace dd4hep {
 
 ///---- Digi data item wrappers
 //#pragma link C++ class dd4hep::digi::Key;
+#pragma link C++ class std::pair<dd4hep::digi::Key::key_type, dd4hep::digi::Particle>+;
+#pragma link C++ class std::map<dd4hep::digi::Key::key_type, dd4hep::digi::Particle>+;
+#pragma link C++ class std::vector<std::pair<dd4hep::digi::Key::key_type, dd4hep::digi::Particle> >+;
+
 #pragma link C++ class std::pair<dd4hep::digi::Key, dd4hep::digi::Particle>;
 #pragma link C++ class std::map<dd4hep::digi::Key, dd4hep::digi::Particle>;
 #pragma link C++ class std::vector<std::pair<dd4hep::digi::Key, dd4hep::digi::Particle> >;
@@ -205,9 +209,10 @@ namespace dd4hep {
 #pragma link C++ class std::map<dd4hep::CellID, dd4hep::digi::EnergyDeposit>+;
 #pragma link C++ class std::vector<std::pair<dd4hep::CellID, dd4hep::digi::EnergyDeposit> >+;
 
+#pragma link C++ class dd4hep::digi::History+;
 #pragma link C++ class dd4hep::digi::Particle+;
 #pragma link C++ class dd4hep::digi::EnergyDeposit+;
-#pragma link C++ class dd4hep::digi::ParticleMapping;
+#pragma link C++ class dd4hep::digi::ParticleMapping+;
 #pragma link C++ class dd4hep::digi::DepositMapping+;
 #pragma link C++ class dd4hep::digi::DepositVector+;
 #pragma link C++ class dd4hep::digi::DigiEvent;

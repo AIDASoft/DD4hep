@@ -72,9 +72,9 @@ template <> std::string DigiStoreDump::data_header(Key key, const std::string& t
 
 template <> std::vector<std::string>
 DigiStoreDump::dump_history(DigiContext& context, 
-			    Key key,
-			    const std::pair<const Key, Particle>& data,
-			    std::size_t seq_no)  const
+                            Key key,
+                            const std::pair<const ParticleMapping::key_type, Particle>& data,
+                            std::size_t seq_no)  const
 {
   std::stringstream str;
   auto& ev = *(context.event);
@@ -102,9 +102,9 @@ DigiStoreDump::dump_history(DigiContext& context,
 
 template <> std::vector<std::string> 
 DigiStoreDump::dump_history(DigiContext& context,
-			    Key container_key,
-			    const std::pair<const CellID, EnergyDeposit>& data,
-			    std::size_t seq_no)  const
+                            Key container_key,
+                            const std::pair<const DepositMapping::key_type, EnergyDeposit>& data,
+                            std::size_t seq_no)  const
 {
   std::string line;
   std::stringstream str;
