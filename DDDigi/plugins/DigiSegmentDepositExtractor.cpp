@@ -35,27 +35,27 @@ namespace dd4hep {
     public:
       /// Standard constructor
       DigiSegmentDepositExtractor(const DigiKernel& kernel, const std::string& nam)
-	: DigiContainerProcessor(kernel, nam) {}
+        : DigiContainerProcessor(kernel, nam) {}
 
       template <typename T> void copy_deposits(const T& cont, work_t& work, const predicate_t& predicate)  const  {
-	DepositVector deposits(cont.name, work.environ.output.mask);
-	for( const auto& dep : cont )   {
-	  if( predicate(dep) )   {
-	    CellID        cell = dep.first;
-	    EnergyDeposit depo = dep.second;
-	    deposits.data.emplace_back(cell, std::move(depo));
-	  }
-	}
+        DepositVector deposits(cont.name, work.environ.output.mask);
+        for( const auto& dep : cont )   {
+          if( predicate(dep) )   {
+            CellID        cell = dep.first;
+            EnergyDeposit depo = dep.second;
+            deposits.emplace(cell, std::move(depo));
+          }
+        }
         work.environ.output.data.put(deposits.key, std::move(deposits));
       }
       /// Main functional callback
       virtual void execute(DigiContext&, work_t& work, const predicate_t& predicate)  const override final  {
-	if ( const auto* m = work.get_input<DepositMapping>() )
-	  copy_deposits(*m, work, predicate);
-	else if ( const auto* v = work.get_input<DepositVector>() )
-	  copy_deposits(*v, work, predicate);
-	else
-	  except("Request to handle unknown data type: %s", work.input_type_name().c_str());
+        if ( const auto* m = work.get_input<DepositMapping>() )
+          copy_deposits(*m, work, predicate);
+        else if ( const auto* v = work.get_input<DepositVector>() )
+          copy_deposits(*v, work, predicate);
+        else
+          except("Request to handle unknown data type: %s", work.input_type_name().c_str());
       }
     };
   }    // End namespace digi

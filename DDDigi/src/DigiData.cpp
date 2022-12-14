@@ -120,16 +120,16 @@ std::pair<std::size_t,std::size_t> History::drop()   {
 const Particle& History::hist_entry_t::get_particle(const DigiEvent& event)  const  {
   static Key item_key("MCParticles",0x0);
   Key key(this->source);
-  const auto& segment = event.get_segment(this->source.segment());
+  const auto& segment = event.get_segment(Key(this->source).segment());
   const auto& particle_data = segment.get<ParticleMapping>(key.set_item(item_key.item()));
   return particle_data.get(this->source);
 }
 
 const EnergyDeposit& History::hist_entry_t::get_deposit(const DigiEvent& event, Key::itemkey_type container_item)  const {
   Key key(this->source);
-  const auto& segment = event.get_segment(this->source.segment());
+  const auto& segment = event.get_segment(Key(this->source).segment());
   const auto& hit_data = segment.get<DepositVector>(key.set_item(container_item));
-  return hit_data.at(this->source.item());
+  return hit_data.at(Key(this->source).item());
 }
 
 /// Retrieve the weighted momentum of all contributing particles
@@ -305,7 +305,7 @@ void DepositMapping::remove(iterator position)   {
 std::size_t ParticleMapping::insert(const ParticleMapping& updates)    {
   std::size_t update_size = updates.size();
   for( const ParticleMapping::value_type& c : updates )
-    this->insert(Key(c.first), c.second);
+    this->insert(c.first, c.second);
   return update_size;
 }
 

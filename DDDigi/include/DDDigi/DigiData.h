@@ -66,11 +66,11 @@ namespace dd4hep {
       key_type key;
       /// Second union entry to use for discrimination
       struct {
-	// Ordering is important here: 
-	// We want to group the containers by item ie. by container name
-	// and not by mask
-	segment_type segment;
-	submask_type submask;
+        // Ordering is important here: 
+        // We want to group the containers by item ie. by container name
+        // and not by mask
+        segment_type segment;
+        submask_type submask;
         mask_type    mask;
         itemkey_type item;
       } values;
@@ -82,7 +82,7 @@ namespace dd4hep {
       /// Copy constructor
       Key(const Key&);
       /// Initializaing constructor (fast)
-      Key(key_type full_mask) = delete;
+      Key(key_type full_mask);
       /// Initializing constructor with key generation using hash algorithm
       explicit Key(const char* item, mask_type mask);
       /// Initializing constructor with key generation using hash algorithm
@@ -125,6 +125,10 @@ namespace dd4hep {
       /// Access key as long integer
       key_type value()  const;
 
+      operator key_type()  const  {
+        return this->key;
+      }
+      
       /// Project the mask part of the key
       static itemkey_type item(Key k);
       /// Project the item part of the key
@@ -151,6 +155,12 @@ namespace dd4hep {
     inline Key::Key(const Key& copy)   {
       this->key = copy.key;
     }
+
+    /// Initializaing constructor (fast)
+    inline Key::Key(key_type full_mask)   {
+      this->key = full_mask;
+    }
+      
     /// Initializaing constructor with key generation using hash algorithm
     inline Key::Key(const char* item, mask_type mask)  {
       this->set(item, mask);
@@ -334,13 +344,14 @@ namespace dd4hep {
      *  \ingroup DD4HEP_DIGITIZATION
      */
     class ParticleMapping : public SegmentEntry   {
-      using container_t    = std::map<Key, Particle>;
+    public:
+      using container_t    = std::map<Key::key_type, Particle>;
       using value_type     = container_t::value_type;
       using mapped_type    = container_t::mapped_type;
       using key_type       = container_t::key_type;
       using iterator       = container_t::iterator;
       using const_iterator = container_t::const_iterator;
-
+    protected:
       container_t data;
 
     public: 
@@ -406,17 +417,17 @@ namespace dd4hep {
     class History   {
     public:
       struct hist_entry_t   {
-	Key    source { };
-	double weight { 0e0 };
-	hist_entry_t(Key s, double w);
-	hist_entry_t() = default;
-	hist_entry_t(hist_entry_t&& copy) = default;
-	hist_entry_t(const hist_entry_t& copy) = default;
-	hist_entry_t& operator=(hist_entry_t&& copy) = default;
-	hist_entry_t& operator=(const hist_entry_t& copy) = default;
-	~hist_entry_t() = default;
-	const Particle& get_particle(const DigiEvent& event)  const;
-	const EnergyDeposit& get_deposit(const DigiEvent& event, Key::itemkey_type container_item)  const;
+        Key::key_type source { };
+        double weight { 0e0 };
+        hist_entry_t(Key s, double w);
+        hist_entry_t() = default;
+        hist_entry_t(hist_entry_t&& copy) = default;
+        hist_entry_t(const hist_entry_t& copy) = default;
+        hist_entry_t& operator=(hist_entry_t&& copy) = default;
+        hist_entry_t& operator=(const hist_entry_t& copy) = default;
+        ~hist_entry_t() = default;
+        const Particle& get_particle(const DigiEvent& event)  const;
+        const EnergyDeposit& get_deposit(const DigiEvent& event, Key::itemkey_type container_item)  const;
       };
       /// Sources contributing to the deposit indexed by the cell identifier
       std::vector<hist_entry_t> hits;
@@ -443,11 +454,11 @@ namespace dd4hep {
 
       /// Number of hits contributing to history entry
       std::size_t num_hits()   const   {
-	return hits.size();
+        return hits.size();
       }
       /// Number of particles contributing to history entry
       std::size_t num_particles()   const   {
-	return particles.size();
+        return particles.size();
       }
       /// Retrieve the weighted momentum of all contributing particles
       Direction average_particle_momentum(const DigiEvent& event)  const;
@@ -467,12 +478,12 @@ namespace dd4hep {
     class EnergyDeposit   {
     public:
       enum { 
-	KILLED             = 1 << 0,
-	ENERGY_SMEARED     = 1 << 1,
-	POSITION_SMEARED   = 1 << 2,
-	TIME_SMEARED       = 1 << 3,
-	ZERO_SUPPRESSED    = 1 << 4,
-	DEPOSIT_NOISE      = 1 << 5,
+        KILLED             = 1 << 0,
+        ENERGY_SMEARED     = 1 << 1,
+        POSITION_SMEARED   = 1 << 2,
+        TIME_SMEARED       = 1 << 3,
+        ZERO_SUPPRESSED    = 1 << 4,
+        DEPOSIT_NOISE      = 1 << 5,
         RECALIBRATED       = 1 << 6
       };
 
@@ -523,9 +534,13 @@ namespace dd4hep {
     class DepositVector : public SegmentEntry  {
     public: 
       using container_t    = std::vector<std::pair<const CellID, EnergyDeposit> >;
+      using value_type     = container_t::value_type;
+      using mapped_type    = container_t::value_type::second_type;
+      using key_type       = container_t::value_type::first_type;
       using iterator       = container_t::iterator;
       using const_iterator = container_t::const_iterator;
 
+    protected:
       container_t    data { };
 
     public: 
@@ -601,6 +616,9 @@ namespace dd4hep {
     class DepositMapping : public SegmentEntry  {
     public: 
       using container_t    = std::multimap<CellID, EnergyDeposit>;
+      using value_type     = container_t::value_type;
+      using mapped_type    = container_t::mapped_type;
+      using key_type       = container_t::key_type;
       using iterator       = container_t::iterator;
       using const_iterator = container_t::const_iterator;
 
@@ -860,10 +878,10 @@ namespace dd4hep {
       bool emplace_any(Key key, std::any&& data);
 
       template <typename T>
-	bool emplace(Key key, T&& data_item)   {
-	key.set_segment(this->id);
-	data_item.key.set_segment(this->id);
-	return this->emplace_any(key, std::move(data_item));
+      bool emplace(Key key, T&& data_item)   {
+        key.set_segment(this->id);
+        data_item.key.set_segment(this->id);
+        return this->emplace_any(key, std::move(data_item));
       }
 
       /// Move data items other than std::any to the data segment
@@ -912,26 +930,26 @@ namespace dd4hep {
     /// Access data as reference by key. If not existing, an exception is thrown
     template<typename T> inline T& DataSegment::get(Key key)     {
       if ( T* ptr = std::any_cast<T>(this->get_item(key, true)) )
-	return *ptr;
+        return *ptr;
       throw std::runtime_error(this->invalid_cast(key, typeid(T)));
     }
     /// Access data as reference by key. If not existing, an exception is thrown
     template<typename T> inline const T& DataSegment::get(Key key)  const   {
       if ( const T* ptr = std::any_cast<T>(this->get_item(key, true)) )
-	return *ptr;
+        return *ptr;
       throw std::runtime_error(this->invalid_cast(key, typeid(T)));
     }
 
     /// Access data as pointers by key. If not existing, nullptr is returned
     template<typename T> inline T* DataSegment::pointer(Key key)     {
       if ( T* ptr = std::any_cast<T>(this->get_item(key, false)) )
-	return ptr;
+        return ptr;
       return nullptr;
     }
     /// Access data as pointers by key. If not existing, nullptr is returned
     template<typename T> inline const T* DataSegment::pointer(Key key)  const   {
       if ( const T* ptr = std::any_cast<T>(this->get_item(key, false)) )
-	return ptr;
+        return ptr;
       return nullptr;
     }
 
