@@ -89,7 +89,7 @@ std::stringstream DetectorChecksum::logger()   const    {
 }
 
 DetectorChecksum::entry_t DetectorChecksum::make_entry(std::stringstream& log)   const {
-  std::string data(std::move(log.str()));
+  std::string data(log.str());
   hash_t hash_value = hash64(data.c_str(), data.length());
   return { hash_value, std::move(data) };
 }
@@ -1176,9 +1176,9 @@ void DetectorChecksum::dump_elements()   const   {
 void DetectorChecksum::dump_materials()   const   {
   const auto& geo = data().mapOfMaterials;
   for(const auto& e : geo)   {
-    Material m = e.first;
+    Material material = e.first;
     printout(ALWAYS, "DetectorChecksum", "+++ Material  %-32s    0x%016lx%s",
-	     m.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
+	     material.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
   }
 }
 
@@ -1186,9 +1186,9 @@ void DetectorChecksum::dump_materials()   const   {
 void DetectorChecksum::dump_solids()   const   {
   const auto& geo = data().mapOfSolids;
   for(const auto& e : geo)   {
-    Solid s = e.first;
+    Solid solid = e.first;
     printout(ALWAYS, "DetectorChecksum", "+++ Solid     %-32s    0x%016lx%s",
-	     s.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
+	     solid.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
   }
 }
 
@@ -1196,9 +1196,9 @@ void DetectorChecksum::dump_solids()   const   {
 void DetectorChecksum::dump_volumes()   const   {
   const auto& geo = data().mapOfVolumes;
   for(const auto& e : geo)   {
-    Volume v = e.first;
+    Volume volume = e.first;
     printout(ALWAYS, "DetectorChecksum", "+++ Volume    %-32s    0x%016lx%s",
-	     v.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
+	     volume.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
   }
 }
 
@@ -1251,9 +1251,9 @@ void DetectorChecksum::dump_iddescriptors()   const   {
 void DetectorChecksum::dump_segmentations()   const   {
   const auto& geo = data().mapOfSegmentations;
   for(const auto& e : geo)   {
-    Segmentation s = e.first;
+    Segmentation segmentation = e.first;
     printout(ALWAYS, "DetectorChecksum", "+++ Segment   %-32s    0x%016lx%s",
-	     s.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
+	     segmentation.name(), e.second.hash, debug > 2 ? ("\n"+e.second.data).c_str() : "");
   }
 }
 

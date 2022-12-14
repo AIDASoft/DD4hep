@@ -122,10 +122,10 @@ void DigiContainerProcessor::execute(context_t&         /* context   */,
 
 /// Main functional callback adapter
 void DigiDepositsProcessor::execute(context_t& context, work_t& work, const predicate_t& predicate)  const   {
-  if ( auto* v = work.get_input<DepositVector>() )
-    m_handleVector(context,  *v, work, predicate);
-  else if ( auto* m = work.get_input<DepositMapping>() )
-    m_handleMapping(context, *m, work, predicate);
+  if ( auto* vector_data = work.get_input<DepositVector>() )
+    m_handleVector(context,  *vector_data, work, predicate);
+  else if ( auto* mapped_data = work.get_input<DepositMapping>() )
+    m_handleMapping(context, *mapped_data, work, predicate);
   else
     except("Request to handle unknown data type: %s", work.input_type_name().c_str());
 }

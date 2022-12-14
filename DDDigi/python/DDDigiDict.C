@@ -192,11 +192,27 @@ namespace dd4hep {
 #pragma link off all classes;
 #pragma link off all functions;
 
-using namespace std;
-
 #pragma link C++ namespace dd4hep;
 #pragma link C++ namespace dd4hep::digi;
 
+///---- Digi data item wrappers
+//#pragma link C++ class dd4hep::digi::Key;
+#pragma link C++ class std::pair<dd4hep::digi::Key, dd4hep::digi::Particle>;
+#pragma link C++ class std::map<dd4hep::digi::Key, dd4hep::digi::Particle>;
+#pragma link C++ class std::vector<std::pair<dd4hep::digi::Key, dd4hep::digi::Particle> >;
+
+#pragma link C++ class std::pair<dd4hep::CellID, dd4hep::digi::EnergyDeposit>+;
+#pragma link C++ class std::map<dd4hep::CellID, dd4hep::digi::EnergyDeposit>+;
+#pragma link C++ class std::vector<std::pair<dd4hep::CellID, dd4hep::digi::EnergyDeposit> >+;
+
+#pragma link C++ class dd4hep::digi::Particle+;
+#pragma link C++ class dd4hep::digi::EnergyDeposit+;
+#pragma link C++ class dd4hep::digi::ParticleMapping;
+#pragma link C++ class dd4hep::digi::DepositMapping+;
+#pragma link C++ class dd4hep::digi::DepositVector+;
+#pragma link C++ class dd4hep::digi::DigiEvent;
+
+///---- action dictionaries
 #pragma link C++ class dd4hep::digi::KernelHandle;
 #pragma link C++ class dd4hep::digi::ActionHandle;
 
@@ -218,14 +234,5 @@ using namespace std;
 #pragma link C++ class dd4hep::digi::DigiSegmentSplitter;
 
 #pragma link C++ class dd4hep::digi::DigiDepositMonitor;
-
-/// Digi data item wrappers
-#pragma link C++ class dd4hep::digi::Particle+;
-#pragma link C++ class dd4hep::digi::EnergyDeposit+;
-#pragma link C++ class dd4hep::digi::ParticleMapping+;
-#pragma link C++ class dd4hep::digi::DepositMapping+;
-#pragma link C++ class dd4hep::digi::DepositVector+;
-
-#pragma link C++ class dd4hep::digi::DigiEvent;
 
 #endif
