@@ -326,6 +326,10 @@ class Logger:
     "Logger constructor"
     self.name = name
 
+  def setPrintLevel(self, level):
+    "Adjust printout level of dd4hep"
+    dd4hep.setPrintLevel(level)
+
   def always(self, msg):
     "Call dd4hep printout function with level ALWAYS"
     dd4hep.always(self.name, msg)

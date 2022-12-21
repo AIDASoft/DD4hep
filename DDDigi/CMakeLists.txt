@@ -45,23 +45,43 @@ dd4hep_add_plugin(DDDigiPlugins
   GENERATED      G__DDDigi.cxx
   USES           DD4hep::DDDigi
 )
-#---------------------------  Plugin library to read input from DDG4  --------------
-if (DD4HEP_USE_GEANT4)
+#
+#----------------  I/O Plugin library to read/write DDG4 and edm4hep files ---------
+set(DDDigiIO_USES       "DD4hep::DDDigi;DD4hep::DDCore")
+set(DDDigiIO_SOURCES    "io/DigiIO.cpp")
+set(DDDigiIO_GENERATED)
+set(DDDigiIO_DEFINITIONS)
+if(DD4HEP_USE_GEANT4)
   dd4hep_add_dictionary(G__DDDigi_DDG4_IO
-    SOURCES ../DDCore/include/ROOT/Warnings.h ddg4/IO.cpp
+    SOURCES ../DDCore/include/ROOT/Warnings.h io/DDG4IO.cpp
     LINKDEF ../DDCore/include/ROOT/LinkDef.h
     USES    DD4hep::DDG4 DD4hep::DDCore
   )
-  dd4hep_add_plugin(DDDigi_DDG4_IO
-    SOURCES        ddg4/*.cpp
-    GENERATED      G__DDDigi_DDG4_IO.cxx
-    USES           DD4hep::DDDigi DD4hep::DDG4 DD4hep::DDCore
-  )
-  set_target_properties(DDDigi_DDG4_IO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-  install(TARGETS DDDigi_DDG4_IO EXPORT DD4hep ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+  list(APPEND DDDigiIO_DEFINITIONS DD4HEP_USE_DDG4=1)
+  list(APPEND DDDigiIO_GENERATED   G__DDDigi_DDG4_IO.cxx)
+  list(APPEND DDDigiIO_SOURCES     "io/DDG4IO.cpp;io/DigiDDG4Input.cpp")
+  list(APPEND DDDigiIO_USES        DD4hep::DDG4)
 else()
   dd4hep_print( "|++> Geant4 not used. DDDigi will not be able to read DDG4 output.")
 endif()
+#
+if(DD4HEP_USE_EDM4HEP)
+  list(APPEND DDDigiIO_SOURCES      io/Digi2edm4hep.cpp)
+  list(APPEND DDDigiIO_DEFINITIONS  DD4HEP_USE_EDM4HEP=1)
+  list(APPEND DDDigiIO_USES         "EDM4HEP::edm4hep;EDM4HEP::edm4hepDict;podio::podio;podio::podioDict;podio::podioRootIO")
+else()
+  dd4hep_print( "|++> EDM4HEP not used. DDDigi will not be able to write EDM4HEP output.")
+endif()
+#
+list(REMOVE_DUPLICATES DDDigiIO_USES)
+dd4hep_add_plugin(DDDigi_IO
+    SOURCES        ${DDDigiIO_SOURCES}
+    GENERATED      ${DDDigiIO_GENERATED}
+    USES           ${DDDigiIO_USES}
+  )
+  target_compile_definitions(DDDigi_IO PRIVATE ${DDDigiIO_DEFINITIONS})
+  set_target_properties(DDDigi_IO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+  install(TARGETS DDDigi_IO EXPORT DD4hep ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
 #
 #---Package installation procedure(s) ----------------------------------------------
 set_target_properties(DDDigi DDDigiPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})

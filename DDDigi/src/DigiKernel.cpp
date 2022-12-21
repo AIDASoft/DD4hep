@@ -39,11 +39,7 @@ namespace tbb {  struct global_control { enum { max_allowed_parallelism = -1 }; 
 #include <memory>
 #include <chrono>
 
-using namespace dd4hep;
 using namespace dd4hep::digi;
-namespace  {
-  static std::mutex kernel_mutex;
-}
 
 /// DigiKernel herlp class: Container of instance variabled
 /*
@@ -120,7 +116,11 @@ public:
   Internals() = default;
   /// Default destructor
   ~Internals() = default;
+
+  static std::mutex kernel_mutex;  
 };
+
+std::mutex DigiKernel::Internals::kernel_mutex {};
 
 /// DigiKernel herlp class: TBB wrapper to execute DigiAction instances
 /*
@@ -205,7 +205,7 @@ DigiKernel::DigiKernel(Detector& description_ref)
 
 /// Default destructor
 DigiKernel::~DigiKernel() {
-  std::lock_guard<std::mutex> lock(kernel_mutex);
+  std::lock_guard<std::mutex> lock(Internals::kernel_mutex);
   internals->tbb_init.reset();
   detail::releasePtr(internals->monitor_handler);
   detail::releasePtr(internals->output_action);
@@ -221,7 +221,7 @@ DigiKernel::~DigiKernel() {
 DigiKernel& DigiKernel::instance(Detector& description) {
   static dd4hep::dd4hep_ptr<DigiKernel> s_main_instance(0);
   if ( 0 == s_main_instance.get() )   {
-    std::lock_guard<std::mutex> lock(kernel_mutex);
+    std::lock_guard<std::mutex> lock(Internals::kernel_mutex);
     if ( 0 == s_main_instance.get() )   { // Need to check again!
       s_main_instance.adopt(new DigiKernel(description));
     }
@@ -367,18 +367,27 @@ void DigiKernel::register_monitor(DigiAction* action, TNamed* object)  const    
 
 /// Submit a bunch of actions to be executed in parallel
 void DigiKernel::submit (DigiContext& context, ParallelCall*const algorithms[], std::size_t count, void* data, bool parallel)  const    {
-  (void)parallel; // Silence compiler warning when not using TBB
   const char* tag = context.event->id();
 #ifdef DD4HEP_USE_TBB
   bool para = parallel && (internals->tbb_init && internals->num_threads > 0);
   if ( para )   {
     tbb::task_group que;
     info("%s+++ Executing chunk of %3ld execution entries in parallel", tag, count);
-    for( std::size_t i=0; i<count; ++i)
-      que.run( Wrapper<ParallelCall,void*>(algorithms[i], data) );
-    que.wait();
+    try   {
+      for( std::size_t i=0; i<count && !internals->stop; ++i)
+	que.run( Wrapper<ParallelCall,void*>(algorithms[i], data) );
+      que.wait();
+    }
+    catch(const std::exception& e)    {
+      std::exception_ptr eptr = std::current_exception();
+      internals->stop = true;
+      error("%s+++ C++ exception. STOP event loop. [%s]", tag, e.what());
+      std::rethrow_exception(eptr);
+    }
     return;
   }
+#else
+  (void)parallel; // Silence compiler warning when not using TBB
 #endif
   info("%s+++ Executing chunk of %3ld execution entries sequentially", tag, count);
   for( std::size_t i=0; i<count; ++i)
@@ -438,22 +447,29 @@ int DigiKernel::run()   {
   info("+++ Total number of events:    %d",internals->numEvents);
 #ifdef DD4HEP_USE_TBB
   if ( !internals->tbb_init && internals->num_threads > 0 )   {
-    using ctrl_t = tbb::global_control;
-    if ( 0 == internals->num_threads )  {
-      internals->num_threads = ctrl_t::max_allowed_parallelism;
-    }
-    info("+++ Number of TBB threads:     %d",internals->num_threads);
-    info("+++ Number of parallel events: %d",internals->maxEventsParallel);
-    internals->tbb_init = std::make_unique<ctrl_t>(ctrl_t::max_allowed_parallelism,internals->num_threads+1);
-    if ( internals->maxEventsParallel >= 0 )   {
-      int todo_evt = internals->events_todo;
-      int num_proc = std::min(todo_evt,internals->maxEventsParallel);
-      tbb::task_group main_group;
-      for(int i=0; i < num_proc; ++i)
-        main_group.run(Processor(*this));
-      main_group.wait();
-    }
-    debug("+++ All event processing threads Synchronized --- Done!");
+      using ctrl_t = tbb::global_control;
+      if ( 0 == internals->num_threads )  {
+	internals->num_threads = ctrl_t::max_allowed_parallelism;
+      }
+      info("+++ Number of TBB threads:     %d",internals->num_threads);
+      info("+++ Number of parallel events: %d",internals->maxEventsParallel);
+      internals->tbb_init = std::make_unique<ctrl_t>(ctrl_t::max_allowed_parallelism,internals->num_threads+1);
+      if ( internals->maxEventsParallel >= 0 )   {
+	int todo_evt = internals->events_todo;
+	int num_proc = std::min(todo_evt,internals->maxEventsParallel);
+	tbb::task_group main_group;
+	try  {
+	  for(int i=0; i < num_proc; ++i)
+	    main_group.run(Processor(*this));
+	  main_group.wait();
+	}
+	catch(const std::exception& e)    {
+	  internals->stop = true;
+	  error("run: +++ C++ exception. Event loop stop. [%s]", e.what());
+	  main_group.wait();
+	}
+      }
+      debug("+++ All event processing threads Synchronized --- Done!");
   }
   else
 #endif
@@ -464,6 +480,7 @@ int DigiKernel::run()   {
 	++internals->events_submitted;
       }
     }
+
   std::chrono::duration<double> duration = std::chrono::system_clock::now() - start;
   double sec = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
   info("+++ %d Events out of %d processed. "

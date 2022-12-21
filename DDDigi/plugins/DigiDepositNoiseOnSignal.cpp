@@ -69,6 +69,6 @@ namespace dd4hep {
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-
+/// Factory instantiation:
 #include <DDDigi/DigiFactories.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositNoiseOnSignal)

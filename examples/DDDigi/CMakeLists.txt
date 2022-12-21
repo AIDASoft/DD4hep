@@ -48,6 +48,7 @@ dd4hep_add_test_reg(DDDigi_framework
 dd4hep_add_test_reg(DDDigi_colored_noise
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
   EXEC_ARGS  geoPluginRun -ui -plugin DD4hep_FalphaNoise -shots 1000000 -variance 1 -alpha 0.5
+  DEPENDS    DDDigi_framework
   REGEX_PASS "FalphaNoise      INFO  Distribution  RMS                 1.0"
   REGEX_FAIL "Error;ERROR;Exception"
   )
@@ -76,6 +77,14 @@ if (DD4HEP_USE_GEANT4)
     DEPENDS    DDDigi_generate_data
     REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
     REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test DDDigi exception while processing
+  dd4hep_add_test_reg(DDDigi_test_processing_exception
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestInput.py
+               -num_events 1000
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+ Terminate Digi and delete associated actions."
   )
   # Test signal attenuation for spillover
   dd4hep_add_test_reg(DDDigi_test_attenuate
@@ -195,6 +204,15 @@ if (DD4HEP_USE_GEANT4)
     EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestSimpleADCResponse.py
     DEPENDS    DDDigi_generate_data
     REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  # Test edm4hep write (needs to be expanded)
+  dd4hep_add_test_reg(DDDigi_test_edm4hep_write_1
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestWriteEdm4hep.py
+               -num_events 5 -num_threads 10 -events_parallel 4
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed."
     REGEX_FAIL "Error;ERROR;Exception"
   )
 #

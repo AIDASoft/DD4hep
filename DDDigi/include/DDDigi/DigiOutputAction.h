@@ -52,6 +52,7 @@ namespace dd4hep {
     public:
       /// Standard constructor
       DigiOutputAction(const kernel_t& kernel, const std::string& nam);
+
       /// Default destructor
       virtual ~DigiOutputAction();
 

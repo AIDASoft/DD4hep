@@ -136,7 +136,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~DigiContainerProcessor();
       /// Adopt monitoring action
-      void adopt_monitor(DigiDepositMonitor* monitor);
+      virtual void adopt_monitor(DigiDepositMonitor* monitor);
       /// Main functional callback adapter
       virtual void execute(context_t& context, work_t& work, const predicate_t& predicate)  const;
     };
@@ -214,7 +214,7 @@ namespace dd4hep {
       /// Standard constructor
       DigiContainerSequence(const kernel_t& kernel, const std::string& name);
       /// Set the default predicate
-      void set_predicate(const predicate_t& predicate);
+      virtual void set_predicate(const predicate_t& predicate);
       /// Adopt new parallel worker
       virtual void adopt_processor(DigiContainerProcessor* action);
       /// Main functional callback adapter
@@ -251,9 +251,9 @@ namespace dd4hep {
       using self_t      = DigiContainerSequenceAction;
       /// Work definition structure: Argument structure for client calls
       struct work_t  {
-	env_t&              environ;
-	work_items_t&       input_items;
-	const self_t&       parent;
+	env_t&        environ;
+	work_items_t& input_items;
+	const self_t& parent;
       };
 
       using worker_t         = DigiParallelWorker<processor_t, work_t, std::size_t, self_t&>;
@@ -290,8 +290,12 @@ namespace dd4hep {
 
       /// Default destructor
       virtual ~DigiContainerSequenceAction();
+
       /// Initialization callback
       virtual void initialize();
+
+      /// Finalization callback
+      virtual void finalize();
 
       /// Get hold of the registered processor for a given container
       worker_t* need_registered_worker(Key item_key, bool exc=true)  const;
@@ -300,11 +304,11 @@ namespace dd4hep {
       /// Standard constructor
       DigiContainerSequenceAction(const kernel_t& kernel, const std::string& name);
       /// Set the default predicate
-      void set_predicate(const predicate_t& predicate);
+      virtual void set_predicate(const predicate_t& predicate);
       /// Adopt new parallel worker acting on one single container
-      void adopt_processor(DigiContainerProcessor* action, const std::string& container);
+      virtual void adopt_processor(DigiContainerProcessor* action, const std::string& container);
       /// Adopt new parallel worker acting on multiple containers
-      void adopt_processor(DigiContainerProcessor* action, const std::vector<std::string>& containers);
+      virtual void adopt_processor(DigiContainerProcessor* action, const std::vector<std::string>& containers);
       /// Main functional callback if specific work is known
       virtual void execute(context_t& context)  const override;
     };
@@ -377,9 +381,9 @@ namespace dd4hep {
 	return this->m_input_masks;
       }
       /// Set the default predicate
-      void set_predicate(const predicate_t& predicate);
+      virtual void set_predicate(const predicate_t& predicate);
       /// Adopt new parallel worker
-      void adopt_processor(DigiContainerProcessor* action, const std::vector<std::string>& containers);
+      virtual void adopt_processor(DigiContainerProcessor* action, const std::vector<std::string>& containers);
       /// Main functional callback
       virtual void execute(context_t& context)  const;
     };

@@ -44,7 +44,7 @@ namespace dd4hep {
       template <typename T> void
       create_deposits(context_t& context, const T& cont, work_t& work, const predicate_t& predicate)  const  {
 	Key key(cont.name, work.environ.output.mask);
-	DepositMapping m(cont.name, work.environ.output.mask);
+	DepositMapping m(cont.name, work.environ.output.mask, cont.data_type );
 	std::size_t dropped = 0UL, updated = 0UL, added = 0UL;
 	for( const auto& dep : cont )    {
 	  if ( predicate(dep) )   {

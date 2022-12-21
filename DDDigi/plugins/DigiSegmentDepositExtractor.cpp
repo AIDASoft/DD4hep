@@ -38,14 +38,14 @@ namespace dd4hep {
         : DigiContainerProcessor(kernel, nam) {}
 
       template <typename T> void copy_deposits(const T& cont, work_t& work, const predicate_t& predicate)  const  {
-        DepositVector deposits(cont.name, work.environ.output.mask);
-        for( const auto& dep : cont )   {
-          if( predicate(dep) )   {
-            CellID        cell = dep.first;
-            EnergyDeposit depo = dep.second;
-            deposits.emplace(cell, std::move(depo));
-          }
-        }
+	DepositVector deposits(cont.name, work.environ.output.mask, cont.data_type);
+	for( const auto& dep : cont )   {
+	  if( predicate(dep) )   {
+	    CellID        cell = dep.first;
+	    EnergyDeposit depo = dep.second;
+	    deposits.emplace(cell, std::move(depo));
+	  }
+	}
         work.environ.output.data.put(deposits.key, std::move(deposits));
       }
       /// Main functional callback

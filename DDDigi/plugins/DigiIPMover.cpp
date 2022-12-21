@@ -59,11 +59,9 @@ namespace dd4hep {
       move_particles(const char* tag, PARTICLES& cont, const Position& delta)  const  {
 	info("%s+++ %-32s [%6ld] IP: x:%7.3f y:%7.3f z:%7.3f", 
 	     tag, cont.name.c_str(), cont.size(), delta.X(), delta.Y(), delta.Z());
-	for( auto& p : cont )   {
-	  auto& part = p.second;
-	  part.end_position   += delta;
-	  part.start_position += delta;
-	}
+	/// Move particle
+	for( auto& p : cont )
+	  p.second.move_position(delta);
 	return cont.size();
       }
 
@@ -84,6 +82,6 @@ namespace dd4hep {
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-
+/// Factory instantiation:
 #include <DDDigi/DigiFactories.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiIPMover)

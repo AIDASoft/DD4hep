@@ -55,6 +55,8 @@ namespace dd4hep {
      *   Sampling resolution:    sigma(E)/E ~ 0.09 * sqrt(1000*dE/E)
      *   dE = energy loss of a single charged particle in one sampling layer
      *
+     *   (See all: https://handwiki.org/wiki/Physics:Energy_resolution_in_calorimeters)
+     *
      *
      *  \author  M.Frank
      *  \version 1.0
