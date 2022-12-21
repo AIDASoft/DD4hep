@@ -40,7 +40,7 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class Digi2edm4hepWriter : public  DigiOutputAction  {
+    class Digi2edm4hepOutput : public  DigiOutputAction  {
     public:
       class internals_t;
     protected:
@@ -49,13 +49,13 @@ namespace dd4hep {
 
     protected:
       /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(Digi2edm4hepWriter);
+      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(Digi2edm4hepOutput);
       /// Default destructor
-      virtual ~Digi2edm4hepWriter();
+      virtual ~Digi2edm4hepOutput();
 
     public:
       /// Standard constructor
-      Digi2edm4hepWriter(const kernel_t& kernel, const std::string& nam);
+      Digi2edm4hepOutput(const kernel_t& kernel, const std::string& nam);
       /// Initialization callback
       virtual void initialize();
       /// Check for valid output stream
@@ -71,18 +71,18 @@ namespace dd4hep {
     /// Actor to save individual data containers to edm4hep
     /** Actor to save individual data containers to edm4hep
      *
-     *  This is a typical worker action of the Digi2edm4hepWriter
+     *  This is a typical worker action of the Digi2edm4hepOutput
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
     class Digi2edm4hepProcessor : public DigiContainerProcessor   {
-      friend class Digi2edm4hepWriter;
+      friend class Digi2edm4hepOutput;
 
     protected:
       /// Reference to the edm4hep engine
-      std::shared_ptr<Digi2edm4hepWriter::internals_t> internals;
+      std::shared_ptr<Digi2edm4hepOutput::internals_t> internals;
       /// Property: RPhi resolution
       float m_pointResoutionRPhi = 0.004;
       /// Property: Z resolution
@@ -161,9 +161,9 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class Digi2edm4hepWriter::internals_t {
+    class Digi2edm4hepOutput::internals_t {
     public:
-      Digi2edm4hepWriter* m_parent                    { nullptr };
+      Digi2edm4hepOutput* m_parent                    { nullptr };
       /// Reference to podio store
       std::unique_ptr<podio::EventStore>  m_store     { };
       /// Reference to podio writer
@@ -186,7 +186,7 @@ namespace dd4hep {
 
     public:
       /// Default constructor
-      internals_t(Digi2edm4hepWriter* parent);
+      internals_t(Digi2edm4hepOutput* parent);
       /// Default destructor
       ~internals_t();
 
@@ -204,18 +204,18 @@ namespace dd4hep {
     };
 
     /// Default constructor
-    Digi2edm4hepWriter::internals_t::internals_t(Digi2edm4hepWriter* parent) : m_parent(parent)
+    Digi2edm4hepOutput::internals_t::internals_t(Digi2edm4hepOutput* parent) : m_parent(parent)
     {
       m_store  = std::make_unique<podio::EventStore>();
     }
 
     /// Default destructor
-    Digi2edm4hepWriter::internals_t::~internals_t()    {
+    Digi2edm4hepOutput::internals_t::~internals_t()    {
       if ( m_file ) close();
       m_store.reset();
     }
 
-    template <typename T> T* Digi2edm4hepWriter::internals_t::register_collection(const std::string& nam, T* coll)   {
+    template <typename T> T* Digi2edm4hepOutput::internals_t::register_collection(const std::string& nam, T* coll)   {
       m_collections.emplace(nam, coll);
       m_store->registerCollection(nam, coll);
       m_parent->debug("+++ created collection %s <%s>", nam.c_str(), coll->getTypeName().c_str());
@@ -223,7 +223,7 @@ namespace dd4hep {
     }
 
     /// Create all collections according to the parent setup
-    void Digi2edm4hepWriter::internals_t::create_collections()    {
+    void Digi2edm4hepOutput::internals_t::create_collections()    {
       if ( nullptr == m_header )   {
         m_header = register_collection("EventHeader", new edm4hep::EventHeaderCollection());
         for( auto& cont : m_parent->m_containers )   {
@@ -245,7 +245,7 @@ namespace dd4hep {
 
     /// Access named collection: throws exception ifd the collection is not present
     template <typename T> 
-    podio::CollectionBase* Digi2edm4hepWriter::internals_t::get_collection(const T& cont)  {
+    podio::CollectionBase* Digi2edm4hepOutput::internals_t::get_collection(const T& cont)  {
       auto iter = m_collections.find(cont.name);
       if ( iter == m_collections.end() )    {
         m_parent->except("Error");
@@ -254,7 +254,7 @@ namespace dd4hep {
     }
 
     /// Commit data at end of filling procedure
-    void Digi2edm4hepWriter::internals_t::commit()   {
+    void Digi2edm4hepOutput::internals_t::commit()   {
       if ( m_file )   {
         m_file->writeEvent();
         m_store->clearCollections();
@@ -264,7 +264,7 @@ namespace dd4hep {
     }
 
       /// Open new output stream
-    void Digi2edm4hepWriter::internals_t::open()    {
+    void Digi2edm4hepOutput::internals_t::open()    {
       if ( m_file )   {
         close();
       }
@@ -278,7 +278,7 @@ namespace dd4hep {
     }
 
     /// Commit data to disk and close output stream
-    void Digi2edm4hepWriter::internals_t::close()   {
+    void Digi2edm4hepOutput::internals_t::close()   {
       m_parent->info("+++ Closing EDM4HEP output file.");
       if ( m_file )   {
         m_file->finish();
@@ -287,7 +287,7 @@ namespace dd4hep {
     }
 
     /// Standard constructor
-    Digi2edm4hepWriter::Digi2edm4hepWriter(const DigiKernel& krnl, const std::string& nam)
+    Digi2edm4hepOutput::Digi2edm4hepOutput(const DigiKernel& krnl, const std::string& nam)
       : DigiOutputAction(krnl, nam)
     {
       internals = std::make_shared<internals_t>(this);
@@ -295,13 +295,13 @@ namespace dd4hep {
     }
 
     /// Default destructor
-    Digi2edm4hepWriter::~Digi2edm4hepWriter()   {
+    Digi2edm4hepOutput::~Digi2edm4hepOutput()   {
       internals.reset();
       InstanceCount::decrement(this);
     }
 
     /// Initialization callback
-    void Digi2edm4hepWriter::initialize()   {
+    void Digi2edm4hepOutput::initialize()   {
       this->DigiOutputAction::initialize();
       for ( auto& c : m_registered_processors )   {
         auto* act = dynamic_cast<Digi2edm4hepProcessor*>(c.second);
@@ -316,22 +316,22 @@ namespace dd4hep {
     }
 
      /// Check for valid output stream
-    bool Digi2edm4hepWriter::have_output()  const  {
+    bool Digi2edm4hepOutput::have_output()  const  {
       return internals->m_file.get() != nullptr;
     }
 
     /// Open new output stream
-    void Digi2edm4hepWriter::open_output() const   {
+    void Digi2edm4hepOutput::open_output() const   {
       internals->open();
     }
 
     /// Close possible open stream
-    void Digi2edm4hepWriter::close_output()  const  {
+    void Digi2edm4hepOutput::close_output()  const  {
       internals->close();
     }
 
     /// Commit event data to output stream
-    void Digi2edm4hepWriter::commit_output() const  {
+    void Digi2edm4hepOutput::commit_output() const  {
       internals->commit();
     }
 
@@ -438,5 +438,5 @@ namespace dd4hep {
 
 /// Factory instantiation:
 #include <DDDigi/DigiFactories.h>
-DECLARE_DIGIACTION_NS(dd4hep::digi,Digi2edm4hepWriter)
+DECLARE_DIGIACTION_NS(dd4hep::digi,Digi2edm4hepOutput)
 DECLARE_DIGIACTION_NS(dd4hep::digi,Digi2edm4hepProcessor)
