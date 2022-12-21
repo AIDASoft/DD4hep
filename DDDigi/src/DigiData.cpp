@@ -41,6 +41,7 @@ std::string dd4hep::digi::digiTypeName(const std::type_info& info)    {
   if ( idx != std::string::npos ) typ = str_replace(typ, typ.substr(idx), ">");
   typ = str_replace(str_replace(typ,"std::",""),"dd4hep::","");
   typ = str_replace(str_replace(typ,"sim::",""),"digi::","");
+  typ = str_replace(str_replace(typ,", less<Key>",""),", less<long long>","");
   return typ;
 }
 
@@ -49,14 +50,20 @@ std::string dd4hep::digi::digiTypeName(const std::any& data)    {
 }
 
 Key& Key::set(const std::string& name, int mask)    {
+  return this->set(name, 0x0, mask);
+}
+
+/// Generate key using hash algorithm
+Key& Key::set(const std::string& name, int segment, int mask)    {
   auto& _k = keys();
   if ( name.empty() )   {
     std::lock_guard<std::mutex> lock(_k.lock);
     except("DDDigi::Key", "+++ No key name was specified  --  this is illegal!");
   }
   this->key = 0;
-  this->set_mask(Key::mask_type(0xFFFF&mask));
   this->set_item(detail::hash32(name));
+  this->set_mask(Key::mask_type(0xFFFF&mask));
+  this->set_segment(Key::segment_type(0xFF&segment));
   std::lock_guard<std::mutex> lock(_k.lock);
   _k.map[this->item()] = name;
   return *this;
@@ -301,6 +308,12 @@ void DepositMapping::remove(iterator position)   {
   data.erase(position);
 }
 
+/// Move particle
+void Particle::move_position(const Position& delta)    {
+  this->start_position += delta;
+  this->end_position += delta;
+}
+
 /// Merge new deposit map onto existing map
 std::size_t ParticleMapping::insert(const ParticleMapping& updates)    {
   std::size_t update_size = updates.size();
@@ -405,14 +418,6 @@ bool DataSegment::emplace_any(Key key, std::any&& item)    {
 	   key.mask(), key.item(), yes_no(has_value));
   }
   return ret;
-}
-
-/// Move data items other than std::any to the data segment
-template <typename DATA> bool DataSegment::put(Key key, DATA&& value)   {
-  key.set_segment(this->id);
-  value.key.set_segment(this->id);
-  std::any item = std::make_any<DATA>(std::move(value));
-  return this->emplace_any(key, std::move(item));
 }
 
 template bool DataSegment::put(Key key, DepositVector&& data);

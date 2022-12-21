@@ -86,7 +86,10 @@ public:
     std::size_t cnt = 0;
     const auto& nam = input.name;
     Key::mask_type mask = input.key.mask();
-
+    if ( output.data_type == SegmentEntry::UNKNOWN )
+      output.data_type = input.data_type;
+    else if ( output.data_type != input.data_type )
+      combine->except("+++ Digitization does not allow to mix data of different type!");
     if ( combine->m_erase_combined )   {
       cnt = output.merge(std::move(input));
     }
@@ -101,7 +104,7 @@ public:
   /// Generic deposit merger: implicitly assume identical item types are mapped sequentially
   void merge(const std::string& nam, size_t start, int thr)  {
     Key key = keys[start];
-    DepositVector out(nam, combine->m_deposit_mask);
+    DepositVector out(nam, combine->m_deposit_mask, SegmentEntry::UNKNOWN);
     for( std::size_t j = start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
 	if ( DepositMapping* m = std::any_cast<DepositMapping>(work[j]) )

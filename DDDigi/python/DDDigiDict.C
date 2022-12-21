@@ -128,6 +128,7 @@ namespace dd4hep {
       static DigiEventAction*        toEventAction(DigiAction* a) { return cst<DigiEventAction>(a); }
       static DigiDepositMonitor*     toDepositMonitor(DigiAction* a) { return cst<DigiDepositMonitor>(a); }
       static DigiContainerProcessor* toContainerProcessor(DigiAction* a) { return cst<DigiContainerProcessor>(a); }
+      static DigiContainerSequenceAction* toContainerSequenceAction(DigiAction* a) { return cst<DigiContainerSequenceAction>(a); }
 
       /// Access DigiAction property
       static PropertyResult getProperty(DigiAction* action, const std::string& name)  {

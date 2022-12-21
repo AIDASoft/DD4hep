@@ -18,9 +18,9 @@ from dddigi import DEBUG, INFO, WARNING, ERROR  # noqa: F401
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-attenuation = {'MiniTel1Hits': 50 * units.ns,
-               'MiniTel2Hits': 50 * units.ns,
-               'MiniTel3Hits': 50 * units.ns,
+attenuation = {'Minitel1Hits': 50 * units.ns,
+               'Minitel2Hits': 50 * units.ns,
+               'Minitel3Hits': 50 * units.ns,
 }
 
 
@@ -111,12 +111,20 @@ class Test(dddigi.Digitize):
 
   def run_checked(self, num_events=5, num_threads=5, parallel=3):
     result = "FAILED"
+    if self.num_events:
+      num_events = int(self.num_events)
+    if self.num_threads:
+      num_threads = int(self.num_threads)
+    if self.events_parallel:
+      parallel = int(self.events_parallel)
     evt_done = self.run(num_events=num_events, num_threads=num_threads, parallel=parallel)
     if evt_done == num_events:
         result = "PASSED"
-    self.always('%s Test finished after processing %d events.' % (result, evt_done,))
+    self.always('%s Test finished after processing %d events. [%d parallel threads, %d parallel events]' \
+                % (result, evt_done, num_threads, parallel, ))
     self.always('Test done. Exiting')
-
+    self.kernel().terminate()
+    return evt_done
 
 # ==========================================================================================================
 def test_setup_1(digi, print_level=WARNING, parallel=True):

@@ -42,10 +42,10 @@ def loadDDDigi():
   logger.info('DDDigi.py: Successfully loaded DDDigi plugin library libDDDigiPlugins!')
   #
   # import with ROOT the I/O module to read DDG4 output
-  result = gSystem.Load("libDDDigi_DDG4_IO")
+  result = gSystem.Load("libDDDigi_IO")
   if result < 0:
-    raise Exception('DDDigi.py: Failed to load the DDG4 IO library libDDDigi_DDG4_IO: ' + gSystem.GetErrorStr())
-  logger.info('DDDigi.py: Successfully loaded DDG4 IO plugin library libDDDigi_DDG4_IO!')
+    raise Exception('DDDigi.py: Failed to load the DDDigi IO library libDDDigi_IO: ' + gSystem.GetErrorStr())
+  logger.info('DDDigi.py: Successfully loaded DDDigi IO plugin library libDDDigi_IO!')
   #
   # import the main dd4hep module from ROOT
   from ROOT import dd4hep as module
@@ -216,7 +216,8 @@ def _adopt_event_action(self, action):
 
 def _adopt_container_processor(self, action, processor_argument):
   " Helper to convert DigiActions objects to DigiEventAction "
-  attr = getattr(_get_action(self), 'adopt_processor')
+  parent = Interface.toContainerSequenceAction(_get_action(self))
+  attr = getattr(parent, 'adopt_processor')
   proc = Interface.toContainerProcessor(_get_action(action))
   attr(proc, processor_argument)
 # ---------------------------------------------------------------------------
@@ -325,7 +326,8 @@ _props('ActionHandle',
        add_set_property=_add_new_set_property,
        add_list_property=_add_new_list_property,
        add_vector_property=_add_new_vector_property,
-       add_mapped_property=_add_new_mapped_property)
+       add_mapped_property=_add_new_mapped_property,
+       adopt_container_processor=_adopt_container_processor)
 _props('DigiSynchronize', adopt=_adopt_event_action, adopt_action=_adopt_sequence_action)
 _props('DigiActionSequence', adopt=_adopt_event_action, adopt_action=_adopt_sequence_action)
 _props('DigiParallelActionSequence', adopt_action=_adopt_sequence_action)
@@ -333,6 +335,7 @@ _props('DigiSequentialActionSequence', adopt_action=_adopt_sequence_action)
 _props('DigiContainerSequenceAction', adopt_container_processor=_adopt_container_processor)
 _props('DigiMultiContainerProcessor', adopt_processor=_adopt_processor)
 _props('DigiSegmentSplitter', adopt_segment_processor=_adopt_segment_processor)
+  
 # ---------------------------------------------------------------------------
 
 

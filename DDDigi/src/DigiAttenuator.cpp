@@ -126,6 +126,7 @@ void DigiAttenuatorSequence::initialize()   {
     att->property("factor").set(factor);
     att->property("OutputLevel").set(int(outputLevel()));
     adopt_processor(att, c.first);
+    att->release(); // Release processor **after** adoption.
   }
   this->DigiContainerSequenceAction::initialize();
 }

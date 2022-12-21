@@ -143,6 +143,11 @@ DigiContainerSequence::~DigiContainerSequence() {
   InstanceCount::decrement(this);
 }
 
+/// Set the default predicate
+void DigiContainerSequence::set_predicate(const predicate_t& predicate)   {
+  m_worker_predicate = predicate;
+}
+
 /// Adopt new parallel worker
 void DigiContainerSequence::adopt_processor(DigiContainerProcessor* action)   {
   if ( !action )  {
@@ -176,6 +181,7 @@ DigiContainerSequenceAction::DigiContainerSequenceAction(const kernel_t& krnl, c
   declareProperty("output_mask",    m_output_mask);
   declareProperty("output_segment", m_output_segment);
   m_kernel.register_initialize(std::bind(&DigiContainerSequenceAction::initialize,this));
+  m_kernel.register_terminate(std::bind(&DigiContainerSequenceAction::finalize,this));
   InstanceCount::increment(this);
 }
 
@@ -194,6 +200,11 @@ void dd4hep::digi::DigiContainerSequenceAction::initialize()   {
   }
 }
 
+/// Finalization callback
+void dd4hep::digi::DigiContainerSequenceAction::finalize()    {
+  m_workers.clear();
+}
+
 /// Set the default predicate
 void DigiContainerSequenceAction::set_predicate(const predicate_t& predicate)   {
   m_worker_predicate = predicate;
@@ -203,7 +214,7 @@ void DigiContainerSequenceAction::set_predicate(const predicate_t& predicate)   
 void DigiContainerSequenceAction::adopt_processor(DigiContainerProcessor* action,
 						  const std::string& container)
 {
-  Key key(container, 0x0);
+  Key key(container.c_str(), 0x0);
   auto it = m_registered_processors.find(key);
   if ( it != m_registered_processors.end() )   {
     if ( action != it->second )   {
@@ -219,7 +230,7 @@ void DigiContainerSequenceAction::adopt_processor(DigiContainerProcessor* action
   action->addRef();
   m_registered_processors.emplace(key, action);
   info("+++ Adding processor: %s for container: [%08X] %s",
-       action->c_name(), key.item(), container.c_str());
+       action->c_name(), key.item(), ('"'+container+'"').c_str());
 }
 
 /// Adopt new parallel worker acting on multiple containers
@@ -234,8 +245,9 @@ void DigiContainerSequenceAction::adopt_processor(DigiContainerProcessor* action
 
 /// Get hold of the registered processor for a given container
 DigiContainerSequenceAction::worker_t*
-DigiContainerSequenceAction::need_registered_worker(Key item_key, bool exc)   const  {
-  item_key.set_mask(0);
+DigiContainerSequenceAction::need_registered_worker(Key key, bool exc)   const  {
+  Key item_key;
+  item_key.set_item(key.item());
   auto it = m_registered_workers.find(item_key);
   if ( it != m_registered_workers.end() )  {
     return it->second;
@@ -249,14 +261,14 @@ DigiContainerSequenceAction::need_registered_worker(Key item_key, bool exc)   co
 /// Main functional callback if specific work is known
 void DigiContainerSequenceAction::execute(context_t& context)  const   {
   std::vector<ParallelWorker*> event_workers;
+  work_items_t items;
   auto& event  = *context.event;
   auto& input  = event.get_segment(m_input_segment);
   auto& output = event.get_segment(m_output_segment);
-  output_t out { m_output_mask, output };
-  env_t    env { context, m_properties, out };
-  work_items_t items;
-  work_t   arg { env, items, *this };
+  output_t    out { m_output_mask, output };
+  env_t       env { context, m_properties, out };
   work_item_t itm { nullptr, { }, nullptr };
+  work_t      arg { env, items, *this };
 
   arg.input_items.resize(m_workers.size(), itm);
   event_workers.reserve(input.size());

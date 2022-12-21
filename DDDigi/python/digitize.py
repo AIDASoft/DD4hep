@@ -32,12 +32,18 @@ class Digitize(dd4hep.Logger, dd4hep.CommandLine):
   """
   def __init__(self, kernel=None):
     dd4hep.Logger.__init__(self, 'dddigi')
+    dd4hep.CommandLine.__init__(self)
     self._kernel = kernel
     self._main_processor = None
     self._input_processor = None
     self._event_processor = None
     self._parallel = True
+    self._dddigi = dddigi
     self.description = self._kernel.detectorDescription()
+    if self.output_level:
+      lvl = int(self.output_level)
+      self.setPrintLevel(lvl)
+      self._kernel.OutputLevel = lvl
 
   """
      Access the worker kernel object.
@@ -154,7 +160,7 @@ class Digitize(dd4hep.Logger, dd4hep.CommandLine):
     self.info('+++  List of sensitive detectors:')
     dets = self.activeDetectors()
     for d in dets:
-      self.info('+++  %-32s ---> type:%-12s' % (d['name'], d['type'],))
+      self.always('+++  %-32s ---> type:%-12s' % (d['name'], d['type'],))
 
   """
      Configure ROOT output for the event digitization

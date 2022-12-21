@@ -55,15 +55,22 @@ void DigiStoreDump::initialize()   {
 template <typename T> std::string DigiStoreDump::data_header(Key key, const std::string& tag, const T& container)  const  {
   return this->format("%04X %04X %08X %-32s: %6ld %-12s [%s]", 
 		      key.segment(), key.mask(), key.item(),
-		      Key::key_name(key).c_str(), container.size(), tag.c_str(),
+		      ('"'+Key::key_name(key)+'"').c_str(), container.size(), tag.c_str(),
 		      digiTypeName(typeid(T)).c_str());
 }
 
 template <> std::string DigiStoreDump::data_header(Key key, const std::string& tag, const std::type_info& info)  const  {
+  std::string typ = digiTypeName(info);
+  if ( tag.empty() )   {
+    return this->format("%04X %04X %08X %-32s: %6s %s",
+			key.segment(), key.mask(), key.item(),
+			('"'+Key::key_name(key)+'"').c_str(), "",
+			typ.c_str());
+  }
   return this->format("%04X %04X %08X %-32s: %-12s %s",
 		      key.segment(), key.mask(), key.item(),
-		      Key::key_name(key).c_str(), tag.c_str(),
-		      digiTypeName(info).c_str());
+		      ('"'+Key::key_name(key)+'"'), tag.c_str(),
+		      typ.c_str());
 }
 
 template <> std::string DigiStoreDump::data_header(Key key, const std::string& tag, const std::any& data)  const  {
@@ -78,9 +85,7 @@ DigiStoreDump::dump_history(DigiContext& context,
 {
   std::stringstream str;
   auto& ev = *(context.event);
-  const auto& item = data.second;
   Key particle_key = data.first;
-  Key history_key  = item.history;
   std::vector<std::string> records;
   History::hist_entry_t hist { particle_key, 1.0 };
   const Particle&  par = hist.get_particle(ev);
@@ -89,9 +94,8 @@ DigiStoreDump::dump_history(DigiContext& context,
 
   str << Key::key_name(key) << "[" << seq_no << "]:";
   std::string line =
-    format("|----  %-18s Segment:%04X Mask:%04X Item:%04X History: %s Segment:%04X Mask:%04X Item:%04X %016lX",
+    format("|----  %-18s Segment:%04X Mask:%04X Item:%04X %016lX",
 	   str.str().c_str(), particle_key.segment(), particle_key.mask(), particle_key.item(),
-	   Key::key_name(history_key).c_str(), history_key.segment(), history_key.mask(), history_key.item(),
 	   long(&data.second));
   records.emplace_back(line);
   line = format("|        PDG:%6d Charge:%-2d Mass:%7.2f v:%7.5g %7.5g %7.5g  p:%12g %12g %12g      %016lX",
@@ -295,29 +299,35 @@ void DigiStoreDump::dump_headers(const std::string& tag,
 				 const DigiEvent&   event,
 				 const DataSegment& segment)  const
 {
+  int first = 1;
   std::string str;
   std::vector<std::string> records;
-  info("%s+--- %-12s segment: %ld entries", event.id(), tag.c_str(), segment.size());
   std::lock_guard<std::mutex> lock(segment.lock);
+  records.push_back(format("+--- %-12s segment: %ld entries", tag.c_str(), segment.size()));
+  records.push_back(format("| Segt Mask Item-id  Item-name"));
   for ( const auto& entry : segment )     {
     Key key {entry.first};
     const std::any& data = entry.second;
     if ( const auto* mapping = std::any_cast<DepositMapping>(&data) )
-      str = data_header(key, "deposits", *mapping);
+      str = "| " + data_header(key, "deposits", *mapping);
     else if ( const auto* vector = std::any_cast<DepositVector>(&data) )
-      str = data_header(key, "deposits", *vector);
+      str = "| " + data_header(key, "deposits", *vector);
     else if ( const auto* parts = std::any_cast<ParticleMapping>(&data) )
-      str = data_header(key, "particles", *parts);
+      str = "| " + data_header(key, "particles", *parts);
     else if ( const auto* adcs = std::any_cast<DetectorResponse>(&data) )
-      str = data_header(key, "ADC values", *adcs);
+      str = "| " + data_header(key, "ADC values", *adcs);
     else if ( const auto* hist = std::any_cast<DetectorHistory>(&data) )
-      str = data_header(key, "histories", *hist);
+      str = "| " + data_header(key, "histories", *hist);
     else if ( data.type() == typeid(void) )
-      str = data_header(key, "void data", data);
+      str = "| " + data_header(key, "void data", data);
     else
-      str = data_header(key, "", data);
+      str = "| " + data_header(key, "", data);
+    if ( first )   {
+      first = false;
+    }
     records.push_back(str);
   }
+  if ( records.size() == 2 ) records.pop_back();
   std::lock_guard<std::mutex> record_lock(m_kernel.global_output_lock());
   for(const auto& s : records)
     info("%s|----  %s", event.id(), s.c_str());
@@ -335,3 +345,4 @@ void DigiStoreDump::execute(DigiContext& context)  const    {
     dump_headers(seg, *event, event->get_segment(segment));
   }
 }
+

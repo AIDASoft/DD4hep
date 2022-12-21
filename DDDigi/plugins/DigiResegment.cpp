@@ -106,7 +106,7 @@ namespace dd4hep {
       template <typename T> void
       resegment_deposits(const T& cont, work_t& work, const predicate_t& predicate)  const  {
 	Key key(cont.name, work.environ.output.mask);
-	DepositVector m(cont.name, key.mask());
+	DepositVector m(cont.name, key.mask(), cont.data_type);
 	std::size_t start = m.size();
 	for( const auto& dep : cont )   {
 	  if( predicate(dep) )   {
