@@ -22,7 +22,6 @@
 // =========================================================================
 //  EDM4HEP specific stuff
 // =========================================================================
-
 #ifdef DD4HEP_USE_EDM4HEP
 
 /// edm4hep include files
@@ -161,12 +160,13 @@ namespace dd4hep {
 #endif
       }
     }
-  }    // End namespace digi
-}      // End namespace dd4hep
+  }     // End namespace digi
+}       // End namespace dd4hep
+#endif  // DD4HEP_USE_EDM4HEP
 
-// =========================================================================
-//  DDG4 specific stuff
-// =========================================================================
+/// =========================================================================
+///  Conversion from DDG4 in memory to DDDigi
+/// =========================================================================
 #if defined(DD4HEP_USE_DDG4)
 
 #include <DDG4/Geant4Data.h>
@@ -200,73 +200,6 @@ namespace dd4hep {
     void add_particle_history(const sim::Geant4Tracker::Hit* hit, Key key, History& hist)  {
       key.set_item(hit->truth.trackID);
       hist.particles.emplace_back(key, hit->truth.deposit);
-    }
-
-    /// Set all properties of the MutableMCParticle
-    template <> template <>
-    void data_io<ddg4_input>::_to_edm4hep(const particle_t& p, 
-					  edm4hep::MutableMCParticle mcp)
-    {
-      auto status = p.status;
-      const PropertyMask mask(status);
-      mcp.setPDG(p.pdgID);
-
-      mcp.setMomentum( _toVectorF( { p.psx, p.psy, p.psz } ) );
-      mcp.setMomentumAtEndpoint( _toVectorF( {p.pex, p.pey, p.pez} ) );
-      mcp.setVertex( _toVectorD( { p.vsx, p.vsy, p.vsz } ) );
-      mcp.setEndpoint( _toVectorD( { p.vex, p.vey, p.vez } ) );
-
-      mcp.setTime(p.time);
-      mcp.setMass(p.mass);
-      mcp.setCharge(3.0*float(p.charge));
-
-      // Set generator status
-      mcp.setGeneratorStatus(0);
-      if( p.genStatus ) {
-	mcp.setGeneratorStatus( p.genStatus ) ;
-      } else {
-	if ( mask.isSet(sim::G4PARTICLE_GEN_STABLE) )             mcp.setGeneratorStatus(1);
-	else if ( mask.isSet(sim::G4PARTICLE_GEN_DECAYED) )       mcp.setGeneratorStatus(2);
-	else if ( mask.isSet(sim::G4PARTICLE_GEN_DOCUMENTATION) ) mcp.setGeneratorStatus(3);
-	else if ( mask.isSet(sim::G4PARTICLE_GEN_BEAM) )          mcp.setGeneratorStatus(4);
-	else if ( mask.isSet(sim::G4PARTICLE_GEN_OTHER) )         mcp.setGeneratorStatus(9);
-      }
-
-      // Set simulation status
-      mcp.setCreatedInSimulation(         mask.isSet(sim::G4PARTICLE_SIM_CREATED) );
-      mcp.setBackscatter(                 mask.isSet(sim::G4PARTICLE_SIM_BACKSCATTER) );
-      mcp.setVertexIsNotEndpointOfParent( mask.isSet(sim::G4PARTICLE_SIM_PARENT_RADIATED) );
-      mcp.setDecayedInTracker(            mask.isSet(sim::G4PARTICLE_SIM_DECAY_TRACKER) );
-      mcp.setDecayedInCalorimeter(        mask.isSet(sim::G4PARTICLE_SIM_DECAY_CALO) );
-      mcp.setHasLeftDetector(             mask.isSet(sim::G4PARTICLE_SIM_LEFT_DETECTOR) );
-      mcp.setStopped(                     mask.isSet(sim::G4PARTICLE_SIM_STOPPED) );
-      mcp.setOverlay(                     false );
-
-      //fg: if simstatus !=0 we have to set the generator status to 0:
-      if( mcp.isCreatedInSimulation() )
-	mcp.setGeneratorStatus( 0 );
-
-      mcp.setSpin(p.spin);
-      mcp.setColorFlow(p.colorFlow);
-    }
-
-    template <> template <> 
-    void data_io<ddg4_input>::_to_edm4hep(const std::vector<const particle_t*>& cont,
-					  edm4hep::MCParticleCollection* coll)
-    {
-      std::size_t i, n = cont.size();
-      _pre_create(coll, n);
-      /// Convert particle body
-      for ( i=0; i<n; ++i)   {
-	const particle_t* p = cont[i];
-	auto  mcp = coll->at(i);
-	_to_edm4hep(*p, mcp);
-	/// Relationships are already resolved and kept in order: Just copy indices
-	for (auto idau : p->daughters)
-	  mcp.addToDaughters(coll->at(idau));
-	for (auto ipar : p->parents)
-	  mcp.addToParents(coll->at(ipar));
-      }
     }
 
     template <> template <>
@@ -356,11 +289,96 @@ namespace dd4hep {
       for( const auto& p : hits )
 	cnv_to_digi(key, p, out);
     }
-
   }     // End namespace digi
 }       // End namespace dd4hep
 #endif  // DD4HEP_USE_DDG4
 
+/// ======================================================================
+///  Conversion from DDG4 in memory to edm4hep
+/// ======================================================================
+#if defined(DD4HEP_USE_DDG4) && defined(DD4HEP_USE_EDM4HEP)
+
+/// Namespace for the AIDA detector description toolkit
+namespace dd4hep {
+
+  /// Namespace for the Digitization part of the AIDA detector description toolkit
+  namespace digi {
+
+    /// Set all properties of the MutableMCParticle
+    template <> template <>
+    void data_io<ddg4_input>::_to_edm4hep(const particle_t& p, 
+					  edm4hep::MutableMCParticle mcp)
+    {
+      auto status = p.status;
+      const PropertyMask mask(status);
+      mcp.setPDG(p.pdgID);
+
+      mcp.setMomentum( _toVectorF( { p.psx, p.psy, p.psz } ) );
+      mcp.setMomentumAtEndpoint( _toVectorF( {p.pex, p.pey, p.pez} ) );
+      mcp.setVertex( _toVectorD( { p.vsx, p.vsy, p.vsz } ) );
+      mcp.setEndpoint( _toVectorD( { p.vex, p.vey, p.vez } ) );
+
+      mcp.setTime(p.time);
+      mcp.setMass(p.mass);
+      mcp.setCharge(3.0*float(p.charge));
+
+      // Set generator status
+      mcp.setGeneratorStatus(0);
+      if( p.genStatus ) {
+	mcp.setGeneratorStatus( p.genStatus ) ;
+      } else {
+	if ( mask.isSet(sim::G4PARTICLE_GEN_STABLE) )             mcp.setGeneratorStatus(1);
+	else if ( mask.isSet(sim::G4PARTICLE_GEN_DECAYED) )       mcp.setGeneratorStatus(2);
+	else if ( mask.isSet(sim::G4PARTICLE_GEN_DOCUMENTATION) ) mcp.setGeneratorStatus(3);
+	else if ( mask.isSet(sim::G4PARTICLE_GEN_BEAM) )          mcp.setGeneratorStatus(4);
+	else if ( mask.isSet(sim::G4PARTICLE_GEN_OTHER) )         mcp.setGeneratorStatus(9);
+      }
+
+      // Set simulation status
+      mcp.setCreatedInSimulation(         mask.isSet(sim::G4PARTICLE_SIM_CREATED) );
+      mcp.setBackscatter(                 mask.isSet(sim::G4PARTICLE_SIM_BACKSCATTER) );
+      mcp.setVertexIsNotEndpointOfParent( mask.isSet(sim::G4PARTICLE_SIM_PARENT_RADIATED) );
+      mcp.setDecayedInTracker(            mask.isSet(sim::G4PARTICLE_SIM_DECAY_TRACKER) );
+      mcp.setDecayedInCalorimeter(        mask.isSet(sim::G4PARTICLE_SIM_DECAY_CALO) );
+      mcp.setHasLeftDetector(             mask.isSet(sim::G4PARTICLE_SIM_LEFT_DETECTOR) );
+      mcp.setStopped(                     mask.isSet(sim::G4PARTICLE_SIM_STOPPED) );
+      mcp.setOverlay(                     false );
+
+      //fg: if simstatus !=0 we have to set the generator status to 0:
+      if( mcp.isCreatedInSimulation() )
+	mcp.setGeneratorStatus( 0 );
+
+      mcp.setSpin(p.spin);
+      mcp.setColorFlow(p.colorFlow);
+    }
+
+    template <> template <> 
+    void data_io<ddg4_input>::_to_edm4hep(const std::vector<const particle_t*>& cont,
+					  edm4hep::MCParticleCollection* coll)
+    {
+      std::size_t i, n = cont.size();
+      _pre_create(coll, n);
+      /// Convert particle body
+      for ( i=0; i<n; ++i)   {
+	const particle_t* p = cont[i];
+	auto  mcp = coll->at(i);
+	_to_edm4hep(*p, mcp);
+	/// Relationships are already resolved and kept in order: Just copy indices
+	for (auto idau : p->daughters)
+	  mcp.addToDaughters(coll->at(idau));
+	for (auto ipar : p->parents)
+	  mcp.addToParents(coll->at(ipar));
+      }
+    }
+  }     // End namespace digi
+}       // End namespace dd4hep
+#endif  // DD4HEP_USE_DDG4 && DD4HEP_USE_EDM4HEP
+
+
+/// ======================================================================
+///  Conversion from DDDigi in memory to edm4hep
+/// ======================================================================
+#ifdef DD4HEP_USE_EDM4HEP
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
