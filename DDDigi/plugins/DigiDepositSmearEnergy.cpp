@@ -57,6 +57,13 @@ namespace dd4hep {
      *
      *   (See all: https://handwiki.org/wiki/Physics:Energy_resolution_in_calorimeters)
      *
+     *   Properties:
+     *   intrinsic_fluctuation:      Intrinsic energy resolution constant (gaussian ~ std::sqrt(energy))
+     *   systematic_resolution:      Systematic energy resolution constant (gaussian ~deposit energy)
+     *   instrumentation_resolution: Instrumentation energy resolution constant (gaussian(CONSTANT))
+     *   pair_ionization_energy:     Ionization constant to create electron ION pair in absorber
+     *   ionization_fluctuation:     Flag to use ionization fluctuation smearing (poisson ~ # e-ion-pairs)
+     *   modify_energy:              Flag to modify energy deposit according to error - otherwise only compute error
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -74,6 +81,8 @@ namespace dd4hep {
       double m_pair_ionization_energy     { 0e0 };
       /// Property: Flag to use ionization fluctuation smearing (poisson ~ # e-ion-pairs)
       bool   m_ionization_fluctuation     { false };
+      /// Property: Flag to modify energy deposit according to error - otherwise only compute error
+      bool   m_modify_energy              { true };
 
     public:
       /// Standard constructor
@@ -85,6 +94,7 @@ namespace dd4hep {
 	declareProperty("systematic_resolution",      m_systematic_resolution  = 0e0);	
 	declareProperty("pair_ionisation_energy",     m_pair_ionization_energy = 3.6*dd4hep::eV);
 	declareProperty("ionization_fluctuation",     m_ionization_fluctuation = false);
+	declareProperty("modify_energy",              m_modify_energy = true);
 	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositSmearEnergy::smear)
       }
 
@@ -127,9 +137,14 @@ namespace dd4hep {
 	    }
 	    /// delta_E is in GeV
 	    delta_E *= dd4hep::GeV;
-	    if ( m_monitor ) m_monitor->energy_shift(dep, delta_E);
-	    depo.deposit = deposit + (delta_E);
-	    depo.flag |= EnergyDeposit::ENERGY_SMEARED;
+	    depo.depositError = delta_E;
+	    if ( m_monitor )  {
+	      m_monitor->energy_shift(dep, delta_E);
+	    }
+	    if ( m_modify_energy )  {
+	      depo.deposit = deposit + delta_E;
+	      depo.flag |= EnergyDeposit::ENERGY_SMEARED;
+	    }
 	    ++updated;
 	  }
 	}
@@ -137,8 +152,26 @@ namespace dd4hep {
 	     context.event->id(), cont.name.c_str(), updated, cont.size(), cont.key.mask());
       }
     };
+
+    /// Actor to only set energy error (as above, but with preset option
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class DigiDepositSetEnergyError : public DigiDepositSmearEnergy   {
+    public:
+      /// Standard constructor
+      DigiDepositSetEnergyError(const DigiKernel& krnl, const std::string& nam)
+	: DigiDepositSmearEnergy(krnl, nam)
+      {
+	m_modify_energy = false;
+      }
+    };
   }    // End namespace digi
 }      // End namespace dd4hep
 
 #include <DDDigi/DigiFactories.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositSmearEnergy)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDepositSetEnergyError)
