@@ -50,7 +50,7 @@ dd4hep_add_plugin(DDDigiPlugins
 set(DDDigiIO_USES        "DD4hep::DDDigi;DD4hep::DDCore")
 set(DDDigiIO_SOURCES     "io/DigiIO.cpp;io/Digi2ROOT.cpp")
 set(DDDigiIO_GENERATED)
-set(DDDigiIO_DEFINITIONS)
+set(DDDigiIO_DEFINITIONS "DD4HEP_BUILD_DDDIGI_IO=1")
 if(DD4HEP_USE_GEANT4)
   list(APPEND DDDigiIO_DEFINITIONS "DD4HEP_USE_DDG4=1")
   dd4hep_add_dictionary(G__DDDigi_DDG4_IO
