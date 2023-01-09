@@ -69,7 +69,7 @@ template <> std::string DigiStoreDump::data_header(Key key, const std::string& t
   }
   return this->format("%04X %04X %08X %-32s: %-12s %s",
 		      key.segment(), key.mask(), key.item(),
-		      ('"'+Key::key_name(key)+'"'), tag.c_str(),
+		      ('"'+Key::key_name(key)+'"').c_str(), tag.c_str(),
 		      typ.c_str());
 }
 

@@ -47,10 +47,10 @@ dd4hep_add_plugin(DDDigiPlugins
 )
 #
 #----------------  I/O Plugin library to read/write DDG4 and edm4hep files ---------
-set(DDDigiIO_USES       "DD4hep::DDDigi;DD4hep::DDCore")
-set(DDDigiIO_SOURCES    "io/DigiIO.cpp")
+set(DDDigiIO_USES        "DD4hep::DDDigi;DD4hep::DDCore")
+set(DDDigiIO_SOURCES     "io/DigiIO.cpp")
 set(DDDigiIO_GENERATED)
-set(DDDigiIO_DEFINITIONS)
+set(DDDigiIO_DEFINITIONS "DD4HEP_BUILD_DDDIGI_IO=1")
 if(DD4HEP_USE_GEANT4)
   dd4hep_add_dictionary(G__DDDigi_DDG4_IO
     SOURCES ../DDCore/include/ROOT/Warnings.h io/DDG4IO.cpp

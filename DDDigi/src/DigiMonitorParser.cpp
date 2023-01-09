@@ -160,11 +160,11 @@ namespace dd4hep   {
         void operator()(dd4hep::digi::H2DParams& val, const float y, tag_max_y) const {
           val.max_y = y;
         }
-        void operator()(dd4hep::digi::H2DParams& val, const std::string& name, tag_name) const {
-          val.name = name;
+        void operator()(dd4hep::digi::H2DParams& val, const std::string& nam, tag_name) const {
+          val.name = nam;
         }
-        void operator()(dd4hep::digi::H2DParams& val, const std::string& title, tag_title) const {
-          val.title = title;
+        void operator()(dd4hep::digi::H2DParams& val, const std::string& tit, tag_title) const {
+          val.title = tit;
         }
 
       };
