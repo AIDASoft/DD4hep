@@ -92,7 +92,6 @@ namespace dd4hep {
     struct ddg4_input;
     struct digi_input;
     struct edm4hep_input;
-
   }    // End namespace digi
 }      // End namespace dd4hep
 #endif // DDDIGI_DIGIIO_H
