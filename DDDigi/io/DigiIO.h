@@ -35,19 +35,27 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
+    /// Auto cast union to read objects from ROOT files
     template <typename T> union input_data  {
+      /// Void type
       const void*      m_raw;
-      std::vector<T*>* m_items;
+      /// Concrete type
+      std::vector<T*>* m_data;
+
+      /// Constructor
       input_data(const void* p)   { this->m_raw = p; }
-      void clear()  { if ( this->m_items ) this->m_items->clear(); }
-      std::size_t size()  { return (this->m_items) ? this->m_items->size() : 0UL; }
+      /// Vector interface: get object
       std::vector<T*>& get()    { 
-	if ( this->m_items ) return *(this->m_items);
+	if ( this->m_data ) return *(this->m_data);
 	throw std::runtime_error("input_data: Invalid data!");
       }
+      /// Vector interface: clear items
+      void clear()         { if ( this->m_data ) this->m_data->clear(); }
+      /// Vector interface: access array size
+      std::size_t size()   { return (this->m_data) ? this->m_data->size() : 0UL; }
     };
 
-    /// Generci I/O helper to input/output digi data
+    /// Generic I/O helper to input/output digi data
     /**
      *
      *  \author  M.Frank
@@ -135,18 +143,18 @@ namespace dd4hep {
      *  \ingroup DD4HEP_DIGITIZATION
      */
     struct edm4hep_input  {
-      typedef edm4hep::MutableMCParticle        particle_type;
-      struct  input_trackerhit_type {};
+      typedef edm4hep::MutableMCParticle particle_type;
+      struct  input_trackerhit_type     {};
       struct  input_calorimeterhit_type {};
     };
 
     struct digi_input  {
       typedef Particle particle_type;
-      struct  input_trackerhit_type {};
+      struct  input_trackerhit_type     {};
       struct  input_calorimeterhit_type {};
     };
 
-    /// Generci I/O helper to output digi data in edm4hep format
+    /// Generic I/O helper to output digi data in edm4hep format
     /**
      *
      *  \author  M.Frank
