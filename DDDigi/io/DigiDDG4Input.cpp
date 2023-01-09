@@ -17,6 +17,7 @@
 #include "DigiIO.h"
 
 #include <DDG4/Geant4Data.h>
+#include <DDG4/Geant4Particle.h>
 
 // ROOT include files
 #include <TBranch.h>
@@ -123,4 +124,6 @@ namespace dd4hep {
     };
   }    // End namespace digi
 }      // End namespace dd4hep
+
+/// Factory instantiation
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDDG4ROOT)
