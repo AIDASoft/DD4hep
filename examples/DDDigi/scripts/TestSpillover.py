@@ -31,7 +31,7 @@ def run():
   # ========================================================================================================
   input_action.adopt_action('DigiDDG4ROOT/SignalReader',
                             mask=0x0,
-                            keep_raw = keep_raw,
+                            keep_raw=keep_raw,
                             input=[digi.next_input()],
                             OutputLevel=rdr_output)
   digi.info('Created input.signal')
@@ -41,7 +41,7 @@ def run():
   spillover = input_action.adopt_action('DigiSequentialActionSequence/Spillover-25')
   evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader-25ns',
                                      mask=0x1,
-                                     keep_raw = keep_raw,
+                                     keep_raw=keep_raw,
                                      input=[digi.next_input()],
                                      OutputLevel=rdr_output)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att-25ns',
@@ -58,7 +58,7 @@ def run():
   spillover = input_action.adopt_action('DigiSequentialActionSequence/Spillover-50')
   evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader-50ns',
                                      mask=0x2,
-                                     keep_raw = keep_raw,
+                                     keep_raw=keep_raw,
                                      input=[digi.next_input()],
                                      OutputLevel=rdr_output)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att-50ns',
@@ -73,7 +73,7 @@ def run():
   spillover = input_action.adopt_action('DigiSequentialActionSequence/Spillover-75')
   evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader-75ns',
                                      mask=0x3,
-                                     keep_raw = keep_raw,
+                                     keep_raw=keep_raw,
                                      input=[digi.next_input()],
                                      OutputLevel=rdr_output)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att-75ns',
@@ -105,7 +105,7 @@ def run():
   spillover = input_action.adopt_action('DigiSequentialActionSequence/Spillover+50')
   evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader+50ns',
                                      mask=0x5,
-                                     keep_raw = keep_raw,
+                                     keep_raw=keep_raw,
                                      input=[digi.next_input()],
                                      OutputLevel=rdr_output)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att+50ns',
@@ -120,7 +120,7 @@ def run():
   spillover = input_action.adopt_action('DigiSequentialActionSequence/Spillover+75')
   evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader+75ns',
                                      mask=0x6,
-                                     keep_raw = keep_raw,
+                                     keep_raw=keep_raw,
                                      input=[digi.next_input()],
                                      OutputLevel=rdr_output)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att+75ns',

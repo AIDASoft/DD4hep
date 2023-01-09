@@ -501,21 +501,23 @@ namespace dd4hep {
       };
 
       /// Hit position
-      Position       position    { };
+      Position       position     { };
       /// Hit direction
-      Direction      momentum    { };
+      Direction      momentum     { };
       /// Length of the track segment contributing to this hit
-      double         length      { 0 };
+      double         length       { 0e0 };
       /// Total energy deposit
-      double         deposit     { 0 };
+      double         deposit      { 0e0 };
+      /// Total energy deposit
+      double         depositError { -1e0 };
       /// Proper creation time of the deposit with rescpect to beam crossing
-      double         time        { 0 };
+      double         time         { 0e0 };
       /// Optional flag for user masks
-      uint64_t       flag        { 0UL };
+      uint64_t       flag         { 0UL };
       /// Source mask of this deposit
-      Key::mask_type mask        { 0 };
+      Key::mask_type mask         { 0 };
       /// Deposit history
-      History        history     { };
+      History        history      { };
 
     public:
       /// Default constructor

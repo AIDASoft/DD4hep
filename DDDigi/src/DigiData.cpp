@@ -157,23 +157,27 @@ Direction History::average_particle_momentum(const DigiEvent& event)  const   {
 /// Update the deposit using deposit weighting
 void EnergyDeposit::update_deposit_weighted(const EnergyDeposit& upda)  {
   double    sum = deposit + upda.deposit;
+  double    err = depositError + upda.depositError;
   Position  pos = ((deposit / sum) * position) + ((upda.deposit / sum) * upda.position);
   Direction mom = ((deposit / sum) * momentum) + ((upda.deposit / sum) * upda.momentum);
   position = pos;
   momentum = mom;
   deposit  = sum;
+  depositError = err;
   history.update(upda.history);
 }
 
 /// Update the deposit using deposit weighting
 void EnergyDeposit::update_deposit_weighted(EnergyDeposit&& upda)  {
   double    sum = deposit + upda.deposit;
+  double    err = depositError + upda.depositError;
   Position  pos = ((deposit / sum) * position) + ((upda.deposit / sum) * upda.position);
   Direction mom = ((deposit / sum) * momentum) + ((upda.deposit / sum) * upda.momentum);
   position = pos;
   momentum = mom;
-  deposit  = sum;
-  history.update(upda.history);
+  deposit  = sum; 
+  depositError = err;
+  history.update(std::move(upda.history));
 }
 
 /// Merge new deposit map onto existing map

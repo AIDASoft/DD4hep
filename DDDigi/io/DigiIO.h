@@ -74,8 +74,11 @@ namespace dd4hep {
       template <typename FIRST_TYPE, typename OUTPUT_TYPE> static
 	void _to_edm4hep(const FIRST_TYPE& first, OUTPUT_TYPE output);
 
+      template <typename FIRST_TYPE, typename OUTPUT_TYPE> static
+	void _to_edm4hep(const FIRST_TYPE& first, int hit_type, OUTPUT_TYPE output);
+
       template <typename FIRST_TYPE, typename SECOND_TYPE, typename OUTPUT_TYPE> static
-	void _to_edm4hep(const FIRST_TYPE& first, const SECOND_TYPE& second, OUTPUT_TYPE output);
+	void _to_edm4hep(const FIRST_TYPE& first, const SECOND_TYPE& second, int hit_type, OUTPUT_TYPE output);
     };
 
     struct ddg4_input  {
@@ -117,6 +120,9 @@ namespace dd4hep {
 
       template <typename FIRST, typename SECOND> static
 	void _to_edm4hep(const FIRST& cont, SECOND coll);
+
+      template <typename FIRST, typename SECOND> static
+	void _to_edm4hep(const FIRST& cont, SECOND coll, int hit_type);
 
       template <typename FIRST, typename SECOND, typename THIRD> static
 	void _to_digi(FIRST first, const SECOND& second, THIRD& third);

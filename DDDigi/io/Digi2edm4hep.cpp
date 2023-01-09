@@ -91,11 +91,10 @@ namespace dd4hep {
       virtual void execute(context_t& context)  const;
     };
 
-    /// Actor to select energy deposits according to the supplied segmentation
-    /** Actor to select energy deposits according to the supplied segmentation
+    /// Actor to save individual data containers to edm4hep
+    /** Actor to save individual data containers to edm4hep
      *
-     *  The selected deposits are placed in the output container
-     *  supplied by the arguments.
+     *  This is a typical worker action of the Digi2edm4hepAction
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -105,9 +104,14 @@ namespace dd4hep {
       friend class Digi2edm4hepAction;
 
     protected:
+      /// Reference to the edm4hep engine
       std::shared_ptr<Digi2edm4hepAction::internals_t> internals;
-      float pointResoRPhi = 0.004;
-      float pointResoZ = 0.004;
+      /// Property: RPhi resolution
+      float m_pointResoutionRPhi = 0.004;
+      /// Property: Z resolution
+      float m_pointResoutionZ = 0.004;
+      /// Hit type for hit processor
+      int   m_hit_type = 0;
 
     public:
       /// Standard constructor
@@ -173,14 +177,24 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
+    /// Helper class to create output in edm4hep format
+    /** Helper class to create output in edm4hep format
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
     class Digi2edm4hepAction::internals_t {
     public:
-      Digi2edm4hepAction* m_parent                { nullptr };
-      std::unique_ptr<podio::EventStore>  m_store { };
-      std::unique_ptr<podio::ROOTWriter>  m_file  { };
-      edm4hep::EventHeaderCollection* m_header    { nullptr };
+      Digi2edm4hepAction* m_parent                    { nullptr };
+      /// Reference to podio store
+      std::unique_ptr<podio::EventStore>  m_store     { };
+      /// Reference to podio writer
+      std::unique_ptr<podio::ROOTWriter>  m_file      { };
+      /// edm4hep event header collection
+      edm4hep::EventHeaderCollection*     m_header    { nullptr };
       /// MC particle collection
-      edm4hep::MCParticleCollection*  m_particles { nullptr };
+      edm4hep::MCParticleCollection*      m_particles { nullptr };
       /// Collection of all edm4hep object collections
       std::map<std::string, podio::CollectionBase*> m_collections;
 
@@ -382,6 +396,9 @@ namespace dd4hep {
     Digi2edm4hepProcessor::Digi2edm4hepProcessor(const DigiKernel& krnl, const std::string& nam)
       : DigiContainerProcessor(krnl, nam)
     {
+      declareProperty("point_resolution_RPhi", m_pointResoutionRPhi);
+      declareProperty("point_resolution_Z",    m_pointResoutionZ);
+      declareProperty("hit_type",              m_hit_type = 0);
     }
 
     void Digi2edm4hepProcessor::convert_particles(DigiContext& ctxt,
@@ -401,10 +418,12 @@ namespace dd4hep {
 					   const predicate_t& predicate,
 					   edm4hep::TrackerHitCollection* collection)  const
     {
-      std::array<float,6> covMat = {0., 0., pointResoRPhi*pointResoRPhi, 0., 0., pointResoZ*pointResoZ};
+      std::array<float,6> covMat = {0., 0., m_pointResoutionRPhi*m_pointResoutionRPhi, 
+				    0., 0., m_pointResoutionZ*m_pointResoutionZ
+      };
       for ( const auto& depo : cont )   {
 	if ( predicate(depo) )   {
-	  digi_io::_to_edm4hep(depo, covMat, collection);
+	  digi_io::_to_edm4hep(depo, covMat, m_hit_type /* edm4hep::SIMTRACKERHIT */, collection);
 	}
       }
     }
@@ -416,7 +435,7 @@ namespace dd4hep {
     {
       for ( const auto& depo : cont )   {
 	if ( predicate(depo) )   {
-	  digi_io::_to_edm4hep(depo, collection);
+	  digi_io::_to_edm4hep(depo, m_hit_type /* edm4hep::SIMCALORIMETERHIT */, collection);
 	}
       }
     }

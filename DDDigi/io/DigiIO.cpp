@@ -16,6 +16,9 @@
 #include <DD4hep/Printout.h>
 #include "DigiIO.h"
 
+/// C/C++ include files
+#include <limits>
+
 // =========================================================================
 //  EDM4HEP specific stuff
 // =========================================================================
@@ -354,8 +357,8 @@ namespace dd4hep {
 	cnv_to_digi(key, p, out);
     }
 
-  }    // End namespace digi
-}      // End namespace dd4hep
+  }     // End namespace digi
+}       // End namespace dd4hep
 #endif  // DD4HEP_USE_DDG4
 
 /// Namespace for the AIDA detector description toolkit
@@ -398,33 +401,43 @@ namespace dd4hep {
     template <>
     void digi_io::_to_edm4hep(const std::pair<const CellID, EnergyDeposit>& dep,
 			      const std::array<float, 6>& covMat,
+			      int hit_type,
 			      edm4hep::TrackerHitCollection* collection)
     {
       const EnergyDeposit& de = dep.second;
       auto hit = collection->create();
-      hit.setType(0 /* edm4hep::SIMTRACKERHIT */);
-      hit.setTime(de.time);
-      hit.setCovMatrix(covMat);
-      hit.setCellID(dep.first);
-      hit.setEDep(de.deposit);
-      hit.setEDepError(de.deposit/1e0);
-      hit.setEdx(de.deposit/de.length);
+      double dep_error = de.depositError;
+      if ( dep_error < -std::numeric_limits<double>::epsilon() )   {
+	dep_error = 0e0;
+      }
+      hit.setType( hit_type );
+      hit.setTime( de.time );
+      hit.setCovMatrix( covMat );
+      hit.setCellID( dep.first );
+      hit.setEDep( de.deposit );
+      hit.setEDepError( dep_error );
+      hit.setEdx( de.deposit/de.length );
       hit.setPosition( _toVectorD(de.position) );
     }
 
     template <>
     void digi_io::_to_edm4hep(const std::pair<const CellID, EnergyDeposit>& dep,
+			      int hit_type,
 			      edm4hep::CalorimeterHitCollection* collection)
     {
       const EnergyDeposit& de = dep.second;
       auto hit = collection->create();
-      hit.setType(0 /* edm4hep::SIMCALORIMETERHIT */);
-      hit.setTime(de.time);
-      hit.setCellID(dep.first);
-      hit.setEnergy(de.deposit);
-      hit.setEnergyError(de.deposit/10e0);
+      double dep_error = de.depositError;
+      if ( dep_error < -std::numeric_limits<double>::epsilon() )   {
+	dep_error = 0e0;
+      }
+      hit.setType( hit_type );
+      hit.setTime( de.time );
+      hit.setCellID( dep.first );
+      hit.setEnergy( de.deposit );
+      hit.setEnergyError( dep_error );
       hit.setPosition( _toVectorF(de.position) );
     }
-  }    // End namespace digi
-}      // End namespace dd4hep
+  }     // End namespace digi
+}       // End namespace dd4hep
 #endif  // DD4HEP_USE_EDM4HEP
