@@ -335,7 +335,6 @@ _props('DigiSequentialActionSequence', adopt_action=_adopt_sequence_action)
 _props('DigiContainerSequenceAction', adopt_container_processor=_adopt_container_processor)
 _props('DigiMultiContainerProcessor', adopt_processor=_adopt_processor)
 _props('DigiSegmentSplitter', adopt_segment_processor=_adopt_segment_processor)
-  
 # ---------------------------------------------------------------------------
 
 
