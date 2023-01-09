@@ -90,7 +90,7 @@ def run():
   spillover = input_action.adopt_action('DigiSequentialActionSequence/Spillover+25')
   evtreader = spillover.adopt_action('DigiDDG4ROOT/Reader+25ns',
                                      mask=0x4,
-                                     keep_raw = keep_raw,
+                                     keep_raw=keep_raw,
                                      input=[digi.next_input()],
                                      OutputLevel=rdr_output)
   attenuate = spillover.adopt_action('DigiAttenuatorSequence/Att+25ns',
