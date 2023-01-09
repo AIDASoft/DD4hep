@@ -470,7 +470,6 @@ namespace dd4hep {
 }       // End namespace dd4hep
 #endif  // DD4HEP_USE_DDG4 && DD4HEP_USE_EDM4HEP
 
-
 /// ======================================================================
 ///  Conversion from DDDigi in memory to edm4hep
 /// ======================================================================

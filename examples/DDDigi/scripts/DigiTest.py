@@ -125,6 +125,7 @@ class Test(dddigi.Digitize):
     self.kernel().terminate()
     return evt_done
 
+
 # ==========================================================================================================
 def test_setup_1(digi, print_level=WARNING, parallel=True):
   """
