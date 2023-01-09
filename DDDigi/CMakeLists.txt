@@ -50,24 +50,25 @@ dd4hep_add_plugin(DDDigiPlugins
 set(DDDigiIO_USES        "DD4hep::DDDigi;DD4hep::DDCore")
 set(DDDigiIO_SOURCES     "io/DigiIO.cpp")
 set(DDDigiIO_GENERATED)
-set(DDDigiIO_DEFINITIONS "DD4HEP_BUILD_DDDIGI_IO=1")
+set(DDDigiIO_DEFINITIONS)
 if(DD4HEP_USE_GEANT4)
+  list(APPEND DDDigiIO_DEFINITIONS "DD4HEP_USE_DDG4=1")
   dd4hep_add_dictionary(G__DDDigi_DDG4_IO
-    SOURCES ../DDCore/include/ROOT/Warnings.h io/DDG4IO.cpp
-    LINKDEF ../DDCore/include/ROOT/LinkDef.h
-    USES    DD4hep::DDG4 DD4hep::DDCore
+    SOURCES     ../DDCore/include/ROOT/Warnings.h io/DDG4IO.cpp
+    LINKDEF     ../DDCore/include/ROOT/LinkDef.h
+    USES        DD4hep::DDG4 DD4hep::DDCore
+    DEFINITIONS ${DDDigiIO_DEFINITIONS}
   )
-  list(APPEND DDDigiIO_DEFINITIONS DD4HEP_USE_DDG4=1)
   list(APPEND DDDigiIO_GENERATED   G__DDDigi_DDG4_IO.cxx)
   list(APPEND DDDigiIO_SOURCES     "io/DDG4IO.cpp;io/DigiDDG4Input.cpp")
-  list(APPEND DDDigiIO_USES        DD4hep::DDG4)
+  list(APPEND DDDigiIO_USES        "DD4hep::DDG4")
 else()
   dd4hep_print( "|++> Geant4 not used. DDDigi will not be able to read DDG4 output.")
 endif()
 #
 if(DD4HEP_USE_EDM4HEP)
   list(APPEND DDDigiIO_SOURCES      io/Digi2edm4hep.cpp)
-  list(APPEND DDDigiIO_DEFINITIONS  DD4HEP_USE_EDM4HEP=1)
+  list(APPEND DDDigiIO_DEFINITIONS  "DD4HEP_USE_EDM4HEP=1")
   list(APPEND DDDigiIO_USES         "EDM4HEP::edm4hep;EDM4HEP::edm4hepDict;podio::podio;podio::podioDict;podio::podioRootIO")
 else()
   dd4hep_print( "|++> EDM4HEP not used. DDDigi will not be able to write EDM4HEP output.")
@@ -78,8 +79,8 @@ dd4hep_add_plugin(DDDigi_IO
     SOURCES        ${DDDigiIO_SOURCES}
     GENERATED      ${DDDigiIO_GENERATED}
     USES           ${DDDigiIO_USES}
+    DEFINITIONS    ${DDDigiIO_DEFINITIONS}
   )
-  target_compile_definitions(DDDigi_IO PRIVATE ${DDDigiIO_DEFINITIONS})
   set_target_properties(DDDigi_IO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   install(TARGETS DDDigi_IO EXPORT DD4hep ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
 #
