@@ -56,13 +56,13 @@ void Geant4Output2ROOT::closeOutput()   {
   if (m_file) {
     TDirectory::TContext ctxt(m_file);
     Sections::iterator i = m_sections.find(m_section);
-    info("+++ Closing ROOT ourput file %s", m_file->GetName());
+    info("+++ Closing ROOT output file %s", m_file->GetName());
     if ( i != m_sections.end() )
       m_sections.erase(i);
     m_branches.clear();
     m_tree->Write();
     m_file->Close();
-    m_tree = 0;
+    m_tree = nullptr;
     detail::deletePtr (m_file);
   }
 }
