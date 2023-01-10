@@ -54,68 +54,68 @@ namespace dd4hep {
 
       /// Input definition
       struct input_t  {
-	/// Input segment reference
-	segment_t*      segment;
-	/// Input data key
-	Key             key;
-	/// Input deposits
-	std::any*       data;
+        /// Input segment reference
+        segment_t*      segment;
+        /// Input data key
+        Key             key;
+        /// Input deposits
+        std::any*       data;
       };
 
       /// Output handle definition
       struct output_t  {
-	int             mask;
-	segment_t&      data;
+        int             mask;
+        segment_t&      data;
       };
 
       /// Hit processing predicate
       struct predicate_t  {
-	using deposit_t  = std::pair<const CellID, EnergyDeposit>;
-	using callback_t = std::function<bool(const deposit_t&)>;
-	callback_t            callback      { };
-	uint32_t              id            { 0 };
-	const segmentation_t* segmentation  { nullptr };
+        using deposit_t  = std::pair<const CellID, EnergyDeposit>;
+        using callback_t = std::function<bool(const deposit_t&)>;
+        callback_t            callback      { };
+        uint32_t              id            { 0 };
+        const segmentation_t* segmentation  { nullptr };
 
-	predicate_t() = default;
-	predicate_t(std::function<bool(const deposit_t&)> func, uint32_t i, const segmentation_t* s)
-	: callback(func), id(i), segmentation(s) {}
-	predicate_t(predicate_t&& copy) = default;
-	predicate_t(const predicate_t& copy) = default;
-	predicate_t& operator = (predicate_t&& copy) = default;
-	predicate_t& operator = (const predicate_t& copy) = default;
-	/// Check if a deposit should be processed
-	bool operator()(const deposit_t& deposit)   const;
-	static bool always_true(const deposit_t&)        { return true; }
-	static bool not_killed (const deposit_t& depo)   { return 0 == (depo.second.flag&EnergyDeposit::KILLED); }
+        predicate_t() = default;
+        predicate_t(std::function<bool(const deposit_t&)> func, uint32_t i, const segmentation_t* s)
+          : callback(func), id(i), segmentation(s) {}
+        predicate_t(predicate_t&& copy) = default;
+        predicate_t(const predicate_t& copy) = default;
+        predicate_t& operator = (predicate_t&& copy) = default;
+        predicate_t& operator = (const predicate_t& copy) = default;
+        /// Check if a deposit should be processed
+        bool operator()(const deposit_t& deposit)   const;
+        static bool always_true(const deposit_t&)        { return true; }
+        static bool not_killed (const deposit_t& depo)   { return 0 == (depo.second.flag&EnergyDeposit::KILLED); }
       };
 
       struct env_t   {
-	/// Event processing context
-	context_t&        context;
-	/// Optional properties
-	const property_t& properties;
-	/// Output data
-	output_t&         output;
+        /// Event processing context
+        context_t&        context;
+        /// Optional properties
+        const property_t& properties;
+        /// Output data
+        output_t&         output;
       };
 
       /// Work definition
       struct work_t  {
-	env_t             environ;
-	/// Input data
-	input_t           input;
+        env_t             environ;
+        /// Input data
+        input_t           input;
 
-	/// Basic check if input data are present
-	bool has_input()  const    {  return this->input.data->has_value();  }
-	/// Access key of input data
-	Key  input_key()  const    {  return this->input.key;               }
-	/// Access the input data type
-	const std::type_info& input_type()  const;
-	/// String form of the input data type
-	std::string input_type_name()  const;
-	/// Access input data by type
-	template <typename DATA> DATA* get_input(bool exc=false);
-	/// Access input data by type
-	template <typename DATA> const DATA* get_input(bool exc=false)  const;
+        /// Basic check if input data are present
+        bool has_input()  const    {  return this->input.data->has_value();  }
+        /// Access key of input data
+        Key  input_key()  const    {  return this->input.key;               }
+        /// Access the input data type
+        const std::type_info& input_type()  const;
+        /// String form of the input data type
+        std::string input_type_name()  const;
+        /// Access input data by type
+        template <typename DATA> DATA* get_input(bool exc=false);
+        /// Access input data by type
+        template <typename DATA> const DATA* get_input(bool exc=false)  const;
       };
 
       /// Monitoring object
@@ -169,8 +169,8 @@ namespace dd4hep {
     };
 
 #define DEPOSIT_PROCESSOR_BIND_HANDLERS(X)   {     using namespace std::placeholders; \
-	this->m_handleVector  = std::bind( &X<DepositVector>,  this, _1, _2, _3, _4); \
-	this->m_handleMapping = std::bind( &X<DepositMapping>, this, _1, _2, _3, _4); }
+      this->m_handleVector  = std::bind( &X<DepositVector>,  this, _1, _2, _3, _4); \
+      this->m_handleMapping = std::bind( &X<DepositMapping>, this, _1, _2, _3, _4); }
 
     /// Worker class act on containers in an event identified by input masks and container name
     /**
@@ -251,16 +251,16 @@ namespace dd4hep {
       using self_t      = DigiContainerSequenceAction;
       /// Work definition structure: Argument structure for client calls
       struct work_t  {
-	env_t&        environ;
-	work_items_t& input_items;
-	const self_t& parent;
+        env_t&        environ;
+        work_items_t& input_items;
+        const self_t& parent;
       };
 
       using worker_t         = DigiParallelWorker<processor_t, work_t, std::size_t, self_t&>;
       using workers_t        = DigiParallelWorkers<worker_t>;
       using predicate_t      = processor_t::predicate_t;
-      using reg_workers_t    = std::map<Key, worker_t*>;
-      using reg_processors_t = std::map<Key, processor_t*>;
+      using reg_workers_t    = std::map<Key::key_type, worker_t*>;
+      using reg_processors_t = std::map<Key::key_type, processor_t*>;
       friend class DigiParallelWorker<processor_t, work_t, std::size_t, self_t&>;
 
       /// Property: Input data segment name
@@ -327,9 +327,9 @@ namespace dd4hep {
 
       /// Argument structure required to support multiple client calls
       struct work_t  {
-	env_t&              environ;
-	work_items_t&       items;
-	const self_t&       parent;
+        env_t&              environ;
+        work_items_t&       items;
+        const self_t&       parent;
       };
       using worker_t      = DigiParallelWorker<processor_t, work_t, std::size_t, self_t&>;
       using workers_t     = DigiParallelWorkers<worker_t>;
@@ -364,7 +364,7 @@ namespace dd4hep {
       workers_t                 m_workers;
 
     protected:
-       /// Define standard assignments and constructors
+      /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiMultiContainerProcessor);
       /// Default destructor
       virtual ~DigiMultiContainerProcessor();
@@ -375,10 +375,10 @@ namespace dd4hep {
       /// Standard constructor
       DigiMultiContainerProcessor(const kernel_t& kernel, const std::string& name);
       const std::vector<Key>& worker_keys(size_t worker_id)  const  {
-	return this->m_worker_keys.at(worker_id);
+        return this->m_worker_keys.at(worker_id);
       }
       const std::vector<int>& input_masks()  const   {
-	return this->m_input_masks;
+        return this->m_input_masks;
       }
       /// Set the default predicate
       virtual void set_predicate(const predicate_t& predicate);

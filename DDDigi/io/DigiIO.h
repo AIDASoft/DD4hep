@@ -46,8 +46,8 @@ namespace dd4hep {
       input_data(const void* p)   { this->m_raw = p; }
       /// Vector interface: get object
       std::vector<T*>& get()    { 
-	if ( this->m_data ) return *(this->m_data);
-	throw std::runtime_error("input_data: Invalid data!");
+        if ( this->m_data ) return *(this->m_data);
+        throw std::runtime_error("input_data: Invalid data!");
       }
       /// Vector interface: clear items
       void clear()         { if ( this->m_data ) this->m_data->clear(); }
@@ -63,18 +63,19 @@ namespace dd4hep {
      *  \ingroup DD4HEP_DIGITIZATION
      */
     template <typename T> struct data_io   {
+#if 0
       using particle_t       = typename T::particle_type;
       using trackerhit_t     = typename T::input_trackerhit_type;
       using calorimeterhit_t = typename T::input_calorimeterhit_type;
       using pwrap_t          = std::shared_ptr<particle_t>;
       using twrap_t          = std::shared_ptr<trackerhit_t>;
       using cwrap_t          = std::shared_ptr<calorimeterhit_t>;
-
+#endif
       /// Default constructor
       data_io() = default;
       /// Default destructor
       ~data_io() = default;
-
+#if 0
       /// Check if specialization can handle data conversion
       template <typename DATA>
       static bool _can_handle(const DATA& data);
@@ -82,36 +83,26 @@ namespace dd4hep {
       /// Convert data of particle type
       template <typename CONT> static
       std::vector<const particle_t*> _to_vector(const CONT& cont);
-
+#endif
       /// Pre-create container of output data
       template <typename CONT> static
       void _pre_create(CONT* coll, std::size_t n);
 
       template <typename FIRST, typename SECOND> static
-	void _to_edm4hep(const FIRST& cont, SECOND coll);
+      void _to_edm4hep(const FIRST& cont, SECOND coll);
 
       template <typename FIRST, typename SECOND> static
-	void _to_edm4hep(const FIRST& cont, SECOND coll, int hit_type);
+      void _to_edm4hep(const FIRST& cont, SECOND coll, int hit_type);
 
       template <typename FIRST, typename SECOND, typename THIRD> static
-	void _to_digi(FIRST first, const SECOND& second, THIRD& third);
+      void _to_digi(FIRST first, const SECOND& second, THIRD& third);
 
       template <typename FIRST, typename SECOND, typename PREDICATE> static
-	void _to_digi_if(const FIRST& first, SECOND& second, const PREDICATE& pred);
+      void _to_digi_if(const FIRST& first, SECOND& second, const PREDICATE& pred);
     };
 
-    /// Structure definitions for DDG4 input data
-    /**
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_DIGITIZATION
-     */
-    struct ddg4_input  {
-      typedef sim::Geant4Particle particle_type;
-      struct  input_trackerhit_type {};
-      struct  input_calorimeterhit_type {};
-    };
+    struct ddg4_input;
+    struct digi_input;
 
   }    // End namespace digi
 }      // End namespace dd4hep
@@ -148,12 +139,6 @@ namespace dd4hep {
       struct  input_calorimeterhit_type {};
     };
 
-    struct digi_input  {
-      typedef Particle particle_type;
-      struct  input_trackerhit_type     {};
-      struct  input_calorimeterhit_type {};
-    };
-
     /// Generic I/O helper to output digi data in edm4hep format
     /**
      *
@@ -166,13 +151,13 @@ namespace dd4hep {
       /// Default constructor
       digi_io() = default;
       template <typename FIRST_TYPE, typename OUTPUT_TYPE> static
-	void _to_edm4hep(const FIRST_TYPE& first, OUTPUT_TYPE output);
+      void _to_edm4hep(const FIRST_TYPE& first, OUTPUT_TYPE output);
 
       template <typename FIRST_TYPE, typename OUTPUT_TYPE> static
-	void _to_edm4hep(const FIRST_TYPE& first, int hit_type, OUTPUT_TYPE output);
+      void _to_edm4hep(const FIRST_TYPE& first, int hit_type, OUTPUT_TYPE output);
 
       template <typename FIRST_TYPE, typename SECOND_TYPE, typename OUTPUT_TYPE> static
-	void _to_edm4hep(const FIRST_TYPE& first, const SECOND_TYPE& second, int hit_type, OUTPUT_TYPE output);
+      void _to_edm4hep(const FIRST_TYPE& first, const SECOND_TYPE& second, int hit_type, OUTPUT_TYPE output);
     };
   }    // End namespace digi
 }      // End namespace dd4hep

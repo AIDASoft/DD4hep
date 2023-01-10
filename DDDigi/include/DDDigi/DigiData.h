@@ -279,12 +279,12 @@ namespace dd4hep {
     class SegmentEntry   {
     public:
       enum data_type_t  {
-	UNKNOWN            = 0,
-	PARTICLES          = 1 << 1,
-	TRACKER_HITS       = 1 << 2,
-	CALORIMETER_HITS   = 1 << 3,
-	HISTORY            = 1 << 4,
-	DETECTOR_RESPONSE  = 1 << 5,
+        UNKNOWN            = 0,
+        PARTICLES          = 1 << 1,
+        TRACKER_HITS       = 1 << 2,
+        CALORIMETER_HITS   = 1 << 3,
+        HISTORY            = 1 << 4,
+        DETECTOR_RESPONSE  = 1 << 5,
       };
       std::string      name { };
       Key              key  { };
@@ -491,12 +491,12 @@ namespace dd4hep {
     class EnergyDeposit   {
     public:
       enum { 
-	KILLED             = 1 << 0,
-	ENERGY_SMEARED     = 1 << 1,
-	POSITION_SMEARED   = 1 << 2,
-	TIME_SMEARED       = 1 << 3,
-	ZERO_SUPPRESSED    = 1 << 4,
-	DEPOSIT_NOISE      = 1 << 5,
+        KILLED             = 1 << 0,
+        ENERGY_SMEARED     = 1 << 1,
+        POSITION_SMEARED   = 1 << 2,
+        TIME_SMEARED       = 1 << 3,
+        ZERO_SUPPRESSED    = 1 << 4,
+        DEPOSIT_NOISE      = 1 << 5,
         RECALIBRATED       = 1 << 6,
       };
 
@@ -561,7 +561,7 @@ namespace dd4hep {
 
     /// Standard constructor
     template <typename USERDATA> inline 
-      DepositPredicate<USERDATA>::DepositPredicate(const userdata_t& d)
+    DepositPredicate<USERDATA>::DepositPredicate(const userdata_t& d)
       : data(d)
     {
     }
@@ -974,26 +974,26 @@ namespace dd4hep {
     /// Access data as reference by key. If not existing, an exception is thrown
     template<typename DATA> inline DATA& DataSegment::get(Key key)     {
       if ( DATA* ptr = std::any_cast<DATA>(this->get_item(key, true)) )
-	return *ptr;
+        return *ptr;
       throw std::runtime_error(this->invalid_cast(key, typeid(DATA)));
     }
     /// Access data as reference by key. If not existing, an exception is thrown
     template<typename DATA> inline const DATA& DataSegment::get(Key key)  const   {
       if ( const DATA* ptr = std::any_cast<DATA>(this->get_item(key, true)) )
-	return *ptr;
+        return *ptr;
       throw std::runtime_error(this->invalid_cast(key, typeid(DATA)));
     }
 
     /// Access data as pointers by key. If not existing, nullptr is returned
     template<typename DATA> inline DATA* DataSegment::pointer(Key key)     {
       if ( DATA* ptr = std::any_cast<DATA>(this->get_item(key, false)) )
-	return ptr;
+        return ptr;
       return nullptr;
     }
     /// Access data as pointers by key. If not existing, nullptr is returned
     template<typename DATA> inline const DATA* DataSegment::pointer(Key key)  const   {
       if ( const DATA* ptr = std::any_cast<DATA>(this->get_item(key, false)) )
-	return ptr;
+        return ptr;
       return nullptr;
     }
 
@@ -1007,7 +1007,7 @@ namespace dd4hep {
 
     /// Helper to place data to data segment
     template <typename KEY, typename DATA> 
-      bool put_data(DataSegment& segment, KEY key, DATA& data)    {
+    bool put_data(DataSegment& segment, KEY key, DATA& data)    {
       return segment.emplace_any(key, std::any(data));
     }
 
