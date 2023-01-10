@@ -406,7 +406,7 @@ namespace dd4hep {
     {
       auto* coll = internals->m_particles;
       std::size_t start = coll->size();
-      digi_io()._to_edm4hep(cont, coll);
+      data_io<edm4hep_input>::_to_edm4hep(cont, coll);
       std::size_t end = internals->m_particles->size();
       info("%s+++ %-24s added %6ld/%6ld entries from mask: %04X to %s",
            ctxt.event->id(), cont.name.c_str(), end-start, end, cont.key.mask(),
@@ -423,7 +423,7 @@ namespace dd4hep {
       };
       for ( const auto& depo : cont )   {
         if ( predicate(depo) )   {
-          digi_io::_to_edm4hep(depo, covMat, m_hit_type /* edm4hep::SIMTRACKERHIT */, collection);
+          data_io<edm4hep_input>::_to_edm4hep(depo, covMat, *collection, m_hit_type /* edm4hep::SIMTRACKERHIT */);
         }
       }
     }
@@ -435,7 +435,7 @@ namespace dd4hep {
     {
       for ( const auto& depo : cont )   {
         if ( predicate(depo) )   {
-          digi_io::_to_edm4hep(depo, m_hit_type /* edm4hep::SIMCALORIMETERHIT */, collection);
+          data_io<edm4hep_input>::_to_edm4hep(depo, *collection, m_hit_type /* edm4hep::SIMCALORIMETERHIT */);
         }
       }
     }
