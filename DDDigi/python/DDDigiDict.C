@@ -197,7 +197,6 @@ namespace dd4hep {
 #pragma link C++ namespace dd4hep::digi;
 
 ///---- Digi data item wrappers
-//#pragma link C++ class dd4hep::digi::Key;
 #pragma link C++ class std::pair<dd4hep::digi::Key::key_type, dd4hep::digi::Particle>+;
 #pragma link C++ class std::map<dd4hep::digi::Key::key_type, dd4hep::digi::Particle>+;
 #pragma link C++ class std::map<dd4hep::digi::Key::key_type, dd4hep::digi::Particle*>+;

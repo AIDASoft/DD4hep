@@ -76,7 +76,7 @@ namespace dd4hep {
       void _to_edm4hep(const FIRST& first, SECOND& second, int hit_type);
 
       template <typename FIRST, typename SECOND> static
-	void _to_edm4hep(const FIRST& cont, SECOND coll, int hit_type);
+      void _to_edm4hep(const FIRST& cont, SECOND coll, int hit_type);
 
       template <typename FIRST, typename SECOND, typename THIRD> static
       void _to_edm4hep(const FIRST& first, const SECOND& second, THIRD& third, int hit_type);
