@@ -28,6 +28,10 @@
 #include <edm4hep/SimTrackerHit.h>
 #include <edm4hep/MCParticle.h>
 #include <edm4hep/MCParticleCollection.h>
+#include <edm4hep/TrackerHitCollection.h>
+#include <edm4hep/SimTrackerHitCollection.h>
+#include <edm4hep/CalorimeterHitCollection.h>
+#include <edm4hep/SimCalorimeterHitCollection.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -40,6 +44,9 @@ namespace dd4hep {
       typedef my_part particle_type;
     };
 
+    edm4hep::Vector3d _toVectorD(const Position& ep);
+    edm4hep::Vector3f _toVectorF(const Position& ep);
+
     /// Structure definitions for DDDigi input data
     /**
      *
@@ -49,6 +56,19 @@ namespace dd4hep {
      */
     struct digi_input  {
       typedef Particle particle_type;
+      struct  input_trackerhit_type     {};
+      struct  input_calorimeterhit_type {};
+    };
+
+    /// Structure definitions for edm4hep input data
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    struct edm4hep_input  {
+      typedef edm4hep::MutableMCParticle particle_type;
       struct  input_trackerhit_type     {};
       struct  input_calorimeterhit_type {};
     };
@@ -64,6 +84,15 @@ namespace dd4hep {
       typedef sim::Geant4Particle particle_type;
       struct  input_trackerhit_type {};
       struct  input_calorimeterhit_type {};
+    };
+
+    template <typename T> struct data_input   {
+      using particle_t       = typename T::particle_type;
+      using trackerhit_t     = typename T::input_trackerhit_type;
+      using calorimeterhit_t = typename T::input_calorimeterhit_type;
+      using pwrap_t          = std::shared_ptr<particle_t>;
+      using twrap_t          = std::shared_ptr<trackerhit_t>;
+      using cwrap_t          = std::shared_ptr<calorimeterhit_t>;
     };
 
     edm4hep::Vector3d _toVectorD(const dd4hep::Position& ep)  {
@@ -82,28 +111,27 @@ namespace dd4hep {
       }
     }
 
-    template <typename T> template <typename DATA>
-    bool data_io<T>::_can_handle(const DATA& data)  {
-      return internal_can_handle(data, typeid(T::pwrap_t));
+    template <typename INPUT, typename DATA>
+    static bool _can_handle(const INPUT& , const DATA& data)  {
+      return internal_can_handle(data, typeid(typename data_input<INPUT>::pwrap_t));
     }
 
-    template <typename T> template <typename CONT>
-    void data_io<T>::_pre_create(CONT* coll, std::size_t n)  {
+    template <typename CONT>
+    void _pre_create(CONT* coll, std::size_t n)  {
       /// We have to pre-create all objects to be able to fill the parent-daughter relationships
       for ( std::size_t i=0; i<n; ++i )   {
         coll->create();
       }
     }
 
-    template <typename T> template <typename CONT>
-    std::vector<const typename data_io<T>::particle_t*> 
-    data_io<T>::_to_vector(const CONT& cont)   {
-      std::vector<const particle_t*> vec;
+    template <typename INPUT, typename CONT>
+    std::vector<const typename INPUT::particle_t*> _to_vector(const INPUT&, const CONT& cont)   {
+      std::vector<const typename INPUT::particle_t*> vec;
       vec.reserve(cont.size());
       for ( const auto& part : cont )   {
         const auto& p = part.second;
-        if ( p.source.type() == typeid(pwrap_t) )   {
-          const auto* ptr = std::any_cast<pwrap_t>(&p.source);
+        if ( p.source.type() == typeid(typename INPUT::pwrap_t) )   {
+          const auto* ptr = std::any_cast<typename INPUT::pwrap_t>(&p.source);
           vec.emplace_back(ptr->get());
         }
       }
@@ -121,7 +149,7 @@ namespace dd4hep {
 
     /// Set all properties of the MutableMCParticle
     template <> template <>
-    void data_io<digi_input>::_to_edm4hep(const particle_t& p, 
+    void data_io<digi_input>::_to_edm4hep(const Particle& p, 
                                           edm4hep::MutableMCParticle mcp)  {
       mcp.setPDG(p.pdgID);
       mcp.setTime(p.time);
@@ -134,7 +162,7 @@ namespace dd4hep {
     }
 
     template <> template <>
-    void data_io<digi_input>::_to_edm4hep(const std::vector<const particle_t*>& cont,
+    void data_io<digi_input>::_to_edm4hep(const std::vector<const Particle*>& cont,
                                           edm4hep::MCParticleCollection* coll)   {
       std::size_t i, n = cont.size();
       _pre_create(coll, n);
@@ -146,7 +174,7 @@ namespace dd4hep {
 
     /// Set all properties of the MutableMCParticle
     template <> template <>
-    void data_io<edm4hep_input>::_to_edm4hep(const particle_t& p, 
+    void data_io<edm4hep_input>::_to_edm4hep(const edm4hep::MCParticle& p, 
                                              edm4hep::MutableMCParticle mcp)
     {
       mcp.setPDG( p.getPDG() );
@@ -164,15 +192,15 @@ namespace dd4hep {
     }
 
     template <> template <>
-    void data_io<edm4hep_input>::_to_edm4hep(const std::vector<const particle_t*>& cont,
+    void data_io<edm4hep_input>::_to_edm4hep(const std::vector<const edm4hep::MCParticle*>& cont,
                                              edm4hep::MCParticleCollection* coll)
     {
       std::size_t i, n = cont.size();
       _pre_create(coll, n);
       /// Convert particle body
       for ( i=0; i<n; ++i)   {
-        const particle_t* p = cont[i];
-        auto  mcp = coll->at(i);
+        const auto* p = cont[i];
+        auto mcp = coll->at(i);
         _to_edm4hep(*p, mcp);
 #if 0
         /// Relationships are already resolved and kept in order: Just copy indices
@@ -184,6 +212,48 @@ namespace dd4hep {
         }
 #endif
       }
+    }
+
+    template <> template <> 
+    void data_io<edm4hep_input>::_to_edm4hep(const std::pair<const CellID, EnergyDeposit>& dep,
+					     const std::array<float, 6>& covMat,
+					     edm4hep::TrackerHitCollection& collection,
+					     int hit_type)
+
+    {
+      const EnergyDeposit& de = dep.second;
+      auto hit = collection.create();
+      double dep_error = de.depositError;
+      if ( dep_error < -std::numeric_limits<double>::epsilon() )   {
+        dep_error = 0e0;
+      }
+      hit.setType( hit_type );
+      hit.setTime( de.time );
+      hit.setCovMatrix( covMat );
+      hit.setCellID( dep.first );
+      hit.setEDep( de.deposit );
+      hit.setEDepError( dep_error );
+      hit.setEdx( de.deposit/de.length );
+      hit.setPosition( _toVectorD(de.position) );
+    }
+
+    template <> template <>
+    void data_io<edm4hep_input>::_to_edm4hep(const std::pair<const CellID, EnergyDeposit>& dep,
+					     edm4hep::CalorimeterHitCollection& collection,
+					     int hit_type)
+    {
+      const EnergyDeposit& de = dep.second;
+      auto hit = collection.create();
+      double dep_error = de.depositError;
+      if ( dep_error < -std::numeric_limits<double>::epsilon() )   {
+        dep_error = 0e0;
+      }
+      hit.setType( hit_type );
+      hit.setTime( de.time );
+      hit.setCellID( dep.first );
+      hit.setEnergy( de.deposit );
+      hit.setEnergyError( dep_error );
+      hit.setPosition( _toVectorF(de.position) );
     }
   }     // End namespace digi
 }       // End namespace dd4hep
@@ -331,7 +401,7 @@ namespace dd4hep {
 
     /// Set all properties of the MutableMCParticle
     template <> template <>
-    void data_io<ddg4_input>::_to_edm4hep(const particle_t& p, 
+    void data_io<ddg4_input>::_to_edm4hep(const sim::Geant4Particle& p, 
                                           edm4hep::MutableMCParticle mcp)
     {
       auto status = p.status;
@@ -378,14 +448,15 @@ namespace dd4hep {
     }
 
     template <> template <> 
-    void data_io<ddg4_input>::_to_edm4hep(const std::vector<const particle_t*>& cont,
+    void data_io<ddg4_input>::_to_edm4hep(const std::vector<const sim::Geant4Particle*>& cont,
                                           edm4hep::MCParticleCollection* coll)
     {
+      /// Precreate objects to allow setting the references without second pass
       std::size_t i, n = cont.size();
       _pre_create(coll, n);
       /// Convert particle body
       for ( i=0; i<n; ++i)   {
-        const particle_t* p = cont[i];
+        const auto* p = cont[i];
         auto  mcp = coll->at(i);
         _to_edm4hep(*p, mcp);
         /// Relationships are already resolved and kept in order: Just copy indices
@@ -410,76 +481,32 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
-    template <>
-    void digi_io::_to_edm4hep(const ParticleMapping& cont,
-                              edm4hep::MCParticleCollection* coll)
+    template <> template <> 
+    void data_io<edm4hep_input>::_to_edm4hep(const ParticleMapping& cont,
+					     edm4hep::MCParticleCollection* coll)
     {
       if ( cont.empty() )   {
         return;
       }
-      if ( data_io<edm4hep_input>::_can_handle(*cont.begin()) )  {
-        data_io<edm4hep_input> io;
-        auto vec = io._to_vector(cont);
+      else if ( _can_handle(edm4hep_input(), *cont.begin()) )  {
+        auto vec = _to_vector(data_input<edm4hep_input>(), cont);
         if ( !vec.empty() )  {
-          io._to_edm4hep(vec, coll);
+	  data_io<edm4hep_input>::_to_edm4hep(vec, coll);
         }
-        return;
       }
-      else if ( data_io<ddg4_input>::_can_handle(*cont.begin()) )  {
-        data_io<ddg4_input> io;
-        auto vec = io._to_vector(cont);
+      else if ( _can_handle(ddg4_input(), *cont.begin()) )  {
+        auto vec = _to_vector(data_input<ddg4_input>(), cont);
         if ( !vec.empty() )  {
-          io._to_edm4hep(vec, coll);
+          data_io<ddg4_input>::_to_edm4hep(vec, coll);
         }
-        return;
       }
-      // Catch-all: convert what we have at hands
-      data_io<digi_input> io;
-      auto vec = io._to_vector(cont);
-      if ( !vec.empty() )  {
-        io._to_edm4hep(vec, coll);
+      else   {
+	// Catch-all: convert what we have at hands
+	auto vec = _to_vector(data_input<digi_input>(), cont);
+	if ( !vec.empty() )  {
+	  data_io<digi_input>::_to_edm4hep(vec, coll);
+	}
       }
-    }
-
-    template <>
-    void digi_io::_to_edm4hep(const std::pair<const CellID, EnergyDeposit>& dep,
-                              const std::array<float, 6>& covMat,
-                              int hit_type,
-                              edm4hep::TrackerHitCollection* collection)
-    {
-      const EnergyDeposit& de = dep.second;
-      auto hit = collection->create();
-      double dep_error = de.depositError;
-      if ( dep_error < -std::numeric_limits<double>::epsilon() )   {
-        dep_error = 0e0;
-      }
-      hit.setType( hit_type );
-      hit.setTime( de.time );
-      hit.setCovMatrix( covMat );
-      hit.setCellID( dep.first );
-      hit.setEDep( de.deposit );
-      hit.setEDepError( dep_error );
-      hit.setEdx( de.deposit/de.length );
-      hit.setPosition( _toVectorD(de.position) );
-    }
-
-    template <>
-    void digi_io::_to_edm4hep(const std::pair<const CellID, EnergyDeposit>& dep,
-                              int hit_type,
-                              edm4hep::CalorimeterHitCollection* collection)
-    {
-      const EnergyDeposit& de = dep.second;
-      auto hit = collection->create();
-      double dep_error = de.depositError;
-      if ( dep_error < -std::numeric_limits<double>::epsilon() )   {
-        dep_error = 0e0;
-      }
-      hit.setType( hit_type );
-      hit.setTime( de.time );
-      hit.setCellID( dep.first );
-      hit.setEnergy( de.deposit );
-      hit.setEnergyError( dep_error );
-      hit.setPosition( _toVectorF(de.position) );
     }
   }     // End namespace digi
 }       // End namespace dd4hep

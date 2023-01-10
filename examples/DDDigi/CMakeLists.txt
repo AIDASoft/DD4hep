@@ -16,17 +16,17 @@ IF(NOT TARGET DD4hep::DDCore)
   include ( ${DD4hep_DIR}/cmake/DD4hepBuild.cmake )
   dd4hep_configure_output()
 ENDIF()
-
+#
 IF(NOT TARGET DD4hep::DDDigi)
   MESSAGE(STATUS "+++> DDDigi examples shall not be built! [DDDigi not enabled]")
   return()
 ENDIF()
-
+#
 dd4hep_set_compiler_flags()
 dd4hep_use_python_executable()
 #==========================================================================
 dd4hep_configure_output ()
-
+#
 set(DDDigiexamples_INSTALL  ${CMAKE_INSTALL_PREFIX}/examples/DDDigi)
 #
 dd4hep_add_plugin(DDDigiExampleLib SOURCES src/*.cpp )
@@ -206,15 +206,18 @@ if (DD4HEP_USE_GEANT4)
     REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed"
     REGEX_FAIL "Error;ERROR;Exception"
   )
-  # Test edm4hep write (needs to be expanded)
-  dd4hep_add_test_reg(DDDigi_test_edm4hep_write_1
-    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
-    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestWriteEdm4hep.py
-               -num_events 5 -num_threads 10 -events_parallel 4
-    DEPENDS    DDDigi_generate_data
-    REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed."
-    REGEX_FAIL "Error;ERROR;Exception"
-  )
+  #
+  if (DD4HEP_USE_EDM4HEP)
+    # Test edm4hep write (needs to be expanded)
+    dd4hep_add_test_reg(DDDigi_test_edm4hep_write
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+      EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestWriteEdm4hep.py
+                 -num_events 5 -num_threads 10 -events_parallel 4
+      DEPENDS    DDDigi_generate_data
+      REGEX_PASS "\\+\\+\\+ 5 Events out of 5 processed."
+      REGEX_FAIL "Error;ERROR;Exception"
+    )
+  endif()
 #
 endif()
 #
