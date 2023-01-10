@@ -315,7 +315,7 @@ namespace dd4hep {
       internals->create_collections();
     }
 
-     /// Check for valid output stream
+    /// Check for valid output stream
     bool Digi2edm4hepOutput::have_output()  const  {
       return internals->m_file.get() != nullptr;
     }
