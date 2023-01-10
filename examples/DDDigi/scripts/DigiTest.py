@@ -27,7 +27,7 @@ attenuation = {'Minitel1Hits': 50 * units.ns,
 # ==========================================================================================================
 class Test(dddigi.Digitize):
 
-  def __init__(self, geometry=None):
+  def __init__(self, geometry=None, process_data=True):
     global attenuation
     dddigi.Digitize.__init__(self, dddigi.Kernel())
     dddigi.setPrintFormat(str('%-32s %5s %s'))
@@ -50,7 +50,7 @@ class Test(dddigi.Digitize):
     if not os.path.exists(self.inputs[0]):
       if os.path.exists('DDDigi'):
         os.chdir('DDDigi')
-    if not os.path.exists(self.inputs[0]):
+    if process_data and not os.path.exists(self.inputs[0]):
       # This will cause: FileNotFoundError: [Errno 2] No such file or directory: 'xxxxx'
       open(self.inputs[0])
 

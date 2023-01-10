@@ -19,7 +19,7 @@ def yes_no(val):
 
 def run():
   import DigiTest
-  digi = DigiTest.Test(geometry=None)
+  digi = DigiTest.Test(geometry=None, process_data=False)
   info = digi.info
   num_tests = 0
   histo = digi.create_action('DigiDepositEnergyMonitor/TestHisto')
