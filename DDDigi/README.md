@@ -63,8 +63,8 @@ DigiDDG4ROOT
 - Reader for ROOT files produced with DDG4. <br/>
   Properties:                                                                                        <br/>
 
-    |**Property**|**Data type**|**Description**|
-    |:--- |:--- |:--- |
+    |**Property**  |**Data type**    |**Description**                                                  |
+    |:---          |:---             |:---                                                             |
     |`.input`      | vector<string>  | List of input files to be processed                             |
     |`.tree`       | string          | Name of the main data tree. default: `EVENT`                    |
     |`.containers` | vector<string>  | List of containers to be loaded to DDDigi.                      |
@@ -155,10 +155,8 @@ DigiAttenuatorSequence
     |`.signal_decay`  | string          | Decay function. default: `exponential`                          |
     |`.t0`            | double          | Time constant for exponential signal decay.                     |
 
-
 DigiDepositSmearPositionTrack
 -----------------------------
-
 - Smear energy deposit positions by an ellipse of the track passing in the
   x-y plane.
 

@@ -59,7 +59,7 @@ class Test(dddigi.Digitize):
     return obj
 
   def load_geo(self, volume_manager=None):
-    fname = "file:" + os.environ['DD4hepExamplesINSTALL'] + "/examples/ClientTests/compact/MiniTelGenerate.xml"
+    fname = 'file:' + os.environ['DD4hepExamplesINSTALL'] + '/examples/ClientTests/compact/MiniTelGenerate.xml'
     self.kernel().loadGeometry(str(fname))
     self.printDetectors()
     if volume_manager:
@@ -110,7 +110,7 @@ class Test(dddigi.Digitize):
     return next_source
 
   def run_checked(self, num_events=5, num_threads=5, parallel=3):
-    result = "FAILED"
+    result = 'FAILED'
     if self.num_events:
       num_events = int(self.num_events)
     if self.num_threads:
@@ -119,7 +119,7 @@ class Test(dddigi.Digitize):
       parallel = int(self.events_parallel)
     evt_done = self.run(num_events=num_events, num_threads=num_threads, parallel=parallel)
     if evt_done == num_events:
-        result = "PASSED"
+        result = 'PASSED'
     self.always('%s Test finished after processing %d events. [%d parallel threads, %d parallel events]'
                 % (result, evt_done, num_threads, parallel, ))
     self.always('Test done. Exiting')

@@ -485,4 +485,16 @@ if (DD4HEP_USE_GEANT4)
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   endforeach(script)
   #
+  #
+  # Test EDM4HEP output module
+  if (DD4HEP_USE_EDM4HEP)
+    # Test EDM4HEP write (needs to be expanded)
+    dd4hep_add_test_reg(ClientTests_sim_MinitTel_edm4hep_write
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+      EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTelEdm4hepWrite.py
+                 -batch -events 5
+      REGEX_PASS "\\+\\+\\+ Finished run 0 after 5 events \\(5 events in total\\)"
+      REGEX_FAIL "Error;ERROR;Exception"
+    )
+  endif()
 endif(DD4HEP_USE_GEANT4)
