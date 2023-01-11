@@ -30,7 +30,7 @@ def run():
   writ.adopt_container_processor(proc, cont)
   writ.adopt_container_processor(proc, 'MCParticles/MCParticles')
   digi.check_creation([read, dump])
-  digi.run_checked(num_events=10, num_threads=10, parallel=3)
+  digi.run_checked(num_events=5, num_threads=10, parallel=5)
 
 
 # ---------------------------------------------------------------------------

@@ -233,7 +233,7 @@ namespace dd4hep {
       hit.setCellID( dep.first );
       hit.setEDep( de.deposit );
       hit.setEDepError( dep_error );
-      hit.setEdx( de.deposit/de.length );
+      //hit.setEdx( de.deposit/de.length );
       hit.setPosition( _toVectorD(de.position) );
     }
 

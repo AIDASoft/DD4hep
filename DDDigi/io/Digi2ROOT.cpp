@@ -14,7 +14,7 @@
 #define DIGI_DIGI2ROOT_H
 
 // Framework include files
-#include <DDDigi/DigiContainerProcessor.h>
+#include <DDDigi/DigiOutputAction.h>
 #include <DDDigi/DigiData.h>
 
 /// Namespace for the AIDA detector description toolkit
@@ -26,25 +26,18 @@ namespace dd4hep {
     /// Event action to support edm4hep output format from DDDigi
     /**
      *  Supported output containers types are:
-     *  - edm4hep::MCParticles aka "MCParticles"
-     *  - edm4hep::CalorimeterHitCollection  aka "CalorimeterHits"
-     *  - edm4hep::TrackerHitCollection aka "TracketHits"
+     *  - MCParticles aka "MCParticles"
+     *  - EnergyDeposits
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class Digi2ROOTWriter : public  DigiContainerSequenceAction  {
+    class Digi2ROOTWriter : public  DigiOutputAction  {
     public:
       class internals_t;
 
     protected:
-      /// Property: Container names to be loaded
-      std::string m_output;
-      /// Property: Processor type to manage containers
-      std::string m_processor_type;
-      /// Property: Container / data type mapping
-      std::map<std::string, std::string> m_containers  { };
       /// Reference to internals
       std::shared_ptr<internals_t> internals;
 
@@ -57,32 +50,16 @@ namespace dd4hep {
     public:
       /// Standard constructor
       Digi2ROOTWriter(const kernel_t& kernel, const std::string& nam);
-
       /// Initialization callback
       virtual void initialize();
-
-      /// Finalization callback
-      virtual void finalize();
-
-      /// Adopt new parallel worker
-      virtual void adopt_processor(DigiContainerProcessor* action,
-                                   const std::string& container)  override final;
-
-      /// Adopt new parallel worker acting on multiple containers
-      virtual void adopt_processor(DigiContainerProcessor* action,
-                                   const std::vector<std::string>& containers);
-
-      /// Callback to store the run information
-      void beginRun();
-
-      /// Callback to store the run information
-      void endRun();
-
-      /// Callback to store the Geant4 run information
-      void saveRun();
-
-      /// Main functional callback
-      virtual void execute(context_t& context)  const;
+      /// Check for valid output stream
+      virtual bool have_output()  const  override final;
+      /// Open new output stream
+      virtual void open_output() const  override final;
+      /// Close possible open stream
+      virtual void close_output()  const  override final;
+      /// Commit event data to output stream
+      virtual void commit_output() const  override final;
     };
 
     /// Actor to save individual data containers to edm4hep
@@ -96,7 +73,6 @@ namespace dd4hep {
      */
     class Digi2ROOTProcessor : public DigiContainerProcessor   {
       friend class Digi2ROOTWriter;
-
     protected:
       /// Reference to the edm4hep engine
       std::shared_ptr<Digi2ROOTWriter::internals_t> internals;
@@ -104,14 +80,13 @@ namespace dd4hep {
     public:
       /// Standard constructor
       Digi2ROOTProcessor(const DigiKernel& krnl, const std::string& nam);
-
       /// Standard destructor
       virtual ~Digi2ROOTProcessor() = default;
 
-      void convert_particles(DigiContext& context, const ParticleMapping& cont)  const;
-      void convert_deposits(DigiContext& context, const DepositVector& cont, const predicate_t& predicate)  const;
-      void convert_deposits(DigiContext& context, const DepositMapping& cont, const predicate_t& predicate)  const;
-      void convert_history(DigiContext& context, const DepositsHistory& cont, work_t& work, const predicate_t& predicate)  const;
+      void convert_particles(DigiContext& context, ParticleMapping& cont)  const;
+      void convert_deposits(DigiContext& context, DepositVector& cont, const predicate_t& predicate)  const;
+      void convert_deposits(DigiContext& context, DepositMapping& cont, const predicate_t& predicate)  const;
+      void convert_history(DigiContext& context, DepositsHistory& cont, work_t& work, const predicate_t& predicate)  const;
 
       /// Main functional callback
       virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const override final;
@@ -141,9 +116,10 @@ namespace dd4hep {
 #include "DigiIO.h"
 
 /// ROOT include files
-#include <TClass.h>
 #include <TFile.h>
 #include <TTree.h>
+#include <TROOT.h>
+#include <TClass.h>
 #include <TBranch.h>
 
 #include <vector>
@@ -154,6 +130,9 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
+    using persistent_particles_t = std::vector<std::pair<Key::key_type, Particle*> >;
+    using persistent_deposits_t  = std::vector<std::pair<CellID, EnergyDeposit*> >;
+
     /// Helper class to create output in edm4hep format
     /** Helper class to create output in edm4hep format
      *
@@ -161,35 +140,41 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class Digi2ROOTWriter::internals_t {
+    class Digi2ROOTWriter::internals_t  final {
     public:
       struct BranchWrapper   {
+	TClass*  clazz = nullptr;
 	TBranch* branch = nullptr;
 	void*    address = nullptr;
 	void (*fcn_clear)(void* addr) = 0;
-	void clear()  { this->fcn_clear(this->address); }
-	template <typename T> T* get() { return (T*)this->address; }
+	void (*fcn_del)(void* addr) = 0;
+	void clear()                    { this->fcn_clear(this->address); }
+	void del()                      { this->fcn_del(this->address);   }
+	template <typename T> T* get()  { return (T*)this->address;       }
+	template <typename T> void set(T* ptr);
       };
-      Digi2ROOTWriter* m_parent                       { nullptr };
+      template <typename O> struct _wrapper_handler  {
+	static void clear(void* ptr)  {  O* c = (O*)ptr; c->clear();  }
+	static void del(void* ptr)    {  O* c = (O*)ptr; delete c;    }
+      };
       typedef std::map<std::string, BranchWrapper> Collections;
-      typedef std::map<std::string, TTree*> Sections;
-      /// Known file sections
-      Sections m_sections;
-      /// Collections in the event tree
-      Collections m_collections;
-      /// Reference to the ROOT file to open
-      std::unique_ptr<TFile> m_file;
-      /// Reference to the event data tree
-      TTree* m_tree;
-      /// Property: name of the event tree
-      std::string m_section;
-      /// Property: vector with disabled collections
-      std::vector<std::string> m_disabledCollections;
 
-      /// Total numbe rof events to be processed
-      long num_events  { -1 };
-      /// Running event counter
-      long event_count {  0 };
+      /// Reference to the parent
+      Digi2ROOTWriter*         m_parent       { nullptr };
+      /// Collections in the event tree
+      Collections              m_collections  { };
+      /// Reference to the ROOT file to open
+      std::unique_ptr<TFile>   m_file         { };
+      /// Reference to the event data tree
+      TTree*                   m_tree         { nullptr };
+
+      /// Property: name of the event tree
+      std::string              m_section      { "EVENT" };
+
+      /// Default basket size
+      Int_t                    m_basket_size  { 32000 };
+      /// Default split level
+      Int_t                    m_split_level  {    99 };
 
     private:
       /// Helper to register single collection
@@ -197,14 +182,16 @@ namespace dd4hep {
 
     public:
       /// Default constructor
-      internals_t() = default;
+      internals_t(Digi2ROOTWriter* parent);
       /// Default destructor
-      ~internals_t() = default;
+      ~internals_t();
 
-      /// Commit data at end of filling procedure
-      void commit();
+      /// Open output file
+      void open();
       /// Commit data to disk and close output stream
       void close();
+      /// Commit data at end of filling procedure
+      void commit();
 
       /// Create all collections according to the parent setup (locked)
       void create_collections();
@@ -214,11 +201,33 @@ namespace dd4hep {
       template <typename T> BranchWrapper& get_collection(const T&);
     };
 
+    template <typename T> void Digi2ROOTWriter::internals_t::BranchWrapper::set(T* ptr)   {
+      clazz     = gROOT->GetClass(typeid(*ptr), kTRUE);
+      branch    = nullptr;
+      address   = ptr;
+      fcn_clear = _wrapper_handler<T>::clear;
+      fcn_del   = _wrapper_handler<T>::del;
+    }
+
+    /// Default constructor
+    Digi2ROOTWriter::internals_t::internals_t(Digi2ROOTWriter* parent) : m_parent(parent)
+    {
+    }
+
+    /// Default destructor
+    Digi2ROOTWriter::internals_t::~internals_t()    {
+      m_parent->info("Releasing allocated resources.");
+      if ( m_file ) close();
+      for( auto& coll : m_collections )   {
+	coll.second.clear();
+	coll.second.del();
+      }
+      m_collections.clear();
+    }
+
     template <typename T> T* Digi2ROOTWriter::internals_t::register_collection(const std::string& nam, T* coll)   {
-      struct _do_clear  {
-	static void clear(void* ptr)  {  T* c = (T*)ptr; c->clear();  }
-      };
-      BranchWrapper bw = { nullptr, (void*)coll, _do_clear::clear };
+      BranchWrapper bw;
+      bw.set(coll);
       m_collections.emplace(nam, bw);
       m_parent->debug("+++ created collection %s <%s>", nam.c_str(), typeName(typeid(T)).c_str());
       return coll;
@@ -227,17 +236,16 @@ namespace dd4hep {
     /// Create all collections according to the parent setup
     void Digi2ROOTWriter::internals_t::create_collections()    {
       if ( m_collections.empty() )   {
-        std::string fname = m_parent->m_output;
-        m_file.reset(new TFile(fname.c_str(), "RECREATE", "DDDigi data"));
         for( auto& cont : m_parent->m_containers )   {
           const std::string& nam = cont.first;
           const std::string& typ = cont.second;
-          if ( typ == "MCParticles" )
-            register_collection(nam, new std::vector<Particle*>());
-          else
-            register_collection(nam, new std::vector<EnergyDeposit*>());
+          if ( typ == "MCParticles" )   {
+            register_collection(nam, new persistent_particles_t());
+	  }
+          else   {
+            register_collection(nam, new persistent_deposits_t());
+	  }
         }
-        m_parent->info("+++ Will save %ld events to %s", num_events, m_parent->m_output.c_str());
       }
     }
 
@@ -257,27 +265,38 @@ namespace dd4hep {
 	coll.second.clear();
     }
 
-    /// Commit data at end of filling procedure
-    void Digi2ROOTWriter::internals_t::commit()   {
+    /// Open output file
+    void Digi2ROOTWriter::internals_t::open()   {
       if ( m_file )   {
-	for( auto& coll : m_collections )    {
-	  coll.second.branch->Write();
-	}
-        clearCollections();
-        return;
+	close();
       }
-      m_parent->except("+++ Failed to write output file. [Stream is not open]");
+      std::string fname = m_parent->next_stream_name();
+      m_file.reset(TFile::Open(fname.c_str(), "RECREATE", "DDDigi data"));
+      m_tree = new TTree(m_section.c_str(), "DDDigi data", m_split_level, m_file.get());
+      m_parent->info("+++ Opened ROOT output file %s", m_file->GetName());
+      for( auto& coll : m_collections )    {
+	auto& dsc = coll.second;
+	dsc.branch = m_tree->Branch(coll.first.c_str(),
+				    dsc.clazz->GetName(),
+				    &dsc.address,
+				    m_basket_size,
+				    m_split_level);
+	dsc.branch->SetAutoDelete(kFALSE);
+      }
+      m_parent->info("+++ Will save %ld events to %s",
+		     m_parent->num_events, m_parent->m_output.c_str());
     }
 
     /// Commit data to disk and close output stream
     void Digi2ROOTWriter::internals_t::close()   {
       if ( m_file )    {
 	TDirectory::TContext ctxt(m_file.get());
-	Sections::iterator i = m_sections.find(m_section);
-	m_parent->info("+++ Closing ROOT output file %s", m_file->GetName());
-	if ( i != m_sections.end() )
-	  m_sections.erase(i);
-	m_collections.clear();
+	m_parent->info("+++ Closing ROOT output file %s after %ld events and %ld bytes",
+		       m_file->GetName(), m_tree->GetEntries(), m_file->GetBytesWritten());
+	for( auto& coll : m_collections )   {
+	  coll.second.branch->ResetAddress();
+	  coll.second.branch = nullptr;
+	}
 	m_tree->Write();
 	m_file->Close();
 	m_tree = nullptr;
@@ -285,112 +304,73 @@ namespace dd4hep {
       m_file.reset();
     }
 
+    /// Commit data at end of filling procedure
+    void Digi2ROOTWriter::internals_t::commit()   {
+      if ( m_tree )   {
+	m_tree->Fill();
+        clearCollections();
+	++m_parent->event_count;
+	if ( m_parent->m_sequence_streams )  {
+	  if ( 0 == (m_parent->event_count%m_parent->num_events) )  {
+	    close();
+	  }
+	}
+        return;
+      }
+      m_parent->except("+++ Failed to write output file. [Stream is not open]");
+    }
+
     /// Standard constructor
     Digi2ROOTWriter::Digi2ROOTWriter(const DigiKernel& krnl, const std::string& nam)
-      : DigiContainerSequenceAction(krnl, nam)
+      : DigiOutputAction(krnl, nam)
     {
-      internals = std::make_shared<internals_t>();
-      declareProperty("output",         m_output);
-      declareProperty("containers",     m_containers);
-      declareProperty("processor_type", m_processor_type = "Digi2ROOTProcessor");
-      internals->m_parent = this;
+      internals = std::make_shared<internals_t>(this);
+      m_processor_type = "Digi2ROOTProcessor";
+      declareProperty("basket_size",    internals->m_basket_size);
+      declareProperty("split_level",    internals->m_split_level);
       InstanceCount::increment(this);
     }
 
     /// Default destructor
-    Digi2ROOTWriter::~Digi2ROOTWriter()   {{
-        std::lock_guard<std::mutex> lock(m_kernel.global_io_lock());
-        internals->close();
-      }
+    Digi2ROOTWriter::~Digi2ROOTWriter()   {
       internals.reset();
       InstanceCount::decrement(this);
     }
 
     /// Initialization callback
     void Digi2ROOTWriter::initialize()   {
-      if ( m_containers.empty() )   {
-        warning("+++ No input containers given for attenuation action -- no action taken");
-        return;
-      }
-      internals->num_events = m_kernel.property("numEvents").value<long>();
-      for ( const auto& c : m_containers )   {
-        Key key(c.first, 0, 0);
-        auto it = m_registered_processors.find(key);
-        if ( it == m_registered_processors.end() )   {
-          std::string nam = name() + ".E4H." + c.first;
-          auto* conv = createAction<DigiContainerProcessor>(m_processor_type, m_kernel, nam);
-          if ( !conv )   {
-            except("+++ Failed to create edm4hep processor: %s of type: %s",
-                   nam.c_str(), m_processor_type.c_str());
-          }
-          conv->property("OutputLevel").set(int(outputLevel()));
-          adopt_processor(conv, c.first);
-          conv->release(); // Release processor **after** adoption.
+      this->DigiOutputAction::initialize();
+      for ( auto& c : m_registered_processors )   {
+        auto* act = dynamic_cast<Digi2ROOTProcessor*>(c.second);
+        if ( act )   { // This is not nice! Need to think about something better.
+          act->internals = this->internals;
+	  continue;
         }
+	except("Error: Invalid processor type for ROOT output: %s", c.second->c_name());
       }
-      std::lock_guard<std::mutex> lock(m_kernel.global_io_lock());
       m_parallel = false;
       internals->create_collections();
-      this->DigiContainerSequenceAction::initialize();
     }
 
-    /// Finalization callback
-    void Digi2ROOTWriter::finalize()   {
+    /// Check for valid output stream
+    bool Digi2ROOTWriter::have_output()  const  {
+      return internals->m_file.get() != nullptr;
+    }
+
+    /// Open new output stream
+    void Digi2ROOTWriter::open_output() const   {
+      internals->open();
+    }
+
+    /// Close possible open stream
+    void Digi2ROOTWriter::close_output()  const  {
       internals->close();
     }
 
-    /// Adopt new parallel worker
-    void Digi2ROOTWriter::adopt_processor(DigiContainerProcessor* action,
-					  const std::string& container)
-    {
-      std::size_t idx = container.find('/');
-      if ( idx != std::string::npos )   {
-        std::string nam = container.substr(0, idx);
-        std::string typ = container.substr(idx+1);
-        auto* act = dynamic_cast<Digi2ROOTProcessor*>(action);
-        if ( act )   { // This is not nice! Need to think about something better.
-          act->internals = this->internals;
-        }
-        this->DigiContainerSequenceAction::adopt_processor(action, nam);
-        m_containers.emplace(nam, typ);
-        return;
-      }
-      except("+++ Invalid container specification: %s. %s",
-             container.c_str(), "Specify container as tuple: \"<name>/<type>\" !");
+    /// Commit event data to output stream
+    void Digi2ROOTWriter::commit_output() const  {
+      internals->commit();
     }
-
-    /// Adopt new parallel worker acting on multiple containers
-    void Digi2ROOTWriter::adopt_processor(DigiContainerProcessor* action, 
-					  const std::vector<std::string>& containers)
-    {
-      DigiContainerSequenceAction::adopt_processor(action, containers);
-    }
-
-    /// Main functional callback
-    void Digi2ROOTWriter::execute(DigiContext& context)  const    {
-      std::lock_guard<std::mutex> lock(context.global_io_lock());
-      this->DigiContainerSequenceAction::execute(context);
-      this->internals->commit();
-      if ( ++internals->event_count == internals->num_events )  {
-        internals->close();
-      }
-    }
-
-    /// Callback to store the run information
-    void Digi2ROOTWriter::beginRun()  {
-      saveRun();
-    }
-
-    /// Callback to store the run information
-    void Digi2ROOTWriter::endRun()  {
-      // saveRun(run);
-    }
-
-    /// Callback to store the Geant4 run information
-    void Digi2ROOTWriter::saveRun()  {
-      warning("saveRun(): RunHeader not implemented in EDM4hep, nothing written ...");
-    }
-
 
     /// Standard constructor
     Digi2ROOTProcessor::Digi2ROOTProcessor(const DigiKernel& krnl, const std::string& nam)
@@ -398,55 +378,58 @@ namespace dd4hep {
     {
     }
 
-    void Digi2ROOTProcessor::convert_particles(DigiContext& ctxt,
-					       const ParticleMapping& cont)  const
+    void Digi2ROOTProcessor::convert_particles(DigiContext&     ctxt,
+					       ParticleMapping& cont)  const
     {
       auto& coll = internals->get_collection(cont);
-      auto* vec = coll.get<std::vector<const ParticleMapping::value_type*> >();
+      auto* vec = coll.get<persistent_particles_t>();
+      vec->clear();
       vec->reserve(cont.size());
-      for( const auto& p : cont )   {
-	vec->emplace_back(&p);
+      for( auto& p : cont )   {
+	vec->emplace_back(std::make_pair(p.first, &p.second));
       }
       info("%s+++ %-24s added %6ld entries from mask: %04X",
            ctxt.event->id(), cont.name.c_str(), vec->size(), cont.key.mask());
     }
 
-    void Digi2ROOTProcessor::convert_deposits(DigiContext&          ctxt,
-					      const DepositMapping& cont,
-					      const predicate_t&    predicate)  const
+    void Digi2ROOTProcessor::convert_deposits(DigiContext&       ctxt,
+					      DepositMapping&    cont,
+					      const predicate_t& predicate)  const
     {
       auto& coll = internals->get_collection(cont);
-      auto* vec  = coll.get<std::vector<const DepositMapping::value_type*> >();
+      auto* vec  = coll.get<persistent_deposits_t>();
+      vec->clear();
       vec->reserve(cont.size());
-      for ( const auto& depo : cont )   {
+      for ( auto& depo : cont )   {
 	if ( predicate(depo) )   {
-	  vec->emplace_back(&depo);
+	  vec->emplace_back(std::make_pair(depo.first, &depo.second));
 	}
       }
       info("%s+++ %-24s added %6ld entries from mask: %04X",
            ctxt.event->id(), cont.name.c_str(), vec->size(), cont.key.mask());
     }
 
-    void Digi2ROOTProcessor::convert_deposits(DigiContext&          ctxt,
-					      const DepositVector&  cont,
-					      const predicate_t&    predicate)  const
+    void Digi2ROOTProcessor::convert_deposits(DigiContext&       ctxt,
+					      DepositVector&     cont,
+					      const predicate_t& predicate)  const
     {
       auto& coll = internals->get_collection(cont);
-      auto* vec  = coll.get<std::vector<const DepositVector::value_type*> >();
+      auto* vec  = coll.get<persistent_deposits_t>();
+      vec->clear();
       vec->reserve(cont.size());
-      for ( const auto& depo : cont )   {
+      for ( auto& depo : cont )   {
 	if ( predicate(depo) )   {
-	  vec->emplace_back(&depo);
+	  vec->emplace_back(std::make_pair(depo.first, &depo.second));
 	}
       }
       info("%s+++ %-24s added %6ld entries from mask: %04X",
            ctxt.event->id(), cont.name.c_str(), vec->size(), cont.key.mask());
     }
 
-    void Digi2ROOTProcessor::convert_history(DigiContext&           ctxt,
-					     const DepositsHistory& cont,
-					     work_t&                work,
-					     const predicate_t&     predicate)  const
+    void Digi2ROOTProcessor::convert_history(DigiContext&       ctxt,
+					     DepositsHistory&   cont,
+					     work_t&            work,
+					     const predicate_t& predicate)  const
     {
       info("%s+++ %-32s Segment: %d Predicate:%s Conversion to edm4hep not implemented!",
            ctxt.event->id(), cont.name.c_str(), int(work.input.segment->id),
@@ -455,13 +438,13 @@ namespace dd4hep {
 
     /// Main functional callback
     void Digi2ROOTProcessor::execute(DigiContext& ctxt, work_t& work, const predicate_t& predicate)  const  {
-      if ( const auto* p = work.get_input<ParticleMapping>() )
+      if ( auto* p = work.get_input<ParticleMapping>() )
         convert_particles(ctxt, *p);
-      else if ( const auto* m = work.get_input<DepositMapping>() )
+      else if ( auto* m = work.get_input<DepositMapping>() )
         convert_deposits(ctxt, *m, predicate);
-      else if ( const auto* v = work.get_input<DepositVector>() )
+      else if ( auto* v = work.get_input<DepositVector>() )
         convert_deposits(ctxt, *v, predicate);
-      else if ( const auto* h = work.get_input<DepositsHistory>() )
+      else if ( auto* h = work.get_input<DepositsHistory>() )
         convert_history(ctxt, *h, work, predicate);
       else
         except("Request to handle unknown data type: %s", work.input_type_name().c_str());

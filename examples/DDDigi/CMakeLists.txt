@@ -207,6 +207,15 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "Error;ERROR;Exception"
   )
   #
+  # Test raw digi write
+  dd4hep_add_test_reg(DDDigi_test_digi_root_write
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestWriteDigi.py
+    DEPENDS    DDDigi_generate_data
+    REGEX_PASS "\\+\\+\\+ Closing ROOT output file dddigi_write_digi_00000000.root after 5 events"
+    REGEX_FAIL "Error;ERROR;Exception"
+  )
+  #
   if (DD4HEP_USE_EDM4HEP)
     # Test edm4hep write (needs to be expanded)
     dd4hep_add_test_reg(DDDigi_test_edm4hep_write
