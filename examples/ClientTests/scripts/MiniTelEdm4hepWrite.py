@@ -32,7 +32,7 @@ def run():
     DDG4.setPrintLevel(DDG4.OutputLevel.WARNING)
     m.ui.Commands = [run, '/ddg4/UI/terminate']
   m.configure()
-  wr  = m.geant4.setupEDM4hepOutput('edm4hep', 'MiniTel_ddg4_edm4hep.root')
+  m.geant4.setupEDM4hepOutput('edm4hep', 'MiniTel_ddg4_edm4hep.root')
   gen = DDG4.GeneratorAction(kernel, 'Geant4GeneratorActionInit/GenerationInit')
   kernel.generatorAction().adopt(gen)
 
