@@ -14,7 +14,7 @@
 #define DDDIGI_DIGIOUTPUTACTION_H
 
 /// Framework include files
-#include <DDDigi/DigiEventAction.h>
+#include <DDDigi/DigiContainerProcessor.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -32,34 +32,68 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiOutputAction : public DigiEventAction {
+    class DigiOutputAction : public DigiContainerSequenceAction {
     public:
-      enum { OUTPUT_START = -1  };
-      enum { NO_MASK     = 0x0 };
-
     protected:
-      /// Array of data containers to be saved
-      std::vector<std::string> m_containers { };
+      /// Property: Processor type to manage containers
+      std::string                        m_processor_type  { };
+      /// Property: Container / data type mapping
+      std::map<std::string, std::string> m_containers  { };
       /// Property: Output data specification
-      std::string              m_output { };
-      /// Property: Mask to flag output source items
-      int                      m_mask   { NO_MASK };
+      std::string                        m_output { };
+      /// Property: Create stream names with sequence numbers
+      bool                               m_sequence_streams  {  true };
+
+      /// Total numbe rof events to be processed
+      long num_events  { -1 };
+      /// Running event counter
+      long event_count {  0 };
+      /// Stream sequence counter
+      long fseq_count  {  0 };
 
     protected:
       /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiOutputAction);
 
+      /// Default destructor
+      virtual ~DigiOutputAction();
+
     public:
       /// Standard constructor
       DigiOutputAction(const kernel_t& kernel, const std::string& nam);
 
-      /// Default destructor
-      virtual ~DigiOutputAction();
+      /// Initialization callback
+      virtual void initialize();
+
+      /// Finalization callback
+      virtual void finalize();
+
+      /// Check for valid output stream
+      virtual bool have_output()  const = 0;
+
+      /// Open new output stream
+      virtual void open_output() const = 0;
+
+      /// Close current output stream
+      virtual void close_output() const = 0;
+
+      /// Commit event data to output stream
+      virtual void commit_output() const = 0;
+
+      /// Create new output stream name
+      virtual std::string next_stream_name();
+
+      /// Adopt new parallel worker
+      virtual void adopt_processor(DigiContainerProcessor* action,
+                                   const std::string& container)  override;
+
+      /// Adopt new parallel worker acting on multiple containers
+      virtual void adopt_processor(DigiContainerProcessor* action,
+                                   const std::vector<std::string>& containers);
 
       /// Callback to read event output
       virtual void execute(context_t& context)  const override;
     };
-
   }    // End namespace digi
 }      // End namespace dd4hep
 #endif // DDDIGI_DIGIOUTPUTACTION_H

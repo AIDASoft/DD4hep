@@ -14,7 +14,7 @@
 #define DIGI_DIGI2EDM4HEP_H
 
 // Framework include files
-#include <DDDigi/DigiContainerProcessor.h>
+#include <DDDigi/DigiOutputAction.h>
 
 /// C/C++ include files
 
@@ -40,17 +40,10 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class Digi2edm4hepWriter : public  DigiContainerSequenceAction  {
+    class Digi2edm4hepWriter : public  DigiOutputAction  {
     public:
       class internals_t;
-
     protected:
-      /// Property: Container names to be loaded
-      std::string m_output;
-      /// Property: Processor type to manage containers
-      std::string m_processor_type;
-      /// Property: Container / data type mapping
-      std::map<std::string, std::string> m_containers  { };
       /// Reference to internals
       std::shared_ptr<internals_t> internals;
 
@@ -63,32 +56,16 @@ namespace dd4hep {
     public:
       /// Standard constructor
       Digi2edm4hepWriter(const kernel_t& kernel, const std::string& nam);
-
       /// Initialization callback
       virtual void initialize();
-
-      /// Finalization callback
-      virtual void finalize();
-
-      /// Adopt new parallel worker
-      virtual void adopt_processor(DigiContainerProcessor* action,
-                                   const std::string& container)  override final;
-
-      /// Adopt new parallel worker acting on multiple containers
-      virtual void adopt_processor(DigiContainerProcessor* action,
-                                   const std::vector<std::string>& containers);
-
-      /// Callback to store the run information
-      void beginRun();
-
-      /// Callback to store the run information
-      void endRun();
-
-      /// Callback to store the Geant4 run information
-      void saveRun();
-
-      /// Main functional callback
-      virtual void execute(context_t& context)  const;
+      /// Check for valid output stream
+      virtual bool have_output()  const  override final;
+      /// Open new output stream
+      virtual void open_output() const  override final;
+      /// Close possible open stream
+      virtual void close_output()  const  override final;
+      /// Commit event data to output stream
+      virtual void commit_output() const  override final;
     };
 
     /// Actor to save individual data containers to edm4hep
@@ -209,12 +186,14 @@ namespace dd4hep {
 
     public:
       /// Default constructor
-      internals_t() = default;
+      internals_t(Digi2edm4hepWriter* parent);
       /// Default destructor
-      ~internals_t() = default;
+      ~internals_t();
 
       /// Commit data at end of filling procedure
       void commit();
+      /// Open new output stream
+      void open();
       /// Commit data to disk and close output stream
       void close();
 
@@ -224,10 +203,21 @@ namespace dd4hep {
       template <typename T> podio::CollectionBase* get_collection(const T&);
     };
 
+    /// Default constructor
+    Digi2edm4hepWriter::internals_t::internals_t(Digi2edm4hepWriter* parent) : m_parent(parent)
+    {
+      m_store  = std::make_unique<podio::EventStore>();
+    }
+
+    /// Default destructor
+    Digi2edm4hepWriter::internals_t::~internals_t()    {
+      if ( m_file ) close();
+      m_store.reset();
+    }
+
     template <typename T> T* Digi2edm4hepWriter::internals_t::register_collection(const std::string& nam, T* coll)   {
       m_collections.emplace(nam, coll);
       m_store->registerCollection(nam, coll);
-      m_file->registerForWrite(nam);
       m_parent->debug("+++ created collection %s <%s>", nam.c_str(), coll->getTypeName().c_str());
       return coll;
     }
@@ -235,9 +225,6 @@ namespace dd4hep {
     /// Create all collections according to the parent setup
     void Digi2edm4hepWriter::internals_t::create_collections()    {
       if ( nullptr == m_header )   {
-        std::string fname = m_parent->m_output;
-        m_store  = std::make_unique<podio::EventStore>();
-        m_file   = std::make_unique<podio::ROOTWriter>(fname, m_store.get());
         m_header = register_collection("EventHeader", new edm4hep::EventHeaderCollection());
         for( auto& cont : m_parent->m_containers )   {
           const std::string& nam = cont.first;
@@ -276,121 +263,77 @@ namespace dd4hep {
       m_parent->except("+++ Failed to write output file. [Stream is not open]");
     }
 
+      /// Open new output stream
+    void Digi2edm4hepWriter::internals_t::open()    {
+      if ( m_file )   {
+        close();
+      }
+      m_file.reset();
+      std::string fname = m_parent->next_stream_name();
+      m_file = std::make_unique<podio::ROOTWriter>(fname, m_store.get());
+      m_parent->info("+++ Opened EDM4HEP output file %s", fname.c_str());
+     for( const auto& c : m_collections )   {
+	m_file->registerForWrite(c.first);
+      }
+    }
+
     /// Commit data to disk and close output stream
     void Digi2edm4hepWriter::internals_t::close()   {
+      m_parent->info("+++ Closing EDM4HEP output file.");
       if ( m_file )   {
         m_file->finish();
       }
       m_file.reset();
-      m_store.reset();
     }
 
     /// Standard constructor
     Digi2edm4hepWriter::Digi2edm4hepWriter(const DigiKernel& krnl, const std::string& nam)
-      : DigiContainerSequenceAction(krnl, nam)
+      : DigiOutputAction(krnl, nam)
     {
-      internals = std::make_shared<internals_t>();
-      declareProperty("output",         m_output);
-      declareProperty("containers",     m_containers);
-      declareProperty("processor_type", m_processor_type = "Digi2edm4hepProcessor");
-      internals->m_parent = this;
+      internals = std::make_shared<internals_t>(this);
       InstanceCount::increment(this);
     }
 
     /// Default destructor
-    Digi2edm4hepWriter::~Digi2edm4hepWriter()   {{
-        std::lock_guard<std::mutex> lock(m_kernel.global_io_lock());
-        internals->close();
-      }
+    Digi2edm4hepWriter::~Digi2edm4hepWriter()   {
       internals.reset();
       InstanceCount::decrement(this);
     }
 
     /// Initialization callback
     void Digi2edm4hepWriter::initialize()   {
-      if ( m_containers.empty() )   {
-        warning("+++ No input containers given for attenuation action -- no action taken");
-        return;
-      }
-      internals->num_events = m_kernel.property("numEvents").value<long>();
-      for ( const auto& c : m_containers )   {
-        Key key(c.first, 0, 0);
-        auto it = m_registered_processors.find(key);
-        if ( it == m_registered_processors.end() )   {
-          std::string nam = name() + ".E4H." + c.first;
-          auto* conv = createAction<DigiContainerProcessor>(m_processor_type, m_kernel, nam);
-          if ( !conv )   {
-            except("+++ Failed to create edm4hep processor: %s of type: %s",
-                   nam.c_str(), m_processor_type.c_str());
-          }
-          conv->property("OutputLevel").set(int(outputLevel()));
-          adopt_processor(conv, c.first);
-          conv->release(); // Release processor **after** adoption.
+      this->DigiOutputAction::initialize();
+      for ( auto& c : m_registered_processors )   {
+        auto* act = dynamic_cast<Digi2edm4hepProcessor*>(c.second);
+        if ( act )   { // This is not nice! Need to think about something better.
+          act->internals = this->internals;
+	  continue;
         }
+	except("Error: Invalid processor type for EDM4HEP output: %s", c.second->c_name());
       }
-      std::lock_guard<std::mutex> lock(m_kernel.global_io_lock());
       m_parallel = false;
       internals->create_collections();
-      this->DigiContainerSequenceAction::initialize();
     }
 
-    /// Finalization callback
-    void Digi2edm4hepWriter::finalize()   {
+     /// Check for valid output stream
+    bool Digi2edm4hepWriter::have_output()  const  {
+      return internals->m_file.get() != nullptr;
+    }
+
+    /// Open new output stream
+    void Digi2edm4hepWriter::open_output() const   {
+      internals->open();
+    }
+
+    /// Close possible open stream
+    void Digi2edm4hepWriter::close_output()  const  {
       internals->close();
     }
 
-    /// Adopt new parallel worker
-    void Digi2edm4hepWriter::adopt_processor(DigiContainerProcessor* action,
-                                             const std::string& container)
-    {
-      std::size_t idx = container.find('/');
-      if ( idx != std::string::npos )   {
-        std::string nam = container.substr(0, idx);
-        std::string typ = container.substr(idx+1);
-        auto* act = dynamic_cast<Digi2edm4hepProcessor*>(action);
-        if ( act )   { // This is not nice! Need to think about something better.
-          act->internals = this->internals;
-        }
-        this->DigiContainerSequenceAction::adopt_processor(action, nam);
-        m_containers.emplace(nam, typ);
-        return;
-      }
-      except("+++ Invalid container specification: %s. %s",
-             container.c_str(), "Specify container as tuple: \"<name>/<type>\" !");
+    /// Commit event data to output stream
+    void Digi2edm4hepWriter::commit_output() const  {
+      internals->commit();
     }
-
-    /// Adopt new parallel worker acting on multiple containers
-    void Digi2edm4hepWriter::adopt_processor(DigiContainerProcessor* action, 
-                                             const std::vector<std::string>& containers)
-    {
-      DigiContainerSequenceAction::adopt_processor(action, containers);
-    }
-
-    /// Main functional callback
-    void Digi2edm4hepWriter::execute(DigiContext& context)  const    {
-      std::lock_guard<std::mutex> lock(context.global_io_lock());
-      this->DigiContainerSequenceAction::execute(context);
-      this->internals->commit();
-      if ( ++internals->event_count == internals->num_events )  {
-        internals->close();
-      }
-    }
-
-    /// Callback to store the run information
-    void Digi2edm4hepWriter::beginRun()  {
-      saveRun();
-    }
-
-    /// Callback to store the run information
-    void Digi2edm4hepWriter::endRun()  {
-      // saveRun(run);
-    }
-
-    /// Callback to store the Geant4 run information
-    void Digi2edm4hepWriter::saveRun()  {
-      warning("saveRun(): RunHeader not implemented in EDM4hep, nothing written ...");
-    }
-
 
     /// Standard constructor
     Digi2edm4hepProcessor::Digi2edm4hepProcessor(const DigiKernel& krnl, const std::string& nam)

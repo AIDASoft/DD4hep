@@ -24,12 +24,6 @@
 #include <DDDigi/DigiInputAction.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiInputAction)
 
-#include <DDDigi/DigiOutputAction.h>
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiOutputAction)
-
-#include <DDDigi/DigiROOTOutput.h>
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiROOTOutput)
-
 #include <DDDigi/DigiSynchronize.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSynchronize)
 
