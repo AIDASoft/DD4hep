@@ -263,7 +263,7 @@ namespace dd4hep {
       m_parent->except("+++ Failed to write output file. [Stream is not open]");
     }
 
-      /// Open new output stream
+    /// Open new output stream
     void Digi2edm4hepOutput::internals_t::open()    {
       if ( m_file )   {
         close();
