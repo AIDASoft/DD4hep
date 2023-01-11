@@ -103,4 +103,5 @@ if (DD4HEP_USE_GEANT4)
     REGEX_PASS " Parameter value at call 13 is 'terminate-command-2'"
     REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
+  #
 endif()

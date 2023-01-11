@@ -216,8 +216,9 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "Error;ERROR;Exception"
   )
   #
+  # Test EDM4HEP output module
   if (DD4HEP_USE_EDM4HEP)
-    # Test edm4hep write (needs to be expanded)
+    # Test EDM4HEP write (needs to be expanded)
     dd4hep_add_test_reg(DDDigi_test_edm4hep_write
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
       EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/DDDigi/scripts/TestWriteEdm4hep.py

@@ -32,7 +32,7 @@ namespace dd4hep {
     
     using namespace std::placeholders;
 
-    class DigiEdm4hepROOT : public DigiROOTInput    {
+    class DigiEdm4hepInput : public DigiROOTInput    {
     public:
       static constexpr double epsilon = std::numeric_limits<double>::epsilon();
 
@@ -58,7 +58,7 @@ namespace dd4hep {
 
     public:
       /// Initializing constructor
-      DigiEdm4hepROOT(const DigiKernel& krnl, const std::string& nam)
+      DigiEdm4hepInput(const DigiKernel& krnl, const std::string& nam)
 	: DigiROOTInput(krnl, nam)
       {
 	declareProperty("keep_raw", m_keep_raw);
@@ -123,4 +123,4 @@ namespace dd4hep {
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-DECLARE_DIGIACTION_NS(dd4hep::digi,DigiEdm4hepROOT)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiEdm4hepInput)
