@@ -38,8 +38,12 @@ def run():
     cmds.append('/ddg4/UI/terminate')
     m.ui.Commands = cmds
   m.configure()
-  wr = m.defineOutput(output='MiniTel')
+  if args.output and str(args.output).lower().find('edm4hep') >= 0:
+    wr = m.defineEdm4hepOutput(args.output)
+  else:
+    wr = m.defineOutput(output='MiniTel')
   wr.FilesByRun = True
+
   gen = DDG4.GeneratorAction(kernel, "Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
 
