@@ -32,7 +32,7 @@ namespace dd4hep {
     // Forward declarations
     class DigiROOTInput;
 
-    /// Base class for input actions to the digitization
+    /// Base class for input actions to the digitization using ROOT
     /**
      *
      *  \author  M.Frank

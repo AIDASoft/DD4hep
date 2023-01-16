@@ -18,7 +18,7 @@ def run():
                            mask=0x0,
                            input=['MiniTel_DDG4_edm4hep_data.run00000000.root',
                                   'MiniTel_DDG4_edm4hep_data.run00000001.root',
-                                  'MiniTel_DDG4_edm4hep_data.run00000002.root',])
+                                  'MiniTel_DDG4_edm4hep_data.run00000002.root'])
   read.input_section = 'events'
   read.objects_disabled = ['EventHeader']
   read.events_per_file = 5
