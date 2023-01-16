@@ -28,16 +28,19 @@
 
 using namespace dd4hep::digi;
 
-class DigiROOTInput::inputsource_t   {
+class DigiROOTInput::inputsource_t
+  : public DigiInputAction::input_source,
+    public DigiInputAction::event_frame
+{
 public:
   /// Branches present in the current file
   std::map<Key, container_t>  branches  { };
   /// Reference to the current ROOT file to be read
-  TFile*     file   { nullptr };
+  TFile*   file   { nullptr };
   /// Reference to the ROOT tree to be read
-  TTree*     tree   { nullptr };
+  TTree*   tree   { nullptr };
   /// Current entry inside the current input source
-  Long64_t   entry  { -1 };
+  Long64_t entry  { -1 };
 
 public:
   inputsource_t() = default;
@@ -66,11 +69,11 @@ class DigiROOTInput::internals_t   {
 public:
   using handle_t = std::unique_ptr<inputsource_t>;
   /// Reference to parent action
-  DigiROOTInput* m_parent  { nullptr };
+  DigiROOTInput* m_parent       { nullptr };
   /// Handle to input source
-  handle_t       m_input_handle;
+  handle_t       m_source       { };
   /// Pointer to current input source
-  int            m_curr_input  { INPUT_START };
+  int            m_curr_input   { INPUT_START };
 
 public:
   /// Default constructor
@@ -89,24 +92,12 @@ DigiROOTInput::internals_t::internals_t (DigiROOTInput* p)
 {
 }
 
-DigiROOTInput::inputsource_t& DigiROOTInput::internals_t::next()   {
-  if ( !m_input_handle )    {
-    m_input_handle = open_next_data_source();
-  }
-  Int_t total = m_input_handle->tree->GetEntries();
-  if ( (1+m_input_handle->entry) >= total )   {
-    m_input_handle.reset();
-    m_input_handle = open_next_data_source();
-  }
-  return m_input_handle->next();
-}
-
 std::unique_ptr<DigiROOTInput::inputsource_t>
 DigiROOTInput::internals_t::open_next_data_source()   {
-  const auto& inputs = m_parent->inputs();
+  const auto& inputs    = m_parent->inputs();
   const auto& tree_name = m_parent->input_section();
-
   int len = inputs.size();
+
   if ( inputs.empty() ) m_curr_input = 0;
   while ( (m_curr_input+1) < len )   {
     const auto& fname = inputs[++m_curr_input];
@@ -149,11 +140,26 @@ DigiROOTInput::internals_t::open_next_data_source()   {
       if ( source->branches.empty() )    {
 	m_parent->except("+++ No branches to be loaded. Configuration error!");
       }
+      m_parent->onOpenFile(*source);
       return source;
     }
   }
   m_parent->except("+++ No open file present. Configuration error?");
   throw std::runtime_error("+++ No open file present");
+}
+
+DigiROOTInput::inputsource_t& DigiROOTInput::internals_t::next()   {
+  if ( !m_source || m_parent->fileLimitReached(*m_source) )    {
+    m_source = open_next_data_source();
+  }
+  Int_t total = m_source->tree->GetEntries();
+  if ( (1+m_source->entry) >= total )   {
+    m_source.reset();
+    m_source = open_next_data_source();
+  }
+  auto& src = m_source->next();
+  m_parent->onProcessEvent(src, src);
+  return src;
 }
 
 /// Standard constructor

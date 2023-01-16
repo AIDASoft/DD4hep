@@ -33,9 +33,6 @@ namespace dd4hep {
 
     class DigiDDG4ROOT : public DigiROOTInput    {
     public:
-      /// Property to generate extra history records
-      bool    m_keep_raw        { true };
-
       /// Class pointers of the objects to be imported
       TClass* m_trackerHitClass { nullptr };
       TClass* m_caloHitClass    { nullptr };
@@ -44,7 +41,6 @@ namespace dd4hep {
     public:
       /// Initializing constructor
       DigiDDG4ROOT(const DigiKernel& krnl, const std::string& nam) : DigiROOTInput(krnl, nam)      {
-	declareProperty("keep_raw", m_keep_raw);
 	m_particlesClass  = gROOT->GetClass(typeid(std::vector<dd4hep::sim::Geant4Particle*>), kTRUE);
 	m_trackerHitClass = gROOT->GetClass(typeid(std::vector<dd4hep::sim::Geant4Tracker::Hit*>), kTRUE);
 	m_caloHitClass    = gROOT->GetClass(typeid(std::vector<dd4hep::sim::Geant4Calorimeter::Hit*>), kTRUE);
