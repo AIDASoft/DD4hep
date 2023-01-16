@@ -14,46 +14,37 @@
 // Framework include files
 #include <DD4hep/InstanceCount.h>
 #include <DDDigi/DigiROOTInput.h>
-#include <DD4hep/Printout.h>
-#include <DD4hep/Factories.h>
 
 // ROOT include files
 #include <TROOT.h>
 #include <TFile.h>
 #include <TTree.h>
 
-// C/C++ include files
-#include <stdexcept>
-#include <map>
-
 using namespace dd4hep::digi;
 
 class DigiROOTInput::inputsource_t
-  : public DigiInputAction::input_source,
-    public DigiInputAction::event_frame
-{
+  : public DigiInputAction::input_source, public DigiInputAction::event_frame  {
 public:
   /// Branches present in the current file
-  std::map<Key, container_t>  branches  { };
+  std::map<Key, container_t> branches { };
   /// Reference to the current ROOT file to be read
-  TFile*   file   { nullptr };
+  std::unique_ptr<TFile>     file     { nullptr };
   /// Reference to the ROOT tree to be read
   TTree*   tree   { nullptr };
   /// Current entry inside the current input source
   Long64_t entry  { -1 };
 
 public:
+  /// Default constructor
   inputsource_t() = default;
-  ~inputsource_t()   {
-    if ( file )    {
-      file->Close();
-      delete file;
-      file = nullptr;
-    }
+  /// Default destructor
+  ~inputsource_t() = default;
+  /// Check if the input source is exhausted
+  bool done()   const     {
+    return (entry+1) >= tree->GetEntries();
   }
   inputsource_t& next()   {
-    ++entry;
-    tree->LoadTree( entry );
+    tree->LoadTree( ++entry );
     return *this;
   }
 };
@@ -67,11 +58,11 @@ public:
  */
 class DigiROOTInput::internals_t   {
 public:
-  using handle_t = std::unique_ptr<inputsource_t>;
+  using source_t = std::unique_ptr<inputsource_t>;
   /// Reference to parent action
   DigiROOTInput* m_parent       { nullptr };
   /// Handle to input source
-  handle_t       m_source       { };
+  source_t       m_source       { };
   /// Pointer to current input source
   int            m_curr_input   { INPUT_START };
 
@@ -82,8 +73,8 @@ public:
   ~internals_t () = default;
   /// Access the next valid event entry
   inputsource_t& next();
-  /// Open the next input source
-  std::unique_ptr<inputsource_t> open_next_data_source();
+  /// Open the next input source from the input list
+  std::unique_ptr<inputsource_t> open_source();
 };
 
 /// Default constructor
@@ -92,8 +83,8 @@ DigiROOTInput::internals_t::internals_t (DigiROOTInput* p)
 {
 }
 
-std::unique_ptr<DigiROOTInput::inputsource_t>
-DigiROOTInput::internals_t::open_next_data_source()   {
+/// Open the next input source from the input list
+std::unique_ptr<DigiROOTInput::inputsource_t> DigiROOTInput::internals_t::open_source()   {
   const auto& inputs    = m_parent->inputs();
   const auto& tree_name = m_parent->input_section();
   int len = inputs.size();
@@ -101,10 +92,9 @@ DigiROOTInput::internals_t::open_next_data_source()   {
   if ( inputs.empty() ) m_curr_input = 0;
   while ( (m_curr_input+1) < len )   {
     const auto& fname = inputs[++m_curr_input];
-    auto* file = TFile::Open(fname.c_str());
+    std::unique_ptr<TFile> file(TFile::Open(fname.c_str()));
     if ( file && file->IsZombie() )  {
-      delete file;
-      file = nullptr;
+      file.reset();
       m_parent->error("OpenInput ++ Failed to open input source %s", fname.c_str());
     }
     else if ( file )  {
@@ -120,12 +110,9 @@ DigiROOTInput::internals_t::open_next_data_source()   {
 			tree_name.c_str(), fname.c_str());
 	continue;
       }
-      auto source = std::make_unique<inputsource_t>();
-      source->branches.clear();
-      source->file  = file;
+      auto source   = std::make_unique<inputsource_t>();
+      source->file  = std::move(file);
       source->tree  = tree;
-      source->entry = -1;
-
       auto* branches = tree->GetListOfBranches();
       int mask = m_parent->input_mask();
       TObjArrayIter it(branches);
@@ -145,17 +132,13 @@ DigiROOTInput::internals_t::open_next_data_source()   {
     }
   }
   m_parent->except("+++ No open file present. Configuration error?");
-  throw std::runtime_error("+++ No open file present");
+  return {};
 }
 
+/// Access the next event from the sequence of input files
 DigiROOTInput::inputsource_t& DigiROOTInput::internals_t::next()   {
-  if ( !m_source || m_parent->fileLimitReached(*m_source) )    {
-    m_source = open_next_data_source();
-  }
-  Int_t total = m_source->tree->GetEntries();
-  if ( (1+m_source->entry) >= total )   {
-    m_source.reset();
-    m_source = open_next_data_source();
+  if ( !m_source || m_source->done() || m_parent->fileLimitReached(*m_source) )    {
+    m_source = open_source();
   }
   auto& src = m_source->next();
   m_parent->onProcessEvent(src, src);

@@ -11,27 +11,31 @@
 //
 //==========================================================================
 
-// Framework include files
+/// Framework include files
 #include <DDDigi/DigiROOTInput.h>
 #include "DigiIO.h"
 
 #include <DDG4/Geant4Data.h>
 #include <DDG4/Geant4Particle.h>
 
-// ROOT include files
-#include <TBranch.h>
-#include <TClass.h>
+/// ROOT include files
 #include <TROOT.h>
+#include <TBranch.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
-    
-    using namespace std::placeholders;
 
-    class DigiDDG4ROOT : public DigiROOTInput    {
+    /// DDDigi input reader for DDG4 native ROOT output
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+   class DigiDDG4ROOT : public DigiROOTInput    {
     public:
       /// Class pointers of the objects to be imported
       TClass* m_trackerHitClass { nullptr };

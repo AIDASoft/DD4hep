@@ -16,8 +16,6 @@
 #include <DDDigi/DigiData.h>
 #include "DigiIO.h"
 
-// C/C++ include files
-
 /// Forward declarations
 namespace podio {  class CollectionBase; }
 
@@ -40,9 +38,9 @@ namespace dd4hep {
 
       /// Forward declarations
       class internals_t;
-      class inputsource_t;
-      class collection_t;
       class work_t;
+      class source_t;
+      class collection_t;
       using podio_coll_t = const podio::CollectionBase;
       using descriptor_t = std::pair<const Key, collection_t>;
 
@@ -59,6 +57,7 @@ namespace dd4hep {
       /// Initializing constructor
       DigiEdm4hepInput(const DigiKernel& krnl, const std::string& nam);
 
+      /// Generic conversion function for hits
       template <typename T, typename COLL>
       void from_edm4hep(DigiContext&       context,
 			DataSegment&       segment,
@@ -81,6 +80,7 @@ namespace dd4hep {
 	}
       }
 
+      /// Generic conversion function for MC particles
       template <typename COLL>
       void from_edm4hep(DigiContext&       context,
 			DataSegment&       segment,
@@ -118,6 +118,13 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
+    /// EDM4HEP event frame wrapper
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
     class edm4hep_read_frame_t : public DigiInputAction::event_frame   {
     public:
       podio::Frame frame { };
@@ -162,7 +169,7 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiEdm4hepInput::inputsource_t : public DigiInputAction::input_source   {
+    class DigiEdm4hepInput::source_t : public DigiInputAction::input_source   {
     public:
       /// Reference to the reader object
       std::unique_ptr<reader_t>   stream      { };
@@ -175,11 +182,11 @@ namespace dd4hep {
 
     public:
       /// Initializing constructor
-      inputsource_t(const std::string& s, std::unique_ptr<reader_t>&& str) 
+      source_t(const std::string& s, std::unique_ptr<reader_t>&& str) 
 	: stream(std::move(str)), section(s)  {
       }
       /// Default destructor
-      ~inputsource_t()   {
+      ~source_t()   {
 	if ( stream )    {
 	  stream.reset();
 	}
@@ -212,7 +219,7 @@ namespace dd4hep {
      */
     class DigiEdm4hepInput::internals_t  {
     public:
-      using input_t = std::unique_ptr<inputsource_t>;
+      using input_t = std::unique_ptr<source_t>;
 
       /// Reference to the parent object
       DigiEdm4hepInput* m_parent { nullptr };
@@ -224,8 +231,8 @@ namespace dd4hep {
     public:
       /// Initializing constructor
       internals_t(DigiEdm4hepInput* parent);
-      /// Open new input stream
-      std::unique_ptr<inputsource_t> open_next_data_source();
+      /// Open the next input source from the input list
+      std::unique_ptr<source_t> open_source();
       /// Access the next event from the sequence of input files
       std::shared_ptr<frame_t> next();
     };
@@ -236,8 +243,9 @@ namespace dd4hep {
     {
     }
 
-    std::unique_ptr<DigiEdm4hepInput::inputsource_t>
-    DigiEdm4hepInput::internals_t::open_next_data_source()   {
+    /// Open the next input source from the input list
+    std::unique_ptr<DigiEdm4hepInput::source_t>
+    DigiEdm4hepInput::internals_t::open_source()   {
       const auto& inputs = m_parent->inputs();
       int len = inputs.size();
       if ( inputs.empty() ) m_curr_input = 0;
@@ -247,7 +255,7 @@ namespace dd4hep {
 	try  {
 	  auto sec = m_parent->input_section();
 	  stream->openFile(fname);
-	  auto source = std::make_unique<inputsource_t>(sec, std::move(stream));
+	  auto source = std::make_unique<source_t>(sec, std::move(stream));
 	  m_parent->info("+++ Opened EDM4HEP input file %s.", fname.c_str());
 	  m_parent->onOpenFile(*source);
 	  return source;
@@ -260,10 +268,11 @@ namespace dd4hep {
       throw std::runtime_error("+++ No open file present");
     }
 
+    /// Access the next event record. If the courrent source is exhausted, open next source
     std::shared_ptr<frame_t> DigiEdm4hepInput::internals_t::next()   {
       if ( !m_source || m_source->done() || m_parent->fileLimitReached(*m_source) )    {
 	int mask = m_parent->input_mask();
-	m_source = open_next_data_source();
+	m_source = open_source();
 	if ( m_source )   {
 	  auto frame = m_source->next();
 	  if ( frame )   {
