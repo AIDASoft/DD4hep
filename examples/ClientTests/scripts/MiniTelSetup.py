@@ -44,4 +44,3 @@ class Setup(DDG4TestSetup.Setup):
 
   def defineEdm4hepOutput(self, output='MiniTel_' + time.strftime('%Y-%m-%d_%H-%M')):
     return DDG4TestSetup.Setup.defineEdm4hepOutput(self, output)
-
