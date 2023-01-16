@@ -491,8 +491,8 @@ if (DD4HEP_USE_GEANT4)
     # Test EDM4HEP write (needs to be expanded)
     dd4hep_add_test_reg(ClientTests_sim_MinitTel_edm4hep_write
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-      EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTelEdm4hepWrite.py
-                 -batch -events 5
+      EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTelGenerate.py
+                 -batch -events 5 -output MiniTel_ddg4_edm4hep.edm4hep.root
       REGEX_PASS "\\+\\+\\+ Finished run 0 after 5 events \\(5 events in total\\)"
       REGEX_FAIL "Error;ERROR;Exception"
     )
