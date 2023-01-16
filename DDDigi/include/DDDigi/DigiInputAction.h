@@ -16,6 +16,9 @@
 /// Framework include files
 #include <DDDigi/DigiEventAction.h>
 
+/// C/C++ include files
+#include <limits>
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
@@ -36,10 +39,18 @@ namespace dd4hep {
     public:
       enum { INPUT_START = -1  };
       enum { NO_MASK     = 0x0 };
+      /// Most probably need some minimum cutoff:
+      static constexpr double epsilon = std::numeric_limits<double>::epsilon();
 
     protected:
       /// Property: Input data specification
       std::vector<std::string> m_input_sources { };
+      /// Property: Container names to be loaded
+      std::vector<std::string> m_objects_enabled  { };
+      /// Property: Container names to be ignored for loading
+      std::vector<std::string> m_objects_disabled  { };
+      /// Property: Option to specify event section in the input data (tree, table etc.)
+      std::string              m_input_section { "EVENT" };
       /// Property: Input data segment name
       std::string              m_input_segment { "inputs" };
       /// Property: Mask to flag input source items
@@ -69,6 +80,21 @@ namespace dd4hep {
       int input_mask()  const   {
 	return m_input_mask;
       }
+      /// Access to input section name containing the event data
+      const std::string& input_section()  const   {
+	return m_input_section;
+      }
+      /// Access to container names containing data
+      const std::vector<std::string>& objects_enabled()  const   {
+	return m_objects_enabled;
+      }
+      /// Access to container names containing data
+      const std::vector<std::string>& objects_disabled()  const   {
+	return m_objects_disabled;
+      }
+      /// Check if a event object should be loaded: Default YES unless inhibited by selection or veto
+      bool object_loading_is_enabled(const std::string& nam)  const;
+
       /// Callback to read event input
       virtual void execute(context_t& context)  const override;
     };

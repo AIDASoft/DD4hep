@@ -21,7 +21,7 @@ def run():
                             parallel=True,
                             input_mask=0x0,
                             input_segment='input',
-                            output='dddigi_write_edm4hep.root')
+                            output='MiniTel_dddigi_edm4hep.root')
   proc = digi.create_action('Digi2edm4hepProcessor/edm4hep')
   hit_type = 'TrackerHits'
   if digi.hit_type:

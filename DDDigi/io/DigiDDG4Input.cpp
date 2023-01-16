@@ -13,7 +13,6 @@
 
 // Framework include files
 #include <DDDigi/DigiROOTInput.h>
-#include <DDDigi/DigiFactories.h>
 #include "DigiIO.h"
 
 #include <DDG4/Geant4Data.h>
@@ -22,8 +21,7 @@
 // ROOT include files
 #include <TBranch.h>
 #include <TClass.h>
-
-// C/C++ include files
+#include <TROOT.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -35,42 +33,34 @@ namespace dd4hep {
 
     class DigiDDG4ROOT : public DigiROOTInput    {
     public:
-      static constexpr double epsilon = std::numeric_limits<double>::epsilon();
-
       /// Property to generate extra history records
-      bool m_keep_raw          { true };
-      mutable TClass* m_trackerHitClass { nullptr };
-      mutable TClass* m_caloHitClass    { nullptr };
-      mutable TClass* m_particlesClass  { nullptr };
+      bool    m_keep_raw        { true };
 
-      TClass* get_class(TClass* c)  const   {
-	if ( c == m_particlesClass || c == m_trackerHitClass || c == m_caloHitClass )
-	  return c;
-	const char* nam = c->GetName();
-	if ( strstr(nam, "vector<dd4hep::sim::Geant4Particle*") ) 
-	  return m_particlesClass  = c;
-	else if ( strstr(nam, "vector<dd4hep::sim::Geant4Tracker::Hit*") ) 
-	  return m_trackerHitClass = c;
-	else if ( strstr(nam, "vector<dd4hep::sim::Geant4Calorimeter::Hit*") ) 
-	  return m_caloHitClass    = c;
-	except("Unknown data class: %s Cannot be handled", nam);
-	return c;
-      }
+      /// Class pointers of the objects to be imported
+      TClass* m_trackerHitClass { nullptr };
+      TClass* m_caloHitClass    { nullptr };
+      TClass* m_particlesClass  { nullptr };
 
     public:
       /// Initializing constructor
-      DigiDDG4ROOT(const DigiKernel& krnl, const std::string& nam)
-	: DigiROOTInput(krnl, nam)
-      {
+      DigiDDG4ROOT(const DigiKernel& krnl, const std::string& nam) : DigiROOTInput(krnl, nam)      {
 	declareProperty("keep_raw", m_keep_raw);
+	m_particlesClass  = gROOT->GetClass(typeid(std::vector<dd4hep::sim::Geant4Particle*>), kTRUE);
+	m_trackerHitClass = gROOT->GetClass(typeid(std::vector<dd4hep::sim::Geant4Tracker::Hit*>), kTRUE);
+	m_caloHitClass    = gROOT->GetClass(typeid(std::vector<dd4hep::sim::Geant4Calorimeter::Hit*>), kTRUE);
+	assert(m_particlesClass != 0);
+	assert(m_trackerHitClass != 0);
+	assert(m_caloHitClass != 0);
       }
 
+      /// Convert DDG4 hit collections collection
       template <typename T>
-      void conv_hits(DigiContext& context, DataSegment& segment,
-		     const std::string& tag,
-		     Key::mask_type mask,
-		     const char* nam,
-		     void* ptr)   const
+      void from_dd4g4(DigiContext& context,
+		      DataSegment& segment,
+		      const std::string& tag,
+		      Key::mask_type mask,
+		      const char* nam,
+		      void* ptr)   const
       {
 	DepositVector out(nam, mask, SegmentEntry::UNKNOWN);
 	std::map<CellID, std::shared_ptr<T> > hits;
@@ -90,9 +80,12 @@ namespace dd4hep {
 	  put_data(segment, Key(std::string(nam)+".ddg4", mask, segment.id), hits);
 	}
       }
-
-      void conv_particles(DigiContext& context, DataSegment& segment,
-			  int mask, const std::string& nam, void* ptr)   const
+      /// Convert DDG4 MC particle collection
+      void from_dd4g4(DigiContext& context,
+		      DataSegment& segment,
+		      int mask,
+		      const std::string& nam,
+		      void* ptr)   const
       {
 	ParticleMapping particles(nam, mask);
 	if ( ptr )   {
@@ -106,18 +99,19 @@ namespace dd4hep {
 
       /// Callback to handle single branch
       virtual void operator()(DigiContext& context, work_t& work)  const  override  {
-	TBranch& br = work.branch;
-	int     msk = work.input_key.mask();
-	auto&   seg = work.input_segment;
+	TBranch& br = work.container.branch;
 	void**  add = (void**)br.GetAddress();
-	TClass* cls = get_class(&work.cl);
+	int     msk = work.container.key.mask();
+	TClass* cls = &work.container.clazz;
+	auto&   seg = work.segment;
 	const char* nam = br.GetName();
+
 	if ( cls == m_caloHitClass )
-	  conv_hits<sim::Geant4Calorimeter::Hit>(context, seg, "calorimeter", msk, nam, *add);
+	  from_dd4g4<sim::Geant4Calorimeter::Hit>(context, seg, "calorimeter", msk, nam, *add);
 	else if ( cls == m_trackerHitClass )
-	  conv_hits<sim::Geant4Tracker::Hit>(context, seg, "tracker", msk, nam, *add);
+	  from_dd4g4<sim::Geant4Tracker::Hit>(context, seg, "tracker", msk, nam, *add);
 	else if ( cls == m_particlesClass )
-	  conv_particles(context, seg, msk, nam, *add);
+	  from_dd4g4(context, seg, msk, nam, *add);
 	else
 	  except("Unknown data type encountered in branch: %s", nam);
       }
@@ -126,4 +120,5 @@ namespace dd4hep {
 }      // End namespace dd4hep
 
 /// Factory instantiation
+#include <DDDigi/DigiFactories.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiDDG4ROOT)
