@@ -54,9 +54,7 @@ namespace dd4hep {
       std::string m_caloHitType    { };
       /// Type of particles container
       std::string m_particlesType  { };
-      /// Property to generate extra history records
-      bool        m_keep_raw       { true };
-
+      
     public:
       /// Initializing constructor
       DigiEdm4hepInput(const DigiKernel& krnl, const std::string& nam);
@@ -120,9 +118,14 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
+    class edm4hep_read_frame_t : public DigiInputAction::event_frame   {
+    public:
+      podio::Frame frame { };
+      edm4hep_read_frame_t(podio::Frame&& frm) : frame(std::move(frm)) {}
+    };
     using reader_t = podio::ROOTFrameReader;
-    using frame_t  = podio::Frame;
-
+    using frame_t  = edm4hep_read_frame_t;
+    
     /// EDM4HEP Digi input reader: Collection descriptor definition
     /**
      *
@@ -159,7 +162,7 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class DigiEdm4hepInput::inputsource_t   {
+    class DigiEdm4hepInput::inputsource_t : public DigiInputAction::input_source   {
     public:
       /// Reference to the reader object
       std::unique_ptr<reader_t>   stream      { };
@@ -217,7 +220,6 @@ namespace dd4hep {
       input_t           m_source { };
       /// Pointer to current input source
       int               m_curr_input   { INPUT_START };
-      std::size_t       m_curr_event   { 0 };
 
     public:
       /// Initializing constructor
@@ -247,6 +249,7 @@ namespace dd4hep {
 	  stream->openFile(fname);
 	  auto source = std::make_unique<inputsource_t>(sec, std::move(stream));
 	  m_parent->info("+++ Opened EDM4HEP input file %s.", fname.c_str());
+	  m_parent->onOpenFile(*source);
 	  return source;
 	}
 	catch (const std::runtime_error& e)   {
@@ -258,13 +261,13 @@ namespace dd4hep {
     }
 
     std::shared_ptr<frame_t> DigiEdm4hepInput::internals_t::next()   {
-      if ( !m_source || m_source->done() )    {
+      if ( !m_source || m_source->done() || m_parent->fileLimitReached(*m_source) )    {
 	int mask = m_parent->input_mask();
 	m_source = open_next_data_source();
 	if ( m_source )   {
 	  auto frame = m_source->next();
 	  if ( frame )   {
-	    auto table = frame->getIDTable();
+	    auto table = frame->frame.getIDTable();
 	    const auto& ids = table.ids();
 	    for( int id : ids )   {
 	      std::string nam = table.name(id);
@@ -274,13 +277,16 @@ namespace dd4hep {
 		m_source->collections.emplace( key, collection_t(id, nam) );
 	      }
 	    }
+	    m_parent->onProcessEvent(*m_source, *frame);
 	    return frame;
 	  }
 	  m_parent->except("+++ No valid frame present in file.");
 	}
 	m_parent->except("+++ No open file present. Aborting processing");
       }
-      return m_source->next();
+      auto frame = m_source->next();
+      m_parent->onProcessEvent(*m_source, *frame);
+      return frame;
     }
 
     /// Initializing constructor
@@ -291,7 +297,6 @@ namespace dd4hep {
       m_trackerHitType = typeName(typeid(edm4hep::SimTrackerHitCollection));
       m_caloHitType    = typeName(typeid(edm4hep::SimCalorimeterHitCollection));
       m_particlesType  = typeName(typeid(edm4hep::MCParticleCollection));
-      declareProperty("keep_raw",              m_keep_raw);
       declareProperty("tracker_hits_type",     m_trackerHitType);
       declareProperty("calorimeter_hits_type", m_caloHitType);
       declareProperty("particles_hits_type",   m_particlesType);
@@ -308,7 +313,7 @@ namespace dd4hep {
 
       for( auto& coll : internals->m_source->collections )    {
 	const auto& nam = coll.second.name;
-	const podio::CollectionBase* collection = frame->get(nam);
+	const podio::CollectionBase* collection = frame->frame.get(nam);
 	if ( collection )   {
 	  work_t work { context, coll, segment, collection };
 	  (*this)(context, work);

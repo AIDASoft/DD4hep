@@ -42,6 +42,18 @@ namespace dd4hep {
       /// Most probably need some minimum cutoff:
       static constexpr double epsilon = std::numeric_limits<double>::epsilon();
 
+      /// Input source base
+      class input_source   {
+      public:
+	/// Event counter for current file
+	int event_count  { 0 };
+      };
+
+      /// Event frame base
+      class event_frame   {
+      public:
+      };
+
     protected:
       /// Property: Input data specification
       std::vector<std::string> m_input_sources { };
@@ -55,9 +67,13 @@ namespace dd4hep {
       std::string              m_input_segment { "inputs" };
       /// Property: Mask to flag input source items
       int                      m_input_mask    { NO_MASK };
+      /// Property: Number of events to be read by file
+      int                      m_events_per_file { -1 };
       /// Property: Loop on inputs and restart at end
       bool                     m_input_rescan { true };
-
+      /// Property: generate raw input history records to Digi store
+      bool                     m_keep_raw       { true };
+      
     protected:
       /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiInputAction);
@@ -92,6 +108,13 @@ namespace dd4hep {
       const std::vector<std::string>& objects_disabled()  const   {
 	return m_objects_disabled;
       }
+      /// Check if the number of events per file is reached
+      bool fileLimitReached(input_source& source)   const;
+      /// Callback when a new file is opened
+      virtual void onOpenFile(input_source& source);
+      /// Callback when a new event is processed
+      virtual void onProcessEvent(input_source& source, event_frame& frame);
+
       /// Check if a event object should be loaded: Default YES unless inhibited by selection or veto
       bool object_loading_is_enabled(const std::string& nam)  const;
 
