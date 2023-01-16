@@ -16,11 +16,14 @@ def run():
   digi = DigiTest.Test(geometry=None, process_data=False)
   read = digi.input_action('DigiEdm4hepInput/SignalReader',
                            mask=0x0,
-                           input=['MiniTel_edm4hep_DDG4_data.run00000000.root'])
+                           input=['MiniTel_DDG4_edm4hep_data.run00000000.root',
+                                  'MiniTel_DDG4_edm4hep_data.run00000001.root',
+                                  'MiniTel_DDG4_edm4hep_data.run00000002.root',])
   read.input_section = 'events'
   read.objects_disabled = ['EventHeader']
+  read.events_per_file = 5
   digi.event_action('DigiStoreDump/StoreDump', parallel=False)
-  digi.run_checked(num_events=5, num_threads=1, parallel=1)
+  digi.run_checked(num_events=100, num_threads=10, parallel=10)
 
 
 if __name__ == '__main__':
