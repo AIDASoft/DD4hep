@@ -17,7 +17,7 @@ def run():
   digi = DigiTest.Test(geometry=None)
   read = digi.input_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()])
   dump = digi.event_action('DigiStoreDump/StoreDump', parallel=False)
-  writ = digi.output_action('Digi2edm4hepWriter/Writer',
+  writ = digi.output_action('Digi2edm4hepOutput/Writer',
                             parallel=True,
                             input_mask=0x0,
                             input_segment='input',
