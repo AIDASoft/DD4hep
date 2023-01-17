@@ -46,8 +46,13 @@ class Setup:
 
   def defineOutput(self, output):
     # Configure I/O
-    evt_root = self.geant4.setupROOTOutput('RootOutput', output, mc_truth=True)
-    return evt_root
+    evt_write = self.geant4.setupROOTOutput('RootOutput', output, mc_truth=True)
+    return evt_write
+
+  def defineEdm4hepOutput(self, output):
+    # Configure I/O
+    evt_write = self.geant4.setupEDM4hepOutput('Edm4hepOutput', output)
+    return evt_write
 
   def setupGun(self, name="Gun", particle='pi-', energy=100 * GeV, multiplicity=1):
     # Setup particle gun

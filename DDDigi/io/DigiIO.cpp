@@ -102,6 +102,11 @@ namespace dd4hep {
     edm4hep::Vector3f _toVectorF(const dd4hep::Position& ep)  {
       return { float(ep.x()), float(ep.y()), float(ep.z()) };
     }
+
+    template <typename POSITION> Position _toPosition(const POSITION& pos)  {
+      return { pos.x, pos.y, pos.z };
+    }
+
     namespace {
       template <typename DATA> bool internal_can_handle(const DATA&, const std::type_info&)   {
         return true;
@@ -255,6 +260,111 @@ namespace dd4hep {
       hit.setEnergyError( dep_error );
       hit.setPosition( _toVectorF(de.position) );
     }
+
+    template <> template <>
+    void data_io<edm4hep_input>::_to_digi(Key key, 
+					  const edm4hep::MCParticleCollection& input,
+					  ParticleMapping& particles)
+    {
+      Key mkey = key;
+      for( std::size_t i=0, n=input.size(); i<n; ++i )  {
+	Particle part {};
+	edm4hep::MCParticle p = input.at(i);
+        part.start_position = _toPosition(p.getVertex());
+        part.end_position   = _toPosition(p.getEndpoint());
+        part.momentum       = _toPosition(p.getMomentum());
+        part.pdgID          = p.getPDG();
+        part.charge         = 3.0*p.getCharge();
+        part.mass           = p.getMass();
+        part.time           = p.getTime();
+        mkey.set_item(particles.size());
+        part.source = std::make_any<edm4hep::MCParticle>(std::move(p));
+        particles.push(mkey, std::move(part));
+      }
+    }
+
+    template <> template <>
+    bool DepositPredicate<EnergyCut>::operator()(edm4hep::SimTrackerHit h)  const   {
+      return h.getEDep() > data.cutoff;
+    }
+
+    template <> template <>
+    void data_io<edm4hep_input>::_to_digi_if(const edm4hep::SimTrackerHitCollection& input,
+					     std::map<CellID, edm4hep::SimTrackerHit>& hits,
+					     const DepositPredicate<EnergyCut>& predicate)   {
+      for( std::size_t i=0, n=input.size(); i<n; ++i )  {
+	auto p = input.at(i);
+        if ( predicate(p) )   {
+          CellID cell = p.getCellID();
+          hits.emplace(cell, std::move(p));
+        }
+      }
+    }
+
+    template <> template <>
+    void data_io<edm4hep_input>::_to_digi(Key key,
+					  const std::map<CellID, edm4hep::SimTrackerHit>& hits,
+					  DepositVector& out)  {
+      out.data_type = SegmentEntry::CALORIMETER_HITS;
+      for( const auto& depo : hits )   {
+	Key history_key;
+	EnergyDeposit dep { };
+	const auto& h = depo.second;
+	dep.flag = h.getQuality();
+	dep.time = h.getTime();
+	dep.length = h.getPathLength();
+	dep.deposit = h.getEDep();
+	dep.position = _toPosition(h.getPosition());
+	dep.momentum = _toPosition(h.getMomentum());
+	history_key.set_mask(key.mask());
+	history_key.set_item(out.size());
+	history_key.set_segment(key.segment());
+	dep.history.hits.emplace_back(history_key, dep.deposit);
+	//add_particle_history(h, history_key, dep.history);
+	out.emplace(depo.first, std::move(dep));
+      }
+    }
+
+    template <> template <>
+    bool DepositPredicate<EnergyCut>::operator()(edm4hep::SimCalorimeterHit h)  const   {
+      return h.getEnergy() > data.cutoff;
+    }
+
+    template <> template <>
+    void data_io<edm4hep_input>::_to_digi_if(const edm4hep::SimCalorimeterHitCollection& input,
+					     std::map<CellID, edm4hep::SimCalorimeterHit>& hits,
+					     const DepositPredicate<EnergyCut>& predicate)   {
+      for( std::size_t i=0, n=input.size(); i<n; ++i )  {
+	auto p = input.at(i);
+        if ( predicate(p) )   {
+          CellID cell = p.getCellID();
+          hits.emplace(cell, std::move(p));
+        }
+      }
+    }
+
+    template <> template <>
+    void data_io<edm4hep_input>::_to_digi(Key key,
+					  const std::map<CellID, edm4hep::SimCalorimeterHit>& hits,
+					  DepositVector& out)  {
+      out.data_type = SegmentEntry::CALORIMETER_HITS;
+      for( const auto& depo : hits )  {
+	Key history_key;
+	EnergyDeposit dep { };
+	const auto& h = depo.second;
+	dep.flag = 0;
+	
+	dep.deposit = h.getEnergy();
+	dep.position = _toPosition(h.getPosition());
+	history_key.set_mask(key.mask());
+	history_key.set_item(out.size());
+	history_key.set_segment(key.segment());
+	dep.history.hits.emplace_back(history_key, dep.deposit);
+	//add_particle_history(h, history_key, dep.history);
+	out.emplace(depo.first, std::move(dep));
+      }
+    }
+
   }     // End namespace digi
 }       // End namespace dd4hep
 #endif  // DD4HEP_USE_EDM4HEP
@@ -346,7 +456,7 @@ namespace dd4hep {
     }
 
     template <typename T>
-    static void cnv_to_digi(Key key,
+    static void ddg4_cnv_to_digi(Key key,
                             const std::pair<const CellID, std::shared_ptr<T> >& depo,
                             DepositVector& out)     {
       Key history_key;
@@ -373,7 +483,7 @@ namespace dd4hep {
                                        DepositVector& out)  {
       out.data_type = SegmentEntry::CALORIMETER_HITS;
       for( const auto& p : hits )
-        cnv_to_digi(key, p, out);
+        ddg4_cnv_to_digi(key, p, out);
     }
 
     template <> template <>
@@ -382,7 +492,7 @@ namespace dd4hep {
                                        DepositVector& out)  {
       out.data_type = SegmentEntry::TRACKER_HITS;
       for( const auto& p : hits )
-        cnv_to_digi(key, p, out);
+        ddg4_cnv_to_digi(key, p, out);
     }
   }     // End namespace digi
 }       // End namespace dd4hep
@@ -469,7 +579,6 @@ namespace dd4hep {
   }     // End namespace digi
 }       // End namespace dd4hep
 #endif  // DD4HEP_USE_DDG4 && DD4HEP_USE_EDM4HEP
-
 
 /// ======================================================================
 ///  Conversion from DDDigi in memory to edm4hep

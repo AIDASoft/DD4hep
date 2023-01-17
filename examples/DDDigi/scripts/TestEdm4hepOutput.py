@@ -17,11 +17,11 @@ def run():
   digi = DigiTest.Test(geometry=None)
   read = digi.input_action('DigiDDG4ROOT/SignalReader', mask=0x0, input=[digi.next_input()])
   dump = digi.event_action('DigiStoreDump/StoreDump', parallel=False)
-  writ = digi.output_action('Digi2edm4hepWriter/Writer',
+  writ = digi.output_action('Digi2edm4hepOutput/Writer',
                             parallel=True,
                             input_mask=0x0,
                             input_segment='input',
-                            output='dddigi_write_edm4hep.root')
+                            output='MiniTel_DDDigi_edm4hep_data.root')
   proc = digi.create_action('Digi2edm4hepProcessor/edm4hep')
   hit_type = 'TrackerHits'
   if digi.hit_type:

@@ -122,7 +122,6 @@ class Test(dddigi.Digitize):
         result = 'PASSED'
     self.always('%s Test finished after processing %d events. [%d parallel threads, %d parallel events]'
                 % (result, evt_done, num_threads, parallel, ))
-    self.always('Test done. Exiting')
     self.kernel().terminate()
     return evt_done
 

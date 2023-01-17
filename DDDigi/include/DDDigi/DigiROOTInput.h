@@ -16,11 +16,12 @@
 /// Framework include files
 #include <DDDigi/DigiInputAction.h>
 
-// C/C++ include files
+/// C/C++ include files
 #include <memory>
 
 /// Forward declarations
 class TBranch;
+class TClass;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -31,7 +32,7 @@ namespace dd4hep {
     // Forward declarations
     class DigiROOTInput;
 
-    /// Base class for input actions to the digitization
+    /// Base class for input actions to the digitization using ROOT
     /**
      *
      *  \author  M.Frank
@@ -44,25 +45,23 @@ namespace dd4hep {
       /// Helper classes
       class internals_t;
       class inputsource_t;
-
+      class container_t  {
+      public:
+	Key          key;
+	TBranch&     branch;
+	TClass&      clazz;
+      container_t(Key k, TBranch& b, TClass& c) : key(k), branch(b), clazz(c) {}
+      };
       class work_t   {
       public:
-	DataSegment& input_segment;
-	Key          input_key;
-	TBranch&     branch;
-	TClass&      cl;
+	DataSegment& segment;
+	container_t& container;
       };
 
+
     protected:
-      /// Property: Name of the tree to connect to
-      std::string                    m_tree_name   { };
-      /// Property: Container names to be loaded
-      std::vector<std::string>       m_containers  { };
       /// Connection parameters to the "current" input source
       mutable std::unique_ptr<internals_t> imp;
-
-      /// Open new input file
-      void open_new_file()  const;
 
     protected:
       /// Define standard assignments and constructors
@@ -73,15 +72,6 @@ namespace dd4hep {
       DigiROOTInput(const DigiKernel& kernel, const std::string& nam);
       /// Default destructor
       virtual ~DigiROOTInput();
-
-      /// Access to tree name containing data
-      const std::string& tree_name()  const   {
-	return m_tree_name;
-      }
-      /// Access to container names containing data
-      const std::vector<std::string>& container_names()  const   {
-	return m_containers;
-      }
 
       /// Callback to read event input
       virtual void execute(DigiContext& context)  const override;
