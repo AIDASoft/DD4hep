@@ -102,6 +102,7 @@ namespace dd4hep {
   }    // End namespace digi
 }      // End namespace dd4hep
 
+//#include <podio/Frame.h>
 #include "DigiFrame.h"
 #include <podio/ROOTFrameReader.h>
 #include <edm4hep/SimTrackerHit.h>
@@ -128,7 +129,8 @@ namespace dd4hep {
     class edm4hep_read_frame_t : public DigiInputAction::event_frame   {
     public:
       podio::Frame frame { };
-      edm4hep_read_frame_t(podio::Frame&& frm) : frame(std::move(frm)) {}
+      edm4hep_read_frame_t(podio::Frame&& frm) : frame(std::move(frm)) { }
+      const podio::CollectionBase* get(const std::string& nam) const { return frame.self()->get(nam); }
     };
     using reader_t = podio::ROOTFrameReader;
     using frame_t  = edm4hep_read_frame_t;
@@ -271,20 +273,19 @@ namespace dd4hep {
     /// Access the next event record. If the courrent source is exhausted, open next source
     std::shared_ptr<frame_t> DigiEdm4hepInput::internals_t::next()   {
       if ( !m_source || m_source->done() || m_parent->fileLimitReached(*m_source) )    {
-	int mask = m_parent->input_mask();
 	m_source = open_source();
 	if ( m_source )   {
 	  auto frame = m_source->next();
 	  if ( frame )   {
-	    auto table = frame->frame.getIDTable();
-	    const auto& ids = table.ids();
-	    for( int id : ids )   {
-	      std::string nam = table.name(id);
+	    auto table = frame->frame.getAvailableCollections();
+	    int id = 0, mask = m_parent->input_mask();
+	    for( const auto& nam : table )   {
 	      m_parent->info("+++ Collection id: %04X --> '%s'", id, nam.c_str());
 	      if ( m_parent->object_loading_is_enabled(nam) )   {
 		Key key(nam, mask);
 		m_source->collections.emplace( key, collection_t(id, nam) );
 	      }
+	      ++id;
 	    }
 	    m_parent->onProcessEvent(*m_source, *frame);
 	    return frame;
@@ -322,7 +323,7 @@ namespace dd4hep {
 
       for( auto& coll : internals->m_source->collections )    {
 	const auto& nam = coll.second.name;
-	const podio::CollectionBase* collection = frame->frame.get(nam);
+	const podio::CollectionBase* collection = frame->get(nam);
 	if ( collection )   {
 	  work_t work { context, coll, segment, collection };
 	  (*this)(context, work);

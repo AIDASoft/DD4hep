@@ -1,5 +1,5 @@
-#ifndef DIGI_FRAME_H
-#define DIGI_FRAME_H
+#ifndef PODIO_FRAME_H
+#define PODIO_FRAME_H
 
 #include "podio/CollectionBase.h"
 #include "podio/CollectionIDTable.h"
@@ -162,15 +162,7 @@ public:
   /** Frame destructor */
   ~Frame() = default;
 
-  /// Access CollectionIDTable from concept
-  podio::CollectionIDTable getIDTable() const  {
-    return m_self->getIDTable();
-  }
-
-  /// Generic collection access from concept
-  const CollectionBase* get(const std::string& name) const    {
-    return m_self->get(name);
-  }
+  const std::unique_ptr<FrameConcept>& self() const  { return m_self; }
 
   /** Get a collection from the Frame
    */
