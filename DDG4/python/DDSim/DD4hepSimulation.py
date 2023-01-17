@@ -291,7 +291,7 @@ class DD4hepSimulation(object):
     dd4hep.setPrintLevel(self.printLevel)
 
     for compactFile in self.compactFile:
-      kernel.loadGeometry(str("file:" + compactFile))
+      kernel.loadGeometry(str("file:" + os.path.abspath(compactFile)))
     detectorDescription = kernel.detectorDescription()
 
     DDG4.importConstants(detectorDescription)
