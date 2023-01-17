@@ -67,7 +67,7 @@ else()
 endif()
 #
 if(DD4HEP_USE_EDM4HEP)
-  list(APPEND DDDigiIO_SOURCES      "io/Digi2edm4hep.cpp;io/DigiEdm4hepInput.cpp")
+  list(APPEND DDDigiIO_SOURCES      "io/Digi2edm4hepOutput.cpp;io/DigiEdm4hepInput.cpp")
   list(APPEND DDDigiIO_DEFINITIONS  "DD4HEP_USE_EDM4HEP=1")
   list(APPEND DDDigiIO_USES         "EDM4HEP::edm4hep;EDM4HEP::edm4hepDict;podio::podio;podio::podioDict;podio::podioRootIO")
 else()
