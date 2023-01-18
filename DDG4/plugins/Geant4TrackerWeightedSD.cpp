@@ -233,11 +233,9 @@ namespace dd4hep {
           
           Geant4Tracker::Hit* hit = new Geant4Tracker::Hit(pre.truth.trackID,
                                                            pre.truth.pdgID,
-                                                           deposit,time);
+                                                           deposit,time, step_length,
+							   pos, mom);
           hit->flag     = hit_flag;
-          hit->position = pos;
-          hit->momentum = mom;
-          hit->length   = step_length;
           hit->cellID   = cell;
           hit->g4ID     = g4ID;
 

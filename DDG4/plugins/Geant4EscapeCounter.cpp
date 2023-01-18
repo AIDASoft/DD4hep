@@ -102,13 +102,25 @@ bool Geant4EscapeCounter::process(const G4Step* step, G4TouchableHistory* /* his
   Geant4TouchableHandler handler(step);
   string   hdlr_path  = handler.path();
   Position prePos     = h.prePos();
+  Position postPos    = h.postPos();
   Geant4HitCollection* coll = collection(m_collectionID);
-  SimpleTracker::Hit*  hit = new SimpleTracker::Hit(th.id(),th.pdgID(),h.deposit(),th.time());
+  SimpleTracker::Hit*  hit = new SimpleTracker::Hit();
+  hit->g4ID          = th.id();
+  hit->energyDeposit = h.deposit();
   hit->cellID        = volumeID(step);
   hit->energyDeposit = th.energy();
   hit->position      = prePos;
   hit->momentum      = h.trkMom();
-  hit->length        = 0;
+  hit->length        = (postPos-prePos).R();
+  hit->truth.trackID = th.id();
+  hit->truth.deposit = h.deposit();
+  hit->truth.pdgID   = th.pdgID();
+  hit->truth.deposit = h.deposit();
+  hit->truth.time    = th.time();
+  hit->truth.length  = hit->length;
+  hit->truth.x       = hit->position.x();
+  hit->truth.y       = hit->position.y();
+  hit->truth.z       = hit->position.z();
   coll->add(hit);
   mark(h.track);
 

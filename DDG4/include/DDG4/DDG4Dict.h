@@ -142,7 +142,7 @@ namespace dd4hep {
     /// Default constructor
     inline Geant4Tracker::Hit::Hit() : length(0), energyDeposit(0e0)  {    }
     /// Initializing constructor
-    inline Geant4Tracker::Hit::Hit(int, int, double, double)   {}
+    //inline Geant4Tracker::Hit::Hit(int, int, double, double)   {}
     /// Default destructor
     inline Geant4Tracker::Hit::~Hit()  {    }
     /// Explicit assignment operation

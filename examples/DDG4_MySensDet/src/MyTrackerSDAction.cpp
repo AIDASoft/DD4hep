@@ -63,13 +63,11 @@ namespace dd4hep {
       double   hit_len   = direction.R();
 
       // Somehow extract here the physics you want
-      MyTrackerSD::Hit* hit = new MyTrackerSD::Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime());
+      MyTrackerSD::Hit* hit = new MyTrackerSD::Hit(h.trkID(), h.trkPdgID(), h.deposit(),
+						   h.track->GetGlobalTime(), hit_len,
+						   position, 0.5*(h. preMom() + h.postMom()));
       Geant4HitData::MonteCarloContrib contrib = Geant4HitData::extractContribution(step);
       hit->cellID        = cellID(step);
-      hit->energyDeposit = contrib.deposit;
-      hit->position      = position;
-      hit->momentum      = 0.5*(h. preMom() + h.postMom());
-      hit->length        = hit_len;
       hit->step_length   = hit_len;
       hit->prePos        = prePos;
       hit->postPos       = postPos;
