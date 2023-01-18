@@ -211,7 +211,7 @@ namespace dd4hep {
 	  y = float(pos_y);
 	  z = float(pos_z);
 	}
-	/// Access position
+	/// Access momentum
 	Direction momentum() const   {
 	  return Direction(px, py, pz);
 	}

@@ -56,16 +56,17 @@ namespace dd4hep {
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool Geant4SensitiveAction<MyTrackerSD>::process(const G4Step* step,G4TouchableHistory* /*hist*/ ) {
       Geant4StepHandler h(step);
-      Position prePos    = h.prePos();
-      Position postPos   = h.postPos();
-      Position direction = postPos - prePos;
-      Position position  = mean_direction(prePos,postPos);
-      double   hit_len   = direction.R();
-
+      Position  prePos    = h.prePos();
+      Position  postPos   = h.postPos();
+      Position  direction = postPos - prePos;
+      Position  pos       = mean_direction(prePos,postPos);
+      Direction mom       = 0.5 * (h.preMom() + h.postMom());
+      double    hit_len   = direction.R();
+      double    depo      = h.deposit();
+      double    tim       = h.track->GetGlobalTime();
       // Somehow extract here the physics you want
-      MyTrackerSD::Hit* hit = new MyTrackerSD::Hit(h.trkID(), h.trkPdgID(), h.deposit(),
-						   h.track->GetGlobalTime(), hit_len,
-						   position, 0.5*(h. preMom() + h.postMom()));
+      MyTrackerSD::Hit* hit = 
+	new MyTrackerSD::Hit(h.trkID(), h.trkPdgID(), depo, tim, hit_len, pos, mom);
       Geant4HitData::MonteCarloContrib contrib = Geant4HitData::extractContribution(step);
       hit->cellID        = cellID(step);
       hit->step_length   = hit_len;
@@ -74,14 +75,13 @@ namespace dd4hep {
       collection(m_collectionID)->add(hit);
       mark(h.track);
       if ( 0 == hit->cellID )  {
-        hit->cellID        = volumeID(step);
+        hit->cellID = volumeID(step);
         except("+++ Invalid CELL ID for hit!");
       }
       printP1("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
-            step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
-            (void*)hit->cellID);
+	      depo, pos.X(), pos.Y(), pos.Z(), (void*)hit->cellID);
       Geant4TouchableHandler handler(step);
-      print("    Geant4 path:%s",handler.path().c_str());
+      print("    Geant4 path:%s", handler.path().c_str());
 
       // Do something with my personal data (can be also something more clever ;-):
       m_userData.integratedDeposit += contrib.deposit;
