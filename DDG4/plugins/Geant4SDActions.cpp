@@ -86,8 +86,8 @@ namespace dd4hep {
       Position  prePos    = h.prePos();
       Position  postPos   = h.postPos();
       Position  direction = postPos - prePos;
-      Position  pos       = mean_direction(prePos,postPos);
-      Direction mom       = 0.5*( h. preMom() + h.postMom() );
+      Position  pos       = mean_direction(prePos, postPos);
+      Direction mom       = 0.5 * (h.preMom() + h.postMom());
       double    hit_len   = direction.R();
 
       // if (hit_len > 0) {
