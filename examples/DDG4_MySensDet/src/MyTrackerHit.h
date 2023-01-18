@@ -47,8 +47,9 @@ namespace SomeExperiment {
     /// Default constructor
     MyTrackerHit() = default;
     /// Initializing constructor
-    MyTrackerHit(int track_id, int pdg_id, double deposit, double time_stamp)
-      : dd4hep::sim::Geant4Tracker::Hit(track_id,pdg_id,deposit,time_stamp) {}
+    MyTrackerHit(int track_id, int pdg_id, double deposit, double time_stamp, double len,
+		 const dd4hep::Position& pos, const dd4hep::Direction& mom)
+      : dd4hep::sim::Geant4Tracker::Hit(track_id,pdg_id,deposit,time_stamp, len, pos, mom) {}
     /// Default destructor
     virtual ~MyTrackerHit() = default;
     /// Assignment operator

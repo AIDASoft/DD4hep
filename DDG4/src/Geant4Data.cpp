@@ -55,8 +55,7 @@ DataExtension::~DataExtension() {
 }
 
 /// Default constructor
-Geant4HitData::Geant4HitData()
-  : cellID(0), flag(0), g4ID(0), extension() {
+Geant4HitData::Geant4HitData()   {
   InstanceCount::increment(this);
 }
 
@@ -70,12 +69,13 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* ste
   Geant4StepHandler h(step);
   double deposit =
     (h.trackDef() == G4OpticalPhoton::OpticalPhotonDefinition()) ? h.trkEnergy() : h.totalEnergy();
-  const G4ThreeVector& pre  = h.prePosG4();
-  const G4ThreeVector& post = h.postPosG4();
-  double length = (post-pre).mag() ;
-  float pos[] = {float((pre.x()+post.x())/2.0),float((pre.y()+post.y())/2.0),float((pre.z()+post.z())/2.0) };
-  Contribution contrib(h.trkID(),h.trkPdgID(),deposit,h.trkTime(),length,pos);
-  return contrib;
+  const G4ThreeVector& pre   = h.prePosG4();
+  const G4ThreeVector& post  = h.postPosG4();
+  G4ThreeVector        m     = h.track->GetMomentum();
+  double               len   = (post-pre).mag() ;
+  double               pos[] = { (pre.x()+post.x())/2.0,(pre.y()+post.y())/2.0,(pre.z()+post.z())/2.0 };
+  double               mom[] = { m.x(), m.y(), m.z() };
+  return Contribution(h.trkID(), h.trkPdgID(), deposit, h.trkTime(), len, pos, mom);
 }
 
 /// Extract the MC contribution for a given hit from the step information with BirksLaw effect option
@@ -86,18 +86,22 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* ste
     (h.trackDef() == G4OpticalPhoton::OpticalPhotonDefinition()) ? h.trkEnergy() : h.totalEnergy();
   const G4ThreeVector& pre  = h.prePosG4();
   const G4ThreeVector& post = h.postPosG4();
+  G4ThreeVector        m    = h.track->GetMomentum();
   double length = (post-pre).mag() ;
-  float pos[] = {float((pre.x()+post.x())/2.0),float((pre.y()+post.y())/2.0),float((pre.z()+post.z())/2.0) };
-  Contribution contrib(h.trkID(),h.trkPdgID(),deposit,h.trkTime(),length,pos);
-  return contrib;
+  double mom[] = { m.x(), m.y(), m.z() };
+  double pos[] = { (pre.x()+post.x())/2.0,(pre.y()+post.y())/2.0,(pre.z()+post.z())/2.0 };
+  return Contribution(h.trkID(), h.trkPdgID(), deposit, h.trkTime(), length, pos, mom);
 }
 
 /// Extract the MC contribution for a given hit from the fast simulation spot information
 Geant4HitData::Contribution Geant4HitData::extractContribution(const Geant4FastSimSpot* spot) {
   Geant4FastSimHandler h(spot);
+  const G4Track*       t = spot->primary;
+  G4ThreeVector        m = t->GetMomentum();
   G4ThreeVector        p = h.avgPositionG4();
-  double               position[3] = {p.x(), p.y(), p.z()};
-  return Contribution(h.trkID(),h.trkPdgID(),h.energy(),h.trkTime(),0e0,position);
+  double               pos[] = { p.x(), p.y(), p.z() };
+  double               mom[] = { m.x(), m.y(), m.z() };
+  return Contribution( h.trkID(), h.trkPdgID(), h.energy(), h. trkTime(), 0e0, pos, mom);
 }
 
 /// Default constructor
@@ -108,8 +112,13 @@ Geant4Tracker::Hit::Hit()
 }
 
 /// Standard initializing constructor
-Geant4Tracker::Hit::Hit(int track_id, int pdg_id, double deposit, double time_stamp)
-  : Geant4HitData(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp, 0.), energyDeposit(deposit) {
+Geant4Tracker::Hit::Hit(int track_id, int pdg_id, double deposit, double time_stamp,
+			double len, const Position& pos, const Direction& mom)
+  : Geant4HitData(), position(pos), momentum(mom), length(len),
+    truth(track_id, pdg_id, deposit, time_stamp, len, pos, mom),
+    energyDeposit(deposit)
+{
+  g4ID = track_id;
   InstanceCount::increment(this);
 }
 
@@ -139,14 +148,20 @@ Geant4Tracker::Hit& Geant4Tracker::Hit::clear() {
 
 /// Store Geant4 point and step information into tracker hit structure.
 Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const G4Step* step, const G4StepPoint* pnt) {
-  G4Track* trk = step->GetTrack();
+  G4Track*      trk = step->GetTrack();
+  G4ThreeVector trm = trk->GetMomentum();
   G4ThreeVector pos = pnt->GetPosition();
   G4ThreeVector mom = pnt->GetMomentum();
-
+  double        dep = step->GetTotalEnergyDeposit();
+  
+  truth.deposit = dep;
   truth.trackID = trk->GetTrackID();
   truth.pdgID   = trk->GetDefinition()->GetPDGEncoding();
-  truth.deposit = step->GetTotalEnergyDeposit();
   truth.time    = trk->GetGlobalTime();
+  truth.setPosition(pos.x(), pos.y(), pos.z()); 
+  truth.setMomentum(trm.x(), trm.y(), trm.z()); 
+
+  energyDeposit = dep;
   position.SetXYZ(pos.x(), pos.y(), pos.z());
   momentum.SetXYZ(mom.x(), mom.y(), mom.z());
   length = 0;
@@ -156,16 +171,21 @@ Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const G4Step* step, const G4S
 /// Store Geant4 spot information into tracker hit structure.
 Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const Geant4FastSimSpot* spot)   {
   const G4Track* trk  = spot->primary;
-  G4ThreeVector  pos  = spot->hitPosition();
-  G4ThreeVector  mom  = trk->GetMomentum().unit();
   double         dep  = spot->hit->GetEnergy();
+  G4ThreeVector  trm  = trk->GetMomentum();
+  G4ThreeVector  pos  = spot->hitPosition();
+  G4ThreeVector  mom  = trk->GetMomentum().unit() * dep;
+
   this->truth.deposit = dep;
   this->truth.trackID = trk->GetTrackID();
   this->truth.time    = trk->GetGlobalTime();
   this->truth.pdgID   = trk->GetDefinition()->GetPDGEncoding();
+  this->truth.setPosition(pos.x(), pos.y(), pos.z()); 
+  this->truth.setMomentum(trm.x(), trm.y(), trm.z()); 
+
   this->energyDeposit = dep;
   this->position.SetXYZ(pos.x(), pos.y(), pos.z());
-  this->momentum.SetXYZ(mom.x()*dep, mom.y()*dep, mom.z()*dep);
+  this->momentum.SetXYZ(mom.x(), mom.y(), mom.z());
   this->length = 0;
   return *this;
 }
