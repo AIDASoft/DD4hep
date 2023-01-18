@@ -210,6 +210,13 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   const G4PrimaryParticle* prim = h.primary();
   Particle* prim_part = 0;
 
+  // if particles are not tracked to the end, we pick up were we stopped previously
+  auto existingParticle = m_particleMap.find(h.id());
+  if(existingParticle != m_particleMap.end()) {
+    m_currTrack.get_data(*(existingParticle->second));
+    return;
+  }
+
   if ( prim )   {
     prim_part = m_primaryMap->get(prim);
     if ( !prim_part )  {
