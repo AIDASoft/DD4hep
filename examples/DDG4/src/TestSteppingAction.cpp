@@ -31,6 +31,7 @@ namespace dd4hep {
     class TestSteppingAction : public Geant4SteppingAction {
       std::size_t m_calls_steps { 0UL };
       std::size_t m_calls_suspended { 0UL };
+      std::size_t m_calls_kill { 0UL };
     
     public:
       /// Standard constructor
@@ -42,12 +43,16 @@ namespace dd4hep {
       virtual ~TestSteppingAction()   {
 	info("+++ Track Calls Steps: %ld", m_calls_steps);
 	info("+++ Track Calls Suspended: %ld", m_calls_suspended);
+	info("+++ Track Calls Killed: %ld", m_calls_kill);
       }
       /// stepping callback
       virtual void operator()(const G4Step* step, G4SteppingManager*) {
         if(m_calls_steps % 5 == 0 ) {
           ++m_calls_suspended;
           step->GetTrack()->SetTrackStatus(fSuspend);
+        } else if((m_calls_steps + 1) % 30 == 0 ) {
+          ++m_calls_kill;
+          step->GetTrack()->SetTrackStatus(fStopAndKill);
         }
 	++m_calls_steps;
       }

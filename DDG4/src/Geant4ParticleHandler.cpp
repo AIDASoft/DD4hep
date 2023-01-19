@@ -316,16 +316,6 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   Geant4ParticleHandle ph(&m_currTrack);
   const int g4_id = h.id();
 
-  if(track->GetTrackStatus() == fSuspend) {
-    m_haveSuspended = true;
-    //track is already in particle map, we pick it up from there in begin again
-    if(m_particleMap.find(g4_id) != m_particleMap.end()) return;
-    //track is not already stored, keep it in special map
-    auto iPart = m_suspendedPM.emplace(g4_id, new Particle());
-    (iPart.first->second)->get_data(m_currTrack);
-    return; // we trust that we eventually return to this function with another status and go on then
-  }
-
   int track_reason = m_currTrack.reason;
   PropertyMask mask(m_currTrack.reason);
   // Update vertex end point and final momentum
@@ -401,6 +391,17 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     else
       ph.dumpWithVertex(outputLevel()+3,name(),"FATAL: No real particle parent present");
   }
+
+  if(track->GetTrackStatus() == fSuspend) {
+    m_haveSuspended = true;
+    //track is already in particle map, we pick it up from there in begin again
+    if(m_particleMap.find(g4_id) != m_particleMap.end()) return;
+    //track is not already stored, keep it in special map
+    auto iPart = m_suspendedPM.emplace(g4_id, new Particle());
+    (iPart.first->second)->get_data(m_currTrack);
+    return; // we trust that we eventually return to this function with another status and go on then
+  }
+
 }
 
 /// Pre-event action callback

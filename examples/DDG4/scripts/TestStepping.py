@@ -61,7 +61,7 @@ def run():
   gun = geant4.setupGun("Gun", particle='gamma', energy=1 * GeV, multiplicity=1)
   gun.direction = (0.0, 0.0, 1.0)
   gun.OutputLevel = generator_output_level
-  kernel.NumEvents = 2
+  kernel.NumEvents = 10
   # Instantiate the stepping action
   stepping = DDG4.SteppingAction(kernel, 'TestSteppingAction/MyStepper')
   kernel.steppingAction().add(stepping)
