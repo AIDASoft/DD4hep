@@ -282,7 +282,7 @@ namespace dd4hep {
         /// copy constructor
         Hit(const Hit& c) = delete;
         /// Initializing constructor
-        Hit(int track_id, int pdg_id, double deposit, double time_stamp, double len, const Position& p, const Direction& d);
+        Hit(int track_id, int pdg_id, double deposit, double time_stamp, double len=0.0, const Position& p={0.0, 0.0, 0.0}, const Direction& d={0.0, 0.0, 0.0});
         /// Default destructor
         virtual ~Hit();
         /// Move assignment operator
