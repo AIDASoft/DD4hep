@@ -39,7 +39,7 @@ endmacro(dd4hep_use_python_executable)
 macro(dd4hep_set_compiler_flags)
   include(CheckCXXCompilerFlag)
 
-  SET(COMPILER_FLAGS -Wshadow -Wformat-security -Wno-long-long -Wdeprecated -fdiagnostics-color=auto -Wall -Wextra -pedantic)
+  SET(COMPILER_FLAGS -Wshadow -Wformat-security -Wno-long-long -Wdeprecated -fdiagnostics-color=auto -Wall -Wextra -pedantic -Wno-psabi)
 
   # AppleClang/Clang specific warning flags
   if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
