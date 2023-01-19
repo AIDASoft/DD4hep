@@ -96,6 +96,14 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
   #
+  # Test G4 stepping action
+  dd4hep_add_test_reg( DDG4_TestSteppingAction
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${DDG4examples_INSTALL}/scripts/TestStepping.py -batch -events 3
+    REGEX_PASS " Track Calls Suspended: [1-9][0-9]*"
+    REGEX_FAIL " ERROR ;EXCEPTION;Exception"
+  )
+  #
   # Test G4 command UI
   dd4hep_add_test_reg( DDG4_UIManager
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"

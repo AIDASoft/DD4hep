@@ -115,9 +115,8 @@ bool Geant4ParticleHandler::adopt(Geant4Action* action)    {
 void Geant4ParticleHandler::clear()  {
   detail::releaseObjects(m_particleMap);
   m_particleMap.clear();
-  //m_suspendedPM should already be empty and cleared...
-  detail::releaseObjects(m_suspendedPM);
-  m_suspendedPM.clear();
+  // m_suspendedPM should already be empty and cleared...
+  assert(m_suspendedPM.empty() && "There was something wrong with the particle record treatment, please open a bug report!");
   m_equivalentTracks.clear();
 }
 
