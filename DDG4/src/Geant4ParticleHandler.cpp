@@ -115,6 +115,9 @@ bool Geant4ParticleHandler::adopt(Geant4Action* action)    {
 void Geant4ParticleHandler::clear()  {
   detail::releaseObjects(m_particleMap);
   m_particleMap.clear();
+  //m_suspendedPM should already be empty and cleared...
+  detail::releaseObjects(m_suspendedPM);
+  m_suspendedPM.clear();
   m_equivalentTracks.clear();
 }
 
@@ -210,11 +213,23 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   const G4PrimaryParticle* prim = h.primary();
   Particle* prim_part = 0;
 
-  // if particles are not tracked to the end, we pick up were we stopped previously
-  auto existingParticle = m_particleMap.find(h.id());
-  if(existingParticle != m_particleMap.end()) {
-    m_currTrack.get_data(*(existingParticle->second));
-    return;
+  // if particles are not tracked to the end, we pick up where we stopped previously
+  if (m_haveSuspended) {
+    //primary particles are already in the particle map, we don't have to store them in another map
+    auto existingParticle = m_particleMap.find(h.id());
+    if(existingParticle != m_particleMap.end()) {
+      m_currTrack.get_data(*(existingParticle->second));
+      return;
+    }
+    //other particles might not be in the particleMap yet, so we take them from here
+    existingParticle = m_suspendedPM.find(h.id());
+    if(existingParticle != m_suspendedPM.end()) {
+      m_currTrack.get_data(*(existingParticle->second));
+      // make sure we delete a suspended particle in the map, fill it back later...
+      delete (*existingParticle).second;
+      m_suspendedPM.erase(existingParticle);
+      return;
+    }
   }
 
   if ( prim )   {
@@ -300,7 +315,18 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
 void Geant4ParticleHandler::end(const G4Track* track)   {
   Geant4TrackHandler h(track);
   Geant4ParticleHandle ph(&m_currTrack);
-  int g4_id = h.id();
+  const int g4_id = h.id();
+
+  if(track->GetTrackStatus() == fSuspend) {
+    m_haveSuspended = true;
+    //track is already in particle map, we pick it up from there in begin again
+    if(m_particleMap.find(g4_id) != m_particleMap.end()) return;
+    //track is not already stored, keep it in special map
+    auto iPart = m_suspendedPM.emplace(g4_id, new Particle());
+    (iPart.first->second)->get_data(m_currTrack);
+    return; // we trust that we eventually return to this function with another status and go on then
+  }
+
   int track_reason = m_currTrack.reason;
   PropertyMask mask(m_currTrack.reason);
   // Update vertex end point and final momentum

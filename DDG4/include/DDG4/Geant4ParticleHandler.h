@@ -119,6 +119,9 @@ namespace dd4hep {
       Particle          m_currTrack;
       /// Map with stored MC Particles
       ParticleMap       m_particleMap;
+      /// Map with stored MC Particles that were suspended by the stepping action
+      ParticleMap       m_suspendedPM;
+      bool              m_haveSuspended = false;
       /// Map associating the G4Track identifiers with identifiers of existing MCParticles
       TrackEquivalents  m_equivalentTracks;
 
