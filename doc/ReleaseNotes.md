@@ -1,3 +1,199 @@
+# v01-24
+
+* 2023-01-20 Andre Sailer ([PR#1048](https://github.com/AIDASoft/DD4hep/pull/1048))
+  - add -Wno-psabi to compiler flags to ignore warnings about ABI changes that we will never have issues with. Fixes #1043
+
+* 2023-01-20 Andre Sailer ([PR#1046](https://github.com/AIDASoft/DD4hep/pull/1046))
+  - ParticleHandler: account for modified stepping actions, where tracking of a particle could be paused and later restarted.
+
+* 2023-01-18 Andre Sailer ([PR#1045](https://github.com/AIDASoft/DD4hep/pull/1045))
+  - thisdd4hep: fix an issue with environment paths getting dropped when they contain a complete substring of a path that is going to be added
+
+* 2023-01-18 Markus Frank ([PR#1044](https://github.com/AIDASoft/DD4hep/pull/1044))
+  - This PR addresses issue https://github.com/AIDASoft/DD4hep/issues/1037
+    Rather than adding the beta as a double it was chosen to add at each step the track momentum
+    in floats which for 4 more bytes offers more information.
+
+* 2023-01-18 Andre Sailer ([PR#1042](https://github.com/AIDASoft/DD4hep/pull/1042))
+  - ddsim: fix exception when a compactFile path not containing any slashes was given (fixes #1039 )
+
+* 2023-01-17 Markus Frank ([PR#1041](https://github.com/AIDASoft/DD4hep/pull/1041))
+  - Make DDDigi I/O interface more common and add edm4hep write/read example
+  - Move DDG4 edm4hep writer to use podio Frames
+
+* 2023-01-11 Markus Frank ([PR#1038](https://github.com/AIDASoft/DD4hep/pull/1038))
+  - Improve DDDigi documentation when opening code sub-page
+  - Silence flak8 warning from python
+  - Fix a bug in the detector checksum module. Tested with TGeo units and G4 units of the CLICSiD model.
+  - Propagate the configuration flag `DD4HEP_USE_EDM4HEP` to the generated dd4hep cmake of client projects.
+  - Add DDDigi output module for the edm4hep format
+  - Add DDDigi output module for the native ROOT objects including required dictionaries.
+
+* 2022-12-15 Markus Frank ([PR#1032](https://github.com/AIDASoft/DD4hep/pull/1032))
+  - Improve GDML export procedures
+    -- Allow to set export precision in the plugin
+    -- New ROOT release needed to properly export surfaces (current ROOT GDML export does not handle this currectly)
+       See ROOT PR https://github.com/root-project/root/pull/11886
+       See ROOT PR https://github.com/root-project/root/pull/11887
+       See ROOT PR https://github.com/root-project/root/pull/11888
+       See ROOT PR https://github.com/root-project/root/pull/11889
+       See ROOT PR https://github.com/root-project/root/pull/11895
+  - Remove some build errors for MAC
+
+* 2022-12-09 Markus Frank ([PR#1030](https://github.com/AIDASoft/DD4hep/pull/1030))
+  - Program GDML writer (requires new ROOT release to take advantage)
+
+* 2022-12-09 Markus Frank ([PR#1029](https://github.com/AIDASoft/DD4hep/pull/1029))
+  - Improve DDDigi package doc
+  - Bug fix in detector checksum
+  - Remove flak8 warnings
+
+* 2022-12-06 Markus Frank ([PR#1028](https://github.com/AIDASoft/DD4hep/pull/1028))
+  - Add detector checksum facility as plugin: Compare different detector setups
+  - Gives identical hash results for TGeo units and G4 units
+  - Supports detector dumps with "unified" strings for debugging
+  ```
+  Usage: -plugin DD4hepDetectorChecksum -arg [-arg]                             
+  
+       -detector <string>     Top level DetElement path. Default: '/world'        
+       -readout               also hash the detector's readout properties         
+                              (sensitive det, id desc, segmentation)              
+                              default: false                                      
+                                                                                  
+     Debugging: Dump individual hash codes (debug>=1)                             
+     Debugging: and the hashed string (debug>2)                                   
+       -dump_elements         Dump hashes of used elements                        
+       -dump_materials        Dump hashes of used materials                       
+       -dump_solids           Dump hashes of used solids                          
+       -dump_volumes          Dump hashes of used volumes                         
+       -dump_placements       Dump hashes of used placements                      
+       -dump_detelements      Dump hashes of used detelements                     
+       -dump_sensitive        Dump hashes of sensitive detectors                  
+       -dump_readout          Dump hashes of readout entities                     
+       -dump_iddescriptors    Dump hashes of ID descriptors                       
+       -dump_segmentations    Dump hashes of readout segmentations                
+                                                                                  
+     Modify units in the created hash strings (deprecated):                       
+       -length_unit  <value>  Unit of length  as literal. default: mm             
+       -angle_unit   <value>  Unit of angle   as literal. default: deg            
+       -energy_unit  <value>  Unit of energy  as literal. default: GeV            
+       -density_unit <value>  Unit of density as literal. default: g/cm3          
+       -atomic_unit <value>   Unit of atomic weight as literal. default: g/mole   
+                                                                                  
+       -debug <number>        Enable debug printouts.                             
+       -help                  Print this help output
+  ```
+
+* 2022-11-30 Kolja Kauder ([PR#1017](https://github.com/AIDASoft/DD4hep/pull/1017))
+  - Final state HepMC particles were all attached to (0,0,0). Fixed by switching vertex creation for parentless particles to using their end-point instead, fixes #1013
+
+* 2022-11-26 Markus Frank ([PR#1026](https://github.com/AIDASoft/DD4hep/pull/1026))
+  - Fixed some coverity defects recently reported
+  - Fix Geant4Converter bug: Protect for reflected assembly shapes.
+  - Added feature to Geant4Output2ROOT to change file when the run number changes (ie. for each /run/beamOn command)
+  - Modify and enhance the MiniTel example in ClientTests to serve as a small, but flexible testbed for DDDigi
+  - Add multiple DDDigi tests using the modified MiniTel
+    o Data generator using DDG4
+    o See examples/DDDigi/scripts for the tests:
+       o multiple interactions
+       o spillover events
+       o Container parallelization
+       o Segmentation parallization
+  - Started to implement a checksum mechanism based on well formatted XML dumps similar to GDML, but with
+    well defined floating point precision.
+    o See https://github.com/AIDASoft/DD4hep/issues/994 for details
+    o first and incomplete dump for shapes.
+    o to be completed eventually
+    o whoever feels like it can become involved to implement such dumps for other objects:
+      - elements, isotopes, materials, DetElements, Volumes, Placements etc.
+
+* 2022-11-25 jmcarcell ([PR#1024](https://github.com/AIDASoft/DD4hep/pull/1024))
+  - Fix compiler warning about unused variable
+  - Fix warning in example test and fix also the test, it was comparing `char* == char*` which is almost never true
+
+* 2022-11-24 Wouter Deconinck ([PR#1012](https://github.com/AIDASoft/DD4hep/pull/1012))
+  - DDG4: Geant4TCUserParticleHandler: Allow for asymmetric tracking region with `tracker_region_zmin`
+
+* 2022-11-22 Markus Frank ([PR#1023](https://github.com/AIDASoft/DD4hep/pull/1023))
+  Take into account suggestions from PR https://github.com/AIDASoft/DD4hep/pull/1021
+
+* 2022-11-22 Markus Frank ([PR#1021](https://github.com/AIDASoft/DD4hep/pull/1021))
+  - Implemented issue https://github.com/AIDASoft/DD4hep/issues/1010: Changing Geant4 physics flags 
+    o Extended the Geant4UIManager to support command queues at various stages of the program:
+      -- configure
+      -- initialize
+      -- pre-run
+      -- post-run
+      -- terminate
+    o Added interface function to directly communicate with the G4UI using string commands at any time
+      from python.
+    o Extended Geant4Kernel functionality to allow client actions to subscribe to stages of the program
+      and perform dedicated actions on:
+      -- configure
+      -- initialize
+      -- terminate
+      As an example please see DDG4/src/Geant4UIManager.cpp
+  
+  - Dropped issue https://github.com/AIDASoft/DD4hep/issues/1004 after some tests and investigation:
+    This issue cannot be resolved, because MC records may also be read without Geant4 and a physics list being initialized.
+    Hence the event readers cannot implement such a feature if the event record does not support charge, but only the PDG code.
+    Conclusion is to best update the charge of particles at the output stage using the PDG code or to implement an event action,
+    which performs this actions right before the output stage.
+  - Simplified component properties. 
+  - Improvements to DDDigi (work in progress)
+
+* 2022-11-17 Andre Sailer ([PR#1019](https://github.com/AIDASoft/DD4hep/pull/1019))
+  - LCIOConversions: fix attaching SimCaloHit collections to event, this was accidentally dropped in #922
+
+* 2022-11-16 Jonas Hahnfeld ([PR#1018](https://github.com/AIDASoft/DD4hep/pull/1018))
+  - Fix build with GCC 8
+
+* 2022-11-11 Wouter Deconinck ([PR#1011](https://github.com/AIDASoft/DD4hep/pull/1011))
+  - Allow HepMC3 ROOT input files in ddsim when they end with `.hepmc3.tree.root`
+
+* 2022-11-10 Wouter Deconinck ([PR#989](https://github.com/AIDASoft/DD4hep/pull/989))
+  - ddsim: Automatically interpret '.hepmc3' input files
+
+* 2022-11-03 Andre Sailer ([PR#1005](https://github.com/AIDASoft/DD4hep/pull/1005))
+  - Examples: OpticalTracker: declare dependency on DDRec
+  - Docs: fix some typos noted in #1003
+
+* 2022-10-30 Markus Frank ([PR#1002](https://github.com/AIDASoft/DD4hep/pull/1002))
+  - Fix to issue https://github.com/AIDASoft/DD4hep/issues/1000 and https://github.com/AIDASoft/DD4hep/issues/999
+
+* 2022-10-29 Markus Frank ([PR#998](https://github.com/AIDASoft/DD4hep/pull/998))
+  - DDCore
+    -- Add string hash function for 8 and 16 bit hash results
+    -- Add position transformations (world, detector element) to volume manager
+  
+  - DDG4
+    -- Fix interface to Geant4StackingAction. Add missing function interface to allow access to ClassifyNewTrack.
+       Also pass the current stacking manager reference to all user callbacks.
+    -- Add simple example to test the functionality  examples/DDG4/scrips/TestStacking.py
+  
+  - DDDigi
+    -- Add some processor plugins for simple data processing.
+    -- Enhance the usage of the Key identifier.
+    -- Add several test scripts in the example area.
+  
+  - examples
+    -- Reduce the test execution time of the top CPU consumers by reducing the number of simulated events.
+
+* 2022-10-24 Paul Gessinger ([PR#997](https://github.com/AIDASoft/DD4hep/pull/997))
+  - DD4HEP_RELAX_PYVER is exported to `DD4hepConfig.cmake`.
+
+* 2022-10-22 Andre Sailer ([PR#996](https://github.com/AIDASoft/DD4hep/pull/996))
+  - DDSim: fix bug preventing the use of integers for the verbosity level (-v/--printLevel, --output.input etc.) fixes #992
+
+* 2022-10-17 Andre Sailer ([PR#987](https://github.com/AIDASoft/DD4hep/pull/987))
+  - DDEve: Adapt to renamed header in upcoming ROOT 6.28
+
+* 2022-10-17 Wouter Deconinck ([PR#986](https://github.com/AIDASoft/DD4hep/pull/986))
+  - Shapes::Trap: Fix the 4-argument trapezoidal prism constructor (again)
+
+* 2022-10-10 Wouter Deconinck ([PR#983](https://github.com/AIDASoft/DD4hep/pull/983))
+  - Ensure that closed tessellated solids are converted to closed solids in geant4
+
 # v01-23
 
 * 2022-09-28 Wouter Deconinck ([PR#982](https://github.com/aidasoft/dd4hep/pull/982))
