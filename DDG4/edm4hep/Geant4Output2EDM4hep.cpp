@@ -231,22 +231,23 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
-  //G4AutoLock protection_lock(&action_mutex);
-
-  warning("saveRun: RunHeader not implemented in EDM4hep, nothing written for run: %d", run->GetRunID());
-
+  G4AutoLock protection_lock(&action_mutex);
   // --- write an edm4hep::RunHeader ---------
-  //FIXME: need a suitable Runheader object in EDM4hep
-  //  edm4hep::LCRunHeaderImpl* rh =  new edm4hep::LCRunHeaderImpl;
-  //  for (stringmap_t::iterator it = m_runHeader.begin(); it != m_runHeader.end(); ++it) {
-  //    rh->parameters().setValue( it->first, it->second );
-  //  }
-  //  m_runNo = m_runNumberOffset > 0 ? m_runNumberOffset + run->GetRunID() : run->GetRunID();
-  //  rh->parameters().setValue("GEANT4Version", G4Version);
-  //  rh->parameters().setValue("DD4HEPVersion", versionString());
-  //  rh->setRunNumber(m_runNo);
-  //  rh->setDetectorName(context()->detectorDescription().header().name());
-  //  m_file->writeRunHeader(rh);
+  // Runs are just Frames with different contents in EDM4hep / podio. We simply
+  // store everything as parameters for now
+  auto runHeader = podio::Frame();
+
+  for (const auto& [key, value] : m_runHeader) {
+    runHeader.putParameter(key, value);
+  }
+
+  m_runNo = m_runNumberOffset > 0 ? m_runNumberOffset + run->GetRunID() : run->GetRunID();
+  runHeader.putParameter("runNumber", m_runNo);
+  runHeader.putParameter("GEANT4Version", G4Version);
+  runHeader.putParameter("DD4hepVersion", versionString());
+  runHeader.putParameter("detectorName", context()->detectorDescription().header().name());
+
+  m_file->writeFrame(runHeader, "runs");
 }
 
 void Geant4Output2EDM4hep::begin(const G4Event* event)  {
