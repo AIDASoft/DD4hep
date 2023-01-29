@@ -266,8 +266,6 @@ namespace dd4hep {
     Object* data() const;
     /// Access the copy number of this placement within its mother
     int copyNumber() const;
-    /// Access placed volume flags
-    long flags() const;
     /// Volume material
     Material material() const;
     /// Logical volume of this placement
