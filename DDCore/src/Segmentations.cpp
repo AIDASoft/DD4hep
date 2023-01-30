@@ -112,12 +112,12 @@ void Segmentation::setDecoder(const BitFieldCoder* decode) const  {
   access()->segmentation->setDecoder(decode);
 }
 
-/// Access the main detector element using this segmetnation object
+/// Access the main detector element using this segmentation object
 Handle<DetElementObject> Segmentation::detector() const  {
   return access()->detector;
 }
 
-/// Access the sensitive detector using this segmetnation object
+/// Access the sensitive detector using this segmentation object
 Handle<SensitiveDetectorObject> Segmentation::sensitive() const  {
   return access()->sensitive;
 }
