@@ -70,9 +70,9 @@ namespace dd4hep {
     DDSegmentation::Parameters parameters() const;
     /// Access to parameter by name
     DDSegmentation::Parameter  parameter(const std::string& parameterName) const;
-    /// Access the main detector element using this segmetnation object
+    /// Access the main detector element using this segmentation object
     Handle<DetElementObject> detector() const;
-    /// Access the sensitive detector using this segmetnation object
+    /// Access the sensitive detector using this segmentation object
     Handle<SensitiveDetectorObject> sensitive() const;
     /// Access the underlying decoder
     const BitFieldCoder* decoder() const;
