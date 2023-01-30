@@ -151,6 +151,12 @@ endif()
 
 if(DD4HEP_USE_EDM4HEP)
   find_package(EDM4HEP REQUIRED)
+
+  set(podio_required 0.16.0)
+  find_package(podio REQUIRED ${podio_required})
+  if(NOT podio_VERSION VERSION_GREATER_EQUAL podio_required)
+    message(FATAL_ERROR "podio found version ${podio_VERSION} is insufficient (${podio_required})")
+  endif()
 #  DD4HEP_SETUP_EDM4HEP_TARGETS()
 endif()
 
