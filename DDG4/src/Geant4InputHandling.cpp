@@ -344,7 +344,8 @@ int dd4hep::sim::smearInteraction(const Geant4Action* caller,
 static G4PrimaryParticle* createG4Primary(const Geant4ParticleHandle p)  {
   G4PrimaryParticle* g4 = 0;
   if ( 0 != p->pdgID )   {
-    const int pdgID =  p->pdgID < 1000000000 ? p->pdgID : (p->pdgID / 10) * 10;
+    // For ions we use the pdgID of the definition, in case we had to zero the excitation level, see Geant4Particle.cpp
+    const int pdgID =  p->pdgID < 1000000000 ? p->pdgID : p.definition()->GetPDGEncoding();
     g4 = new G4PrimaryParticle(pdgID, p->psx, p->psy, p->psz, p.energy());
   }
   else   {
