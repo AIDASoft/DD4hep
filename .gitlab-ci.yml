@@ -18,14 +18,20 @@ mac11-clang12:
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
-    - ctest --output-on-failure -j4
+    - ctest --output-on-failure -j4 -T Test --no-compress-output --test-output-size-failed 1024000
     - cd ../examples/
     - mkdir build
     - cd build
     - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
-    - ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement
+    - ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement -T Test --no-compress-output  --test-output-size-failed 1024000
+  after_script:
+    - xsltproc .github/utils/ctest2junit.xsl build/Testing/*/Test.xml > junit.xml
+    - xsltproc .github/utils/ctest2junit.xsl  examples/build/Testing/*/Test.xml > junit_examples.xml
+  artifacts:
+    reports:
+      junit: junit*.xml
 
 mac11-clang12-XERCESC:
   stage: build
@@ -42,14 +48,20 @@ mac11-clang12-XERCESC:
     - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
-    - ctest --output-on-failure -j4
+    - ctest --output-on-failure -j4 -T Test --no-compress-output --test-output-size-failed 1024000
     - cd ../examples/
     - mkdir build
     - cd build
     - cmake -GNinja -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 ..
     - ninja
     - ninja install
-    - ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement
+    - ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement -T Test --no-compress-output --test-output-size-failed 1024000
+  after_script:
+    - xsltproc .github/utils/ctest2junit.xsl build/Testing/*/Test.xml > junit_XERCES.xml
+    - xsltproc .github/utils/ctest2junit.xsl examples/build/Testing/*/Test.xml > junit_examples_XERCES.xml
+  artifacts:
+    reports:
+      junit: junit*.xml
 
 Python:
   stage: build
