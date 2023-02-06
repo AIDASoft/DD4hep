@@ -9,9 +9,9 @@ jobs:
       matrix:
         LCG: ["LCG_99/x86_64-centos7-gcc10-opt"]
     steps:
-    - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - uses: aidasoft/run-lcg-view@v1
+    - uses: actions/checkout@v3
+    - uses: cvmfs-contrib/github-action-cvmfs@v3
+    - uses: aidasoft/run-lcg-view@v3
       with:
         release-platform: ${{ matrix.LCG }}
         run: |
