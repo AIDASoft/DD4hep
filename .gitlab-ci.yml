@@ -3,12 +3,12 @@ stages:
     - documentation
     - deployment
 
-mac1015-clang110-Geant10.6:
+mac11-clang12:
   stage: build
   tags:
     - mac
   script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-mac1015-clang110-opt/setup.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-mac11-clang120-opt/setup.sh
     - export CXX=clang++
     - export CC=clang
     - export FC=""
@@ -27,12 +27,12 @@ mac1015-clang110-Geant10.6:
     - ninja install
     - ctest --output-on-failure -E t_ClientTests_Check_Shape_Eightpoint_Reflect_DetElement
 
-mac1015-clang110-Geant10.6-XERCESC:
+mac11-clang12-XERCESC:
   stage: build
   tags:
     - mac
   script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_98python3/x86_64-mac1015-clang110-opt/setup.sh
+    - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-mac11-clang120-opt/setup.sh
     - export CXX=clang++
     - export CC=clang
     - export FC=""
