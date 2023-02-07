@@ -68,7 +68,8 @@ if (DD4HEP_USE_GEANT4)
     EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/ClientTests/scripts/MiniTelGenerate.py
          -batch -events 30 -runs 8
     REGEX_PASS "\\+\\+\\+ Finished run 7 after 30 events \\(240 events in total\\)."
-    REGEX_FAIL "Error;ERROR;FATAL;Exception"
+    # Space is intentional to avoid G4Exception (From FindIon)
+    REGEX_FAIL "Error;ERROR;FATAL; Exception"
   )
   # Test basic input reading from DDG4
   dd4hep_add_test_reg(DDDigi_test_input_reading
@@ -225,7 +226,7 @@ if (DD4HEP_USE_GEANT4)
       -batch -events 30 -runs 3 -output MiniTel_DDG4_edm4hep_data.root
       DEPENDS    DDDigi_generate_ddg4_data
       REGEX_PASS "\\+\\+\\+ Finished run 2 after 30 events \\(90 events in total\\)."
-      REGEX_FAIL "Error;ERROR;FATAL;Exception"
+      REGEX_FAIL "Error;ERROR;FATAL; Exception"
     )
     # Test reading EDM4HEP input written with DDG4
     dd4hep_add_test_reg(DDDigi_test_edm4hep_read
