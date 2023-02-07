@@ -45,7 +45,7 @@ dd4hep_add_test_reg( OpticalTracker_simulation
   EXEC_ARGS  ${Python_EXECUTABLE} ${OpticalTracker_INSTALL}/scripts/richsim.py
              --outputFile "${OpticalTracker_INSTALL}/sim.root"
   REGEX_PASS "TEST: passed"
-  REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL"
+  REGEX_FAIL " Exception; EXCEPTION;ERROR;Error;FATAL"
   )
 
 # ---Test: Number of raw photon hits

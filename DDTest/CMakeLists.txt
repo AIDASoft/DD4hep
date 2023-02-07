@@ -59,11 +59,12 @@ if (DD4HEP_USE_GEANT4)
 
   if(DD4HEP_USE_HEPMC3)
     ADD_TEST( t_test_ddsim_ion_hepmc3 "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
-      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=2
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=1
       --outputFile=testSidIons.root --inputFiles ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
       --part.userParticleHandler=)
     # Tests causes G4Exception about: Isomer level 9 may be ambiguous, just a warning
-    SET_TESTS_PROPERTIES( t_test_ddsim_ion_hepmc3 PROPERTIES FAIL_REGULAR_EXPRESSION  "ERROR;Error" )
+    # space before Exception intentional!!!
+    SET_TESTS_PROPERTIES( t_test_ddsim_ion_hepmc3 PROPERTIES FAIL_REGULAR_EXPRESSION  "ERROR;Error; Exception" )
   endif()
 
   foreach(TEST_NAME
