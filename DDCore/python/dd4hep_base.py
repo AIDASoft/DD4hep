@@ -10,7 +10,7 @@
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
 import cppyy
-import imp
+import importlib
 import logging
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ def compileAClick(dictionary, g4=True):
   gSystem.AddIncludePath(inc)
   gSystem.AddLinkedLibs(lib)
   logger.info('Loading AClick %s', dictionary)
-  package = imp.find_module('DDG4')
+  package = importlib.import_module('DDG4')
   dic = os.path.dirname(package[1]) + os.sep + dictionary
   gInterpreter.ProcessLine('.L ' + dic + '+')
   from ROOT import dd4hep as module
@@ -149,6 +149,7 @@ cond = dd4hep.cond
 tools = dd4hep.tools
 align = dd4hep.align
 detail = dd4hep.detail
+import imp
 units = imp.new_module('units')
 # ---------------------------------------------------------------------------
 import_namespace_item('tools', 'Evaluator')
@@ -405,70 +406,26 @@ class CommandLine:
       return self.data.get(attr)
     return None
 
-
 # ---------------------------------------------------------------------------
 #
 #  Import units from TGeo.
 #  Calling import_units makes all the units local to the dd4hep module.
 #
 try:
-  # from ROOT import TGeoUnit as TGeoUnits
+  import_namespace_item('core', 'dd4hep_units')
   def import_units(ns=None):
-    def import_unit(ns, nam):
-      setattr(ns, nam, getattr(core, nam))
-    items = [
-        # Length
-        'nanometer', 'micrometer', 'millimeter', 'centimeter', 'meter', 'kilometer', 'parsec', 'angstrom', 'fermi',
-        'nm', 'um', 'mm', 'cm', 'm', 'km', 'pc',
-        # Area
-        'millimeter2', 'centimeter2', 'meter2', 'kilometer2', 'barn', 'millibarn', 'microbarn', 'nanobarn', 'picobarn',
-        'mm2', 'cm2', 'm2', 'km2',
-        # Volume
-        'millimeter3', 'centimeter3', 'meter3', 'kilometer3', 'mm3', 'cm3', 'm3', 'km3',
-        # Angle
-        'radian', 'milliradian', 'degree', 'steradian', 'rad', 'mrad', 'sr', 'deg',
-        # Time & frequency
-        'nanosecond', 'second', 'millisecond', 'microsecond', 'picosecond', 'hertz',
-        'kilohertz', 'megahertz', 'ns', 's', 'ms',
-        # Electric charge
-        'eplus', 'e_SI', 'coulomb',
-        # Energy
-        'electronvolt', 'kiloelectronvolt', 'megaelectronvolt', 'gigaelectronvolt', 'teraelectronvolt',
-        'petaelectronvolt', 'joule', 'eV', 'keV', 'MeV', 'GeV', 'TeV', 'PeV',
-        # Mass
-        'milligram', 'gram', 'kilogram', 'mg', 'g', 'kg',
-        # Power, Force, Pressure
-        'watt', 'newton', 'hep_pascal', 'bar', 'atmosphere',
-        # Electrical current, potential, resistance
-        'nanoampere', 'microampere', 'milliampere', 'ampere', 'volt', 'kilovolt', 'megavolt', 'ohm',
-        # Electric capacitance
-        'picofarad', 'nanofarad', 'microfarad', 'millifarad', 'farad',
-        # Magnetic flux, field, Inductance, Temperature, substance
-        'weber', 'tesla', 'gauss', 'kilogauss', 'henry', 'kelvin', 'mole',
-        # Activity, dose intensity
-        'becquerel', 'curie', 'microgray', 'milligray', 'gray', 'kilogray',
-        # Luminous intensity, flux, Illuminance
-        'candela', 'lumen', 'lux',
-        # Misc
-        'perCent', 'perThousand', 'perMillion', 'pi', 'twopi', 'halfpi', 'pi2',
-        'Avogadro', 'c_light', 'c_squared', 'h_Planck', 'hbar_Planck', 'hbarc', 'hbarc_squared', 'electron_charge',
-        'e_squared', 'electron_mass_c2', 'proton_mass_c2', 'neutron_mass_c2', 'amu_c2', 'amu', 'mu0', 'epsilon0',
-        #
-        'elm_coupling', 'fine_structure_const', 'classic_electr_radius', 'electron_Compton_length', 'Bohr_radius',
-        'alpha_rcl2', 'twopi_mc2_rcl2', 'k_Boltzmann',
-        'Temperature_STP', 'Pressure_STP',
-        'Temperature_NTP', 'Pressure_NTP',
-        'kGasThreshold', 'universe_mean_density'
-        ]
     if ns is None:
       ns = name_space
     logger.debug('Importing units into namespace ' + str(ns.__name__))
-    for u in items:
-      if u[0] != '_':
-        import_unit(ns, u)
-    return len(items)
+    count = 0;
+    for nam in dir(dd4hep.dd4hep_units):
+      if nam[0] != '_':
+        count = count + 1
+        setattr(ns, nam, getattr(core.dd4hep_units, nam))
+        ##setattr(ns, nam, getattr(core, nam))
+    return count
 except Exception as e:
-  logger.warning('No units can be imported. %s' % str(e))
+  logger.warning('No units can be imported. ' + str(e))
 
   def import_units(ns=None):
     return 0

@@ -11,11 +11,12 @@
 //
 //==========================================================================
 
-// Framework include files
+/// Framework include files
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Handle.h"
 #include "DD4hep/Memory.h"
-// C/C++ include files
+
+/// C/C++ include files
 #include <iostream>
 #include <iomanip>
 #include <cstdio>
@@ -24,7 +25,6 @@
 #include <mutex>
 #include <map>
 
-using namespace std;
 using namespace dd4hep;
 
 /// Do not clutter global namespace
@@ -64,6 +64,7 @@ namespace {
 InstanceCount::InstanceCount() {
   s_thisCount.increment();
 }
+
 /// Standard destructor
 InstanceCount::~InstanceCount() {
   s_thisCount.decrement();
@@ -79,14 +80,17 @@ InstanceCount::~InstanceCount() {
     s_typCounts->clear();
   }
 }
+
 /// Check if tracing is enabled.
 bool InstanceCount::doTrace() {
   return s_trace_instances;
 }
+
 /// Enable/Disable tracing
 void InstanceCount::doTracing(bool value) {
   s_trace_instances = value;
 }
+
 /// Access counter object for local caching on optimizations
 InstanceCount::Counter* InstanceCount::getCounter(const std::type_info& typ) {
   Counter* cnt = s_trace_instances ? types()[&typ] : &s_nullCount;
@@ -146,57 +150,57 @@ void InstanceCount::dump(int typ) {
   bool need_footer = false;
   if ((typ & STRING) && s_strCounts.get()) {
     if ( !s_strCounts->empty() )  {
-      cout << "+--------------------------------------------------------------------------+" << endl;
-      cout << "|   I n s t a n c e   c o u n t e r s   b y    N A M E                     |" << endl;
-      cout << "+----------+---------+---------+-------------------------------------------+" << endl;
-      cout << "|   Total  |  Max    | Leaking |      Type identifier                      |" << endl;
-      cout << "+----------+---------+---------+-------------------------------------------+" << endl;
+      std::cout << "+--------------------------------------------------------------------------+" << std::endl;
+      std::cout << "|   I n s t a n c e   c o u n t e r s   b y    N A M E                     |" << std::endl;
+      std::cout << "+----------+---------+---------+-------------------------------------------+" << std::endl;
+      std::cout << "|   Total  |  Max    | Leaking |      Type identifier                      |" << std::endl;
+      std::cout << "+----------+---------+---------+-------------------------------------------+" << std::endl;
       long tot_instances=0, max_instances=0, now_instances=0;
       for ( const auto& i : *s_strCounts ) {
-        cout << "|" << setw(10) << i.second->total()
-             << "|" << setw(9)  << i.second->maximum()
-             << "|" << setw(9)  << i.second->value()
-             << "|" << i.first->substr(0,80) << endl;
+        std::cout << "|" << std::setw(10) << i.second->total()
+		  << "|" << std::setw(9)  << i.second->maximum()
+		  << "|" << std::setw(9)  << i.second->value()
+		  << "|" << i.first->substr(0,80) << std::endl;
         tot_instances += i.second->total();
         max_instances += i.second->maximum();
         now_instances += i.second->value();
       }
-      cout << "+----------+---------+---------+-------------------------------------------+" << endl;
-      cout << "|" << setw(10) << tot_instances
-           << "|" << setw(9)  << max_instances
-           << "|" << setw(9)  << now_instances
-           << "|" << "Grand total (Sum of all counters)" << endl;
+      std::cout << "+----------+---------+---------+-------------------------------------------+" << std::endl;
+      std::cout << "|" << std::setw(10) << tot_instances
+		<< "|" << std::setw(9)  << max_instances
+		<< "|" << std::setw(9)  << now_instances
+		<< "|" << "Grand total (Sum of all counters)" << std::endl;
       need_footer = true;
     }
   }
   if ((typ & TYPEINFO) && s_typCounts.get()) {
     if ( !s_typCounts->empty() ) {
-      cout << "+--------------------------------------------------------------------------+" << endl;
-      cout << "|   I n s t a n c e   c o u n t e r s   b y    T Y P E I N F O             |" << endl;
-      cout << "+----------+---------+---------+-------------------------------------------+" << endl;
-      cout << "|   Total  |  Max    | Leaking |      Type identifier                      |" << endl;
-      cout << "+----------+---------+---------+-------------------------------------------+" << endl;
+      std::cout << "+--------------------------------------------------------------------------+" << std::endl;
+      std::cout << "|   I n s t a n c e   c o u n t e r s   b y    T Y P E I N F O             |" << std::endl;
+      std::cout << "+----------+---------+---------+-------------------------------------------+" << std::endl;
+      std::cout << "|   Total  |  Max    | Leaking |      Type identifier                      |" << std::endl;
+      std::cout << "+----------+---------+---------+-------------------------------------------+" << std::endl;
       long tot_instances=0, max_instances=0, now_instances=0;
       for ( const auto& i : *s_typCounts ) {
-        string nam = typeName(*(i.first));
+	std::string nam = typeName(*(i.first));
         if ( nam.length() > 80 ) nam = nam.substr(0,80)+" ...";
-        cout << "|" << setw(10) << i.second->total()
-             << "|" << setw(9)  << i.second->maximum()
-             << "|" << setw(9)  << i.second->value()
-             << "|" << nam << endl;
+        std::cout << "|" << std::setw(10) << i.second->total()
+		  << "|" << std::setw(9)  << i.second->maximum()
+		  << "|" << std::setw(9)  << i.second->value()
+		  << "|" << nam << std::endl;
         tot_instances += i.second->total();
         max_instances += i.second->maximum();
         now_instances += i.second->value();
       }
-      cout << "+----------+---------+---------+-------------------------------------------+" << endl;
-      cout << "|" << setw(10) << tot_instances
-           << "|" << setw(9)  << max_instances
-           << "|" << setw(9)  << now_instances
-           << "|" << "Grand total (Sum of all counters)" << endl;
+      std::cout << "+----------+---------+---------+-------------------------------------------+" << std::endl;
+      std::cout << "|" << std::setw(10) << tot_instances
+		<< "|" << std::setw(9)  << max_instances
+		<< "|" << std::setw(9)  << now_instances
+		<< "|" << "Grand total (Sum of all counters)" << std::endl;
       need_footer = true;
     }
   }
   if (need_footer) {
-    cout << "+----------+-------+-------------------------------------------+" << endl;
+    std::cout << "+----------+-------+-------------------------------------------+" << std::endl;
   }
 }

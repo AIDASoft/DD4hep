@@ -166,11 +166,12 @@ namespace dd4hep {
     static constexpr double petaelectronvolt = 1.e+9 * megaelectronvolt;
 
     static constexpr double joule = electronvolt / e_SI;   // joule = 6.24150 e+12 * MeV
+    static constexpr double kilojoule = 1.e3*joule;
 
     // symbols
-    static constexpr double MeV = megaelectronvolt;
-    static constexpr double eV = electronvolt;
+    static constexpr double eV  = electronvolt;
     static constexpr double keV = kiloelectronvolt;
+    static constexpr double MeV = megaelectronvolt;
     static constexpr double GeV = gigaelectronvolt;
     static constexpr double TeV = teraelectronvolt;
     static constexpr double PeV = petaelectronvolt;
@@ -191,6 +192,8 @@ namespace dd4hep {
     // Power [E][T^-1]
     //
     static constexpr double watt = joule / second;   // watt = 6.24150 e+3 * MeV/ns
+    static constexpr double kilowatt = 1.e3*watt;
+    static constexpr double megawatt = 1.e6*watt;
 
     //
     // Force [E][L^-1]
