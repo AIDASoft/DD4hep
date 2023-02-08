@@ -411,6 +411,7 @@ class CommandLine:
       return self.data.get(attr)
     return None
 
+
 # ---------------------------------------------------------------------------
 #
 #  Import units from TGeo.
@@ -418,7 +419,6 @@ class CommandLine:
 #
 try:
   import_namespace_item('core', 'dd4hep_units')
-
 
   def import_units(ns=None):
     if ns is None:
@@ -435,7 +435,6 @@ try:
 
 except Exception as e:
   logger.warning('No units can be imported. ' + str(e))
-
 
   def import_units(ns=None):
     return 0
