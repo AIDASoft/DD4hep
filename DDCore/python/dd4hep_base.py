@@ -10,15 +10,18 @@
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
 import cppyy
-import importlib
+import imp
 import logging
+
 
 logger = logging.getLogger(__name__)
 
-# We compile the DDG4 plugin on the fly if it does not exist using the AClick mechanism:
-
 
 def compileAClick(dictionary, g4=True):
+  """
+  We compile the DDG4 plugin on the fly if it does not exist using the AClick mechanism.
+
+  """
   from ROOT import gInterpreter, gSystem
   import os.path
   dd4hep = os.environ['DD4hepINSTALL']
@@ -32,7 +35,7 @@ def compileAClick(dictionary, g4=True):
   gSystem.AddIncludePath(inc)
   gSystem.AddLinkedLibs(lib)
   logger.info('Loading AClick %s', dictionary)
-  package = importlib.import_module('DDG4')
+  package = imp.find_module('DDG4')
   dic = os.path.dirname(package[1]) + os.sep + dictionary
   gInterpreter.ProcessLine('.L ' + dic + '+')
   from ROOT import dd4hep as module
@@ -40,6 +43,9 @@ def compileAClick(dictionary, g4=True):
 
 
 def loaddd4hep():
+  """
+  Import DD4hep module from ROOT using ROOT reflection
+  """
   import os
   import sys
   # Add ROOT to the python path in case it is not yet there....
@@ -149,7 +155,6 @@ cond = dd4hep.cond
 tools = dd4hep.tools
 align = dd4hep.align
 detail = dd4hep.detail
-import imp
 units = imp.new_module('units')
 # ---------------------------------------------------------------------------
 import_namespace_item('tools', 'Evaluator')
@@ -413,19 +418,24 @@ class CommandLine:
 #
 try:
   import_namespace_item('core', 'dd4hep_units')
+
+
   def import_units(ns=None):
     if ns is None:
       ns = name_space
+
     logger.debug('Importing units into namespace ' + str(ns.__name__))
-    count = 0;
+    count = 0
     for nam in dir(dd4hep.dd4hep_units):
       if nam[0] != '_':
         count = count + 1
         setattr(ns, nam, getattr(core.dd4hep_units, nam))
-        ##setattr(ns, nam, getattr(core, nam))
+        # setattr(ns, nam, getattr(core, nam))
     return count
+
 except Exception as e:
   logger.warning('No units can be imported. ' + str(e))
+
 
   def import_units(ns=None):
     return 0
