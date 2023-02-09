@@ -121,6 +121,7 @@ std::unique_ptr<DigiROOTInput::inputsource_t> DigiROOTInput::internals_t::open_s
 	if ( m_parent->object_loading_is_enabled(b->GetName()) )   {
 	  TClass* cls = gROOT->GetClass( b->GetClassName(), kTRUE );
 	  Key key(b->GetName(), mask);
+	  b->SetAutoDelete(kFALSE);
 	  source->branches.emplace(key, container_t(key, *b, *cls));
 	}
       }
