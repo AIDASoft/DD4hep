@@ -55,9 +55,11 @@ namespace dd4hep {
       for(auto const& ival: this->strParameters()) {
         lcparameters.setValues(ival.first, ival.second);
       }
+#if LCIO_VERSION_GE(2, 17)
       for(auto const& ival: this->dblParameters()) {
         lcparameters.setValues(ival.first, ival.second);
       }
+#endif
     }
 
 
@@ -380,7 +382,9 @@ void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
     runNumber = parameters->runNumber() + runNumberOffset;
     eventNumber = parameters->eventNumber() + eventNumberOffset;
     parameters->extractParameters(*e);
+#if LCIO_VERSION_GE(2, 17)
     eventWeight = e->getParameters().getDoubleVal("EventWeights");
+#endif
   } else {  // ... or from DD4hep framework
     runNumber = m_runNo + runNumberOffset;
     eventNumber = ctxt.context->GetEventID() + eventNumberOffset;
