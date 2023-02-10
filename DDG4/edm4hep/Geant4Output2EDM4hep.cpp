@@ -96,15 +96,19 @@ namespace dd4hep {
     
     template <> void EventParameters::extractParameters(podio::Frame& frame)   {
       for(auto const& p: this->intParameters()) {
-	std::cout << "Saving event parameter: " << p.first << std::endl;
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first);
         frame.putParameter(p.first, p.second);
       }
       for(auto const& p: this->fltParameters()) {
-	std::cout << "Saving event parameter: " << p.first << std::endl;
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first);
         frame.putParameter(p.first, p.second);
       }
       for(auto const& p: this->strParameters()) {
-	std::cout << "Saving event parameter: " << p.first << std::endl;
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first);
+        frame.putParameter(p.first, p.second);
+      }
+      for (auto const& p: this->dblParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first);
         frame.putParameter(p.first, p.second);
       }
     }
@@ -368,11 +372,13 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
   int runNumber(0), eventNumber(0);
   const int eventNumberOffset(m_eventNumberOffset > 0 ? m_eventNumberOffset : 0);
   const int runNumberOffset(m_runNumberOffset > 0 ? m_runNumberOffset : 0);
+  double eventWeight{0};
   // Get event number, run number and parameters from extension ...
   if ( parameters ) {
     runNumber = parameters->runNumber() + runNumberOffset;
     eventNumber = parameters->eventNumber() + eventNumberOffset;
     parameters->extractParameters(m_frame);
+    eventWeight = m_frame.getParameter<double>("EventWeights");
   } else { // ... or from DD4hep framework
     runNumber = m_runNo + runNumberOffset;
     eventNumber = ctxt.context->GetEventID() + eventNumberOffset;
@@ -384,6 +390,7 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
   auto header = header_collection.create();
   header.setRunNumber(runNumber);
   header.setEventNumber(eventNumber);
+  header.setWeight(eventWeight);
   //not implemented in EDM4hep ?  header.setDetectorName(context()->detectorDescription().header().name());
   header.setTimeStamp( std::time(nullptr) ) ;
   m_frame.put( std::move(header_collection), "EventHeader");

@@ -55,6 +55,9 @@ namespace dd4hep {
       for(auto const& ival: this->strParameters()) {
         lcparameters.setValues(ival.first, ival.second);
       }
+      for(auto const& ival: this->dblParameters()) {
+        lcparameters.setValues(ival.first, ival.second);
+      }
     }
 
 
@@ -371,11 +374,13 @@ void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
   int runNumber(0), eventNumber(0);
   const int eventNumberOffset(m_eventNumberOffset > 0 ? m_eventNumberOffset : 0);
   const int runNumberOffset(m_runNumberOffset > 0 ? m_runNumberOffset : 0);
+  double eventWeight{0};
   // Get event number, run number and parameters from extension ...
   if (parameters) {
     runNumber = parameters->runNumber() + runNumberOffset;
     eventNumber = parameters->eventNumber() + eventNumberOffset;
     parameters->extractParameters(*e);
+    eventWeight = e->getParameters().getDoubleVal("EventWeights");
   } else {  // ... or from DD4hep framework
     runNumber = m_runNo + runNumberOffset;
     eventNumber = ctxt.context->GetEventID() + eventNumberOffset;
@@ -383,6 +388,7 @@ void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
   print("+++ Saving LCIO event %d run %d ....", eventNumber, runNumber);
   e->setRunNumber(runNumber);
   e->setEventNumber(eventNumber);
+  e->setWeight(eventWeight);
   e->setDetectorName(context()->detectorDescription().header().name());
   saveEventParameters<int>(e, m_eventParametersInt);
   saveEventParameters<float>(e, m_eventParametersFloat);
