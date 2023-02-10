@@ -45,19 +45,28 @@ namespace dd4hep  {
           if(attr.second.size() > 1 or inAttr.first != 0){
             strstr << "_" << inAttr.first;
           }
-          auto attr_as_int = std::dynamic_pointer_cast<HepMC3::IntAttribute>(inAttr.second);
-          auto attr_as_flt = std::dynamic_pointer_cast<HepMC3::FloatAttribute>(inAttr.second);
-          if(attr_as_int) {
-            m_intValues[strstr.str()] = {attr_as_int->value()};
-          } else if(attr_as_flt) {
-            m_fltValues[strstr.str()] = {attr_as_flt->value()};
+          if(auto int_attr = std::dynamic_pointer_cast<HepMC3::IntAttribute>(inAttr.second)) {
+            m_intValues[strstr.str()] = {int_attr->value()};
+          } else if(auto flt_attr = std::dynamic_pointer_cast<HepMC3::FloatAttribute>(inAttr.second)) {
+            m_fltValues[strstr.str()] = {flt_attr->value()};
+          } else if(auto dbl_attr = std::dynamic_pointer_cast<HepMC3::DoubleAttribute>(inAttr.second)) {
+            m_dblValues[strstr.str()] = {dbl_attr->value()};
           } else { // anything else
             m_strValues[strstr.str()] = {inAttr.second->unparsed_string()};
           }
         }
       }
-    }
 
+      if (const auto& weights = genEvent.weights(); !weights.empty()) {
+        m_dblValues["EventWeights"] = weights;
+      }
+      // Not using the GenEven::weight_names here because that checks for
+      // emptyness and throws in that case. We don't care if we get an empty
+      // vector at this point
+      if (genEvent.run_info() && !genEvent.run_info()->weight_names().empty()) {
+        m_strValues["EventWeightNames"] = genEvent.weight_names();
+      }
+    }
 
     /// Base class to read hepmc3 event files
     /**

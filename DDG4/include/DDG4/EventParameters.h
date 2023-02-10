@@ -35,6 +35,7 @@ namespace dd4hep  {
       std::map<std::string, std::vector<int>>         m_intValues {};
       std::map<std::string, std::vector<float>>       m_fltValues {};
       std::map<std::string, std::vector<std::string>> m_strValues {};
+      std::map<std::string, std::vector<double>>      m_dblValues {};
 
     public:
       /// Initializing constructor
@@ -61,6 +62,8 @@ namespace dd4hep  {
       auto const& fltParameters() const { return m_fltValues; }
       /// Get the string event parameters
       auto const& strParameters() const { return m_strValues; }
+      /// Get the double event parameters
+      auto const& dblParameters() const { return m_dblValues; }
 
     };
 
