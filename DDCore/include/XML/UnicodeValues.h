@@ -225,6 +225,7 @@ UNICODE (idspecref);
 UNICODE (ignore);
 UNICODE (include);
 UNICODE (includes);
+UNICODE (incguard);
 UNICODE (incoming_r);
 UNICODE (info);
 UNICODE (inner);
