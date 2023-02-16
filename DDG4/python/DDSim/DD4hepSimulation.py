@@ -665,14 +665,17 @@ SIM = DD4hepSimulation()
     if self.runType == "batch":
       if not self.numberOfEvents:
         self._errorMessages.append("ERROR: Batch mode requested, but did not set number of events")
-      if not self.inputFiles and not self.enableGun:
-        self._errorMessages.append("ERROR: Batch mode requested, but did not set inputFile(s) or gun")
+      if not (self.inputFiles or self.enableGun or self.inputConfig.userInputPlugin):
+        self._errorMessages.append("ERROR: Batch mode requested, but did not set inputFile(s), gun, or userInputPlugin")
 
     if self.inputFiles and (self.enableG4Gun or self.enableG4GPS):
       self._errorMessages.append("ERROR: Cannot use both inputFiles and Geant4Gun or GeneralParticleSource")
 
     if self.enableGun and (self.enableG4Gun or self.enableG4GPS):
       self._errorMessages.append("ERROR: Cannot use both DD4hepGun and Geant4 Gun or GeneralParticleSource")
+
+    if self.inputConfig.userInputPlugin and (self.enableG4Gun or self.enableG4GPS):
+      self._errorMessages.append("ERROR: Cannot use both userInputPlugin and Geant4 Gun or GeneralParticleSource")
 
     if self.numberOfEvents < 0 and not self.inputFiles:
       self._errorMessages.append("ERROR: Negative number of events only sensible for inputFiles")
