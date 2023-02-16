@@ -18,7 +18,7 @@
  *  Note: Do NEVER include this file directly!
  *
  *  Use the specific include files in the XML or JSON directory!
- *  Also NO header guards!
+ *
  */
 
 
