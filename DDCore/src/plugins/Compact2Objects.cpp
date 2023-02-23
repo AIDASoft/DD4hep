@@ -29,6 +29,7 @@
 #include <DD4hep/FieldTypes.h>
 #include <DD4hep/Printout.h>
 #include <DD4hep/Factories.h>
+#include <DD4hep/Path.h>
 #include <DD4hep/Plugins.h>
 #include <DD4hep/detail/SegmentationsInterna.h>
 #include <DD4hep/detail/DetectorInterna.h>
@@ -127,6 +128,7 @@ namespace {
     bool includes     = false;
     bool matrix       = false;
     bool surface      = false;
+    bool include_guard= true;
   } s_debug;
 }
 
@@ -268,6 +270,29 @@ static long load_Compact(Detector& description, xml_h element) {
 DECLARE_XML_DOC_READER(lccdd,load_Compact)
 DECLARE_XML_DOC_READER(compact,load_Compact)
 
+ // We create out own type to avoid a class over the extension types
+  // attached to the Detector as a set of std::string is common.
+class ProcessedFilesSet: public std::set<std::string> {};
+
+/// Check whether a XML file was already processed
+bool check_process_file(Detector& description, std::string filename) {
+
+  // In order to have a global compact that is kept across plugin invocations
+  // we add it as an extension to the the detector description.
+  auto already_processed = description.extension<ProcessedFilesSet>( false );
+  if ( !already_processed ) {
+    already_processed = new ProcessedFilesSet( );
+    description.addExtension<ProcessedFilesSet>(already_processed );
+  }
+  std::string npath = dd4hep::Path{filename}.normalize();
+  if (already_processed->find(npath) != already_processed->end() ) {
+    printout(INFO, "Compact","++ Already processed xml document %s.", npath.c_str());
+    return true;
+  }
+  already_processed->insert(npath);
+  return false;
+}
+
 /** Convert parser debug flags.
  */
 template <> void Converter<Debug>::operator()(xml_h e) const {
@@ -287,6 +312,8 @@ template <> void Converter<Debug>::operator()(xml_h e) const {
     else if ( nam.substr(0,6) == "includ" ) s_debug.includes      = (0 != val);
     else if ( nam.substr(0,6) == "matrix" ) s_debug.matrix       = (0 != val);
     else if ( nam.substr(0,6) == "surfac" ) s_debug.surface      = (0 != val);
+    else if ( nam.substr(0,6) == "incgua" ) s_debug.include_guard= (0 != val);
+
   }
 }
   
@@ -1383,6 +1410,11 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
 /// Read material entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<IncludeFile>::operator()(xml_h element) const   {
   xml::DocumentHolder doc(xml::DocumentHandler().load(element, element.attr_value(_U(ref))));
+  if ( s_debug.include_guard) {
+    // Include guard, we check whether this file was already processed
+    if (check_process_file(description, doc.uri()))
+      return;
+  }
   xml_h root = doc.root();
   if ( s_debug.includes )   {
     printout(ALWAYS, "Compact","++ Processing xml document %s.",doc.uri().c_str());
@@ -1484,6 +1516,11 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
   string type = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("xml");
   if ( type == "xml" )  {
     xml::DocumentHolder doc(xml::DocumentHandler().load(element, element.attr_value(_U(ref))));
+    if ( s_debug.include_guard ) {
+      // Include guard, we check whether this file was already processed
+      if (check_process_file(description, doc.uri()))
+        return;
+    }
     if ( s_debug.includes )   {
       printout(ALWAYS, "Compact","++ Processing xml document %s.",doc.uri().c_str());
     }
