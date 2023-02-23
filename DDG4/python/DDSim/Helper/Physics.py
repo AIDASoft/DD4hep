@@ -5,7 +5,10 @@ import os
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import mm
+import logging
 import ddsix as six
+
+logger = logging.getLogger(__name__)
 
 
 class Physics(ConfigHelper):
@@ -139,7 +142,11 @@ class Physics(ConfigHelper):
       rg.RangeCut = self.rangecut
 
     for func in self._userFunctions:
-      func(kernel)
+      try:
+        func(kernel)
+      except Exception as e:
+        logger.error("Exception in UserFunction: %r", e)
+        raise RuntimeError("Exception in UserFunction: %r" % e)
 
     return seq
 
