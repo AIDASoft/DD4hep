@@ -1,3 +1,39 @@
+# v01-25
+
+* 2023-02-23 Thomas Madlener ([PR#1059](https://github.com/aidasoft/dd4hep/pull/1059))
+  - Propagate HepMC event weights to EDM4hep and LCIO outputs of ddsim
+    - Store all available weights and their names into the Frame / Event parameters, additionally store the first weight into the `weight` field of the `edm4hep::EventHeader`, resp. the `LCEvent`.
+  - Add a possibility to store `double` values in `DDG4::EventParameters`
+
+* 2023-02-23 Andre Sailer ([PR#920](https://github.com/aidasoft/dd4hep/pull/920))
+  - DDG4: Geant4InputHandling: Try to address the simulation of Excited Ions. Print a warning if we encounter excited Ions that Geant4 cannot handle. Waiting for something else to provide the excitation energy information that is needed in this case. Fixes #918 and #1051 
+  - DDSim: Catch and log exceptions for physics/userFunctions.
+
+* 2023-02-21 Ben Couturier ([PR#1060](https://github.com/aidasoft/dd4hep/pull/1060))
+  - Prevent a compact file from being loaded twice if the debug option "incguard" has been set.
+
+* 2023-02-16 Andre Sailer ([PR#1061](https://github.com/aidasoft/dd4hep/pull/1061))
+  - ddsim: make it possible to use batchmode with userInputPlugins only
+
+* 2023-02-09 Markus Frank ([PR#1058](https://github.com/aidasoft/dd4hep/pull/1058))
+  The export of dd4hep::units is problematic in the presence of identical libraries from DD4hep in the LD_LIBRARY_PATH:
+  - The ROOT auto-class loading tends to falsely load these libraries if constants from the dd4hep namespace are requested in python. This is clearly wrong: the original libraries may not be binary compatible. The 
+  - The export of the units using a helper class fixes this and ensures that the auto load mechanism is not automatically triggered. This is at least a formally correct solution until the auto load mechanism is better understood.
+  
+  - In the ROOT loader for DDDigi the `TBranch::SetAutoDelete(true)` was not set causing eventually double deletion and arbitrary crashes. Data read by DDDigi are put on the store and deleted by the application to allow subsequent reading for feeding other threads. If ROOT would take care of the deletion, multi-threaded processing is not possible.
+
+* 2023-02-06 Dmitry Kalinkin ([PR#1055](https://github.com/aidasoft/dd4hep/pull/1055))
+  - Pass `DYLD_LIBRARY_PATH` environment to listcomponents_dd4hep when generating rootmaps in CMake
+
+* 2023-01-31 Paul Gessinger ([PR#1053](https://github.com/aidasoft/dd4hep/pull/1053))
+  - Check podio version for compatibility in cmake
+
+* 2023-01-30 Dmitry Kalinkin ([PR#1052](https://github.com/aidasoft/dd4hep/pull/1052))
+  - Removed not implemented declaration of member function `PlacedVolume::flags()`
+
+* 2023-01-26 Thomas Madlener ([PR#1050](https://github.com/aidasoft/dd4hep/pull/1050))
+  - DDG4 EDM4hep Output: Write Frames into the `"runs"` category of the output file to store some run information.
+
 # v01-24
 
 * 2023-01-20 Andre Sailer ([PR#1048](https://github.com/AIDASoft/DD4hep/pull/1048))
