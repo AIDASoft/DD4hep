@@ -1,3 +1,8 @@
+# v01-25-01
+
+* 2023-02-24 Andre Sailer ([PR#1063](https://github.com/aidasoft/dd4hep/pull/1063))
+  * DDG4: fix -Wnon-pod-varargs in Geant4Output2EDM4hep, which fails on clang
+
 # v01-25
 
 * 2023-02-23 Thomas Madlener ([PR#1059](https://github.com/aidasoft/dd4hep/pull/1059))
