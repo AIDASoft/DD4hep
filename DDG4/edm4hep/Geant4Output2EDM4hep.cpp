@@ -97,21 +97,21 @@ namespace dd4hep {
     
     template <> void EventParameters::extractParameters(podio::Frame& frame)   {
       for(auto const& p: this->intParameters()) {
-        printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first);
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first.c_str());
         frame.putParameter(p.first, p.second);
       }
       for(auto const& p: this->fltParameters()) {
-        printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first);
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first.c_str());
         frame.putParameter(p.first, p.second);
       }
       for(auto const& p: this->strParameters()) {
-        printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first);
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first.c_str());
         frame.putParameter(p.first, p.second);
       }
 #if podio_VERSION_MAJOR > 0 || podio_VERSION_MINOR > 16 || podio_VERSION_PATCH > 2
       // This functionality is only present in podio > 0.16.2
       for (auto const& p: this->dblParameters()) {
-        printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first);
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first.c_str());
         frame.putParameter(p.first, p.second);
       }
 #endif
