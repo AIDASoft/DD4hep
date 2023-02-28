@@ -29,6 +29,7 @@
     <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
     <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
   </includes>
+
   <!--
   <plugins>
     <plugin name="DD4hep_TestConstantsMultiplier"/>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+     #  Check issue: https://github.com/AIDASoft/DD4hep/issues/1062
+     #==========================================================================
+-->
+
+  <define>
+    <constant name="world_constant" value="5*m"/>
+  </define>
+
+  <!-- Include some geometry file
+       The syntax is not obvious without knowing the code.
+       However this cryptification is necessary to steer the order of inclusion.
+   -->
+  <debug>
+    <type name="incguard" value="0"/>
+    <type name="includes" value="1"/>
+  </debug>
+
+  <!-- This here get parsed late, after the sub-detectors are constructed, but before closing -->
+  <includes>
+    <file ref="${DD4hepExamplesINSTALL}/examples/ClientTests/compact/BoxTrafos.xml"/>
+    <file ref="${DD4hepExamplesINSTALL}/examples/ClientTests/compact/ExamplePlugins.xml"/>
+  </includes>
+
+  <!-- This here get parsed late, after the sub-detectors are constructed, but before closing -->
+  <includes>
+     <xml ref="${DD4hepExamplesINSTALL}/examples/ClientTests/compact/ExamplePlugins.xml"/>
+  </includes>
+
+  <!-- This here is parsed at the very end    -->
+  <plugins>
+     <include ref="${DD4hepExamplesINSTALL}/examples/ClientTests/compact/ExamplePlugins.xml"/>
+  </plugins>
+
+</lccdd>

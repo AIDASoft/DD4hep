@@ -206,7 +206,7 @@ namespace {
         if ( result == EINVAL )   {
           std::cout << "FAILED to execute dd4hep plugin: '" << plug[0] 
                     << "' with args (" << num_args << ") :[ ";
-          for(size_t j = 1; j < plug.size(); ++j)   {
+          for( std::size_t j = 1; j < plug.size(); ++j )   {
             if ( plug[j] ) std::cout << plug[j] << " ";
           }
           std::cout << "]" << std::endl << std::flush;
@@ -214,21 +214,26 @@ namespace {
         }
         std::cout << "run_plugin: " << text << " Executed dd4hep plugin: '" << plug[0]
                   << "' with args (" << num_args << ") :[ ";
-        for(size_t j=1; j<plug.size(); ++j)   {
+        for( std::size_t j=1; j<plug.size(); ++j )   {
           if ( plug[j] ) std::cout << plug[j] << " ";
         }
         std::cout << "]" << std::endl << std::flush;
       }
-      result = run_plugin(description,name,a.first,a.second);
-      return result;
+      if ( name && name[0] )   {
+	result = run_plugin(description, name, a.first, a.second);
+	return result;
+      }
+      std::cout << "WARNING: No plugin name supplied. "
+		<< "Implicitly assuming execution steered by XML." << std::endl;
+      return ENOENT;
     }
   };
 
   //______________________________________________________________________________
   void load_compact(dd4hep::Detector& description, Args& args)   {
     // Load all compact files
-    for(size_t i=0; i<args.geo_files.size(); ++i)  {
-      const char* argv[] = {args.geo_files[i], args.build_types[i], 0};
+    for( std::size_t i=0; i<args.geo_files.size(); ++i )  {
+      const char* argv[] = { args.geo_files[i], args.build_types[i], 0 };
       run_plugin(description,"DD4hep_CompactLoader",2,(char**)argv);
     }
   }
@@ -241,9 +246,9 @@ namespace dd4hep  {
     //______________________________________________________________________________
     int main_wrapper(const char* name, int argc, char** argv)  {
       Args args;
-      for(int i=1; i<argc;++i) {
+      for( int i=1; i<argc;++i ) {
         if ( argv[i][0]=='-' ) {
-          if ( args.handle(i,argc,argv) )
+          if ( args.handle(i, argc, argv) )
             continue;
           else
             usage_default(name);
@@ -272,8 +277,9 @@ namespace dd4hep  {
           result = args.run(description, name);
           if ( result != EINVAL ) app.Run();
         }
-        else
+        else   {
           result = args.run(description, name);
+	}
         if ( result == EINVAL ) usage_default(name);
       }
       else {
@@ -322,7 +328,8 @@ namespace dd4hep  {
       if ( !arguments.dry_run &&
            !arguments.ui      &&
            !arguments.interpreter &&
-           arguments.plugins.empty() )
+           arguments.plugins.empty() &&
+	   arguments.geo_files.empty() )
       {
         usage_plugin_runner();
       }
@@ -354,7 +361,7 @@ namespace dd4hep  {
         int num_args = int(plug.size())-2;
         TTimeStamp start;
         char text[32];
-        long result = run_plugin(description,plug[0], num_args,(char**)&plug[1]);
+        long result = run_plugin(description, plug[0], num_args, (char**)&plug[1]);
         TTimeStamp stop;
         ::snprintf(text,sizeof(text),"[%8.3f sec]",stop.AsDouble()-start.AsDouble());
         if ( result == EINVAL )   {
