@@ -43,4 +43,5 @@
      <include ref="${DD4hepExamplesINSTALL}/examples/ClientTests/compact/ExamplePlugins.xml"/>
   </plugins>
 
+
 </lccdd>

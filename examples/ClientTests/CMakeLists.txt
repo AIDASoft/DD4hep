@@ -386,6 +386,23 @@ dd4hep_add_test_reg( MiniTel_check_checksum_full
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
+# Test the sequential processing of two xml files
+dd4hep_add_test_reg( include_plugins_command_line
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTel.xml 
+       	     		  -input ${ClientTestsEx_INSTALL}/compact/ExamplePlugins.xml
+  REGEX_PASS "Tested 5 numeric constants for expression evaluation"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR"
+)
+#
+# Test the sequential processing of two xml files
+dd4hep_add_test_reg( include_plugins_command_xml
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/IncludePlugins.xml 
+  REGEX_PASS "Tested 5 numeric constants for expression evaluation"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR"
+)
+#
 #      EXEC_ARGS  test_with_root.sh ${script}
 #
 if (DD4HEP_USE_GEANT4)
