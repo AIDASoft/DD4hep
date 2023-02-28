@@ -424,6 +424,12 @@ bool DataSegment::emplace_any(Key key, std::any&& item)    {
   return ret;
 }
 
+/// Access  data size
+std::size_t DataParameters::size()  const    {
+  return data->stringParams.size()+data->floatParams.size()+data->intParams.size();
+}
+
+template bool DataSegment::put(Key key, DataParameters&& data);
 template bool DataSegment::put(Key key, DepositVector&& data);
 template bool DataSegment::put(Key key, DepositMapping&& data);
 template bool DataSegment::put(Key key, ParticleMapping&& data);

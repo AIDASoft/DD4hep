@@ -234,6 +234,10 @@ public:
   const podio::GenericParameters& getGenericParametersForWrite() const {
     return m_self->parameters();
   }
+  /// MSF: Added by me.
+  const podio::GenericParameters& getGenericParameters() const {
+    return m_self->parameters();
+  }
 
   /**
    * Get a collection for writing (in a prepared and "ready-to-write" state)

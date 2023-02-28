@@ -12,104 +12,18 @@
 //==========================================================================
 
 // Framework include files
-#include <DDDigi/DigiInputAction.h>
-#include <DDDigi/DigiData.h>
+#include "DigiEdm4hepInput.h"
 #include "DigiIO.h"
 
-/// Forward declarations
-namespace podio {  class CollectionBase; }
-
-/// Namespace for the AIDA detector description toolkit
-namespace dd4hep {
-
-  /// Namespace for the Digitization part of the AIDA detector description toolkit
-  namespace digi {
-    
-    /// EDM4HEP Digi input reader
-    /**
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_DIGITIZATION
-     */
-    class DigiEdm4hepInput : public DigiInputAction    {
-    public:
-      static constexpr double epsilon = std::numeric_limits<double>::epsilon();
-
-      /// Forward declarations
-      class internals_t;
-      class work_t;
-      class source_t;
-      class collection_t;
-      using podio_coll_t = const podio::CollectionBase;
-      using descriptor_t = std::pair<const Key, collection_t>;
-
-      /// Reference to internal data
-      std::unique_ptr<internals_t> internals;
-      /// Type of tracker hit container
-      std::string m_trackerHitType { };
-      /// Type of calorimenter hit container
-      std::string m_caloHitType    { };
-      /// Type of particles container
-      std::string m_particlesType  { };
-      
-    public:
-      /// Initializing constructor
-      DigiEdm4hepInput(const DigiKernel& krnl, const std::string& nam);
-
-      /// Generic conversion function for hits
-      template <typename T, typename COLL>
-      void from_edm4hep(DigiContext&       context,
-			DataSegment&       segment,
-			Key::mask_type     mask,
-			const std::string& nam,
-			const COLL*        collection)   const
-      {
-	DepositVector out(nam, mask, SegmentEntry::UNKNOWN);
-	std::map<CellID, T> hits;
-	std::size_t len = 0;
-	const DepositPredicate<EnergyCut> predicate ( { this->epsilon } );
-	len = collection->size();
-	data_io<edm4hep_input>()._to_digi_if(*collection, hits, predicate);
-	data_io<edm4hep_input>()._to_digi(Key(nam, segment.id, mask), hits, out);
-	info("%s+++ %-24s Converted %6ld Edm4hep %-14s to %6ld cell deposits",
-	     context.event->id(), nam.c_str(), len, collection->getValueTypeName().c_str(), out.size());
-	put_data(segment, Key(out.name, mask), out);
-	if ( m_keep_raw )   {
-	  put_data(segment, Key(nam+".edm4hep", mask, segment.id), hits);
-	}
-      }
-
-      /// Generic conversion function for MC particles
-      template <typename COLL>
-      void from_edm4hep(DigiContext&       context,
-			DataSegment&       segment,
-			int                mask,
-			const std::string& nam,
-			const COLL*        collection)   const
-      {
-	ParticleMapping particles(nam, mask);
-	data_io<edm4hep_input>()._to_digi(Key(nam, segment.id, mask), *collection, particles);
-	debug("%s+++ Converted %ld Edm4hep particles", context.event->id(), particles.size());
-	put_data(segment, Key(nam, mask), particles);
-      }
-
-      /// Callback to handle single branch
-      virtual void operator()(DigiContext& context, work_t& work)  const;
-      /// Event action callback
-      virtual void execute(DigiContext& context)  const  override;
-    };
-  }    // End namespace digi
-}      // End namespace dd4hep
-
-//#include <podio/Frame.h>
+// podio/edm4hep include files
 #include "DigiFrame.h"
+//#include <podio/Frame.h>
 #include <podio/ROOTFrameReader.h>
 #include <edm4hep/SimTrackerHit.h>
 #include <edm4hep/SimCalorimeterHit.h>
 #include <edm4hep/MCParticleCollection.h>
-#include <edm4hep/SimTrackerHitCollection.h>
 #include <edm4hep/EventHeaderCollection.h>
+#include <edm4hep/SimTrackerHitCollection.h>
 #include <edm4hep/SimCalorimeterHitCollection.h>
 #include <edm4hep/CaloHitContributionCollection.h>
 
@@ -132,9 +46,10 @@ namespace dd4hep {
       edm4hep_read_frame_t(podio::Frame&& frm) : frame(std::move(frm)) { }
       const podio::CollectionBase* get(const std::string& nam) const { return frame.self()->get(nam); }
     };
+    
     using reader_t = podio::ROOTFrameReader;
     using frame_t  = edm4hep_read_frame_t;
-    
+
     /// EDM4HEP Digi input reader: Collection descriptor definition
     /**
      *
@@ -158,10 +73,11 @@ namespace dd4hep {
      */
     class DigiEdm4hepInput::work_t   {
     public:
-      DigiContext&  context;
-      descriptor_t& descriptor;
-      DataSegment&  segment;
-      podio_coll_t* collection;
+      DigiContext&   context;
+      DataSegment&   segment;
+      frame_t&       frame;
+      descriptor_t&  descriptor;
+      podio_coll_t*  collection;
     };
 
     /// EDM4HEP Digi input reader: Input source definition
@@ -224,7 +140,7 @@ namespace dd4hep {
       using input_t = std::unique_ptr<source_t>;
 
       /// Reference to the parent object
-      DigiEdm4hepInput* m_parent { nullptr };
+      DigiEdm4hepInput* parent { nullptr };
       /// Handle to input source
       input_t           m_source { };
       /// Pointer to current input source
@@ -232,70 +148,64 @@ namespace dd4hep {
 
     public:
       /// Initializing constructor
-      internals_t(DigiEdm4hepInput* parent);
+      internals_t() = default;
       /// Open the next input source from the input list
       std::unique_ptr<source_t> open_source();
       /// Access the next event from the sequence of input files
       std::shared_ptr<frame_t> next();
     };
 
-    /// Initializing constructor
-    DigiEdm4hepInput::internals_t::internals_t(DigiEdm4hepInput* parent)
-      : m_parent(parent)
-    {
-    }
-
     /// Open the next input source from the input list
     std::unique_ptr<DigiEdm4hepInput::source_t>
     DigiEdm4hepInput::internals_t::open_source()   {
-      const auto& inputs = m_parent->inputs();
+      const auto& inputs = parent->inputs();
       int len = inputs.size();
       if ( inputs.empty() ) m_curr_input = 0;
       while ( (m_curr_input+1) < len )   {
 	const auto& fname = inputs[++m_curr_input];
 	auto stream = std::make_unique<reader_t>();
 	try  {
-	  auto sec = m_parent->input_section();
+	  auto sec = parent->input_section();
 	  stream->openFile(fname);
 	  auto source = std::make_unique<source_t>(sec, std::move(stream));
-	  m_parent->info("+++ Opened EDM4HEP input file %s.", fname.c_str());
-	  m_parent->onOpenFile(*source);
+	  parent->info("+++ Opened EDM4HEP input file %s.", fname.c_str());
+	  parent->onOpenFile(*source);
 	  return source;
 	}
 	catch (const std::runtime_error& e)   {
-	  m_parent->error("OpenInput ++ Failed to open input source %s [%s]", fname.c_str(), e.what());
+	  parent->error("OpenInput ++ Failed to open input source %s [%s]", fname.c_str(), e.what());
 	}
       }
-      m_parent->except("+++ No open file present. Configuration error?");
+      parent->except("+++ No open file present. Configuration error?");
       throw std::runtime_error("+++ No open file present");
     }
 
     /// Access the next event record. If the courrent source is exhausted, open next source
     std::shared_ptr<frame_t> DigiEdm4hepInput::internals_t::next()   {
-      if ( !m_source || m_source->done() || m_parent->fileLimitReached(*m_source) )    {
+      if ( !m_source || m_source->done() || parent->fileLimitReached(*m_source) )    {
 	m_source = open_source();
 	if ( m_source )   {
 	  auto frame = m_source->next();
 	  if ( frame )   {
 	    auto table = frame->frame.getAvailableCollections();
-	    int id = 0, mask = m_parent->input_mask();
+	    int id = 0, mask = parent->input_mask();
 	    for( const auto& nam : table )   {
-	      m_parent->info("+++ Collection id: %04X --> '%s'", id, nam.c_str());
-	      if ( m_parent->object_loading_is_enabled(nam) )   {
+	      parent->info("+++ Collection id: %04X --> '%s'", id, nam.c_str());
+	      if ( parent->object_loading_is_enabled(nam) )   {
 		Key key(nam, mask);
 		m_source->collections.emplace( key, collection_t(id, nam) );
 	      }
 	      ++id;
 	    }
-	    m_parent->onProcessEvent(*m_source, *frame);
+	    parent->onProcessEvent(*m_source, *frame);
 	    return frame;
 	  }
-	  m_parent->except("+++ No valid frame present in file.");
+	  parent->except("+++ No valid frame present in file.");
 	}
-	m_parent->except("+++ No open file present. Aborting processing");
+	parent->except("+++ No open file present. Aborting processing");
       }
       auto frame = m_source->next();
-      m_parent->onProcessEvent(*m_source, *frame);
+      parent->onProcessEvent(*m_source, *frame);
       return frame;
     }
 
@@ -303,14 +213,67 @@ namespace dd4hep {
     DigiEdm4hepInput::DigiEdm4hepInput(const DigiKernel& krnl, const std::string& nam)
       : DigiInputAction(krnl, nam)
     {
-      internals        = std::make_unique<internals_t>(this);
-      m_trackerHitType = typeName(typeid(edm4hep::SimTrackerHitCollection));
-      m_caloHitType    = typeName(typeid(edm4hep::SimCalorimeterHitCollection));
-      m_particlesType  = typeName(typeid(edm4hep::MCParticleCollection));
+      internals         = std::make_unique<internals_t>();
+      internals->parent = this;
+      m_trackerHitType  = typeName(typeid(edm4hep::SimTrackerHitCollection));
+      m_caloHitType     = typeName(typeid(edm4hep::SimCalorimeterHitCollection));
+      m_particlesType   = typeName(typeid(edm4hep::MCParticleCollection));
+      m_evtHeaderType   = typeName(typeid(edm4hep::EventHeaderCollection));
       declareProperty("tracker_hits_type",     m_trackerHitType);
       declareProperty("calorimeter_hits_type", m_caloHitType);
       declareProperty("particles_hits_type",   m_particlesType);
+      declareProperty("event_header_type",     m_evtHeaderType);
       m_input_section = "events";
+    }
+
+    template <typename HIT_TYPE, typename EDM4HEP_COLLECTION_TYPE>
+    void DigiEdm4hepInput::hits_from_edm4hep(DigiContext&                   context,
+					     DataSegment&                   segment,
+					     Key::mask_type                 mask,
+					     const std::string&             nam,
+					     const EDM4HEP_COLLECTION_TYPE* collection)   const
+    {
+      DepositVector out(nam, mask, SegmentEntry::UNKNOWN);
+      std::map<CellID, HIT_TYPE> hits;
+      std::size_t len = 0;
+      const DepositPredicate<EnergyCut> predicate ( { this->epsilon } );
+      len = collection->size();
+      data_io<edm4hep_input>()._to_digi_if(*collection, hits, predicate);
+      data_io<edm4hep_input>()._to_digi(Key(nam, segment.id, mask), hits, out);
+      info("%s+++ %-24s Converted %6ld Edm4hep %-14s to %6ld cell deposits",
+	   context.event->id(), nam.c_str(), len, collection->getValueTypeName().c_str(), out.size());
+      put_data(segment, Key(out.name, mask), std::move(out));
+      if ( m_keep_raw )   {
+	put_data(segment, Key(nam+".edm4hep", mask, segment.id), std::move(hits));
+      }
+    }
+
+    /// Generic conversion function for MC particles
+    void DigiEdm4hepInput::parts_from_edm4hep(DigiContext&       context,
+					      DataSegment&       segment,
+					      int                mask,
+					      const std::string& nam,
+					      const edm4hep::MCParticleCollection* collection)   const
+    {
+      ParticleMapping transient(nam, mask);
+      data_io<edm4hep_input>()._to_digi(Key(nam, segment.id, mask), *collection, transient);
+      debug("%s+++ Converted %ld Edm4hep transient", context.event->id(), transient.size());
+      put_data(segment, Key(nam, mask), std::move(transient));
+    }
+
+    /// Generic conversion function for event parameter settings
+    void DigiEdm4hepInput::params_from_edm4hep(DigiContext&        context,
+					       DataSegment&        segment,
+					       int                 mask,
+					       const std::string&  nam,
+					       const podio::Frame& frame,
+					       const edm4hep::EventHeaderCollection* collection)   const
+    {
+      DataParameters parameters(nam, mask);
+      data_io<edm4hep_input>()._to_digi(Key(nam, segment.id, mask), *collection, parameters);
+      data_io<edm4hep_input>()._to_digi(Key(nam, segment.id, mask), frame.getGenericParameters(), parameters);
+      debug("%s+++ Converted %ld Edm4hep transient", context.event->id(), parameters.size());
+      put_data(segment, Key(nam, mask), std::move(parameters));
     }
 
     /// Pre-track action callback
@@ -325,7 +288,7 @@ namespace dd4hep {
 	const auto& nam = coll.second.name;
 	const podio::CollectionBase* collection = frame->get(nam);
 	if ( collection )   {
-	  work_t work { context, coll, segment, collection };
+	  work_t work { context, segment, *frame, coll, collection };
 	  (*this)(context, work);
 	  continue;
 	}
@@ -347,15 +310,16 @@ namespace dd4hep {
       const auto& typ = col->getTypeName();
 
       if ( typ == m_caloHitType )
-	from_edm4hep<edm4hep::SimCalorimeterHit>(context, seg, msk, nam, static_cast<const edm4hep::SimCalorimeterHitCollection*>(col));
+	hits_from_edm4hep<edm4hep::SimCalorimeterHit>(context, seg, msk, nam, static_cast<const edm4hep::SimCalorimeterHitCollection*>(col));
       else if ( typ == m_trackerHitType )
-	from_edm4hep<edm4hep::SimTrackerHit>(context, seg, msk, nam, static_cast<const edm4hep::SimTrackerHitCollection*>(col));
+	hits_from_edm4hep<edm4hep::SimTrackerHit>(context, seg, msk, nam, static_cast<const edm4hep::SimTrackerHitCollection*>(col));
       else if ( typ == m_particlesType )
-	from_edm4hep(context, seg, msk, nam, static_cast<const edm4hep::MCParticleCollection*>(col));
+	parts_from_edm4hep(context, seg, msk, nam, static_cast<const edm4hep::MCParticleCollection*>(col));
+      else if ( typ == m_evtHeaderType )
+	params_from_edm4hep(context, seg, msk, nam, work.frame.frame, static_cast<const edm4hep::EventHeaderCollection*>(col));
       else
 	except("Unknown data type encountered in branch: %s", nam.c_str());
     }
-
   }    // End namespace digi
 }      // End namespace dd4hep
 

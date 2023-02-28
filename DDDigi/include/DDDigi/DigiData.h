@@ -873,6 +873,84 @@ namespace dd4hep {
     }
     typedef DetectorHistory DepositsHistory;
 
+    /// Detector history vector definition for digitization
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_DIGITIZATION
+     */
+    class DataParameters : public SegmentEntry  {
+    public: 
+      template <typename T> using map_type_t = std::map<std::string, std::vector<T> >;
+      struct header_data  {
+	map_type_t<std::string> stringParams;
+	map_type_t<float>       floatParams;
+	map_type_t<int>         intParams;
+	std::int32_t            run_number    {  -1 };
+	std::int32_t            event_number  {  -1 };
+	std::int64_t            time_stamp    {   0 };
+	double                  event_weight  { 0e0 };
+      };
+      std::shared_ptr<header_data> data;
+    public: 
+      /// Initializing constructor
+      DataParameters(const std::string& name, Key::mask_type mask);
+      /// Default constructor
+      DataParameters() = default;
+      /// Disable move constructor
+      DataParameters(DataParameters&& copy) = default;
+      /// Disable copy constructor
+      DataParameters(const DataParameters& copy) = default;
+      /// Default destructor
+      virtual ~DataParameters() = default;
+      /// Disable move assignment
+      DataParameters& operator=(DataParameters&& copy) = default;
+      /// Disable copy assignment
+      DataParameters& operator=(const DataParameters& copy) = default;
+      /// Access  data size
+      std::size_t size()  const;
+      /// Access the event number
+      std::int32_t getEventNumber() const   {
+	return data->event_number;
+      }
+      /// Access the run number
+      std::int32_t getRunNumber() const   {
+	return data->run_number;
+      }
+      /// Access the time stamp
+      std::uint64_t getTimeStamp() const   {
+	return data->time_stamp;
+      }
+      /// Access the event weight
+      float getWeight() const   {
+	return data->event_weight;
+      }
+      /// Set the event number
+      void setEventNumber(std::int32_t value)   {
+	data->event_number = value;
+      }
+      /// Set the run number
+      void setRunNumber(std::int32_t value)   {
+	data->run_number = value;
+      }
+      /// Set the time stamp
+      void setTimeStamp(std::uint64_t value)   {
+	data->time_stamp = value;
+      }
+      /// Set the event weight
+      void setWeight(float value)   {
+	data->event_weight = value;
+      }
+    };
+
+    /// Initializing constructor
+    inline DataParameters::DataParameters(const std::string& nam, Key::mask_type msk)
+      : SegmentEntry(nam, msk, SegmentEntry::HISTORY)
+    {
+      this->data = std::make_shared<header_data>();
+    }
+
 
     ///  Data segment definition (locked map)
     /**
@@ -1007,8 +1085,9 @@ namespace dd4hep {
 
     /// Helper to place data to data segment
     template <typename KEY, typename DATA> 
-    bool put_data(DataSegment& segment, KEY key, DATA& data)    {
-      return segment.emplace_any(key, std::any(data));
+    bool put_data(DataSegment& segment, KEY key, DATA&& value)    {
+      std::any item = std::make_any<DATA>(std::move(value));
+      return segment.emplace_any(key, std::move(item));
     }
 
     ///  User event data for DDDigi

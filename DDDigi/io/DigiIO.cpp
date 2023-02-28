@@ -32,6 +32,8 @@
 #include <edm4hep/SimTrackerHitCollection.h>
 #include <edm4hep/CalorimeterHitCollection.h>
 #include <edm4hep/SimCalorimeterHitCollection.h>
+#include <edm4hep/EventHeaderCollection.h>
+#include <podio/GenericParameters.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -301,6 +303,7 @@ namespace dd4hep {
       }
     }
 
+    /// Import edm4hep SimTrackerHit collections
     template <> template <>
     void data_io<edm4hep_input>::_to_digi(Key key,
 					  const std::map<CellID, edm4hep::SimTrackerHit>& hits,
@@ -323,6 +326,32 @@ namespace dd4hep {
 	//add_particle_history(h, history_key, dep.history);
 	out.emplace(depo.first, std::move(dep));
       }
+    }
+
+    /// Import edm4hep EventHeader collections
+    template <> template <>
+    void data_io<edm4hep_input>::_to_digi(Key /* key */,
+					  const edm4hep::EventHeaderCollection& headers,
+					  dd4hep::digi::DataParameters& params)  {
+      for( unsigned int i=0, n=headers.size(); i < n; ++i)   {
+	const auto& hdr = headers[i];
+	params.setRunNumber(hdr.getRunNumber());
+	params.setEventNumber(hdr.getEventNumber());
+	params.setTimeStamp(hdr.getTimeStamp());
+	params.setWeight(hdr.getWeight());
+	break;
+      }
+    }
+
+    /// Import parameters from podio frame
+    template <> template <>
+    void data_io<edm4hep_input>::_to_digi(Key /* key */,
+					  const podio::GenericParameters& inputparams,
+					  dd4hep::digi::DataParameters&   parameters)  {
+      /// Now copy all frame parameters to the data header
+      parameters.data->stringParams = inputparams.getStringMap();
+      parameters.data->floatParams  = inputparams.getFloatMap();
+      parameters.data->intParams    = inputparams.getIntMap();
     }
 
     template <> template <>

@@ -10,131 +10,13 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DIGI_DIGI2EDM4HEP_H
-#define DIGI_DIGI2EDM4HEP_H
-
-// Framework include files
-#include <DDDigi/DigiOutputAction.h>
-
-/// C/C++ include files
-
-namespace edm4hep  {
-  class TrackerHitCollection;
-  class CalorimeterHitCollection;
-}
-
-/// Namespace for the AIDA detector description toolkit
-namespace dd4hep {
-
-  /// Namespace for the Digitization part of the AIDA detector description toolkit
-  namespace digi {
-
-    /// Event action to support edm4hep output format from DDDigi
-    /**
-     *  Supported output containers types are:
-     *  - edm4hep::MCParticles aka "MCParticles"
-     *  - edm4hep::CalorimeterHitCollection  aka "CalorimeterHits"
-     *  - edm4hep::TrackerHitCollection aka "TracketHits"
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_DIGITIZATION
-     */
-    class Digi2edm4hepOutput : public  DigiOutputAction  {
-    public:
-      class internals_t;
-    protected:
-      /// Reference to internals
-      std::shared_ptr<internals_t> internals;
-
-    protected:
-      /// Define standard assignments and constructors
-      DDDIGI_DEFINE_ACTION_CONSTRUCTORS(Digi2edm4hepOutput);
-      /// Default destructor
-      virtual ~Digi2edm4hepOutput();
-
-    public:
-      /// Standard constructor
-      Digi2edm4hepOutput(const kernel_t& kernel, const std::string& nam);
-      /// Initialization callback
-      virtual void initialize();
-      /// Check for valid output stream
-      virtual bool have_output()  const  override final;
-      /// Open new output stream
-      virtual void open_output() const  override final;
-      /// Close possible open stream
-      virtual void close_output()  const  override final;
-      /// Commit event data to output stream
-      virtual void commit_output() const  override final;
-    };
-
-    /// Actor to save individual data containers to edm4hep
-    /** Actor to save individual data containers to edm4hep
-     *
-     *  This is a typical worker action of the Digi2edm4hepOutput
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_DIGITIZATION
-     */
-    class Digi2edm4hepProcessor : public DigiContainerProcessor   {
-      friend class Digi2edm4hepOutput;
-
-    protected:
-      /// Reference to the edm4hep engine
-      std::shared_ptr<Digi2edm4hepOutput::internals_t> internals;
-      /// Property: RPhi resolution
-      float m_pointResoutionRPhi = 0.004;
-      /// Property: Z resolution
-      float m_pointResoutionZ = 0.004;
-      /// Hit type for hit processor
-      int   m_hit_type = 0;
-
-    public:
-      /// Standard constructor
-      Digi2edm4hepProcessor(const DigiKernel& krnl, const std::string& nam);
-
-      /// Standard destructor
-      virtual ~Digi2edm4hepProcessor() = default;
-
-      template <typename T> void
-      convert_depos(const T& cont, const predicate_t& predicate, edm4hep::TrackerHitCollection* collection)  const;
-
-      template <typename T> void
-      convert_depos(const T& cont, const predicate_t& predicate, edm4hep::CalorimeterHitCollection* collection)  const;
-
-      template <typename T> void
-      convert_deposits(DigiContext& context, const T& cont, const predicate_t& predicate)  const;
-
-      void convert_history(DigiContext& context, const DepositsHistory& cont, work_t& work, const predicate_t& predicate)  const;
-
-      void convert_particles(DigiContext& context, const ParticleMapping& cont)  const;
-
-      /// Main functional callback
-      virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const override final;
-    };
-  }    // End namespace digi
-}      // End namespace dd4hep
-#endif // DIGI_DIGI2EDM4HEP_H
-
-//==========================================================================
-//  AIDA Detector description implementation 
-//--------------------------------------------------------------------------
-// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
-// All rights reserved.
-//
-// For the licensing terms see $DD4hepINSTALL/LICENSE.
-// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
-//
-// Author     : M.Frank
-//
-//==========================================================================
 
 /// Framework include files
 #include <DD4hep/InstanceCount.h>
 #include <DDDigi/DigiContext.h>
 #include <DDDigi/DigiPlugins.h>
 #include <DDDigi/DigiKernel.h>
+#include "DigiEdm4hepOutput.h"
 #include "DigiIO.h"
 
 /// edm4hep include files
@@ -161,9 +43,9 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_DIGITIZATION
      */
-    class Digi2edm4hepOutput::internals_t {
+    class DigiEdm4hepOutput::internals_t {
     public:
-      Digi2edm4hepOutput* m_parent                    { nullptr };
+      DigiEdm4hepOutput* m_parent                    { nullptr };
       /// Reference to podio store
       std::unique_ptr<podio::EventStore>  m_store     { };
       /// Reference to podio writer
@@ -186,7 +68,7 @@ namespace dd4hep {
 
     public:
       /// Default constructor
-      internals_t(Digi2edm4hepOutput* parent);
+      internals_t(DigiEdm4hepOutput* parent);
       /// Default destructor
       ~internals_t();
 
@@ -204,18 +86,18 @@ namespace dd4hep {
     };
 
     /// Default constructor
-    Digi2edm4hepOutput::internals_t::internals_t(Digi2edm4hepOutput* parent) : m_parent(parent)
+    DigiEdm4hepOutput::internals_t::internals_t(DigiEdm4hepOutput* parent) : m_parent(parent)
     {
       m_store  = std::make_unique<podio::EventStore>();
     }
 
     /// Default destructor
-    Digi2edm4hepOutput::internals_t::~internals_t()    {
+    DigiEdm4hepOutput::internals_t::~internals_t()    {
       if ( m_file ) close();
       m_store.reset();
     }
 
-    template <typename T> T* Digi2edm4hepOutput::internals_t::register_collection(const std::string& nam, T* coll)   {
+    template <typename T> T* DigiEdm4hepOutput::internals_t::register_collection(const std::string& nam, T* coll)   {
       m_collections.emplace(nam, coll);
       m_store->registerCollection(nam, coll);
       m_parent->debug("+++ created collection %s <%s>", nam.c_str(), coll->getTypeName().c_str());
@@ -223,7 +105,7 @@ namespace dd4hep {
     }
 
     /// Create all collections according to the parent setup
-    void Digi2edm4hepOutput::internals_t::create_collections()    {
+    void DigiEdm4hepOutput::internals_t::create_collections()    {
       if ( nullptr == m_header )   {
         m_header = register_collection("EventHeader", new edm4hep::EventHeaderCollection());
         for( auto& cont : m_parent->m_containers )   {
@@ -245,7 +127,7 @@ namespace dd4hep {
 
     /// Access named collection: throws exception ifd the collection is not present
     template <typename T> 
-    podio::CollectionBase* Digi2edm4hepOutput::internals_t::get_collection(const T& cont)  {
+    podio::CollectionBase* DigiEdm4hepOutput::internals_t::get_collection(const T& cont)  {
       auto iter = m_collections.find(cont.name);
       if ( iter == m_collections.end() )    {
         m_parent->except("Error");
@@ -254,7 +136,7 @@ namespace dd4hep {
     }
 
     /// Commit data at end of filling procedure
-    void Digi2edm4hepOutput::internals_t::commit()   {
+    void DigiEdm4hepOutput::internals_t::commit()   {
       if ( m_file )   {
         m_file->writeEvent();
         m_store->clearCollections();
@@ -264,7 +146,7 @@ namespace dd4hep {
     }
 
     /// Open new output stream
-    void Digi2edm4hepOutput::internals_t::open()    {
+    void DigiEdm4hepOutput::internals_t::open()    {
       if ( m_file )   {
         close();
       }
@@ -272,13 +154,13 @@ namespace dd4hep {
       std::string fname = m_parent->next_stream_name();
       m_file = std::make_unique<podio::ROOTWriter>(fname, m_store.get());
       m_parent->info("+++ Opened EDM4HEP output file %s", fname.c_str());
-     for( const auto& c : m_collections )   {
+      for( const auto& c : m_collections )   {
 	m_file->registerForWrite(c.first);
       }
     }
 
     /// Commit data to disk and close output stream
-    void Digi2edm4hepOutput::internals_t::close()   {
+    void DigiEdm4hepOutput::internals_t::close()   {
       m_parent->info("+++ Closing EDM4HEP output file.");
       if ( m_file )   {
         m_file->finish();
@@ -287,7 +169,7 @@ namespace dd4hep {
     }
 
     /// Standard constructor
-    Digi2edm4hepOutput::Digi2edm4hepOutput(const DigiKernel& krnl, const std::string& nam)
+    DigiEdm4hepOutput::DigiEdm4hepOutput(const DigiKernel& krnl, const std::string& nam)
       : DigiOutputAction(krnl, nam)
     {
       internals = std::make_shared<internals_t>(this);
@@ -295,16 +177,16 @@ namespace dd4hep {
     }
 
     /// Default destructor
-    Digi2edm4hepOutput::~Digi2edm4hepOutput()   {
+    DigiEdm4hepOutput::~DigiEdm4hepOutput()   {
       internals.reset();
       InstanceCount::decrement(this);
     }
 
     /// Initialization callback
-    void Digi2edm4hepOutput::initialize()   {
+    void DigiEdm4hepOutput::initialize()   {
       this->DigiOutputAction::initialize();
       for ( auto& c : m_registered_processors )   {
-        auto* act = dynamic_cast<Digi2edm4hepProcessor*>(c.second);
+        auto* act = dynamic_cast<DigiEdm4hepOutputProcessor*>(c.second);
         if ( act )   { // This is not nice! Need to think about something better.
           act->internals = this->internals;
 	  continue;
@@ -316,27 +198,27 @@ namespace dd4hep {
     }
 
     /// Check for valid output stream
-    bool Digi2edm4hepOutput::have_output()  const  {
+    bool DigiEdm4hepOutput::have_output()  const  {
       return internals->m_file.get() != nullptr;
     }
 
     /// Open new output stream
-    void Digi2edm4hepOutput::open_output() const   {
+    void DigiEdm4hepOutput::open_output() const   {
       internals->open();
     }
 
     /// Close possible open stream
-    void Digi2edm4hepOutput::close_output()  const  {
+    void DigiEdm4hepOutput::close_output()  const  {
       internals->close();
     }
 
     /// Commit event data to output stream
-    void Digi2edm4hepOutput::commit_output() const  {
+    void DigiEdm4hepOutput::commit_output() const  {
       internals->commit();
     }
 
     /// Standard constructor
-    Digi2edm4hepProcessor::Digi2edm4hepProcessor(const DigiKernel& krnl, const std::string& nam)
+    DigiEdm4hepOutputProcessor::DigiEdm4hepOutputProcessor(const DigiKernel& krnl, const std::string& nam)
       : DigiContainerProcessor(krnl, nam)
     {
       declareProperty("point_resolution_RPhi", m_pointResoutionRPhi);
@@ -344,8 +226,8 @@ namespace dd4hep {
       declareProperty("hit_type",              m_hit_type = 0);
     }
 
-    void Digi2edm4hepProcessor::convert_particles(DigiContext& ctxt,
-                                                  const ParticleMapping& cont)  const
+    void DigiEdm4hepOutputProcessor::convert_particles(DigiContext& ctxt,
+						       const ParticleMapping& cont)  const
     {
       auto* coll = internals->m_particles;
       std::size_t start = coll->size();
@@ -357,12 +239,12 @@ namespace dd4hep {
     }
 
     template <typename T> void
-    Digi2edm4hepProcessor::convert_depos(const T& cont,
-                                         const predicate_t& predicate,
-                                         edm4hep::TrackerHitCollection* collection)  const
+    DigiEdm4hepOutputProcessor::convert_depos(const T& cont,
+					      const predicate_t& predicate,
+					      edm4hep::TrackerHitCollection* collection)  const
     {
       std::array<float,6> covMat = {0., 0., m_pointResoutionRPhi*m_pointResoutionRPhi, 
-        0., 0., m_pointResoutionZ*m_pointResoutionZ
+				    0., 0., m_pointResoutionZ*m_pointResoutionZ
       };
       for ( const auto& depo : cont )   {
         if ( predicate(depo) )   {
@@ -372,9 +254,9 @@ namespace dd4hep {
     }
 
     template <typename T> void
-    Digi2edm4hepProcessor::convert_depos(const T& cont,
-                                         const predicate_t& predicate,
-                                         edm4hep::CalorimeterHitCollection* collection)  const
+    DigiEdm4hepOutputProcessor::convert_depos(const T& cont,
+					      const predicate_t& predicate,
+					      edm4hep::CalorimeterHitCollection* collection)  const
     {
       for ( const auto& depo : cont )   {
         if ( predicate(depo) )   {
@@ -384,9 +266,9 @@ namespace dd4hep {
     }
 
     template <typename T> void
-    Digi2edm4hepProcessor::convert_deposits(DigiContext&       ctxt,
-                                            const T&           cont,
-                                            const predicate_t& predicate)  const
+    DigiEdm4hepOutputProcessor::convert_deposits(DigiContext&       ctxt,
+						 const T&           cont,
+						 const predicate_t& predicate)  const
     {
       podio::CollectionBase* coll = internals->get_collection(cont);
       std::size_t start = coll->size();
@@ -409,10 +291,10 @@ namespace dd4hep {
            coll->getTypeName().c_str());
     }
 
-    void Digi2edm4hepProcessor::convert_history(DigiContext&           ctxt,
-                                                const DepositsHistory& cont,
-                                                work_t&                work,
-                                                const predicate_t&     predicate)  const
+    void DigiEdm4hepOutputProcessor::convert_history(DigiContext&           ctxt,
+						     const DepositsHistory& cont,
+						     work_t&                work,
+						     const predicate_t&     predicate)  const
     {
       info("%s+++ %-32s Segment: %d Predicate:%s Conversion to edm4hep not implemented!",
            ctxt.event->id(), cont.name.c_str(), int(work.input.segment->id),
@@ -420,7 +302,7 @@ namespace dd4hep {
     }
 
     /// Main functional callback
-    void Digi2edm4hepProcessor::execute(DigiContext& ctxt, work_t& work, const predicate_t& predicate)  const  {
+    void DigiEdm4hepOutputProcessor::execute(DigiContext& ctxt, work_t& work, const predicate_t& predicate)  const  {
       if ( const auto* p = work.get_input<ParticleMapping>() )
         convert_particles(ctxt, *p);
       else if ( const auto* m = work.get_input<DepositMapping>() )
@@ -438,5 +320,5 @@ namespace dd4hep {
 
 /// Factory instantiation:
 #include <DDDigi/DigiFactories.h>
-DECLARE_DIGIACTION_NS(dd4hep::digi,Digi2edm4hepOutput)
-DECLARE_DIGIACTION_NS(dd4hep::digi,Digi2edm4hepProcessor)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiEdm4hepOutput)
+DECLARE_DIGIACTION_NS(dd4hep::digi,DigiEdm4hepOutputProcessor)
