@@ -309,7 +309,7 @@ template <> void Converter<Debug>::operator()(xml_h e) const {
     else if ( nam.substr(0,6) == "segmen" ) s_debug.segmentation = (0 != val);
     else if ( nam.substr(0,6) == "consta" ) s_debug.constants    = (0 != val);
     else if ( nam.substr(0,6) == "define" ) s_debug.constants    = (0 != val);
-    else if ( nam.substr(0,6) == "includ" ) s_debug.includes      = (0 != val);
+    else if ( nam.substr(0,6) == "includ" ) s_debug.includes     = (0 != val);
     else if ( nam.substr(0,6) == "matrix" ) s_debug.matrix       = (0 != val);
     else if ( nam.substr(0,6) == "surfac" ) s_debug.surface      = (0 != val);
     else if ( nam.substr(0,6) == "incgua" ) s_debug.include_guard= (0 != val);
@@ -1438,7 +1438,11 @@ template <> void Converter<JsonFile>::operator()(xml_h element) const {
 
 /// Read alignment entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<XMLFile>::operator()(xml_h element) const {
-  this->description.fromXML(element.attr<string>(_U(ref)));
+  string fname = element.attr<string>(_U(ref));
+  if ( s_debug.includes )   {
+    printout(ALWAYS, "Compact","++ Processing xml document %s.", fname.c_str());
+  }
+  this->description.fromXML(fname);
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
@@ -1668,7 +1672,8 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
     ReflectionBuilder rb(description);
     rb.execute();
   }
-  xml_coll_t(compact, _U(plugins)).for_each(_U(plugin), Converter<Plugin> (description));
+  xml_coll_t(compact, _U(plugins)).for_each(_U(plugin),  Converter<Plugin>  (description));
+  xml_coll_t(compact, _U(plugins)).for_each(_U(include), Converter<XMLFile> (description));
 }
 
 #ifdef _WIN32
