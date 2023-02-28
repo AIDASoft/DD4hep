@@ -27,7 +27,6 @@
 #include <fstream>
 #include <cerrno>
 
-using namespace std;
 using namespace dd4hep;
 
 /// Plugin function: Test in memory XML parsing of a simple sub detector
@@ -43,18 +42,21 @@ using namespace dd4hep;
  */
 static int multiply_constants (Detector& detector, int argc, char** argv)  {
   bool help = false;
+  std::string name = "TestConstantsMultiplier";
   for(int i=0; i<argc && argv[i]; ++i)  {
-    if ( 0 == ::strncmp("-help",argv[i],4) )
+    if ( 0 == ::strncmp("-name",argv[i],4) )
+      name = argv[++i];
+    else if ( 0 == ::strncmp("-help",argv[i],4) )
       help = true;
     else
       help = true;
   }
   if ( help )   {
     /// Help printout describing the basic command line interface
-    cout <<
+    std::cout <<
       "Usage: -plugin <name> -arg [-arg]                              \n"
       "     name:   factory name     DD4hep_TestConstantsMultiplier   \n"
-      "\tArguments given: " << arguments(argc,argv) << endl << flush;
+      "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
     ::exit(EINVAL);
   }
   int num_test = 0;
@@ -64,7 +66,7 @@ static int multiply_constants (Detector& detector, int argc, char** argv)  {
     if ( c.dataType() == "number" )   {
       try {
         double res = _multiply(c.name(),1.0);
-        printout(INFO,"TestConstantsMultiplier","+++ Constant: %-16s = %-16s [%s]  -> %-16s = %9.3g",
+        printout(INFO,name,"+++ Constant: %-16s = %-16s [%s]  -> %-16s = %9.3g",
                  c.name(), c->GetTitle(), c.dataType().c_str(), c.name(), res);
         ++num_test;
       }
@@ -72,9 +74,13 @@ static int multiply_constants (Detector& detector, int argc, char** argv)  {
       }
     }
   }
-  printout(ALWAYS,"TestConstantsMultiplier",
-           "+++ Tested %d numeric constants for expression evaluation.",num_test);
+  printout(ALWAYS,name,"+++ Tested %d numeric constants for expression evaluation.",num_test);
   return 1;
 }
-
 DECLARE_APPLY(DD4hep_TestConstantsMultiplier,multiply_constants)
+
+static int  print_line(Detector& , int, char** )  {
+  printout(ALWAYS,"Line","+++ ------------------------------------------------------------------");
+  return 1;
+}
+DECLARE_APPLY(DD4hep_TestPrintLine,print_line)

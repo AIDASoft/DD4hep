@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+  <plugins>
+    <plugin name="DD4hep_TestPrintLine"/>
+    <plugin name="DD4hep_VolumeDump"/>
+    <plugin name="DD4hep_TestConstantsMultiplier">
+      <argument value="-name"/>
+      <argument value="have_fun"/>
+    </plugin>
+    <plugin name="DD4hep_TestPrintLine"/>
+  </plugins>
+</lccdd>
