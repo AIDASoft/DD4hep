@@ -132,6 +132,7 @@ void Geant4Tracker::Hit::copyFrom(const Hit& c) {
   if ( &c != this )  {
     position = c.position;
     momentum = c.momentum;
+    deposit = c.deposit;
     length = c.length;
     truth = c.truth;
   }
@@ -141,6 +142,7 @@ void Geant4Tracker::Hit::copyFrom(const Hit& c) {
 Geant4Tracker::Hit& Geant4Tracker::Hit::clear() {
   position.SetXYZ(0, 0, 0);
   momentum.SetXYZ(0, 0, 0);
+  deposit = 0.0;
   length = 0.0;
   truth.clear();
   return *this;

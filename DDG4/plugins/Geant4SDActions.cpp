@@ -104,7 +104,7 @@ namespace dd4hep {
         except("+++ Invalid CELL ID for hit!");
       }
       print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
-            step->GetTotalEnergyDeposit(), pos.X(), pos.Y(), pos.Z(), (void*)hit->cellID);
+            hit->energyDeposit,hit->position.X(),hit->position.Y(),hit->position.Z(),(void*)hit->cellID);
       Geant4TouchableHandler handler(step);
       print("    Geant4 path:%s",handler.path().c_str());
       return true;
@@ -119,7 +119,8 @@ namespace dd4hep {
       Geant4FastSimHandler h(spot);
       Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime(),
 			 0e0, h.avgPosition(), h.momentum());
-      hit->cellID        = cellID(h.touchable(), h.avgPositionG4());
+      hit->cellID  = cellID(h.touchable(), h.avgPositionG4());
+      hit->truth   = Hit::extractContribution(spot);
       collection(m_collectionID)->add(hit);
       mark(h.track);
       if ( 0 == hit->cellID )  {
@@ -127,7 +128,7 @@ namespace dd4hep {
         except("+++ Invalid CELL ID for hit!");
       }
       print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
-            h.deposit(),hit->position.X(),hit->position.Y(),hit->position.Z(),(void*)hit->cellID);
+            hit->energyDeposit,hit->position.X(),hit->position.Y(),hit->position.Z(),(void*)hit->cellID);
       Geant4TouchableHandler handler(h.touchable());
       print("    Geant4 path:%s",handler.path().c_str());
       return true;
@@ -169,11 +170,11 @@ namespace dd4hep {
       Direction mom       = 0.5 * ( h.preMom() + h.postMom() ) ;
       double    tim       = h.track->GetGlobalTime();
       double    hit_len   = direction.R();
+      auto      contrib   = Hit::extractContribution(step);
       
-      Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), tim, hit_len, pos, mom);
-      hit->truth         = Hit::extractContribution(step);
-      hit->energyDeposit = hit->truth.deposit;
-      hit->cellID        = cellID(step);
+      Hit* hit = new Hit(h.trkID(), h.trkPdgID(), contrib.deposit, tim, hit_len, pos, mom);
+      hit->truth  = contrib;
+      hit->cellID = cellID(step);
       if (track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) {
         track->SetTrackStatus(fStopAndKill);
       }
@@ -184,7 +185,7 @@ namespace dd4hep {
         except("+++ Invalid CELL ID for hit!");
       }
       print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
-            step->GetTotalEnergyDeposit(), pos.X(),pos.Y(), pos.Z(), (void*)hit->cellID);
+            hit->energyDeposit,hit->position.X(),hit->position.Y(),hit->position.Z(),(void*)hit->cellID);
       Geant4TouchableHandler handler(step);
       print("    Geant4 path:%s",handler.path().c_str());
       return true;
@@ -197,9 +198,12 @@ namespace dd4hep {
     {
       typedef Geant4Tracker::Hit Hit;
       Geant4FastSimHandler h(spot);
-      Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime(),
+      auto contrib  = Hit::extractContribution(spot);
+      Hit* hit = new Hit(h.trkID(), h.trkPdgID(), contrib.deposit, h.track->GetGlobalTime(),
 			 0e0, h.avgPosition(), h.momentum());
-      hit->cellID        = cellID(h.touchable(), h.avgPositionG4());
+      hit->cellID = cellID(h.touchable(), h.avgPositionG4());
+      hit->truth  = contrib;
+
       collection(m_collectionID)->add(hit);
       mark(h.track);
       if ( 0 == hit->cellID )  {
@@ -207,7 +211,7 @@ namespace dd4hep {
         except("+++ Invalid CELL ID for hit!");
       }
       print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
-            h.deposit(),hit->position.X(),hit->position.Y(),hit->position.Z(),(void*)hit->cellID);
+            hit->energyDeposit,hit->position.X(),hit->position.Y(),hit->position.Z(),(void*)hit->cellID);
       Geant4TouchableHandler handler(h.touchable());
       print("    Geant4 path:%s",handler.path().c_str());
       return true;
