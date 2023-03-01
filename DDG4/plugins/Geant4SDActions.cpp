@@ -171,7 +171,9 @@ namespace dd4hep {
       double    hit_len   = direction.R();
       
       Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), tim, hit_len, pos, mom);
-      hit->cellID = cellID(step);
+      hit->truth         = Hit::extractContribution(step);
+      hit->energyDeposit = hit->truth.deposit;
+      hit->cellID        = cellID(step);
       if (track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) {
         track->SetTrackStatus(fStopAndKill);
       }
