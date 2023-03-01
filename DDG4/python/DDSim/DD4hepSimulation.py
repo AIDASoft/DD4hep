@@ -17,6 +17,7 @@ from DDSim.Helper.HepMC3 import HepMC3
 from DDSim.Helper.GuineaPig import GuineaPig
 from DDSim.Helper.Physics import Physics
 from DDSim.Helper.Filter import Filter
+from DDSim.Helper.Geometry import Geometry
 from DDSim.Helper.Random import Random
 from DDSim.Helper.Action import Action
 from DDSim.Helper.Output import Output, outputLevel, outputLevelType
@@ -85,6 +86,7 @@ class DD4hepSimulation(object):
     self.hepmc3 = HepMC3()
     self.meta = Meta()
 
+    self.geometry = Geometry()
     self.filter = Filter()
     self.physics = Physics()
 
@@ -324,8 +326,10 @@ class DD4hepSimulation(object):
     # setup the magnetic field:
     self.__setMagneticFieldOptions(simple)
 
-    # ----------------------------------------------------------------------------------
+    # configure geometry creation
+    self.geometry.constructGeometry(kernel, geant4)
 
+    # ----------------------------------------------------------------------------------
     # Configure Run actions
     run1 = DDG4.RunAction(kernel, 'Geant4TestRunAction/RunInit')
     kernel.registerGlobalAction(run1)
