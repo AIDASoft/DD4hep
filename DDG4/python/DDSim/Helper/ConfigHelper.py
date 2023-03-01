@@ -125,7 +125,7 @@ class ConfigHelper(object):
     for name, obj in six.iteritems(vars(ddsim)):
       if isinstance(obj, ConfigHelper):
         for var, optionsDict in six.iteritems(obj.getOptions()):
-          optionsDict['action'] = 'store_true' if var.startswith("enable") else 'store'
+          optionsDict['action'] = 'store_true' if var.startswith("enable") else optionsDict.get('action', 'store')
           parser.add_argument("--%s.%s" % (name, var),
                               dest="%s.%s" % (name, var),
                               **optionsDict
