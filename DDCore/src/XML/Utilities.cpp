@@ -27,6 +27,18 @@ using namespace dd4hep;
 using namespace dd4hep::detail;
 using namespace dd4hep::xml::tools;
 
+namespace {
+  static constexpr const char* TAG_LIMITSETREF     = "limitsetref";
+  static constexpr const char* TAG_REGIONREF       = "regionref";
+  static constexpr const char* TAG_VISREF          = "visref";
+
+  static constexpr const char* TAG_COMBINE_HITS    = "combine_hits";
+  static constexpr const char* TAG_VERBOSE         = "verbose";
+  static constexpr const char* TAG_TYPE            = "type";
+  static constexpr const char* TAG_ECUT            = "ecut";
+  static constexpr const char* TAG_HITS_COLLECTION = "hits_collection";
+}
+
 /// Create layered transformation from xml information
 Transform3D dd4hep::xml::createTransformation(xml::Element e)   {
   int flag = 0;
@@ -230,4 +242,140 @@ void  dd4hep::xml::setDetectorTypeFlag( dd4hep::xml::Handle_t e, dd4hep::DetElem
              "+++ setDetectorTypeFlags encountered an error:\n%s", err.what());
   }
 }
+
+namespace   {
+  template <typename TYPE>
+  std::size_t _propagate(bool      debug,
+			 bool      apply_to_children, 
+			 Volume    vol,
+			 TYPE      item, 
+			 const Volume& (Volume::*apply)(const TYPE&)  const)   {
+    std::size_t count = 0;
+    if ( !vol->IsAssembly() )  {
+      printout(debug ? ALWAYS : DEBUG,"VolumeConfig", "++ Volume: %s apply setting %s", vol.name(), item.name());
+      (vol.*apply)(item);
+      ++count;
+    }
+    if ( apply_to_children )   {
+      std::set<Volume> handled; 
+      for (Int_t idau = 0, ndau = vol->GetNdaughters(); idau < ndau; ++idau)   {
+	Volume v = vol->GetNode(idau)->GetVolume();
+	if ( handled.find(v) == handled.end() )   {
+	  handled.insert(v);
+	  count += _propagate(debug, apply_to_children, v, item, apply);
+	}
+      }
+    }
+    return count;
+  }
+
+}
+
+/// Configure volume properties from XML element
+std::size_t dd4hep::xml::configVolume( dd4hep::Detector&     detector,
+				       dd4hep::xml::Handle_t element,
+				       dd4hep::Volume        vol,
+				       bool                  propagate,
+				       bool                  ignore_unknown)
+{
+  std::size_t count = 0;
+  if ( element )   {
+    xml::Attribute x_dbg = element.attr_nothrow(_U(debug));
+    bool           debug = x_dbg ? element.attr<bool>(x_dbg) : false;
+    PrintLevel     lvl   = debug ? ALWAYS : DEBUG;
+    for( xml_coll_t coll(element, "*"); coll; coll++ )   {
+      xml_dim_t      itm = coll;
+      std::string    nam   = itm.nameStr("UN-NAMED");
+
+      if ( itm.tag() == TAG_REGIONREF )   {
+	Region region = detector.region(nam);
+	count += _propagate(debug, propagate, vol.ptr(), region, &Volume::setRegion);
+	printout(lvl, "VolumeConfig", "++ %-12s: %-10s REGIONs   named '%s'",
+		 vol.name(), region.isValid() ? "Set" : "Invalidate", nam.c_str());
+      }
+      else if ( itm.tag() == TAG_LIMITSETREF )   {
+	LimitSet limitset = detector.limitSet(nam);      
+	count += _propagate(debug, propagate, vol.ptr(), limitset, &Volume::setLimitSet);
+	printout(lvl, "VolumeConfig", "++ %-12s: %-10s LIMITSETs named '%s'",
+		 vol.name(), limitset.isValid() ? "Set" : "Invalidate", nam.c_str());
+      }
+      else if ( itm.tag() == TAG_VISREF )   {
+	VisAttr attrs = detector.visAttributes(nam);
+	count += _propagate(debug, propagate, vol.ptr(), attrs, &Volume::setVisAttributes);
+	printout(lvl, "VolumeConfig", "++ %-12s: %-10s VISATTRs  named '%s'",
+		 vol.name(), attrs.isValid() ? "Set" : "Invalidate", nam.c_str());
+      }
+      else if ( !ignore_unknown )  {
+	except("VolumeConfig", "++ Unknown Volume property: %s [Ignored]", itm.tag().c_str());
+      }
+      else  {
+	printout(DEBUG, "VolumeConfig", "++ Unknown Volume property: %s [Ignored]", itm.tag().c_str());
+      }
+    }
+    return count;
+  }
+  except("VolumeConfig","++ Invalid XML handle to configure DetElement!");
+  return count;
+}
+
+/// Configure sensitive detector from XML element
+std::size_t dd4hep::xml::configSensitiveDetector( dd4hep::Detector&        /* detector */,
+						  dd4hep::SensitiveDetector   sensitive,
+						  dd4hep::xml::Handle_t       element)
+{
+  std::size_t count = 0;
+  if ( sensitive.isValid() && element )    {
+    xml::Attribute x_dbg = element.attr_nothrow(_U(debug));
+    bool           debug = x_dbg ? element.attr<bool>(x_dbg) : false;
+    PrintLevel     lvl   = debug ? ALWAYS : DEBUG;
+
+    for( xml_coll_t coll(element, "*"); coll; coll++ )   {
+      xml_dim_t itm = coll;
+      if ( itm.tag() == TAG_COMBINE_HITS )   {
+	bool value = itm.attr<bool>(_U(value));
+	sensitive.setCombineHits(value);
+	++count;
+	printout(lvl, "SensDetConfig", "++ %s Set property 'combine_hits' to %s",
+		 sensitive.name(), true_false(value));
+      }
+      else if ( itm.tag() == TAG_VERBOSE )   {
+	bool value = itm.attr<bool>(_U(value));
+	sensitive.setVerbose(value);
+	++count;
+	printout(lvl, "SensDetConfig", "++ %s Set property 'verbose' to %s",
+		 sensitive.name(), true_false(value));
+      }
+      else if ( itm.tag() == TAG_TYPE )   {
+	std::string value = itm.valueStr();
+	sensitive.setType(value);
+	++count;
+	printout(lvl, "SensDetConfig", "++ %s Set property 'type' to %s",
+		 sensitive.name(), value.c_str());
+      }
+      else if ( itm.tag() == TAG_ECUT )   {
+	double value = itm.attr<double>(_U(value));
+	sensitive.setEnergyCutoff(value);
+	++count;
+	printout(lvl, "SensDetConfig", "++ %s Set property 'ecut' to %f",
+		 sensitive.name(), value);
+      }
+      else if ( itm.tag() == TAG_HITS_COLLECTION )   {
+	sensitive.setHitsCollection(itm.valueStr());
+	++count;
+	printout(lvl, "SensDetConfig", "++ %s Set property 'hits_collection' to %s",
+		 sensitive.name(), itm.valueStr().c_str());
+      }
+      else   {
+	except("SensDetConfig",
+	       "++ Unknown Sensitive Detector property: %s [Failure]",
+	       itm.tag().c_str());
+      }
+    }
+    return count;
+  }
+  except("SensDetConfig",
+	 "FAILED: No valid sensitive detector. Configuration could not be applied!");
+  return count;
+}
+
 #endif
