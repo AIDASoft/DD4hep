@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+     #  Check issue: https://github.com/AIDASoft/DD4hep/issues/1062
+     #==========================================================================
+-->
+
+  <debug>
+    <type name="includes" value="1"/>
+    <type name="regions"  value="1"/>
+    <type name="limits"   value="1"/>
+  </debug>
+
+  <!-- This here get parsed late, after the sub-detectors are constructed, but before closing -->
+  <includes>
+    <file ref="${DD4hepExamplesINSTALL}/examples/ClientTests/compact/MiniTel.xml"/>
+  </includes>
+
+  <display>
+    <vis name="world_vis" alpha="0.8" r="1.0" g="1.0" b="0.0" showDaughters="true"  visible="true"  drawingStyle="solid" lineStyle="solid"/>
+  </display>
+
+  <limits>
+    <limitset name="world_limits">
+      <limit name="step_length_max"  particles="*" value="5.0" unit="mm"/>
+      <limit name="track_length_max" particles="*" value="1.0" unit="mm"/>
+    </limitset>
+    <limitset name="minitel_limits_extra">
+      <limit name="step_length_max" particles="e[+-]"  value="1.0"  unit="mm"/>
+      <limit name="step_length_max" particles="mu[+-]" value="3.0"  unit="mm"/>
+      <limit name="step_length_max" particles="*"      value="5.0"  unit="mm"/>
+    </limitset>
+  </limits>
+
+  <regions>
+    <region name="world_region" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="world_limits"/>
+    </region>
+    <region name="minitel_region_5" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="minitel_limits_extra"/>
+    </region>
+    <region name="minitel_region_6" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="minitel_limits_extra"/>
+    </region>
+  </regions>
+
+  <!-- FIRST possibily to configure the world object:
+       Use a dedicated xml child of the compact description.
+  -->
+  <world debug="true">
+    <regionref   name="world_region"/>
+    <limitsetref name="world_limits"/>
+    <visref      name="world_vis"/>
+  </world>
+
+
+  <!-- SECOND possibily to configure the world object:
+       Use a plugin to apply the options. This does NOT allow for any other shape
+       than the default box defined by the constants.
+  -->
+  <plugins>
+    <plugin type="config" name="DD4hep_DetElementConfig" path="/world" debug="true">
+      <volume>
+         <regionref   name="world_region"/>
+         <limitsetref name="world_limits"/>
+         <visref      name="world_vis"/>
+      </volume>
+    </plugin>
+  </plugins>
+
+  <!-- Use the same plugin to define any other DetElement entry  -->
+  <plugins>
+    <!-- Example to modify the world volume and assign region settings etc.  -->
+    <plugin type="config" name="DD4hep_DetElementConfig" path="/world/MyLHCBdetector5" propagate="true" debug="true">
+      <volume>
+         <regionref   name="minitel_region_5"/>
+         <limitsetref name="minitel_limits_extra"/>
+      </volume>
+    </plugin>
+
+    <plugin type="config" name="DD4hep_DetElementConfig" path="/world/MyLHCBdetector6" propagate="true">
+      <volume>
+         <regionref   name="minitel_region_6"/>
+         <limitsetref name="minitel_limits_extra"/>
+      </volume>
+    </plugin>
+  </plugins>
+
+  <!-- Example to modify a given sensitive detector and modify properties -->
+  <plugins>
+    <plugin type="config" name="DD4hep_SensitiveDetectorConfig" detector="MyLHCBdetector5" debug="true">
+      <combine_hits    value="true"/>
+      <verbose         value="true"/>
+      <type            value="tracker"/>
+      <ecut            value="5*keV"/>
+      <hits_collection value="hits_collection_5"/>
+    </plugin>
+  </plugins>
+
+</lccdd>
