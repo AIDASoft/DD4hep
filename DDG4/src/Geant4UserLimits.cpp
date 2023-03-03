@@ -17,9 +17,11 @@
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Primitives.h"
+#include "DD4hep/Printout.h"
 
 // Geant 4 include files
 #include "G4Track.hh"
+#include "G4ParticleDefinition.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 // C/C++ include files
@@ -30,32 +32,47 @@ using namespace dd4hep::sim;
 
 /// Access value according to track
 double Geant4UserLimits::Handler::value(const G4Track& track) const    {
+  auto* def = track.GetParticleDefinition();
   if ( !particleLimits.empty() )  {
     auto i = particleLimits.find(track.GetDefinition());
     if ( i != particleLimits.end() )  {
+      dd4hep::printout(dd4hep::INFO,"Geant4UserLimits", "Apply explicit limit %f to track: %s",
+		       def->GetParticleName().c_str());
       return (*i).second;
     }
   }
+  dd4hep::printout(dd4hep::INFO,"Geant4UserLimits", "Apply default limit %f to track: %s",
+		   def->GetParticleName().c_str());
   return defaultValue;
 }
 
 /// Set the handler value(s)
 void Geant4UserLimits::Handler::set(const string& particles, double val)   {
-  if ( particles == "*" )   {
+  if ( particles == "*" || particles == ".(.*)" )   {
     defaultValue = val;
     return;
   }
   auto defs = Geant4ParticleHandle::g4DefinitionsRegEx(particles);
-  for(auto* d : defs)
+  for( auto* d : defs )
     particleLimits[d] = val;
 }
 
 /// Initializing Constructor
-Geant4UserLimits::Geant4UserLimits(LimitSet ls)
-  : G4UserLimits(ls.name()), limits(ls)
+Geant4UserLimits::Geant4UserLimits(LimitSet limitset)
+  : G4UserLimits(limitset.name()), limits(limitset)
 {
-  const auto& lim = limits.limits();
+  this->update(limitset);
   InstanceCount::increment(this);
+}
+
+/// Standard destructor
+Geant4UserLimits::~Geant4UserLimits()  {
+  InstanceCount::decrement(this);
+}
+
+/// Update the object
+void Geant4UserLimits::update(LimitSet limitset)    {
+  const auto& lim = limitset.limits();
   /// Set defaults
   maxStepLength.defaultValue  = fMaxStep;
   maxTrackLength.defaultValue = fMaxTrack;
@@ -77,11 +94,6 @@ Geant4UserLimits::Geant4UserLimits(LimitSet ls)
     else
       throw runtime_error("Unknown Geant4 user limit: " + l.toString());
   }
-}
-
-/// Standard destructor
-Geant4UserLimits::~Geant4UserLimits()  {
-  InstanceCount::decrement(this);
 }
 
 /// Setters may not be called!

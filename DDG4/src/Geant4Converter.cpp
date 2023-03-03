@@ -55,10 +55,11 @@
 #include <G4Isotope.hh>
 #include <G4Material.hh>
 #include <G4UserLimits.hh>
+#include <G4RegionStore.hh>
 #include <G4FieldManager.hh>
 #include <G4LogicalVolume.hh>
-#include <G4ReflectionFactory.hh>
 #include <G4OpticalSurface.hh>
+#include <G4ReflectionFactory.hh>
 #include <G4LogicalSkinSurface.hh>
 #include <G4ElectroMagneticField.hh>
 #include <G4LogicalBorderSurface.hh>
@@ -73,6 +74,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <limits>
 
 namespace units = dd4hep;
 using namespace dd4hep::detail;
@@ -711,70 +713,94 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     return nullptr;
   }
   else if (volIt == info.g4Volumes.end() ) {
-    string      n       = volume->GetName();
-    TGeoMedium* med     = volume->GetMedium();
-    TGeoShape*  sh      = volume->GetShape();
-    G4VSolid*   solid   = (G4VSolid*) handleSolid(sh->GetName(), sh);
-    bool        is_assembly = sh->IsA() == TGeoShapeAssembly::Class() || volume->IsA() == TGeoVolumeAssembly::Class();
+    const char*  vnam = volume->GetName();
+    TGeoMedium*  med  = volume->GetMedium();
+    Solid        sh   = volume->GetShape();
+    bool         is_assembly = sh->IsA() == TGeoShapeAssembly::Class() || volume->IsAssembly();
 
     printout(lvl, "Geant4Converter", "++ Convert Volume %-32s: %p %s/%s assembly:%s",
-             n.c_str(), volume, sh->IsA()->GetName(), volume->IsA()->GetName(), yes_no(is_assembly));
-    
+             vnam, volume, sh.type(), _v.type(), yes_no(is_assembly));
     if ( is_assembly ) {
       return nullptr;
     }
-    Region        reg    = _v.region();
-    LimitSet      lim    = _v.limitSet();
-    VisAttr       vis    = _v.visAttributes();
-    G4Region*     region = reg.isValid() ? info.g4Regions[reg] : nullptr;
-    G4UserLimits* limits = lim.isValid() ? info.g4Limits[lim]  : nullptr;
-    G4Material*   medium = (G4Material*) handleMaterial(med->GetName(), Material(med));
+    Region        reg      = _v.region();
+    LimitSet      lim      = _v.limitSet();
+    VisAttr       vis      = _v.visAttributes();
+    G4Region*     g4region = reg.isValid() ? info.g4Regions[reg] : nullptr;
+    G4UserLimits* g4limits = lim.isValid() ? info.g4Limits[lim]  : nullptr;
+    G4VSolid*     g4solid  = (G4VSolid*)   handleSolid(sh->GetName(), sh);
+    G4Material*   g4medium = (G4Material*) handleMaterial(med->GetName(), Material(med));
     /// Check all pre-conditions
-    if ( !solid )   {
-      except("G4Converter","++ No Geant4 Solid present for volume:" + n);
+    if ( !g4solid )   {
+      except("G4Converter","++ No Geant4 Solid present for volume: %s", vnam);
     }
-    else if ( !medium )   {
-      except("G4Converter","++ No Geant4 material present for volume:" + n);
+    else if ( !g4medium )   {
+      except("G4Converter","++ No Geant4 material present for volume: %s", vnam);
     }
-    else if ( reg.isValid() && !region )  {
-      except("G4Cnv::volume["+name+"]"," ++ Failed to access Geant4 region %s.",reg.name());
+    else if ( reg.isValid() && !g4region )  {
+      except("G4Cnv::volume["+name+"]"," ++ Failed to access Geant4 region %s.", reg.name());
     }
-    else if ( lim.isValid() && !limits )  {
-      except("G4Cnv::volume["+name+"]","++ FATAL Failed to access Geant4 user limits %s.",lim.name());
+    else if ( lim.isValid() && !g4limits )  {
+      except("G4Cnv::volume["+name+"]","++ FATAL Failed to access Geant4 user limits %s.", lim.name());
     }
-    else if ( limits )   {
-      printout(lvl, "Geant4Converter", "++ Volume     + Apply LIMITS settings:%-24s to volume %s.",
-               lim.name(), _v.name());
+    else if ( g4limits )   {
+      printout(lvl, "Geant4Converter", "++ Volume     + Apply LIMITS settings: %-24s to volume %s.",
+               lim.name(), vnam);
     }
 
     G4LogicalVolume* g4vol = nullptr;
     if ( _v.hasProperties() && !_v.getProperty(GEANT4_TAG_PLUGIN,"").empty() )   {
       Detector* det = const_cast<Detector*>(&m_detDesc); 
       string plugin = _v.getProperty(GEANT4_TAG_PLUGIN,"");
-      g4vol = PluginService::Create<G4LogicalVolume*>(plugin, det, _v, solid, medium);
+      g4vol = PluginService::Create<G4LogicalVolume*>(plugin, det, _v, g4solid, g4medium);
       if ( !g4vol )    {
 	except("G4Cnv::volume["+name+"]","++ FATAL Failed to call plugin to create logical volume.");
       }
     }
     else  {
-      g4vol = new G4LogicalVolume(solid, medium, n, nullptr, nullptr, nullptr);
+      g4vol = new G4LogicalVolume(g4solid, g4medium, vnam, nullptr, nullptr, nullptr);
     }
 
-    if ( limits )   {
-      g4vol->SetUserLimits(limits);
+    if ( g4limits )   {
+      g4vol->SetUserLimits(g4limits);
     }
-    if ( region )   {
-      printout(lvl, "Geant4Converter", "++ Volume     + Apply REGION settings: %s to volume %s.",
-               reg.name(), _v.name());
-      g4vol->SetRegion(region);
-      region->AddRootLogicalVolume(g4vol);
+    if ( g4region )   {
+      PrintLevel plevel = (debugVolumes||debugRegions||debugLimits) ? ALWAYS : outputLevel;
+      printout(plevel, "Geant4Converter", "++ Volume     + Apply REGION settings: %-24s to volume %s.",
+	       reg.name(), vnam);
+      // Handle the region settings for the world volume seperately.
+      // Geant4 does NOT WANT any regions assigned to the workd volume.
+      // The world's region is created in the G4RunManagerKernel!
+      if ( _v == m_detDesc.worldVolume() )   {
+	const char* wrd_nam = "DefaultRegionForTheWorld";
+	const char* src_nam = g4region->GetName().c_str();
+	auto* world_region  = G4RegionStore::GetInstance()->GetRegion(wrd_nam, false);
+	if ( auto* cuts = g4region->GetProductionCuts() )   {
+	  world_region->SetProductionCuts(cuts);
+	  printout(plevel, "Geant4Converter",
+		   "++ Volume %s Region: %s. Apply production cuts from %s", 
+		   vnam, wrd_nam, src_nam);
+	}
+	if ( auto* lims = g4region->GetUserLimits() )   {
+	  world_region->SetUserLimits(lims);
+	  printout(plevel, "Geant4Converter",
+		   "++ Volume %s Region: %s. Apply user limits from %s", 
+		   vnam, wrd_nam, src_nam);
+	}
+      }
+      else   {
+	g4vol->SetRegion(g4region);
+	g4region->AddRootLogicalVolume(g4vol);
+      }
     }
-    G4VisAttributes* vattr = vis.isValid() ? (G4VisAttributes*)handleVis(vis.name(), vis) : nullptr;
-    if ( vattr )   {
-      g4vol->SetVisAttributes(vattr);
+    G4VisAttributes* g4vattr = vis.isValid()
+      ? (G4VisAttributes*)handleVis(vis.name(), vis) : nullptr;
+    if ( g4vattr )   {
+      g4vol->SetVisAttributes(g4vattr);
     }
     info.g4Volumes[volume] = g4vol;
-    printout(lvl, "Geant4Converter", "++ Volume     + %s converted: %p ---> G4: %p", n.c_str(), volume, g4vol);
+    printout(lvl, "Geant4Converter",
+	     "++ Volume     + %s converted: %p ---> G4: %p", vnam, volume, g4vol);
   }
   return nullptr;
 }
@@ -786,13 +812,16 @@ void* Geant4Converter::collectVolume(const string& /* name */, const TGeoVolume*
   Region              reg = _v.region();
   LimitSet            lim = _v.limitSet();
   SensitiveDetector   det = _v.sensitiveDetector();
+  bool              world = (volume == m_detDesc.worldVolume().ptr());
 
-  if ( lim.isValid() )
-    info.limits[lim].insert(volume);
-  if ( reg.isValid() )
-    info.regions[reg].insert(volume);
-  if ( det.isValid() )
-    info.sensitives[det].insert(volume);
+  if ( !world )   {
+    if ( lim.isValid() )
+      info.limits[lim].insert(volume);
+    if ( reg.isValid() )
+      info.regions[reg].insert(volume);
+    if ( det.isValid() )
+      info.sensitives[det].insert(volume);
+  }
   return (void*)volume;
 }
 
@@ -1043,8 +1072,8 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
   G4Region* g4 = data().g4Regions[region];
   if ( !g4 ) {
     PrintLevel lvl = debugRegions ? ALWAYS : outputLevel;
-    Region     r   = region;
-    g4 = new G4Region(r.name());
+    Region r = region;
+    g4 = new G4Region(region.name());
 
     // create region info with storeSecondaries flag
     if( not r.wasThresholdSet() and r.storeSecondaries() ) {
@@ -1065,49 +1094,49 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
       cuts = new G4ProductionCuts();
       cuts->SetProductionCut(r.cut()*CLHEP::mm/units::mm);
       printout(lvl, "Geant4Converter", "++ %s: Using default cut: %f [mm]",
-               r.name(), r.cut()*CLHEP::mm/units::mm);
+	       r.name(), r.cut()*CLHEP::mm/units::mm);
     }
     for( const auto& nam : limits )  {
       LimitSet ls = m_detDesc.limitSet(nam);
-      if (ls.isValid()) {
-        const LimitSet::Set& cts = ls.cuts();
-        for (const auto& c : cts )   {
-          int pid = 0;
-          if ( c.particles == "*" ) pid = -1;
-          else if ( c.particles == "e-"     ) pid = idxG4ElectronCut;
-          else if ( c.particles == "e+"     ) pid = idxG4PositronCut;
-          else if ( c.particles == "e[+-]"  ) pid = -idxG4PositronCut-idxG4ElectronCut;
-          else if ( c.particles == "e[-+]"  ) pid = -idxG4PositronCut-idxG4ElectronCut;
-          else if ( c.particles == "gamma"  ) pid = idxG4GammaCut;
-          else if ( c.particles == "proton" ) pid = idxG4ProtonCut;
-          else throw runtime_error("G4Region: Invalid production cut particle-type:" + c.particles);
-          if ( !cuts ) cuts = new G4ProductionCuts();
-          if ( pid == -(idxG4PositronCut+idxG4ElectronCut) )  {
-            cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, idxG4PositronCut);
-            cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, idxG4ElectronCut);
-          }
-          else  {
-            cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, pid);
-          }
-          printout(lvl, "Geant4Converter", "++ %s: Set cut  [%s/%d] = %f [mm]",
-                   r.name(), c.particles.c_str(), pid, c.value*CLHEP::mm/units::mm);
-        }
-        bool found = false;
-        const auto& lm = data().g4Limits;
-        for (const auto& j : lm )   {
-          if (nam == j.first->GetName()) {
-            g4->SetUserLimits(j.second);
-            printout(lvl, "Geant4Converter", "++ %s: Set limits %s to region type %s",
-                     r.name(), nam.c_str(), j.second->GetType().c_str());
-            found = true;
-            break;
-          }
-        }
-        if ( found )   {
-          continue;
-        }
+      if ( ls.isValid() ) {
+	const LimitSet::Set& cts = ls.cuts();
+	for (const auto& c : cts )   {
+	  int pid = 0;
+	  if ( c.particles == "*" ) pid = -1;
+	  else if ( c.particles == "e-"     ) pid = idxG4ElectronCut;
+	  else if ( c.particles == "e+"     ) pid = idxG4PositronCut;
+	  else if ( c.particles == "e[+-]"  ) pid = -idxG4PositronCut-idxG4ElectronCut;
+	  else if ( c.particles == "e[-+]"  ) pid = -idxG4PositronCut-idxG4ElectronCut;
+	  else if ( c.particles == "gamma"  ) pid = idxG4GammaCut;
+	  else if ( c.particles == "proton" ) pid = idxG4ProtonCut;
+	  else throw runtime_error("G4Region: Invalid production cut particle-type:" + c.particles);
+	  if ( !cuts ) cuts = new G4ProductionCuts();
+	  if ( pid == -(idxG4PositronCut+idxG4ElectronCut) )  {
+	    cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, idxG4PositronCut);
+	    cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, idxG4ElectronCut);
+	  }
+	  else  {
+	    cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, pid);
+	  }
+	  printout(lvl, "Geant4Converter", "++ %s: Set cut  [%s/%d] = %f [mm]",
+		   r.name(), c.particles.c_str(), pid, c.value*CLHEP::mm/units::mm);
+	}
+	bool found = false;
+	const auto& lm = data().g4Limits;
+	for (const auto& j : lm )   {
+	  if (nam == j.first->GetName()) {
+	    g4->SetUserLimits(j.second);
+	    printout(lvl, "Geant4Converter", "++ %s: Set limits %s to region type %s",
+		     r.name(), nam.c_str(), j.second->GetType().c_str());
+	    found = true;
+	    break;
+	  }
+	}
+	if ( found )   {
+	  continue;
+	}
       }
-      throw runtime_error("G4Region: Failed to resolve user limitset:" + nam);
+      except("Geant4Converter", "++ G4Region: Failed to resolve limitset: " + nam);
     }
     /// Assign cuts to region if they were created
     if ( cuts ) g4->SetProductionCuts(cuts);
@@ -1120,27 +1149,32 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
 void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVolume*>& /* volumes */) const {
   G4UserLimits* g4 = data().g4Limits[limitset];
   if ( !g4 ) {
+    PrintLevel lvl = debugLimits || debugRegions ? ALWAYS : outputLevel;
     struct LimitPrint  {
       const LimitSet& ls;
       LimitPrint(const LimitSet& lset) : ls(lset) {}
       const LimitPrint& operator()(const std::string& pref, const Geant4UserLimits::Handler& h)  const {
         if ( !h.particleLimits.empty() )  {
           printout(ALWAYS,"Geant4Converter",
-                   "+++ LimitSet: Limit %s.%s applied for particles:",ls.name(), pref.c_str());
+                   "+++ LimitSet: Explicit Limit %s.%s applied for particles:",ls.name(), pref.c_str());
           for(const auto& p : h.particleLimits)
             printout(ALWAYS,"Geant4Converter","+++ LimitSet:    Particle type: %-18s PDG: %-6d : %f",
                      p.first->GetParticleName().c_str(), p.first->GetPDGEncoding(), p.second);
         }
-        else  {
+        else if ( h.defaultValue > std::numeric_limits<double>::epsilon() )  {
           printout(ALWAYS,"Geant4Converter",
-                   "+++ LimitSet: Limit %s.%s NOT APPLIED.",ls.name(), pref.c_str());
+                   "+++ LimitSet: Implicit Limit %s.%s for wildcard particles: %f",
+		   ls.name(), pref.c_str(), float(h.defaultValue));
         }
         return *this;
       }
     };
     Geant4UserLimits* limits = new Geant4UserLimits(limitset);
     g4 = limits;
-    if ( debugRegions )    {
+    printout(lvl, "Geant4Converter",
+             "++ Successfully converted LimitSet: %s [%ld cuts, %ld limits]",
+	     limitset.name(), limitset.cuts().size(), limitset.limits().size());
+    if ( debugRegions || debugLimits )    {
       LimitPrint print(limitset);
       print("maxTime",    limits->maxTime)
         ("minEKine",      limits->minEKine)
