@@ -48,6 +48,8 @@ namespace dd4hep {
       bool m_debugReflections       = false;
       /// Property: Flag to debug regions during conversion mechanism
       bool m_debugRegions           = false;
+      /// Property: Flag to debug limit sets during conversion mechanism
+      bool m_debugLimits            = false;
       /// Property: Flag to debug regions during conversion mechanism
       bool m_debugSurfaces          = false;
 
@@ -140,6 +142,7 @@ Geant4DetectorGeometryConstruction::Geant4DetectorGeometryConstruction(Geant4Con
   declareProperty("DebugPlacements",   m_debugPlacements);
   declareProperty("DebugReflections",  m_debugReflections);
   declareProperty("DebugRegions",      m_debugRegions);
+  declareProperty("DebugLimits",       m_debugLimits);
   declareProperty("DebugSurfaces",     m_debugSurfaces);
 
   declareProperty("PrintPlacements",   m_printPlacements);
