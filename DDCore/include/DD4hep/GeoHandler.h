@@ -48,17 +48,6 @@ namespace dd4hep {
      */
     class GeoHandlerTypes {
     public:
-#if 0
-      typedef std::set<const TGeoVolume*> ConstVolumeSet;
-      typedef std::map<SensitiveDetector, ConstVolumeSet> SensitiveVolumes;
-      typedef std::map<Region,   ConstVolumeSet>          RegionVolumes;
-      typedef std::map<LimitSet, ConstVolumeSet>          LimitVolumes;
-      typedef std::map<int, std::set<const TGeoNode*> >   Data;
-      typedef std::set<SensitiveDetector>                 SensitiveDetectorSet;
-      typedef std::set<Region>                            RegionSet;
-      typedef std::set<LimitSet>                          LimitSetSet;
-      typedef std::set<TNamed*>                           ObjectSet;
-#endif
       /// Data container to store information obtained during the geometry scan
       /**
        *  \author  M.Frank
@@ -101,6 +90,8 @@ namespace dd4hep {
       GeoHandler& i_collect(const TGeoNode* parent,
 			    const TGeoNode* node,
 			    int level, Region rg, LimitSet ls);
+      /// Assemble summary of the current node
+      void i_collect_node(const TGeoNode* node, GeometryInfo& info);
 
     private:
       /// Never call Copy constructor

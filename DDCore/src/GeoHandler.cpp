@@ -87,39 +87,48 @@ GeoHandler& GeoHandler::collect(DetElement element) {
   return i_collect(par_node, element.placement().ptr(), 0, Region(), LimitSet());
 }
 
+/// Assemble summary of the current node
+void GeoHandler::i_collect_node(const TGeoNode* n, GeometryInfo& info)   {
+  TGeoVolume* v = n->GetVolume();
+  if (v) {
+    Material mat(v->GetMedium());
+    Volume   vol(v);
+    // Note : assemblies and the world do not have a real volume nor a material
+    if (info.volumeSet.find(vol) == info.volumeSet.end()) {
+      info.volumeSet.emplace(vol);
+      info.volumes.emplace_back(vol);
+    }
+    if ( mat.isValid() )
+      info.materials.emplace(mat);
+    if (dynamic_cast<Volume::Object*>(v)) {
+      VisAttr vis = vol.visAttributes();
+      //Region      reg = vol.region();
+      //LimitSet    lim = vol.limitSet();
+      //SensitiveDetector det = vol.sensitiveDetector();
+
+      if (vis.isValid())
+	info.vis.emplace(vis);
+      //if ( lim.isValid() ) info.limits[lim.ptr()].emplace(v);
+      //if ( reg.isValid() ) info.regions[reg.ptr()].emplace(v);
+      //if ( det.isValid() ) info.sensitives[det.ptr()].emplace(v);
+    }
+    collectSolid(info, v->GetName(), n->GetName(), v->GetShape(), n->GetMatrix());
+  }
+}
+
 GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
-  DetElement par = element.parent();
+
+  DetElement     par = element.parent();
+  TGeoNode*    place = element.placement().ptr();
   TGeoNode* par_node = par.isValid() ? par.placement().ptr() : nullptr;
+
   m_data->clear();
-  i_collect(par_node, element.placement().ptr(), 0, Region(), LimitSet());
+  i_collect_node(place, info);
+  i_collect(par_node, place, 0, Region(), LimitSet());
   for (auto i = m_data->rbegin(); i != m_data->rend(); ++i) {
     const auto& mapped = (*i).second;
     for (const TGeoNode* n : mapped )  {
-      TGeoVolume* v = n->GetVolume();
-      if (v) {
-        Material mat(v->GetMedium());
-        Volume   vol(v);
-        // Note : assemblies and the world do not have a real volume nor a material
-        if (info.volumeSet.find(vol) == info.volumeSet.end()) {
-          info.volumeSet.emplace(vol);
-          info.volumes.emplace_back(vol);
-        }
-        if ( mat.isValid() )
-          info.materials.emplace(mat);
-        if (dynamic_cast<Volume::Object*>(v)) {
-          VisAttr vis = vol.visAttributes();
-          //Region      reg = vol.region();
-          //LimitSet    lim = vol.limitSet();
-          //SensitiveDetector det = vol.sensitiveDetector();
-
-          if (vis.isValid())
-            info.vis.emplace(vis);
-          //if ( lim.isValid() ) info.limits[lim.ptr()].emplace(v);
-          //if ( reg.isValid() ) info.regions[reg.ptr()].emplace(v);
-          //if ( det.isValid() ) info.sensitives[det.ptr()].emplace(v);
-        }
-        collectSolid(info, v->GetName(), n->GetName(), v->GetShape(), n->GetMatrix());
-      }
+      i_collect_node(n, info);
     }
   }
   return *this;

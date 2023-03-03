@@ -317,6 +317,11 @@ namespace {
     template <> long XMLDocumentReaderFactory<xml_document_##name>::create(dd4hep::Detector& l,ns::xml_h e) {return func(l,e);} \
     DD4HEP_PLUGINSVC_FACTORY(xml_document_##name,name##_XML_reader,long(dd4hep::Detector*,ns::xml_h*),__LINE__)  }
 
+// Call function of the type [long (*func)(dd4hep::Detector& description, xml_h handle)]
+#define DECLARE_XML_PLUGIN(name,func)  DD4HEP_OPEN_PLUGIN(dd4hep,xml_document_##name)  { \
+    template <> long XMLDocumentReaderFactory<xml_document_##name>::create(dd4hep::Detector& l,ns::xml_h e) {return func(l,e);} \
+    DD4HEP_PLUGINSVC_FACTORY(xml_document_##name,name,long(dd4hep::Detector*,ns::xml_h*),__LINE__)  }
+
 // Call function of the type [NamedObject* (*func)(dd4hep::Detector& description, xml_h handle, ref_t reference)]
 #define DECLARE_XML_PROCESSOR_BASIC(name,func,deprecated)  DD4HEP_OPEN_PLUGIN(dd4hep,det_element_##name) {\
     template <> Ref_t XmlDetElementFactory< det_element_##name >::create(dd4hep::Detector& l,ns::xml_h e,ns::ref_t h) \
