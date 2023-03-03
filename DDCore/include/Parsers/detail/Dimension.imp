@@ -240,20 +240,26 @@ XML_CHILD_ACCESSOR_XML_DIM(beampipe)
 XML_CHILD_ACCESSOR_XML_DIM(shape)
 XML_CHILD_ACCESSOR_XML_DIM(solid)
 
-std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::padType() const {
-  return m_element.attr < std::string > (_U(pads));
-}
-
+/// Access "name" attribute as STL std::string
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::nameStr() const {
   return m_element.attr < std::string > (_U(name));
 }
 
-std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::refStr() const {
-  return m_element.attr < std::string > (_U(ref));
+/// Access "name" attribute as STL std::string. Return default value if not present
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::nameStr(const std::string& default_value) const {
+  Attribute attr = m_element.attr_nothrow(_U(name));
+  return attr ? m_element.attr < std::string >(attr) : default_value;
 }
 
+/// Access "type" attribute as STL std::string
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::typeStr() const {
   return m_element.attr < std::string > (_U(type));
+}
+
+/// Access "type" attribute as STL std::string. Return default value if not present
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::typeStr(const std::string& default_value) const {
+  Attribute attr = m_element.attr_nothrow(_U(type));
+  return attr ? m_element.attr < std::string >(attr) : default_value;
 }
 
 /// Access "value" attribute as STL std::string
@@ -261,14 +267,42 @@ std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::valueStr() const   {
   return m_element.attr < std::string > (_U(value));
 }
 
+/// Access "value" attribute as STL std::string. Return default value if not present
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::valueStr(const std::string& default_value) const   {
+  Attribute attr = m_element.attr_nothrow(_U(value));
+  return attr ? m_element.attr < std::string >(attr) : default_value;
+}
+
 /// Access "label" attribute as STL std::string
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::labelStr() const   {
   return m_element.attr < std::string > (_U(label));
 }
 
+/// Access "label" attribute as STL std::string. Return default value if not present
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::labelStr(const std::string& default_value) const   {
+  Attribute attr = m_element.attr_nothrow(_U(label));
+  return attr ? m_element.attr < std::string >(attr) : default_value;
+}
+
 /// Access "symbol" attribute as STL std::string
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::symbolStr() const   {
   return m_element.attr < std::string > (_U(symbol));
+}
+
+/// Access "symbol" attribute as STL std::string. Return default value if not present
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::symbolStr(const std::string& default_value) const   {
+  Attribute attr = m_element.attr_nothrow(_U(symbol));
+  return attr ? m_element.attr < std::string >(attr) : default_value;
+}
+
+/// Access "padType" attribute as STL std::string
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::padType() const {
+  return m_element.attr < std::string > (_U(pads));
+}
+
+/// Access "ref" attribute as STL std::string
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::refStr() const {
+  return m_element.attr < std::string > (_U(ref));
 }
 
 /// Access "region" attribute as STL std::string. If not present returns empty string.

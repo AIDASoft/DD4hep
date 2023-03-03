@@ -724,16 +724,26 @@ namespace dd4hep {
 
       /// Access "name" attribute as STL string
       std::string nameStr() const;
-      /// Access "ref" attribute as a string
-      std::string refStr() const;
+      /// Access "name" attribute as STL string. Return default value if not present
+      std::string nameStr(const std::string& default_value) const;
       /// Access "type" attribute as STL string
       std::string typeStr() const;
+      /// Access "type" attribute as STL string. Return default value if not present
+      std::string typeStr(const std::string& default_value) const;
       /// Access "value" attribute as STL string
       std::string valueStr() const;
+      /// Access "value" attribute as STL string. Return default value if not present
+      std::string valueStr(const std::string& default_value) const;
       /// Access "label" attribute as STL string
       std::string labelStr() const;
+      /// Access "label" attribute as STL string. Return default value if not present
+      std::string labelStr(const std::string& default_value) const;
       /// Access "symbol" attribute as STL string
       std::string symbolStr() const;
+      /// Access "symbol" attribute as STL string. Return default value if not present
+      std::string symbolStr(const std::string& default_value) const;
+      /// Access "ref" attribute as a string
+      std::string refStr() const;
       /// Access "module" attribute as STL string
       std::string moduleStr() const;
       /// Access "readout" attribute as STL string
