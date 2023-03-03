@@ -9,7 +9,6 @@
 #
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
-import sys
 import DDG4
 #
 """
@@ -41,7 +40,7 @@ def run():
     seq, act = m.geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
     act.DebugVolumes = True
     act.DebugRegions = True
-    act.DebugLimits  = True
+    act.DebugLimits = True
     seq, act = m.geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
 
   m.ui.Commands = cmds
