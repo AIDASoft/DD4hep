@@ -58,9 +58,14 @@ namespace dd4hep {
      */
     class ObjectHandleMap: public Detector::HandleMap {
     public:
+      /// Name the map
+      std::string name;
+    public:
       /// Default constructor
-      ObjectHandleMap() {
-      }
+      ObjectHandleMap() = default;
+      /// Initializing constructor
+      ObjectHandleMap(const std::string& name);
+      /// Append entry to map
       void append(const Handle<NamedObject>& e, bool throw_on_doubles = true) {
         if (e.isValid()) {
           std::string n = e.name();
@@ -77,7 +82,7 @@ namespace dd4hep {
         }
         throw InvalidObjectError("Attempt to add an invalid object.");
       }
-
+      /// Append entry to map
       template <typename T> void append(const Handle<NamedObject>& e, bool throw_on_doubles = true) {
         T* obj = dynamic_cast<T*>(e.ptr());
         if (obj) {
@@ -145,6 +150,8 @@ namespace dd4hep {
     DetectorData();
     /// Default destructor
     virtual ~DetectorData();
+    /// Move constructor
+    DetectorData(DetectorData&& copy) = delete;
     /// Copy constructor
     DetectorData(const DetectorData& copy) = delete;
     /// Assignment operator
@@ -206,5 +213,10 @@ namespace dd4hep {
     const Detector::HandleMap& idSpecifications() const   {    return m_idDict;           }
   };
 
+  /// Initializing constructor
+  inline DetectorData::ObjectHandleMap::ObjectHandleMap(const std::string& nam)
+    : name(nam)
+  {
+  }
 }         /* End namespace dd4hep         */
 #endif // DD4HEP_DETECTORDATA_H
