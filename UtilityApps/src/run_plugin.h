@@ -223,7 +223,7 @@ namespace {
 	result = run_plugin(description, name, a.first, a.second);
 	return result;
       }
-      std::cout << "WARNING: No plugin name supplied. "
+      std::cout << "WARNING: run_plugin: No plugin name supplied. "
 		<< "Implicitly assuming execution steered by XML." << std::endl;
       return ENOENT;
     }
