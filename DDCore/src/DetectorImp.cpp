@@ -636,12 +636,21 @@ Handle<NamedObject> DetectorImp::getRefChild(const HandleMap& e, const string& n
     return (*i).second;
   }
   if (do_throw) {
+    union ptr {
+      const ObjectHandleMap* omap;
+      const char* c;
+      const void* other;
+      ptr(const void* p) { other = p; }
+    };
     int cnt = 0;
-    cout << "GetRefChild: Failed to find child with name: " << name
-         << " Map contains " << e.size() << " elements." << endl;
+    std::string nam = "";
+    ptr m(&e), ref(this);
+    if ( ref.c > m.c && m.c < ref.c+sizeof(*this) ) nam = m.omap->name;
+    cout << "GetRefChild: Failed to find child with name: '" << name
+	 << "'. Map " << nam << " contains " << e.size() << " elements." << endl;
     for(i=e.begin(); i!=e.end(); ++i)
       cout << "   " << cnt << "  " << (*i).first << endl;
-    throw runtime_error("Cannot find a child with the reference name:" + name);
+    throw runtime_error(nam+": Cannot find a child with the reference name:" + name);
   }
   return 0;
 }
