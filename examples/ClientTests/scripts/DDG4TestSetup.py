@@ -75,11 +75,14 @@ class Setup:
     part.enableUI()
     return part
 
-  def setupPhysics(self, model='QGSP_BERT'):
+  def setupPhysics(self, model='QGSP_BERT', dump=False):
     # Now build the physics list:
     self.phys = self.kernel.physicsList()
     self.phys.extends = model
+    self.phys.decays = True
     self.phys.enableUI()
+    if dump:
+      self.phys.dump()
     return self
 
   def run(self, num_events=None):
