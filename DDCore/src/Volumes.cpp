@@ -436,6 +436,11 @@ PlacedVolume::Object* PlacedVolume::data() const   {
   return o;
 }
 
+/// Access the object type from the class information
+const char* PlacedVolume::type() const   {
+  return m_element ? m_element->IsA()->GetName() : "UNKNOWN-PlacedVolume";
+}
+
 /// Access the copy number of this placement within its mother
 int PlacedVolume::copyNumber() const   {
   return m_element ? m_element->GetNumber() : -1;
@@ -454,6 +459,24 @@ Volume PlacedVolume::volume() const {
 /// Parent volume (envelope)
 Volume PlacedVolume::motherVol() const {
   return Volume(m_element ? m_element->GetMotherVolume() : 0);
+}
+
+/// Number of daughters placed in this volume
+std::size_t PlacedVolume::num_daughters()  const   {
+  return m_element ? m_element->GetNdaughters() : 0;
+}
+
+/// Access the daughter by index
+PlacedVolume PlacedVolume::daughter(std::size_t which)  const   {
+  if ( m_element )  {
+    if ( which < (std::size_t)m_element->GetNdaughters() )   {
+      return m_element->GetDaughter(which);
+    }
+    except("Volume","+++ Access daughter %ld of %s [Has only %d daughters]",
+	   which, m_element->GetName(), m_element->GetNdaughters());
+  }
+  except("Volume","+++ Cannot access daughters of a non-existing volume!");
+  return nullptr;
 }
 
 /// Access to the volume IDs
@@ -621,6 +644,11 @@ void Volume::enableCopyNumberCheck(bool value)    {
 Volume::Object* Volume::data() const   {
   Volume::Object* o = _userExtension(*this);
   return o;
+}
+
+/// Access the object type from the class information
+const char* Volume::type() const   {
+  return m_element ? m_element->IsA()->GetName() : "UNKNOWN-Volume";
 }
 
 /// Create a reflected volume tree. The reflected volume has left-handed coordinates

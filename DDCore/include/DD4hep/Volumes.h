@@ -264,6 +264,8 @@ namespace dd4hep {
 
     /// Check if placement is properly instrumented
     Object* data() const;
+    /// Access the object type from the class information
+    const char* type() const;
     /// Access the copy number of this placement within its mother
     int copyNumber() const;
     /// Volume material
@@ -272,6 +274,10 @@ namespace dd4hep {
     Volume volume() const;
     /// Parent volume (envelope)
     Volume motherVol() const;
+    /// Number of daughters placed in this volume
+    std::size_t num_daughters()  const;
+    /// Access the daughter by index
+    PlacedVolume daughter(std::size_t which)  const;
     /// Access the full transformation matrix to the parent volume
     const TGeoMatrix& matrix()  const;
     /// Access the translation vector to the parent volume
@@ -426,6 +432,9 @@ namespace dd4hep {
     
     /// Check if placement is properly instrumented
     Object* data() const;
+
+    /// Access the object type from the class information
+    const char* type() const;
 
     /// Create a reflected volume tree. The reflected volume has left-handed coordinates
     Volume reflect()  const;
@@ -634,7 +643,7 @@ namespace dd4hep {
     
     /// Test if this volume is an assembly structure
     bool isAssembly()   const;
-    
+
     /// Set the volume's option value
     const Volume& setOption(const std::string& opt) const;
     /// Access the volume's option value
