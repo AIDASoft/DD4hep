@@ -565,6 +565,11 @@ namespace dd4hep {
       return _toString(attr_value(tag_value));
     }
 
+    template <> INLINE Attribute Handle_t::attr<Attribute>(const XmlChar* tag_value, Attribute default_value) const {
+      Attribute a = attr_nothrow(tag_value);
+      return a ? a : default_value;
+    }
+
     template <> INLINE bool Handle_t::attr<bool>(const XmlChar* tag_value, bool default_value) const {
       Attribute a = attr_nothrow(tag_value);
       return a ? _toBool(attr_value(a)) : default_value;

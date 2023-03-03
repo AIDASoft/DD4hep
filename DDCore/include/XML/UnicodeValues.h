@@ -380,6 +380,7 @@ UNICODE (positionRPhiZ);
 UNICODE (pressure);
 UNICODE (projective_cylinder);
 UNICODE (projective_zplane);
+UNICODE (propagate);
 UNICODE (property);
 UNICODE (properties);
 UNICODE (psi);
