@@ -323,15 +323,15 @@ template <> void Converter<Debug>::operator()(xml_h e) const {
  */
 template <> void Converter<Plugin>::operator()(xml_h e) const {
   xml_comp_t plugin(e);
-  vector<char*> argv;
-  vector<string> arguments;
   string name = plugin.nameStr();
   string type = "default";
-  xml_attr_t typ_attr = e.attr_nothrow(_U(type));
-  if ( typ_attr )   {
-    type = e.attr<string>(_U(type));
+
+  if ( xml_attr_t typ_attr = e.attr_nothrow(_U(type)) )   {
+    type = e.attr<string>(typ_attr);
   }
   if ( type == "default" )  {
+    vector<char*> argv;
+    vector<string> arguments;
     for (xml_coll_t coll(e, _U(arg)); coll; ++coll) {
       string val = coll.attr<string>(_U(value));
       arguments.emplace_back(val);
@@ -1151,6 +1151,10 @@ template <> void Converter<LimitSet>::operator()(xml_h e) const {
     limit.unit      = c.attr<string>(_U(unit));
     limit.value     = _multiply<double>(limit.content, limit.unit);
     ls.addLimit(limit);
+    printout(s_debug.limits ? ALWAYS : DEBUG, "Compact",
+	     "++ %s: add %-6s: [%s] = %s [%s] = %f",
+	     ls.name(), limit.name.c_str(), limit.particles.c_str(),
+	     limit.content.c_str(), limit.unit.c_str(), limit.value);
   }
   limit.name      = "cut";
   for (xml_coll_t c(e, _U(cut)); c; ++c) {
@@ -1159,6 +1163,10 @@ template <> void Converter<LimitSet>::operator()(xml_h e) const {
     limit.unit      = c.attr<string>(_U(unit));
     limit.value     = _multiply<double>(limit.content, limit.unit);
     ls.addCut(limit);
+    printout(s_debug.limits ? ALWAYS : DEBUG, "Compact",
+	     "++ %s: add %-6s: [%s] = %s [%s] = %f",
+	     ls.name(), limit.name.c_str(), limit.particles.c_str(),
+	     limit.content.c_str(), limit.unit.c_str(), limit.value);
   }
   description.addLimitSet(ls);
 }
@@ -1447,20 +1455,37 @@ template <> void Converter<XMLFile>::operator()(xml_h element) const {
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<World>::operator()(xml_h element) const {
-  xml_det_t  world(element);
-  xml_comp_t shape = world.child(_U(shape));
-  VisAttr    vis = description.visAttributes("WorldVis");
-  Material   mat = world.hasAttr(_U(material))
-    ? description.material(world.attr<string>(_U(material))) : description.air();
+  xml_elt_t  x_world(element);
+  xml_comp_t x_shape = x_world.child(_U(shape), false);
+  Volume world_vol;
 
-  if ( !vis.isValid() ) vis = description.invisible();
   /// Create the shape and the corresponding volume
-  Solid    sol(shape.createShape());
-  Volume   vol("world_volume", sol, mat);
-  vol.setVisAttributes(vis);
-  description.manager().SetTopVolume(vol.ptr());
-  printout(INFO, "Compact", "++ Converted successfully world %s. vis:%s material:%s.",
-           vol.name(), vis.name(), mat.name());
+  if ( x_shape )   {
+    Solid      sol(x_shape.createShape());
+    xml_attr_t att = x_world.getAttr(_U(material));
+    Material   mat = att ? description.material(x_world.attr<string>(att)) : description.air();
+    world_vol = Volume("world_volume", sol, mat);
+    printout(INFO, "Compact",
+	     "++ Created successfully world volume %s. shape: %s material:%s.",
+	     world_vol.name(), sol.type(), mat.name());
+    description.manager().SetTopVolume(world_vol.ptr());
+  }
+  else   {
+    world_vol = description.worldVolume();
+    if ( !world_vol )   {
+      except("Compact", "++ Logical error: "
+	     "You cannot configure the world volume before it is created.");
+    }
+  }
+  // Delegate further configuration o0f the world volume to the xml utilities:
+  if ( world_vol.isValid() )   {
+    xml::configVolume(description, x_world, world_vol, false, true);
+    auto vis = world_vol.visAttributes();
+    if ( !vis.isValid() )  {
+      vis = description.visAttributes("WorldVis");
+      world_vol.setVisAttributes(vis);
+    }
+  }
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
@@ -1575,6 +1600,8 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   bool close_document = true;
   bool close_geometry = true;
   bool build_reflections = false;
+  xml_dim_t world = element.child(_U(world), false);
+
 
   if (element.hasChild(_U(debug)))
     (Converter<Debug>(description))(xml_h(compact.child(_U(debug))));
@@ -1638,20 +1665,22 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(materials)).for_each(_U(material), Converter<Material>(description));
   xml_coll_t(compact, _U(materials)).for_each(_U(plugin),   Converter<Plugin> (description));
   
-  xml_coll_t(compact, _U(display)).for_each(_U(include), Converter<DetElementInclude>(description));
-  xml_coll_t(compact, _U(display)).for_each(_U(vis), Converter<VisAttr>(description));
+  printout(DEBUG, "Compact", "++ Converting visualization attributes...");
+  xml_coll_t(compact, _U(display)).for_each(_U(include),    Converter<DetElementInclude>(description));
+  xml_coll_t(compact, _U(display)).for_each(_U(vis),        Converter<VisAttr>(description));
+  printout(DEBUG, "Compact", "++ Converting limitset structures...");
+  xml_coll_t(compact, _U(limits)).for_each(_U(include),     Converter<DetElementInclude>(description));
+  xml_coll_t(compact, _U(limits)).for_each(_U(limitset),    Converter<LimitSet>(description));
+  printout(DEBUG, "Compact", "++ Converting region   structures...");
+  xml_coll_t(compact, _U(regions)).for_each(_U(include),    Converter<DetElementInclude>(description));
+  xml_coll_t(compact, _U(regions)).for_each(_U(region),     Converter<Region>(description));
   
-  if (element.hasChild(_U(world)))
-    (Converter<World>(description))(xml_h(compact.child(_U(world))));
-
+  if ( world )  {
+    (Converter<World>(description))(world);
+  }
   if ( open_geometry ) description.init();
-  xml_coll_t(compact, _U(limits)).for_each(_U(include),  Converter<DetElementInclude>(description));
-  xml_coll_t(compact, _U(limits)).for_each(_U(limitset), Converter<LimitSet>(description));
-
   printout(DEBUG, "Compact", "++ Converting readout  structures...");
   xml_coll_t(compact, _U(readouts)).for_each(_U(readout), Converter<Readout>(description));
-  printout(DEBUG, "Compact", "++ Converting region   structures...");
-  xml_coll_t(compact, _U(regions)).for_each(_U(region), Converter<Region>(description));
   printout(DEBUG, "Compact", "++ Converting included files with subdetector structures...");
   xml_coll_t(compact, _U(detectors)).for_each(_U(include), Converter<DetElementInclude>(description));
   printout(DEBUG, "Compact", "++ Converting detector structures...");
