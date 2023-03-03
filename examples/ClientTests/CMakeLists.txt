@@ -470,11 +470,16 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   #
   # Test of an example user analysis creating an N-tuple instead of an output file with events
+  # Note: Exception: *** G4Exception : PART5107
+  #           issued by : G4IonTable::FindIon()
+  #           Isomer level 9 may be ambiguous.
+  #       *** This is just a warning message. ***
+  # This is NOT an error!
   dd4hep_add_test_reg( ClientTests_sim_UserAnalysis
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTelEnergyDeposits.py batch
     REGEX_PASS "Entries :      200 "
-    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+    REGEX_FAIL "EXCEPTION;ERROR;Error" )
   #
   # Test of an example user analysis creating an N-tuple instead of an output file with events
   dd4hep_add_test_reg( ClientTests_sim_TrackingRegion
