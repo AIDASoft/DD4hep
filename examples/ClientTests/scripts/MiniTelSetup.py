@@ -23,8 +23,10 @@ import DDG4TestSetup
 
 
 class Setup(DDG4TestSetup.Setup):
-  def __init__(self, geometry="/examples/ClientTests/compact/MiniTel.xml", macro=None, vis=None):
+  def __init__(self, geometry=None, macro=None, vis=None):
     install_dir = os.environ['DD4hepExamplesINSTALL']
+    if geometry is None:
+      geometry = "/examples/ClientTests/compact/MiniTel.xml"
     DDG4TestSetup.Setup.__init__(self, "file:" + install_dir + geometry, macro=macro, vis=vis)
 
   def configure(self, output_level=None):
