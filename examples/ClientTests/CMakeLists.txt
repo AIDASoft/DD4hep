@@ -506,7 +506,7 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( minitel_config_region_subdet_geant4
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTel.py
-    	       -batch -events 1 -geometry /examples/ClientTests/compact/WorldSettings.xml -debug
+    	       -batch -debug -events 1 -geometry /examples/ClientTests/compact/WorldSettings.xml
     REGEX_PASS "\\+ Apply REGION settings: minitel_region_5         to volume MyLHCBdetector5."
     REGEX_FAIL "Exception;EXCEPTION;ERROR"
   )
@@ -515,7 +515,7 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( minitel_config_region_world_geant4
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTel.py
-    	       -batch -events 1 -geometry /examples/ClientTests/compact/WorldSettings.xml -debug
+    	       -batch -debug -events 1 -geometry /examples/ClientTests/compact/WorldSettings.xml
     REGEX_PASS "Volume world_volume Region: DefaultRegionForTheWorld. Apply user limits from world_region"
     REGEX_FAIL "Exception;EXCEPTION;ERROR"
   )

@@ -70,6 +70,6 @@ namespace  {
   
 }  // End namespace dd4hep
 /// Instantiate factory
-DECLARE_XML_PLUGIN(DD4hep_DetElementConfig, configure_detelement);
+DECLARE_XML_PLUGIN(DD4hep_DetElementConfig, configure_detelement)
 /// Instantiate factory
-DECLARE_XML_PLUGIN(DD4hep_SensitiveDetectorConfig, configure_sensitive);
+DECLARE_XML_PLUGIN(DD4hep_SensitiveDetectorConfig, configure_sensitive)
