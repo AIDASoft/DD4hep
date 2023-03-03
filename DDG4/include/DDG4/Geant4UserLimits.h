@@ -72,9 +72,11 @@ namespace dd4hep {
 
     public:
       /// Initializing Constructor
-      Geant4UserLimits(LimitSet ls);
+      Geant4UserLimits(LimitSet limitset);
       /// Standard destructor
       virtual ~Geant4UserLimits();
+      /// Update the object
+      virtual void update(LimitSet limitset);
       /// Access the user tracklength for a G4 track object
       virtual G4double GetMaxAllowedStep(const G4Track& track)
       {  return maxStepLength.value(track);    }

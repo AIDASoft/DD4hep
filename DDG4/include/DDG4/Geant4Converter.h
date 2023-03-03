@@ -45,6 +45,8 @@ namespace dd4hep {
       bool debugReflections = false;
       /// Property: Flag to debug regions during conversion mechanism
       bool debugRegions     = false;
+      /// Property: Flag to debug LimitSets during conversion mechanism
+      bool debugLimits      = false;
       /// Property: Flag to debug surfaces during conversion mechanism
       bool debugSurfaces    = false;
 
