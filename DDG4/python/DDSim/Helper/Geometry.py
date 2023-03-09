@@ -33,13 +33,11 @@ class Geometry(ConfigHelper):
     # unused
     self.printPlacements = False
     self.printSensitives = False
-    # FIXME: get this via output.geoInfoPrintLevel!!!
-    self.geoInfoPrintLevel = 7
 
     self._dumpDGDML_EXTRA = {"help": "If not empty, filename to dump the Geometry as GDML"}
     self.dumpGDML = ""
 
-  def constructGeometry(self, kernel, geant4, numberOfThreads=1):
+  def constructGeometry(self, kernel, geant4, geoPrintLevel=2, numberOfThreads=1):
     """Construct Geant4 geometry."""
     from DDG4 import DetectorConstruction
 
@@ -54,10 +52,9 @@ class Geometry(ConfigHelper):
     act.DebugSurfaces = self.enableDebugSurfaces
     act.PrintPlacements = self.printPlacements
     act.PrintSensitives = self.printSensitives
-    act.GeoInfoPrintLevel = self.geoInfoPrintLevel
+    act.GeoInfoPrintLevel = geoPrintLevel
     act.DumpHierarchy = self.dumpHierarchy
     act.DumpGDML = self.dumpGDML
-
 
     # Apply sensitive detectors
     sensitives = DetectorConstruction(kernel, str('Geant4DetectorSensitivesConstruction/ConstructSD'))

@@ -328,7 +328,7 @@ class DD4hepSimulation(object):
     self.__setMagneticFieldOptions(geant4)
 
     # configure geometry creation
-    self.geometry.constructGeometry(kernel, geant4)
+    self.geometry.constructGeometry(kernel, geant4, self.output.geometry)
 
     # ----------------------------------------------------------------------------------
     # Configure Run actions

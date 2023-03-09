@@ -51,6 +51,9 @@ class Output(ConfigHelper):
     self._random_EXTRA = {'choices': OUTPUT_CHOICES, 'type': outputLevelType}
     self._random = outputLevel('FATAL')
 
+    self._geometry_EXTRA = {'choices': OUTPUT_CHOICES, 'type': outputLevelType}
+    self._geometry = outputLevel('DEBUG')
+
   @property
   def inputStage(self):
     """Output level for input sources"""
@@ -86,3 +89,12 @@ class Output(ConfigHelper):
   @random.setter
   def random(self, level):
     self._random = outputLevel(level)
+
+  @property
+  def geometry(self):
+    """Output level for geometry."""
+    return self._geometry
+
+  @geometry.setter
+  def geometry(self, level):
+    self._geometry = outputLevel(level)
