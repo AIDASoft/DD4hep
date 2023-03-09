@@ -60,7 +60,7 @@ namespace dd4hep  {
       std::vector<std::string> m_applicablePartNames  { };
       /// Property: Parametrisation control: Enable/disable fast simulation
       bool           m_enable         { false };
-      /// Property: Defines step lenght
+      /// Property: Defines step length
       double         m_stepX0         { 0.1 };
       /// Property: Set minimum kinetic energy to trigger parametrisation
       ParticleConfig m_eMin           { };

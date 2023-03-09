@@ -474,7 +474,7 @@ class Geant4:
                               sensitives=None, sensitives_args=None,
                               allow_threads=False):
     """
-    Configure Geant4 user initialization for optionasl multi-threading mode
+    Configure Geant4 user initialization for optional multi-threading mode
 
     \author  M.Frank
     """
