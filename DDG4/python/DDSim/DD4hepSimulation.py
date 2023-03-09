@@ -10,6 +10,7 @@ from __future__ import absolute_import, unicode_literals, division, print_functi
 
 import os
 import sys
+import textwrap
 import traceback
 from DDSim.Helper.Meta import Meta
 from DDSim.Helper.LCIO import LCIO
@@ -614,11 +615,11 @@ class DD4hepSimulation(object):
   def __printSteeringFile(self, parser):
     """print the parameters formated as a steering file"""
 
-    steeringFileBase = """from DDSim.DD4hepSimulation import DD4hepSimulation
-from g4units import mm, GeV, MeV
-SIM = DD4hepSimulation()
-
-"""
+    steeringFileBase = textwrap.dedent("""from DDSim.DD4hepSimulation import DD4hepSimulation
+                                          from g4units import mm, GeV, MeV
+                                          SIM = DD4hepSimulation()
+                                          """)
+    steeringFileBase += "\n"
     optionDict = parser._option_string_actions
     parameters = vars(self)
     for parName, parameter in sorted(list(parameters.items()), key=sortParameters):
