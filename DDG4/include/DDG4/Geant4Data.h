@@ -270,10 +270,10 @@ namespace dd4hep {
         Direction     momentum;
         /// Length of the track segment contributing to this hit
         double        length;
-        /// Monte Carlo / Geant4 information
-        Contribution  truth;
         /// Energy deposit in the tracker hit
         double        energyDeposit;
+        /// Monte Carlo / Geant4 information
+        Contribution  truth;
       public:
         /// Default constructor
         Hit();
@@ -283,6 +283,8 @@ namespace dd4hep {
         Hit(const Hit& c) = delete;
         /// Initializing constructor
         Hit(int track_id, int pdg_id, double deposit, double time_stamp, double len=0.0, const Position& p={0.0, 0.0, 0.0}, const Direction& d={0.0, 0.0, 0.0});
+	/// Optimized constructor for sensitive detectors
+	Hit(const Geant4HitData::Contribution& contrib, const Direction& mom, double deposit);
         /// Default destructor
         virtual ~Hit();
         /// Move assignment operator
