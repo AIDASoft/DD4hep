@@ -106,7 +106,7 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const Geant4FastS
 
 /// Default constructor
 Geant4Tracker::Hit::Hit()
-: Geant4HitData(), position(), momentum(), length(0.0), truth(), energyDeposit(0.0)
+: Geant4HitData(), position(), momentum(), length(0.0), energyDeposit(0.0), truth()
 {
   InstanceCount::increment(this);
 }
@@ -114,11 +114,19 @@ Geant4Tracker::Hit::Hit()
 /// Standard initializing constructor
 Geant4Tracker::Hit::Hit(int track_id, int pdg_id, double deposit, double time_stamp,
 			double len, const Position& pos, const Direction& mom)
-  : Geant4HitData(), position(pos), momentum(mom), length(len),
-    truth(track_id, pdg_id, deposit, time_stamp, len, pos, mom),
-    energyDeposit(deposit)
+  : Geant4HitData(), position(pos), momentum(mom), length(len), energyDeposit(deposit),
+    truth(track_id, pdg_id, deposit, time_stamp, len, pos, mom)
 {
   g4ID = track_id;
+  InstanceCount::increment(this);
+}
+
+/// Optimized constructor for sensitive detectors
+Geant4Tracker::Hit::Hit(const Geant4HitData::Contribution& contrib, const Direction& mom, double depo)
+  : Geant4HitData(), position(contrib.x, contrib.y, contrib.z),
+    momentum(mom), length(contrib.length), energyDeposit(depo), truth(contrib)
+{
+  g4ID = truth.trackID;
   InstanceCount::increment(this);
 }
 
