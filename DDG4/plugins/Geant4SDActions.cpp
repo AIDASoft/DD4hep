@@ -82,27 +82,21 @@ namespace dd4hep {
     template <> bool
     Geant4SensitiveAction<Geant4Tracker>::process(const G4Step* step,G4TouchableHistory* /* hist */) {
       typedef Geant4Tracker::Hit Hit;
+      // Note: 1) We store in the hit the hit-direction, which is not the same as the track direction.
+      //       2) The energy deposit is the difference between incoming and outcoming energy.
       Geant4StepHandler h(step);
-      Position  prePos    = h.prePos();
-      Position  postPos   = h.postPos();
-      Position  direction = postPos - prePos;
-      Position  pos       = mean_direction(prePos, postPos);
-      Direction mom       = 0.5 * (h.preMom() + h.postMom());
-      double    hit_len   = direction.R();
+      auto contrib = Hit::extractContribution(step);
+      Direction hit_momentum = 0.5 * (h.preMom() + h.postMom());
+      double    hit_deposit  = h.deposit();
+      Hit* hit = new Hit(contrib, hit_momentum, hit_deposit);
 
-      // if (hit_len > 0) {
-      //   double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
-      //   direction *= new_len/hit_len;
-      // }
-      Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime(), hit_len, pos, mom);
-      hit->truth  = Hit::extractContribution(step);
       hit->cellID = cellID(step);
-      collection(m_collectionID)->add(hit);
-      mark(h.track);
       if ( 0 == hit->cellID )  {
         hit->cellID = volumeID(step);
         except("+++ Invalid CELL ID for hit!");
       }
+      collection(m_collectionID)->add(hit);
+      mark(h.track);
       print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
             hit->energyDeposit,hit->position.X(),hit->position.Y(),hit->position.Z(),(void*)hit->cellID);
       Geant4TouchableHandler handler(step);
@@ -117,16 +111,16 @@ namespace dd4hep {
     {
       typedef Geant4Tracker::Hit Hit;
       Geant4FastSimHandler h(spot);
-      Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime(),
-			 0e0, h.avgPosition(), h.momentum());
+      auto contrib = Hit::extractContribution(spot);
+      Hit* hit = new Hit(contrib, h.momentum(), h.deposit());
+
       hit->cellID  = cellID(h.touchable(), h.avgPositionG4());
-      hit->truth   = Hit::extractContribution(spot);
-      collection(m_collectionID)->add(hit);
-      mark(h.track);
       if ( 0 == hit->cellID )  {
         hit->cellID = volumeID(h.touchable());
         except("+++ Invalid CELL ID for hit!");
       }
+      collection(m_collectionID)->add(hit);
+      mark(h.track);
       print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
             hit->energyDeposit,hit->position.X(),hit->position.Y(),hit->position.Z(),(void*)hit->cellID);
       Geant4TouchableHandler handler(h.touchable());
@@ -160,30 +154,25 @@ namespace dd4hep {
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool
     Geant4SensitiveAction<Geant4OpticalTracker>::process(const G4Step* step,G4TouchableHistory* /* hist */) {
-      G4Track * track =  step->GetTrack();
+      // Note: 1) We store in the hit the hit-direction, which is not the same as the track direction.
+      //       2) The energy deposit is the track momentum
       typedef Geant4Tracker::Hit Hit;
       Geant4StepHandler h(step);
-      Position  prePos    = h.prePos();
-      Position  postPos   = h.postPos();
-      Position  direction = postPos - prePos;
-      Position  pos       = mean_direction(prePos, postPos);
-      Direction mom       = 0.5 * ( h.preMom() + h.postMom() ) ;
-      double    tim       = h.track->GetGlobalTime();
-      double    hit_len   = direction.R();
-      auto      contrib   = Hit::extractContribution(step);
-      
-      Hit* hit = new Hit(h.trkID(), h.trkPdgID(), contrib.deposit, tim, hit_len, pos, mom);
-      hit->truth  = contrib;
-      hit->cellID = cellID(step);
-      if (track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) {
-        track->SetTrackStatus(fStopAndKill);
+      auto      contrib = Hit::extractContribution(step);
+      Direction hit_momentum = 0.5 * (h.preMom() + h.postMom());
+      double    hit_deposit  = contrib.deposit;
+      Hit* hit = new Hit(contrib, hit_momentum, hit_deposit);
+
+      if (h.trackDef() != G4OpticalPhoton::OpticalPhotonDefinition()) {
+        step->GetTrack()->SetTrackStatus(fStopAndKill);
       }
-      collection(m_collectionID)->add(hit);
-      mark(h.track);
+      hit->cellID = cellID(step);
       if ( 0 == hit->cellID )  {
         hit->cellID      = volumeID( step ) ;
         except("+++ Invalid CELL ID for hit!");
       }
+      collection(m_collectionID)->add(hit);
+      mark(h.track);
       print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
             hit->energyDeposit,hit->position.X(),hit->position.Y(),hit->position.Z(),(void*)hit->cellID);
       Geant4TouchableHandler handler(step);
@@ -198,18 +187,16 @@ namespace dd4hep {
     {
       typedef Geant4Tracker::Hit Hit;
       Geant4FastSimHandler h(spot);
-      auto contrib  = Hit::extractContribution(spot);
-      Hit* hit = new Hit(h.trkID(), h.trkPdgID(), contrib.deposit, h.track->GetGlobalTime(),
-			 0e0, h.avgPosition(), h.momentum());
-      hit->cellID = cellID(h.touchable(), h.avgPositionG4());
-      hit->truth  = contrib;
+      auto contrib = Hit::extractContribution(spot);
+      Hit* hit = new Hit(contrib, h.momentum(), contrib.deposit);
 
-      collection(m_collectionID)->add(hit);
-      mark(h.track);
+      hit->cellID  = cellID(h.touchable(), h.avgPositionG4());
       if ( 0 == hit->cellID )  {
         hit->cellID      = volumeID(h.touchable());
         except("+++ Invalid CELL ID for hit!");
       }
+      collection(m_collectionID)->add(hit);
+      mark(h.track);
       print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
             hit->energyDeposit,hit->position.X(),hit->position.Y(),hit->position.Z(),(void*)hit->cellID);
       Geant4TouchableHandler handler(h.touchable());
