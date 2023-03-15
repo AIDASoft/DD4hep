@@ -78,4 +78,4 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 }
 
 DECLARE_DETELEMENT(DD4hep_MultiLayerTracker,create_detector)
-DECLARE_DEPRECATED_DETELEMENT(MultiLayerTracker,create_detector)
+
