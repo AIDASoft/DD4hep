@@ -24,15 +24,26 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
   xml_det_t   x_det = e;
   string      name  = x_det.nameStr();
   xml_comp_t  box    (x_det.child(_U(box)));
-  xml_dim_t   pos    (x_det.child(_U(position)));
-  xml_dim_t   rot    (x_det.child(_U(rotation)));
+  xml_dim_t   pos    (x_det.child(_U(position), false));
+  xml_dim_t   rot    (x_det.child(_U(rotation), false));
   Material    mat    (description.material(x_det.materialStr()));
   DetElement  det    (name,x_det.id());
   Volume      det_vol(name+"_vol",Box(box.x(),box.y(),box.z()), mat);
   Volume      mother = description.pickMotherVolume(det);
-  Transform3D transform(Rotation3D(RotationZYX(rot.z(),rot.y(),rot.x())),Position(pos.x(),pos.y(),pos.z()));
-  PlacedVolume phv = mother.placeVolume(det_vol,transform);
+  Transform3D transform;
 
+  if ( pos && rot )   {
+    transform = Transform3D(Rotation3D(RotationZYX(rot.z(),rot.y(),rot.x())),
+			    Position(pos.x(),pos.y(),pos.z()));
+  }
+  else if ( rot )   {
+    transform = Transform3D(Rotation3D(RotationZYX(rot.z(),rot.y(),rot.x())),
+			    Position());
+  }
+  else if ( pos )   {
+    transform = Transform3D(Rotation3D(), Position(pos.x(),pos.y(),pos.z()));
+  }
+  PlacedVolume phv = mother.placeVolume(det_vol,transform);
   det_vol.setVisAttributes(description, x_det.visStr());
   det_vol.setLimitSet(description, x_det.limitsStr());
   det_vol.setRegion(description, x_det.regionStr());
@@ -51,4 +62,4 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
 
 // first argument is the type from the xml file
 DECLARE_DETELEMENT(DD4hep_BoxSegment,create_element)
-DECLARE_DEPRECATED_DETELEMENT(BoxSegment,create_element)
+
