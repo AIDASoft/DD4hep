@@ -18,8 +18,27 @@
   <detectors>
     <detector id="1" name="Shape_OBJ" type="DD4hep_TestShape_Creator">
       <check>
-        <shape type="CAD_MultiVolume" ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/MS3D/jeep1.ms3d" unit="cm">
+ 	<!-- The <envelope/> element defines an envelope volume for the 
+	     contained subvolumes defined by the <volume/> elements.
+	     The element informationm id fed to a plugin of type 
+	     "DD4hep_StdVolume".
+	     See <DD4hep>/DDCore/src/XML/Utilities.cpp for 
+	     details about possible arguments.
 
+             If you supply materials and visualisation attributes to the shape:
+	     1) The material attribute in the <shape/> element will be applied 
+	        to all sub-volumes without an explicit material attribute in the 
+   	        <volume/> element.
+	     2) dto. the material cchild in the <shape/> element.
+	     3) The material attribute in the <volume/> element applies 
+	        ONLY to the volume specified. This allows to specify a separate 
+                material for each sub-volume in multi-volume CADs.
+             4) The vis attribute in the  <volume/> element applies 
+	        ONLY to the volume specified. The name identifies a dd4hep vis object.
+        -->
+	<shape type="CAD_MultiVolume"
+	       ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/MS3D/jeep1.ms3d"
+	       unit="cm">
           <!--      Envelope definition
                     This is optional: By default the child volumes are placed in an assembly.
           -->
