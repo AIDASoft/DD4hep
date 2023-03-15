@@ -24,13 +24,13 @@ using namespace dd4hep;
 
 // fallthrough only exists from c++17
 #if defined __has_cpp_attribute
-    #if __has_cpp_attribute(fallthrough)
-        #define ATTR_FALLTHROUGH [[fallthrough]]
-    #else
-        #define ATTR_FALLTHROUGH
-    #endif
+#if __has_cpp_attribute(fallthrough)
+#define ATTR_FALLTHROUGH [[fallthrough]]
 #else
-    #define ATTR_FALLTHROUGH
+#define ATTR_FALLTHROUGH
+#endif
+#else
+#define ATTR_FALLTHROUGH
 #endif
 
 DD4HEP_INSTANTIATE_HANDLE(ConstantField);
@@ -91,6 +91,16 @@ void DipoleField::fieldComponents(const double* pos, double* field) {
   }
 }
 
+namespace   {
+  constexpr static unsigned char FIELD_INITIALIZED   = 1<<0;
+  constexpr static unsigned char FIELD_IDENTITY      = 1<<1;
+  constexpr static unsigned char FIELD_ROTATION_ONLY = 1<<2;
+  constexpr static unsigned char FIELD_POSITION_ONLY = 1<<3;
+  Transform3D::Point operator+(const Transform3D::Point& p0, const Transform3D::Point& p1)  {
+    return Transform3D::Point(p0.X()+p1.X(), p0.Y()+p1.Y(),p0.Z()+p1.Z());
+  }
+}
+
 /// Initializing constructor
 MultipoleField::MultipoleField() : coefficents(), skews(), volume(), transform(), B_z(0.0)  {
   type = CartesianField::MAGNETIC;
@@ -98,10 +108,24 @@ MultipoleField::MultipoleField() : coefficents(), skews(), volume(), transform()
 
 /// Compute  the field components at a given location and add to given field
 void MultipoleField::fieldComponents(const double* pos, double* field) {
-  Transform3D::Point p = transform * Transform3D::Point(pos[0],pos[1],pos[2]);
-  //const Transform3D::Point::CoordinateType& c = p.Coordinates();
-  double x=p.X(), y=p.Y(), z=p.Z();
-  double coord[3] = {x,y,z};
+  Transform3D::Point p0(pos[0],pos[1],pos[2]);
+  Transform3D::Point p = (flag&FIELD_IDENTITY) ? p0
+    : (flag&FIELD_POSITION_ONLY) ? (p0 + translation)
+    : (transform * Transform3D::Point(pos[0],pos[1],pos[2]));
+  double x = p.X(), y = p.Y(), z = p.Z();
+  double coord[3] = {x, y, z};
+
+  if ( 0 == flag )   {
+    constexpr static double eps = 1e-10;
+    double xx, xy, xz, dx, yx, yy, yz, dy, zx, zy, zz, dz;
+    transform.GetComponents(xx, xy, xz, dx, yx, yy, yz, dy, zx, zy, zz, dz);
+    flag |= FIELD_INITIALIZED;
+    flag = ((xx + yy + zz) < (3e0 - eps)) ? FIELD_ROTATION_ONLY : FIELD_POSITION_ONLY;
+    if ( (flag&FIELD_POSITION_ONLY) && (std::abs(dx) + std::abs(dy) + std::abs(dz)) < eps )
+      flag |= FIELD_IDENTITY;
+    translation = Transform3D::Point(dx, dy, dz);
+  }
+
   if ( 0 == volume.ptr() || volume->Contains(coord) )  {
     double bx = 0.0;
     double by = 0.0;

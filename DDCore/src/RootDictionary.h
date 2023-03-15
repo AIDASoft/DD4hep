@@ -663,6 +663,7 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class std::map<dd4hep::VolumeID,dd4hep::VolumeManagerContext*>+;
 
 #pragma link C++ class dd4hep::CartesianField+;
+#pragma link C++ class dd4hep::CartesianField::TypedObject+;
 #pragma link C++ class dd4hep::CartesianField::Object+;
 #pragma link C++ class dd4hep::Handle<dd4hep::CartesianField::Object>+;
 #pragma link C++ class dd4hep::OverlayedField+;

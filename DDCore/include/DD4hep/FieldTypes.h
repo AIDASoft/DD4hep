@@ -149,12 +149,22 @@ namespace dd4hep {
    */
   class MultipoleField : public CartesianField::Object {
   public:
-    Coefficents  coefficents;
-    Coefficents  skews;
-    Solid volume;
-    Transform3D  transform;
-    double       B_z;
+    /// Multi-pole coefficients
+    Coefficents  coefficents { };
+    /// Multi-pole skews
+    Coefficents  skews       { };
+    /// Boundary volume (optional)
+    Solid        volume      { };
+    /// Position transformation of the field
+    Transform3D  transform   { };
+    /// Constant Z field overlay
+    double       B_z         { 0e0 };
 
+  private:
+    /// The access to the field will be optimized. Remember properties.
+    unsigned char flag       { 0 };
+    /// Translation of the transformation
+    Transform3D::Point translation { };
   public:
     /// Initializing constructor
     MultipoleField();

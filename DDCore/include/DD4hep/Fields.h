@@ -40,7 +40,7 @@ namespace dd4hep {
   class CartesianField: public Handle<NamedObject> {
   public:
     enum FieldType {
-      UNKNOWN = 0, ELECTRIC = 0x1, MAGNETIC = 0x2
+      UNKNOWN = 0, ELECTRIC = 0x1, MAGNETIC = 0x2, OVERLAY  = 0x4,
     };
     typedef std::map<std::string, std::map<std::string, std::string> > Properties;
 
@@ -50,12 +50,24 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CORE
      */
-    class Object: public NamedObject {
+    class TypedObject : public NamedObject {
+    public:
+      /// Field type
+      int   field_type { UNKNOWN };
+      /// Default constructor
+      using NamedObject::NamedObject;
+    };
+
+    /// Internal data class shared by all handles of a given type
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CORE
+     */
+    class Object: public TypedObject {
     public:
       /// Utility definition for concrete implementations
       typedef std::vector<double> Coefficents;
-      /// Field type
-      int        type;
       /// Field extensions
       Properties properties;
       /// Default constructor
@@ -85,7 +97,7 @@ namespace dd4hep {
 
     /// Access the field type
     int fieldType() const {
-      return data<Object>()->type;
+      return data<Object>()->field_type;
     }
 
     /// Access the field type (string)
@@ -95,10 +107,10 @@ namespace dd4hep {
     bool changesEnergy() const;
 
     /// Returns the 3 field components (x, y, z).
-    void value(const Position& pos, Direction& field) const;   // { value(pos,&field.x); }
+    void value(const Position& pos, Direction& field) const;
 
     /// Returns the 3 field components (x, y, z).
-    void value(const Position& pos, double* val) const;   //      { value(&pos.x,val);   }
+    void value(const Position& pos, double* val) const;
 
     /// Returns the 3 field components (x, y, z).
     void value(const double* pos, double* val) const;
@@ -126,7 +138,9 @@ namespace dd4hep {
   class OverlayedField: public Handle<NamedObject> {
   public:
     enum FieldType {
-      ELECTRIC = 0x1, MAGNETIC = 0x2
+      ELECTRIC = CartesianField::ELECTRIC,
+      MAGNETIC = CartesianField::MAGNETIC,
+      OVERLAY  = CartesianField::OVERLAY,
     };
     typedef std::map<std::string, std::string> PropertyValues;
     typedef std::map<std::string, PropertyValues> Properties;
@@ -137,15 +151,16 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CORE
      */
-    class Object: public NamedObject {
+    class Object: public CartesianField::TypedObject {
     public:
-      int type;
       CartesianField electric;
       CartesianField magnetic;
       std::vector<CartesianField> electric_components;
       std::vector<CartesianField> magnetic_components;
       /// Field extensions
       Properties properties;
+
+    public:
       /// Default constructor
       Object();
       /// Default destructor
@@ -162,8 +177,8 @@ namespace dd4hep {
     OverlayedField(const std::string& name);
 
     /// Access the field type
-    int type() const {
-      return data<Object>()->type;
+    int fieldType() const {
+      return data<Object>()->field_type;
     }
 
     /// Does the field change the energy of charged particles?
@@ -173,50 +188,50 @@ namespace dd4hep {
     void add(CartesianField field);
 
     /// Returns the 3 electric field components (x, y, z) if many components are present
-    void combinedElectric(const Position& pos, double* field) const {
-      combinedElectric((const double*) &pos, field);
-    }
+    void combinedElectric(const Position& pos, double* field) const;
 
     /// Returns the 3 electric field components (x, y, z) if many components are present
     Direction combinedElectric(const Position& pos) const {
-      Direction field;
-      combinedElectric((const double*) &pos, (double*) &field);
-      return field;
+      double field[3] = { 0e0, 0e0, 0e0 };
+      combinedElectric(pos, field);
+      return {field[0], field[1], field[2]};
     }
 
     /// Returns the 3 electric field components (x, y, z) if many components are present
-    void combinedElectric(const double* pos, double* field) const;
-
-    /// Returns the 3 magnetic field components (x, y, z) if many components are present
-    void combinedMagnetic(const Position& pos, double* field) const {
-      combinedMagnetic((const double*) &pos, field);
+    void combinedElectric(const double* pos, double* field) const   {
+      combinedElectric(Position(pos[0], pos[1], pos[2]), field);
     }
 
     /// Returns the 3 magnetic field components (x, y, z) if many components are present
-    void combinedMagnetic(const double* pos, double* field) const;
+    void combinedMagnetic(const Position& pos, double* field) const;
 
     /// Returns the 3 magnetic field components (x, y, z) at a given position
     Direction combinedMagnetic(const Position& pos) const {
-      Direction field;
-      combinedMagnetic((const double*) &pos, (double*) &field);
-      return field;
+      double field[3] = { 0e0, 0e0, 0e0 };
+      combinedMagnetic({pos.X(), pos.Y(), pos.Z()}, field);
+      return { field[0], field[1], field[2] };
+    }
+
+    /// Returns the 3 magnetic field components (x, y, z) if many components are present
+    void combinedMagnetic(const double* pos, double* field) const   {
+      combinedMagnetic(Position(pos[0], pos[1], pos[2]), field);
+    }
+
+    /// Returns the 3 electric field components (x, y, z).
+    void electricField(const Position& pos, double* field) const;
+
+    /// Returns the 3 electric field components (x, y, z) at a given position
+    Direction electricField(const Position& pos) const {
+      double field[3] = { 0e0, 0e0, 0e0 };
+      electricField(pos, field);
+      return { field[0], field[1], field[2] };
     }
 
     /// Returns the 3 electric field components (x, y, z).
     void electricField(const Position& pos, Direction& field) const {
-      electricField((const double*) &pos, (double*) &field);
-    }
-
-    /// Returns the 3 electric field components (x, y, z).
-    void electricField(const Position& pos, double* field) const {
-      electricField((double*) &pos, field);
-    }
-
-    /// Returns the 3 electric field components (x, y, z) at a given position
-    Direction electricField(const Position& pos) const {
-      Direction field;
-      electricField((const double*) &pos, (double*) &field);
-      return field;
+      double fld[3] = { 0e0, 0e0, 0e0 };
+      electricField(Position(pos.X(), pos.Y(), pos.Z()), fld);
+      field = { fld[0], fld[1], fld[2] };
     }
 
     /// Returns the 3 electric field components (x, y, z).
@@ -226,37 +241,35 @@ namespace dd4hep {
       f.isValid() ? f.value(pos, field) : combinedElectric(pos, field);
     }
 
+    /// Returns the 3  magnetic field components (x, y, z).
+    void magneticField(const Position& pos, double* field) const;
+
+    /// Returns the 3  magnetic field components (x, y, z).
+    void magneticField(const double* pos, double* field) const   {
+      magneticField(Position(pos[0], pos[1], pos[2]), field);
+    }
+
     /// Returns the 3 magnetic field components (x, y, z).
-    void magneticField(const Position& pos, Direction& field) const {
-      magneticField((double*) &pos, (double*) &field);
+    void magneticField(const double* pos, Direction& field) const {
+      double fld[3] = { 0e0, 0e0, 0e0 };
+      magneticField(Position(pos[0], pos[1], pos[2]), fld);
+      field = { fld[0], fld[1], fld[2] };
     }
 
     /// Returns the 3 electric field components (x, y, z) at a given position
     Direction magneticField(const Position& pos) const {
-      Direction field;
-      magneticField((double*) &pos, (double*) &field);
-      return field;
-    }
-
-    /// Returns the 3  magnetic field components (x, y, z).
-    void magneticField(const Position& pos, double* field) const {
-      magneticField((double*) &pos, field);
-    }
-
-    /// Returns the 3  magnetic field components (x, y, z).
-    void magneticField(const double* pos, double* field) const {
-      field[0] = field[1] = field[2] = 0.0;
-      CartesianField f = data<Object>()->magnetic;
-      f.isValid() ? f.value(pos, field) : combinedMagnetic(pos, field);
+      double field[3] = { 0e0, 0e0, 0e0 };
+      magneticField(pos, field);
+      return { field[0], field[1], field[2] };
     }
 
     /// Returns the 3 electric (val[0]-val[2]) and magnetic field components (val[3]-val[5]).
-    void electromagneticField(const Position& pos, double* val) const {
-      electromagneticField((double*) &pos, val);
-    }
+    void electromagneticField(const Position& pos, double* field) const;
 
     /// Returns the 3 electric (val[0]-val[2]) and magnetic field components (val[3]-val[5]).
-    void electromagneticField(const double* pos, double* val) const;
+    void electromagneticField(const double* pos, double* val) const   {
+      electromagneticField(Position(pos[0], pos[1], pos[2]), val);
+    }
 
     /// Access to properties container
     Properties& properties() const;
