@@ -3,6 +3,7 @@
 from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import GeV
+from math import atan, exp
 import logging
 import ddsix as six
 
@@ -22,9 +23,16 @@ class Gun(ConfigHelper):
 
     self._phiMin_EXTRA = {'help': "Minimal azimuthal angle for random distribution"}
     self.phiMin = None
+    self._phiMax_EXTRA = {'help': "Maximal azimuthal angle for random distribution"}
     self.phiMax = None
+    self._thetaMin_EXTRA = {'help': "Minimal polar angle for random distribution"}
     self.thetaMin = None
+    self._thetaMax_EXTRA = {'help': "Maximal polar angle for random distribution"}
     self.thetaMax = None
+    self._etaMin_EXTRA = {'help': "Minimal pseudorapidity for random distibution (overrides thetaMax)"}
+    self.etaMin = None
+    self._etaMax_EXTRA = {'help': "Maximal pseudorapidity for random distibution (overrides thetaMin)"}
+    self.etaMax = None
     self._momentumMin_EXTRA = {'help': "Minimal momentum when using distribution (default = 0.0)"}
     self.momentumMin = 0 * GeV
     self._momentumMax_EXTRA = {'help': "Maximal momentum when using distribution (default = 0.0)"}
@@ -136,6 +144,12 @@ class Gun(ConfigHelper):
         ddg4Gun.isotrop = True
       if self.phiMax is not None:
         ddg4Gun.PhiMax = self.phiMax
+        ddg4Gun.isotrop = True
+      if self.etaMin is not None:
+        ddg4Gun.ThetaMax = 2. * atan(exp(-float(self.etaMin)))
+        ddg4Gun.isotrop = True
+      if self.etaMax is not None:
+        ddg4Gun.ThetaMin = 2. * atan(exp(-float(self.etaMax)))
         ddg4Gun.isotrop = True
       # this avoids issues if momentumMin is None because of previous default
       ddg4Gun.MomentumMin = self.momentumMin if self.momentumMin else 0.0
