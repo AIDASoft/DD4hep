@@ -33,6 +33,7 @@ namespace {
 
 /// Default constructor
 CartesianField::Object::Object() : TypedObject()  {
+  // The field_type MUST be overriden by the concrete sublass!
   field_type = UNKNOWN;
   InstanceCount::increment(this);
 }
@@ -126,8 +127,9 @@ void OverlayedField::add(CartesianField field) {
         o->field_type |= field.MAGNETIC;
         o->magnetic = (v.size() == 1) ? field : CartesianField();
       }
-      if (isMag || isEle)
+      if ( isMag || isEle )  {
         return;
+      }
       except("OverlayedField","add: Attempt to add an unknown field type.");
     }
     except("OverlayedField","add: Attempt to add an invalid object.");

@@ -30,6 +30,7 @@
     <constant name="world_x"                value="20*cm"/>
     <constant name="world_y"                value="20*cm"/>
     <constant name="world_z"                value="20*cm"/>
+    <constant name="QC1_rmin"               value="2*cm"/>
   </define>
 
   <detectors>
@@ -40,8 +41,24 @@
   </detectors>
 
   <fields>
+    <!--
+    <field name="QC1L1_field_0" type="MultipoleMagnet" Z="0.0*tesla">
+      <position y="0*cm" x="5*cm" z="0*cm"/>
+      <rotation x="0" y="0" z="0.0"/>
+      <coefficient coefficient="0*tesla"/>
+      <coefficient coefficient="(-1)*(45.6)*(-0.273)/0.3*tesla/m"/>
+      <shape type="Tube" rmin="0.*cm" rmax="QC1_rmin" dz="2*cm" />
+    </field>
+    <field name="QC1L1_field_2" type="MultipoleMagnet" Z="0.0*tesla">
+      <position y="0*cm" x="-5*cm" z="0*cm"/>
+      <rotation x="0" y="pi" z="0.0"/>
+      <coefficient coefficient="0*tesla"/>
+      <coefficient coefficient="(-1)*(45.6)*(-0.273)/0.3*tesla/m"/>
+      <shape type="Tube" rmin="0.*cm" rmax="QC1_rmin" dz="2*cm" />
+    </field>
 
-<fields>
+
+
     <field name="QC1L1_field_0" type="MultipoleMagnet" Z="0.0*tesla">
       <position y="0*cm" x="5*cm" z="0*cm"/>
       <rotation x="0" y="0" z="0.0"/>
@@ -73,5 +90,40 @@
       <coefficient coefficient="(-1)*(45.6)*(-0.273)/0.3*tesla/m"/>
       <shape type="Tube" rmin="0.*cm" rmax="QC1_rmin" dz="2*cm" />
     </field>
+
+    -->
+    <field name="QC1L1_field_0" type="MultipoleMagnet" Z="0.0*tesla">
+      <position y="0*cm" x="5*cm" z="0*cm"/>
+      <rotation x="0" y="0" z="0.0"/>
+      <coefficient coefficient="0*tesla"/>
+      <coefficient coefficient="(-1)*(45.6)*(-0.273)/0.3*tesla/m"/>
+      <shape type="Tube" rmin="0.*cm" rmax="QC1_rmin" dz="2*cm" />
+    </field>
+
+    <field name="QC1L1_field_1" type="MultipoleMagnet" Z="0.0*tesla">
+      <position y="5*cm" x="0*cm" z="0*cm"/>
+      <rotation x="0" y="pi/2." z="0.0"/>
+      <coefficient coefficient="0*tesla"/>
+      <coefficient coefficient="(-1)*(45.6)*(-0.273)/0.3*tesla/m"/>
+      <shape type="Tube" rmin="0.*cm" rmax="QC1_rmin" dz="2*cm" />
+    </field>
+
+    <field name="QC1L1_field_2" type="MultipoleMagnet" Z="0.0*tesla">
+      <position y="0*cm" x="-5*cm" z="0*cm"/>
+      <rotation x="0" y="pi" z="0.0"/>
+      <coefficient coefficient="0*tesla"/>
+      <coefficient coefficient="(-1)*(45.6)*(-0.273)/0.3*tesla/m"/>
+      <shape type="Tube" rmin="0.*cm" rmax="QC1_rmin" dz="2*cm" />
+    </field>
+
+    <field name="QC1L1_field_3" type="MultipoleMagnet" Z="0.0*tesla">
+      <position y="-5*cm" x="0*cm" z="0*cm"/>
+      <rotation x="0" y="pi*3./2." z="0.0"/>
+      <coefficient coefficient="0*tesla"/>
+      <coefficient coefficient="(-1)*(45.6)*(-0.273)/0.3*tesla/m"/>
+      <shape type="Tube" rmin="0.*cm" rmax="QC1_rmin" dz="2*cm" />
+    </field>
+
+
   </fields>
 </lccdd>
