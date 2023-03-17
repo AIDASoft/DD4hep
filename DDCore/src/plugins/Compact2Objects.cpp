@@ -137,7 +137,7 @@ static Ref_t create_ConstantField(Detector& /* description */, xml_h e) {
   xml_comp_t field(e), strength(e.child(_U(strength)));
   string t = e.attr<string>(_U(field));
   ConstantField* ptr = new ConstantField();
-  ptr->type = ::toupper(t[0]) == 'E' ? CartesianField::ELECTRIC : CartesianField::MAGNETIC;
+  ptr->field_type = ::toupper(t[0]) == 'E' ? CartesianField::ELECTRIC : CartesianField::MAGNETIC;
   ptr->direction.SetX(strength.x());
   ptr->direction.SetY(strength.y());
   ptr->direction.SetZ(strength.z());
@@ -188,6 +188,7 @@ static Ref_t create_SolenoidField(Detector& description, xml_h e) {
     ptr->minZ = c.attr<double>(_U(zmin));
   else
     ptr->minZ = -ptr->maxZ;
+  ptr->field_type = CartesianField::MAGNETIC;
   obj.assign(ptr, c.nameStr(), c.typeStr());
   return obj;
 }
@@ -219,6 +220,7 @@ static Ref_t create_DipoleField(Detector& /* description */, xml_h e) {
       val = _multiply<double>(coll.text(), mult);
     ptr->coefficents.emplace_back(val);
   }
+  ptr->field_type = CartesianField::MAGNETIC;
   obj.assign(ptr, c.nameStr(), c.typeStr());
   return obj;
 }
@@ -246,7 +248,7 @@ static Ref_t create_MultipoleField(Detector& description, xml_h e) {
     ptr->volume = xml::createShape(description, type, child);
   }
   ptr->B_z = bz;
-  ptr->transform = Transform3D(rot,pos).Inverse();
+  ptr->transform = Transform3D(rot,pos);
   for (xml_coll_t coll(c, _U(coefficient)); coll; ++coll, mult /= lunit) {
     xml_dim_t coeff = coll;
     if ( coll.hasAttr(_U(value)) )
@@ -257,6 +259,7 @@ static Ref_t create_MultipoleField(Detector& description, xml_h e) {
     val = coeff.skew(0.0) * mult;
     ptr->skews.emplace_back(val);
   }
+  ptr->field_type = CartesianField::MAGNETIC;
   obj.assign(ptr, c.nameStr(), c.typeStr());
   return obj;
 }

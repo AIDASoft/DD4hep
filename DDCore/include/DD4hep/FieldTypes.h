@@ -155,8 +155,12 @@ namespace dd4hep {
     Coefficents  skews       { };
     /// Boundary volume (optional)
     Solid        volume      { };
-    /// Position transformation of the field
+    /// Position transformation of the field. Only stored here for reference
     Transform3D  transform   { };
+    /// Inverse position transformation of the field
+    Transform3D  inverse     { };
+    /// The rotation part of the transformation. Need to rotate the field
+    Rotation3D   rotation    { };
     /// Constant Z field overlay
     double       B_z         { 0e0 };
 
