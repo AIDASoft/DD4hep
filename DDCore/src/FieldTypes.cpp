@@ -129,8 +129,9 @@ void MultipoleField::fieldComponents(const double* pos, double* field) {
 
   double x = p.X(), y = p.Y(), z = p.Z();
   double coord[3] = {x, y, z};
-  ::printf("Pos: %+15.8e  %+15.8e  %+15.8e  Inverse: %+15.8e  %+15.8e  %+15.8e\n",
-	   pos[0]/dd4hep::cm,pos[1]/dd4hep::cm,pos[2]/dd4hep::cm, p.X()/dd4hep::cm, p.Y()/dd4hep::cm, p.Z()/dd4hep::cm);
+  // Debug printout:
+  //::printf("Pos: %+15.8e  %+15.8e  %+15.8e  Inverse: %+15.8e  %+15.8e  %+15.8e\n",
+  //         pos[0]/dd4hep::cm,pos[1]/dd4hep::cm,pos[2]/dd4hep::cm, p.X()/dd4hep::cm, p.Y()/dd4hep::cm, p.Z()/dd4hep::cm);
 
   if ( 0 == volume.ptr() || volume->Contains(coord) )  {
     double bx = 0.0;
