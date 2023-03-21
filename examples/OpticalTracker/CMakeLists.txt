@@ -57,3 +57,13 @@ dd4hep_add_test_reg( OpticalTracker_number_of_hits
   REGEX_FAIL "TEST: failed"
   DEPENDS OpticalTracker_simulation
   )
+
+# ---Test: Energy deposition
+dd4hep_add_test_reg( OpticalTracker_energy_deposition
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_OpticalTracker.sh"
+  EXEC_ARGS  root.exe -b -x -n -q -l
+             "${OpticalTracker_INSTALL}/scripts/test_energy_deposition.C(\"${OpticalTracker_INSTALL}/sim.root\")"
+  REGEX_PASS "TEST: passed"
+  REGEX_FAIL "TEST: failed"
+  DEPENDS OpticalTracker_simulation
+  )
