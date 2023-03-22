@@ -30,19 +30,34 @@
 using namespace std;
 using namespace dd4hep::sim;
 
+namespace  {
+  bool user_limit_debug = false;
+}
+
+      /// Allow for debugging user limits (very verbose)
+bool Geant4UserLimits::enable_debug(bool value)   {
+  bool tmp = user_limit_debug;
+  user_limit_debug = value;
+  return tmp;
+}
+
 /// Access value according to track
 double Geant4UserLimits::Handler::value(const G4Track& track) const    {
   auto* def = track.GetParticleDefinition();
   if ( !particleLimits.empty() )  {
     auto i = particleLimits.find(track.GetDefinition());
     if ( i != particleLimits.end() )  {
-      dd4hep::printout(dd4hep::INFO,"Geant4UserLimits", "Apply explicit limit %f to track: %s",
-		       def->GetParticleName().c_str());
+      if ( user_limit_debug )   {
+	dd4hep::printout(dd4hep::INFO,"Geant4UserLimits", "Apply explicit limit %f to track: %s",
+			 def->GetParticleName().c_str());
+      }
       return (*i).second;
     }
   }
-  dd4hep::printout(dd4hep::INFO,"Geant4UserLimits", "Apply default limit %f to track: %s",
-		   def->GetParticleName().c_str());
+  if ( user_limit_debug )   {
+    dd4hep::printout(dd4hep::INFO,"Geant4UserLimits", "Apply default limit %f to track: %s",
+		     def->GetParticleName().c_str());
+  }
   return defaultValue;
 }
 
@@ -53,8 +68,9 @@ void Geant4UserLimits::Handler::set(const string& particles, double val)   {
     return;
   }
   auto defs = Geant4ParticleHandle::g4DefinitionsRegEx(particles);
-  for( auto* d : defs )
+  for( auto* d : defs )  {
     particleLimits[d] = val;
+  }
 }
 
 /// Initializing Constructor

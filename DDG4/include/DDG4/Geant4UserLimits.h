@@ -98,6 +98,8 @@ namespace dd4hep {
       virtual void SetUserMaxTime(G4double utimeMax);
       virtual void SetUserMinEkine(G4double uekinMin);
       virtual void SetUserMinRange(G4double urangMin);
+      /// Allow for debugging user limits (very verbose)
+      static bool enable_debug(bool value);
     };
   }
 }
