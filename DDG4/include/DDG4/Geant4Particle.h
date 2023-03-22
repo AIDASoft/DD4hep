@@ -94,8 +94,6 @@ namespace dd4hep {
       G4PARTICLE_LAST_NOTHING = 1<<31
     };
 
-
-
     /// Data structure to store the MC particle information
     /**
      *  \author  M.Frank
@@ -106,29 +104,47 @@ namespace dd4hep {
     public:
       typedef std::set<int> Particles;
       /// Reference counter
-      int ref = 0;           //! not persistent
-      int id  = 0;
-      int originalG4ID = 0;  //! not persistent
-      int g4Parent = 0, reason = 0, mask = 0;
-      int steps  = 0, secondaries = 0, pdgID = 0;
-      int status = 0, colorFlow[2] { 0, 0 };
+      int ref                      { 0 };           //! not persistent
+      int id                       { 0 };
+      int originalG4ID             { 0 };           //! not persistent
+      int g4Parent                 { 0 };
+      int reason                   { 0 };
+      int mask                     { 0 };
+      int steps                    { 0 };
+      int secondaries              { 0 };
+      int pdgID                    { 0 };
+      int status                   { 0 };
+      int colorFlow[2]             { 0, 0 };
       unsigned short genStatus     { 0 };
       char  charge                 { 0 };
       char  _spare[1]              { 0 };
       float spin[3]                { 0E0,0E0,0E0 };
       // 12 ints + 4 bytes + 3 floats should be aligned to 8 bytes....
+      /// The starting vertex
       double vsx  = 0E0, vsy  = 0E0, vsz = 0E0;
+      /// The end vertex
       double vex  = 0E0, vey  = 0E0, vez = 0E0;
+      /// The track momentum at the start vertex
       double psx  = 0E0, psy  = 0E0, psz = 0E0;
+      /// The track momentum at the end vertex
       double pex  = 0E0, pey  = 0E0, pez = 0E0;
-      double mass = 0E0, time = 0E0, properTime = 0E0;
-      /// The list of daughters of this MC particle
+      /// Particle mass
+      double mass       { 0E0 };
+      /// Particle creation time
+      double time       { 0E0 };
+      /// Proper time
+      double properTime { 0E0 };
+      /// The list of parents of this MC particle
       Particles parents;
+      /// The list of daughters of this MC particle
       Particles daughters;
 
       /// User data extension if required
-      dd4hep_ptr<ParticleExtension> extension;   //! not persisten. ROOT cannot handle
+      dd4hep_ptr<ParticleExtension> extension  { };
+      /// Reference to the G4VProcess, which created this track
       const G4VProcess *process = 0;             //! not persistent
+
+    public:
       /// Default constructor
       Geant4Particle();
       /// Constructor with ID initialization
@@ -169,6 +185,7 @@ namespace dd4hep {
     protected:
       /// Particle pointer
       Geant4Particle* particle;
+
     public:
       /// Default constructor
       Geant4ParticleHandle(Geant4Particle* part);
@@ -325,6 +342,7 @@ namespace dd4hep {
       /// Map associating the G4Track identifiers with identifiers of existing MCParticles
       TrackEquivalents equivalentTracks;
 
+    public:
       /// Default constructor
       Geant4ParticleMap() {}
       /// Default destructor

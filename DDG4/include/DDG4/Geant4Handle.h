@@ -14,11 +14,11 @@
 #ifndef DDG4_GEANT4HANDLE_H
 #define DDG4_GEANT4HANDLE_H
 
-// Framework include files
+/// Framework include files
 #include "DD4hep/ComponentProperties.h"
 #include "DD4hep/Detector.h"
 
-// C/C++ include files
+/// C/C++ include files
 #include <string>
 #include <memory>
 

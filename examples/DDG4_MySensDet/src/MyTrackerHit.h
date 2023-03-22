@@ -15,6 +15,7 @@
 
 /// Framework include files
 #include "DDG4/Geant4Data.h"
+#include "DDG4/Geant4Particle.h"
 
 namespace SomeExperiment {
 
@@ -56,6 +57,21 @@ namespace SomeExperiment {
     void copyFrom(const MyTrackerHit& c);
   };
 
+  /// User data to be attached to the output MC particle
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_SIMULATION
+   */
+  class ParticleUserData : public dd4hep::sim::ParticleExtension   {
+  public:
+    /// Some data item to be attached to the Geant4 particle object
+    double absolute_momentum { 0e0 };
+
+  public:
+    using dd4hep::sim::ParticleExtension::ParticleExtension;
+  };
+  
   /// Helper to dump data file
   /**
    *  Usage:  
@@ -84,7 +100,9 @@ namespace SomeExperiment {
 #pragma link C++ namespace dd4hep::sim;
 #pragma link C++ namespace SomeExperiment;
 #pragma link C++ class     SomeExperiment::MyTrackerHit+;
+#pragma link C++ class     SomeExperiment::ParticleUserData+;
 #pragma link C++ class     SomeExperiment::Dump;
+
 #endif
 
 #endif // EXAMPLES_DDG4_MYSENSDET_SRC_MYTRACKERHIT_H

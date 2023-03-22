@@ -13,8 +13,9 @@
 
 // Framework include files
 #include "MyTrackerHit.h"
-#include "DDG4/Geant4SensDetAction.inl"
-#include "DDG4/Factories.h"
+#include <DDG4/Geant4SensDetAction.inl>
+#include <DDG4/Geant4ParticleInformation.h>
+#include <DDG4/Factories.h>
 
 
 namespace SomeExperiment {
@@ -86,6 +87,14 @@ namespace dd4hep {
       // Do something with my personal data (can be also something more clever ;-):
       m_userData.integratedDeposit += contrib.deposit;
       ++m_userData.mumDeposits;
+
+      /// Let's play with the Geant4TrackInformation
+      /// See issue https://github.com/AIDASoft/DD4hep/issues/1073
+      if ( nullptr == h.track->GetUserInformation() )   {
+	auto data = std::make_unique<ParticleUserData>();
+	data->absolute_momentum = h.track->GetMomentum().mag();
+	h.track->SetUserInformation(new Geant4ParticleInformation(std::move(data)));
+      }
       return true;
     }
 

@@ -21,6 +21,7 @@
 #include <DDG4/Geant4TrackingAction.h>
 #include <DDG4/Geant4SteppingAction.h>
 #include <DDG4/Geant4ParticleHandler.h>
+#include <DDG4/Geant4ParticleInformation.h>
 #include <DDG4/Geant4UserParticleHandler.h>
 
 // Geant4 include files
@@ -351,15 +352,18 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   if ( m_userHandler )  {
     m_userHandler->end(track, m_currTrack);
   }
-
+ 
   // These are candidate tracks with a probability to be stored due to their properties:
   // - primary particle
   // - hits created
   // - secondaries
   // - above energy threshold
   // - to be kept due to creator process
+  // - to be kept due to user information of type 'Geant4ParticleInformation' stored in the G4Track
   //
-  if ( !mask.isNull() )   {
+  Geant4ParticleInformation* track_info =
+    dynamic_cast<Geant4ParticleInformation*>(track->GetUserInformation());
+  if ( !mask.isNull() || track_info )   {
     m_equivalentTracks[g4_id] = g4_id;
     ParticleMap::iterator ip = m_particleMap.find(g4_id);
     if ( mask.isSet(G4PARTICLE_PRIMARY) )   {
@@ -369,6 +373,10 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     Particle* part = 0;
     if ( ip==m_particleMap.end() ) part = m_particleMap[g4_id] = new Particle();
     else part = (*ip).second;
+    if ( track_info )  {
+      mask.set(G4PARTICLE_KEEP_USER);
+      part->extension.reset(track_info->release());
+    }
     part->get_data(m_currTrack);
   }
   else   {
