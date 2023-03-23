@@ -64,7 +64,6 @@ namespace { class DDG4Dict {};   }
 
 /// Dictionaires for Geant4 particles
 #pragma link C++ class dd4hep::sim::ParticleExtension+;
-#pragma link C++ class std::unique_ptr<dd4hep::sim::ParticleExtension>+;
 
 /// Auto-pointers related. ROOT cannot handle I/O!
 #pragma link C++ class dd4hep::dd4hep_ptr<dd4hep::sim::DataExtension>;
