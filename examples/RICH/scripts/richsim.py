@@ -73,7 +73,7 @@ if __name__ == "__main__":
     # Installed compact file, otherwise assume the user passed `--compactFile`
     install_prefix = os.environ.get("DD4hepExamplesINSTALL")
     if install_prefix:
-        SIM.compactFile = install_prefix + "/examples/OpticalTracker/compact/pfrich.xml"
+        SIM.compactFile = install_prefix + "/examples/RICH/compact/pfrich.xml"
 
     # Output file (assuming CWD)
     SIM.outputFile = "sim.root"
