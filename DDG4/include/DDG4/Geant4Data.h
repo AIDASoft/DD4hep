@@ -15,12 +15,12 @@
 #define DDG4_GEANT4DATA_H
 
 // Framework include files
-#include <DD4hep/Memory.h>
 #include <Math/Vector3D.h>
 
 // C/C++ include files
 #include <set>
 #include <vector>
+#include <memory>
 
 // Forward declarations
 class G4Step;
@@ -127,7 +127,7 @@ namespace dd4hep {
       /// Original Geant 4 track identifier of the creating track (debugging)
       long g4ID = -1;
       /// User data extension if required
-      dd4hep_ptr<DataExtension> extension;   //! not persisten. ROOT cannot handle
+      std::unique_ptr<DataExtension> extension;
 
       /// Utility class describing the monte carlo contribution of a given particle to a hit.
       /**
