@@ -288,6 +288,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   m_currTrack.vex         = 0.0;
   m_currTrack.vey         = 0.0;
   m_currTrack.vez         = 0.0;
+  m_currTrack.vet         = 0.0;
   m_currTrack.psx         = mom.x();
   m_currTrack.psy         = mom.y();
   m_currTrack.psz         = mom.z();

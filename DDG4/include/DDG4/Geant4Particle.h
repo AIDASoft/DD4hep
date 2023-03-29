@@ -122,8 +122,8 @@ namespace dd4hep {
       // 12 ints + 4 bytes + 3 floats should be aligned to 8 bytes....
       /// The starting vertex
       double vsx  = 0E0, vsy  = 0E0, vsz = 0E0;
-      /// The end vertex
-      double vex  = 0E0, vey  = 0E0, vez = 0E0;
+      /// The end vertex, with time as a workaround for issue 1082
+      double vex  = 0E0, vey  = 0E0, vez = 0E0, vet = 0E0;
       /// The track momentum at the start vertex
       double psx  = 0E0, psy  = 0E0, psz = 0E0;
       /// The track momentum at the end vertex

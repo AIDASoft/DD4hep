@@ -84,6 +84,7 @@ Geant4Particle& Geant4Particle::get_data(Geant4Particle& c)   {
     vex         = c.vex;
     vey         = c.vey;
     vez         = c.vez;
+    vet         = c.vet;
     psx         = c.psx;
     psy         = c.psy;
     psz         = c.psz;

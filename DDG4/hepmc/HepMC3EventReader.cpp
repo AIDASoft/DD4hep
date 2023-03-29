@@ -109,6 +109,7 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
     p->vex          = vex.get_component(0) * len_unit;
     p->vey          = vex.get_component(1) * len_unit;
     p->vez          = vex.get_component(2) * len_unit;
+    p->vet          = vex.get_component(3) * len_unit / CLHEP::c_light;
     p->process      = 0;
     p->spin[0]      = spin[0];
     p->spin[1]      = spin[1];
@@ -146,7 +147,7 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
       vtx->x = p->vex;
       vtx->y = p->vey;
       vtx->z = p->vez;
-      vtx->time = p->time;
+      vtx->time = p->vet;
 
       vtx->out.insert(p->id) ;
     }
