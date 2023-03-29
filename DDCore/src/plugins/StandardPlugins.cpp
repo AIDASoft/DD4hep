@@ -1374,40 +1374,68 @@ DECLARE_APPLY(DD4hep_PlacedVolumeProcessor,placed_volume_processor)
  *  \date    01/04/2014
  */
 template <int flag> long dump_detelement_tree(Detector& description, int argc, char** argv) {
+  using VolIDs = PlacedVolume::VolIDs;
   struct Actor {
+    Detector& descr;
     string path;
     long count = 0;
+    DetElement det_world;
     int have_match = -1, analysis_level = 999999;
-    bool dump_materials = false, dump_shapes = false, dump_positions = false;
+    bool dump_materials = false, dump_shapes = false, dump_positions = false, dump_volids = false;
     bool sensitive_only = false;
 
-    Actor(const string& p, int level, bool mat, bool shap, bool pos, bool sens)
-      : path(p), analysis_level(level), dump_materials(mat), dump_shapes(shap), dump_positions(pos), sensitive_only(sens) {}
+    Actor(Detector& det) : descr(det) {
+      det_world = descr.world();
+    }
     ~Actor() {
       printout(ALWAYS,"DetectorDump", "+++ Scanned a total of %ld elements.",count);
     }
-    long dump(DetElement de,int level)   {
-      const DetElement::Children& c = de.children();
+    IDDescriptor get_id_descriptor(PlacedVolume pv)   {
+      Volume v = pv.volume();
+      SensitiveDetector sd = v.sensitiveDetector();
+      if ( sd.isValid() )   {
+	IDDescriptor dsc = sd.readout().idSpec();
+	if ( dsc.isValid() ) return dsc;
+      }
+      for (Int_t idau = 0, ndau = v->GetNdaughters(); idau < ndau; ++idau)  {
+	IDDescriptor dsc = get_id_descriptor(v->GetNode(idau));
+	if ( dsc.isValid() ) return dsc;
+      }
+      return IDDescriptor();
+    }
+    void validate_id_descriptor(DetElement de, IDDescriptor& desc)   {
+      desc = (!de.parent() || de.parent() == det_world)
+	? IDDescriptor() : get_id_descriptor(de.placement());
+    }
+
+    long dump(DetElement de, int level, IDDescriptor& id_desc, VolIDs chain)   {
+      PlacedVolume place = de.placement();
+      const DetElement::Children& children = de.children();
       bool  use_elt = path.empty() || de.path().find(path) != string::npos;
-      if ( have_match<0 && use_elt ) have_match = level;
-      use_elt = use_elt && (level-have_match)<=analysis_level;
+
+      if ( have_match < 0 && use_elt )  {
+	have_match = level;
+      }
+      use_elt = use_elt && ((level-have_match) <= analysis_level);
+      if ( de != det_world )    {
+	chain.insert(chain.end(), place.volIDs().begin(), place.volIDs().end());
+      }
       if ( use_elt )   {
         if ( !sensitive_only || 0 != de.volumeID() )  {
-          PlacedVolume place = de.placement();
-          char sens = place.isValid() ? place.volume().isSensitive() ? 'S' : ' ' : ' ';
+          char sens = place.isValid() && place.volume().isSensitive() ? 'S' : ' ';
           char fmt[128];
           switch(flag)  {
           case 0:
             ++count;
             if ( de.placement() == de.idealPlacement() )  {
               ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p  %%c",level+1,2*level+1);
-              printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(c.size()),
+              printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(children.size()),
                        (unsigned long)de.volumeID(), (void*)place.ptr(), sens);
               break;
             }
             ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p [ideal:%%p aligned:%%p]  %%c",
                        level+1,2*level+1);
-            printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(c.size()),
+            printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(children.size()),
                      (unsigned long)de.volumeID(), (void*)de.idealPlacement().ptr(),
                      (void*)place.ptr(), sens);
             break;
@@ -1416,7 +1444,7 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
             ::snprintf(fmt,sizeof(fmt),
                        "%03d %%-%ds Detector: %%s NumDau:%%d VolID:%%p",
                        level+1,2*level+1);
-            printout(INFO,"DetectorDump", fmt, "", de.path().c_str(), int(c.size()), (void*)de.volumeID());
+            printout(INFO,"DetectorDump", fmt, "", de.path().c_str(), int(children.size()), (void*)de.volumeID());
             if ( de.placement() == de.idealPlacement() )  {
               ::snprintf(fmt,sizeof(fmt),
                          "%03d %%-%ds Placement: %%s  %%c",
@@ -1452,31 +1480,46 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
             ::snprintf(fmt,sizeof(fmt), "%03d %%-%ds Position: (%%9.4f,%%9.4f,%%9.4f) [cm] w/r to world",  level+1,2*level+3);
             printout(INFO,"DetectorDump",fmt,"", world[0], world[1], world[2]);
           }
+	  if ( dump_volids && !place.volIDs().empty() )    {
+	    std::stringstream log;
+	    log << " VID:";
+	    for( const auto& i : chain )
+	      log << " " << i.first << ':' << dec << setw(2) << i.second;
+	    if ( id_desc.isValid() )  {
+	      log << " (encoded:0x" << setfill('0') << setw(8) << hex
+		  << id_desc.encode(chain)
+		  << setfill(' ') << dec << ") ";
+	    }
+	    ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s", level+1, 2*level+1);
+            printout(INFO,"DetectorDump", fmt, "", log.str().c_str());
+	  }
         }
       }
-      for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
-        dump((*i).second,level+1);
+      for ( const auto& c : children )   {
+	validate_id_descriptor(c.second, id_desc);
+	dump(c.second, level+1, id_desc, chain);
+      }
       return 1;
     }
   };
-  int  level = 999999;
-  bool sensitive_only = false, materials = false, shapes = false, positions = false;
-  string path;
+  Actor  a(description);
   for(int i=0; i<argc; ++i)  {
-    if      ( ::strncmp(argv[i],"--sensitive",     5)==0 ) { sensitive_only = true;    }
-    else if ( ::strncmp(argv[i], "-sensitive",     5)==0 ) { sensitive_only = true;    }
-    else if ( ::strncmp(argv[i], "--no-sensitive", 8)==0 ) { sensitive_only = false;   }
-    else if ( ::strncmp(argv[i], "-materials",     4)==0 ) { materials = true;         }
-    else if ( ::strncmp(argv[i], "--materials",    5)==0 ) { materials = true;         }
-    else if ( ::strncmp(argv[i], "-shapes",        4)==0 ) { shapes = true;            }
-    else if ( ::strncmp(argv[i], "--shapes",       5)==0 ) { shapes = true;            }
-    else if ( ::strncmp(argv[i], "-positions",     4)==0 ) { positions = true;         }
-    else if ( ::strncmp(argv[i], "--positions",    5)==0 ) { positions = true;         }
-    else if ( ::strncmp(argv[i], "-no-sensitive",  7)==0 ) { sensitive_only = false;   }
-    else if ( ::strncmp(argv[i], "--detector",     5)==0 ) { path = argv[++i];         }
-    else if ( ::strncmp(argv[i], "-detector",      5)==0 ) { path = argv[++i];         }
-    else if ( ::strncmp(argv[i], "--level",        5)==0 ) { level= ::atol(argv[++i]); }
-    else if ( ::strncmp(argv[i], "-level",         5)==0 ) { level= ::atol(argv[++i]); }
+    if      ( ::strncmp(argv[i],"--sensitive",     5)==0 ) { a.sensitive_only = true;  }
+    else if ( ::strncmp(argv[i], "-sensitive",     5)==0 ) { a.sensitive_only = true;  }
+    else if ( ::strncmp(argv[i], "--no-sensitive", 8)==0 ) { a.sensitive_only = false; }
+    else if ( ::strncmp(argv[i], "-materials",     4)==0 ) { a.dump_materials = true;  }
+    else if ( ::strncmp(argv[i], "--materials",    5)==0 ) { a.dump_materials = true;  }
+    else if ( ::strncmp(argv[i], "-shapes",        4)==0 ) { a.dump_shapes    = true;  }
+    else if ( ::strncmp(argv[i], "--shapes",       5)==0 ) { a.dump_shapes    = true;  }
+    else if ( ::strncmp(argv[i], "-positions",     4)==0 ) { a.dump_positions = true;  }
+    else if ( ::strncmp(argv[i], "--positions",    5)==0 ) { a.dump_positions = true;  }
+    else if ( ::strncmp(argv[i], "-no-sensitive",  7)==0 ) { a.sensitive_only = false; }
+    else if ( ::strncmp(argv[i], "--volids",       5)==0 ) { a.dump_volids    = true;  }
+    else if ( ::strncmp(argv[i], "-volids",        5)==0 ) { a.dump_volids    = true;  }
+    else if ( ::strncmp(argv[i], "--detector",     5)==0 ) { a.path = argv[++i];       }
+    else if ( ::strncmp(argv[i], "-detector",      5)==0 ) { a.path = argv[++i];       }
+    else if ( ::strncmp(argv[i], "--level",        5)==0 ) { a.analysis_level = ::atol(argv[++i]); }
+    else if ( ::strncmp(argv[i], "-level",         5)==0 ) { a.analysis_level = ::atol(argv[++i]); }
     else   {
       cout << "  "
            << (flag==0 ? "DD4hep_DetectorDump" : "DD4hep_DetectorVolumeDump") << " -arg [-arg]     \n"
@@ -1490,16 +1533,19 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
         "    -positions             dto.                                                           \n"
         "   --materials             Print material information.                                    \n"
         "    -materials             dto.                                                           \n"
-        "   --detector   <path>     Process elements only if <path> is part of the DetElement path.\n"
+        "   --detector    <path>    Process elements only if <path> is part of the DetElement path.\n"
         "    -detector    <path>    dto.                                                           \n"
         "    -level       <number>  Maximal depth to be explored by the scan                       \n"
         "   --level       <number>  dto.                                                           \n"
+        "    -volids                Print volume identifiers of placements.                        \n"
+        "   --volids                dto.                                                           \n"
         "\tArguments given: " << arguments(argc,argv) << endl << flush;        
       ::exit(EINVAL);
     }
   }
-  Actor a(path, level, materials, shapes, positions, sensitive_only);
-  return a.dump(description.world(),0);
+  VolIDs chain;
+  IDDescriptor id_desc;
+  return a.dump(description.world(), 0, id_desc, chain);
 }
 DECLARE_APPLY(DD4hep_DetectorDump,dump_detelement_tree<0>)
 DECLARE_APPLY(DD4hep_DetectorVolumeDump,dump_detelement_tree<1>)
