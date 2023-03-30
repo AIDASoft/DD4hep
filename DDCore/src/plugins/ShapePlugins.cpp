@@ -29,6 +29,20 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
+/// Plugin to create a scaled shape
+/**
+ *  The xml entity 'e' must look like the following: 
+ *  - name is optional, x,y,z is the scale.
+ *  - <shape>: some shape understood by a DD4hep factory.
+ * 
+ *  <some-tag name="my-solid" x="1.0" y="2.0" z="3.0" ... stuff not looked at .... >
+ *       <shape>  ......  </shape>
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Scaled(Detector&, xml_h e)   {
   xml_dim_t scale(e);
   Solid shape(xml_comp_t(scale.child(_U(shape))).createShape());
@@ -38,6 +52,18 @@ static Handle<TObject> create_Scaled(Detector&, xml_h e)   {
 }
 DECLARE_XML_SHAPE(Scale__shape_constructor,create_Scaled)
 
+/// Plugin to create an assembly shape
+/**
+ *  The xml entity 'e' must look like the following: 
+ *  - name is optional
+ *
+ *  <some-tag name="my-assembly"  ......stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Assembly(Detector&, xml_h e)   {
   xml_dim_t dim(e);
   Solid solid = Handle<TNamed>(new TGeoShapeAssembly());
@@ -46,6 +72,18 @@ static Handle<TObject> create_Assembly(Detector&, xml_h e)   {
 }
 DECLARE_XML_SHAPE(Assembly__shape_constructor,create_Assembly)
 
+/// Plugin to create a 3D box
+/**
+ *  The xml entity 'e' must look like the following: 
+ *  - name is optional, x,y,z are the dimensions
+ * 
+ *  <some-tag name="my-box" x="1.0*cm" y="2.0*cm" z="3.0*cm" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Box(Detector&, xml_h e)   {
   xml_dim_t dim(e);
   Solid solid = Box(dim.dx(),dim.dy(),dim.dz());
@@ -54,6 +92,20 @@ static Handle<TObject> create_Box(Detector&, xml_h e)   {
 }
 DECLARE_XML_SHAPE(Box__shape_constructor,create_Box)
 
+/// Plugin to create a half-space
+/**
+ *  The xml entity 'e' must look like the following: 
+ *  - name is optional
+ * 
+ *  <some-tag name="my-box" ... stuff not looked at .... >
+ *     <point  x="1.0*cm" y="2.0*cm" z="3.0*cm"/>
+ *     <normal x="1.0" y="0.0" z="0.0"/>
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_HalfSpace(Detector&, xml_h e)   {
   xml_dim_t dim(e);
   xml_dim_t point  = e.child(_U(point));
@@ -66,6 +118,23 @@ static Handle<TObject> create_HalfSpace(Detector&, xml_h e)   {
 }
 DECLARE_XML_SHAPE(HalfSpace__shape_constructor,create_HalfSpace)
 
+/// Plugin to create a poly-cone
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional, startphi, deltaphi are optional
+ * 
+ *  <some-tag name="my-polycone" startphi="0*rad" deltaphi="pi" ... stuff not looked at .... >
+ *     <zplane rmin="1.0*cm" rmax="2.0*cm"/>
+ *     <zplane rmin="2.0*cm" rmax="4.0*cm"/>
+ *     <zplane rmin="3.0*cm" rmax="6.0*cm"/>
+ *     <zplane rmin="4.0*cm" rmax="8.0*cm"/>
+ *     <zplane rmin="5.0*cm" rmax="10.0*cm"/>
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Polycone(Detector&, xml_h element)   {
   xml_dim_t e(element);
   int num = 0;
@@ -86,6 +155,24 @@ static Handle<TObject> create_Polycone(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(Polycone__shape_constructor,create_Polycone)
 
+/// Plugin to create a cone-segment
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional, rmin1, rmin2, startphi, deltaphi are optional
+ *  <some-tag name="my-polycone" rmin1="1*cm" rmax1="2.cm"  rmin1="2*cm" rmax1="3.cm" 
+ *                               startphi="0*rad" deltaphi="pi" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *  OR (deprecated):
+ *  - name is optional, rmin1, rmin2, (phi1 or phi2) are optional
+ *  <some-tag name="my-polycone" rmin1="1*cm" rmax1="2.cm"  rmin1="2*cm" rmax1="3.cm" 
+ *                               phi1="0*rad" phi2="pi" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_ConeSegment(Detector&, xml_h element)   {
   Solid solid;
   xml_dim_t e(element);
@@ -109,6 +196,24 @@ static Handle<TObject> create_ConeSegment(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(ConeSegment__shape_constructor,create_ConeSegment)
 
+/// Plugin to create a tube
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional, rmin, startphi, deltaphi are optional
+ *  <some-tag name="my-tube" rmin="1*cm" rmax="2.cm" 
+                             startphi="0*rad" deltaphi="pi" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *  OR (deprecated):
+ *  - name is optional, rmin, (phi1 or phi2) are optional
+ *  <some-tag name="my-tube" rmin="1*cm" rmax="2.cm" 
+ *                           phi1="0*rad" phi2="pi" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Tube(Detector&, xml_h element)   {
   Solid solid;
   xml_dim_t e(element);
@@ -129,6 +234,12 @@ static Handle<TObject> create_Tube(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(Tube__shape_constructor,create_Tube)
 
+/// Plugin to create a twisted tube
+/**
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_TwistedTube(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid;
@@ -151,6 +262,12 @@ static Handle<TObject> create_TwistedTube(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(TwistedTube__shape_constructor,create_TwistedTube)
 
+/// Plugin to create a cut tube
+/**
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_CutTube(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = CutTube(e.rmin(0.0),e.rmax(),e.dz(),
@@ -167,6 +284,12 @@ static Handle<TObject> create_CutTube(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(CutTube__shape_constructor,create_CutTube)
 
+/// Plugin to create an elliptical tube
+/**
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_EllipticalTube(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = EllipticalTube(e.a(),e.b(),e.dz());
@@ -175,6 +298,12 @@ static Handle<TObject> create_EllipticalTube(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(EllipticalTube__shape_constructor,create_EllipticalTube)
 
+/// Plugin to create an ttruncated tube
+/**
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_TruncatedTube(Detector&, xml_h element)   {
   xml_dim_t e(element);
   double sp = e.startphi(0.0), dp = e.deltaphi(2*M_PI);
@@ -187,6 +316,17 @@ static Handle<TObject> create_TruncatedTube(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(TruncatedTube__shape_constructor,create_TruncatedTube)
 
+/// Plugin to create a cone
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional, rmin is optional
+ *  <some-tag name="my-tube" rmin="1*cm" rmax="2.cm" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Cone(Detector&, xml_h element)   {
   xml_dim_t e(element);
   double rmi1 = e.rmin1(0.0), rma1 = e.rmax1();
@@ -196,6 +336,24 @@ static Handle<TObject> create_Cone(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(Cone__shape_constructor,create_Cone)
 
+/// Plugin to create a trap
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional, rmin is optional
+ *  <some-tag name="my-tube" dx="1*cm" dy="2.cm" dz="2*cm" pLTX="..." ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *  OR:
+ *  name is optional, z, theta, phi, alpha1, alpha2, x3, x4, y1, y2 is optional
+ *  <some-tag name="my-tube" z="2*cm" theta="0" phi="0"
+ *                           y1="1*cm" x1="1*cm" x2="2.cm" alpha1="0" 
+ *                           y2="2.cm" x3="2*cm" x4="2*cm" alpha2="pi"
+ *                            ... stuff not looked at .... >
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Trap(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid;
@@ -217,6 +375,12 @@ static Handle<TObject> create_Trap(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(Trap__shape_constructor,create_Trap)
 
+/// Plugin to create a pseudo trap
+/**
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_PseudoTrap(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = PseudoTrap(e.x1(),e.x2(),e.y1(),e.y2(),e.z(),e.radius(),e.attr<bool>(xml_tag_t("minusZ")));
@@ -225,6 +389,17 @@ static Handle<TObject> create_PseudoTrap(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(PseudoTrap__shape_constructor,create_PseudoTrap)
 
+/// Plugin to create a trd1
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional, z is optional
+ *  <some-tag name="my-trd1" x1="1*cm" x2="2*cm" y="1*cm" z="2*cm" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Trd1(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = Trd1(e.x1(),e.x2(),e.y(),e.z(0.0));
@@ -233,6 +408,17 @@ static Handle<TObject> create_Trd1(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(Trd1__shape_constructor,create_Trd1)
 
+/// Plugin to create a trd2
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional, z is optional
+ *  <some-tag name="my-trd2" x1="1*cm" x2="2*cm" y1="1*cm" y2="2*cm" z="2*cm" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Trd2(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = Trd2(e.x1(),e.x2(),e.y1(),e.y2(),e.z(0.0));
@@ -242,6 +428,24 @@ static Handle<TObject> create_Trd2(Detector&, xml_h element)   {
 DECLARE_XML_SHAPE(Trapezoid__shape_constructor,create_Trd2)
 DECLARE_XML_SHAPE(Trd2__shape_constructor,create_Trd2)
 
+/// Plugin to create a torus
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional, rmin, startphi, deltaphi are optional
+ *  <some-tag name="my-torus" r="10*cm" rmin="1*cm" rmax="2.cm" 
+                              startphi="0*rad" deltaphi="pi" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *  OR (deprecated):
+ *  - name is optional, rmin, (phi1 or phi2) are optional
+ *  <some-tag name="my-tube" r="10*cm" rmin="1*cm" rmax="2.cm" 
+ *                           phi1="0*rad" phi2="pi" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Torus(Detector&, xml_h element)   {
   Solid      solid;
   xml_dim_t  e(element);
@@ -311,6 +515,17 @@ static Handle<TObject> create_Sphere(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(Sphere__shape_constructor,create_Sphere)
 
+/// Plugin to create a paraboloid
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional, rmin is optional
+ *  <some-tag name="my-paraboloid" rmin="1*cm" rmax="2*cm" dz="1*cm" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Paraboloid(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = Paraboloid(e.rmin(0.0),e.rmax(),e.dz());
@@ -319,6 +534,19 @@ static Handle<TObject> create_Paraboloid(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(Paraboloid__shape_constructor,create_Paraboloid)
 
+/// Plugin to create a hyperboloid
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional, rmin is optional
+ *  <some-tag name="my-hyperboloid" rmin="1*cm" inner_stereo="pi/2" 
+ *                                  rmax="2*cm" outer_stereo="pi/2"
+ *                                  dz="5*cm" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Hyperboloid(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = Hyperboloid(e.rmin(), e.inner_stereo(), e.rmax(), e.outer_stereo(), e.dz());
@@ -327,6 +555,18 @@ static Handle<TObject> create_Hyperboloid(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(Hyperboloid__shape_constructor,create_Hyperboloid)
 
+/// Plugin to create a regular polyhedron
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional
+ *  <some-tag name="my-polyhedron"  numsides="5" rmin="1*cm" rmax="2*cm" dz="5*cm"
+ *                                  dz="5*cm" ... stuff not looked at .... >
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_PolyhedraRegular(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = PolyhedraRegular(e.numsides(),e.rmin(),e.rmax(),e.dz());
@@ -335,7 +575,20 @@ static Handle<TObject> create_PolyhedraRegular(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(PolyhedraRegular__shape_constructor,create_PolyhedraRegular)
 
-/// Plugin factory to created polyhedra shapes
+/// Plugin to create a irregular polyhedron
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional
+ *  <some-tag name="my-polyhedron"  numsides="5" startphi="0" deltaphi="2*pi" ... stuff not looked at .... >
+ *    <plane rmin="1*cm" rmax="2*cm" z="1*cm"/>
+ *    <plane rmin="2*cm" rmax="3*cm" z="2*cm"/>
+ *    <plane rmin="2*cm" rmax="4*cm" z="4*cm"/>
+ *       ... stuff not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_Polyhedra(Detector&, xml_h element)   {
   xml_dim_t e(element);
   std::vector<double> z, rmin, rmax;
@@ -351,7 +604,12 @@ static Handle<TObject> create_Polyhedra(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(Polyhedra__shape_constructor,create_Polyhedra)
 
-/// Plugin factory to created extruded polygons
+/// Plugin factory to create extruded polygons
+/**
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_ExtrudedPolygon(Detector&, xml_h element)   {
   xml_dim_t e(element);
   std::vector<double> pt_x, pt_y, sec_z, sec_x, sec_y, sec_scale;
@@ -373,7 +631,12 @@ static Handle<TObject> create_ExtrudedPolygon(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(ExtrudedPolygon__shape_constructor,create_ExtrudedPolygon)
 
-/// Plugin factory to created arbitrary 8-point solids
+/// Plugin factory to create arbitrary 8-point solids
+/**
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_EightPointSolid(Detector&, xml_h element)   {
   xml_dim_t e(element);
   double v[8][2];
@@ -391,7 +654,12 @@ static Handle<TObject> create_EightPointSolid(Detector&, xml_h element)   {
 DECLARE_XML_SHAPE(EightPointSolid__shape_constructor,create_EightPointSolid)
 
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
-/// Plugin factory to created tessellated shapes
+/// Plugin factory to create tessellated shapes
+/**
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Handle<TObject> create_TessellatedSolid(Detector&, xml_h element)   {
   xml_dim_t e(element);
   std::vector<TessellatedSolid::Vertex> vertices;
@@ -623,15 +891,29 @@ static Handle<TObject> create_BooleanMulti(Detector& description, xml_h element)
 }
 DECLARE_XML_SHAPE(BooleanShape__shape_constructor,create_BooleanMulti)
 
-static Handle<TObject> create_std_volume(Detector& description, xml_h e)   {
-  return xml::createStdVolume(description, e);
+/// Plugin factory to create arbitrary volumes using the xml::createStdVolume utility
+/**
+ *  For details see the implementation in DDCore/src/XML/Utilities.cpp
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
+static Handle<TObject> create_std_volume(Detector& description, xml_h element)   {
+  return xml::createStdVolume(description, element);
 }
 DECLARE_XML_VOLUME(DD4hep_StdVolume,create_std_volume)
 
-static Handle<TObject> create_gen_volume(Detector& description, xml_h e)   {
-  xml_dim_t elt = e;
+/// Plugin factory to create arbitrary volumes using the xml::createVolume utility
+/**
+ *  For details see the implementation in DDCore/src/XML/Utilities.cpp
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
+static Handle<TObject> create_gen_volume(Detector& description, xml_h element)   {
+  xml_dim_t elt = element;
   string    typ = elt.attr<string>(_U(type));
-  return xml::createVolume(description, typ, e);
+  return xml::createVolume(description, typ, element);
 }
 DECLARE_XML_VOLUME(DD4hep_GenericVolume,create_gen_volume)
 
@@ -644,6 +926,12 @@ TGeoCombiTrans* createPlacement(const Rotation3D& iRot, const Position& iTrans) 
   return new TGeoCombiTrans(t, r);
 }
 
+/// Plugin factory to create shapes for shape check tests
+/**
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens)  {
   xml_det_t    x_det     = e;
   string       name      = x_det.nameStr();
@@ -899,6 +1187,12 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
 // first argument is the type from the xml file
 DECLARE_DETELEMENT(DD4hep_TestShape_Creator,create_shape)
 
+/// Plugin factory to check shape meshes against a reference file
+/**
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
 void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
   if ( argc != 2 )   {  }
   xml_det_t    x_det  = *(xml_h*)argv[0];
@@ -986,5 +1280,4 @@ void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
   }
   return Constant("SUCCESS",os.str().c_str()).ptr();
 }
-
 DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_Mesh_Verifier,shape_mesh_verifier)

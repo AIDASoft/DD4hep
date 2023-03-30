@@ -97,7 +97,7 @@ static long dummy_plugin(Detector& , int, char**) {
 }
 DECLARE_APPLY(DD4hep_DummyPlugin,dummy_plugin)
 
-/// Basic entry point to create a Detector instance
+/// Basic entry point to create/access the Detector instance
 /**
  *  Factory: Detector_constructor
  *
@@ -187,9 +187,10 @@ static long run_function(Detector&, int argc, char** argv) {
   }
   if ( lib.empty() || func.empty() )  {
     std::cout <<
-      "Usage: -plugin <name> -arg [-arg]                                \n"
-      "     -library   <string> Library to be loaded                    \n"
-      "     -function  <string> name of the entry point to be executed. \n"
+      "Usage: -plugin <name> -arg [-arg]                                 \n\n"
+      "       Execute a function without arguments inside a library.     \n\n"
+      "     -library   <string>    Library to be loaded                    \n"
+      "     -function  <string>    name of the entry point to be executed. \n"
       "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
     ::exit(EINVAL);
   }
@@ -252,9 +253,7 @@ DECLARE_APPLY(DD4hep_Rint,run_interpreter)
  */
 static long root_ui(Detector& description, int /* argc */, char** /* argv */) {
   char cmd[256];
-  //DD4hepUI* ui = new DD4hepUI(description);
-  //::snprintf(cmd,sizeof(cmd),"dd4hep::detail::DD4hepUI* gDD4hepUI = (dd4hep::detail::DD4hepUI*)%p;",(void*)ui);
-  std::snprintf(cmd,sizeof(cmd),
+  std::snprintf(cmd, sizeof(cmd),
 		"dd4hep::detail::DD4hepUI* gDD4hepUI = new "
 		"dd4hep::detail::DD4hepUI(*(dd4hep::Detector*)%p);",
 		(void*)&description);
@@ -391,17 +390,39 @@ DECLARE_APPLY(DD4hep_Dump_BorderSurfaces,root_dump_border_surfaces)
  *  \date    01/04/2014
  */
 static long root_elements(Detector& description, int argc, char** argv) {
+  using elt_h = xml::Element;
+
+  /// Generic printer object. Calls the print method of TObject
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
+   */
   struct ElementPrint {
+    /// Default constructor
     ElementPrint() = default;
+    /// Default destructor
     virtual ~ElementPrint() = default;
-    virtual void operator()(TGeoElement* elt)  { elt->Print();  }
-    virtual void operator()(TGeoIsotope* iso)  { iso->Print();  }
+    /// Element writer
+    virtual void operator()(TGeoElement* elt)  {   elt->Print();    }
+    /// Isotope writer
+    virtual void operator()(TGeoIsotope* iso)  {   iso->Print();    }
   };
+
+  /// XML printer to produce XML output
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
+   */
   struct ElementPrintXML : public ElementPrint  {
-    typedef xml::Element elt_h;
+    /// Root XML element
     elt_h root;
+    /// Initializing constructor
     ElementPrintXML(elt_h r) : root(r) {}
+    /// Default destructor
     virtual ~ElementPrintXML() {}
+    /// Element writer
     virtual void operator()(TGeoElement* element)  {
       elt_h elt = root.addChild(_U(element));
       elt.setAttr(_U(Z),element->Z());
@@ -413,6 +434,7 @@ static long root_elements(Detector& description, int argc, char** argv) {
       atom.setAttr(_U(unit),"g/mole");
       atom.setAttr(_U(value),element->A());
     }
+    /// Isotope writer
     virtual void operator()(TGeoIsotope* isotope)  {
       elt_h iso = root.addChild(_U(isotope));
       iso.setAttr(_U(Z),isotope->GetZ());
@@ -442,9 +464,9 @@ static long root_elements(Detector& description, int argc, char** argv) {
     }
   }
 
-  xml::Document doc(0);
+  xml::Document        doc(0);
   xml::DocumentHandler docH;
-  xml::Element  element(0);
+  xml::Element         element(0);
   if ( type == "xml" )  {
      const char comment[] = "\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
@@ -496,19 +518,34 @@ DECLARE_APPLY(DD4hep_ElementTable,root_elements)
  *  \date    01/04/2014
  */
 static long root_materials(Detector& description, int argc, char** argv) {
+
+  using elt_h = xml::Element;
+
+  /// Material printer object
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
+   */
   struct MaterialPrint {
-    typedef xml::Element elt_h;
+  public:
+    /// Reference to the detector description
     Detector& description;
+
+  public:
+    /// Initializing constructor
     MaterialPrint(Detector& desc) : description(desc) {}
+    /// Default destructor
     virtual ~MaterialPrint() = default;
+    /// Print single material
     virtual elt_h print(TGeoMaterial* mat)  {
       const char* st = "Undefined";
-      switch(mat->GetState())  {
-      case TGeoMaterial::kMatStateSolid:  st = "solid"; break;
-      case TGeoMaterial::kMatStateLiquid: st = "liquid"; break;
-      case TGeoMaterial::kMatStateGas:    st = "gas"; break;
-      case TGeoMaterial::kMatStateUndefined: 
-      default: st = "Undefined"; break;
+      switch( mat->GetState() )   {
+      case TGeoMaterial::kMatStateSolid:     st = "solid";     break;
+      case TGeoMaterial::kMatStateLiquid:    st = "liquid";    break;
+      case TGeoMaterial::kMatStateGas:       st = "gas";       break;
+      case TGeoMaterial::kMatStateUndefined:
+      default:                               st = "Undefined"; break;
       }
       ::printf("%-32s %-8s\n", mat->GetName(), mat->IsMixture() ? "Mixture" : "Material");
       ::printf("         Aeff=%7.3f Zeff=%7.4f rho=%8.3f [g/mole] radlen=%8.3g [cm] intlen=%8.3g [cm] index=%3d\n",
@@ -518,11 +555,13 @@ static long root_materials(Detector& description, int argc, char** argv) {
                mat->GetTemperature(), mat->GetPressure()/dd4hep::pascal/100.0, st);
       return elt_h(0);
     }
+    /// Print element entry
     virtual void print(elt_h, TGeoElement* elt, double frac)   {
       ::printf("  %-6s Fraction: %7.3f Z=%3d A=%6.2f N=%3d Neff=%6.2f\n",
                elt->GetName(), frac, elt->Z(), elt->A(), elt->N(), elt->Neff());
     }
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+    /// Print material property
     virtual void printProperty(elt_h, TNamed* prop, TGDMLMatrix* matrix)   {
       if ( matrix )
         ::printf("  Property: %-20s [%ld x %ld] --> %s\n",
@@ -534,19 +573,25 @@ static long root_materials(Detector& description, int argc, char** argv) {
 #endif
     virtual void operator()(TGeoMaterial* mat)  {
       Double_t* mix = mat->IsMixture() ? ((TGeoMixture*)mat)->GetWmixt() : 0;
-      elt_h  mh = print(mat);
-      for(int n=mat->GetNelements(), i=0; i<n; ++i)   {
+      elt_h     mh  = print(mat);
+      for( int n=mat->GetNelements(), i=0; i<n; ++i )   {
         TGeoElement* elt = mat->GetElement(i);
         print(mh, elt, mix ? mix[i] : 1);
       }
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
       TListIter mat_iter(&mat->GetProperties());
-      for(TObject* i = mat_iter.Next(); i; i=mat_iter.Next())   {
+      for( TObject* i = mat_iter.Next(); i; i=mat_iter.Next() )   {
         printProperty(mh, (TNamed*)i, description.manager().GetGDMLMatrix(i->GetTitle()));
       }
 #endif
     }
   };
+  /// XML printer to produce XML output
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \date    01/04/2014
+   */
   struct MaterialPrintXML : public MaterialPrint  {
     elt_h root;
     MaterialPrintXML(elt_h elt, Detector& desc) : MaterialPrint(desc), root(elt) {}
@@ -620,31 +665,31 @@ static long root_materials(Detector& description, int argc, char** argv) {
     }
   }
 
-  xml::Document doc(0);
+  xml::Document        doc(0);
   xml::DocumentHandler docH;
-  xml::Element  element(0);
+  xml::Element         element(0);
   if ( type == "xml" )  {
-     const char comment[] = "\n"
-    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-    "      ++++   Generic detector description in C++               ++++\n"
-    "      ++++   dd4hep Detector description generator.            ++++\n"
-    "      ++++                                                     ++++\n"
-    "      ++++   Parser:"
-    XML_IMPLEMENTATION_TYPE
-    "                ++++\n"
-    "      ++++                                                     ++++\n"
-    "      ++++   Table of elements as defined in ROOT: " ROOT_RELEASE "     ++++\n"
-    "      ++++                                                     ++++\n"
-    "      ++++                              M.Frank CERN/LHCb      ++++\n"
-    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
-     doc = docH.create("materials", comment);
-     element = doc.root();
+    const char comment[] = "\n"
+      "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+      "      ++++   Generic detector description in C++               ++++\n"
+      "      ++++   dd4hep Detector description generator.            ++++\n"
+      "      ++++                                                     ++++\n"
+      "      ++++   Parser:"
+      XML_IMPLEMENTATION_TYPE
+      "                ++++\n"
+      "      ++++                                                     ++++\n"
+      "      ++++   Table of elements as defined in ROOT: " ROOT_RELEASE "     ++++\n"
+      "      ++++                                                     ++++\n"
+      "      ++++                              M.Frank CERN/LHCb      ++++\n"
+      "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
+    doc = docH.create("materials", comment);
+    element = doc.root();
   }
   dd4hep_ptr<MaterialPrint> printer(element
                                     ? new MaterialPrintXML(element, description)
-                                   : new MaterialPrint(description));
+                                    : new MaterialPrint(description));
   TObject* obj = 0;
-  TList* mats = description.manager().GetListOfMaterials();
+  TList*   mats = description.manager().GetListOfMaterials();
   dd4hep_ptr<TIterator> iter(mats->MakeIterator());
   while( (obj=iter->Next()) != 0 )  {
     TGeoMaterial* mat = (TGeoMaterial*)obj;
@@ -746,7 +791,7 @@ static long process_xml_doc(Detector& description, int argc, char** argv) {
     DetectorImp* imp = dynamic_cast<DetectorImp*>(&description);
     if ( imp )  {
       xml::XmlElement* h = (xml::XmlElement*)argv[0];
-      xml::Handle_t input(h);
+      xml::Handle_t    input(h);
       if ( input.ptr() )   {
         if ( argc > 1 )  {
           type = buildType(argv[1]);
@@ -1287,9 +1332,9 @@ DECLARE_APPLY(DD4hep_VolumeDump,dump_volume_tree)
  *  \date    18/11/2016
  */
 static int detelement_processor(Detector& description, int argc, char** argv)   {
-  bool       recursive = true;
+  bool          recursive = true;
   ProcessorArgs args(argc, argv);
-  DetElement det = description.world();
+  DetElement    det = description.world();
   std::unique_ptr<DetectorProcessor>
     proc(dd4hep::createProcessor<DetectorProcessor>(description, args.argc, &args.argv[0]));
 

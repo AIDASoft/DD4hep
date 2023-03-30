@@ -14,7 +14,7 @@
 #define DD4HEP_DETELEMENTVOLUMEIDS_H
 
 // Framework include files
-#include <DD4hep/Detector.h>
+#include <DD4hep/DetElement.h>
 #include <DD4hep/Volumes.h>
 
 // C/C++ includes
@@ -22,21 +22,25 @@
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
-  /// Helper class to assign volume identifiers to DetElements in a subdetector tree
+  /// Forward declarations
+  class Detector;
+
+  /// Actor class to assign volume identifiers to DetElements in a subdetector tree
   /**
+   *  During the tree traversal the encoding information is also accumulated
+   *  in a map indexed by the DetElement.
+   *
    *  \author  M.Frank
    *  \version 1.0
    */
   class DetElementVolumeIDs   {
   private:
-    using Chain = std::vector<PlacedVolume>;
-    
     /// Reference to the Detector instance
     const Detector& m_detDesc;
-    /// Node counter
-    std::size_t     m_numNodes = 0;
 
   public:
+    /// Node counter
+    std::size_t     numberOfNodes  { 0 };
     /// Encoding/mask for sensitive volumes
     struct Encoding  {
       VolumeID identifier;
@@ -46,22 +50,22 @@ namespace dd4hep {
     std::map<DetElement, std::vector<Encoding> > entries;
 
   private:
+    using PlacementPath = std::vector<PlacedVolume>;
+   
     /// Scan a single physical volume and look for sensitive elements below
     std::size_t scanPhysicalVolume(DetElement&        parent,
 				   DetElement         e,
 				   PlacedVolume       pv, 
 				   Encoding           parent_encoding,
 				   SensitiveDetector& sd,
-				   Chain&             chain);
+				   PlacementPath&     chain);
   public:
     /// Default constructor
     DetElementVolumeIDs(const Detector& description);
-    /// Access node count
-    std::size_t numNodes()  const  {   return m_numNodes;  }
     /// Populate the Volume manager
     std::size_t populate(DetElement e);
   };
-}         /* End namespace dd4hep                */
+}      /* End namespace dd4hep                */
 #endif // DD4HEP_DETELEMENTVOLUMEIDS_H
 //==========================================================================
 //  AIDA Detector description implementation 
@@ -79,33 +83,15 @@ namespace dd4hep {
 // Framework include files
 #include <DD4hep/Printout.h>
 #include <DD4hep/Factories.h>
+#include <DD4hep/Detector.h>
 #include <DD4hep/DetectorTools.h>
 #include <DD4hep/detail/DetectorInterna.h>
 
 /// Namespace for the AIDA detector description toolkit
 using namespace dd4hep;
 
-using Encoding = DetElementVolumeIDs::Encoding;
-using Chain    = std::vector<PlacedVolume>;
-using VolIDs   = PlacedVolume::VolIDs;
-
 namespace  {
 
-  /// Compute the encoding for a set of VolIDs within a readout descriptor
-  Encoding update_encoding(const IDDescriptor iddesc, const VolIDs& ids, const Encoding& initial)  {
-    VolumeID volume_id = initial.identifier, mask = initial.mask;
-    for (VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
-      const auto& id = (*i);
-      const BitFieldElement* f = iddesc.field(id.first);
-      VolumeID msk = f->mask();
-      int      off = f->offset();
-      VolumeID val = id.second;    // Necessary to extend volume IDs > 32 bit
-      volume_id   |= ((f->value(val << off) << off)&msk);
-      mask        |= msk;
-    }
-    return { volume_id, mask };
-  }
-  
   /// Basic entry point to assign volume identifiers to detector elements
   /**
    *  Factory: DD4hep_DetElementVolumeIDs
@@ -147,6 +133,27 @@ namespace  {
 }
 DECLARE_APPLY(DD4hep_DetElementVolumeIDs,assign_de_volumeIDs)
 
+using Encoding = DetElementVolumeIDs::Encoding;
+using VolIDs   = PlacedVolume::VolIDs;
+
+namespace  {
+
+  /// Compute the encoding for a set of VolIDs within a readout descriptor
+  Encoding update_encoding(const IDDescriptor iddesc, const VolIDs& ids, const Encoding& initial)  {
+    VolumeID volume_id = initial.identifier, mask = initial.mask;
+    for (VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
+      const auto& id = (*i);
+      const BitFieldElement* f = iddesc.field(id.first);
+      VolumeID msk = f->mask();
+      int      off = f->offset();
+      VolumeID val = id.second;    // Necessary to extend volume IDs > 32 bit
+      volume_id   |= ((f->value(val << off) << off)&msk);
+      mask        |= msk;
+    }
+    return { volume_id, mask };
+  }
+}
+
 /// Default constructor
 DetElementVolumeIDs::DetElementVolumeIDs(const Detector& description)
   : m_detDesc(description)
@@ -170,9 +177,9 @@ std::size_t DetElementVolumeIDs::populate(DetElement det) {
       DetElement   de = i.second;
       pv = de.placement();
       if (pv.isValid()) {
-	Chain    chain;
-	Encoding coding {0, 0};
-	SensitiveDetector sd(0);
+	PlacementPath     chain;
+	Encoding          coding { 0, 0 };
+	SensitiveDetector sd (0);
 	count += scanPhysicalVolume(de, de, pv, coding, sd, chain);
 	continue;
       }
@@ -188,19 +195,20 @@ std::size_t DetElementVolumeIDs::populate(DetElement det) {
 	   "+++ No sensitive detector available for top level DetElement %s.",
 	   det.path().c_str());
   }
-  Chain chain;
+  PlacementPath chain;
   count += scanPhysicalVolume(det, det, pv, encoding, sd, chain);
   printout(INFO, "DetElementVolumeIDs", "++ Assigned %ld volume identifiers to DetElements.", count); 
   return count;
 }
 
 /// Scan a single physical volume and look for sensitive elements below
-std::size_t DetElementVolumeIDs::scanPhysicalVolume(DetElement&        parent,
-						    DetElement         e,
-						    PlacedVolume       pv, 
-						    Encoding           parent_encoding,
-						    SensitiveDetector& sd,
-						    Chain&             chain)
+std::size_t
+DetElementVolumeIDs::scanPhysicalVolume(DetElement&        parent,
+					DetElement         e,
+					PlacedVolume       pv, 
+					Encoding           parent_encoding,
+					SensitiveDetector& sd,
+					PlacementPath&     chain)
 {
   TGeoNode* node = pv.ptr();
   std::size_t count = 0;
@@ -252,7 +260,7 @@ std::size_t DetElementVolumeIDs::scanPhysicalVolume(DetElement&        parent,
 	  }
 	}
 	if ( de_dau.isValid() ) {
-	  Chain dau_chain;
+	  PlacementPath dau_chain;
 	  count += scanPhysicalVolume(parent, de_dau, place_dau, vol_encoding, sd, dau_chain);
 	}
 	else { // there may be several layers of volumes between mother-child of DE
@@ -290,7 +298,7 @@ std::size_t DetElementVolumeIDs::scanPhysicalVolume(DetElement&        parent,
 	// Collect all sensitive volumes, which belong to the next DetElement
 	if ( entries.find(e) == entries.end()) {
 	  entries[e].emplace_back(vol_encoding);
-	  ++m_numNodes;
+	  ++numberOfNodes;
 	}
 	++count;
       }
