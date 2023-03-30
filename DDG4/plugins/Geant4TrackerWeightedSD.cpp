@@ -364,11 +364,11 @@ namespace dd4hep {
           hit_flag |= Geant4Tracker::Hit::HIT_KILLED_TRACK;
           extractHit(post_inside);
         }
-        // Avoid danglich hits if the track leaves the sensitive volume
+        // Avoid dangling hits if the track leaves the sensitive volume
         else if ( post_inside == kSurface )  {
           extractHit(post_inside);
         }
-        // Avoid danglich hits if the track leaves the sensitive volume
+        // Avoid dangling hits if the track leaves the sensitive volume
         else if ( thisSD == preSD && (preSD != postSD || prePV != postPV) )  {
           extractHit(post_inside);
         }
