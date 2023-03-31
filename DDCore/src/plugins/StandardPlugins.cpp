@@ -111,7 +111,8 @@ static void* create_description_instance(const char* /* name */) {
 DECLARE_CONSTRUCTOR(Detector_constructor,create_description_instance)
 
 /// Basic entry point to display the currently loaded geometry using the ROOT OpenGL viewer
-/**
+/** Invoke the ROOT geometry display using the factory mechanism.
+ *
  *  Factory: DD4hep_GeometryDisplay
  *
  *  \author  M.Frank
@@ -135,6 +136,7 @@ static long display(Detector& description, int argc, char** argv) {
     else  {
       std::cout <<
         "Usage: -plugin DD4hep_GeometryDisplay  -arg [-arg]                                \n\n"
+	"     Invoke the ROOT geometry display using the factory mechanism.                \n\n"
         "     -detector <string> Top level DetElement path. Default: '/world'                \n"
         "     -option   <string> ROOT Draw option.    Default: 'ogl'                         \n"
         "     -level    <number> Visualization level  [TGeoManager::SetVisLevel]  Default: 4 \n"
@@ -187,7 +189,7 @@ static long run_function(Detector&, int argc, char** argv) {
   }
   if ( lib.empty() || func.empty() )  {
     std::cout <<
-      "Usage: -plugin <name> -arg [-arg]                                 \n\n"
+      "Usage: -plugin DD4hep_Function -arg [-arg]                        \n\n"
       "       Execute a function without arguments inside a library.     \n\n"
       "     -library   <string>    Library to be loaded                    \n"
       "     -function  <string>    name of the entry point to be executed. \n"
@@ -239,7 +241,7 @@ static long run_interpreter(Detector& /* description */, int argc, char** argv) 
 }
 DECLARE_APPLY(DD4hep_Rint,run_interpreter)
 
-/// Basic entry point to start the ROOT interpreter.
+/// Basic entry point to start the ROOT UI
 /**
  *  The UI will show up in the ROOT prompt and is accessible
  *  in the interpreter with the global variable 
@@ -857,9 +859,8 @@ static long dump_geometry2root(Detector& description, int argc, char** argv) {
     }
     if ( output.empty() )   {
       std::cout <<
-        "Usage: -plugin <name> -arg [-arg]                                             \n"
+        "Usage: -plugin DD4hep_Geometry2ROOT -arg [-arg]                             \n\n"
 	"     Output DD4hep detector description object to a ROOT file.              \n\n"
-        "     name:   factory name     DD4hepGeometry2ROOT                             \n"
         "     -output <string>         Output file name.                               \n"
         "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
       ::exit(EINVAL);
@@ -874,6 +875,39 @@ static long dump_geometry2root(Detector& description, int argc, char** argv) {
   return 0;
 }
 DECLARE_APPLY(DD4hep_Geometry2ROOT,dump_geometry2root)
+
+/// Basic entry point to load a dd4hep geometry directly from the ROOT file
+/**
+ *  Factory: DD4hep_RootLoader
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
+ */
+static long load_geometryFromroot(Detector& description, int argc, char** argv) {
+  if ( argc > 0 )   {
+    std::string input = argv[0];  // <-- for backwards compatibility
+    for(int i = 0; i < argc && argv[i]; ++i)  {
+      if ( 0 == ::strncmp("-input",argv[i],4) )
+        input = argv[++i];
+    }
+    if ( input.empty() )   {
+      std::cout <<
+        "Usage: DD4hep_RootLoader -arg [-arg]                                        \n\n"
+	"     Load DD4hep detector description from ROOT file to memory.             \n\n"
+        "     -input  <string>         Input file name.                                \n"
+        "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
+      ::exit(EINVAL);
+    }
+    printout(INFO,"DD4hepRootLoader","+++ Read geometry from root file:%s",input.c_str());
+    if ( 1 == DD4hepRootPersistency::load(description,input.c_str(),"Geometry") )  {
+      return 1;
+    }
+  }
+  printout(ERROR,"DD4hep_RootLoader","+++ No input file name given.");
+  return 0;
+}
+DECLARE_APPLY(DD4hep_RootLoader,load_geometryFromroot)
 
 /// Basic entry point to dump a dd4hep geometry as TGeo to a ROOT file
 /**
@@ -910,39 +944,6 @@ static long dump_geometry2tgeo(Detector& description, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hep_Geometry2TGeo,dump_geometry2tgeo)
 DECLARE_APPLY(DD4hepGeometry2TGeo,dump_geometry2tgeo)
-
-/// Basic entry point to load a dd4hep geometry directly from the ROOT file
-/**
- *  Factory: DD4hep_RootLoader
- *
- *  \author  M.Frank
- *  \version 1.0
- *  \date    01/04/2014
- */
-static long load_geometryFromroot(Detector& description, int argc, char** argv) {
-  if ( argc > 0 )   {
-    std::string input = argv[0];  // <-- for backwards compatibility
-    for(int i = 0; i < argc && argv[i]; ++i)  {
-      if ( 0 == ::strncmp("-input",argv[i],4) )
-        input = argv[++i];
-    }
-    if ( input.empty() )   {
-      std::cout <<
-        "Usage: DD4hep_RootLoader -arg [-arg]                                          \n"
-        "     name:   factory name     DD4hepGeometry2ROOT                             \n"
-        "     -input  <string>         Input file name.                                \n"
-        "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
-      ::exit(EINVAL);
-    }
-    printout(INFO,"DD4hepRootLoader","+++ Read geometry from root file:%s",input.c_str());
-    if ( 1 == DD4hepRootPersistency::load(description,input.c_str(),"Geometry") )  {
-      return 1;
-    }
-  }
-  printout(ERROR,"DD4hep_RootLoader","+++ No input file name given.");
-  return 0;
-}
-DECLARE_APPLY(DD4hep_RootLoader,load_geometryFromroot)
 
 /// Basic entry point to check sensitive detector strictures
 /**
