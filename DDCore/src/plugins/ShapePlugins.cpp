@@ -32,12 +32,12 @@ using namespace dd4hep::detail;
 /// Plugin to create a scaled shape
 /**
  *  The xml entity 'e' must look like the following: 
- *  - name is optional, x,y,z is the scale.
+ *  - name is optional, x,y,z are the values of scaling.
  *  - <shape>: some shape understood by a DD4hep factory.
  * 
- *  <some-tag name="my-solid" x="1.0" y="2.0" z="3.0" ... stuff not looked at .... >
+ *  <some-tag name="my-solid" x="1.0" y="2.0" z="3.0" ... further xml-attributes not looked at .... >
  *       <shape>  ......  </shape>
- *       ... stuff not looked at .... 
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -57,8 +57,8 @@ DECLARE_XML_SHAPE(Scale__shape_constructor,create_Scaled)
  *  The xml entity 'e' must look like the following: 
  *  - name is optional
  *
- *  <some-tag name="my-assembly"  ......stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *  <some-tag name="my-assembly"  ......further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -77,8 +77,8 @@ DECLARE_XML_SHAPE(Assembly__shape_constructor,create_Assembly)
  *  The xml entity 'e' must look like the following: 
  *  - name is optional, x,y,z are the dimensions
  * 
- *  <some-tag name="my-box" x="1.0*cm" y="2.0*cm" z="3.0*cm" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *  <some-tag name="my-box" x="1.0*cm" y="2.0*cm" z="3.0*cm" ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -97,10 +97,10 @@ DECLARE_XML_SHAPE(Box__shape_constructor,create_Box)
  *  The xml entity 'e' must look like the following: 
  *  - name is optional
  * 
- *  <some-tag name="my-box" ... stuff not looked at .... >
+ *  <some-tag name="my-box" ... further xml-attributes not looked at .... >
  *     <point  x="1.0*cm" y="2.0*cm" z="3.0*cm"/>
  *     <normal x="1.0" y="0.0" z="0.0"/>
- *       ... stuff not looked at .... 
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -118,18 +118,39 @@ static Handle<TObject> create_HalfSpace(Detector&, xml_h e)   {
 }
 DECLARE_XML_SHAPE(HalfSpace__shape_constructor,create_HalfSpace)
 
+/// Plugin to create a cone
+/**
+ *  The xml entity 'element' must look like the following: 
+ *  - name is optional, rmin is optional
+ *  <some-tag name="my-cone" z="10*cm" rmin1="1*cm" rmax1="2.cm" rmin2="2*cm" rmax2="4*cm" 
+ *                           ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
+ *  </some-tag>
+ *
+ *  \author  M.Frank
+ *  \version 1.0
+ */
+static Handle<TObject> create_Cone(Detector&, xml_h element)   {
+  xml_dim_t e(element);
+  double rmi1 = e.rmin1(0.0), rma1 = e.rmax1();
+  Solid solid = Cone(e.z(0.0), rmi1, rma1, e.rmin2(rmi1), e.rmax2(rma1));
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  return solid;
+}
+DECLARE_XML_SHAPE(Cone__shape_constructor,create_Cone)
+
 /// Plugin to create a poly-cone
 /**
  *  The xml entity 'element' must look like the following: 
  *  - name is optional, startphi, deltaphi are optional
  * 
- *  <some-tag name="my-polycone" startphi="0*rad" deltaphi="pi" ... stuff not looked at .... >
+ *  <some-tag name="my-polycone" startphi="0*rad" deltaphi="pi" ... further xml-attributes not looked at .... >
  *     <zplane rmin="1.0*cm" rmax="2.0*cm"/>
  *     <zplane rmin="2.0*cm" rmax="4.0*cm"/>
  *     <zplane rmin="3.0*cm" rmax="6.0*cm"/>
  *     <zplane rmin="4.0*cm" rmax="8.0*cm"/>
  *     <zplane rmin="5.0*cm" rmax="10.0*cm"/>
- *       ... stuff not looked at .... 
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -157,17 +178,20 @@ DECLARE_XML_SHAPE(Polycone__shape_constructor,create_Polycone)
 
 /// Plugin to create a cone-segment
 /**
+ *  This shape implements for historical reasons two alternative constructors,
+ *  which are automatically recognized depending on the supplied attributes.
+ *
  *  The xml entity 'element' must look like the following: 
  *  - name is optional, rmin1, rmin2, startphi, deltaphi are optional
  *  <some-tag name="my-polycone" rmin1="1*cm" rmax1="2.cm"  rmin1="2*cm" rmax1="3.cm" 
- *                               startphi="0*rad" deltaphi="pi" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *                               startphi="0*rad" deltaphi="pi" ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *  OR (deprecated):
  *  - name is optional, rmin1, rmin2, (phi1 or phi2) are optional
  *  <some-tag name="my-polycone" rmin1="1*cm" rmax1="2.cm"  rmin1="2*cm" rmax1="3.cm" 
- *                               phi1="0*rad" phi2="pi" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *                               phi1="0*rad" phi2="pi" ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -198,17 +222,20 @@ DECLARE_XML_SHAPE(ConeSegment__shape_constructor,create_ConeSegment)
 
 /// Plugin to create a tube
 /**
+ *  This shape implements for historical reasons two alternative constructors,
+ *  which are automatically recognized depending on the supplied attributes.
+ *
  *  The xml entity 'element' must look like the following: 
  *  - name is optional, rmin, startphi, deltaphi are optional
  *  <some-tag name="my-tube" rmin="1*cm" rmax="2.cm" 
-                             startphi="0*rad" deltaphi="pi" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *                           startphi="0*rad" deltaphi="pi" ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *  OR (deprecated):
  *  - name is optional, rmin, (phi1 or phi2) are optional
  *  <some-tag name="my-tube" rmin="1*cm" rmax="2.cm" 
- *                           phi1="0*rad" phi2="pi" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *                           phi1="0*rad" phi2="pi" ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -316,39 +343,21 @@ static Handle<TObject> create_TruncatedTube(Detector&, xml_h element)   {
 }
 DECLARE_XML_SHAPE(TruncatedTube__shape_constructor,create_TruncatedTube)
 
-/// Plugin to create a cone
-/**
- *  The xml entity 'element' must look like the following: 
- *  - name is optional, rmin is optional
- *  <some-tag name="my-tube" rmin="1*cm" rmax="2.cm" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
- *  </some-tag>
- *
- *  \author  M.Frank
- *  \version 1.0
- */
-static Handle<TObject> create_Cone(Detector&, xml_h element)   {
-  xml_dim_t e(element);
-  double rmi1 = e.rmin1(0.0), rma1 = e.rmax1();
-  Solid solid = Cone(e.z(0.0),rmi1,rma1,e.rmin2(rmi1),e.rmax2(rma1));
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
-  return solid;
-}
-DECLARE_XML_SHAPE(Cone__shape_constructor,create_Cone)
-
 /// Plugin to create a trap
 /**
  *  The xml entity 'element' must look like the following: 
  *  - name is optional, rmin is optional
- *  <some-tag name="my-tube" dx="1*cm" dy="2.cm" dz="2*cm" pLTX="..." ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *  <some-tag name="my-trap" dx="1*cm" dy="2.cm" dz="2*cm" pLTX="..." ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
+ *  This constructor is a reduces form for a subset of trap shapes.
+ *
  *  OR:
- *  name is optional, z, theta, phi, alpha1, alpha2, x3, x4, y1, y2 is optional
- *  <some-tag name="my-tube" z="2*cm" theta="0" phi="0"
+ *  name is optional, z, theta, phi, alpha1, alpha2, x3, x4, y2 is optional
+ *  <some-tag name="my-trap" z="2*cm" theta="0" phi="0"
  *                           y1="1*cm" x1="1*cm" x2="2.cm" alpha1="0" 
  *                           y2="2.cm" x3="2*cm" x4="2*cm" alpha2="pi"
- *                            ... stuff not looked at .... >
+ *                            ... further xml-attributes not looked at .... >
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -393,8 +402,8 @@ DECLARE_XML_SHAPE(PseudoTrap__shape_constructor,create_PseudoTrap)
 /**
  *  The xml entity 'element' must look like the following: 
  *  - name is optional, z is optional
- *  <some-tag name="my-trd1" x1="1*cm" x2="2*cm" y="1*cm" z="2*cm" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *  <some-tag name="my-trd1" x1="1*cm" x2="2*cm" y="1*cm" z="2*cm" ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -412,8 +421,8 @@ DECLARE_XML_SHAPE(Trd1__shape_constructor,create_Trd1)
 /**
  *  The xml entity 'element' must look like the following: 
  *  - name is optional, z is optional
- *  <some-tag name="my-trd2" x1="1*cm" x2="2*cm" y1="1*cm" y2="2*cm" z="2*cm" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *  <some-tag name="my-trd2" x1="1*cm" x2="2*cm" y1="1*cm" y2="2*cm" z="2*cm" ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -433,14 +442,14 @@ DECLARE_XML_SHAPE(Trd2__shape_constructor,create_Trd2)
  *  The xml entity 'element' must look like the following: 
  *  - name is optional, rmin, startphi, deltaphi are optional
  *  <some-tag name="my-torus" r="10*cm" rmin="1*cm" rmax="2.cm" 
-                              startphi="0*rad" deltaphi="pi" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+                              startphi="0*rad" deltaphi="pi" ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *  OR (deprecated):
  *  - name is optional, rmin, (phi1 or phi2) are optional
  *  <some-tag name="my-tube" r="10*cm" rmin="1*cm" rmax="2.cm" 
- *                           phi1="0*rad" phi2="pi" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *                           phi1="0*rad" phi2="2*pi" ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -519,8 +528,8 @@ DECLARE_XML_SHAPE(Sphere__shape_constructor,create_Sphere)
 /**
  *  The xml entity 'element' must look like the following: 
  *  - name is optional, rmin is optional
- *  <some-tag name="my-paraboloid" rmin="1*cm" rmax="2*cm" dz="1*cm" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *  <some-tag name="my-paraboloid" rmin="1*cm" rmax="2*cm" dz="1*cm" ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -540,8 +549,8 @@ DECLARE_XML_SHAPE(Paraboloid__shape_constructor,create_Paraboloid)
  *  - name is optional, rmin is optional
  *  <some-tag name="my-hyperboloid" rmin="1*cm" inner_stereo="pi/2" 
  *                                  rmax="2*cm" outer_stereo="pi/2"
- *                                  dz="5*cm" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *                                  dz="5*cm" ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -560,8 +569,8 @@ DECLARE_XML_SHAPE(Hyperboloid__shape_constructor,create_Hyperboloid)
  *  The xml entity 'element' must look like the following: 
  *  - name is optional
  *  <some-tag name="my-polyhedron"  numsides="5" rmin="1*cm" rmax="2*cm" dz="5*cm"
- *                                  dz="5*cm" ... stuff not looked at .... >
- *       ... stuff not looked at .... 
+ *                                  dz="5*cm" ... further xml-attributes not looked at .... >
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
@@ -579,11 +588,11 @@ DECLARE_XML_SHAPE(PolyhedraRegular__shape_constructor,create_PolyhedraRegular)
 /**
  *  The xml entity 'element' must look like the following: 
  *  - name is optional
- *  <some-tag name="my-polyhedron"  numsides="5" startphi="0" deltaphi="2*pi" ... stuff not looked at .... >
+ *  <some-tag name="my-polyhedron"  numsides="5" startphi="0" deltaphi="2*pi" ... further xml-attributes not looked at .... >
  *    <plane rmin="1*cm" rmax="2*cm" z="1*cm"/>
  *    <plane rmin="2*cm" rmax="3*cm" z="2*cm"/>
  *    <plane rmin="2*cm" rmax="4*cm" z="4*cm"/>
- *       ... stuff not looked at .... 
+ *       ... further optional xml-elements not looked at .... 
  *  </some-tag>
  *
  *  \author  M.Frank
