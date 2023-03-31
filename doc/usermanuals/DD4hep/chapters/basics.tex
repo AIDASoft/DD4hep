@@ -2033,9 +2033,9 @@ but can as well be initiated from the above mentioned plugin test program.
 \subsection{Geometry Display}
 \label{sec:dd4hep-manual-plugin-geometry-display}
 
-Plugin to invoke the geometry display and start the ROOT interpreter:
+This plugin may be used to invoke the geometry display and start the ROOT interpreter:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
-      Usage: -plugin DD4hep_GeometryDisplay  -arg [-arg]                                
+    Usage: -plugin DD4hep_GeometryDisplay  -arg [-arg]                                
   	       Invoke the ROOT geometry display using the factory mechanism.                
              -detector <string> Top level DetElement path. Default: '/world'                
              -option   <string> ROOT Draw option.    Default: 'ogl'                         
@@ -2043,6 +2043,8 @@ Plugin to invoke the geometry display and start the ROOT interpreter:
              -visopt   <number> Visualization option [TGeoManager::SetVisOption] Default: 1       
              -load              Only load the geometry. Do not invoke the display          
              -help              Print this help output         
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Execute a Function in a Library}
@@ -2051,12 +2053,14 @@ Plugin to invoke the geometry display and start the ROOT interpreter:
 Plugin to invoke a C function in a library. The plugin automatically loads the library and
 executes the function. The function may not require arguments. The function is identified by it's 
 linker name. Hence, to not need to deal with linker name mangling export such functions
-with extern ``C''
+with \texttt{extern ``C''}.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_Function -arg [-arg]                                 
              Execute a function without arguments inside a library.     
            -library   <string>    Library to be loaded                    
            -function  <string>    name of the entry point to be executed. 
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Start the ROOT Interpreter}
@@ -2067,47 +2071,57 @@ assumed to be command, which should be evaluated.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_Rint -arg [-arg]                                 
              Start the ROOT interpreter. Optionally process one or several commands.
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Start the DD4hep UI}
 \label{sec:dd4hep-manual-plugin-dd4hep-ui}
 
 The DD4hep UI is a mediator to interactively interact more easily with the DD4hep instance from the 
-ROOT command prompt. See the defintition file DDCore/include /DD4hep/DD4hepUI.h for details.
-An instance of the DD4hepUI class is generated and made availible to ROOT by the global pointer
+ROOT command prompt. See the defintition file \texttt{DDCore/include/DD4hep/DD4hepUI.h} for details.
+An instance of the \texttt{DD4hepUI} class is generated and made availible to ROOT by the global pointer
 gDD4hepUI. Any argument is ignored.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_InteractiveUI
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Dump GDML Tables of the TGeoManager}
 \label{sec:dd4hep-manual-plugin-dump-gdml-tables}
 
-The plugin simply dumps the GDML tables associated to the TGeoManager instance to stdout.
+The plugin simply dumps the GDML tables associated to the \texttt{TGeoManager} instance to stdout.
 Useful to verify the parsed conent.
 Any argument is ignored.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_Dump_GDMLTables
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Dump Optical Surfaces of the TGeoManager}
 \label{sec:dd4hep-manual-plugin-dump-optical-surfaces}
 
-The plugin simply dumps the optical surfaces associated to the TGeoManager instance to stdout.
+The plugin simply dumps the optical surfaces associated to the \texttt{TGeoManager} instance to stdout.
 Useful to verify the parsed conent.
 Any argument is ignored.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_Dump_OpticalSurfaces
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Dump Skin Surfaces of the TGeoManager}
 \label{sec:dd4hep-manual-plugin-dump-skin-surfaces}
 
-The plugin simply dumps the skin surfaces associated to the TGeoManager instance to stdout.
+The plugin simply dumps the skin surfaces associated to the \texttt{TGeoManager} instance to stdout.
 Useful to verify the parsed conent.
 Any argument is ignored.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_Dump_SkinSurfaces
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Dump Border Surfaces of the TGeoManager}
@@ -2118,6 +2132,8 @@ Useful to verify the parsed conent.
 Any argument is ignored.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_Dump_BorderSurfaces
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Dump the Element/Material Table of the TGeoManager}
@@ -2128,21 +2144,25 @@ Optionally the output can be generated in XML understood by DD4hep in order to e
 export the elements used in the apparatus.
 Useful to verify the parsed conent.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
-  Usage:  -plugin DD4hep_ElementTable -opt [-opt]
+    Usage:  -plugin DD4hep_ElementTable -opt [-opt]
                   -type   <string>    Output format: text or xml
                   -output <file-name> Output file specifier (xml only)
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
-To dump the material table, use the plugin ``DD4hep_MaterialTable''.
+To dump the material table, use the plugin \texttt{DD4hep\_MaterialTable}.
 
 \subsection{Load and Interprete XML file}
 \label{sec:dd4hep-manual-plugin-load-xml}
 
-Load and interprete an XML file with DD4hep.
+Load and interprete an \texttt{XML} file with DD4hep.
 The root tag name of the file defines the factory name to be called
 to analyse the content. The optional build type is a flag passed to the
 Detector entity and may be used for more detailed interpretation.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
-  Usage:  -plugin DD4hep_XMLLoader <file-uri> <build-type>
+    Usage:  -plugin DD4hep_XMLLoader <file-uri> <build-type>
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Load and Interprete XML Element}
@@ -2152,10 +2172,12 @@ Interprete a single XML element.
 The root tag name of the file defines the factory name to be called
 to analyse the content. The optional build type is a flag passed to the
 Detector entity and may be used for more detailed interpretation.
-This plugin can only be used, since the argument to a pointer to an XML::Handle
+This plugin can only be used, since the argument to a pointer to an \texttt{XML::Handle}
 is passed.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
-  Usage:  -plugin DD4hep_XMLProcessor <pointer-to-xml-element> <build-type>
+    Usage:  -plugin DD4hep_XMLProcessor <pointer-to-xml-element> <build-type>
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Load and Initialize the DD4hep Volume Manager}
@@ -2163,7 +2185,9 @@ is passed.
 
 To load and initialize the DD4hep volume manager object, use:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
-  Usage:  -plugin DD4hep_VolumeManager
+    Usage:  -plugin DD4hep_VolumeManager
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 Any argument is ignored. Please note: the detector description must be full initialized 
 before this plugin may be called. Anything else results in incomplete content.
@@ -2179,6 +2203,8 @@ method may serve to produce well defined snapshots e.g. for mass production.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
      Usage: -plugin DD4hep_Geometry2ROOT -arg [-arg]
              -output <string>         Output file name.
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Load Detector Description from ROOT file}
@@ -2188,6 +2214,8 @@ Once saved, load the DD4hep detector description into memory.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
      Usage: -plugin DD4hep_RootLoader -arg [-arg]
              -input <string>         Input file name.
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Dump Geometry to ROOT file}
@@ -2196,16 +2224,18 @@ Once saved, load the DD4hep detector description into memory.
 The plugin saves the geometry part of the detector description to ROOT.
 Only ROOT is required to read this information.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
-     Usage: -plugin DD4hep_Geometry2TGeo -arg [-arg]
+    Usage: -plugin DD4hep_Geometry2TGeo -arg [-arg]
              -output <string>         Output file name.
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Dump DetElement/Volume Tree}
 \label{sec:dd4hep-manual-plugin-dump-detelement-volume-tree}
 
-Dump for verification and debugging the DetElement or Volume tree
+Dump for verification and debugging the \texttt{DetElement} or \texttt{Volume} tree
 of the detector description. Both plugin are very similar, once with emphsis on the
-ejected DetElement information, once with emphasis on the geometry information.
+ejected \texttt{DetElement} information, once with emphasis on the geometry information.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
    Usage -plugin DD4hep_DetectorDump / DD4hep_DetectorVolumeDump -arg [-arg]
 
@@ -2225,6 +2255,8 @@ ejected DetElement information, once with emphasis on the geometry information.
 	       --level       <number>  dto.                                                           
 	        -volids                Print volume identifiers of placements.                        
 	       --volids                dto.                                                           
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 \subsection{Fill DetElement Cache}
@@ -2235,9 +2267,11 @@ to the world coordinate system. To fill this cache immediately rather than on de
 plugin. Depending on the top element passed, this caching mechanism can also be applied to
 some sub-detectors.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}''
-   Usage: -plugin DD4hep_DetElementCache  -arg [-arg]                 
+    Usage: -plugin DD4hep_DetElementCache  -arg [-arg]                 
              -detector <string>  Top level DetElement path. Default: '/world'
 	     --detector <string> dto.                                        
+
+    For details see also: DDCore/src/plugins/StandardPlugins.cpp
 \end{minted}
 
 
