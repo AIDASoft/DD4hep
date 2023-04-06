@@ -186,7 +186,7 @@ void Geant4FastSimShowerModel::constructSensitives(Geant4DetectorConstructionCon
   G4Region* region = this->getRegion(this->m_regionName);
   for(const auto& prop : this->m_eTriggerNames)    {
     G4ParticleDefinition* def = this->getParticleDefinition(prop.first);
-    double val = dd4hep::_toDouble(prop.second) * dd4hep::GeV/CLHEP::GeV;
+    double val = dd4hep::_toDouble(prop.second)/dd4hep::GeV*CLHEP::GeV;
     this->m_eTriggerCut.emplace(def, val);
     this->info("Set Energy(ModelTrigger) [%-16s] = %8.4f GeV", prop.first.c_str(), val);
   }
