@@ -58,13 +58,50 @@ if (DD4HEP_USE_GEANT4)
   SET_TESTS_PROPERTIES( t_test_python_import_ddg4 PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
 
   if(DD4HEP_USE_HEPMC3)
-    ADD_TEST( t_test_ddsim_ion_hepmc3 "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
-      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=1
-      --outputFile=testSidIons.root --inputFiles ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
-      --part.userParticleHandler=)
-    # Tests causes G4Exception about: Isomer level 9 may be ambiguous, just a warning
-    # space before Exception intentional!!!
-    SET_TESTS_PROPERTIES( t_test_ddsim_ion_hepmc3 PROPERTIES FAIL_REGULAR_EXPRESSION  "ERROR;Error; Exception" )
+    set(TEST_HEPMC3_EXTENSIONS)
+
+    if(ZLIB_FOUND)
+      file(ARCHIVE_CREATE
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc.gz
+        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+        FORMAT raw
+        COMPRESSION GZip)
+      list(APPEND TEST_HEPMC3_EXTENSIONS .gz)
+    endif()
+    if(LIBLZMA_FOUND)
+      file(ARCHIVE_CREATE
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc.xz
+        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+        FORMAT raw
+        COMPRESSION XZ)
+      list(APPEND TEST_HEPMC3_EXTENSIONS .xz)
+    endif()
+    if(BZIP2_FOUND)
+      file(ARCHIVE_CREATE
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc.bz2
+        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+        FORMAT raw
+        COMPRESSION BZip2)
+      list(APPEND TEST_HEPMC3_EXTENSIONS .bz2)
+    endif()
+
+    foreach(TEST_HEPMC3_EXTENSION "" ${TEST_HEPMC3_EXTENSIONS})
+      string(REPLACE "." "_" TEST_NAME "test_ddsim_ion_hepmc3${TEST_HEPMC3_EXTENSION}")
+      if("${TEST_HEPMC3_EXTENSION}" STREQUAL "")
+        set(TEST_HEPMC3_INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc${TEST_HEPMC3_EXTENSION}")
+      else()
+        set(TEST_HEPMC3_INPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc${TEST_HEPMC3_EXTENSION}")
+      endif()
+
+      add_test( t_${TEST_NAME} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+        ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=1
+        --outputFile=testSidIons.root --inputFiles ${TEST_HEPMC3_INPUT_FILE}
+        --part.userParticleHandler=)
+
+      # Tests causes G4Exception about: Isomer level 9 may be ambiguous, just a warning
+      # space before Exception intentional!!!
+      set_tests_properties( t_${TEST_NAME} PROPERTIES FAIL_REGULAR_EXPRESSION  "ERROR;Error; Exception" )
+    endforeach()
   endif()
 
   foreach(TEST_NAME

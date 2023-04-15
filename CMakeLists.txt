@@ -157,6 +157,11 @@ endif()
 
 IF(DD4HEP_USE_HEPMC3)
   find_package(HepMC3 REQUIRED)
+
+  # Optional dependencies for compressed input support
+  find_package(ZLIB)
+  find_package(LibLZMA)
+  find_package(BZip2)
 ENDIF()
 
 if(DD4HEP_USE_TBB)
