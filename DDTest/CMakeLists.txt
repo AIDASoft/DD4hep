@@ -97,7 +97,7 @@ if (DD4HEP_USE_GEANT4)
 
       add_test( t_${TEST_NAME} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=1
-        --outputFile=testSidIons.root --inputFiles ${TEST_HEPMC3_INPUT_FILE}
+        --outputFile=${TEST_NAME}.root --inputFiles ${TEST_HEPMC3_INPUT_FILE}
         --part.userParticleHandler=)
 
       # Tests causes G4Exception about: Isomer level 9 may be ambiguous, just a warning
