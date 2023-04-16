@@ -155,14 +155,16 @@ if(DD4HEP_USE_EDM4HEP)
 #  DD4HEP_SETUP_EDM4HEP_TARGETS()
 endif()
 
-IF(DD4HEP_USE_HEPMC3)
+if(DD4HEP_USE_HEPMC3)
   find_package(HepMC3 REQUIRED)
 
   # Optional dependencies for compressed input support
-  find_package(ZLIB)
-  find_package(LibLZMA)
-  find_package(BZip2)
-ENDIF()
+  if(${HEPMC3_VERSION} VERSION_GREATER_EQUAL "3.02.05")
+    find_package(ZLIB)
+    find_package(LibLZMA)
+    find_package(BZip2)
+  endif()
+endif()
 
 if(DD4HEP_USE_TBB)
   find_package(TBB REQUIRED CONFIG)
