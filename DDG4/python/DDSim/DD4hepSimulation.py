@@ -42,12 +42,12 @@ except ImportError:
   ARGCOMPLETEENABLED = False
 
 POSSIBLEINPUTFILES = (
-  ".stdhep", ".slcio", ".HEPEvt", ".hepevt",
-  ".hepmc", ".hepmc.gz", ".hepmc.xz", ".hepmc.bz2",
-  ".hepmc3", ".hepmc3.gz", ".hepmc3.xz", ".hepmc3.bz2",
-  ".hepmc3.tree.root",
-  ".pairs",
-)
+    ".stdhep", ".slcio", ".HEPEvt", ".hepevt",
+    ".hepmc", ".hepmc.gz", ".hepmc.xz", ".hepmc.bz2",
+    ".hepmc3", ".hepmc3.gz", ".hepmc3.xz", ".hepmc3.bz2",
+    ".hepmc3.tree.root",
+    ".pairs",
+    )
 
 
 class DD4hepSimulation(object):
@@ -415,10 +415,10 @@ class DD4hepSimulation(object):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepevt%d" % index)
         gen.Input = "Geant4EventReaderHepEvtLong|" + inputFile
       elif inputFile.endswith((
-        ".hepmc", ".hepmc.gz", ".hepmc.xz", ".hepmc.bz2",
-        ".hepmc3", ".hepmc3.gz", ".hepmc3.xz", ".hepmc3.bz2",
-        ".hepmc3.tree.root",
-      )):
+          ".hepmc", ".hepmc.gz", ".hepmc.xz", ".hepmc.bz2",
+          ".hepmc3", ".hepmc3.gz", ".hepmc3.xz", ".hepmc3.bz2",
+          ".hepmc3.tree.root",
+          )):
         if self.hepmc3.useHepMC3:
           gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
           gen.Parameters = self.hepmc3.getParameters()
@@ -543,10 +543,10 @@ class DD4hepSimulation(object):
     if not all(fileName.endswith(extensions) for fileName in fileNames):
       self._errorMessages.append("ERROR: Unknown fileformat for file: %s" % fileNames)
     if not self.hepmc3.useHepMC3 and any(fileName.endswith((
-      ".hepmc.gz", ".hepmc.xz", ".hepmc.bz2",
-      ".hepmc3", ".hepmc3.gz", ".hepmc3.xz", ".hepmc3.bz2",
-      ".hepmc3.tree.root",
-    )) for fileName in fileNames):
+        ".hepmc.gz", ".hepmc.xz", ".hepmc.bz2",
+        ".hepmc3", ".hepmc3.gz", ".hepmc3.xz", ".hepmc3.bz2",
+        ".hepmc3.tree.root",
+        )) for fileName in fileNames):
       self._errorMessages.append("ERROR: HepMC3 files or compressed HepMC2 require the use of HepMC3 library")
     return fileNames
 
