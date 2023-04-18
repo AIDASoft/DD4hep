@@ -60,31 +60,25 @@ if (DD4HEP_USE_GEANT4)
   if(DD4HEP_USE_HEPMC3)
     set(TEST_HEPMC3_EXTENSIONS)
 
-    if(${HEPMC3_VERSION} VERSION_GREATER_EQUAL "3.02.05")
-      if(ZLIB_FOUND)
-        file(ARCHIVE_CREATE
-          OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc.gz
-          PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
-          FORMAT raw
-          COMPRESSION GZip)
-        list(APPEND TEST_HEPMC3_EXTENSIONS .gz)
-      endif()
-      if(LIBLZMA_FOUND)
-        file(ARCHIVE_CREATE
-          OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc.xz
-          PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
-          FORMAT raw
-          COMPRESSION XZ)
-        list(APPEND TEST_HEPMC3_EXTENSIONS .xz)
-      endif()
-      if(BZIP2_FOUND)
-        file(ARCHIVE_CREATE
-          OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc.bz2
-          PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
-          FORMAT raw
-          COMPRESSION BZip2)
-        list(APPEND TEST_HEPMC3_EXTENSIONS .bz2)
-      endif()
+    if(${DD4HEP_HEPMC3_COMPRESSION_SUPPORT})
+      file(ARCHIVE_CREATE
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc.gz
+        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+        FORMAT raw
+        COMPRESSION GZip)
+      list(APPEND TEST_HEPMC3_EXTENSIONS .gz)
+      file(ARCHIVE_CREATE
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc.xz
+        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+        FORMAT raw
+        COMPRESSION XZ)
+      list(APPEND TEST_HEPMC3_EXTENSIONS .xz)
+      file(ARCHIVE_CREATE
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc.bz2
+        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+        FORMAT raw
+        COMPRESSION BZip2)
+      list(APPEND TEST_HEPMC3_EXTENSIONS .bz2)
     endif()
 
     foreach(TEST_HEPMC3_EXTENSION "" ${TEST_HEPMC3_EXTENSIONS})
