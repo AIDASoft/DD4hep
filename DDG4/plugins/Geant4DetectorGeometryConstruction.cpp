@@ -172,6 +172,9 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   conv.debugSurfaces    = m_debugSurfaces;
   conv.debugPlacements  = m_debugPlacements;
   conv.debugReflections = m_debugReflections;
+  conv.debugLimits      = m_debugLimits;
+  conv.printPlacements  = m_printPlacements;
+  conv.printSensitives  = m_printSensitives;
 
   ctxt->geometry = conv.create(world).detach();
   ctxt->geometry->printLevel = outputLevel();

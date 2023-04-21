@@ -30,9 +30,10 @@ class Geometry(ConfigHelper):
     self._dumpHierachy_EXTRA = {"help": "If larger than 0, the depth up to which detector hierarchy is dumped"}
     self.dumpHierarchy = 0
 
-    # unused
-    self.printPlacements = False
-    self.printSensitives = False
+    self._enablePrintPlacements_EXTRA = {"help": "Print information about placements"}
+    self.enablePrintPlacements = False
+    self._enablePrintSensitives_EXTRA = {"help": "Print information about Sensitives"}
+    self.enablePrintSensitives = False
 
     self._dumpDGDML_EXTRA = {"help": "If not empty, filename to dump the Geometry as GDML"}
     self.dumpGDML = ""
@@ -50,8 +51,8 @@ class Geometry(ConfigHelper):
     act.DebugReflections = self.enableDebugReflections
     act.DebugRegions = self.enableDebugRegions
     act.DebugSurfaces = self.enableDebugSurfaces
-    act.PrintPlacements = self.printPlacements
-    act.PrintSensitives = self.printSensitives
+    act.PrintPlacements = self.enablePrintPlacements
+    act.PrintSensitives = self.enablePrintSensitives
     act.GeoInfoPrintLevel = geoPrintLevel
     act.DumpHierarchy = self.dumpHierarchy
     act.DumpGDML = self.dumpGDML
