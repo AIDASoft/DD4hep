@@ -23,11 +23,11 @@ class Meta(ConfigHelper):
     self.eventParameters = []
     self._runNumberOffset_EXTRA = {'help': "The run number offset to write in slcio output file. "
                                            "E.g setting it to 42 will start counting runs from 42 instead of 0",
-                                   'type' : int}
+                                   'type': int}
     self.runNumberOffset = 0
     self._eventNumberOffset_EXTRA = {'help': "The event number offset to write in slcio output file."
                                              " E.g setting it to 42 will start counting events from 42 instead of 0",
-                                     'type' : int}
+                                     'type': int}
     self.eventNumberOffset = 0
 
   def parseEventParameters(self):
