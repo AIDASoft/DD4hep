@@ -385,8 +385,8 @@ getRelevant(set<int>& visited,
     double me = en > std::numeric_limits<double>::epsilon() ? p->mass / en : 0.0;
     //  fix by S.Morozov for real != 0
     double proper_time = fabs(dp->time-p->time) * me;
-    double proper_time_Precision = pow(10.,-DBL_DIG)*me*fmax(fabs(p->time),fabs(dp->time));
-    bool isProperTimeZero = (proper_time <= proper_time_Precision);
+    double proper_time_Precision = pow(10.,-DBL_DIG)*fabs(me)*fmax(fabs(p->time),fabs(dp->time));
+    bool isProperTimeZero = (fabs(proper_time) <= fabs(proper_time_Precision));
 
     // -- remove original if ---
     bool rejectParticle = not p.definition()                    // completely unknown to geant4
