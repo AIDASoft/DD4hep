@@ -52,6 +52,11 @@ set(ClientTestsEx_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
 # Single shape tests:
 
 #Reference for test depends on assimp version
+if(assimp_VERSION VERSION_GREATER_EQUAL 5.2.0)
+  set(assimp_duck_VERSION 5.2.0)
+else()
+  set(assimp_duck_VERSION 5.0.0)
+endif()
 configure_file(${CMAKE_CURRENT_LIST_DIR}/compact/Check_Shape_Collada_duck.xml.in
   ${CMAKE_CURRENT_LIST_DIR}/compact/Check_Shape_Collada_duck.xml @ONLY
 )
