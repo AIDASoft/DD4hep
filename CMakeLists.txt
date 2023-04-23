@@ -160,7 +160,7 @@ if(DD4HEP_USE_HEPMC3)
 
   # Optional dependencies for compressed input support
   if(HEPMC3_VERSION VERSION_GREATER_EQUAL "3.02.05")
-    option(DD4HEP_HEPMC3_COMPRESSION_SUPPORT "Enable reading of compressed HepMC files" ON)
+    option(DD4HEP_HEPMC3_COMPRESSION_SUPPORT "Enable reading of compressed HepMC files" OFF)
     if(DD4HEP_HEPMC3_COMPRESSION_SUPPORT)
       find_package(ZLIB REQUIRED)
       find_package(LibLZMA REQUIRED)
