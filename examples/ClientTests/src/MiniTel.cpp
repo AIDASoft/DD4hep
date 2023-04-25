@@ -89,22 +89,23 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
     xml_comp_t x_pos = m;
     if ( x_pos.z() > env_dim_max.z() ) {
       env_dim_max.SetZ(x_pos.z());
-      printout(ALWAYS,"","z_max = %f",x_pos.z());
+      printout(DEBUG,"MiniTel","Envelope z_max = %f",x_pos.z());
     }
     if ( x_pos.z() < env_dim_min.z() )  {
       env_dim_min.SetZ(x_pos.z());
-      printout(ALWAYS,"","z_min = %f",x_pos.z());
+      printout(DEBUG,"MiniTel","Envelope z_min = %f",x_pos.z());
     }
   }
 
   Volume side_vol;
   if ( x_det.hasChild(_U(assembly)) )   {
     side_vol = Assembly("side_0");
+    printout(DEBUG,"MiniTel","Using assembly envelope");
   }
   else   {
     Box side_box(env_dim_max.x(), env_dim_max.y(), (env_dim_max.z()-env_dim_min.z())/2.0+sensor_box.z() + epsilon);
-    printout(ALWAYS,"","Box = %f",side_box.z());
     side_vol = Volume("side_0", side_box, description.air());
+    printout(DEBUG,"MiniTel","Envelope Box = %f",side_box.z());
   }
   side_det = DetElement(sdet,"side_0", x_det.id());
   if ( x_det.hasChild(_U(side_position)) )  {
