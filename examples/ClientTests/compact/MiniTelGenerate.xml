@@ -46,39 +46,39 @@
     <detector name="Minitel1" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="1" sensitive="true" readout="Minitel1Hits" limits="minitel_limits_1" region="minitel_region_1">
       <dimensions z="1*mm" y="10*cm" x="10*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis1" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
-      <side_position   z="30*mm" y="0*cm" x="0*cm" />
+      <side_position   z="50*mm" y="0*cm" x="0*cm" />
+      <module_position z="-40*mm" y="0*cm" x="0*cm" />
+      <module_position z="-30*mm" y="0*cm" x="0*cm" />
+      <module_position z="-20*mm" y="0*cm" x="0*cm" />
+      <module_position z="-10*mm" y="0*cm" x="0*cm" />
+      <module_position z="0*mm" y="0*cm" x="0*cm" />
       <module_position z="10*mm" y="0*cm" x="0*cm" />
       <module_position z="20*mm" y="0*cm" x="0*cm" />
       <module_position z="30*mm" y="0*cm" x="0*cm" />
       <module_position z="40*mm" y="0*cm" x="0*cm" />
-      <module_position z="50*mm" y="0*cm" x="0*cm" />
-      <module_position z="60*mm" y="0*cm" x="0*cm" />
-      <module_position z="70*mm" y="0*cm" x="0*cm" />
-      <module_position z="80*mm" y="0*cm" x="0*cm" />
-      <module_position z="90*mm" y="0*cm" x="0*cm" />
       <reflect/>
     </detector>
     <detector name="Minitel2" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="2" sensitive="true" readout="Minitel2Hits" limits="minitel_limits_1" region="minitel_region_1">
       <dimensions z="2*mm" y="15*cm" x="15*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis2" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
       <side_position   z="130*mm" y="0*cm" x="0*cm" />
+      <module_position z="-30*mm" y="0*cm" x="0*cm" />
+      <module_position z="-20*mm" y="0*cm" x="0*cm" />
+      <module_position z="-10*mm" y="0*cm" x="0*cm" />
       <module_position z="10*mm" y="0*cm" x="0*cm" />
       <module_position z="20*mm" y="0*cm" x="0*cm" />
       <module_position z="30*mm" y="0*cm" x="0*cm" />
-      <module_position z="40*mm" y="0*cm" x="0*cm" />
-      <module_position z="50*mm" y="0*cm" x="0*cm" />
-      <module_position z="60*mm" y="0*cm" x="0*cm" />
       <reflect/>
     </detector>
     <detector name="Minitel3" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="3" sensitive="true" readout="Minitel3Hits" limits="minitel_limits_1" region="minitel_region_1">
       <dimensions z="4*mm" y="20*cm" x="20*cm" />
       <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis3" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
       <side_position   z="200*mm" y="0*cm" x="0*cm" />
+      <module_position z="-20*mm" y="0*cm" x="0*cm" />
+      <module_position z="-10*mm" y="0*cm" x="0*cm" />
+      <module_position z="0*mm" y="0*cm" x="0*cm" />
       <module_position z="10*mm" y="0*cm" x="0*cm" />
       <module_position z="20*mm" y="0*cm" x="0*cm" />
-      <module_position z="30*mm" y="0*cm" x="0*cm" />
-      <module_position z="40*mm" y="0*cm" x="0*cm" />
-      <module_position z="50*mm" y="0*cm" x="0*cm" />
       <reflect/>
     </detector>
   </detectors>
