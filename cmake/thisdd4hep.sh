@@ -80,7 +80,7 @@ test -r ${ROOTENV_INIT} && { cd $(dirname ${ROOTENV_INIT}); . ./$(basename ${ROO
 #
 #----Geant4 LIBRARY_PATH------------------------------------------------------
 if [ ${Geant4_DIR} ]; then
-    G4LIB_DIR=`dirname ${Geant4_DIR}`;
+    G4LIB_DIR=`dirname ${Geant4_DIR} | sed 's@/cmake\$@@'`;
     export G4INSTALL=`dirname ${G4LIB_DIR}`;
     export G4ENV_INIT=${G4INSTALL}/bin/geant4.sh
     # ---------- initialze geant4 environment
