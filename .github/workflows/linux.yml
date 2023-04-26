@@ -127,7 +127,7 @@ jobs:
     - name: Prepare Artifact Name
       if: success() || failure()
       run: |
-          artifact_name="${{ matrix.view_path }}"
+          artifact_name="${{ matrix.view-path }}"
           artifact_name=$(echo -n "${artifact_name}" | sed -e 's@/@@g')
           echo "ARTIFACT_NAME=${artifact_name}" >> $GITHUB_ENV
     - name: Upload test results
