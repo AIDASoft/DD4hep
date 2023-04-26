@@ -82,12 +82,13 @@ if (DD4HEP_USE_GEANT4)
     endif()
 
     foreach(TEST_HEPMC3_EXTENSION "" ${TEST_HEPMC3_EXTENSIONS})
-      string(REPLACE "." "_" TEST_NAME "test_ddsim_ion_hepmc3${TEST_HEPMC3_EXTENSION}")
       if("${TEST_HEPMC3_EXTENSION}" STREQUAL "")
         set(TEST_HEPMC3_INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc${TEST_HEPMC3_EXTENSION}")
       else()
         set(TEST_HEPMC3_INPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/geantinos.hepmc${TEST_HEPMC3_EXTENSION}")
       endif()
+      get_filename_component(TEST_HEPMC3_INPUT_FILE_NAME "${TEST_HEPMC3_INPUT_FILE}" NAME)
+      string(REPLACE "." "_" TEST_NAME "test_ddsim_hepmc3_${TEST_HEPMC3_INPUT_FILE_NAME}")
 
       add_test( t_${TEST_NAME} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=1
