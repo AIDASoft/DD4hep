@@ -62,20 +62,20 @@ if (DD4HEP_USE_GEANT4)
 
     if(DD4HEP_HEPMC3_COMPRESSION_SUPPORT)
       file(ARCHIVE_CREATE
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc.gz
-        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/geantinos.hepmc.gz
+        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/geantinos.hepmc
         FORMAT raw
         COMPRESSION GZip)
       list(APPEND TEST_HEPMC3_EXTENSIONS .gz)
       file(ARCHIVE_CREATE
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc.xz
-        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/geantinos.hepmc.xz
+        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/geantinos.hepmc
         FORMAT raw
         COMPRESSION XZ)
       list(APPEND TEST_HEPMC3_EXTENSIONS .xz)
       file(ARCHIVE_CREATE
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc.bz2
-        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/geantinos.hepmc.bz2
+        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/geantinos.hepmc
         FORMAT raw
         COMPRESSION BZip2)
       list(APPEND TEST_HEPMC3_EXTENSIONS .bz2)
@@ -86,7 +86,7 @@ if (DD4HEP_USE_GEANT4)
       if("${TEST_HEPMC3_EXTENSION}" STREQUAL "")
         set(TEST_HEPMC3_INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc${TEST_HEPMC3_EXTENSION}")
       else()
-        set(TEST_HEPMC3_INPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/Pythia_output.hepmc${TEST_HEPMC3_EXTENSION}")
+        set(TEST_HEPMC3_INPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/geantinos.hepmc${TEST_HEPMC3_EXTENSION}")
       endif()
 
       add_test( t_${TEST_NAME} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
