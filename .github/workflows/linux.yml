@@ -14,8 +14,11 @@ jobs:
               "LCG_102/x86_64-centos9-gcc11-opt",    # g4 11
               "LCG_102/x86_64-centos7-clang12-opt",  # g4 11
               "LCG_102/x86_64-ubuntu2004-gcc9-opt",  # g4 11
-              "dev3/x86_64-centos7-gcc11-opt",
               "dev4/x86_64-centos7-gcc11-opt"]
+        DD4HEP_HEPMC3_COMPRESSION_SUPPORT: ["OFF"]
+        include:
+          - LCG: "dev3/x86_64-centos7-gcc11-opt"
+            DD4HEP_HEPMC3_COMPRESSION_SUPPORT: "ON"
     steps:
     - uses: actions/checkout@v3
     - uses: cvmfs-contrib/github-action-cvmfs@v3
@@ -34,6 +37,7 @@ jobs:
             -DDD4HEP_USE_EDM4HEP=OFF \
             -DDD4HEP_USE_TBB=ON \
             -DDD4HEP_USE_HEPMC3=ON \
+            -DDD4HEP_HEPMC3_COMPRESSION_SUPPORT=${{ matrix.DD4HEP_HEPMC3_COMPRESSION_SUPPORT }} \
             -DDD4HEP_BUILD_DEBUG=OFF \
             -DBUILD_TESTING=ON \
             -DDD4HEP_DEBUG_CMAKE=ON \
