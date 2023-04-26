@@ -21,7 +21,7 @@
 # 
 # M.Frank, CERN, 2015:  Adapt to new cmake scripts
 #==========================================================================
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 project( DD4hep_Examples )
 
