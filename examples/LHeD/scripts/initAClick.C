@@ -61,7 +61,8 @@ int initAClick(const char* command=0)  {
   std::string dd4hep  = make_str(gSystem->Getenv("DD4hepINSTALL"));
   std::string clhep   = make_str(gSystem->Getenv("CLHEP_ROOT_DIR"));
   std::string defs    = "";
-  std::string libs    = " -L"+rootsys+"/lib";
+  // lib/root is used in spack (key4hep)
+  std::string libs    = " -L"+rootsys+"/lib" + " -L"+rootsys+"/lib/root";
   std::string inc     = "";
   inc += " -I" + dd4hep + "/examples/LHeD/scripts ";
   inc += " -I" + dd4hep;
