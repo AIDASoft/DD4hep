@@ -12,7 +12,7 @@
 # DDCMS is a detector description convention developed by the CMS experiment.
 #
 #==========================================================================
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 IF(NOT TARGET DD4hep::DDCore)
   find_package ( DD4hep REQUIRED )
