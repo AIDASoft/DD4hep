@@ -253,7 +253,7 @@ static Handle<TObject> create_CAD_Volume(Detector& dsc, xml_h e)   {
       if ( vol.isValid() )   {
         if ( (vol.material() == dsc.air()) && default_material.isValid() )
           vol.setMaterial(default_material);
-        envelope.placeVolume(vol);
+        envelope.placeVolume(vol,env_trafo);
       }
     }
   }
