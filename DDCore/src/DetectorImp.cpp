@@ -631,9 +631,9 @@ vector<DetElement> DetectorImp::detectors(const string& type1,
 }
 
 Handle<NamedObject> DetectorImp::getRefChild(const HandleMap& e, const string& name, bool do_throw) const {
-  HandleMap::const_iterator i = e.find(name);
-  if (i != e.end()) {
-    return (*i).second;
+  HandleMap::const_iterator it = e.find(name);
+  if (it != e.end()) {
+    return it->second;
   }
   if (do_throw) {
     union ptr {
@@ -642,15 +642,20 @@ Handle<NamedObject> DetectorImp::getRefChild(const HandleMap& e, const string& n
       const void* other;
       ptr(const void* p) { other = p; }
     };
-    int cnt = 0;
     std::string nam = "";
     ptr m(&e), ref(this);
     if ( ref.c > m.c && m.c < ref.c+sizeof(*this) ) nam = m.omap->name;
-    cout << "GetRefChild: Failed to find child with name: '" << name
-	 << "'. Map " << nam << " contains " << e.size() << " elements." << endl;
-    for(i=e.begin(); i!=e.end(); ++i)
-      cout << "   " << cnt << "  " << (*i).first << endl;
-    throw runtime_error(nam+": Cannot find a child with the reference name:" + name);
+    std::stringstream err;
+    err << "getRefChild: Failed to find child with name: " << name
+        << " Map " << nam << " contains " << e.size() << " elements: {";
+    for (it = e.begin(); it != e.end(); ++it) {
+      if (it != e.begin()) {
+        err << ", ";
+      }
+      err << it->first;
+    }
+    err << "}";
+    throw runtime_error(err.str());
   }
   return 0;
 }
