@@ -235,8 +235,8 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
     G4AutoLock protection_lock(&action_mutex);
     m_frame.put( std::move(m_particles), "MCParticles");
     while ( ! m_trackerHits.empty() ) {
-      auto trackerHits = m_trackerHits.back().extract();
-      m_frame.put( std::move(trackerHits), trackerHits.key());
+      auto trackerHits = m_trackerHits.extract(m_trackerHits.begin());
+      m_frame.put( std::move(trackerHits.mapped()), trackerHits.key());
     }
     while ( ! m_calorimeterHits.empty() ) {
       const auto colName = m_calorimeterHits.back().key();
