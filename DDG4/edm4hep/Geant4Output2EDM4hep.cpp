@@ -20,6 +20,9 @@
 
 /// edm4hep include files
 #include <edm4hep/MCParticleCollection.h>
+#include <edm4hep/SimTrackerHitCollection.h>
+#include <edm4hep/CaloHitContributionCollection.h>
+#include <edm4hep/SimCalorimeterHitCollection.h>
 /// podio include files
 #include <podio/Frame.h>
 #include <podio/ROOTFrameWriter.h>
@@ -163,9 +166,6 @@ namespace dd4hep {
 
 /// edm4hep include files
 #include <edm4hep/EventHeaderCollection.h>
-#include <edm4hep/SimTrackerHitCollection.h>
-#include <edm4hep/CaloHitContributionCollection.h>
-#include <edm4hep/SimCalorimeterHitCollection.h>
 
 using namespace dd4hep::sim;
 using namespace dd4hep;
