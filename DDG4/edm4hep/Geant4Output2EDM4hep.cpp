@@ -49,7 +49,7 @@ namespace dd4hep {
       using writer_t = podio::ROOTFrameWriter;
       using stringmap_t = std::map< std::string, std::string >;
       using trackermap_t = std::map< std::string, edm4hep::SimTrackerHitCollection >;
-      using calorimeterpair_t std::pair< edm4hep::SimCalorimeterHitCollection, edm4hep::CaloHitContributionCollection >;
+      using calorimeterpair_t = std::pair< edm4hep::SimCalorimeterHitCollection, edm4hep::CaloHitContributionCollection >;
       using calorimetermap_t = std::map< std::string, calorimeterpair_t >;
       std::unique_ptr<writer_t>     m_file  { };
       podio::Frame                  m_frame { };
