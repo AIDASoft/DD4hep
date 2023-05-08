@@ -239,10 +239,9 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
       m_frame.put( std::move(trackerHits.mapped()), trackerHits.key());
     }
     while ( ! m_calorimeterHits.empty() ) {
-      const auto colName = m_calorimeterHits.back().key();
-      auto calorimeterHits = m_calorimeterHits.back().extract();
-      m_frame.put( std::move(calorimeterHits.first), calorimeterHits.key());
-      m_frame.put( std::move(calorimeterHits.second), calorimeterHits.key() + "Contributions");
+      auto calorimeterHits = m_calorimeterHits.extract(m_calorimeterHits.begin());
+      m_frame.put( std::move(calorimeterHits.mapped().first), calorimeterHits.key());
+      m_frame.put( std::move(calorimeterHits.mapped().second), calorimeterHits.key() + "Contributions");
     }
     m_file->writeFrame(m_frame, m_section_name);
     m_particles.clear();
