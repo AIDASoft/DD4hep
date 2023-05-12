@@ -48,8 +48,11 @@ namespace dd4hep {
     protected:
       using writer_t = podio::ROOTFrameWriter;
       using stringmap_t = std::map< std::string, std::string >;
-      using trackermap_t = std::map< std::string, edm4hep::SimTrackerHitCollection >;
-      using calorimeterpair_t = std::pair< edm4hep::SimCalorimeterHitCollection, edm4hep::CaloHitContributionCollection >;
+      using trackerptr_t = std::unique_ptr< edm4hep::SimTrackerHitCollection >;
+      using trackermap_t = std::map< std::string, trackerptr_t >;
+      using calorimeterptr_t = std::unique_ptr< edm4hep::SimCalorimeterHitCollection >;
+      using contributionsptr_t = std::unique_ptr< edm4hep::CaloHitContributionCollection >;
+      using calorimeterpair_t = std::pair< calorimeterptr_t, contributionsptr_t >;
       using calorimetermap_t = std::map< std::string, calorimeterpair_t >;
       std::unique_ptr<writer_t>     m_file  { };
       podio::Frame                  m_frame { };
@@ -234,17 +237,17 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
   if ( m_file )   {
     G4AutoLock protection_lock(&action_mutex);
     m_frame.put( std::move(m_particles), "MCParticles");
-    while ( ! m_trackerHits.empty() ) {
-      auto trackerHits = m_trackerHits.extract(m_trackerHits.begin());
-      m_frame.put( std::move(trackerHits.mapped()), trackerHits.key());
+    for (auto& [colName, trackerHits] : m_trackerHits) {
+      m_frame.put( std::move(trackerHits), colName);
     }
-    while ( ! m_calorimeterHits.empty() ) {
-      auto calorimeterHits = m_calorimeterHits.extract(m_calorimeterHits.begin());
-      m_frame.put( std::move(calorimeterHits.mapped().first), calorimeterHits.key());
-      m_frame.put( std::move(calorimeterHits.mapped().second), calorimeterHits.key() + "Contributions");
+    for (auto& [colName, calorimeterHits] : m_calorimeterHits) {
+      m_frame.put( std::move(calorimeterHits.first), colName);
+      m_frame.put( std::move(calorimeterHits.second), colName + "Contributions");
     }
     m_file->writeFrame(m_frame, m_section_name);
     m_particles.clear();
+    m_trackerHits.clear();
+    m_calorimeterHits.clear();
     m_frame = {};
     return;
   }
@@ -276,6 +279,8 @@ void Geant4Output2EDM4hep::begin(const G4Event* event)  {
   /// Create event frame object
   m_eventNo = event->GetEventID();
   m_particles.clear();
+  m_trackerHits.clear();
+  m_calorimeterHits.clear();
   m_particles = {};
   m_frame = {};
 }
@@ -442,6 +447,10 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   debug("+++ Saving EDM4hep collection %s with %d entries.", colName.c_str(), int(nhits));
   //-------------------------------------------------------------------
   if( typeid( Geant4Tracker::Hit ) == coll->type().type()  ){
+    // https://jguegant.github.io/blogs/tech/performing-try-emplace.html
+    if (m_trackerHits.find(colName) == m_trackerHits.end()) {
+      m_trackerHits[colName] = std::make_unique< edm4hep::SimTrackerHitCollection >();
+    }
     for(unsigned i=0 ; i < nhits ; ++i){
       auto sth = m_trackerHits[colName]->create();
       const Geant4Tracker::Hit* hit = coll->hit(i);
@@ -472,6 +481,12 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
     Geant4Sensitive* sd = coll->sensitive();
     int hit_creation_mode = sd->hitCreationMode();
 
+    if (m_calorimeterHits.find(colName) == m_calorimeterHits.end()) {
+      m_calorimeterHits[colName] = std::make_pair(
+        std::make_unique< edm4hep::SimCalorimeterHitCollection >(),
+        std::make_unique< edm4hep::CaloHitContributionCollection >()
+      );
+    }
     for(unsigned i=0 ; i < nhits ; ++i){
       auto sch = m_calorimeterHits[colName].first->create();
       const Geant4Calorimeter::Hit* hit = coll->hit(i);
