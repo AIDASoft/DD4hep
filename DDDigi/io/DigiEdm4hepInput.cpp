@@ -16,9 +16,9 @@
 #include "DigiIO.h"
 
 // podio/edm4hep include files
-#include "DigiFrame.h"
-//#include <podio/Frame.h>
+#include <podio/Frame.h>
 #include <podio/ROOTFrameReader.h>
+
 #include <edm4hep/SimTrackerHit.h>
 #include <edm4hep/SimCalorimeterHit.h>
 #include <edm4hep/MCParticleCollection.h>
@@ -44,7 +44,7 @@ namespace dd4hep {
     public:
       podio::Frame frame { };
       edm4hep_read_frame_t(podio::Frame&& frm) : frame(std::move(frm)) { }
-      const podio::CollectionBase* get(const std::string& nam) const { return frame.self()->get(nam); }
+      const podio::CollectionBase* get(const std::string& nam) const { return frame.get(nam); }
     };
     
     using reader_t = podio::ROOTFrameReader;
@@ -271,7 +271,7 @@ namespace dd4hep {
     {
       DataParameters parameters(nam, mask);
       data_io<edm4hep_input>()._to_digi(Key(nam, segment.id, mask), *collection, parameters);
-      data_io<edm4hep_input>()._to_digi(Key(nam, segment.id, mask), frame.getGenericParameters(), parameters);
+      data_io<edm4hep_input>()._to_digi(Key(nam, segment.id, mask), frame.getParameters(), parameters);
       debug("%s+++ Converted %ld Edm4hep transient", context.event->id(), parameters.size());
       put_data(segment, Key(nam, mask), std::move(parameters));
     }

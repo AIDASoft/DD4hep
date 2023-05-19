@@ -151,7 +151,7 @@ endif()
 
 if(DD4HEP_USE_EDM4HEP)
   find_package(EDM4HEP REQUIRED)
-  find_package(podio 0.16.0 REQUIRED)
+  find_package(podio 0.16.3 REQUIRED)
 #  DD4HEP_SETUP_EDM4HEP_TARGETS()
 endif()
 
