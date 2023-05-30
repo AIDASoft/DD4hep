@@ -16,7 +16,7 @@
 # The usage of Xerces-C is mandatory due to the entity resolution mechanism
 #
 #==========================================================================
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 IF(NOT TARGET DD4hep::DDCore)
   find_package ( DD4hep REQUIRED )
