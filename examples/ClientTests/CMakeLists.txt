@@ -8,7 +8,7 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 IF(NOT TARGET DD4hep::DDCore)
   find_package ( DD4hep REQUIRED )
@@ -379,7 +379,7 @@ dd4hep_add_test_reg( MiniTel_check_checksum_Minitel3
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTelGenerate.xml
   	      -plugin DD4hepDetectorChecksum -readout -detector Minitel3
-  REGEX_PASS "Combined hash code                      36773df7c4d6cf2b  \\(52 sub-codes\\)"
+  REGEX_PASS "Combined hash code                      96566298cb469f79  \\(54 sub-codes\\)"
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
@@ -388,7 +388,7 @@ dd4hep_add_test_reg( MiniTel_check_checksum_full
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTelGenerate.xml
   	      -plugin DD4hepDetectorChecksum -readout
-  REGEX_PASS "Combined hash code                      99b55eb7a563d587  \\(201 sub-codes\\)"
+  REGEX_PASS "Combined hash code                      97ecf7772fe1d462  \\(207 sub-codes\\)"
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #

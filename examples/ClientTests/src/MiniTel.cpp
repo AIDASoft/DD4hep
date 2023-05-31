@@ -68,7 +68,8 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
 
   assembly.setVisAttributes(description.visAttributes(x_det.visStr()));
 
-  Volume sensor_vol(det_name, Box(det_dim.x(),det_dim.y(),det_dim.z()), mat);
+  Box    sensor_box(Box(det_dim.x(),det_dim.y(),det_dim.z()));
+  Volume sensor_vol(det_name, sensor_box, mat);
   sensor_vol.setVisAttributes(description.visAttributes(det_mod.visStr()));
   sensor_vol.setLimitSet(description, x_det.limitsStr());
   sensor_vol.setRegion(description, x_det.regionStr());
@@ -76,19 +77,43 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
   if ( x_det.isSensitive() ) {
     sens.setType("tracker");
   }
-
   int count = 0;
   PlacedVolume pv;
   DetElement   side_det;
-  Assembly     side_vol;
+  double       epsilon = 1e-10; 
   Position     side_pos(0,0,30*dd4hep::mm);
+  Position     env_dim_min(sensor_box.x()+epsilon, sensor_box.y()+epsilon, +100000.0);
+  Position     env_dim_max(sensor_box.x()+epsilon, sensor_box.y()+epsilon, -100000.0);
 
+  for( xml_coll_t m(x_det, _U(module_position)); m; m++ )    {
+    xml_comp_t x_pos = m;
+    if ( x_pos.z() > env_dim_max.z() ) {
+      env_dim_max.SetZ(x_pos.z());
+      printout(DEBUG,"MiniTel","Envelope z_max = %f",x_pos.z());
+    }
+    if ( x_pos.z() < env_dim_min.z() )  {
+      env_dim_min.SetZ(x_pos.z());
+      printout(DEBUG,"MiniTel","Envelope z_min = %f",x_pos.z());
+    }
+  }
+
+  Volume side_vol;
+  if ( x_det.hasChild(_U(assembly)) )   {
+    side_vol = Assembly("side_0");
+    printout(DEBUG,"MiniTel","Using assembly envelope");
+  }
+  else   {
+    Box side_box(env_dim_max.x(), env_dim_max.y(), (env_dim_max.z()-env_dim_min.z())/2.0+sensor_box.z() + epsilon);
+    side_vol = Volume("side_0", side_box, description.air());
+    printout(DEBUG,"MiniTel","Envelope Box = %f",side_box.z());
+  }
   side_det = DetElement(sdet,"side_0", x_det.id());
-  side_vol = Assembly("side_0");
   if ( x_det.hasChild(_U(side_position)) )  {
     xml_comp_t x_pos = x_det.child(_U(side_position));
     side_pos = Position(x_pos.x(0), x_pos.y(0), x_pos.z(3*dd4hep::cm));
+    printout(ALWAYS,"","side_pos = %f",side_pos.z());
   }
+
   pv = assembly.placeVolume(side_vol, side_pos);
   pv.addPhysVolID("side",0);
   side_det.setPlacement(pv);
