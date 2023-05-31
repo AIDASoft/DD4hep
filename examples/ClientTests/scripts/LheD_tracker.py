@@ -35,6 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 def run():
+  args = DDG4.CommandLine()
   kernel = DDG4.Kernel()
   description = kernel.detectorDescription()
 
@@ -49,7 +50,7 @@ def run():
   geant4.setupCshUI()
   # geant4.setupCshUI('csh',True,True)
   # geant4.setupCshUI('csh',True,True,'vis.mac')
-  if len(sys.argv) >= 2 and sys.argv[1] == "batch":
+  if args.batch:
     kernel.UI = ''
 
   # Configure field

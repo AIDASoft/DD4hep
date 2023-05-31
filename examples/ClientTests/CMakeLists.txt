@@ -492,7 +492,7 @@ if (DD4HEP_USE_GEANT4)
   foreach(script Assemblies LheD_tracker MiniTel MiniTel_hepmc NestedDetectors )
     dd4hep_add_test_reg( ClientTests_sim_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-      EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/${script}.py batch
+      EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/${script}.py -batch
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   endforeach(script)
