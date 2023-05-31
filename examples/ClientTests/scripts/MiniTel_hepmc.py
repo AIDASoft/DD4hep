@@ -26,8 +26,9 @@ import DDG4
 
 def run():
   from MiniTelSetup import Setup
+  args = DDG4.CommandLine()
   m = Setup()
-  if len(sys.argv) >= 2 and sys.argv[1] == "batch":
+  if args.batch:
     DDG4.setPrintLevel(DDG4.OutputLevel.WARNING)
     m.kernel.UI = ''
   m.configure()
