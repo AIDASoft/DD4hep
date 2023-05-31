@@ -10,7 +10,6 @@
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
 import os
-import sys
 import time
 import DDG4
 from DDG4 import OutputLevel as Output
