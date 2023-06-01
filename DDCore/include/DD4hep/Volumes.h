@@ -115,54 +115,8 @@ namespace dd4hep {
       /// String representation for debugging
       std::string str()  const;
     };
-    /// Optional parameters to implement special features such as parametrization
-    /**
-     *
-     *   \author  M.Frank
-     *   \version 1.0
-     *   \ingroup DD4HEP_CORE
-     */
-    class Parameterisation   {
-    public:
-      /** Feature: Geant4 parameterised volumes  */
-      using Dimension = std::pair<Transform3D, size_t>;
-      /// Reference to the starting point of the parameterisation
-      Transform3D   start    {   };
-      /// Reference to the parameterised transformation for dimension 1
-      Dimension     trafo1D  { {}, 0UL };
-      /// Reference to the parameterised transformation for dimension 2
-      Dimension     trafo2D  { {}, 0UL };
-      /// Reference to the parameterised transformation for dimension 3
-      Dimension     trafo3D  { {}, 0UL };
-      /// Number of entries for the parameterisation in dimension 2
-      unsigned long flags    { 0 };
-      /// Number of entries for the parameterisation in dimension 2
-      unsigned long refCount { 0 };
-      /// Reference to the placements of this volume
-      std::vector<PlacedVolume> placements {  };
-      /// Bitfield from sensitive detector to encode the volume ID on the fly
-      const detail::BitFieldElement* field { nullptr };
+    class Parameterisation;
 
-    public:
-      /// Default constructor
-      Parameterisation() = default;
-      /// Default move
-      Parameterisation(Parameterisation&& copy) = default;
-      /// Copy constructor
-      Parameterisation(const Parameterisation& c) = default;
-      /// Default destructor
-      virtual ~Parameterisation() = default;
-      /// Move assignment
-      Parameterisation& operator=(Parameterisation&& copy) = default;
-      /// Assignment operator
-      Parameterisation& operator=(const Parameterisation& copy) = default;
-      /// Increase ref count
-      Parameterisation* addref();
-      /// Decrease ref count
-      void release();
-      /// Enable ROOT persistency
-      ClassDef(Parameterisation,200);
-    };
     /// Magic word to detect memory corruptions
     unsigned long magic { 0 };
     /// Reference count on object (used to implement Grab/Release)
@@ -289,6 +243,58 @@ namespace dd4hep {
     /// String dump
     std::string toString() const;
   };
+
+  // This needs full knowledge of the PlacedVolume class, at least for ROOT 6.28/04
+  // so we place it here
+  /// Optional parameters to implement special features such as parametrization
+  /**
+   *
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \ingroup DD4HEP_CORE
+   */
+  class PlacedVolumeExtension::Parameterisation {
+  public:
+    /** Feature: Geant4 parameterised volumes  */
+    using Dimension = std::pair<Transform3D, size_t>;
+    /// Reference to the starting point of the parameterisation
+    Transform3D   start    {   };
+    /// Reference to the parameterised transformation for dimension 1
+    Dimension     trafo1D  { {}, 0UL };
+    /// Reference to the parameterised transformation for dimension 2
+    Dimension     trafo2D  { {}, 0UL };
+    /// Reference to the parameterised transformation for dimension 3
+    Dimension     trafo3D  { {}, 0UL };
+    /// Number of entries for the parameterisation in dimension 2
+    unsigned long flags    { 0 };
+    /// Number of entries for the parameterisation in dimension 2
+    unsigned long refCount { 0 };
+    /// Reference to the placements of this volume
+    std::vector<PlacedVolume> placements {  };
+    /// Bitfield from sensitive detector to encode the volume ID on the fly
+    const detail::BitFieldElement* field { nullptr };
+
+  public:
+    /// Default constructor
+    Parameterisation() = default;
+    /// Default move
+    Parameterisation(Parameterisation&& copy) = default;
+    /// Copy constructor
+    Parameterisation(const Parameterisation& c) = default;
+    /// Default destructor
+    virtual ~Parameterisation() = default;
+    /// Move assignment
+    Parameterisation& operator=(Parameterisation&& copy) = default;
+    /// Assignment operator
+    Parameterisation& operator=(const Parameterisation& copy) = default;
+    /// Increase ref count
+    Parameterisation* addref();
+    /// Decrease ref count
+    void release();
+    /// Enable ROOT persistency
+    ClassDef(Parameterisation,200);
+  };
+
 
   /// Implementation class extending the ROOT volume (TGeoVolume)
   /**
