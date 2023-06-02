@@ -241,7 +241,7 @@ namespace dd4hep {
       data_io<edm4hep_input>()._to_digi_if(*collection, hits, predicate);
       data_io<edm4hep_input>()._to_digi(Key(nam, segment.id, mask), hits, out);
       info("%s+++ %-24s Converted %6ld Edm4hep %-14s to %6ld cell deposits",
-	   context.event->id(), nam.c_str(), len, collection->getValueTypeName().c_str(), out.size());
+	   context.event->id(), nam.c_str(), len, collection->getValueTypeName().data(), out.size());
       put_data(segment, Key(out.name, mask), std::move(out));
       if ( m_keep_raw )   {
 	put_data(segment, Key(nam+".edm4hep", mask, segment.id), std::move(hits));
