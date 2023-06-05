@@ -68,12 +68,12 @@ DDSegmentation::Parameter  Segmentation::parameter(const std::string& parameterN
 }
 
 /// determine the local position based on the cell ID
-Position Segmentation::position(const long64& cell) const {
+Position Segmentation::position(const CellID& cell) const {
   return Position(access()->segmentation->position(cell));
 }
 
 /// determine the cell ID based on the local position
-long64 Segmentation::cellID(const Position& localPosition, const Position& globalPosition, const long64& volID) const {
+CellID Segmentation::cellID(const Position& localPosition, const Position& globalPosition, const CellID & volID) const {
   return access()->segmentation->cellID(localPosition, globalPosition, volID);
 }
 

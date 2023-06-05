@@ -134,10 +134,10 @@ int main_wrapper(int argc, char** argv ){
 	
         SimCalorimeterHit* sHit = (SimCalorimeterHit*) col->getElementAt(i) ;
 	
-        dd4hep::long64 id0 = sHit->getCellID0() ;
-        dd4hep::long64 id1 = sHit->getCellID1() ;
+        dd4hep::CellID id0 = sHit->getCellID0() ;
+        dd4hep::CellID id1 = sHit->getCellID1() ;
 
-	dd4hep::long64 id =  idDecoder0.toLong( id0 , id1 ) ;                                                                                                                  
+	dd4hep::CellID id =  idDecoder0.toLong( id0 , id1 ) ;                                                                                                                  
 
 	Position point( sHit->getPosition()[0]* dd4hep::mm , sHit->getPosition()[1]* dd4hep::mm ,  sHit->getPosition()[2]* dd4hep::mm ) ;
 	

@@ -60,12 +60,12 @@ namespace dd4hep {
       /// Full identifier (field + id)
       std::string identifier()  const;
       /// Check a given cell id if it matches this selection
-      bool matches(uint64_t cell)  const  {
-	return this->split_id(cell) == this->predicate.id;
-      }
+      //bool matches(uint64_t cell)  const  {
+      //  return this->split_id(cell) == this->predicate.id;
+      //}
       /// Check a given cell id if it matches this selection
       bool matches(CellID cell)  const  {
-	return this->split_id(cell) == this->predicate.id;
+        return this->split_id(cell) == this->predicate.id;
       }
 
       /// Check if a deposit should be processed

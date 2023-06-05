@@ -26,7 +26,7 @@ int main(int /* argc */, char** /* argv */ ){
     const BitFieldCoder bf("system:5,side:-2,layer:9,module:8,sensor:8,x:32:-16,y:-16" ) ;
 
     // set some 'random' values to bf2 
-    long64 field = 0  ;
+    CellID field = 0  ;
     
     bf.set( field, "layer",  373 );
     bf.set( field, "module", 254 );
@@ -37,7 +37,7 @@ int main(int /* argc */, char** /* argv */ ){
     bf.set( field, "y",      -16710 );
 
 
-    test(  field , long64(0xbebafecacafebabeUL)  , " same value 0xbebafecacafebabeUL from individual initialization " ); 
+    test(  field , CellID(0xbebafecacafebabeUL)  , " same value 0xbebafecacafebabeUL from individual initialization " ); 
 
 
     // make a copy for testing the access
