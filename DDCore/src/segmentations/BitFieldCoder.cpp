@@ -42,9 +42,9 @@ namespace dd4hep{
       }
     }
   
-    long64 BitFieldElement::value(long64 id) const { 
+    FieldID BitFieldElement::value(CellID id) const { 
       if(  _isSigned   ) {
-        long64 val = ( id & _mask ) >> _offset ;
+        FieldID val = ( id & _mask ) >> _offset ;
         if( ( val  & ( 1LL << ( _width - 1 ) ) ) != 0 ) { // negative value
           val -= ( 1LL << _width );
         }
@@ -54,7 +54,7 @@ namespace dd4hep{
       }
     }
 
-    void BitFieldElement::set(long64& field, long64 in) const {
+    void BitFieldElement::set(CellID& field, FieldID in) const {
     
       // check range 
       if( in < _minVal || in > _maxVal  ) {
@@ -96,7 +96,7 @@ namespace dd4hep{
     }
 
 
-    std::string BitFieldCoder::valueString(ulong64 bitfield) const {
+    std::string BitFieldCoder::valueString(CellID bitfield) const {
 
       std::stringstream  os ;
 
