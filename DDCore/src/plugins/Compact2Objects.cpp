@@ -1460,24 +1460,34 @@ template <> void Converter<XMLFile>::operator()(xml_h element) const {
 template <> void Converter<World>::operator()(xml_h element) const {
   xml_elt_t  x_world(element);
   xml_comp_t x_shape = x_world.child(_U(shape), false);
+  xml_attr_t att = x_world.getAttr(_U(material));
+  Material   mat = att ? description.material(x_world.attr<string>(att)) : description.air();
   Volume world_vol;
 
   /// Create the shape and the corresponding volume
   if ( x_shape )   {
-    Solid      sol(x_shape.createShape());
-    xml_attr_t att = x_world.getAttr(_U(material));
-    Material   mat = att ? description.material(x_world.attr<string>(att)) : description.air();
+    Solid sol(x_shape.createShape());
     world_vol = Volume("world_volume", sol, mat);
-    printout(INFO, "Compact",
-	     "++ Created successfully world volume %s. shape: %s material:%s.",
-	     world_vol.name(), sol.type(), mat.name());
+    printout(INFO, "Compact", "++ Created successfully world volume '%s'. shape: %s material:%s.",
+             world_vol.name(), sol.type(), mat.name());
     description.manager().SetTopVolume(world_vol.ptr());
   }
   else   {
     world_vol = description.worldVolume();
-    if ( !world_vol )   {
+    if ( !world_vol && att )   {
+      /// If we require a user configured world, but no shape is given, define the standard box.
+      /// Implicitly assumes that the box dimensions are given in the standard way.
+      Box sol("world_x", "world_y", "world_z");
+      world_vol = Volume("world_volume", sol, mat);
+      printout(INFO, "Compact", "++ Created world volume '%s' as %s (%.2f, %.2f %.2f [cm]) material:%s.",
+               world_vol.name(), sol.type(),
+               sol.x()/dd4hep::cm, sol.y()/dd4hep::cm, sol.z()/dd4hep::cm,
+               mat.name());
+      description.manager().SetTopVolume(world_vol.ptr());
+    }
+    else if ( !world_vol )  {
       except("Compact", "++ Logical error: "
-	     "You cannot configure the world volume before it is created.");
+	     "You cannot configure the world volume before it is created and not giving creation instructions.");
     }
   }
   // Delegate further configuration o0f the world volume to the xml utilities:
