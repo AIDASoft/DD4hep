@@ -410,10 +410,18 @@ dd4hep_add_test_reg( minitel_config_plugins_include_command_xml
 )
 #
 # Test setting properties to the world volume and a single sub-detector
-dd4hep_add_test_reg( minitel_config_subdet
+dd4hep_add_test_reg( minitel_config_world_volume
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/WorldSettings.xml 
   REGEX_PASS "\\+\\+ Applied 5 settings to MyLHCBdetector5"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR"
+)
+#
+# Test creation of the world volume with user specified material
+dd4hep_add_test_reg( minitel_config_world_material
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/WorldMaterial.xml -print INFO -destroy -load
+  REGEX_PASS "\\+\\+ Created world volume 'world_volume' as TGeoBBox \\(50.00, 50.00 50.00 \\[cm\\]\\) material:Steel235"
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
