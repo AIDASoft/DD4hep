@@ -35,14 +35,14 @@ def run():
     cmds.append('/ddg4/UI/terminate')
     m.kernel.UI = ''
 
+  # Configure G4 geometry setup
+  seq, act = m.geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
   if args.debug:
-    # Configure G4 geometry setup
-    seq, act = m.geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
     act.DebugVolumes = True
     act.DebugRegions = True
     act.DebugLimits = True
-    seq, act = m.geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
 
+  seq, act = m.geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
   m.ui.Commands = cmds
   m.configure()
   m.defineOutput()

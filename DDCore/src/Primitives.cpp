@@ -173,7 +173,7 @@ namespace {
 /// Convert volumeID to string format (016X)
 std::string dd4hep::volumeID(VolumeID vid)   {
   char text[32];
-  ::snprintf(text,sizeof(text),"%016llx",vid);
+  ::snprintf(text,sizeof(text),"%016lx", vid);
   return text;
 }
 

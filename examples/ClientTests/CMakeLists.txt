@@ -410,10 +410,18 @@ dd4hep_add_test_reg( minitel_config_plugins_include_command_xml
 )
 #
 # Test setting properties to the world volume and a single sub-detector
-dd4hep_add_test_reg( minitel_config_subdet
+dd4hep_add_test_reg( minitel_config_world_volume
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/WorldSettings.xml 
   REGEX_PASS "\\+\\+ Applied 5 settings to MyLHCBdetector5"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR"
+)
+#
+# Test creation of the world volume with user specified material
+dd4hep_add_test_reg( minitel_config_world_material
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/WorldMaterial.xml -print INFO -destroy -load
+  REGEX_PASS "\\+\\+ Created world volume 'world_volume' as TGeoBBox \\(50.00, 50.00 50.00 \\[cm\\]\\) material:Steel235"
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
@@ -492,7 +500,7 @@ if (DD4HEP_USE_GEANT4)
   foreach(script Assemblies LheD_tracker MiniTel MiniTel_hepmc NestedDetectors )
     dd4hep_add_test_reg( ClientTests_sim_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-      EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/${script}.py batch
+      EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/${script}.py -batch
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   endforeach(script)
@@ -513,7 +521,7 @@ if (DD4HEP_USE_GEANT4)
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTel.py
     	       -batch -debug -events 1 -geometry /examples/ClientTests/compact/WorldSettings.xml
     REGEX_PASS "\\+ Apply REGION settings: minitel_region_5         to volume MyLHCBdetector5."
-    REGEX_FAIL "Exception;EXCEPTION;ERROR"
+    REGEX_FAIL "EXCEPTION; Exception;ERROR"
   )
   #
   # Test setting properties to the world volume
@@ -522,7 +530,7 @@ if (DD4HEP_USE_GEANT4)
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTel.py
     	       -batch -debug -events 1 -geometry /examples/ClientTests/compact/WorldSettings.xml
     REGEX_PASS "Volume world_volume Region: DefaultRegionForTheWorld. Apply user limits from world_region"
-    REGEX_FAIL "Exception;EXCEPTION;ERROR"
+    REGEX_FAIL "EXCEPTION; Exception;ERROR"
   )
   #
   if(Geant4_VERSION VERSION_LESS 10.7)
@@ -536,7 +544,7 @@ if (DD4HEP_USE_GEANT4)
         EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/${script}.py -batch -events 2
 		   -geometry ${ClientTestsEx_INSTALL}/compact/SiliconBlock.xml -batch -events 2
         REGEX_PASS "Event 1 Begin event action. Access event related information"
-        REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+        REGEX_FAIL "EXCEPTION; Exception;ERROR;Error" )
     endforeach(script)
   endif()
   #
@@ -546,7 +554,7 @@ if (DD4HEP_USE_GEANT4)
       EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/ParamVolume.py
       		 -geometry ${script}.xml -batch -events 2
       REGEX_PASS "Event 1 Begin event action. Access event related information"
-      REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+      REGEX_FAIL "EXCEPTION; Exception;ERROR;Error" )
   endforeach(script)
   #
   #
@@ -558,7 +566,7 @@ if (DD4HEP_USE_GEANT4)
       EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTelGenerate.py
                  -batch -events 5 -output MiniTel_ddg4_edm4hep.edm4hep.root
       REGEX_PASS "\\+\\+\\+ Finished run 0 after 5 events \\(5 events in total\\)"
-      REGEX_FAIL "Error;ERROR;Exception"
+      REGEX_FAIL "Error;ERROR; Exception"
     )
   endif()
 endif(DD4HEP_USE_GEANT4)

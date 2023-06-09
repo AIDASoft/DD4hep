@@ -486,13 +486,13 @@ namespace dd4hep {
     struct NeighbourSurfacesStruct {
 
       /// map of all neighbours in the same layer
-      std::map<dd4hep::long64 , std::vector<dd4hep::long64 > > sameLayer ; 
+      std::map<dd4hep::CellID , std::vector<dd4hep::CellID > > sameLayer ; 
 
       /// map of all neighbours in the previous layer
-      std::map<dd4hep::long64 , std::vector<dd4hep::long64 > > prevLayer ;
+      std::map<dd4hep::CellID , std::vector<dd4hep::CellID > > prevLayer ;
 
       /// map of all neighbours in the next layer
-      std::map<dd4hep::long64 , std::vector<dd4hep::long64 > > nextLayer ;
+      std::map<dd4hep::CellID , std::vector<dd4hep::CellID > > nextLayer ;
 
     } ;
     typedef StructExtension<NeighbourSurfacesStruct> NeighbourSurfacesData ;

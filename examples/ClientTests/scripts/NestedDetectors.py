@@ -10,7 +10,6 @@
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
 import os
-import sys
 import time
 import DDG4
 from DDG4 import OutputLevel as Output
@@ -28,6 +27,7 @@ from g4units import GeV, MeV
 
 
 def run():
+  args = DDG4.CommandLine()
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.setOutputLevel(str('Geant4Converter'), Output.DEBUG)
@@ -37,7 +37,7 @@ def run():
   geant4 = DDG4.Geant4(kernel)
   geant4.printDetectors()
   geant4.setupCshUI()
-  if len(sys.argv) >= 2 and sys.argv[1] == "batch":
+  if args.batch:
     kernel.UI = ''
 
   # Configure field
