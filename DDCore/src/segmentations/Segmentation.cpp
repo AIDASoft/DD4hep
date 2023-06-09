@@ -132,7 +132,7 @@ namespace dd4hep {
     }
 
     /// Helper method to convert a bin number to a 1D position
-    double Segmentation::binToPosition(long64 bin, double cellSize, double offset) {
+    double Segmentation::binToPosition(FieldID bin, double cellSize, double offset) {
       return bin * cellSize + offset;
     }
 
@@ -145,7 +145,7 @@ namespace dd4hep {
     }
 
     /// Helper method to convert a bin number to a 1D position given a vector of binBoundaries
-    double Segmentation::binToPosition(CellID bin, std::vector<double> const& cellBoundaries, double offset) {
+    double Segmentation::binToPosition(FieldID bin, std::vector<double> const& cellBoundaries, double offset) {
       return (cellBoundaries[bin+1] + cellBoundaries[bin])*0.5 + offset;
     }
     /// Helper method to convert a 1D position to a cell ID given a vector of binBoundaries

@@ -14,10 +14,10 @@
 #define DD4HEP_SEGMENTATIONS_H
 
 // Framework include files
-#include "DD4hep/Handle.h"
-#include "DD4hep/Objects.h"
-#include "DD4hep/BitFieldCoder.h"
-#include "DDSegmentation/Segmentation.h"
+#include <DD4hep/Handle.h>
+#include <DD4hep/Objects.h>
+#include <DD4hep/BitFieldCoder.h>
+#include <DDSegmentation/Segmentation.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -79,9 +79,9 @@ namespace dd4hep {
     /// Set the underlying decoder
     void setDecoder(const BitFieldCoder* decoder) const;
     /// determine the local position based on the cell ID
-    Position position(const long64& cellID) const;
+    Position position(const CellID& cellID) const;
     /// determine the cell ID based on the local position
-    long64 cellID(const Position& localPosition, const Position& globalPosition, const long64& volumeID) const;
+    CellID cellID(const Position& localPosition, const Position& globalPosition, const VolumeID& volumeID) const;
     /// Determine the volume ID from the full cell ID by removing all local fields
     VolumeID volumeID(const CellID& cellID) const;
     /// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
