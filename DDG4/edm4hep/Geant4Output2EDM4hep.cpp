@@ -96,10 +96,10 @@ namespace dd4hep {
       /// Fill event parameters in EDM4hep event
       template <typename T>
       void saveEventParameters(const std::map<std::string, std::string >& parameters)   {
-	for(const auto& p : parameters)   {
-	  info("Saving event parameter: %-32s = %s", p.first.c_str(), p.second.c_str());
-	  m_frame.putParameter(p.first, p.second);
-	}
+        for(const auto& p : parameters)   {
+          info("Saving event parameter: %-32s = %s", p.first.c_str(), p.second.c_str());
+          m_frame.putParameter(p.first, p.second);
+        }
       }
     };
     
@@ -171,7 +171,7 @@ using namespace dd4hep::sim;
 using namespace dd4hep;
 
 namespace {
-  G4Mutex action_mutex=G4MUTEX_INITIALIZER;
+  G4Mutex action_mutex = G4MUTEX_INITIALIZER;
 }
 
 #include <DDG4/Factories.h>
@@ -211,7 +211,7 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
       fname = m_output.substr(0, idx) + _toString(m_runNo, ".run%08d") + m_output.substr(idx);
     }
   }
-  if ( !m_file && !fname.empty() )   {
+  if ( !fname.empty() )   {
     m_file = std::make_unique<podio::ROOTFrameWriter>(fname);
     if ( !m_file )   {
       fatal("+++ Failed to open output file: %s", fname.c_str());
@@ -234,10 +234,14 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
   if ( m_file )   {
     G4AutoLock protection_lock(&action_mutex);
     m_frame.put( std::move(m_particles), "MCParticles");
-    for (auto& [colName, trackerHits] : m_trackerHits) {
-      m_frame.put( std::move(trackerHits), colName);
+    for (auto it = m_trackerHits.begin(); it != m_trackerHits.end(); ++it)   {
+      it->second.getDatamodelRegistryIndex();
+      it->second.size();
+      m_frame.put( std::move(it->second), it->first);
     }
     for (auto& [colName, calorimeterHits] : m_calorimeterHits) {
+      calorimeterHits.first.getDatamodelRegistryIndex();
+      calorimeterHits.second.getDatamodelRegistryIndex();
       m_frame.put( std::move(calorimeterHits.first), colName);
       m_frame.put( std::move(calorimeterHits.second), colName + "Contributions");
     }
@@ -257,11 +261,9 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   // --- write an edm4hep::RunHeader ---------
   // Runs are just Frames with different contents in EDM4hep / podio. We simply
   // store everything as parameters for now
-  auto runHeader = podio::Frame();
-
-  for (const auto& [key, value] : m_runHeader) {
+  podio::Frame runHeader  {};
+  for (const auto& [key, value] : m_runHeader)
     runHeader.putParameter(key, value);
-  }
 
   m_runNo = m_runNumberOffset > 0 ? m_runNumberOffset + run->GetRunID() : run->GetRunID();
   runHeader.putParameter("runNumber", m_runNo);
@@ -274,12 +276,24 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
 
 void Geant4Output2EDM4hep::begin(const G4Event* event)  {
   /// Create event frame object
+  G4HCofThisEvent* hce = event->GetHCofThisEvent();
   m_eventNo = event->GetEventID();
-  m_particles.clear();
+  m_frame = {};
+  m_particles = {};
   m_trackerHits.clear();
   m_calorimeterHits.clear();
-  m_particles = {};
-  m_frame = {};
+  if ( hce )  {
+    int nCol = hce->GetNumberOfCollections();
+    for (int i = 0; i < nCol; ++i) {
+      Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(hce->GetHC(i));
+      if( typeid( Geant4Tracker::Hit ) == coll->type().type() )
+        m_trackerHits[coll->GetName()] = {};
+      else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type() )
+        m_calorimeterHits[coll->GetName()] = {};
+      else
+        except("begin(Event): Unknown container type!");
+    }
+  }
 }
 
 /// Data conversion interface for MC particles to EDM4hep format
@@ -324,13 +338,13 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
       // Set generator status
       mcp.setGeneratorStatus(0);
       if( p->genStatus ) {
-	mcp.setGeneratorStatus( p->genStatus ) ;
+        mcp.setGeneratorStatus( p->genStatus ) ;
       } else {
-	if ( mask.isSet(G4PARTICLE_GEN_STABLE) )             mcp.setGeneratorStatus(1);
-	else if ( mask.isSet(G4PARTICLE_GEN_DECAYED) )       mcp.setGeneratorStatus(2);
-	else if ( mask.isSet(G4PARTICLE_GEN_DOCUMENTATION) ) mcp.setGeneratorStatus(3);
-	else if ( mask.isSet(G4PARTICLE_GEN_BEAM) )          mcp.setGeneratorStatus(4);
-	else if ( mask.isSet(G4PARTICLE_GEN_OTHER) )         mcp.setGeneratorStatus(9);
+        if ( mask.isSet(G4PARTICLE_GEN_STABLE) )             mcp.setGeneratorStatus(1);
+        else if ( mask.isSet(G4PARTICLE_GEN_DECAYED) )       mcp.setGeneratorStatus(2);
+        else if ( mask.isSet(G4PARTICLE_GEN_DOCUMENTATION) ) mcp.setGeneratorStatus(3);
+        else if ( mask.isSet(G4PARTICLE_GEN_BEAM) )          mcp.setGeneratorStatus(4);
+        else if ( mask.isSet(G4PARTICLE_GEN_OTHER) )         mcp.setGeneratorStatus(9);
       }
 
       // Set simulation status
@@ -345,7 +359,7 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
 
       //fg: if simstatus !=0 we have to set the generator status to 0:
       if( mcp.isCreatedInSimulation() )
-	mcp.setGeneratorStatus( 0 )  ;
+        mcp.setGeneratorStatus( 0 )  ;
 
       mcp.setSpin(p->spin);
       mcp.setColorFlow(p->colorFlow);
@@ -360,27 +374,27 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
       auto q = m_particles[i];
 
       for (const auto& idau : p->daughters) {
-	const auto k = p_ids.find(idau);
-	if (k == p_ids.end()) {
-	  fatal("+++ Particle %d: FAILED to find daughter with ID:%d",p->id,idau);
-	  continue;
-	}
-	int iqdau = (*k).second;
-	auto qdau = m_particles[iqdau];
-	q.addToDaughters(qdau);
+        const auto k = p_ids.find(idau);
+        if (k == p_ids.end()) {
+          fatal("+++ Particle %d: FAILED to find daughter with ID:%d",p->id,idau);
+          continue;
+        }
+        int iqdau = (*k).second;
+        auto qdau = m_particles[iqdau];
+        q.addToDaughters(qdau);
       }
 
       for (const auto& ipar : p->parents) {
-	if (ipar >= 0) { // A parent ID of -1 means NO parent, because a base of 0 is perfectly legal
-	  const auto k = p_ids.find(ipar);
-	  if (k == p_ids.end()) {
-	    fatal("+++ Particle %d: FAILED to find parent with ID:%d",p->id,ipar);
-	    continue;
-	  }
-	  int iqpar = (*k).second;
-	  auto qpar = m_particles[iqpar];
-	  q.addToParents(qpar);
-	}
+        if (ipar >= 0) { // A parent ID of -1 means NO parent, because a base of 0 is perfectly legal
+          const auto k = p_ids.find(ipar);
+          if (k == p_ids.end()) {
+            fatal("+++ Particle %d: FAILED to find parent with ID:%d",p->id,ipar);
+            continue;
+          }
+          int iqpar = (*k).second;
+          auto qpar = m_particles[iqpar];
+          q.addToParents(qpar);
+        }
       }
     }
   }
@@ -496,7 +510,7 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
         sCaloHitCont.setParticle( mcp );
 
         if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )     {
-	  edm4hep::Vector3f p(c.x/CLHEP::mm, c.y/CLHEP::mm, c.z/CLHEP::mm);
+          edm4hep::Vector3f p(c.x/CLHEP::mm, c.y/CLHEP::mm, c.z/CLHEP::mm);
           sCaloHitCont.setPDG( c.pdgID );
           sCaloHitCont.setStepPosition( p );
         }
@@ -507,4 +521,3 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
     error("+++ unknown type in Geant4HitCollection %s ", coll->type().type().name());
   }
 }
-
