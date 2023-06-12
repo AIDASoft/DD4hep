@@ -34,35 +34,35 @@ namespace dd4hep {
 
       /// Main functional callback
       virtual void execute(DigiContext& context, work_t& work, const predicate_t&)  const override final  {
-	std::size_t killed = 0, total = 0, i = 0;
-	if ( auto* v = work.get_input<DepositVector>() )   {
-	  total = v->size();
-	  for( auto iter = v->begin(); iter != v->end(); ++iter, ++i )   {
-	    if ( v->at(i).flag&EnergyDeposit::KILLED )   {
-	      v->remove(iter);
-	      iter = v->begin() + (--i);
-	    }
-	  }
-	  killed = total - v->size();
-	}
-	else if ( auto* m = work.get_input<DepositMapping>() )   {
-	  CellID last_cell = ~0x0LL;
-	  total = m->size();
-	  for( auto iter = m->begin(); iter != m->end(); ++iter )   {
-	    if ( iter->second.flag&EnergyDeposit::KILLED )   {
-	      m->remove(iter);
-	      iter = (last_cell != ~0x0LL) ? m->data.find(last_cell) : m->begin();
-	      continue;
-	    }
-	    last_cell = iter->first;
-	  }
-	  killed = total - m->size();
-	}
-	else   {
-	  except("Request to handle unknown data type: %s", work.input_type_name().c_str());
-	}
-	if ( m_monitor ) m_monitor->count_shift(total, killed);
-	info("%s+++ Killed %6ld out of %6ld deposit entries from container: %s",context.event->id(), killed, total);
+        std::size_t killed = 0, total = 0, i = 0;
+        if ( auto* v = work.get_input<DepositVector>() )   {
+          total = v->size();
+          for( auto iter = v->begin(); iter != v->end(); ++iter, ++i )   {
+            if ( v->at(i).flag&EnergyDeposit::KILLED )   {
+              v->remove(iter);
+              iter = v->begin() + (--i);
+            }
+          }
+          killed = total - v->size();
+        }
+        else if ( auto* m = work.get_input<DepositMapping>() )   {
+          CellID last_cell = ~0x0ULL;
+          total = m->size();
+          for( auto iter = m->begin(); iter != m->end(); ++iter )   {
+            if ( iter->second.flag&EnergyDeposit::KILLED )   {
+              m->remove(iter);
+              iter = (last_cell != ~0x0ULL) ? m->data.find(last_cell) : m->begin();
+              continue;
+            }
+            last_cell = iter->first;
+          }
+          killed = total - m->size();
+        }
+        else   {
+          except("Request to handle unknown data type: %s", work.input_type_name().c_str());
+        }
+        if ( m_monitor ) m_monitor->count_shift(total, killed);
+        info("%s+++ Killed %6ld out of %6ld deposit entries from container: %s",context.event->id(), killed, total);
       }
     };
   }    // End namespace digi

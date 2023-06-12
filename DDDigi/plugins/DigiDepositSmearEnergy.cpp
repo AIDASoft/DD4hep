@@ -87,69 +87,69 @@ namespace dd4hep {
     public:
       /// Standard constructor
       DigiDepositSmearEnergy(const DigiKernel& krnl, const std::string& nam)
-	: DigiDepositsProcessor(krnl, nam)
+        : DigiDepositsProcessor(krnl, nam)
       {
-	declareProperty("intrinsic_fluctuation",      m_intrinsic_fluctuation = 0e0);
-	declareProperty("instrumentation_resolution", m_instrumentation_resolution = 0e0);
-	declareProperty("systematic_resolution",      m_systematic_resolution  = 0e0);	
-	declareProperty("pair_ionisation_energy",     m_pair_ionization_energy = 3.6*dd4hep::eV);
-	declareProperty("ionization_fluctuation",     m_ionization_fluctuation = false);
-	declareProperty("modify_energy",              m_modify_energy = true);
-	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositSmearEnergy::smear)
+        declareProperty("intrinsic_fluctuation",      m_intrinsic_fluctuation = 0e0);
+        declareProperty("instrumentation_resolution", m_instrumentation_resolution = 0e0);
+        declareProperty("systematic_resolution",      m_systematic_resolution  = 0e0);	
+        declareProperty("pair_ionisation_energy",     m_pair_ionization_energy = 3.6*dd4hep::eV);
+        declareProperty("ionization_fluctuation",     m_ionization_fluctuation = false);
+        declareProperty("modify_energy",              m_modify_energy = true);
+        DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositSmearEnergy::smear);
       }
 
       /// Create deposit mapping with updates on same cellIDs
       template <typename T> void
       smear(DigiContext& context, T& cont, work_t& /* work */, const predicate_t& predicate)  const  {
-	auto& random = context.randomGenerator();
-	std::size_t updated = 0UL;
+        auto& random = context.randomGenerator();
+        std::size_t updated = 0UL;
 
-	for( auto& dep : cont )    {
-	  if ( predicate(dep) )   {
-	    CellID cell = dep.first;
-	    EnergyDeposit& depo = dep.second;
-	    double deposit = depo.deposit;
-	    double delta_E = 0e0;
-	    double energy  = deposit / dd4hep::GeV; // E in units of GeV
-	    double sigma_E_systematic   = m_systematic_resolution * energy;
-	    double sigma_E_intrin_fluct = m_intrinsic_fluctuation * std::sqrt(energy);
-	    double sigma_E_instrument   = m_instrumentation_resolution / dd4hep::GeV;
-	    double delta_ion = 0e0, num_pairs = 0e0;
-	    constexpr static double eps = std::numeric_limits<double>::epsilon();
-	    if ( sigma_E_systematic > eps )   {
-	      delta_E += sigma_E_systematic * random.gaussian(0e0, 1e0);
-	    }
-	    if ( sigma_E_intrin_fluct > eps )   {
-	      delta_E += sigma_E_intrin_fluct * random.gaussian(0e0, 1e0);
-	    }
-	    if ( sigma_E_instrument > eps )   {
-	      delta_E += sigma_E_instrument * random.gaussian(0e0, 1e0);
-	    }
-	    if ( m_ionization_fluctuation )   {
-	      num_pairs = energy / (m_pair_ionization_energy/dd4hep::GeV);
-	      delta_ion = energy * (random.poisson(num_pairs)/num_pairs);
-	      delta_E += delta_ion;
-	    }
-	    if ( dd4hep::isActivePrintLevel(outputLevel()) )   {
-	      print("%s+++ %016lX [GeV] E:%9.2e [%9.2e %9.2e] intrin_fluct:%9.2e systematic:%9.2e instrument:%9.2e ioni:%9.2e/%.0f",
-		    context.event->id(), cell, energy, deposit/dd4hep::GeV, delta_E,
-		    sigma_E_intrin_fluct, sigma_E_systematic, sigma_E_instrument, delta_ion, num_pairs);
-	    }
-	    /// delta_E is in GeV
-	    delta_E *= dd4hep::GeV;
-	    depo.depositError = delta_E;
-	    if ( m_monitor )  {
-	      m_monitor->energy_shift(dep, delta_E);
-	    }
-	    if ( m_modify_energy )  {
-	      depo.deposit = deposit + delta_E;
-	      depo.flag |= EnergyDeposit::ENERGY_SMEARED;
-	    }
-	    ++updated;
-	  }
-	}
-	info("%s+++ %-32s Smear energy: updated %6ld out of %6ld entries from mask: %04X",
-	     context.event->id(), cont.name.c_str(), updated, cont.size(), cont.key.mask());
+        for( auto& dep : cont )    {
+          if ( predicate(dep) )   {
+            CellID cell = dep.first;
+            EnergyDeposit& depo = dep.second;
+            double deposit = depo.deposit;
+            double delta_E = 0e0;
+            double energy  = deposit / dd4hep::GeV; // E in units of GeV
+            double sigma_E_systematic   = m_systematic_resolution * energy;
+            double sigma_E_intrin_fluct = m_intrinsic_fluctuation * std::sqrt(energy);
+            double sigma_E_instrument   = m_instrumentation_resolution / dd4hep::GeV;
+            double delta_ion = 0e0, num_pairs = 0e0;
+            constexpr static double eps = std::numeric_limits<double>::epsilon();
+            if ( sigma_E_systematic > eps )   {
+              delta_E += sigma_E_systematic * random.gaussian(0e0, 1e0);
+            }
+            if ( sigma_E_intrin_fluct > eps )   {
+              delta_E += sigma_E_intrin_fluct * random.gaussian(0e0, 1e0);
+            }
+            if ( sigma_E_instrument > eps )   {
+              delta_E += sigma_E_instrument * random.gaussian(0e0, 1e0);
+            }
+            if ( m_ionization_fluctuation )   {
+              num_pairs = energy / (m_pair_ionization_energy/dd4hep::GeV);
+              delta_ion = energy * (random.poisson(num_pairs)/num_pairs);
+              delta_E += delta_ion;
+            }
+            if ( dd4hep::isActivePrintLevel(outputLevel()) )   {
+              print("%s+++ %016lX [GeV] E:%9.2e [%9.2e %9.2e] intrin_fluct:%9.2e systematic:%9.2e instrument:%9.2e ioni:%9.2e/%.0f",
+                    context.event->id(), cell, energy, deposit/dd4hep::GeV, delta_E,
+                    sigma_E_intrin_fluct, sigma_E_systematic, sigma_E_instrument, delta_ion, num_pairs);
+            }
+            /// delta_E is in GeV
+            delta_E *= dd4hep::GeV;
+            depo.depositError = delta_E;
+            if ( m_monitor )  {
+              m_monitor->energy_shift(dep, delta_E);
+            }
+            if ( m_modify_energy )  {
+              depo.deposit = deposit + delta_E;
+              depo.flag |= EnergyDeposit::ENERGY_SMEARED;
+            }
+            ++updated;
+          }
+        }
+        info("%s+++ %-32s Smear energy: updated %6ld out of %6ld entries from mask: %04X",
+             context.event->id(), cont.name.c_str(), updated, cont.size(), cont.key.mask());
       }
     };
 
@@ -164,9 +164,9 @@ namespace dd4hep {
     public:
       /// Standard constructor
       DigiDepositSetEnergyError(const DigiKernel& krnl, const std::string& nam)
-	: DigiDepositSmearEnergy(krnl, nam)
+        : DigiDepositSmearEnergy(krnl, nam)
       {
-	m_modify_energy = false;
+        m_modify_energy = false;
       }
     };
   }    // End namespace digi

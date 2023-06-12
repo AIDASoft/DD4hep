@@ -235,13 +235,9 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
     G4AutoLock protection_lock(&action_mutex);
     m_frame.put( std::move(m_particles), "MCParticles");
     for (auto it = m_trackerHits.begin(); it != m_trackerHits.end(); ++it)   {
-      it->second.getDatamodelRegistryIndex();
-      it->second.size();
       m_frame.put( std::move(it->second), it->first);
     }
     for (auto& [colName, calorimeterHits] : m_calorimeterHits) {
-      calorimeterHits.first.getDatamodelRegistryIndex();
-      calorimeterHits.second.getDatamodelRegistryIndex();
       m_frame.put( std::move(calorimeterHits.first), colName);
       m_frame.put( std::move(calorimeterHits.second), colName + "Contributions");
     }
@@ -276,24 +272,11 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
 
 void Geant4Output2EDM4hep::begin(const G4Event* event)  {
   /// Create event frame object
-  G4HCofThisEvent* hce = event->GetHCofThisEvent();
   m_eventNo = event->GetEventID();
   m_frame = {};
   m_particles = {};
   m_trackerHits.clear();
   m_calorimeterHits.clear();
-  if ( hce )  {
-    int nCol = hce->GetNumberOfCollections();
-    for (int i = 0; i < nCol; ++i) {
-      Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(hce->GetHC(i));
-      if( typeid( Geant4Tracker::Hit ) == coll->type().type() )
-        m_trackerHits[coll->GetName()] = {};
-      else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type() )
-        m_calorimeterHits[coll->GetName()] = {};
-      else
-        except("begin(Event): Unknown container type!");
-    }
-  }
 }
 
 /// Data conversion interface for MC particles to EDM4hep format
@@ -458,8 +441,10 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   debug("+++ Saving EDM4hep collection %s with %d entries.", colName.c_str(), int(nhits));
   //-------------------------------------------------------------------
   if( typeid( Geant4Tracker::Hit ) == coll->type().type()  ){
+    // Create the hit container even if there are no entries!
+    auto& hits = m_trackerHits[colName] = {};
     for(unsigned i=0 ; i < nhits ; ++i){
-      auto sth = m_trackerHits[colName]->create();
+      auto sth = hits->create();
       const Geant4Tracker::Hit* hit = coll->hit(i);
       const Geant4Tracker::Hit::Contribution& t = hit->truth;
       int   trackID   = pm->particleID(t.trackID);
@@ -487,8 +472,10 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type() ){
     Geant4Sensitive* sd = coll->sensitive();
     int hit_creation_mode = sd->hitCreationMode();
+    // Create the hit container even if there are no entries!
+    auto& hits = m_calorimeterHits[colName] = {};
     for(unsigned i=0 ; i < nhits ; ++i){
-      auto sch = m_calorimeterHits[colName].first->create();
+      auto sch = hits.first->create();
       const Geant4Calorimeter::Hit* hit = coll->hit(i);
       const auto& pos = hit->position;
       sch.setCellID( hit->cellID );
@@ -499,7 +486,7 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
       // now add the individual step contributions
       for(auto ci=hit->truth.begin(); ci != hit->truth.end(); ++ci){
 
-        auto sCaloHitCont = m_calorimeterHits[colName].second->create();
+        auto sCaloHitCont = hits.second->create();
         sch.addToContributions( sCaloHitCont );
 
         const Geant4HitData::Contribution& c = *ci;

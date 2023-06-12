@@ -74,28 +74,29 @@ namespace dd4hep {
       /// Generic conversion function for hits
       template <typename HIT_TYPE, typename EDM4HEP_COLLECTION_TYPE>
       void hits_from_edm4hep(DigiContext&                   context,
-			     DataSegment&                   segment,
-			     Key::mask_type                 mask,
-			     const std::string&             nam,
-			     const EDM4HEP_COLLECTION_TYPE* collection)   const;
+                             DataSegment&                   segment,
+                             Key::mask_type                 mask,
+                             const std::string&             nam,
+                             const EDM4HEP_COLLECTION_TYPE* collection)   const;
 
       /// Generic conversion function for MC particles
       void parts_from_edm4hep(DigiContext&       context,
-			      DataSegment&       segment,
-			      int                mask,
-			      const std::string& nam,
-			      const edm4hep::MCParticleCollection* collection)   const;
+                              DataSegment&       segment,
+                              int                mask,
+                              const std::string& nam,
+                              const edm4hep::MCParticleCollection* collection)   const;
 
       /// Generic conversion function for event parameter settings
       void params_from_edm4hep(DigiContext&        context,
-			       DataSegment&        segment,
-			       int                 mask,
-			       const std::string&  nam,
-			       const podio::Frame& frame,
-			       const edm4hep::EventHeaderCollection* collection)   const;
+                               DataSegment&        segment,
+                               int                 mask,
+                               const std::string&  nam,
+                               const podio::Frame& frame,
+                               const edm4hep::EventHeaderCollection* collection)   const;
 
       /// Callback to handle single branch
       virtual void operator()(DigiContext& context, work_t& work)  const;
+
       /// Event action callback
       virtual void execute(DigiContext& context)  const  override;
     };

@@ -41,28 +41,28 @@ namespace dd4hep {
       /// Create deposit mapping with updates on same cellIDs
       template <typename T> void
       handle_deposits(DigiContext& context, T& cont, work_t& /* work */, const predicate_t& predicate)  const  {
-	std::size_t killed  = 0UL;
-	std::size_t handled = 0UL;
-	for( auto& dep : cont )    {
-	  if ( predicate(dep) )   {
-	    int flag = EnergyDeposit::ZERO_SUPPRESSED;
-	    if ( dep.second.deposit * dd4hep::GeV < m_energy_threshold )   {
-	      flag |= EnergyDeposit::KILLED;
-	      ++killed;
-	    }
-	    dep.second.flag |= flag;
-	    ++handled;
-	  }
-	}
-	info("%s+++ %-32s Zero suppression: entries: %6ld handled: %6ld killed %6ld entries from mask: %04X",
-	     context.event->id(), cont.name.c_str(), cont.size(), handled, killed, cont.key.mask());
+        std::size_t killed  = 0UL;
+        std::size_t handled = 0UL;
+        for( auto& dep : cont )    {
+          if ( predicate(dep) )   {
+            int flag = EnergyDeposit::ZERO_SUPPRESSED;
+            if ( dep.second.deposit * dd4hep::GeV < m_energy_threshold )   {
+              flag |= EnergyDeposit::KILLED;
+              ++killed;
+            }
+            dep.second.flag |= flag;
+            ++handled;
+          }
+        }
+        info("%s+++ %-32s Zero suppression: entries: %6ld handled: %6ld killed %6ld entries from mask: %04X",
+             context.event->id(), cont.name.c_str(), cont.size(), handled, killed, cont.key.mask());
       }
       /// Standard constructor
       DigiDepositZeroSuppress(const DigiKernel& krnl, const std::string& nam)
-	: DigiDepositsProcessor(krnl, nam)
+        : DigiDepositsProcessor(krnl, nam)
       {
-	declareProperty("threshold", m_energy_threshold);
-	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositZeroSuppress::handle_deposits)
+        declareProperty("threshold", m_energy_threshold);
+        DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositZeroSuppress::handle_deposits);
       }
     };
   }    // End namespace digi

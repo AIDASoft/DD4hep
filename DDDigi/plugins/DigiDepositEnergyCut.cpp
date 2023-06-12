@@ -43,27 +43,27 @@ namespace dd4hep {
       /// Create deposit mapping with updates on same cellIDs
       template <typename T> void
       cut_energy(context_t& context, T& cont, work_t& /* work */, const predicate_t& predicate)  const  {
-	std::size_t dropped = 0UL;
-	for( auto& dep : cont )    {
-	  if ( predicate(dep) )   {
-	    EnergyDeposit& depo = dep.second;
-	    if ( depo.deposit < m_cutoff )   {
-	      depo.flag |= EnergyDeposit::KILLED;
-	      ++dropped;
-	    }
-	  }
-	}
-	if ( m_monitor ) m_monitor->count_shift(cont.size(), dropped);
-	info("%s+++ %-32s dropped %6ld out of %6ld entries from mask: %04X",
-	     context.event->id(), cont.name.c_str(), dropped, cont.size(), cont.key.mask());
+        std::size_t dropped = 0UL;
+        for( auto& dep : cont )    {
+          if ( predicate(dep) )   {
+            EnergyDeposit& depo = dep.second;
+            if ( depo.deposit < m_cutoff )   {
+              depo.flag |= EnergyDeposit::KILLED;
+              ++dropped;
+            }
+          }
+        }
+        if ( m_monitor ) m_monitor->count_shift(cont.size(), dropped);
+        info("%s+++ %-32s dropped %6ld out of %6ld entries from mask: %04X",
+             context.event->id(), cont.name.c_str(), dropped, cont.size(), cont.key.mask());
       }
 
       /// Standard constructor
       DigiDepositEnergyCut(const DigiKernel& krnl, const std::string& nam)
-	: DigiDepositsProcessor(krnl, nam)
+        : DigiDepositsProcessor(krnl, nam)
       {
-	declareProperty("deposit_cutoff", m_cutoff);
-	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositEnergyCut::cut_energy)
+        declareProperty("deposit_cutoff", m_cutoff);
+        DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositEnergyCut::cut_energy);
       }
     };
   }    // End namespace digi
