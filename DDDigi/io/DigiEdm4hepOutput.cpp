@@ -61,8 +61,10 @@ namespace dd4hep {
       std::map<std::string, std::unique_ptr<edm4hep::TrackerHitCollection> > m_tracker_collections;
       /// Collection of all edm4hep calorimeter object collections
       std::map<std::string, std::unique_ptr<edm4hep::CalorimeterHitCollection> > m_calo_collections;
-
-      std::string                             m_section_name  { };
+      /// Output section name
+      std::string                             m_section_name{ "EVENT" };
+      /// Output mutex
+      std::mutex                              m_lock;
       /// Total numbe rof events to be processed
       long num_events  { -1 };
       /// Running event counter
@@ -143,7 +145,7 @@ namespace dd4hep {
         return nullptr;
       }
     };
-        
+
     /// Clear local data content
     void DigiEdm4hepOutput::internals_t::clear()   {
       m_header.second->clear();
@@ -157,6 +159,7 @@ namespace dd4hep {
     /// Commit data at end of filling procedure
     void DigiEdm4hepOutput::internals_t::commit()   {
       if ( m_writer )   {
+        std::lock_guard<std::mutex> protection(m_lock);
         m_frame.put( std::move(*m_header.second), m_header.first);
         m_frame.put( std::move(*m_particles.second), m_particles.first);
         for( const auto& c : m_tracker_collections )
