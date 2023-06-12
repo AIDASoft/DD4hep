@@ -51,8 +51,6 @@ namespace dd4hep {
       DigiEdm4hepOutput*                      m_parent    { nullptr };
       /// Reference to podio writer
       std::unique_ptr<podio::ROOTFrameWriter> m_writer    { };
-      /// Reference to podio store
-      podio::Frame                            m_frame     { };
       /// edm4hep event header collection
       headercollection_t                      m_header    { };
       /// MC particle collection
@@ -160,14 +158,15 @@ namespace dd4hep {
     void DigiEdm4hepOutput::internals_t::commit()   {
       if ( m_writer )   {
         std::lock_guard<std::mutex> protection(m_lock);
-        m_frame.put( std::move(*m_header.second), m_header.first);
-        m_frame.put( std::move(*m_particles.second), m_particles.first);
+        podio::Frame frame { };
+        frame.put( std::move(*m_header.second), m_header.first);
+        frame.put( std::move(*m_particles.second), m_particles.first);
         for( const auto& c : m_tracker_collections )
-          m_frame.put( std::move(*c.second), c.first);
+          frame.put( std::move(*c.second), c.first);
         for( const auto& c : m_calo_collections )
-          m_frame.put( std::move(*c.second), c.first);
+          frame.put( std::move(*c.second), c.first);
 
-        m_writer->writeFrame(m_frame, m_section_name);
+        m_writer->writeFrame(frame, m_section_name);
         clear();
         return;
       }
