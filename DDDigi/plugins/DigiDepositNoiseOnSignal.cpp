@@ -42,29 +42,29 @@ namespace dd4hep {
       /// Create deposit mapping with updates on same cellIDs
       template <typename T> void
       create_noise(DigiContext& context, T& cont, work_t& /* work */, const predicate_t& predicate)  const  {
-	auto& random = context.randomGenerator();
-	std::size_t updated = 0UL;
-	for( auto& dep : cont )  {
-	  if ( predicate(dep) )  {
-	    int flag = EnergyDeposit::DEPOSIT_NOISE;
-	    double delta_E = random.gaussian(m_mean, m_sigma);
-	    if ( m_monitor ) m_monitor->energy_shift(dep, delta_E);
-	    dep.second.deposit += delta_E;
-	    dep.second.flag |= flag;
-	    ++updated;
-	  }
-	}
-	info("%s+++ %-32s Noise on signal: %6ld entries, updated %6ld entries. mask: %04X",
-	     context.event->id(), cont.name.c_str(), cont.size(), updated, cont.key.mask());
+        auto& random = context.randomGenerator();
+        std::size_t updated = 0UL;
+        for( auto& dep : cont )  {
+          if ( predicate(dep) )  {
+            int flag = EnergyDeposit::DEPOSIT_NOISE;
+            double delta_E = random.gaussian(m_mean, m_sigma);
+            if ( m_monitor ) m_monitor->energy_shift(dep, delta_E);
+            dep.second.deposit += delta_E;
+            dep.second.flag |= flag;
+            ++updated;
+          }
+        }
+        info("%s+++ %-32s Noise on signal: %6ld entries, updated %6ld entries. mask: %04X",
+             context.event->id(), cont.name.c_str(), cont.size(), updated, cont.key.mask());
       }
 
       /// Standard constructor
       DigiDepositNoiseOnSignal(const DigiKernel& krnl, const std::string& nam)
-	: DigiDepositsProcessor(krnl, nam)
+        : DigiDepositsProcessor(krnl, nam)
       {
-	declareProperty("mean",  m_mean);
-	declareProperty("sigma", m_sigma);
-	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositNoiseOnSignal::create_noise)
+        declareProperty("mean",  m_mean);
+        declareProperty("sigma", m_sigma);
+        DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositNoiseOnSignal::create_noise);
       }
     };
   }    // End namespace digi

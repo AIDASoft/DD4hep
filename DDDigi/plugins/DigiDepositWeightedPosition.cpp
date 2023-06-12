@@ -43,35 +43,35 @@ namespace dd4hep {
       /// Create deposit mapping with updates on same cellIDs
       template <typename T> void
       create_deposits(context_t& context, const T& cont, work_t& work, const predicate_t& predicate)  const  {
-	Key key(cont.name, work.environ.output.mask);
-	DepositMapping m(cont.name, work.environ.output.mask, cont.data_type );
-	std::size_t dropped = 0UL, updated = 0UL, added = 0UL;
-	for( const auto& dep : cont )    {
-	  if ( predicate(dep) )   {
-	    const EnergyDeposit& depo = dep.second;
-	    if ( depo.deposit >= m_cutoff )   {
-	      CellID cell = dep.first;
-	      auto   iter = m.data.find(cell);
-	      if ( iter == m.data.end() )
-		m.data.emplace(dep.first, depo), ++added;
-	      else
-		iter->second.update_deposit_weighted(depo), ++updated;
-	      continue;
-	    }
-	    ++dropped;
-	  }
-	}
-	info("%s+++ %-32s added %6ld updated %6ld dropped %6ld entries (now: %6ld) from mask: %04X to mask: %04X",
-	     context.event->id(), cont.name.c_str(), added, updated, dropped, m.size(), cont.key.mask(), m.key.mask());
-	work.environ.output.data.put(m.key, std::move(m));
+        Key key(cont.name, work.environ.output.mask);
+        DepositMapping m(cont.name, work.environ.output.mask, cont.data_type );
+        std::size_t dropped = 0UL, updated = 0UL, added = 0UL;
+        for( const auto& dep : cont )    {
+          if ( predicate(dep) )   {
+            const EnergyDeposit& depo = dep.second;
+            if ( depo.deposit >= m_cutoff )   {
+              CellID cell = dep.first;
+              auto   iter = m.data.find(cell);
+              if ( iter == m.data.end() )
+                m.data.emplace(dep.first, depo), ++added;
+              else
+                iter->second.update_deposit_weighted(depo), ++updated;
+              continue;
+            }
+            ++dropped;
+          }
+        }
+        info("%s+++ %-32s added %6ld updated %6ld dropped %6ld entries (now: %6ld) from mask: %04X to mask: %04X",
+             context.event->id(), cont.name.c_str(), added, updated, dropped, m.size(), cont.key.mask(), m.key.mask());
+        work.environ.output.data.put(m.key, std::move(m));
       }
 
       /// Standard constructor
       DigiDepositWeightedPosition(const DigiKernel& krnl, const std::string& nam)
-	: DigiDepositsProcessor(krnl, nam)
+        : DigiDepositsProcessor(krnl, nam)
       {
-	declareProperty("deposit_cutoff", m_cutoff);
-	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositWeightedPosition::create_deposits)
+        declareProperty("deposit_cutoff", m_cutoff);
+        DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositWeightedPosition::create_deposits);
       }
     };
   }    // End namespace digi

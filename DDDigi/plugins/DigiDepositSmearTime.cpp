@@ -44,35 +44,35 @@ namespace dd4hep {
       /// Create deposit mapping with updates on same cellIDs
       template <typename T> void
       smear(DigiContext& context, T& cont, work_t& /* work */, const predicate_t& predicate)  const  {
-	auto& random = context.randomGenerator();
-	std::size_t killed  = 0UL;
-	std::size_t updated = 0UL;
-	for( auto& dep : cont )  {
-	  if ( predicate(dep) )  {
-	    int flag = EnergyDeposit::TIME_SMEARED;
-	    double delta_T = m_resolution_time * random.gaussian();
-	    if ( delta_T < m_window_time.first || delta_T > m_window_time.second )   {
-	      flag |= EnergyDeposit::KILLED;
-	      ++killed;
-	    }
-	    if ( m_monitor ) m_monitor->time_shift(dep, delta_T);
-	    dep.second.time += delta_T;
-	    dep.second.flag |= flag;
-	    ++updated;
-	  }
-	}
-	if ( m_monitor ) m_monitor->count_shift(cont.size(), -killed);
-	info("%s+++ %-32s Smeared time resolution: %6ld entries, updated %6ld killed %6ld entries from mask: %04X",
-	     context.event->id(), cont.name.c_str(), cont.size(), updated, killed, cont.key.mask());
+        auto& random = context.randomGenerator();
+        std::size_t killed  = 0UL;
+        std::size_t updated = 0UL;
+        for( auto& dep : cont )  {
+          if ( predicate(dep) )  {
+            int flag = EnergyDeposit::TIME_SMEARED;
+            double delta_T = m_resolution_time * random.gaussian();
+            if ( delta_T < m_window_time.first || delta_T > m_window_time.second )   {
+              flag |= EnergyDeposit::KILLED;
+              ++killed;
+            }
+            if ( m_monitor ) m_monitor->time_shift(dep, delta_T);
+            dep.second.time += delta_T;
+            dep.second.flag |= flag;
+            ++updated;
+          }
+        }
+        if ( m_monitor ) m_monitor->count_shift(cont.size(), -killed);
+        info("%s+++ %-32s Smeared time resolution: %6ld entries, updated %6ld killed %6ld entries from mask: %04X",
+             context.event->id(), cont.name.c_str(), cont.size(), updated, killed, cont.key.mask());
       }
 
       /// Standard constructor
       DigiDepositSmearTime(const DigiKernel& krnl, const std::string& nam)
-	: DigiDepositsProcessor(krnl, nam)
+        : DigiDepositsProcessor(krnl, nam)
       {
-	declareProperty("resolution_time", m_resolution_time);
-	declareProperty("window_time",     m_window_time);
-	DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositSmearTime::smear)
+        declareProperty("resolution_time", m_resolution_time);
+        declareProperty("window_time",     m_window_time);
+        DEPOSIT_PROCESSOR_BIND_HANDLERS(DigiDepositSmearTime::smear);
       }
     };
   }    // End namespace digi

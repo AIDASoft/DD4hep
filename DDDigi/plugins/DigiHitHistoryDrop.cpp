@@ -46,69 +46,69 @@ namespace dd4hep {
 
       /// Default destructor
       virtual ~DigiHitHistoryDrop()  {
-	InstanceCount::decrement(this);
+        InstanceCount::decrement(this);
       }
 
     public:
       /// Standard constructor
       DigiHitHistoryDrop(const DigiKernel& krnl, const std::string& nam)
-	: DigiEventAction(krnl, nam)
+        : DigiEventAction(krnl, nam)
       {
-	declareProperty("masks", m_masks);
-	declareProperty("input", m_input = "inputs");
-	InstanceCount::increment(this);
+        declareProperty("masks", m_masks);
+        declareProperty("input", m_input = "inputs");
+        InstanceCount::increment(this);
       }
 
       template <typename T>
       std::pair<std::size_t, std::size_t> drop_history(T& cont)  const  {
-	std::size_t num_drop_hit = 0;
-	std::size_t num_drop_particle = 0;
-	for( auto& dep : cont )    {
-	  auto ret = dep.second.history.drop();
-	  num_drop_hit += ret.first;
-	  num_drop_particle += ret.second;
-	}
-	return std::make_pair(num_drop_hit,num_drop_particle);
+        std::size_t num_drop_hit = 0;
+        std::size_t num_drop_particle = 0;
+        for( auto& dep : cont )    {
+          auto ret = dep.second.history.drop();
+          num_drop_hit += ret.first;
+          num_drop_particle += ret.second;
+        }
+        return std::make_pair(num_drop_hit,num_drop_particle);
       }
       std::pair<std::size_t, std::size_t> drop_history(DetectorHistory& cont)  const  {
-	std::size_t num_drop_hit = 0;
-	std::size_t num_drop_particle = 0;
-	for( auto& dep : cont )    {
-	  auto ret = dep.second.drop();
-	  num_drop_hit += ret.first;
-	  num_drop_particle += ret.second;
-	}
-	return std::make_pair(num_drop_hit,num_drop_particle);
+        std::size_t num_drop_hit = 0;
+        std::size_t num_drop_particle = 0;
+        for( auto& dep : cont )    {
+          auto ret = dep.second.drop();
+          num_drop_hit += ret.first;
+          num_drop_particle += ret.second;
+        }
+        return std::make_pair(num_drop_hit,num_drop_particle);
       }
 
       /// Main functional callback
       virtual void execute(DigiContext& context)  const  final  {
-	auto& inputs = context.event->get_segment(m_input);
-	std::size_t num_drop_hit = 0;
-	std::size_t num_drop_particle = 0;
-	for( auto& i : inputs )     {
-	  Key key(i.first);
-	  auto im = std::find(m_masks.begin(), m_masks.end(), key.mask());
-	  if( im != m_masks.end() )   {
-	    if ( DepositMapping* m = std::any_cast<DepositMapping>(&i.second) )    {
-	      auto ret = drop_history(*m);
-	      num_drop_hit += ret.first;
-	      num_drop_particle += ret.second;
-	    }
-	    else if ( DepositVector* v = std::any_cast<DepositVector>(&i.second) )    {
-	      auto ret = drop_history(*v);
-	      num_drop_hit += ret.first;
-	      num_drop_particle += ret.second;
-	    }
-	    else if( DetectorHistory* h = std::any_cast<DetectorHistory>(&i.second) )    {
-	      auto [nhit, npart] = drop_history(*h);
-	      num_drop_hit += nhit;
-	      num_drop_particle += npart;	      
-	    }
-	  }
-	}
-	info("%s+++ Dropped history of %6ld hits %6ld particles", 
-	     context.event->id(), num_drop_hit, num_drop_particle);
+        auto& inputs = context.event->get_segment(m_input);
+        std::size_t num_drop_hit = 0;
+        std::size_t num_drop_particle = 0;
+        for( auto& i : inputs )     {
+          Key key(i.first);
+          auto im = std::find(m_masks.begin(), m_masks.end(), key.mask());
+          if( im != m_masks.end() )   {
+            if ( DepositMapping* m = std::any_cast<DepositMapping>(&i.second) )    {
+              auto ret = drop_history(*m);
+              num_drop_hit += ret.first;
+              num_drop_particle += ret.second;
+            }
+            else if ( DepositVector* v = std::any_cast<DepositVector>(&i.second) )    {
+              auto ret = drop_history(*v);
+              num_drop_hit += ret.first;
+              num_drop_particle += ret.second;
+            }
+            else if( DetectorHistory* h = std::any_cast<DetectorHistory>(&i.second) )    {
+              auto [nhit, npart] = drop_history(*h);
+              num_drop_hit += nhit;
+              num_drop_particle += npart;	      
+            }
+          }
+        }
+        info("%s+++ Dropped history of %6ld hits %6ld particles", 
+             context.event->id(), num_drop_hit, num_drop_particle);
       }
     };
   }    // End namespace digi

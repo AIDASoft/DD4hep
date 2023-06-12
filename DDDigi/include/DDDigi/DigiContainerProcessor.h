@@ -167,10 +167,18 @@ namespace dd4hep {
       /// Main functional callback adapter
       virtual void execute(context_t& context, work_t& work, const predicate_t& predicate)  const;
     };
-
-#define DEPOSIT_PROCESSOR_BIND_HANDLERS(X)   {     using namespace std::placeholders; \
-      this->m_handleVector  = std::bind( &X<DepositVector>,  this, _1, _2, _3, _4); \
-      this->m_handleMapping = std::bind( &X<DepositMapping>, this, _1, _2, _3, _4); }
+    
+#define DEPOSIT_PROCESSOR_BIND_HANDLERS(X)                              \
+    this->m_handleVector  = std::bind( &X<DepositVector>,  this,        \
+                                       std::placeholders::_1,           \
+                                       std::placeholders::_2,           \
+                                       std::placeholders::_3,           \
+                                       std::placeholders::_4);          \
+    this->m_handleMapping = std::bind( &X<DepositMapping>, this,        \
+                                       std::placeholders::_1,           \
+                                       std::placeholders::_2,           \
+                                       std::placeholders::_3,           \
+                                       std::placeholders::_4)
 
     /// Worker class act on containers in an event identified by input masks and container name
     /**

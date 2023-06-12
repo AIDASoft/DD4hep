@@ -20,8 +20,9 @@
 #include "DigiIO.h"
 
 /// edm4hep include files
-#include <podio/EventStore.h>
-#include <podio/ROOTWriter.h>
+#include <podio/CollectionBase.h>
+#include <podio/ROOTFrameWriter.h>
+#include <podio/Frame.h>
 #include <edm4hep/SimTrackerHit.h>
 #include <edm4hep/MCParticleCollection.h>
 #include <edm4hep/TrackerHitCollection.h>
@@ -45,26 +46,27 @@ namespace dd4hep {
      */
     class DigiEdm4hepOutput::internals_t {
     public:
-      DigiEdm4hepOutput* m_parent                    { nullptr };
-      /// Reference to podio store
-      std::unique_ptr<podio::EventStore>  m_store     { };
+      using particlecollection_t = std::pair<std::string,std::unique_ptr<edm4hep::MCParticleCollection> >;
+      using headercollection_t   = std::pair<std::string,std::unique_ptr<edm4hep::EventHeaderCollection> >;
+      DigiEdm4hepOutput*                      m_parent    { nullptr };
       /// Reference to podio writer
-      std::unique_ptr<podio::ROOTWriter>  m_file      { };
+      std::unique_ptr<podio::ROOTFrameWriter> m_writer    { };
+      /// Reference to podio store
+      podio::Frame                            m_frame     { };
       /// edm4hep event header collection
-      edm4hep::EventHeaderCollection*     m_header    { nullptr };
+      headercollection_t                      m_header    { };
       /// MC particle collection
-      edm4hep::MCParticleCollection*      m_particles { nullptr };
-      /// Collection of all edm4hep object collections
-      std::map<std::string, podio::CollectionBase*> m_collections;
+      particlecollection_t                    m_particles { };
+      /// Collection of all edm4hep tracker object collections
+      std::map<std::string, std::unique_ptr<edm4hep::TrackerHitCollection> > m_tracker_collections;
+      /// Collection of all edm4hep calorimeter object collections
+      std::map<std::string, std::unique_ptr<edm4hep::CalorimeterHitCollection> > m_calo_collections;
 
+      std::string                             m_section_name  { };
       /// Total numbe rof events to be processed
       long num_events  { -1 };
       /// Running event counter
       long event_count {  0 };
-
-    private:
-      /// Helper to register single collection
-      template <typename T> T* register_collection(const std::string& name, T* collection);
 
     public:
       /// Default constructor
@@ -72,6 +74,8 @@ namespace dd4hep {
       /// Default destructor
       ~internals_t();
 
+      /// Clear local data content
+      void clear();
       /// Commit data at end of filling procedure
       void commit();
       /// Open new output stream
@@ -88,58 +92,80 @@ namespace dd4hep {
     /// Default constructor
     DigiEdm4hepOutput::internals_t::internals_t(DigiEdm4hepOutput* parent) : m_parent(parent)
     {
-      m_store  = std::make_unique<podio::EventStore>();
     }
 
     /// Default destructor
     DigiEdm4hepOutput::internals_t::~internals_t()    {
-      if ( m_file ) close();
-      m_store.reset();
-    }
-
-    template <typename T> T* DigiEdm4hepOutput::internals_t::register_collection(const std::string& nam, T* coll)   {
-      m_collections.emplace(nam, coll);
-      m_store->registerCollection(nam, coll);
-      m_parent->debug("+++ created collection %s <%s>", nam.c_str(), coll->getTypeName().data());
-      return coll;
+      if ( m_writer ) close();
+      m_tracker_collections.clear();
+      m_calo_collections.clear();
+      m_particles.second.reset();
+      m_header.second.reset();
     }
 
     /// Create all collections according to the parent setup
     void DigiEdm4hepOutput::internals_t::create_collections()    {
-      if ( nullptr == m_header )   {
-        m_header = register_collection("EventHeader", new edm4hep::EventHeaderCollection());
+      if ( !m_header.second )   {
+        m_header = std::make_pair("EventHeader", std::make_unique<edm4hep::EventHeaderCollection>());
         for( auto& cont : m_parent->m_containers )   {
           const std::string& nam = cont.first;
           const std::string& typ = cont.second;
           if ( typ == "MCParticles" )   {
-            m_particles = register_collection(nam, new edm4hep::MCParticleCollection());
+            m_particles = std::make_pair(nam, std::make_unique<edm4hep::MCParticleCollection>());
           }
           else if ( typ == "TrackerHits" )   {
-            register_collection(nam, new edm4hep::TrackerHitCollection());
+            m_tracker_collections.emplace(nam, std::make_unique<edm4hep::TrackerHitCollection>());
           }
           else if ( typ == "CalorimeterHits" )   {
-            register_collection(nam, new edm4hep::CalorimeterHitCollection());
+            m_calo_collections.emplace(nam, std::make_unique<edm4hep::CalorimeterHitCollection>());
           }
         }
         m_parent->info("+++ Will save %ld events to %s", num_events, m_parent->m_output.c_str());
       }
     }
-
     /// Access named collection: throws exception ifd the collection is not present
     template <typename T> 
     podio::CollectionBase* DigiEdm4hepOutput::internals_t::get_collection(const T& cont)  {
-      auto iter = m_collections.find(cont.name);
-      if ( iter == m_collections.end() )    {
-        m_parent->except("Error");
+      switch(cont.data_type)   {
+      case SegmentEntry::TRACKER_HITS:   {
+        auto iter = m_tracker_collections.find(cont.name);
+        if ( iter == m_tracker_collections.end() )
+          m_parent->except("Error");
+        return iter->second.get();
       }
-      return iter->second;
+      case SegmentEntry::CALORIMETER_HITS:   {
+        auto iter = m_calo_collections.find(cont.name);
+        if ( iter == m_calo_collections.end() )
+          m_parent->except("Error");
+        return iter->second.get();
+      }
+      default:
+        return nullptr;
+      }
+    };
+        
+    /// Clear local data content
+    void DigiEdm4hepOutput::internals_t::clear()   {
+      m_header.second->clear();
+      m_particles.second->clear();
+      for( const auto& c : m_tracker_collections )
+        c.second->clear();
+      for( const auto& c : m_calo_collections )
+        c.second->clear();
     }
 
     /// Commit data at end of filling procedure
     void DigiEdm4hepOutput::internals_t::commit()   {
-      if ( m_file )   {
-        m_file->writeEvent();
-        m_store->clearCollections();
+      if ( m_writer )   {
+        m_frame.put( std::move(*m_header.second), m_header.first);
+        m_frame.put( std::move(*m_particles.second), m_particles.first);
+        for( const auto& c : m_tracker_collections )
+          m_frame.put( std::move(*c.second), c.first);
+        for( const auto& c : m_calo_collections )
+          m_frame.put( std::move(*c.second), c.first);
+
+        m_writer->writeFrame(m_frame, m_section_name);
+        clear();
         return;
       }
       m_parent->except("+++ Failed to write output file. [Stream is not open]");
@@ -147,25 +173,23 @@ namespace dd4hep {
 
     /// Open new output stream
     void DigiEdm4hepOutput::internals_t::open()    {
-      if ( m_file )   {
+      if ( m_writer )   {
         close();
       }
-      m_file.reset();
+      clear();
+      m_writer.reset();
       std::string fname = m_parent->next_stream_name();
-      m_file = std::make_unique<podio::ROOTWriter>(fname, m_store.get());
+      m_writer = std::make_unique<podio::ROOTFrameWriter>(fname);
       m_parent->info("+++ Opened EDM4HEP output file %s", fname.c_str());
-      for( const auto& c : m_collections )   {
-	m_file->registerForWrite(c.first);
-      }
     }
 
     /// Commit data to disk and close output stream
     void DigiEdm4hepOutput::internals_t::close()   {
       m_parent->info("+++ Closing EDM4HEP output file.");
-      if ( m_file )   {
-        m_file->finish();
+      if ( m_writer )   {
+        m_writer->finish();
       }
-      m_file.reset();
+      m_writer.reset();
     }
 
     /// Standard constructor
@@ -189,9 +213,9 @@ namespace dd4hep {
         auto* act = dynamic_cast<DigiEdm4hepOutputProcessor*>(c.second);
         if ( act )   { // This is not nice! Need to think about something better.
           act->internals = this->internals;
-	  continue;
+          continue;
         }
-	except("Error: Invalid processor type for EDM4HEP output: %s", c.second->c_name());
+        except("Error: Invalid processor type for EDM4HEP output: %s", c.second->c_name());
       }
       m_parallel = false;
       internals->create_collections();
@@ -199,7 +223,7 @@ namespace dd4hep {
 
     /// Check for valid output stream
     bool DigiEdm4hepOutput::have_output()  const  {
-      return internals->m_file.get() != nullptr;
+      return internals->m_writer.get() != nullptr;
     }
 
     /// Open new output stream
@@ -227,24 +251,22 @@ namespace dd4hep {
     }
 
     void DigiEdm4hepOutputProcessor::convert_particles(DigiContext& ctxt,
-						       const ParticleMapping& cont)  const
+                                                       const ParticleMapping& cont)  const
     {
-      auto* coll = internals->m_particles;
-      std::size_t start = coll->size();
-      data_io<edm4hep_input>::_to_edm4hep(cont, coll);
-      std::size_t end = internals->m_particles->size();
-      info("%s+++ %-24s added %6ld/%6ld entries from mask: %04X to %s",
-           ctxt.event->id(), cont.name.c_str(), end-start, end, cont.key.mask(),
-           coll->getTypeName().data());
+      auto& parts = internals->m_particles.second;
+      data_io<edm4hep_input>::_to_edm4hep(cont, parts.get());
+      info("%s+++ %-24s added %6ld entries from mask: %04X to %s",
+           ctxt.event->id(), cont.name.c_str(), parts->size(), cont.key.mask(),
+           parts->getTypeName().data());
     }
 
     template <typename T> void
     DigiEdm4hepOutputProcessor::convert_depos(const T& cont,
-					      const predicate_t& predicate,
-					      edm4hep::TrackerHitCollection* collection)  const
+                                              const predicate_t& predicate,
+                                              edm4hep::TrackerHitCollection* collection)  const
     {
       std::array<float,6> covMat = {0., 0., m_pointResoutionRPhi*m_pointResoutionRPhi, 
-				    0., 0., m_pointResoutionZ*m_pointResoutionZ
+        0., 0., m_pointResoutionZ*m_pointResoutionZ
       };
       for ( const auto& depo : cont )   {
         if ( predicate(depo) )   {
@@ -255,8 +277,8 @@ namespace dd4hep {
 
     template <typename T> void
     DigiEdm4hepOutputProcessor::convert_depos(const T& cont,
-					      const predicate_t& predicate,
-					      edm4hep::CalorimeterHitCollection* collection)  const
+                                              const predicate_t& predicate,
+                                              edm4hep::CalorimeterHitCollection* collection)  const
     {
       for ( const auto& depo : cont )   {
         if ( predicate(depo) )   {
@@ -267,8 +289,8 @@ namespace dd4hep {
 
     template <typename T> void
     DigiEdm4hepOutputProcessor::convert_deposits(DigiContext&       ctxt,
-						 const T&           cont,
-						 const predicate_t& predicate)  const
+                                                 const T&           cont,
+                                                 const predicate_t& predicate)  const
     {
       podio::CollectionBase* coll = internals->get_collection(cont);
       std::size_t start = coll->size();
@@ -292,9 +314,9 @@ namespace dd4hep {
     }
 
     void DigiEdm4hepOutputProcessor::convert_history(DigiContext&           ctxt,
-						     const DepositsHistory& cont,
-						     work_t&                work,
-						     const predicate_t&     predicate)  const
+                                                     const DepositsHistory& cont,
+                                                     work_t&                work,
+                                                     const predicate_t&     predicate)  const
     {
       info("%s+++ %-32s Segment: %d Predicate:%s Conversion to edm4hep not implemented!",
            ctxt.event->id(), cont.name.c_str(), int(work.input.segment->id),
