@@ -146,27 +146,36 @@ namespace dd4hep {
 
     /// Clear local data content
     void DigiEdm4hepOutput::internals_t::clear()   {
+#if 0
       m_header.second->clear();
       m_particles.second->clear();
       for( const auto& c : m_tracker_collections )
         c.second->clear();
       for( const auto& c : m_calo_collections )
         c.second->clear();
+#endif
+      *m_header.second = {};
+      *m_particles.second = {};
+      for( const auto& c : m_tracker_collections )
+        *c.second = {};
+      for( const auto& c : m_calo_collections )
+        *c.second = {};
     }
 
     /// Commit data at end of filling procedure
     void DigiEdm4hepOutput::internals_t::commit()   {
-      if ( m_writer )   {
-        std::lock_guard<std::mutex> protection(m_lock);
-        podio::Frame frame { };
-        frame.put( std::move(*m_header.second), m_header.first);
-        frame.put( std::move(*m_particles.second), m_particles.first);
-        for( const auto& c : m_tracker_collections )
-          frame.put( std::move(*c.second), c.first);
-        for( const auto& c : m_calo_collections )
-          frame.put( std::move(*c.second), c.first);
+      if ( m_writer )   {{
+          std::lock_guard<std::mutex> protection(m_lock);
+          podio::Frame frame { };
+          frame.put( std::move(*m_header.second), m_header.first);
+          frame.put( std::move(*m_particles.second), m_particles.first);
+          for( const auto& c : m_tracker_collections )
+            frame.put( std::move(*c.second), c.first);
+          for( const auto& c : m_calo_collections )
+            frame.put( std::move(*c.second), c.first);
 
-        m_writer->writeFrame(frame, m_section_name);
+          m_writer->writeFrame(frame, m_section_name);
+        }
         clear();
         return;
       }
