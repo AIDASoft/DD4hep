@@ -41,8 +41,9 @@ namespace dd4hep {
     class BitFieldCoder;
     class BitFieldElement;
     /// Useful typedefs to differentiate cell IDs and volume IDs
-    typedef long long int CellID;
-    typedef long long int VolumeID;
+    typedef uint64_t CellID;
+    typedef uint64_t VolumeID;
+    typedef int64_t  FieldID;
   }
 
 
@@ -54,6 +55,7 @@ namespace dd4hep {
   typedef DDSegmentation::BitFieldElement BitFieldElement;
 #else
   using DDSegmentation::CellID;
+  using DDSegmentation::FieldID;
   using DDSegmentation::VolumeID;
   using DDSegmentation::BitFieldCoder;
   using DDSegmentation::BitFieldElement;

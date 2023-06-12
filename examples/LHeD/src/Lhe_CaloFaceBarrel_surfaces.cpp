@@ -55,7 +55,7 @@ namespace{
       _width = width ;
     }
 
-    void setID( dd4hep::long64 id_val ) { _id = id_val ; }
+    void setID( dd4hep::CellID id_val ) { _id = id_val ; }
     
     // overwrite to include points inside the inner radius of the barrel 
     bool insideBounds(const dd4hep::rec::Vector3D& point, double epsilon) const {

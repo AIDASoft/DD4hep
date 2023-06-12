@@ -100,7 +100,7 @@ namespace dd4hep {
     template <typename T> T* DigiEdm4hepOutput::internals_t::register_collection(const std::string& nam, T* coll)   {
       m_collections.emplace(nam, coll);
       m_store->registerCollection(nam, coll);
-      m_parent->debug("+++ created collection %s <%s>", nam.c_str(), coll->getTypeName().c_str());
+      m_parent->debug("+++ created collection %s <%s>", nam.c_str(), coll->getTypeName().data());
       return coll;
     }
 
@@ -235,7 +235,7 @@ namespace dd4hep {
       std::size_t end = internals->m_particles->size();
       info("%s+++ %-24s added %6ld/%6ld entries from mask: %04X to %s",
            ctxt.event->id(), cont.name.c_str(), end-start, end, cont.key.mask(),
-           coll->getTypeName().c_str());
+           coll->getTypeName().data());
     }
 
     template <typename T> void
@@ -288,7 +288,7 @@ namespace dd4hep {
       std::size_t end = coll->size();
       info("%s+++ %-24s added %6ld/%6ld entries from mask: %04X to %s",
            ctxt.event->id(), cont.name.c_str(), end-start, end, cont.key.mask(),
-           coll->getTypeName().c_str());
+           coll->getTypeName().data());
     }
 
     void DigiEdm4hepOutputProcessor::convert_history(DigiContext&           ctxt,

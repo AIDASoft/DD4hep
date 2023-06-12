@@ -41,6 +41,9 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
             -DCMAKE_CXX_STANDARD=17 ..
+          if [ "${{ matrix.LCG }}" = "dev3/x86_64-centos7-gcc11-opt" ]; then
+            cmake -DDD4HEP_HEPMC3_COMPRESSION_SUPPORT=ON ..
+          fi
           echo "::group::Compile"
           ninja install
           . ../bin/thisdd4hep.sh

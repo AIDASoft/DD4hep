@@ -120,7 +120,7 @@ int main_wrapper(int argc, char** argv ){
 	
         EVENT::SimTrackerHit* sHit = (EVENT::SimTrackerHit*) col->getElementAt(i) ;
 	
-        dd4hep::long64 id = sHit->getCellID0() ;
+        dd4hep::FieldID id = sHit->getCellID0() ;
 	
         idDecoder.setValue( id ) ;
         //      std::cout << " simhit with cellid : " << idDecoder << std::endl ;

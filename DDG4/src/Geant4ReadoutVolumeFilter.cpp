@@ -53,7 +53,7 @@ bool Geant4ReadoutVolumeFilter::operator()(const G4Step* step) const    {
   Geant4StepHandler stepH(step);
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
   VolumeID id  = volMgr.volumeID(stepH.preTouchable());
-  long64   key = m_key->value(id);
+  FieldID  key = m_key->value(id);
   if ( m_collection->key_min <= key && m_collection->key_max >= key )
     return true;
   return false;
@@ -64,7 +64,7 @@ bool Geant4ReadoutVolumeFilter::operator()(const Geant4FastSimSpot* spot) const 
   Geant4FastSimHandler spotH(spot);
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
   VolumeID id  = volMgr.volumeID(spotH.touchable());
-  long64   key = m_key->value(id);
+  FieldID  key = m_key->value(id);
   if ( m_collection->key_min <= key && m_collection->key_max >= key )
     return true;
   return false;

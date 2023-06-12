@@ -349,9 +349,9 @@ namespace dd4hep {
 					  const podio::GenericParameters& inputparams,
 					  dd4hep::digi::DataParameters&   parameters)  {
       /// Now copy all frame parameters to the data header
-      parameters.data->stringParams = inputparams.getStringMap();
-      parameters.data->floatParams  = inputparams.getFloatMap();
-      parameters.data->intParams    = inputparams.getIntMap();
+      parameters.data->stringParams = inputparams.getMap<std::string>();
+      parameters.data->floatParams  = inputparams.getMap<float>();
+      parameters.data->intParams    = inputparams.getMap<int>();
     }
 
     template <> template <>

@@ -55,7 +55,7 @@ namespace{
       _phi0 = phi0 ;
       _sym = symmetry ;
     }
-    void setID( dd4hep::long64 id_val ) { _id = id_val; }
+    void setID( dd4hep::CellID id_val ) { _id = id_val; }
     
     // overwrite to include points inside the inner radius of the endcap 
     bool insideBounds(const dd4hep::rec::Vector3D& point, double epsilon) const {

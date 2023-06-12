@@ -41,7 +41,16 @@ try:
 except ImportError:
   ARGCOMPLETEENABLED = False
 
-POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc", ".hepmc3", ".hepmc3.tree.root", ".pairs")
+HEPMC3_SUPPORTED_EXTENSIONS = [
+    ".hepmc.gz", ".hepmc.xz", ".hepmc.bz2",
+    ".hepmc3", ".hepmc3.gz", ".hepmc3.xz", ".hepmc3.bz2",
+    ".hepmc3.tree.root",
+    ]
+POSSIBLEINPUTFILES = [
+    ".stdhep", ".slcio", ".HEPEvt", ".hepevt",
+    ".pairs",
+    ".hepmc",
+    ] + HEPMC3_SUPPORTED_EXTENSIONS
 
 
 class DD4hepSimulation(object):
@@ -408,7 +417,7 @@ class DD4hepSimulation(object):
       elif inputFile.endswith(".hepevt"):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepevt%d" % index)
         gen.Input = "Geant4EventReaderHepEvtLong|" + inputFile
-      elif inputFile.endswith((".hepmc", ".hepmc3", ".hepmc3.tree.root")):
+      elif inputFile.endswith(tuple([".hepmc"] + HEPMC3_SUPPORTED_EXTENSIONS)):
         if self.hepmc3.useHepMC3:
           gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
           gen.Parameters = self.hepmc3.getParameters()
@@ -530,10 +539,11 @@ class DD4hepSimulation(object):
     """
     if isinstance(fileNames, six.string_types):
       fileNames = [fileNames]
-    if not all(fileName.endswith(extensions) for fileName in fileNames):
+    if not all(fileName.endswith(tuple(extensions)) for fileName in fileNames):
       self._errorMessages.append("ERROR: Unknown fileformat for file: %s" % fileNames)
-    if not self.hepmc3.useHepMC3 and any(fileName.endswith((".hepmc3", ".hepmc3.tree.root")) for fileName in fileNames):
-      self._errorMessages.append("ERROR: HepMC3 files require the use of HepMC3 library")
+    is_hepmc3_extension = any(fileName.endswith(tuple(HEPMC3_SUPPORTED_EXTENSIONS)) for fileName in fileNames)
+    if not self.hepmc3.useHepMC3 and is_hepmc3_extension:
+      self._errorMessages.append("ERROR: HepMC3 files or compressed HepMC2 require the use of HepMC3 library")
     return fileNames
 
   def __applyBoostOrSmear(self, kernel, actionList, mask):
@@ -615,10 +625,11 @@ class DD4hepSimulation(object):
   def __printSteeringFile(self, parser):
     """print the parameters formated as a steering file"""
 
-    steeringFileBase = textwrap.dedent("""from DDSim.DD4hepSimulation import DD4hepSimulation
-                                          from g4units import mm, GeV, MeV
-                                          SIM = DD4hepSimulation()
-                                          """)
+    steeringFileBase = textwrap.dedent("""\
+        from DDSim.DD4hepSimulation import DD4hepSimulation
+        from g4units import mm, GeV, MeV
+        SIM = DD4hepSimulation()
+        """)
     steeringFileBase += "\n"
     optionDict = parser._option_string_actions
     parameters = vars(self)

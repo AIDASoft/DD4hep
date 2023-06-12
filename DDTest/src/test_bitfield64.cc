@@ -26,7 +26,7 @@ int main(int /* argc */, char** /* argv */ ){
     BitField64 bf3( bf.fieldDescription() ) ;
 
 
-    test(  bf.getValue() , long64(0x0) , " initialized with 0 " ); 
+    test(  bf.getValue() , CellID(0x0) , " initialized with 0 " ); 
 
     //    std::cout  << " bf value : " << bf << std::endl ;
     
@@ -34,10 +34,10 @@ int main(int /* argc */, char** /* argv */ ){
 
     //    std::cout  << " bf value : " << bf << std::endl ;
 
-    test(  bf.getValue() , long64( 0xbebafecacafebabeULL ) , 
+    test(  bf.getValue() , 0xbebafecacafebabeULL, 
 	   " initialized with 0xbebafecacafebabeUL - compare as signed " ); 
 
-    test(  (ulong64) bf.getValue()   , 0xbebafecacafebabeULL  , 
+    test( bf.getValue()   , 0xbebafecacafebabeULL  , 
 	   " initialized with 0xbebafecacafebabeUL - compare as unsigned " ); 
 
 

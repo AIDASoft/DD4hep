@@ -10,7 +10,6 @@
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
 import os
-import sys
 import time
 import DDG4
 from g4units import GeV, mm, cm
@@ -25,6 +24,7 @@ from g4units import GeV, mm, cm
 
 
 def run():
+  args = DDG4.CommandLine()
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/examples/ClientTests/compact/Assemblies.xml"))
@@ -33,7 +33,7 @@ def run():
   geant4.printDetectors()
   # Configure UI
   geant4.setupCshUI()
-  if len(sys.argv) >= 2 and sys.argv[1] == "batch":
+  if args.batch:
     kernel.UI = ''
 
   # Configure field
