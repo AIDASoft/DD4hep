@@ -14,7 +14,7 @@
 #define JSON_DOCUMENTHANDLER_H
 
 /// Framework include files
-#include "JSON/Elements.h"
+#include <JSON/Elements.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

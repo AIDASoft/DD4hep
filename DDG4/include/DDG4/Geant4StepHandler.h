@@ -165,7 +165,7 @@ namespace dd4hep {
         G4LogicalVolume* lv = logvol(p);
         return lv ? lv->GetSensitiveDetector() : 0;
       }
-      const char* sdName(const G4StepPoint* p, const char* undefined = "") const {
+      std::string sdName(const G4StepPoint* p, const std::string& undefined = "") const {
         G4VSensitiveDetector* s = sd(p);
         return s ? s->GetName().c_str() : undefined;
       }

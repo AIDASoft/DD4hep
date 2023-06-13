@@ -48,7 +48,7 @@ namespace dd4hep {
       Geant4FastSimHandler() = delete;
       /// Initializing constructor
       Geant4FastSimHandler(const Geant4FastSimSpot* sp)
-	: Geant4HitHandler(sp->primary, sp->touchable), spot(sp)
+        : Geant4HitHandler(sp->primary, sp->touchable), spot(sp)
       {
       }
       /// No copy constructor
@@ -61,7 +61,7 @@ namespace dd4hep {
       Geant4FastSimHandler& operator=(Geant4FastSimHandler&& copy) = delete;
       /// Returns total energy deposit
       double energy() const  {
-	return spot->hit->GetEnergy();
+        return spot->hit->GetEnergy();
       }
       /// Return track momentum in DD4hep notation
       Momentum momentum() const {
@@ -84,14 +84,14 @@ namespace dd4hep {
       }
       /// Returns the track momentum as a G4ThreeVector
       G4ThreeVector momentumG4() const {
-	return track->GetMomentum();
+        return track->GetMomentum();
       }
       /// Access the enery deposit of the energy spot
       double deposit() const  {
         return spot->hit->GetEnergy();
       }
       G4VPhysicalVolume* volume() const {
-	return touchable()->GetVolume();
+        return touchable()->GetVolume();
       }
       G4LogicalVolume* logvol() const {
         return volume()->GetLogicalVolume();
@@ -103,12 +103,12 @@ namespace dd4hep {
         G4LogicalVolume* lv = logvol();
         return lv ? lv->GetSensitiveDetector() : 0;
       }
-      const char* sdName(const char* undefined = "") const {
+      std::string sdName(const std::string& undefined = "") const {
         G4VSensitiveDetector* s = sd();
-        return s ? s->GetName().c_str() : undefined;
+        return s ? s->GetName() : undefined;
       }
       bool isSensitive() const {
-	G4LogicalVolume* lv = logvol();
+        G4LogicalVolume* lv = logvol();
         return lv ? (0 != lv->GetSensitiveDetector()) : false;
       }
     };

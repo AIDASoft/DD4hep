@@ -12,10 +12,12 @@
 //==========================================================================
 
 // Framework include files
-#include "JSON/DocumentHandler.h"
+#define BOOST_BIND_GLOBAL_PLACEHOLDERS
+#include <JSON/Helper.h>
+#include <JSON/DocumentHandler.h>
 
 // C/C++ include files
-#include "boost/property_tree/json_parser.hpp"
+#include <boost/property_tree/json_parser.hpp>
 #include <memory>
 #include <stdexcept>
 
