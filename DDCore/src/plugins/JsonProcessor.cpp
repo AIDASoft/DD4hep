@@ -26,19 +26,20 @@
 */
 
 // Framework inlcude files
-#include "JSON/Helper.h"
-#include "JSON/DocumentHandler.h"
-#include "JSON/Conversions.h"
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/IDDescriptor.h"
-#include "DD4hep/detail/SegmentationsInterna.h"
-#include "DD4hep/detail/DetectorInterna.h"
-#include "DD4hep/detail/ObjectsInterna.h"
+#define BOOST_BIND_GLOBAL_PLACEHOLDERS
+#include <JSON/Helper.h>
+#include <JSON/DocumentHandler.h>
+#include <JSON/Conversions.h>
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/IDDescriptor.h>
+#include <DD4hep/detail/SegmentationsInterna.h>
+#include <DD4hep/detail/DetectorInterna.h>
+#include <DD4hep/detail/ObjectsInterna.h>
 
 // C/C++ include files
 #include <iostream>
-#include "boost/property_tree/json_parser.hpp"
+#include <boost/property_tree/json_parser.hpp>
 
 namespace {
   class Json;
