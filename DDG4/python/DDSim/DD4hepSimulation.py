@@ -260,11 +260,11 @@ class DD4hepSimulation(object):
       logger.info("=" * 80)
       pprint(vars(self))
       logger.info("=" * 80)
-      exit(1)
+      exit(0)
 
     if self._dumpSteeringFile:
       self.__printSteeringFile(parser)
-      exit(1)
+      exit(0)
 
   def getDetectorLists(self, detectorDescription):
     ''' get lists of trackers and calorimeters that are defined in detectorDescription (the compact xml file)'''
