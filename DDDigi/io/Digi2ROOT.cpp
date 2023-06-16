@@ -51,7 +51,7 @@ namespace dd4hep {
       /// Standard constructor
       Digi2ROOTWriter(const kernel_t& kernel, const std::string& nam);
       /// Initialization callback
-      virtual void initialize();
+      virtual void initialize()  override;
       /// Check for valid output stream
       virtual bool have_output()  const  override final;
       /// Open new output stream
