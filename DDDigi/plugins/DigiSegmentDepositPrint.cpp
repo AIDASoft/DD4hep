@@ -33,37 +33,38 @@ namespace dd4hep {
     public:
       /// Standard constructor
       DigiSegmentDepositPrint(const DigiKernel& kernel, const std::string& nam)
-	: DigiContainerProcessor(kernel, nam) {}
+        : DigiContainerProcessor(kernel, nam) {}
 
       /// Single container printout
       template <typename T> void
       print(const char* fmt, const T& cont, const predicate_t& predicate)  const   {
-	for( const auto& dep : cont )   {
-	  if( predicate(dep) )   {
-	    info(fmt, predicate.segmentation->split_id(dep.first), dep.first,
-		 dep.second.history.hits.size(), 
-		 dep.second.history.particles.size(),
-		 dep.second.deposit);
-	  }
-	}
+        for( const auto& dep : cont )   {
+          if( predicate(dep) )   {
+            info(fmt, predicate.segmentation->split_id(dep.first), dep.first,
+                 dep.second.history.hits.size(), 
+                 dep.second.history.particles.size(),
+                 dep.second.deposit);
+          }
+        }
       }
 
       /// Main functional callback
       virtual void execute(DigiContext& context, work_t& work, const predicate_t& predicate)  const override final  {
-	char format[256];
-	::snprintf(format, sizeof(format), 
-		   "%s[%s] %s-id: %%d [processor:%d] Cell: %%016lX mask: %016lX  "
-		   "hist:%%4ld hits %%4ld parts. "
-		   "entries deposit: %%f", 
-		   context.event->id(),
-		   predicate.segmentation->idspec.name(), predicate.segmentation->cname(),
-		   predicate.id, predicate.segmentation->split_mask);
-	if ( const auto* m = work.get_input<DepositMapping>() )
-	  print(format, *m, predicate);
-	else if ( const auto* v = work.get_input<DepositVector>() )
-	  print(format, *v, predicate);
-	else
-	  error("+++ Request to dump an invalid container %s", Key::key_name(work.input.key).c_str());
+        using ulonglong = unsigned long long;
+        char format[256];
+        ::snprintf(format, sizeof(format), 
+                   "%s[%s] %s-id: %%d [processor:%d] Cell: %%016lX mask: %016llX  "
+                   "hist:%%4ld hits %%4ld parts. "
+                   "entries deposit: %%f", 
+                   context.event->id(),
+                   predicate.segmentation->idspec.name(), predicate.segmentation->cname(),
+                   predicate.id, ulonglong(predicate.segmentation->split_mask));
+        if ( const auto* m = work.get_input<DepositMapping>() )
+          print(format, *m, predicate);
+        else if ( const auto* v = work.get_input<DepositVector>() )
+          print(format, *v, predicate);
+        else
+          error("+++ Request to dump an invalid container %s", Key::key_name(work.input.key).c_str());
       }
     };
   }    // End namespace digi

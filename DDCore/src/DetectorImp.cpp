@@ -643,8 +643,10 @@ Handle<NamedObject> DetectorImp::getRefChild(const HandleMap& e, const string& n
       ptr(const void* p) { other = p; }
     };
     std::string nam = "";
-    ptr m(&e), ref(this);
-    if ( ref.c > m.c && m.c < ref.c+sizeof(*this) ) nam = m.omap->name;
+    ptr mptr(&e), ref(this);
+    if ( ref.c > mptr.c && mptr.c < ref.c+sizeof(*this) )  {
+      nam = mptr.omap->name;
+    }
     std::stringstream err;
     err << "getRefChild: Failed to find child with name: " << name
         << " Map " << nam << " contains " << e.size() << " elements: {";
