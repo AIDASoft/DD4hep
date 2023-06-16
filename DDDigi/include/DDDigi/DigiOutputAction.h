@@ -63,10 +63,10 @@ namespace dd4hep {
       DigiOutputAction(const kernel_t& kernel, const std::string& nam);
 
       /// Initialization callback
-      virtual void initialize();
+      virtual void initialize()  override;
 
       /// Finalization callback
-      virtual void finalize();
+      virtual void finalize()  override;
 
       /// Check for valid output stream
       virtual bool have_output()  const = 0;
@@ -89,7 +89,7 @@ namespace dd4hep {
 
       /// Adopt new parallel worker acting on multiple containers
       virtual void adopt_processor(DigiContainerProcessor* action,
-                                   const std::vector<std::string>& containers);
+                                   const std::vector<std::string>& containers)  override;
 
       /// Callback to read event output
       virtual void execute(context_t& context)  const override;

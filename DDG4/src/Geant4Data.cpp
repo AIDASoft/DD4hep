@@ -71,11 +71,11 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* ste
     (h.trackDef() == G4OpticalPhoton::OpticalPhotonDefinition()) ? h.trkEnergy() : h.totalEnergy();
   const G4ThreeVector& pre   = h.prePosG4();
   const G4ThreeVector& post  = h.postPosG4();
-  G4ThreeVector        m     = h.track->GetMomentum();
+  G4ThreeVector        mom   = h.track->GetMomentum();
   double               len   = (post-pre).mag() ;
-  double               pos[] = { (pre.x()+post.x())/2.0,(pre.y()+post.y())/2.0,(pre.z()+post.z())/2.0 };
-  double               mom[] = { m.x(), m.y(), m.z() };
-  return Contribution(h.trkID(), h.trkPdgID(), deposit, h.trkTime(), len, pos, mom);
+  double               position[] = { (pre.x()+post.x())/2.0,(pre.y()+post.y())/2.0,(pre.z()+post.z())/2.0 };
+  double               momentum[] = { mom.x(), mom.y(), mom.z() };
+  return Contribution(h.trkID(), h.trkPdgID(), deposit, h.trkTime(), len, position, momentum);
 }
 
 /// Extract the MC contribution for a given hit from the step information with BirksLaw effect option
@@ -86,22 +86,22 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* ste
     (h.trackDef() == G4OpticalPhoton::OpticalPhotonDefinition()) ? h.trkEnergy() : h.totalEnergy();
   const G4ThreeVector& pre  = h.prePosG4();
   const G4ThreeVector& post = h.postPosG4();
-  G4ThreeVector        m    = h.track->GetMomentum();
+  G4ThreeVector        mom  = h.track->GetMomentum();
   double length = (post-pre).mag() ;
-  double mom[] = { m.x(), m.y(), m.z() };
-  double pos[] = { (pre.x()+post.x())/2.0,(pre.y()+post.y())/2.0,(pre.z()+post.z())/2.0 };
-  return Contribution(h.trkID(), h.trkPdgID(), deposit, h.trkTime(), length, pos, mom);
+  double momentum[] = { mom.x(), mom.y(), mom.z() };
+  double position[] = { (pre.x()+post.x())/2.0,(pre.y()+post.y())/2.0,(pre.z()+post.z())/2.0 };
+  return Contribution(h.trkID(), h.trkPdgID(), deposit, h.trkTime(), length, position, momentum);
 }
 
 /// Extract the MC contribution for a given hit from the fast simulation spot information
 Geant4HitData::Contribution Geant4HitData::extractContribution(const Geant4FastSimSpot* spot) {
   Geant4FastSimHandler h(spot);
   const G4Track*       t = spot->primary;
-  G4ThreeVector        m = t->GetMomentum();
-  G4ThreeVector        p = h.avgPositionG4();
-  double               pos[] = { p.x(), p.y(), p.z() };
-  double               mom[] = { m.x(), m.y(), m.z() };
-  return Contribution( h.trkID(), h.trkPdgID(), h.energy(), h. trkTime(), 0e0, pos, mom);
+  G4ThreeVector        mom = t->GetMomentum();
+  G4ThreeVector        pos = h.avgPositionG4();
+  double               position[] = { pos.x(), pos.y(), pos.z() };
+  double               momentum[] = { mom.x(), mom.y(), mom.z() };
+  return Contribution( h.trkID(), h.trkPdgID(), h.energy(), h. trkTime(), 0e0, position, momentum);
 }
 
 /// Default constructor

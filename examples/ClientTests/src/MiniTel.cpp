@@ -85,8 +85,8 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
   Position     env_dim_min(sensor_box.x()+epsilon, sensor_box.y()+epsilon, +100000.0);
   Position     env_dim_max(sensor_box.x()+epsilon, sensor_box.y()+epsilon, -100000.0);
 
-  for( xml_coll_t m(x_det, _U(module_position)); m; m++ )    {
-    xml_comp_t x_pos = m;
+  for( xml_coll_t mod(x_det, _U(module_position)); mod; mod++ )    {
+    xml_comp_t x_pos = mod;
     if ( x_pos.z() > env_dim_max.z() ) {
       env_dim_max.SetZ(x_pos.z());
       printout(DEBUG,"MiniTel","Envelope z_max = %f",x_pos.z());
@@ -117,8 +117,8 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
   pv = assembly.placeVolume(side_vol, side_pos);
   pv.addPhysVolID("side",0);
   side_det.setPlacement(pv);
-  for( xml_coll_t m(x_det, _U(module_position)); m; m++ )    {
-    xml_comp_t x_pos = m;
+  for( xml_coll_t mpos(x_det, _U(module_position)); mpos; mpos++ )    {
+    xml_comp_t x_pos = mpos;
     DetElement module(side_det, _toString(count, "module_%d"), count);
     pv = side_vol.placeVolume(sensor_vol,Transform3D(Position(x_pos.x(),x_pos.y(),x_pos.z())));
     pv.addPhysVolID("module", ++count);

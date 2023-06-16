@@ -171,8 +171,8 @@ namespace {
     try  {
       stringstream log;
       log << "| " << setw(32) << left << tag << " ";
-      for(const auto& p : value)
-	log << setw(6) << left << p << "  ";
+      for(const auto& val : value)
+        log << setw(6) << left << val << "  ";
       _print(log);
     }
     catch(const exception& e)   {
@@ -186,7 +186,7 @@ namespace {
       stringstream log;
       log << "| " << setw(32) << left << tag << " ";
       for(const auto& p : value)
-	log << setw(6) << left << p.first << " = " << setw(10) << left << p.second << "  ";
+        log << setw(6) << left << p.first << " = " << setw(10) << left << p.second << "  ";
       _print(log);
     }
     catch(const exception& e)   {
