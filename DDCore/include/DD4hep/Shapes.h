@@ -45,6 +45,7 @@
 #include <TGeoScaledShape.h>
 #include <TGeoCompositeShape.h>
 #include <TGeoShapeAssembly.h>
+#include <TGeoPara.h>
 #if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
 #include <TGeoTessellated.h>
 #endif
