@@ -138,6 +138,11 @@ if (DD4HEP_USE_GEANT4)
     SET_TESTS_PROPERTIES( t_test_ddsim_${OUTPUT_FILE} PROPERTIES FAIL_REGULAR_EXPRESSION  " Exception; EXCEPTION;ERROR;Error" )
   endforeach()
 
+  add_test( t_ddsimUserPlugins "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+    ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=10
+    --outputFile=t_ddsimUserPlugins.root -G --steeringFile ${CMAKE_CURRENT_SOURCE_DIR}/python/user_steering.PY
+    --part.userParticleHandler=)
+
 endif()
 install(DIRECTORY include/DD4hep DESTINATION include)
 
