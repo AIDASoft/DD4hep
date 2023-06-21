@@ -31,6 +31,7 @@
 #include <G4Trap.hh>
 #include <G4Cons.hh>
 #include <G4Hype.hh>
+#include <G4Para.hh>
 #include <G4Torus.hh>
 #include <G4Sphere.hh>
 #include <G4CutTubs.hh>
@@ -138,6 +139,14 @@ namespace dd4hep {
       for ( std::size_t i=0; i<8; ++i, vtx_xy +=2 )
         vertices.emplace_back(vtx_xy[0] * CM_2_MM, vtx_xy[1] * CM_2_MM);
       return new G4GenericTrap(sh->GetName(), sh->GetDz() * CM_2_MM, vertices);
+    }
+
+    template <> G4VSolid* convertShape<TGeoPara>(const TGeoShape* shape) {
+      const auto* sh = static_cast<const TGeoPara*>(shape);
+      return new G4Para(sh->GetName(),
+                        sh->GetX() * CM_2_MM, sh->GetY() * CM_2_MM, sh->GetZ() * CM_2_MM,
+                        sh->GetAlpha() * DEGREE_2_RAD, sh->GetTheta() * DEGREE_2_RAD,
+                        sh->GetPhi() * DEGREE_2_RAD);
     }
 
     template <> G4VSolid* convertShape<TGeoXtru>(const TGeoShape* shape)  {
