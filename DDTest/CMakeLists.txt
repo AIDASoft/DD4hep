@@ -140,7 +140,7 @@ if (DD4HEP_USE_GEANT4)
 
   add_test( t_ddsimUserPlugins "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
     ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=10
-    --outputFile=t_ddsimUserPlugins.root -G --steeringFile ${CMAKE_CURRENT_SOURCE_DIR}/python/user_steering.PY
+    --outputFile=t_ddsimUserPlugins.root -G --steeringFile ${CMAKE_CURRENT_SOURCE_DIR}/python/userSteeringFile.PY
     --part.userParticleHandler=)
 
 endif()
