@@ -533,6 +533,15 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "EXCEPTION; Exception;ERROR"
   )
   #
+  # Test importing a geometry from ROOT and placing DetElements
+  dd4hep_add_test_reg( import_geo_place_det_elements
+    COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS geoPluginRun -destroy -input ${ClientTestsEx_INSTALL}/compact/lhcbfull_plugins.xml
+    WORKING_DIRECTORY ${ClientTestsEx_INSTALL}/compact
+    REGEX_PASS "PASSED Checked 216249 VolumeManager contexts. Num.Errors: 0"
+    REGEX_FAIL "EXCEPTION;Exception"
+  )
+  #
   if(Geant4_VERSION VERSION_LESS 10.7)
     dd4hep_print("|++> Geant4 fast simulation not supported for Geant4 ${Geant4_VERSION}")
   else()
