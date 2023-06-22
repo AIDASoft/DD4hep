@@ -315,7 +315,7 @@ int DetElementCreator::operator()(PlacedVolume pv, int vol_level)   {
 
 /// Callback to output PlacedVolume information of an entire Placement
 int DetElementCreator::process(PlacedVolume pv, int lvl, bool recursive)   {
-  int ret = 0;
+  int ret = 1;
   string pv_nam = pv.name();
   if ( detector_volume_level > 0 ||
        ( (!detector_volume_match.empty() &&
