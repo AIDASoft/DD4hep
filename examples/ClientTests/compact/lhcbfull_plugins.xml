@@ -28,7 +28,7 @@
     <!-- Load the geometry file in ROOT format  -->
     <plugin name="DD4hep_PlainROOT">
       <argument value="-input"/>
-      <argument value="checkout/examples/DDDB/data/lhcbfull.root"/>
+      <argument value="lhcbfull.root"/>
       <argument value="-import"/>
       <argument value="-air"/>
       <argument value="sAir"/>
