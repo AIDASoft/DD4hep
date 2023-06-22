@@ -87,7 +87,7 @@ dd4hep_add_test_reg( CLICSiD_multiple_inputs
 #
 #
 ## Always false. Good for now!
-if( "${ROOT_FIND_VERSION}" VERSION_GREATER "6.13.0" )
+if( "${ROOT_VERSION}" VERSION_GREATER "6.13.0" )
 # ROOT Geometry export to GDML
 dd4hep_add_test_reg( CLICSiD_GDML_export_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
