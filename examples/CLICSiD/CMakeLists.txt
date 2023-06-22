@@ -104,7 +104,7 @@ dd4hep_add_test_reg( CLICSiD_GDML_export_LONGTEST
              -plugin DD4hep_ROOTGDMLExtract -output LumiReadout_Forward.gdml   -path /world/LumiReadout_Forward
              -plugin DD4hep_ROOTGDMLExtract -output LumiReadout_Backward.gdml  -path /world/LumiReadout_Backward
              -plugin DD4hep_VolumeDump --topstat
-  REGEX_PASS "Checked 130738 physical volume placements"
+  REGEX_PASS "Checked 130882 physical volume placements"
   REGEX_FAIL "Exception;EXCEPTION;ERROR" )
 #
 # ROOT Geometry export to GDML
