@@ -86,47 +86,47 @@ dd4hep_add_test_reg( CLICSiD_multiple_inputs
   REGEX_FAIL "Exception;EXCEPTION;ERROR" )
 #
 #
-## Always false. Good for now!
-if( "${ROOT_FIND_VERSION}" VERSION_GREATER "6.13.0" )
-# ROOT Geometry export to GDML
-dd4hep_add_test_reg( CLICSiD_GDML_export_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  geoPluginRun -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -print WARNING -destroy -volmgr
-             -plugin DD4hep_ROOTGDMLExtract -output EcalBarrel.gdml            -path /world/EcalBarrel
-             -plugin DD4hep_ROOTGDMLExtract -output EcalEndcap.gdml            -path /world/EcalEndcap
-             -plugin DD4hep_ROOTGDMLExtract -output HcalBarrel.gdml            -path /world/HcalBarrel 
-             -plugin DD4hep_ROOTGDMLExtract -output HcalEndcap.gdml            -path /world/HcalEndcap
-             -plugin DD4hep_ROOTGDMLExtract -output HcalPlug.gdml              -path /world/HcalPlug
-             -plugin DD4hep_ROOTGDMLExtract -output MuonBarrel.gdml            -path /world/MuonBarrel
-             -plugin DD4hep_ROOTGDMLExtract -output MuonEndcap.gdml            -path /world/MuonEndcap
-             -plugin DD4hep_ROOTGDMLExtract -output LumiCal.gdml               -path /world/LumiCal
-             -plugin DD4hep_ROOTGDMLExtract -output BeamCal.gdml               -path /world/BeamCal
-             -plugin DD4hep_ROOTGDMLExtract -output LumiReadout_Forward.gdml   -path /world/LumiReadout_Forward
-             -plugin DD4hep_ROOTGDMLExtract -output LumiReadout_Backward.gdml  -path /world/LumiReadout_Backward
-             -plugin DD4hep_VolumeDump --topstat
-  REGEX_PASS "Checked 130738 physical volume placements"
-  REGEX_FAIL "Exception;EXCEPTION;ERROR" )
-#
-# ROOT Geometry export to GDML
-dd4hep_add_test_reg( CLICSiD_GDML_import_LONGTEST
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  geoPluginRun -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -print WARNING -destroy -volmgr
-             -plugin DD4hep_ROOTGDMLParse    -input EcalBarrel.gdml            -path /world/EcalBarrel
-             -plugin DD4hep_ROOTGDMLParse    -input EcalEndcap.gdml            -path /world/EcalEndcap
-             -plugin DD4hep_ROOTGDMLParse    -input HcalBarrel.gdml            -path /world/HcalBarrel
-             -plugin DD4hep_ROOTGDMLParse    -input HcalEndcap.gdml            -path /world/HcalEndcap
-             -plugin DD4hep_ROOTGDMLParse    -input HcalPlug.gdml              -path /world/HcalPlug
-             -plugin DD4hep_ROOTGDMLParse    -input MuonBarrel.gdml            -path /world/MuonBarrel
-             -plugin DD4hep_ROOTGDMLParse    -input MuonEndcap.gdml            -path /world/MuonEndcap
-             -plugin DD4hep_ROOTGDMLParse    -input LumiCal.gdml               -path /world/LumiCal
-             -plugin DD4hep_ROOTGDMLParse    -input BeamCal.gdml               -path /world/BeamCal
-             -plugin DD4hep_ROOTGDMLParse    -input LumiReadout_Forward.gdml   -path /world/LumiReadout_Forward
-             -plugin DD4hep_ROOTGDMLParse    -input LumiReadout_Backward.gdml  -path /world/LumiReadout_Backward
-             -plugin DD4hep_VolumeDump --topstat
-  DEPENDS    CLICSiD_GDML_export_LONGTEST
-  REGEX_PASS "Checked 130738 physical volume placements"
-  REGEX_FAIL "Exception;EXCEPTION;ERROR" )
-#
+if( "${ROOT_VERSION}" VERSION_GREATER "6.13.0" )
+  # ROOT Geometry export to GDML
+  dd4hep_add_test_reg( CLICSiD_GDML_export_LONGTEST
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
+    EXEC_ARGS  geoPluginRun -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -print WARNING -destroy -volmgr
+               -plugin DD4hep_ROOTGDMLExtract -output EcalBarrel.gdml            -path /world/EcalBarrel
+               -plugin DD4hep_ROOTGDMLExtract -output EcalEndcap.gdml            -path /world/EcalEndcap
+               -plugin DD4hep_ROOTGDMLExtract -output HcalBarrel.gdml            -path /world/HcalBarrel 
+               -plugin DD4hep_ROOTGDMLExtract -output HcalEndcap.gdml            -path /world/HcalEndcap
+               -plugin DD4hep_ROOTGDMLExtract -output HcalPlug.gdml              -path /world/HcalPlug
+               -plugin DD4hep_ROOTGDMLExtract -output MuonBarrel.gdml            -path /world/MuonBarrel
+               -plugin DD4hep_ROOTGDMLExtract -output MuonEndcap.gdml            -path /world/MuonEndcap
+               -plugin DD4hep_ROOTGDMLExtract -output LumiCal.gdml               -path /world/LumiCal
+               -plugin DD4hep_ROOTGDMLExtract -output BeamCal.gdml               -path /world/BeamCal
+               -plugin DD4hep_ROOTGDMLExtract -output LumiReadout_Forward.gdml   -path /world/LumiReadout_Forward
+               -plugin DD4hep_ROOTGDMLExtract -output LumiReadout_Backward.gdml  -path /world/LumiReadout_Backward
+               -plugin DD4hep_VolumeDump --topstat
+    REGEX_PASS "\\+\\+\\+ Checked 130882 physical volume placements."
+    REGEX_FAIL "Exception;EXCEPTION;ERROR"
+  )
+  #
+  # ROOT Geometry export to GDML
+  dd4hep_add_test_reg( CLICSiD_GDML_import_LONGTEST
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
+    EXEC_ARGS  geoPluginRun -input file:${CLICSiDEx_INSTALL}/compact/SiD_empty.xml -print WARNING -destroy -volmgr
+               -plugin DD4hep_ROOTGDMLParse    -input EcalBarrel.gdml            -path /world/EcalBarrel
+               -plugin DD4hep_ROOTGDMLParse    -input EcalEndcap.gdml            -path /world/EcalEndcap
+               -plugin DD4hep_ROOTGDMLParse    -input HcalBarrel.gdml            -path /world/HcalBarrel
+               -plugin DD4hep_ROOTGDMLParse    -input HcalEndcap.gdml            -path /world/HcalEndcap
+               -plugin DD4hep_ROOTGDMLParse    -input HcalPlug.gdml              -path /world/HcalPlug
+               -plugin DD4hep_ROOTGDMLParse    -input MuonBarrel.gdml            -path /world/MuonBarrel
+               -plugin DD4hep_ROOTGDMLParse    -input MuonEndcap.gdml            -path /world/MuonEndcap
+               -plugin DD4hep_ROOTGDMLParse    -input LumiCal.gdml               -path /world/LumiCal
+               -plugin DD4hep_ROOTGDMLParse    -input BeamCal.gdml               -path /world/BeamCal
+               -plugin DD4hep_ROOTGDMLParse    -input LumiReadout_Forward.gdml   -path /world/LumiReadout_Forward
+               -plugin DD4hep_ROOTGDMLParse    -input LumiReadout_Backward.gdml  -path /world/LumiReadout_Backward
+               -plugin DD4hep_VolumeDump --topstat
+    DEPENDS    CLICSiD_GDML_export_LONGTEST
+    REGEX_PASS "\\+\\+\\+ Checked 11282 physical volume placements."
+    REGEX_FAIL "Exception;EXCEPTION;ERROR" )
+  #
 endif()
 #
 # Checksum test of the EcalBarrel sub-detector

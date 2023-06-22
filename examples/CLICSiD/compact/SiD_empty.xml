@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+ 
+  <info name="GDML_Import"
+	title="GDML import test"
+	author="Markus Frank"
+	url="http://www.cern.ch/lhcb"
+	status="development"
+	version="1.0">
+    <comment>GDML import test</comment>        
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="WorldVis"     alpha="0.8" r="1.0" g="1.0" b="0.0" showDaughters="false"  visible="true"  drawingStyle="solid" lineStyle="solid"/>
+    <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" showDaughters="true"  visible="true"  drawingStyle="solid" lineStyle="solid"/>
+  </display>
+
+  <world material="Air">
+    <shape type="Box" dx="30*m" dy="30*m" dz="30*m"/>
+  </world>
+</lccdd>
