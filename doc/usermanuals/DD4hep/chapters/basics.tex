@@ -20,7 +20,7 @@ The package {\texttt{DDCore}} contains the definition of the basic classes of th
 \label{sec:dd4hep-user-manual-platforms}
 Actively supported and tested platforms for DD4hep are :
 \begin{itemize}
-\item \texttt{Scientic Linux CERN 6}
+\item \texttt{Scientific Linux CERN 6}
 \item \texttt{CERN CentOS 7}
 \item \texttt{Apple macOS}
 \end{itemize}
@@ -68,7 +68,7 @@ To build only the doxygen documentation and user manuals without the need for an
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos]{shell}
   cmake -DBUILD_DOCS_ONLY=ON ..
 \end{minted}
-After one can execute the following target for building doxygen documentaion
+After one can execute the following target for building doxygen documentation
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos]{shell}
 make reference
 \end{minted}
@@ -142,7 +142,7 @@ For the importance of the functionality of this issue we repeat here the functio
 \item [Compatibility Views] help to ensure smooth periods of software redesign. During the life-time of the experiment often various software constructs are for functional reasons re-designed and re-engineered. Compatibility Views either adapt new data designs to existing application code or expose new behavior based on existing data.
 \end{description}
 
-Since the lifetime of DD4hep objects is mostly defined by the lifetime of the {\texttt{dd4hep::Detector}} object (in turn defining the lifetime of ROOT's {\texttt{TGeoManager}}) or for the conditions is managed by the ConditionsManager object under the steering of the embeding framework there is also no memory model imposed which would only lead to performance penalties. Hence, handles can be applied to data structures independent of their origin:
+Since the lifetime of DD4hep objects is mostly defined by the lifetime of the {\texttt{dd4hep::Detector}} object (in turn defining the lifetime of ROOT's {\texttt{TGeoManager}}) or for the conditions is managed by the ConditionsManager object under the steering of the embedding framework there is also no memory model imposed which would only lead to performance penalties. Hence, handles can be applied to data structures independent of their origin:
 \begin{itemize}
 \item allocated from the stack
 \item allocated from the heap
@@ -248,7 +248,7 @@ The data extension may then be retrieved whenever the instance of the extensible
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
   ExtensionInterface* ptr = module.extension<ExtensionInterface>();
 \end{minted}
-The lookup mechanism is rather efficient. Though it is advisable to cache the pointer within the client code if the usage is very frequent.
+The look-up mechanism is rather efficient. Though it is advisable to cache the pointer within the client code if the usage is very frequent.
 
 There are currently three object types present which support this mechanism:
 \begin{itemize}
@@ -264,7 +264,7 @@ Using native tools to interpret \texttt{XML} structures is rather tedious and le
 
 The functionality of the \texttt{XML} tools is perhaps best shown with a small example. Imagine to extract the data from an \texttt{XML} snippet like the following:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
-  <detector name="Sometthing">
+  <detector name="Something">
     <tubs rmin="BP_radius - BP_thickness" rmax="BP_radius" zhalf="Endcap_zmax/2.0"/>
     <position x="0" y="0" z="Endcap_zmax/2.0" />
     <rotation x="0.0" y="CrossingAngle/2.0" z="0.0" />
@@ -430,7 +430,7 @@ Additional support for specialized applications is provided by the interface:
 \item User defined extensions (line 53) are supported with the extension mechanism described in section~\ref{sec:dd4hep-user-manual-data-extensions}.
 \end{itemize}
 
-All the values are populated either directly from \texttt{XML} or from \textit{detector constructors} (see section~\ref{sec:detector-constructors}). The interface also allows to load \texttt{XML} configuration files of any kind provided an appropriate  interpretation plugin is present. In the next section we describe the functionality  of the ``lccd'' plugin used to interpret the compact detector description. This mechanism can easily be extended using ROOT plugins, where the plugin name must corrspond to the \texttt{XML} root element of the document to be interpreted.
+All the values are populated either directly from \texttt{XML} or from \textit{detector constructors} (see section~\ref{sec:detector-constructors}). The interface also allows to load \texttt{XML} configuration files of any kind provided an appropriate  interpretation plugin is present. In the next section we describe the functionality  of the ``lccd'' plugin used to interpret the compact detector description. This mechanism can easily be extended using ROOT plugins, where the plugin name must correspond to the \texttt{XML} root element of the document to be interpreted.
 
 \section{Detector Description Persistency in \texttt{XML}}
 \label{sec:compact-xml-structure}
@@ -440,7 +440,7 @@ As explained in a previous section, the mechanism involved in the data loading  
 <lccdd>
   <info>   ...    </info>       Auxiliary detector model information
   <includes>  ... </includes>   Section defining GDML files to be included
-  <define>  ...   </define>     Dictionary of constant expressions and varables
+  <define>  ...   </define>     Dictionary of constant expressions and variables
   <materials> ... </materials>  Additional material definitions
   <display>  ...  </display>    Definition of visualization attributes
   <detectors> ... </detectors>  Section with sub-detector definitions
@@ -489,7 +489,7 @@ These {\texttt{number}} variables can be combined to formulas e.g. to automatica
   ....
 </define>
 \end{minted}
-The other allowed data type is {\texttt{string}}. {\texttt{string}} values are stored in the raw format in the {\texttt{Detector}} object instance and can be retrieved by name. The values are as well added to the evalutation dictionary in order to resolve e.g. environment pathes.
+The other allowed data type is {\texttt{string}}. {\texttt{string}} values are stored in the raw format in the {\texttt{Detector}} object instance and can be retrieved by name. The values are as well added to the evaluation dictionary in order to resolve e.g. environment paths.
 
 \item  {\textbf{The \texttt{<materials>} sub-tree}} contains additional materials, which are not contained in the default materials tables. The snippet below shows an example to extend the table of known materials. For more details please see section~\ref{sec:compact-material-description}.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
@@ -712,7 +712,7 @@ description of the material's finish.}. Materials are not constructed by any cli
 \section{Shapes}
 \label{dd4hep-basic-shapes}
 
-Shapes are abstract objects with a bounding surface and fixed dimensions.  There are primitive, atomic shapes and complex boolean shapes as shown in Figure~\ref{fig:dd4hep-solids}. The shapes have accessors for the most basic quantities to allow intrinsic access to the geometrical properties. Not all properties offered by TGeo are exposed. Other properties of the corresponding TGeo object can be accessed using the operloaded \texttt{operator->()} of the handle object. TGeo and similarly Geant4 offer a whole palette of primitive shapes, which can be used to construct more complex shapes:
+Shapes are abstract objects with a bounding surface and fixed dimensions.  There are primitive, atomic shapes and complex boolean shapes as shown in Figure~\ref{fig:dd4hep-solids}. The shapes have accessors for the most basic quantities to allow intrinsic access to the geometrical properties. Not all properties offered by TGeo are exposed. Other properties of the corresponding TGeo object can be accessed using the overloaded \texttt{operator->()} of the handle object. TGeo and similarly Geant4 offer a whole palette of primitive shapes, which can be used to construct more complex shapes:
 \begin{itemize}
 \item \texttt{Box} shape represented by the \texttt{TGeoBBox} class. To create a new box object call one of the following constructors:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
@@ -1076,9 +1076,9 @@ ExtrudedPolygon(const std::string& nam,
                 const std::vector<double> & sec_z, const std::vector<double> & sec_x, const std::vector<double> & sec_y,
                 const std::vector<double> & zscale);
 
-/// Access vector of x parameters of the various vetrices
+/// Access vector of x parameters of the various vertices
 std::vector<double> x() const;
-/// Access vector of x parameters of the various vetrices
+/// Access vector of x parameters of the various vertices
 std::vector<double> y() const;
 /// Access vector of z-values of the z plane parameters
 std::vector<double> z() const;
@@ -1125,7 +1125,7 @@ bool addFacet(const int pt0, const int pt1, const int pt2)  const;
 /// Add new facet to the shape. Call only if the tessellated shape was constructed with vertices
 bool addFacet(const int pt0, const int pt1, const int pt2, const int pt3)  const;
 \end{minted}
-Tesselated shapes play an essential role to support reading Computer Aided Design files in DD4hep. Such support is implemented in the DD4hep subpackage \texttt{DDCAD}.
+Tessellated shapes play an essential role to support reading Computer Aided Design files in DD4hep. Such support is implemented in the DD4hep subpackage \texttt{DDCAD}.
 
 \end{itemize}
 
@@ -1155,7 +1155,7 @@ All three boolean shapes have constructors as shown here for the \texttt{UnionSo
   UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
   /// Constructor to create a new object. Placement by a RotationZYX within the mother
   UnionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot);
-  /// Constructor to create a new object. Placement by a generic rotoation within the mother
+  /// Constructor to create a new object. Placement by a generic rotation within the mother
   UnionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
   /// Constructor to create a new object. Placement by a generic transformation within the mother
   UnionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& pos);
@@ -1188,7 +1188,7 @@ fulfilling a constructor of the type: \texttt{Box(dim.dx(), dim.dy(), dim.dz())}
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
   Sphere(e.rmin(0), e.rmax(), e.starttheta(0), e.endtheta(), e.startphi(0), e.endphi());
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
   <some_element type="Sphere" rmin="value" rmax="value" starttheta="value" endtheta="value" startphi="value" endphi="value"/>
 \end{minted}
@@ -1415,7 +1415,7 @@ PlacedVolume placeVolume(const Volume& vol)  const;
 \end{minted}
 \item If the positioning is described by a simple translation, use:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
-PlacedVolume placeVolume(const Volume& vol, const Position& pos)  coampercentnst;
+PlacedVolume placeVolume(const Volume& vol, const Position& pos)  const;
 \end{minted}
 \item In case the daughter should be rotated first around the Z-axis, then around the Y-axis and finally around the X-axis place the daughter using this call:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
@@ -1468,7 +1468,7 @@ Detector elements (class \texttt{DetElement}) are entities which represent  subd
   const Children& children() const;
   /// Access to individual children by name
   DetElement child(const std::string& name) const;
-  /// Access to the detector elements's parent
+  /// Access to the detector element's parent
   DetElement parent() const;
 \end{minted}
 
@@ -1482,7 +1482,7 @@ Detector elements (class \texttt{DetElement}) are entities which represent  subd
   Volume volume() const;
 \end{minted}
 
-\item information about the environmental conditions etc. (\texttt{conditons}):
+\item information about the environmental conditions etc. (\texttt{conditions}):
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
   /// Access to the conditions information 
   Conditions conditions() const;
@@ -1567,7 +1567,7 @@ Volumes may be shared and reused in several placements. In the parallel hierarch
 \section{Description of the Readout Structure}
 \label{sec:dd4hep-manual-readout-description}
 
-The \texttt{Readout} class describes the detailed structure of a sensitve volume. The for example may be the layout of strips or pixels in a silicon detector i.e. the description of entities which would not be modeled using individual volumes and placements though this would theoretically  feasible. Each sensitive element is segmented according to the \texttt{Segmentation} object and hits resulting from energy depositions in the sensitive volume are  encoded using the \texttt{IDDescriptor} object.
+The \texttt{Readout} class describes the detailed structure of a sensitive volume. The for example may be the layout of strips or pixels in a silicon detector i.e. the description of entities which would not be modeled using individual volumes and placements though this would theoretically  feasible. Each sensitive element is segmented according to the \texttt{Segmentation} object and hits resulting from energy depositions in the sensitive volume are  encoded using the \texttt{IDDescriptor} object.
 
 \begin{figure}[h]
   \begin{center}
@@ -1595,10 +1595,10 @@ These identifiers are the data input to  \texttt{segmentation classes}~\ref{sec:
 \subsection{Segmentations}
 \label{sec:dd4hep-manual-readout-segmentations}
 
-Segementations define the user API to the low level interpretation of the energy deposits in a subdetector. For technical reasons and partial religious reasons are the segmentation implementation not part of the DD4hep  toolkit, but an independent package call \texttt{DDSegmentation}. Though the usage is an integral part of DD4hep.
+Segmentations define the user API to the low level interpretation of the energy deposits in a subdetector. For technical reasons and partial religious reasons are the segmentation implementation not part of the DD4hep  toolkit, but an independent package call \texttt{DDSegmentation}. Though the usage is an integral part of DD4hep.
 
 \subsection{Volume Manager}
-The \texttt{VolumeManager} is a tool to seek a lookup table of placements of  sensitive volumes and their corresponding unique volume identifier, the \texttt{cellID}. The volume manager analyzes - once the geometry is closed - the hierarchical tree and stores the various placements in the hierarchy with respect to their identifiers. In other words the the tree is  reused volumes shown e.g. in Figure~\ref{fig:dd4hep-hierarchies} is degenerated  according to the full pathes of the various volumes. This  use case is very common to reconstruction and analysis applications whenever a given raw-data (aka ``hit'') element must be related to its geometrical location.
+The \texttt{VolumeManager} is a tool to seek a look-up table of placements of  sensitive volumes and their corresponding unique volume identifier, the \texttt{cellID}. The volume manager analyzes - once the geometry is closed - the hierarchical tree and stores the various placements in the hierarchy with respect to their identifiers. In other words the the tree is  reused volumes shown e.g. in Figure~\ref{fig:dd4hep-hierarchies} is degenerated  according to the full paths of the various volumes. This  use case is very common to reconstruction and analysis applications whenever a given raw-data (aka ``hit'') element must be related to its geometrical location.
 
 Figure~\ref{fig:dd4hep-user-manual-volmgr} shows the design diagram of this component:
 \begin{figure}[h]
@@ -1696,7 +1696,7 @@ to describe the magnetic field:
         B_y &=& \frac{C_4 x^3}{6}-\frac{1}{2} C_4 x y^2-\frac{1}{2} S_4 x^2 y+\frac{S_4 y^3}{6}\quad.
     \end{eqnarray*}
 \end{itemize}
-The defined field components only apply within the shape 'volume'. If 'volume' is an invalid shape (i.e. not defined), then the field components are valied throughout the 'universe'.
+The defined field components only apply within the shape 'volume'. If 'volume' is an invalid shape (i.e. not defined), then the field components are valid throughout the 'universe'.
 
 The magnetic multipoles are defined as follows:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
@@ -1823,30 +1823,30 @@ DECLARE_DETELEMENT(CylindricalEndcapCalorimeter,create_detector);
 {\small
 \begin{tabular} {p{0.1\linewidth}|p{0.9\linewidth}}
 \hline \\
-1 & The include file DetFactoryHelper.h includes allutilities to extract \texttt{XML} information together with the appropriate type definition.\\
-4-5 & Convenience shortcut to save ourself a lot of typing.\\
+1 & The include file DetFactoryHelper.h includes all utilities to extract \texttt{XML} information together with the appropriate type definition.\\
+4-5 & Convenience shortcut to save us a lot of typing.\\
 7 & The entry point to the detector constructor. This routine shall be called by the plugin mechanism.\\
 8 & The functionality of the raw \texttt{XML} handle \texttt{xml\_h} is rather limited. A simple assignment to a \texttt{XML} detector object gives us all the functionality we need.\\
 9--10 & Extracting the sub-detector name and properties from the xml handle.\\
 11--16 & Access the \texttt{dimension} child-element from the \texttt{XML} subtree, access the element's attributes and precompute values used later.\\
 17 & Retrieve a reference to the ``air'' material from \texttt{Detector}.\\
 18--19 & Construct the envelope volume shaped as a tube made out of air.\\
-24 & Now the detector can be built: We loop over all layers types and overeach layer type as often as necessary (attribute: repeat).The \texttt{XML} collection object will return all child elements of \texttt{x\_det}with a tag-name ``layer''.  Note the macro \texttt{\_U(layer)}: When using Xerces-C as an \texttt{XML} parser, it will expand to the reference to an object containing the unicode value of the string ``layer''. The full list of predefined tag names can be found in theinclude file \texttt{XML/UnicodeValues.h}.If a user tag is not part in the precompiled tag list, the corresponding Unicodestring may be created with the macro \texttt{\_Unicode(layer)} or \texttt{Unicode("layer")}.\\
+24 & Now the detector can be built: We loop over all layers types and over each layer type as often as necessary (attribute: repeat).The \texttt{XML} collection object will return all child elements of \texttt{x\_det}with a tag-name ``layer''.  Note the macro \texttt{\_U(layer)}: When using Xerces-C as an \texttt{XML} parser, it will expand to the reference to an object containing the unicode value of the string ``layer''. The full list of predefined tag names can be found in the include file \texttt{XML/UnicodeValues.h}.If a user tag is not part in the precompiled tag list, the corresponding Unicodestring may be created with the macro \texttt{\_Unicode(layer)} or \texttt{Unicode("layer")}.\\
 25 & Convenience assignment to extract attributes of the layer element.\\
 26--28 & Compute total layer width.\\
 30 & Create \texttt{repeat} number of layers of the same type.\\
 31-33 & Create the named envelope volume with a tube shape containing all slices of this layer.\\
 35-50 & Create the different layer-slices with a tube shape and the corresponding material as indicated in the \texttt{XML} data.\\
-42-45 & If the slice is sensitive i.e. is instrumented and supposed to deliver signals from particle passing, the sensitive detector component of thisdetector needs to be attached to the slice.\\
-46 & Set visualization and geant4 attributes to the slice volume. If the attributes are not present, they will be ignored.\\
+42-45 & If the slice is sensitive i.e. is instrumented and supposed to deliver signals from particle passing, the sensitive detector component of this detector needs to be attached to the slice.\\
+46 & Set visualization and Geant4 attributes to the slice volume. If the attributes are not present, they will be ignored.\\
 47 & Now the created slice volume will be placed inside the mother, the layer envelope at the correct position. This operation results in the creation of a \texttt{PlacedVolume}.\\
 48 & It identify uniquely every slice within the layer an identifier (here the number of the created slice) is attached. This identifier must be present in the bitmap defined by the \texttt{IDDescriptor} of this subdetector.\\
 52-55 & Same as 46-48, but now the created layer volume is placed in the envelope of the entire subdetector.\\
 59 & Set envelope attributes.\\
-61 & Construct the main detector element of this subdetector.This will be the unique entry point to access any information of the subdetector. {\textbf{Note:}} the subdetector my consist of a hierarchy of detector elements.For example each layer could be described by its own \texttt{DetElement} and alllayer-\texttt{DetElement} instances being children of the subdetector instance.\\
+61 & Construct the main detector element of this subdetector.This will be the unique entry point to access any information of the subdetector. {\textbf{Note:}} the subdetector my consist of a hierarchy of detector elements.For example each layer could be described by its own \texttt{DetElement} and all layer-\texttt{DetElement} instances being children of the subdetector instance.\\
 62-62 & Place the subdetector envelope into its mother (typically the top level (world) volume).\\
 64-65 & Add the missing \texttt{IDDescriptor} identifiers to complete the bitmap.\\
-66 & Store the placement in the subdetector detector element in order to make it availible to later clients of this \texttt{DetElement}. \\
+66 & Store the placement in the subdetector detector element in order to make it available to later clients of this \texttt{DetElement}. \\
 67-69 & Endcap calorimeters typically are symmetric i.e. an endcap is located on each side of the barrel. To easy such reflections the entire endcap structure can be copied and placed again. \\
 70 & All done. Return the created subdetector element to the caller for registration. \\ 
 73 & \textbf{Very important:} Without the registration of the construction function to the framework, the corresponding plugin will not be found. The macro has two arguments: firstly the plugin name which is identical to the detector type in the \texttt{XML} snippet and secondly the function to be called at construction time.
@@ -1893,7 +1893,7 @@ $> geoDisplay -compact <path to the \texttt{XML} file containing the detector de
                                     INFO(=3), WARNING(=4), ERROR(=5), FATAL(=6)    
                                     The lower the level, the more printout...      
         -load_only   [OPTIONAL]     Dry-run to only load geometry without     
-                                    starting the dispay.                      
+                                    starting the display.                      
 \end{minted}
 
 
