@@ -9,6 +9,7 @@ Corresponding example is DD4hep_Issue_1134
 Geometry is here:  `examples/DDCAD/compact/DD4hep_Issue_1134.xml`
 
 To visualize: `$> geoDisplay <installation>/examples/DDCAD/compact/DD4hep_Issue_1134.xml`
+Certain problems are present when rotating the display, but this should not be connected to Issue 1134.
 
 Basic simulation activation: `$> python <installation>/examples/DDCAD/scripts/DD4hep_Issue_1134.py`
 
