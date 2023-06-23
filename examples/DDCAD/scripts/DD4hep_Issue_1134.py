@@ -14,7 +14,7 @@ import os
 import time
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import GeV, MeV, m
+from g4units import GeV
 
 """
 
@@ -59,10 +59,9 @@ def run():
 
   # Configure I/O
   geant4.setupROOTOutput('RootOutput', 'DD4hep_Issue_1134_' + time.strftime('%Y-%m-%d_%H-%M'))
-
   # Setup particle gun
   gun = geant4.setupGun("Gun", particle='e+', energy=20 * GeV, multiplicity=1)
-
+  gun.OutputLevel = Output.INFO
   # Now build the physics list:
   phys = geant4.setupPhysics('QGSP_BERT')
   ph = DDG4.PhysicsList(kernel, str('Geant4PhysicsList/Myphysics'))
