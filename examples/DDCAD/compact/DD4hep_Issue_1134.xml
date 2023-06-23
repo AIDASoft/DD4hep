@@ -24,17 +24,6 @@
   <detectors>
     <detector id="1" name="Shape_STL" type="DD4hep_TestShape_Creator">
       <check>
-	<!-- If you supply materials and visualisation attributes to the shape:
-	     1) The material attribute in the <shape/> element will be applied 
-	        to all sub-volumes without an explicit material attribute in the 
-   	        <volume/> element.
-	     2) dto. the material cchild in the <shape/> element.
-	     3) The material attribute in the <volume/> element applies 
-	        ONLY to the volume specified. This allows to specify a separate 
-                material for each sub-volume in multi-volume CADs.
-             4) The vis attribute in the  <volume/> element applies 
-	        ONLY to the volume specified. The name identifies a dd4hep vis object.
-        -->
         <shape type="CAD_MultiVolume"
 	       ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/STL/DD4hep_Issue_1134.stl"
 	       unit="cm"
