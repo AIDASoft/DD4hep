@@ -945,7 +945,6 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
   xml_det_t    x_det     = e;
   string       name      = x_det.nameStr();
   xml_dim_t    x_reflect = x_det.child(_U(reflect), false);
-  xml_comp_t   x_test    = x_det.child(xml_tag_t("test"), false);
   DetElement   det         (name,x_det.id());
   Material     mat       = description.air();
   Assembly     assembly    (name);
@@ -981,7 +980,7 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
       string sens_type = x_det.child(_U(sensitive)).attr<string>(_U(type));
       volume.setSensitiveDetector(sens);
       sens.setType(sens_type);
-      printout(INFO,"TestShape","+++ Sensitive type is %s", sens_type.c_str());      
+      printout(INFO,"TestShape","+++ Sensitive type is %s", sens_type.c_str());
     }
     volume.setVisAttributes(description, x_check.visStr());
     solid->SetName(shape_type.c_str());
@@ -1023,7 +1022,11 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
 	     shape_type.c_str(), nam ? '[' : ' ', nam ? nam : "" ,nam ? ']' : ' ');
       
     bool instance_test = false;
-    if ( 0 == strcasecmp(solid->GetTitle(),BOX_TAG) )
+    if ( shape_type == "CAD_Assembly" || shape_type == "CAD_MultiVolume" )   {
+      solid->SetTitle(shape_type.c_str());
+      instance_test = true;
+    }
+    else if ( 0 == strcasecmp(solid->GetTitle(),BOX_TAG) )
       instance_test = isInstance<Box>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),TUBE_TAG) )
       instance_test = isInstance<Tube>(solid);
@@ -1170,8 +1173,9 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
     pv.addPhysVolID("system", x_det.id());
     det.setPlacement(pv);
   }
-
-  if ( x_test.ptr() )  {
+  /// Execute test plugin(s) on the placed volume if desired
+  for ( xml_coll_t itm(e, xml_tag_t("test")); itm; ++itm, ++count )   {
+    xml_comp_t   x_test = itm;
     string typ = x_test.typeStr();
     const void* argv[] = { &e, &pv, 0};
     Ref_t result = (NamedObject*)PluginService::Create<void*>(typ, &description, 2, (char**)argv);

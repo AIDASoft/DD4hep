@@ -246,10 +246,10 @@ void  dd4hep::xml::setDetectorTypeFlag( dd4hep::xml::Handle_t e, dd4hep::DetElem
 namespace   {
   template <typename TYPE>
   std::size_t _propagate(bool      debug,
-			 bool      apply_to_children, 
-			 Volume    vol,
-			 TYPE      item, 
-			 const Volume& (Volume::*apply)(const TYPE&)  const)   {
+                         bool      apply_to_children, 
+                         Volume    vol,
+                         TYPE      item, 
+                         const Volume& (Volume::*apply)(const TYPE&)  const)   {
     std::size_t count = 0;
     if ( !vol->IsAssembly() )  {
       printout(debug ? ALWAYS : DEBUG,"VolumeConfig", "++ Volume: %s apply setting %s", vol.name(), item.name());
@@ -259,11 +259,11 @@ namespace   {
     if ( apply_to_children )   {
       std::set<Volume> handled; 
       for (Int_t idau = 0, ndau = vol->GetNdaughters(); idau < ndau; ++idau)   {
-	Volume v = vol->GetNode(idau)->GetVolume();
-	if ( handled.find(v) == handled.end() )   {
-	  handled.insert(v);
-	  count += _propagate(debug, apply_to_children, v, item, apply);
-	}
+        Volume v = vol->GetNode(idau)->GetVolume();
+        if ( handled.find(v) == handled.end() )   {
+          handled.insert(v);
+          count += _propagate(debug, apply_to_children, v, item, apply);
+        }
       }
     }
     return count;
@@ -273,10 +273,10 @@ namespace   {
 
 /// Configure volume properties from XML element
 std::size_t dd4hep::xml::configVolume( dd4hep::Detector&     detector,
-				       dd4hep::xml::Handle_t element,
-				       dd4hep::Volume        vol,
-				       bool                  propagate,
-				       bool                  ignore_unknown)
+                                       dd4hep::xml::Handle_t element,
+                                       dd4hep::Volume        vol,
+                                       bool                  propagate,
+                                       bool                  ignore_unknown)
 {
   std::size_t count = 0;
   if ( element )   {
@@ -288,28 +288,28 @@ std::size_t dd4hep::xml::configVolume( dd4hep::Detector&     detector,
       std::string    nam   = itm.nameStr("UN-NAMED");
 
       if ( itm.tag() == TAG_REGIONREF )   {
-	Region region = detector.region(nam);
-	count += _propagate(debug, propagate, vol.ptr(), region, &Volume::setRegion);
-	printout(lvl, "VolumeConfig", "++ %-12s: %-10s REGIONs   named '%s'",
-		 vol.name(), region.isValid() ? "Set" : "Invalidate", nam.c_str());
+        Region region = detector.region(nam);
+        count += _propagate(debug, propagate, vol.ptr(), region, &Volume::setRegion);
+        printout(lvl, "VolumeConfig", "++ %-12s: %-10s REGIONs   named '%s'",
+                 vol.name(), region.isValid() ? "Set" : "Invalidate", nam.c_str());
       }
       else if ( itm.tag() == TAG_LIMITSETREF )   {
-	LimitSet limitset = detector.limitSet(nam);      
-	count += _propagate(debug, propagate, vol.ptr(), limitset, &Volume::setLimitSet);
-	printout(lvl, "VolumeConfig", "++ %-12s: %-10s LIMITSETs named '%s'",
-		 vol.name(), limitset.isValid() ? "Set" : "Invalidate", nam.c_str());
+        LimitSet limitset = detector.limitSet(nam);      
+        count += _propagate(debug, propagate, vol.ptr(), limitset, &Volume::setLimitSet);
+        printout(lvl, "VolumeConfig", "++ %-12s: %-10s LIMITSETs named '%s'",
+                 vol.name(), limitset.isValid() ? "Set" : "Invalidate", nam.c_str());
       }
       else if ( itm.tag() == TAG_VISREF )   {
-	VisAttr attrs = detector.visAttributes(nam);
-	count += _propagate(debug, propagate, vol.ptr(), attrs, &Volume::setVisAttributes);
-	printout(lvl, "VolumeConfig", "++ %-12s: %-10s VISATTRs  named '%s'",
-		 vol.name(), attrs.isValid() ? "Set" : "Invalidate", nam.c_str());
+        VisAttr attrs = detector.visAttributes(nam);
+        count += _propagate(debug, propagate, vol.ptr(), attrs, &Volume::setVisAttributes);
+        printout(lvl, "VolumeConfig", "++ %-12s: %-10s VISATTRs  named '%s'",
+                 vol.name(), attrs.isValid() ? "Set" : "Invalidate", nam.c_str());
       }
       else if ( !ignore_unknown )  {
-	except("VolumeConfig", "++ Unknown Volume property: %s [Ignored]", itm.tag().c_str());
+        except("VolumeConfig", "++ Unknown Volume property: %s [Ignored]", itm.tag().c_str());
       }
       else  {
-	printout(DEBUG, "VolumeConfig", "++ Unknown Volume property: %s [Ignored]", itm.tag().c_str());
+        printout(DEBUG, "VolumeConfig", "++ Unknown Volume property: %s [Ignored]", itm.tag().c_str());
       }
     }
     return count;
@@ -320,8 +320,8 @@ std::size_t dd4hep::xml::configVolume( dd4hep::Detector&     detector,
 
 /// Configure sensitive detector from XML element
 std::size_t dd4hep::xml::configSensitiveDetector( dd4hep::Detector&        /* detector */,
-						  dd4hep::SensitiveDetector   sensitive,
-						  dd4hep::xml::Handle_t       element)
+                                                  dd4hep::SensitiveDetector   sensitive,
+                                                  dd4hep::xml::Handle_t       element)
 {
   std::size_t count = 0;
   if ( sensitive.isValid() && element )    {
@@ -332,49 +332,49 @@ std::size_t dd4hep::xml::configSensitiveDetector( dd4hep::Detector&        /* de
     for( xml_coll_t coll(element, "*"); coll; coll++ )   {
       xml_dim_t itm = coll;
       if ( itm.tag() == TAG_COMBINE_HITS )   {
-	bool value = itm.attr<bool>(_U(value));
-	sensitive.setCombineHits(value);
-	++count;
-	printout(lvl, "SensDetConfig", "++ %s Set property 'combine_hits' to %s",
-		 sensitive.name(), true_false(value));
+        bool value = itm.attr<bool>(_U(value));
+        sensitive.setCombineHits(value);
+        ++count;
+        printout(lvl, "SensDetConfig", "++ %s Set property 'combine_hits' to %s",
+                 sensitive.name(), true_false(value));
       }
       else if ( itm.tag() == TAG_VERBOSE )   {
-	bool value = itm.attr<bool>(_U(value));
-	sensitive.setVerbose(value);
-	++count;
-	printout(lvl, "SensDetConfig", "++ %s Set property 'verbose' to %s",
-		 sensitive.name(), true_false(value));
+        bool value = itm.attr<bool>(_U(value));
+        sensitive.setVerbose(value);
+        ++count;
+        printout(lvl, "SensDetConfig", "++ %s Set property 'verbose' to %s",
+                 sensitive.name(), true_false(value));
       }
       else if ( itm.tag() == TAG_TYPE )   {
-	std::string value = itm.valueStr();
-	sensitive.setType(value);
-	++count;
-	printout(lvl, "SensDetConfig", "++ %s Set property 'type' to %s",
-		 sensitive.name(), value.c_str());
+        std::string value = itm.valueStr();
+        sensitive.setType(value);
+        ++count;
+        printout(lvl, "SensDetConfig", "++ %s Set property 'type' to %s",
+                 sensitive.name(), value.c_str());
       }
       else if ( itm.tag() == TAG_ECUT )   {
-	double value = itm.attr<double>(_U(value));
-	sensitive.setEnergyCutoff(value);
-	++count;
-	printout(lvl, "SensDetConfig", "++ %s Set property 'ecut' to %f",
-		 sensitive.name(), value);
+        double value = itm.attr<double>(_U(value));
+        sensitive.setEnergyCutoff(value);
+        ++count;
+        printout(lvl, "SensDetConfig", "++ %s Set property 'ecut' to %f",
+                 sensitive.name(), value);
       }
       else if ( itm.tag() == TAG_HITS_COLLECTION )   {
-	sensitive.setHitsCollection(itm.valueStr());
-	++count;
-	printout(lvl, "SensDetConfig", "++ %s Set property 'hits_collection' to %s",
-		 sensitive.name(), itm.valueStr().c_str());
+        sensitive.setHitsCollection(itm.valueStr());
+        ++count;
+        printout(lvl, "SensDetConfig", "++ %s Set property 'hits_collection' to %s",
+                 sensitive.name(), itm.valueStr().c_str());
       }
       else   {
-	except("SensDetConfig",
-	       "++ Unknown Sensitive Detector property: %s [Failure]",
-	       itm.tag().c_str());
+        except("SensDetConfig",
+               "++ Unknown Sensitive Detector property: %s [Failure]",
+               itm.tag().c_str());
       }
     }
     return count;
   }
   except("SensDetConfig",
-	 "FAILED: No valid sensitive detector. Configuration could not be applied!");
+         "FAILED: No valid sensitive detector. Configuration could not be applied!");
   return count;
 }
 

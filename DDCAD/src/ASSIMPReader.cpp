@@ -14,6 +14,7 @@
 /// Framework include files
 #include <DD4hep/Printout.h>
 #include <DD4hep/Detector.h>
+#include <DD4hep/ShapeTags.h>
 #include <DDCAD/ASSIMPReader.h>
 
 /// Open Asset Importer Library
@@ -67,6 +68,7 @@ ASSIMPReader::readShapes(const std::string& source, double unit_length)  const
                      i, str.str().c_str());
           }
         }
+        shape->SetTitle(TESSELLATEDSOLID_TAG);
         result.emplace_back(std::unique_ptr<TGeoTessellated>(shape.ptr()));
         continue;
       }
