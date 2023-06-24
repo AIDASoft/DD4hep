@@ -167,7 +167,7 @@ dd4hep_add_test_reg( DDCAD_Issue1134_g4overlap_check
   EXEC_ARGS  ddsim --compactFile ${DDCADEx_INSTALL}/compact/DD4hep_Issue_1134.xml
                    --enableG4Gun --runType run
                    --macroFile ${DDCADEx_INSTALL}/scripts/overlap.mac
-  REGEX_PASS "Checking overlaps for volume AV_2.Shape_STL_0.0.tessellated_._... .G4TessellatedSolid. ... OK"
+  REGEX_PASS "Checking overlaps for volume AV_2.Shape_STL_0.0.tessellated_.* .G4TessellatedSolid. ... OK"
   REGEX_FAIL "EXCEPTION;ERROR;Error;FAILED"
 )
 #
@@ -177,7 +177,7 @@ dd4hep_add_test_reg( DDCAD_Issue1134_g4geometry_scan
   EXEC_ARGS  g4GeometryScan
              --compact=file:${DDCADEx_INSTALL}/compact/DD4hep_Issue_1134.xml
              --position=-35,-35,-300 --direction=7,7,60
-  REGEX_PASS ".  -1.29,  -1.29, -11.06.  Path:./world/AV_2.Shape_STL_0.0.tessellated_._.... Shape:G4TessellatedSolid  Mat:Gold"
+  REGEX_PASS ".  -1.29,  -1.29, -11.06.  Path:./world/AV_2.Shape_STL_0.0.tessellated_.* Shape:G4TessellatedSolid  Mat:Gold"
   REGEX_FAIL "EXCEPTION;ERROR;Error;FAILED"
 )
 #
