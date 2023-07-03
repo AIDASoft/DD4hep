@@ -60,6 +60,7 @@ namespace dd4hep {
       stringmap_t                   m_eventParametersInt;
       stringmap_t                   m_eventParametersFloat;
       stringmap_t                   m_eventParametersString;
+      stringmap_t                   m_cellIDEncodingStrings{};
       std::string                   m_section_name      { "events" };
       int                           m_runNo             { 0 };
       int                           m_runNumberOffset   { 0 };
@@ -67,10 +68,10 @@ namespace dd4hep {
       int                           m_eventNumberOffset { 0 };
       bool                          m_filesByRun        { false };
       
-      /// create the podio collections for the particles and hits
-      void createCollections(OutputContext<G4Event>& ctxt) ;
       /// Data conversion interface for MC particles to EDM4hep format
       void saveParticles(Geant4ParticleMap* particles);
+      /// Store the metadata frame with e.g. the cellID encoding strings
+      void saveFileMetaData();
     public:
       /// Standard constructor
       Geant4Output2EDM4hep(Geant4Context* ctxt, const std::string& nam);
@@ -223,10 +224,20 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::endRun(const G4Run* run)  {
   saveRun(run);
+  saveFileMetaData();
   if ( m_file )   {
     m_file->finish();
     m_file.reset();
   }
+}
+
+void Geant4Output2EDM4hep::saveFileMetaData() {
+  podio::Frame metaFrame{};
+  for (const auto& [name, encodingStr] : m_cellIDEncodingStrings) {
+    metaFrame.putParameter(name + "__CellIDEncoding", encodingStr);
+  }
+
+  m_file->writeFrame(metaFrame, "metadata");
 }
 
 /// Commit data at end of filling procedure
@@ -428,6 +439,25 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
   }
 }
 
+/**
+ * Helper struct that can be used together with map::try_emplace to construct
+ * the encoding only once per collection (name).
+ */
+struct LazyEncodingExtraction {
+  /// Constructor that does effectively nothing. This will be called in every
+  /// try_emplace call
+  LazyEncodingExtraction(Geant4HitCollection* coll) : m_coll(coll) {}
+  /// Defer the real work to the implicit conversion to std::string that will
+  /// only be called if the value is actually emplaced into the map
+  operator std::string() const {
+    const auto* sd = m_coll->sensitive();
+    return dd4hep::sim::Geant4ConversionHelper::encoding(sd->sensitiveDetector());
+  }
+private:
+  Geant4HitCollection* m_coll{nullptr};
+};
+
+
 /// Callback to store each Geant4 hit collection
 void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VHitsCollection* collection)  {
   Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(collection);
@@ -439,6 +469,10 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   size_t nhits = collection->GetSize();
   Geant4ParticleMap* pm = context()->event().extension<Geant4ParticleMap>(false);
   debug("+++ Saving EDM4hep collection %s with %d entries.", colName.c_str(), int(nhits));
+
+  // Using try_emplace here to only fill this the first time we come across
+  m_cellIDEncodingStrings.try_emplace(colName, LazyEncodingExtraction{coll});
+
   //-------------------------------------------------------------------
   if( typeid( Geant4Tracker::Hit ) == coll->type().type()  ){
     // Create the hit container even if there are no entries!
