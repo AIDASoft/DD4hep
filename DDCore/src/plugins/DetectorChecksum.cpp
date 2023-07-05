@@ -515,6 +515,41 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSolid(Solid solid) cons
     else if ( shape->IsA() == TGeoShapeAssembly::Class() )   {
       log << "<shape_assembly " << nam << "\"/>";
     }
+    else if ( shape->IsA() == TGeoTessellated::Class() )  {
+      const TGeoTessellated* sh  = (TGeoTessellated*)shape;
+      log << "<define>" << newline;
+      if ( sh->IsClosedBody() == false ) {
+        except("DetectorChecksum","+++ TGeoTessellated volume is not closed: %s", solid.name());
+      }
+      for (int ivertex = 0; ivertex < sh->GetNvertices(); ivertex++)  {
+        const auto& vtx = const_cast<TGeoTessellated*>(sh)->GetVertex(ivertex);
+        log << "<position name\"" << nam << "_v" << ivertex
+            << " lunit=\"" << m_len_unit_nam << "\""
+            << " x=\"" << vtx.x() << "\""
+            << " y=\"" << vtx.y() << "\""
+            << " z=\"" << vtx.z() << "\""
+            << "/>" << newline;
+      }
+      log << "</define>" << newline;
+      log << "<tessellated name=\"" << nam << "\">" << newline;
+      for (int ifacet = 0; ifacet < sh->GetNfacets(); ifacet++)  {
+        const auto& facet = const_cast<TGeoTessellated*>(sh)->GetFacet(ifacet);
+        if ( facet.GetNvert() == 3 ) {
+          log << "<triangular";
+        }
+        else if ( facet.GetNvert() == 4 ) {
+          log << "<quadrangular";
+        }
+        else {
+          except("DetectorChecksum","+++ TGeoTessellated volume with unsupported number of vertices: %s", solid.name());
+        }
+        for (int ivertex = 0; ivertex < facet.GetNvert(); ivertex++) {
+          log << " vertex" << ivertex + 1 << "=\"" << nam << "_v" << facet.GetVertexIndex(ivertex);
+        }
+        log << "type=\"ABSOLUTE\"/>" << newline;
+      }
+      log << "</tessellated>" << newline;
+    }
     else   {
       except("DetectorChecksum","+++ Unknown shape: %s", solid.name());
     }
