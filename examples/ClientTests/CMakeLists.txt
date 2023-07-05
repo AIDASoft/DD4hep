@@ -392,6 +392,15 @@ dd4hep_add_test_reg( MiniTel_check_checksum_full
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
+# Checksum test of the full detector
+dd4hep_add_test_reg( Check_Shape_Tessellated_check_checksum
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/Check_Shape_Tessellated.xml
+  	      -plugin DD4hepDetectorChecksum -readout
+  REGEX_PASS "Combined hash code                      7fc1ef04482fc040  \\(13 sub-codes\\)"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR"
+)
+#
 # Test the sequential processing of two xml files
 dd4hep_add_test_reg( minitel_config_plugins_include_command_line
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
