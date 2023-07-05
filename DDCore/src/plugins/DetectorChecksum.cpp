@@ -522,6 +522,7 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSolid(Solid solid) cons
         except("DetectorChecksum","+++ TGeoTessellated volume is not closed: %s", solid.name());
       }
       for (int ivertex = 0; ivertex < sh->GetNvertices(); ivertex++)  {
+        // Note: const_cast since TGeoTessellated::GetVertex not marked const in ROOT <= 6.28
         const auto& vtx = const_cast<TGeoTessellated*>(sh)->GetVertex(ivertex);
         log << "<position name\"" << nam << "_v" << ivertex
             << " lunit=\"" << m_len_unit_nam << "\""
@@ -533,6 +534,7 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSolid(Solid solid) cons
       log << "</define>" << newline;
       log << "<tessellated name=\"" << nam << "\">" << newline;
       for (int ifacet = 0; ifacet < sh->GetNfacets(); ifacet++)  {
+        // Note: const_cast since TGeoTessellated::GetFacet not marked const in ROOT <= 6.28
         const auto& facet = const_cast<TGeoTessellated*>(sh)->GetFacet(ifacet);
         if ( facet.GetNvert() == 3 ) {
           log << "<triangular";
