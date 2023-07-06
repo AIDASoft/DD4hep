@@ -554,7 +554,7 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSolid(Solid solid) cons
         log << "</tessellated>" << newline;
       }
       else {
-        log << "<tessellated></tessellated>" << newline
+        log << "<tessellated></tessellated>" << newline;
       }
     }
     else   {
