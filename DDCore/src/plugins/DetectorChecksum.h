@@ -114,6 +114,8 @@ namespace dd4hep {
 
       /// Property: precision of hashed printouts
       mutable int precision     { 6 };
+      /// Property: Include meshed solids in detector hash
+      int hash_meshes  { 0 };
       /// Property: Include readout property in detector hash
       int hash_readout  { 0 };
       /// Property: maximum depth level for printouts
