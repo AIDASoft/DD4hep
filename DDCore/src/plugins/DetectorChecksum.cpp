@@ -526,9 +526,9 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSolid(Solid solid) cons
         const auto& vtx = const_cast<TGeoTessellated*>(sh)->GetVertex(ivertex);
         log << "<position name\"" << nam << "_v" << ivertex
             << " lunit=\"" << m_len_unit_nam << "\""
-            << " x=\"" << vtx.x() << "\""
-            << " y=\"" << vtx.y() << "\""
-            << " z=\"" << vtx.z() << "\""
+            << " x=\"" << vtx.x()/m_len_unit << "\""
+            << " y=\"" << vtx.y()/m_len_unit << "\""
+            << " z=\"" << vtx.z()/m_len_unit << "\""
             << "/>" << newline;
       }
       log << "</define>" << newline;
