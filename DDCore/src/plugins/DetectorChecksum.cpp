@@ -1306,7 +1306,7 @@ void DetectorChecksum::dump_sensitives()   const   {
 
 static long create_checksum(Detector& description, int argc, char** argv) {
   std::vector<std::string> detectors;
-  int precision = 6, newline = 1, level = 1, readout = 0, debug = 0;
+  int precision = 6, newline = 1, level = 1, meshes = 0, readout = 0, debug = 0;
   int dump_elements = 0, dump_materials = 0, dump_solids = 0, dump_volumes = 0;
   int dump_placements = 0, dump_detelements = 0, dump_sensitives = 0;
   int dump_iddesc = 0, dump_segmentations = 0;
@@ -1333,6 +1333,8 @@ static long create_checksum(Detector& description, int argc, char** argv) {
       debug = ::atol(argv[++i]);
     else if ( 0 == ::strncmp("+newline",argv[i],5) )
       newline = 0;
+    else if ( 0 == ::strncmp("-meshes",argv[i],5) )
+      meshes = 1;
     else if ( 0 == ::strncmp("-readout",argv[i],5) )
       readout = 1;
     else if ( 0 == ::strncmp("-dump_elements",argv[i],10) )
@@ -1357,6 +1359,9 @@ static long create_checksum(Detector& description, int argc, char** argv) {
       std::cout <<
         "Usage: -plugin DD4hepDetectorChecksum -arg [-arg]                             \n\n"
         "     -detector <string>     Top level DetElement path. Default: '/world'        \n"
+	"     -meshes                also hash the detector's meshed solids              \n"
+	"                            (may be sensitive to changes due to rounding)       \n"
+	"                            default: false                                      \n"
 	"     -readout               also hash the detector's readout properties         \n"
 	"                            (sensitive det, id desc, segmentation)              \n"
 	"                            default: false                                      \n"
@@ -1396,6 +1401,7 @@ static long create_checksum(Detector& description, int argc, char** argv) {
   if ( !dens_unit.empty() ) wr.m_densunit_nam = dens_unit;
   if ( !atom_unit.empty() ) wr.m_atomunit_nam = atom_unit;
   if ( newline ) wr.newline = "\n";
+  wr.hash_meshes = meshes;
   wr.hash_readout = readout;
   wr.max_level = level;
   wr.debug = debug;
