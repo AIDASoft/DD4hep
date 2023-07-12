@@ -392,12 +392,21 @@ dd4hep_add_test_reg( MiniTel_check_checksum_full
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
-# Checksum test of the full detector
+# Checksum test of a tessellated solid (default, without meshes)
 dd4hep_add_test_reg( Check_Shape_Tessellated_check_checksum
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/Check_Shape_Tessellated.xml
-  	      -plugin DD4hepDetectorChecksum -readout
-  REGEX_PASS "Combined hash code                      2e6b0d0c8839df5e  \\(13 sub-codes\\)"
+  	      -plugin DD4hepDetectorChecksum
+  REGEX_PASS "Combined hash code                      c8eb13dd1d4d9ca1  \\(13 sub-codes\\)"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR"
+)
+#
+# Checksum test of a tessellated solid (with meshes)
+dd4hep_add_test_reg( Check_Shape_Tessellated_check_checksum_with_meshes
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/Check_Shape_Tessellated.xml
+  	      -plugin DD4hepDetectorChecksum -meshes -precision 3
+  REGEX_PASS "Combined hash code                      ada64a13764bb466  \\(13 sub-codes\\)"
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
