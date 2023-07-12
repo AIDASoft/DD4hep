@@ -516,7 +516,7 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSolid(Solid solid) cons
       log << "<shape_assembly " << nam << "\"/>";
     }
     else if ( shape->IsA() == TGeoTessellated::Class() )  {
-      if ( hash_readout )   {
+      if ( hash_meshes )   {
         const TGeoTessellated* sh  = (TGeoTessellated*)shape;
         log << "<define>" << newline;
         if ( sh->IsClosedBody() == false ) {
