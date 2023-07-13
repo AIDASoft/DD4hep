@@ -58,15 +58,15 @@ namespace dd4hep {
       std::string m_uiSetup;
       /// Property: Name of the visualization macro file
       std::string m_visSetup;
-      /// Property: Array of macro files to be chained and executed when the Geant4Kernel gets configured
+      /// Property: List of commands to be executed when the Geant4Kernel gets configured
       std::vector<std::string> m_configureCommands;
-      /// Property: Array of macro files to be chained and executed when the Geant4Kernel gets initialized
+      /// Property: List of commands to be executed when the Geant4Kernel gets initialized
       std::vector<std::string> m_initializeCommands;
-      /// Property: Array of macro files to be chained and executed when the Geant4Kernel gets terminated
+      /// Property: List of commands to be executed when the Geant4Kernel gets terminated
       std::vector<std::string> m_terminateCommands;
-      /// Property: Array of macro files to be chained and executed BEFORE running
+      /// Property: List of commands to be executed BEFORE running
       std::vector<std::string> m_preRunCommands;
-      /// Property: Array of macro files to be chained and executed AFTER running
+      /// Property: List of commands to be executed AFTER running
       std::vector<std::string> m_postRunCommands;
       /// Property: Array of commands to be chained
       std::vector<std::string> m_macros;
