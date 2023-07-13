@@ -30,6 +30,12 @@ class Physics(ConfigHelper):
     self._zeroTimePDGs = {11, 13, 15, 17}
     self._userFunctions = []
 
+    self._commandsConfigure = []
+    self._commandsTerminate = []
+    self._commandsPostRun = []
+    self._commandsPreRun = []
+    self._commandsInitialize = []
+
   @property
   def rejectPDGs(self):
     """Set of PDG IDs that will not be passed from the input record to Geant4.
@@ -115,6 +121,46 @@ class Physics(ConfigHelper):
   @list.setter
   def list(self, val):  # noqa: A003
     self._list = val
+
+  @property
+  def commandsConfigure(self):
+    """List of UI commands to run during the 'Configure' phase."""
+    return self._commandsConfigure
+  @commandsConfigure.setter
+  def commandsConfigure(self, val):
+    self._commandsConfigure = self.makeList(val)
+
+  @property
+  def commandsInitialize(self):
+    """List of UI commands to run during the 'Initialize' phase."""
+    return self._commandsInitialize
+  @commandsInitialize.setter
+  def commandsInitialize(self, val):
+    self._commandsInitialize = self.makeList(val)
+
+  @property
+  def commandsTerminate(self):
+    """List of UI commands to run during the 'Terminate' phase."""
+    return self._commandsTerminate
+  @commandsTerminate.setter
+  def commandsTerminate(self, val):
+    self._commandsTerminate = self.makeList(val)
+
+  @property
+  def commandsPreRun(self):
+    """List of UI commands to run during the 'PreRun' phase."""
+    return self._commandsPreRun
+  @commandsPreRun.setter
+  def commandsPreRun(self, val):
+    self._commandsPreRun = self.makeList(val)
+
+  @property
+  def commandsPostRun(self):
+    """List of UI commands to run during the 'PostRun' phase."""
+    return self._commandsPostRun
+  @commandsPostRun.setter
+  def commandsPostRun(self, val):
+    self._commandsPostRun = self.makeList(val)
 
   def setupPhysics(self, kernel, name=None):
     seq = kernel.physicsList()

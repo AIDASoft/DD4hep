@@ -317,18 +317,26 @@ class DD4hepSimulation(object):
     geant4.printDetectors()
 
     if self.runType == "vis":
-      geant4.setupUI(typ="tcsh", vis=True, macro=self.macroFile)
+      uiaction = geant4.setupUI(typ="tcsh", vis=True, macro=self.macroFile)
     elif self.runType == "qt":
-      geant4.setupUI(typ="qt", vis=True, macro=self.macroFile)
+      uiaction = geant4.setupUI(typ="qt", vis=True, macro=self.macroFile)
     elif self.runType == "run":
-      geant4.setupUI(typ="tcsh", vis=False, macro=self.macroFile, ui=False)
+      uiaction = geant4.setupUI(typ="tcsh", vis=False, macro=self.macroFile, ui=False)
     elif self.runType == "shell":
-      geant4.setupUI(typ="tcsh", vis=False, macro=None, ui=True)
+      uiaction = geant4.setupUI(typ="tcsh", vis=False, macro=None, ui=True)
     elif self.runType == "batch":
-      geant4.setupUI(typ="tcsh", vis=False, macro=None, ui=False)
+      uiaction = geant4.setupUI(typ="tcsh", vis=False, macro=None, ui=False)
     else:
       logger.error("unknown runType")
       exit(1)
+
+    # User Configuration for the Geant4Phases
+    uiaction.ConfigureCommands = self.physics._commandsConfigure
+    uiaction.TerminateCommands = self.physics._commandsTerminate
+    uiaction.PostRunCommands = self.physics._commandsPostRun
+    uiaction.PreRunCommands = self.physics._commandsPreRun
+    uiaction.InitializeCommands = self.physics._commandsInitialize
+
 
     kernel.NumEvents = self.numberOfEvents
 
