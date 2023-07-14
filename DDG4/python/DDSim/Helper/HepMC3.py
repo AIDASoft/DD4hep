@@ -1,6 +1,5 @@
 """Helper object for hepmc3 input control"""
 
-from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.Input import Input
 
 

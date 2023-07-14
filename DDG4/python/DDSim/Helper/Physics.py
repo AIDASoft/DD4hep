@@ -1,12 +1,10 @@
 """Helper object for physicslist properties"""
 
-from __future__ import absolute_import, unicode_literals
 import os
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import mm
 import logging
-import ddsix as six
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +70,7 @@ class Physics(ConfigHelper):
     if val is None:
       self._rangecut = None
       return
-    if isinstance(val, six.string_types):
+    if isinstance(val, str):
       if val == "None":
         self._rangecut = None
         return

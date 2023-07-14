@@ -1,10 +1,7 @@
 """Helper object for SD Actions
 """
 
-from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
-from ddsix.moves import range
-import ddsix as six
 
 
 class Action(ConfigHelper):
@@ -80,7 +77,7 @@ class Action(ConfigHelper):
       self._mapActions.update(val)
       return
 
-    if isinstance(val, six.string_types):
+    if isinstance(val, str):
       vals = val.split(" ")
     elif isinstance(val, list):
       vals = val

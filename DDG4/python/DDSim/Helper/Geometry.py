@@ -1,7 +1,5 @@
 """Helper object for Geant4 Geometry conversion."""
 
-from __future__ import absolute_import, unicode_literals
-
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
 
