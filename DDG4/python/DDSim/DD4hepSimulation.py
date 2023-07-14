@@ -28,6 +28,7 @@ from DDSim.Helper.ConfigHelper import ConfigHelper
 from DDSim.Helper.MagneticField import MagneticField
 from DDSim.Helper.ParticleHandler import ParticleHandler
 from DDSim.Helper.Gun import Gun
+from DDSim.Helper.UI import UI
 import argparse
 import ddsix as six
 import logging
@@ -99,6 +100,7 @@ class DD4hepSimulation(object):
     self.geometry = Geometry()
     self.filter = Filter()
     self.physics = Physics()
+    self.ui = UI()
 
     self._argv = None
 
@@ -331,12 +333,11 @@ class DD4hepSimulation(object):
       exit(1)
 
     # User Configuration for the Geant4Phases
-    uiaction.ConfigureCommands = self.physics._commandsConfigure
-    uiaction.TerminateCommands = self.physics._commandsTerminate
-    uiaction.PostRunCommands = self.physics._commandsPostRun
-    uiaction.PreRunCommands = self.physics._commandsPreRun
-    uiaction.InitializeCommands = self.physics._commandsInitialize
-
+    uiaction.ConfigureCommands = self.ui._commandsConfigure
+    uiaction.InitializeCommands = self.ui._commandsInitialize
+    uiaction.PostRunCommands = self.ui._commandsPostRun
+    uiaction.PreRunCommands = self.ui._commandsPreRun
+    uiaction.TerminateCommands = self.ui._commandsTerminate
 
     kernel.NumEvents = self.numberOfEvents
 
