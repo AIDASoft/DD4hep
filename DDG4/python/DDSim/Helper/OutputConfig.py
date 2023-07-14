@@ -1,7 +1,17 @@
 """Class for output file configuration"""
 
-from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
+
+#: True if DD4hep was built with LCIO
+DD4HEP_USE_LCIO = "@DD4HEP_USE_LCIO@" != "OFF"
+#: True if DD4hep was built with EDM4hep
+DD4HEP_USE_EDM4HEP = "@DD4HEP_USE_EDM4HEP@" != "OFF"
+
+
+def defaultOutputFile():
+  if DD4HEP_USE_LCIO:
+    return "dummyOutput.slcio"
+  return "dummyOutput.root"
 
 
 class OutputConfig(ConfigHelper):
