@@ -1,5 +1,4 @@
 """Helper object for Magnetic Field properties"""
-from __future__ import absolute_import, unicode_literals
 from g4units import mm, m
 from DDSim.Helper.ConfigHelper import ConfigHelper
 

@@ -1,11 +1,9 @@
 """Helper object for configuring the LCIO output file (meta)"""
 
-from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
 import datetime
 import os
 import logging
-import ddsix as six
 from io import open
 
 logger = logging.getLogger(__name__)
@@ -67,10 +65,10 @@ class Meta(ConfigHelper):
     """add the parameters to the (lcio) run Header"""
     runHeader = {}
     parameters = vars(sim)
-    for parName, parameter in six.iteritems(parameters):
+    for parName, parameter in parameters.items():
       if isinstance(parameter, ConfigHelper):
         options = parameter.getOptions()
-        for opt, optionsDict in six.iteritems(options):
+        for opt, optionsDict in options.items():
           runHeader["%s.%s" % (parName, opt)] = str(optionsDict['default'])
       else:
         runHeader[parName] = str(parameter)

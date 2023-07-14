@@ -1,11 +1,9 @@
 """Helper object for particle gun properties"""
 
-from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import GeV
 from math import atan, exp
 import logging
-import ddsix as six
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +64,7 @@ class Gun(ConfigHelper):
     if val is None:
       return
     possibleDistributions = self._distribution_EXTRA['choices']
-    if not isinstance(val, six.string_types):
+    if not isinstance(val, str):
       raise RuntimeError("malformed input '%s' for gun.distribution. Need a string : %s " %
                          (val, ",".join(possibleDistributions)))
     if val not in possibleDistributions:

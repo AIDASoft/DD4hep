@@ -4,13 +4,9 @@ Later the parameter dictionary is used to instantiate the filter object
 The default filters are a GeantinoRejector and a 1keV minimum energy cut
 
 """
-
-from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import keV
 import logging
-from ddsix.moves import range
-import ddsix as six
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +86,7 @@ class Filter(ConfigHelper):
       self._mapDetFilter.update(val)
       return
 
-    if isinstance(val, six.string_types):
+    if isinstance(val, str):
       vals = val.split(" ")
     elif isinstance(val, list):
       vals = val
@@ -116,7 +112,7 @@ class Filter(ConfigHelper):
 
   def __makeMapDetList(self):
     """ create the values of the mapDetFilters a list of filters """
-    for pattern, filters in six.iteritems(self._mapDetFilter):
+    for pattern, filters in self._mapDetFilter.items():
       self._mapDetFilter[pattern] = ConfigHelper.makeList(filters)
 
   def setupFilters(self, kernel):
@@ -124,10 +120,10 @@ class Filter(ConfigHelper):
     import DDG4
     setOfFilters = set()
 
-    for name, filt in six.iteritems(self.filters):
+    for name, filt in self.filters.items():
       setOfFilters.add(name)
       ddFilt = DDG4.Filter(kernel, filt['name'])
-      for para, value in six.iteritems(filt['parameter']):
+      for para, value in filt['parameter'].items():
         setattr(ddFilt, para, value)
       kernel.registerGlobalFilter(ddFilt)
       filt['filter'] = ddFilt
@@ -150,7 +146,7 @@ class Filter(ConfigHelper):
     """
     self.__makeMapDetList()
     foundFilter = False
-    for pattern, filts in six.iteritems(self.mapDetFilter):
+    for pattern, filts in self.mapDetFilter.items():
       if pattern.lower() in det.lower():
         foundFilter = True
         for filt in filts:

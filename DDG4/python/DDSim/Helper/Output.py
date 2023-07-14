@@ -1,6 +1,5 @@
 """Dummy helper object for particle gun properties"""
 
-from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
 OUTPUT_CHOICES = (1, 2, 3, 4, 5, 6, 7, 'VERBOSE', 'DEBUG',
