@@ -82,8 +82,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        view-path: ["/cvmfs/sw.hsf.org/key4hep/",
-                    "/cvmfs/sw-nightlies.hsf.org/key4hep/"]
+        view-path: ["/cvmfs/sw-nightlies.hsf.org/key4hep/"]
     steps:
     - uses: actions/checkout@v3
     - uses: cvmfs-contrib/github-action-cvmfs@v3
