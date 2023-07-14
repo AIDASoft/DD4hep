@@ -6,8 +6,6 @@ Based on M. Frank and F. Gaede runSim.py
    @version 0.1
 
 """
-from __future__ import absolute_import, unicode_literals, division, print_function
-
 import os
 import sys
 import textwrap
@@ -30,7 +28,6 @@ from DDSim.Helper.ParticleHandler import ParticleHandler
 from DDSim.Helper.Gun import Gun
 from DDSim.Helper.UI import UI
 import argparse
-import ddsix as six
 import logging
 from io import open
 
@@ -551,7 +548,7 @@ class DD4hepSimulation(object):
     """check if the fileName is allowed, note that the filenames are case
     sensitive, and in case of hepevt we depend on this to identify short and long versions of the content
     """
-    if isinstance(fileNames, six.string_types):
+    if isinstance(fileNames, str):
       fileNames = [fileNames]
     if not all(fileName.endswith(tuple(extensions)) for fileName in fileNames):
       self._errorMessages.append("ERROR: Unknown fileformat for file: %s" % fileNames)
@@ -579,7 +576,7 @@ class DD4hepSimulation(object):
   def __parseAllHelper(self, parsed):
     """ parse all the options for the helper """
     parsedDict = vars(parsed)
-    for name, obj in six.iteritems(vars(self)):
+    for name, obj in vars(self).items():
       if isinstance(obj, ConfigHelper):
         for var in obj.getOptions():
           key = "%s.%s" % (name, var)
@@ -656,14 +653,14 @@ class DD4hepSimulation(object):
         steeringFileBase += "## %s \n" % "\n## ".join(parameter.__doc__.splitlines())
         steeringFileBase += "################################################################################\n"
         options = parameter.getOptions()
-        for opt, optionsDict in sorted(six.iteritems(options), key=sortParameters):
+        for opt, optionsDict in sorted(options.items(), key=sortParameters):
           if opt.startswith("_"):
             continue
           parValue = optionsDict['default']
-          if isinstance(optionsDict.get('help'), six.string_types):
+          if isinstance(optionsDict.get('help'), str):
             steeringFileBase += "\n## %s\n" % "\n## ".join(optionsDict.get('help').splitlines())
           # add quotes if it is a string
-          if isinstance(parValue, six.string_types):
+          if isinstance(parValue, str):
             steeringFileBase += "SIM.%s.%s = \"%s\"\n" % (parName, opt, parValue)
           else:
             steeringFileBase += "SIM.%s.%s = %s\n" % (parName, opt, parValue)
@@ -673,7 +670,7 @@ class DD4hepSimulation(object):
         if isinstance(optionObj, argparse._StoreAction):
           steeringFileBase += "## %s\n" % "\n## ".join(optionObj.help.splitlines())
         # add quotes if it is a string
-        if isinstance(parameter, six.string_types):
+        if isinstance(parameter, str):
           steeringFileBase += "SIM.%s = \"%s\"" % (parName, str(parameter))
         else:
           steeringFileBase += "SIM.%s = %s" % (parName, str(parameter))
