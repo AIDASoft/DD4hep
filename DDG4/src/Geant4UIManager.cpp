@@ -210,7 +210,10 @@ void Geant4UIManager::start() {
   /// Execute the chained pre-run command statements
   for(const auto& c : m_preRunCommands)  {
     info("++ Executing pre-run statement: %s",c.c_str());
-    mgr->ApplyCommand(c.c_str());
+    G4int ret = mgr->ApplyCommand(c.c_str());
+    if ( ret != 0 )  {
+      except("Failed to execute command: %s",c.c_str());
+    }
     executed_statements = true;
   }
   /// Start UI session if present
@@ -219,7 +222,10 @@ void Geant4UIManager::start() {
     /// Execute the chained post-run command statements
     for(const auto& c : m_postRunCommands)  {
       info("++ Executing post-run statement: %s",c.c_str());
-      mgr->ApplyCommand(c.c_str());
+      G4int ret = mgr->ApplyCommand(c.c_str());
+      if ( ret != 0 )  {
+        except("Failed to execute command: %s",c.c_str());
+      }
       executed_statements = true;
     }
     return;
@@ -232,7 +238,10 @@ void Geant4UIManager::start() {
     /// Execute the chained post-run command statements
     for(const auto& c : m_postRunCommands)  {
       info("++ Executing post-run statement: %s",c.c_str());
-      mgr->ApplyCommand(c.c_str());
+      G4int ret = mgr->ApplyCommand(c.c_str());
+      if ( ret != 0 )  {
+        except("Failed to execute command: %s",c.c_str());
+      }
     }
     return;
   }
