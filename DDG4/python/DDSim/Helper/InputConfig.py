@@ -10,6 +10,7 @@ class InputConfig(ConfigHelper):
   def __init__(self):
     super(InputConfig, self).__init__()
     self._userPlugin = []
+    self._closeProperties()
 
   @property
   def userInputPlugin(self):

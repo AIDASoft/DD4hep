@@ -27,6 +27,7 @@ class Physics(ConfigHelper):
                         5101, 5103, 5201, 5203, 5301, 5303, 5401, 5403, 5503}  # b? diquarks
     self._zeroTimePDGs = {11, 13, 15, 17}
     self._userFunctions = []
+    self._closeProperties()
 
   @property
   def rejectPDGs(self):

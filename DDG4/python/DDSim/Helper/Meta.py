@@ -27,6 +27,7 @@ class Meta(ConfigHelper):
                                              " E.g setting it to 42 will start counting events from 42 instead of 0",
                                      'type': int}
     self.eventNumberOffset = 0
+    # no closeProperties, allow adding arbitrary information to runHeader
 
   def parseEventParameters(self):
     """

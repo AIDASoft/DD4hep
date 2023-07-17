@@ -39,6 +39,7 @@ class Action(ConfigHelper):
     self._mapActions = dict()
     self._trackerSDTypes = ['tracker']
     self._calorimeterSDTypes = ['calorimeter']
+    self._closeProperties()
 
   @property
   def tracker(self):

@@ -29,6 +29,7 @@ class UI(ConfigHelper):
     self._commandsPostRun = []
     self._commandsPreRun = []
     self._commandsTerminate = []
+    self._closeProperties()
 
   @property
   def commandsConfigure(self):

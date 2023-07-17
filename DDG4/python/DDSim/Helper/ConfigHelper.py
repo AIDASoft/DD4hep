@@ -16,8 +16,24 @@ call for the parser object create an additional member::
 class ConfigHelper(object):
   """Base class for configuration helper"""
 
+  # We need a static set of properties, because steeringFile parsing creates new Helper objects!
+  _setOfProperties = dict()
+
   def __init__(self):
     pass
+
+  def _name(self):
+    return self.__class__.__name__
+
+  def _closeProperties(self):
+    """Store the list of properties."""
+    self._setOfProperties[self._name()] = set(vars(self))
+
+  def _checkProperties(self):
+    newProps = set(vars(self))
+    if existingProps := self._setOfProperties.get(self._name(), set()):
+      if unknownProps := newProps - existingProps:
+        raise RuntimeError(f"{self._name()} error: Trying to add unknown propert(y/ies): {unknownProps}!")
 
   def getOptions(self):
     finalVars = {}

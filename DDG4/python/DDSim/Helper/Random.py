@@ -23,6 +23,7 @@ class Random (ConfigHelper):
                                            "on eventID and runID\nAllows reproducibility even when"
                                            "SkippingEvents"}
     self.enableEventSeed = False
+    self._closeProperties()
 
   def initialize(self, DDG4, kernel, output):
     """ initialize the random generator

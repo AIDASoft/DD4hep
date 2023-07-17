@@ -43,6 +43,7 @@ class Gun(ConfigHelper):
                                             'eta', 'pseudorapidity',
                                             'ffbar']}  # (1+cos^2 theta)
     self._distribution = None
+    self._closeProperties()
 
   @property
   def distribution(self):

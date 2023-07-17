@@ -52,6 +52,7 @@ class Output(ConfigHelper):
 
     self._geometry_EXTRA = {'choices': OUTPUT_CHOICES, 'type': outputLevelType}
     self._geometry = outputLevel('DEBUG')
+    self._closeProperties()
 
   @property
   def inputStage(self):
