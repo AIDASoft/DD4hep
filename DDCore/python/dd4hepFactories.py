@@ -103,11 +103,11 @@ class ComponentDumper:
           ret = 'D'
           if interactive:
             try:
-              ret = input("%s%s%s%s" % ("<CR> to DUMP the list of components \n",
-                                        "<Q>  to QUIT                        \n",
-                                        "<D>  to DUMP the list of components \n",
-                                        "<S>  to SKIP this particular library\n",
-                                        "<L>  to no longer LOAD libraries    \n"))
+              ret = input("<CR> to DUMP the list of components \n"
+                          "<Q>  to QUIT                        \n"
+                          "<D>  to DUMP the list of components \n"
+                          "<S>  to SKIP this particular library\n"
+                          "<L>  to no longer LOAD libraries    \n")
             except Exception:
               ret = 'D'
           if not len(ret):
