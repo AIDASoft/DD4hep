@@ -22,7 +22,7 @@ def loadDDG4():
 
   # Try to load libglapi to avoid issues with TLS Static
   # Turn off all errors from ROOT about the library missing
-  if('libglapi' not in gSystem.GetLibraries()):
+  if 'libglapi' not in gSystem.GetLibraries():
     orgLevel = ROOT.gErrorIgnoreLevel
     ROOT.gErrorIgnoreLevel = 6000
     gSystem.Load("libglapi")
