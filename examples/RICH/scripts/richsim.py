@@ -77,6 +77,7 @@ if __name__ == "__main__":
 
     # Output file (assuming CWD)
     SIM.outputFile = "sim.root"
+    SIM.outputConfig.forceDD4HEP = True
 
     # Override with user options
     SIM.parseOptions()
