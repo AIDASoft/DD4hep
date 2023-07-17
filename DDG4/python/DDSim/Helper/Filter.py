@@ -40,6 +40,7 @@ class Filter(ConfigHelper):
     self._calo = "edep0"
     self._filters = {}
     self._createDefaultFilters()
+    self._closeProperties()
 
   @property
   def tracker(self):

@@ -8,8 +8,8 @@ class Input(ConfigHelper):
 
   def __init__(self):
     super(Input, self).__init__()
-
     self.__parameters = {}
+    self._closeProperties()
 
   def getParameters(self):
     return self.__parameters

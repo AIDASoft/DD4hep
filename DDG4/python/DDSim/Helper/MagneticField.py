@@ -17,3 +17,4 @@ class MagneticField(ConfigHelper):
     self.delta_intersection = 0.001 * mm
     self.delta_one_step = 0.01 * mm
     self.largest_step = 10 * m
+    self._closeProperties()

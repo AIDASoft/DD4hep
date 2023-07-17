@@ -19,6 +19,7 @@ class ParticleHandler(ConfigHelper):
     self._minDistToParentVertex = 2.2e-14 * mm
     self._enableDetailedHitsAndParticleInfo = False
     self._userParticleHandler = "Geant4TCUserParticleHandler"
+    self._closeProperties()
 
   @property
   def enableDetailedHitsAndParticleInfo(self):

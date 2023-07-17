@@ -566,6 +566,7 @@ class DD4hepSimulation(object):
               self._errorMessages.append("ERROR: %s " % e)
               if logger.level <= logging.DEBUG:
                 self._errorMessages.append(traceback.format_exc())
+        obj._checkProperties()
 
   def __checkOutputLevel(self, level):
     """return outputlevel as int so we don't have to import anything for faster startup"""

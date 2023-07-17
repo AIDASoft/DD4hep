@@ -12,6 +12,7 @@ class HepMC3(Input):
     self._parameters["Flow2"] = "flow2"
     # this option will evaluate to True if the HEPMC3 plugin was build
     self._useHepMC3 = ("@DD4HEP_USE_HEPMC3@" != "OFF")
+    self._closeProperties()
 
   @property
   def useHepMC3(self):

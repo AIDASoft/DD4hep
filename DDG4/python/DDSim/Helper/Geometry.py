@@ -35,6 +35,7 @@ class Geometry(ConfigHelper):
 
     self._dumpDGDML_EXTRA = {"help": "If not empty, filename to dump the Geometry as GDML"}
     self.dumpGDML = ""
+    self._closeProperties()
 
   def constructGeometry(self, kernel, geant4, geoPrintLevel=2, numberOfThreads=1):
     """Construct Geant4 geometry."""

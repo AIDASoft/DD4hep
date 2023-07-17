@@ -9,6 +9,7 @@ class GuineaPig(Input):
   def __init__(self):
     super(GuineaPig, self).__init__()
     self._parameters["ParticlesPerEvent"] = -1
+    self._closeProperties()
 
   @property
   def particlesPerEvent(self):
