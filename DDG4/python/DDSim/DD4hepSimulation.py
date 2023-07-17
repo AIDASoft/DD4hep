@@ -20,7 +20,7 @@ from DDSim.Helper.Geometry import Geometry
 from DDSim.Helper.Random import Random
 from DDSim.Helper.Action import Action
 from DDSim.Helper.Output import Output, outputLevel, outputLevelType
-from DDSim.Helper.OutputConfig import OutputConfig, defaultOutputFile, DD4HEP_USE_EDM4HEP, DD4HEP_USE_LCIO
+from DDSim.Helper.OutputConfig import OutputConfig, defaultOutputFile
 from DDSim.Helper.InputConfig import InputConfig
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from DDSim.Helper.MagneticField import MagneticField
@@ -354,29 +354,8 @@ class DD4hepSimulation(object):
     # Configure the random seed, do it before the I/O because we might change the seed!
     self.random.initialize(DDG4, kernel, self.output.random)
 
-    # Configure I/O
-    if callable(self.outputConfig._userPlugin):
-      self.outputConfig._userPlugin(self)
-    elif self.outputFile.endswith(".slcio"):
-      if not DD4HEP_USE_LCIO:
-        raise RuntimeError("DD4HEP was not build wiht LCIO support: please change output format %s" % self.outputFile)
-      logger.info("++++ Setting up LCIO Output ++++")
-      lcOut = geant4.setupLCIOOutput('LcioOutput', self.outputFile)
-      lcOut.RunHeader = self.meta.addParametersToRunHeader(self)
-      eventPars = self.meta.parseEventParameters()
-      lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = eventPars
-      lcOut.RunNumberOffset = self.meta.runNumberOffset if self.meta.runNumberOffset > 0 else 0
-      lcOut.EventNumberOffset = self.meta.eventNumberOffset if self.meta.eventNumberOffset > 0 else 0
-    elif self.outputFile.endswith(".root") and DD4HEP_USE_EDM4HEP:
-      logger.info("++++ Setting up EDM4hep ROOT Output ++++")
-      e4Out = geant4.setupEDM4hepOutput('EDM4hepOutput', self.outputFile)
-      eventPars = self.meta.parseEventParameters()
-      e4Out.EventParametersString, e4Out.EventParametersInt, e4Out.EventParametersFloat = eventPars
-      e4Out.RunNumberOffset = self.meta.runNumberOffset if self.meta.runNumberOffset > 0 else 0
-      e4Out.EventNumberOffset = self.meta.eventNumberOffset if self.meta.eventNumberOffset > 0 else 0
-    elif self.outputFile.endswith(".root"):
-      logger.info("++++ Setting up DD4hep's ROOT Output ++++")
-      geant4.setupROOTOutput('RootOutput', self.outputFile)
+    # Configure the output file format and plugin
+    self.outputConfig.initialize(dd4hepsimulation=self, geant4=geant4)
 
     actionList = []
 
