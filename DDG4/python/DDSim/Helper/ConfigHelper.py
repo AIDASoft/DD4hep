@@ -121,7 +121,8 @@ class ConfigHelper(object):
     for name, obj in vars(ddsim).items():
       if isinstance(obj, ConfigHelper):
         for var, optionsDict in obj.getOptions().items():
-          optionsDict['action'] = 'store_true' if var.startswith("enable") else optionsDict.get('action', 'store')
+          optionsDict['action'] = ('store_true' if var.startswith(("enable", "force"))
+                                   else optionsDict.get('action', 'store'))
           parser.add_argument("--%s.%s" % (name, var),
                               dest="%s.%s" % (name, var),
                               **optionsDict
