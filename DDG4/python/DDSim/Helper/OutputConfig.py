@@ -26,7 +26,7 @@ class OutputConfig(ConfigHelper):
     self._forceLCIO = False
     self._forceEDM4HEP = False
     self._forceDD4HEP = False
-    self._closeProperties()
+    # no closeProperties, allow custom ones for userPlugin configuration
 
   def _checkConsistency(self):
     """Raise error if more than one force flag is true."""
