@@ -1,6 +1,9 @@
 """Class for output file configuration"""
+import logging
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
+
+logger = logging.getLogger(__name__)
 
 #: True if DD4hep was built with LCIO
 DD4HEP_USE_LCIO = "@DD4HEP_USE_LCIO@" != "OFF"
@@ -20,6 +23,52 @@ class OutputConfig(ConfigHelper):
   def __init__(self):
     super(OutputConfig, self).__init__()
     self._userPlugin = None
+    self._forceLCIO = False
+    self._forceEDM4HEP = False
+    self._forceDD4HEP = False
+
+  def _checkConsistency(self):
+    """Raise error if more than one force flag is true."""
+    if self._forceLCIO + self._forceEDM4HEP + self._forceDD4HEP > 1:
+      raise RuntimeError(f"OutputConfig error: More than one force flag enabled: LCIO({self._forceLCIO}),"
+                         f" EDM4HEP({self._forceEDM4HEP}), DD4HEP({self._forceDD4HEP})")
+
+  @property
+  def forceLCIO(self):
+    """Use the LCIO output plugin regardless of outputfilename."""
+    return self._forceLCIO
+
+  @forceLCIO.setter
+  def forceLCIO(self, val):
+    self._forceLCIO = self.makeBool(val)
+    if self._forceLCIO:
+      if not DD4HEP_USE_LCIO:
+        raise RuntimeError("OutputConfig error: forceLCIO requested, but LCIO not available!")
+      self._checkConsistency()
+
+  @property
+  def forceEDM4HEP(self):
+    """Use the EDM4HEP output plugin regardless of outputfilename."""
+    return self._forceEDM4HEP
+
+  @forceEDM4HEP.setter
+  def forceEDM4HEP(self, val):
+    self._forceEDM4HEP = self.makeBool(val)
+    if self._forceEDM4HEP:
+      if not DD4HEP_USE_EDM4HEP:
+        raise RuntimeError("OutputConfig error: forceEDM4HEP requested, but EDM4HEP not available!")
+      self._checkConsistency()
+
+  @property
+  def forceDD4HEP(self):
+    """Use the DD4HEP output plugin regardless of outputfilename."""
+    return self._forceDD4HEP
+
+  @forceDD4HEP.setter
+  def forceDD4HEP(self, val):
+    self._forceDD4HEP = self.makeBool(val)
+    if self._forceDD4HEP:
+      self._checkConsistency()
 
   @property
   def userOutputPlugin(self):
@@ -61,3 +110,53 @@ class OutputConfig(ConfigHelper):
     if not callable(userOutputPluginConfig):
       raise RuntimeError("The provided userPlugin is not a callable function.")
     self._userPlugin = userOutputPluginConfig
+
+  def initialize(self, dd4hepsimulation, geant4):
+    """Configure the output file and plugin."""
+    if callable(self._userPlugin):
+      logger.info("++++ Setting up UserPlugin for Output ++++")
+      return self._userPlugin(dd4hepsimulation)
+
+    if self.forceLCIO:
+      return self._configureLCIO(dd4hepsimulation, geant4)
+
+    if self.forceEDM4HEP:
+      return self._configureEDM4HEP(dd4hepsimulation, geant4)
+
+    if self.forceDD4HEP:
+      return self._configureDD4HEP(dd4hepsimulation, geant4)
+
+    if dd4hepsimulation.outputFile.endswith(".slcio"):
+      return self._configureLCIO(dd4hepsimulation, geant4)
+
+    if dd4hepsimulation.outputFile.endswith(".root") and DD4HEP_USE_EDM4HEP:
+      return self._configureEDM4HEP(dd4hepsimulation, geant4)
+
+    if dd4hepsimulation.outputFile.endswith(".root"):
+      return self._configureDD4HEP(dd4hepsimulation, geant4)
+
+  def _configureLCIO(self, dds, geant4):
+    if not DD4HEP_USE_LCIO:
+      raise RuntimeError("DD4HEP was not build wiht LCIO support: please change output format %s" % dds.outputFile)
+    logger.info("++++ Setting up LCIO Output ++++")
+    lcOut = geant4.setupLCIOOutput('LcioOutput', dds.outputFile)
+    lcOut.RunHeader = dds.meta.addParametersToRunHeader(dds)
+    eventPars = dds.meta.parseEventParameters()
+    lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = eventPars
+    lcOut.RunNumberOffset = dds.meta.runNumberOffset if dds.meta.runNumberOffset > 0 else 0
+    lcOut.EventNumberOffset = dds.meta.eventNumberOffset if dds.meta.eventNumberOffset > 0 else 0
+    return
+
+  def _configureEDM4HEP(self, dds, geant4):
+    logger.info("++++ Setting up EDM4hep ROOT Output ++++")
+    e4Out = geant4.setupEDM4hepOutput('EDM4hepOutput', dds.outputFile)
+    eventPars = dds.meta.parseEventParameters()
+    e4Out.EventParametersString, e4Out.EventParametersInt, e4Out.EventParametersFloat = eventPars
+    e4Out.RunNumberOffset = dds.meta.runNumberOffset if dds.meta.runNumberOffset > 0 else 0
+    e4Out.EventNumberOffset = dds.meta.eventNumberOffset if dds.meta.eventNumberOffset > 0 else 0
+    return
+
+  def _configureDD4HEP(self, dds, geant4):
+    logger.info("++++ Setting up DD4hep's ROOT Output ++++")
+    geant4.setupROOTOutput('RootOutput', dds.outputFile)
+    return
