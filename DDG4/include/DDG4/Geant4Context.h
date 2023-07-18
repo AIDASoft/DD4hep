@@ -162,7 +162,7 @@ namespace dd4hep {
      *  the user framework.
      *  - The access to the dd4hep objects is via the Geant4Context::detectorDescription() call,
      *  - the access to DDG4 as a whole is supported via Geant4Context::kernel() and
-     *  - the access to the user gframework using a specialized implementation of:
+     *  - the access to the user framework using a specialized implementation of:
      *  template <typename T> T& userFramework()  const;
      *
      *  A user defined implementations must be specialized somewhere in a compilation unit
