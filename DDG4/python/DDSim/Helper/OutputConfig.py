@@ -152,6 +152,7 @@ class OutputConfig(ConfigHelper):
     logger.info("++++ Setting up EDM4hep ROOT Output ++++")
     e4Out = geant4.setupEDM4hepOutput('EDM4hepOutput', dds.outputFile)
     eventPars = dds.meta.parseEventParameters()
+    e4Out.RunHeader = dds.meta.addParametersToRunHeader(dds)
     e4Out.EventParametersString, e4Out.EventParametersInt, e4Out.EventParametersFloat = eventPars
     e4Out.RunNumberOffset = dds.meta.runNumberOffset if dds.meta.runNumberOffset > 0 else 0
     e4Out.EventNumberOffset = dds.meta.eventNumberOffset if dds.meta.eventNumberOffset > 0 else 0
