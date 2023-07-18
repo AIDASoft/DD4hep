@@ -39,8 +39,8 @@ namespace dd4hep {
     public:
       using hash_t       = uint64_t;
       struct entry_t   {
-	hash_t   hash;
-	std::string  data;
+        hash_t      hash { 0 };
+        std::string data { "" };
       };
       using ElementMap       = std::map<Atom,              entry_t>;
       using MaterialMap      = std::map<Material,          entry_t>;
@@ -75,14 +75,14 @@ namespace dd4hep {
         VisMap           mapOfVis;
         LimitMap         mapOfLimits;
         IdSpecMap        mapOfIdSpecs;
-	SegmentationMap  mapOfSegmentations;
+        SegmentationMap  mapOfSegmentations;
         SensDetMap       mapOfSensDets;
         TrafoMap         mapOfPositions;
         TrafoMap         mapOfRotations;
         FieldMap         mapOfFields;
-	AlignmentMap     mapOfAlignments;
-	MapOfDetElements mapOfDetElements;
-	entry_t  header;
+        AlignmentMap     mapOfAlignments;
+        MapOfDetElements mapOfDetElements;
+        entry_t  header;
 
         GeometryInfo() = default;
       };
@@ -115,13 +115,15 @@ namespace dd4hep {
       /// Property: precision of hashed printouts
       mutable int precision     { 6 };
       /// Property: Include meshed solids in detector hash
-      int hash_meshes  { 0 };
+      int hash_meshes           { 0 };
       /// Property: Include readout property in detector hash
-      int hash_readout  { 0 };
+      int hash_readout          { 0 };
       /// Property: maximum depth level for printouts
-      int max_level     { 1 };
+      int max_level             { 1 };
+      /// Property: Keep hash-strings, not only hash values (debugging)
+      int have_hash_strings     { 0 };
       /// Property: debug level
-      int debug         { 4 };
+      int debug                 { 4 };
 
       GeometryInfo& data() const {
         return *m_dataPtr;
