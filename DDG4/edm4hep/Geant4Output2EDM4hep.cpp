@@ -17,6 +17,7 @@
 #include <DD4hep/Detector.h>
 #include <DDG4/EventParameters.h>
 #include <DDG4/Geant4OutputAction.h>
+#include <DDG4/RunParameters.h>
 
 /// edm4hep include files
 #include <edm4hep/MCParticleCollection.h>
@@ -125,6 +126,29 @@ namespace dd4hep {
       }
 #endif
     }
+
+    template <> void RunParameters::extractParameters(podio::Frame& frame)   {
+      for(auto const& p: this->intParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving run parameter: %s", p.first.c_str());
+        frame.putParameter(p.first, p.second);
+      }
+      for(auto const& p: this->fltParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving run parameter: %s", p.first.c_str());
+        frame.putParameter(p.first, p.second);
+      }
+      for(auto const& p: this->strParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving run parameter: %s", p.first.c_str());
+        frame.putParameter(p.first, p.second);
+      }
+#if podio_VERSION_MAJOR > 0 || podio_VERSION_MINOR > 16 || podio_VERSION_PATCH > 2
+      // This functionality is only present in podio > 0.16.2
+      for (auto const& p: this->dblParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving run parameter: %s", p.first.c_str());
+        frame.putParameter(p.first, p.second);
+      }
+#endif
+    }
+
   }    // End namespace sim
 }      // End namespace dd4hep
 #endif // DD4HEP_DDG4_GEANT4OUTPUT2EDM4hep_H
@@ -277,6 +301,11 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   runHeader.putParameter("GEANT4Version", G4Version);
   runHeader.putParameter("DD4hepVersion", versionString());
   runHeader.putParameter("detectorName", context()->detectorDescription().header().name());
+
+  RunParameters* parameters = context()->run().extension<RunParameters>(false);
+  if ( parameters ) {
+    parameters->extractParameters(runHeader);
+  }
 
   m_file->writeFrame(runHeader, "runs");
 }
