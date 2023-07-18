@@ -137,6 +137,9 @@ namespace dd4hep  {
 
       /// make sure that all parameters have been processed, otherwise throw exceptions
       virtual void checkParameters( std::map< std::string, std::string >& );
+
+      /// Register Run Parameters
+      virtual void registerRunParameters() {}
     };
 
     /// Generic input action capable of using the Geant4EventReader class.
