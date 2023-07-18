@@ -27,6 +27,7 @@
 #include "HepMC3EventReader.h"
 
 #include "DDG4/EventParameters.h"
+#include "DDG4/RunParameters.h"
 
 #include <HepMC3/ReaderFactory.h>
 
@@ -68,6 +69,22 @@ namespace dd4hep  {
       }
     }
 
+    template <class T=HepMC3::GenRunInfo> void RunParameters::ingestParameters(T const& runInfo) {
+      // This attributes is not the same return type as for GenEvent!
+      for(auto const& attr: runInfo.attributes()){
+        std::stringstream strstr;
+        if(auto int_attr = std::dynamic_pointer_cast<HepMC3::IntAttribute>(attr.second)) {
+          m_intValues[attr.first] = {int_attr->value()};
+        } else if(auto flt_attr = std::dynamic_pointer_cast<HepMC3::FloatAttribute>(attr.second)) {
+          m_fltValues[attr.first] = {flt_attr->value()};
+        } else if(auto dbl_attr = std::dynamic_pointer_cast<HepMC3::DoubleAttribute>(attr.second)) {
+          m_dblValues[attr.first] = {dbl_attr->value()};
+        } else { // anything else
+          m_strValues[attr.first] = {attr.second->unparsed_string()};
+        }
+      }
+    }
+
     /// Base class to read hepmc3 event files
     /**
      *  \version 1.0
@@ -89,6 +106,9 @@ namespace dd4hep  {
       virtual EventReaderStatus moveToEvent(int event_number);
       //virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
       virtual EventReaderStatus setParameters(std::map< std::string, std::string >& parameters);
+      /// register the run parameters into an extension for the run context
+      virtual void registerRunParameters();
+
     };
   }
 }
@@ -109,6 +129,15 @@ HEPMC3FileReader::HEPMC3FileReader(const std::string& nam)
   m_reader = HepMC3::deduce_reader(nam);
   printout(INFO,"HEPMC3FileReader","Created file reader. Try to open input %s", nam.c_str());
   m_directAccess = false;
+}
+
+void HEPMC3FileReader::registerRunParameters() {
+  try {
+    auto *parameters = new RunParameters();
+    parameters->ingestParameters(*(m_reader->run_info()));
+    context()->run().addExtension<RunParameters>(parameters);
+  } catch(std::exception &) {
+  }
 }
 
 /// moveToSpecifiedEvent, a.k.a. skipNEvents

@@ -165,6 +165,7 @@ int Geant4InputAction::readParticles(int evt_number,
       m_reader->setParameters( m_parameters );
       m_reader->checkParameters( m_parameters );
       m_reader->setInputAction( this );
+      m_reader->registerRunParameters();
     }
     catch(const exception& e)  {
       err = e.what();
