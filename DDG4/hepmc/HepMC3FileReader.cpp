@@ -72,7 +72,6 @@ namespace dd4hep  {
     template <class T=HepMC3::GenRunInfo> void RunParameters::ingestParameters(T const& runInfo) {
       // This attributes is not the same return type as for GenEvent!
       for(auto const& attr: runInfo.attributes()){
-        std::stringstream strstr;
         if(auto int_attr = std::dynamic_pointer_cast<HepMC3::IntAttribute>(attr.second)) {
           m_intValues[attr.first] = {int_attr->value()};
         } else if(auto flt_attr = std::dynamic_pointer_cast<HepMC3::FloatAttribute>(attr.second)) {
@@ -128,6 +127,10 @@ HEPMC3FileReader::HEPMC3FileReader(const std::string& nam)
 {
   m_reader = HepMC3::deduce_reader(nam);
   printout(INFO,"HEPMC3FileReader","Created file reader. Try to open input %s", nam.c_str());
+  // to read potential run_info in HepMC3 ASCII files, we have to call skip(-1), otherwise run_info is only read when we
+  // read the first event. This is different for different readers, and may or may not work :shrug:
+  // skip(-1) is also a no-op for RootReader, and for RootReader the RunInfo is read when the file is opened
+  m_reader->skip(-1);
   m_directAccess = false;
 }
 
@@ -136,7 +139,8 @@ void HEPMC3FileReader::registerRunParameters() {
     auto *parameters = new RunParameters();
     parameters->ingestParameters(*(m_reader->run_info()));
     context()->run().addExtension<RunParameters>(parameters);
-  } catch(std::exception &) {
+  } catch(std::exception &e) {
+    printout(ERROR,"HEPMC3FileReader::registerRunParameters","Failed to register run parameters: %s", e.what());
   }
 }
 
