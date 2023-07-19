@@ -125,12 +125,18 @@ DECLARE_GEANT4_EVENT_READER_NS(dd4hep::sim,HEPMC3FileReader)
 HEPMC3FileReader::HEPMC3FileReader(const std::string& nam)
 : HEPMC3EventReader(nam)
 {
-  m_reader = HepMC3::deduce_reader(nam);
   printout(INFO,"HEPMC3FileReader","Created file reader. Try to open input %s", nam.c_str());
-  // to read potential run_info in HepMC3 ASCII files, we have to call skip(-1), otherwise run_info is only read when we
-  // read the first event. This is different for different readers, and may or may not work :shrug:
-  // skip(-1) is also a no-op for RootReader, and for RootReader the RunInfo is read when the file is opened
-  m_reader->skip(-1);
+  m_reader = HepMC3::deduce_reader(nam);
+  // to get the runInfo in the Ascii reader we have to force HepMC to read the first event
+  m_reader->skip(1);
+  // then we get the run info (shared pointer)
+  auto runInfo = m_reader->run_info();
+  // and close the reader
+  m_reader->close();
+  // so we can open the file again from the start
+  m_reader = HepMC3::deduce_reader(nam);
+  // and set the run info object now
+  m_reader->set_run_info(runInfo);
   m_directAccess = false;
 }
 
