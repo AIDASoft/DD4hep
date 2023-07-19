@@ -19,6 +19,7 @@
 #include "DDG4/Geant4OutputAction.h"
 
 #include "DDG4/EventParameters.h"
+#include "DDG4/RunParameters.h"
 // Geant4 headers
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
@@ -62,6 +63,23 @@ namespace dd4hep {
 #endif
     }
 
+    template <class T=lcio::LCRunHeaderImpl> void RunParameters::extractParameters(T& runHeader){
+      auto& lcparameters = runHeader.parameters();
+      for(auto const& ival: this->intParameters()) {
+        lcparameters.setValues(ival.first, ival.second);
+      }
+      for(auto const& ival: this->fltParameters()) {
+        lcparameters.setValues(ival.first, ival.second);
+      }
+      for(auto const& ival: this->strParameters()) {
+        lcparameters.setValues(ival.first, ival.second);
+      }
+#if LCIO_VERSION_GE(2, 17)
+      for(auto const& ival: this->dblParameters()) {
+        lcparameters.setValues(ival.first, ival.second);
+      }
+#endif
+    }
 
     class Geant4ParticleMap;
 
@@ -250,6 +268,10 @@ void Geant4Output2LCIO::saveRun(const G4Run* run)  {
   rh->parameters().setValue("DD4HEPVersion", versionString());
   rh->setRunNumber(m_runNo);
   rh->setDetectorName(context()->detectorDescription().header().name());
+  auto* parameters = context()->run().extension<RunParameters>(false);
+  if (parameters) {
+    parameters->extractParameters(*rh);
+  }
   m_file->writeRunHeader(rh);
 }
 
