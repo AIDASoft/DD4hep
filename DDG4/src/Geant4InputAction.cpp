@@ -19,6 +19,7 @@
 #include "DDG4/Geant4Context.h"
 #include "DDG4/Geant4Kernel.h"
 #include "DDG4/Geant4InputAction.h"
+#include "DDG4/Geant4RunAction.h"
 
 #include "G4Event.hh"
 
@@ -127,11 +128,49 @@ Geant4InputAction::Geant4InputAction(Geant4Context* ctxt, const string& nam)
   declareProperty("HaveAbort",      m_abort = true);
   declareProperty("Parameters",     m_parameters = {});
   m_needsControl = true;
+
+  runAction().callAtBegin(this, &Geant4InputAction::beginRun);
 }
 
 /// Default destructor
 Geant4InputAction::~Geant4InputAction()   {
 }
+
+///Intialize the event reader before the run starts
+void Geant4InputAction::beginRun(const G4Run*) {
+  createReader();
+}
+
+void Geant4InputAction::createReader() {
+  if(m_reader) {
+    return;
+  }
+  if ( m_input.empty() )  {
+    except("InputAction: No input file declared!");
+  }
+  string err;
+  TypeName tn = TypeName::split(m_input,"|");
+  try  {
+    m_reader = PluginService::Create<Geant4EventReader*>(tn.first,tn.second);
+    if ( 0 == m_reader )   {
+      PluginDebug dbg;
+      m_reader = PluginService::Create<Geant4EventReader*>(tn.first,tn.second);
+      abortRun("Error creating reader plugin.",
+               "Failed to create file reader of type %s. Cannot open dataset %s",
+               tn.first.c_str(),tn.second.c_str());
+    }
+    m_reader->setParameters( m_parameters );
+    m_reader->checkParameters( m_parameters );
+    m_reader->setInputAction( this );
+    m_reader->registerRunParameters();
+  } catch(const exception& e)  {
+    err = e.what();
+  }
+  if ( !err.empty() )  {
+    abortRun(err,"Error when creating reader for file %s",m_input.c_str());
+  }
+}
+
 
 /// helper to report Geant4 exceptions
 string Geant4InputAction::issue(int i)  const  {
@@ -145,36 +184,9 @@ int Geant4InputAction::readParticles(int evt_number,
                                      Vertices& vertices,
                                      std::vector<Particle*>& particles)
 {
+  //in case readParticles is called diractly outside of having a run, we make sure a reader exists
+  createReader();
   int evid = evt_number + m_firstEvent;
-  if ( 0 == m_reader )  {
-    if ( m_input.empty() )  {
-      except("InputAction: No input file declared!");
-    }
-    string err;
-    TypeName tn = TypeName::split(m_input,"|");
-    try  {
-      m_reader = PluginService::Create<Geant4EventReader*>(tn.first,tn.second);
-      if ( 0 == m_reader )   {
-        PluginDebug dbg;
-        m_reader = PluginService::Create<Geant4EventReader*>(tn.first,tn.second);
-        abortRun(issue(evid)+"Error creating reader plugin.",
-                 "Failed to create file reader of type %s. Cannot open dataset %s",
-                 tn.first.c_str(),tn.second.c_str());
-        return Geant4EventReader::EVENT_READER_NO_FACTORY;
-      }
-      m_reader->setParameters( m_parameters );
-      m_reader->checkParameters( m_parameters );
-      m_reader->setInputAction( this );
-      m_reader->registerRunParameters();
-    }
-    catch(const exception& e)  {
-      err = e.what();
-    }
-    if ( !err.empty() )  {
-      abortRun(issue(evid)+err,"Error when creating reader for file %s",m_input.c_str());
-      return Geant4EventReader::EVENT_READER_NO_FACTORY;
-    }
-  }
   int status = m_reader->moveToEvent(evid);
   if(status == Geant4EventReader::EVENT_READER_EOF ) {
     long nEvents = context()->kernel().property("NumEvents").value<long>();
