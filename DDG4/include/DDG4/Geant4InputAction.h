@@ -36,6 +36,7 @@
 
 // Forward declarations
 class G4Event;
+class G4Run;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {
@@ -177,6 +178,11 @@ namespace dd4hep  {
       /// Property: named parameters to configure file readers or input actions
       std::map< std::string, std::string> m_parameters;
 
+      /// Perform some actions before the run starts, like opening the event inputs
+      void beginRun(const G4Run*);
+
+      /// Create the input reader
+      void createReader();
     public:
       /// Read an event and return a LCCollectionVec of MCParticles.
       int readParticles(int event_number,
