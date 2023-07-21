@@ -30,6 +30,7 @@
 #include "DDG4/RunParameters.h"
 
 #include <HepMC3/ReaderFactory.h>
+#include <HepMC3/Version.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {
@@ -127,6 +128,7 @@ HEPMC3FileReader::HEPMC3FileReader(const std::string& nam)
 {
   printout(INFO,"HEPMC3FileReader","Created file reader. Try to open input %s", nam.c_str());
   m_reader = HepMC3::deduce_reader(nam);
+#if HEPMC3_VERSION_CODE >= 3002006
   // to get the runInfo in the Ascii reader we have to force HepMC to read the first event
   m_reader->skip(1);
   // then we get the run info (shared pointer)
@@ -137,6 +139,7 @@ HEPMC3FileReader::HEPMC3FileReader(const std::string& nam)
   m_reader = HepMC3::deduce_reader(nam);
   // and set the run info object now
   m_reader->set_run_info(runInfo);
+#endif
   m_directAccess = false;
 }
 
