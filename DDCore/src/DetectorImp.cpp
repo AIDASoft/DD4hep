@@ -572,7 +572,7 @@ vector<string> DetectorImp::detectorTypes() const  {
 }
 
 /// Access a set of subdetectors according to the sensitive type.
-const vector<DetElement>& DetectorImp::detectors(const string& type, bool throw_exc)  {
+const vector<DetElement>& DetectorImp::detectors(const string& type, bool throw_exc) const {
   if ( m_manager->IsClosed() ) {
     DetectorTypeMap::const_iterator i=m_detectorTypes.find(type);
     if ( i != m_detectorTypes.end() ) return (*i).second;

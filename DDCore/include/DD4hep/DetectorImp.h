@@ -320,7 +320,7 @@ namespace dd4hep {
        - If throw_exc is set to true, an exception is thrown if the type
        is not present. Otherwise an empty detector container is returned.
     */
-    virtual const std::vector<DetElement>& detectors(const std::string& type, bool throw_exc)  override;
+    virtual const std::vector<DetElement>& detectors(const std::string& type, bool throw_exc) const override;
 
     /// Access a set of subdetectors according to several sensitive types.
     virtual std::vector<DetElement> detectors(const std::string& type1,
