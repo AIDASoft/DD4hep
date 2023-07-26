@@ -540,6 +540,7 @@ Material DetectorImp::material(const string& name) const {
 
 /// Internal helper to map detector types once the geometry is closed
 void DetectorImp::mapDetectorTypes()  {
+  m_detectorTypes[""] = {};
   for( const auto& i : m_detectors )   {
     DetElement det(i.second);
     if ( det.parent().isValid() )  { // Exclude 'world'
@@ -573,13 +574,13 @@ vector<string> DetectorImp::detectorTypes() const  {
 /// Access a set of subdetectors according to the sensitive type.
 const vector<DetElement>& DetectorImp::detectors(const string& type, bool throw_exc)  {
   if ( m_manager->IsClosed() ) {
+    DetectorTypeMap::const_iterator i=m_detectorTypes.find(type);
+    if ( i != m_detectorTypes.end() ) return (*i).second;
     if ( throw_exc )  {
-      DetectorTypeMap::const_iterator i=m_detectorTypes.find(type);
-      if ( i != m_detectorTypes.end() ) return (*i).second;
       throw runtime_error("detectors("+type+"): Detectors of this type do not exist in the current setup!");
     }
     // return empty vector instead of exception
-    return m_detectorTypes[ type ] ;
+    return m_detectorTypes.at("") ;
   }
   throw runtime_error("detectors("+type+"): Detectors can only selected by type once the geometry is closed!");
 }
