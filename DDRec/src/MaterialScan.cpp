@@ -35,7 +35,7 @@ MaterialScan::MaterialScan()
 }
 
 /// Default constructor
-MaterialScan::MaterialScan(Detector& description)
+MaterialScan::MaterialScan(const Detector& description)
   : m_detector(description)
 {
   m_materialMgr.reset(new MaterialManager(m_detector.world().volume()));
