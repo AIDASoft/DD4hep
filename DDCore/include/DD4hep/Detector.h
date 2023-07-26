@@ -194,7 +194,7 @@ namespace dd4hep {
        is not present. Otherwise an empty detector container is returned.
     */
     virtual const std::vector<DetElement>& detectors(const std::string& type,
-                                                     bool throw_exc=false) = 0;
+                                                     bool throw_exc=false) const = 0;
 
     /// Access a set of subdetectors according to several sensitive types.
     virtual std::vector<DetElement> detectors(const std::string& type1,
