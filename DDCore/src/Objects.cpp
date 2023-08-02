@@ -452,7 +452,7 @@ string Limit::toString() const {
   string res = name + " = " + content;
   if (!unit.empty())
     res += unit + " ";
-  res + " (" + particles + ")";
+  res += " (" + particles + ")";
   return res;
 }
 
