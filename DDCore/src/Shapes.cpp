@@ -89,7 +89,7 @@ template <typename T> const char* Solid_type<T>::type() const  {
 
 /// Access the dimensions of the shape: inverse of the setDimensions member function
 template <typename T> vector<double> Solid_type<T>::dimensions()  {
-  return move( get_shape_dimensions(this->access()) );
+  return get_shape_dimensions(this->access());
 }
 
 /// Set the shape dimensions. As for the TGeo shape, but angles in rad rather than degrees.
