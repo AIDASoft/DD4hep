@@ -1155,14 +1155,17 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
       if (draw_style == VisAttr::SOLID) {
         m_element->SetFillStyle(1001);   // Root: solid
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,29,0)
+        // Set directly transparency to the volume, NOT to the material as for ROOT < 6.29
+        m_element->ResetTransparency(Char_t((1.0-vis->alpha)*100));
+#elif ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
         // As suggested by Valentin Volkl https://sft.its.cern.ch/jira/browse/DDFORHEP-20
         //
         // According to https://root.cern.ch/phpBB3/viewtopic.php?t=2309#p66013
         // a transparency>50 will make a volume invisible in the normal pad.
         // Hence: possibly restrict transparency to a maximum of 50.
         //        but let's see first how this behaves.
-        m_element->SetTransparency((1.0-vis->alpha)*100);
+        m_element->SetTransparency(Char_t((1.0-vis->alpha)*100));
 #endif
       }
       else {
