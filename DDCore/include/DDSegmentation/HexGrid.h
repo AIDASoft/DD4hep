@@ -10,7 +10,7 @@
 //==========================================================================
 
 /*
- * CartesianGrid.h
+ * HexGrid.h
  *
  *  Created on: August 9, 2023
  *      Author: Sebouh J. Paul, UC Riverside
@@ -24,7 +24,7 @@
 namespace dd4hep {
   namespace DDSegmentation {
 
-    /// Segmentation base class describing cartesian grid segmentation
+    /// Segmentation base class describing hexagonal grid segmentation, with or without staggering
     class HexGrid: public Segmentation {
     public:
       /// Destructor
