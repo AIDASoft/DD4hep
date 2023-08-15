@@ -24,7 +24,8 @@
 namespace dd4hep {
   namespace DDSegmentation {
 
-    /// Segmentation base class describing cartesian grid segmentation
+    /// Segmentation base class describing a cartesian grid segmentation with square
+    /// cells, with or without staggering
     class SquareGrid: public Segmentation {
     public:
       /// Destructor
