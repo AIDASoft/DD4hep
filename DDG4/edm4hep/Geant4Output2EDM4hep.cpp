@@ -505,7 +505,7 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   //-------------------------------------------------------------------
   if( typeid( Geant4Tracker::Hit ) == coll->type().type()  ){
     // Create the hit container even if there are no entries!
-    auto& hits = m_trackerHits[colName] = edm4hep::SimTrackerHitCollection();
+    auto& hits = m_trackerHits[colName];
     for(unsigned i=0 ; i < nhits ; ++i){
       auto sth = hits->create();
       const Geant4Tracker::Hit* hit = coll->hit(i);
@@ -536,8 +536,7 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
     Geant4Sensitive* sd = coll->sensitive();
     int hit_creation_mode = sd->hitCreationMode();
     // Create the hit container even if there are no entries!
-    auto& hits = m_calorimeterHits[colName] =
-      std::make_pair(edm4hep::SimCalorimeterHitCollection(), edm4hep::CaloHitContributionCollection());
+    auto& hits = m_calorimeterHits[colName];
     for(unsigned i=0 ; i < nhits ; ++i){
       auto sch = hits.first->create();
       const Geant4Calorimeter::Hit* hit = coll->hit(i);
