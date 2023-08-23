@@ -68,7 +68,7 @@ namespace dd4hep  {
       ParticleConfig m_eMax           { };
       /// Property: Set maximum kinetic energy for particles to be killed
       ParticleConfig m_eKill          { };
-      /// Property: Set minmal kinetic energy for particles to trigger the model
+      /// Property: Set minimal kinetic energy for particles to trigger the model
       ParticleConfig m_eTriggerNames  { };
 
       /// Particle definitions for which this parametrization is applicable
