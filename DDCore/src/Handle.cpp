@@ -290,29 +290,28 @@ namespace dd4hep  {
       // "path1/path2/${VAR1}/path3/${VAR2}"
       size_t id1 = env.find("${", current_index);
       // variable start found, do a greedy search for the variable end 
-      if (id1 != string::npos) {
-        size_t id2 = env.find("}", id1);
-        if (id2 == string::npos) {
-          runtime_error("dd4hep: Syntax error, bas variable syntax: " + env); 
-        }
-        processed_variable << env.substr(current_index, id1 -current_index );
-        string v   = env.substr(id1, id2-id1+1);
-        stringstream err;
-        auto   ret = eval.getEnviron(v, err);
-        // Checking that the variable lookup worked
-        if ( ret.first != tools::Evaluator::OK) {
-	        cerr << v << ": " << err.str() << endl;
-	        throw runtime_error("dd4hep: Severe error during environment lookup of " + v + " " + err.str());
-        }
-        // Now adding the variable
-        processed_variable << ret.second;
-        current_index = id2 + 1;
-      } else {
-        // In this case we did not find the ${ to indicate a start of variable,
+      if (id1 == string::npos) {
+         // In this case we did not find the ${ to indicate a start of variable,
         // we just copy the rest of the variable to the stringstream and exit
         processed_variable << env.substr(current_index);
         break;
       }
+      size_t id2 = env.find("}", id1);
+      if (id2 == string::npos) {
+        runtime_error("dd4hep: Syntax error, bad variable syntax: " + env); 
+      }
+      processed_variable << env.substr(current_index, id1 -current_index );
+      string v   = env.substr(id1, id2-id1+1);
+      stringstream err;
+      auto   ret = eval.getEnviron(v, err);
+      // Checking that the variable lookup worked
+      if ( ret.first != tools::Evaluator::OK) {
+        cerr << v << ": " << err.str() << endl;
+        throw runtime_error("dd4hep: Severe error during environment lookup of " + v + " " + err.str());
+      }
+      // Now adding the variable
+      processed_variable << ret.second;
+      current_index = id2 + 1;       
     }
     return processed_variable.str();
   }
