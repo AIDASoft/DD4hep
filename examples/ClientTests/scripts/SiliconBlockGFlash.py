@@ -100,6 +100,7 @@ def run():
   model.Enable = True
   # Energy boundaries are optional: Units are GeV
   model.Emin = {'e+': 0.1 * GeV, 'e-': 0.1 * GeV}
+  model.Emax = {'e+': 100 * GeV, 'e-': 100 * GeV}
   model.Ekill = {'e+': 0.1 * MeV, 'e-': 0.1 * MeV}
   model.enableUI()
   seq.adopt(model)
