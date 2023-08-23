@@ -280,26 +280,41 @@ namespace dd4hep  {
   }
 
   /// Evaluate string constant using environment stored in the evaluator
-  string _getEnviron(const string& env)   {
-    size_t id1 = env.find("${");
-    size_t id2 = env.rfind("}");
-    if ( id1 == string::npos || id2 == string::npos )   {
-      return "";
-    }
-    else  {
-      stringstream err;
-      string v   = env.substr(id1,id2-id1+1);
-      auto   ret = eval.getEnviron(v, err);
-      if ( ret.first != tools::Evaluator::OK) {
-	cerr << env << ": " << err.str() << endl;
-	throw runtime_error("dd4hep: Severe error during environment lookup of " + env +
-			    " " + err.str());
+  string _getEnviron(const string& env)   {    
+    // We are trying to deal with the case when several variables are being replaced in the
+    // string.   
+    size_t current_index = 0;
+    stringstream processed_variable;
+    while (true) {
+      // Looking for the start of a variable use, with the syntax
+      // "path1/path2/${VAR1}/path3/${VAR2}"
+      size_t id1 = env.find("${", current_index);
+      // variable start found, do a greedy search for the variable end 
+      if (id1 != string::npos) {
+        size_t id2 = env.find("}", id1);
+        if (id2 == string::npos) {
+          runtime_error("dd4hep: Syntax error, bas variable syntax: " + env); 
+        }
+        processed_variable << env.substr(current_index, id1 -current_index );
+        string v   = env.substr(id1, id2-id1+1);
+        stringstream err;
+        auto   ret = eval.getEnviron(v, err);
+        // Checking that the variable lookup worked
+        if ( ret.first != tools::Evaluator::OK) {
+	        cerr << v << ": " << err.str() << endl;
+	        throw runtime_error("dd4hep: Severe error during environment lookup of " + v + " " + err.str());
+        }
+        // Now adding the variable
+        processed_variable << ret.second;
+        current_index = id2 + 1;
+      } else {
+        // In this case we did not find the ${ to indicate a start of variable,
+        // we just copy the rest of the variable to the stringstream and exit
+        processed_variable << env.substr(current_index);
+        break;
       }
-      v = env.substr(0,id1);
-      v += ret.second;
-      v += env.substr(id2+1);
-      return v;
     }
+    return processed_variable.str();
   }
 
   /// String manipulations: Remove unconditionally all white spaces
