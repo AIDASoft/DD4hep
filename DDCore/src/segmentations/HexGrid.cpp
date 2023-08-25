@@ -5,7 +5,7 @@
  *      Author: Sebouh J. Paul, UC Riverside
  */
 #include "DD4hep/Factories.h"
-#include "HexGrid.h"
+#include "DDSegmentation/HexGrid.h"
 
 namespace dd4hep {
   namespace DDSegmentation {
