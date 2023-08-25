@@ -19,7 +19,11 @@
 #include "ROOT/RDirectory.hxx"
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,27,00)
 #include "ROOT/RGeomViewer.hxx"
-using GEOM_VIEWER = ROOT::Experimental::RGeomViewer;
+#  if ROOT_VERSION_CODE >= ROOT_VERSION(6,29,00)
+     using GEOM_VIEWER = ROOT::RGeomViewer;
+#  else
+     using GEOM_VIEWER = ROOT::Experimental::RGeomViewer;
+#  endif
 #else
 #include "ROOT/REveGeomViewer.hxx"
 using GEOM_VIEWER = ROOT::Experimental::REveGeomViewer;
