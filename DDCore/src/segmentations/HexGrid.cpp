@@ -13,7 +13,7 @@ namespace dd4hep {
     /// Default constructor used by derived classes passing the encoding string
     HexGrid::HexGrid(const std::string& cellEncoding) :
       Segmentation(cellEncoding) {
-      _type = "HexGridXY";
+        _type = "HexGridXY";
 	_description = "Hexagonal segmentation in the local XY-plane";
 
 	// register all necessary parameters
@@ -27,7 +27,7 @@ namespace dd4hep {
 
     /// Default constructor used by derived classes passing an existing decoder
     HexGrid::HexGrid(const BitFieldCoder* decode) : Segmentation(decode) {
-      // define type and description
+        // define type and description
 	_type = "HexGridXY";
 	_description = "Hexagonal segmentation in the local XY-plane";
 
@@ -61,11 +61,9 @@ namespace dd4hep {
 	    cellPosition.X-=0.75*_sideLength;
 	    break;
 	  case 1:
-	    //cellPosition.X+=0.75*_sideLength;
 	    cellPosition.Y+=std::sqrt(3)/4*_sideLength;
 	    break;
 	  case 2:
-	    //cellPosition.X-=0.75*_sideLength;
 	    cellPosition.Y-=std::sqrt(3)/4*_sideLength;
 	    break;
 	  case 3:
@@ -100,11 +98,9 @@ namespace dd4hep {
 	    x+=0.75*_sideLength;
 	    break;
           case 1:
-            //x-=0.75*_sideLength;
             y-=std::sqrt(3)/4*_sideLength;
             break;
           case 2:
-            //x+=0.75*_sideLength;
             y+=std::sqrt(3)/4*_sideLength;
             break;
           case 3:
@@ -119,13 +115,6 @@ namespace dd4hep {
 	  (b<0.5)*(-abs(a-.5)<(b-.5)*3)+(b>0.5)*(abs(a-.5)-.5<(b-1)*3);
 	int iy=std::floor(y/(std::sqrt(3)*_sideLength/2.));
 	iy-=(ix+iy)&1;
-
-	
-	//int ix=int(floor((localPosition.X - _offsetX) / (3/2*_sideLength)));
-	//int iy=int(floor((localPosition.Y - _offsetY) / (std::sqrt(3)/2*_sideLength)));
-		   //if((ix+iy)%2 &&
-		   //   ((localPosition.X-offset_X)/(2*_sideLength)+(localPosition.Y-_offsetX)/(std::sqrt(3)*_sideLength))
-		   //iy-=1;
 	
 	_decoder->set( cID,_xId, ix );
 	_decoder->set( cID,_yId, iy );
