@@ -65,7 +65,6 @@ namespace dd4hep {
       return std::fmod(std::fmod(i,n) + n,n);
     }
 
-    //inline double positive_floor(
     
     /// determine the cell ID based on the position
     CellID SquareGrid::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
