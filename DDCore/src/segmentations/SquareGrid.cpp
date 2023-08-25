@@ -1,4 +1,12 @@
 /*
+ * AIDA Detector description implementation 
+ * 
+ * Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+ * All rights reserved.
+ *
+ * For the licensing terms see $DD4hepINSTALL/LICENSE.
+ * For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+ *
  *  SquareGrid.cpp
  *  A square grid in X,Y which has options for staggering in the S2 pattern
  *  Created on: August 9, 2023
