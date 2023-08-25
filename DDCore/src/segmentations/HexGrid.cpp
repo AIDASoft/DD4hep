@@ -1,7 +1,15 @@
 /*
- * HexGrid.cpp
+ * AIDA Detector description implementation 
+ * 
+ * Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+ * All rights reserved.
  *
- *  Created on: August 9, 2023
+ * For the licensing terms see $DD4hepINSTALL/LICENSE.
+ * For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+ *
+ * HexGrid.cpp  
+ *
+ * Created on: August 9, 2023
  *      Author: Sebouh J. Paul, UC Riverside
  */
 #include "DD4hep/Factories.h"
