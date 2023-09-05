@@ -95,7 +95,7 @@ namespace dd4hep {
       }
       /// set the keyword used to determine which volumes to stagger
       void setStaggerKeyword(const std::string& staggerKeyword) {
-        _staggerKeyword = staggerKeyword);
+        _staggerKeyword = staggerKeyword;
       }
       /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
           in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
