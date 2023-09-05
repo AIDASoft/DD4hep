@@ -64,7 +64,11 @@ namespace dd4hep {
       const std::string& fieldNameY() const {
         return _yId;
       }
-      
+      /// access the keyword for staggering
+      const std::string& staggerKeyword() const {
+        return _staggerKeyword;
+      }
+
       /// set the stagger mode: 0=no stagger; 1=stagger cycling through 3 offsets
       void setStagger(int stagger) {
 	_stagger= stagger;
