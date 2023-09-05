@@ -31,6 +31,7 @@ namespace dd4hep {
 	registerParameter("offset_y", "Cell offset in Y", _offsetY, 0., SegmentationParameter::LengthUnit, true);
 	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
 	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
+	registerIdentifier("stagger_keyword", "Cell ID identifier used in staggering", _staggerKeyword, "layer");
     }
 
     /// Default constructor used by derived classes passing an existing decoder
@@ -55,7 +56,7 @@ namespace dd4hep {
 
     /// determine the position based on the cell ID
     Vector3D HexGrid::position(const CellID& cID) const {
-        int layer= _decoder->get(cID,"layer");
+        int layer= _decoder->get(cID,_staggerKeyword);
 	Vector3D cellPosition;
 	cellPosition.X = _decoder->get(cID,_xId )*1.5*_sideLength+_offsetX+_sideLength/2.;
 	cellPosition.Y = _decoder->get(cID,_yId )*std::sqrt(3)/2.*_sideLength+ _offsetY+_sideLength*std::sqrt(3)/2.;
@@ -90,7 +91,7 @@ namespace dd4hep {
     /// determine the cell ID based on the position
     CellID HexGrid::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
         CellID cID = vID ;
-	int layer= _decoder->get(cID,"layer");
+	int layer= _decoder->get(cID,_staggerKeyword);
 	double _gridSizeY=std::sqrt(3)*_sideLength/2.;
 	double _gridSizeX=3*_sideLength/2;
 
