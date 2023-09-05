@@ -47,6 +47,7 @@ namespace dd4hep {
 	registerParameter("offset_y", "Cell offset in Y", _offsetY, 0., SegmentationParameter::LengthUnit, true);
 	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
 	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
+	registerIdentifier("stagger_keyword", "Cell ID identifier used in staggering", _staggerKeyword, "layer");
     
     }
 
