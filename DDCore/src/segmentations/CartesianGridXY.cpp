@@ -26,6 +26,7 @@ CartesianGridXY::CartesianGridXY(const std::string& cellEncoding) :
 	registerParameter("stagger_y", "Option to stagger the layers in y (ie, add grid_size_y/2 to offset_y for odd layers)", _staggerY, 0);
 	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
 	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
+	registerIdentifier("stagger_keyword", "Cell ID identifier used in staggering", _staggerKeyword, "layer");
 }
 
 /// Default constructor used by derived classes passing an existing decoder
@@ -53,7 +54,7 @@ CartesianGridXY::~CartesianGridXY() {
 /// determine the position based on the cell ID
 Vector3D CartesianGridXY::position(const CellID& cID) const {
 	Vector3D cellPosition;
-	int layer= _decoder->get(cID,"layer");
+	int layer= _decoder->get(cID,_staggerKeyword);
 	cellPosition.X = binToPosition( _decoder->get(cID,_xId ), _gridSizeX, _offsetX+_staggerX*_gridSizeX*(layer%2)/2.);
 	cellPosition.Y = binToPosition( _decoder->get(cID,_yId ), _gridSizeY, _offsetY+_staggerY*_gridSizeY*(layer%2)/2.);
 	return cellPosition;
