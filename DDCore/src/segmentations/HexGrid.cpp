@@ -93,8 +93,6 @@ namespace dd4hep {
     CellID HexGrid::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
         CellID cID = vID ;
 	int layer= _decoder->get(cID,_staggerKeyword);
-	double _gridSizeY=std::sqrt(3)*_sideLength/2.;
-	double _gridSizeX=3*_sideLength/2;
 
 	double x=localPosition.X-_offsetX;
 	double y=localPosition.Y-_offsetY;
