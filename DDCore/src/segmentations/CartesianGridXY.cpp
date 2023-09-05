@@ -22,11 +22,14 @@ CartesianGridXY::CartesianGridXY(const std::string& cellEncoding) :
 	registerParameter("grid_size_y", "Cell size in Y", _gridSizeY, 1., SegmentationParameter::LengthUnit);
 	registerParameter("offset_x", "Cell offset in X", _offsetX, 0., SegmentationParameter::LengthUnit, true);
 	registerParameter("offset_y", "Cell offset in Y", _offsetY, 0., SegmentationParameter::LengthUnit, true);
-	registerParameter("stagger_x", "Option to stagger the layers in x (ie, add grid_size_x/2 to offset_x for odd layers)", _staggerX, 0);
-	registerParameter("stagger_y", "Option to stagger the layers in y (ie, add grid_size_y/2 to offset_y for odd layers)", _staggerY, 0);
+	registerParameter("stagger_x", "Option to stagger the layers in x (ie, add grid_size_x/2 to offset_x for odd layers)", _staggerX, 0,
+		SegmentationParameter::NoUnit, false);
+	registerParameter("stagger_y", "Option to stagger the layers in y (ie, add grid_size_y/2 to offset_y for odd layers)", _staggerY, 0, 
+		SegmentationParameter::NoUnit, false);
 	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
 	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
-	registerIdentifier("stagger_keyword", "Volume ID identifier used for determining which volumes to stagger", _staggerKeyword, "layer");
+	registerIdentifier("stagger_keyword", "Volume ID identifier used for determining which volumes to stagger", _staggerKeyword, "layer", 
+		SegmentationParameter::NoUnit, false);
 }
 
 /// Default constructor used by derived classes passing an existing decoder
@@ -42,11 +45,14 @@ CartesianGridXY::CartesianGridXY(const BitFieldCoder* decode) :
 	registerParameter("grid_size_y", "Cell size in Y", _gridSizeY, 1., SegmentationParameter::LengthUnit);
 	registerParameter("offset_x", "Cell offset in X", _offsetX, 0., SegmentationParameter::LengthUnit, true);
 	registerParameter("offset_y", "Cell offset in Y", _offsetY, 0., SegmentationParameter::LengthUnit, true);
-	registerParameter("stagger_x", "Option to stagger the layers in x (ie, add grid_size_x/2 to offset_x for odd layers)", _staggerX, 0);
-	registerParameter("stagger_y", "Option to stagger the layers in y (ie, add grid_size_y/2 to offset_y for odd layers)", _staggerY, 0);
+	registerParameter("stagger_x", "Option to stagger the layers in x (ie, add grid_size_x/2 to offset_x for odd layers)", _staggerX, 0,
+		SegmentationParameter::NoUnit, false);
+	registerParameter("stagger_y", "Option to stagger the layers in y (ie, add grid_size_y/2 to offset_y for odd layers)", _staggerY, 0,
+		SegmentationParameter::NoUnit, false);
 	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
 	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
-	registerIdentifier("stagger_keyword", "Volume ID identifier used for determining which volumes to stagger", _staggerKeyword, "layer");
+	registerIdentifier("stagger_keyword", "Volume ID identifier used for determining which volumes to stagger", _staggerKeyword, "layer",
+		SegmentationParameter::NoUnit, false);
 }
 
 /// destructor
