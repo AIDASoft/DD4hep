@@ -73,7 +73,7 @@ namespace dd4hep {
       int staggerY() const {
         return _staggerY;
       }
-      /// access the keyword for staggering
+      /// access the keyword used to determine which volumes to stagger
       const std::string& staggerKeyword() const {
         return _staggerKeyword;
       }
@@ -109,7 +109,7 @@ namespace dd4hep {
       void setStaggerY(int staggerY) {
         _staggerY = staggerY;
       }
-      /// set the staggering option in Y
+      /// set the keyword used to determine which volumes to stagger
       void setStaggerKeyword(const std::string& staggerKeyword) {
         _staggerKeyword = staggerKeyword;
       }
@@ -141,7 +141,7 @@ namespace dd4hep {
       std::string _xId;
       /// the field name used for Y
       std::string _yId;
-      /// the keyword used for staggering
+      /// the keyword used to determine which volumes to stagger
       std::string _staggerKeyword;
     };
 
