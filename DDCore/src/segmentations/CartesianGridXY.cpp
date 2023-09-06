@@ -28,7 +28,7 @@ CartesianGridXY::CartesianGridXY(const std::string& cellEncoding) :
 		SegmentationParameter::NoUnit, true);
 	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
 	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
-	registerIdentifier("stagger_keyword", "Volume ID identifier used for determining which volumes to stagger", _staggerKeyword, "layer", 
+	registerParameter("stagger_keyword", "Volume ID identifier used for determining which volumes to stagger", _staggerKeyword, (std::string)"layer", 
 		SegmentationParameter::NoUnit, true);
 }
 
@@ -51,7 +51,7 @@ CartesianGridXY::CartesianGridXY(const BitFieldCoder* decode) :
 		SegmentationParameter::NoUnit, true);
 	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
 	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
-	registerIdentifier("stagger_keyword", "Volume ID identifier used for determining which volumes to stagger", _staggerKeyword, "layer",
+	registerParameter("stagger_keyword", "Volume ID identifier used for determining which volumes to stagger", _staggerKeyword, (std::string)"layer",
 		SegmentationParameter::NoUnit, true);
 }
 
