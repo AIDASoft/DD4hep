@@ -82,8 +82,8 @@ Vector3D CartesianGridXY::position(const CellID& cID) const {
 		_decoder->set( cID,_xId, positionToBin(localPosition.X, _gridSizeX, _offsetX+_staggerX*_gridSizeX*(layer%2)/2) );
 		_decoder->set( cID,_yId, positionToBin(localPosition.Y, _gridSizeY, _offsetY+_staggerY*_gridSizeY*(layer%2)/2) );
 	} else {
-		_decoder->set( cID,_xId, positionToBin(localPosition.X, _gridSizeX, _offsetX);
-		_decoder->set( cID,_yId, positionToBin(localPosition.Y, _gridSizeY, _offsetY);
+		_decoder->set( cID,_xId, positionToBin(localPosition.X, _gridSizeX, _offsetX));
+		_decoder->set( cID,_yId, positionToBin(localPosition.Y, _gridSizeY, _offsetY));
 	}
 	return cID ;
 }
