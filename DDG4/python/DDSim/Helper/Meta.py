@@ -100,6 +100,9 @@ class Meta(ConfigHelper):
 
     # add User
     import getpass
-    runHeader["User"] = getpass.getuser()
+    try:
+        runHeader["User"] = getpass.getuser()
+    except KeyError:
+        runHeader["User"] = str(os.getuid())
 
     return runHeader
