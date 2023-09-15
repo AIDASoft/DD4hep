@@ -65,18 +65,6 @@ namespace dd4hep {
       const std::string& fieldNameY() const {
         return _yId;
       }
-      /// access the staggering option in X
-      int staggerX() const {
-        return _staggerX;
-      }
-      /// access the staggering option in Y
-      int staggerY() const {
-        return _staggerY;
-      }
-      /// access the keyword used to determine which volumes to stagger
-      const std::string& staggerKeyword() const {
-        return _staggerKeyword;
-      }
       /// set the grid size in X
       void setGridSizeX(double cellSize) {
         _gridSizeX = cellSize;
@@ -101,18 +89,6 @@ namespace dd4hep {
       void setFieldNameY(const std::string& fieldName) {
         _yId = fieldName;
       }
-      /// set the staggering option in X
-      void setStaggerX(int staggerX) {
-        _staggerX = staggerX;
-      }
-      /// set the staggering option in Y
-      void setStaggerY(int staggerY) {
-        _staggerY = staggerY;
-      }
-      /// set the keyword used to determine which volumes to stagger
-      void setStaggerKeyword(const std::string& staggerKeyword) {
-        _staggerKeyword = staggerKeyword;
-      }
       /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
           in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
 
@@ -129,20 +105,14 @@ namespace dd4hep {
       double _gridSizeX;
       /// the coordinate offset in X
       double _offsetX;
-      /// staggering option in X.  0 = no staggering.  1 = stagger by _gridSizeX/2.0 in odd layers
-      int _staggerX;
       /// the grid size in Y
       double _gridSizeY;
       /// the coordinate offset in Y
       double _offsetY;
-      /// staggering option in Y.  0 = no staggering.  1 = stagger by _gridSizeY/2.0 in odd layers
-      int _staggerY;
       /// the field name used for X
       std::string _xId;
       /// the field name used for Y
       std::string _yId;
-      /// the keyword used to determine which volumes to stagger
-      std::string _staggerKeyword;
     };
 
   } /* namespace DDSegmentation */
