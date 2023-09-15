@@ -57,7 +57,9 @@ namespace dd4hep {
 
     /// determine the position based on the cell ID
     Vector3D HexGrid::position(const CellID& cID) const {
-        int layer= _decoder->get(cID,_staggerKeyword);
+        int layer=0;
+	if (_stagger) layer= _decoder->get(cID,_staggerKeyword);
+		
 	Vector3D cellPosition;
 	cellPosition.X = _decoder->get(cID,_xId )*1.5*_sideLength+_offsetX+_sideLength/2.;
 	cellPosition.Y = _decoder->get(cID,_yId )*std::sqrt(3)/2.*_sideLength+ _offsetY+_sideLength*std::sqrt(3)/2.;
@@ -92,7 +94,8 @@ namespace dd4hep {
     /// determine the cell ID based on the position
     CellID HexGrid::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
         CellID cID = vID ;
-	int layer= _decoder->get(cID,_staggerKeyword);
+	int layer=0;
+	if (_stagger) layer= _decoder->get(cID,_staggerKeyword);
 
 	double x=localPosition.X-_offsetX;
 	double y=localPosition.Y-_offsetY;
