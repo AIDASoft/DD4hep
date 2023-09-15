@@ -1,7 +1,7 @@
 /*
  * CartesianGridXYStaggered.cpp
  *
- *  Created on: September 15, 2023
+ *  Created on: Sept 15, 2023
  *      Author: Sebouh J. Paul, UCR
  */
 
@@ -63,22 +63,32 @@ CartesianGridXYStaggered::~CartesianGridXYStaggered() {
 /// determine the position based on the cell ID
 Vector3D CartesianGridXYStaggered::position(const CellID& cID) const {
 	Vector3D cellPosition;
-	int layer= _decoder->get(cID,_staggerKeyword);
-	cellPosition.X = binToPosition( _decoder->get(cID,_xId ), _gridSizeX, _offsetX+_staggerX*_gridSizeX*(layer%2)/2.);
-	cellPosition.Y = binToPosition( _decoder->get(cID,_yId ), _gridSizeY, _offsetY+_staggerY*_gridSizeY*(layer%2)/2.);
+	if (_staggerX || _staggerY){
+		int layer= _decoder->get(cID,_staggerKeyword);
+		cellPosition.X = binToPosition( _decoder->get(cID,_xId ), _gridSizeX, _offsetX+_staggerX*_gridSizeX*(layer%2)/2.);
+		cellPosition.Y = binToPosition( _decoder->get(cID,_yId ), _gridSizeY, _offsetY+_staggerY*_gridSizeY*(layer%2)/2.);
+	} else {
+		cellPosition.X = binToPosition( _decoder->get(cID,_xId ), _gridSizeX, _offsetX);
+		cellPosition.Y = binToPosition( _decoder->get(cID,_yId ), _gridSizeY, _offsetY);
+	}
 	return cellPosition;
 }
 
 /// determine the cell ID based on the position
   CellID CartesianGridXYStaggered::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
         CellID cID = vID ;
-	int layer= _decoder->get(cID,_staggerKeyword);
-	_decoder->set( cID,_xId, positionToBin(localPosition.X, _gridSizeX, _offsetX+_staggerX*_gridSizeX*(layer%2)/2) );
-	_decoder->set( cID,_yId, positionToBin(localPosition.Y, _gridSizeY, _offsetY+_staggerY*_gridSizeY*(layer%2)/2) );
+	if (_staggerX || _staggerY){
+		int layer= _decoder->get(cID,_staggerKeyword);
+		_decoder->set( cID,_xId, positionToBin(localPosition.X, _gridSizeX, _offsetX+_staggerX*_gridSizeX*(layer%2)/2) );
+		_decoder->set( cID,_yId, positionToBin(localPosition.Y, _gridSizeY, _offsetY+_staggerY*_gridSizeY*(layer%2)/2) );
+	} else {
+		_decoder->set( cID,_xId, positionToBin(localPosition.X, _gridSizeX, _offsetX));
+		_decoder->set( cID,_yId, positionToBin(localPosition.Y, _gridSizeY, _offsetY));
+	}
 	return cID ;
 }
 
-std::vector<double> CartesianGridXYStaggered::cellDimensions(const CellID&) const {
+
 #if __cplusplus >= 201103L
   return {_gridSizeX, _gridSizeY};
 #else
