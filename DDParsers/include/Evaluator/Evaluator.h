@@ -57,7 +57,7 @@ namespace dd4hep  {
         WARNING_EXISTING_FUNCTION,  /**< Redefinition of existing function */
         WARNING_BLANK_STRING,       /**< Empty input string */
         ERROR_NOT_A_NAME,           /**< Not allowed sysmbol in the name of variable or function */
-        ERROR_SYNTAX_ERROR,         /**< Systax error */
+        ERROR_SYNTAX_ERROR,         /**< Syntax error */
         ERROR_UNPAIRED_PARENTHESIS, /**< Unpaired parenthesis */
         ERROR_UNEXPECTED_SYMBOL,    /**< Unexpected sysbol */
         ERROR_UNKNOWN_VARIABLE,     /**< Non-existing variable */
