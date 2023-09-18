@@ -50,17 +50,27 @@ static int invoke_dump_B_field(int argc, char** argv ){
   size_t colon_posY = RangeY.find(':');
   size_t colon_posZ = RangeZ.find(':');
 
+  float minX=0, maxX=0, minY=0, maxY=0, minZ=0, maxZ=0;
+
   if( colon_posX == std::string::npos || colon_posY == std::string::npos || colon_posZ == std::string::npos ) {
-    std::cout << " usage: dumpBfield compact.xml xmin:xmax ymin:ymax zmin:zmax dx dy dz [in cm]" << std::endl;
-    exit(1);
+    // symmetric intervals
+    std::cout << "Intervals not specified as xmin:xmax ymin:ymax zmin:zmax" << std::endl
+              << "  setting xmin = -xmax, ymin = -ymax, zmin = -zmax " << std::endl;
+    maxX = std::stof( RangeX );
+    maxY = std::stof( RangeY );
+    maxZ = std::stof( RangeZ );
+    minX = -maxX;
+    minY = -maxY;
+    minZ = -maxZ;
   }
-  
-  float minX = std::stof( RangeX.substr(0, colon_posX) );
-  float maxX = std::stof( RangeX.substr(colon_posX+1) );
-  float minY = std::stof( RangeY.substr(0, colon_posY) );
-  float maxY = std::stof( RangeY.substr(colon_posY+1) );
-  float minZ = std::stof( RangeZ.substr(0, colon_posZ) );
-  float maxZ = std::stof( RangeZ.substr(colon_posZ+1) );
+  else { // asymmetric intervals
+    minX = std::stof( RangeX.substr(0, colon_posX) );
+    maxX = std::stof( RangeX.substr(colon_posX+1) );
+    minY = std::stof( RangeY.substr(0, colon_posY) );
+    maxY = std::stof( RangeY.substr(colon_posY+1) );
+    minZ = std::stof( RangeZ.substr(0, colon_posZ) );
+    maxZ = std::stof( RangeZ.substr(colon_posZ+1) );
+  }
 
   minX *= dd4hep::cm;
   maxX *= dd4hep::cm;
