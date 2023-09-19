@@ -89,7 +89,7 @@ Vector3D CartesianGridXYStaggered::position(const CellID& cID) const {
 }
 
 
-std::vector<double> cellDimensions(const CellID& cellID) const {
+std::vector<double> CartesianGridXYStaggered::cellDimensions(const CellID& cellID) const {
   return {_gridSizeX, _gridSizeY};
 }
 
