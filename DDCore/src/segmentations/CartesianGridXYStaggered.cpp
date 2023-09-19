@@ -89,14 +89,8 @@ Vector3D CartesianGridXYStaggered::position(const CellID& cID) const {
 }
 
 
-#if __cplusplus >= 201103L
+std::vector<double> cellDimensions(const CellID& cellID) const {
   return {_gridSizeX, _gridSizeY};
-#else
-  std::vector<double> cellDims(2,0.0);
-  cellDims[0] = _gridSizeX;
-  cellDims[1] = _gridSizeY;
-  return cellDims;
-#endif
 }
 
 
