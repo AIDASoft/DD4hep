@@ -29,8 +29,10 @@ using namespace dd4hep::detail;
 static int invoke_dump_B_field(int argc, char** argv ){
   
   if( argc != 8 ) {
-    std::cout << " usage: dumpBfield compact.xml xmin:xmax ymin:ymax zmin:zmax dx dy dz [in cm]" << std::endl 
-	      << "    will dump the B-field in volume [xmin:xmax, ymin:ymax, zmin:zmax] with steps [dx,dy,dz] "
+    std::cout << " usage: dumpBfield compact.xml xmin[:xmax] ymin[:ymax] zmin[:zmax] dx dy dz [in cm]" << std::endl 
+	      << "    will dump the B-field in volume (xmin:xmax, ymin:ymax, zmin:zmax) with steps (dx,dy,dz). All values are in cm."
+     	      << "    If a single value is given for a range, symmetric boundaries are used"
+
 	      << std::endl ;
     
     exit(1) ;
