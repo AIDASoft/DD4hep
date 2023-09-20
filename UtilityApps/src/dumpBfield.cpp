@@ -29,8 +29,9 @@ using namespace dd4hep::detail;
 static int invoke_dump_B_field(int argc, char** argv ){
   
   if( argc != 8 ) {
-    std::cout << " usage: dumpBfield compact.xml x y z dx dy dz [in cm]" << std::endl 
-	      << "    will dump the B-field in volume [-x:x,-y:y,-z,z] with steps [dx,dy,dz] "
+    std::cout << " usage: dumpBfield compact.xml xmin[:xmax] ymin[:ymax] zmin[:zmax] dx dy dz [in cm]" << std::endl 
+	      << "    will dump the B-field in volume (xmin:xmax, ymin:ymax, zmin:zmax) with steps (dx,dy,dz). All values are in cm."
+     	      << "    If a single value is given for a range, symmetric boundaries are used"
 	      << std::endl ;
     
     exit(1) ;
@@ -41,12 +42,56 @@ static int invoke_dump_B_field(int argc, char** argv ){
   std::stringstream sstr ;
   sstr << argv[2] << " " << argv[3] << " " << argv[4] << " " << argv[5] << " " << argv[6] << " " << argv[7] ;
   
-  float xRange , yRange , zRange , dx , dy, dz ;
-  sstr >> xRange >> yRange >> zRange >> dx >> dy >> dz;
+  std::string RangeX , RangeY , RangeZ;
+  float dx , dy, dz ;
 
-  xRange *= dd4hep::cm;
-  yRange *= dd4hep::cm;
-  zRange *= dd4hep::cm;
+  sstr >> RangeX >> RangeY >> RangeZ >> dx >> dy >> dz;
+
+  size_t colon_posX = RangeX.find(':');
+  size_t colon_posY = RangeY.find(':');
+  size_t colon_posZ = RangeZ.find(':');
+
+  float minX=0, maxX=0, minY=0, maxY=0, minZ=0, maxZ=0;
+
+  if( colon_posX == std::string::npos ) {
+    std::cout << "X Interval not specified as xmin:xmax" << std::endl
+      << "  setting xmin = -xmax " << std::endl;
+    maxX = std::stof( RangeX );
+    minX = -maxX;
+  }
+  else {
+    minX = std::stof( RangeX.substr(0, colon_posX) );
+    maxX = std::stof( RangeX.substr(colon_posX+1) );
+  }
+  
+  if( colon_posY == std::string::npos ) {
+    std::cout << "Y Interval not specified as ymin:ymax" << std::endl
+      << "  setting ymin = -ymax " << std::endl;
+    maxY = std::stof( RangeY );
+    minY = -maxY;
+  }
+  else {
+    minY = std::stof( RangeY.substr(0, colon_posY) );
+    maxY = std::stof( RangeY.substr(colon_posY+1) );
+  }
+
+if( colon_posZ == std::string::npos ) {
+    std::cout << "Z Interval not specified as zmin:zmax" << std::endl
+      << "  setting zmin = -zmax " << std::endl;
+    maxZ = std::stof( RangeZ );
+    minZ = -maxZ;
+  }
+  else {
+    minZ = std::stof( RangeZ.substr(0, colon_posZ) );
+    maxZ = std::stof( RangeZ.substr(colon_posZ+1) );
+  }
+
+  minX *= dd4hep::cm;
+  maxX *= dd4hep::cm;
+  minY *= dd4hep::cm;
+  maxY *= dd4hep::cm;
+  minZ *= dd4hep::cm;
+  maxZ *= dd4hep::cm;
   dx *= dd4hep::cm;
   dy *= dd4hep::cm;
   dz *= dd4hep::cm;
@@ -57,9 +102,9 @@ static int invoke_dump_B_field(int argc, char** argv ){
   printf("#######################################################################################################\n");
   printf("      x[cm]            y[cm]            z[cm]          Bx[Tesla]        By[Tesla]        Bz[Tesla]     \n");
 
-  for( float x = -xRange ; x <=xRange ; x += dx ){
-    for( float y = -yRange ; y <=yRange ; y += dy ){
-      for( float z = -zRange ; z <=zRange ; z += dz ){
+  for( float x = minX ; x <= maxX ; x += dx ){
+    for( float y = minY ; y <= maxY ; y += dy ){
+      for( float z = minZ ; z <= maxZ ; z += dz ){
 
 	double posV[3] = { x, y, z }  ;
 	double bfieldV[3] ;
