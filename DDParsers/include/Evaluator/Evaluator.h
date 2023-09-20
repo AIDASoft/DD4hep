@@ -56,10 +56,10 @@ namespace dd4hep  {
         WARNING_EXISTING_VARIABLE,  /**< Redefinition of existing variable */
         WARNING_EXISTING_FUNCTION,  /**< Redefinition of existing function */
         WARNING_BLANK_STRING,       /**< Empty input string */
-        ERROR_NOT_A_NAME,           /**< Not allowed sysmbol in the name of variable or function */
-        ERROR_SYNTAX_ERROR,         /**< Systax error */
+        ERROR_NOT_A_NAME,           /**< Not allowed symbol in the name of variable or function */
+        ERROR_SYNTAX_ERROR,         /**< Syntax error */
         ERROR_UNPAIRED_PARENTHESIS, /**< Unpaired parenthesis */
-        ERROR_UNEXPECTED_SYMBOL,    /**< Unexpected sysbol */
+        ERROR_UNEXPECTED_SYMBOL,    /**< Unexpected symbol */
         ERROR_UNKNOWN_VARIABLE,     /**< Non-existing variable */
         ERROR_UNKNOWN_FUNCTION,     /**< Non-existing function */
         ERROR_EMPTY_PARAMETER,      /**< Function call has empty parameter */
