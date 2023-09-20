@@ -909,7 +909,7 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSegmentation(Segmentati
         log << "/>" << newline;
       }
       log << " </parameters>" << newline;
-      log << "</segmentatoin>";
+      log << "</segmentation>";
       ise = geo.emplace(seg, make_entry(log)).first;
     }
     return ise->second;
