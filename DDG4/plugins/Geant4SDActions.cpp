@@ -163,7 +163,7 @@ namespace dd4hep {
       double    hit_deposit  = contrib.deposit;
       Hit* hit = new Hit(contrib, hit_momentum, hit_deposit);
 
-      if (h.trackDef() != G4OpticalPhoton::OpticalPhotonDefinition()) {
+      if (h.trackDef() == G4OpticalPhoton::OpticalPhotonDefinition()) {
         step->GetTrack()->SetTrackStatus(fStopAndKill);
       }
       hit->cellID = cellID(step);
