@@ -72,7 +72,7 @@ endforeach()
 #
 # Multi-shape tests
 # Not working: OBJ_spider
-list(APPEND DDCAD_Tests_MV COB_dwarf MS3D_jeep)
+list(APPEND DDCAD_Tests_MV COB_dwarf MS3D_jeep RelativePath)
 foreach (test ${DDCAD_Tests_MV})
   dd4hep_add_test_reg( DDCAD_Check_Shape_${test}
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
