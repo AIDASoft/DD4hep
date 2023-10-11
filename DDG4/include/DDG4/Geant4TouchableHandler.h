@@ -13,13 +13,14 @@
 #ifndef DDG4_GEANT4TOUCHABLEHANDLER_H
 #define DDG4_GEANT4TOUCHABLEHANDLER_H
 
+#include <G4VTouchable.hh>
+
 // C/C++ include files
 #include <vector>
 #include <string>
 
 // Forward declarations
 class G4VPhysicalVolume;
-class G4VTouchable;
 class G4Step;
 
 /// Namespace for the AIDA detector description toolkit

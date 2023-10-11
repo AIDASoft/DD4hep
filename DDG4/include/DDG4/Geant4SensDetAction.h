@@ -20,6 +20,7 @@
 
 // Geant4 include files
 #include <G4ThreeVector.hh>
+#include <G4VTouchable.hh>
 
 // C/C++ include files
 #include <vector>
@@ -28,7 +29,6 @@
 class G4HCofThisEvent;
 class G4Step;
 class G4Event;
-class G4VTouchable;
 class G4TouchableHistory;
 class G4VHitsCollection;
 class G4VReadOutGeometry;
