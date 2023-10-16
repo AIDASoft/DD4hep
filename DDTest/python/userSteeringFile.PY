@@ -211,7 +211,7 @@ SIM.gun.direction = (0, 0, 1)
 ##     
 SIM.gun.distribution = None
 
-## The kinetic energy for the particle gun.
+## Total energy (including mass) for the particle gun.
 ## 
 ## If not None, it will overwrite the setting of momentumMin and momentumMax
 SIM.gun.energy = None
