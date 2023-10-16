@@ -35,7 +35,7 @@ class Gun(ConfigHelper):
     self.momentumMin = 0 * GeV
     self._momentumMax_EXTRA = {'help': "Maximal momentum when using distribution (default = 0.0)"}
     self.momentumMax = 10 * GeV
-    self._energy_EXTRA = {'help': "The kinetic energy for the particle gun.\n\n"
+    self._energy_EXTRA = {'help': "Total energy (including mass) for the particle gun.\n\n"
                           "If not None, it will overwrite the setting of momentumMin and momentumMax"}
     self.energy = None
 
