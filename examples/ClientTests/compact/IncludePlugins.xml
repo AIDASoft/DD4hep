@@ -42,6 +42,10 @@
   <plugins>
      <include ref="${DD4hepExamplesINSTALL}/examples/ClientTests/compact/ExamplePlugins.xml"/>
   </plugins>
+  <!-- This here is parsed at the very end    -->
+  <plugins>
+     <include ref="ExamplePlugins.xml"/>
+  </plugins>
 
 
 </lccdd>
