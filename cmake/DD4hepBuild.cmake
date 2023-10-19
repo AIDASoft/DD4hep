@@ -826,7 +826,11 @@ MACRO(DD4HEP_SETUP_GEANT4_TARGETS)
 
     if(Geant4_builtin_clhep_FOUND)
       dd4hep_debug("Using Geant4 internal CLHEP")
-      ADD_LIBRARY(CLHEP::CLHEP INTERFACE IMPORTED GLOBAL)
+      if(TARGET CLHEP::CLHEP)
+        message(WARNING "CLHEP::CLHEP already exists, this may cause problems if there are two different installations of CLHEP, one from Geant4 and one external")
+      else()
+        ADD_LIBRARY(CLHEP::CLHEP INTERFACE IMPORTED GLOBAL)
+      endif()
       SET_TARGET_PROPERTIES(CLHEP::CLHEP
         PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${Geant4_INCLUDE_DIRS}"

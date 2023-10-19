@@ -1,0 +1,30 @@
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+
+     Test to verify functionality of loading CAD files with pathes relative 
+     to the declaring xml file. [See Issue 1166: Allow to give CAD files with 
+     relative paths similar to importing xml files (DDCAD) ]
+
+-->
+
+  <includes>
+    <gdmlFile ref="../../ClientTests/compact/CheckShape.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1" name="Shape_MS3D" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="CAD_MultiVolume" ref="../models/MS3D/jeep1.ms3d" unit="cm"/>
+      </check>
+    </detector>
+  </detectors>
+</lccdd>

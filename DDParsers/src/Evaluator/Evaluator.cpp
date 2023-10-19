@@ -545,7 +545,7 @@ static int engine(char const* begin, char const* end, double & result,
     iWhat = SyntaxTable[iPrev][iCur];
     iPrev = iCur;
     switch (iWhat) {
-    case 0:                             // systax error
+    case 0:                             // syntax error
       EVAL_EXIT( EVAL::ERROR_SYNTAX_ERROR, pointer );
     case 1:                             // operand: number, variable, function
       EVAL_STATUS = operand(pointer, end, value, pointer, dictionary);

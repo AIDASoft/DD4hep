@@ -1,0 +1,51 @@
+<lccdd>
+  <!-- Verify transparency handling of ROOT:
+
+       For details see: examples/ClientTests/compact/visTestEx.xml
+       Also see compact/visTestEx.xml for more explanations
+
+  -->
+  <define>
+    <constant name="world_x" value="1*m"/>
+    <constant name="world_y" value="1*m"/>
+    <constant name="world_z" value="1*m"/>
+    <constant name="tracker_region_rmax" value="1*m"/>
+    <constant name="tracker_region_zmax" value="1*m"/>
+    <constant name="tracker_region_zmin" value="-1*m"/>
+  </define>
+
+  <includes>
+    <gdmlFile ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+  
+  <display>
+    <vis name="green" alpha="0.2" r= "0.0" g="1.0" b="0.0" />
+    <vis name="blue"  alpha="0.6" r= "0.0" g="0.0" b="1.0" />
+    <vis name="red"   alpha="1.0" r= "1.0" g="0.0" b="0.0" />
+  </display>
+
+  <detectors>
+    <detector name="Tube1" type="DD4hep_TubeSegment" vis="green">
+      <material name="Air"/>
+      <tubs rmin="0" rmax="1*cm" zhalf="2*cm"/>
+      <position x="0*cm" y="-4*cm" z="0"/>
+      <rotation x="0" y="0" z="0"/>
+    </detector>
+
+    <detector name="Tube2" type="DD4hep_TubeSegment" vis="blue">
+      <material name="Iron"/>
+      <tubs rmin="0" rmax="1*cm" zhalf="2*cm"/>
+      <position x="0*cm" y="0*cm" z="0"/>
+      <rotation x="0" y="0" z="0"/>
+    </detector>
+
+    <detector name="Tube3" type="DD4hep_TubeSegment" vis="red">
+      <material name="Iron"/>
+      <tubs rmin="0" rmax="1*cm" zhalf="2*cm"/>
+      <position x="0*cm" y="4*cm" z="0"/>
+      <rotation x="0" y="0" z="0"/>
+    </detector>
+  </detectors>
+
+</lccdd>

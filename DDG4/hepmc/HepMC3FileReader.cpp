@@ -130,11 +130,12 @@ HEPMC3FileReader::HEPMC3FileReader(const std::string& nam)
   m_reader = HepMC3::deduce_reader(nam);
 #if HEPMC3_VERSION_CODE >= 3002006
   // to get the runInfo in the Ascii reader we have to force HepMC to read the first event
-  m_reader->skip(1);
+  HepMC3::GenEvent dummy;
+  m_reader->read_event(dummy);
   // then we get the run info (shared pointer)
   auto runInfo = m_reader->run_info();
-  // and close the reader
-  m_reader->close();
+  // and deallocate the reader
+  m_reader.reset();
   // so we can open the file again from the start
   m_reader = HepMC3::deduce_reader(nam);
   // and set the run info object now
