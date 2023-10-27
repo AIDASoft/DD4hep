@@ -40,6 +40,9 @@ DECLARE_SEGMENTATION(CartesianGridYZ,create_segmentation<dd4hep::DDSegmentation:
 #include "DDSegmentation/CartesianGridXYZ.h"
 DECLARE_SEGMENTATION(CartesianGridXYZ,create_segmentation<dd4hep::DDSegmentation::CartesianGridXYZ>)
 
+#include "DDSegmentation/CartesianGridXYStaggered.h"
+DECLARE_SEGMENTATION(CartesianGridXYStaggered,dd4hep::create_segmentation<dd4hep::DDSegmentation::CartesianGridXYStaggered>)
+
 #include "DDSegmentation/CartesianStripX.h"
 DECLARE_SEGMENTATION(CartesianStripX,create_segmentation<dd4hep::DDSegmentation::CartesianStripX>)
 
@@ -75,3 +78,6 @@ DECLARE_SEGMENTATION(ProjectiveCylinder,create_segmentation<dd4hep::DDSegmentati
 
 #include "DDSegmentation/MultiSegmentation.h"
 DECLARE_SEGMENTATION(MultiSegmentation,create_segmentation<dd4hep::DDSegmentation::MultiSegmentation>)
+
+#include "DDSegmentation/HexGrid.h"
+DECLARE_SEGMENTATION(HexGrid,create_segmentation<dd4hep::DDSegmentation::HexGrid>)
