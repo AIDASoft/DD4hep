@@ -65,21 +65,32 @@ TEveStraightLineSet* getSurfaceVectors(bool addO=true, bool addU= true, bool add
 
 //=====================================================================================
 
-static long teve_display(Detector& description, int /* argc */, char** /* argv */) {
+static long teve_display(Detector& description, int argc, char** argv)  {
+  int level = 4, visopt = 0, help = 0;
 
+  for( int i=0; i<argc; ++i )  {
+    if ( strncmp(argv[i],"-visopt",4)    == 0 ) visopt = ::atol(argv[++i]);
+    else if ( strncmp(argv[i],"-level", 4)    == 0 ) level  = ::atol(argv[++i]);
+    else help = 1;
+  }
+  if ( help )   {
+    std::cout <<
+      "Usage: teveDisplay -arg [-arg]                                                    \n\n"
+      "     Invoke TEve display using the factory mechanism.                             \n\n"
+      "     -level    <number> Visualization level  [TGeoManager::SetVisLevel]  Default: 4 \n"
+      "     -visopt   <number> Visualization option [TGeoManager::SetVisOption] Default: 0 \n"
+      "     -help              Print this help output" << std::endl << std::flush;
+    ::exit(EINVAL);
+  }
+  
   TGeoManager* mgr = &description.manager();
   mgr->SetNsegments(100); // Increase the visualization resolution.
   TEveManager::Create();
 
-  // mgr->SetVisOption(1) ;
-  // mgr->SetVisLevel(4) ;
-  
-  //  gEve->fGeometries->Add(new TObjString("DefaultGeometry"),mgr);
-
   TEveGeoTopNode* tn = new TEveGeoTopNode(mgr, mgr->GetTopNode());
   // option 0 in TEve seems to correspond to option 1 in TGeo ( used in geoDisplay ...)
-  tn->SetVisOption(0) ;
-  tn->SetVisLevel(4);
+  tn->SetVisOption(visopt) ;
+  tn->SetVisLevel(level);
 
   // // ---- try to set transparency - does not seem to work ...
   // TGeoNode* node1 = gGeoManager->GetTopNode();
@@ -130,13 +141,9 @@ static long teve_display(Detector& description, int /* argc */, char** /* argv *
   MultiView::instance()->ImportGeomRPhi( helperSurfaces );
   MultiView::instance()->ImportGeomRhoZ( helperSurfaces ) ;
 
-
   make_gui();
-
   next_event();
-
   gEve->FullRedraw3D(kTRUE);
-
   return 1;
 }
 DECLARE_APPLY(DD4hepTEveDisplay,teve_display)
@@ -145,18 +152,31 @@ DECLARE_APPLY(DD4hepTEveDisplay,teve_display)
 //=====================================================================================================================
 
 int main(int argc,char** argv)  {
-  return dd4hep::execute::main_default("DD4hepTEveDisplay",argc,argv);
+  std::vector<const char*> av;
+  std::string level, visopt, opt;
+  bool help = false;
+  for( int i=0; i<argc; ++i )   {
+    if ( i==1 && argv[i][0] != '-' ) av.emplace_back("-input");
+    else if ( strncmp(argv[i],"-help",4)      == 0 ) help = true, av.emplace_back(argv[i]);
+    else if ( strncmp(argv[i],"-visopt",4)    == 0 ) visopt   = argv[++i];
+    else if ( strncmp(argv[i],"-level", 4)    == 0 ) level    = argv[++i];
+    else if ( strncmp(argv[i],"-option",4)    == 0 ) opt      = argv[++i];
+    else av.emplace_back(argv[i]);
+  }
+  av.emplace_back("-interactive");
+  av.emplace_back("-plugin");
+  av.emplace_back("DD4hepTEveDisplay");
+  if ( help              ) av.emplace_back("-help");
+  if ( !opt.empty()      ) av.emplace_back("-opt"),      av.emplace_back(opt.c_str());
+  if ( !level.empty()    ) av.emplace_back("-level"),    av.emplace_back(level.c_str());
+  if ( !visopt.empty()   ) av.emplace_back("-visopt"),   av.emplace_back(visopt.c_str());
+  return dd4hep::execute::main_plugins("DD4hepTEveDisplay", av.size(), (char**)&av[0]);
 }
 
 //=====================================================================================================================
-
-
 TEveStraightLineSet* getSurfaceVectors(bool addO, bool addU, bool addV, bool addN, TString name,int color) {
-
   TEveStraightLineSet* ls = new TEveStraightLineSet(name);
-
   Detector& description = Detector::getInstance();
-
   DetElement world = description.world() ;
 
   // create a list of all surfaces in the detector:

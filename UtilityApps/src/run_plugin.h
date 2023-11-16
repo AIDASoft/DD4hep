@@ -220,11 +220,11 @@ namespace {
         std::cout << "]" << std::endl << std::flush;
       }
       if ( name && name[0] )   {
-	result = run_plugin(description, name, a.first, a.second);
-	return result;
+        result = run_plugin(description, name, a.first, a.second);
+        return result;
       }
       std::cout << "WARNING: run_plugin: No plugin name supplied. "
-		<< "Implicitly assuming execution steered by XML." << std::endl;
+                << "Implicitly assuming execution steered by XML." << std::endl;
       return ENOENT;
     }
   };
@@ -279,7 +279,7 @@ namespace dd4hep  {
         }
         else   {
           result = args.run(description, name);
-	}
+        }
         if ( result == EINVAL ) usage_default(name);
       }
       else {
@@ -329,7 +329,7 @@ namespace dd4hep  {
            !arguments.ui      &&
            !arguments.interpreter &&
            arguments.plugins.empty() &&
-	   arguments.geo_files.empty() )
+           arguments.geo_files.empty() )
       {
         usage_plugin_runner();
       }
