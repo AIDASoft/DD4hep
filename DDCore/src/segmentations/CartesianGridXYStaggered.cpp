@@ -96,7 +96,3 @@ std::vector<double> CartesianGridXYStaggered::cellDimensions(const CellID& cellI
 
 } /* namespace DDSegmentation */
 } /* namespace dd4hep */
-
-// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
-// needs also #include "DD4hep/Factories.h"
-// DECLARE_SEGMENTATION(CartesianGridXYStaggered,dd4hep::create_segmentation<dd4hep::DDSegmentation::CartesianGridXYStaggered>)

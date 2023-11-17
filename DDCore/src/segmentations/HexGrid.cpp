@@ -145,5 +145,3 @@ namespace dd4hep {
 
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
-
-DECLARE_SEGMENTATION(HexGrid, create_segmentation<dd4hep::DDSegmentation::HexGrid>)
