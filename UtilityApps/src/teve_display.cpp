@@ -22,6 +22,7 @@
 #include "run_plugin.h"
 #include "TRint.h"
 
+#include "TROOT.h"
 #include "TEveGeoNode.h"
 #include "TEveBrowser.h"
 #include "TGNumberEntry.h"
@@ -282,7 +283,11 @@ void make_gui() {
   TGHorizontalFrame* hf = new TGHorizontalFrame(frmMain);
   {
       
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,9,2)
+    TString icondir( Form("%s/", TROOT::GetIconPath().Data()) );
+#else
     TString icondir( Form("%s/icons/", gSystem->Getenv("ROOTSYS")) );
+#endif
     TGPictureButton* b = 0;
     EvNavHandler    *fh = new EvNavHandler;
 
