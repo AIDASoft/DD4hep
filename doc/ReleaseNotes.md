@@ -1,3 +1,19 @@
+# v01-27-01
+
+* 2023-11-20 jmcarcell ([PR#1191](https://github.com/aidasoft/DD4hep/pull/1191))
+  - CMake: Add a check for the c++ standard that Geant4 was compiled with, and fail if it is
+    different from the one required for DD4hep.
+
+* 2023-11-19 Wouter Deconinck ([PR#1190](https://github.com/aidasoft/DD4hep/pull/1190))
+  - Use TROOT::GetIconPath to find icons in DDEve
+
+* 2023-11-17 Markus Frank ([PR#1187](https://github.com/aidasoft/DD4hep/pull/1187))
+  - Implement startup flags to set the visualization depth in teveDisplay like for geoDisplay.
+    See  Issue: See deeper hierarchy in teveDisplay  https://github.com/AIDASoft/DD4hep/issues/1186 for details.
+
+* 2023-11-17 Dmitry Kalinkin ([PR#1184](https://github.com/aidasoft/DD4hep/pull/1184))
+  - Fixed runtime issues during initialization caused by incorrectly placed `DECLARE_SEGMENTATION` for CartesianGridXYStaggered and HexGrid.
+
 # v01-27
 
 * 2023-10-19 Alvaro Tolosa Delgado ([PR#1174](https://github.com/aidasoft/dd4hep/pull/1174))
