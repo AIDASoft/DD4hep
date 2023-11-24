@@ -43,7 +43,7 @@ namespace {
     return v.data() != 0;
   }
   inline double check_null(double d)   {
-    if ( abs(d) < 1e-12 )
+    if ( fabs(d) < 1e-12 )
       return 0e0;
     else
       return d;
