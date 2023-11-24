@@ -124,6 +124,8 @@ namespace dd4hep {
       int have_hash_strings     { 0 };
       /// Property: debug level
       int debug                 { 4 };
+      int reorder               { 1 };
+      int write_files           { 1 };
 
       GeometryInfo& data() const {
         return *m_dataPtr;
@@ -214,6 +216,10 @@ namespace dd4hep {
       void dump_solids()   const;
       /// Dump volumes used in this apparatus
       void dump_volumes()   const;
+      /// Dump positions used in this apparatus
+      void dump_positions()   const;
+      /// Dump rotations used in this apparatus
+      void dump_rotations()   const;
       /// Dump placements used in this apparatus
       void dump_placements()   const;
       /// Dump detelements used in this apparatus
