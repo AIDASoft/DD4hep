@@ -123,7 +123,7 @@ namespace dd4hep {
 	double a=positive_modulo(y/(std::sqrt(3)*_sideLength),1);
 	double b=positive_modulo(x/(3*_sideLength),1);
 	int ix = std::floor(x/(3*_sideLength/2.))+		
-	  (b<0.5)*(-abs(a-.5)<(b-.5)*3)+(b>0.5)*(abs(a-.5)-.5<(b-1)*3);
+	  (b<0.5)*(-std::abs(a-.5)<(b-.5)*3)+(b>0.5)*(std::abs(a-.5)-.5<(b-1)*3);
 	int iy=std::floor(y/(std::sqrt(3)*_sideLength/2.));
 	iy-=(ix+iy)&1;
 	
