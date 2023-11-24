@@ -1387,13 +1387,16 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
     string name = make_NCName(optSurf->GetName());
     g4 = new G4OpticalSurface(name, model, finish, type, optSurf->GetValue());
     g4->SetSigmaAlpha(optSurf->GetSigmaAlpha());
-    // not implemented: g4->SetPolish(s->GetPolish());
+    g4->SetPolish(optSurf->GetPolish());
+
     printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
-             "++ Created OpticalSurface: %-18s type:%s model:%s finish:%s",
+             "++ Created OpticalSurface: %-18s type:%s model:%s finish:%s SigmaAlphs: %.3e Polish: %.3e",
              optSurf->GetName(),
              TGeoOpticalSurface::TypeToString(optSurf->GetType()),
              TGeoOpticalSurface::ModelToString(optSurf->GetModel()),
-             TGeoOpticalSurface::FinishToString(optSurf->GetFinish()));
+             TGeoOpticalSurface::FinishToString(optSurf->GetFinish()),
+             optSurf->GetSigmaAlpha(), optSurf->GetPolish());
+
     G4MaterialPropertiesTable* tab = nullptr;
     TListIter it(&optSurf->GetProperties());
     for(TObject* obj = it.Next(); obj; obj = it.Next())  {
