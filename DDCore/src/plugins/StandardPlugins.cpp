@@ -124,7 +124,7 @@ static long display(Detector& description, int argc, char** argv) {
   int vislevel = 6, visopt = 1;
   std::string detector = "/world";
   const char* opt = "ogl";
-  for(int i = 0; i < argc && argv[i]; ++i)  {
+  for( int i = 0; i < argc && argv[i]; ++i )  {
     if ( 0 == ::strncmp("-option",argv[i],4) )
       opt = argv[++i];
     else if ( 0 == ::strncmp("-level",argv[i],4) )
