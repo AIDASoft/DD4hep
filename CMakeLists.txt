@@ -8,7 +8,7 @@ SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DD4hep)
 
 SET( DD4hep_VERSION_MAJOR 1 )
 SET( DD4hep_VERSION_MINOR 27 )
-SET( DD4hep_VERSION_PATCH 0 )
+SET( DD4hep_VERSION_PATCH 1 )
 
 #######################
 # Basic project setup #
@@ -137,6 +137,10 @@ if(DD4HEP_USE_GEANT4)
   IF(NOT Geant4_builtin_clhep_FOUND)
     SET(DD4HEP_USE_CLHEP TRUE)
   ENDIF()
+  if(Geant4_CXX_STANDARD MATCHES "[0-9]+" AND Geant4_CXX_STANDARD LESS ${CMAKE_CXX_STANDARD})
+    message(FATAL_ERROR "Geant4 was compiled with C++${Geant4_CXX_STANDARD}, but DD4hep requires C++${CMAKE_CXX_STANDARD}")
+  endif()
+
   DD4HEP_SETUP_GEANT4_TARGETS()
   # Geant4 sets the CLHEP include directory to include_directories, we undo this here
   # we don't do this inside DD4hep_SETUP_GEANT4_TARGETS, because that is also used in
