@@ -36,7 +36,7 @@ namespace   {
 
     constexpr double tol = 1.0e-3;       // Geant4 compatible
     double check = (x.Cross(y)).Dot(z);  // in case of a LEFT-handed orthogonal system this must be -1
-    if (abs(1. + check) > tol) {
+    if (std::abs(1. + check) > tol) {
       except("NestedBoxReflection", "+++ FAILED to construct Rotation is not LEFT-handed!");
     }
     printout(INFO, "NestedBoxReflection", "+++ Constructed LEFT-handed reflection rotation.");
