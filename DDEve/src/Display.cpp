@@ -30,6 +30,7 @@
 #include "DD4hep/Printout.h"
 
 // ROOT include files
+#include "TROOT.h"
 #include "TH2.h"
 #include "TFile.h"
 #include "TSystem.h"
@@ -270,7 +271,11 @@ void Display::UnregisterEvents(View* view)   {
 
 /// Open standard message box
 void Display::MessageBox(PrintLevel level, const string& text, const string& title) const   {
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,9,2)
+  string path = TString::Format("%s/", TROOT::GetIconPath().Data()).Data();
+#else
   string path = TString::Format("%s/icons/", gSystem->Getenv("ROOTSYS")).Data();
+#endif
   const TGPicture* pic = 0;
   if ( level == VERBOSE )
     pic = client().GetPicture((path+"mb_asterisk_s.xpm").c_str());

@@ -1,3 +1,100 @@
+# v01-27-01
+
+* 2023-11-20 jmcarcell ([PR#1191](https://github.com/aidasoft/DD4hep/pull/1191))
+  - CMake: Add a check for the c++ standard that Geant4 was compiled with, and fail if it is
+    different from the one required for DD4hep.
+
+* 2023-11-19 Wouter Deconinck ([PR#1190](https://github.com/aidasoft/DD4hep/pull/1190))
+  - Use TROOT::GetIconPath to find icons in DDEve
+
+* 2023-11-17 Markus Frank ([PR#1187](https://github.com/aidasoft/DD4hep/pull/1187))
+  - Implement startup flags to set the visualization depth in teveDisplay like for geoDisplay.
+    See  Issue: See deeper hierarchy in teveDisplay  https://github.com/AIDASoft/DD4hep/issues/1186 for details.
+
+* 2023-11-17 Dmitry Kalinkin ([PR#1184](https://github.com/aidasoft/DD4hep/pull/1184))
+  - Fixed runtime issues during initialization caused by incorrectly placed `DECLARE_SEGMENTATION` for CartesianGridXYStaggered and HexGrid.
+
+# v01-27
+
+* 2023-10-19 Alvaro Tolosa Delgado ([PR#1174](https://github.com/aidasoft/dd4hep/pull/1174))
+  - Geant4OpticalTracker: Kill optical photons (instead of all other particles) as soon they enter into a Optical Tracker sensitive detector
+
+* 2023-10-19 Wouter Deconinck ([PR#1148](https://github.com/aidasoft/dd4hep/pull/1148))
+  - Allow several DDRec c'tors to work on `const Detector&` instead of `Detector&`
+
+* 2023-10-18 Markus Frank ([PR#1181](https://github.com/aidasoft/dd4hep/pull/1181))
+  Allow for XML processing of files relative to xml tag location:
+  - For some tags the relative placement of include files was not possible.
+    This pull request is supposed to close these missing include features.
+  - See issue https://github.com/AIDASoft/DD4hep/issues/1180 for details)
+  - See the examples ClientTests: minitel_config_plugins_include_command_xml
+    with the compact file ClientTests/compact/IncludePlugins.xml for an example.
+
+* 2023-10-17 Alvaro Tolosa Delgado ([PR#1179](https://github.com/aidasoft/dd4hep/pull/1179))
+  - DDSim: Corrected documentation of `--gun.energy`. This corresponds to the total energy including the mass of the particle
+
+* 2023-10-11 Andre Sailer ([PR#1176](https://github.com/aidasoft/dd4hep/pull/1176))
+  - DDG4: G4VTouchable: for Geant4 11.1.ref09 cannot forward declare the class any more
+
+* 2023-10-11 Markus Frank ([PR#1175](https://github.com/aidasoft/dd4hep/pull/1175))
+  - Handle request from issue 1166: Allow to load CAD files with relative path w/r to declaring xml file 
+  - Add illustrating example: t_DDCAD_Check_Shape_RelativePath
+
+* 2023-09-20 Dhevan Gangadharan ([PR#1170](https://github.com/aidasoft/dd4hep/pull/1170))
+  - Extend usage of dumpBfield to asymmetric X,Y,Z ranges.
+
+* 2023-09-20 Sebouh Paul ([PR#1161](https://github.com/aidasoft/dd4hep/pull/1161))
+  - DDSegmentation: added segmentation HexGrid for hexagonal segmentation
+  - DDSegmentation: added CartesionGridXYStaggered for rectangular segmentation that can be staggered for every other layer
+
+* 2023-09-19 Dmitry Kalinkin ([PR#1171](https://github.com/aidasoft/dd4hep/pull/1171))
+
+
+* 2023-09-15 jmcarcell ([PR#1169](https://github.com/aidasoft/dd4hep/pull/1169))
+  - CMake: DDG4: Check if the CLHEP target exists before creating it in DD4hepBuild.cmake, since if it exists cmake will error.
+
+* 2023-09-15 Wouter Deconinck ([PR#1168](https://github.com/aidasoft/dd4hep/pull/1168))
+  - ddsim: handle run header exception when the user has no username.
+
+* 2023-08-31 Dmitry Kalinkin ([PR#1165](https://github.com/aidasoft/dd4hep/pull/1165))
+  - DDG4: HepMC3Input: Fix loading of run info for RootTree HepMC3 input format
+
+* 2023-08-25 Andre Sailer ([PR#1162](https://github.com/aidasoft/dd4hep/pull/1162))
+  - DDEve Webdisplay: fix issue with ROOT master with RGeomViewer no longer being in the experimental namespace.
+
+* 2023-08-24 Andre Sailer ([PR#1160](https://github.com/aidasoft/dd4hep/pull/1160))
+  - SiliconBlockGFlash: add maximal energy for using parametrisation, for electron and positron, fixes #1153
+
+* 2023-08-24 Markus Frank ([PR#1155](https://github.com/aidasoft/dd4hep/pull/1155))
+  - Implement correct transparency handling of ROOT:
+    The transparency setting was connected to the material of the volume.
+    This led to the same transparency setting for all volumes of the same material.
+    It was not possible to change them at the level of the volume though 
+    the API  suggested so.
+    See: https://github.com/AIDASoft/DD4hep/issues/1117
+    See: https://github.com/root-project/root/pull/13402
+  - Add test examples/ClientTests/compact/visTestEx.xml and visTest.xml.
+    From the inversion of tubes with the same material, for ROOT >= 6.29
+    the correct transparency settings are shown, whereas for ROOT < 6.29
+    the transparency settings are the same for all volumes.
+    Also see scripts/visTest.C
+
+* 2023-08-23 Ben Couturier ([PR#1159](https://github.com/aidasoft/dd4hep/pull/1159))
+  - Improved _getEnviron to deal with the case when multiple variables are to be evaluated in the string
+
+* 2023-08-22 Dmitry Kalinkin ([PR#1158](https://github.com/aidasoft/dd4hep/pull/1158))
+  - DDSim: Fix reading HepMC3 input files via xrootd, fixes #1156
+
+* 2023-08-22 Wouter Deconinck ([PR#1157](https://github.com/aidasoft/dd4hep/pull/1157))
+  - Geant4Output2EDM4hep: allow use of identical collection names across multiple detectors
+
+* 2023-08-04 Andre Sailer ([PR#1152](https://github.com/aidasoft/dd4hep/pull/1152))
+  - CI: use clang16 for header guards check
+
+* 2023-08-04 jmcarcell ([PR#1151](https://github.com/aidasoft/dd4hep/pull/1151))
+  - Limits object: fix string creation of Limit::toString, this will now also print the relevant "particles"
+  - Shapes: remove "move" from return of dimensions()
+
 # v01-26
 
 * 2023-07-24 Andre Sailer ([PR#1147](https://github.com/aidasoft/DD4hep/pull/1147))

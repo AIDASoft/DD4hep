@@ -25,7 +25,7 @@ namespace dd4hep {
   namespace rec {
     
 
-    SurfaceManager::SurfaceManager(Detector& theDetector){
+    SurfaceManager::SurfaceManager(const Detector& theDetector){
 
       // have to make sure the volume manager is populated once in order to have
       // the volumeIDs attached to the DetElements
@@ -52,7 +52,7 @@ namespace dd4hep {
       return 0 ;
     }
 
-    void SurfaceManager::initialize(Detector& description) {
+    void SurfaceManager::initialize(const Detector& description) {
       
       const std::vector<std::string>& types = description.detectorTypes() ;
 

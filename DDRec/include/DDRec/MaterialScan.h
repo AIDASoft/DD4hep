@@ -53,7 +53,7 @@ namespace dd4hep {
     private:
       
       /// Reference to detector setup
-      Detector&                        m_detector;
+      const Detector&                  m_detector;
       /// Material manager
       std::unique_ptr<MaterialManager> m_materialMgr;  //!
       /// Local cache: subdetector placements
@@ -64,7 +64,7 @@ namespace dd4hep {
     public:
 
       /// Standard constructor for the master instance
-      MaterialScan(Detector& description);
+      MaterialScan(const Detector& description);
 
       /// Default destructor
       virtual ~MaterialScan();

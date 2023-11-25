@@ -20,10 +20,35 @@
 #include <DDCAD/ASSIMPWriter.h>
 
 // C/C++ include files
+#include <filesystem>
 
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
+
+/// If the path to the CAD file does not directly exist try to resolve it:
+static string resolve_path(xml_h e, const string& file)   {
+  error_code errc;
+  std::string fname;
+  /// Use the xml utilities in the DocumentHandler to resolve the relative path
+  if ( file.length() > 7 && file.substr(0,7) == "file://" )
+    fname = file.substr(7);
+  else
+    fname = file;
+  if ( !filesystem::exists(fname, errc) )   {
+    string fn = xml::DocumentHandler::system_path(e, fname);
+    if ( fn.length() > 7 && fn.substr(0,7) == "file://" )
+      fn = fn.substr(7);
+    if ( !std::filesystem::exists(fn, errc) )   {
+      auto fp = filesystem::path(xml::DocumentHandler::system_path(e)).parent_path();
+      except("CAD_Shape","+++ CAD file: %s (= %s + %s) is not accessible [%d: %s]",
+             fn.c_str(), fp.c_str(), fname.c_str(),
+             errc.value(), errc.message().c_str());
+    }
+    return fn;
+  }
+  return fname;
+}
 
 static void* read_CAD_Volume(Detector& dsc, int argc, char** argv)   {
   string fname;
@@ -61,7 +86,7 @@ DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_read_CAD_volumes,read_CAD_Volume)
 static Handle<TObject> create_CAD_Shape(Detector& dsc, xml_h e)   {
   xml_elt_t elt(e);
   cad::ASSIMPReader rdr(dsc);
-  string fname = elt.attr<string>(_U(ref));
+  string fname = resolve_path(e, elt.attr<string>(_U(ref)));
   long   flags = elt.hasAttr(_U(flags)) ? elt.attr<long>(_U(flags))  : 0;
   double unit  = elt.hasAttr(_U(unit))  ? elt.attr<double>(_U(unit)) : dd4hep::cm;
 
@@ -97,7 +122,7 @@ DECLARE_XML_SHAPE(CAD_Shape__shape_constructor,create_CAD_Shape)
 
 static Handle<TObject> create_CAD_Assembly(Detector& dsc, xml_h e)   {
   xml_elt_t elt(e);
-  string fname = elt.attr<string>(_U(ref));
+  string fname = resolve_path(e, elt.attr<string>(_U(ref)));
   double unit  = elt.hasAttr(_U(unit)) ? elt.attr<double>(_U(unit)) : dd4hep::cm;
   auto volumes = cad::ASSIMPReader(dsc).readVolumes(fname, unit);
   if ( volumes.empty() )   {
@@ -159,8 +184,8 @@ DECLARE_XML_VOLUME(CAD_Assembly__volume_constructor,create_CAD_Assembly)
  */
 static Handle<TObject> create_CAD_Volume(Detector& dsc, xml_h e)   {
   xml_elt_t elt(e);
-  string fname = elt.attr<string>(_U(ref));
   double unit  = elt.attr<double>(_U(unit));
+  string fname = resolve_path(e, elt.attr<string>(_U(ref)));
   long   flags = elt.hasAttr(_U(flags)) ? elt.attr<long>(_U(flags))  : 0;
   cad::ASSIMPReader rdr(dsc);
 

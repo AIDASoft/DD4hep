@@ -38,7 +38,7 @@ namespace dd4hep {
 
     public:
       /// The constructor
-      SurfaceManager(Detector& theDetector);
+      SurfaceManager(const Detector& theDetector);
 
       /// No default constructor
 #if defined(G__ROOT)
@@ -69,7 +69,7 @@ namespace dd4hep {
 
 
       /// initialize all known surface maps
-      void initialize(Detector& theDetector) ;
+      void initialize(const Detector& theDetector) ;
 
       SurfaceMapsMap _map ;
     };

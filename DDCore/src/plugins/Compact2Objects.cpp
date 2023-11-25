@@ -50,9 +50,10 @@
 #include <TMath.h>
 
 // C/C++ include files
-#include <climits>
+#include <filesystem>
 #include <iostream>
 #include <iomanip>
+#include <climits>
 #include <set>
 
 using namespace std;
@@ -1443,17 +1444,38 @@ template <> void Converter<IncludeFile>::operator()(xml_h element) const   {
 template <> void Converter<JsonFile>::operator()(xml_h element) const {
   string base = xml::DocumentHandler::system_directory(element);
   string file = element.attr<string>(_U(ref));
-  vector<char*>  argv{&file[0],&base[0]};
+  vector<char*>  argv{&file[0], &base[0]};
   description.apply("DD4hep_JsonProcessor",int(argv.size()), &argv[0]);
 }
 
 /// Read alignment entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<XMLFile>::operator()(xml_h element) const {
+  PrintLevel level = s_debug.includes ? ALWAYS : DEBUG;
   string fname = element.attr<string>(_U(ref));
-  if ( s_debug.includes )   {
-    printout(ALWAYS, "Compact","++ Processing xml document %s.", fname.c_str());
+  size_t idx = fname.find("://");
+  std::error_code ec;
+
+  if ( idx == string::npos && filesystem::exists(fname, ec) )  {
+    // Regular file without protocol specification
+    printout(level, "Compact","++ Processing xml document %s.", fname.c_str());
+    this->description.fromXML(fname);
   }
-  this->description.fromXML(fname);
+  else if ( idx == string::npos )  {
+    // File relative to location of xml tag (protocol specification not possible)
+    string location = xml::DocumentHandler::system_path(element, fname);
+    printout(level, "Compact","++ Processing xml document %s.", location.c_str());
+    this->description.fromXML(location);
+  }
+  else if ( idx > 0 )   {
+    // File with protocol specification: must trust the location and the parser capabilities
+    printout(level, "Compact","++ Processing xml document %s.", fname.c_str());
+    this->description.fromXML(fname);
+  }
+  else  {
+    // Are there any other possibilities ?
+    printout(level, "Compact","++ Processing xml document %s.", fname.c_str());
+    this->description.fromXML(fname);
+  }
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
@@ -1716,6 +1738,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   }
   xml_coll_t(compact, _U(plugins)).for_each(_U(plugin),  Converter<Plugin>  (description));
   xml_coll_t(compact, _U(plugins)).for_each(_U(include), Converter<XMLFile> (description));
+  xml_coll_t(compact, _U(plugins)).for_each(_U(xml),     Converter<XMLFile> (description));
 }
 
 #ifdef _WIN32

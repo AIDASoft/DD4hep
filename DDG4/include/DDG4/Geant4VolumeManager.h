@@ -18,8 +18,8 @@
 #include <DD4hep/IDDescriptor.h>
 #include <DDG4/Geant4Primitives.h>
 
+#include <G4VTouchable.hh>
 // Geant4 forward declarations
-class G4VTouchable;
 class G4VPhysicalVolume;
 
 

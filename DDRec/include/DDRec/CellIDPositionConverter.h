@@ -48,7 +48,7 @@ namespace dd4hep {
     public:
       
       /// The constructor - takes the main description object.
-      CellIDPositionConverter( Detector& description ) : _description( &description )  {
+      CellIDPositionConverter(const Detector& description ) : _description( &description )  {
         _volumeManager = VolumeManager::getVolumeManager(description);
       }
 
