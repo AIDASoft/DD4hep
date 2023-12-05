@@ -11,6 +11,7 @@
 from __future__ import absolute_import, unicode_literals
 import cppyy
 import importlib
+import types
 import logging
 
 
@@ -155,7 +156,7 @@ cond = dd4hep.cond
 tools = dd4hep.tools
 align = dd4hep.align
 detail = dd4hep.detail
-units = imp.new_module('units')
+units = types.ModuleType('units')
 # ---------------------------------------------------------------------------
 import_namespace_item('tools', 'Evaluator')
 # ---------------------------------------------------------------------------
