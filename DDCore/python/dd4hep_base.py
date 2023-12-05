@@ -10,7 +10,7 @@
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
 import cppyy
-import imp
+import importlib
 import logging
 
 
@@ -35,8 +35,8 @@ def compileAClick(dictionary, g4=True):
   gSystem.AddIncludePath(inc)
   gSystem.AddLinkedLibs(lib)
   logger.info('Loading AClick %s', dictionary)
-  package = imp.find_module('DDG4')
-  dic = os.path.dirname(package[1]) + os.sep + dictionary
+  package_spec = importlib.util.find_spec('DDG4')
+  dic = os.path.dirname(package_spec.origin) + os.sep + dictionary
   gInterpreter.ProcessLine('.L ' + dic + '+')
   from ROOT import dd4hep as module
   return module
