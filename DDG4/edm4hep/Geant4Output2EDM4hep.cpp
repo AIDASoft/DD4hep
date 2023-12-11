@@ -24,6 +24,7 @@
 #include <edm4hep/SimTrackerHitCollection.h>
 #include <edm4hep/CaloHitContributionCollection.h>
 #include <edm4hep/SimCalorimeterHitCollection.h>
+#include <edm4hep/EDM4hepVersion.h>
 /// podio include files
 #include <podio/Frame.h>
 #include <podio/ROOTFrameWriter.h>
@@ -342,12 +343,13 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
       auto mcp = m_particles.create();
       mcp.setPDG(p->pdgID);
 
-      float ps_fa[3] = {float(p->psx/CLHEP::GeV),float(p->psy/CLHEP::GeV),float(p->psz/CLHEP::GeV)};
-      mcp.setMomentum( ps_fa );
-
-      float pe_fa[3] = {float(p->pex/CLHEP::GeV),float(p->pey/CLHEP::GeV),float(p->pez/CLHEP::GeV)};
-      mcp.setMomentumAtEndpoint( pe_fa );
-
+#if edm4hep_VERSION < EDM4HEP_VERSION(0, 10, 3)
+      mcp.setMomentum( {float(p->psx/CLHEP::GeV),float(p->psy/CLHEP::GeV),float(p->psz/CLHEP::GeV)} );
+      mcp.setMomentumAtEndpoint( {float(p->pex/CLHEP::GeV),float(p->pey/CLHEP::GeV),float(p->pez/CLHEP::GeV)} );
+#else
+      mcp.setMomentum( {p->psx/CLHEP::GeV, p->psy/CLHEP::GeV, p->psz/CLHEP::GeV} );
+      mcp.setMomentumAtEndpoint( {p->pex/CLHEP::GeV, p->pey/CLHEP::GeV, p->pez/CLHEP::GeV} );
+#endif
       double vs_fa[3] = { p->vsx/CLHEP::mm, p->vsy/CLHEP::mm, p->vsz/CLHEP::mm } ;
       mcp.setVertex( vs_fa );
 
