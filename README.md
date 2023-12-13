@@ -12,7 +12,7 @@ DD4hep is a software framework for providing a complete solution for full detect
 For information about how to install DD4hep see [this page](https://dd4hep.web.cern.ch/dd4hep/page/installation/)
 
 ## Documentation
-Use's Manuals can be found [here](https://dd4hep.web.cern.ch/dd4hep/page/users-manual/).
+User's Manuals can be found [here](https://dd4hep.web.cern.ch/dd4hep/page/users-manual/).
 
 The Code Reference can be found [here](https://dd4hep.web.cern.ch/dd4hep/reference/).
 
