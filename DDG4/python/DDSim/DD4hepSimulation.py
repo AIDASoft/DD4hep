@@ -277,11 +277,13 @@ class DD4hepSimulation(object):
         detType = sd.type()
         logger.info('getDetectorLists - found active detector %s type: %s', name, detType)
         if any(pat.lower() in detType.lower() for pat in self.action.trackerSDTypes):
+          logger.info('getDetectorLists - Identified %s as a tracker', name)
           trackers.append(det.name())
         elif any(pat.lower() in detType.lower() for pat in self.action.calorimeterSDTypes):
+          logger.info('getDetectorLists - Identified %s as a calorimeter', name)
           calos.append(det.name())
         else:
-          logger.warning('Unknown sensitive detector type: %s', detType)
+          logger.warning('getDetectorLists - Unknown sensitive detector type: %s', detType)
           unknown.append(det.name())
 
     return trackers, calos, unknown
@@ -464,13 +466,13 @@ class DD4hepSimulation(object):
     # get lists of trackers and calorimeters in detectorDescription
 
     trk, cal, unk = self.getDetectorLists(detectorDescription)
-
-    for detectors, function, defFilter, abort in [(trk, geant4.setupTracker, self.filter.tracker, False),
-                                                  (cal, geant4.setupCalorimeter, self.filter.calo, False),
-                                                  (unk, geant4.setupDetector, None, True),
-                                                  ]:
+    for detectors, function, defFilter, defAction, abort in \
+        [(trk, geant4.setupTracker, self.filter.tracker, self.action.tracker, False),
+         (cal, geant4.setupCalorimeter, self.filter.calo, self.action.calo, False),
+         (unk, geant4.setupDetector, None, "No Default", True),
+         ]:
       try:
-        self.__setupSensitiveDetectors(detectors, function, defFilter, abort)
+        self.__setupSensitiveDetectors(detectors, function, defFilter, defAction, abort)
       except Exception as e:
         logger.error("Failed setting up sensitive detector %s", e)
         raise
@@ -580,7 +582,7 @@ class DD4hepSimulation(object):
       return -1
 
   def __setupSensitiveDetectors(self, detectors, setupFunction, defaultFilter=None,
-                                abortForMissingAction=False,
+                                defaultAction=None, abortForMissingAction=False,
                                 ):
     """Attach sensitive detector actions for all subdetectors.
 
@@ -592,7 +594,7 @@ class DD4hepSimulation(object):
     :param abortForMissingAction: if true end program if there is no action found
     """
     for det in detectors:
-      logger.info('Setting up SD for %s', det)
+      logger.info('Setting up SD for %s with %s', det, defaultAction)
       action = None
       for pattern in self.action.mapActions:
         if pattern.lower() in det.lower():
