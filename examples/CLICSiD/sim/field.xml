@@ -24,7 +24,7 @@
 		delta_one_step="0.001*mm"
 		eps_min="5e-05*mm"
 		eps_max="0.001*mm"
-		stepper="HelixSimpleRunge"
+		stepper="ClassicalRK4"
 		equation="Mag_UsualEqRhs">
     </attributes>
   </properties>
