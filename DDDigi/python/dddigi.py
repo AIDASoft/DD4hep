@@ -94,8 +94,8 @@ def importConstants(description, namespace=None, debug=False):
   """
   ns = current
   if namespace is not None and not hasattr(current, namespace):
-    import imp
-    m = imp.new_module('dddigi.' + namespace)
+    import types
+    m = types.ModuleType('dddigi.' + namespace)
     setattr(current, namespace, m)
     ns = m
   evaluator = dd4hep.g4Evaluator()
