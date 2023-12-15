@@ -1,3 +1,24 @@
+# v01-27-02
+
+* 2023-12-15 Andre Sailer ([PR#1205](https://github.com/aidasoft/dd4hep/pull/1205))
+  - Geant4PrimaryHandling: fix issue with multiple vertices in Geant4 GeneralParticleSource, fixes #1204
+
+* 2023-12-14 Markus Frank ([PR#1201](https://github.com/aidasoft/dd4hep/pull/1201))
+  - Incorporate type fix from https://github.com/AIDASoft/DD4hep/pull/1172
+  - Propagate polish setting from ROOT surfaces to Geant4
+  - Improve debugging capabilities of detector checksums by improved dumping possibilities.
+
+* 2023-12-14 Andre Sailer ([PR#1196](https://github.com/aidasoft/dd4hep/pull/1196))
+  - NestedBoxReflection_geo.cpp: use std::abs instead of abs
+  - HexGrid: use std::abs instead of abs
+  - DDSim: better logging of which sensitive detector is used when defaults are used
+
+* 2023-12-14 Paul Gessinger ([PR#1195](https://github.com/aidasoft/dd4hep/pull/1195))
+  - Replace usage of the `imp` module that was removed in Python 3.12 with `importlib` and `types`.
+
+* 2023-11-24 Andre Sailer ([PR#1192](https://github.com/aidasoft/dd4hep/pull/1192))
+  - DetectorChecksum: use fabs to check if values are 0.0, fixes  #1188
+
 # v01-27-01
 
 * 2023-11-20 jmcarcell ([PR#1191](https://github.com/aidasoft/DD4hep/pull/1191))
