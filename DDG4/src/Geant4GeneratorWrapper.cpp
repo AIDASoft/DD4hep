@@ -70,12 +70,12 @@ void Geant4GeneratorWrapper::operator()(G4Event* event)  {
   Geant4PrimaryMap*   primaryMap = context()->event().extension<Geant4PrimaryMap>();
   set<G4PrimaryVertex*> primaries;
   
+  // Now generate the new interaction
+  generator()->GeneratePrimaryVertex(event);
+
   /// Collect all existing interactions (primary vertices)
   for(G4PrimaryVertex* v=event->GetPrimaryVertex(); v; v=v->GetNext())
     primaries.insert(v);
-
-  // Now generate the new interaction
-  generator()->GeneratePrimaryVertex(event);
 
   // Add all the missing interactions (primary vertices) to the primary event record.
   Geant4PrimaryInteraction* inter = createPrimary(m_mask, primaryMap, primaries);

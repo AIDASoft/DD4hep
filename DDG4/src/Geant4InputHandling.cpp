@@ -88,6 +88,11 @@ static void collectPrimaries(Geant4PrimaryMap*         pm,
                              Geant4Vertex*             particle_origine,
                              G4PrimaryParticle*        gp)
 {
+  //if the particle is in the map, we do not have to do anything
+  if ( pm->get(gp) )  {
+    return;
+  }
+
   int pid = int(interaction->particles.size());
   Geant4Particle* p = createPrimary(pid,particle_origine,gp);
   G4PrimaryParticle* dau = gp->GetDaughter();
