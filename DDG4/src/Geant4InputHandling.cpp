@@ -103,14 +103,13 @@ static void collectPrimaries(Geant4PrimaryMap*         pm,
 
   if ( dau )   {
     Geant4Vertex* dv = new Geant4Vertex(*particle_origine);
-    int vid = int(interaction->vertices.size());
     PropertyMask reason(p->reason);
     reason.set(G4PARTICLE_HAS_SECONDARIES);
 
     dv->mask = mask;
     dv->in.insert(p->id);
 
-    interaction->vertices[vid].emplace_back(dv) ;
+    interaction->vertices[mask].emplace_back(dv) ;
 
     for(; dau; dau = dau->GetNext())
       collectPrimaries(pm, interaction, dv, dau);
