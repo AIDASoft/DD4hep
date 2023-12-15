@@ -121,18 +121,19 @@ static void collectPrimaries(Geant4PrimaryMap*         pm,
 Geant4PrimaryInteraction* 
 dd4hep::sim::createPrimary(int mask,
                            Geant4PrimaryMap* pm,
-                           const G4PrimaryVertex* gv)
+                           std::set<G4PrimaryVertex*>const& primaries)
 {
   Geant4PrimaryInteraction* interaction = new Geant4PrimaryInteraction();
-  Geant4Vertex* v = createPrimary(gv);
-  int vid = int(interaction->vertices.size());
   interaction->locked = true;
   interaction->mask = mask;
-  v->mask = mask;
-  interaction->vertices[vid].emplace_back(v);
-
-  for (G4PrimaryParticle *gp = gv->GetPrimary(); gp; gp = gp->GetNext() )
-    collectPrimaries(pm, interaction, v, gp);
+  for (auto const& gv: primaries) {
+    Geant4Vertex* v = createPrimary(gv);
+    v->mask = mask;
+    interaction->vertices[mask].emplace_back(v);
+    for (G4PrimaryParticle *gp = gv->GetPrimary(); gp; gp = gp->GetNext()) {
+      collectPrimaries(pm, interaction, v, gp);
+    }
+  }
   return interaction;
 }
 
