@@ -78,10 +78,12 @@ void Geant4GeneratorWrapper::operator()(G4Event* event)  {
   generator()->GeneratePrimaryVertex(event);
 
   /// Add all the missing interactions (primary vertices) to the primary event record.
+  int maskCounter = 100000 + m_mask;
   for(G4PrimaryVertex* gv=event->GetPrimaryVertex(); gv; gv=gv->GetNext())  {
     if ( primaries.find(gv) == primaries.end() )   {
-      Geant4PrimaryInteraction* inter = createPrimary(m_mask, primaryMap, gv);
-      prim->add(m_mask, inter);
+      Geant4PrimaryInteraction* inter = createPrimary(maskCounter, primaryMap, gv);
+      prim->add(maskCounter, inter);
+      maskCounter += 1;
     }
   }
 }

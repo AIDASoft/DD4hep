@@ -180,13 +180,14 @@ static void appendInteraction(const Geant4Action* caller,
   }
   Geant4PrimaryInteraction::VertexMap::iterator ivfnd, iv, ivend;
   for( iv=input->vertices.begin(), ivend=input->vertices.end(); iv != ivend; ++iv )   {
-    ivfnd = output->vertices.find((*iv).first) ; //(*iv).second->mask);
+    int theMask = input->mask;
+    ivfnd = output->vertices.find(theMask);
     if ( ivfnd != output->vertices.end() )   {
       caller->abortRun("Duplicate primary interaction identifier!",
                        "Cannot handle 2 interactions with identical identifiers!");
     }
     for(Geant4Vertex* vtx :  (*iv).second )
-      output->vertices[(*iv).first].emplace_back( vtx->addRef() );
+      output->vertices[theMask].emplace_back( vtx->addRef() );
   }
 }
 
