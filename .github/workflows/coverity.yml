@@ -17,4 +17,4 @@ jobs:
         coverity-project: 'AIDASoft%2FDD4hep'
         coverity-project-token: ${{ secrets.DD4HEP_COVERITY_TOKEN  }}
         github-pat: ${{ secrets.READ_COVERITY_IMAGE }}
-        release-platform: "LCG_102b/x86_64-centos7-gcc11-opt"
+        release-platform: "LCG_104a/x86_64-el9-gcc13-opt"
