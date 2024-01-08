@@ -299,16 +299,15 @@ namespace dd4hep  {
       return 0;
     }
 
-    void usage_plugin_runner() {
-      std::cout <<
-        "geoPluginRun -opt [-opt]                                                \n"
+    void usage_plugin_runner(const char* runner="geoPluginRun", bool exit_program=true) {
+      std::cout << runner << " -opt [-opt]                                       \n"
         "        -input  <file>  [OPTIONAL]  Specify geometry input file.        \n"
         "        -plugin <name>  <args> [args] [-end-plugin]                     \n"
         "                        [REQUIRED]  Plugin to be executed and applied.  \n"
         "        -plugin <name>  <args> [args] -end-plugin                       \n"
         "                        [OPTIONAL]  Next plugin with arguments.         \n";
       print_default_args() << std::endl;
-      ::exit(EINVAL);
+      if ( exit_program ) ::exit(EINVAL);
     }
 
     //______________________________________________________________________________
