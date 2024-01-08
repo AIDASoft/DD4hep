@@ -18,10 +18,10 @@ CartesianGridXY::CartesianGridXY(const std::string& cellEncoding) :
 	_description = "Cartesian segmentation in the local XY-plane";
 
 	// register all necessary parameters
-	registerParameter("grid_size_x", "Cell size in X", _gridSizeX, 1., SegmentationParameter::LengthUnit);
-	registerParameter("grid_size_y", "Cell size in Y", _gridSizeY, 1., SegmentationParameter::LengthUnit);
-	registerParameter("offset_x", "Cell offset in X", _offsetX, 0., SegmentationParameter::LengthUnit, true);
-	registerParameter("offset_y", "Cell offset in Y", _offsetY, 0., SegmentationParameter::LengthUnit, true);
+	registerParameter("grid_size_x", "Cell size in X",   _gridSizeX, 1., SegmentationParameter::LengthUnit);
+	registerParameter("grid_size_y", "Cell size in Y",   _gridSizeY, 1., SegmentationParameter::LengthUnit);
+	registerParameter("offset_x",    "Cell offset in X", _offsetX,   0., SegmentationParameter::LengthUnit, true);
+	registerParameter("offset_y",    "Cell offset in Y", _offsetY,   0., SegmentationParameter::LengthUnit, true);
 	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
 	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
 }
@@ -35,10 +35,10 @@ CartesianGridXY::CartesianGridXY(const BitFieldCoder* decode) :
 	_description = "Cartesian segmentation in the local XY-plane";
 
 	// register all necessary parameters
-	registerParameter("grid_size_x", "Cell size in X", _gridSizeX, 1., SegmentationParameter::LengthUnit);
-	registerParameter("grid_size_y", "Cell size in Y", _gridSizeY, 1., SegmentationParameter::LengthUnit);
-	registerParameter("offset_x", "Cell offset in X", _offsetX, 0., SegmentationParameter::LengthUnit, true);
-	registerParameter("offset_y", "Cell offset in Y", _offsetY, 0., SegmentationParameter::LengthUnit, true);
+	registerParameter("grid_size_x", "Cell size in X",   _gridSizeX, 1., SegmentationParameter::LengthUnit);
+	registerParameter("grid_size_y", "Cell size in Y",   _gridSizeY, 1., SegmentationParameter::LengthUnit);
+	registerParameter("offset_x",    "Cell offset in X", _offsetX,   0., SegmentationParameter::LengthUnit, true);
+	registerParameter("offset_y",    "Cell offset in Y", _offsetY,   0., SegmentationParameter::LengthUnit, true);
 	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
 	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
 }
@@ -57,14 +57,16 @@ Vector3D CartesianGridXY::position(const CellID& cID) const {
 }
 
 /// determine the cell ID based on the position
-  CellID CartesianGridXY::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
-        CellID cID = vID ;
+CellID CartesianGridXY::cellID(const Vector3D& localPosition,
+                               const Vector3D& /* globalPosition */,
+                               const VolumeID& vID) const {
+  CellID cID = vID;
 	_decoder->set( cID,_xId, positionToBin(localPosition.X, _gridSizeX, _offsetX) );
 	_decoder->set( cID,_yId, positionToBin(localPosition.Y, _gridSizeY, _offsetY) );
-	return cID ;
+	return cID;
 }
 
-std::vector<double> CartesianGridXY::cellDimensions(const CellID&) const {
+  std::vector<double> CartesianGridXY::cellDimensions(const CellID& /* cellID */) const {
 #if __cplusplus >= 201103L
   return {_gridSizeX, _gridSizeY};
 #else
