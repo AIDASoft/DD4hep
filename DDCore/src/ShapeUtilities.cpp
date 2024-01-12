@@ -433,8 +433,14 @@ namespace dd4hep {
     for(int i=0; i<num_facet; ++i)  {
       const TGeoFacet& f = sh->GetFacet(i);
       pars.emplace_back(double(f.GetNvert()));
-      for(int j=0, n=f.GetNvert(); j<n; ++j)
+      for(int j=0, n=f.GetNvert(); j<n; ++j)   {
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,0)
+	int idx = f[j];
+        pars.emplace_back(double(idx));
+#else
         pars.emplace_back(double(f.GetVertexIndex(j)));
+#endif
+      }
     }
     return pars;
   }
