@@ -259,9 +259,15 @@ namespace dd4hep {
       for(int i=0; i<num_facet; ++i)  {
         const TGeoFacet& facet = sh->GetFacet(i);
         int nv = facet.GetNvert();
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
+        const auto& v0 = sh->GetVertex(facet[0]);
+        const auto& v1 = sh->GetVertex(facet[1]);
+        const auto& v2 = sh->GetVertex(facet[2]);
+#else
         const auto& v0 = sh->GetVertex(facet.GetVertexIndex(0));
         const auto& v1 = sh->GetVertex(facet.GetVertexIndex(1));
         const auto& v2 = sh->GetVertex(facet.GetVertexIndex(2));
+#endif
         G4VFacet* g4f = 0;
         if ( nv == 3 )    {
           g4f = new G4TriangularFacet(G4ThreeVector(v0.x() * CM_2_MM, v0.y() * CM_2_MM, v0.z() * CM_2_MM),
@@ -270,7 +276,11 @@ namespace dd4hep {
                                       ABSOLUTE);
         }
         else if ( nv == 4 )    {
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
+          const auto& v3 = sh->GetVertex(facet[3]);
+#else
           const auto& v3 = sh->GetVertex(facet.GetVertexIndex(3));
+#endif
           g4f = new G4QuadrangularFacet(G4ThreeVector(v0.x() * CM_2_MM, v0.y() * CM_2_MM, v0.z() * CM_2_MM),
                                         G4ThreeVector(v1.x() * CM_2_MM, v1.y() * CM_2_MM, v1.z() * CM_2_MM),
                                         G4ThreeVector(v2.x() * CM_2_MM, v2.y() * CM_2_MM, v2.z() * CM_2_MM),

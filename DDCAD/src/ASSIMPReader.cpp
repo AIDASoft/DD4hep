@@ -16,6 +16,7 @@
 #include <DD4hep/Detector.h>
 #include <DD4hep/ShapeTags.h>
 #include <DDCAD/ASSIMPReader.h>
+#include <DDCAD/Utilities.h>
 
 /// Open Asset Importer Library
 #include "assimp/scene.h"
@@ -62,8 +63,7 @@ ASSIMPReader::readShapes(const std::string& source, double unit_length)  const
         if ( dump_facets )   {
           for( size_t i=0, n=shape->GetNfacets(); i < n; ++i )   {
             const auto& facet = shape->GetFacet(i);
-            std::stringstream str;
-            str << facet;
+            std::stringstream str = dd4hep::cad::streamFacet(facet, shape);
             printout(ALWAYS,"ASSIMPReader","++ Facet %4ld : %s",
                      i, str.str().c_str());
           }
@@ -162,8 +162,7 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
         if ( dump_facets )   {
           for( size_t i=0, n=shape->GetNfacets(); i < n; ++i )   {
             const auto& facet = shape->GetFacet(i);
-            std::stringstream str;
-            str << facet;
+            std::stringstream str = dd4hep::cad::streamFacet(facet, shape);
             printout(ALWAYS,"ASSIMPReader","++ Facet %4ld : %s",
                      i, str.str().c_str());
           }
