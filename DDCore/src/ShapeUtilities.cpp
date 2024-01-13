@@ -434,7 +434,7 @@ namespace dd4hep {
       const TGeoFacet& f = sh->GetFacet(i);
       pars.emplace_back(double(f.GetNvert()));
       for(int j=0, n=f.GetNvert(); j<n; ++j)   {
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,31,1)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
 	int idx = f[j];
         pars.emplace_back(double(idx));
 #else

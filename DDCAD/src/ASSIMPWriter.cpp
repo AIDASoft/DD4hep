@@ -15,6 +15,7 @@
 #include <DD4hep/Detector.h>
 #include <DD4hep/Printout.h>
 #include <DDCAD/ASSIMPWriter.h>
+#include <DDCAD/Utilities.h>
 
 /// Open Asset Importer Library
 #include "assimp/postprocess.h"
@@ -22,11 +23,11 @@
 #include "assimp/scene.h"
 
 /// ROOT include files
+#include <TBuffer3D.h>
 #include <TBuffer3DTypes.h>
+#include <TClass.h>
 #include <TGeoBoolNode.h>
 #include <TGeoMatrix.h>
-#include <TBuffer3D.h>
-#include <TClass.h>
 #include <CsgOps.h>
 
 /// C/C++ include files
@@ -157,6 +158,7 @@ namespace  {
             ++nskip;
             continue;
           }
+#if ROOT_VERSION_CODE < ROOT_VERSION(6,31,1)
           bool degenerated = true;
           TGeoFacet f(&vertices, 3, vv0, vv1, vv2);
           f.ComputeNormal(degenerated);
@@ -164,6 +166,7 @@ namespace  {
             ++nskip;
             continue;
           }
+#endif
           tes->AddFacet(vv0, vv1, vv2);
         }
 #else
@@ -388,7 +391,11 @@ int ASSIMPWriter::write(const std::string& file_name,
     for( long j=0, nvx=0, n=tes->GetNfacets(); j < n; ++j )  {
       bool degenerated  = false;
       const auto& facet = tes->GetFacet(j);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
+      tmp = tes->FacetComputeNormal(j, degenerated);
+#else
       tmp = facet.ComputeNormal(degenerated);
+#endif
       if ( !degenerated && facet.GetNvert() > 0 )   {
         aiFace& face  = mesh->mFaces[mesh->mNumFaces];
         double  u     = unit_scale;
@@ -397,7 +404,11 @@ int ASSIMPWriter::write(const std::string& file_name,
         trafo->LocalToMaster(tmp.fVec, norm.fVec);
         face.mNumIndices = 0;
         for( long k=0; k < facet.GetNvert(); ++k )  {
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
+          tmp = tes->GetVertex(facet[k]);
+#else
           tmp = facet.GetVertex(k);
+#endif
           trafo->LocalToMaster(tmp.fVec, vtx.fVec);
           face.mIndices[face.mNumIndices] = nvx;
           mesh->mNormals[nvx]  = aiVector3D(norm.x(), norm.y(), norm.z());
@@ -408,13 +419,12 @@ int ASSIMPWriter::write(const std::string& file_name,
         }
         ++mesh->mNumFaces;
         if ( dump_facets )   {
-          stringstream str;
           const auto* id = face.mIndices;
           const auto* vv = mesh->mVertices;
-          TGeoFacet fac(Vertex(vv[id[0]].x,vv[id[0]].y,vv[id[0]].z),
-                        Vertex(vv[id[1]].x,vv[id[1]].y,vv[id[1]].z),
-                        Vertex(vv[id[2]].x,vv[id[2]].y,vv[id[2]].z));
-          str << fac;
+          ROOT::Geom::Vertex_t v1(vv[id[0]].x, vv[id[0]].y, vv[id[0]].z);
+          ROOT::Geom::Vertex_t v2(vv[id[1]].x, vv[id[1]].y, vv[id[1]].z);
+          ROOT::Geom::Vertex_t v3(vv[id[2]].x, vv[id[2]].y, vv[id[2]].z);
+          std::stringstream str = dd4hep::cad::streamVertices(v1, v2, v3);
           printout(ALWAYS,"ASSIMPWriter","++ Facet %4ld : %s", j, str.str().c_str());
         }
       }
