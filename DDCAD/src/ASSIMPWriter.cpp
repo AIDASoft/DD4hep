@@ -158,15 +158,17 @@ namespace  {
             ++nskip;
             continue;
           }
-#if ROOT_VERSION_CODE < ROOT_VERSION(6,31,1)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
+          bool degenerated = dd4hep::cad::facetIsDegenerated(vertices);
+#else
           bool degenerated = true;
           TGeoFacet f(&vertices, 3, vv0, vv1, vv2);
           f.ComputeNormal(degenerated);
+#endif
           if ( degenerated )    {
             ++nskip;
             continue;
           }
-#endif
           tes->AddFacet(vv0, vv1, vv2);
         }
 #else
