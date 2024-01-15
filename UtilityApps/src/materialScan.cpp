@@ -17,13 +17,14 @@
 //
 //==========================================================================
 
-#include "TError.h"
-#include "TInterpreter.h"
+#include <TError.h>
+#include <TInterpreter.h>
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
-#include "DDRec/MaterialScan.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DDRec/MaterialScan.h>
 #include "main.h"
 
 using namespace dd4hep;
@@ -39,7 +40,8 @@ int main_wrapper(int argc, char** argv)   {
       std::cout << " usage: materialScan compact.xml x0 y0 z0 x1 y1 z1 [-interactive]" << std::endl 
                 << " or:    materialScan compact.xml -interactive" << std::endl 
                 << "        -> prints the materials on a straight line between the two given points (unit is cm) " << std::endl
-                << "        -interactive   Load geometry once, then allow for shots from the ROOT prompt"
+                << "        -interactive   Load geometry once, then allow for shots from the ROOT prompt" << std::endl
+		<< " NOTE:  ALL lengths in units of [cm]"
                 << std::endl;
       exit(EINVAL);
     }
@@ -73,7 +75,7 @@ int main_wrapper(int argc, char** argv)   {
   description.fromXML(inFile);
   MaterialScan scan(description);
   if ( do_scan )   {
-    scan.print(x0, y0, z0, x1, y1, z1);
+    scan.print(x0*dd4hep::cm, y0*dd4hep::cm, z0*dd4hep::cm, x1*dd4hep::cm, y1*dd4hep::cm, z1*dd4hep::cm);
   }
   if ( interactive )   {
     char cmd[256];

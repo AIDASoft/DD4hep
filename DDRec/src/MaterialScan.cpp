@@ -18,10 +18,12 @@
 //
 //==========================================================================
 // Framework include files
-#include "DDRec/MaterialScan.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
+#include <DDRec/MaterialScan.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
 
+/// C/C++ include files
 #include <cstdio>
 
 using namespace dd4hep;
@@ -35,7 +37,7 @@ MaterialScan::MaterialScan()
 }
 
 /// Default constructor
-MaterialScan::MaterialScan(const Detector& description)
+MaterialScan::MaterialScan(Detector& description)
   : m_detector(description)
 {
   m_materialMgr.reset(new MaterialManager(m_detector.world().volume()));
@@ -178,20 +180,20 @@ void MaterialScan::print(const Vector3D& p0, const Vector3D& p1, double epsilon)
   double sum_x0 = 0;
   double sum_lambda = 0;
   double path_length = 0, total_length = 0;
-  const char* fmt1 = " | %5d %-20s %3.0f %8.3f %8.4f %11.4f  %11.4f %10.3f %8.2f %11.6f %11.6f  (%7.2f,%7.2f,%7.2f)\n";
-  const char* fmt2 = " | %5d %-20s %3.0f %8.3f %8.4f %11.6g  %11.6g %10.3f %8.2f %11.6f %11.6f  (%7.2f,%7.2f,%7.2f)\n";
+  const char* fmt1 = " | %5d %-25s %3.0f %8.3f %8.4f %11.4f  %11.4f %10.3f %8.2f %11.6f %11.6f  (%7.2f,%7.2f,%7.2f)\n";
+  const char* fmt2 = " | %5d %-25s %3.0f %8.3f %8.4f %11.6g  %11.6g %10.3f %8.2f %11.6f %11.6f  (%7.2f,%7.2f,%7.2f)\n";
   const char* line = " +--------------------------------------------------------------------------------------------------------------------------------------------------\n";
 
   direction = (p1-p0).unit();
   
   ::printf("%s + Material scan between: x_0 = (%7.2f,%7.2f,%7.2f) [cm] and x_1 = (%7.2f,%7.2f,%7.2f) [cm] : \n%s",
            line,p0[0],p0[1],p0[2],p1[0],p1[1],p1[2],line);
-  ::printf(" |     \\   %-11s        Atomic                 Radiation   Interaction               Path   Integrated  Integrated    Material\n","Material");
-  ::printf(" | Num. \\  %-11s   Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint  \n","Name");
-  ::printf(" | Layer \\ %-11s            [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm)\n","");
+  ::printf(" |     \\   %-16s          Atomic               Radiation   Interaction               Path   Integrated  Integrated    Material\n","Material");
+  ::printf(" | Num. \\  %-16s   Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint  \n","Name");
+  ::printf(" | Layer \\ %-16s            [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm)\n","");
   ::printf("%s",line);
   MaterialVec materials;
-  for( unsigned i=0,n=placements.size(); i<n; ++i){
+  for( unsigned i=0, n=placements.size(); i<n; ++i){
     TGeoNode*  pv  = placements[i].first.ptr();
     double length  = placements[i].second;
     total_length  += length;
@@ -206,34 +208,41 @@ void MaterialScan::print(const Vector3D& p0, const Vector3D& p1, double epsilon)
 #endif
       continue;
     }
-    TGeoMaterial* mat = placements[i].first->GetMedium()->GetMaterial();
-    double nx0     = length / mat->GetRadLen();
-    double nLambda = length / mat->GetIntLen();
+    TGeoMaterial* curr_mat = placements[i].first->GetMedium()->GetMaterial();
+    TGeoMaterial* next_mat = (i+1)<n ? placements[i+1].first->GetMedium()->GetMaterial() : nullptr;
+    double nx0     = length / curr_mat->GetRadLen();
+    double nLambda = length / curr_mat->GetIntLen();
 
     sum_x0        += nx0;
     sum_lambda    += nLambda;
     path_length   += length;
     materials.emplace_back(placements[i].first->GetMedium(),length);
-    const char* fmt = mat->GetRadLen() >= 1e5 ? fmt2 : fmt1;
-    ::printf(fmt, i+1, mat->GetName(), mat->GetZ(), mat->GetA(),
-             mat->GetDensity(), mat->GetRadLen(), mat->GetIntLen(), 
-             length, path_length, sum_x0, sum_lambda, end[0], end[1], end[2]);
+    const char* fmt = curr_mat->GetRadLen() >= 1e5 ? fmt2 : fmt1;
+    std::string mname = curr_mat->GetName();
+    if ( next_mat && (i+1)<n )  {
+      mname += " -> ";
+      mname += next_mat->GetName();
+    }
+    ::printf(fmt, i+1, mname.c_str(), curr_mat->GetZ(), curr_mat->GetA(),
+             curr_mat->GetDensity(), curr_mat->GetRadLen()/dd4hep::cm, curr_mat->GetIntLen()/dd4hep::cm,
+             length/dd4hep::cm, path_length/dd4hep::cm, sum_x0, sum_lambda,
+	     end[0]/dd4hep::cm, end[1]/dd4hep::cm, end[2]/dd4hep::cm);
     //mat->Print();
   }
   printf("%s",line);
   const MaterialData& avg = matMgr.createAveragedMaterial(materials);
   const char* fmt = avg.radiationLength() >= 1e5 ? fmt2 : fmt1;
   ::printf(fmt,0,"Average Material",avg.Z(),avg.A(),avg.density(), 
-           avg.radiationLength(), avg.interactionLength(),
-           path_length, path_length, 
+           avg.radiationLength()/dd4hep::cm, avg.interactionLength()/dd4hep::cm,
+           path_length/dd4hep::cm, path_length/dd4hep::cm,
            path_length/avg.radiationLength(), 
            path_length/avg.interactionLength(),
-           end[0], end[1], end[2]);
+           end[0]/dd4hep::cm, end[1]/dd4hep::cm, end[2]/dd4hep::cm);
   printf("%s",line);
 }
 
 /// Scan along a line and print the materials traversed
 void MaterialScan::print(double x0, double y0, double z0, double x1, double y1, double z1, double epsilon)  const  {
   Vector3D p0(x0, y0, z0), p1(x1, y1, z1);
-  print(p0, p1, epsilon);
+  this->print(p0, p1, epsilon);
 }
