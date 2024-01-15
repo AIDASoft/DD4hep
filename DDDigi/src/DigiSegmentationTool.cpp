@@ -26,9 +26,10 @@ namespace  {
 		     const string& split_by,
 		     map<dd4hep::VolumeID, pair<dd4hep::DetElement, dd4hep::VolumeID> >& splits,
 		     dd4hep::DetElement de, dd4hep::VolumeID vid, dd4hep::VolumeID mask)   {
-    const auto& new_ids = de.placement().volIDs();
-    dd4hep::VolumeID    new_vid = vid;
-    dd4hep::VolumeID    new_msk = mask;
+    dd4hep::PlacedVolume plc = de.placement();
+    const auto&      new_ids = plc.volIDs();
+    dd4hep::VolumeID new_vid = vid;
+    dd4hep::VolumeID new_msk = mask;
     if ( !new_ids.empty() )   {
       new_vid |= tool.iddescriptor.encode(new_ids);
       new_msk |= tool.iddescriptor.get_mask(new_ids);
@@ -185,7 +186,8 @@ DigiSegmentationTool::split_context(const string& split_by)  const {
 /// Create full set of detector segments which can be split according to the context
 set<uint32_t> DigiSegmentationTool::split_segmentation(const string& split_by)  const  {
   map<VolumeID, pair<DetElement, VolumeID> > segmentation_splits;
-  const auto& ids = this->detector.placement().volIDs();
+  PlacedVolume     place = this->detector.placement();
+  const auto& ids = place.volIDs();
   VolumeID    vid = this->iddescriptor.encode(ids);
   VolumeID    msk = this->iddescriptor.get_mask(ids);
   const auto* fld = this->iddescriptor.field(split_by);
