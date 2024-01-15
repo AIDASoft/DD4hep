@@ -180,17 +180,17 @@ void MaterialScan::print(const Vector3D& p0, const Vector3D& p1, double epsilon)
   double sum_x0 = 0;
   double sum_lambda = 0;
   double path_length = 0, total_length = 0;
-  const char* fmt1 = " | %5d %-25s %3.0f %8.3f %8.4f %11.4f  %11.4f %10.3f %8.2f %11.6f %11.6f  (%7.2f,%7.2f,%7.2f)\n";
-  const char* fmt2 = " | %5d %-25s %3.0f %8.3f %8.4f %11.6g  %11.6g %10.3f %8.2f %11.6f %11.6f  (%7.2f,%7.2f,%7.2f)\n";
+  const char* fmt1 = " | %7s %-25s %3.0f %8.3f %8.4f %11.4f  %11.4f %10.3f %8.2f %11.6f %11.6f  (%7.2f,%7.2f,%7.2f)\n";
+  const char* fmt2 = " | %7s %-25s %3.0f %8.3f %8.4f %11.6g  %11.6g %10.3f %8.2f %11.6f %11.6f  (%7.2f,%7.2f,%7.2f)\n";
   const char* line = " +--------------------------------------------------------------------------------------------------------------------------------------------------\n";
 
   direction = (p1-p0).unit();
   
   ::printf("%s + Material scan between: x_0 = (%7.2f,%7.2f,%7.2f) [cm] and x_1 = (%7.2f,%7.2f,%7.2f) [cm] : \n%s",
            line,p0[0],p0[1],p0[2],p1[0],p1[1],p1[2],line);
-  ::printf(" |     \\   %-16s          Atomic               Radiation   Interaction               Path   Integrated  Integrated    Material\n","Material");
-  ::printf(" | Num. \\  %-16s   Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint  \n","Name");
-  ::printf(" | Layer \\ %-16s            [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm)\n","");
+  ::printf(" |       \\   %-16s          Atomic               Radiation   Interaction               Path   Integrated  Integrated    Material\n","Material");
+  ::printf(" | Num.   \\  %-16s   Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint/Startpoint\n","Name");
+  ::printf(" | Layer   \\ %-16s            [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm)\n","");
   ::printf("%s",line);
   MaterialVec materials;
   for( unsigned i=0, n=placements.size(); i<n; ++i){
@@ -223,16 +223,30 @@ void MaterialScan::print(const Vector3D& p0, const Vector3D& p1, double epsilon)
       mname += " -> ";
       mname += next_mat->GetName();
     }
-    ::printf(fmt, i+1, mname.c_str(), curr_mat->GetZ(), curr_mat->GetA(),
-             curr_mat->GetDensity(), curr_mat->GetRadLen()/dd4hep::cm, curr_mat->GetIntLen()/dd4hep::cm,
-             length/dd4hep::cm, path_length/dd4hep::cm, sum_x0, sum_lambda,
-	     end[0]/dd4hep::cm, end[1]/dd4hep::cm, end[2]/dd4hep::cm);
-    //mat->Print();
+    if ( 0 == i )  {
+      ::printf(fmt, "(start)" , curr_mat->GetName(), curr_mat->GetZ(), curr_mat->GetA(),
+	       curr_mat->GetDensity(), curr_mat->GetRadLen()/dd4hep::cm, curr_mat->GetIntLen()/dd4hep::cm,
+	       0e0, 0e0, 0e0, 0e0,
+	       p0[0]/dd4hep::cm, p0[1]/dd4hep::cm, p0[2]/dd4hep::cm);
+    }
+    // No else here!
+    if ( (n-1) == i )  {
+      ::printf(fmt, "(end)", curr_mat->GetName(), curr_mat->GetZ(), curr_mat->GetA(),
+	       curr_mat->GetDensity(), curr_mat->GetRadLen()/dd4hep::cm, curr_mat->GetIntLen()/dd4hep::cm,
+	       0e0, 0e0, 0e0, 0e0,
+	       p0[0]/dd4hep::cm, p0[1]/dd4hep::cm, p0[2]/dd4hep::cm);
+    }
+    else   {
+      ::printf(fmt, std::to_string(i+1).c_str(), mname.c_str(), next_mat->GetZ(), next_mat->GetA(),
+	       next_mat->GetDensity(), next_mat->GetRadLen()/dd4hep::cm, next_mat->GetIntLen()/dd4hep::cm,
+	       length/dd4hep::cm, path_length/dd4hep::cm, sum_x0, sum_lambda,
+	       end[0]/dd4hep::cm, end[1]/dd4hep::cm, end[2]/dd4hep::cm);
+    }
   }
   printf("%s",line);
   const MaterialData& avg = matMgr.createAveragedMaterial(materials);
   const char* fmt = avg.radiationLength() >= 1e5 ? fmt2 : fmt1;
-  ::printf(fmt,0,"Average Material",avg.Z(),avg.A(),avg.density(), 
+  ::printf(fmt,"","Average Material",avg.Z(),avg.A(),avg.density(), 
            avg.radiationLength()/dd4hep::cm, avg.interactionLength()/dd4hep::cm,
            path_length/dd4hep::cm, path_length/dd4hep::cm,
            path_length/avg.radiationLength(), 
