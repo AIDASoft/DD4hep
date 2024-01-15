@@ -57,7 +57,8 @@ void DigiSubdetectorSequence::initialize()   {
   if ( m_detector.isValid() && m_sensDet.isValid() )   {
     m_idDesc       = m_sensDet.readout().idSpec();
     m_segmentation = m_sensDet.readout().segmentation();
-    const VolIDs& ids = m_detector.placement().volIDs();
+    PlacedVolume  plc = m_detector.placement();
+    const VolIDs& ids = plc.volIDs();
     VolumeID      vid = m_idDesc.encode(ids);
     VolumeID      msk = m_idDesc.get_mask(ids);
     scan_detector(m_detector, vid, msk);
@@ -88,7 +89,8 @@ void DigiSubdetectorSequence::scan_sensitive(PlacedVolume pv, VolumeID vid, Volu
 }
 
 void DigiSubdetectorSequence::scan_detector(DetElement de, VolumeID vid, VolumeID mask)   {
-  const VolIDs& new_ids = de.placement().volIDs();
+  PlacedVolume  place   = m_detector.placement();
+  const VolIDs& new_ids = place.volIDs();
   VolumeID      new_vid = vid;
   VolumeID      new_msk = mask;
   if ( !new_ids.empty() )   {

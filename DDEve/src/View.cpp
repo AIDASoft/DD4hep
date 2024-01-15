@@ -160,7 +160,8 @@ void View::ConfigureGeometry(const DisplayConfiguration::ViewConfig& config)    
   string dets;
   DisplayConfiguration::Configurations::const_iterator ic;
   float legend_y = Annotation::DefaultTextSize()+Annotation::DefaultMargin();
-  const DetElement::Children& c = m_eve->detectorDescription().world().children();
+  DetElement world = m_eve->detectorDescription().world();
+  const DetElement::Children& c = world.children();
   for( ic=config.subdetectors.begin(); ic != config.subdetectors.end(); ++ic)   {
     const DisplayConfiguration::Config& cfg = *ic;
     string nam = cfg.name;

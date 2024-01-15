@@ -983,8 +983,8 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 	double width = 0e0, offset = 0e0;
 	auto flags = pv_data->params->flags;
 	auto count = pv_data->params->trafo1D.second;
-	const auto& start = pv_data->params->start.Translation().Vect();
-	const auto& delta = pv_data->params->trafo1D.first.Translation().Vect();
+	auto start = pv_data->params->start.Translation().Vect();
+	auto delta = pv_data->params->trafo1D.first.Translation().Vect();
 
 	if ( flags&Volume::X_axis )
 	  { axis = kXAxis; width = delta.X(); offset = start.X(); }

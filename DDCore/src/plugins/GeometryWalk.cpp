@@ -115,19 +115,20 @@ void GeometryWalk::walk(DetElement e, PlacedVolume::VolIDs ids)  const   {
 /// Action routine to execute the test
 long GeometryWalk::run(Detector& description,int argc,char** argv)    {
   cout << "++ Processing plugin....GeometryWalker.." << endl;
+  DetElement world = description.world();
   for(int in=1; in < argc; ++in)  {
     string name = argv[in]+1;
     if ( name == "all" || name == "All" || name == "ALL" )  {
-      const _C& children = description.world().children();
+      const _C& children = world.children();
       for (_C::const_iterator i=children.begin(); i!=children.end(); ++i)  {
         DetElement sdet = (*i).second;
         cout << "++ Processing subdetector: " << sdet.name() << endl;
-        GeometryWalk test(description,sdet);
+        GeometryWalk test(description, sdet);
       }
       return 1;
     }
     cout << "++ Processing subdetector: " << name << endl;
-    GeometryWalk test(description,description.detector(name));
+    GeometryWalk test(description, description.detector(name));
   }
   return 1;
 }

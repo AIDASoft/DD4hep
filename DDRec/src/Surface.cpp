@@ -721,7 +721,7 @@ namespace dd4hep {
       // first we need to find the right volume for the local surface in the DetElement's volumes
       std::list< PlacedVolume > pVList ;
       PlacedVolume pv = _det.placement() ;
-      Volume theVol = _volSurf.volume() ;
+      Volume   theVol = _volSurf.volume() ;
       
       if( ! findVolume(  pv, theVol , pVList ) ){
         theVol = _volSurf.volume() ;
@@ -730,8 +730,8 @@ namespace dd4hep {
       } 
 
       //=========== compute and cache world transform for surface ==========
-      
-      const TGeoHMatrix& wm = _det.nominal().worldTransformation() ;
+      Alignment nominal = _det.nominal();
+      const TGeoHMatrix& wm = nominal.worldTransformation() ;
       
 #if 0 // debug
       wm.Print() ;
