@@ -14,6 +14,7 @@
 #define DDCAD_UTILITIES_H
 
 #include <vector>
+#include <cmath>
 
 #include <TGeoTessellated.h>
 #include <TGeoVector3.h>
@@ -63,13 +64,13 @@ namespace dd4hep {
       //
       // v1.z v2.z v3.z	v1.z v2.z
       double det =  0.0
-	+ v1.x() * v2.y() * v3.z()
-	+ v2.x() * v3.y() * v1.z()
-	+ v3.x() * v1.y() * v2.z()
-	- v1.z() * v2.y() * v3.x()
-	- v2.z() * v3.y() * v1.x()
-	- v3.z() * v1.y() * v2.x();
-      return det < epsilon;
+        + v1.x() * v2.y() * v3.z()
+        + v2.x() * v3.y() * v1.z()
+        + v3.x() * v1.y() * v2.z()
+        - v1.z() * v2.y() * v3.x()
+        - v2.z() * v3.y() * v1.x()
+        - v3.z() * v1.y() * v2.x();
+      return std::fabs(det) < epsilon;
     }
   }
 }
