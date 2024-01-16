@@ -37,8 +37,8 @@ elseif(DD4HEP_LOAD_ASSIMP)
 
     ExternalProject_Add(
         assimp_project
-        SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/assimp
-        INSTALL_DIR  ${CMAKE_INSTALL_PREFIX}
+        SOURCE_DIR     ${CMAKE_CURRENT_BINARY_DIR}/external/assimp
+        INSTALL_DIR    ${CMAKE_INSTALL_PREFIX}
         GIT_REPOSITORY https://github.com/assimp/assimp.git
         GIT_TAG v5.0.1
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
