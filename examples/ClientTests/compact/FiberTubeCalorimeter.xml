@@ -1,0 +1,110 @@
+<lccdd>
+  <info name="SCEPCAL with IDEA"
+        title="SCEPCAL with IDEA"
+        author="Sarah Eno"
+        url="https://twiki.cern.ch/twiki/bin/view/CLIC/xxx"
+        status="development"
+        version="1.0">
+    <comment>The compact format for the SCEPCAL IDEA from Sarah Eno</comment>
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <materials>
+    <material name="Brass">
+      <D value="8.73" unit="g/cm3" />
+      <fraction n="0.75" ref="Cu"/>
+      <fraction n="0.25" ref="Zn"/>
+    </material>
+  </materials>
+
+  <define>
+    <!-- constants for dual readout crystal calorimeter -->
+    <constant name="DRcrystalwidth" value="1.0*cm"/>  <!-- should be 1 -->
+    <constant name="DRcrystallength" value="20.0*cm"/>  <!-- should be 20 normally, 400 for 20 interacion length test-->
+    <constant name="DRcrystalNsize" value="45"/>    <!-- should be 45 -->
+    <!-- gap between ecal and hcal  -->
+    <constant name="EcalHcalgap" value="0.1*cm"/> <!-- should be small 0.1 mm -->
+    <!-- constants for dual readout spagetti fiber hcal calorimeter in SCEPCAL -->
+    <!-- these are radii (or half widths) -->
+    <constant name="DRFiberAbswidthSCE" value="1.0*mm"/>  <!-- should be 1.0 mm --> 
+    <constant name="DRFiberFibwidthSCE" value=".5025*mm"/>  <!-- should be 0.5025 mm -->
+    <constant name="holeoverSCE" value="0.025*mm"/> 
+    <constant name="gapSCE" value="0.0001*mm"/>
+    <constant name="DRFiberlengthSCE" value="2.*cm"/>   <!-- should be 200 cm -->
+    <constant name="DRFiberNsizeSCE" value="5"/>        <!-- should be 136 -->
+    <!-- 200 crash  190 no crash 195 no crash  197 no crash 199 no crash-->
+    <!-- crashes when make fiber size smaller -->
+
+    <!-- constants for dual readout spagetti fiber hcal calorimeter in IDEA -->
+    <constant name="DRFiberAbswidthIDEA" value="1.0*mm"/>  <!-- should be 1.0 mm -->
+    <constant name="DRFiberFibwidthIDEA" value="0.5025*mm"/>  <!-- should be 0.5025 mm -->
+    <constant name="holeoverIDEA" value="0.025*mm"/> 
+    <constant name="gapIDEA" value="0.0001*mm"/>
+    <constant name="DRFiberlengthIDEA" value="400.*cm"/>   <!-- should be 200 cm -->
+    <constant name="DRFiberNsizeIDEA" value="199"/>        <!-- should be 150 -->
+
+
+<!-- constants for dual readout sampling hcal calorimeter -->
+    <constant name="DRSampAthick" value="4.*mm"/>  <!-- should be 20 -->
+    <constant name="DRSampSthick" value="4.*mm"/>  <!-- should be 5 -->
+    <constant name="DRSampQthick" value="4.*mm"/>   <!-- should be 5 -->
+    <constant name="DRSampxy" value="20.*mm"/> <!-- should be 20 -->
+    <constant name="DRSampNsize" value="10"/>        <!-- should be 5 -->
+    <constant name="DRSampNlayer" value="200"/>  <!-- should be 40 -->
+    <!-- detector numbering scheme -->
+    <constant name="Ecal_ID" value="5"/>
+    <constant name="Hcal_ID" value="6"/>
+    <constant name="EdgeDet_ID" value="4"/>
+
+    <constant name="killthick" value="0.01*cm"/>
+    <constant name="edgeoffset" value="50*cm"/>
+
+    <constant name="world_side" value="DRcrystallength+2*DRFiberlengthIDEA+EcalHcalgap+edgeoffset+10."/>
+    <constant name="world_x" value="world_side/1.5"/>  <!-- should be /4 -->
+    <constant name="world_y" value="world_side/1.5"/>  <!-- should be /4 -->
+    <constant name="world_z" value="world_side"/>
+  </define>
+
+  <display>
+    <vis name="AbsVis" alpha="1.0" r="0.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="CerenVis" alpha="0.5" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+    <vis name="ScintVis" alpha="0.5" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="phdetVis" alpha="1.0" r="1.0" g="1.0" b="1.0" showDaughters="true" visible="true"/>
+    <vis name="towerVis" alpha="0.1" r="0.3" g="0.3" b="0.3" showDaughters="true" visible="true"/>
+  </display>
+
+  <readouts>
+    <readout name="DRFNoSegment">
+      <segmentation type="NoSegmentation"/>
+      <id>system:8,layer:12,tube:12,hole:3,type:3</id>
+    </readout>
+  </readouts>
+
+  <detectors>
+    <detector id="Hcal_ID" name="FiberTubeCalorimeter" type="DD4hep_FiberTubeCalorimeter" readout="DRFNoSegment" vis="towerVis">
+    <!-- here z_length is the absorber length, thickness is length of an end side
+         z1 is the photodetector length gap is the distance between modules, and dz is how far the fiber sticks out of the absorber.
+         Nsize is the number of cells to make
+         zmin is where the dtector goes
+    -->
+    <dimensions numsides="DRFiberNsizeSCE"
+                thickness="DRFiberAbswidthSCE"
+                z_length="DRFiberlengthSCE"
+                gap="gapSCE"
+                zmin="-world_side/2.+2*killthick+edgeoffset+DRcrystallength+EcalHcalgap"
+                z1="killthick"/>
+      <structure>
+        <core1 name="core1" rmax="DRFiberFibwidthSCE" rmin="0.0" material="Polystyrene" vis="ScintVis" sensitive="yes"/> 
+        <core2 name="core2" rmax="DRFiberFibwidthSCE" rmin="0.0" material="Quartz" vis="CerenVis" sensitive="yes"/> 
+        <hole name="hole" rmax="(DRFiberFibwidthSCE+holeoverSCE)" rmin="0.0" material="Air" vis="holeVis" sensitive="yes"/> 
+        <absorb material="Brass" vis="AbsVis" sensitive="yes"/>
+        <phdet1 name="phdet1" rmax="DRFiberFibwidthSCE" rmin="0.0" material="killMedia2" vis="phdetVis" sensitive="yes"/> 
+        <phdet2 name="phdet2" rmax="DRFiberFibwidthSCE" rmin="0.0" material="killMedia3" vis="phdetVis" sensitive="yes"/> 
+      </structure>
+    </detector>
+  </detectors>
+</lccdd>

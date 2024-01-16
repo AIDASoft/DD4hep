@@ -97,6 +97,7 @@ namespace  {
     bool check_placements { false };
     bool check_volmgr     { false };
     bool check_sensitive  { false };
+    bool ignore_detector  { false };
 
     SensitiveDetector get_current_sensitive_detector();
 
@@ -449,7 +450,7 @@ void DetectorCheck::checkManagerSingleVolume(DetElement detector, PlacedVolume p
     if ( pv.volume().isSensitive() )  {
       PlacedVolume det_place = m_volMgr.lookupDetElementPlacement(vid);
       ++m_sens_counters.elements;
-      if ( pv.ptr() != det_place.ptr() )   {
+      if ( !ignore_detector && pv.ptr() != det_place.ptr() )   {
         err << "VolumeMgrTest: Wrong placement "
             << " got "        << det_place.name() << " (" << (void*)det_place.ptr() << ")"
             << " instead of " << pv.name()        << " (" << (void*)pv.ptr()        << ") "
@@ -551,33 +552,35 @@ void DetectorCheck::checkManagerSingleVolume(DetElement detector, PlacedVolume p
             printout(ERROR, m_det.name(), "DETELEMENT_PERSISTENCY FAILED: World transformation have DIFFERET pointer!");
           ++m_place_counters.errors;
         }
-        
-        if ( pv.ptr() == det_elem.placement().ptr() )   {
-          // The computed transformation 'trafo' MUST be equal to:
-          // m_volMgr.worldTransformation(vid) AND det_elem.nominal().worldTransformation()
-          int res1 = detail::matrix::_matrixEqual(trafo, det_elem.nominal().worldTransformation());
-          int res2 = detail::matrix::_matrixEqual(trafo, m_volMgr.worldTransformation(m_mapping,vid));
-          if ( res1 != detail::matrix::MATRICES_EQUAL || res2 != detail::matrix::MATRICES_EQUAL )  {
-            printout(ERROR, m_det.name(), "DETELEMENT_PLACEMENT FAILED: World transformation DIFFER.");
-            ++m_place_counters.errors;
+
+        if ( !ignore_detector )   {
+          if ( pv.ptr() == det_elem.placement().ptr() )   {
+            // The computed transformation 'trafo' MUST be equal to:
+            // m_volMgr.worldTransformation(vid) AND det_elem.nominal().worldTransformation()
+            int res1 = detail::matrix::_matrixEqual(trafo, det_elem.nominal().worldTransformation());
+            int res2 = detail::matrix::_matrixEqual(trafo, m_volMgr.worldTransformation(m_mapping,vid));
+            if ( res1 != detail::matrix::MATRICES_EQUAL || res2 != detail::matrix::MATRICES_EQUAL )  {
+              printout(ERROR, m_det.name(), "DETELEMENT_PLACEMENT FAILED: World transformation DIFFER.");
+              ++m_place_counters.errors;
+            }
+            else  {
+              printout(INFO, m_det.name(), "DETELEMENT_PLACEMENT: PASSED. All matrices equal: %s",
+                       volumeID(vid).c_str());
+            }
           }
           else  {
-            printout(INFO, m_det.name(), "DETELEMENT_PLACEMENT: PASSED. All matrices equal: %s",
-                     volumeID(vid).c_str());
-          }
-        }
-        else  {
-          // The computed transformation 'trafo' MUST be equal to:
-          // m_volMgr.worldTransformation(vid)
-          // The det_elem.nominal().worldTransformation() however is DIFFERENT!
-          int res2 = detail::matrix::_matrixEqual(trafo, m_volMgr.worldTransformation(m_mapping,vid));
-          if ( res2 != detail::matrix::MATRICES_EQUAL )  {
-            printout(ERROR, m_det.name(), "VOLUME_PLACEMENT FAILED: World transformation DIFFER.");
-            ++m_place_counters.errors;
-          }
-          else  {
-            printout(INFO, m_det.name(), "VOLUME_PLACEMENT: PASSED. All matrices equal: %s",
-                     volumeID(vid).c_str());
+            // The computed transformation 'trafo' MUST be equal to:
+            // m_volMgr.worldTransformation(vid)
+            // The det_elem.nominal().worldTransformation() however is DIFFERENT!
+            int res2 = detail::matrix::_matrixEqual(trafo, m_volMgr.worldTransformation(m_mapping,vid));
+            if ( res2 != detail::matrix::MATRICES_EQUAL )  {
+              printout(ERROR, m_det.name(), "VOLUME_PLACEMENT FAILED: World transformation DIFFER.");
+              ++m_place_counters.errors;
+            }
+            else  {
+              printout(INFO, m_det.name(), "VOLUME_PLACEMENT: PASSED. All matrices equal: %s",
+                       volumeID(vid).c_str());
+            }
           }
         }
       }
@@ -643,6 +646,7 @@ void DetectorCheck::help(int argc,char** argv)   {
     "                               sensitive volume placements.                  \n\n"
     "                               NOTE: Option requires proper PhysVolID setup    \n"
     "                               of the sensitive volume placements !            \n"
+    "  -ignore_detector             Ignore DetElement placement check for -volmgr   \n"
     << std::endl;
   std::cout << "Arguments: " << std::endl;
   for(int iarg=0; iarg<argc;++iarg)  {
@@ -659,6 +663,7 @@ long DetectorCheck::run(Detector& description,int argc,char** argv)    {
   bool structure = false;
   bool sensitive = false;
   bool placements = false;
+  bool ignore_de  = false;
   printout(ALWAYS, "DetectorCheck", "++ Processing plugin...");
   for(int iarg=0; iarg<argc;++iarg)  {
     if ( argv[iarg] == 0 ) break;
@@ -674,6 +679,8 @@ long DetectorCheck::run(Detector& description,int argc,char** argv)    {
       geometry = true;
     else if ( ::strncasecmp(argv[iarg], "-sensitive",4) == 0 )
       sensitive = true;
+    else if ( ::strncasecmp(argv[iarg], "-ignore_detelement",4) == 0 )
+      ignore_de = true;
     else if ( ::strncasecmp(argv[iarg], "-help",4) == 0 )
       help(argc, argv);
     else
@@ -685,12 +692,13 @@ long DetectorCheck::run(Detector& description,int argc,char** argv)    {
     if ( name == "all" || name == "All" || name == "ALL" )  {
       for (const auto& det : description.detectors() )  {
         printout(INFO, "DetectorCheck", "++ Processing subdetector: %s", det.second.name());
-	test.check_structure  = structure;
-	test.check_placements = placements;
-	test.check_volmgr     = volmgr;
-	test.check_geometry   = geometry;
-	test.check_sensitive  = sensitive;
-	test.execute(det.second, 9999);
+        test.check_structure  = structure;
+        test.check_placements = placements;
+        test.check_volmgr     = volmgr;
+        test.check_geometry   = geometry;
+        test.check_sensitive  = sensitive;
+        test.ignore_detector  = ignore_de;
+        test.execute(det.second, 9999);
       }
       return 1;
     }
@@ -702,6 +710,7 @@ long DetectorCheck::run(Detector& description,int argc,char** argv)    {
     test.check_volmgr     = volmgr;
     test.check_geometry   = geometry;
     test.check_sensitive  = sensitive;
+    test.ignore_detector  = ignore_de;
     test.execute(det, 9999);
   }
   return 1;
