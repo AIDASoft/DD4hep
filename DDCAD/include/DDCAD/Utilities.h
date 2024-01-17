@@ -26,24 +26,30 @@ namespace dd4hep {
   /// Namespace for implementation details of the AIDA detector description toolkit
   namespace cad  {
 
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
     inline std::string streamFacet(TGeoFacet const& facet,
-					 TGeoTessellated const& shape) {
+                                   TGeoTessellated const& shape) {
       using ::operator<<;
       std::stringstream str;
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
       str << "{";
       for (int i = 0; i < facet.GetNvert(); ++i) {
-	str << shape.GetVertex(facet[i]);
-	if (i != facet.GetNvert() - 1)
-	  str << ", ";
+        str << shape.GetVertex(facet[i]);
+        if (i != facet.GetNvert() - 1)
+          str << ", ";
       }
       str << "}";
-#else
-      str << facet;
-#endif
       return str.str();
     }
-
+#else
+    inline std::string streamFacet(TGeoFacet const& facet,
+                                   TGeoTessellated const& /* shape */) {
+      using ::operator<<;
+      std::stringstream str;
+      str << facet;
+      return str.str();
+    }
+#endif
+    
     inline std::string streamVertices(ROOT::Geom::Vertex_t const& v1,
 					    ROOT::Geom::Vertex_t const& v2,
 					    ROOT::Geom::Vertex_t const& v3) {
