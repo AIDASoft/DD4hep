@@ -117,7 +117,12 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
       ///       assigns the proper indices to the facet.
       for(unsigned int i=0; i < mesh->mNumFaces; i++)  {
         const unsigned int* idx  = mesh->mFaces[i].mIndices;
-        bool degenerated = dd4hep::cad::facetIsDegenerated({vertices[idx[0]], vertices[idx[1]], vertices[idx[2]]});
+        bool degenerated = false;
+        if ( mesh->mFaces[i].mNumIndices == 3 )
+          degenerated = dd4hep::cad::facetIsDegenerated({vertices[idx[0]], vertices[idx[1]], vertices[idx[2]]});
+        else if ( mesh->mFaces[i].mNumIndices == 4 )
+          degenerated = dd4hep::cad::facetIsDegenerated({vertices[idx[0]], vertices[idx[1]], vertices[idx[2]], vertices[idx[3]]});
+        
         if ( degenerated )   {
           printout(DEBUG, "ASSIMPReader", "+++ %s: Drop degenerated facet: %d %d %d",
                    name.c_str(), idx[0], idx[1], idx[2]);
