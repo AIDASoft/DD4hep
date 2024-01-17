@@ -127,12 +127,21 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
           printout(DEBUG, "ASSIMPReader", "+++ %s: Drop degenerated facet: %d %d %d",
                    name.c_str(), idx[0], idx[1], idx[2]);
         }
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
         else if ( mesh->mFaces[i].mNumIndices == 3 )   {
           shape->AddFacet(vertices[idx[0]], vertices[idx[1]], vertices[idx[2]]);
         }
         else if ( mesh->mFaces[i].mNumIndices == 4 )   {
           shape->AddFacet(vertices[idx[0]], vertices[idx[1]], vertices[idx[2]], vertices[idx[3]]);
         }
+#else
+        else if ( mesh->mFaces[i].mNumIndices == 3 )   {
+          shape->AddFacet(idx[0], idx[1], idx[2]);
+        }
+        else if ( mesh->mFaces[i].mNumIndices == 4 )   {
+          shape->AddFacet(idx[0], idx[1], idx[2], idx[3]);
+        }
+#endif
         else  {
           printout(INFO, "ASSIMPReader", "+++ %s: Fancy facet with %d indices.",
                    name.c_str(), mesh->mFaces[i].mNumIndices);
