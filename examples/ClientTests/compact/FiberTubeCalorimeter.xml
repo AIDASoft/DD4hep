@@ -98,9 +98,9 @@
                 zmin="-world_side/2.+2*killthick+edgeoffset+DRcrystallength+EcalHcalgap"
                 z1="killthick"/>
       <structure>
-        <core1 name="core1" rmax="DRFiberFibwidthSCE" rmin="0.0" material="Polystyrene" vis="ScintVis" sensitive="yes"/> 
-        <core2 name="core2" rmax="DRFiberFibwidthSCE" rmin="0.0" material="Quartz" vis="CerenVis" sensitive="yes"/> 
-        <hole name="hole" rmax="(DRFiberFibwidthSCE+holeoverSCE)" rmin="0.0" material="Air" vis="holeVis" sensitive="yes"/> 
+        <core1  name="scintillator" rmax="DRFiberFibwidthSCE" rmin="0.0" material="Polystyrene" vis="ScintVis" sensitive="yes"/> 
+        <core2  name="quartz" rmax="DRFiberFibwidthSCE" rmin="0.0" material="Quartz" vis="CerenVis" sensitive="yes"/> 
+        <hole   name="hole" rmax="(DRFiberFibwidthSCE+holeoverSCE)" rmin="0.0" material="Air" vis="holeVis" sensitive="yes"/> 
         <absorb material="Brass" vis="AbsVis" sensitive="yes"/>
         <phdet1 name="phdet1" rmax="DRFiberFibwidthSCE" rmin="0.0" material="killMedia2" vis="phdetVis" sensitive="yes"/> 
         <phdet2 name="phdet2" rmax="DRFiberFibwidthSCE" rmin="0.0" material="killMedia3" vis="phdetVis" sensitive="yes"/> 
