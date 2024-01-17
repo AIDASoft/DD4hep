@@ -344,6 +344,10 @@ namespace dd4hep  {
     return __to_string(value, fmt);
   }
 
+  string _toString(unsigned long value, const char* fmt) {
+    return __to_string(value, fmt);
+  }
+
   string _toString(float value, const char* fmt) {
     return __to_string(value, fmt);
   }

@@ -239,10 +239,12 @@ namespace dd4hep {
 
   /// String conversions: boolean value to string  \ingroup DD4HEP_CORE
   std::string _toString(bool value);
-  /// String conversions: integer value to string  \ingroup DD4HEP_CORE
+  /// String conversions: short integer value to string  \ingroup DD4HEP_CORE
   std::string _toString(short value, const char* fmt = "%d");
   /// String conversions: integer value to string  \ingroup DD4HEP_CORE
   std::string _toString(int value, const char* fmt = "%d");
+  /// String conversions: unsigned long integer value to string  \ingroup DD4HEP_CORE
+  std::string _toString(unsigned long value, const char* fmt = "%ld");
   /// String conversions: float value to string  \ingroup DD4HEP_CORE
   std::string _toString(float value, const char* fmt = "%.17e");
   /// String conversions: double value to string  \ingroup DD4HEP_CORE

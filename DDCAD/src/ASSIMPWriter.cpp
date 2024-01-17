@@ -159,7 +159,7 @@ namespace  {
             continue;
           }
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
-          bool degenerated = dd4hep::cad::facetIsDegenerated(vertices);
+          bool degenerated = dd4hep::cad::facetIsDegenerated({vertices[vv0],vertices[vv1],vertices[vv2]});
 #else
           bool degenerated = true;
           TGeoFacet f(&vertices, 3, vv0, vv1, vv2);
@@ -426,8 +426,8 @@ int ASSIMPWriter::write(const std::string& file_name,
           ROOT::Geom::Vertex_t v1(vv[id[0]].x, vv[id[0]].y, vv[id[0]].z);
           ROOT::Geom::Vertex_t v2(vv[id[1]].x, vv[id[1]].y, vv[id[1]].z);
           ROOT::Geom::Vertex_t v3(vv[id[2]].x, vv[id[2]].y, vv[id[2]].z);
-          std::stringstream str = dd4hep::cad::streamVertices(v1, v2, v3);
-          printout(ALWAYS,"ASSIMPWriter","++ Facet %4ld : %s", j, str.str().c_str());
+          std::string str = dd4hep::cad::streamVertices(v1, v2, v3);
+          printout(ALWAYS,"ASSIMPWriter","++ Facet %4ld : %s", j, str.c_str());
         }
       }
       else   {
