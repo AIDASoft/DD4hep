@@ -63,9 +63,9 @@ ASSIMPReader::readShapes(const std::string& source, double unit_length)  const
         if ( dump_facets )   {
           for( size_t i=0, n=shape->GetNfacets(); i < n; ++i )   {
             const auto& facet = shape->GetFacet(i);
-            std::stringstream str = dd4hep::cad::streamFacet(facet, shape);
+            std::string str = dd4hep::cad::streamFacet(facet, shape);
             printout(ALWAYS,"ASSIMPReader","++ Facet %4ld : %s",
-                     i, str.str().c_str());
+                     i, str.c_str());
           }
         }
         shape->SetTitle(TESSELLATEDSOLID_TAG);
@@ -90,7 +90,6 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
   bool dump_facets = ((flags>>8)&0x1) == 1;
   int aiflags = aiProcess_Triangulate|aiProcess_JoinIdenticalVertices|aiProcess_CalcTangentSpace;
   auto scene = importer->ReadFile( source.c_str(), aiflags);
-  char text[1048];
   
   if ( !scene )  {
     except("ASSIMPReader","+++ FileNotFound: %s",source.c_str());
@@ -108,9 +107,20 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
         vertices.emplace_back(Vertex(v[i].x*unit, v[i].y*unit, v[i].z*unit));
       }
       TessellatedSolid shape(name,vertices);
+      if ( name.empty() )  {
+        name = _toString(result.size(), "tessellated_%ld");
+      }
+
       for(unsigned int i=0; i < mesh->mNumFaces; i++)  {
         const unsigned int* idx  = mesh->mFaces[i].mIndices;
-        shape->AddFacet(idx[0], idx[1], idx[2]);
+        bool degenerated = dd4hep::cad::facetIsDegenerated({vertices[idx[0]], vertices[idx[1]], vertices[idx[2]]});
+        if ( !degenerated )   {
+          shape->AddFacet(idx[0], idx[1], idx[2]);
+          continue;
+        }
+        printout(INFO, "ASSIMPReader", "+++ %s: Drop degenerated facet: %d %d %d",
+                 name.c_str(), idx[0], idx[1], idx[2]);
+
       }
       if ( shape->GetNfacets() > 2 )   {
         std::string mat_name;
@@ -124,13 +134,8 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
         if ( !mat.isValid() )   {
           printout(ERROR, "ASSIMPReader",
                    "+++ %s: No material named '%s' FOUND. Will use Air. [Missing material]",
-                   text, mat_name.c_str());
+                   name.c_str(), mat_name.c_str());
           mat = detector.air();
-        }
-        if ( name.empty() )  {
-          ::snprintf(text,sizeof(text),"tessellated_%ld", result.size());
-          text[sizeof(text)-1] = 0;
-          name = text;
         }
         Volume vol(name, Solid(shape.ptr()), mat);
         if ( mesh->HasVertexColors(0) )   {
@@ -146,6 +151,7 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
               }
             }
             if ( !vis.isValid() )   {
+              char text[1024];
               ::snprintf(text,sizeof(text),"vis_%s_%p", name.c_str(), (void*)vol.ptr());
               text[sizeof(text)-1] = 0;
               vis = VisAttr(text);
@@ -162,9 +168,9 @@ ASSIMPReader::readVolumes(const std::string& source, double unit_length)  const
         if ( dump_facets )   {
           for( size_t i=0, n=shape->GetNfacets(); i < n; ++i )   {
             const auto& facet = shape->GetFacet(i);
-            std::stringstream str = dd4hep::cad::streamFacet(facet, shape);
+            std::string str = dd4hep::cad::streamFacet(facet, shape);
             printout(ALWAYS,"ASSIMPReader","++ Facet %4ld : %s",
-                     i, str.str().c_str());
+                     i, str.c_str());
           }
         }
         result.emplace_back(std::unique_ptr<TGeoVolume>(vol.ptr()));
