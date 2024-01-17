@@ -57,7 +57,7 @@ namespace dd4hep {
       const ROOT::Geom::Vertex_t& v1 = vertices[0];
       const ROOT::Geom::Vertex_t& v2 = vertices[1];
       const ROOT::Geom::Vertex_t& v3 = vertices[2];
-      constexpr double epsilon = 1.e-20;
+      constexpr double epsilon = 1.0e-10;
       // v1.x v2.x v3.x v1.x v2.x
       //
       // v1.y v2.y v3.y	v1.y v2.y
