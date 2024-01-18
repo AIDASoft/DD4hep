@@ -68,27 +68,17 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   // these refer to different fields in the xml file for this detector
   xml_comp_t fX_struct( x_det.child( _Unicode(structure) ) );
   xml_comp_t fX_absorb( fX_struct.child( _Unicode(absorb) ) );
-  xml_comp_t fX_core1( fX_struct.child( _Unicode(core1) ) );
-  xml_comp_t fX_core2( fX_struct.child( _Unicode(core2) ) );
-  xml_comp_t fX_hole( fX_struct.child( _Unicode(hole) ) );
+  xml_comp_t fX_core1(  fX_struct.child( _Unicode(core1) ) );
+  xml_comp_t fX_core2(  fX_struct.child( _Unicode(core2) ) );
+  xml_comp_t fX_hole(   fX_struct.child( _Unicode(hole) ) );
   xml_comp_t fX_phdet1( fX_struct.child( _Unicode(phdet1) ) );
   xml_comp_t fX_phdet2( fX_struct.child( _Unicode(phdet2) ) );
-  
-  // detector element for entire detector.  
-  DetElement    sdet      (det_name, det_id);
-  Volume        motherVol = description.pickMotherVolume(sdet);
-  Box           env_box   ((2*Ncount+1)*(hthick+agap+tol),(2*Ncount+1)*(hthick+agap+tol), (hzlength+hzph+tol));
-  Volume        envelopeVol  (det_name, env_box, air);
-  envelopeVol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
   Material mat;
   Transform3D trafo;
   PlacedVolume pv;
   Solid sol;
-  
-  pv = motherVol.placeVolume(envelopeVol, Position(0.,0.,azmin+hzlength+hzph+tol));
-  pv.addPhysVolID("system", det_id);
-  sdet.setPlacement(pv);  // associate the placed volume to the detector element
+
   sens.setType("calorimeter");
 
   // scint fiber
@@ -182,24 +172,40 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   }
 
   // setup the volumes with the shapes and properties in one horixontal layer
-  Volume tube_row_vol("layer", Box(hthick,hthick,hzlength+hzph), air);
+  double dx = 2*(Ncount + Ncount+1)/2e0 * (hthick+agap) + tol;
+  double dy = hthick + tol;
+  double dz = hzlength+hzph + tol;
+  Box    tube_row_box(dx, dy, dz);
+  Volume tube_row_vol("layer", tube_row_box, air);
   tube_row_vol.setVisAttributes(description, x_det.visStr());
   tube_row_vol.setSensitiveDetector(sens);
-  
+  cout << tube_row_vol.name()
+       << " dx: " << tube_row_box.x()
+       << " dy: " << tube_row_box.y()
+       << " dz: " << tube_row_box.z() << endl;
+  tube_row_vol.setVisAttributes(description, "layerVis");
+
   for (int ijk=-Ncount; ijk<Ncount+1; ijk++) {
-    double mod_x_off = (ijk)*2*(hthick+agap);
-    Transform3D tr(RotationZYX(0.,0.,0.), Position(mod_x_off,0.,0.));
+    double mod_x_off = (ijk) * 2 * (hthick + agap);
     int towernum = Ncount + ijk + 1;
-    pv = tube_row_vol.placeVolume((towernum%2 == 0) ? quartz_abs_vol : scint_abs_vol, tr);
+    pv = tube_row_vol.placeVolume((towernum%2 == 0) ? quartz_abs_vol : scint_abs_vol, Position(mod_x_off,0.,0.));
     pv.addPhysVolID("tube", towernum);
-    cout << "Placing row  " << setw(5) << right << ijk
-         << " x-offset: "   << setw(7) << right<< mod_x_off
+    //Box bounding_box = pv.volume().solid().GetBoundingBox();
+    cout << "Placing row  "    << setw(5) << right << ijk
+         << " x-offset: "      << setw(7) << right << mod_x_off
          << " volume of type " << pv.volume().name()
          << endl;
   }
+
+  dy = 2*(Ncount + Ncount+1)/2e0 * (hthick+agap) + tol;
+  DetElement    sdet      (det_name, det_id);
+  Box           env_box   (dx+tol, dy+tol, dz+tol);
+  Volume        envelopeVol  (det_name, env_box, air);
+  envelopeVol.setAttributes(description, x_det.regionStr(), x_det.limitsStr(), x_det.visStr());
+
   // Now stack multiple horizontal layers to form the final box
   for (int ijk=-Ncount; ijk<Ncount+1; ijk++) {
-    double mod_y_off = (ijk)*2*(hthick+agap);
+    double mod_y_off = (ijk) * 2 * (tube_row_box.y() + agap);
     Transform3D tr(RotationZYX(0.,0.,0.), Position(0.,mod_y_off,0.));
     pv = envelopeVol.placeVolume(tube_row_vol, tr);
     pv.addPhysVolID("layer", Ncount+ijk+1);
@@ -212,6 +218,12 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
          << " volume of type " << pv.volume().name()
          << endl;
   }
+
+  // detector element for entire detector.  
+  Volume        motherVol = description.pickMotherVolume(sdet);
+  pv = motherVol.placeVolume(envelopeVol, Position(0.,0.,azmin+hzlength+hzph+tol));
+  pv.addPhysVolID("system", det_id);
+  sdet.setPlacement(pv);  // associate the placed volume to the detector element
   return sdet;
 }
 

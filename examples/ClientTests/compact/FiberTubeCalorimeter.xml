@@ -70,11 +70,12 @@
   </define>
 
   <display>
-    <vis name="AbsVis" alpha="1.0" r="0.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="AbsVis"   alpha="0.5" r="0.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
     <vis name="CerenVis" alpha="0.5" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
     <vis name="ScintVis" alpha="0.5" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
     <vis name="phdetVis" alpha="1.0" r="1.0" g="1.0" b="1.0" showDaughters="true" visible="true"/>
     <vis name="towerVis" alpha="0.1" r="0.3" g="0.3" b="0.3" showDaughters="true" visible="true"/>
+    <vis name="layerVis" alpha="0.5" r="0.1" g="0.1" b="0.9" showDaughters="true" visible="true"/>
   </display>
 
   <readouts>
@@ -92,18 +93,18 @@
          zmin is where the dtector goes
     -->
     <dimensions numsides="DRFiberNsizeSCE"
-                thickness="DRFiberAbswidthSCE"
+                thickness="DRFiberAbswidthSCE+holeoverSCE"
                 z_length="DRFiberlengthSCE"
                 gap="gapSCE"
                 zmin="-world_side/2.+2*killthick+edgeoffset+DRcrystallength+EcalHcalgap"
                 z1="killthick"/>
       <structure>
         <core1  name="scintillator" rmax="DRFiberFibwidthSCE" rmin="0.0" material="Polystyrene" vis="ScintVis" sensitive="yes"/> 
-        <core2  name="quartz" rmax="DRFiberFibwidthSCE" rmin="0.0" material="Quartz" vis="CerenVis" sensitive="yes"/> 
-        <hole   name="hole" rmax="(DRFiberFibwidthSCE+holeoverSCE)" rmin="0.0" material="Air" vis="holeVis" sensitive="yes"/> 
-        <absorb material="Brass" vis="AbsVis" sensitive="yes"/>
-        <phdet1 name="phdet1" rmax="DRFiberFibwidthSCE" rmin="0.0" material="killMedia2" vis="phdetVis" sensitive="yes"/> 
-        <phdet2 name="phdet2" rmax="DRFiberFibwidthSCE" rmin="0.0" material="killMedia3" vis="phdetVis" sensitive="yes"/> 
+        <core2  name="quartz"       rmax="DRFiberFibwidthSCE" rmin="0.0" material="Quartz" vis="CerenVis" sensitive="yes"/> 
+        <hole   name="hole"         rmax="DRFiberFibwidthSCE+holeoverSCE" rmin="DRFiberFibwidthSCE" material="Air" vis="holeVis" sensitive="yes"/> 
+        <absorb material="Brass"    vis="AbsVis" sensitive="yes"/>
+        <phdet1 name="phdet1"       rmax="DRFiberFibwidthSCE" rmin="0.0" material="killMedia2" vis="phdetVis" sensitive="yes"/> 
+        <phdet2 name="phdet2"       rmax="DRFiberFibwidthSCE" rmin="0.0" material="killMedia3" vis="phdetVis" sensitive="yes"/> 
       </structure>
     </detector>
   </detectors>
