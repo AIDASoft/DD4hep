@@ -67,7 +67,8 @@ def run():
   geant4.setupROOTOutput('RootOutput', 'FiberTubeCalorimeter_' + time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
-  gun = geant4.setupGun("Gun", particle='e+', energy=50 * GeV, multiplicity=1, position=(0.0, 0.0, -364.0*cm))
+  pos = (0.0, 0.0, -364.0 * cm)
+  gun = geant4.setupGun("Gun", particle='e+', energy=50 * GeV, multiplicity=1, position=pos)
   gun.OutputLevel = generator_output_level
 
   # And handle the simulation particles.
