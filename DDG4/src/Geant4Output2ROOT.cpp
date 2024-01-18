@@ -29,6 +29,8 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TBranch.h>
+#include <TSystem.h>
+
 
 using namespace dd4hep::sim;
 using namespace dd4hep;
@@ -94,7 +96,13 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
   }
   if ( !m_file && !fname.empty() ) {
     TDirectory::TContext ctxt(TDirectory::CurrentDirectory());
+    if ( !gSystem->AccessPathName(fname.c_str()) )  {
+      gSystem->Unlink(fname.c_str());
+    }
     std::unique_ptr<TFile> file(TFile::Open(fname.c_str(), "RECREATE", "dd4hep Simulation data"));
+    if ( !file )  {
+      file.reset(TFile::Open((fname+".1").c_str(), "RECREATE", "dd4hep Simulation data"));
+    }
     if ( !file )  {
       except("Failed to create ROOT output file:'%s'", fname.c_str());
     }
