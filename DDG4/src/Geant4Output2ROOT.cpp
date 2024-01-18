@@ -36,7 +36,7 @@ using namespace std;
 
 /// Standard constructor
 Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* ctxt, const string& nam)
-  : Geant4OutputAction(ctxt, nam), m_file(0), m_tree(0) {
+  : Geant4OutputAction(ctxt, nam), m_file(nullptr), m_tree(nullptr) {
   declareProperty("Section",              m_section = "EVENT");
   declareProperty("HandleMCTruth",        m_handleMCTruth = true);
   declareProperty("DisabledCollections",  m_disabledCollections);
@@ -94,11 +94,15 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
   }
   if ( !m_file && !fname.empty() ) {
     TDirectory::TContext ctxt(TDirectory::CurrentDirectory());
-    m_file = TFile::Open(fname.c_str(), "RECREATE", "dd4hep Simulation data");
-    if (m_file->IsZombie()) {
+    std::unique_ptr<TFile> file(TFile::Open(fname.c_str(), "RECREATE", "dd4hep Simulation data"));
+    if ( !file )  {
+      except("Failed to create ROOT output file:'%s'", fname.c_str());
+    }
+    if (file->IsZombie()) {
       detail::deletePtr (m_file);
       except("Failed to open ROOT output file:'%s'", fname.c_str());
     }
+    m_file = file.release();
     m_tree = section(m_section);
   }
   Geant4OutputAction::beginRun(run);
