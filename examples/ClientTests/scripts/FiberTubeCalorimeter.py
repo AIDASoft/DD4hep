@@ -15,7 +15,7 @@ import os
 import time
 import DDG4
 from DDG4 import OutputLevel as Output
-from g4units import GeV, MeV, m
+from g4units import GeV, MeV, m, cm
 #
 #
 """
@@ -67,7 +67,7 @@ def run():
   geant4.setupROOTOutput('RootOutput', 'FiberTubeCalorimeter_' + time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
-  gun = geant4.setupGun("Gun", particle='e+', energy=20 * GeV, multiplicity=1, position=(0.0, 0.0, -369.0))
+  gun = geant4.setupGun("Gun", particle='e+', energy=50 * GeV, multiplicity=1, position=(0.0, 0.0, -364.0*cm))
   gun.OutputLevel = generator_output_level
 
   # And handle the simulation particles.

@@ -97,7 +97,8 @@
                 z_length="DRFiberlengthSCE"
                 gap="gapSCE"
                 zmin="-world_side/2.+2*killthick+edgeoffset+DRcrystallength+EcalHcalgap"
-                z1="killthick"/>
+                z1="killthick"
+                sensitive="yes"/>
       <structure>
         <core1  name="scintillator" rmax="DRFiberFibwidthSCE" rmin="0.0" material="Polystyrene" vis="ScintVis" sensitive="yes"/> 
         <core2  name="quartz"       rmax="DRFiberFibwidthSCE" rmin="0.0" material="Quartz" vis="CerenVis" sensitive="yes"/> 

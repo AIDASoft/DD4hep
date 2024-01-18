@@ -60,11 +60,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   xml_comp_t    x_dim     = x_det.dimensions();
   double        hthick    = x_dim.thickness();
   double        hzlength  = x_dim.z_length()/2.;
-  double        hzph      = x_dim.z1();
-  int           Ncount    = x_dim.numsides();
-  double        agap      = x_dim.gap();
-  double        azmin     = x_dim.zmin();
-
+  
   // these refer to different fields in the xml file for this detector
   xml_comp_t fX_struct( x_det.child( _Unicode(structure) ) );
   xml_comp_t fX_absorb( fX_struct.child( _Unicode(absorb) ) );
@@ -74,18 +70,18 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   xml_comp_t fX_phdet1( fX_struct.child( _Unicode(phdet1) ) );
   xml_comp_t fX_phdet2( fX_struct.child( _Unicode(phdet2) ) );
 
-  Material mat;
-  Transform3D trafo;
+  Material     mat;
+  Transform3D  trafo;
   PlacedVolume pv;
-  Solid sol;
+  Solid        sol;
 
   sens.setType("calorimeter");
-
+  //
   // scint fiber
-  sol = Tube(0.,fX_core1.rmax(), hzlength);
+  sol = Tube(0., fX_core1.rmax(), hzlength);
   mat = description.material(fX_core1.materialStr());
   Volume fiber_scint_vol(fX_core1.nameStr(), sol, mat);
-  fiber_scint_vol.setAttributes(description,fX_core1.regionStr(),fX_core1.limitsStr(),fX_core1.visStr());
+  fiber_scint_vol.setAttributes(description, fX_core1.regionStr(), fX_core1.limitsStr(), fX_core1.visStr());
   if ( fX_core1.isSensitive() ) {
     fiber_scint_vol.setSensitiveDetector(sens);
   }
@@ -94,12 +90,12 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
        << " vis: "   << setw(15) << left<< fX_core1.visStr()
        << " solid: " << setw(20) << left << sol.type()
        << " sensitive: " << yes_no(fX_core1.isSensitive()) << endl;
-  
+  //
   // quartz fiber
-  sol = Tube(0.,fX_core2.rmax(), hzlength);
+  sol = Tube(0., fX_core2.rmax(), hzlength);
   mat = description.material(fX_core2.materialStr());
   Volume  fiber_quartz_vol(fX_core2.nameStr(), sol, mat);
-  fiber_quartz_vol.setAttributes(description,fX_core2.regionStr(),fX_core2.limitsStr(),fX_core2.visStr());
+  fiber_quartz_vol.setAttributes(description, fX_core2.regionStr(), fX_core2.limitsStr(), fX_core2.visStr());
   if ( fX_core2.isSensitive() ) {
     fiber_quartz_vol.setSensitiveDetector(sens);
   }
@@ -108,10 +104,10 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
        << " vis: " << setw(15) << left << fX_core2.visStr()
        << " solid: " << setw(20) << left << sol.type()
        << " sensitive: " << yes_no(fX_core2.isSensitive()) << endl;
-
+  //
   // absorberhole with a scintillating fiber inside
   mat = description.material(fX_hole.materialStr());
-  sol = Tube(0.,fX_hole.rmax(),hzlength);
+  sol = Tube(0., fX_hole.rmax(), hzlength);
   Volume scint_hole_vol( fX_core1.nameStr()+"_hole", sol, mat);
   scint_hole_vol.setAttributes(description, fX_hole.regionStr(), fX_hole.limitsStr(), fX_hole.visStr());
   trafo = Transform3D(RotationZYX(0.,0.,0.),Position(0.,0.,0.));
@@ -125,10 +121,10 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   if ( fX_hole.isSensitive() ) {
     scint_hole_vol.setSensitiveDetector(sens);
   }
-
+  //
   // absorberhole with a quartz inside
   Volume quartz_hole_vol( fX_core2.nameStr()+"_hole", sol, mat);
-  quartz_hole_vol.setAttributes(description,fX_hole.regionStr(),fX_hole.limitsStr(),fX_hole.visStr());
+  quartz_hole_vol.setAttributes(description, fX_hole.regionStr(), fX_hole.limitsStr(), fX_hole.visStr());
   pv = quartz_hole_vol.placeVolume(fiber_quartz_vol);
   pv.addPhysVolID("type",2);
   cout << setw(28) << left << quartz_hole_vol.name()
@@ -142,9 +138,9 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
   // absorber with scintillator inside
   mat = description.material(fX_absorb.materialStr());
-  sol = Tube(0.,hthick,hzlength);
+  sol = Tube(0., hthick, hzlength);
   Volume scint_abs_vol( fX_core1.nameStr()+"_absorber", sol, mat);
-  scint_abs_vol.setAttributes(description,fX_absorb.regionStr(),fX_absorb.limitsStr(),fX_absorb.visStr());
+  scint_abs_vol.setAttributes(description, fX_absorb.regionStr(), fX_absorb.limitsStr(), fX_absorb.visStr());
   pv = scint_abs_vol.placeVolume(scint_hole_vol);
   pv.addPhysVolID("hole",1);
   cout << setw(28) << left << scint_abs_vol.name()
@@ -155,11 +151,11 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   if ( fX_absorb.isSensitive() ) {
     scint_abs_vol.setSensitiveDetector(sens);
   }
-
+  //
   // absorber with quartz inside
   mat = description.material(fX_absorb.materialStr());
   Volume quartz_abs_vol(fX_core2.nameStr()+"_absorber", sol, mat);
-  quartz_abs_vol.setAttributes(description,fX_absorb.regionStr(),fX_absorb.limitsStr(),fX_absorb.visStr());
+  quartz_abs_vol.setAttributes(description, fX_absorb.regionStr(), fX_absorb.limitsStr(), fX_absorb.visStr());
   pv = quartz_abs_vol.placeVolume(quartz_hole_vol, trafo);
   pv.addPhysVolID("hole",2);
   cout << setw(28) << left << quartz_abs_vol.name()
@@ -170,11 +166,14 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   if ( fX_absorb.isSensitive() ) {
     quartz_abs_vol.setSensitiveDetector(sens);
   }
-
-  // setup the volumes with the shapes and properties in one horixontal layer
-  double dx = 2*(Ncount + Ncount+1)/2e0 * (hthick+agap) + tol;
-  double dy = hthick + tol;
-  double dz = hzlength+hzph + tol;
+  //
+  // Setup the volumes with the shapes and properties in one horixontal layer
+  int    Ncount = x_dim.numsides();
+  double hzph   = x_dim.z1();
+  double agap   = x_dim.gap();
+  double dx     = 2*(Ncount + Ncount+1)/2e0 * (hthick+agap) + tol;
+  double dy     = hthick + tol;
+  double dz     = hzlength+hzph + tol;
   Box    tube_row_box(dx, dy, dz);
   Volume tube_row_vol("layer", tube_row_box, air);
   tube_row_vol.setVisAttributes(description, x_det.visStr());
@@ -190,7 +189,6 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
     int towernum = Ncount + ijk + 1;
     pv = tube_row_vol.placeVolume((towernum%2 == 0) ? quartz_abs_vol : scint_abs_vol, Position(mod_x_off,0.,0.));
     pv.addPhysVolID("tube", towernum);
-    //Box bounding_box = pv.volume().solid().GetBoundingBox();
     cout << "Placing row  "    << setw(5) << right << ijk
          << " x-offset: "      << setw(7) << right << mod_x_off
          << " volume of type " << pv.volume().name()
@@ -198,13 +196,16 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   }
 
   dy = 2*(Ncount + Ncount+1)/2e0 * (hthick+agap) + tol;
-  DetElement    sdet      (det_name, det_id);
-  Box           env_box   (dx+tol, dy+tol, dz+tol);
-  Volume        envelopeVol  (det_name, env_box, air);
+  DetElement    sdet(det_name, det_id);
+  Box           env_box(dx+tol, dy+tol, dz+tol);
+  Volume        envelopeVol(det_name, env_box, air);
   envelopeVol.setAttributes(description, x_det.regionStr(), x_det.limitsStr(), x_det.visStr());
-
+  if ( x_dim.isSensitive() )   {
+    envelopeVol.setSensitiveDetector(sens);
+  }
+  //
   // Now stack multiple horizontal layers to form the final box
-  for (int ijk=-Ncount; ijk<Ncount+1; ijk++) {
+  for (int ijk=-Ncount; ijk < Ncount+1; ijk++) {
     double mod_y_off = (ijk) * 2 * (tube_row_box.y() + agap);
     Transform3D tr(RotationZYX(0.,0.,0.), Position(0.,mod_y_off,0.));
     pv = envelopeVol.placeVolume(tube_row_vol, tr);
@@ -218,10 +219,11 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
          << " volume of type " << pv.volume().name()
          << endl;
   }
-
-  // detector element for entire detector.  
-  Volume        motherVol = description.pickMotherVolume(sdet);
-  pv = motherVol.placeVolume(envelopeVol, Position(0.,0.,azmin+hzlength+hzph+tol));
+  //
+  // detector element for entire detector.
+  dz = x_dim.zmin()+hzlength+hzph+tol;
+  Volume motherVol = description.pickMotherVolume(sdet);
+  pv = motherVol.placeVolume(envelopeVol, Position(0, 0, dz));
   pv.addPhysVolID("system", det_id);
   sdet.setPlacement(pv);  // associate the placed volume to the detector element
   return sdet;
