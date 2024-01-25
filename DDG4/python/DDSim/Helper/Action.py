@@ -167,4 +167,3 @@ class Action(ConfigHelper):
   @stack.setter
   def stack(self, val):
     self._stack = ConfigHelper.makeList(val)
-
