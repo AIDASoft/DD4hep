@@ -5,9 +5,9 @@ from DDSim.Helper.ConfigHelper import ConfigHelper
 
 
 class Action(ConfigHelper):
-  """Helper holding sensitive detector actions.
+  """Helper holding sensitive detector and other actions.
 
-  The default tracker and calorimeter actions can be set with
+  The default tracker and calorimeter sensitive actions can be set with
 
   >>> SIM = DD4hepSimulation()
   >>> SIM.action.tracker=('Geant4TrackerWeightedAction', {'HitPositionCombination': 2, 'CollectSingleDeposits': False})
@@ -30,6 +30,15 @@ class Action(ConfigHelper):
   >>> SIM = DD4hepSimulation()
   >>> SIM.action.mapActions['ecal'] =( "CaloPreShowerSDAction", {"FirstLayerNumber": 1} )
 
+  Additional actions can be set as well with
+
+  >>> SIM = DD4hepSimulation()
+  >>> SIM.action.run = "Geant4TestRunAction"
+  >>> SIM.action.event = "Geant4TestEventAction"
+  >>> SIM.action.track = "Geant4TestTrackAction"
+  >>> SIM.action.step = "Geant4TestStepAction"
+  >>> SIM.action.stack = "Geant4TestStackAction"
+
   """
 
   def __init__(self):
@@ -39,6 +48,11 @@ class Action(ConfigHelper):
     self._mapActions = dict()
     self._trackerSDTypes = ['tracker']
     self._calorimeterSDTypes = ['calorimeter']
+    self._run = []
+    self._event = []
+    self._track = []
+    self._step = []
+    self._stack = []
     self._closeProperties()
 
   @property
@@ -108,3 +122,49 @@ class Action(ConfigHelper):
   @calorimeterSDTypes.setter
   def calorimeterSDTypes(self, val):
     self._calorimeterSDTypes = ConfigHelper.makeList(val)
+
+  @property
+  def run(self):
+    """ set the default run action """
+    return self._run
+
+  @run.setter
+  def run(self, val):
+    self._run = ConfigHelper.makeList(val)
+
+  @property
+  def event(self):
+    """ set the default event action """
+    return self._event
+
+  @event.setter
+  def event(self, val):
+    self._event = ConfigHelper.makeList(val)
+
+  @property
+  def track(self):
+    """ set the default track action """
+    return self._track
+
+  @track.setter
+  def track(self, val):
+    self._track = ConfigHelper.makeList(val)
+
+  @property
+  def step(self):
+    """ set the default step action """
+    return self._step
+
+  @step.setter
+  def step(self, val):
+    self._step = ConfigHelper.makeList(val)
+
+  @property
+  def stack(self):
+    """ set the default stack action """
+    return self._stack
+
+  @stack.setter
+  def stack(self, val):
+    self._stack = ConfigHelper.makeList(val)
+
