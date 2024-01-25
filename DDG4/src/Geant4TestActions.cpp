@@ -186,6 +186,33 @@ void Geant4TestStepAction::operator()(const G4Step*, G4SteppingManager*) {
 }
 
 /// Standard constructor with initializing arguments
+Geant4TestStackAction::Geant4TestStackAction(Geant4Context* c, const std::string& n)
+  : Geant4StackingAction(c, n), Geant4TestBase(this, "Geant4TestStackAction") {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+Geant4TestStackAction::~Geant4TestStackAction() {
+  InstanceCount::decrement(this);
+}
+/// New-stage callback
+void Geant4TestStackAction::newStage(G4StackManager*) {
+  PRINT("%s> calling newStage()", m_type.c_str());
+}
+/// Preparation callback
+void Geant4TestStackAction::prepare(G4StackManager*) {
+  PRINT("%s> calling prepare()", m_type.c_str());
+}
+/// Return TrackClassification with enum G4ClassificationOfNewTrack or NoTrackClassification
+TrackClassification Geant4TestStackAction::classifyNewTrack(G4StackManager*, const G4Track* trk) {
+  PRINT("%s> calling classifyNewTrack(track=%d, parent=%d, position=(%f,%f,%f) Context: run=%p evt=%p)",
+        m_type.c_str(), trk->GetTrackID(),
+        trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z(),
+        &context()->run(), &context()->event());
+  return TrackClassification();
+}
+
+/// Standard constructor with initializing arguments
 Geant4TestSensitive::Geant4TestSensitive(Geant4Context* c, const std::string& n, DetElement det, Detector& description)
   : Geant4Sensitive(c, n, det, description), Geant4TestBase(this, "Geant4TestSensitive") {
   InstanceCount::increment(this);
