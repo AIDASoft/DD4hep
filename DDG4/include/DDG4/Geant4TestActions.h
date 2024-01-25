@@ -148,6 +148,26 @@ namespace dd4hep {
         void operator()(const G4Step*, G4SteppingManager*)  override;
       };
 
+      /// Example stacking action doing nothing, but print
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
+       */
+      class Geant4TestStackAction: public Geant4StackingAction, public Geant4TestBase {
+      public:
+        /// Standard constructor with initializing arguments
+        Geant4TestStackAction(Geant4Context* c, const std::string& n);
+        /// Default destructor
+        virtual ~Geant4TestStackAction();
+        /// New-stage callback
+        virtual void newStage(G4StackManager*)  override;
+        /// Preparation callback
+        virtual void prepare(G4StackManager*)  override;
+        /// Return TrackClassification with enum G4ClassificationOfNewTrack or NoTrackClassification
+        virtual TrackClassification classifyNewTrack(G4StackManager*, const G4Track*)  override;
+      };
+
       /// Example sensitve detector action doing nothing, but print
       /**
        *  \author  M.Frank
