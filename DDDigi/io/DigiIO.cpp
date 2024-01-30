@@ -28,7 +28,14 @@
 #include <edm4hep/SimTrackerHit.h>
 #include <edm4hep/MCParticle.h>
 #include <edm4hep/MCParticleCollection.h>
+#if __has_include("edm4hep/TrackerHitCollection.h")
 #include <edm4hep/TrackerHitCollection.h>
+namespace edm4hep {
+  using TrackerHit3DCollection = edm4hep::TrackerHitCollection;
+}
+#else
+#include <edm4hep/TrackerHit3DCollection.h>
+#endif
 #include <edm4hep/SimTrackerHitCollection.h>
 #include <edm4hep/CalorimeterHitCollection.h>
 #include <edm4hep/SimCalorimeterHitCollection.h>
@@ -224,7 +231,7 @@ namespace dd4hep {
     template <> template <> 
     void data_io<edm4hep_input>::_to_edm4hep(const std::pair<const CellID, EnergyDeposit>& dep,
 					     const std::array<float, 6>& covMat,
-					     edm4hep::TrackerHitCollection& collection,
+					     edm4hep::TrackerHit3DCollection& collection,
 					     int hit_type)
 
     {
