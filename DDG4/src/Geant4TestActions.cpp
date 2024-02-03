@@ -49,6 +49,7 @@ Geant4TestBase::Geant4TestBase(Geant4Action* a, const std::string& typ)
 }
 /// Default destructor
 Geant4TestBase::~Geant4TestBase() {
+  printout(VERBOSE, m_type, "properties at destruction: %d, %f, %s", m_value1, m_value2, m_value3.c_str());
   InstanceCount::decrement(this);
 }
 
