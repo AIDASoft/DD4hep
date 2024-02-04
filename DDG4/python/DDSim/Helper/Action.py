@@ -123,7 +123,6 @@ class Action(ConfigHelper):
   def calorimeterSDTypes(self, val):
     self._calorimeterSDTypes = ConfigHelper.makeList(val)
 
-
   @staticmethod
   def makeListOfDictFromJSON(val):
     if isinstance(val, str):
@@ -131,7 +130,7 @@ class Action(ConfigHelper):
       import json
       try:
         val = json.loads(val)
-      except:
+      except ValueError as e:
         val = tuple(val.split(","))
     if isinstance(val, tuple):
       # assumes: ( "Geant4TestEventAction", {"Property_int": 10} )
@@ -141,7 +140,7 @@ class Action(ConfigHelper):
     if isinstance(val, dict):
       # assumes: { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} }
       # creates: [ { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} } ]
-      val = [ val ]
+      val = [val]
     if isinstance(val, list):
       # assumes: [ { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} } ]
       return val
