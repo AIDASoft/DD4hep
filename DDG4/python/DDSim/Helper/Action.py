@@ -138,7 +138,7 @@ On the command line, these can be specified as JSON strings.
       try:
         val = json.loads(val)
       except ValueError:
-        val = tuple(val.split(","))
+        val = [dict(name=v) for v in val.split(",")]
     if isinstance(val, tuple):
       # assumes: ( "Geant4TestEventAction", {"Property_int": 10} )
       # creates: { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} }
