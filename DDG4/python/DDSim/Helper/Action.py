@@ -30,14 +30,16 @@ class Action(ConfigHelper):
   >>> SIM = DD4hepSimulation()
   >>> SIM.action.mapActions['ecal'] =( "CaloPreShowerSDAction", {"FirstLayerNumber": 1} )
 
-  Additional actions can be set as well with
+  Additional actions can be set as well with the following syntax variations:
 
   >>> SIM = DD4hepSimulation()
-  >>> SIM.action.run = [ ("Geant4TestRunAction", {"Property_int": 10} ) ]
-  >>> SIM.action.event = [ ("Geant4TestEventAction", {"Property_int": 10} ) ]
-  >>> SIM.action.track = [ ("Geant4TestTrackAction", {"Property_int": 10} ) ]
-  >>> SIM.action.step = [ ("Geant4TestStepAction", {"Property_int": 10} ) ]
-  >>> SIM.action.stack = [ ("Geant4TestStackAction", {"Property_int": 10} ) ]
+  >>> SIM.action.run = "Geant4TestRunAction" # name only
+  >>> SIM.action.event = "Geant4TestEventAction/EventAction0,Geant4TestEventAction/EventAction1" # comma-separated names
+  >>> SIM.action.track = ( "Geant4TestTrackAction", {"Property_int": 10} ) # tuple of name and parameter dict
+  >>> SIM.action.step = { "name": "Geant4TestStepAction", "parameter": {"Property_int": 10} } # dict of name and parameter dict
+  >>> SIM.action.stack = [ { "name": "Geant4TestStackAction", "parameter": {"Property_int": 10} } ] # list of dict of name and parameter dict
+
+On the command line, these can be specified as JSON strings.
 
   """
 
