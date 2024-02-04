@@ -130,7 +130,7 @@ class Action(ConfigHelper):
       import json
       try:
         val = json.loads(val)
-      except ValueError as e:
+      except ValueError:
         val = tuple(val.split(","))
     if isinstance(val, tuple):
       # assumes: ( "Geant4TestEventAction", {"Property_int": 10} )
