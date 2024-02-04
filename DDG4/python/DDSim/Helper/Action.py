@@ -33,11 +33,16 @@ class Action(ConfigHelper):
   Additional actions can be set as well with the following syntax variations:
 
   >>> SIM = DD4hepSimulation()
-  >>> SIM.action.run = "Geant4TestRunAction" # name only
-  >>> SIM.action.event = "Geant4TestEventAction/EventAction0,Geant4TestEventAction/EventAction1" # comma-separated names
-  >>> SIM.action.track = ( "Geant4TestTrackAction", {"Property_int": 10} ) # tuple of name and parameter dict
-  >>> SIM.action.step = { "name": "Geant4TestStepAction", "parameter": {"Property_int": 10} } # dict of name and parameter dict
-  >>> SIM.action.stack = [ { "name": "Geant4TestStackAction", "parameter": {"Property_int": 10} } ] # list of dict of name and parameter dict
+  # single action by name only:
+  >>> SIM.action.run = "Geant4TestRunAction"
+  # multiple actions with comma-separated names:
+  >>> SIM.action.event = "Geant4TestEventAction/Action0,Geant4TestEventAction/Action1"
+  # single actuon by tuple of name and parameter dict:
+  >>> SIM.action.track = ( "Geant4TestTrackAction", {"Property_int": 10} )
+  # single action by dict of name and parameter dict:
+  >>> SIM.action.step = { "name": "Geant4TestStepAction", "parameter": {"Property_int": 10} }
+  # multiple actions by list of dict of name and parameter dict:
+  >>> SIM.action.stack = [ { "name": "Geant4TestStackAction", "parameter": {"Property_int": 10} } ]
 
 On the command line, these can be specified as JSON strings.
 
