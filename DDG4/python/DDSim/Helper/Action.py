@@ -33,11 +33,11 @@ class Action(ConfigHelper):
   Additional actions can be set as well with
 
   >>> SIM = DD4hepSimulation()
-  >>> SIM.action.run = "Geant4TestRunAction"
-  >>> SIM.action.event = "Geant4TestEventAction"
-  >>> SIM.action.track = "Geant4TestTrackAction"
-  >>> SIM.action.step = "Geant4TestStepAction"
-  >>> SIM.action.stack = "Geant4TestStackAction"
+  >>> SIM.action.run = [ ("Geant4TestRunAction", {"Property_int": 10} ) ]
+  >>> SIM.action.event = [ ("Geant4TestEventAction", {"Property_int": 10} ) ]
+  >>> SIM.action.track = [ ("Geant4TestTrackAction", {"Property_int": 10} ) ]
+  >>> SIM.action.step = [ ("Geant4TestStepAction", {"Property_int": 10} ) ]
+  >>> SIM.action.stack = [ ("Geant4TestStackAction", {"Property_int": 10} ) ]
 
   """
 
@@ -123,6 +123,30 @@ class Action(ConfigHelper):
   def calorimeterSDTypes(self, val):
     self._calorimeterSDTypes = ConfigHelper.makeList(val)
 
+
+  @staticmethod
+  def makeListOfDictFromJSON(val):
+    if isinstance(val, str):
+      # assumes: valid JSON string or comma-separated list of names
+      import json
+      try:
+        val = json.loads(val)
+      except:
+        val = tuple(val.split(","))
+    if isinstance(val, tuple):
+      # assumes: ( "Geant4TestEventAction", {"Property_int": 10} )
+      # creates: { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} }
+      # note: not able to specified as json which only allows a list
+      val = dict(name=val[0], parameter=val[1])
+    if isinstance(val, dict):
+      # assumes: { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} }
+      # creates: [ { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} } ]
+      val = [ val ]
+    if isinstance(val, list):
+      # assumes: [ { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} } ]
+      return val
+    raise RuntimeError("Commandline setting of action is not successful for: %s " % val)
+
   @property
   def run(self):
     """ set the default run action """
@@ -130,7 +154,7 @@ class Action(ConfigHelper):
 
   @run.setter
   def run(self, val):
-    self._run = ConfigHelper.makeList(val)
+    self._run.extend(Action.makeListOfDictFromJSON(val))
 
   @property
   def event(self):
@@ -139,7 +163,7 @@ class Action(ConfigHelper):
 
   @event.setter
   def event(self, val):
-    self._event = ConfigHelper.makeList(val)
+    self._event.extend(Action.makeListOfDictFromJSON(val))
 
   @property
   def track(self):
@@ -148,7 +172,7 @@ class Action(ConfigHelper):
 
   @track.setter
   def track(self, val):
-    self._track = ConfigHelper.makeList(val)
+    self._track.extend(Action.makeListOfDictFromJSON(val))
 
   @property
   def step(self):
@@ -157,7 +181,7 @@ class Action(ConfigHelper):
 
   @step.setter
   def step(self, val):
-    self._step = ConfigHelper.makeList(val)
+    self._step.extend(Action.makeListOfDictFromJSON(val))
 
   @property
   def stack(self):
@@ -166,4 +190,4 @@ class Action(ConfigHelper):
 
   @stack.setter
   def stack(self, val):
-    self._stack = ConfigHelper.makeList(val)
+    self._stack.extend(Action.makeListOfDictFromJSON(val))
