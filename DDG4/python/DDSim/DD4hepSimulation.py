@@ -348,22 +348,18 @@ class DD4hepSimulation(object):
     self.geometry.constructGeometry(kernel, geant4, self.output.geometry)
 
     # ----------------------------------------------------------------------------------
-    # Configure run, event, track, step actions, if present
-    for action_name in self.action.run:
-        action = DDG4.RunAction(kernel, action_name)
-        kernel.runAction().add(action)
-    for action_name in self.action.event:
-        action = DDG4.EventAction(kernel, action_name)
-        kernel.eventAction().add(action)
-    for action_name in self.action.track:
-        action = DDG4.TrackingAction(kernel, action_name)
-        kernel.trackingAction().add(action)
-    for action_name in self.action.step:
-        action = DDG4.SteppingAction(kernel, action_name)
-        kernel.steppingAction().add(action)
-    for action_name in self.action.stack:
-        action = DDG4.StackingAction(kernel, action_name)
-        kernel.stackingAction().add(action)
+    # Configure run, event, track, step, and stack actions, if present
+    for action_list, DDG4_Action, kernel_Action in \
+        [(self.action.run, DDG4.RunAction, kernel.runAction),
+         (self.action.event, DDG4.EventAction, kernel.eventAction),
+         (self.action.track, DDG4.TrackingAction, kernel.trackingAction),
+         (self.action.step, DDG4.SteppingAction, kernel.steppingAction),
+         (self.action.stack, DDG4.StackingAction, kernel.stackingAction)]:
+      for action_dict in action_list:
+        action = DDG4_Action(kernel, action_dict["name"])
+        for parameter, value in action_dict['parameter'].items():
+          setattr(action, parameter, value)
+        kernel_Action().add(action)
 
     # ----------------------------------------------------------------------------------
     # Configure Run actions
