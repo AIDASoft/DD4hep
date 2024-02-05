@@ -37,7 +37,7 @@ class Action(ConfigHelper):
   >>> SIM.action.run = "Geant4TestRunAction"
   # multiple actions with comma-separated names:
   >>> SIM.action.event = "Geant4TestEventAction/Action0,Geant4TestEventAction/Action1"
-  # single actuon by tuple of name and parameter dict:
+  # single action by tuple of name and parameter dict:
   >>> SIM.action.track = ( "Geant4TestTrackAction", {"Property_int": 10} )
   # single action by dict of name and parameter dict:
   >>> SIM.action.step = { "name": "Geant4TestStepAction", "parameter": {"Property_int": 10} }
