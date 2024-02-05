@@ -357,8 +357,9 @@ class DD4hepSimulation(object):
          (self.action.stack, DDG4.StackingAction, kernel.stackingAction)]:
       for action_dict in action_list:
         action = DDG4_Action(kernel, action_dict["name"])
-        for parameter, value in action_dict['parameter'].items():
-          setattr(action, parameter, value)
+        if 'parameter' in action_dict.keys():
+          for parameter, value in action_dict['parameter'].items():
+            setattr(action, parameter, value)
         kernel_Action().add(action)
 
     # ----------------------------------------------------------------------------------
