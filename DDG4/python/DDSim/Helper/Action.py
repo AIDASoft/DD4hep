@@ -44,7 +44,18 @@ class Action(ConfigHelper):
   # multiple actions by list of dict of name and parameter dict:
   >>> SIM.action.stack = [ { "name": "Geant4TestStackAction", "parameter": {"Property_int": 10} } ]
 
-On the command line, these can be specified as JSON strings.
+On the command line or in python, these actions can be specified as JSON strings:
+  $ ddsim --action.stack '{ "name": "Geant4TestStackAction", "parameter": { "Property_int": 10 } }'
+or
+  >>> SIM.action.stack = '''
+  {
+    "name": "Geant4TestStackAction",
+    "parameter": {
+      "Property_int": 10,
+      "Property_double": "1.0*mm"
+    }
+  }
+  '''
 
   """
 
