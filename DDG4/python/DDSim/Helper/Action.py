@@ -142,7 +142,7 @@ On the command line, these can be specified as JSON strings.
     if isinstance(val, tuple):
       # assumes: ( "Geant4TestEventAction", {"Property_int": 10} )
       # creates: { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} }
-      # note: not able to specified as json which only allows a list
+      # note: not able to be specified as json which only allows a list
       val = dict(name=val[0], parameter=val[1])
     if isinstance(val, dict):
       # assumes: { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} }
