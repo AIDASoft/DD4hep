@@ -27,7 +27,11 @@
 #include <edm4hep/EDM4hepVersion.h>
 /// podio include files
 #include <podio/Frame.h>
+#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
+#include <podio/ROOTWriter.h>
+#else
 #include <podio/ROOTFrameWriter.h>
+#endif
 #include <podio/podioVersion.h>
 
 /// Namespace for the AIDA detector description toolkit
@@ -48,7 +52,11 @@ namespace dd4hep {
      */
     class Geant4Output2EDM4hep : public Geant4OutputAction  {
     protected:
+#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
+      using writer_t = podio::ROOTWriter;
+#else
       using writer_t = podio::ROOTFrameWriter;
+#endif
       using stringmap_t = std::map< std::string, std::string >;
       using trackermap_t = std::map< std::string, edm4hep::SimTrackerHitCollection >;
       using calorimeterpair_t = std::pair< edm4hep::SimCalorimeterHitCollection, edm4hep::CaloHitContributionCollection >;
@@ -238,7 +246,11 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
     }
   }
   if ( !fname.empty() )   {
+#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
+    m_file = std::make_unique<podio::ROOTWriter>(fname);
+#else
     m_file = std::make_unique<podio::ROOTFrameWriter>(fname);
+#endif
     if ( !m_file )   {
       fatal("+++ Failed to open output file: %s", fname.c_str());
     }
