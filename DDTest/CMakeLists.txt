@@ -140,8 +140,21 @@ if (DD4HEP_USE_GEANT4)
 
   add_test( t_ddsimUserPlugins "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
     ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=10
-    --outputFile=t_ddsimUserPlugins.root -G --steeringFile ${CMAKE_CURRENT_SOURCE_DIR}/python/userSteeringFile.PY
-    --part.userParticleHandler=)
+    --outputFile=t_ddsimUserPlugins.root -G
+    --steeringFile ${CMAKE_CURRENT_SOURCE_DIR}/python/userPluginsSteeringFile.PY
+    --part.userParticleHandler=
+  )
+
+  add_test( t_ddsimUserActions "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+    ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=10
+    --outputFile=t_ddsimUserActions.root -G
+    --steeringFile ${CMAKE_CURRENT_SOURCE_DIR}/python/userActionsSteeringFile.PY
+    --action.event "Geant4TestEventAction/EventActionCLI1"
+    --action.step "Geant4TestStepAction/StepActionCLI1,Geant4TestStepAction/StepActionCLI2"
+    --action.step '[ "Geant4TestStepAction/StepActionCLI2", "Geant4TestStepAction/StepActionCLI3" ]'
+    --action.stack '{ "name" : "Geant4TestStackAction/StackActionCLI1" , "parameter" : { "Property_int" : 10 } }'
+    --action.stack '[ { "name" : "Geant4TestStackAction/StackActionCLI2" , "parameter" : { "Property_int" : 10 } } ]'
+  )
 
 endif()
 install(DIRECTORY include/DD4hep DESTINATION include)
