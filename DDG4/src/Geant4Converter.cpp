@@ -12,13 +12,14 @@
 //==========================================================================
 
 // Framework include files
-#include <DD4hep/Detector.h>
-#include <DD4hep/Plugins.h>
 #include <DD4hep/Shapes.h>
 #include <DD4hep/Volumes.h>
+#include <DD4hep/Plugins.h>
 #include <DD4hep/Printout.h>
+#include <DD4hep/Detector.h>
 #include <DD4hep/DD4hepUnits.h>
 #include <DD4hep/PropertyTable.h>
+#include <DD4hep/DetectorTools.h>
 #include <DD4hep/detail/ShapesInterna.h>
 #include <DD4hep/detail/ObjectsInterna.h>
 #include <DD4hep/detail/DetectorInterna.h>
@@ -27,6 +28,7 @@
 #include <DDG4/Geant4Helpers.h>
 #include <DDG4/Geant4Converter.h>
 #include <DDG4/Geant4UserLimits.h>
+#include <DDG4/Geant4AssemblyVolume.h>
 #include <DDG4/Geant4PlacementParameterisation.h>
 #include "Geant4ShapeConverter.h"
 
@@ -77,23 +79,59 @@
 #include <limits>
 
 namespace units = dd4hep;
-using namespace dd4hep::detail;
 using namespace dd4hep::sim;
 using namespace dd4hep;
 using namespace std;
 
-#include <DDG4/Geant4AssemblyVolume.h>
-#include <DD4hep/DetectorTools.h>
-
-static constexpr const double CM_2_MM = (CLHEP::centimeter/dd4hep::centimeter);
-static constexpr const char* GEANT4_TAG_IGNORE = "Geant4-ignore";
-static constexpr const char* GEANT4_TAG_PLUGIN = "Geant4-plugin";
-static constexpr const char* GEANT4_TAG_BIRKSCONSTANT    = "BirksConstant";
-static constexpr const char* GEANT4_TAG_MEE              = "MeanExcitationEnergy";
-static constexpr const char* GEANT4_TAG_ENE_PER_ION_PAIR = "MeanEnergyPerIonPair";
-
 namespace {
+
+  static constexpr const double CM_2_MM = (CLHEP::centimeter/dd4hep::centimeter);
+  static constexpr const char* GEANT4_TAG_IGNORE = "Geant4-ignore";
+  static constexpr const char* GEANT4_TAG_PLUGIN = "Geant4-plugin";
+  static constexpr const char* GEANT4_TAG_BIRKSCONSTANT    = "BirksConstant";
+  static constexpr const char* GEANT4_TAG_MEE              = "MeanExcitationEnergy";
+  static constexpr const char* GEANT4_TAG_ENE_PER_ION_PAIR = "MeanEnergyPerIonPair";
+
   static string indent = "";
+
+  template <typename O, typename C, typename F> void handleRefs(const O* o, const C& c, F pmf) {
+    for (typename C::const_iterator i = c.begin(); i != c.end(); ++i) {
+      //(o->*pmf)((*i)->GetName(), *i);
+      (o->*pmf)("", *i);
+    }
+  }
+
+  template <typename O, typename C, typename F> void handle(const O* o, const C& c, F pmf) {
+    for (typename C::const_iterator i = c.begin(); i != c.end(); ++i) {
+      (o->*pmf)((*i)->GetName(), *i);
+    }
+  }
+
+  template <typename O, typename F> void handleArray(const O* o, const TObjArray* c, F pmf) {
+    TObjArrayIter arr(c);
+    for(TObject* i = arr.Next(); i; i=arr.Next())
+      (o->*pmf)(i);
+  }
+
+  template <typename O, typename C, typename F> void handleMap(const O* o, const C& c, F pmf) {
+    for (typename C::const_iterator i = c.begin(); i != c.end(); ++i)
+      (o->*pmf)((*i).first, (*i).second);
+  }
+
+  template <typename O, typename C, typename F> void handleRMap(const O* o, const C& c, F pmf) {
+    for (typename C::const_reverse_iterator i = c.rbegin(); i != c.rend(); ++i)  {
+      //cout << "Handle RMAP [ " << (*i).first << " ]" << endl;
+      handle(o, (*i).second, pmf);
+    }
+  }
+  template <typename O, typename C, typename F> void handleRMap_(const O* o, const C& c, F pmf) {
+    for (typename C::const_iterator i = c.begin(); i != c.end(); ++i)  {
+      const auto& cc = (*i).second;
+      for (const auto& j : cc)   {
+        (o->*pmf)(j);
+      }
+    }
+  }
 
   string make_NCName(const string& in)   {
     string res = detail::str_replace(in, "/", "_");
@@ -367,8 +405,8 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
                            material->GetTemperature(), material->GetPressure());
     }
 
-    string plugin_name;
-    double value;
+    string plugin_name { };
+    double value = 0e0;
     double ionisation_mee = -2e100;
     double ionisation_birks_constant = -2e100;
     double ionisation_ene_per_ion_pair = -2e100;
@@ -459,33 +497,33 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       if ( nullptr != cptr )   {
         printout(INFO, name, "++ Ignore CONST property %s [%s]  --> Plugin.",
                  named->GetName(), named->GetTitle());
-	plugin_name = named->GetTitle();
+        plugin_name = named->GetTitle();
         continue;
       }
       cptr = ::strstr(named->GetName(), GEANT4_TAG_BIRKSCONSTANT);
       if ( nullptr != cptr )   {
-	err = kFALSE;
-	value = material->GetConstProperty(GEANT4_TAG_BIRKSCONSTANT,&err);
-	if ( err == kFALSE ) ionisation_birks_constant = value * (CLHEP::mm/CLHEP::MeV)/(units::mm/units::MeV);
+        err = kFALSE;
+        value = material->GetConstProperty(GEANT4_TAG_BIRKSCONSTANT,&err);
+        if ( err == kFALSE ) ionisation_birks_constant = value * (CLHEP::mm/CLHEP::MeV)/(units::mm/units::MeV);
         continue;
       }
       cptr = ::strstr(named->GetName(), GEANT4_TAG_MEE);
       if ( nullptr != cptr )   {
-	err = kFALSE;
-	value = material->GetConstProperty(GEANT4_TAG_MEE,&err);
-	if ( err == kFALSE ) ionisation_mee = value * (CLHEP::MeV/units::MeV);
+        err = kFALSE;
+        value = material->GetConstProperty(GEANT4_TAG_MEE, &err);
+        if ( err == kFALSE ) ionisation_mee = value * (CLHEP::MeV/units::MeV);
         continue;
       }
       cptr = ::strstr(named->GetName(), GEANT4_TAG_ENE_PER_ION_PAIR);
       if ( nullptr != cptr )   {
-	err = kFALSE;
-	value = material->GetConstProperty(GEANT4_TAG_ENE_PER_ION_PAIR,&err);
-	if ( err == kFALSE ) ionisation_ene_per_ion_pair = value * (CLHEP::MeV/units::MeV);
+        err = kFALSE;
+        value = material->GetConstProperty(GEANT4_TAG_ENE_PER_ION_PAIR,&err);
+        if ( err == kFALSE ) ionisation_ene_per_ion_pair = value * (CLHEP::MeV/units::MeV);
         continue;
       }
 
       err = kFALSE;
-      value = info.manager->GetProperty(named->GetTitle(),&err);
+      value = info.manager->GetProperty(named->GetTitle(), &err);
       if ( err != kFALSE )   {
         except(name,
                "++ FAILED to create G4 material %s [Cannot convert const property: %s]",
@@ -524,19 +562,19 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
     str << (*mat);
     if ( ionisation )   {
       if ( ionisation_birks_constant > 0e0 )   {
-	ionisation->SetBirksConstant(ionisation_birks_constant);
+        ionisation->SetBirksConstant(ionisation_birks_constant);
       }
       if ( ionisation_mee > -1e100 )   {
-	ionisation->SetMeanExcitationEnergy(ionisation_mee);
+        ionisation->SetMeanExcitationEnergy(ionisation_mee);
       }
       if ( ionisation_ene_per_ion_pair > 0e0 )   {
-	ionisation->SetMeanEnergyPerIonPair(ionisation_ene_per_ion_pair);
+        ionisation->SetMeanEnergyPerIonPair(ionisation_ene_per_ion_pair);
       }
       str << "          log(MEE): " << std::setprecision(4) << ionisation->GetLogMeanExcEnergy();
       if ( ionisation_birks_constant > 0e0 )
-	str << "  Birk's constant: " << std::setprecision(4) << ionisation->GetBirksConstant() << " [mm/MeV]";
+        str << "  Birk's constant: " << std::setprecision(4) << ionisation->GetBirksConstant() << " [mm/MeV]";
       if ( ionisation_ene_per_ion_pair > 0e0 )
-	str << "  Mean Energy Per Ion Pair: " << std::setprecision(4) << ionisation->GetMeanEnergyPerIonPair()/CLHEP::eV << " [eV]";
+        str << "  Mean Energy Per Ion Pair: " << std::setprecision(4) << ionisation->GetMeanEnergyPerIonPair()/CLHEP::eV << " [eV]";
     }
     else  {
       str << "          No ionisation parameters availible.";
@@ -548,7 +586,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       Detector* det = const_cast<Detector*>(&m_detDesc);
       G4Material* extended_mat = PluginService::Create<G4Material*>(plugin_name, det, medium, mat);
       if ( !extended_mat )   {
-	except("G4Cnv::material["+name+"]","++ FATAL Failed to call plugin to create material.");
+        except("G4Cnv::material["+name+"]","++ FATAL Failed to call plugin to create material.");
       }
       mat = extended_mat;
     }
@@ -620,7 +658,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       TGeoScaledShape* sh   = (TGeoScaledShape*) shape;
       TGeoShape*       sol  = sh->GetShape();
       if ( sol->IsA() == TGeoShapeAssembly::Class() )  {
-	return solid;
+        return solid;
       }
       const double*    vals = sh->GetScale()->GetScale();
       G4Scale3D        scal(vals[0], vals[1], vals[2]);
@@ -674,7 +712,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
 
       if ( matrix->IsRotation() ) {
         G4Transform3D transform;
-	g4Transform(matrix, transform);
+        g4Transform(matrix, transform);
         if (oper == TGeoBoolNode::kGeoSubtraction)
           solid = new G4SubtractionSolid(name, left, right, transform);
         else if (oper == TGeoBoolNode::kGeoUnion)
@@ -756,7 +794,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       string plugin = _v.getProperty(GEANT4_TAG_PLUGIN,"");
       g4vol = PluginService::Create<G4LogicalVolume*>(plugin, det, _v, g4solid, g4medium);
       if ( !g4vol )    {
-	except("G4Cnv::volume["+name+"]","++ FATAL Failed to call plugin to create logical volume.");
+        except("G4Cnv::volume["+name+"]","++ FATAL Failed to call plugin to create logical volume.");
       }
     }
     else  {
@@ -769,30 +807,30 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     if ( g4region )   {
       PrintLevel plevel = (debugVolumes||debugRegions||debugLimits) ? ALWAYS : outputLevel;
       printout(plevel, "Geant4Converter", "++ Volume     + Apply REGION settings: %-24s to volume %s.",
-	       reg.name(), vnam);
+               reg.name(), vnam);
       // Handle the region settings for the world volume seperately.
       // Geant4 does NOT WANT any regions assigned to the workd volume.
       // The world's region is created in the G4RunManagerKernel!
       if ( _v == m_detDesc.worldVolume() )   {
-	const char* wrd_nam = "DefaultRegionForTheWorld";
-	const char* src_nam = g4region->GetName().c_str();
-	auto* world_region  = G4RegionStore::GetInstance()->GetRegion(wrd_nam, false);
-	if ( auto* cuts = g4region->GetProductionCuts() )   {
-	  world_region->SetProductionCuts(cuts);
-	  printout(plevel, "Geant4Converter",
-		   "++ Volume %s Region: %s. Apply production cuts from %s", 
-		   vnam, wrd_nam, src_nam);
-	}
-	if ( auto* lims = g4region->GetUserLimits() )   {
-	  world_region->SetUserLimits(lims);
-	  printout(plevel, "Geant4Converter",
-		   "++ Volume %s Region: %s. Apply user limits from %s", 
-		   vnam, wrd_nam, src_nam);
-	}
+        const char* wrd_nam = "DefaultRegionForTheWorld";
+        const char* src_nam = g4region->GetName().c_str();
+        auto* world_region  = G4RegionStore::GetInstance()->GetRegion(wrd_nam, false);
+        if ( auto* cuts = g4region->GetProductionCuts() )   {
+          world_region->SetProductionCuts(cuts);
+          printout(plevel, "Geant4Converter",
+                   "++ Volume %s Region: %s. Apply production cuts from %s", 
+                   vnam, wrd_nam, src_nam);
+        }
+        if ( auto* lims = g4region->GetUserLimits() )   {
+          world_region->SetUserLimits(lims);
+          printout(plevel, "Geant4Converter",
+                   "++ Volume %s Region: %s. Apply user limits from %s", 
+                   vnam, wrd_nam, src_nam);
+        }
       }
       else   {
-	g4vol->SetRegion(g4region);
-	g4region->AddRootLogicalVolume(g4vol);
+        g4vol->SetRegion(g4region);
+        g4region->AddRootLogicalVolume(g4vol);
       }
     }
     G4VisAttributes* g4vattr = vis.isValid()
@@ -802,7 +840,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     }
     info.g4Volumes[volume] = g4vol;
     printout(lvl, "Geant4Converter",
-	     "++ Volume     + %s converted: %p ---> G4: %p", vnam, volume, g4vol);
+             "++ Volume     + %s converted: %p ---> G4: %p", vnam, volume, g4vol);
   }
   return nullptr;
 }
@@ -979,69 +1017,69 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
       G4PhysicalVolumesPair pvPlaced  { nullptr, nullptr };
 
       if ( pv_data && pv_data->params && (pv_data->params->flags&Volume::REPLICATED) )   {
-	EAxis  axis = kUndefined;
-	double width = 0e0, offset = 0e0;
-	auto flags = pv_data->params->flags;
-	auto count = pv_data->params->trafo1D.second;
-	auto start = pv_data->params->start.Translation().Vect();
-	auto delta = pv_data->params->trafo1D.first.Translation().Vect();
+        EAxis  axis = kUndefined;
+        double width = 0e0, offset = 0e0;
+        auto flags = pv_data->params->flags;
+        auto count = pv_data->params->trafo1D.second;
+        auto start = pv_data->params->start.Translation().Vect();
+        auto delta = pv_data->params->trafo1D.first.Translation().Vect();
 
-	if ( flags&Volume::X_axis )
-	  { axis = kXAxis; width = delta.X(); offset = start.X(); }
-	else if ( flags&Volume::Y_axis )
-	  { axis = kYAxis; width = delta.Y(); offset = start.Y(); }
-	else if ( flags&Volume::Z_axis )
-	  { axis = kZAxis; width = delta.Z(); offset = start.Z(); }
-	else
-	  except("Geant4Converter",
-		 "++ Replication around unknown axis is not implemented. flags: %16X", flags);
-	printout(INFO,"Geant4Converter","++ Replicate: Axis: %ld Count: %ld offset: %f width: %f",
-		 axis, count, offset, width);
-	auto* g4pv = new G4PVReplica(name,      // its name
-				     g4vol,     // its logical volume
-				     g4mot,     // its mother (logical) volume
-				     axis,      // its replication axis
-				     count,     // Number of replicas
-				     width,     // Distance between 2 replicas
-				     offset);   // Placement offset in axis direction
-	pvPlaced = { g4pv, nullptr };
+        if ( flags&Volume::X_axis )
+        { axis = kXAxis; width = delta.X(); offset = start.X(); }
+        else if ( flags&Volume::Y_axis )
+        { axis = kYAxis; width = delta.Y(); offset = start.Y(); }
+        else if ( flags&Volume::Z_axis )
+        { axis = kZAxis; width = delta.Z(); offset = start.Z(); }
+        else
+          except("Geant4Converter",
+                 "++ Replication around unknown axis is not implemented. flags: %16X", flags);
+        printout(INFO,"Geant4Converter","++ Replicate: Axis: %ld Count: %ld offset: %f width: %f",
+                 axis, count, offset, width);
+        auto* g4pv = new G4PVReplica(name,      // its name
+                                     g4vol,     // its logical volume
+                                     g4mot,     // its mother (logical) volume
+                                     axis,      // its replication axis
+                                     count,     // Number of replicas
+                                     width,     // Distance between 2 replicas
+                                     offset);   // Placement offset in axis direction
+        pvPlaced = { g4pv, nullptr };
 #if 0
-	pvPlaced =
-	  G4ReflectionFactory::Instance()->Replicate(name,      // its name
-						     g4vol,     // its logical volume
-						     g4mot,     // its mother (logical) volume
-						     axis,      // its replication axis
-						     count,     // Number of replicas
-						     width,     // Distance between 2 replicas
-						     offset);   // Placement offset in axis direction
-	/// Update replica list to avoid additional conversions...
-	auto* g4pv = pvPlaced.second ? pvPlaced.second : pvPlaced.first;
+        pvPlaced =
+          G4ReflectionFactory::Instance()->Replicate(name,      // its name
+                                                     g4vol,     // its logical volume
+                                                     g4mot,     // its mother (logical) volume
+                                                     axis,      // its replication axis
+                                                     count,     // Number of replicas
+                                                     width,     // Distance between 2 replicas
+                                                     offset);   // Placement offset in axis direction
+        /// Update replica list to avoid additional conversions...
+        auto* g4pv = pvPlaced.second ? pvPlaced.second : pvPlaced.first;
 #endif
-	for( auto& handle : pv_data->params->placements )
-	  info.g4Placements[handle.ptr()] = g4pv;
+        for( auto& handle : pv_data->params->placements )
+          info.g4Placements[handle.ptr()] = g4pv;
       }
       else if ( pv_data && pv_data->params )   {
-	auto*  g4par = new Geant4PlacementParameterisation(pv);
-	auto*  g4pv  = new G4PVParameterised(name,              // its name
-					     g4vol,             // its logical volume
-					     g4mot,             // its mother (logical) volume
-					     g4par->axis(),     // its replication axis
-					     g4par->count(),    // Number of replicas
-					     g4par);            // G4 parametrization
-	pvPlaced = { g4pv, nullptr };
-	/// Update replica list to avoid additional conversions...
-	for( auto& handle : pv_data->params->placements )
-	  info.g4Placements[handle.ptr()] = g4pv;
+        auto*  g4par = new Geant4PlacementParameterisation(pv);
+        auto*  g4pv  = new G4PVParameterised(name,              // its name
+                                             g4vol,             // its logical volume
+                                             g4mot,             // its mother (logical) volume
+                                             g4par->axis(),     // its replication axis
+                                             g4par->count(),    // Number of replicas
+                                             g4par);            // G4 parametrization
+        pvPlaced = { g4pv, nullptr };
+        /// Update replica list to avoid additional conversions...
+        for( auto& handle : pv_data->params->placements )
+          info.g4Placements[handle.ptr()] = g4pv;
       }
       else    {
-	pvPlaced =
-	  G4ReflectionFactory::Instance()->Place(transform,     // no rotation
-						 name,          // its name
-						 g4vol,         // its logical volume
-						 g4mot,         // its mother (logical) volume
-						 false,         // no boolean operations
-						 copy,          // its copy number
-						 checkOverlaps);
+        pvPlaced =
+          G4ReflectionFactory::Instance()->Place(transform,     // no rotation
+                                                 name,          // its name
+                                                 g4vol,         // its logical volume
+                                                 g4mot,         // its mother (logical) volume
+                                                 false,         // no boolean operations
+                                                 copy,          // its copy number
+                                                 checkOverlaps);
       }
       printout(debugReflections||debugPlacements ? ALWAYS : lvl, "Geant4Converter",
                "++ Place %svolume %-12s in mother %-12s "
@@ -1096,47 +1134,47 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
       cuts = new G4ProductionCuts();
       cuts->SetProductionCut(r.cut()*CLHEP::mm/units::mm);
       printout(lvl, "Geant4Converter", "++ %s: Using default cut: %f [mm]",
-	       r.name(), r.cut()*CLHEP::mm/units::mm);
+               r.name(), r.cut()*CLHEP::mm/units::mm);
     }
     for( const auto& nam : limits )  {
       LimitSet ls = m_detDesc.limitSet(nam);
       if ( ls.isValid() ) {
-	const LimitSet::Set& cts = ls.cuts();
-	for (const auto& c : cts )   {
-	  int pid = 0;
-	  if ( c.particles == "*" ) pid = -1;
-	  else if ( c.particles == "e-"     ) pid = idxG4ElectronCut;
-	  else if ( c.particles == "e+"     ) pid = idxG4PositronCut;
-	  else if ( c.particles == "e[+-]"  ) pid = -idxG4PositronCut-idxG4ElectronCut;
-	  else if ( c.particles == "e[-+]"  ) pid = -idxG4PositronCut-idxG4ElectronCut;
-	  else if ( c.particles == "gamma"  ) pid = idxG4GammaCut;
-	  else if ( c.particles == "proton" ) pid = idxG4ProtonCut;
-	  else throw runtime_error("G4Region: Invalid production cut particle-type:" + c.particles);
-	  if ( !cuts ) cuts = new G4ProductionCuts();
-	  if ( pid == -(idxG4PositronCut+idxG4ElectronCut) )  {
-	    cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, idxG4PositronCut);
-	    cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, idxG4ElectronCut);
-	  }
-	  else  {
-	    cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, pid);
-	  }
-	  printout(lvl, "Geant4Converter", "++ %s: Set cut  [%s/%d] = %f [mm]",
-		   r.name(), c.particles.c_str(), pid, c.value*CLHEP::mm/units::mm);
-	}
-	bool found = false;
-	const auto& lm = data().g4Limits;
-	for (const auto& j : lm )   {
-	  if (nam == j.first->GetName()) {
-	    g4->SetUserLimits(j.second);
-	    printout(lvl, "Geant4Converter", "++ %s: Set limits %s to region type %s",
-		     r.name(), nam.c_str(), j.second->GetType().c_str());
-	    found = true;
-	    break;
-	  }
-	}
-	if ( found )   {
-	  continue;
-	}
+        const LimitSet::Set& cts = ls.cuts();
+        for (const auto& c : cts )   {
+          int pid = 0;
+          if ( c.particles == "*" ) pid = -1;
+          else if ( c.particles == "e-"     ) pid = idxG4ElectronCut;
+          else if ( c.particles == "e+"     ) pid = idxG4PositronCut;
+          else if ( c.particles == "e[+-]"  ) pid = -idxG4PositronCut-idxG4ElectronCut;
+          else if ( c.particles == "e[-+]"  ) pid = -idxG4PositronCut-idxG4ElectronCut;
+          else if ( c.particles == "gamma"  ) pid = idxG4GammaCut;
+          else if ( c.particles == "proton" ) pid = idxG4ProtonCut;
+          else throw runtime_error("G4Region: Invalid production cut particle-type:" + c.particles);
+          if ( !cuts ) cuts = new G4ProductionCuts();
+          if ( pid == -(idxG4PositronCut+idxG4ElectronCut) )  {
+            cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, idxG4PositronCut);
+            cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, idxG4ElectronCut);
+          }
+          else  {
+            cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, pid);
+          }
+          printout(lvl, "Geant4Converter", "++ %s: Set cut  [%s/%d] = %f [mm]",
+                   r.name(), c.particles.c_str(), pid, c.value*CLHEP::mm/units::mm);
+        }
+        bool found = false;
+        const auto& lm = data().g4Limits;
+        for (const auto& j : lm )   {
+          if (nam == j.first->GetName()) {
+            g4->SetUserLimits(j.second);
+            printout(lvl, "Geant4Converter", "++ %s: Set limits %s to region type %s",
+                     r.name(), nam.c_str(), j.second->GetType().c_str());
+            found = true;
+            break;
+          }
+        }
+        if ( found )   {
+          continue;
+        }
       }
       except("Geant4Converter", "++ G4Region: Failed to resolve limitset: " + nam);
     }
@@ -1166,7 +1204,7 @@ void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVol
         else if ( h.defaultValue > std::numeric_limits<double>::epsilon() )  {
           printout(ALWAYS,"Geant4Converter",
                    "+++ LimitSet: Implicit Limit %s.%s for wildcard particles: %f",
-		   ls.name(), pref.c_str(), float(h.defaultValue));
+                   ls.name(), pref.c_str(), float(h.defaultValue));
         }
         return *this;
       }
@@ -1175,7 +1213,7 @@ void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVol
     g4 = limits;
     printout(lvl, "Geant4Converter",
              "++ Successfully converted LimitSet: %s [%ld cuts, %ld limits]",
-	     limitset.name(), limitset.cuts().size(), limitset.limits().size());
+             limitset.name(), limitset.cuts().size(), limitset.limits().size());
     if ( debugRegions || debugLimits )    {
       LimitPrint print(limitset);
       print("maxTime",    limits->maxTime)
@@ -1385,11 +1423,12 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
     G4OpticalSurfaceModel  model  = geant4_surface_model(optSurf->GetModel());
     G4OpticalSurfaceFinish finish = geant4_surface_finish(optSurf->GetFinish());
     string name = make_NCName(optSurf->GetName());
+    PrintLevel lvl = debugSurfaces ? ALWAYS : DEBUG;
     g4 = new G4OpticalSurface(name, model, finish, type, optSurf->GetValue());
     g4->SetSigmaAlpha(optSurf->GetSigmaAlpha());
     g4->SetPolish(optSurf->GetPolish());
 
-    printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
+    printout(lvl, "Geant4Converter",
              "++ Created OpticalSurface: %-18s type:%s model:%s finish:%s SigmaAlphs: %.3e Polish: %.3e",
              optSurf->GetName(),
              TGeoOpticalSurface::TypeToString(optSurf->GetType()),
@@ -1398,8 +1437,8 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
              optSurf->GetSigmaAlpha(), optSurf->GetPolish());
 
     G4MaterialPropertiesTable* tab = nullptr;
-    TListIter it(&optSurf->GetProperties());
-    for(TObject* obj = it.Next(); obj; obj = it.Next())  {
+    TListIter itp(&optSurf->GetProperties());
+    for(TObject* obj = itp.Next(); obj; obj = itp.Next())  {
       string exc_str;
       TNamed*      named  = (TNamed*)obj;
       TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
@@ -1424,10 +1463,8 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
       }
       catch(const std::exception& e)   {
         exc_str = e.what();
-        idx = -1;
       }
       catch(...)   {
-        idx = -1;
       }
       if ( idx < 0 )   {
         printout(ERROR, "Geant4Converter",
@@ -1443,13 +1480,61 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
       G4MaterialPropertyVector* vec = new G4MaterialPropertyVector(&bins[0], &vals[0], bins.size());
       tab->AddProperty(named->GetName(), vec);
       
-      printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
+      printout(lvl, "Geant4Converter",
                "++       Property: %-20s [%ld x %ld] -->  %s",
                named->GetName(), matrix->GetRows(), matrix->GetCols(), named->GetTitle());
       for(std::size_t i=0, count=v->bins.size(); i<count; ++i)
-        printout(debugSurfaces ? ALWAYS : DEBUG, named->GetName(),
+        printout(lvl, named->GetName(),
                  "  Geant4: %8.3g [MeV]  TGeo: %8.3g [GeV] Conversion: %8.3g",
                  bins[i], v->bins[i], conv.first);
+    }
+    TListIter itc(&optSurf->GetConstProperties());
+    for(TObject* obj = itc.Next(); obj; obj = itc.Next())  {
+      string  exc_str;
+      TNamed* named  = (TNamed*)obj;
+      const char* cptr = ::strstr(named->GetName(), GEANT4_TAG_IGNORE);
+      if ( nullptr != cptr )   {
+        printout(INFO, name, "++ Ignore CONST property %s [%s].",
+                 named->GetName(), named->GetTitle());
+        continue;
+      }
+      cptr = ::strstr(named->GetTitle(), GEANT4_TAG_IGNORE);
+      if ( nullptr != cptr )   {
+        printout(INFO, name,"++ Ignore CONST property %s [%s].",
+                 named->GetName(), named->GetTitle());
+        continue;
+      }
+      Bool_t   err = kFALSE;
+      Double_t value = info.manager->GetProperty(named->GetTitle(),&err);
+      if ( err != kFALSE )   {
+        except(name,
+               "++ FAILED to create G4 material %s [Cannot convert const property: %s]",
+               optSurf->GetName(), named->GetName());
+      }
+      if ( nullptr == tab )  {
+        tab = new G4MaterialPropertiesTable();
+        g4->SetMaterialPropertiesTable(tab);
+      }
+      int idx = -1;
+      try   {
+        idx = tab->GetConstPropertyIndex(named->GetName());
+      }
+      catch(const std::exception& e)   {
+        exc_str = e.what();
+      }
+      catch(...)   {
+      }
+      if ( idx < 0 )   {
+        printout(ERROR, name,
+                 "++ UNKNOWN Geant4 CONST Property: %-20s %s [IGNORED]",
+                 exc_str.c_str(), named->GetName());
+        continue;
+      }
+      // We need to convert the property from TGeo units to Geant4 units
+      double conv = g4ConstPropertyConversion(idx);
+      printout(lvl, name, "++      CONST Property: %-20s %g * %g --> %g ",
+               named->GetName(), value, conv, value * conv);
+      tab->AddConstProperty(named->GetName(), value * conv);
     }
     info.g4OpticalSurfaces[optSurf] = g4;
   }
@@ -1564,47 +1649,6 @@ void* Geant4Converter::printPlacement(const string& name, const TGeoNode* node) 
   str << "                  |" << " SD:" << sd->GetName();
   printout(outputLevel, "G4Placement", str.str().c_str());
   return g4;
-}
-
-namespace  {
-  template <typename O, typename C, typename F> void handleRefs(const O* o, const C& c, F pmf) {
-    for (typename C::const_iterator i = c.begin(); i != c.end(); ++i) {
-      //(o->*pmf)((*i)->GetName(), *i);
-      (o->*pmf)("", *i);
-    }
-  }
-
-  template <typename O, typename C, typename F> void handle(const O* o, const C& c, F pmf) {
-    for (typename C::const_iterator i = c.begin(); i != c.end(); ++i) {
-      (o->*pmf)((*i)->GetName(), *i);
-    }
-  }
-
-  template <typename O, typename F> void handleArray(const O* o, const TObjArray* c, F pmf) {
-    TObjArrayIter arr(c);
-    for(TObject* i = arr.Next(); i; i=arr.Next())
-      (o->*pmf)(i);
-  }
-
-  template <typename O, typename C, typename F> void handleMap(const O* o, const C& c, F pmf) {
-    for (typename C::const_iterator i = c.begin(); i != c.end(); ++i)
-      (o->*pmf)((*i).first, (*i).second);
-  }
-
-  template <typename O, typename C, typename F> void handleRMap(const O* o, const C& c, F pmf) {
-    for (typename C::const_reverse_iterator i = c.rbegin(); i != c.rend(); ++i)  {
-      //cout << "Handle RMAP [ " << (*i).first << " ]" << endl;
-      handle(o, (*i).second, pmf);
-    }
-  }
-  template <typename O, typename C, typename F> void handleRMap_(const O* o, const C& c, F pmf) {
-    for (typename C::const_iterator i = c.begin(); i != c.end(); ++i)  {
-      const auto& cc = (*i).second;
-      for (const auto& j : cc)   {
-        (o->*pmf)(j);
-      }
-    }
-  }
 }
 
 /// Create geometry conversion
