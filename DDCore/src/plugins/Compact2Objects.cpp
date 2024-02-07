@@ -274,8 +274,8 @@ static long load_Compact(Detector& description, xml_h element) {
 DECLARE_XML_DOC_READER(lccdd,load_Compact)
 DECLARE_XML_DOC_READER(compact,load_Compact)
 
- // We create out own type to avoid a class over the extension types
-  // attached to the Detector as a set of std::string is common.
+// We create out own type to avoid a class over the extension types
+// attached to the Detector as a set of std::string is common.
 class ProcessedFilesSet: public std::set<std::string> {};
 
 /// Check whether a XML file was already processed
@@ -551,7 +551,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       }
       else if ( p.hasAttr(_U(option)) )   {
         string prop_nam = p.attr<string>(_U(name));
-	string prop_typ = p.attr<string>(_U(option));
+        string prop_typ = p.attr<string>(_U(option));
         mat->AddConstProperty(prop_nam.c_str(), prop_typ.c_str());
         printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
                  "++            material %-16s  add constant property: %s  ->  %s.",
@@ -746,7 +746,11 @@ template <> void Converter<STD_Conditions>::operator()(xml_h e) const {
  *
  */
 template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
-  xml_elt_t  e = element;
+  xml_elt_t    e = element;
+  TGeoManager& mgr = description.manager();
+  std::string  sname = e.attr<string>(_U(name));
+  string       ref, pname;
+  
   // Defaults from Geant4
   OpticalSurface::EModel  model  = OpticalSurface::Model::kMglisur;
   OpticalSurface::EFinish finish = OpticalSurface::Finish::kFpolished;
@@ -756,23 +760,25 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
   if ( e.hasAttr(_U(model))  ) model  = OpticalSurface::stringToModel(e.attr<string>(_U(model)));
   if ( e.hasAttr(_U(finish)) ) finish = OpticalSurface::stringToFinish(e.attr<string>(_U(finish)));
   if ( e.hasAttr(_U(value))  ) value  = e.attr<double>(_U(value));
-  OpticalSurface surf(description, e.attr<string>(_U(name)), model, finish, type, value);
+  OpticalSurface surf(description, sname, model, finish, type, value);
   if ( s_debug.surface )    {
     printout(ALWAYS,"Compact","+++ Reading optical surface %s Typ:%d model:%d finish:%d value: %.3f",
-             e.attr<string>(_U(name)).c_str(), int(type), int(model), int(finish), value);
+             sname.c_str(), int(type), int(model), int(finish), value);
   }
   for (xml_coll_t props(e, _U(property)); props; ++props)  {
+    pname = props.attr<string>(_U(name));
     if ( props.hasAttr(_U(ref)) )  {
-      surf->AddProperty(props.attr<string>(_U(name)).c_str(), props.attr<string>(_U(ref)).c_str());
+      bool err = kFALSE;
+      ref = props.attr<string>(_U(ref));
+      mgr.GetProperty(ref.c_str(), &err); /// Check existence
+      surf->AddProperty(pname.c_str(), ref.c_str());
       if ( s_debug.surface )  {
-        printout(ALWAYS,"Compact","+++ \t\t Property:  %s  -> %s",
-                 props.attr<string>(_U(name)).c_str(), props.attr<string>(_U(ref)).c_str());
+        printout(ALWAYS,"Compact","+++ \t\t Property:  %s  -> %s", pname.c_str(), ref.c_str());
       }
       continue;
     }
-    size_t     cols = props.attr<long>(_U(coldim));
-    string     nam  = props.attr<string>(_U(name));
-    xml_attr_t opt  = props.attr_nothrow(_U(option));
+    size_t       cols = props.attr<long>(_U(coldim));
+    xml_attr_t   opt  = props.attr_nothrow(_U(option));
     stringstream str(props.attr<string>(_U(values))), str_nam;
     string val;
     vector<double> values;
@@ -788,14 +794,53 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
       string tit = e.attr<string>(opt);
       str_nam << tit << "|";
     }
-    str_nam << nam << "__" << (void*)table;
+    str_nam << pname << "__" << (void*)table;
     table->SetName(str_nam.str().c_str());
-    table->SetTitle(nam.c_str());
+    table->SetTitle(pname.c_str());
     for (size_t i=0, n=values.size(); i<n; ++i)
       table->Set(i/cols, i%cols, values[i]);
-    surf->AddProperty(nam.c_str(), table->GetName());
+    surf->AddProperty(pname.c_str(), table->GetName());
     description.manager().AddGDMLMatrix(table);
   }
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
+  /// In case there were constant surface properties specified: convert them here
+  for(xml_coll_t properties(e, _U(constant)); properties; ++properties) {
+    xml_elt_t p = properties;
+    pname = p.attr<string>(_U(name));
+    if ( p.hasAttr(_U(ref)) )   {
+      bool err = kFALSE;
+      ref = p.attr<string>(_U(ref));
+      mgr.GetProperty(ref.c_str(), &err); /// Check existence
+      if ( err == kFALSE )  {
+        surf->AddConstProperty(pname.c_str(), ref.c_str());
+        printout(s_debug.surface ? ALWAYS : DEBUG, "Compact",
+                 "++            surface  %-16s  add constant property: %s  ->  %s.",
+                 surf->GetName(), pname.c_str(), ref.c_str());
+        continue;
+      }
+      // ERROR
+      throw_print("Compact2Objects[ERROR]: Converting surface: " + sname +
+                  " ConstProperty missing in TGeoManager: " + ref);
+    }
+    else if ( p.hasAttr(_U(value)) )   {
+      stringstream str;
+      str << pname << "_" << (void*)surf.ptr();
+      ref = str.str();
+      mgr.AddProperty(ref.c_str(), p.attr<double>(_U(value))); /// Check existence
+      surf->AddConstProperty(pname.c_str(), ref.c_str());
+      printout(s_debug.surface ? ALWAYS : DEBUG, "Compact",
+               "++            surface  %-16s  add constant property: %s  ->  %s.",
+               surf->GetName(), pname.c_str(), ref.c_str());
+    }
+    else if ( p.hasAttr(_U(option)) )   {
+      string ptyp = p.attr<string>(_U(option));
+      surf->AddConstProperty(pname.c_str(), ptyp.c_str());
+      printout(s_debug.surface ? ALWAYS : DEBUG, "Compact",
+               "++            surface  %-16s  add constant property: %s  ->  %s.",
+               surf->GetName(), pname.c_str(), ptyp.c_str());
+    }
+  }
+#endif
 }
 
 /** Convert compact constant property (Material properties stored in TGeoManager)
@@ -854,9 +899,9 @@ template <> void Converter<PropertyTable>::operator()(xml_h e) const {
   /// Create table and register table
   xml_attr_t    opt = e.attr_nothrow(_U(option));
   PropertyTable tab(description,
-		    e.attr<string>(_U(name)),
-		    opt ? e.attr<string>(opt).c_str() : "",
-		    vals.size()/cols, cols);
+                    e.attr<string>(_U(name)),
+                    opt ? e.attr<string>(opt).c_str() : "",
+                    vals.size()/cols, cols);
   for( size_t i=0, n=vals.size(); i < n; ++i )
     tab->Set(i/cols, i%cols, vals[i]);
   //if ( s_debug.matrix ) tab->Print();
@@ -889,7 +934,7 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
     auto refName = e.attr<string>(_U(ref));
     const auto refAttr = description.visAttributes(refName);
     if(!refAttr.isValid() )  {
-        throw runtime_error("reference VisAttr " + refName + " does not exist");
+      throw runtime_error("reference VisAttr " + refName + " does not exist");
     }
     // Just copying things manually.
     // I think a handle's copy constructor/assignment would reuse the underlying pointer... maybe?
@@ -1156,9 +1201,9 @@ template <> void Converter<LimitSet>::operator()(xml_h e) const {
     limit.value     = _multiply<double>(limit.content, limit.unit);
     ls.addLimit(limit);
     printout(s_debug.limits ? ALWAYS : DEBUG, "Compact",
-	     "++ %s: add %-6s: [%s] = %s [%s] = %f",
-	     ls.name(), limit.name.c_str(), limit.particles.c_str(),
-	     limit.content.c_str(), limit.unit.c_str(), limit.value);
+             "++ %s: add %-6s: [%s] = %s [%s] = %f",
+             ls.name(), limit.name.c_str(), limit.particles.c_str(),
+             limit.content.c_str(), limit.unit.c_str(), limit.value);
   }
   limit.name      = "cut";
   for (xml_coll_t c(e, _U(cut)); c; ++c) {
@@ -1168,9 +1213,9 @@ template <> void Converter<LimitSet>::operator()(xml_h e) const {
     limit.value     = _multiply<double>(limit.content, limit.unit);
     ls.addCut(limit);
     printout(s_debug.limits ? ALWAYS : DEBUG, "Compact",
-	     "++ %s: add %-6s: [%s] = %s [%s] = %f",
-	     ls.name(), limit.name.c_str(), limit.particles.c_str(),
-	     limit.content.c_str(), limit.unit.c_str(), limit.value);
+             "++ %s: add %-6s: [%s] = %s [%s] = %f",
+             ls.name(), limit.name.c_str(), limit.particles.c_str(),
+             limit.content.c_str(), limit.unit.c_str(), limit.value);
   }
   description.addLimitSet(ls);
 }
@@ -1509,7 +1554,7 @@ template <> void Converter<World>::operator()(xml_h element) const {
     }
     else if ( !world_vol )  {
       except("Compact", "++ Logical error: "
-	     "You cannot configure the world volume before it is created and not giving creation instructions.");
+             "You cannot configure the world volume before it is created and not giving creation instructions.");
     }
   }
   // Delegate further configuration o0f the world volume to the xml utilities:
@@ -1742,23 +1787,23 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
 }
 
 #ifdef _WIN32
-  template Converter<Plugin>;
-  template Converter<Constant>;
-  template Converter<Material>;
-  template Converter<Atom>;
-  template Converter<VisAttr>;
-  template Converter<Region>;
-  template Converter<Readout>;
-  template Converter<Segmentation>;
-  template Converter<LimitSet>;
-  template Converter<Property>;
-  template Converter<CartesianField>;
-  template Converter<SensitiveDetector>;
-  template Converter<DetElement>;
-  template Converter<GdmlFile>;
-  template Converter<XMLFile>;
-  template Converter<Header>;
-  template Converter<DetElementInclude>;
-  template Converter<Compact>;
+template Converter<Plugin>;
+template Converter<Constant>;
+template Converter<Material>;
+template Converter<Atom>;
+template Converter<VisAttr>;
+template Converter<Region>;
+template Converter<Readout>;
+template Converter<Segmentation>;
+template Converter<LimitSet>;
+template Converter<Property>;
+template Converter<CartesianField>;
+template Converter<SensitiveDetector>;
+template Converter<DetElement>;
+template Converter<GdmlFile>;
+template Converter<XMLFile>;
+template Converter<Header>;
+template Converter<DetElementInclude>;
+template Converter<Compact>;
 
 #endif
