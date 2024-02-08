@@ -12,19 +12,19 @@
 //==========================================================================
 
 /// Geant4 include files
-#include "G4LogicalVolume.hh"
-#include "G4VPhysicalVolume.hh"
-#include "G4ReflectionFactory.hh"
+#include <G4LogicalVolume.hh>
+#include <G4VPhysicalVolume.hh>
+#include <G4ReflectionFactory.hh>
 
 /// C/C++ include files
 #include <sstream>
 #include <string>
 
 /// Framework include files
-#include "DD4hep/DetectorTools.h"
-#include "DDG4/Geant4Converter.h"
-#include "DDG4/Geant4GeometryInfo.h"
-#include "DDG4/Geant4AssemblyVolume.h"
+#include <DD4hep/DetectorTools.h>
+#include <DDG4/Geant4Converter.h>
+#include <DDG4/Geant4GeometryInfo.h>
+#include <DDG4/Geant4AssemblyVolume.h>
 
 using namespace dd4hep::sim;
 

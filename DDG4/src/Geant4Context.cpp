@@ -12,15 +12,14 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4Kernel.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4Kernel.h>
 
 // C/C++ include files
 #include <algorithm>
 
-using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::sim;
 
@@ -101,9 +100,9 @@ Geant4Context::UserFramework& Geant4Context::userFramework() const  {
 
 /// Create a user trajectory
 G4VTrajectory* Geant4Context::createTrajectory(const G4Track* /* track */) const {
-  string err = dd4hep::format("Geant4Kernel", "createTrajectory: Purely virtual method. requires overloading!");
+  std::string err = dd4hep::format("Geant4Kernel", "createTrajectory: Purely virtual method. requires overloading!");
   dd4hep::printout(dd4hep::FATAL, "Geant4Kernel", "createTrajectory: Purely virtual method. requires overloading!");
-  throw runtime_error(err);
+  throw std::runtime_error(err);
 }
 
 /// Access the tracking manager
