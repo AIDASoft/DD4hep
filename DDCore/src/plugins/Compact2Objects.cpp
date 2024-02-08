@@ -831,7 +831,6 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
                surf->GetName(), pname.c_str(), ptyp.c_str());
     }
   }
-#endif
 }
 
 /** Convert compact constant property (Material properties stored in TGeoManager)
