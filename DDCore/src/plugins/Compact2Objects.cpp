@@ -831,6 +831,7 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
                surf->GetName(), pname.c_str(), ptyp.c_str());
     }
   }
+#endif
 }
 
 /** Convert compact constant property (Material properties stored in TGeoManager)
@@ -896,7 +897,6 @@ template <> void Converter<PropertyTable>::operator()(xml_h e) const {
     tab->Set(i/cols, i%cols, vals[i]);
   //if ( s_debug.matrix ) tab->Print();
 }
-#endif
 
 /** Convert compact visualization attribute to Detector visualization attribute.
  *
