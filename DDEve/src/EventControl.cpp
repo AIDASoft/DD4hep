@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/Display.h"
-#include "DDEve/EventControl.h"
-#include "DDEve/EventHandler.h"
-#include "DD4hep/InstanceCount.h"
+#include <DDEve/Display.h>
+#include <DDEve/EventControl.h>
+#include <DDEve/EventHandler.h>
+#include <DD4hep/InstanceCount.h>
 
 // ROOT include files
 #include <TROOT.h>
@@ -25,12 +25,11 @@
 #include <TGFrame.h>
 #include <TGButton.h>
 #include <TG3DLine.h>
-#include "TGFileDialog.h"
+#include <TGFileDialog.h>
 
-#include "TTree.h"
+#include <TTree.h>
 #include <libgen.h>
 
-using namespace std;
 using namespace dd4hep;
 
 ClassImp(EventControl)
@@ -117,22 +116,22 @@ void EventControl::OnNewEvent(EventHandler& handler)   {
   typedef EventHandler::TypedEventCollections Types;
   typedef std::vector<EventHandler::Collection> Collections;
   const Types& types = handler.data();
-  size_t cnt = 1;
+  std::size_t cnt = 1;
   m_lines[0].second.first->SetText("Hit collection name");
   m_lines[0].second.second->SetText("No.Hits");
   for(const auto& t : types)  {
     const Collections& colls = t.second;
     Line line  = m_lines[cnt++];
-    string cl  = t.first;
-    size_t idx = cl.rfind("Geant4");
-    if ( idx != string::npos ) { 
+    std::string cl  = t.first;
+    std::size_t idx = cl.rfind("Geant4");
+    if ( idx != std::string::npos ) { 
       cl = cl.substr(idx);
       cl = cl.substr(0,cl.find('*'));
     }
-    else if ( (idx=cl.rfind("::")) != string::npos )  {
+    else if ( (idx=cl.rfind("::")) != std::string::npos )  {
       cl = cl.substr(idx+2);
-      if ( (idx=cl.rfind('*')) != string::npos ) cl = cl.substr(0,idx);
-      if ( (idx=cl.rfind('>')) != string::npos ) cl = cl.substr(0,idx);
+      if ( (idx=cl.rfind('*')) != std::string::npos ) cl = cl.substr(0,idx);
+      if ( (idx=cl.rfind('>')) != std::string::npos ) cl = cl.substr(0,idx);
     }
     line.second.first->SetTextColor(kRed);
     line.second.second->SetTextColor(kRed);
@@ -159,15 +158,12 @@ void EventControl::OnNewEvent(EventHandler& handler)   {
 
 /// User callback to add elements to the control
 void EventControl::OnBuild()   {
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,9,2)
-  string icondir = TString::Format("%s/", TROOT::GetIconPath().Data()).Data();
-#else
-  string icondir = TString::Format("%s/icons/", gSystem->Getenv("ROOTSYS")).Data();
-#endif
+  std::string icondir = TString::Format("%s/", TROOT::GetIconPath().Data()).Data();
   TGGroupFrame* group = new TGGroupFrame(m_frame,"Event I/O Control");
   TGCompositeFrame* top = new TGHorizontalFrame(group);
   TGPictureButton* b = 0;
   char text[1024];
+
   group->SetTitlePos(TGGroupFrame::kLeft);
   m_frame->AddFrame(group, new TGLayoutHints(kLHintsExpandX|kLHintsCenterX, 2, 2, 2, 2));
   m_eventGroup = group;
