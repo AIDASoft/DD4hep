@@ -14,11 +14,15 @@
 #ifndef DDCORE_SRC_GEOMETRYTREEDUMP_H
 #define DDCORE_SRC_GEOMETRYTREEDUMP_H
 
-#include "DD4hep/Detector.h"
-#include "DD4hep/GeoHandler.h"
+// Framework include files
+#include <DD4hep/Detector.h>
+#include <DD4hep/GeoHandler.h>
+
+// C/C++ include files
 #include <set>
 #include <map>
 #include <vector>
+
 class TGeoVolume;
 class TGeoNode;
 

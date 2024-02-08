@@ -12,22 +12,22 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/detail/Handle.inl"
-#include "DD4hep/detail/DetectorInterna.h"
-#include "DD4hep/detail/ConditionsInterna.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/DetectorTools.h"
-#include "DD4hep/Printout.h"
-#include "TGeoVolume.h"
-#include "TGeoMatrix.h"
-#include "TGeoManager.h"
+#include <DD4hep/detail/Handle.inl>
+#include <DD4hep/detail/DetectorInterna.h>
+#include <DD4hep/detail/ConditionsInterna.h>
+#include <DD4hep/detail/AlignmentsInterna.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/DetectorTools.h>
+#include <DD4hep/Printout.h>
 
-using namespace std;
+#include <TGeoVolume.h>
+#include <TGeoMatrix.h>
+#include <TGeoManager.h>
+
 using namespace dd4hep;
-using namespace dd4hep::detail;
-typedef detail::tools::PlacementPath PlacementPath;
-typedef detail::tools::ElementPath   ElementPath;
+
+using PlacementPath = detail::tools::PlacementPath;
+using ElementPath   =  detail::tools::ElementPath;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(DetElementObject);
 DD4HEP_INSTANTIATE_HANDLE_NAMED(SensitiveDetectorObject);
@@ -84,9 +84,9 @@ DetElementObject::DetElementObject(const std::string& nam, int ident)
 
 /// Internal object destructor: release extension object(s)
 DetElementObject::~DetElementObject() {
-  destroyHandles(children);
-  destroyHandle (nominal);
-  destroyHandle (survey);
+  detail::destroyHandles(children);
+  detail::destroyHandle (nominal);
+  detail::destroyHandle (survey);
   placement.clear();
   idealPlace.clear();
   parent.clear();
@@ -135,7 +135,7 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
 }
 
 /// Reflect all volumes in a DetElement sub-tree and re-attach the placements
-pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, int new_id, SensitiveDetector sd)   {
+std::pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, int new_id, SensitiveDetector sd)   {
   struct ChildMapper  {
     std::map<TGeoNode*,TGeoNode*> nodes;
     void match(DetElement de_det, DetElement de_ref)  const  {
@@ -154,7 +154,7 @@ pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, i
       if ( nodes.find(n1) == nodes.end() )   {
         TGeoVolume* v1 = n1->GetVolume();
         TGeoVolume* v2 = n2->GetVolume();
-        nodes.insert(make_pair(n1,n2));
+        nodes.insert(std::make_pair(n1,n2));
         printout(DEBUG,"DetElement","reflect: Map  %p  --- %p ",n1,n2);
         for(Int_t i=0; i<v1->GetNdaughters(); ++i)
           map(v1->GetNode(i), v2->GetNode(i));
@@ -173,7 +173,7 @@ pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_name, i
     mapper.map(vol_det->GetNode(i), vol_ref->GetNode(i));
   for(auto i=childrens_det.begin(), j=childrens_ref.begin(); i!=childrens_det.end(); ++i, ++j)
     mapper.match((*i).second, (*j).second);
-  return make_pair(det_ref,vol_ref);
+  return std::make_pair(det_ref,vol_ref);
 }
 
 /// Access to the world object. Only possible once the geometry is closed.
@@ -195,7 +195,7 @@ void DetElementObject::revalidate()  {
   DetElement    det(this);
   DetElement    par(det.parent());
   DetElement    wrld  = world();
-  string        place = det.placementPath();
+  std::string   place = det.placementPath();
 
   detail::tools::placementPath(par, this, par_path);
   PlacedVolume node = detail::tools::findNode(wrld.placement(),place);
@@ -251,7 +251,7 @@ void DetElementObject::update(unsigned int tags, void* param)   {
 }
 
 /// Initializing constructor
-WorldObject::WorldObject(Detector& _description, const string& nam) 
+WorldObject::WorldObject(Detector& _description, const std::string& nam) 
   : DetElementObject(nam,0), description(&_description)
 {
 }

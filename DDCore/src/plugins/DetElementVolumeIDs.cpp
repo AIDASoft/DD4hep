@@ -54,11 +54,11 @@ namespace dd4hep {
    
     /// Scan a single physical volume and look for sensitive elements below
     std::size_t scanPhysicalVolume(DetElement&        parent,
-				   DetElement         e,
-				   PlacedVolume       pv, 
-				   Encoding           parent_encoding,
-				   SensitiveDetector& sd,
-				   PlacementPath&     chain);
+                                   DetElement         e,
+                                   PlacedVolume       pv, 
+                                   Encoding           parent_encoding,
+                                   SensitiveDetector& sd,
+                                   PlacementPath&     chain);
   public:
     /// Default constructor
     DetElementVolumeIDs(const Detector& description);
@@ -104,29 +104,29 @@ namespace  {
     std::string detector = "/world";
     for(int i = 0; i < argc && argv[i]; ++i)  {
       if ( 0 == ::strncmp("-detector",argv[i],4) )
-	detector = argv[++i];
+        detector = argv[++i];
       else  {
-	std::cout <<
-	  "Usage: -plugin DD4hep_DetElementVolumeIDs  -arg [-arg]               \n\n"
-	  "     -detector <string> Top level DetElement path. Default: '/world' \n"
-	  "     -help              Print this help output                       \n"
-	  "     Arguments given: " << arguments(argc,argv) << std::endl << std::flush;
-	::exit(EINVAL);
+        std::cout <<
+          "Usage: -plugin DD4hep_DetElementVolumeIDs  -arg [-arg]               \n\n"
+          "     -detector <string> Top level DetElement path. Default: '/world' \n"
+          "     -help              Print this help output                       \n"
+          "     Arguments given: " << arguments(argc,argv) << std::endl << std::flush;
+        ::exit(EINVAL);
       }
     }
     DetElement element = description.world();
     if ( detector != "/world" )   {
       element = detail::tools::findElement(description,detector);
       if ( !element.isValid() )  {
-	except("DD4hep_DetElementVolumeIDs","+++ Invalid DetElement path: %s",detector.c_str());
+        except("DD4hep_DetElementVolumeIDs","+++ Invalid DetElement path: %s",detector.c_str());
       }
     }
     DetElementVolumeIDs mgr(description);
     auto count = mgr.populate(element);
     if ( count == 0 )   {
       except("DD4hep_DetElementVolumeIDs",
-	     "+++ NO volume identifiers assigned to DetElement %s. %s",
-	     "Something went wrong!",detector.c_str());
+             "+++ NO volume identifiers assigned to DetElement %s. %s",
+             "Something went wrong!",detector.c_str());
     }
     return count > 0 ? 1 : 0;
   }
@@ -169,22 +169,22 @@ std::size_t DetElementVolumeIDs::populate(DetElement det) {
   entries.clear();
   if ( !pv.isValid() )   {
     except("DetElementVolumeIDs",
-	   "+++ Top level DetElement %s has no valid placement. %s",
-	   "[Something awfully wrong]", det.path().c_str());
+           "+++ Top level DetElement %s has no valid placement. %s",
+           "[Something awfully wrong]", det.path().c_str());
   }
   if ( det == m_detDesc.world() )   {
     for (const auto& i : det.children() )  {
       DetElement   de = i.second;
       pv = de.placement();
       if (pv.isValid()) {
-	PlacementPath     chain;
-	Encoding          coding { 0, 0 };
-	SensitiveDetector sd (0);
-	count += scanPhysicalVolume(de, de, pv, coding, sd, chain);
-	continue;
+        PlacementPath     chain;
+        Encoding          coding { 0, 0 };
+        SensitiveDetector sd (0);
+        count += scanPhysicalVolume(de, de, pv, coding, sd, chain);
+        continue;
       }
       printout(WARNING, "DetElementVolumeIDs", "++ Detector element %s of type %s has no placement.", 
-	       de.name(), de.type().c_str());
+               de.name(), de.type().c_str());
     }
     printout(INFO, "DetElementVolumeIDs", "++ Assigned %ld volume identifiers to DetElements.", count); 
     return count;
@@ -192,8 +192,8 @@ std::size_t DetElementVolumeIDs::populate(DetElement det) {
   SensitiveDetector sd = m_detDesc.sensitiveDetector(det.name());
   if ( !pv.volIDs().empty() && !sd.isValid() )   {
     except("DetElementVolumeIDs",
-	   "+++ No sensitive detector available for top level DetElement %s.",
-	   det.path().c_str());
+           "+++ No sensitive detector available for top level DetElement %s.",
+           det.path().c_str());
   }
   PlacementPath chain;
   count += scanPhysicalVolume(det, det, pv, encoding, sd, chain);
@@ -204,11 +204,11 @@ std::size_t DetElementVolumeIDs::populate(DetElement det) {
 /// Scan a single physical volume and look for sensitive elements below
 std::size_t
 DetElementVolumeIDs::scanPhysicalVolume(DetElement&        parent,
-					DetElement         e,
-					PlacedVolume       pv, 
-					Encoding           parent_encoding,
-					SensitiveDetector& sd,
-					PlacementPath&     chain)
+                                        DetElement         e,
+                                        PlacedVolume       pv, 
+                                        Encoding           parent_encoding,
+                                        SensitiveDetector& sd,
+                                        PlacementPath&     chain)
 {
   TGeoNode* node = pv.ptr();
   std::size_t count = 0;
@@ -226,81 +226,81 @@ DetElementVolumeIDs::scanPhysicalVolume(DetElement&        parent,
     }
     else if ( !sd.isValid() )  {
       if ( is_sensitive )
-	sd = vol.sensitiveDetector();
+        sd = vol.sensitiveDetector();
       else if ( (parent->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR) )
-	sd = m_detDesc.sensitiveDetector(parent.name());
+        sd = m_detDesc.sensitiveDetector(parent.name());
       else if ( (e->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR) )
-	sd = m_detDesc.sensitiveDetector(e.name());
+        sd = m_detDesc.sensitiveDetector(e.name());
     }
     chain.emplace_back(node);
     if ( sd.isValid() && !pv_ids.empty() )   {
       Readout ro = sd.readout();
       if ( ro.isValid() )   {
-	vol_encoding  = update_encoding(ro.idSpec(), pv_ids, parent_encoding);
-	have_encoding = true;
+        vol_encoding  = update_encoding(ro.idSpec(), pv_ids, parent_encoding);
+        have_encoding = true;
       }
       else {
-	printout(WARNING, "DetElementVolumeIDs",
-		 "%s: Strange constellation volume %s is sensitive, but has no readout! sd:%p",
-		 parent.name(), pv.volume().name(), sd.ptr());
+        printout(WARNING, "DetElementVolumeIDs",
+                 "%s: Strange constellation volume %s is sensitive, but has no readout! sd:%p",
+                 parent.name(), pv.volume().name(), sd.ptr());
       }
     }
     for (int idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
       TGeoNode*    daughter = node->GetDaughter(idau);
       PlacedVolume place_dau(daughter);
       if ( place_dau.data() ) {
-	DetElement   de_dau;
-	/// Check if this particular volume is the placement of one of the
-	/// children of this detector element. If the daughter placement is also
-	/// a detector child, then we must reset the node chain.
-	for( const auto& de : e.children() )  {
-	  if ( de.second.placement().ptr() == daughter )  {
-	    de_dau = de.second;
-	    break;
-	  }
-	}
-	if ( de_dau.isValid() ) {
-	  PlacementPath dau_chain;
-	  count += scanPhysicalVolume(parent, de_dau, place_dau, vol_encoding, sd, dau_chain);
-	}
-	else { // there may be several layers of volumes between mother-child of DE
-	  count += scanPhysicalVolume(parent, e, place_dau, vol_encoding, sd, chain);
-	}
+        DetElement   de_dau;
+        /// Check if this particular volume is the placement of one of the
+        /// children of this detector element. If the daughter placement is also
+        /// a detector child, then we must reset the node chain.
+        for( const auto& de : e.children() )  {
+          if ( de.second.placement().ptr() == daughter )  {
+            de_dau = de.second;
+            break;
+          }
+        }
+        if ( de_dau.isValid() ) {
+          PlacementPath dau_chain;
+          count += scanPhysicalVolume(parent, de_dau, place_dau, vol_encoding, sd, dau_chain);
+        }
+        else { // there may be several layers of volumes between mother-child of DE
+          count += scanPhysicalVolume(parent, e, place_dau, vol_encoding, sd, chain);
+        }
       }
       else  {
-	except("DetElementVolumeIDs",
-	       "Invalid not instrumented placement: %s %s", daughter->GetName(),
-	       " [Internal error -- bad detector constructor]");
+        except("DetElementVolumeIDs",
+               "Invalid not instrumented placement: %s %s", daughter->GetName(),
+               " [Internal error -- bad detector constructor]");
       }
       /// For compounds the upper level sensitive detector does not exist,
       /// because there are multiple at lower layers
       if ( compound )  {
-	sd = SensitiveDetector(0);
+        sd = SensitiveDetector(0);
       }
     }
     if ( sd.isValid() )   {
       if ( !have_encoding && !compound )   {
-	printout(ERROR, "DetElementVolumeIDs",
-		 "Element %s: Missing SD encoding. Volume manager won't work!",
-		 e.path().c_str());
+        printout(ERROR, "DetElementVolumeIDs",
+                 "Element %s: Missing SD encoding. Volume manager won't work!",
+                 e.path().c_str());
       }
       if ( is_sensitive || count > 0 )  {
-	// Either this layer is sensitive of a layer below.
-	if ( node == e.placement().ptr() )  {
-	  // These here are placement nodes, which at the same time are DetElement placements
-	  // 1) We recuperate volumes from lower levels by reusing the subdetector
-	  //    This only works if there is exactly one sensitive detector per subdetector!
-	  // 2) DetElements in the upper hierarchy of the sensitive also get a volume id,
-	  //    and the volume is registered. (to be discussed)
-	  //
-	  e.object<DetElement::Object>().volumeID = vol_encoding.identifier;
-	}
-	// Collect all sensitive volumes, which belong to the next DetElement
-	if ( entries.find(e) == entries.end()) {
-	  entries[e].emplace_back(vol_encoding);
-	  ++numberOfNodes;
-	}
-	++count;
+        // Either this layer is sensitive of a layer below.
+        if ( node == e.placement().ptr() )  {
+          // These here are placement nodes, which at the same time are DetElement placements
+          // 1) We recuperate volumes from lower levels by reusing the subdetector
+          //    This only works if there is exactly one sensitive detector per subdetector!
+          // 2) DetElements in the upper hierarchy of the sensitive also get a volume id,
+          //    and the volume is registered. (to be discussed)
+          //
+          e.object<DetElement::Object>().volumeID = vol_encoding.identifier;
+        }
+        // Collect all sensitive volumes, which belong to the next DetElement
+        if ( entries.find(e) == entries.end()) {
+          entries[e].emplace_back(vol_encoding);
+          ++numberOfNodes;
+        }
+        ++count;
       }
     }
     chain.pop_back();

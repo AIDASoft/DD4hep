@@ -12,17 +12,15 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/GlobalAlignment.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/MatrixHelpers.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/GlobalAlignment.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/MatrixHelpers.h>
+#include <DD4hep/Printout.h>
 
 // ROOT include files
-#include "TGeoMatrix.h"
-#include "TGeoManager.h"
+#include <TGeoMatrix.h>
+#include <TGeoManager.h>
 
-
-using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::align;
 
@@ -30,14 +28,14 @@ namespace  {
   struct CheckHandle  {
     CheckHandle(const GlobalAlignment& a)  {
       if ( a.isValid() ) return;
-      throw runtime_error("dd4hep: Attempt to access invalid alignment object. [Invalid Handle]");
+      except("dd4hep:GlobalAlignment", "Attempt to access invalid alignment object. [Invalid Handle]");
     }
     ~CheckHandle() {}
   };
 }
 
 /// Initializing constructor to create a new object
-GlobalAlignment::GlobalAlignment(const string& path) {
+GlobalAlignment::GlobalAlignment(const std::string& path) {
   //cout << "GlobalAlignment: path=" << path << endl;
   m_element = new TGeoPhysicalNode(path.c_str());
 }
@@ -59,8 +57,9 @@ PlacedVolume GlobalAlignment::nodePlacement(int level)   const   {
   CheckHandle verify_handle(*this);
   TGeoNode* n = ptr()->GetNode(level);
   if ( n ) return n;
-  throw runtime_error("dd4hep: The object chain of "+string(placement().name())+
-                      " is too short. [Invalid index]");
+  except("dd4hep:GlobalAlignment",
+         "The object chain of %s is too short. [Invalid index]", placement().name());
+  return {};
 }
 
 /// Access the placement of the mother of this node
@@ -70,7 +69,9 @@ PlacedVolume GlobalAlignment::motherPlacement(int level_up)   const    {
   if ( ind >= 0 )  {
     return ptr()->GetMother(level_up);
   }
-  throw runtime_error("dd4hep: This object "+string(placement().name())+" has not enough mothers. [Invalid index]");
+  except("dd4hep:GlobalAlignment",
+         "This object %s has not enough mothers. [Invalid index]", placement().name());
+  return {};
 }
 
 /// Access the currently applied alignment/placement matrix

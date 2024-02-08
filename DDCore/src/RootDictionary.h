@@ -17,34 +17,34 @@
 #define DDCORE_SRC_ROOTDICTIONARY_H
 
 // Framework include files
-#include "Evaluator/Evaluator.h"
-#include "DD4hep/DD4hepRootPersistency.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Grammar.h"
-#include "DD4hep/detail/ObjectsInterna.h"
-#include "DD4hep/detail/DetectorInterna.h"
-#include "DD4hep/detail/ConditionsInterna.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
-#include "DD4hep/detail/VolumeManagerInterna.h"
+#include <Evaluator/Evaluator.h>
+#include <DD4hep/DD4hepRootPersistency.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Grammar.h>
+#include <DD4hep/detail/ObjectsInterna.h>
+#include <DD4hep/detail/DetectorInterna.h>
+#include <DD4hep/detail/ConditionsInterna.h>
+#include <DD4hep/detail/AlignmentsInterna.h>
+#include <DD4hep/detail/VolumeManagerInterna.h>
 
-#include "DD4hep/World.h"
-#include "DD4hep/DD4hepUI.h"
-#include "DD4hep/Callback.h"
-#include "DD4hep/Conditions.h"
-#include "DD4hep/Alignments.h"
-#include "DD4hep/FieldTypes.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/DetectorData.h"
-#include "DD4hep/DetectorProcessor.h"
-#include "DD4hep/ComponentProperties.h"
-#include "DD4hep/DetectorImp.h"
+#include <DD4hep/World.h>
+#include <DD4hep/DD4hepUI.h>
+#include <DD4hep/Callback.h>
+#include <DD4hep/Conditions.h>
+#include <DD4hep/Alignments.h>
+#include <DD4hep/FieldTypes.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/DetectorData.h>
+#include <DD4hep/DetectorProcessor.h>
+#include <DD4hep/ComponentProperties.h>
+#include <DD4hep/DetectorImp.h>
 
 // C/C++ include files
 #include <vector>
 #include <map>
  #include <string>
 
-#include "TRint.h"
+#include <TRint.h>
 
 namespace dd4hep {
   namespace cond {}
@@ -825,7 +825,7 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ function dd4hep::toStringMesh(const TGeoShape*, int);
 #pragma link C++ function dd4hep::toStringMesh(dd4hep::PlacedVolume, int);
 
-#include "DD4hep/ConditionsData.h"
+#include <DD4hep/ConditionsData.h>
 #pragma link C++ class dd4hep::cond::ClientData+;
 #pragma link C++ class dd4hep::cond::AbstractMap+;
 #pragma link C++ class dd4hep::cond::AbstractMap::Params+;

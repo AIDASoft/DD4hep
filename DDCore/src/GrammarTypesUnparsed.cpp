@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/GrammarUnparsed.h"
+#include <DD4hep/GrammarUnparsed.h>
 // C/C++ include files
 #include <any>
 

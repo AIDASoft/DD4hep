@@ -14,9 +14,9 @@
 // Framework include files
 #include <DD4hep/GrammarParsed.h>
 
-#include "Math/Point3D.h"
-#include "Math/Vector4D.h"
-#include "Math/Vector3D.h"
+#include <Math/Point3D.h>
+#include <Math/Vector4D.h>
+#include <Math/Vector3D.h>
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
 

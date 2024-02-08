@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/PluginTester.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Primitives.h"
+#include <DD4hep/PluginTester.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Primitives.h>
 
 // C/C++ include files
 #include <stdexcept>
@@ -22,7 +22,9 @@
 using namespace dd4hep;
 
 namespace {
+
   static int s_extensionID = 0;
+  
   PluginTester::ExtensionMap* extensionContainer(const std::type_info& typ) {
     static std::map<const std::type_info*, PluginTester::ExtensionMap> s_map;
     PluginTester::ExtensionMap& m = s_map[&typ];

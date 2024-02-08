@@ -12,15 +12,14 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/detail/ShapesInterna.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/detail/ShapesInterna.h>
 
 // C/C++ include files
 #include <climits>
 #include <iomanip>
 #include <cstdio>
 
-using namespace std;
 using namespace dd4hep;
 
 ClassImp(dd4hep::TwistedTubeObject)

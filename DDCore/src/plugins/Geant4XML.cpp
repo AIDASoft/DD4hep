@@ -11,23 +11,22 @@
 //
 //==========================================================================
 
-#include "XML/Conversions.h"
-#include "DD4hep/DetFactoryHelper.h"
+#include <XML/Conversions.h>
+#include <DD4hep/DetFactoryHelper.h>
 
 namespace dd4hep {
   struct Geant4;
   class GdmlFile;
   class Property;
   class SensitiveDetector;
-}
-using namespace dd4hep;
 
-namespace dd4hep {
   template <> void Converter<Geant4>::operator()(xml_h e) const;
   template <> void Converter<GdmlFile>::operator()(xml_h e) const;
   template <> void Converter<Property>::operator()(xml_h e) const;
   template <> void Converter<SensitiveDetector>::operator()(xml_h e) const;
 }
+
+using namespace dd4hep;
 
 template <> void Converter<Geant4>::operator()(xml_h element) const {
   xml_elt_t compact(element);

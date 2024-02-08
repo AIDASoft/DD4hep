@@ -17,7 +17,7 @@
 #define DDCORE_SRC_PROPERTYDICTIONARY_H
 
 // Framework include files
-#include "DD4hep/ComponentProperties.h"
+#include <DD4hep/ComponentProperties.h>
 
 // C/C++ include files
 #include <vector>

@@ -11,21 +11,23 @@
 //
 //==========================================================================
 
+// Framework include files
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/detail/Handle.inl"
 #include "DD4hep/detail/ObjectsInterna.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Printout.h"
+
+// C/C++ include files
 #include <stdexcept>
 #include <cstdlib>
 #include <cmath>
-using namespace std;
+
 using namespace dd4hep;
-using namespace dd4hep::detail;
 
 namespace {
-  void _construct(IDDescriptor::Object* o, const string& dsc) {
+  void _construct(IDDescriptor::Object* o, const std::string& dsc) {
     BitFieldCoder& bf = o->decoder;
     o->fieldIDs.clear();
     o->fieldMap.clear();
@@ -39,23 +41,23 @@ namespace {
 }
 
 /// Initializing constructor
-IDDescriptor::IDDescriptor(const string& nam, const string& description) {
+IDDescriptor::IDDescriptor(const std::string& nam, const std::string& description) {
   Object* obj = new Object(description);
   assign(obj, nam, "iddescriptor");
   _construct(obj, description);
 }
 
 /// Re-build object in place
-void IDDescriptor::rebuild(const string& description)   {
+void IDDescriptor::rebuild(const std::string& description)   {
   Object* p = ptr();
-  string  dsc = description;
+  std::string  dsc = description;
   p->decoder.~BitFieldCoder();
   new(&p->decoder) BitFieldCoder(dsc);
   _construct(p, dsc);
 }
 
-/// Acces string representation
-string IDDescriptor::toString() const {
+/// Acces std::string representation
+std::string IDDescriptor::toString() const {
   if ( isValid() ) {
     return m_element->GetName();
   }
@@ -77,7 +79,8 @@ const IDDescriptor::FieldIDs& IDDescriptor::ids() const {
   if ( isValid() ) {
     return data<Object>()->fieldIDs;
   }
-  throw runtime_error("dd4hep: Attempt to access an invalid IDDescriptor object.");
+  except("IDDescriptor","dd4hep: Attempt to access an invalid IDDescriptor object.");
+  throw std::runtime_error("dd4hep");  // Never called. Simply make the compiler happy!
 }
 
 /// Access the fieldmap container
@@ -85,18 +88,19 @@ const IDDescriptor::FieldMap& IDDescriptor::fields() const {
   if ( isValid() ) {
     return data<Object>()->fieldMap;
   }
-  throw runtime_error("dd4hep: Attempt to access an invalid IDDescriptor object.");
+  except("IDDescriptor","dd4hep: Attempt to access an invalid IDDescriptor object.");
+  throw std::runtime_error("dd4hep");  // Never called. Simply make the compiler happy!
 }
 
 /// Get the field descriptor of one field by name
-const BitFieldElement* IDDescriptor::field(const string& field_name) const {
+const BitFieldElement* IDDescriptor::field(const std::string& field_name) const {
   const FieldMap& fm = fields();   // This already checks the object validity
   for (const auto& i : fm )
     if (i.first == field_name)
       return i.second;
   except("IDDescriptor","dd4hep: %s: This ID descriptor has no field with the name: %s",
          name(),field_name.c_str());
-  throw runtime_error("dd4hep");  // Never called. Simply make the compiler happy!
+  throw std::runtime_error("dd4hep");  // Never called. Simply make the compiler happy!
 }
 
 /// Get the field descriptor of one field by its identifier
@@ -106,14 +110,14 @@ const BitFieldElement* IDDescriptor::field(size_t identifier) const {
 }
 
 /// Get the field identifier of one field by name
-size_t IDDescriptor::fieldID(const string& field_name) const {
+std::size_t IDDescriptor::fieldID(const std::string& field_name) const {
   const FieldIDs& fm = ids();   // This already checks the object validity
   for (const auto& i : fm )
     if (i.second == field_name)
       return i.first;
   except("IDDescriptor","dd4hep: %s: This ID descriptor has no field with the name: %s",
          name(),field_name.c_str());
-  throw runtime_error("dd4hep");  // Never called. Simply make the compiler happy!
+  throw std::runtime_error("dd4hep");  // Never called. Simply make the compiler happy!
 }
 
 /// Compute the submask for a given set of volume IDs
@@ -158,34 +162,36 @@ VolumeID IDDescriptor::encode_reverse(const std::vector<std::pair<std::string, i
 
 /// Decode volume IDs and return filled descriptor with all fields
 void IDDescriptor::decodeFields(VolumeID vid,
-                                vector<pair<const BitFieldElement*, VolumeID> >& flds)  const
+                                std::vector<std::pair<const BitFieldElement*, VolumeID> >& flds)  const
 {
-  const vector<BitFieldElement>& v = access()->decoder.fields();
+  const std::vector<BitFieldElement>& v = access()->decoder.fields();
   flds.clear();
   for (auto& f : v )
     flds.emplace_back(&f, f.value(vid));
 }
 
 /// Decode volume IDs and return string reprensentation for debugging purposes
-string IDDescriptor::str(VolumeID vid)   const {
-  const vector<BitFieldElement>& v = access()->decoder.fields();
-  stringstream str;
+std::string IDDescriptor::str(VolumeID vid)   const {
+  const std::vector<BitFieldElement>& v = access()->decoder.fields();
+  std::stringstream str;
   for (auto& f : v )
-    str << f.name() << ":" << setw(4) << setfill('0') << hex << right << f.value(vid)
-        << left << dec << " ";
-  return str.str().substr(0,str.str().length()-1);
+    str << f.name()  << ":" << std::setw(4) << std::setfill('0')
+        << std::hex  << std::right << f.value(vid)
+        << std::left << std::dec << " ";
+  return str.str().substr(0, str.str().length()-1);
 }
 
 /// Decode volume IDs and return string reprensentation for debugging purposes
-string IDDescriptor::str(VolumeID vid, VolumeID mask)   const {
-  const vector<BitFieldElement>& v = access()->decoder.fields();
-  stringstream str;
+std::string IDDescriptor::str(VolumeID vid, VolumeID mask)   const {
+  const std::vector<BitFieldElement>& v = access()->decoder.fields();
+  std::stringstream str;
   for (auto& f : v )  {
     if ( 0 == (mask&f.mask()) ) continue;
-    str << f.name() << ":" << setw(4) << setfill('0') << hex << right << f.value(vid)
-        << left << dec << " ";
+    str << f.name()  << ":" << std::setw(4) << std::setfill('0')
+        << std::hex  << std::right << f.value(vid)
+        << std::left << std::dec << " ";
   }
-  return str.str().substr(0,str.str().length()-1);
+  return str.str().substr(0, str.str().length()-1);
 }
 
 /// Access the BitFieldCoder object

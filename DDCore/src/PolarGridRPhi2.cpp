@@ -12,12 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/PolarGridRPhi2.h"
-#include "DDSegmentation/PolarGridRPhi2.h"
+#include <DD4hep/PolarGridRPhi2.h>
+#include <DDSegmentation/PolarGridRPhi2.h>
 
 // C/C++ include files
 
-using namespace std;
 using namespace dd4hep;
 
 /// determine the position based on the cell ID
@@ -34,12 +33,12 @@ dd4hep::CellID PolarGridRPhi2::cellID(const Position& local,
 }
 
 /// access the grid size in R
-vector<double> PolarGridRPhi2::gridRValues() const  {
+std::vector<double> PolarGridRPhi2::gridRValues() const  {
   return access()->implementation->gridRValues();
 }
 
 /// access the grid size in Phi
-vector<double> PolarGridRPhi2::gridPhiValues() const  {
+std::vector<double> PolarGridRPhi2::gridPhiValues() const  {
   return access()->implementation->gridPhiValues();
 }
 /// set the grid Boundaries in R
@@ -83,12 +82,12 @@ void PolarGridRPhi2::setOffsetPhi(double offset) const  {
 }
 
 /// access the field name used for R
-const string& PolarGridRPhi2::fieldNameR() const  {
+const std::string& PolarGridRPhi2::fieldNameR() const  {
   return access()->implementation->fieldNameR();
 }
 
 /// access the field name used for Phi
-const string& PolarGridRPhi2::fieldNamePhi() const  {
+const std::string& PolarGridRPhi2::fieldNamePhi() const  {
   return access()->implementation->fieldNamePhi();
 }
 
@@ -101,6 +100,6 @@ const string& PolarGridRPhi2::fieldNamePhi() const  {
     -# size in x
     -# size in z
 */
-vector<double> PolarGridRPhi2::cellDimensions(const CellID& id) const  {
+std::vector<double> PolarGridRPhi2::cellDimensions(const CellID& id) const  {
   return access()->implementation->cellDimensions(id);
 }

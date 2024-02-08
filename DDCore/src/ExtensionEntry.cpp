@@ -12,8 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/ExtensionEntry.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/ExtensionEntry.h>
+#include <DD4hep/Printout.h>
 
 /// Callback on invalid call invokation
 void dd4hep::ExtensionEntry::invalidCall(const char* tag)  const {

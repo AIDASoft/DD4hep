@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/DetectorProcessor.h"
-#include "DD4hep/detail/ContainerHelpers.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/DetectorProcessor.h>
+#include <DD4hep/detail/ContainerHelpers.h>
 
 using namespace dd4hep;
 

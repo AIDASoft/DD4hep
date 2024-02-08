@@ -36,7 +36,6 @@ namespace {
 }
 
 using namespace dd4hep;
-using namespace dd4hep::detail;
 
 namespace   {
 
