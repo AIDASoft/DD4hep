@@ -1435,7 +1435,8 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
              TGeoOpticalSurface::ModelToString(optSurf->GetModel()),
              TGeoOpticalSurface::FinishToString(optSurf->GetFinish()),
              optSurf->GetSigmaAlpha(), optSurf->GetPolish());
-
+    ///
+    /// Convert non-scalar properties from GDML tables
     G4MaterialPropertiesTable* tab = nullptr;
     TListIter itp(&optSurf->GetProperties());
     for(TObject* obj = itp.Next(); obj; obj = itp.Next())  {
@@ -1488,6 +1489,9 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
                  "  Geant4: %8.3g [MeV]  TGeo: %8.3g [GeV] Conversion: %8.3g",
                  bins[i], v->bins[i], conv.first);
     }
+    ///
+    /// Convert scalar properties
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
     TListIter itc(&optSurf->GetConstProperties());
     for(TObject* obj = itc.Next(); obj; obj = itc.Next())  {
       string  exc_str;
@@ -1536,6 +1540,7 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
                named->GetName(), value, conv, value * conv);
       tab->AddConstProperty(named->GetName(), value * conv);
     }
+#endif  // ROOT_VERSION >= 6.31.1
     info.g4OpticalSurfaces[optSurf] = g4;
   }
   return g4;
