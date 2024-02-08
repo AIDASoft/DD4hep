@@ -81,7 +81,6 @@
 namespace units = dd4hep;
 using namespace dd4hep::sim;
 using namespace dd4hep;
-using namespace std;
 
 namespace {
 
@@ -92,7 +91,7 @@ namespace {
   static constexpr const char* GEANT4_TAG_MEE              = "MeanExcitationEnergy";
   static constexpr const char* GEANT4_TAG_ENE_PER_ION_PAIR = "MeanEnergyPerIonPair";
 
-  static string indent = "";
+  static std::string indent = "";
 
   template <typename O, typename C, typename F> void handleRefs(const O* o, const C& c, F pmf) {
     for (typename C::const_iterator i = c.begin(); i != c.end(); ++i) {
@@ -120,7 +119,7 @@ namespace {
 
   template <typename O, typename C, typename F> void handleRMap(const O* o, const C& c, F pmf) {
     for (typename C::const_reverse_iterator i = c.rbegin(); i != c.rend(); ++i)  {
-      //cout << "Handle RMAP [ " << (*i).first << " ]" << endl;
+      //cout << "Handle RMAP [ " << (*i).first << " ]" << std::endl;
       handle(o, (*i).second, pmf);
     }
   }
@@ -133,8 +132,8 @@ namespace {
     }
   }
 
-  string make_NCName(const string& in)   {
-    string res = detail::str_replace(in, "/", "_");
+  std::string make_NCName(const std::string& in)   {
+    std::string res = detail::str_replace(in, "/", "_");
     res = detail::str_replace(res, "#", "_");
     return res;
   }
@@ -154,7 +153,7 @@ namespace {
   public:
     Region region;
     double threshold;
-    bool storeSecondaries;
+    bool   storeSecondaries;
     G4UserRegionInformation()
       : threshold(0.0), storeSecondaries(false) {
     }
@@ -166,40 +165,40 @@ namespace {
     }
   };
 
-  pair<double,double> g4PropertyConversion(int index)   {
+  std::pair<double,double> g4PropertyConversion(int index)   {
 #if G4VERSION_NUMBER >= 1040
     switch(index)  {
-    case kRINDEX:                         return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kREFLECTIVITY:                   return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kREALRINDEX:                     return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kIMAGINARYRINDEX:                return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kEFFICIENCY:                     return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kTRANSMITTANCE:                  return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kSPECULARLOBECONSTANT:           return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kSPECULARSPIKECONSTANT:          return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kBACKSCATTERCONSTANT:            return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kGROUPVEL:                       return make_pair(CLHEP::keV/units::keV, (CLHEP::m/CLHEP::s)/(units::m/units::s));  // meter/second
-    case kMIEHG:                          return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
-    case kRAYLEIGH:                       return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);  // ??? says its a length
-    case kWLSCOMPONENT:                   return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kWLSABSLENGTH:                   return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
-    case kABSLENGTH:                      return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
+    case kRINDEX:                         return std::make_pair(CLHEP::keV/units::keV, 1.0);
+    case kREFLECTIVITY:                   return std::make_pair(CLHEP::keV/units::keV, 1.0);
+    case kREALRINDEX:                     return std::make_pair(CLHEP::keV/units::keV, 1.0);
+    case kIMAGINARYRINDEX:                return std::make_pair(CLHEP::keV/units::keV, 1.0);
+    case kEFFICIENCY:                     return std::make_pair(CLHEP::keV/units::keV, 1.0);
+    case kTRANSMITTANCE:                  return std::make_pair(CLHEP::keV/units::keV, 1.0);
+    case kSPECULARLOBECONSTANT:           return std::make_pair(CLHEP::keV/units::keV, 1.0);
+    case kSPECULARSPIKECONSTANT:          return std::make_pair(CLHEP::keV/units::keV, 1.0);
+    case kBACKSCATTERCONSTANT:            return std::make_pair(CLHEP::keV/units::keV, 1.0);
+    case kGROUPVEL:                       return std::make_pair(CLHEP::keV/units::keV, (CLHEP::m/CLHEP::s)/(units::m/units::s));  // meter/second
+    case kMIEHG:                          return std::make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
+    case kRAYLEIGH:                       return std::make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);  // ??? says its a length
+    case kWLSCOMPONENT:                   return std::make_pair(CLHEP::keV/units::keV, 1.0);
+    case kWLSABSLENGTH:                   return std::make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
+    case kABSLENGTH:                      return std::make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
 #if G4VERSION_NUMBER >= 1100
-    case kWLSCOMPONENT2:                  return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kWLSABSLENGTH2:                  return make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
-    case kSCINTILLATIONCOMPONENT1:        return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
-    case kSCINTILLATIONCOMPONENT2:        return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
-    case kSCINTILLATIONCOMPONENT3:        return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kWLSCOMPONENT2:                  return std::make_pair(CLHEP::keV/units::keV, 1.0);
+    case kWLSABSLENGTH2:                  return std::make_pair(CLHEP::keV/units::keV, CLHEP::m/units::m);
+    case kSCINTILLATIONCOMPONENT1:        return std::make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kSCINTILLATIONCOMPONENT2:        return std::make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kSCINTILLATIONCOMPONENT3:        return std::make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
 #else
-    case kFASTCOMPONENT:                  return make_pair(CLHEP::keV/units::keV, 1.0);
-    case kSLOWCOMPONENT:                  return make_pair(CLHEP::keV/units::keV, 1.0);
+    case kFASTCOMPONENT:                  return std::make_pair(CLHEP::keV/units::keV, 1.0);
+    case kSLOWCOMPONENT:                  return std::make_pair(CLHEP::keV/units::keV, 1.0);
 #endif
-    case kPROTONSCINTILLATIONYIELD:       return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV); // Yields: 1/energy
-    case kDEUTERONSCINTILLATIONYIELD:     return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
-    case kTRITONSCINTILLATIONYIELD:       return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
-    case kALPHASCINTILLATIONYIELD:        return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
-    case kIONSCINTILLATIONYIELD:          return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
-    case kELECTRONSCINTILLATIONYIELD:     return make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kPROTONSCINTILLATIONYIELD:       return std::make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV); // Yields: 1/energy
+    case kDEUTERONSCINTILLATIONYIELD:     return std::make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kTRITONSCINTILLATIONYIELD:       return std::make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kALPHASCINTILLATIONYIELD:        return std::make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kIONSCINTILLATIONYIELD:          return std::make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
+    case kELECTRONSCINTILLATIONYIELD:     return std::make_pair(CLHEP::keV/units::keV, units::keV/CLHEP::keV);
     default:
       break;
     }
@@ -207,7 +206,7 @@ namespace {
 #else
     printout(FATAL,"Geant4Converter", "+++ Cannot convert material property with index: %d [Need Geant4 > 10.03]", index);
 #endif
-    return make_pair(0e0,0e0);
+    return std::make_pair(0e0,0e0);
   }
 
   double g4ConstPropertyConversion(int index)   {
@@ -306,7 +305,7 @@ Geant4Converter::~Geant4Converter() {
 }
 
 /// Handle the conversion of isotopes
-void* Geant4Converter::handleIsotope(const string& /* name */, const TGeoIsotope* iso) const {
+void* Geant4Converter::handleIsotope(const std::string& /* name */, const TGeoIsotope* iso) const {
   G4Isotope* g4i = data().g4Isotopes[iso];
   if ( !g4i )  {
     double a_conv = (CLHEP::g / CLHEP::mole);
@@ -320,7 +319,7 @@ void* Geant4Converter::handleIsotope(const string& /* name */, const TGeoIsotope
 }
 
 /// Handle the conversion of elements
-void* Geant4Converter::handleElement(const string& name, const Atom element) const {
+void* Geant4Converter::handleElement(const std::string& name, const Atom element) const {
   G4Element* g4e = data().g4Elements[element];
   if ( !g4e ) {
     PrintLevel lvl = debugElements ? ALWAYS : outputLevel;
@@ -339,8 +338,8 @@ void* Geant4Converter::handleElement(const string& name, const Atom element) con
       printout(lvl, "Geant4Converter", "++ Created G4 Isotope %s from data: Z=%d N=%d A=%.3f [g/mole]",
                element->GetName(), element->Z(), element->N(), element->A());
     }
-    stringstream str;
-    str << (*g4e) << endl;
+    std::stringstream str;
+    str << (*g4e) << std::endl;
     printout(lvl, "Geant4Converter", "++ Created G4 element %s", str.str().c_str());
     data().g4Elements[element] = g4e;
   }
@@ -348,7 +347,7 @@ void* Geant4Converter::handleElement(const string& name, const Atom element) con
 }
 
 /// Dump material in GDML format to output stream
-void* Geant4Converter::handleMaterial(const string& name, Material medium) const {
+void* Geant4Converter::handleMaterial(const std::string& name, Material medium) const {
   Geant4GeometryInfo& info = data();
   G4Material*         mat  = info.g4Materials[medium];
   if ( !mat )  {
@@ -405,18 +404,17 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
                            material->GetTemperature(), material->GetPressure());
     }
 
-    string plugin_name { };
+    std::string plugin_name { };
     double value = 0e0;
     double ionisation_mee = -2e100;
     double ionisation_birks_constant = -2e100;
     double ionisation_ene_per_ion_pair = -2e100;
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     /// Attach the material properties if any
     G4MaterialPropertiesTable* tab = 0;
     TListIter propIt(&material->GetProperties());
     for(TObject* obj=propIt.Next(); obj; obj = propIt.Next())  {
-      string       exc_str;
+      std::string       exc_str;
       TNamed*      named  = (TNamed*)obj;
       TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
       const char*  cptr   = ::strstr(matrix->GetName(), GEANT4_TAG_IGNORE);
@@ -460,7 +458,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       }
       // We need to convert the property from TGeo units to Geant4 units
       auto conv = g4PropertyConversion(idx);
-      vector<double> bins(v->bins), vals(v->values);
+      std::vector<double> bins(v->bins), vals(v->values);
       for(std::size_t i=0, count=bins.size(); i<count; ++i)
         bins[i] *= conv.first, vals[i] *= conv.second;
 
@@ -477,7 +475,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
     /// Attach the material properties if any
     TListIter cpropIt(&material->GetConstProperties());
     for(TObject* obj=cpropIt.Next(); obj; obj = cpropIt.Next())  {
-      string  exc_str;
+      std::string  exc_str;
       Bool_t     err = kFALSE;
       TNamed*  named = (TNamed*)obj;
 
@@ -555,10 +553,10 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       printout(lvl, name, "++      CONST Property: %-20s %g ", named->GetName(), value);
       tab->AddConstProperty(named->GetName(), value * conv);
     }
-#endif
+    //
     // Set Birk's constant if it was supplied in the material table of the TGeoMaterial
     auto* ionisation = mat->GetIonisation();
-    stringstream str;
+    std::stringstream str;
     str << (*mat);
     if ( ionisation )   {
       if ( ionisation_birks_constant > 0e0 )   {
@@ -596,7 +594,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
 }
 
 /// Dump solid in GDML format to output stream
-void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) const {
+void* Geant4Converter::handleSolid(const std::string& name, const TGeoShape* shape) const {
   G4VSolid* solid = nullptr;
   if ( shape ) {
     if ( nullptr != (solid = data().g4Solids[shape]) )   {
@@ -650,10 +648,8 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       solid = convertShape<TGeoArb8>(shape);
     else if (isa == TGeoPara::Class())
       solid = convertShape<TGeoPara>(shape);
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
     else if (isa == TGeoTessellated::Class()) 
       solid = convertShape<TGeoTessellated>(shape);
-#endif
     else if (isa == TGeoScaledShape::Class())  {
       TGeoScaledShape* sh   = (TGeoScaledShape*) shape;
       TGeoShape*       sol  = sh->GetShape();
@@ -743,7 +739,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
 }
 
 /// Dump logical volume in GDML format to output stream
-void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume) const {
+void* Geant4Converter::handleVolume(const std::string& name, const TGeoVolume* volume) const {
   Volume _v(volume);
   Geant4GeometryInfo& info = data();
   PrintLevel lvl = debugVolumes ? ALWAYS : outputLevel;
@@ -791,7 +787,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     G4LogicalVolume* g4vol = nullptr;
     if ( _v.hasProperties() && !_v.getProperty(GEANT4_TAG_PLUGIN,"").empty() )   {
       Detector* det = const_cast<Detector*>(&m_detDesc); 
-      string plugin = _v.getProperty(GEANT4_TAG_PLUGIN,"");
+      std::string plugin = _v.getProperty(GEANT4_TAG_PLUGIN,"");
       g4vol = PluginService::Create<G4LogicalVolume*>(plugin, det, _v, g4solid, g4medium);
       if ( !g4vol )    {
         except("G4Cnv::volume["+name+"]","++ FATAL Failed to call plugin to create logical volume.");
@@ -846,7 +842,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
 }
 
 /// Dump logical volume in GDML format to output stream
-void* Geant4Converter::collectVolume(const string& /* name */, const TGeoVolume* volume) const {
+void* Geant4Converter::collectVolume(const std::string& /* name */, const TGeoVolume* volume) const {
   Geant4GeometryInfo& info = data();
   Volume              _v(volume);
   Region              reg = _v.region();
@@ -866,7 +862,7 @@ void* Geant4Converter::collectVolume(const string& /* name */, const TGeoVolume*
 }
 
 /// Dump volume placement in GDML format to output stream
-void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) const {
+void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* node) const {
   TGeoVolume* mot_vol = node->GetVolume();
   PrintLevel lvl = debugVolumes ? ALWAYS : outputLevel;
   if ( mot_vol->IsA() != TGeoVolumeAssembly::Class() )    {
@@ -939,7 +935,7 @@ void* Geant4Converter::handleAssembly(const string& name, const TGeoNode* node) 
 }
 
 /// Dump volume placement in GDML format to output stream
-void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node) const {
+void* Geant4Converter::handlePlacement(const std::string& name, const TGeoNode* node) const {
   Geant4GeometryInfo& info = data();
   PrintLevel lvl = debugPlacements ? ALWAYS : outputLevel;
   Geant4GeometryMaps::PlacementMap::const_iterator g4it = info.g4Placements.find(node);
@@ -1008,7 +1004,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         return nullptr;
       }
       else if ( node != info.manager->GetTopNode() && volIt == info.g4Volumes.end() )  {
-        throw logic_error("Geant4Converter: Invalid mother volume found!");
+        throw std::logic_error("Geant4Converter: Invalid mother volume found!");
       }
       PlacedVolume pv(node);
       const auto*  pv_data = pv.data();
@@ -1108,7 +1104,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 }
 
 /// Convert the geometry type region into the corresponding Geant4 object(s).
-void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>& /* volumes */) const {
+void* Geant4Converter::handleRegion(Region region, const std::set<const TGeoVolume*>& /* volumes */) const {
   G4Region* g4 = data().g4Regions[region];
   if ( !g4 ) {
     PrintLevel lvl = debugRegions ? ALWAYS : outputLevel;
@@ -1117,7 +1113,7 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
 
     // create region info with storeSecondaries flag
     if( not r.wasThresholdSet() and r.storeSecondaries() ) {
-      throw runtime_error("G4Region: StoreSecondaries is True, but no explicit threshold set:");
+      throw std::runtime_error("G4Region: StoreSecondaries is True, but no explicit threshold set:");
     }
     printout(lvl, "Geant4Converter", "++ Setting up region: %s", r.name());
     G4UserRegionInformation* info = new G4UserRegionInformation();
@@ -1127,7 +1123,7 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
     g4->SetUserInformation(info);
 
     printout(lvl, "Geant4Converter", "++ Converted region settings of:%s.", r.name());
-    vector < string > &limits = r.limits();
+    std::vector < std::string > &limits = r.limits();
     G4ProductionCuts* cuts = 0;
     // set production cut
     if( not r.useDefaultCut() ) {
@@ -1149,7 +1145,7 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
           else if ( c.particles == "e[-+]"  ) pid = -idxG4PositronCut-idxG4ElectronCut;
           else if ( c.particles == "gamma"  ) pid = idxG4GammaCut;
           else if ( c.particles == "proton" ) pid = idxG4ProtonCut;
-          else throw runtime_error("G4Region: Invalid production cut particle-type:" + c.particles);
+          else throw std::runtime_error("G4Region: Invalid production cut particle-type:" + c.particles);
           if ( !cuts ) cuts = new G4ProductionCuts();
           if ( pid == -(idxG4PositronCut+idxG4ElectronCut) )  {
             cuts->SetProductionCut(c.value*CLHEP::mm/units::mm, idxG4PositronCut);
@@ -1186,7 +1182,7 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
 }
 
 /// Convert the geometry type LimitSet into the corresponding Geant4 object(s).
-void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVolume*>& /* volumes */) const {
+void* Geant4Converter::handleLimitSet(LimitSet limitset, const std::set<const TGeoVolume*>& /* volumes */) const {
   G4UserLimits* g4 = data().g4Limits[limitset];
   if ( !g4 ) {
     PrintLevel lvl = debugLimits || debugRegions ? ALWAYS : outputLevel;
@@ -1228,7 +1224,7 @@ void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVol
 }
 
 /// Convert the geometry visualisation attributes to the corresponding Geant4 object(s).
-void* Geant4Converter::handleVis(const string& /* name */, VisAttr attr) const {
+void* Geant4Converter::handleVis(const std::string& /* name */, VisAttr attr) const {
   Geant4GeometryInfo& info = data();
   G4VisAttributes*    g4   = info.g4Vis[attr];
   if ( !g4 ) {
@@ -1255,35 +1251,34 @@ void* Geant4Converter::handleVis(const string& /* name */, VisAttr attr) const {
 
 /// Handle the geant 4 specific properties
 void Geant4Converter::handleProperties(Detector::Properties& prp) const {
-  map < string, string > processors;
+  std::map < std::string, std::string > processors;
   static int s_idd = 9999999;
   for( const auto& [nam, vals] : prp ) {
     if ( nam.substr(0, 6) == "geant4" ) {
       auto id_it = vals.find("id");
-      string id = (id_it == vals.end()) ? _toString(++s_idd,"%d") : (*id_it).second;
+      std::string id = (id_it == vals.end()) ? _toString(++s_idd,"%d") : (*id_it).second;
       processors.emplace(id, nam);
     }
   }
   for( const auto& p : processors ) {
     const GeoHandler* hdlr = this;
     const Detector::PropertyValues& vals = prp[p.second];
-    string type = vals.find("type")->second;
-    string tag  = type + "_Geant4_action";
+    std::string type = vals.find("type")->second;
+    std::string tag  = type + "_Geant4_action";
     Detector* det = const_cast<Detector*>(&m_detDesc);
     long      res = PluginService::Create<long>(tag, det, hdlr, &vals);
     if ( 0 == res ) {
-      throw runtime_error("Failed to locate plugin to interprete files of type"
-                          " \"" + tag + "\" - no factory:" + type);
+      throw std::runtime_error("Failed to locate plugin to interprete files of type"
+                               " \"" + tag + "\" - no factory:" + type);
     }
     res = *(long*)res;
     if ( res != 1 ) {
-      throw runtime_error("Failed to invoke the plugin " + tag + " of type " + type);
+      throw std::runtime_error("Failed to invoke the plugin " + tag + " of type " + type);
     }
     printout(outputLevel, "Geant4Converter", "+++++ Executed Successfully Geant4 setup module *%s*.", type.c_str());
   }
 }
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 /// Convert the geometry type material into the corresponding Geant4 object(s).
 void* Geant4Converter::handleMaterialProperties(TObject* mtx) const    {
   Geant4GeometryInfo& info   = data();
@@ -1422,7 +1417,7 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
     G4SurfaceType          type   = geant4_surface_type(optSurf->GetType());
     G4OpticalSurfaceModel  model  = geant4_surface_model(optSurf->GetModel());
     G4OpticalSurfaceFinish finish = geant4_surface_finish(optSurf->GetFinish());
-    string name = make_NCName(optSurf->GetName());
+    std::string name = make_NCName(optSurf->GetName());
     PrintLevel lvl = debugSurfaces ? ALWAYS : DEBUG;
     g4 = new G4OpticalSurface(name, model, finish, type, optSurf->GetValue());
     g4->SetSigmaAlpha(optSurf->GetSigmaAlpha());
@@ -1440,7 +1435,7 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
     G4MaterialPropertiesTable* tab = nullptr;
     TListIter itp(&optSurf->GetProperties());
     for(TObject* obj = itp.Next(); obj; obj = itp.Next())  {
-      string exc_str;
+      std::string exc_str;
       TNamed*      named  = (TNamed*)obj;
       TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
       const char*  cptr   = ::strstr(matrix->GetName(), GEANT4_TAG_IGNORE);
@@ -1475,7 +1470,7 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
       }
       // We need to convert the property from TGeo units to Geant4 units
       auto conv = g4PropertyConversion(idx);
-      vector<double> bins(v->bins), vals(v->values);
+      std::vector<double> bins(v->bins), vals(v->values);
       for(std::size_t i=0, count=v->bins.size(); i<count; ++i)
         bins[i] *= conv.first, vals[i] *= conv.second;
       G4MaterialPropertyVector* vec = new G4MaterialPropertyVector(&bins[0], &vals[0], bins.size());
@@ -1494,7 +1489,7 @@ void* Geant4Converter::handleOpticalSurface(TObject* surface) const    {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
     TListIter itc(&optSurf->GetConstProperties());
     for(TObject* obj = itc.Next(); obj; obj = itc.Next())  {
-      string  exc_str;
+      std::string  exc_str;
       TNamed* named  = (TNamed*)obj;
       const char* cptr = ::strstr(named->GetName(), GEANT4_TAG_IGNORE);
       if ( nullptr != cptr )   {
@@ -1554,7 +1549,7 @@ void* Geant4Converter::handleSkinSurface(TObject* surface) const   {
   if ( !g4 ) {
     G4OpticalSurface* optSurf  = info.g4OpticalSurfaces[OpticalSurface(surf->GetSurface())];
     G4LogicalVolume*  v = info.g4Volumes[surf->GetVolume()];
-    string name = make_NCName(surf->GetName());
+    std::string name = make_NCName(surf->GetName());
     g4 = new G4LogicalSkinSurface(name, v, optSurf);
     printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
              "++ Created SkinSurface: %-18s  optical:%s",
@@ -1573,7 +1568,7 @@ void* Geant4Converter::handleBorderSurface(TObject* surface) const   {
     G4OpticalSurface*  optSurf = info.g4OpticalSurfaces[OpticalSurface(surf->GetSurface())];
     G4VPhysicalVolume* n1 = info.g4Placements[surf->GetNode1()];
     G4VPhysicalVolume* n2 = info.g4Placements[surf->GetNode2()];
-    string name = make_NCName(surf->GetName());
+    std::string name = make_NCName(surf->GetName());
     g4 = new G4LogicalBorderSurface(name, n1, n2, optSurf);
     printout(debugSurfaces ? ALWAYS : DEBUG, "Geant4Converter",
              "++ Created BorderSurface: %-18s  optical:%s",
@@ -1582,38 +1577,38 @@ void* Geant4Converter::handleBorderSurface(TObject* surface) const   {
   }
   return g4;
 }
-#endif
 
 /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
-void Geant4Converter::printSensitive(SensitiveDetector sens_det, const set<const TGeoVolume*>& /* volumes */) const {
-  Geant4GeometryInfo&     info = data();
-  set<const TGeoVolume*>& volset = info.sensitives[sens_det];
-  SensitiveDetector       sd = sens_det;
-  stringstream str;
+void Geant4Converter::printSensitive(SensitiveDetector sens_det, const std::set<const TGeoVolume*>& /* volumes */) const {
+  Geant4GeometryInfo&          info = data();
+  std::set<const TGeoVolume*>& volset = info.sensitives[sens_det];
+  SensitiveDetector            sd = sens_det;
+  std::stringstream str;
 
   printout(INFO, "Geant4Converter", "++ SensitiveDetector: %-18s %-20s Hits:%-16s", sd.name(), ("[" + sd.type() + "]").c_str(),
            sd.hitsCollection().c_str());
-  str << "                    | " << "Cutoff:" << setw(6) << left << sd.energyCutoff() << setw(5) << right << volset.size()
+  str << "                    | " << "Cutoff:" << std::setw(6) << std::left
+      << sd.energyCutoff() << std::setw(5) << std::right << volset.size()
       << " volumes ";
   if (sd.region().isValid())
-    str << " Region:" << setw(12) << left << sd.region().name();
+    str << " Region:" << std::setw(12) << std::left << sd.region().name();
   if (sd.limits().isValid())
-    str << " Limits:" << setw(12) << left << sd.limits().name();
+    str << " Limits:" << std::setw(12) << std::left << sd.limits().name();
   str << ".";
   printout(INFO, "Geant4Converter", str.str().c_str());
 
   for (const auto i : volset )  {
-    map<Volume, G4LogicalVolume*>::iterator v = info.g4Volumes.find(i);
+    std::map<Volume, G4LogicalVolume*>::iterator v = info.g4Volumes.find(i);
     G4LogicalVolume* vol = (*v).second;
     str.str("");
-    str << "                                   | " << "Volume:" << setw(24) << left << vol->GetName() << " "
+    str << "                                   | " << "Volume:" << std::setw(24) << std::left << vol->GetName() << " "
         << vol->GetNoDaughters() << " daughters.";
     printout(INFO, "Geant4Converter", str.str().c_str());
   }
 }
 
-string printSolid(G4VSolid* sol) {
-  stringstream str;
+std::string printSolid(G4VSolid* sol) {
+  std::stringstream str;
   if (typeid(*sol) == typeid(G4Box)) {
     const G4Box* b = (G4Box*) sol;
     str << "++ Box: x=" << b->GetXHalfLength() << " y=" << b->GetYHalfLength() << " z=" << b->GetZHalfLength();
@@ -1627,7 +1622,7 @@ string printSolid(G4VSolid* sol) {
 }
 
 /// Print G4 placement
-void* Geant4Converter::printPlacement(const string& name, const TGeoNode* node) const {
+void* Geant4Converter::printPlacement(const std::string& name, const TGeoNode* node) const {
   Geant4GeometryInfo& info = data();
   G4VPhysicalVolume*  g4   = info.g4Placements[node];
   G4LogicalVolume*    vol  = info.g4Volumes[node->GetVolume()];
@@ -1638,7 +1633,7 @@ void* Geant4Converter::printPlacement(const string& name, const TGeoNode* node) 
   if ( !sd )  {
     return g4;
   }
-  stringstream str;
+  std::stringstream str;
   str << "G4Cnv::placement: + " << name << " No:" << node->GetNumber() << " Vol:" << vol->GetName() << " Solid:"
       << sol->GetName();
   printout(outputLevel, "G4Placement", str.str().c_str());
@@ -1667,10 +1662,8 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   // We do not have to handle defines etc.
   // All positions and the like are not really named.
   // Hence, start creating the G4 objects for materials, solids and log volumes.
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   handleArray(this, geo.manager->GetListOfGDMLMatrices(), &Geant4Converter::handleMaterialProperties);
   handleArray(this, geo.manager->GetListOfOpticalSurfaces(), &Geant4Converter::handleOpticalSurface);
-#endif
   
   handle(this,     geo.volumes, &Geant4Converter::collectVolume);
   handle(this,     geo.solids,  &Geant4Converter::handleSolid);
@@ -1686,11 +1679,9 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   handleRMap(this, *m_data,     &Geant4Converter::handleAssembly);
   // Now place all this stuff appropriately
   handleRMap(this, *m_data,     &Geant4Converter::handlePlacement);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   /// Handle concrete surfaces
   handleArray(this, geo.manager->GetListOfSkinSurfaces(),   &Geant4Converter::handleSkinSurface);
   handleArray(this, geo.manager->GetListOfBorderSurfaces(), &Geant4Converter::handleBorderSurface);
-#endif
   //==================== Fields
   handleProperties(m_detDesc.properties());
   if ( printSensitives )  {

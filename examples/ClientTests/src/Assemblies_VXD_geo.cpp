@@ -14,13 +14,11 @@
 // Framework includes
 #include "DD4hep/DetFactoryHelper.h"
 
-using namespace std;
 using namespace dd4hep;
-using namespace dd4hep::detail;
 
 static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector sens)  {
   xml_det_t    x_det = e;
-  string       name  = x_det.nameStr();
+  std::string  name  = x_det.nameStr();
   Assembly     assembly(name+"_assembly");
   DetElement   vxd(name, x_det.typeStr(), x_det.id());
   PlacedVolume pv;
@@ -32,7 +30,7 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
     xml_comp_t  x_ladder  (x_layer.child(_U(ladder)));
     int         layer_id   = x_layer.id();
     int         nLadders   = x_ladder.number();
-    string      layername  = name+_toString(layer_id,"_layer%d");
+    std::string layername  = name+_toString(layer_id,"_layer%d");
     double      dphi       = 2.*M_PI/double(nLadders);
     // --- create an assembly and DetElement for the layer 
     Assembly     layer_assembly(layername);
@@ -81,7 +79,7 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
     for(int j=0; j<nLadders; ++j) {
       double dj = double(j);
       double phi = phi0 + dj*dphi;
-      string laddername = layername + _toString(j,"_ladder%d");
+      std::string laddername = layername + _toString(j,"_ladder%d");
       double lthick = sens_thick + supp_thick;
       RotationZYX rot( phi,0,0);
       double pos_x = (radius + lthick/2.)*cos(phi)  - offset * sin( phi );

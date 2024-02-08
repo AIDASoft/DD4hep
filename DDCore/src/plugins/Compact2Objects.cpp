@@ -41,12 +41,8 @@
 // Root/TGeo include files
 #include <TGeoManager.h>
 #include <TGeoMaterial.h>
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
 #include <TGeoPhysicalConstants.h>
-#endif
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 #include <TGDMLMatrix.h>
-#endif
 #include <TMath.h>
 
 // C/C++ include files
@@ -93,11 +89,9 @@ namespace dd4hep {
   template <> void Converter<Property>::operator()(xml_h element) const;
   template <> void Converter<CartesianField>::operator()(xml_h element) const;
   template <> void Converter<SensitiveDetector>::operator()(xml_h element) const;
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   template <> void Converter<OpticalSurface>::operator()(xml_h element) const;
   template <> void Converter<PropertyTable>::operator()(xml_h element) const;
   template <> void Converter<PropertyConstant>::operator()(xml_h element) const;
-#endif
   template <> void Converter<DetElement>::operator()(xml_h element) const;
   template <> void Converter<STD_Conditions>::operator()(xml_h element) const;
   template <> void Converter<IncludeFile>::operator()(xml_h element) const;
@@ -516,10 +510,8 @@ template <> void Converter<Material>::operator()(xml_h e) const {
              matname, dens_val, temp_val/dd4hep::kelvin, pressure_val/dd4hep::pascal/100.0);
 
     mix->SetRadLen(0e0);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
     mix->ComputeDerivedQuantities();
-#endif
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+    ///
     /// In case there were material properties specified: convert them here
     for(xml_coll_t properties(x_mat, _U(constant)); properties; ++properties) {
       xml_elt_t p = properties;
@@ -576,7 +568,6 @@ template <> void Converter<Material>::operator()(xml_h e) const {
         throw_print("Compact2Objects[ERROR]: Converting material:" + mname + " Property missing: " + ref);
       }
     }
-#endif
   }
   TGeoMedium* medium = mgr.GetMedium(matname);
   if (0 == medium) {
@@ -740,7 +731,6 @@ template <> void Converter<STD_Conditions>::operator()(xml_h e) const {
   }
 }
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 /** Convert compact optical surface objects (defines)
  *
  *
@@ -840,7 +830,6 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
                surf->GetName(), pname.c_str(), ptyp.c_str());
     }
   }
-#endif
 }
 
 /** Convert compact constant property (Material properties stored in TGeoManager)
@@ -1449,9 +1438,7 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
       throw runtime_error("Failed to execute subdetector creation plugin. " + dbg.missingFactory(type));
     }
     description.addDetector(det);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     description.surfaceManager().registerSurfaces(det);
-#endif
     return;
   }
   catch (const exception& e)  {
@@ -1734,13 +1721,12 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
     (Converter<Header>(description))(xml_h(compact.child(_U(info))));
 
   xml_coll_t(compact, _U(properties)).for_each(_U(attributes), Converter<Property>(description));
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
   /// These two must be parsed early, because they are needed by the detector constructors
   xml_coll_t(compact, _U(properties)).for_each(_U(constant), Converter<PropertyConstant>(description));
   xml_coll_t(compact, _U(properties)).for_each(_U(matrix),   Converter<PropertyTable>(description));
   xml_coll_t(compact, _U(properties)).for_each(_U(plugin),   Converter<Plugin> (description));
   xml_coll_t(compact, _U(surfaces)).for_each(_U(opticalsurface), Converter<OpticalSurface>(description));
-#endif
+
   xml_coll_t(compact, _U(materials)).for_each(_U(element),  Converter<Atom>(description));
   xml_coll_t(compact, _U(materials)).for_each(_U(material), Converter<Material>(description));
   xml_coll_t(compact, _U(materials)).for_each(_U(plugin),   Converter<Plugin> (description));

@@ -12,17 +12,16 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/OpticalSurfaceManager.h"
-#include "DD4hep/detail/OpticalSurfaceManagerInterna.h"
-#include "DD4hep/ExtensionEntry.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/OpticalSurfaceManager.h>
+#include <DD4hep/detail/OpticalSurfaceManagerInterna.h>
+#include <DD4hep/ExtensionEntry.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
 
 // C/C++ includes
 #include <sstream>
 #include <iomanip>
 
-using namespace std;
 using namespace dd4hep;
 
 /// static accessor calling DD4hepOpticalSurfaceManagerPlugin if necessary
@@ -30,13 +29,11 @@ OpticalSurfaceManager OpticalSurfaceManager::getOpticalSurfaceManager(Detector& 
   return description.surfaceManager();
 }
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
-
 /// Access skin surface by its identifier
-SkinSurface  OpticalSurfaceManager::skinSurface(DetElement de, const string& nam)  const   {
+SkinSurface  OpticalSurfaceManager::skinSurface(DetElement de, const std::string& nam)  const   {
   if ( de.isValid() )  {
     Object* o = access();
-    string  n = de.path() + '#' + nam;
+    std::string  n = de.path() + '#' + nam;
     TGeoSkinSurface* surf = o->detector.manager().GetSkinSurface(n.c_str());
     if ( surf ) return surf;
     auto i = o->skinSurfaces.find(Object::LocalKey(de, nam));
@@ -49,15 +46,15 @@ SkinSurface  OpticalSurfaceManager::skinSurface(DetElement de, const string& nam
 }
 
 /// Access skin surface by its full name
-SkinSurface  OpticalSurfaceManager::skinSurface(const string& full_nam)  const   {
+SkinSurface  OpticalSurfaceManager::skinSurface(const std::string& full_nam)  const   {
   return access()->detector.manager().GetSkinSurface(full_nam.c_str());
 }
 
 /// Access border surface by its identifier
-BorderSurface  OpticalSurfaceManager::borderSurface(DetElement de, const string& nam)  const   {
+BorderSurface  OpticalSurfaceManager::borderSurface(DetElement de, const std::string& nam)  const   {
   if ( de.isValid() )  {
     Object* o = access();
-    string  n = de.path() + '#' + nam;
+    std::string  n = de.path() + '#' + nam;
     TGeoBorderSurface* surf = o->detector.manager().GetBorderSurface(n.c_str());
     if ( surf ) return surf;
     auto i = o->borderSurfaces.find(Object::LocalKey(de, nam));
@@ -70,15 +67,15 @@ BorderSurface  OpticalSurfaceManager::borderSurface(DetElement de, const string&
 }
 
 /// Access border surface by its full name
-BorderSurface  OpticalSurfaceManager::borderSurface(const string& full_nam)  const   {
+BorderSurface  OpticalSurfaceManager::borderSurface(const std::string& full_nam)  const   {
   return access()->detector.manager().GetBorderSurface(full_nam.c_str());
 }
 
 /// Access optical surface data by its identifier
-OpticalSurface OpticalSurfaceManager::opticalSurface(DetElement de, const string& nam)  const   {
+OpticalSurface OpticalSurfaceManager::opticalSurface(DetElement de, const std::string& nam)  const   {
   if ( de.isValid() )  {
     Object* o = access();
-    string  n = de.path() + '#' + nam;
+    std::string  n = de.path() + '#' + nam;
     TGeoOpticalSurface* surf = o->detector.manager().GetOpticalSurface(n.c_str());
     if ( surf ) return surf;
     auto i = o->opticalSurfaces.find(n);
@@ -91,13 +88,13 @@ OpticalSurface OpticalSurfaceManager::opticalSurface(DetElement de, const string
 }
 
 /// Access optical surface data by its identifier
-OpticalSurface OpticalSurfaceManager::opticalSurface(const string& full_nam)  const   {
+OpticalSurface OpticalSurfaceManager::opticalSurface(const std::string& full_nam)  const   {
   return access()->detector.manager().GetOpticalSurface(full_nam.c_str());
 }
 
 /// Add skin surface to manager
 void OpticalSurfaceManager::addSkinSurface(DetElement de, SkinSurface surf)  const   {
-  if ( access()->skinSurfaces.emplace(make_pair(de,surf->GetName()), surf).second )
+  if ( access()->skinSurfaces.emplace(std::make_pair(de,surf->GetName()), surf).second )
     return;
   except("OpticalSurfaceManager","++ Skin surface %s already present for DE:%s.",
          surf->GetName(), de.name());
@@ -105,7 +102,7 @@ void OpticalSurfaceManager::addSkinSurface(DetElement de, SkinSurface surf)  con
 
 /// Add border surface to manager
 void OpticalSurfaceManager::addBorderSurface(DetElement de, BorderSurface surf)  const   {
-  if ( access()->borderSurfaces.emplace(make_pair(de,surf->GetName()), surf).second )
+  if ( access()->borderSurfaces.emplace(std::make_pair(de,surf->GetName()), surf).second )
     return;
   except("OpticalSurfaceManager","++ Border surface %s already present for DE:%s.",
          surf->GetName(), de.name());
@@ -122,7 +119,7 @@ void OpticalSurfaceManager::addOpticalSurface(OpticalSurface surf)  const   {
 /// Register the temporary surface objects with the TGeoManager
 void OpticalSurfaceManager::registerSurfaces(DetElement subdetector)    {
   Object* o = access();
-  unique_ptr<Object> extension(new Object(o->detector));
+  std::unique_ptr<Object> extension(new Object(o->detector));
   for(auto& optical : o->opticalSurfaces)  {
     o->detector.manager().AddOpticalSurface(optical.second.ptr());
     extension->opticalSurfaces.insert(optical);
@@ -130,7 +127,7 @@ void OpticalSurfaceManager::registerSurfaces(DetElement subdetector)    {
   o->opticalSurfaces.clear();
   
   for(auto& skin : o->skinSurfaces)  {
-    string n = skin.first.first.path() + '#' + skin.first.second;
+    std::string n = skin.first.first.path() + '#' + skin.first.second;
     skin.second->SetName(n.c_str());
     o->detector.manager().AddSkinSurface(skin.second.ptr());
     extension->skinSurfaces.insert(skin);
@@ -138,7 +135,7 @@ void OpticalSurfaceManager::registerSurfaces(DetElement subdetector)    {
   o->skinSurfaces.clear();
   
   for(auto& border : o->borderSurfaces)  {
-    string n = border.first.first.path() + '#' + border.first.second;
+    std::string n = border.first.first.path() + '#' + border.first.second;
     border.second->SetName(n.c_str());
     o->detector.manager().AddBorderSurface(border.second.ptr());
     extension->borderSurfaces.insert(border);
@@ -152,4 +149,4 @@ void OpticalSurfaceManager::registerSurfaces(DetElement subdetector)    {
   }
   subdetector.addExtension(new detail::DeleteExtension<Object,Object>(extension.release()));
 }
-#endif
+

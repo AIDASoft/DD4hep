@@ -11,29 +11,23 @@
 //
 //==========================================================================
 
-#include "RVersion.h"
-
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
-
 // Framework include files
-#include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/DetFactoryHelper.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/Printout.h>
 
 // ROOT include file
-#include "TGeoElement.h"
-#include "TGeoPhysicalConstants.h"
-#include "TGeant4PhysicalConstants.h"
-#include "TMath.h"
+#include <TGeoElement.h>
+#include <TGeoPhysicalConstants.h>
+#include <TGeant4PhysicalConstants.h>
+#include <TMath.h>
 
 namespace units = dd4hep;
-using namespace std;
 using namespace dd4hep;
-using namespace dd4hep::detail;
 
 static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetector /* sens */)  {
   xml_det_t    x_det = xml_det;
-  string       det_name = x_det.nameStr();
+  std::string  det_name = x_det.nameStr();
   Assembly     assembly(det_name+"_assembly");
   DetElement   det(det_name,x_det.typeStr(), x_det.id());
 
@@ -41,7 +35,7 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
     xml_det_t xbox = x_det.child(_U(box));
     Volume box = Volume(det_name+"_box",
                         Box(xbox.x(), xbox.y(), xbox.z()),
-                        description.material(xbox.attr<string>(_U(material))));
+                        description.material(xbox.attr<std::string>(_U(material))));
     PlacedVolume place = assembly.placeVolume(box);
     place.addPhysVolID("box",0);
   }
@@ -140,4 +134,4 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
 }
 
 DECLARE_DETELEMENT(MaterialTester,create_element)
-#endif
+

@@ -14,8 +14,8 @@
 #define DD4HEP_OBJECTS_H
 
 // Framework include files
-#include "DD4hep/Handle.h"
-#include "DD4hep/NamedObject.h"
+#include <DD4hep/Handle.h>
+#include <DD4hep/NamedObject.h>
 
 // Forward declarations
 class TMap;
@@ -33,23 +33,22 @@ class TGeoIdentity;
 #pragma GCC diagnostic ignored "-Wdeprecated" // Code that causes warning goes here
 #endif
 // ROOT include files
-#include "Math/Vector3D.h"
-#include "Math/Transform3D.h"
-#include "Math/Translation3D.h"
-#include "Math/RotationX.h"
-#include "Math/RotationY.h"
-#include "Math/RotationZ.h"
-#include "Math/Rotation3D.h"
-#include "Math/RotationZYX.h"
-#include "Math/EulerAngles.h"
-#include "Math/VectorUtil.h"
+#include <Math/Vector3D.h>
+#include <Math/Transform3D.h>
+#include <Math/Translation3D.h>
+#include <Math/RotationX.h>
+#include <Math/RotationY.h>
+#include <Math/RotationZ.h>
+#include <Math/Rotation3D.h>
+#include <Math/RotationZYX.h>
+#include <Math/EulerAngles.h>
+#include <Math/VectorUtil.h>
 #include <TGeoElement.h>
 #include <TGeoMaterial.h>
 #include <TGeoMedium.h>
-#include "TGeoPhysicalNode.h"
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
-#include "TGDMLMatrix.h"
-#endif
+#include <TGeoPhysicalNode.h>
+#include <TGDMLMatrix.h>
+
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
@@ -272,9 +271,8 @@ namespace dd4hep {
    */
   class Material: public Handle<TGeoMedium> {
   public:
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     typedef const TGDMLMatrix* Property;
-#endif
+
   public:
     /// Default constructor
     Material() = default;
@@ -304,7 +302,6 @@ namespace dd4hep {
     double intLength() const;
     /// Access the fraction of an element within the material
     double fraction(Atom atom) const;
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     /// Access to tabular properties of the material
     Property property(const char* name)  const;
     /// Access to tabular properties of the material
@@ -315,7 +312,6 @@ namespace dd4hep {
     double constProperty(const std::string& name)  const;
     /// Access string property value from the material table
     std::string constPropertyRef(const std::string& name, const std::string& default_value="");
-#endif
   };
 
   /// Handle class describing visualization attributes
@@ -506,8 +502,8 @@ namespace dd4hep {
 
 }   /* End namespace dd4hep             */
 
-#include "Math/Vector4D.h"
-#include "Math/Point3D.h"
+#include <Math/Vector4D.h>
+#include <Math/Point3D.h>
 
 namespace ROOT {
   namespace Math {

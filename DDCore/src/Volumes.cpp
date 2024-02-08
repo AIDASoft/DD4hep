@@ -1157,7 +1157,7 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,29,0)
         // Set directly transparency to the volume, NOT to the material as for ROOT < 6.29
         m_element->ResetTransparency(Char_t((1.0-vis->alpha)*100));
-#elif ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
+#else
         // As suggested by Valentin Volkl https://sft.its.cern.ch/jira/browse/DDFORHEP-20
         //
         // According to https://root.cern.ch/phpBB3/viewtopic.php?t=2309#p66013
