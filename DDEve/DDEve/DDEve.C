@@ -32,12 +32,8 @@ void DDEve(const char* xmlConfig=0, const char* evtData=0)  {
   }
   ::snprintf(text,sizeof(text)," -I%s/include -D__DD4HEP_DDEVE_EXCLUSIVE__ -Wno-shadow -g -O0",dd4hep);
   gSystem->AddIncludePath(text);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
   TString fname = "libDDG4IO";
   const char* io_lib = gSystem->FindDynamicLibrary(fname,kTRUE);
-#else
-  const char* io_lib = "libDDG4IO";
-#endif
   if ( io_lib )  {
     result = gSystem->Load("libDDG4IO");
     if ( 0 != result )  {

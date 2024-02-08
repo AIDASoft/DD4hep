@@ -12,16 +12,16 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/GenericEventHandler.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/Factories.h"
-#include "DD4hep/Plugins.h"
+#include <DDEve/GenericEventHandler.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/Factories.h>
+#include <DD4hep/Plugins.h>
 #include <stdexcept>
 
 /// ROOT include files
-#include "TROOT.h"
-#include "TGMsgBox.h"
-#include "TSystem.h"
+#include <TROOT.h>
+#include <TGMsgBox.h>
+#include <TSystem.h>
 #include <climits>
 
 using namespace std;
@@ -74,7 +74,7 @@ string GenericEventHandler::datasourceName() const {
 }
 
 /// Access to the collection type by name
-EventHandler::CollectionType GenericEventHandler::collectionType(const string& collection) const   {
+EventHandler::CollectionType GenericEventHandler::collectionType(const std::string& collection) const   {
   if ( m_current && m_current->hasEvent() )  {
     return m_current->collectionType(collection);
   }
@@ -82,7 +82,7 @@ EventHandler::CollectionType GenericEventHandler::collectionType(const string& c
 }
 
 /// Loop over collection and extract data
-size_t GenericEventHandler::collectionLoop(const string& collection, DDEveHitActor& actor) {
+std::size_t GenericEventHandler::collectionLoop(const std::string& collection, DDEveHitActor& actor) {
   if ( m_current && m_current->hasEvent() )  {
     return m_current->collectionLoop(collection,actor);
   }
@@ -90,7 +90,7 @@ size_t GenericEventHandler::collectionLoop(const string& collection, DDEveHitAct
 }
 
 /// Loop over collection and extract particle data
-size_t GenericEventHandler::collectionLoop(const string& collection, DDEveParticleActor& actor)    {
+std::size_t GenericEventHandler::collectionLoop(const std::string& collection, DDEveParticleActor& actor)    {
   if ( m_current && m_current->hasEvent() )  {
     return m_current->collectionLoop(collection,actor);
   }
@@ -98,23 +98,23 @@ size_t GenericEventHandler::collectionLoop(const string& collection, DDEvePartic
 }
 
 /// Open a new event data file
-bool GenericEventHandler::Open(const string& file_type, const string& file_name)   {
-  size_t idx = file_name.find("lcio");
-  size_t idr = file_name.find("root");
-  string err;
+bool GenericEventHandler::Open(const std::string& file_type, const std::string& file_name)   {
+  std::size_t idx = file_name.find("lcio");
+  std::size_t idr = file_name.find("root");
+  std::string err;
   m_hasFile = false;
   m_hasEvent = false;
   try  {
     detail::deletePtr(m_current);
     //  prefer event handler configured in xml
-    if ( file_type.find("FCC") != string::npos ) {
+    if ( file_type.find("FCC") != std::string::npos ) {
       m_current = (EventHandler*)PluginService::Create<void*>("DD4hep_DDEve_FCCEventHandler",(const char*)0);
     }
     // fall back to defaults according to file ending
-    else if ( idx != string::npos )   {
+    else if ( idx != std::string::npos )   {
       m_current = (EventHandler*)PluginService::Create<void*>("DD4hep_DDEve_LCIOEventHandler",(const char*)0);
     }
-    else if ( idr != string::npos )   {
+    else if ( idr != std::string::npos )   {
       m_current = (EventHandler*)PluginService::Create<void*>("DD4hep_DDEve_DDG4EventHandler",(const char*)0);
     }
     else   {
@@ -135,13 +135,9 @@ bool GenericEventHandler::Open(const string& file_type, const string& file_name)
   }
   catch(const exception& e)  {
     err = "\nAn exception occurred \n"
-      "while opening event data:\n" + string(e.what()) + "\n\n";
+      "while opening event data:\n" + std::string(e.what()) + "\n\n";
   }
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,9,2)
-  string path = TString::Format("%s/stop_t.xpm", TROOT::GetIconPath().Data()).Data();
-#else
-  string path = TString::Format("%s/icons/stop_t.xpm", gSystem->Getenv("ROOTSYS")).Data();
-#endif
+  std::string path = TString::Format("%s/stop_t.xpm", TROOT::GetIconPath().Data()).Data();
   const TGPicture* pic = gClient->GetPicture(path.c_str());
   new TGMsgBox(gClient->GetRoot(),0,"Failed to open event data",err.c_str(),pic,
                kMBDismiss,0,kVerticalFrame,kTextLeft|kTextCenterY);
@@ -162,13 +158,9 @@ bool GenericEventHandler::NextEvent()   {
     throw runtime_error("+++ EventHandler::readEvent: No file open!");
   }
   catch(const exception& e)  {
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,9,2)
-    string path = TString::Format("%s/stop_t.xpm", TROOT::GetIconPath().Data()).Data();
-#else
-    string path = TString::Format("%s/icons/stop_t.xpm", gSystem->Getenv("ROOTSYS")).Data();
-#endif
-    string err = "\nAn exception occurred \n"
-      "while reading a new event:\n" + string(e.what()) + "\n\n";
+    std::string path = TString::Format("%s/stop_t.xpm", TROOT::GetIconPath().Data()).Data();
+    std::string err = "\nAn exception occurred \n"
+      "while reading a new event:\n" + std::string(e.what()) + "\n\n";
     const TGPicture* pic = gClient->GetPicture(path.c_str());
     new TGMsgBox(gClient->GetRoot(),0,"Failed to read event", err.c_str(),pic,
                  kMBDismiss,0,kVerticalFrame,kTextLeft|kTextCenterY);
