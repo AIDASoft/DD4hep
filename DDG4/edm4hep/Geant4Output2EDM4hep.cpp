@@ -24,9 +24,14 @@
 #include <edm4hep/SimTrackerHitCollection.h>
 #include <edm4hep/CaloHitContributionCollection.h>
 #include <edm4hep/SimCalorimeterHitCollection.h>
+#include <edm4hep/EDM4hepVersion.h>
 /// podio include files
 #include <podio/Frame.h>
+#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
+#include <podio/ROOTWriter.h>
+#else
 #include <podio/ROOTFrameWriter.h>
+#endif
 #include <podio/podioVersion.h>
 
 /// Namespace for the AIDA detector description toolkit
@@ -47,7 +52,11 @@ namespace dd4hep {
      */
     class Geant4Output2EDM4hep : public Geant4OutputAction  {
     protected:
+#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
+      using writer_t = podio::ROOTWriter;
+#else
       using writer_t = podio::ROOTFrameWriter;
+#endif
       using stringmap_t = std::map< std::string, std::string >;
       using trackermap_t = std::map< std::string, edm4hep::SimTrackerHitCollection >;
       using calorimeterpair_t = std::pair< edm4hep::SimCalorimeterHitCollection, edm4hep::CaloHitContributionCollection >;
@@ -237,7 +246,11 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
     }
   }
   if ( !fname.empty() )   {
+#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
+    m_file = std::make_unique<podio::ROOTWriter>(fname);
+#else
     m_file = std::make_unique<podio::ROOTFrameWriter>(fname);
+#endif
     if ( !m_file )   {
       fatal("+++ Failed to open output file: %s", fname.c_str());
     }
@@ -342,12 +355,13 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
       auto mcp = m_particles.create();
       mcp.setPDG(p->pdgID);
 
-      float ps_fa[3] = {float(p->psx/CLHEP::GeV),float(p->psy/CLHEP::GeV),float(p->psz/CLHEP::GeV)};
-      mcp.setMomentum( ps_fa );
-
-      float pe_fa[3] = {float(p->pex/CLHEP::GeV),float(p->pey/CLHEP::GeV),float(p->pez/CLHEP::GeV)};
-      mcp.setMomentumAtEndpoint( pe_fa );
-
+#if edm4hep_VERSION < EDM4HEP_VERSION(0, 10, 3)
+      mcp.setMomentum( {float(p->psx/CLHEP::GeV),float(p->psy/CLHEP::GeV),float(p->psz/CLHEP::GeV)} );
+      mcp.setMomentumAtEndpoint( {float(p->pex/CLHEP::GeV),float(p->pey/CLHEP::GeV),float(p->pez/CLHEP::GeV)} );
+#else
+      mcp.setMomentum( {p->psx/CLHEP::GeV, p->psy/CLHEP::GeV, p->psz/CLHEP::GeV} );
+      mcp.setMomentumAtEndpoint( {p->pex/CLHEP::GeV, p->pey/CLHEP::GeV, p->pez/CLHEP::GeV} );
+#endif
       double vs_fa[3] = { p->vsx/CLHEP::mm, p->vsy/CLHEP::mm, p->vsz/CLHEP::mm } ;
       mcp.setVertex( vs_fa );
 
