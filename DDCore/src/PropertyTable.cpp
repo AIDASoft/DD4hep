@@ -12,33 +12,29 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/PropertyTable.h"
-#include "DD4hep/NamedObject.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/PropertyTable.h>
+#include <DD4hep/NamedObject.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
 
-#include "DD4hep/detail/Handle.inl"
+#include <DD4hep/detail/Handle.inl>
 
 // C/C++ includes
 #include <sstream>
 #include <iomanip>
 
-using namespace std;
 using namespace dd4hep;
-
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 
 DD4HEP_INSTANTIATE_HANDLE(TGDMLMatrix);
 
 /// Initializing constructor.
 PropertyTable::PropertyTable(Detector&     description,
-                             const string& table_name,
-                             const string& property_name,
+                             const std::string& table_name,
+                             const std::string& property_name,
                              size_t        num_rows,
                              size_t        num_cols)
 {
-  unique_ptr<Object> table(new Object(table_name.c_str(), num_rows, num_cols));
+  std::unique_ptr<Object> table(new Object(table_name.c_str(), num_rows, num_cols));
   table->SetTitle(property_name.c_str());
   description.manager().AddGDMLMatrix(m_element=table.release());
 }
-#endif

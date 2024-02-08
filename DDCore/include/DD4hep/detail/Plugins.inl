@@ -14,7 +14,7 @@
 #ifndef DD4HEP_PLUGINS_INL
 #define DD4HEP_PLUGINS_INL
 
-#include "DD4hep/Plugins.h"
+#include <DD4hep/Plugins.h>
 
 #if !defined(DD4HEP_PARSERS_NO_ROOT) && ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
 #include <set>

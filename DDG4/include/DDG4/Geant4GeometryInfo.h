@@ -10,16 +10,15 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
 #ifndef DDG4_GEANT4GEOMETRYINFO_H
 #define DDG4_GEANT4GEOMETRYINFO_H
 
 // Framework include files
-#include "DD4hep/Objects.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/GeoHandler.h"
-#include "DD4hep/PropertyTable.h"
-#include "DDG4/Geant4Primitives.h"
+#include <DD4hep/Objects.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/GeoHandler.h>
+#include <DD4hep/PropertyTable.h>
+#include <DDG4/Geant4Primitives.h>
 
 // C/C++ include files
 #include <map>
@@ -127,12 +126,10 @@ namespace dd4hep {
         PropertyVector() = default;
         ~PropertyVector() = default;
       };
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
       std::map<PropertyTable,  PropertyVector*>                g4OpticalProperties;
       std::map<OpticalSurface, G4OpticalSurface*>              g4OpticalSurfaces;
       std::map<SkinSurface,    G4LogicalSkinSurface*>          g4SkinSurfaces;
       std::map<BorderSurface,  G4LogicalBorderSurface*>        g4BorderSurfaces;
-#endif
       std::map<Region, G4Region*>                              g4Regions;
       std::map<VisAttr, G4VisAttributes*>                      g4Vis;
       std::map<LimitSet, G4UserLimits*>                        g4Limits;
@@ -160,5 +157,4 @@ namespace dd4hep {
 
   }    // End namespace sim
 }      // End namespace dd4hep
-
 #endif // DDG4_GEANT4GEOMETRYINFO_H

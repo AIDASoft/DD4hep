@@ -13,14 +13,13 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Python/Geant4PythonCall.h"
-#include "DDG4/Python/DDPython.h"
-#include "TPyReturn.h"
+#include <DDG4/Python/Geant4PythonCall.h>
+#include <DDG4/Python/DDPython.h>
+#include <TPyReturn.h>
 
 // C/C++ include files
 #include <stdexcept>
 
-using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::sim;
 
@@ -87,9 +86,7 @@ namespace dd4hep { namespace sim {
     INSTANTIATE(unsigned long);
     INSTANTIATE(float);
     INSTANTIATE(double);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
     INSTANTIATE(char*);
-#endif
     INSTANTIATE(const char*);
     INSTANTIATE(PyObject*);
     INSTANTIATE(void*);

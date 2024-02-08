@@ -25,7 +25,6 @@
 #include <fstream>
 #include <memory>
 
-using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
@@ -47,7 +46,7 @@ static Handle<TObject> create_Scaled(Detector&, xml_h e)   {
   xml_dim_t scale(e);
   Solid shape(xml_comp_t(scale.child(_U(shape))).createShape());
   Solid solid = Scale(shape.ptr(), scale.x(1.0), scale.y(1.0), scale.z(1.0));
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Scale__shape_constructor,create_Scaled)
@@ -67,7 +66,7 @@ DECLARE_XML_SHAPE(Scale__shape_constructor,create_Scaled)
 static Handle<TObject> create_Assembly(Detector&, xml_h e)   {
   xml_dim_t dim(e);
   Solid solid = Handle<TNamed>(new TGeoShapeAssembly());
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Assembly__shape_constructor,create_Assembly)
@@ -87,7 +86,7 @@ DECLARE_XML_SHAPE(Assembly__shape_constructor,create_Assembly)
 static Handle<TObject> create_Box(Detector&, xml_h e)   {
   xml_dim_t dim(e);
   Solid solid = Box(dim.dx(),dim.dy(),dim.dz());
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Box__shape_constructor,create_Box)
@@ -113,7 +112,7 @@ static Handle<TObject> create_HalfSpace(Detector&, xml_h e)   {
   double p[3] = { point.x(),  point.y(),  point.z()};
   double n[3] = { normal.x(), normal.y(), normal.z()};
   Solid solid = HalfSpace(p, n);
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(HalfSpace__shape_constructor,create_HalfSpace)
@@ -134,7 +133,7 @@ static Handle<TObject> create_Cone(Detector&, xml_h element)   {
   xml_dim_t e(element);
   double rmi1 = e.rmin1(0.0), rma1 = e.rmax1();
   Solid solid = Cone(e.z(0.0), rmi1, rma1, e.rmin2(rmi1), e.rmax2(rma1));
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Cone__shape_constructor,create_Cone)
@@ -159,7 +158,7 @@ DECLARE_XML_SHAPE(Cone__shape_constructor,create_Cone)
 static Handle<TObject> create_Polycone(Detector&, xml_h element)   {
   xml_dim_t e(element);
   int num = 0;
-  vector<double> rmin,rmax,z;
+  std::vector<double> rmin,rmax,z;
   double start = e.startphi(0e0), deltaphi = e.deltaphi(2*M_PI);
   for(xml_coll_t c(e,_U(zplane)); c; ++c, ++num)  {
     xml_comp_t plane(c);
@@ -168,10 +167,10 @@ static Handle<TObject> create_Polycone(Detector&, xml_h element)   {
     z.emplace_back(plane.z());
   }
   if ( num < 2 )  {
-    throw runtime_error("PolyCone Shape> Not enough Z planes. minimum is 2!");
+    throw std::runtime_error("PolyCone Shape> Not enough Z planes. minimum is 2!");
   }
   Solid solid = Polycone(start,deltaphi,rmin,rmax,z);
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Polycone__shape_constructor,create_Polycone)
@@ -215,7 +214,7 @@ static Handle<TObject> create_ConeSegment(Detector&, xml_h element)   {
     /// New naming: angles from [startphi,startphi+deltaphi]
     solid = ConeSegment(e.dz(),e.rmin1(0.0),e.rmax1(),e.rmin2(0.0),e.rmax2(),start_phi,start_phi+delta_phi);
   }
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(ConeSegment__shape_constructor,create_ConeSegment)
@@ -256,7 +255,7 @@ static Handle<TObject> create_Tube(Detector&, xml_h element)   {
     double phi2 = phi1 + e.deltaphi(2*M_PI);
     solid = Tube(e.rmin(0.0),e.rmax(),e.dz(0.0),phi1,phi2);
   }
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Tube__shape_constructor,create_Tube)
@@ -284,7 +283,7 @@ static Handle<TObject> create_TwistedTube(Detector&, xml_h element)   {
   }
   solid = TwistedTube(e.twist(0.0), e.rmin(0.0),e.rmax(),zneg, zpos, nseg, e.deltaphi(2*M_PI));
 
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(TwistedTube__shape_constructor,create_TwistedTube)
@@ -306,7 +305,7 @@ static Handle<TObject> create_CutTube(Detector&, xml_h element)   {
                         e.attr<double>(_U(tx)),
                         e.attr<double>(_U(ty)),
                         e.attr<double>(_U(tz)));
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(CutTube__shape_constructor,create_CutTube)
@@ -320,7 +319,7 @@ DECLARE_XML_SHAPE(CutTube__shape_constructor,create_CutTube)
 static Handle<TObject> create_EllipticalTube(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = EllipticalTube(e.a(),e.b(),e.dz());
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(EllipticalTube__shape_constructor,create_EllipticalTube)
@@ -338,7 +337,7 @@ static Handle<TObject> create_TruncatedTube(Detector&, xml_h element)   {
                               e.attr<double>(xml_tag_t("cutAtStart")),
                               e.attr<double>(xml_tag_t("cutAtDelta")),
                               e.attr<bool>(xml_tag_t("cutInside")));
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(TruncatedTube__shape_constructor,create_TruncatedTube)
@@ -379,7 +378,7 @@ static Handle<TObject> create_Trap(Detector&, xml_h element)   {
     double y2 = (attr=element.attr_nothrow(_U(y2))) ? element.attr<double>(attr) : y1;
     solid = Trap(e.z(0.0),e.theta(0),e.phi(0),y1,x1,x2,e.alpha1(0),y2,x3,x4,e.alpha2(0));
   }
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Trap__shape_constructor,create_Trap)
@@ -393,7 +392,7 @@ DECLARE_XML_SHAPE(Trap__shape_constructor,create_Trap)
 static Handle<TObject> create_PseudoTrap(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = PseudoTrap(e.x1(),e.x2(),e.y1(),e.y2(),e.z(),e.radius(),e.attr<bool>(xml_tag_t("minusZ")));
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(PseudoTrap__shape_constructor,create_PseudoTrap)
@@ -412,7 +411,7 @@ DECLARE_XML_SHAPE(PseudoTrap__shape_constructor,create_PseudoTrap)
 static Handle<TObject> create_Trd1(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = Trd1(e.x1(),e.x2(),e.y(),e.z(0.0));
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Trd1__shape_constructor,create_Trd1)
@@ -431,7 +430,7 @@ DECLARE_XML_SHAPE(Trd1__shape_constructor,create_Trd1)
 static Handle<TObject> create_Trd2(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = Trd2(e.x1(),e.x2(),e.y1(),e.y2(),e.z(0.0));
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Trapezoid__shape_constructor,create_Trd2)
@@ -473,7 +472,7 @@ static Handle<TObject> create_Torus(Detector&, xml_h element)   {
     /// TGeo naming: angles from [startphi,startphi+deltaphi]
     solid = Torus(e.r(), e.rmin(0.0), e.rmax(), start_phi, delta_phi);
   }
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Torus__shape_constructor,create_Torus)
@@ -519,7 +518,7 @@ static Handle<TObject> create_Sphere(Detector&, xml_h element)   {
     endtheta = starttheta + e.deltatheta();
 
   Solid solid = Sphere(e.rmin(0e0), e.rmax(), starttheta, endtheta, startphi, endphi);
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Sphere__shape_constructor,create_Sphere)
@@ -538,7 +537,7 @@ DECLARE_XML_SHAPE(Sphere__shape_constructor,create_Sphere)
 static Handle<TObject> create_Paraboloid(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = Paraboloid(e.rmin(0.0),e.rmax(),e.dz());
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Paraboloid__shape_constructor,create_Paraboloid)
@@ -559,7 +558,7 @@ DECLARE_XML_SHAPE(Paraboloid__shape_constructor,create_Paraboloid)
 static Handle<TObject> create_Hyperboloid(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = Hyperboloid(e.rmin(), e.inner_stereo(), e.rmax(), e.outer_stereo(), e.dz());
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Hyperboloid__shape_constructor,create_Hyperboloid)
@@ -579,7 +578,7 @@ DECLARE_XML_SHAPE(Hyperboloid__shape_constructor,create_Hyperboloid)
 static Handle<TObject> create_PolyhedraRegular(Detector&, xml_h element)   {
   xml_dim_t e(element);
   Solid solid = PolyhedraRegular(e.numsides(),e.rmin(),e.rmax(),e.dz());
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(PolyhedraRegular__shape_constructor,create_PolyhedraRegular)
@@ -608,7 +607,7 @@ static Handle<TObject> create_Polyhedra(Detector&, xml_h element)   {
     z.emplace_back(plane.z());
   }
   Solid solid = Polyhedra(e.numsides(),e.startphi(),e.deltaphi(),z,rmin,rmax);
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(Polyhedra__shape_constructor,create_Polyhedra)
@@ -635,7 +634,7 @@ static Handle<TObject> create_ExtrudedPolygon(Detector&, xml_h element)   {
     pt_y.emplace_back(point.attr<double>(_U(y)));
   }
   Solid solid = ExtrudedPolygon(pt_x, pt_y, sec_z, sec_x, sec_y, sec_scale);
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(ExtrudedPolygon__shape_constructor,create_ExtrudedPolygon)
@@ -657,12 +656,11 @@ static Handle<TObject> create_EightPointSolid(Detector&, xml_h element)   {
     v[num][1] = vtx.y();
   }
   Solid solid = EightPointSolid(e.dz(),&v[0][0]);
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(EightPointSolid__shape_constructor,create_EightPointSolid)
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
 /// Plugin factory to create tessellated shapes
 /**
  *
@@ -679,7 +677,7 @@ static Handle<TObject> create_TessellatedSolid(Detector&, xml_h element)   {
   int num_facets = 0;
   for ( xml_coll_t facet(element, _U(facet)); facet; ++facet ) ++num_facets;
   TessellatedSolid solid = TessellatedSolid(num_facets);
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   for ( xml_coll_t facet(element, _U(facet)); facet; ++facet )   {
     xml_dim_t f(facet);
     size_t i0 = f.attr<size_t>(_U(v0));
@@ -696,10 +694,9 @@ static Handle<TObject> create_TessellatedSolid(Detector&, xml_h element)   {
   return solid;
 }
 DECLARE_XML_SHAPE(TessellatedSolid__shape_constructor,create_TessellatedSolid)
-#endif
 
 /** Plugin function for creating a boolean solid from an xml element <shape type=\"BooleanShape\"/>. 
- *  Expects exactly two child elements <shape/> and a string attribute 'operation', which is one of
+ *  Expects exactly two child elements <shape/> and a std::string attribute 'operation', which is one of
  *  'subtraction', 'union' or 'intersection'. Optionally <position/> and/or <rotation/> can be specified.
  *  More complex boolean solids can be created by nesting the xml elements accordingly.
  *
@@ -793,7 +790,7 @@ static Handle<TObject> create_BooleanShape(Detector&, xml_h element)   {
                              std::string(" - needs to be one of 'subtraction','union' or 'intersection' ") ) ;  
   }
   Solid solid = resultSolid ;
-  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
+  if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<std::string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(BooleanShapeOld__shape_constructor,create_BooleanShape)
@@ -812,15 +809,15 @@ static Handle<TObject> create_BooleanMulti(Detector& description, xml_h element)
   //printout(ALWAYS,"","Boolean shape ---> %s",op.c_str());
   for (xml_coll_t i(e ,_U(star)); i; ++i )   {
     xml_comp_t x_elt = i;
-    string tag = x_elt.tag();
+    std::string tag = x_elt.tag();
     if ( tag == "shape" && !result.isValid() )  {
       result = xml::createShape(description, x_elt.typeStr(), x_elt);
-      if ( (attr=i.attr_nothrow(_U(name))) ) result->SetName(i.attr<string>(attr).c_str());
+      if ( (attr=i.attr_nothrow(_U(name))) ) result->SetName(i.attr<std::string>(attr).c_str());
       flag = 1;
     }
     else if ( tag == "shape" && !solid.isValid() )  {
       solid = xml::createShape(description,  x_elt.typeStr(), x_elt); 
-      if ( (attr=i.attr_nothrow(_U(name))) ) result->SetName(i.attr<string>(attr).c_str());
+      if ( (attr=i.attr_nothrow(_U(name))) ) result->SetName(i.attr<std::string>(attr).c_str());
       flag = 3;
     }
     else if ( result.isValid() && solid.isValid() )  {
@@ -870,7 +867,7 @@ static Handle<TObject> create_BooleanMulti(Detector& description, xml_h element)
         result = tmp;
         trafo  = position = rotation = Transform3D();
         solid = xml::createShape(description,  x_elt.typeStr(), x_elt); 
-        if ( (attr=i.attr_nothrow(_U(name))) ) result->SetName(i.attr<string>(attr).c_str());
+        if ( (attr=i.attr_nothrow(_U(name))) ) result->SetName(i.attr<std::string>(attr).c_str());
         flag = 3;
       }
     }
@@ -893,7 +890,7 @@ static Handle<TObject> create_BooleanMulti(Detector& description, xml_h element)
   }
   attr = element.attr_nothrow(_U(name));
   if ( attr )   {
-    string nam = element.attr<string>(attr);
+    std::string nam = element.attr<std::string>(attr);
     result->SetName(nam.c_str());
   }
   return result;
@@ -920,8 +917,8 @@ DECLARE_XML_VOLUME(DD4hep_StdVolume,create_std_volume)
  *  \version 1.0
  */
 static Handle<TObject> create_gen_volume(Detector& description, xml_h element)   {
-  xml_dim_t elt = element;
-  string    typ = elt.attr<string>(_U(type));
+  xml_dim_t   elt = element;
+  std::string typ = elt.attr<std::string>(_U(type));
   return xml::createVolume(description, typ, element);
 }
 DECLARE_XML_VOLUME(DD4hep_GenericVolume,create_gen_volume)
@@ -943,7 +940,7 @@ TGeoCombiTrans* createPlacement(const Rotation3D& iRot, const Position& iTrans) 
  */
 static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens)  {
   xml_det_t    x_det     = e;
-  string       name      = x_det.nameStr();
+  std::string  name      = x_det.nameStr();
   xml_dim_t    x_reflect = x_det.child(_U(reflect), false);
   DetElement   det         (name,x_det.id());
   Material     mat       = description.air();
@@ -952,21 +949,21 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
   int count = 0;
   
   if ( x_det.hasChild(_U(material)) )  {
-    mat = description.material(x_det.child(_U(material)).attr<string>(_U(name)));
+    mat = description.material(x_det.child(_U(material)).attr<std::string>(_U(name)));
     printout(INFO,"TestShape","+++ Volume material is %s", mat.name());      
   }
   for ( xml_coll_t itm(e, _U(check)); itm; ++itm, ++count )   {
-    xml_dim_t  x_check  = itm;
-    xml_comp_t shape      (x_check.child(_U(shape)));
-    xml_dim_t  pos        (x_check.child(_U(position), false));
-    xml_dim_t  rot        (x_check.child(_U(rotation), false));
-    bool       reflect  = x_check.hasChild(_U(reflect));
-    bool       reflectZ = x_check.hasChild(_U(reflect_z));
-    bool       reflectY = x_check.hasChild(_U(reflect_y));
-    bool       reflectX = x_check.hasChild(_U(reflect_x));
-    string     shape_type = shape.typeStr();
-    Solid      solid;
-    Volume     volume;
+    xml_dim_t   x_check  = itm;
+    xml_comp_t  shape      (x_check.child(_U(shape)));
+    xml_dim_t   pos        (x_check.child(_U(position), false));
+    xml_dim_t   rot        (x_check.child(_U(rotation), false));
+    bool        reflect  = x_check.hasChild(_U(reflect));
+    bool        reflectZ = x_check.hasChild(_U(reflect_z));
+    bool        reflectY = x_check.hasChild(_U(reflect_y));
+    bool        reflectX = x_check.hasChild(_U(reflect_x));
+    std::string shape_type = shape.typeStr();
+    Solid       solid;
+    Volume      volume;
 
     if ( shape_type == "CAD_Assembly" || shape_type == "CAD_MultiVolume" )   {
       volume = xml::createVolume(description, shape_type, shape);
@@ -977,7 +974,7 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
       volume = Volume(name+_toString(count,"_vol_%d"),solid, mat);
     }
     if ( x_det.hasChild(_U(sensitive)) )  {
-      string sens_type = x_det.child(_U(sensitive)).attr<string>(_U(type));
+      std::string sens_type = x_det.child(_U(sensitive)).attr<std::string>(_U(type));
       volume.setSensitiveDetector(sens);
       sens.setType(sens_type);
       printout(INFO,"TestShape","+++ Sensitive type is %s", sens_type.c_str());
@@ -1060,12 +1057,10 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
       instance_test = isInstance<ExtrudedPolygon>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),SCALE_TAG) )
       instance_test = isInstance<Scale>(solid);
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
     else if ( 0 == strcasecmp(solid->GetTitle(),TESSELLATEDSOLID_TAG) )  {
       instance_test = isInstance<TessellatedSolid>(solid);
       shape_type = TESSELLATEDSOLID_TAG;
     }
-#endif
     else if ( 0 == strcasecmp(solid->GetTitle(),POLYCONE_TAG) )
       instance_test = isInstance<Polycone>(solid);
     else if ( 0 == strcasecmp(solid->GetTitle(),TWISTEDTUBE_TAG) )   {
@@ -1176,7 +1171,7 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
   /// Execute test plugin(s) on the placed volume if desired
   for ( xml_coll_t itm(e, xml_tag_t("test")); itm; ++itm, ++count )   {
     xml_comp_t   x_test = itm;
-    string typ = x_test.typeStr();
+    std::string typ = x_test.typeStr();
     const void* argv[] = { &e, &pv, 0};
     Ref_t result = (NamedObject*)PluginService::Create<void*>(typ, &description, 2, (char**)argv);
     if ( !result.isValid() )  {
@@ -1214,8 +1209,8 @@ void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
   int          ref_cr = x_test.hasAttr(_U(create)) ? x_test.attr<int>(_U(create)) : 0;
   int          nseg   = x_test.hasAttr(_U(segmentation)) ? x_test.attr<int>(_U(segmentation)) : -1;
   TString      ref    = x_test.refStr().c_str();
-  string       ref_str;  
-  stringstream os;
+  std::string  ref_str;  
+  std::stringstream os;
 
   if ( nseg > 0 )   {
     description.manager().SetNsegments(nseg);
@@ -1234,7 +1229,7 @@ void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
   }
   gSystem->ExpandPathName(ref);
   if ( ref_cr )   {
-    ofstream out(ref, ofstream::out);
+    std::ofstream out(ref, std::fstream::out);
     if ( !out.is_open() )   {
       except("Mesh_Verifier","+++ FAILED to open(WRITE) reference file: "+x_test.refStr());
     }
@@ -1244,7 +1239,7 @@ void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
   }
   else if ( ref.Length() > 0 )  {
     char c;
-    ifstream in(ref.Data(), ofstream::in);
+    std::ifstream in(ref.Data(), std::fstream::in);
     if ( !in.is_open() )   {
       except("Mesh_Verifier","+++ FAILED to access reference file: "+x_test.refStr());
     }

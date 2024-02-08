@@ -46,9 +46,7 @@
 #include <TGeoCompositeShape.h>
 #include <TGeoShapeAssembly.h>
 #include <TGeoPara.h>
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
 #include <TGeoTessellated.h>
-#endif
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
@@ -1762,7 +1760,6 @@ namespace dd4hep {
     }
   };
 
-#if ROOT_VERSION_CODE > ROOT_VERSION(6,21,0)
   /// Class describing a tessellated shape
   /**
    *   For any further documentation please see the following ROOT documentation:
@@ -1833,7 +1830,6 @@ namespace dd4hep {
     /// Access a single vertex from the shape
     const Vertex& vertex(int index)    const;
   };
-#endif
   
   /// Base class describing boolean (=union,intersection,subtraction) solids
   /**
@@ -2012,6 +2008,5 @@ namespace dd4hep {
     /// Copy Assignment operator
     IntersectionSolid& operator=(const IntersectionSolid& copy) = default;
   };
-
-}         /* End namespace dd4hep             */
+}      /* End namespace dd4hep             */
 #endif // DD4HEP_SHAPES_H

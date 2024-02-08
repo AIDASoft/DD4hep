@@ -12,10 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Primitives.h"
-#include "DDG4/Geant4DataDump.h"
+#include <DD4hep/Primitives.h>
+#include <DDG4/Geant4DataDump.h>
 
-using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::sim;
 

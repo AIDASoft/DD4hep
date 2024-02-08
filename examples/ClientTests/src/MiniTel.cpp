@@ -16,14 +16,14 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Detector.h"
 
+// C/C++ include files
 #include <iostream>
 #include <map>
 
-using namespace std;
 using namespace dd4hep;
-using namespace dd4hep::detail;
 
 namespace  {
+
   struct MyDetExtension  {
     int idD, Ni, Nj;
     double dimDX, dimDY, dimDZ;
@@ -45,14 +45,14 @@ namespace  {
 typedef MyDetExtension DetectorExtension;
 
 static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector sens)  {
-  xml_det_t  x_det    = e;	//xml-detelemnt of the detector taken as an argument
-  xml_comp_t det_dim  = x_det.child(_U(dimensions));
-  xml_comp_t det_mod  = x_det.child(_U(module));	    // considering the module-pixel of the detector
-  string     det_name = x_det.nameStr();	//det_name is the name of the xml-detelement
-  Assembly   assembly (det_name);
-  DetElement sdet(det_name,x_det.id());        //sdet is the detelement of the detector!!(actually is a Handle,already a pointer to m_element)
-  Volume     motherVol = description.pickMotherVolume(sdet); //the mothers volume of our detector
-  Material   mat = description.material("Silicon");
+  xml_det_t   x_det    = e;	//xml-detelemnt of the detector taken as an argument
+  xml_comp_t  det_dim  = x_det.child(_U(dimensions));
+  xml_comp_t  det_mod  = x_det.child(_U(module));	    // considering the module-pixel of the detector
+  std::string det_name = x_det.nameStr();	//det_name is the name of the xml-detelement
+  Assembly    assembly (det_name);
+  DetElement  sdet(det_name,x_det.id());        //sdet is the detelement of the detector!!(actually is a Handle,already a pointer to m_element)
+  Volume      motherVol = description.pickMotherVolume(sdet); //the mothers volume of our detector
+  Material    mat = description.material("Silicon");
 
   DetectorExtension* ext = new MyDetExtension(sdet);
   sdet.addExtension<MyDetExtension>(ext);

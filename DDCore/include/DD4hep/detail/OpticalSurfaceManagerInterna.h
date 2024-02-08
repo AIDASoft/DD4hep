@@ -22,7 +22,7 @@
 #define DD4HEP_DETAIL_OPTICALSURFACEMANAGERINTERNA_H
 
 /// Framework include files
-#include "DD4hep/Detector.h"
+#include <DD4hep/Detector.h>
 
 /// C/C++ include files
 #include <map>
@@ -46,11 +46,9 @@ namespace dd4hep {
 
       /// Reference to the main detector description object
       Detector& detector;
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
       std::map<LocalKey,    SkinSurface>    skinSurfaces;
       std::map<LocalKey,    BorderSurface>  borderSurfaces;
       std::map<std::string, OpticalSurface> opticalSurfaces;
-#endif
       
     public:
       /// Default constructor

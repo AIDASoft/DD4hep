@@ -33,8 +33,6 @@
 using namespace std;
 using namespace dd4hep;
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,13,0)
-
 /// ROOT GDML reader plugin
 /**
  *  Factory: DD4hep_ROOTGDMLParse
@@ -186,10 +184,8 @@ static long gdml_extract(Detector& description, int argc, char** argv) {
         extract.SetIgnoreDummyMaterial(true);
         extract.SetNamingSpeed(TGDMLWrite::kfastButUglySufix);
         extract.WriteGDMLfile(&description.manager(), de.placement().ptr(), uri.GetRelativePart());
-#elif ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
-        extract.WriteGDMLfile(&description.manager(), de.placement().ptr(), uri.GetRelativePart());
 #else
-        extract.WriteGDMLfile(&description.manager(), de.volume().ptr(), uri.GetRelativePart());
+        extract.WriteGDMLfile(&description.manager(), de.placement().ptr(), uri.GetRelativePart());
 #endif
         return 1;
       }
@@ -235,14 +231,12 @@ static long gdml_extract(Detector& description, int argc, char** argv) {
         TGDMLWrite extract;
         TUri uri(output.c_str());
         description.manager().SetExportPrecision(precision);
-#if   ROOT_VERSION_CODE > ROOT_VERSION(6,27,1)
+#if ROOT_VERSION_CODE > ROOT_VERSION(6,27,1)
         extract.SetIgnoreDummyMaterial(true);
         extract.SetNamingSpeed(TGDMLWrite::kfastButUglySufix);
         extract.WriteGDMLfile(&description.manager(), a._node, uri.GetRelativePart());
-#elif ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
-        extract.WriteGDMLfile(&description.manager(), a._node, uri.GetRelativePart());
 #else
-        extract.WriteGDMLfile(&description.manager(), a._node->GetVolume(), uri.GetRelativePart());
+        extract.WriteGDMLfile(&description.manager(), a._node, uri.GetRelativePart());
 #endif
         return 1;
       }
@@ -348,5 +342,3 @@ static Ref_t create_detector(Detector& description, xml_h e, Ref_t /* sens_det *
 
 // first argument is the type from the xml file
 DECLARE_DETELEMENT(DD4hep_GdmlDetector,create_detector)
-
-#endif
