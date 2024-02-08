@@ -793,7 +793,8 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
     description.manager().AddGDMLMatrix(table);
   }
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
-  /// In case there were constant surface properties specified: convert them here
+  //
+  // In case there were constant surface properties specified: convert them here
   for(xml_coll_t properties(e, _U(constant)); properties; ++properties) {
     xml_elt_t p = properties;
     pname = p.attr<string>(_U(name));
@@ -830,6 +831,7 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
                surf->GetName(), pname.c_str(), ptyp.c_str());
     }
   }
+#endif
 }
 
 /** Convert compact constant property (Material properties stored in TGeoManager)
