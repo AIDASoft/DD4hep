@@ -12,17 +12,16 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Readout.h"
-#include "DD4hep/detail/SegmentationsInterna.h"
-#include "DD4hep/detail/ObjectsInterna.h"
-#include "DD4hep/detail/Handle.inl"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/Detector.h"
+#include <DD4hep/Readout.h>
+#include <DD4hep/detail/SegmentationsInterna.h>
+#include <DD4hep/detail/ObjectsInterna.h>
+#include <DD4hep/detail/Handle.inl>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
 
-using namespace std;
 using namespace dd4hep;
-using namespace dd4hep::detail;
 
 /// Copy constructor
 HitCollection::HitCollection(const HitCollection& c)
@@ -31,7 +30,7 @@ HitCollection::HitCollection(const HitCollection& c)
 }
 
 /// Initializing constructor
-HitCollection::HitCollection(const string& n, const string& k, long k_min, long k_max)  
+HitCollection::HitCollection(const std::string& n, const std::string& k, long k_min, long k_max)  
   : name(n), key(k), key_min(k_min), key_max(k_max)
 {
 }
@@ -48,7 +47,7 @@ HitCollection& HitCollection::operator=(const HitCollection& c)   {
 }
 
 /// Initializing constructor to create a new object
-Readout::Readout(const string& nam) {
+Readout::Readout(const std::string& nam) {
   assign(new ReadoutObject(), nam, "readout");
 }
 
@@ -58,12 +57,13 @@ size_t Readout::numCollections() const   {
     Object& ro = object<Object>();
     return ro.hits.size();
   }
-  throw runtime_error("dd4hep: Readout::numCollections: Cannot access object data [Invalid Handle]");
+  except("dd4hep::Readout","numCollections: Cannot access object data [Invalid Handle]");
+  throw std::runtime_error("dd4hep: Readout");
 }
 
 /// Access names of hit collections
-vector<string> Readout::collectionNames()  const   {
-  vector<string> colls;
+std::vector<std::string> Readout::collectionNames()  const   {
+  std::vector<std::string> colls;
   if ( isValid() ) {
     Object& ro = object<Object>();
     if ( !ro.hits.empty() )  {
@@ -72,12 +72,13 @@ vector<string> Readout::collectionNames()  const   {
     }
     return colls;
   }
-  throw runtime_error("dd4hep: Readout::collectionsNames: Cannot access object data [Invalid Handle]");
+  except("dd4hep::Readout", "collectionsNames: Cannot access object data [Invalid Handle]");
+  throw std::runtime_error("dd4hep: Readout");
 }
 
 /// Access hit collectionsy
-vector<const HitCollection*> Readout::collections()  const   {
-  vector<const HitCollection*> colls;
+std::vector<const HitCollection*> Readout::collections()  const   {
+  std::vector<const HitCollection*> colls;
   if ( isValid() ) {
     Object& ro = object<Object>();
     if ( !ro.hits.empty() )  {
@@ -86,7 +87,8 @@ vector<const HitCollection*> Readout::collections()  const   {
     }
     return colls;
   }
-  throw runtime_error("dd4hep: Readout::collections: Cannot access object data [Invalid Handle]");
+  except("dd4hep::Readout", "collections: Cannot access object data [Invalid Handle]");
+  throw std::runtime_error("dd4hep: Readout");
 }
 
 /// Assign IDDescription to readout structure
@@ -102,7 +104,8 @@ void Readout::setIDDescriptor(const Ref_t& new_descriptor) const {
       return;
     }
   }
-  throw runtime_error("dd4hep: Readout::setIDDescriptor: Cannot assign ID descriptor [Invalid Handle]");
+  except("dd4hep::Readout", "setIDDescriptor: Cannot assign ID descriptor [Invalid Handle]");
+  throw std::runtime_error("dd4hep: Readout");
 }
 
 /// Access IDDescription structure
@@ -123,7 +126,8 @@ void Readout::setSegmentation(const Segmentation& seg) const {
       return;
     }
   }
-  throw runtime_error("dd4hep: Readout::setSegmentation: Cannot assign segmentation [Invalid Handle]");
+  except("dd4hep::Readout", "setSegmentation: Cannot assign segmentation [Invalid Handle]");
+  throw std::runtime_error("dd4hep: Readout");
 }
 
 /// Access segmentation structure

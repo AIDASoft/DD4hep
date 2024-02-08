@@ -12,19 +12,17 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
-#include "XML/Conversions.h"
-#include "XML/XMLElements.h"
-#include "XML/DocumentHandler.h"
-#include "DD4hep/DetFactoryHelper.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
+#include <XML/Conversions.h>
+#include <XML/XMLElements.h>
+#include <XML/DocumentHandler.h>
+#include <DD4hep/DetFactoryHelper.h>
 
 // C/C++ include files
 #include <stdexcept>
 
-/*
- *   dd4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {
 
   namespace   {
@@ -47,9 +45,8 @@ namespace dd4hep  {
   template <> void Converter<plugin>::operator()(xml_h element)  const;
   template <> void Converter<dd4hep::arg>::operator()(xml_h element)  const;
 }
-using namespace std;
+
 using namespace dd4hep;
-using namespace dd4hep::detail;
 
 /** Convert arg objects
  *
@@ -59,8 +56,8 @@ using namespace dd4hep::detail;
  */
 template <> void Converter<dd4hep::arg>::operator()(xml_h e)  const  {
   xml_comp_t c(e);
-  string val = c.valueStr();
-  vector<string>* args = (vector<string>*)param;
+  std::string val = c.valueStr();
+  std::vector<std::string>* args = (std::vector<std::string>*)param;
   args->emplace_back(val);
 }
 
@@ -72,13 +69,13 @@ template <> void Converter<dd4hep::arg>::operator()(xml_h e)  const  {
  */
 template <> void Converter<plugin>::operator()(xml_h e)  const  {
   xml_comp_t c(e);
-  string nam = c.nameStr();
-  vector<string> args;
-  vector<const char*> cargs;
+  std::string nam = c.nameStr();
+  std::vector<std::string> args;
+  std::vector<const char*> cargs;
   //args.emplace_back("plugin:"+nam);
 
   xml_coll_t(e,"arg").for_each(Converter<dd4hep::arg>(description,&args));
-  for(vector<string>::const_iterator i=args.begin(); i!=args.end();++i)
+  for(std::vector<std::string>::const_iterator i=args.begin(); i!=args.end();++i)
     cargs.emplace_back((*i).c_str());
   printout(INFO,"ConverterPlugin","+++ Now executing plugin:%s [%d args]",nam.c_str(),int(cargs.size()));
   description.apply(nam.c_str(),int(cargs.size()),(char**)&cargs[0]);
@@ -93,20 +90,20 @@ template <> void Converter<plugin>::operator()(xml_h e)  const  {
 template <> void Converter<include_file>::operator()(xml_h element) const   {
   xml::DocumentHolder doc(xml::DocumentHandler().load(element, element.attr_value(_U(ref))));
   xml_h node = doc.root();
-  string tag = node.tag();
+  std::string tag = node.tag();
   if ( tag == "plugin" )
     Converter<plugin>(description,param)(node);
   else if ( tag == "plugins" )
     Converter<plugins>(description,param)(node);
   else
-    throw runtime_error("Undefined tag name in XML structure:"+tag+" XML parsing abandoned.");
+    throw std::runtime_error("Undefined tag name in XML structure:"+tag+" XML parsing abandoned.");
 }
 
 /** Convert plugins objects
  *
- *  @author  M.Frank
- *  @version 1.0
- *  @date    01/04/2014
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \date    01/04/2014
  */
 template <> void Converter<plugins>::operator()(xml_h e)  const  {
   xml_coll_t(e, _U(define)).for_each(_U(constant),  Converter<Constant>(description,param));

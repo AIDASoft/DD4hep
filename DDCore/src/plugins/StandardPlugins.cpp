@@ -48,8 +48,8 @@
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
-
 namespace  {
+
   struct ProcessorArgs   {
     bool use = false;
     int  start = 0, end = 0, argc = 0, count=0;
@@ -1711,7 +1711,7 @@ DECLARE_APPLY(DD4hep_DetectorTypes,detectortype_cache)
  *  \version 1.0
  *  \date    01/04/2014
  */
-#include "DD4hep/SurfaceInstaller.h"
+#include <DD4hep/SurfaceInstaller.h>
 typedef SurfaceInstaller TestSurfacesPlugin;
 DECLARE_SURFACE_INSTALLER(TestSurfaces,TestSurfacesPlugin)
 
@@ -1723,7 +1723,7 @@ DECLARE_SURFACE_INSTALLER(TestSurfaces,TestSurfacesPlugin)
  *  \version 1.0
  *  \date    01/04/2014
  */
-#include "DD4hep/PluginTester.h"
+#include <DD4hep/PluginTester.h>
 static long install_plugin_tester(Detector& description, int , char** ) {
   PluginTester* test = description.extension<PluginTester>(false);
   if ( !test )  {

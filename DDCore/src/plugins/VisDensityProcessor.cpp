@@ -14,8 +14,9 @@
 #define DD4HEP_DDCORE_VISDENSITYPROCESSOR_H
 
 // Framework include files
-#include "DD4hep/VolumeProcessor.h"
+#include <DD4hep/VolumeProcessor.h>
 
+/// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {
   
   /// DD4hep DetElement creator for the CMS geometry.
@@ -59,14 +60,13 @@ namespace dd4hep  {
 //
 //==========================================================================
 
-//#include "DD4hep/VisDensityProcessor.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/DetectorTools.h"
-#include "DD4hep/DetectorHelper.h"
-#include "DD4hep/DetFactoryHelper.h"
+//#include <DD4hep/VisDensityProcessor.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/DetectorTools.h>
+#include <DD4hep/DetectorHelper.h>
+#include <DD4hep/DetFactoryHelper.h>
 #include <sstream>
 
-using namespace std;
 using namespace dd4hep;
 
 /// Initializing constructor
@@ -124,7 +124,7 @@ static void* create_object(Detector& description, int argc, char** argv)   {
         continue;
       }
       else if ( ::strncmp(argv[i],"-name",4) == 0 )   {
-        string     name = argv[++i];
+        std::string name = argv[++i];
         proc->name = name;
         continue;
       }
@@ -132,13 +132,13 @@ static void* create_object(Detector& description, int argc, char** argv)   {
         proc->show = true;
         continue;
       }
-      cout <<
+      std::cout <<
         "Usage: DD4hep_VisDensityProcessor -arg [-arg]                                       \n"
         "     -vis          <name>     Set the visualization attribute for inactive materials\n"
         "     -min-vis      <name>     Set the visualization attribute for inactive materials\n"
         "     -min-density  <number>   Minimal density to show the volume.                   \n"
         "     -show                    Print setup to output device (stdout)                 \n"
-        "\tArguments given: " << arguments(argc,argv) << endl << flush;
+        "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
       ::exit(EINVAL);
     }
   }

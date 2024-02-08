@@ -12,17 +12,16 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/DetectorHelper.h"
+#include <DD4hep/DetectorHelper.h>
 
 // ROOT include files
-#include "TGeoManager.h"
+#include <TGeoManager.h>
 
-using namespace std;
 using namespace dd4hep;
 
 /// Access the sensitive detector of a given subdetector (if the sub-detector is sensitive!)
 SensitiveDetector DetectorHelper::sensitiveDetector(const std::string& detector) const    {
-  const string& det_name = detector;
+  const std::string& det_name = detector;
   SensitiveDetector sensitive = ptr()->sensitiveDetector(det_name);
   return sensitive;
 }
@@ -61,7 +60,7 @@ Atom DetectorHelper::element(const std::string& nam)  const   {
   TGeoElementTable* tab = mgr.GetElementTable();
   TGeoElement*      elt = tab->FindElement(nam.c_str());
   if ( !elt )    {
-    string n = nam;
+    std::string n = nam;
     transform(n.begin(), n.end(), n.begin(), ::toupper);
     elt = tab->FindElement(n.c_str());     // Check for IRON
     if ( !elt )    {
@@ -81,7 +80,7 @@ Material DetectorHelper::material(const std::string& nam)  const   {
   TGeoManager& mgr = access()->manager();
   TGeoMedium*  med = mgr.GetMedium(nam.c_str());
   if ( !med )    {
-    string n = nam;
+    std::string n = nam;
     transform(n.begin(), n.end(), n.begin(), ::toupper);
     med = mgr.GetMedium(n.c_str());     // Check for IRON
     if ( !med )    {

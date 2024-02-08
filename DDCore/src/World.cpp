@@ -12,8 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/World.h"
-#include "DD4hep/detail/DetectorInterna.h"
+#include <DD4hep/World.h>
+#include <DD4hep/detail/DetectorInterna.h>
 
 /// Access the detector descrion tree
 dd4hep::Detector& dd4hep::World::detectorDescription() const   {

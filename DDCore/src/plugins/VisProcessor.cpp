@@ -13,9 +13,10 @@
 #ifndef DD4HEP_DDCORE_VISMATERIALPROCESSOR_H
 #define DD4HEP_DDCORE_VISMATERIALPROCESSOR_H
 
-// Framework include files
-#include "DD4hep/VolumeProcessor.h"
+/// Framework include files
+#include <DD4hep/VolumeProcessor.h>
 
+/// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {
 
   
@@ -66,14 +67,16 @@ namespace dd4hep  {
 //
 //==========================================================================
 
-//#include "DD4hep/VisMaterialProcessor.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/DetectorTools.h"
-#include "DD4hep/DetectorHelper.h"
-#include "DD4hep/DetFactoryHelper.h"
+/// Framework include files
+//#include <DD4hep/VisMaterialProcessor.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/DetectorTools.h>
+#include <DD4hep/DetectorHelper.h>
+#include <DD4hep/DetFactoryHelper.h>
+
+/// C/C++ include files
 #include <sstream>
 
-using namespace std;
 using namespace dd4hep;
 
 namespace {
@@ -212,20 +215,20 @@ static void* create_object(Detector& description, int argc, char** argv)   {
         continue;
       }
       else if ( ::strncmp(argv[i],"-fraction",3) == 0 )   {
-        stringstream str(argv[++i]);
+        std::stringstream str(argv[++i]);
         if ( str.good() )  {
           str >> proc->fraction;
           if ( !str.fail() ) continue;
         }
       }
       else if ( ::strncmp(argv[i],"-path",4) == 0 )   {
-        string     path = argv[++i];
-        DetElement de = detail::tools::findElement(description,path);
+        std::string path = argv[++i];
+        DetElement  de = detail::tools::findElement(description,path);
         if ( de.isValid() ) continue;
         printout(ERROR,"VisMaterialProcessor","++ Invalid DetElement path: %s",path.c_str());
       }
       else if ( ::strncmp(argv[i],"-name",4) == 0 )   {
-        string     name = argv[++i];
+        std::string name = argv[++i];
         proc->name = name;
         continue;
       }
@@ -233,7 +236,7 @@ static void* create_object(Detector& description, int argc, char** argv)   {
         proc->show = true;
         continue;
       }
-      cout <<
+      std::cout <<
         "Usage: DD4hep_VisMaterialProcessor -arg [-arg]                                      \n"
         "     -vis-active   <name>     Set the visualization attribute for   active materials\n"
         "     -vis-inactive <name>     Set the visualization attribute for inactive materials\n"
@@ -246,7 +249,7 @@ static void* create_object(Detector& description, int argc, char** argv)   {
         "     -fraction     <double>   Set the fraction above which the active elment content\n"
         "                              defines an active volume.                             \n"
         "     -show                    Print setup to output device (stdout)                 \n"
-        "\tArguments given: " << arguments(argc,argv) << endl << flush;
+        "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
       ::exit(EINVAL);
     }
   }

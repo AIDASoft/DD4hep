@@ -17,10 +17,10 @@
 #define DDCORE_SRC_GEODICTIONARY_H
 
 // Framework include files
-#include "DD4hep/Volumes.h"
-#include "DD4hep/Shapes.h"
-#include "DD4hep/VolumeProcessor.h"
-#include "DD4hep/detail/ShapesInterna.h"
+#include <DD4hep/Volumes.h>
+#include <DD4hep/Shapes.h>
+#include <DD4hep/VolumeProcessor.h>
+#include <DD4hep/detail/ShapesInterna.h>
 
 // C/C++ include files
 #include <vector>

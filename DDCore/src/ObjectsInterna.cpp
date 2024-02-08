@@ -18,9 +18,8 @@
 #include <DD4hep/detail/SegmentationsInterna.h>
 
 #include <TROOT.h>
-using namespace std;
+
 using namespace dd4hep;
-using namespace dd4hep::detail;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(VisAttrObject);
 
@@ -55,7 +54,7 @@ ConstantObject::ConstantObject()  {
 }
 
 /// Standard constructor
-ConstantObject::ConstantObject(const string& nam, const string& val, const string& typ)
+ConstantObject::ConstantObject(const std::string& nam, const std::string& val, const std::string& typ)
   : NamedObject(nam.c_str(), val.c_str()) {
   dataType = typ;
   InstanceCount::increment(this);

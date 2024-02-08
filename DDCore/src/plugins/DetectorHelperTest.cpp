@@ -12,19 +12,16 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Factories.h"
-#include "DD4hep/DetectorHelper.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Factories.h>
+#include <DD4hep/DetectorHelper.h>
 
 // C/C++ include files
 #include <stdexcept>
 #include <algorithm>
 
-using namespace std;
 using namespace dd4hep;
-using namespace dd4hep::detail;
-
 
 namespace  {
 

@@ -12,52 +12,54 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Volumes.h"
-#include "DD4hep/FieldTypes.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/Segmentations.h"
-#include "DD4hep/detail/ObjectsInterna.h"
-#include "DD4hep/detail/DetectorInterna.h"
-#include "XML/DocumentHandler.h"
 #include "LCDDConverter.h"
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Volumes.h>
+#include <DD4hep/FieldTypes.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/Segmentations.h>
+#include <DD4hep/detail/ObjectsInterna.h>
+#include <DD4hep/detail/DetectorInterna.h>
+#include <XML/DocumentHandler.h>
 
 // ROOT includes
-#include "TROOT.h"
-#include "TColor.h"
-#include "TGeoShape.h"
+#include <TROOT.h>
+#include <TColor.h>
+#include <TGeoShape.h>
 
-#include "TGeoArb8.h"
-#include "TGeoBoolNode.h"
-#include "TGeoCompositeShape.h"
-#include "TGeoCone.h"
-#include "TGeoEltu.h"
-#include "TGeoHype.h"
-#include "TGeoMatrix.h"
-#include "TGeoParaboloid.h"
-#include "TGeoPara.h"
-#include "TGeoPcon.h"
-#include "TGeoPgon.h"
-#include "TGeoShapeAssembly.h"
-#include "TGeoSphere.h"
-#include "TGeoTorus.h"
-#include "TGeoTrd1.h"
-#include "TGeoTrd2.h"
-#include "TGeoTube.h"
-#include "TGeoScaledShape.h"
+#include <TGeoArb8.h>
+#include <TGeoBoolNode.h>
+#include <TGeoCompositeShape.h>
+#include <TGeoCone.h>
+#include <TGeoEltu.h>
+#include <TGeoHype.h>
+#include <TGeoMatrix.h>
+#include <TGeoParaboloid.h>
+#include <TGeoPara.h>
+#include <TGeoPcon.h>
+#include <TGeoPgon.h>
+#include <TGeoShapeAssembly.h>
+#include <TGeoSphere.h>
+#include <TGeoTorus.h>
+#include <TGeoTrd1.h>
+#include <TGeoTrd2.h>
+#include <TGeoTube.h>
+#include <TGeoScaledShape.h>
 
-#include "TGeoNode.h"
-#include "TClass.h"
-#include "TMath.h"
+#include <TGeoNode.h>
+#include <TClass.h>
+#include <TMath.h>
+
+/// C/C++ include files
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 
-using namespace dd4hep::detail;
 using namespace dd4hep;
-using namespace std;
+using namespace dd4hep::detail;
+
 namespace {
   typedef Position XYZRotation;
 
@@ -86,8 +88,8 @@ namespace {
       c = 0;
     }
     XYZRotation rr(a, b, c);
-    cout << " X:" << a << " " << rr.X() << " Y:" << b << " " << rr.Y() << " Z:" << c << " " << rr.Z()
-         << " lx:" << r[0] << " ly:" << r[4] << " lz:" << r[8] << endl;
+    std::cout << " X:" << a << " " << rr.X() << " Y:" << b << " " << rr.Y() << " Z:" << c << " " << rr.Z()
+              << " lx:" << r[0] << " ly:" << r[4] << " lz:" << r[8] << std::endl;
     return XYZRotation(a, b, c);
   }
 #endif
@@ -100,9 +102,9 @@ namespace {
     return node.data() != 0;
   }
 
-  string genName(const string& n)  {  return n; }
-  string genName(const string& n, const void* ptr)  {
-    string nn = genName(n);
+  std::string genName(const std::string& n)  {  return n; }
+  std::string genName(const std::string& n, const void* ptr)  {
+    std::string nn = genName(n);
     char text[32];
     ::snprintf(text,sizeof(text),"%p",ptr);
     nn += "_";
@@ -111,11 +113,11 @@ namespace {
   }
 }
 
-void LCDDConverter::GeometryInfo::check(const string& name, const TNamed* _n, map<string, const TNamed*>& _m) const {
-  map<string, const TNamed*>::const_iterator i = _m.find(name);
+void LCDDConverter::GeometryInfo::check(const std::string& name, const TNamed* _n, std::map<std::string, const TNamed*>& _m) const {
+  std::map<std::string, const TNamed*>::const_iterator i = _m.find(name);
   if (i != _m.end()) {
     const char* isa = _n ? _n->IsA()->GetName() : (*i).second ? (*i).second->IsA()->GetName() : "Unknown";
-    cout << isa << "(position):  duplicate entry with name:" << name << " " << (void*) _n << " " << (void*) (*i).second << endl;
+    std::cout << isa << "(position):  duplicate entry with name:" << name << " " << (void*) _n << " " << (void*) (*i).second << std::endl;
   }
   _m.insert(make_pair(name, _n));
 }
@@ -132,7 +134,7 @@ LCDDConverter::~LCDDConverter() {
 }
 
 /// Dump element in GDML format to output stream
-xml_h LCDDConverter::handleElement(const string& /* name */, Atom element) const {
+xml_h LCDDConverter::handleElement(const std::string& /* name */, Atom element) const {
   GeometryInfo& geo = data();
   xml_h e = geo.xmlElements[element];
   if (!e) {
@@ -155,7 +157,7 @@ xml_h LCDDConverter::handleElement(const string& /* name */, Atom element) const
 }
 
 /// Dump material in GDML format to output stream
-xml_h LCDDConverter::handleMaterial(const string& name, Material medium) const {
+xml_h LCDDConverter::handleMaterial(const std::string& name, Material medium) const {
   GeometryInfo& geo = data();
   xml_h mat = geo.xmlMaterials[medium];
   if (!mat) {
@@ -184,7 +186,7 @@ xml_h LCDDConverter::handleMaterial(const string& name, Material medium) const {
       }
       for (int i = 0, n = mix->GetNelements(); i < n; i++) {
         TGeoElement *elt = mix->GetElement(i);
-        //string formula = elt->GetTitle() + string("_elm");
+        //std::string formula = elt->GetTitle() + std::string("_elm");
         if (nmix) {
           mat.append(obj = xml_elt_t(geo.doc, _U(composite)));
           obj.setAttr(_U(n), nmix[i]);
@@ -216,7 +218,7 @@ xml_h LCDDConverter::handleMaterial(const string& name, Material medium) const {
 }
 
 /// Dump solid in GDML format to output stream
-xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) const {
+xml_h LCDDConverter::handleSolid(const std::string& name, const TGeoShape* shape) const {
   GeometryInfo& geo = data();
   SolidMap::iterator sit = geo.xmlSolids.find(shape);
   if (!shape) {
@@ -236,7 +238,7 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
     xml_h solid(0);
     xml_h zplane(0);
     TClass* isa = shape->IsA();
-    string shape_name = shape->GetName(); //genName(shape->GetName(),shape);
+    std::string shape_name = shape->GetName(); //genName(shape->GetName(),shape);
     geo.checkShape(name, shape);
     if (isa == TGeoBBox::Class()) {
       const TGeoBBox* sh = (const TGeoBBox*) shape;
@@ -501,10 +503,10 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       xml_h right   = handleSolid(rs->GetName(), rs);
       xml_h first_solid(0), second_solid(0);
       if (!left) {
-        throw runtime_error("G4Converter: No left Detector Solid present for composite shape:" + name);
+        throw std::runtime_error("G4Converter: No left Detector Solid present for composite shape:" + name);
       }
       if (!right) {
-        throw runtime_error("G4Converter: No right Detector Solid present for composite shape:" + name);
+        throw std::runtime_error("G4Converter: No right Detector Solid present for composite shape:" + name);
       }
 
       //specific case!
@@ -545,8 +547,8 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
         solid = xml_elt_t(geo.doc,_U(intersection));
 
       xml_h obj;
-      string lnam = left.attr<string>(_U(name));
-      string rnam = right.attr<string>(_U(name));
+      std::string lnam = left.attr<std::string>(_U(name));
+      std::string rnam = right.attr<std::string>(_U(name));
 
       geo.doc_solids.append(solid);
       solid.append(first_solid = xml_elt_t(geo.doc, _U(first)));
@@ -591,8 +593,8 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       }
     }
     if (!solid) {
-      string err = "Failed to handle unknown solid shape:" + name + " of type " + string(shape->IsA()->GetName());
-      throw runtime_error(err);
+      std::string err = "Failed to handle unknown solid shape:" + name + " of type " + std::string(shape->IsA()->GetName());
+      throw std::runtime_error(err);
     }
     return data().xmlSolids[shape] = solid;
   }
@@ -605,7 +607,7 @@ xml_h LCDDConverter::handlePosition(const std::string& name, const TGeoMatrix* t
   if (!pos) {
     const double* tr = trafo->GetTranslation();
     if (tr[0] != 0.0 || tr[1] != 0.0 || tr[2] != 0.0) {
-      string gen_name = genName(name,trafo);
+      std::string gen_name = genName(name,trafo);
       geo.checkPosition(gen_name, trafo);
       geo.doc_define.append(pos = xml_elt_t(geo.doc, _U(position)));
       pos.setAttr(_U(name), gen_name);
@@ -639,7 +641,7 @@ xml_h LCDDConverter::handleRotation(const std::string& name, const TGeoMatrix* t
   if (!rot) {
     XYZRotation r = getXYZangles(trafo->GetRotationMatrix());
     if (!(r.X() == 0.0 && r.Y() == 0.0 && r.Z() == 0.0)) {
-      string gen_name = genName(name,trafo);
+      std::string gen_name = genName(name,trafo);
       geo.checkRotation(gen_name, trafo);
       geo.doc_define.append(rot = xml_elt_t(geo.doc, _U(rotation)));
       rot.setAttr(_U(name), gen_name);
@@ -667,13 +669,13 @@ xml_h LCDDConverter::handleRotation(const std::string& name, const TGeoMatrix* t
 }
 
 /// Dump logical volume in GDML format to output stream
-xml_h LCDDConverter::handleVolume(const string& /* name */, Volume volume) const {
+xml_h LCDDConverter::handleVolume(const std::string& /* name */, Volume volume) const {
   GeometryInfo& geo = data();
   xml_h vol = geo.xmlVolumes[volume];
   if (!vol) {
     const TGeoVolume* v = volume;
     Volume      _v(v);
-    string      n      = genName(v->GetName(),v);
+    std::string n      = genName(v->GetName(),v);
     TGeoMedium* medium = v->GetMedium();
     TGeoShape*  sh     = v->GetShape();
     xml_ref_t   sol    = handleSolid(sh->GetName(), sh);
@@ -685,15 +687,15 @@ xml_h LCDDConverter::handleVolume(const string& /* name */, Volume volume) const
     }
     else {
       if (!sol)
-        throw runtime_error("G4Converter: No Detector Solid present for volume:" + n);
+        throw std::runtime_error("G4Converter: No Detector Solid present for volume:" + n);
       else if (!m)
-        throw runtime_error("G4Converter: No Detector material present for volume:" + n);
+        throw std::runtime_error("G4Converter: No Detector material present for volume:" + n);
 
       vol = xml_elt_t(geo.doc, _U(volume));
       vol.setAttr(_U(name), n);
       if (m) {
-        string    mat_name = medium->GetName();
-        xml_ref_t med      = handleMaterial(mat_name, Material(medium));
+        std::string mat_name = medium->GetName();
+        xml_ref_t   med      = handleMaterial(mat_name, Material(medium));
         vol.setRef(_U(materialref), med.name());
       }
       vol.setRef(_U(solidref), sol.name());
@@ -734,7 +736,7 @@ xml_h LCDDConverter::handleVolume(const string& /* name */, Volume volume) const
 }
 
 /// Dump logical volume in GDML format to output stream
-xml_h LCDDConverter::handleVolumeVis(const string& /* name */, const TGeoVolume* volume) const {
+xml_h LCDDConverter::handleVolumeVis(const std::string& /* name */, const TGeoVolume* volume) const {
   GeometryInfo& geo = data();
   xml_h         vol = geo.xmlVolumes[volume];
   if (!vol) {
@@ -755,7 +757,7 @@ xml_h LCDDConverter::handleVolumeVis(const string& /* name */, const TGeoVolume*
 }
 
 /// Dump logical volume in GDML format to output stream
-void LCDDConverter::collectVolume(const string& /* name */, const TGeoVolume* volume) const {
+void LCDDConverter::collectVolume(const std::string& /* name */, const TGeoVolume* volume) const {
   Volume v(volume);
   if ( is_volume(volume) )     {
     GeometryInfo&     geo = data();
@@ -774,11 +776,11 @@ void LCDDConverter::collectVolume(const string& /* name */, const TGeoVolume* vo
   }
 }
 
-void LCDDConverter::checkVolumes(const string& /* name */, Volume v) const {
-  string n = v.name()+_toString(v.ptr(),"_%p");
+void LCDDConverter::checkVolumes(const std::string& /* name */, Volume v) const {
+  std::string n = v.name()+_toString(v.ptr(),"_%p");
   NameSet::const_iterator i = m_checkNames.find(n);
   if (i != m_checkNames.end()) {
-    stringstream str;
+    std::stringstream str;
     str << "++ CheckVolumes: Volume " << n << " ";
     if (is_volume(v.ptr()))     {
       SensitiveDetector sd = v.sensitiveDetector();
@@ -790,7 +792,7 @@ void LCDDConverter::checkVolumes(const string& /* name */, Volume v) const {
         str << "with VisAttrs " << vis.name() << " ";
       }
     }
-    str << "has duplicate entries." << endl;
+    str << "has duplicate entries." << std::endl;
     printout(ERROR,"LCDDConverter",str.str().c_str());
     return;
   }
@@ -798,7 +800,7 @@ void LCDDConverter::checkVolumes(const string& /* name */, Volume v) const {
 }
 
 /// Dump volume placement in GDML format to output stream
-xml_h LCDDConverter::handlePlacement(const string& name,PlacedVolume node) const {
+xml_h LCDDConverter::handlePlacement(const std::string& name,PlacedVolume node) const {
   GeometryInfo& geo = data();
   xml_h place = geo.xmlPlacements[node];
   if (!place) {
@@ -834,7 +836,7 @@ xml_h LCDDConverter::handlePlacement(const string& name,PlacedVolume node) const
     geo.xmlPlacements[node] = place;
   }
   else {
-    cout << "Attempt to DOUBLE-place physical volume:" << name << " No:" << node->GetNumber() << endl;
+    std::cout << "Attempt to DOUBLE-place physical volume:" << name << " No:" << node->GetNumber() << std::endl;
   }
   return place;
 }
@@ -862,8 +864,8 @@ xml_h LCDDConverter::handleLimitSet(const std::string& /* name */, LimitSet lim)
   if (!xml) {
     geo.doc_limits.append(xml = xml_elt_t(geo.doc, _U(limitset)));
     xml.setAttr(_U(name), lim.name());
-    const set<Limit>& obj = lim.limits();
-    for (set<Limit>::const_iterator i = obj.begin(); i != obj.end(); ++i) {
+    const std::set<Limit>& obj = lim.limits();
+    for (std::set<Limit>::const_iterator i = obj.begin(); i != obj.end(); ++i) {
       xml_h x = xml_elt_t(geo.doc, _U(limit));
       const Limit& l = *i;
       xml.append(x);
@@ -882,13 +884,13 @@ xml_h LCDDConverter::handleSegmentation(Segmentation seg) const {
   xml_h xml;
   if (seg.isValid()) {
     typedef DDSegmentation::Parameters _P;
-    string typ = seg.type();
+    std::string typ = seg.type();
     _P p = seg.parameters();
     xml = xml_elt_t(data().doc, Unicode(typ));
     for (_P::const_iterator i = p.begin(); i != p.end(); ++i) {
       const _P::value_type& v = *i;
       if (v->name() == "lunit") {
-        string val = v->value() == _toDouble("mm") ? "mm" : v->value() == _toDouble("cm") ? "cm" :
+        std::string val = v->value() == _toDouble("mm") ? "mm" : v->value() == _toDouble("cm") ? "cm" :
           v->value() == _toDouble("m") ? "m" : v->value() == _toDouble("micron") ? "micron" :
           v->value() == _toDouble("nanometer") ? "namometer" : "??";
         xml.setAttr(Unicode(v->name()), Unicode(val));
@@ -910,7 +912,7 @@ xml_h LCDDConverter::handleSegmentation(Segmentation seg) const {
 }
 
 /// Convert the geometry type SensitiveDetector into the corresponding Detector object(s).
-xml_h LCDDConverter::handleSensitive(const string& /* name */, SensitiveDetector sd) const {
+xml_h LCDDConverter::handleSensitive(const std::string& /* name */, SensitiveDetector sd) const {
   GeometryInfo& geo = data();
   xml_h sensdet = geo.xmlSensDets[sd];
   if (!sensdet) {
@@ -971,7 +973,7 @@ xml_h LCDDConverter::handleIdSpec(const std::string& name, IDDescriptor id_spec)
 }
 
 /// Convert the geometry visualisation attributes to the corresponding Detector object(s).
-xml_h LCDDConverter::handleVis(const string& /* name */, VisAttr attr) const {
+xml_h LCDDConverter::handleVis(const std::string& /* name */, VisAttr attr) const {
   GeometryInfo& geo = data();
   xml_h vis = geo.xmlVis[attr];
   if (!vis) {
@@ -1010,7 +1012,7 @@ xml_h LCDDConverter::handleField(const std::string& /* name */, OverlayedField f
   xml_h field = geo.xmlFields[f];
   if (!field) {
     Handle<NamedObject> fld(f);
-    string type = f->GetTitle();
+    std::string type = f->GetTitle();
     field = xml_elt_t(geo.doc, Unicode(type));
     field.setAttr(_U(name), f->GetName());
     fld = PluginService::Create<NamedObject*>(type + "_Convert2Detector", &m_detDesc, &field, &fld);
@@ -1019,8 +1021,8 @@ xml_h LCDDConverter::handleField(const std::string& /* name */, OverlayedField f
     if (!fld.isValid()) {
       PluginDebug dbg;
       PluginService::Create<NamedObject*>(type + "_Convert2Detector", &m_detDesc, &field, &fld);
-      throw runtime_error("Failed to locate plugin to convert electromagnetic field:"
-                          + string(f->GetName()) + " of type " + type + ". "
+      throw std::runtime_error("Failed to locate plugin to convert electromagnetic field:"
+                          + std::string(f->GetName()) + " of type " + type + ". "
                           + dbg.missingFactory(type));
     }
     geo.doc_fields.append(field);
@@ -1030,11 +1032,11 @@ xml_h LCDDConverter::handleField(const std::string& /* name */, OverlayedField f
 
 /// Handle the geant 4 specific properties
 void LCDDConverter::handleProperties(Detector::Properties& prp) const {
-  map<string, string> processors;
+  std::map<std::string, std::string> processors;
   static int s_idd = 9999999;
-  string id;
+  std::string id;
   for (Detector::Properties::const_iterator i = prp.begin(); i != prp.end(); ++i) {
-    const string& nam = (*i).first;
+    const std::string& nam = (*i).first;
     const Detector::PropertyValues& vals = (*i).second;
     if (nam.substr(0, 6) == "geant4") {
       Detector::PropertyValues::const_iterator id_it = vals.find("id");
@@ -1049,25 +1051,25 @@ void LCDDConverter::handleProperties(Detector::Properties& prp) const {
       processors.insert(make_pair(id, nam));
     }
   }
-  for (map<string, string>::const_iterator i = processors.begin(); i != processors.end(); ++i) {
+  for (std::map<std::string, std::string>::const_iterator i = processors.begin(); i != processors.end(); ++i) {
     const GeoHandler* ptr = this;
-    string nam = (*i).second;
+    std::string nam = (*i).second;
     const Detector::PropertyValues& vals = prp[nam];
-    string type = vals.find("type")->second;
-    string tag = type + "_Geant4_action";
+    std::string type = vals.find("type")->second;
+    std::string tag = type + "_Geant4_action";
     long result = PluginService::Create<long>(tag, &m_detDesc, ptr, &vals);
     if (0 == result) {
       PluginDebug dbg;
       result = PluginService::Create<long>(tag, &m_detDesc, ptr, &vals);
       if (0 == result) {
-        throw runtime_error("Failed to locate plugin to interprete files of type"
+        throw std::runtime_error("Failed to locate plugin to interprete files of type"
                             " \"" + tag + "\" - no factory:" + type + ". " +
                             dbg.missingFactory(tag));
       }
     }
     result = *(long*) result;
     if (result != 1) {
-      throw runtime_error("Failed to invoke the plugin " + tag + " of type " + type);
+      throw std::runtime_error("Failed to invoke the plugin " + tag + " of type " + type);
     }
     printout(INFO,"","+++ Executed Successfully Detector setup module %s.",type.c_str());
   }
@@ -1097,7 +1099,7 @@ void LCDDConverter::handleHeader() const {
 
 template <typename O, typename C, typename F> void handle(const O* o, const C& c, F pmf) {
   for (typename C::const_iterator i = c.begin(); i != c.end(); ++i) {
-    string n = (*i)->GetName();
+    std::string n = (*i)->GetName();
     (o->*pmf)(n, *i);
   }
 }
@@ -1116,7 +1118,7 @@ template <typename O, typename C, typename F> void handleRMap(const O* o, const 
 xml_doc_t LCDDConverter::createGDML(DetElement top) {
   Detector& description = m_detDesc;
   if (!top.isValid()) {
-    throw runtime_error("Attempt to call createGDML with an invalid geometry!");
+    throw std::runtime_error("Attempt to call createGDML with an invalid geometry!");
   }
   GeometryInfo& geo = *(m_dataPtr = new GeometryInfo);
   m_data->clear();
@@ -1171,7 +1173,7 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
 /// Create geometry conversion
 xml_doc_t LCDDConverter::createVis(DetElement top) {
   if (!top.isValid()) {
-    throw runtime_error("Attempt to call createDetector with an invalid geometry!");
+    throw std::runtime_error("Attempt to call createDetector with an invalid geometry!");
   }
 
   GeometryInfo& geo = *(m_dataPtr = new GeometryInfo);
@@ -1196,7 +1198,7 @@ xml_doc_t LCDDConverter::createVis(DetElement top) {
 xml_doc_t LCDDConverter::createDetector(DetElement top) {
   Detector& description = m_detDesc;
   if (!top.isValid()) {
-    throw runtime_error("Attempt to call createDetector with an invalid geometry!");
+    throw std::runtime_error("Attempt to call createDetector with an invalid geometry!");
   }
 
   GeometryInfo& geo = *(m_dataPtr = new GeometryInfo);
@@ -1306,12 +1308,12 @@ static long create_visASCII(Detector& description, int /* argc */, char** argv) 
   LCDDConverter wr(description);
   /* xml_doc_t doc = */ wr.createVis(description.world());
   LCDDConverter::GeometryInfo& geo = wr.data();
-  map<string, xml_comp_t> vis_map;
+  std::map<std::string, xml_comp_t> vis_map;
   for (xml_coll_t c(geo.doc_display, _U(vis)); c; ++c)
     vis_map.insert(make_pair(xml_comp_t(c).nameStr(), xml_comp_t(c)));
 
   const char* sep = ";";
-  ofstream os(argv[0]);
+  std::ofstream os(argv[0]);
   for (xml_coll_t c(geo.doc_structure, _U(volume)); c; ++c) {
     xml_comp_t vol = c;
     xml_comp_t ref = c.child(_U(visref));
@@ -1321,9 +1323,9 @@ static long create_visASCII(Detector& description, int /* argc */, char** argv) 
        << "visible:" << vis.visible() << sep << "r:"
        << col.R() << sep << "g:" << col.G() << sep << "b:" << col.B() << sep 
        << "alpha:" << col.alpha() << sep << "line_style:"
-       << vis.attr < string > (_U(line_style)) << sep 
-       << "drawing_style:" << vis.attr < string> (_U(drawing_style)) << sep 
-       << "show_daughters:" << vis.show_daughters() << sep << endl;
+       << vis.attr < std::string > (_U(line_style)) << sep 
+       << "drawing_style:" << vis.attr < std::string> (_U(drawing_style)) << sep 
+       << "show_daughters:" << vis.show_daughters() << sep << std::endl;
   }
   os.close();
   return 1;

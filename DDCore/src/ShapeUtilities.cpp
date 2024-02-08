@@ -376,7 +376,7 @@ namespace dd4hep {
     TGeoArb8* sh = get_ptr<TGeoArb8>(shape);
     struct _V { double xy[8][2]; } *vtx = (_V*)sh->GetVertices();
     std::vector<double> pars { sh->GetDz() };
-    for ( size_t i=0; i<8; ++i )   {
+    for ( std::size_t i=0; i<8; ++i )   {
       pars.emplace_back(vtx->xy[i][0]);
       pars.emplace_back(vtx->xy[i][1]);
     }
@@ -504,7 +504,7 @@ namespace dd4hep {
     cout << "dimensions: [" << PSEUDOTRAP_TAG << "]" << endl
          << right_matrix->GetTitle() << endl;
 #endif
-    for(size_t i=0; i<7; ++i)   {
+    for(std::size_t i=0; i<7; ++i)   {
       double val;
       params >> val;
       pars.emplace_back(val);
@@ -521,7 +521,7 @@ namespace dd4hep {
     std::stringstream params(right_matrix->GetTitle());
     std::vector<double> pars;
     pars.reserve(8);
-    for(size_t i=0; i<8; ++i)   {
+    for(std::size_t i=0; i<8; ++i)   {
       double val;
       params >> val;
       pars.emplace_back(val);
@@ -638,7 +638,7 @@ namespace dd4hep {
     if ( params.size() < 3 )   {
       invalidSetDimensionCall(sh,params);
     }
-    size_t nz = size_t(params[2]);
+    std::size_t nz = std::size_t(params[2]);
     if ( params.size() != 3 + 3*nz )   {
       invalidSetDimensionCall(sh,params);
     }
@@ -762,7 +762,7 @@ namespace dd4hep {
   }
   template <> void set_dimensions(TGeoPgon* sh, const std::vector<double>& params)   {
     auto pars = params;
-    if ( params.size() < 4 || params.size() != 4 + 3*size_t(params[3]) )   {
+    if ( params.size() < 4 || params.size() != 4 + 3*std::size_t(params[3]) )   {
       invalidSetDimensionCall(sh,params);
     }
     pars[0]  /= units::deg;
@@ -771,7 +771,7 @@ namespace dd4hep {
   }
   template <> void set_dimensions(TGeoXtru* sh, const std::vector<double>& params)   {
     auto pars = params;
-    if ( params.size() < 1 || params.size() != 1 + 4*size_t(params[0]) )   {
+    if ( params.size() < 1 || params.size() != 1 + 4*std::size_t(params[0]) )   {
       invalidSetDimensionCall(sh,params);
     }
     Solid(sh)._setDimensions(&pars[0]);
@@ -817,7 +817,7 @@ namespace dd4hep {
     int num_vtx   = params[0];
     int num_facet = params[1];
     std::vector<TessellatedSolid::Vertex> vertices;
-    size_t i_par = 1;
+    std::size_t i_par = 1;
     printout(DEBUG,"TessellatedSolid","+++ Loading %d vertices, %d facets",num_vtx, num_facet);
     for (int i=0; i<num_vtx; ++i)   {
       double x = params[++i_par];

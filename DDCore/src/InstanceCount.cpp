@@ -12,9 +12,9 @@
 //==========================================================================
 
 /// Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Handle.h"
-#include "DD4hep/Memory.h"
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Handle.h>
+#include <DD4hep/Memory.h>
 
 /// C/C++ include files
 #include <iostream>
@@ -32,13 +32,13 @@ namespace {
   typedef InstanceCount::Counter COUNT;
   typedef std::map<const std::type_info*, COUNT*> TypeCounter;
   typedef std::map<const std::string*, COUNT*> StringCounter;
-  static bool s_trace_instances = ::getenv("DD4HEP_TRACE") != 0;
-  static dd4hep_ptr<TypeCounter> s_typCounts(new TypeCounter());
-  static dd4hep_ptr<StringCounter> s_strCounts(new StringCounter());
-  static InstanceCount::Counter s_nullCount;
-  static InstanceCount::Counter s_thisCount;
-  static InstanceCount s_counter;
-  inline TypeCounter& types() {
+  static  bool s_trace_instances = ::getenv("DD4HEP_TRACE") != 0;
+  static  dd4hep_ptr<TypeCounter> s_typCounts(new TypeCounter());
+  static  dd4hep_ptr<StringCounter> s_strCounts(new StringCounter());
+  static  InstanceCount::Counter s_nullCount;
+  static  InstanceCount::Counter s_thisCount;
+  static  InstanceCount s_counter;
+  inline  TypeCounter& types() {
     return *(s_typCounts.get());
   }
   inline StringCounter& strings() {
