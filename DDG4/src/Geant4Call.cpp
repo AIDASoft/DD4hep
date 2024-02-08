@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4Call.h"
+#include <DDG4/Geant4Call.h>
 
 /// Default destructor (keep here to avoid weak linkage to vtable)
 dd4hep::sim::Geant4Call::~Geant4Call()   {
