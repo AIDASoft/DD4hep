@@ -730,6 +730,13 @@ void DetectorImp::endDocument(bool close_geometry)    {
     // Since we allow now for anonymous shapes,
     // we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();
+    PlacedVolume pv = mgr->GetTopNode();
+    auto* extension = pv->GetUserExtension();
+    if ( nullptr == extension )   {
+      extension = new PlacedVolume::Object();
+      pv->SetUserExtension(extension);
+    }
+    m_world.setPlacement(pv);
   }
   // Patching shape names of anaonymous shapes
   ShapePatcher patcher(m_volManager, m_world);
