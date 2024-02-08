@@ -146,7 +146,7 @@ void Display::LoadXML(const char* xmlFile)     {
 
 /// Load geometry from compact xml file
 void Display::LoadGeometryRoot(const char* /* rootFile */)     {
-  throw runtime_error("This call is not implemented !");
+  throw std::runtime_error("This call is not implemented !");
 }
 
 /// Load geometry with panel
@@ -169,7 +169,7 @@ GenericEventHandler& Display::eventHandler() const   {
   if ( m_evtHandler )  {
     return *m_evtHandler;
   }
-  throw runtime_error("Invalid event handler");
+  throw std::runtime_error("Invalid event handler");
 }
 
 /// Add new menu to the main menu bar
@@ -238,7 +238,7 @@ Display::CalodataContext& Display::GetCaloHistogram(const std::string& nam)   {
       i = m_calodata.emplace(nam,ctx).first;
       return (*i).second;      
     }
-    throw runtime_error("Cannot access calodata configuration "+nam);
+    throw std::runtime_error("Cannot access calodata configuration "+nam);
   }
   return (*i).second;
 }
@@ -289,7 +289,7 @@ void Display::MessageBox(PrintLevel level, const std::string& text, const std::s
 }
 
 /// Popup XML file chooser. returns chosen file name; empty on cancel
-string Display::OpenXmlFileDialog(const std::string& default_dir)   const {
+std::string Display::OpenXmlFileDialog(const std::string& default_dir)   const {
   static const char *evtFiletypes[] = { 
     "xml files",    "*.xml",
     "XML files",    "*.XML",
@@ -310,7 +310,7 @@ string Display::OpenXmlFileDialog(const std::string& default_dir)   const {
 }
 
 /// Popup ROOT file chooser. returns chosen file name; empty on cancel
-string Display::OpenEventFileDialog(const std::string& default_dir)   const {
+std::string Display::OpenEventFileDialog(const std::string& default_dir)   const {
   static const char *evtFiletypes[] = { 
     "ROOT files",    "*.root",
     "SLCIO files",   "*.slcio",
@@ -348,7 +348,7 @@ void Display::BuildMenus(TGMenuBar* menubar)   {
 TFile* Display::Open(const char* name) const   {
   TFile* f = TFile::Open(name);
   if ( f && !f->IsZombie() ) return f;
-  throw runtime_error("+++ Failed to open ROOT file:"+string(name));
+  throw std::runtime_error("+++ Failed to open ROOT file:"+std::string(name));
 }
 
 /// Consumer event data
@@ -358,7 +358,7 @@ void Display::OnFileOpen(EventHandler& /* handler */ )   {
 /// Consumer event data
 void Display::OnNewEvent(EventHandler& handler )   {
   typedef EventHandler::TypedEventCollections Types;
-  typedef vector<EventHandler::Collection> Collections;
+  typedef std::vector<EventHandler::Collection> Collections;
   const Types& types = handler.data();
   TEveElement* particles = 0;
 
@@ -477,7 +477,7 @@ TEveElementList& Display::GetGeoTopic(const std::string& name)    {
 TEveElementList& Display::GetGeoTopic(const std::string& name) const   {
   Topics::const_iterator i=m_geoTopics.find(name);
   if ( i == m_geoTopics.end() )  {
-    throw runtime_error("Display: Attempt to access non-existing geometry topic:"+name);
+    throw std::runtime_error("Display: Attempt to access non-existing geometry topic:"+name);
   }
   return *((*i).second);
 }
@@ -498,7 +498,7 @@ TEveElementList& Display::GetEveTopic(const std::string& name)    {
 TEveElementList& Display::GetEveTopic(const std::string& name) const   {
   Topics::const_iterator i=m_eveTopics.find(name);
   if ( i == m_eveTopics.end() )  {
-    throw runtime_error("Display: Attempt to access non-existing event topic:"+name);
+    throw std::runtime_error("Display: Attempt to access non-existing event topic:"+name);
   }
   return *((*i).second);
 }
@@ -542,7 +542,7 @@ void Display::LoadGeoChildren(TEveElement* start, int levels, bool redraw)  {
         DetElement de = (*i).second;
         SensitiveDetector sd = m_detDesc->sensitiveDetector(de.name());
         TEveElementList& parent = sd.isValid() ? sens : struc;
-        pair<bool,TEveElement*> e = Utilities::LoadDetElement(de,levels,&parent);
+        std::pair<bool,TEveElement*> e = Utilities::LoadDetElement(de,levels,&parent);
         if ( e.second && e.first )  {
           parent.AddElement(e.second);
         }
@@ -556,7 +556,7 @@ void Display::LoadGeoChildren(TEveElement* start, int levels, bool redraw)  {
         const char* node_name = n->GetName();
         int level = Utilities::findNodeWithMatrix(detectorDescription().world().placement().ptr(),n,&mat);
         if ( level > 0 )   {
-          pair<bool,TEveElement*> e(false,0);
+          std::pair<bool,TEveElement*> e(false,0);
           const DetElement::Children& c = world.children();
           for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
             DetElement de = (*i).second;

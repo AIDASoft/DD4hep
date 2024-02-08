@@ -12,8 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/FrameControl.h"
-#include "DD4hep/Printout.h"
+#include <DDEve/FrameControl.h>
+#include <DD4hep/Printout.h>
 
 // ROOT include files
 #include <TSystem.h>
@@ -22,7 +22,6 @@
 
 #include <stdexcept>
 
-using namespace std;
 using namespace dd4hep;
 
 ClassImp(FrameControl)

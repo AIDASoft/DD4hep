@@ -12,23 +12,24 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/CaloLego.h"
-#include "DDEve/Annotation.h"
-#include "DDEve/Factories.h"
-#include "DD4hep/InstanceCount.h"
+#include <DDEve/CaloLego.h>
+#include <DDEve/Annotation.h>
+#include <DDEve/Factories.h>
+#include <DD4hep/InstanceCount.h>
 
 // Root include files
-#include "TH2.h"
-#include "TEveCalo.h"
-#include "TEveTrans.h"
-#include "TEveScene.h"
-#include "TGLViewer.h"
-#include "TGLWidget.h"
-#include "TEveCaloLegoOverlay.h"
-#include "TEveLegoEventHandler.h"
+#include <TH2.h>
+#include <TEveCalo.h>
+#include <TEveTrans.h>
+#include <TEveScene.h>
+#include <TGLViewer.h>
+#include <TGLWidget.h>
+#include <TEveCaloLegoOverlay.h>
+#include <TEveLegoEventHandler.h>
 
+// C/C++ include files
 #include <limits>
-using namespace std;
+
 using namespace dd4hep;
 
 ClassImp(CaloLego)
@@ -123,5 +124,5 @@ void CaloLego::ConfigureEvent(const DisplayConfiguration::ViewConfig& config)  {
 }
 
 /// Call to import geometry topics
-void CaloLego::ImportGeoTopics(const string&)   {
+void CaloLego::ImportGeoTopics(const std::string&)   {
 }

@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/DisplayConfiguration.h"
+#include <DDEve/DisplayConfiguration.h>
 
 // C/C++ include files
 #include <stdexcept>

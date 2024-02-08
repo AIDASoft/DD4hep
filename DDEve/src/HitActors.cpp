@@ -12,18 +12,17 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/HitActors.h"
-#include "DD4hep/Objects.h"
-#include "DD4hep/DD4hepUnits.h"
+#include <DDEve/HitActors.h>
+#include <DD4hep/Objects.h>
+#include <DD4hep/DD4hepUnits.h>
 
 // ROOT include files
-#include "TH2.h"
-#include "TVector3.h"
-#include "TEveBoxSet.h"
-#include "TEvePointSet.h"
-#include "TEveCompound.h"
+#include <TH2.h>
+#include <TVector3.h>
+#include <TEveBoxSet.h>
+#include <TEvePointSet.h>
+#include <TEveCompound.h>
 
-using namespace std;
 using namespace dd4hep;
 
 #ifdef DD4HEP_USE_GEANT4_UNITS
@@ -125,7 +124,8 @@ TEveElement* BoxsetCreator::element() const   {
 void BoxsetCreator::operator()(const DDEveHit& hit)   {
   double ene = hit.deposit*MEV_2_GEV <= emax ? hit.deposit*MEV_2_GEV : emax;
   TVector3 scale(ene/towerH,ene/towerH,ene/towerH);
-  cout << "Hit:" << ene << " deposit:" << hit.deposit << " " << " emax:" << emax << " towerH:" << towerH << endl;
+  std::cout << "Hit:" << ene << " deposit:" << hit.deposit << " "
+            << " emax:" << emax << " towerH:" << towerH << std::endl;
   TVector3 p(hit.x*MM_2_CM, hit.y*MM_2_CM, hit.z*MM_2_CM);
   double phi = p.Phi();
   float s1X = -0.5*(scale(0)*std::sin(phi)+scale(2)*std::cos(phi));
