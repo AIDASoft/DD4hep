@@ -12,30 +12,29 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/InstanceCount.h"
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/InstanceCount.h>
 
-#include "DDEve/View.h"
-#include "DDEve/DD4hepMenu.h"
-#include "DDEve/PopupMenu.h"
-#include "DDEve/EventControl.h"
+#include <DDEve/View.h>
+#include <DDEve/DD4hepMenu.h>
+#include <DDEve/PopupMenu.h>
+#include <DDEve/EventControl.h>
 
 // ROOT include files
-#include "TEveBrowser.h"
-#include "TEveManager.h"
-#include "TEveElement.h"
-#include "TEveWindow.h"
-#include "TEveViewer.h"
-#include "TGLViewer.h"
-#include "TGClient.h"
-#include "TSystem.h"
+#include <TEveBrowser.h>
+#include <TEveManager.h>
+#include <TEveElement.h>
+#include <TEveWindow.h>
+#include <TEveViewer.h>
+#include <TGLViewer.h>
+#include <TGClient.h>
+#include <TSystem.h>
 
 // Forward declarations
 class TEveWindowSlot;
 
-using namespace std;
 using namespace dd4hep;
 
 ClassImp(DD4hepMenu)

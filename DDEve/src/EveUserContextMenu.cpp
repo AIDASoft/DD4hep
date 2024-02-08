@@ -12,19 +12,18 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DDEve/Display.h"
-#include "DDEve/ContextMenu.h"
-#include "DDEve/EveUserContextMenu.h"
+#include <DD4hep/Printout.h>
+#include <DDEve/Display.h>
+#include <DDEve/ContextMenu.h>
+#include <DDEve/EveUserContextMenu.h>
 
 // ROOT include files
-#include "TEveGeoShape.h"
-#include "TEveManager.h"
-#include "TEveElement.h"
+#include <TEveGeoShape.h>
+#include <TEveManager.h>
+#include <TEveElement.h>
 
 // C/C++ include files
 
-using namespace std;
 using namespace dd4hep;
 
 ClassImp(EveUserContextMenu)

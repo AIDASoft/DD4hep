@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/EventHandler.h"
+#include <DDEve/EventHandler.h>
 
 using namespace dd4hep;
 

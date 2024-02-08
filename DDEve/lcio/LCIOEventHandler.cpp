@@ -13,24 +13,23 @@
 
 // Framework include files
 #include "LCIOEventHandler.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Objects.h"
-#include "DD4hep/Factories.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Objects.h>
+#include <DD4hep/Factories.h>
 
-#include "IO/LCReader.h"
-#include "EVENT/LCCollection.h"
-#include "EVENT/SimCalorimeterHit.h"
-#include "EVENT/SimTrackerHit.h"
-#include "EVENT/MCParticle.h"
+#include <IO/LCReader.h>
+#include <EVENT/LCCollection.h>
+#include <EVENT/SimCalorimeterHit.h>
+#include <EVENT/SimTrackerHit.h>
+#include <EVENT/MCParticle.h>
 
-#include "TSystem.h"
-#include "TGMsgBox.h"
+#include <TSystem.h>
+#include <TGMsgBox.h>
 
 // C/C++ include files
 #include <stdexcept>
 #include <climits>
 
-using namespace std;
 using namespace lcio;
 using namespace dd4hep;
 using namespace EVENT;
@@ -168,25 +167,25 @@ bool LCIOEventHandler::NextEvent()   {
       const _S* collnames = m_event->getCollectionNames();
       for( _S::const_iterator i = collnames->begin(); i != collnames->end(); ++i) {
         LCCollection* c = m_event->getCollection(*i);
-        m_data[c->getTypeName()].push_back(make_pair((*i).c_str(),c->getNumberOfElements()));
+        m_data[c->getTypeName()].push_back(std::make_pair((*i).c_str(),c->getNumberOfElements()));
         m_branches[*i] = c;
       }
       m_hasEvent = true;
       return 1;
     }
-    throw runtime_error("+++ EventHandler::readEvent: Failed to read event");
+    throw std::runtime_error("+++ EventHandler::readEvent: Failed to read event");
   }
-  throw runtime_error("+++ EventHandler::readEvent: No file open!");
+  throw std::runtime_error("+++ EventHandler::readEvent: No file open!");
 }
 
 /// Load the previous event
 bool LCIOEventHandler::PreviousEvent()   {
-  throw runtime_error("+++ This version of the LCIO reader can only access files sequentially!\n"
-                      "+++ Access to the previous event is not supported.");
+  throw std::runtime_error("+++ This version of the LCIO reader can only access files sequentially!\n"
+                           "+++ Access to the previous event is not supported.");
 }
 
 /// Goto a specified event in the file
 bool LCIOEventHandler::GotoEvent(long /* event_number */)   {
-  throw runtime_error("+++ This version of the LCIO reader can only access files sequentially!\n"
-                      "+++ Random access is not supported.");
+  throw std::runtime_error("+++ This version of the LCIO reader can only access files sequentially!\n"
+                           "+++ Random access is not supported.");
 }

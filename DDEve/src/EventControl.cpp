@@ -79,11 +79,6 @@ void EventControl::GotoEvent()   {
 
 /// Open a new event data file
 bool EventControl::Open()   {
-  // e- shots:
-  //m_display->eventHandler().Open("/home/frankm/SW/DD4hep_head_dbg.root_v5.34.10/build/CLICSiD_2014-06-10_15-26.root");
-  // pi- shots:
-  //m_display->eventHandler().Open("/home/frankm/SW/DD4hep_head_dbg.root_v5.34.10/build/CLICSiD_2014-06-18_12-48.root");
-
   std::string fname = m_display->OpenEventFileDialog(".");
   if ( !fname.empty() )  {
     return m_display->eventHandler().Open(m_display->getEventHandlerName(),fname);

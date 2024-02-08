@@ -13,8 +13,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/View3D.h"
-#include "DDEve/Factories.h"
+#include <DDEve/View3D.h>
+#include <DDEve/Factories.h>
 
 using namespace dd4hep;
 

@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/PopupMenu.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
+#include <DDEve/PopupMenu.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
 
 // C/C++ include files
 

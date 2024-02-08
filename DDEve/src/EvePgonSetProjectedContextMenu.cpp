@@ -12,16 +12,15 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/ContextMenu.h"
-#include "DDEve/EvePgonSetProjectedContextMenu.h"
+#include <DDEve/ContextMenu.h>
+#include <DDEve/EvePgonSetProjectedContextMenu.h>
 
 // ROOT include files
-#include "TEvePolygonSetProjected.h"
+#include <TEvePolygonSetProjected.h>
 
 // C/C++ include files
 #include <stdexcept>
 
-using namespace std;
 using namespace dd4hep;
 
 ClassImp(EvePgonSetProjectedContextMenu)

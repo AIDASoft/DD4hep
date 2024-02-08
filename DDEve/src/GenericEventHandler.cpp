@@ -24,7 +24,6 @@
 #include <TSystem.h>
 #include <climits>
 
-using namespace std;
 using namespace dd4hep;
 
 ClassImp(GenericEventHandler)
@@ -43,7 +42,7 @@ EventHandler* GenericEventHandler::current() const   {
   if ( m_current )  {
     return m_current;
   }
-  throw runtime_error("Invalid event handler");
+  throw std::runtime_error("Invalid event handler");
 }
 
 /// Notfy all subscribers
@@ -69,7 +68,7 @@ long GenericEventHandler::numEvents() const   {
 }
 
 /// Access the data source name
-string GenericEventHandler::datasourceName() const {
+std::string GenericEventHandler::datasourceName() const {
   return current()->datasourceName();
 }
 
@@ -118,7 +117,7 @@ bool GenericEventHandler::Open(const std::string& file_type, const std::string& 
       m_current = (EventHandler*)PluginService::Create<void*>("DD4hep_DDEve_DDG4EventHandler",(const char*)0);
     }
     else   {
-      throw runtime_error("Attempt to open file:"+file_name+" of unknown type:"+file_type);
+      throw std::runtime_error("Attempt to open file:"+file_name+" of unknown type:"+file_type);
     }
     if ( m_current )   {
       if ( m_current->Open(file_type, file_name) )   {
@@ -133,7 +132,7 @@ bool GenericEventHandler::Open(const std::string& file_type, const std::string& 
       err = "+++ Failed to create fikle reader for file '"+file_name+"' of type '"+file_type+"'";
     }
   }
-  catch(const exception& e)  {
+  catch(const std::exception& e)  {
     err = "\nAn exception occurred \n"
       "while opening event data:\n" + std::string(e.what()) + "\n\n";
   }
@@ -155,9 +154,9 @@ bool GenericEventHandler::NextEvent()   {
         return 1;
       }
     }
-    throw runtime_error("+++ EventHandler::readEvent: No file open!");
+    throw std::runtime_error("+++ EventHandler::readEvent: No file open!");
   }
-  catch(const exception& e)  {
+  catch(const std::exception& e)  {
     std::string path = TString::Format("%s/stop_t.xpm", TROOT::GetIconPath().Data()).Data();
     std::string err = "\nAn exception occurred \n"
       "while reading a new event:\n" + std::string(e.what()) + "\n\n";
