@@ -151,9 +151,9 @@ if (DD4HEP_USE_GEANT4)
     --steeringFile ${CMAKE_CURRENT_SOURCE_DIR}/python/userActionsSteeringFile.PY
     --action.event "Geant4TestEventAction/EventActionCLI1"
     --action.step "Geant4TestStepAction/StepActionCLI1,Geant4TestStepAction/StepActionCLI2"
-    --action.step '[ "Geant4TestStepAction/StepActionCLI2", "Geant4TestStepAction/StepActionCLI3" ]'
-    --action.stack '{ "name" : "Geant4TestStackAction/StackActionCLI1" , "parameter" : { "Property_int" : 10 } }'
-    --action.stack '[ { "name" : "Geant4TestStackAction/StackActionCLI2" , "parameter" : { "Property_int" : 10 } } ]'
+    --action.step '\[ \"Geant4TestStepAction/StepActionCLI3\" , \"Geant4TestStepAction/StepActionCLI4\" \]'
+    --action.stack '\{ \"name\" : \"Geant4TestStackAction/StackActionCLI1\" , \"parameter\" : \{ \"Property_int\" : 10 \} \}'
+    --action.stack '\[ \{ \"name\" : \"Geant4TestStackAction/StackActionCLI2\" , \"parameter\" : { \"Property_int\" : 10 \} \} \]'
   )
 
 endif()
