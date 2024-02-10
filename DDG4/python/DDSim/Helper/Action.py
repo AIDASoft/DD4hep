@@ -160,8 +160,15 @@ or
       # creates: [ { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} } ]
       val = [val]
     if isinstance(val, list):
-      # assumes: [ { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} } ]
-      return val
+      if not val:
+        # empty list
+        return []
+      if isinstance(val[0], str):
+        # assumes: [ "Geant4TestEventAction", "Geant4TestEventAction" ]
+        return [dict(name=v) for v in val]
+      if isinstance(val[0], dict):
+        # assumes: [ { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} } ]
+        return val
     raise RuntimeError("Commandline setting of action is not successful for: %s " % val)
 
   @property
