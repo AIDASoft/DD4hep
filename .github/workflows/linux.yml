@@ -17,8 +17,8 @@ jobs:
               "dev3/x86_64-centos7-gcc11-opt",
               "dev4/x86_64-centos7-gcc11-opt"]
     steps:
-    - uses: actions/checkout@v3
-    - uses: cvmfs-contrib/github-action-cvmfs@v3
+    - uses: actions/checkout@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v3
       with:
         release-platform: ${{ matrix.LCG }}
@@ -69,7 +69,7 @@ jobs:
           echo "ARTIFACT_NAME=${artifact_name}" >> $GITHUB_ENV
     - name: Upload test results
       if: success() || failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Test Results ${{ env.ARTIFACT_NAME }}
         path: |
@@ -84,8 +84,8 @@ jobs:
       matrix:
         view-path: ["/cvmfs/sw-nightlies.hsf.org/key4hep/"]
     steps:
-    - uses: actions/checkout@v3
-    - uses: cvmfs-contrib/github-action-cvmfs@v3
+    - uses: actions/checkout@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v3
       with:
         container: centos7
@@ -134,7 +134,7 @@ jobs:
           echo "ARTIFACT_NAME=${artifact_name}" >> $GITHUB_ENV
     - name: Upload test results
       if: success() || failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Test Results ${{ env.ARTIFACT_NAME }}
         path: |
@@ -148,8 +148,8 @@ jobs:
       matrix:
         LCG: ["LCG_102/x86_64-centos7-gcc11-opt"]
     steps:
-    - uses: actions/checkout@v3
-    - uses: cvmfs-contrib/github-action-cvmfs@v3
+    - uses: actions/checkout@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v3
       with:
         release-platform: ${{ matrix.LCG }}
@@ -183,8 +183,8 @@ jobs:
       matrix:
         LCG: ["dev3/x86_64-centos7-gcc11-opt"]
     steps:
-    - uses: actions/checkout@v3
-    - uses: cvmfs-contrib/github-action-cvmfs@v3
+    - uses: actions/checkout@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v3
       with:
         release-platform: ${{ matrix.LCG }}
@@ -233,7 +233,7 @@ jobs:
           echo "ARTIFACT_NAME=${artifact_name}" >> $GITHUB_ENV
     - name: Upload test results
       if: success() || failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Test Results ${{ env.ARTIFACT_NAME }}
         path: |
@@ -246,7 +246,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Upload
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Event File
         path: ${{ github.event_path }}

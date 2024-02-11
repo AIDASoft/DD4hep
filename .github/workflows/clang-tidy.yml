@@ -10,8 +10,8 @@ jobs:
       matrix:
         LCG: ["dev4/x86_64-el9-clang16-opt"]
     steps:
-    - uses: actions/checkout@v3
-    - uses: cvmfs-contrib/github-action-cvmfs@v3
+    - uses: actions/checkout@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v3
       with:
         release-platform: ${{ matrix.LCG }}
