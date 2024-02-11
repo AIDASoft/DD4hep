@@ -154,6 +154,10 @@ if (DD4HEP_USE_GEANT4)
     --action.step '\[ \"Geant4TestStepAction/StepActionCLI3\" , \"Geant4TestStepAction/StepActionCLI4\" \]'
     --action.stack '\{ \"name\" : \"Geant4TestStackAction/StackActionCLI1\" , \"parameter\" : \{ \"Property_int\" : 10 \} \}'
     --action.stack '\[ \{ \"name\" : \"Geant4TestStackAction/StackActionCLI2\" , \"parameter\" : { \"Property_int\" : 10 \} \} \]'
+    --printLevel VERBOSE
+  )
+  set_tests_properties( t_ddsimUserActions PROPERTIES
+    PASS_REGULAR_EXPRESSION "Deleting object StepActionCLI1"
   )
 
 endif()

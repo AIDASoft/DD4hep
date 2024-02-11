@@ -67,10 +67,15 @@ or
     self._trackerSDTypes = ['tracker']
     self._calorimeterSDTypes = ['calorimeter']
     self._run = []
+    self._run_EXTRA = {"action": "append"}
     self._event = []
+    self._event_EXTRA = {"action": "append"}
     self._track = []
+    self._track_EXTRA = {"action": "append"}
     self._step = []
+    self._step_EXTRA = {"action": "append"}
     self._stack = []
+    self._stack_EXTRA = {"action": "append"}
     self._closeProperties()
 
   @property
@@ -148,27 +153,23 @@ or
       import json
       try:
         val = json.loads(val)
+        # interpret json structure
+        return Action.makeListOfDictFromJSON(val)
       except ValueError:
-        val = [dict(name=v) for v in val.split(",")]
+        # returns: [ { "name": "Geant4TestEventAction" } ]
+        return [dict(name=v) for v in val.split(",")]
     if isinstance(val, tuple):
       # assumes: ( "Geant4TestEventAction", {"Property_int": 10} )
-      # creates: { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} }
+      # returns: [ { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} } ]
       # note: not able to be specified as json which only allows a list
-      val = dict(name=val[0], parameter=val[1])
+      return [dict(name=val[0], parameter=val[1])]
     if isinstance(val, dict):
       # assumes: { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} }
-      # creates: [ { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} } ]
-      val = [val]
+      # returns: [ { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} } ]
+      return [val]
     if isinstance(val, list):
-      if not val:
-        # empty list
-        return []
-      if isinstance(val[0], str):
-        # assumes: [ "Geant4TestEventAction", "Geant4TestEventAction" ]
-        return [dict(name=v) for v in val]
-      if isinstance(val[0], dict):
-        # assumes: [ { "name": "Geant4TestEventAction", "parameter": {"Property_int": 10} } ]
-        return val
+      # interpret each list entry into a list and concatenate
+      return [i for v in val for i in Action.makeListOfDictFromJSON(v)]
     raise RuntimeError("Commandline setting of action is not successful for: %s " % val)
 
   @property
@@ -178,7 +179,9 @@ or
 
   @run.setter
   def run(self, val):
-    self._run.extend(Action.makeListOfDictFromJSON(val))
+    for action in Action.makeListOfDictFromJSON(val):
+      if action not in self._run:
+        self._run.append(action)
 
   @property
   def event(self):
@@ -187,7 +190,9 @@ or
 
   @event.setter
   def event(self, val):
-    self._event.extend(Action.makeListOfDictFromJSON(val))
+    for action in Action.makeListOfDictFromJSON(val):
+      if action not in self._event:
+        self._event.append(action)
 
   @property
   def track(self):
@@ -196,7 +201,9 @@ or
 
   @track.setter
   def track(self, val):
-    self._track.extend(Action.makeListOfDictFromJSON(val))
+    for action in Action.makeListOfDictFromJSON(val):
+      if action not in self._track:
+        self._track.append(action)
 
   @property
   def step(self):
@@ -205,7 +212,9 @@ or
 
   @step.setter
   def step(self, val):
-    self._step.extend(Action.makeListOfDictFromJSON(val))
+    for action in Action.makeListOfDictFromJSON(val):
+      if action not in self._step:
+        self._step.append(action)
 
   @property
   def stack(self):
@@ -214,4 +223,6 @@ or
 
   @stack.setter
   def stack(self, val):
-    self._stack.extend(Action.makeListOfDictFromJSON(val))
+    for action in Action.makeListOfDictFromJSON(val):
+      if action not in self._stack:
+        self._stack.append(action)
