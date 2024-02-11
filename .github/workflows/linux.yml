@@ -235,7 +235,7 @@ jobs:
       if: success() || failure()
       uses: actions/upload-artifact@v4
       with:
-        name: Test Results ${{ env.ARTIFACT_NAME }}
+        name: Test Results ${{ env.ARTIFACT_NAME }} (g4units)
         path: |
            /home/runner/work/DD4hep/DD4hep/build/TestResults_1.xml
            /home/runner/work/DD4hep/DD4hep/examples/build/TestResults_2.xml
