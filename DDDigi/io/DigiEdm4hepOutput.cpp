@@ -21,11 +21,14 @@
 
 /// edm4hep include files
 #include <podio/CollectionBase.h>
+#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
+#include <podio/ROOTWriter.h>
+#else
 #include <podio/ROOTFrameWriter.h>
+#endif
 #include <podio/Frame.h>
 #include <edm4hep/SimTrackerHit.h>
 #include <edm4hep/MCParticleCollection.h>
-#include <edm4hep/TrackerHitCollection.h>
 #include <edm4hep/EventHeaderCollection.h>
 #include <edm4hep/CalorimeterHitCollection.h>
 #include <edm4hep/CaloHitContributionCollection.h>
@@ -50,13 +53,17 @@ namespace dd4hep {
       using headercollection_t   = std::pair<std::string,std::unique_ptr<edm4hep::EventHeaderCollection> >;
       DigiEdm4hepOutput*                      m_parent    { nullptr };
       /// Reference to podio writer
+#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
+      std::unique_ptr<podio::ROOTWriter>      m_writer    { };
+#else
       std::unique_ptr<podio::ROOTFrameWriter> m_writer    { };
+#endif
       /// edm4hep event header collection
       headercollection_t                      m_header    { };
       /// MC particle collection
       particlecollection_t                    m_particles { };
       /// Collection of all edm4hep tracker object collections
-      std::map<std::string, std::unique_ptr<edm4hep::TrackerHitCollection> > m_tracker_collections;
+      std::map<std::string, std::unique_ptr<edm4hep::TrackerHit3DCollection> > m_tracker_collections;
       /// Collection of all edm4hep calorimeter object collections
       std::map<std::string, std::unique_ptr<edm4hep::CalorimeterHitCollection> > m_calo_collections;
       /// Output section name
@@ -114,7 +121,7 @@ namespace dd4hep {
             m_particles = std::make_pair(nam, std::make_unique<edm4hep::MCParticleCollection>());
           }
           else if ( typ == "TrackerHits" )   {
-            m_tracker_collections.emplace(nam, std::make_unique<edm4hep::TrackerHitCollection>());
+            m_tracker_collections.emplace(nam, std::make_unique<edm4hep::TrackerHit3DCollection>());
           }
           else if ( typ == "CalorimeterHits" )   {
             m_calo_collections.emplace(nam, std::make_unique<edm4hep::CalorimeterHitCollection>());
@@ -190,7 +197,11 @@ namespace dd4hep {
       clear();
       m_writer.reset();
       std::string fname = m_parent->next_stream_name();
+#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
+      m_writer = std::make_unique<podio::ROOTWriter>(fname);
+#else
       m_writer = std::make_unique<podio::ROOTFrameWriter>(fname);
+#endif
       m_parent->info("+++ Opened EDM4HEP output file %s", fname.c_str());
     }
 
@@ -274,7 +285,7 @@ namespace dd4hep {
     template <typename T> void
     DigiEdm4hepOutputProcessor::convert_depos(const T& cont,
                                               const predicate_t& predicate,
-                                              edm4hep::TrackerHitCollection* collection)  const
+                                              edm4hep::TrackerHit3DCollection* collection)  const
     {
       std::array<float,6> covMat = {0., 0., m_pointResoutionRPhi*m_pointResoutionRPhi, 
         0., 0., m_pointResoutionZ*m_pointResoutionZ
@@ -308,7 +319,7 @@ namespace dd4hep {
       if ( !cont.empty() )   {
         switch(cont.data_type)    {
         case SegmentEntry::TRACKER_HITS:
-          convert_depos(cont, predicate, static_cast<edm4hep::TrackerHitCollection*>(coll));
+          convert_depos(cont, predicate, static_cast<edm4hep::TrackerHit3DCollection*>(coll));
           break;
         case SegmentEntry::CALORIMETER_HITS:
           convert_depos(cont, predicate, static_cast<edm4hep::CalorimeterHitCollection*>(coll));
