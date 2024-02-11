@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'AIDASoft/DD4hep'
     steps:
-    - uses: actions/checkout@v3
-    - uses: cvmfs-contrib/github-action-cvmfs@v3
+    - uses: actions/checkout@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v3
       with:
         coverity-cmake-command: 'cmake -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DDD4HEP_USE_EDM4HEP=OFF -DDD4HEP_USE_TBB=ON -DDD4HEP_USE_HEPMC3=ON -DDD4HEP_BUILD_DEBUG=OFF -DBUILD_TESTING=ON -DDD4HEP_DEBUG_CMAKE=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..'
