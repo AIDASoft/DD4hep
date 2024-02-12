@@ -20,8 +20,8 @@
 #include <pthread.h>
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DDG4/Python/DDPython.h"
+#include <DD4hep/Printout.h>
+#include <DDG4/Python/DDPython.h>
 
 #if !defined(__MAKECINT__) && !defined(__CINT__) && !defined(G__DICTIONARY)
 // -----------------------------------------------------------------------------
@@ -38,13 +38,10 @@
 #include "Python.h"
 #endif
 
-using namespace std;
-using namespace dd4hep;
-
 namespace {
-  string loadScript(const string& fname) {
-    ifstream file(fname.c_str());
-    stringstream str;
+  std::string loadScript(const std::string& fname) {
+    std::ifstream file(fname.c_str());
+    std::stringstream str;
     if( file ) {
       char ch;
       while( file.get(ch) ) str.put(ch);
@@ -54,14 +51,14 @@ namespace {
     return "";
   }
 
+  static dd4hep::DDPython* _instance = 0;
   static int       _blockers = 0;
   static pthread_t _mainThread = 0;
   static int       _refCount = 0;
-  static DDPython* _instance = 0;
   static PyObject* _main_dict = 0;
   static PyThreadState *_save_state = 0;
   int _execPy(const char* cmd)   {
-    DDPython::GILState state(0);
+    dd4hep::DDPython::GILState state(0);
     PyObject* ret = ::PyRun_String((char*)cmd, Py_file_input,_main_dict,_main_dict);
     if ( ::PyErr_Occurred() )   {
       ::PyErr_Print();
@@ -80,7 +77,7 @@ namespace {
     return 0;
   }
   int _evalPy(const char* cmd)   {
-    DDPython::GILState state(0);
+    dd4hep::DDPython::GILState state(0);
     PyObject* ret = ::PyRun_String((char*)cmd, Py_eval_input,_main_dict,_main_dict);
     if ( ::PyErr_Occurred() )   {
       ::PyErr_Print();
@@ -100,44 +97,44 @@ namespace {
   }
 }
 
-DDPython::GILState::GILState(int) : state(0) {
+dd4hep::DDPython::GILState::GILState(int) : state(0) {
   if ( ::Py_IsInitialized() )  {
     PyGILState_STATE st = (PyGILState_STATE)::PyGILState_Ensure();
     state = (int)st;
   }
 }
 
-DDPython::GILState::~GILState()  {
+dd4hep::DDPython::GILState::~GILState()  {
   if ( ::Py_IsInitialized() )  {
     PyGILState_STATE st = (PyGILState_STATE)state;
     ::PyGILState_Release(st);
   }
 }
 
-DDPython::BlockThreads::BlockThreads(int)  {
+dd4hep::DDPython::BlockThreads::BlockThreads(int)  {
   if ( _blockers == 0 )  {
     DDPython::restoreThread();
   }
   ++_blockers;
 }
 
-DDPython::BlockThreads::~BlockThreads()  {
+dd4hep::DDPython::BlockThreads::~BlockThreads()  {
   --_blockers;
   if ( _blockers == 0 )  {
     DDPython::allowThreads();
   }
 }
 
-DDPython::AllowThreads::AllowThreads(int)  {
+dd4hep::DDPython::AllowThreads::AllowThreads(int)  {
   DDPython::allowThreads();
 }
 
-DDPython::AllowThreads::~AllowThreads()  {
+dd4hep::DDPython::AllowThreads::~AllowThreads()  {
   DDPython::restoreThread();
 }
 
 /// Standard constructor, initializes variables
-DDPython::DDPython() : context(0)  {
+dd4hep::DDPython::DDPython() : context(0)  {
   ++_refCount;
   bool inited = ::Py_IsInitialized();
   if ( !inited ) {
@@ -173,7 +170,7 @@ DDPython::DDPython() : context(0)  {
 }
 
 /// Default Destructor
-DDPython::~DDPython()   {
+dd4hep::DDPython::~DDPython()   {
   --_refCount;
   if ( 0 == _refCount && ::Py_IsInitialized() ) {
     dd4hep::printout(ALWAYS,"DDPython","+++ Shutdown python interpreter......");
@@ -190,32 +187,32 @@ DDPython::~DDPython()   {
 } 
 
 
-DDPython DDPython::instance()   {
+dd4hep::DDPython dd4hep::DDPython::instance()   {
   if ( 0 == _instance ) _instance = new DDPython();
   return DDPython();
 }
 
 /// Save thread state
-void DDPython::allowThreads()   {
+void dd4hep::DDPython::allowThreads()   {
   if ( !_save_state && ::Py_IsInitialized() )  {
     _save_state = ::PyEval_SaveThread();
   }
 }
 
-void DDPython::restoreThread()   {
+void dd4hep::DDPython::restoreThread()   {
   if ( _save_state ) {
     ::PyEval_RestoreThread(_save_state);
     _save_state = 0;
   }
 }
 
-int DDPython::setArgs(int argc, char** argv)  const   {
+int dd4hep::DDPython::setArgs(int argc, char** argv)  const   {
   // Need to protect against API change from Python 2 to Python 3
 #if PY_VERSION_HEX < 0x03000000
   ::PySys_SetArgv(argc,argv);
 #else
-  vector<wstring> wargs;
-  vector<const wchar_t*> wargv;
+  std::vector<std::wstring> wargs;
+  std::vector<const wchar_t*> wargv;
   for(int i=0; i<argc;++i)  {
     std::wstring wstr;
     if ( argv[i] )  {
@@ -234,7 +231,7 @@ int DDPython::setArgs(int argc, char** argv)  const   {
   return 1;
 }
 
-void DDPython::shutdown()   {
+void dd4hep::DDPython::shutdown()   {
   if ( 0 != _instance )  {
     if ( 1 == _refCount ) {
       delete _instance;
@@ -243,21 +240,21 @@ void DDPython::shutdown()   {
   }
 }
 
-int DDPython::runFile(const std::string& fname)  const   {
+int dd4hep::DDPython::runFile(const std::string& fname)  const   {
   std::string cmd = loadScript(fname);
   return execute(cmd);
 }
 
-int DDPython::evaluate(const std::string& cmd)  const   {
+int dd4hep::DDPython::evaluate(const std::string& cmd)  const   {
   return _evalPy(cmd.c_str());
 }
 
-int DDPython::execute(const std::string& cmd)  const   {
+int dd4hep::DDPython::execute(const std::string& cmd)  const   {
   return _execPy(cmd.c_str());
 }
 
-PyObject* DDPython::call(PyObject* method, PyObject* args)   {
-  DDPython::GILState state(0);
+PyObject* dd4hep::DDPython::call(PyObject* method, PyObject* args)   {
+  dd4hep::DDPython::GILState state(0);
   if ( PyCallable_Check(method) )   {
     PyObject* ret = ::PyObject_CallObject(method,args==Py_None ? NULL : args);
     return ret;
@@ -266,7 +263,7 @@ PyObject* DDPython::call(PyObject* method, PyObject* args)   {
   return 0;
 }
 
-TPyReturn DDPython::callC(PyObject* method, PyObject* args)   {
+TPyReturn dd4hep::DDPython::callC(PyObject* method, PyObject* args)   {
   if ( PyCallable_Check(method) )   {
     PyObject* arg = args==Py_None || args==0 ? 0 : args;
     PyObject* ret = ::PyObject_CallObject(method,arg);
@@ -279,11 +276,11 @@ TPyReturn DDPython::callC(PyObject* method, PyObject* args)   {
       return TPyReturn(ret);
     }
   }
-  throw runtime_error("DDPython::callC: Object is not callable!");
+  throw std::runtime_error("dd4hep::DDPython::callC: Object is not callable!");
 }
 
 /// Release python object
-void DDPython::releaseObject(PyObject*& obj)   {
+void dd4hep::DDPython::releaseObject(PyObject*& obj)   {
   if ( obj && ::Py_IsInitialized() )  {
     Py_DECREF(obj);
   }
@@ -291,7 +288,7 @@ void DDPython::releaseObject(PyObject*& obj)   {
 }
 
 /// Release python object
-void DDPython::assignObject(PyObject*& obj, PyObject* new_obj)   {
+void dd4hep::DDPython::assignObject(PyObject*& obj, PyObject* new_obj)   {
   if ( ::Py_IsInitialized() )  {
     if ( obj ) { Py_DECREF(obj); }
     if ( new_obj ){ Py_INCREF(new_obj); }
@@ -299,14 +296,14 @@ void DDPython::assignObject(PyObject*& obj, PyObject* new_obj)   {
   obj = new_obj;
 }
 
-void DDPython::prompt()  const   {
-  DDPython::GILState state(0);
+void dd4hep::DDPython::prompt()  const   {
+  dd4hep::DDPython::GILState state(0);
   ::PyRun_InteractiveLoop(stdin,const_cast<char*>("\0"));
 }
 
-void DDPython::afterFork()  const  {
+void dd4hep::DDPython::afterFork()  const  {
   if ( ::Py_IsInitialized() ) {
-    cout << "[INFO] Re-init python after forking....." << endl;
+    std::cout << "[INFO] Re-init python after forking....." << std::endl;
 #if PY_VERSION_HEX < 0x03070000
     ::PyOS_AfterFork();
 #else
@@ -319,21 +316,21 @@ void DDPython::afterFork()  const  {
   }
 }
 
-void DDPython::setMainThread()  {
+void dd4hep::DDPython::setMainThread()  {
   _mainThread = pthread_self();
 }
 
-bool DDPython::isMainThread()   {
+bool dd4hep::DDPython::isMainThread()   {
   return _mainThread == pthread_self();
 }
 
 /// Start the interpreter in normal mode without hacks like 'pythopn.exe' does.
-int DDPython::run_interpreter(int argc, char** argv)   {
+int dd4hep::DDPython::run_interpreter(int argc, char** argv)   {
 #if PY_VERSION_HEX < 0x03000000
   return ::Py_Main(argc, argv);
 #else
-  vector<wstring> wargs;
-  vector<const wchar_t*> wargv;
+  std::vector<std::wstring> wargs;
+  std::vector<const wchar_t*> wargv;
   for(int i=0; i<argc;++i)  {
     std::wstring wstr;
     if ( argv[i] )  {

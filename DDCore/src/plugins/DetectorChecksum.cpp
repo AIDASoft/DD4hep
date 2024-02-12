@@ -29,6 +29,7 @@
 #include <TColor.h>
 #include <TGeoBoolNode.h>
 #include <TGeoSystemOfUnits.h>
+
 // C/C++ include files
 #include <iostream>
 #include <sstream>
@@ -38,9 +39,10 @@
 #include <cfenv>
 
 using namespace dd4hep;
-using namespace dd4hep::detail;
+using DetectorChecksum = dd4hep::detail::DetectorChecksum;
 
 namespace {
+  
   bool is_volume(const TGeoVolume* volume)  {
     Volume v(volume);
     return v.data() != 0;

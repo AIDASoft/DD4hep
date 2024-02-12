@@ -14,19 +14,19 @@
 #define DD4HEP_MUST_USE_DETECTORIMP_H 1
 
 // Framework include files
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/GeoHandler.h"
-#include "DD4hep/DetectorHelper.h"
-#include "DD4hep/DetectorTools.h"
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/GeoHandler.h>
+#include <DD4hep/DetectorHelper.h>
+#include <DD4hep/DetectorTools.h>
 
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/detail/ObjectsInterna.h"
-#include "DD4hep/detail/DetectorInterna.h"
-#include "DD4hep/detail/VolumeManagerInterna.h"
-#include "DD4hep/detail/OpticalSurfaceManagerInterna.h"
-#include "DD4hep/DetectorImp.h"
-#include "DD4hep/DD4hepUnits.h"
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/detail/ObjectsInterna.h>
+#include <DD4hep/detail/DetectorInterna.h>
+#include <DD4hep/detail/VolumeManagerInterna.h>
+#include <DD4hep/detail/OpticalSurfaceManagerInterna.h>
+#include <DD4hep/DetectorImp.h>
+#include <DD4hep/DD4hepUnits.h>
 
 // C/C++ include files
 #include <iostream>
@@ -35,21 +35,19 @@
 #include <mutex>
 
 // ROOT inlcude files
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
-#include "TGeoSystemOfUnits.h"
-#endif
-#include "TGeoCompositeShape.h"
-#include "TGeoBoolNode.h"
-#include "TGeoManager.h"
-#include "TGeoMatrix.h"
-#include "TGeoVolume.h"
-#include "TGeoShape.h"
-#include "TClass.h"
+#include <TGeoSystemOfUnits.h>
+#include <TGeoCompositeShape.h>
+#include <TGeoBoolNode.h>
+#include <TGeoManager.h>
+#include <TGeoMatrix.h>
+#include <TGeoVolume.h>
+#include <TGeoShape.h>
+#include <TClass.h>
 
-#include "XML/DocumentHandler.h"
+#include <XML/DocumentHandler.h>
 
 #ifndef __TIXML__
-#include "xercesc/dom/DOMException.hpp"
+#include <xercesc/dom/DOMException.hpp>
 namespace dd4hep {
   namespace xml {
     typedef xercesc::DOMException XmlException;
@@ -58,12 +56,12 @@ namespace dd4hep {
 #endif
 
 using namespace dd4hep;
-using namespace std;
 
 ClassImp(DetectorImp)
 
 namespace {
-  recursive_mutex  s_detector_apply_lock;
+
+  std::recursive_mutex  s_detector_apply_lock;
 
   struct TypePreserve {
     DetectorBuildType& m_t;
@@ -76,16 +74,16 @@ namespace {
   };
 
   struct Instances  {
-    recursive_mutex  lock;
-    map<string, Detector*> detectors;
+    std::recursive_mutex  lock;
+    std::map<std::string, Detector*> detectors;
     Instances() = default;
     ~Instances()  {
     }
-    Detector* get(const string& name)   {
+    Detector* get(const std::string& name)   {
       auto i = detectors.find(name);
       return i == detectors.end() ? 0 : (*i).second;
     }
-    void insert(const string& name, Detector* detector)   {
+    void insert(const std::string& name, Detector* detector)   {
       auto i = detectors.find(name);
       if ( i == detectors.end() )   {
         detectors.emplace(name,detector);
@@ -93,7 +91,7 @@ namespace {
       }
       except("DD4hep","Cannot insert detector instance %s [Already present]",name.c_str());
     }
-    Detector* remove(const string& name)   {
+    Detector* remove(const std::string& name)   {
       auto i = detectors.find(name);
       if ( i != detectors.end() )  {
         Detector* det = (*i).second;
@@ -106,8 +104,8 @@ namespace {
   
   class DetectorGuard  final  {
   protected:
-    static pair<recursive_mutex, map<DetectorImp*, TGeoManager*> >& detector_lock()   {
-      static pair<recursive_mutex, map<DetectorImp*, TGeoManager*> > s_inst;
+    static std::pair<std::recursive_mutex, std::map<DetectorImp*, TGeoManager*> >& detector_lock()   {
+      static std::pair<std::recursive_mutex, std::map<DetectorImp*, TGeoManager*> > s_inst;
       return s_inst;
     }
     DetectorImp* detector {nullptr};
@@ -124,8 +122,8 @@ namespace {
       auto& lock = detector_lock();
       auto i = lock.second.find(detector);
       if ( i != lock.second.end() )   {
-	mgr = (*i).second;
-	lock.second.erase(i);
+        mgr = (*i).second;
+        lock.second.erase(i);
       }
       lock.first.unlock();
       return mgr;
@@ -138,19 +136,19 @@ namespace {
   }
 }
 
-string dd4hep::versionString(){
-  string vs("vXX-YY") ;
-  sprintf( &vs[0] , "v%2.2d-%2.2d", DD4HEP_MAJOR_VERSION, DD4HEP_MINOR_VERSION  ) ;
+std::string dd4hep::versionString(){
+  std::string vs("vXX-YY") ;
+  std::sprintf( &vs[0] , "v%2.2d-%2.2d", DD4HEP_MAJOR_VERSION, DD4HEP_MINOR_VERSION  ) ;
   return vs;
 }
 
-unique_ptr<Detector> Detector::make_unique(const std::string& name)   {
+std::unique_ptr<Detector> Detector::make_unique(const std::string& name)   {
   Detector* description = new DetectorImp(name);
-  return unique_ptr<Detector>(description);
+  return std::unique_ptr<Detector>(description);
 }
 
 Detector& Detector::getInstance(const std::string& name)   {
-  lock_guard<recursive_mutex> lock(detector_instances().lock);
+  std::lock_guard<std::recursive_mutex> lock(detector_instances().lock);
   Detector* description = detector_instances().get(name);
   if ( 0 == description )   {
     gGeoManager = 0;
@@ -162,7 +160,7 @@ Detector& Detector::getInstance(const std::string& name)   {
 
 /// Destroy the instance
 void Detector::destroyInstance(const std::string& name) {
-  lock_guard<recursive_mutex> lock(detector_instances().lock);
+  std::lock_guard<std::recursive_mutex> lock(detector_instances().lock);
   Detector* description = detector_instances().remove(name);
   if (description)
     delete description;
@@ -179,34 +177,21 @@ DetectorImp::DetectorImp()
 }
 
 /// Initializing constructor
-DetectorImp::DetectorImp(const string& name)
+DetectorImp::DetectorImp(const std::string& name)
   : TNamed(), DetectorData(), DetectorLoad(this), m_buildType(BUILD_NONE)
 {
-#if defined(DD4HEP_USE_GEANT4_UNITS) && ROOT_VERSION_CODE >= ROOT_VERSION(6,22,7)
-    printout(INFO,"DD4hep","++ Using globally Geant4 unit system (mm,ns,MeV)");
-    if ( TGeoManager::GetDefaultUnits() != TGeoManager::kG4Units )  {
-      TGeoManager::LockDefaultUnits(kFALSE);
-      TGeoManager::SetDefaultUnits(TGeoManager::kG4Units);
-      TGeoManager::LockDefaultUnits(kTRUE);
-    }
-#elif ROOT_VERSION_CODE >= ROOT_VERSION(6,22,7)
-    if ( TGeoManager::GetDefaultUnits() != TGeoManager::kRootUnits )  {
-      TGeoManager::LockDefaultUnits(kFALSE);
-      TGeoManager::SetDefaultUnits(TGeoManager::kRootUnits);
-      TGeoManager::LockDefaultUnits(kTRUE);
-    }
+#if defined(DD4HEP_USE_GEANT4_UNITS)
+  printout(INFO,"DD4hep","++ Using globally Geant4 unit system (mm,ns,MeV)");
+  if ( TGeoManager::GetDefaultUnits() != TGeoManager::kG4Units )  {
+    TGeoManager::LockDefaultUnits(kFALSE);
+    TGeoManager::SetDefaultUnits(TGeoManager::kG4Units);
+    TGeoManager::LockDefaultUnits(kTRUE);
+  }
 #else
-  static bool first = true;
-  if ( first )    {
-    first = false;
-#if defined(DD4HEP_USE_GEANT4_UNITS) && ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
-    printout(INFO,"DD4hep","++ Using globally Geant4 unit system (mm,ns,MeV)");
-    TGeoManager::SetDefaultG4Units();
-    TGeoUnit::setUnitType(TGeoUnit::kTGeant4Units);
-#elif ROOT_VERSION_CODE >= ROOT_VERSION(6,20,0)
-    TGeoManager::SetDefaultRootUnits();
-    TGeoUnit::setUnitType(TGeoUnit::kTGeoUnits);
-#endif
+  if ( TGeoManager::GetDefaultUnits() != TGeoManager::kRootUnits )  {
+    TGeoManager::LockDefaultUnits(kFALSE);
+    TGeoManager::SetDefaultUnits(TGeoManager::kRootUnits);
+    TGeoManager::LockDefaultUnits(kTRUE);
   }
 #endif
 
@@ -251,7 +236,7 @@ DetectorImp::DetectorImp(const string& name)
 DetectorImp::~DetectorImp() {
   DetectorGuard(this).lock(gGeoManager);
   if ( m_manager )  {
-    lock_guard<recursive_mutex> lock(detector_instances().lock);
+    std::lock_guard<std::recursive_mutex> lock(detector_instances().lock);
     if ( m_manager == gGeoManager ) gGeoManager = 0;
     Detector* description = detector_instances().get(GetName());
     if ( 0 != description )   {
@@ -280,10 +265,10 @@ Int_t DetectorImp::saveObject(const char *name, Int_t option, Int_t bufsize) con
     DetectorData::unpatchRootStreamer(TGeoNode::Class());
     return nbytes;
   }
-  catch (const exception& e) {
+  catch (const std::exception& e) {
     DetectorData::unpatchRootStreamer(TGeoVolume::Class());
     DetectorData::unpatchRootStreamer(TGeoNode::Class());
-    except("Detector","Exception %s while saving dd4hep::Detector object",e.what());
+    except("Detector","Exception %s while saving dd4hep::Detector object", e.what());
   }
   catch (...) {
     DetectorData::unpatchRootStreamer(TGeoVolume::Class());
@@ -315,7 +300,7 @@ void* DetectorImp::userExtension(unsigned long long int key, bool alert) const {
 }
 
 /// Register new mother volume using the detector name.
-void DetectorImp::declareParent(const string& detector_name, const DetElement& parent)  {
+void DetectorImp::declareParent(const std::string& detector_name, const DetElement& parent)  {
   if ( !detector_name.empty() )  {
     if ( parent.isValid() )  {
       auto i = m_detectorParents.find(detector_name);
@@ -343,7 +328,7 @@ void DetectorImp::declareParent(const string& detector_name, const DetElement& p
 /// Access mother volume by detector element
 Volume DetectorImp::pickMotherVolume(const DetElement& de) const {
   if ( de.isValid() )   {
-    string de_name = de.name();
+    std::string de_name = de.name();
     auto i = m_detectorParents.find(de_name);
     if (i == m_detectorParents.end())   {
       if ( m_worldVol.isValid() )  {
@@ -422,14 +407,14 @@ DetElement DetectorImp::detector(const std::string& name) const  {
 }
 
 Detector& DetectorImp::addDetector(const Handle<NamedObject>& ref_det) {
-  DetElement det_element(ref_det);
+  DetElement     det_element(ref_det);
   DetectorHelper helper(this);
-  DetElement existing_det = helper.detectorByID(det_element.id());
+  DetElement     existing_det = helper.detectorByID(det_element.id());
 
   if ( existing_det.isValid() )   {
     SensitiveDetector sd = helper.sensitiveDetector(existing_det);
     if ( sd.isValid() )   {
-      stringstream str;
+      std::stringstream str;
       str << "Detector: The sensitive sub-detectors " << det_element.name() << " and "
           << existing_det.name() << " have the identical ID:" << det_element.id() << ".";
       except("DD4hep",str.str());
@@ -439,9 +424,9 @@ Detector& DetectorImp::addDetector(const Handle<NamedObject>& ref_det) {
   det_element->flag |= DetElement::Object::IS_TOP_LEVEL_DETECTOR;
   PlacedVolume pv = det_element.placement();
   if ( !pv.isValid() )   {
-    stringstream str;
+    std::stringstream str;
     str << "Detector: Adding subdetectors with no valid placement is not allowed: "
-	<< det_element.name() << " ID:" << det_element.id() << ".";
+        << det_element.name() << " ID:" << det_element.id() << ".";
     except("DD4hep",str.str());
   }
   Volume volume = pv->GetMotherVolume();
@@ -464,7 +449,7 @@ Detector& DetectorImp::addDetector(const Handle<NamedObject>& ref_det) {
   // The detector's placement must be one of the existing detectors
   for(HandleMap::iterator idet = m_detectors.begin(); idet != m_detectors.end(); ++idet)  {
     DetElement parent((*idet).second);
-    Volume vol = parent.placement().volume();
+    Volume     vol = parent.placement().volume();
     if ( vol == volume )  {
       printout(INFO,"DD4hep","+++ Detector: Added detector %s to the parent:%s.",
                det_element.name(),parent.name());
@@ -473,7 +458,7 @@ Detector& DetectorImp::addDetector(const Handle<NamedObject>& ref_det) {
     }
   }
   except("DD4hep","+++ Detector: The detector %s has no known parent.", det_element.name());
-  throw runtime_error("Detector-Error"); // Never called....
+  throw std::runtime_error("Detector-Error"); // Never called....
 }
 
 /// Add a new constant by named reference to the detector description
@@ -488,38 +473,38 @@ Detector& DetectorImp::addConstant(const Handle<NamedObject>& x) {
 }
 
 /// Retrieve a constant by its name from the detector description
-Constant DetectorImp::constant(const string& name) const {
+Constant DetectorImp::constant(const std::string& name) const {
   if ( !m_inhibitConstants )   {
     return getRefChild(m_define, name);
   }
-  throw runtime_error("Detector:constant("+name+"): Access to global constants is inhibited.");
+  throw std::runtime_error("Detector:constant("+name+"): Access to global constants is inhibited.");
 }
 
 /// Typed access to constants: access string values
-string DetectorImp::constantAsString(const string& name) const {
+std::string DetectorImp::constantAsString(const std::string& name) const {
   if ( !m_inhibitConstants )   {
     Handle<NamedObject> c = constant(name);
     if (c.isValid())
       return c->GetTitle();
-    throw runtime_error("Detector:constantAsString: The constant " + name + " is not known to the system.");
+    throw std::runtime_error("Detector:constantAsString: The constant " + name + " is not known to the system.");
   }
-  throw runtime_error("Detector:constantAsString("+name+"):: Access to global constants is inhibited.");
+  throw std::runtime_error("Detector:constantAsString("+name+"):: Access to global constants is inhibited.");
 }
 
 /// Typed access to constants: long values
-long DetectorImp::constantAsLong(const string& name) const {
+long DetectorImp::constantAsLong(const std::string& name) const {
   if ( !m_inhibitConstants )   {
     return _toLong(constantAsString(name));
   }
-  throw runtime_error("Detector:constantAsLong("+name+"): Access to global constants is inhibited.");
+  throw std::runtime_error("Detector:constantAsLong("+name+"): Access to global constants is inhibited.");
 }
 
 /// Typed access to constants: double values
-double DetectorImp::constantAsDouble(const string& name) const {
+double DetectorImp::constantAsDouble(const std::string& name) const {
   if ( !m_inhibitConstants )   {
     return _toDouble(constantAsString(name));
   }
-  throw runtime_error("Detector:constantAsDouble("+name+"): Access to global constants is inhibited.");
+  throw std::runtime_error("Detector:constantAsDouble("+name+"): Access to global constants is inhibited.");
 }
 
 /// Add a field component by named reference to the detector description
@@ -530,12 +515,12 @@ Detector& DetectorImp::addField(const Handle<NamedObject>& x) {
 }
 
 /// Retrieve a matrial by its name from the detector description
-Material DetectorImp::material(const string& name) const {
+Material DetectorImp::material(const std::string& name) const {
   TGeoMedium* mat = m_manager->GetMedium(name.c_str());
   if (mat) {
     return Material(mat);
   }
-  throw runtime_error("Cannot find a material referenced by name:" + name);
+  throw std::runtime_error("Cannot find a material referenced by name:" + name);
 }
 
 /// Internal helper to map detector types once the geometry is closed
@@ -560,36 +545,36 @@ void DetectorImp::mapDetectorTypes()  {
 }
 
 /// Access the availible detector types
-vector<string> DetectorImp::detectorTypes() const  {
+std::vector<std::string> DetectorImp::detectorTypes() const  {
   if ( m_manager->IsClosed() ) {
-    vector<string> v;
+    std::vector<std::string> v;
     v.reserve(m_detectorTypes.size());
     for(const auto& t : m_detectorTypes )
       v.emplace_back(t.first);
     return v;
   }
-  throw runtime_error("detectorTypes: Call only available once the geometry is closed!");
+  throw std::runtime_error("detectorTypes: Call only available once the geometry is closed!");
 }
 
 /// Access a set of subdetectors according to the sensitive type.
-const vector<DetElement>& DetectorImp::detectors(const string& type, bool throw_exc) const {
+const std::vector<DetElement>& DetectorImp::detectors(const std::string& type, bool throw_exc) const {
   if ( m_manager->IsClosed() ) {
     DetectorTypeMap::const_iterator i=m_detectorTypes.find(type);
     if ( i != m_detectorTypes.end() ) return (*i).second;
     if ( throw_exc )  {
-      throw runtime_error("detectors("+type+"): Detectors of this type do not exist in the current setup!");
+      throw std::runtime_error("detectors("+type+"): Detectors of this type do not exist in the current setup!");
     }
     // return empty vector instead of exception
     return m_detectorTypes.at("") ;
   }
-  throw runtime_error("detectors("+type+"): Detectors can only selected by type once the geometry is closed!");
+  throw std::runtime_error("detectors("+type+"): Detectors can only selected by type once the geometry is closed!");
 }
 
-vector<DetElement> DetectorImp::detectors(unsigned int includeFlag, unsigned int excludeFlag ) const  {
+std::vector<DetElement> DetectorImp::detectors(unsigned int includeFlag, unsigned int excludeFlag ) const  {
   if( ! m_manager->IsClosed() ) {
-    throw runtime_error("detectors(typeFlag): Detectors can only selected by typeFlag once the geometry is closed!");
+    throw std::runtime_error("detectors(typeFlag): Detectors can only selected by typeFlag once the geometry is closed!");
   }
-  vector<DetElement> dets ;
+  std::vector<DetElement> dets ;
   dets.reserve( m_detectors.size() ) ;
   
   for(HandleMap::const_iterator i=m_detectors.begin(); i!=m_detectors.end(); ++i)   {
@@ -608,13 +593,13 @@ vector<DetElement> DetectorImp::detectors(unsigned int includeFlag, unsigned int
 }
 
 /// Access a set of subdetectors according to several sensitive types.
-vector<DetElement> DetectorImp::detectors(const string& type1,
-                                          const string& type2,
-                                          const string& type3,
-                                          const string& type4,
-                                          const string& type5 )  {
+std::vector<DetElement> DetectorImp::detectors(const std::string& type1,
+                                               const std::string& type2,
+                                               const std::string& type3,
+                                               const std::string& type4,
+                                               const std::string& type5 )  {
   if ( m_manager->IsClosed() ) {
-    vector<DetElement> v;
+    std::vector<DetElement> v;
     DetectorTypeMap::const_iterator i, end=m_detectorTypes.end();
     if ( !type1.empty() && (i=m_detectorTypes.find(type1)) != end )
       v.insert(v.end(),(*i).second.begin(),(*i).second.end());
@@ -628,10 +613,10 @@ vector<DetElement> DetectorImp::detectors(const string& type1,
       v.insert(v.end(),(*i).second.begin(),(*i).second.end());
     return v;
   }
-  throw runtime_error("detectors("+type1+","+type2+",...): Detectors can only selected by type once the geometry is closed!");
+  throw std::runtime_error("detectors("+type1+","+type2+",...): Detectors can only selected by type once the geometry is closed!");
 }
 
-Handle<NamedObject> DetectorImp::getRefChild(const HandleMap& e, const string& name, bool do_throw) const {
+Handle<NamedObject> DetectorImp::getRefChild(const HandleMap& e, const std::string& name, bool do_throw) const {
   HandleMap::const_iterator it = e.find(name);
   if (it != e.end()) {
     return it->second;
@@ -658,7 +643,7 @@ Handle<NamedObject> DetectorImp::getRefChild(const HandleMap& e, const string& n
       err << it->first;
     }
     err << "}";
-    throw runtime_error(err.str());
+    throw std::runtime_error(err.str());
   }
   return 0;
 }
@@ -673,7 +658,7 @@ namespace {
     void patchShapes() {
       auto&  data = *m_data;
       char   text[32];
-      string nam;
+      std::string nam;
       printout(INFO,"Detector","+++ Patching names of anonymous shapes....");
       for (auto i = data.rbegin(); i != data.rend(); ++i) {
         for( const TGeoNode* n : (*i).second )  {
@@ -693,7 +678,7 @@ namespace {
           }
           else {
             nam = sn;
-            if (nam.find("_shape") == string::npos)
+            if (nam.find("_shape") == std::string::npos)
               nam += text;
             s->SetName(nam.c_str());
           }
@@ -726,7 +711,7 @@ namespace {
 /// Finalize/close the geometry
 void DetectorImp::endDocument(bool close_geometry)    {
   TGeoManager* mgr = m_manager;
-  lock_guard<recursive_mutex> lock(s_detector_apply_lock);
+  std::lock_guard<std::recursive_mutex> lock(s_detector_apply_lock);
   if ( close_geometry && !mgr->IsClosed() )  {
 #if 0
     Region trackingRegion("TrackingRegion");
@@ -745,6 +730,13 @@ void DetectorImp::endDocument(bool close_geometry)    {
     // Since we allow now for anonymous shapes,
     // we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();
+    PlacedVolume pv = mgr->GetTopNode();
+    auto* extension = pv->GetUserExtension();
+    if ( nullptr == extension )   {
+      extension = new PlacedVolume::Object();
+      pv->SetUserExtension(extension);
+    }
+    m_world.setPlacement(pv);
   }
   // Patching shape names of anaonymous shapes
   ShapePatcher patcher(m_volManager, m_world);
@@ -758,7 +750,7 @@ void DetectorImp::endDocument(bool close_geometry)    {
 void DetectorImp::init() {
   if (!m_world.isValid()) {
     TGeoManager* mgr = m_manager;
-    lock_guard<recursive_mutex> lock(s_detector_apply_lock);
+    std::lock_guard<std::recursive_mutex> lock(s_detector_apply_lock);
     Constant     air_const = getRefChild(m_define, "Air", false);
     Constant     vac_const = getRefChild(m_define, "Vacuum", false);
     Box          worldSolid;
@@ -817,16 +809,16 @@ void DetectorImp::init() {
 }
 
 /// Read any geometry description or alignment file
-void DetectorImp::fromXML(const string& xmlfile, DetectorBuildType build_type) {
+void DetectorImp::fromXML(const std::string& xmlfile, DetectorBuildType build_type) {
   TypePreserve build_type_preserve(m_buildType = build_type);
-  lock_guard<recursive_mutex> lock(s_detector_apply_lock);
+  std::lock_guard<std::recursive_mutex> lock(s_detector_apply_lock);
   processXML(xmlfile,0);
 }
 
 /// Read any geometry description or alignment file with external XML entity resolution
-void DetectorImp::fromXML(const string& fname, xml::UriReader* entity_resolver, DetectorBuildType build_type)  {
+void DetectorImp::fromXML(const std::string& fname, xml::UriReader* entity_resolver, DetectorBuildType build_type)  {
   TypePreserve build_type_preserve(m_buildType = build_type);
-  lock_guard<recursive_mutex> lock(s_detector_apply_lock);
+  std::lock_guard<std::recursive_mutex> lock(s_detector_apply_lock);
   processXML(fname,entity_resolver);
 }
 
@@ -839,8 +831,8 @@ void DetectorImp::dump() const {
 
 /// Manipulate geometry using facroy converter
 long DetectorImp::apply(const char* factory_type, int argc, char** argv)   const   {
-  lock_guard<recursive_mutex> lock(s_detector_apply_lock);
-  string fac = factory_type;
+  std::lock_guard<std::recursive_mutex> lock(s_detector_apply_lock);
+  std::string fac = factory_type;
   try {
     Detector* thisPtr = const_cast<DetectorImp*>(this);
     long result = PluginService::Create<long>(fac, thisPtr, argc, argv);
@@ -848,24 +840,24 @@ long DetectorImp::apply(const char* factory_type, int argc, char** argv)   const
       PluginDebug dbg;
       result = PluginService::Create<long>(fac, thisPtr, argc, argv);
       if ( 0 == result )  {
-        throw runtime_error("dd4hep: apply-plugin: Failed to locate plugin " +
-                            fac + ". " + dbg.missingFactory(fac));
+        throw std::runtime_error("dd4hep: apply-plugin: Failed to locate plugin " +
+                                 fac + ". " + dbg.missingFactory(fac));
       }
     }
     result = *(long*) result;
     if (result != 1) {
-      throw runtime_error("dd4hep: apply-plugin: Failed to execute plugin " + fac);
+      throw std::runtime_error("dd4hep: apply-plugin: Failed to execute plugin " + fac);
     }
     return result;
   }
   catch (const xml::XmlException& e) {
-    throw runtime_error(xml::_toString(e.msg) + "\ndd4hep: XML-DOM Exception with plugin:" + fac);
+    throw std::runtime_error(xml::_toString(e.msg) + "\ndd4hep: XML-DOM Exception with plugin:" + fac);
   }
-  catch (const exception& e) {
-    throw runtime_error(string(e.what()) + "\ndd4hep: with plugin:" + fac);
+  catch (const std::exception& e) {
+    throw std::runtime_error(std::string(e.what()) + "\ndd4hep: with plugin:" + fac);
   }
   catch (...) {
-    throw runtime_error("UNKNOWN exception from plugin:" + fac);
+    throw std::runtime_error("UNKNOWN exception from plugin:" + fac);
   }
   return EINVAL;
 }

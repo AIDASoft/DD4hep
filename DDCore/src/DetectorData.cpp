@@ -12,24 +12,22 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Grammar.h"
-#include "DD4hep/DetectorData.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/detail/ObjectsInterna.h"
-#include "DD4hep/detail/DetectorInterna.h"
+#include <DD4hep/Grammar.h>
+#include <DD4hep/DetectorData.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/detail/ObjectsInterna.h>
+#include <DD4hep/detail/DetectorInterna.h>
 
 // ROOT include files
-#include "TGeoManager.h"
-#include "TClassStreamer.h"
-#include "TDataMember.h"
-#include "TDataType.h"
-#include "TClass.h"
-#include "TROOT.h"
-
+#include <TGeoManager.h>
+#include <TClassStreamer.h>
+#include <TDataMember.h>
+#include <TDataType.h>
+#include <TClass.h>
+#include <TROOT.h>
 
 namespace dd4hep {  namespace detail {    class DetectorImp;  }}
 
-using namespace dd4hep::detail;
 using namespace dd4hep;
 
 namespace {
@@ -212,17 +210,17 @@ void DetectorData::destroyData(bool destroy_mgr)   {
   m_extensions.clear();
   m_detectorParents.clear();
 
-  destroyHandle(m_world);
-  destroyHandle(m_field);
-  destroyHandle(m_header);
-  destroyHandles(m_readouts);
-  destroyHandles(m_idDict);
-  destroyHandles(m_limits);
-  destroyHandles(m_regions);
-  destroyHandles(m_sensitive);
-  destroyHandles(m_display);
-  destroyHandles(m_fields);
-  destroyHandles(m_define);
+  detail::destroyHandle(m_world);
+  detail::destroyHandle(m_field);
+  detail::destroyHandle(m_header);
+  detail::destroyHandles(m_readouts);
+  detail::destroyHandles(m_idDict);
+  detail::destroyHandles(m_limits);
+  detail::destroyHandles(m_regions);
+  detail::destroyHandles(m_sensitive);
+  detail::destroyHandles(m_display);
+  detail::destroyHandles(m_fields);
+  detail::destroyHandles(m_define);
 #if 0
   for(const auto& def : m_define)   {
     auto c = def;
@@ -231,7 +229,7 @@ void DetectorData::destroyData(bool destroy_mgr)   {
     delete def.second.ptr();
   }
 #endif  
-  destroyHandle(m_volManager);
+  detail::destroyHandle(m_volManager);
   m_properties.clear();
   m_trackers.clear();
   m_trackingVol.clear();
@@ -243,7 +241,7 @@ void DetectorData::destroyData(bool destroy_mgr)   {
   m_inhibitConstants = false;
   if ( destroy_mgr )  {
     gGeoManager = m_manager;
-    deletePtr(m_manager);
+    detail::deletePtr(m_manager);
     gGeoManager = 0;
   }
   else  {

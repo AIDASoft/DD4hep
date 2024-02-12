@@ -12,50 +12,49 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/View.h"
-#include "DDEve/Display.h"
-#include "DDEve/ViewMenu.h"
-#include "DDEve/DD4hepMenu.h"
-#include "DDEve/ElementList.h"
-#include "DDEve/GenericEventHandler.h"
-#include "DDEve/EveShapeContextMenu.h"
-#include "DDEve/EvePgonSetProjectedContextMenu.h"
-#include "DDEve/Utilities.h"
-#include "DDEve/DDEveEventData.h"
-#include "DDEve/HitActors.h"
-#include "DDEve/ParticleActors.h"
+#include <DDEve/View.h>
+#include <DDEve/Display.h>
+#include <DDEve/ViewMenu.h>
+#include <DDEve/DD4hepMenu.h>
+#include <DDEve/ElementList.h>
+#include <DDEve/GenericEventHandler.h>
+#include <DDEve/EveShapeContextMenu.h>
+#include <DDEve/EvePgonSetProjectedContextMenu.h>
+#include <DDEve/Utilities.h>
+#include <DDEve/DDEveEventData.h>
+#include <DDEve/HitActors.h>
+#include <DDEve/ParticleActors.h>
 
-#include "DD4hep/Detector.h"
-#include "DD4hep/DetectorData.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/DetectorData.h>
+#include <DD4hep/Printout.h>
 
 // ROOT include files
-#include "TROOT.h"
-#include "TH2.h"
-#include "TFile.h"
-#include "TSystem.h"
-#include "TGTab.h"
-#include "TGMsgBox.h"
-#include "TGClient.h"
-#include "TGFileDialog.h"
-#include "TEveScene.h"
-#include "TEveBrowser.h"
-#include "TEveManager.h"
-#include "TEveCaloData.h"
-#include "TEveCalo.h"
-#include "TEveViewer.h"
-#include "TEveCompound.h"
-#include "TEveBoxSet.h"
-#include "TEvePointSet.h"
-#include "TEveGeoShape.h"
-#include "TEveTrackPropagator.h"
-#include "TGeoManager.h"
+#include <TROOT.h>
+#include <TH2.h>
+#include <TFile.h>
+#include <TSystem.h>
+#include <TGTab.h>
+#include <TGMsgBox.h>
+#include <TGClient.h>
+#include <TGFileDialog.h>
+#include <TEveScene.h>
+#include <TEveBrowser.h>
+#include <TEveManager.h>
+#include <TEveCaloData.h>
+#include <TEveCalo.h>
+#include <TEveViewer.h>
+#include <TEveCompound.h>
+#include <TEveBoxSet.h>
+#include <TEvePointSet.h>
+#include <TEveGeoShape.h>
+#include <TEveTrackPropagator.h>
+#include <TGeoManager.h>
 
 // C/C++ include files
 #include <stdexcept>
 #include <climits>
 
-using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::detail;
 
@@ -147,7 +146,7 @@ void Display::LoadXML(const char* xmlFile)     {
 
 /// Load geometry from compact xml file
 void Display::LoadGeometryRoot(const char* /* rootFile */)     {
-  throw runtime_error("This call is not implemented !");
+  throw std::runtime_error("This call is not implemented !");
 }
 
 /// Load geometry with panel
@@ -170,7 +169,7 @@ GenericEventHandler& Display::eventHandler() const   {
   if ( m_evtHandler )  {
     return *m_evtHandler;
   }
-  throw runtime_error("Invalid event handler");
+  throw std::runtime_error("Invalid event handler");
 }
 
 /// Add new menu to the main menu bar
@@ -194,15 +193,15 @@ void Display::ImportConfiguration(const DisplayConfiguration& config)   {
 }
 
 /// Access to calo data histograms by name as defined in the configuration
-Display::CalodataContext& Display::GetCaloHistogram(const string& nam)   {
+Display::CalodataContext& Display::GetCaloHistogram(const std::string& nam)   {
   Calodata::iterator i = m_calodata.find(nam);
   if ( i == m_calodata.end() )  {
     DataConfigurations::const_iterator j = m_calodataConfigs.find(nam);
     if ( j != m_calodataConfigs.end() )   {
       CalodataContext ctx;
       ctx.config = (*j).second;
-      string use = ctx.config.use;
-      string hits = ctx.config.hits;
+      std::string use = ctx.config.use;
+      std::string hits = ctx.config.hits;
       if ( use.empty() )  {
         const char* n = nam.c_str();
         const DisplayConfiguration::Calodata& cd = (*j).second.data.calodata;
@@ -239,19 +238,19 @@ Display::CalodataContext& Display::GetCaloHistogram(const string& nam)   {
       i = m_calodata.emplace(nam,ctx).first;
       return (*i).second;      
     }
-    throw runtime_error("Cannot access calodata configuration "+nam);
+    throw std::runtime_error("Cannot access calodata configuration "+nam);
   }
   return (*i).second;
 }
 
 /// Access a data filter by name. Data filters are used to customize views
-const Display::ViewConfig* Display::GetViewConfiguration(const string& nam)  const   {
+const Display::ViewConfig* Display::GetViewConfiguration(const std::string& nam)  const   {
   ViewConfigurations::const_iterator i = m_viewConfigs.find(nam);
   return (i == m_viewConfigs.end()) ? 0 : &((*i).second);
 }
 
 /// Access a data filter by name. Data filters are used to customize calodatas
-const Display::DataConfig* Display::GetCalodataConfiguration(const string& nam)  const   {
+const Display::DataConfig* Display::GetCalodataConfiguration(const std::string& nam)  const   {
   DataConfigurations::const_iterator i = m_calodataConfigs.find(nam);
   return (i == m_calodataConfigs.end()) ? 0 : &((*i).second);
 }
@@ -270,12 +269,8 @@ void Display::UnregisterEvents(View* view)   {
 }
 
 /// Open standard message box
-void Display::MessageBox(PrintLevel level, const string& text, const string& title) const   {
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,9,2)
-  string path = TString::Format("%s/", TROOT::GetIconPath().Data()).Data();
-#else
-  string path = TString::Format("%s/icons/", gSystem->Getenv("ROOTSYS")).Data();
-#endif
+void Display::MessageBox(PrintLevel level, const std::string& text, const std::string& title) const   {
+  std::string path = TString::Format("%s/", TROOT::GetIconPath().Data()).Data();
   const TGPicture* pic = 0;
   if ( level == VERBOSE )
     pic = client().GetPicture((path+"mb_asterisk_s.xpm").c_str());
@@ -294,7 +289,7 @@ void Display::MessageBox(PrintLevel level, const string& text, const string& tit
 }
 
 /// Popup XML file chooser. returns chosen file name; empty on cancel
-string Display::OpenXmlFileDialog(const string& default_dir)   const {
+std::string Display::OpenXmlFileDialog(const std::string& default_dir)   const {
   static const char *evtFiletypes[] = { 
     "xml files",    "*.xml",
     "XML files",    "*.XML",
@@ -307,7 +302,7 @@ string Display::OpenXmlFileDialog(const string& default_dir)   const {
   fi.fFilename  = 0;
   new TGFileDialog(client().GetRoot(), 0, kFDOpen, &fi);
   if ( fi.fFilename ) {
-    string ret = fi.fFilename;
+    std::string ret = fi.fFilename;
     if ( ret.find("file:") != 0 ) return "file:"+ret;
     return ret;
   }
@@ -315,7 +310,7 @@ string Display::OpenXmlFileDialog(const string& default_dir)   const {
 }
 
 /// Popup ROOT file chooser. returns chosen file name; empty on cancel
-string Display::OpenEventFileDialog(const string& default_dir)   const {
+std::string Display::OpenEventFileDialog(const std::string& default_dir)   const {
   static const char *evtFiletypes[] = { 
     "ROOT files",    "*.root",
     "SLCIO files",   "*.slcio",
@@ -353,7 +348,7 @@ void Display::BuildMenus(TGMenuBar* menubar)   {
 TFile* Display::Open(const char* name) const   {
   TFile* f = TFile::Open(name);
   if ( f && !f->IsZombie() ) return f;
-  throw runtime_error("+++ Failed to open ROOT file:"+string(name));
+  throw std::runtime_error("+++ Failed to open ROOT file:"+std::string(name));
 }
 
 /// Consumer event data
@@ -363,7 +358,7 @@ void Display::OnFileOpen(EventHandler& /* handler */ )   {
 /// Consumer event data
 void Display::OnNewEvent(EventHandler& handler )   {
   typedef EventHandler::TypedEventCollections Types;
-  typedef vector<EventHandler::Collection> Collections;
+  typedef std::vector<EventHandler::Collection> Collections;
   const Types& types = handler.data();
   TEveElement* particles = 0;
 
@@ -372,38 +367,38 @@ void Display::OnNewEvent(EventHandler& handler )   {
   for(Types::const_iterator ityp=types.begin(); ityp!=types.end(); ++ityp)  {
     const Collections& colls = (*ityp).second;
     for(Collections::const_iterator j=colls.begin(); j!=colls.end(); ++j)   {
-      size_t len = (*j).second;
+      std::size_t len = (*j).second;
       if ( len > 0 )   {
-	const char* nam = (*j).first;
-	DataConfigurations::const_iterator icfg = m_collectionsConfigs.find(nam);
-	DataConfigurations::const_iterator cfgend = m_collectionsConfigs.end();
+        const char* nam = (*j).first;
+        DataConfigurations::const_iterator icfg = m_collectionsConfigs.find(nam);
+        DataConfigurations::const_iterator cfgend = m_collectionsConfigs.end();
         EventHandler::CollectionType typ = handler.collectionType(nam);
         if ( typ == EventHandler::CALO_HIT_COLLECTION ||
              typ == EventHandler::TRACKER_HIT_COLLECTION )  {
           if ( icfg != cfgend )  {
             const DataConfig& cfg = (*icfg).second;
-	    if ( ::toupper(cfg.use[0]) == 'T' || ::toupper(cfg.use[0]) == 'Y' )  {
-	      if ( cfg.hits == "PointSet" )  {
-		PointsetCreator cr(nam,len,cfg);
-		handler.collectionLoop((*j).first, cr);
-		ImportEvent(cr.element());
-	      }
-	      else if ( cfg.hits == "BoxSet" )  {
-		BoxsetCreator cr(nam,len,cfg);
-		handler.collectionLoop((*j).first, cr);
-		ImportEvent(cr.element());
-	      }
-	      else if ( cfg.hits == "TowerSet" )  {
-		TowersetCreator cr(nam,len,cfg);
-		handler.collectionLoop((*j).first, cr);
-		ImportEvent(cr.element());
-	      }
-	      else {  // Default is point set
-		PointsetCreator cr(nam,len);
-		handler.collectionLoop((*j).first, cr);
-		ImportEvent(cr.element());
-	      }
-	    }
+            if ( ::toupper(cfg.use[0]) == 'T' || ::toupper(cfg.use[0]) == 'Y' )  {
+              if ( cfg.hits == "PointSet" )  {
+                PointsetCreator cr(nam,len,cfg);
+                handler.collectionLoop((*j).first, cr);
+                ImportEvent(cr.element());
+              }
+              else if ( cfg.hits == "BoxSet" )  {
+                BoxsetCreator cr(nam,len,cfg);
+                handler.collectionLoop((*j).first, cr);
+                ImportEvent(cr.element());
+              }
+              else if ( cfg.hits == "TowerSet" )  {
+                TowersetCreator cr(nam,len,cfg);
+                handler.collectionLoop((*j).first, cr);
+                ImportEvent(cr.element());
+              }
+              else {  // Default is point set
+                PointsetCreator cr(nam,len);
+                handler.collectionLoop((*j).first, cr);
+                ImportEvent(cr.element());
+              }
+            }
           }
           else  {
             PointsetCreator cr(nam,len);
@@ -417,21 +412,21 @@ void Display::OnNewEvent(EventHandler& handler )   {
           // last track is gone ie. when we re-initialize the event scene
 
           // $$$ Do not know exactly what the field parameters mean
-	  if ( (icfg=m_collectionsConfigs.find("StartVertexPoints")) != cfgend )   {
-	    StartVertexCreator cr("StartVertexPoints", len, (*icfg).second);
-	    handler.collectionLoop((*j).first, cr);
-	    printout(INFO,"Display","+++ StartVertexPoints: Filled %d start vertex points.....",cr.count);
-	    ImportEvent(cr.element());
-	  }
-	  if ( (icfg=m_collectionsConfigs.find("MCParticles")) != cfgend )   {
-	    MCParticleCreator cr(new TEveTrackPropagator("","",new TEveMagFieldDuo(350, -3.5, 2.0)),
-				 new TEveCompound("MC_Particles","MC_Particles"),
-				 icfg == cfgend ? 0 : &((*icfg).second));
-	    handler.collectionLoop((*j).first, cr);
-	    printout(INFO,"Display","+++ StartVertexPoints: Filled %d patricle tracks.....",cr.count);
-	    cr.close();
-	    particles = cr.particles;
-	  }
+          if ( (icfg=m_collectionsConfigs.find("StartVertexPoints")) != cfgend )   {
+            StartVertexCreator cr("StartVertexPoints", len, (*icfg).second);
+            handler.collectionLoop((*j).first, cr);
+            printout(INFO,"Display","+++ StartVertexPoints: Filled %d start vertex points.....",cr.count);
+            ImportEvent(cr.element());
+          }
+          if ( (icfg=m_collectionsConfigs.find("MCParticles")) != cfgend )   {
+            MCParticleCreator cr(new TEveTrackPropagator("","",new TEveMagFieldDuo(350, -3.5, 2.0)),
+                                 new TEveCompound("MC_Particles","MC_Particles"),
+                                 icfg == cfgend ? 0 : &((*icfg).second));
+            handler.collectionLoop((*j).first, cr);
+            printout(INFO,"Display","+++ StartVertexPoints: Filled %d patricle tracks.....",cr.count);
+            cr.close();
+            particles = cr.particles;
+          }
         }
       }
     }
@@ -442,7 +437,7 @@ void Display::OnNewEvent(EventHandler& handler )   {
     CalodataContext& ctx = (*i).second;
     TH2F* h = ctx.eveHist->GetHist(0);
     EtaPhiHistogramActor actor(h);
-    size_t n = eventHandler().collectionLoop(ctx.config.hits, actor);
+    std::size_t n = eventHandler().collectionLoop(ctx.config.hits, actor);
     ctx.eveHist->DataChanged();
     printout(INFO,"FillEtaPhiHistogram","+++ %s: Filled %ld hits from %s....",
              ctx.calo3D->GetName(), n, ctx.config.hits.c_str());
@@ -467,7 +462,7 @@ TEveElementList& Display::GetGeo()   {
 }
 
 /// Access/Create a topic by name
-TEveElementList& Display::GetGeoTopic(const string& name)    {
+TEveElementList& Display::GetGeoTopic(const std::string& name)    {
   Topics::iterator i=m_geoTopics.find(name);
   if ( i == m_geoTopics.end() )  {
     TEveElementList* topic = new ElementList(name.c_str(), name.c_str(), true, true);
@@ -479,16 +474,16 @@ TEveElementList& Display::GetGeoTopic(const string& name)    {
 }
 
 /// Access/Create a topic by name. Throws exception if the topic does not exist
-TEveElementList& Display::GetGeoTopic(const string& name) const   {
+TEveElementList& Display::GetGeoTopic(const std::string& name) const   {
   Topics::const_iterator i=m_geoTopics.find(name);
   if ( i == m_geoTopics.end() )  {
-    throw runtime_error("Display: Attempt to access non-existing geometry topic:"+name);
+    throw std::runtime_error("Display: Attempt to access non-existing geometry topic:"+name);
   }
   return *((*i).second);
 }
 
 /// Access/Create a topic by name
-TEveElementList& Display::GetEveTopic(const string& name)    {
+TEveElementList& Display::GetEveTopic(const std::string& name)    {
   Topics::iterator i=m_eveTopics.find(name);
   if ( i == m_eveTopics.end() )  {
     TEveElementList* topic = new ElementList(name.c_str(), name.c_str(), true, true);
@@ -500,10 +495,10 @@ TEveElementList& Display::GetEveTopic(const string& name)    {
 }
 
 /// Access/Create a topic by name. Throws exception if the topic does not exist
-TEveElementList& Display::GetEveTopic(const string& name) const   {
+TEveElementList& Display::GetEveTopic(const std::string& name) const   {
   Topics::const_iterator i=m_eveTopics.find(name);
   if ( i == m_eveTopics.end() )  {
-    throw runtime_error("Display: Attempt to access non-existing event topic:"+name);
+    throw std::runtime_error("Display: Attempt to access non-existing event topic:"+name);
   }
   return *((*i).second);
 }
@@ -514,12 +509,12 @@ void Display::ImportGeo(TEveElement* el)   {
 }
 
 /// Call to import geometry elements by topic
-void Display::ImportGeo(const string& topic, TEveElement* el)  { 
+void Display::ImportGeo(const std::string& topic, TEveElement* el)  { 
   GetGeoTopic(topic).AddElement(el);
 }
 
 /// Call to import event elements by topic
-void Display::ImportEvent(const string& topic, TEveElement* el)  { 
+void Display::ImportEvent(const std::string& topic, TEveElement* el)  { 
   GetEveTopic(topic).AddElement(el);
 }
 
@@ -547,7 +542,7 @@ void Display::LoadGeoChildren(TEveElement* start, int levels, bool redraw)  {
         DetElement de = (*i).second;
         SensitiveDetector sd = m_detDesc->sensitiveDetector(de.name());
         TEveElementList& parent = sd.isValid() ? sens : struc;
-        pair<bool,TEveElement*> e = Utilities::LoadDetElement(de,levels,&parent);
+        std::pair<bool,TEveElement*> e = Utilities::LoadDetElement(de,levels,&parent);
         if ( e.second && e.first )  {
           parent.AddElement(e.second);
         }
@@ -561,7 +556,7 @@ void Display::LoadGeoChildren(TEveElement* start, int levels, bool redraw)  {
         const char* node_name = n->GetName();
         int level = Utilities::findNodeWithMatrix(detectorDescription().world().placement().ptr(),n,&mat);
         if ( level > 0 )   {
-          pair<bool,TEveElement*> e(false,0);
+          std::pair<bool,TEveElement*> e(false,0);
           const DetElement::Children& c = world.children();
           for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
             DetElement de = (*i).second;

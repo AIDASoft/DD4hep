@@ -12,38 +12,36 @@
 //==========================================================================
 
 // Framework include files
-#include "DDCond/Type1/Manager_Type1.h"
+#include <DDCond/Type1/Manager_Type1.h>
 
-#include "DD4hep/Detector.h"
-#include "DD4hep/World.h"
-#include "DD4hep/Errors.h"
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Factories.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/PluginCreators.h"
-#include "DD4hep/ConditionsListener.h"
-#include "DD4hep/detail/Handle.inl"
-#include "DD4hep/detail/DetectorInterna.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/World.h>
+#include <DD4hep/Errors.h>
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Factories.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/PluginCreators.h>
+#include <DD4hep/ConditionsListener.h>
+#include <DD4hep/detail/Handle.inl>
+#include <DD4hep/detail/DetectorInterna.h>
+#include <DD4hep/detail/ConditionsInterna.h>
 
-#include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsEntry.h"
-#include "DDCond/ConditionsCleanup.h"
-#include "DDCond/ConditionsManager.h"
-#include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsDataLoader.h"
+#include <DDCond/ConditionsPool.h>
+#include <DDCond/ConditionsEntry.h>
+#include <DDCond/ConditionsCleanup.h>
+#include <DDCond/ConditionsManager.h>
+#include <DDCond/ConditionsIOVPool.h>
+#include <DDCond/ConditionsDataLoader.h>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 typedef UpdatePool::UpdateEntries Updates;
-typedef RangeConditions RC;
+typedef dd4hep::RangeConditions RC;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(Manager_Type1);
 
-static void* ddcond_create_manager_instance(Detector& description, int, char**)  {
+static void* ddcond_create_manager_instance(dd4hep::Detector& description, int, char**)  {
   return (ConditionsManagerObject*)new Manager_Type1(description);
 }
 DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsManager_Type1,ddcond_create_manager_instance)
@@ -54,15 +52,15 @@ namespace {
   struct Range {};
   struct Discrete {};
 
-  int s_debug = INFO;
+  int s_debug = dd4hep::INFO;
 
   /// Helper: IOV Check function declaration
-  template <typename T> const IOVType* check_iov_type(const Manager_Type1* o, const IOV* iov);
+  template <typename T> const dd4hep::IOVType* check_iov_type(const Manager_Type1* o, const dd4hep::IOV* iov);
 
   /// Helper: Specialized IOV check
-  template <> const IOVType* check_iov_type<void>(const Manager_Type1* o, const IOV* iov)   {
+  template <> const dd4hep::IOVType* check_iov_type<void>(const Manager_Type1* o, const dd4hep::IOV* iov)   {
     if ( iov )  {
-      const IOVType* typ = iov->iovType ? iov->iovType : o->iovType(iov->type);
+      const dd4hep::IOVType* typ = iov->iovType ? iov->iovType : o->iovType(iov->type);
       if ( typ )  {
         if ( iov->type == typ->type )  {
           if ( typ->type < o->m_rawPool.size() )  {
@@ -77,45 +75,45 @@ namespace {
   }
 
   /// Helper: Specialized IOV check for discrete IOV values
-  template <> const IOVType* check_iov_type<Discrete>(const Manager_Type1* o, const IOV* iov)   {
-    const IOVType* typ = check_iov_type<void>(o,iov);
+  template <> const dd4hep::IOVType* check_iov_type<Discrete>(const Manager_Type1* o, const dd4hep::IOV* iov)   {
+    const dd4hep::IOVType* typ = check_iov_type<void>(o,iov);
     if ( typ && !iov->has_range() ) return typ;
     return 0;
   }
 #if 0
   /// Helper: Specialized IOV check for range IOV values
-  template <> const IOVType* check_iov_type<Range>(const Manager_Type1* o, const IOV* iov)   {
-    const IOVType* typ = check_iov_type<void>(o,iov);
+  template <> const dd4hep::IOVType* check_iov_type<Range>(const Manager_Type1* o, const dd4hep::IOV* iov)   {
+    const dd4hep::IOVType* typ = check_iov_type<void>(o,iov);
     if ( typ && iov->has_range() ) return typ;
     return 0;
   }
 #endif
   /// Helper: Check conditions result for consistency
-  template <typename T> void __check_values__(const Manager_Type1* o, Condition::key_type key, const IOV* iov)  
+  template <typename T> void __check_values__(const Manager_Type1* o, dd4hep::Condition::key_type key, const dd4hep::IOV* iov)  
   {
     if ( !iov )  {
-      except("ConditionsMgr","+++ Invalid IOV to access condition: %16llX. [Null-reference]",key);
+      dd4hep::except("ConditionsMgr","+++ Invalid IOV to access condition: %16llX. [Null-reference]",key);
     }
-    const IOVType* typ = check_iov_type<T>(o,iov);
+    const dd4hep::IOVType* typ = check_iov_type<T>(o,iov);
     if ( !typ )  {
       // Severe: We have an unknown IOV type. This is not allowed, 
       // because we do not known hot to handle it.....
-      except("ConditionsMgr","+++ Invalid IOV type [%d] to access condition: %16llX.",
-             iov->type, key);
+      dd4hep::except("ConditionsMgr","+++ Invalid IOV type [%d] to access condition: %16llX.",
+                     iov->type, key);
     }
   }
 
   /// Helper: Check if the conditions range covers the entire IOV span
-  bool is_range_complete(const IOV& iov, const RC& conditions)  {
+  bool is_range_complete(const dd4hep::IOV& iov, const RC& conditions)  {
     if ( !conditions.empty() )  {
       // We need to check if the entire range is covered.
       // For every key.second we must find a key.first, which is at least as big
-      IOV::Key test=iov.keyData;
+      dd4hep::IOV::Key test=iov.keyData;
       // The range may be returned unordered. Hence, 
       // we have to try to match at most conditions.size() times until we really know
-      for(size_t j = 0; j < conditions.size(); ++j )  {
+      for( std::size_t j = 0; j < conditions.size(); ++j )  {
         for(const auto& cond : conditions )   {
-          const IOV::Key& k = cond->iov->key();
+          const dd4hep::IOV::Key& k = cond->iov->key();
           if ( k.first   <= test.first+1 && k.second >= test.first  ) test.first = k.second;
           if ( k.first+1 <= test.second  && k.second >= test.second ) test.second = k.first;
           //printout(INFO,"Test","IOV: %ld,%ld --> %ld,%ld",k.first,k.second, test.first, test.second);
@@ -128,7 +126,7 @@ namespace {
   }
 
   template <typename PMF>
-  void __callListeners(const Manager_Type1::Listeners& listeners, PMF pmf, Condition& cond)  {
+  void __callListeners(const Manager_Type1::Listeners& listeners, PMF pmf, dd4hep::Condition& cond)  {
     for(const auto& listener : listeners )
       (listener.first->*pmf)(cond, listener.second);
   }
@@ -157,7 +155,7 @@ Manager_Type1::~Manager_Type1()   {
 
 void Manager_Type1::initialize()  {
   if ( !m_updatePool.get() )  {
-    string typ = m_loaderType;
+    std::string typ = m_loaderType;
     const void* argv_loader[] = {"ConditionsDataLoader", this, 0};
     const void* argv_pool[] = {this, 0, 0};
     m_loader.reset(createPlugin<ConditionsDataLoader>(typ,m_detDesc,2,argv_loader));
@@ -173,13 +171,14 @@ void Manager_Type1::initialize()  {
 }
 
 /// Register new IOV type if it does not (yet) exist.
-pair<bool, const IOVType*> Manager_Type1::registerIOVType(size_t iov_index, const string& iov_name)   {
+std::pair<bool, const dd4hep::IOVType*>
+Manager_Type1::registerIOVType(std::size_t iov_index, const std::string& iov_name)   {
   if ( iov_index<m_iovTypes.size() )  {
     IOVType& typ = m_iovTypes[iov_index];
     bool eq_type = typ.type == iov_index;
     bool eq_name = typ.name == iov_name;
     if ( eq_type && eq_name )  {
-      return make_pair(false,&typ);
+      return { false, &typ };
     }
     else if ( typ.type != 0 && eq_type && !eq_name )  {
       except("ConditionsMgr","Cannot register IOV %s. Type %d already in use!",
@@ -188,15 +187,15 @@ pair<bool, const IOVType*> Manager_Type1::registerIOVType(size_t iov_index, cons
     typ.name = iov_name;
     typ.type = iov_index;
     m_rawPool[typ.type] = new ConditionsIOVPool(&typ);
-    return make_pair(true,&typ);
+    return { true, &typ };
   }
   except("ConditionsMgr","Cannot register IOV section %d of type %d. Value out of bounds: [%d,%d]",
          iov_name.c_str(), iov_index, 0, int(m_iovTypes.size()));
-  return make_pair(false,(IOVType*)0);
+  return { false, nullptr };
 }
 
 /// Access IOV by its type
-const IOVType* Manager_Type1::iovType (size_t iov_index) const  {
+const dd4hep::IOVType* Manager_Type1::iovType (size_t iov_index) const  {
   if ( iov_index<m_iovTypes.size() )  {
     const IOVType& typ = m_iovTypes[iov_index];
     if ( typ.type == iov_index ) return &typ;
@@ -206,7 +205,7 @@ const IOVType* Manager_Type1::iovType (size_t iov_index) const  {
 }
 
 /// Access IOV by its name
-const IOVType* Manager_Type1::iovType (const string& iov_name) const   {
+const dd4hep::IOVType* Manager_Type1::iovType (const std::string& iov_name) const   {
   for( const auto& i : m_iovTypes ) 
     if ( i.name == iov_name ) return &i;
   except("ConditionsMgr","Request to access an unregistered IOV type: %s.", iov_name.c_str());
@@ -217,7 +216,7 @@ const IOVType* Manager_Type1::iovType (const string& iov_name) const   {
 ConditionsPool* Manager_Type1::registerIOV(const IOVType& typ, IOV::Key key)   {
   // IOV read and checked. Now register it, but always locked!
   ConditionsIOVPool* pool = m_rawPool[typ.type];
-  dd4hep_lock_t lock(m_poolLock);
+  dd4hep_lock_t      lock(m_poolLock);
   if ( !pool )  {
     m_rawPool[typ.type] = pool = new ConditionsIOVPool(&typ);
   }
@@ -229,7 +228,7 @@ ConditionsPool* Manager_Type1::registerIOV(const IOVType& typ, IOV::Key key)   {
   iov->type      = typ.type;
   iov->keyData   = key;
   const void* argv_pool[] = {this, iov, 0};
-  shared_ptr<ConditionsPool> cond_pool(createPlugin<ConditionsPool>(m_poolType,m_detDesc,2,argv_pool));
+  std::shared_ptr<ConditionsPool> cond_pool(createPlugin<ConditionsPool>(m_poolType,m_detDesc,2,argv_pool));
   pool->elements.emplace(key,cond_pool);
   printout(INFO,"ConditionsMgr","Created IOV Pool for:%s",iov->str().c_str());
   return cond_pool.get();
@@ -268,16 +267,13 @@ bool Manager_Type1::registerUnlocked(ConditionsPool& pool, Condition cond)   {
 }
 
 /// Register a whole block of conditions with identical IOV.
-size_t Manager_Type1::blockRegister(ConditionsPool& pool, const vector<Condition>& cond) const {
-  size_t result = 0;
-  //string typ;
+std::size_t Manager_Type1::blockRegister(ConditionsPool& pool, const std::vector<Condition>& cond) const {
+  std::size_t result = 0;
   for(auto c : cond)   {
     if ( c.isValid() )    {
       c->iov = pool.iov;
       c->setFlag(Condition::ACTIVE);
       pool.insert(c);
-      //typ = typeName(typeid(*(c.ptr())));
-      //if ( typ.find("Static") != string::npos ) cout << "++Insert:   " << typ << endl;
       if ( !m_onRegister.empty() )   {
         __callListeners(m_onRegister, &ConditionsListener::onRegisterCondition, c);
       }
@@ -293,7 +289,7 @@ size_t Manager_Type1::blockRegister(ConditionsPool& pool, const vector<Condition
 
 /// Set a single conditions value to be managed.
 /// Requires external lock on update pool!
-Condition Manager_Type1::__queue_update(cond::Entry* e)   {
+dd4hep::Condition Manager_Type1::__queue_update(cond::Entry* e)   {
   if ( e )  {
     ConditionsPool*  p = this->ConditionsManagerObject::registerIOV(e->validity);
     Condition condition(e->name,e->type);
@@ -360,8 +356,8 @@ int Manager_Type1::clean(const IOVType* typ, int max_age)   {
 }
 
 /// Invoke cache cleanup with user defined policy
-pair<int,int> Manager_Type1::clean(const ConditionsCleanup& cleaner)   {
-  pair<int,int> count(0,0);
+std::pair<int,int> Manager_Type1::clean(const ConditionsCleanup& cleaner)   {
+  std::pair<int,int> count(0,0);
   for( TypedConditionPool::iterator i=m_rawPool.begin(); i != m_rawPool.end(); ++i)  {
     ConditionsIOVPool* p = *i;
     if ( p && cleaner(*p) )  {
@@ -373,8 +369,8 @@ pair<int,int> Manager_Type1::clean(const ConditionsCleanup& cleaner)   {
 }
 
 /// Full cleanup of all managed conditions.
-pair<int,int> Manager_Type1::clear()   {
-  pair<int,int> count(0,0);
+std::pair<int,int> Manager_Type1::clear()   {
+  std::pair<int,int> count(0,0);
   for( TypedConditionPool::iterator i=m_rawPool.begin(); i != m_rawPool.end(); ++i)  {
     ConditionsIOVPool* p = *i;
     if ( p )  {

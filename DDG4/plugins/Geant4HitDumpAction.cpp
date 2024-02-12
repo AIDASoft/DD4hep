@@ -83,12 +83,10 @@ namespace dd4hep {
 #include <G4HCofThisEvent.hh>
 #include <G4Event.hh>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Standard constructor
-Geant4HitDumpAction::Geant4HitDumpAction(Geant4Context* ctxt, const string& nam)
+Geant4HitDumpAction::Geant4HitDumpAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4EventAction(ctxt, nam), m_containers{"*"}
 {
   m_needsControl = true;
@@ -108,7 +106,7 @@ void Geant4HitDumpAction::begin(const G4Event* /* event */)   {
 /// Dump single container of hits
 void Geant4HitDumpAction::dumpCollection(G4VHitsCollection* collection)  {
   Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(collection);
-  string nam = collection->GetName();
+  std::string nam = collection->GetName();
   if ( coll )    {
     Geant4DataDump::CalorimeterHits cal_hits;
     Geant4DataDump::TrackerHits     trk_hits;

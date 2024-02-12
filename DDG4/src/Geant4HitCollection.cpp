@@ -12,12 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4HitCollection.h"
-#include "DDG4/Geant4Data.h"
-#include "G4Allocator.hh"
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4HitCollection.h>
+#include <DDG4/Geant4Data.h>
+#include <G4Allocator.hh>
 
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 G4ThreadLocal G4Allocator<Geant4HitWrapper>* HitWrapperAllocator = 0;
@@ -85,12 +84,12 @@ Geant4HitCollection::~Geant4HitCollection() {
 }
 
 /// Type information of the object stored
-const ComponentCast& Geant4HitCollection::type() const {
+const dd4hep::ComponentCast& Geant4HitCollection::type() const {
   return m_manipulator->cast;
 }
 
 /// Type information of the vector type for extracting data
-const ComponentCast& Geant4HitCollection::vector_type() const {
+const dd4hep::ComponentCast& Geant4HitCollection::vector_type() const {
   return m_manipulator->vec_type;
 }
 

@@ -40,9 +40,7 @@
 #include <sstream>
 #include <iomanip>
 
-using namespace std;
 using namespace dd4hep;
-using namespace dd4hep::detail;
 
 /*
  *  The section below uses the new ROOT features using user extensions to volumes
@@ -71,17 +69,17 @@ namespace {
     return o;
   }
 
-  TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m)  {
+  TGeoVolume* _createTGeoVolume(const std::string& name, TGeoShape* s, TGeoMedium* m)  {
     geo_volume_t* e = new geo_volume_t(name.c_str(),s,m);
     e->SetUserExtension(new Volume::Object());
     return e;
   }
-  TGeoVolume* _createTGeoVolumeAssembly(const string& name)  {
+  TGeoVolume* _createTGeoVolumeAssembly(const std::string& name)  {
     geo_assembly_t* e = new geo_assembly_t(name.c_str()); // It is important to use the correct constructor!!
     e->SetUserExtension(new Assembly::Object());
     return e;
   }
-  TGeoVolumeMulti* _createTGeoVolumeMulti(const string& name, TGeoMedium* medium)  {
+  TGeoVolumeMulti* _createTGeoVolumeMulti(const std::string& name, TGeoMedium* medium)  {
     TGeoVolumeMulti* e = new TGeoVolumeMulti(name.c_str(), medium);
     e->SetUserExtension(new VolumeMulti::Object());
     return e;
@@ -89,7 +87,7 @@ namespace {
   PlacedVolume::Object* _data(const PlacedVolume& v) {
     PlacedVolume::Object* o = _userExtension(v);
     if (o) return o;
-    throw runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
+    throw std::runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
   }
   /// Accessor to the data part of the Volume
   Volume::Object* _data(const Volume& v, bool throw_exception = true) {
@@ -99,7 +97,7 @@ namespace {
       return o;
     else if (!throw_exception)
       return nullptr;
-    throw runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
+    throw std::runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
   }
 
   class VolumeImport   {
@@ -107,7 +105,7 @@ namespace {
     void setShapeTitle(TGeoVolume* vol)   {
       if ( vol )   {
         TGeoShape* sh = vol->GetShape();
-        string tag = get_shape_tag(sh);
+        std::string tag = get_shape_tag(sh);
         sh->SetTitle(tag.c_str());
       }
     }
@@ -216,7 +214,7 @@ namespace {
       return nullptr;
     }
     map.Add(v, vol);
-    string nam;
+    std::string nam;
     if (newname && newname[0])  {
       nam = newname;
       vol->SetName(newname);
@@ -395,8 +393,8 @@ void PlacedVolumeExtension::Release() const  {
 }
 
 /// Lookup volume ID
-vector<PlacedVolumeExtension::VolID>::const_iterator
-PlacedVolumeExtension::VolIDs::find(const string& name) const {
+std::vector<PlacedVolumeExtension::VolID>::const_iterator
+PlacedVolumeExtension::VolIDs::find(const std::string& name) const {
   for (Base::const_iterator i = this->Base::begin(); i != this->Base::end(); ++i)
     if (name == (*i).first)
       return i;
@@ -404,8 +402,8 @@ PlacedVolumeExtension::VolIDs::find(const string& name) const {
 }
 
 /// Insert a new value into the volume ID container
-std::pair<vector<PlacedVolumeExtension::VolID>::iterator, bool>
-PlacedVolumeExtension::VolIDs::insert(const string& name, int value) {
+std::pair<std::vector<PlacedVolumeExtension::VolID>::iterator, bool>
+PlacedVolumeExtension::VolIDs::insert(const std::string& name, int value) {
   Base::iterator i = this->Base::begin();
   for (; i != this->Base::end(); ++i)
     if (name == (*i).first)
@@ -419,12 +417,12 @@ PlacedVolumeExtension::VolIDs::insert(const string& name, int value) {
 }
 
 /// String representation for debugging
-string PlacedVolumeExtension::VolIDs::str()  const   {
-  stringstream str;
-  str << hex;
+std::string PlacedVolumeExtension::VolIDs::str()  const   {
+  std::stringstream str;
+  str << std::hex;
   for(const auto& i : *this )   {
-    str << i.first << "=" << setw(4) << right
-        << setfill('0') << i.second << setfill(' ') << " ";
+    str << i.first << "=" << std::setw(4) << std::right
+        << std::setfill('0') << i.second << std::setfill(' ') << " ";
   }
   return str.str();
 }
@@ -484,7 +482,7 @@ const PlacedVolume::VolIDs& PlacedVolume::volIDs() const {
 }
 
 /// Add identifier
-PlacedVolume& PlacedVolume::addPhysVolID(const string& nam, int value) {
+PlacedVolume& PlacedVolume::addPhysVolID(const std::string& nam, int value) {
   auto* o = _data(*this);
   if ( !o->params )   {
     o->volIDs.emplace_back(nam, value);
@@ -523,15 +521,15 @@ Position PlacedVolume::position()  const    {
 }
 
 /// String dump
-string PlacedVolume::toString() const {
-  stringstream str;
+std::string PlacedVolume::toString() const {
+  std::stringstream str;
   Object* obj = _data(*this);
   str << m_element->GetName() << ":  vol='" << m_element->GetVolume()->GetName()
       << "' mat:'" << m_element->GetMatrix()->GetName()
       << "' volID[" << obj->volIDs.size() << "] ";
   for (VolIDs::const_iterator i = obj->volIDs.begin(); i != obj->volIDs.end(); ++i)
     str << (*i).first << "=" << (*i).second << "  ";
-  str << ends;
+  str << std::ends;
   return str.str();
 }
 
@@ -613,23 +611,23 @@ void VolumeExtension::Release() const  {
 }
 
 /// Constructor to be used when creating a new geometry tree.
-Volume::Volume(const string& nam) {
+Volume::Volume(const std::string& nam) {
   m_element = _createTGeoVolume(nam,0,0);
 }
 
 /// Constructor to be used when creating a new geometry tree.
-Volume::Volume(const string& nam, const string& title) {
+Volume::Volume(const std::string& nam, const std::string& title) {
   m_element = _createTGeoVolume(nam,0,0);
   m_element->SetTitle(title.c_str());
 }
 
 /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
-Volume::Volume(const string& nam, const Solid& sol, const Material& mat) {
+Volume::Volume(const std::string& nam, const Solid& sol, const Material& mat) {
   m_element = _createTGeoVolume(nam, sol.ptr(), mat.ptr());
 }
 
 /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
-Volume::Volume(const string& nam, const string& title, const Solid& sol, const Material& mat) {
+Volume::Volume(const std::string& nam, const std::string& title, const Solid& sol, const Material& mat) {
   m_element = _createTGeoVolume(nam, sol.ptr(), mat.ptr());
   m_element->SetTitle(title.c_str());
 }
@@ -711,7 +709,7 @@ bool Volume::isAssembly()   const   {
 }    
 
 /// Divide volume into subsections (See the ROOT manuloa for details)
-Volume Volume::divide(const string& divname, int iaxis, int ndiv,
+Volume Volume::divide(const std::string& divname, int iaxis, int ndiv,
                       double start, double step, int numed, const char* option)   {
   TGeoVolume* p = m_element;
   if ( p )  {
@@ -740,7 +738,7 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
     except("dd4hep","Volume: Attempt to place volume without placement matrix.");
   }
   if ( transform != detail::matrix::_identity() ) {
-    string nam = string(daughter->GetName()) + "_placement";
+    std::string nam = std::string(daughter->GetName()) + "_placement";
     transform->SetName(nam.c_str());
   }
   TGeoShape* shape = daughter->GetShape();
@@ -796,7 +794,7 @@ PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Rotat
   double elements[9];
   rot3D.GetComponents(elements);
   r.SetMatrix(elements);
-  auto matrix = make_unique<TGeoCombiTrans>(TGeoTranslation(0,0,0),r);
+  auto matrix = std::make_unique<TGeoCombiTrans>(TGeoTranslation(0,0,0),r);
   return _addNode(par, daughter, copy_nr, matrix.release());
 }
 
@@ -809,7 +807,7 @@ PlacedVolume _addNode(TGeoVolume* par, Volume daughter, int copy_nr, const Trans
   tr.GetTranslation(pos3D);
   rot3D.GetComponents(elements);
   r.SetMatrix(elements);
-  auto matrix = make_unique<TGeoCombiTrans>(TGeoTranslation(pos3D.x(), pos3D.y(), pos3D.z()),r);
+  auto matrix = std::make_unique<TGeoCombiTrans>(TGeoTranslation(pos3D.x(), pos3D.y(), pos3D.z()),r);
   return _addNode(par, daughter, copy_nr, matrix.release());
 }
 
@@ -1094,16 +1092,16 @@ PlacedVolume Volume::paramVolume3D(const Transform3D& start,
 }
 
 /// Set the volume's option value
-const Volume& Volume::setOption(const string& opt) const {
+const Volume& Volume::setOption(const std::string& opt) const {
   if ( isValid() )   {
     m_element->SetOption(opt.c_str());
     return *this;
   }
-  throw runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
+  throw std::runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
 }
 
 /// Access the volume's option value
-string Volume::option() const {
+std::string Volume::option() const {
   return m_element->GetOption();
 }
 
@@ -1115,9 +1113,9 @@ const Volume& Volume::setMaterial(const Material& mat) const {
       m_element->SetMedium(medium);
       return *this;
     }
-    throw runtime_error("dd4hep: Volume: Medium " + string(mat.name()) + " is not registered with geometry manager.");
+    throw std::runtime_error("dd4hep: Volume: Medium " + std::string(mat.name()) + " is not registered with geometry manager.");
   }
-  throw runtime_error("dd4hep: Volume: Attempt to assign invalid material.");
+  throw std::runtime_error("dd4hep: Volume: Attempt to assign invalid material.");
 }
 
 /// Access to the Volume material
@@ -1157,7 +1155,7 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,29,0)
         // Set directly transparency to the volume, NOT to the material as for ROOT < 6.29
         m_element->ResetTransparency(Char_t((1.0-vis->alpha)*100));
-#elif ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
+#else
         // As suggested by Valentin Volkl https://sft.its.cern.ch/jira/browse/DDFORHEP-20
         //
         // According to https://root.cern.ch/phpBB3/viewtopic.php?t=2309#p66013
@@ -1190,7 +1188,7 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
 }
 
 /// Set Visualization attributes to the volume
-const Volume& Volume::setVisAttributes(const Detector& description, const string& nam) const {
+const Volume& Volume::setVisAttributes(const Detector& description, const std::string& nam) const {
   if (!nam.empty()) {
     VisAttr attr = description.visAttributes(nam);
     setVisAttributes(attr);
@@ -1199,7 +1197,7 @@ const Volume& Volume::setVisAttributes(const Detector& description, const string
 }
 
 /// Attach attributes to the volume
-const Volume& Volume::setAttributes(const Detector& description, const string& rg, const string& ls, const string& vis) const {
+const Volume& Volume::setAttributes(const Detector& description, const std::string& rg, const std::string& ls, const std::string& vis) const {
   if (!rg.empty())
     setRegion(description.region(rg));
   if (!ls.empty())
@@ -1241,7 +1239,7 @@ Box Volume::boundingBox() const {
 }
 
 /// Set the regional attributes to the volume
-const Volume& Volume::setRegion(const Detector& description, const string& nam) const {
+const Volume& Volume::setRegion(const Detector& description, const std::string& nam) const {
   if (!nam.empty()) {
     return setRegion(description.region(nam));
   }
@@ -1260,7 +1258,7 @@ Region Volume::region() const {
 }
 
 /// Set the limits to the volume
-const Volume& Volume::setLimitSet(const Detector& description, const string& nam) const {
+const Volume& Volume::setLimitSet(const Detector& description, const std::string& nam) const {
   if (!nam.empty()) {
     return setLimitSet(description.limitSet(nam));
   }
@@ -1302,7 +1300,7 @@ bool Volume::hasProperties()  const   {
 }
 
 /// Add Volume property (name-value pair)
-void Volume::addProperty(const string& nam, const string& val) const  {
+void Volume::addProperty(const std::string& nam, const std::string& val) const  {
   auto* o = _data(*this);
   if ( !o->properties )   {
     o->properties = new TList();
@@ -1318,7 +1316,7 @@ void Volume::addProperty(const string& nam, const string& val) const  {
 }
 
 /// Access property value. Returns default_value if the property is not present
-string Volume::getProperty(const string& nam, const string& default_val)   const {
+std::string Volume::getProperty(const std::string& nam, const std::string& default_val)   const {
   const auto* o = _data(*this);
   if ( !o->properties )   {
     return default_val;
@@ -1329,12 +1327,12 @@ string Volume::getProperty(const string& nam, const string& default_val)   const
 }
 
 /// Constructor to be used when creating a new assembly object
-Assembly::Assembly(const string& nam) {
+Assembly::Assembly(const std::string& nam) {
   m_element = _createTGeoVolumeAssembly(nam);
 }
 
 /// Constructor to be used when creating a new multi-volume object
-VolumeMulti::VolumeMulti(const string& nam, Material mat) {
+VolumeMulti::VolumeMulti(const std::string& nam, Material mat) {
   m_element = _createTGeoVolumeMulti(nam, mat.ptr());
 }
 
@@ -1354,11 +1352,11 @@ void VolumeMulti::verifyVolumeMulti()   {
 }
 
 /// Output mesh vertices to string
-string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
+std::string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
   Volume       vol   = place->GetVolume();
   TGeoMatrix*  mat   = place->GetMatrix();
   Solid        sol   = vol.solid();
-  stringstream os;
+  std::stringstream os;
   struct _numbering {
     double adjust(double value)  const   {
       if ( std::abs(value) < TGeoShape::Tolerance() )
@@ -1369,7 +1367,7 @@ string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
 
   if ( vol->IsA() == TGeoVolumeAssembly::Class() )    {
     for(int i=0; i<vol->GetNdaughters(); ++i)  {
-      os << toStringMesh(vol->GetNode(i), prec) << endl;
+      os << toStringMesh(vol->GetNode(i), prec) << std::endl;
     }
     return os.str();
   }
@@ -1380,36 +1378,36 @@ string dd4hep::toStringMesh(PlacedVolume place, int prec)   {
   Double_t* points = new Double_t[3*nvert];
   sol->SetPoints(points);
 
-  os << setw(16) << left << sol->IsA()->GetName()
-     << " " << nvert << " Mesh-points:" << endl;
-  os << setw(16) << left << sol->IsA()->GetName() << " " << sol->GetName()
+  os << std::setw(16) << std::left << sol->IsA()->GetName()
+     << " " << nvert << " Mesh-points:" << std::endl;
+  os << std::setw(16) << std::left << sol->IsA()->GetName() << " " << sol->GetName()
      << " N(mesh)=" << sol->GetNmeshVertices()
-     << "  N(vert)=" << nvert << "  N(seg)=" << nsegs << "  N(pols)=" << npols << endl;
+     << "  N(vert)=" << nvert << "  N(seg)=" << nsegs << "  N(pols)=" << npols << std::endl;
     
   for(int i=0; i<nvert; ++i)   {
     Double_t* p = points + 3*i;
     Double_t global[3], local[3] = {p[0], p[1], p[2]};
     mat->LocalToMaster(local, global);
-    os << setw(16) << left << sol->IsA()->GetName() << " " << setw(3) << left << i
-       << " Local  ("  << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(local[0])
-       << ", "         << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(local[1])
-       << ", "         << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(local[2])
-       << ") Global (" << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(global[0])
-       << ", "         << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(global[1])
-       << ", "         << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(global[2])
-       << ")" << endl;
+    os << std::setw(16) << std::left << sol->IsA()->GetName() << " " << std::setw(3) << std::left << i
+       << " Local  ("  << std::setw(7) << std::setprecision(prec) << std::fixed << std::right << _vertex.adjust(local[0])
+       << ", "         << std::setw(7) << std::setprecision(prec) << std::fixed << std::right << _vertex.adjust(local[1])
+       << ", "         << std::setw(7) << std::setprecision(prec) << std::fixed << std::right << _vertex.adjust(local[2])
+       << ") Global (" << std::setw(7) << std::setprecision(prec) << std::fixed << std::right << _vertex.adjust(global[0])
+       << ", "         << std::setw(7) << std::setprecision(prec) << std::fixed << std::right << _vertex.adjust(global[1])
+       << ", "         << std::setw(7) << std::setprecision(prec) << std::fixed << std::right << _vertex.adjust(global[2])
+       << ")" << std::endl;
   }
   Box box = sol;
   const Double_t* org = box->GetOrigin();
-  os << setw(16) << left << sol->IsA()->GetName()
+  os << std::setw(16) << std::left << sol->IsA()->GetName()
      << " Bounding box: "
-     << " dx="        << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(box->GetDX())
-     << " dy="        << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(box->GetDY())
-     << " dz="        << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(box->GetDZ())
-     << " Origin: x=" << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(org[0])
-     << " y="         << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(org[1])
-     << " z="         << setw(7) << setprecision(prec) << fixed << right << _vertex.adjust(org[2])
-     << endl;
+     << " dx="        << std::setw(7) << std::setprecision(prec) << std::fixed << std::right << _vertex.adjust(box->GetDX())
+     << " dy="        << std::setw(7) << std::setprecision(prec) << std::fixed << std::right << _vertex.adjust(box->GetDY())
+     << " dz="        << std::setw(7) << std::setprecision(prec) << std::fixed << std::right << _vertex.adjust(box->GetDZ())
+     << " Origin: x=" << std::setw(7) << std::setprecision(prec) << std::fixed << std::right << _vertex.adjust(org[0])
+     << " y="         << std::setw(7) << std::setprecision(prec) << std::fixed << std::right << _vertex.adjust(org[1])
+     << " z="         << std::setw(7) << std::setprecision(prec) << std::fixed << std::right << _vertex.adjust(org[2])
+     << std::endl;
   
   /// -------------------- DONE --------------------
   delete [] points;

@@ -12,33 +12,31 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/DetectorSelector.h"
-#include "DD4hep/Detector.h"
+#include <DD4hep/DetectorSelector.h>
+#include <DD4hep/Detector.h>
 
-using namespace std;
 using namespace dd4hep;
 
 /// Access a set of subdetectors according to the sensitive type.
-const DetectorSelector::Result& 
-DetectorSelector::detectors(const string& type)
+const DetectorSelector::Result& DetectorSelector::detectors(const std::string& type)
 {
   return description.detectors(type);
 }
 
 /// Access a set of subdetectors according to several sensitive types.
 DetectorSelector::Result
-DetectorSelector::detectors(const string& type1,
-                            const string& type2,
-                            const string& type3,
-                            const string& type4,
-                            const string& type5)  {
-  const string* types[] = { &type1, &type2, &type3, &type4, &type5 };
+DetectorSelector::detectors(const std::string& type1,
+                            const std::string& type2,
+                            const std::string& type3,
+                            const std::string& type4,
+                            const std::string& type5)  {
+  const std::string* types[] = { &type1, &type2, &type3, &type4, &type5 };
   Result result;
-  for(size_t i=0; i<sizeof(types)/sizeof(types[0]); ++i)  {
+  for( std::size_t i=0; i<sizeof(types)/sizeof(types[0]); ++i )  {
     try  {
       if ( !types[i]->empty() )  {
-        const vector<DetElement>& v = description.detectors(*(types[i]));
-        result.insert(end(result),begin(v),end(v));
+        const std::vector<DetElement>& v = description.detectors(*(types[i]));
+        result.insert(std::end(result), std::begin(v), std::end(v));
       }
     }
     catch(...)   {}
@@ -55,7 +53,7 @@ DetectorSelector::detectors(unsigned int includeFlag, unsigned int excludeFlag )
   const Detector::HandleMap& entries = description.detectors();
   result.reserve( entries.size() ) ;
   description.detectors(""); // Just to ensure the geometry is closed....
-  for(const auto& i : entries )  {
+  for( const auto& i : entries )  {
     DetElement det(i.second);
     if ( det.parent().isValid() )  { // Exclude 'world'
       //fixme: what to do with compounds - add their daughters  ?

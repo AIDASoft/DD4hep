@@ -12,12 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/detail/SegmentationsInterna.h"
-#include "DD4hep/InstanceCount.h"
+#include <DD4hep/detail/SegmentationsInterna.h>
+#include <DD4hep/InstanceCount.h>
 
 #include "DDSegmentation/Segmentation.h"
 
-using namespace std;
 using namespace dd4hep;
 
 /// Standard constructor
@@ -37,26 +36,26 @@ SegmentationObject::~SegmentationObject() {
 }
 
 /// Access the encoding string
-string SegmentationObject::fieldDescription() const {
+std::string SegmentationObject::fieldDescription() const {
   return segmentation->fieldDescription();
 }
 
 /// Access the segmentation name
-const string& SegmentationObject::name() const {
+const std::string& SegmentationObject::name() const {
   return segmentation->name();
 }
 /// Set the segmentation name
-void SegmentationObject::setName(const string& value) {
+void SegmentationObject::setName(const std::string& value) {
   segmentation->setName(value);
 }
 
 /// Access the segmentation type
-const string& SegmentationObject::type() const {
+const std::string& SegmentationObject::type() const {
   return segmentation->type();
 }
 
 /// Access the description of the segmentation
-const string& SegmentationObject::description() const {
+const std::string& SegmentationObject::description() const {
   return segmentation->description();
 }
 
@@ -71,7 +70,7 @@ void SegmentationObject::setDecoder(const BitFieldCoder* ptr_decoder) const {
 }
 
 /// Access to parameter by name
-DDSegmentation::Parameter SegmentationObject::parameter(const string& parameterName) const {
+DDSegmentation::Parameter SegmentationObject::parameter(const std::string& parameterName) const {
   return segmentation->parameter(parameterName);
 }
 

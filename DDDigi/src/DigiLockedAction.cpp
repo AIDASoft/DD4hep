@@ -16,14 +16,11 @@
 #include <DD4hep/InstanceCount.h>
 #include <DDDigi/DigiLockedAction.h>
 
-// C/C++ include files
-
-using namespace std;
 using namespace dd4hep::digi;
 
 
 /// Standard constructor
-DigiLockedAction::DigiLockedAction(const DigiKernel& kernel, const string& nam)
+DigiLockedAction::DigiLockedAction(const DigiKernel& kernel, const std::string& nam)
   : DigiEventAction(kernel, nam)
 {
   InstanceCount::increment(this);

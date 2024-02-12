@@ -21,7 +21,6 @@
 #include <memory>
 #include <stdexcept>
 
-using namespace std;
 using namespace dd4hep::json;
 
 /// Default constructor
@@ -33,13 +32,13 @@ DocumentHandler::~DocumentHandler()   {
 }
 
 /// Load XML file and parse it.
-Document DocumentHandler::load(const string& fname) const   {
-  string fn = fname;
-  if ( fname.find("://") != string::npos ) fn = fname.substr(fname.find("://")+3);
-  //string cmd = "cat "+fn;
+Document DocumentHandler::load(const std::string& fname) const   {
+  std::string fn = fname;
+  if ( fname.find("://") != std::string::npos ) fn = fname.substr(fname.find("://")+3);
+  //std::string cmd = "cat "+fn;
   //::printf("\n\n+++++ Dump json file: %s\n\n\n",fn.c_str());
   //::system(cmd.c_str());
-  unique_ptr<JsonElement> doc(new JsonElement(fn, ptree()));
+  std::unique_ptr<JsonElement> doc(new JsonElement(fn, ptree()));
   boost::property_tree::read_json(fn,doc->second);
   return doc.release();
 }
@@ -47,5 +46,5 @@ Document DocumentHandler::load(const string& fname) const   {
 /// Parse a standalong XML string into a document.
 Document DocumentHandler::parse(const char* doc_string, size_t length) const   {
   if ( doc_string && length ) {}
-  throw runtime_error("Bla");
+  throw std::runtime_error("Bla");
 }

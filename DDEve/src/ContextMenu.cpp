@@ -12,20 +12,19 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/ContextMenu.h"
+#include <DDEve/ContextMenu.h>
 
 // ROOT include files
-#include "TList.h"
-#include "TClassMenuItem.h"
+#include <TList.h>
+#include <TClassMenuItem.h>
 
 // C/C++ include files
 #include <stdexcept>
 #include <map>
 
-using namespace std;
 using namespace dd4hep;
 
-typedef map<string,ContextMenu*> Contexts;
+typedef std::map<std::string,ContextMenu*> Contexts;
 static Contexts& mapped_entries()  {
   static Contexts e;
   return e;
@@ -55,7 +54,7 @@ ClassImp(ContextMenu)
 /// Initializing constructor
 ContextMenu::ContextMenu(TClass* cl) : m_class(cl)  {
   if ( !cl )   {
-    throw runtime_error("Failure: Cannot create context menu for NULL class!");
+    throw std::runtime_error("Failure: Cannot create context menu for NULL class!");
   }
 }
 
@@ -89,12 +88,12 @@ ContextMenu& ContextMenu::AddSeparator()   {
 }
 
 /// Add user callback 
-ContextMenu& ContextMenu::Add(const string& title, Callback cb, void* ud)   {
+ContextMenu& ContextMenu::Add(const std::string& title, Callback cb, void* ud)   {
   ContextMenuHandler* handler = new ContextMenuHandler(cb, ud);
   TClassMenuItem* item = 
     new TClassMenuItem(TClassMenuItem::kPopupUserFunction,
-		       ContextMenuHandler::Class(),title.c_str(),
-		       "Context",handler,"TObject*",2);
+                       ContextMenuHandler::Class(),title.c_str(),
+                       "Context",handler,"TObject*",2);
   m_calls.push_back(handler);
   m_class->GetMenuList()->AddLast(item);
   return *this;

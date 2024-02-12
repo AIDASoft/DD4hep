@@ -12,12 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/PolarGridRPhi.h"
-#include "DDSegmentation/PolarGridRPhi.h"
+#include <DD4hep/PolarGridRPhi.h>
+#include <DDSegmentation/PolarGridRPhi.h>
 
 // C/C++ include files
 
-using namespace std;
 using namespace dd4hep;
 
 /// determine the position based on the cell ID
@@ -74,12 +73,12 @@ void PolarGridRPhi::setGridSizePhi(double cellSize) const  {
 }
 
 /// access the field name used for R
-const string& PolarGridRPhi::fieldNameR() const  {
+const std::string& PolarGridRPhi::fieldNameR() const  {
   return access()->implementation->fieldNameR();
 }
 
 /// access the field name used for Phi
-const string& PolarGridRPhi::fieldNamePhi() const  {
+const std::string& PolarGridRPhi::fieldNamePhi() const  {
   return access()->implementation->fieldNamePhi();
 }
 
@@ -92,6 +91,6 @@ const string& PolarGridRPhi::fieldNamePhi() const  {
     -# size in x
     -# size in z
 */
-vector<double> PolarGridRPhi::cellDimensions(const CellID& id) const  {
+std::vector<double> PolarGridRPhi::cellDimensions(const CellID& id) const  {
   return access()->implementation->cellDimensions(id);
 }

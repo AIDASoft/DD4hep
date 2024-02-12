@@ -12,18 +12,13 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Shapes.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/SurfaceInstaller.h"
-
-// C/C++ include files
-#include <stdexcept>
+#include <DD4hep/Shapes.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/SurfaceInstaller.h>
 
 // ROOT includes
-#include "TClass.h"
+#include <TClass.h>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep;
 
 typedef DetElement::Children _C;
@@ -33,30 +28,30 @@ SurfaceInstaller::SurfaceInstaller(Detector& description, int argc, char** argv)
   : m_detDesc(description), m_det(), m_stopScanning(false)
 {
   if ( argc > 0 )  {
-    string det_name = argv[0];
-    string n = det_name[0] == '-' ? det_name.substr(1) : det_name;
+    std::string det_name = argv[0];
+    std::string n = det_name[0] == '-' ? det_name.substr(1) : det_name;
     m_det = description.detector(n);
     if ( !m_det.isValid() )   {
-      stringstream err;
+      std::stringstream err;
       err << "The subdetector " << det_name << " is not known to the geometry.";
       printout(INFO,"SurfaceInstaller",err.str().c_str());
-      throw runtime_error(err.str());
+      except(det_name, err.str());
     }
-    printout(INFO,m_det.name(),"+++ Processing SurfaceInstaller for subdetector: '%s'",m_det.name());
+    printout(INFO,m_det.name(), "+++ Processing SurfaceInstaller for subdetector: '%s'",m_det.name());
     return;
   }
-  throw runtime_error("The plugin takes at least one argument. No argument supplied");
+  except("SurfaceInstaller", "The plugin takes at least one argument. No argument supplied");
 }
 
 /// Indicate error message and throw exception
 void SurfaceInstaller::invalidInstaller(const std::string& msg)   const  {
   const char* det = m_det.isValid() ? m_det.name() : "<UNKNOWN>";
-  string typ = m_det.isValid() ? m_det.type() : string("<UNKNOWN>");
+  std::string typ = m_det.isValid() ? m_det.type() : std::string("<UNKNOWN>");
   printout(FATAL,"SurfaceInstaller","+++ Surfaces for: %s",det);
   printout(FATAL,"SurfaceInstaller","+++ %s.",msg.c_str());
   printout(FATAL,"SurfaceInstaller","+++ You sure you apply the correct plugin to generate");
   printout(FATAL,"SurfaceInstaller","+++ surfaces for a detector of type %s",typ.c_str());
-  throw std::runtime_error("+++ Failed to install Surfaces to detector "+string(det));
+  except("SurfaceInstaller", "+++ Failed to install Surfaces to detector "+std::string(det));
 }
 
 /// Shortcut to access the parent detectorelement's volume
@@ -78,19 +73,19 @@ const double* SurfaceInstaller::placementTranslation(DetElement component)  cons
 /// Printout volume information
 void SurfaceInstaller::install(DetElement component, PlacedVolume pv)   {
   if ( pv.volume().isSensitive() )  {
-    stringstream log;
-    PlacementPath all_nodes;
-    ElementPath   det_elts;
+    std::stringstream log;
+    PlacementPath     all_nodes;
+    ElementPath       det_elts;
     detail::tools::elementPath(component,det_elts);
     detail::tools::placementPath(component,all_nodes);
-    string elt_path  = detail::tools::elementPath(det_elts);
-    string node_path = detail::tools::placementPath(all_nodes);
+    std::string elt_path  = detail::tools::elementPath(det_elts);
+    std::string node_path = detail::tools::placementPath(all_nodes);
 
     log << "Lookup " << " Detector[" << det_elts.size() << "]: " << elt_path;
-    printout(INFO,m_det.name(),log.str());
+    printout(INFO,m_det.name(), log.str());
     log.str("");
     log << "       " << " Places[" <<  all_nodes.size()  << "]:   " << node_path;
-    printout(INFO,m_det.name(),log.str());
+    printout(INFO,m_det.name(), log.str());
     log.str("");
     log << "       " << " detail::matrix[" <<  all_nodes.size()  << "]: ";
     for(PlacementPath::const_reverse_iterator i=all_nodes.rbegin(); i!=all_nodes.rend(); ++i)  {
@@ -116,7 +111,7 @@ void SurfaceInstaller::install(DetElement component, PlacedVolume pv)   {
     printout(INFO,m_det.name(),log.str());
     return;
   }
-  cout << component.name() << ": " << pv.name() << endl;
+  std::cout << component.name() << ": " << pv.name() << std::endl;
 }
 
 /// Scan through tree of volume placements

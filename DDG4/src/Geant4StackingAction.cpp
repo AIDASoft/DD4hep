@@ -12,23 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4StackingAction.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4StackingAction.h>
+
 // Geant4 headers
-#include "G4Threading.hh"
-#include "G4AutoLock.hh"
+#include <G4Threading.hh>
+#include <G4AutoLock.hh>
 
-// C/C++ include files
-#include <stdexcept>
-
-using namespace std;
 using namespace dd4hep::sim;
 namespace {
   G4Mutex action_mutex=G4MUTEX_INITIALIZER;
 }
 
 /// Standard constructor
-Geant4StackingAction::Geant4StackingAction(Geant4Context* ctxt, const string& nam)
+Geant4StackingAction::Geant4StackingAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
@@ -40,13 +37,12 @@ Geant4StackingAction::~Geant4StackingAction() {
 
 /// Classify new track: The first call in the sequence returning non-null pointer wins!
 TrackClassification 
-Geant4StackingAction::classifyNewTrack(G4StackManager* /* manager */,
-				       const G4Track* /* track */)  {
+Geant4StackingAction::classifyNewTrack(G4StackManager* /* manager */, const G4Track* /* track */)  {
   return TrackClassification();
 }
 
 /// Standard constructor
-Geant4SharedStackingAction::Geant4SharedStackingAction(Geant4Context* ctxt, const string& nam)
+Geant4SharedStackingAction::Geant4SharedStackingAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4StackingAction(ctxt, nam), m_action(0)
 {
   InstanceCount::increment(this);
@@ -71,7 +67,7 @@ void Geant4SharedStackingAction::use(Geant4StackingAction* action)   {
     m_action = action;
     return;
   }
-  throw runtime_error("Geant4SharedStackingAction: Attempt to use invalid actor!");
+  except("Attempt to use invalid actor!");
 }
 
 /// Begin-of-stacking callback
@@ -97,7 +93,7 @@ void Geant4SharedStackingAction::prepare(G4StackManager* stackManager)  {
 /// Classify new track with delegation
 TrackClassification 
 Geant4SharedStackingAction::classifyNewTrack(G4StackManager* stackManager,
-					     const G4Track* track)   {
+                                             const G4Track* track)   {
   if ( m_action )  {
     G4AutoLock protection_lock(&action_mutex);  {
       ContextSwap swap(m_action,context());
@@ -108,7 +104,7 @@ Geant4SharedStackingAction::classifyNewTrack(G4StackManager* stackManager,
 }
 
 /// Standard constructor
-Geant4StackingActionSequence::Geant4StackingActionSequence(Geant4Context* ctxt, const string& nam)
+Geant4StackingActionSequence::Geant4StackingActionSequence(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt, nam) {
   m_needsControl = true;
   InstanceCount::increment(this);
@@ -130,7 +126,7 @@ void Geant4StackingActionSequence::adopt(Geant4StackingAction* action) {
     m_actors.add(action);
     return;
   }
-  throw runtime_error("Geant4StackingActionSequence: Attempt to add invalid actor!");
+  except("Attempt to add invalid actor!");
 }
 
 /// Set or update client context
@@ -145,7 +141,7 @@ void Geant4StackingActionSequence::configureFiber(Geant4Context* thread_context)
 }
 
 /// Get an action by name
-Geant4StackingAction* Geant4StackingActionSequence::get(const string& nam) const   {
+Geant4StackingAction* Geant4StackingActionSequence::get(const std::string& nam) const   {
   return m_actors.get(FindByName(TypeName::split(nam).second));
 }
 
@@ -164,7 +160,7 @@ void Geant4StackingActionSequence::prepare(G4StackManager* stackManager) {
 /// Classify new track: The first call in the sequence returning non-null pointer wins!
 TrackClassification 
 Geant4StackingActionSequence::classifyNewTrack(G4StackManager* stackManager,
-					       const G4Track* track)   {
+                                               const G4Track* track)   {
   for( auto a : m_actors )   {
     auto ret = a->classifyNewTrack(stackManager, track);
     if ( ret.type != NoTrackClassification )  {

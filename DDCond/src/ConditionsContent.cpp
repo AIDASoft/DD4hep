@@ -12,12 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DDCond/ConditionsContent.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Printout.h"
+#include <DDCond/ConditionsContent.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Printout.h>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 /// Default constructor
@@ -95,16 +93,16 @@ bool ConditionsContent::remove(Condition::key_type hash)   {
   return false;
 }
 
-pair<Condition::key_type, ConditionsLoadInfo*>
+std::pair<dd4hep::Condition::key_type, ConditionsLoadInfo*>
 ConditionsContent::insertKey(Condition::key_type hash)   {
   auto ret = m_conditions.emplace(hash,(ConditionsLoadInfo*)0);
   //printout(DEBUG,"ConditionsContent","++ Insert key: %016X",hash);
-  if ( ret.second )  return pair<Condition::key_type, ConditionsLoadInfo*>(hash,0);
-  return pair<Condition::key_type, ConditionsLoadInfo*>(0,0);
+  if ( ret.second )  return { hash, 0 };
+  return { 0,0 };
 }
 
 /// Add a new conditions key. T must inherit from class ConditionsContent::Info
-pair<Condition::key_type, ConditionsLoadInfo*>
+std::pair<dd4hep::Condition::key_type, ConditionsLoadInfo*>
 ConditionsContent::addLocationInfo(Condition::key_type hash, ConditionsLoadInfo* info)   {
   if ( info )   {
     //printout(DEBUG,"ConditionsContent","++ Add location key: %016X",hash);
@@ -115,11 +113,11 @@ ConditionsContent::addLocationInfo(Condition::key_type hash, ConditionsLoadInfo*
     }
     info->release();
   }
-  return pair<Condition::key_type, ConditionsLoadInfo*>(0,0);
+  return { 0,0 };
 }
 
 /// Add a new shared conditions dependency
-pair<Condition::key_type, ConditionDependency*>
+std::pair<dd4hep::Condition::key_type, ConditionDependency*>
 ConditionsContent::addDependency(ConditionDependency* dep)
 {
   auto ret = m_derived.emplace(dep->key(),dep);
@@ -139,11 +137,11 @@ ConditionsContent::addDependency(ConditionDependency* dep)
   except("DeConditionsRequests",
          "++ Dependency already exists: %s [%08X] [%016llX]",
          path, maker.values.item_key, maker.hash);
-  return pair<Condition::key_type, ConditionDependency*>(0,0);
+  return std::pair<Condition::key_type, ConditionDependency*>(0,0);
 }
 
 /// Add a new conditions dependency (Built internally from arguments)
-std::pair<Condition::key_type, ConditionDependency*>
+std::pair<dd4hep::Condition::key_type, ConditionDependency*>
 ConditionsContent::addDependency(DetElement de,
                                  Condition::itemkey_type item,
                                  std::shared_ptr<ConditionUpdateCall> callback)

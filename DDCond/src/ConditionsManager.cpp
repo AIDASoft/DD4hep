@@ -12,23 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Errors.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/detail/Handle.inl"
-#include "DD4hep/PluginCreators.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Errors.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/detail/Handle.inl>
+#include <DD4hep/PluginCreators.h>
 
-#include "DD4hep/ConditionsListener.h"
-#include "DDCond/ConditionsManager.h"
-#include "DDCond/ConditionsManagerObject.h"
+#include <DD4hep/ConditionsListener.h>
+#include <DDCond/ConditionsManager.h>
+#include <DDCond/ConditionsManagerObject.h>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsManagerObject);
-
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -94,8 +91,8 @@ void ConditionsManagerObject::onRemove(Condition condition)   {
 }
 
 /// Access the used/registered IOV types
-const vector<const IOVType*> ConditionsManagerObject::iovTypesUsed() const   {
-  vector<const IOVType*> result;
+const std::vector<const dd4hep::IOVType*> ConditionsManagerObject::iovTypesUsed() const   {
+  std::vector<const IOVType*> result;
   const auto& types = this->iovTypes();
   for ( const auto& i : types )  {
     if ( i.type != IOVType::UNKNOWN_IOV ) result.emplace_back(&i);
@@ -107,15 +104,15 @@ const vector<const IOVType*> ConditionsManagerObject::iovTypesUsed() const   {
 void ConditionsManagerObject::fromString(const std::string& data, IOV& iov)   {
   size_t id1 = data.find(',');
   size_t id2 = data.find('#');
-  if ( id2 == string::npos )  {
+  if ( id2 == std::string::npos )  {
     except("ConditionsManager","+++ Unknown IOV string representation: %s",data.c_str());
   }
-  string iov_name = data.substr(id2+1);
+  std::string iov_name = data.substr(id2+1);
   IOV::Key key;
   int nents = 0;
   /// Need assignment from long (k1,k2) for compatibility with Apple MAC
   long k1 = 0, k2 = 0;
-  if ( id1 != string::npos )   {
+  if ( id1 != std::string::npos )   {
     nents = ::sscanf(data.c_str(),"%ld,%ld#",&k1,&k2) == 2 ? 2 : 0;
     key.second = k2;
     key.first = k1;
@@ -143,7 +140,7 @@ void ConditionsManagerObject::fromString(const std::string& data, IOV& iov)   {
 }
 
 /// Register IOV using new string data
-ConditionsPool* ConditionsManagerObject::registerIOV(const string& data)   {
+ConditionsPool* ConditionsManagerObject::registerIOV(const std::string& data)   {
   IOV iov(0);
   // Convert string to IOV
   fromString(data, iov);
@@ -173,17 +170,17 @@ ConditionsManager& ConditionsManager::initialize()   {
 }
 
 /// Access the detector description
-Detector& ConditionsManager::detectorDescription()  const   {
+dd4hep::Detector& ConditionsManager::detectorDescription()  const   {
   return access()->detectorDescription();
 }
 
 /// Access to the property manager
-PropertyManager& ConditionsManager::properties()  const   {
+dd4hep::PropertyManager& ConditionsManager::properties()  const   {
   return access()->properties();
 }
 
 /// Access to properties
-Property& ConditionsManager::operator[](const std::string& property_name) const    {
+dd4hep::Property& ConditionsManager::operator[](const std::string& property_name) const    {
   return access()->properties().property(property_name);
 }
 
@@ -193,13 +190,13 @@ ConditionsDataLoader& ConditionsManager::loader()  const    {
 }
 
 /// Register new IOV type if it does not (yet) exist.
-pair<bool, const IOVType*> 
-ConditionsManager::registerIOVType(size_t iov_type, const string& iov_name)  const  {
+std::pair<bool, const dd4hep::IOVType*> 
+ConditionsManager::registerIOVType(size_t iov_type, const std::string& iov_name)  const  {
   return access()->registerIOVType(iov_type, iov_name);
 }
 
 /// Access IOV by its name
-const IOVType* ConditionsManager::iovType (const string& iov_name) const   {
+const dd4hep::IOVType* ConditionsManager::iovType (const std::string& iov_name) const   {
   return access()->iovType(iov_name);
 }
 
@@ -209,9 +206,9 @@ ConditionsIOVPool* ConditionsManager::iovPool(const IOVType& iov_type)  const {
 }
 
 /// Access the used/registered IOV types
-const vector<const IOVType*> ConditionsManager::iovTypesUsed() const  {
+const std::vector<const dd4hep::IOVType*> ConditionsManager::iovTypesUsed() const  {
   Object* obj = access();
-  vector<const IOVType*> result;
+  std::vector<const IOVType*> result;
   const auto& types = obj->iovTypes();
   result.reserve(types.size());
   for(const auto& i : types )
@@ -220,7 +217,7 @@ const vector<const IOVType*> ConditionsManager::iovTypesUsed() const  {
 }
 
 /// Register IOV with type and key
-ConditionsPool* ConditionsManager::registerIOV(const string& iov_rep)  const   {
+ConditionsPool* ConditionsManager::registerIOV(const std::string& iov_rep)  const   {
   IOV iov(0);
   Object* o = access();
   o->fromString(iov_rep, iov);
@@ -244,12 +241,12 @@ ConditionsPool* ConditionsManager::registerIOV(const IOVType& typ, IOV::Key key)
 }
 
 /// Create IOV from string
-void ConditionsManager::fromString(const string& iov_str, IOV& iov)  const  {
+void ConditionsManager::fromString(const std::string& iov_str, IOV& iov)  const  {
   access()->fromString(iov_str, iov);
 }
       
 /// Register a whole block of conditions with identical IOV.
-size_t ConditionsManager::blockRegister(ConditionsPool& pool, const std::vector<Condition>& cond) const   {
+std::size_t ConditionsManager::blockRegister(ConditionsPool& pool, const std::vector<Condition>& cond) const   {
   return access()->blockRegister(pool, cond);
 }
 

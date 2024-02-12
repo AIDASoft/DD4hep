@@ -12,11 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/DetectorProcessor.h"
-#include "DD4hep/AlignmentsNominalMap.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/DetectorProcessor.h>
+#include <DD4hep/AlignmentsNominalMap.h>
+#include <DD4hep/detail/AlignmentsInterna.h>
+#include <DD4hep/detail/ConditionsInterna.h>
 
 using namespace dd4hep;
 using align::Keys;

@@ -12,13 +12,12 @@
 //==========================================================================
 
 // Framework include files
-#include "DDCond/ConditionsDependencyHandler.h"
-#include "DDCond/ConditionsManagerObject.h"
-#include "DD4hep/ConditionsProcessor.h"
-#include "DD4hep/Printout.h"
-#include "TTimeStamp.h"
+#include <DDCond/ConditionsDependencyHandler.h>
+#include <DDCond/ConditionsManagerObject.h>
+#include <DD4hep/ConditionsProcessor.h>
+#include <DD4hep/Printout.h>
+#include <TTimeStamp.h>
 
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 namespace {
@@ -27,7 +26,7 @@ namespace {
     return d->target.name;
 #else
     char text[64];
-    ConditionKey::KeyMaker key(d->target.hash);
+    dd4hep::ConditionKey::KeyMaker key(d->target.hash);
     ::snprintf(text,sizeof(text),"%08X %08X",key.values.det_key, key.values.item_key);
     return text;
 #endif
@@ -46,7 +45,8 @@ void ConditionsDependencyHandler::Work::do_intersection(const IOV* iov_ptr)   {
   }
 }
 
-Condition ConditionsDependencyHandler::Work::resolve(Work*& current)   {
+dd4hep::Condition
+ConditionsDependencyHandler::Work::resolve(Work*& current)   {
   Work* previous = current;
   current = this;
   state = RESOLVED;
@@ -86,7 +86,7 @@ ConditionsDependencyHandler::~ConditionsDependencyHandler()   {
 }
 
 /// ConditionResolver implementation: Access to the detector description instance
-Detector& ConditionsDependencyHandler::detectorDescription() const  {
+dd4hep::Detector& ConditionsDependencyHandler::detectorDescription() const  {
   return m_manager->detectorDescription();
 }
 
@@ -164,17 +164,20 @@ bool ConditionsDependencyHandler::registerOne(const IOV& iov, Condition cond)   
 }
 
 /// Handle multi-condition inserts by callbacks: block insertions of conditions with identical IOV
-size_t ConditionsDependencyHandler::registerMany(const IOV& iov, const std::vector<Condition>& values)   {
+std::size_t
+ConditionsDependencyHandler::registerMany(const IOV& iov, const std::vector<Condition>& values)   {
   return m_pool.registerMany(iov, values);
 }
 
 /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
-std::vector<Condition> ConditionsDependencyHandler::get(DetElement de)   {
+std::vector<dd4hep::Condition>
+ConditionsDependencyHandler::get(DetElement de)   {
   return this->get(de.key());
 }
 
 /// Interface to access conditions by hash value of the item (only valid at resolve!)
-std::vector<Condition> ConditionsDependencyHandler::getByItem(Condition::itemkey_type key)   {
+std::vector<dd4hep::Condition>
+ConditionsDependencyHandler::getByItem(Condition::itemkey_type key)   {
   if ( m_state == RESOLVED )   {
     struct item_selector {
       std::vector<Condition>  conditions;
@@ -197,7 +200,8 @@ std::vector<Condition> ConditionsDependencyHandler::getByItem(Condition::itemkey
 }
 
 /// Interface to access conditions by hash value of the DetElement (only valid at resolve!)
-std::vector<Condition> ConditionsDependencyHandler::get(Condition::detkey_type det_key)   {
+std::vector<dd4hep::Condition>
+ConditionsDependencyHandler::get(Condition::detkey_type det_key)   {
   if ( m_state == RESOLVED )   {
     ConditionKey::KeyMaker lower(det_key, Condition::FIRST_ITEM_KEY);
     ConditionKey::KeyMaker upper(det_key, Condition::LAST_ITEM_KEY);
@@ -211,14 +215,16 @@ std::vector<Condition> ConditionsDependencyHandler::get(Condition::detkey_type d
 }
 
 /// ConditionResolver implementation: Interface to access conditions
-Condition ConditionsDependencyHandler::get(Condition::key_type key, bool throw_if_not)  {
+dd4hep::Condition
+ConditionsDependencyHandler::get(Condition::key_type key, bool throw_if_not)  {
   return this->get(key, nullptr, throw_if_not);
 }
 
 /// ConditionResolver implementation: Interface to access conditions
-Condition ConditionsDependencyHandler::get(Condition::key_type key,
-                                           const ConditionDependency* dependency,
-                                           bool throw_if_not)
+dd4hep::Condition
+ConditionsDependencyHandler::get(Condition::key_type key,
+                                 const ConditionDependency* dependency,
+                                 bool throw_if_not)
 {
   /// If we are not already resolving here, we follow the normal procedure
   Condition c = m_pool.get(key);
@@ -324,14 +330,14 @@ void ConditionsDependencyHandler::do_callback(Work* work)   {
     }
     else   {
       printout(ERROR,"DependencyHandler",
-	       "+++ Callback handler returned invalid condition.  Key:%s %c%s%c",
-	       work->context.dependency->target.toString().c_str(),
+               "+++ Callback handler returned invalid condition.  Key:%s %c%s%c",
+               work->context.dependency->target.toString().c_str(),
 #if defined(DD4HEP_CONDITIONS_DEBUG)
-	       '[',work->context.dependency->detector.path().c_str(),']'
+               '[',work->context.dependency->detector.path().c_str(),']'
 #else
-	       ' ',"",' '
+               ' ',"",' '
 #endif
-	       );
+               );
       throw std::runtime_error("Invalid derived condition callback");
     }
     return;

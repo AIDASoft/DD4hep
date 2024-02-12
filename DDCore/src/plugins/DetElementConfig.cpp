@@ -42,7 +42,7 @@ namespace  {
       std::size_t count = 0;
       bool propagate = det == detector.world() ? false: x_det.attr<bool>(_U(propagate), false);
       if ( xml_dim_t x_vol = x_det.child(_U(volume), false) )   {
-	count += xml::configVolume(detector, x_vol, det.volume(), propagate, false);
+        count += xml::configVolume(detector, x_vol, det.volume(), propagate, false);
       }
       PrintLevel lvl = x_det.attr<xml::Attribute>(_U(debug), nullptr) ? ALWAYS : DEBUG;
       printout(lvl, "DetElementConfig", "++ Applied %ld settings to %s", count, path.c_str());
@@ -69,6 +69,7 @@ namespace  {
   }
   
 }  // End namespace dd4hep
+
 /// Instantiate factory
 DECLARE_XML_PLUGIN(DD4hep_DetElementConfig, configure_detelement)
 /// Instantiate factory

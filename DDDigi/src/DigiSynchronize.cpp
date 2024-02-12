@@ -20,7 +20,6 @@
 // C/C++ include files
 #include <stdexcept>
 
-using namespace std;
 using namespace dd4hep::digi;
 
 
@@ -31,7 +30,7 @@ DigiParallelWorker<DigiEventAction, DigiSynchronize::work_t, std::size_t, DigiSy
 }
 
 /// Standard constructor
-DigiSynchronize::DigiSynchronize(const DigiKernel& kernel, const string& nam)
+DigiSynchronize::DigiSynchronize(const DigiKernel& kernel, const std::string& nam)
   : DigiEventAction(kernel, nam)
 {
   InstanceCount::increment(this);
@@ -44,11 +43,11 @@ DigiSynchronize::~DigiSynchronize() {
 
 /// Pre-track action callback
 void DigiSynchronize::execute(DigiContext& context)  const   {
-  auto start = chrono::high_resolution_clock::now();
+  auto start = std::chrono::high_resolution_clock::now();
   if ( !m_actors.empty() )   {
     m_kernel.submit(context, m_actors.get_group(), m_actors.size(), &context, m_parallel);
   }
-  chrono::duration<double> secs = chrono::high_resolution_clock::now() - start;
+  std::chrono::duration<double> secs = std::chrono::high_resolution_clock::now() - start;
   const DigiEvent& ev = *context.event;
   debug("%s+++ Event: %8d (DigiSynchronize) Parallel: %-4s  %3ld actions [%8.3g sec]",
         ev.id(), ev.eventNumber, yes_no(m_parallel), m_actors.size(),

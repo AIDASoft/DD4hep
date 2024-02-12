@@ -12,13 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DDCond/ConditionsSlice.h"
-#include "DDCond/ConditionsIOVPool.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Printout.h"
+#include <DDCond/ConditionsSlice.h>
+#include <DDCond/ConditionsIOVPool.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Printout.h>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 /// Initializing constructor
@@ -29,7 +27,7 @@ ConditionsSlice::ConditionsSlice(ConditionsManager mgr) : manager(mgr)
 
 /// Initializing constructor
 ConditionsSlice::ConditionsSlice(ConditionsManager mgr,
-                                 const shared_ptr<ConditionsContent>& cont)
+                                 const std::shared_ptr<ConditionsContent>& cont)
   : manager(mgr), content(cont)
 {
   InstanceCount::increment(this);  
@@ -55,10 +53,10 @@ void ConditionsSlice::derefPools()     {
 }
 
 /// Access the combined IOV of the slice from the pool
-const IOV& ConditionsSlice::iov()  const    {
+const dd4hep::IOV& ConditionsSlice::iov()  const    {
   if ( pool.get() ) return pool->validity();
-  dd4hep::except("ConditionsSlice",
-                 "pool-iov: Failed to access validity of non-existing pool.");
+  except("ConditionsSlice",
+         "pool-iov: Failed to access validity of non-existing pool.");
   return pool->validity();
 }
 
@@ -74,29 +72,29 @@ bool ConditionsSlice::manage(ConditionsPool* p, Condition condition, ManageFlag 
     bool ret = false;
     if ( flg&REGISTER_MANAGER )  {
       if ( !p )   {
-        dd4hep::except("ConditionsSlice",
-                       "manage_condition: Cannot access conditions pool according to IOV:%s.",
-                       pool->validity().str().c_str());
+        except("ConditionsSlice",
+               "manage_condition: Cannot access conditions pool according to IOV:%s.",
+               pool->validity().str().c_str());
       }
       ret = manager.registerUnlocked(*p,condition);
       if ( !ret )  {
-        dd4hep::except("ConditionsSlice",
-                       "manage_condition: Failed to register condition %016llx according to IOV:%s.",
-                       condition->hash, pool->validity().str().c_str());
+        except("ConditionsSlice",
+               "manage_condition: Failed to register condition %016llx according to IOV:%s.",
+               condition->hash, pool->validity().str().c_str());
       }
     }
     if ( flg&REGISTER_POOL )  {
       ret = pool->insert(condition);
       if ( !ret )  {
-        dd4hep::except("ConditionsSlice",
-                       "manage_condition: Failed to register condition %016llx to user pool with IOV:%s.",
-                       condition->hash, pool->validity().str().c_str());
+        except("ConditionsSlice",
+               "manage_condition: Failed to register condition %016llx to user pool with IOV:%s.",
+               condition->hash, pool->validity().str().c_str());
       }
     }
     return ret;
   }
-  dd4hep::except("ConditionsSlice",
-                 "manage_condition: Cannot manage invalid condition!");
+  except("ConditionsSlice",
+         "manage_condition: Cannot manage invalid condition!");
   return false;
 }
 
@@ -107,14 +105,14 @@ bool ConditionsSlice::manage(Condition condition, ManageFlag flg)    {
 }
 
 /// Access all conditions from a given detector element
-vector<Condition> ConditionsSlice::get(DetElement detector)  const  {
+std::vector<dd4hep::Condition> ConditionsSlice::get(DetElement detector)  const  {
   return pool->get(detector,FIRST_ITEM,LAST_ITEM);
 }
 
 /// No ConditionsMap overload: Access all conditions within a key range in the interval [lower,upper]
-vector<Condition> ConditionsSlice::get(DetElement detector,
-                                       Condition::itemkey_type lower,
-                                       Condition::itemkey_type upper)  const  {
+std::vector<dd4hep::Condition> ConditionsSlice::get(DetElement detector,
+                                                    Condition::itemkey_type lower,
+                                                    Condition::itemkey_type upper)  const  {
   return pool->get(detector, lower, upper);
 }
 
@@ -123,25 +121,25 @@ bool ConditionsSlice::insert(DetElement detector, Condition::itemkey_type key, C
   if ( condition.isValid() )  {
     ConditionsPool* p = manager.registerIOV(pool->validity());
     if ( !p )   {
-      dd4hep::except("ConditionsSlice",
-                     "manage_condition: Cannot access conditions pool according to IOV:%s.",
-                     pool->validity().str().c_str());
+      except("ConditionsSlice",
+             "manage_condition: Cannot access conditions pool according to IOV:%s.",
+             pool->validity().str().c_str());
     }
     bool ret = manager.registerUnlocked(*p,condition);
     if ( !ret )  {
-      dd4hep::except("ConditionsSlice",
-                     "manage_condition: Failed to register condition %016llx according to IOV:%s.",
-                     condition->hash, pool->validity().str().c_str());
+      except("ConditionsSlice",
+             "manage_condition: Failed to register condition %016llx according to IOV:%s.",
+             condition->hash, pool->validity().str().c_str());
     }
     return pool->insert(detector, key, condition);
   }
-  dd4hep::except("ConditionsSlice",
-                 "insert_condition: Cannot insert invalid condition to the user pool!");
+  except("ConditionsSlice",
+         "insert_condition: Cannot insert invalid condition to the user pool!");
   return false;
 }
 
 /// ConditionsMap overload: Access a condition
-Condition ConditionsSlice::get(DetElement detector, Condition::itemkey_type key)  const   {
+dd4hep::Condition ConditionsSlice::get(DetElement detector, Condition::itemkey_type key)  const   {
   return pool->get(detector, key);
 }
 
@@ -160,14 +158,14 @@ void ConditionsSlice::scan(DetElement         detector,
 
 namespace  {
   
-  struct SliceOper  : public ConditionsSelect  {
+  struct SliceOper  : public dd4hep::ConditionsSelect  {
     ConditionsContent& content;
     SliceOper(ConditionsContent& c) : content(c) {}
     void operator()(const ConditionsIOVPool::Elements::value_type& v)    {
       v.second->select_all(*this);
     }
-    bool operator()(Condition::Object* c)  const  {
-      if ( 0 == (c->flags&Condition::DERIVED) )   {
+    bool operator()(dd4hep::Condition::Object* c)  const  {
+      if ( 0 == (c->flags&dd4hep::Condition::DERIVED) )   {
 #if !defined(DD4HEP_MINIMAL_CONDITIONS)
         content.addLocation(c->hash,c->address);
 #endif

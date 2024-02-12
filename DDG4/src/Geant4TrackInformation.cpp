@@ -12,10 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4TrackInformation.h"
+#include <DDG4/Geant4TrackInformation.h>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Default constructor

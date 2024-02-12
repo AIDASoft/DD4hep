@@ -33,11 +33,9 @@
 
 
 using namespace dd4hep::sim;
-using namespace dd4hep;
-using namespace std;
 
 /// Standard constructor
-Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* ctxt, const string& nam)
+Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* ctxt, const std::string& nam)
   : Geant4OutputAction(ctxt, nam), m_file(nullptr), m_tree(nullptr) {
   declareProperty("Section",              m_section = "EVENT");
   declareProperty("HandleMCTruth",        m_handleMCTruth = true);
@@ -70,7 +68,7 @@ void Geant4Output2ROOT::closeOutput()   {
 }
 
 /// Create/access tree by name
-TTree* Geant4Output2ROOT::section(const string& nam) {
+TTree* Geant4Output2ROOT::section(const std::string& nam) {
   Sections::const_iterator i = m_sections.find(nam);
   if (i == m_sections.end()) {
     TDirectory::TContext ctxt(m_file);
@@ -83,7 +81,7 @@ TTree* Geant4Output2ROOT::section(const string& nam) {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2ROOT::beginRun(const G4Run* run) {
-  string fname = m_output;
+  std::string fname = m_output;
   if ( m_filesByRun )    {
     size_t idx = m_output.rfind(".");
     if ( m_file )  {
@@ -91,7 +89,7 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
     }
     fname  = m_output.substr(0, idx);
     fname += _toString(run->GetRunID(), ".run%08d");
-    if ( idx != string::npos )
+    if ( idx != std::string::npos )
       fname += m_output.substr(idx);
   }
   if ( !m_file && !fname.empty() ) {
@@ -117,7 +115,7 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
 }
 
 /// Fill single EVENT branch entry (Geant4 collection data)
-int Geant4Output2ROOT::fill(const string& nam, const ComponentCast& type, void* ptr) {
+int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, void* ptr) {
   if (m_file) {
     TBranch* b = 0;
     Branches::const_iterator i = m_branches.find(nam);
@@ -130,7 +128,7 @@ int Geant4Output2ROOT::fill(const string& nam, const ComponentCast& type, void* 
         m_branches.emplace(nam, b);
       }
       else {
-        throw runtime_error("No ROOT TClass object availible for object type:" + typeName(typ));
+        throw std::runtime_error("No ROOT TClass object availible for object type:" + typeName(typ));
       }
     }
     else {
@@ -147,7 +145,7 @@ int Geant4Output2ROOT::fill(const string& nam, const ComponentCast& type, void* 
     b->SetAddress(&ptr);
     int nbytes = b->Fill();
     if (nbytes < 0) {
-      throw runtime_error("Failed to write ROOT collection:" + nam + "!");
+      throw std::runtime_error("Failed to write ROOT collection:" + nam + "!");
     }
     return nbytes;
   }
@@ -188,12 +186,12 @@ void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
       Manip* manipulator = Geant4HitWrapper::manipulator<Geant4Particle>();
       G4ParticleTable* table = G4ParticleTable::GetParticleTable();
       const ParticleMap& pm = parts->particles();
-      vector<void*> particles;
+      std::vector<void*> particles;
       particles.reserve(pm.size());
       for ( const auto& i : pm )   {
-	auto* p = i.second;
-	G4ParticleDefinition* def = table->FindParticle(p->pdgID);
-	p->charge = int(3.0 * (def ? def->GetPDGCharge() : -1.0)); // Assume e-/pi-
+        auto* p = i.second;
+        G4ParticleDefinition* def = table->FindParticle(p->pdgID);
+        p->charge = int(3.0 * (def ? def->GetPDGCharge() : -1.0)); // Assume e-/pi-
         particles.emplace_back((ParticleMap::mapped_type*)p);
       }
       fill("MCParticles",manipulator->vec_type,&particles);
@@ -204,14 +202,14 @@ void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
 /// Callback to store each Geant4 hit collection
 void Geant4Output2ROOT::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHitsCollection* collection) {
   Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(collection);
-  string hc_nam = collection->GetName();
+  std::string hc_nam = collection->GetName();
   for(const auto& n : m_disabledCollections)  {
     if ( n == hc_nam )   {
       return;
     }
   }
   if (coll) {
-    vector<void*> hits;
+    std::vector<void*> hits;
     coll->getHitsUnchecked(hits);
     size_t nhits = coll->GetSize();
     if ( m_handleMCTruth && m_truth && nhits > 0 )   {
@@ -237,7 +235,7 @@ void Geant4Output2ROOT::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHi
         }
       }
       catch(...)   {
-        printout(ERROR,name(),"+++ Exception while saving collection %s.",hc_nam.c_str());
+        error("+++ Exception while saving collection %s.",hc_nam.c_str());
       }
     }
     fill(hc_nam, coll->vector_type(), &hits);

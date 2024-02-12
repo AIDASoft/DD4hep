@@ -15,8 +15,8 @@
 #define DD4HEP_CONDITIONS_XMLCONDITONSLOADER_H
 
 // Framework include files
-#include "DDCond/ConditionsDataLoader.h"
-#include "DD4hep/Printout.h"
+#include <DDCond/ConditionsDataLoader.h>
+#include <DD4hep/Printout.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -44,18 +44,18 @@ namespace dd4hep {
       /// Default destructor
       virtual ~ConditionsXmlLoader();
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
-      virtual size_t load_single(key_type key,
-                                 const IOV& req_validity,
-                                 RangeConditions& conditions);
+      virtual std::size_t load_single(key_type key,
+                                      const IOV& req_validity,
+                                      RangeConditions& conditions);
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
-      virtual size_t load_range( key_type key,
-                                 const IOV& req_validity,
-                                 RangeConditions& conditions);
+      virtual std::size_t load_range( key_type key,
+                                      const IOV& req_validity,
+                                      RangeConditions& conditions);
       /// Optimized update using conditions slice data
-      virtual size_t load_many(  const IOV& /* req_validity */,
-                                 RequiredItems&  /* work         */,
-                                 LoadedItems&    /* loaded       */,
-                                 IOV&       /* conditions_validity */)
+      virtual std::size_t load_many(  const IOV& /* req_validity */,
+                                      RequiredItems&  /* work         */,
+                                      LoadedItems&    /* loaded       */,
+                                      IOV&       /* conditions_validity */)
       {
         except("ConditionsLoader","+++ update: Invalid call!");
         return 0;
@@ -65,26 +65,24 @@ namespace dd4hep {
 }      /* End namespace dd4hep                    */
 #endif /* DD4HEP_CONDITIONS_XMLCONDITONSLOADER_H  */
 
-//#include "ConditionsXmlLoader.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Factories.h"
-#include "DD4hep/PluginCreators.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+// #include <ConditionsXmlLoader.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Factories.h>
+#include <DD4hep/PluginCreators.h>
+#include <DD4hep/detail/ConditionsInterna.h>
 
-#include "XML/XMLElements.h"
-#include "XML/DocumentHandler.h"
-#include "DDCond/ConditionsEntry.h"
+#include <XML/XMLElements.h>
+#include <XML/DocumentHandler.h>
+#include <DDCond/ConditionsEntry.h>
 
 // C/C++ include files
 #include <string>
 
 // Forward declartions
-using std::string;
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 namespace {
-  void* create_loader(Detector& description, int argc, char** argv)   {
+  void* create_loader(dd4hep::Detector& description, int argc, char** argv)   {
     const char* name = argc>0 ? argv[0] : "XMLLoader";
     ConditionsManagerObject* mgr = (ConditionsManagerObject*)(argc>0 ? argv[1] : 0);
     return new ConditionsXmlLoader(description,ConditionsManager(mgr),name);
@@ -107,8 +105,8 @@ size_t ConditionsXmlLoader::load_source(const std::string& nam,
                                         const IOV& req_validity,
                                         RangeConditions& conditions)
 {
-  size_t len = conditions.size();
-  string fac = "XMLConditionsParser";
+  std::size_t len = conditions.size();
+  std::string fac = "XMLConditionsParser";
   xml::DocumentHolder doc(xml::DocumentHandler().load(nam));
   xml::Handle_t       handle = doc.root();
   ConditionsStack     stack;
@@ -136,11 +134,11 @@ size_t ConditionsXmlLoader::load_source(const std::string& nam,
   return conditions.size()-len;
 }
 
-size_t ConditionsXmlLoader::load_single(key_type key,
-                                        const IOV& req_validity,
-                                        RangeConditions& conditions)
+std::size_t ConditionsXmlLoader::load_single(key_type key,
+                                             const IOV& req_validity,
+                                             RangeConditions& conditions)
 {
-  size_t len = conditions.size();
+  std::size_t len = conditions.size();
   if ( m_buffer.empty() && !m_sources.empty() )  {
     return load_source(m_sources.begin()->first, key, req_validity, conditions);
   }
@@ -158,11 +156,11 @@ size_t ConditionsXmlLoader::load_single(key_type key,
   return conditions.size()-len;
 }
 
-size_t ConditionsXmlLoader::load_range(key_type key,
-                                       const IOV& req_validity,
-                                       RangeConditions& conditions)
+std::size_t ConditionsXmlLoader::load_range(key_type key,
+                                            const IOV& req_validity,
+                                            RangeConditions& conditions)
 {
-  size_t len = conditions.size();
+  std::size_t len = conditions.size();
   while ( !m_sources.empty() )  {
     load_source(m_sources.begin()->first, key, req_validity, conditions);
   }
@@ -180,4 +178,3 @@ size_t ConditionsXmlLoader::load_range(key_type key,
   m_buffer = keep;
   return conditions.size()-len;
 }
-

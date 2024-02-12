@@ -12,18 +12,17 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/Calo2DProjection.h"
-#include "DDEve/Annotation.h"
-#include "DDEve/Factories.h"
-#include "DD4hep/InstanceCount.h"
+#include <DDEve/Calo2DProjection.h>
+#include <DDEve/Annotation.h>
+#include <DDEve/Factories.h>
+#include <DD4hep/InstanceCount.h>
 
 // Root include files
-#include "TEveCalo.h"
-#include "TEveScene.h"
-#include "TGLViewer.h"
-#include "TEveArrow.h"
+#include <TEveCalo.h>
+#include <TEveScene.h>
+#include <TGLViewer.h>
+#include <TEveArrow.h>
 
-using namespace std;
 using namespace dd4hep;
 
 ClassImp(Calo2DProjection)
@@ -61,18 +60,18 @@ void Calo2DProjection::ConfigureGeometry(const DisplayConfiguration::ViewConfig&
       TEveElementList& sens = m_eve->GetGeoTopic("Sensitive");
       TEveElementList& struc = m_eve->GetGeoTopic("Structure");
       for(TEveElementList::List_i i=sens.BeginChildren(); i!=sens.EndChildren(); ++i)  {
-	TEveElementList* ll = dynamic_cast<TEveElementList*>(*i);
-	if ( ll && cfg.name == ll->GetName() )  {
-	  m_projMgr->ImportElements(*i,m_geoScene);
-	  goto Done;
-	}
+        TEveElementList* ll = dynamic_cast<TEveElementList*>(*i);
+        if ( ll && cfg.name == ll->GetName() )  {
+          m_projMgr->ImportElements(*i,m_geoScene);
+          goto Done;
+        }
       }
       for(TEveElementList::List_i i=struc.BeginChildren(); i!=struc.EndChildren(); ++i)  {
-	TEveElementList* ll = dynamic_cast<TEveElementList*>(*i);
-	if ( ll && cfg.name == ll->GetName() )  {
-	  m_projMgr->ImportElements(*i,m_geoScene);
-	  goto Done;
-	}
+        TEveElementList* ll = dynamic_cast<TEveElementList*>(*i);
+        if ( ll && cfg.name == ll->GetName() )  {
+          m_projMgr->ImportElements(*i,m_geoScene);
+          goto Done;
+        }
       }
     Done:
       continue;
@@ -110,8 +109,8 @@ void Calo2DProjection::ConfigureGeometry(const DisplayConfiguration::ViewConfig&
 #endif
       legend_y += a->GetTextSize();
       printout(INFO,"Calo2DProjection","+++ %s: add detector %s [%s] rmin=%f towerH:%f emax=%f",
-	       name().c_str(),n,ctx.config.hits.c_str(),calo3d.rmin,calo3d.towerH,
-	       calo3d.emax);
+               name().c_str(),n,ctx.config.hits.c_str(),calo3d.rmin,calo3d.towerH,
+               calo3d.emax);
     }
   }
 }
@@ -122,5 +121,5 @@ void Calo2DProjection::ConfigureEvent(const DisplayConfiguration::ViewConfig& co
 }
 
 /// Call to import geometry topics
-void Calo2DProjection::ImportGeoTopics(const string& /* title */)   {
+void Calo2DProjection::ImportGeoTopics(const std::string& /* title */)   {
 }

@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4DataConversion.h"
+#include <DDG4/Geant4DataConversion.h>
 
 using namespace dd4hep::sim;
 

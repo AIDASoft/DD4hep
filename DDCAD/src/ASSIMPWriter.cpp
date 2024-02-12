@@ -33,27 +33,25 @@
 /// C/C++ include files
 #include <set>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::cad;
 
 using Vertex = Tessellated::Vertex_t;
 
 namespace  {
 
-  void _collect(std::vector<std::pair<PlacedVolume,TGeoHMatrix*> >& cont,
-                bool recursive, const TGeoHMatrix& to_global, PlacedVolume pv)
+  void _collect(std::vector<std::pair<dd4hep::PlacedVolume,TGeoHMatrix*> >& cont,
+                bool recursive, const TGeoHMatrix& to_global, dd4hep::PlacedVolume pv)
   {
-    Volume v = pv.volume();
+    dd4hep::Volume v = pv.volume();
     for(Int_t i=0; i<v->GetNdaughters(); ++i)  {
-      PlacedVolume p   = v->GetNode(i);
-      Solid        sol = p.volume().solid();
-      bool         use = sol->IsA() != TGeoShapeAssembly::Class();
-      unique_ptr<TGeoHMatrix> mother(new TGeoHMatrix(to_global));
+      dd4hep::PlacedVolume p   = v->GetNode(i);
+      dd4hep::Solid        sol = p.volume().solid();
+      bool                 use = sol->IsA() != TGeoShapeAssembly::Class();
+      std::unique_ptr<TGeoHMatrix> mother(new TGeoHMatrix(to_global));
       mother->Multiply(p->GetMatrix());
 
       if ( use )
-        cont.push_back(make_pair(p, mother.get()));
+        cont.push_back(std::make_pair(p, mother.get()));
       if ( recursive )
         _collect(cont, recursive, *mother, p);  
       if ( use )
@@ -63,8 +61,8 @@ namespace  {
   bool equals(Vertex const &lhs, Vertex const &rhs)  {
     constexpr double kTolerance = 1.e-32;
     return TMath::Abs(lhs[0] - rhs[0]) < kTolerance &&
-                                         TMath::Abs(lhs[1] - rhs[1]) < kTolerance &&
-                                                                       TMath::Abs(lhs[2] - rhs[2]) < kTolerance;
+      TMath::Abs(lhs[1] - rhs[1]) < kTolerance &&
+      TMath::Abs(lhs[2] - rhs[2]) < kTolerance;
   }
 
   struct TessellateShape   {
@@ -73,42 +71,46 @@ namespace  {
     virtual ~TessellateShape() = default;
     RootCsg::TBaseMesh* make_mesh(TGeoShape* sh)  const;
     RootCsg::TBaseMesh* collect_composite(TGeoCompositeShape* sh)    const;
-    unique_ptr<TGeoTessellated> build_mesh(int id, const std::string& name, TGeoShape* shape);
-    unique_ptr<TGeoTessellated> tessellate_primitive(const std::string& name, Solid solid);
-    unique_ptr<TGeoTessellated> close_tessellated(int id, TGeoShape* shape, int nskip, unique_ptr<TGeoTessellated>&& tes);
+    std::unique_ptr<TGeoTessellated> build_mesh(int id, const std::string& name, TGeoShape* shape);
+    std::unique_ptr<TGeoTessellated> tessellate_primitive(const std::string& name, dd4hep::Solid solid);
+    std::unique_ptr<TGeoTessellated> close_tessellated(int id, TGeoShape* shape, int nskip, std::unique_ptr<TGeoTessellated>&& tes);
   };
 
-  unique_ptr<TGeoTessellated> TessellateShape::close_tessellated(int id, TGeoShape* shape, int nskip, unique_ptr<TGeoTessellated>&& tes)   {
-    string nam = shape->GetName(), typ = "["+string(shape->IsA()->GetName())+"]";
+  std::unique_ptr<TGeoTessellated>
+  TessellateShape::close_tessellated(int id, TGeoShape* shape, int nskip, std::unique_ptr<TGeoTessellated>&& tes)   {
+    std::string nam = shape->GetName(), typ = "["+std::string(shape->IsA()->GetName())+"]";
     nam = nam.substr(0, nam.find("_0x"));
     tes->CloseShape(true, true, true);
     if ( nskip > 0 )   {
-      printout(ALWAYS,"ASSIMPWriter","+++ %3d %-48s %-24s Skipped %3ld/%-4d degenerate facets %4d vertices closed:%s defined:%s",
-               id, nam.c_str(), typ.c_str(), nskip, tes->GetNfacets(),  tes->GetNvertices(),
-               yes_no(tes->IsClosedBody()), yes_no(tes->IsDefined()));
+      dd4hep::printout(dd4hep::ALWAYS,
+                       "ASSIMPWriter","+++ %3d %-48s %-24s Skipped %3ld/%-4d degenerate facets %4d vertices closed:%s defined:%s",
+                       id, nam.c_str(), typ.c_str(), nskip, tes->GetNfacets(),  tes->GetNvertices(),
+                       dd4hep::yes_no(tes->IsClosedBody()), dd4hep::yes_no(tes->IsDefined()));
     }
     else   {
-      printout(ALWAYS,"ASSIMPWriter","+++ %3d %-48s %-24s Tessellated %4d facets %4d vertices closed:%s defined:%s",
-               id, nam.c_str(), typ.c_str(),
-               tes->GetNfacets(), tes->GetNvertices(),
-               yes_no(tes->IsClosedBody()),
-               yes_no(tes->IsDefined()));
+      dd4hep::printout(dd4hep::ALWAYS,
+                       "ASSIMPWriter","+++ %3d %-48s %-24s Tessellated %4d facets %4d vertices closed:%s defined:%s",
+                       id, nam.c_str(), typ.c_str(),
+                       tes->GetNfacets(), tes->GetNvertices(),
+                       dd4hep::yes_no(tes->IsClosedBody()),
+                       dd4hep::yes_no(tes->IsDefined()));
     }
-    cout << flush;
+    std::cout << std::flush;
     return move(tes);
   }
 
-  unique_ptr<TGeoTessellated> TessellateShape::build_mesh(int id, const std::string& name, TGeoShape* shape)      {
-    auto mesh = unique_ptr<RootCsg::TBaseMesh>(this->make_mesh(shape));
-    size_t nskip = 0;
-    vector<Vertex> vertices;
+  std::unique_ptr<TGeoTessellated> TessellateShape::build_mesh(int id, const std::string& name, TGeoShape* shape)      {
+    auto mesh = std::unique_ptr<RootCsg::TBaseMesh>(this->make_mesh(shape));
+    std::vector<Vertex> vertices;
+    std::size_t nskip = 0;
+
     vertices.reserve(mesh->NumberOfVertices());
-    map<size_t,size_t> vtx_index_replacements;
+    std::map<std::size_t,std::size_t> vtx_index_replacements;
     for( size_t ipoint = 0, npoints = mesh->NumberOfVertices(); ipoint < npoints; ++ipoint )   {
       long found = -1;
       const double* v = mesh->GetVertex(ipoint);
       Vertex vtx(v[0], v[1], v[2]);
-      for(size_t i=0; i < vertices.size(); ++i)   {
+      for(std::size_t i=0; i < vertices.size(); ++i)   {
         if ( equals(vertices[i],vtx) )  {
           vtx_index_replacements[ipoint] = found = i;
           break;
@@ -119,12 +121,12 @@ namespace  {
         vertices.emplace_back(v[0], v[1], v[2]);
       }
     }
-    size_t vtx_len = vertices.size();
-    unique_ptr<TGeoTessellated> tes = make_unique<TGeoTessellated>(name.c_str(), vertices);
-    for( size_t ipoly = 0, npols = mesh->NumberOfPolys(); ipoly < npols; ++ipoly)    {
-      size_t npoints = mesh->SizeOfPoly(ipoly);
+    std::size_t vtx_len = vertices.size();
+    std::unique_ptr<TGeoTessellated> tes = std::make_unique<TGeoTessellated>(name.c_str(), vertices);
+    for( std::size_t ipoly = 0, npols = mesh->NumberOfPolys(); ipoly < npols; ++ipoly)    {
+      std::size_t npoints = mesh->SizeOfPoly(ipoly);
       if ( npoints >= 3 )   {
-        printout(DEBUG,"ASSIMPWriter","+++ Got polygon with %ld points",npoints);
+        printout(dd4hep::DEBUG,"ASSIMPWriter","+++ Got polygon with %ld points",npoints);
         ///
         /// 3-vertex polygons automatically translate to GL_TRIANGLES
         /// See Kronos documentation to glBegin / glEnd from the glu library:
@@ -138,13 +140,13 @@ namespace  {
         /// One triangle is defined for each vertex presented after the first two vertices.
         /// Vertices 1 , n + 1 , and n + 2 define triangle n.
         /// N - 2 triangles are drawn.
-        size_t v0  = mesh->GetVertexIndex(ipoly, 0);
-        size_t vv0 = vtx_index_replacements[v0];
-        for( size_t ipoint = 0; ipoint < npoints-2; ++ipoint )   {
-          size_t v1 = mesh->GetVertexIndex(ipoly, ipoint+1);
-          size_t v2 = mesh->GetVertexIndex(ipoly, ipoint+2);
-          size_t vv1 = vtx_index_replacements[v1];
-          size_t vv2 = vtx_index_replacements[v2];
+        std::size_t v0  = mesh->GetVertexIndex(ipoly, 0);
+        std::size_t vv0 = vtx_index_replacements[v0];
+        for( std::size_t ipoint = 0; ipoint < npoints-2; ++ipoint )   {
+          std::size_t v1 = mesh->GetVertexIndex(ipoly, ipoint+1);
+          std::size_t v2 = mesh->GetVertexIndex(ipoly, ipoint+2);
+          std::size_t vv1 = vtx_index_replacements[v1];
+          std::size_t vv2 = vtx_index_replacements[v2];
           if ( vv0 > vtx_len || vv1 > vtx_len || vv2 > vtx_len )  {
             ++nskip;
             continue;
@@ -177,7 +179,7 @@ namespace  {
         /// For odd n, vertices n, n + 1 , and n + 2 define triangle n.
         /// For even n, vertices n + 1 , n, and n + 2 define triangle n.
         /// N - 2 triangles are drawn.
-        for( size_t ipoint = 0; ipoint < npoints-2; ++ipoint )   {
+        for( std::size_t ipoint = 0; ipoint < npoints-2; ++ipoint )   {
           vtx_t v0(mesh->GetVertex(mesh->GetVertexIndex(ipoly, ipoint)));
           vtx_t v1(mesh->GetVertex(mesh->GetVertexIndex(ipoly, ipoint+1)));
           vtx_t v2(mesh->GetVertex(mesh->GetVertexIndex(ipoly, ipoint+2)));
@@ -209,11 +211,11 @@ namespace  {
     // Do not wonder about this logic.
     // GetBuffer3D (->make_mesh) uses static variable fgTransform of TGeoShape!
     glmat->Multiply(node->GetLeftMatrix());
-    auto left_mesh  = unique_ptr<RootCsg::TBaseMesh>(make_mesh(left));
+    auto left_mesh  = std::unique_ptr<RootCsg::TBaseMesh>(make_mesh(left));
     *glmat = &copy;
 
     glmat->Multiply(node->GetRightMatrix());
-    auto right_mesh = unique_ptr<RootCsg::TBaseMesh>(make_mesh(right));
+    auto right_mesh = std::unique_ptr<RootCsg::TBaseMesh>(make_mesh(right));
     *glmat = &copy;
 
     switch (oper) {
@@ -229,14 +231,14 @@ namespace  {
     }
   }
 
-  unique_ptr<TGeoTessellated> TessellateShape::tessellate_primitive(const std::string& name, Solid solid)   {
+  std::unique_ptr<TGeoTessellated> TessellateShape::tessellate_primitive(const std::string& name, dd4hep::Solid solid)   {
     using  vtx_t = Vertex;
     const  TBuffer3D& buf3D = solid->GetBuffer3D(TBuffer3D::kAll, false);
     struct pol_t { int c, n; int segs[1]; } *pol = nullptr;
     struct seg_t { int c, _1, _2;         };
     const  seg_t* segs = (seg_t*)buf3D.fSegs;
     const  vtx_t* vtcs = (vtx_t*)buf3D.fPnts;
-    size_t i, num_facet = 0;
+    std::size_t i, num_facet = 0;
     const  Int_t* q;
 
     for( i=0, q=buf3D.fPols; i<buf3D.NbPols(); ++i, q += (2+pol->n))  {
@@ -244,7 +246,7 @@ namespace  {
       for( int j=0; j < pol->n-1; ++j ) num_facet += 2;
     }
 
-    unique_ptr<TGeoTessellated> tes = make_unique<TGeoTessellated>(name.c_str(), num_facet);
+    std::unique_ptr<TGeoTessellated> tes = std::make_unique<TGeoTessellated>(name.c_str(), num_facet);
     q = buf3D.fPols;
     for( i=0, q=buf3D.fPols; i<buf3D.NbPols(); ++i)  {
       pol = (pol_t*)q;
@@ -292,13 +294,13 @@ int ASSIMPWriter::write(const std::string& file_name,
   std::vector<std::pair<PlacedVolume,TGeoHMatrix*> > placements;
   int  build_mode  = ((flags&0x1) != 0) ? 1 : 0;
   bool dump_facets = ((flags&0x2) != 0);
-  vector<Material>        materials;
-  TGeoHMatrix             toGlobal;
+  std::vector<Material>  materials;
+  TGeoHMatrix            toGlobal;
 
   for( auto pv : places )
     _collect(placements, recursive, toGlobal, pv);
 
-  size_t num_mesh = placements.size();
+  std::size_t num_mesh = placements.size();
 
   aiScene scene;
   scene.mNumMaterials = 0;
@@ -316,9 +318,9 @@ int ASSIMPWriter::write(const std::string& file_name,
   auto* geo_transform = TGeoShape::GetTransform();
 
   TGeoHMatrix identity;
-  for( size_t imesh=0; imesh < num_mesh; ++imesh )   {
-    unique_ptr<TGeoHMatrix>     trafo(placements[imesh].second);
-    unique_ptr<TGeoTessellated> shape_holder;
+  for( std::size_t imesh=0; imesh < num_mesh; ++imesh )   {
+    std::unique_ptr<TGeoHMatrix>     trafo(placements[imesh].second);
+    std::unique_ptr<TGeoTessellated> shape_holder;
     PlacedVolume     pv  = placements[imesh].first;
     Volume           vol = pv.volume();
     Solid            sol = vol.solid();
@@ -348,12 +350,12 @@ int ASSIMPWriter::write(const std::string& file_name,
       continue;
     }
     
-    size_t num_vert = 0;
+    std::size_t num_vert = 0;
     for( long j=0, n=tes->GetNfacets(); j < n; ++j )
       num_vert += tes->GetFacet(j).GetNvert();
 
-    size_t index = std::numeric_limits<size_t>::max();
-    for( size_t j=0; j<materials.size(); ++j )  {
+    std::size_t index = std::numeric_limits<std::size_t>::max();
+    for( std::size_t j=0; j<materials.size(); ++j )  {
       if( materials[j] == mat )   {
         index = j;
         break;

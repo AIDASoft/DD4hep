@@ -13,14 +13,11 @@
 #ifndef DD4HEP_PROPERTYTABLE_H
 #define DD4HEP_PROPERTYTABLE_H
 
-#include "RVersion.h"
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
-
 // Framework include files
-#include "DD4hep/Handle.h"
+#include <DD4hep/Handle.h>
 
 // ROOT include files
-#include "TGDMLMatrix.h"
+#include <TGDMLMatrix.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -59,6 +56,5 @@ namespace dd4hep {
     PropertyTable& operator=(const PropertyTable& m) = default;
   };
 
-}         /* End namespace dd4hep              */
-#endif    /* ROOT_VERSION                      */
+}      // End namespace dd4hep
 #endif // DD4HEP_PROPERTYTABLE_H

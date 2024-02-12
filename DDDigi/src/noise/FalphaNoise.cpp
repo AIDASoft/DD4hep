@@ -19,7 +19,6 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace std;
 using namespace dd4hep::detail;
 
 #ifdef  __GSL_FALPHA_NOISE

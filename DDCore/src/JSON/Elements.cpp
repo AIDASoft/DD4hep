@@ -12,8 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "JSON/Printout.h"
-#include "JSON/Elements.h"
+#include <JSON/Printout.h>
+#include <JSON/Elements.h>
 
 // C/C++ include files
 #include <iostream>
@@ -21,21 +21,20 @@
 #include <cstdio>
 #include <map>
 
-using namespace std;
 using namespace dd4hep::json;
 static const size_t INVALID_NODE = ~0U;
 
 // Forward declarations
 namespace dd4hep {
-  std::pair<int, double> _toInteger(const string& value);
-  std::pair<int, double> _toFloatingPoint(const string& value);
-  void   _toDictionary(const string& name, const string& value, const string& typ);
-  string _getEnviron(const string& env);
+  std::pair<int, double> _toInteger(const std::string& value);
+  std::pair<int, double> _toFloatingPoint(const std::string& value);
+  void   _toDictionary(const std::string& name, const std::string& value, const std::string& typ);
+  std::string _getEnviron(const std::string& env);
 }
 // Static storage
 namespace {
-  string _checkEnviron(const string& env)  {
-    string r = dd4hep::_getEnviron(env);
+  std::string _checkEnviron(const std::string& env)  {
+    std::string r = dd4hep::_getEnviron(env);
     return r.empty() ? env : r;
   }
 }
@@ -50,7 +49,7 @@ namespace {
 
   JsonElement* node_first(JsonElement* e, const char* tag) {
     if ( e )  {
-      string t(tag);
+      std::string t(tag);
       if ( t == "*" )  {
         ptree::iterator i = e->second.begin();
         return i != e->second.end() ? &(*i) : 0;
@@ -61,7 +60,7 @@ namespace {
     return 0;
   }
 
-  size_t node_count(JsonElement* e, const string& t) {
+  size_t node_count(JsonElement* e, const std::string& t) {
     return e ? (t=="*" ? e->second.size() : e->second.count(t)) : 0;
   }
 
@@ -78,64 +77,64 @@ namespace {
   }
 }
 
-string dd4hep::json::_toString(Attribute attr) {
+std::string dd4hep::json::_toString(Attribute attr) {
   if (attr)
     return _toString(attribute_value(attr));
   return "";
 }
 
-template <typename T> static inline string __to_string(T value, const char* fmt) {
+template <typename T> static inline std::string __to_string(T value, const char* fmt) {
   char text[128];
   ::snprintf(text, sizeof(text), fmt, value);
   return text;
 }
 
 /// Do-nothing version. Present for completeness and argument interchangeability
-string dd4hep::json::_toString(const char* s) {
+std::string dd4hep::json::_toString(const char* s) {
   if ( !s || *s == 0 ) return "";
   else if ( !(*s == '$' && *(s+1) == '{') ) return s;
   return _checkEnviron(s);
 }
 
 /// Do-nothing version. Present for completeness and argument interchangeability
-string dd4hep::json::_toString(const string& s) {
+std::string dd4hep::json::_toString(const std::string& s) {
   if ( s.length() < 3 || s[0] != '$' ) return s;
   else if ( !(s[0] == '$' && s[1] == '{') ) return s;
   return _checkEnviron(s);
 }
 
 /// Format unsigned long integer to string with arbitrary format
-string dd4hep::json::_toString(unsigned long v, const char* fmt) {
+std::string dd4hep::json::_toString(unsigned long v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
 /// Format unsigned integer (32 bits) to string with arbitrary format
-string dd4hep::json::_toString(unsigned int v, const char* fmt) {
+std::string dd4hep::json::_toString(unsigned int v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
 /// Format signed integer (32 bits) to string with arbitrary format
-string dd4hep::json::_toString(int v, const char* fmt) {
+std::string dd4hep::json::_toString(int v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
 /// Format signed long integer to string with arbitrary format
-string dd4hep::json::_toString(long v, const char* fmt)   {
+std::string dd4hep::json::_toString(long v, const char* fmt)   {
   return __to_string(v, fmt);
 }
 
 /// Format single procision float number (32 bits) to string with arbitrary format
-string dd4hep::json::_toString(float v, const char* fmt) {
+std::string dd4hep::json::_toString(float v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
 /// Format double procision float number (64 bits) to string with arbitrary format
-string dd4hep::json::_toString(double v, const char* fmt) {
+std::string dd4hep::json::_toString(double v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
 /// Format pointer to string with arbitrary format
-string dd4hep::json::_ptrToString(const void* v, const char* fmt) {
+std::string dd4hep::json::_ptrToString(const void* v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
@@ -149,7 +148,7 @@ int dd4hep::json::_toInt(const char* value) {
 
 bool dd4hep::json::_toBool(const char* value) {
   if (value) {
-    string s = _toString(value);
+    std::string s = _toString(value);
     return s == "true";
   }
   return false;
@@ -171,7 +170,7 @@ template <typename T> void dd4hep::json::_toDictionary(const char* name, T value
   dd4hep::_toDictionary(name, _toString(value), "number");
 }
 
-template void dd4hep::json::_toDictionary(const char* name, const string& value);
+template void dd4hep::json::_toDictionary(const char* name, const std::string& value);
 template void dd4hep::json::_toDictionary(const char* name, unsigned long value);
 template void dd4hep::json::_toDictionary(const char* name, unsigned int value);
 template void dd4hep::json::_toDictionary(const char* name, unsigned short value);
@@ -182,7 +181,7 @@ template void dd4hep::json::_toDictionary(const char* name, float value);
 template void dd4hep::json::_toDictionary(const char* name, double value);
 
 /// Evaluate string constant using environment stored in the evaluator
-string dd4hep::json::getEnviron(const string& env)   {
+std::string dd4hep::json::getEnviron(const std::string& env)   {
   return dd4hep::_getEnviron(env);
 }
 
@@ -194,7 +193,7 @@ NodeList::NodeList(const NodeList& copy)
 }
 
 /// Initializing constructor
-NodeList::NodeList(JsonElement* node, const string& tag_value)
+NodeList::NodeList(JsonElement* node, const std::string& tag_value)
   : m_tag(tag_value), m_node(node)
 {
   reset();
@@ -207,7 +206,7 @@ NodeList::~NodeList() {
 /// Reset the nodelist
 JsonElement* NodeList::reset() {
   if ( m_tag == "*" )
-    m_ptr = make_pair(m_node->second.ordered_begin(), m_node->second.not_found());
+    m_ptr = std::make_pair(m_node->second.ordered_begin(), m_node->second.not_found());
   else
     m_ptr = m_node->second.equal_range(m_tag);
   if ( m_ptr.first != m_ptr.second )
@@ -269,8 +268,8 @@ bool Handle_t::hasAttr(const char* tag_value) const {
 }
 
 /// Retrieve a collection of all attributes of this DOM element
-vector<Attribute> Handle_t::attributes() const {
-  vector < Attribute > attrs;
+std::vector<Attribute> Handle_t::attributes() const {
+  std::vector < Attribute > attrs;
   if (m_node) {
     for(ptree::iterator i=m_node->second.begin(); i!=m_node->second.end(); ++i)  {
       Attribute a = &(*i);
@@ -286,12 +285,12 @@ size_t Handle_t::numChildren(const char* t, bool throw_exception) const {
     return 0;
   else if (n != INVALID_NODE)
     return n;
-  string msg = "Handle_t::numChildren: ";
+  std::string msg = "Handle_t::numChildren: ";
   if (m_node)
     msg += "Element [" + tag() + "] has no children of type '" + _toString(t) + "'";
   else
     msg += "Element [INVALID] has no children of type '" + _toString(t) + "'";
-  throw runtime_error(msg);
+  throw std::runtime_error(msg);
 }
 
 /// Remove a single child node identified by its handle from the tree of the element
@@ -299,12 +298,12 @@ Handle_t Handle_t::child(const char* t, bool throw_exception) const {
   Elt_t e = node_first(m_node, t);
   if (e || !throw_exception)
     return e;
-  string msg = "Handle_t::child: ";
+  std::string msg = "Handle_t::child: ";
   if (m_node)
     msg += "Element [" + tag() + "] has no child of type '" + _toString(t) + "'";
   else
     msg += "Element [INVALID]. Cannot remove child of type: '" + _toString(t) + "'";
-  throw runtime_error(msg);
+  throw std::runtime_error(msg);
 }
 
 NodeList Handle_t::children(const char* tag_value) const {
@@ -320,12 +319,12 @@ Attribute Handle_t::attr_ptr(const char* t) const {
   Attribute a = attribute_node(m_node, t);
   if (0 != a)
     return a;
-  string msg = "Handle_t::attr_ptr: ";
+  std::string msg = "Handle_t::attr_ptr: ";
   if (m_node)
     msg += "Element [" + tag() + "] has no attribute of type '" + _toString(t) + "'";
   else
     msg += "Element [INVALID] has no attribute of type '" + _toString(t) + "'";
-  throw runtime_error(msg);
+  throw std::runtime_error(msg);
 }
 
 /// Access attribute name (throws exception if not present)
@@ -333,7 +332,7 @@ const char* Handle_t::attr_name(const Attribute a) const {
   if (a) {
     return a->first.c_str();
   }
-  throw runtime_error("Attempt to access invalid XML attribute object!");
+  throw std::runtime_error("Attempt to access invalid XML attribute object!");
 }
 
 /// Access attribute value by the attribute's unicode name (throws exception if not present)
@@ -358,7 +357,7 @@ Handle_t Document::root() const   {
   if ( m_doc )   {
     return m_doc;
   }
-  throw runtime_error("Document::root: Invalid handle!");
+  throw std::runtime_error("Document::root: Invalid handle!");
 }
 
 /// Assign new document. Old document is dropped.
@@ -403,11 +402,11 @@ size_t Collection_t::size() const {
 }
 
 /// Helper function to throw an exception
-void Collection_t::throw_loop_exception(const exception& e) const {
+void Collection_t::throw_loop_exception(const std::exception& e) const {
   if (m_node) {
-    throw runtime_error(string(e.what()) + "\n" + "dd4hep: Error interpreting XML nodes of type <" + tag() + "/>");
+    throw std::runtime_error(std::string(e.what()) + "\n" + "dd4hep: Error interpreting XML nodes of type <" + tag() + "/>");
   }
-  throw runtime_error(string(e.what()) + "\n" + "dd4hep: Error interpreting collections XML nodes.");
+  throw std::runtime_error(std::string(e.what()) + "\n" + "dd4hep: Error interpreting collections XML nodes.");
 }
 
 void Collection_t::operator++() const {
@@ -444,8 +443,8 @@ void dd4hep::json::dumpTree(Element elt)   {
 
 void dd4hep::json::dumpTree(const JsonElement* elt)   {
   struct Dump {
-    void operator()(const JsonElement* e, const string& tag)   const  {
-      string t = tag+"   ";
+    void operator()(const JsonElement* e, const std::string& tag)   const  {
+      std::string t = tag+"   ";
       printout(INFO,"DumpTree","+++ %s %s: %s",tag.c_str(), e->first.c_str(), e->second.data().c_str());
       for(auto i=e->second.begin(); i!=e->second.end(); ++i)
         (*this)(&(*i), t);

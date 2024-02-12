@@ -27,13 +27,12 @@
 #include <TDatabasePDG.h>
 #include <TParticlePDG.h>
 
+// C/C++ include files
 #include <sstream>
 #include <iostream>
 #include <regex.h>
 
-using namespace dd4hep;
 using namespace dd4hep::sim;
-typedef detail::ReferenceBitMask<int> PropertyMask;
 
 /// Default destructor
 ParticleExtension::~ParticleExtension() {
@@ -385,6 +384,7 @@ void Geant4ParticleHandle::header4(int level, const std::string& src, const char
 }
 
 void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* tag) const  {
+  using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
   Geant4ParticleHandle p(*this);
   //char equiv[32];
   PropertyMask mask(p->reason);
@@ -495,32 +495,31 @@ void Geant4ParticleMap::clear()    {
 void Geant4ParticleMap::dump()  const  {
   int cnt;
   char text[64];
-  using namespace std;
   const Geant4ParticleMap* m = this;
 
   cnt = 0;
-  cout << "Particle map:" << endl;
+  std::cout << "Particle map:" << std::endl;
   for( const auto& p : m->particleMap )  {
-    ::snprintf(text,sizeof(text)," [%-4d:%p]",p.second->id,(void*)p.second);
-    cout << text;
+    std::snprintf(text,sizeof(text)," [%-4d:%p]",p.second->id,(void*)p.second);
+    std::cout << text;
     if ( ++cnt == 8 ) {
-      cout << endl;
+      std::cout << std::endl;
       cnt = 0;
     }
   }
-  cout << endl;
+  std::cout << std::endl;
 
   cnt = 0;
-  cout << "Equivalents:" << endl;
+  std::cout << "Equivalents:" << std::endl;
   for( const auto& p : m->equivalentTracks )  {
-    ::snprintf(text,sizeof(text)," [%-5d : %-5d]",p.first,p.second);
-    cout << text;
+    std::snprintf(text,sizeof(text)," [%-5d : %-5d]",p.first,p.second);
+    std::cout << text;
     if ( ++cnt == 8 ) {
-      cout << endl;
+      std::cout << std::endl;
       cnt = 0;
     }
   }
-  cout << endl;
+  std::cout << std::endl;
 }
 
 /// Adopt particle maps

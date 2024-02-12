@@ -14,8 +14,7 @@
 // Framework include files
 #include <DDG4/Geant4FastSimShowerModel.h>
 
-using namespace dd4hep;
-using namespace dd4hep::sim;
+using dd4hep::sim::Geant4FastSimShowerModel;
 
 #include <DDG4/Factories.h>
 DECLARE_GEANT4ACTION(Geant4FastSimShowerModel)

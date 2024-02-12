@@ -13,7 +13,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Errors.h"
+#include <DD4hep/Errors.h>
 
 // C/C++ includes
 #include <cerrno>

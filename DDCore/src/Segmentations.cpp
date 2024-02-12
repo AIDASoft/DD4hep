@@ -12,27 +12,25 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Segmentations.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Plugins.h"
-#include "DD4hep/detail/Handle.inl"
-#include "DD4hep/detail/SegmentationsInterna.h"
+#include <DD4hep/Segmentations.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Plugins.h>
+#include <DD4hep/detail/Handle.inl>
+#include <DD4hep/detail/SegmentationsInterna.h>
 
 // C/C++ include files
 #include <iostream>
 #include <stdexcept>
 
-using namespace std;
 using namespace dd4hep;
-using namespace dd4hep::detail;
 
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(SegmentationObject);
 
 /// Constructor to used when creating a new object
-Segmentation::Segmentation(const string& typ, const string& nam, const BitFieldCoder* dec) : Handle<Object>()
+Segmentation::Segmentation(const std::string& typ, const std::string& nam, const BitFieldCoder* dec) : Handle<Object>()
 {
-  string seg_type = "segmentation_constructor__"+typ;
+  std::string seg_type = "segmentation_constructor__"+typ;
   SegmentationObject* obj = PluginService::Create<SegmentationObject*>(seg_type, dec);
   if ( obj != 0 )  {
     assign(obj, nam, typ);
@@ -122,56 +120,56 @@ Handle<SensitiveDetectorObject> Segmentation::sensitive() const  {
   return access()->sensitive;
 }
 
-#include "DDSegmentation/NoSegmentation.h"
+#include <DDSegmentation/NoSegmentation.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::NoSegmentation);
 
-#include "DDSegmentation/CartesianGrid.h"
+#include <DDSegmentation/CartesianGrid.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianGrid);
 
-#include "DDSegmentation/CartesianGridXY.h"
+#include <DDSegmentation/CartesianGridXY.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridXY);
 
-#include "DDSegmentation/CartesianGridXZ.h"
+#include <DDSegmentation/CartesianGridXZ.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridXZ);
 
-#include "DDSegmentation/CartesianGridYZ.h"
+#include <DDSegmentation/CartesianGridYZ.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridYZ);
 
-#include "DDSegmentation/CartesianGridXYZ.h"
+#include <DDSegmentation/CartesianGridXYZ.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridXYZ);
 
-#include "DDSegmentation/CartesianStripX.h"
+#include <DDSegmentation/CartesianStripX.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianStripX);
 
-#include "DDSegmentation/CartesianStripY.h"
+#include <DDSegmentation/CartesianStripY.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianStripY);
 
-#include "DDSegmentation/CartesianStripZ.h"
+#include <DDSegmentation/CartesianStripZ.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianStripZ);
 
-#include "DDSegmentation/TiledLayerGridXY.h"
+#include <DDSegmentation/TiledLayerGridXY.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::TiledLayerGridXY);
 
-#include "DDSegmentation/MegatileLayerGridXY.h"
+#include <DDSegmentation/MegatileLayerGridXY.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::MegatileLayerGridXY);
 
-#include "DDSegmentation/WaferGridXY.h"
+#include <DDSegmentation/WaferGridXY.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::WaferGridXY);
 
-#include "DDSegmentation/PolarGridRPhi.h"
+#include <DDSegmentation/PolarGridRPhi.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::PolarGridRPhi);
 
-#include "DDSegmentation/PolarGridRPhi2.h"
+#include <DDSegmentation/PolarGridRPhi2.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::PolarGridRPhi2);
 
-#include "DDSegmentation/GridPhiEta.h"
+#include <DDSegmentation/GridPhiEta.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::GridPhiEta);
 
-#include "DDSegmentation/GridRPhiEta.h"
+#include <DDSegmentation/GridRPhiEta.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::GridRPhiEta);
 
-#include "DDSegmentation/ProjectiveCylinder.h"
+#include <DDSegmentation/ProjectiveCylinder.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::ProjectiveCylinder);
 
-#include "DDSegmentation/MultiSegmentation.h"
+#include <DDSegmentation/MultiSegmentation.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::MultiSegmentation);

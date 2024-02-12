@@ -12,17 +12,14 @@
 //==========================================================================
 
 // Framework includes
-#include "DDAlign/AlignmentsCalib.h"
+#include <DDAlign/AlignmentsCalib.h>
 
-#include "DD4hep/Memory.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/DetectorTools.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
+#include <DD4hep/Memory.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/DetectorTools.h>
+#include <DD4hep/detail/AlignmentsInterna.h>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::align;
-typedef Condition::key_type key_type;
 
 /// Helper class to store information about alignment calibration items
 /**  Implementation details: Alignment context entry
@@ -34,12 +31,12 @@ typedef Condition::key_type key_type;
  */
 class AlignmentsCalib::Entry   {
 public:
-  Delta                  delta;
-  Delta                  original;
-  Condition              source;
-  DetElement             detector;
-  Condition::key_type    target = 0;
-  int                    dirty  = 0;
+  dd4hep::Delta                  delta;
+  dd4hep::Delta                  original;
+  dd4hep::Condition              source;
+  dd4hep::DetElement             detector;
+  dd4hep::Condition::key_type    target = 0;
+  int                            dirty  = 0;
   Entry() = default;
   Entry(const Entry& c) = delete;
   Entry& operator=(const Entry& c) = delete;
@@ -57,13 +54,13 @@ AlignmentsCalib::~AlignmentsCalib()   noexcept(false)  {
 }
 
 /// Convenience only: Access detector element by path
-DetElement AlignmentsCalib::detector(const string& path)  const   {
+dd4hep::DetElement AlignmentsCalib::detector(const std::string& path)  const   {
   DetElement det(detail::tools::findElement(description,path));
   return det;
 }
 
 /// Implementation: Add a new entry to the transaction stack.
-pair<key_type,AlignmentsCalib::Entry*>
+std::pair<dd4hep::Condition::key_type,AlignmentsCalib::Entry*>
 AlignmentsCalib::_set(DetElement detector, const Delta& delta)   {
   ConditionKey tar_key(detector.key(),Keys::alignmentKey);
   UsedConditions::iterator i = used.find(tar_key.hash);
@@ -103,14 +100,14 @@ AlignmentsCalib::_set(DetElement detector, const Delta& delta)   {
 }
 
 /// (1) Add a new entry to an existing DetElement structure.
-Condition::key_type
+dd4hep::Condition::key_type
 AlignmentsCalib::set(DetElement det, const Delta& delta)   {
   return _set(det.access(), delta).first;
 }
 
 /// (2) Add a new entry to an existing DetElement structure.
-Condition::key_type
-AlignmentsCalib::set(const string& path, const Delta& delta)   {
+dd4hep::Condition::key_type
+AlignmentsCalib::set(const std::string& path, const Delta& delta)   {
   return _set(detector(path).access(), delta).first;
 }
 

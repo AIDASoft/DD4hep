@@ -12,19 +12,17 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DDG4/Geant4UIMessenger.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DDG4/Geant4UIMessenger.h>
 
 // Geant4 include files
-#include "G4UIcmdWithoutParameter.hh"
-#include "G4UIcmdWithAString.hh"
+#include <G4UIcmdWithoutParameter.hh>
+#include <G4UIcmdWithAString.hh>
 
 // C/C++ include files
 #include <algorithm>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 namespace {
@@ -35,8 +33,8 @@ namespace {
     InstallProperties(Geant4UIMessenger::Commands& c, const std::string& p, G4UImessenger* m)
       : cmds(c), path(p), msg(m) {
     }
-    void operator()(const pair<string, Property>& o) {
-      string n = path + o.first;
+    void operator()(const std::pair<std::string, dd4hep::Property>& o) {
+      std::string n = path + o.first;
       G4UIcmdWithAString* cmd = new G4UIcmdWithAString(n.c_str(), msg);
       cmd->SetParameterName(o.first.c_str(), true);
       cmd->SetGuidance(("Property item of type " + o.second.type()).c_str());
@@ -45,7 +43,7 @@ namespace {
   };
 }
 
-Geant4UIMessenger::Geant4UIMessenger(const string& name, const string& path)
+Geant4UIMessenger::Geant4UIMessenger(const std::string& name, const std::string& path)
   : G4UImessenger(), m_directory(0), m_properties(0), m_name(name), m_path(path) {
   m_directory = new G4UIdirectory(path.c_str());
   printout(INFO, "Geant4UI", "+++ %s> Install Geant4 control directory:%s", name.c_str(), path.c_str());
@@ -89,7 +87,7 @@ void Geant4UIMessenger::exportProperties(PropertyManager& mgr) {
 G4String Geant4UIMessenger::GetCurrentValue(G4UIcommand * c) {
   Commands::iterator i = m_propertyCmd.find(c);
   if (m_properties && i != m_propertyCmd.end()) {
-    const string& n = (*i).second;
+    const std::string& n = (*i).second;
     return (*m_properties)[n].str();
   }
   printout(INFO, "Geant4UI",
@@ -101,7 +99,7 @@ G4String Geant4UIMessenger::GetCurrentValue(G4UIcommand * c) {
 void Geant4UIMessenger::SetNewValue(G4UIcommand *c, G4String v) {
   Commands::iterator i = m_propertyCmd.find(c);
   if (m_properties && i != m_propertyCmd.end()) {
-    const string& n = (*i).second;
+    const std::string& n = (*i).second;
     try  {
       if (!v.empty()) {
         Property& p = (*m_properties)[n];
@@ -111,12 +109,12 @@ void Geant4UIMessenger::SetNewValue(G4UIcommand *c, G4String v) {
                  m_name.c_str(), n.c_str(), v.c_str(), p.str().c_str());
       }
       else {
-        string value = (*m_properties)[n].str();
+        std::string value = (*m_properties)[n].str();
         printout(INFO, "Geant4UI", "+++ %s> Unchanged property value %s = %s.",
                  m_name.c_str(), n.c_str(), value.c_str());
       }
     }
-    catch(const exception& e)   {
+    catch(const std::exception& e)   {
       printout(INFO, "Geant4UI", "+++ %s> Exception: Failed to change property %s = '%s'.",
                m_name.c_str(), n.c_str(), v.c_str());
       printout(INFO, "Geant4UI", "+++ %s> Exception: %s", m_name.c_str(), e.what());
@@ -134,7 +132,7 @@ void Geant4UIMessenger::SetNewValue(G4UIcommand *c, G4String v) {
         const void* args[] = {v.c_str(), 0};
         (*j).second.execute(args);
       }
-      catch(const exception& e)   {
+      catch(const std::exception& e)   {
         printout(INFO, "Geant4UI", "+++ %s> Exception: Failed to exec action '%s' [%s].",
                  m_name.c_str(), c->GetCommandName().c_str(), c->GetCommandPath().c_str());
         printout(INFO, "Geant4UI", "+++ %s> Exception: %s",e.what());

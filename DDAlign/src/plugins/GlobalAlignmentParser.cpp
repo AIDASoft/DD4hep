@@ -12,20 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Path.h"
-#include "DD4hep/Mutex.h"
-#include "DD4hep/Printout.h"
-#include "XML/Conversions.h"
-#include "XML/XMLParsers.h"
-#include "XML/DocumentHandler.h"
-#include "DD4hep/DetectorTools.h"
-#include "DD4hep/DetFactoryHelper.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Path.h>
+#include <DD4hep/Mutex.h>
+#include <DD4hep/Printout.h>
+#include <XML/Conversions.h>
+#include <XML/XMLParsers.h>
+#include <XML/DocumentHandler.h>
+#include <DD4hep/DetectorTools.h>
+#include <DD4hep/DetFactoryHelper.h>
 
-#include "DDAlign/AlignmentTags.h"
-#include "DDAlign/GlobalAlignmentStack.h"
-#include "DDAlign/GlobalAlignmentCache.h"
-#include "DDAlign/GlobalDetectorAlignment.h"
+#include <DDAlign/AlignmentTags.h>
+#include <DDAlign/GlobalAlignmentStack.h>
+#include <DDAlign/GlobalAlignmentCache.h>
+#include <DDAlign/GlobalDetectorAlignment.h>
 
 // C/C++ include files
 #include <stdexcept>
@@ -52,13 +52,13 @@ namespace dd4hep  {
   template <> void Converter<alignment>::operator()(xml_h seq)  const;
   template <> void Converter<detelement>::operator()(xml_h seq)  const;
   template <> void Converter<include_file>::operator()(xml_h seq)  const;
+
+  static long setup_Alignment(Detector& description, const xml_h& e);
 }
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::align;
+using StackEntry = GlobalAlignmentStack::StackEntry;
 
-static long setup_Alignment(Detector& description, const xml_h& e);
 
 /** Convert to enable/disable debugging.
  *
@@ -66,12 +66,10 @@ static long setup_Alignment(Detector& description, const xml_h& e);
  *  @version 1.0
  *  @date    01/04/2014
  */
-template <> void Converter<debug>::operator()(xml_h e) const {
+template <> void dd4hep::Converter<dd4hep::debug>::operator()(xml_h e) const {
   bool value = e.attr<bool>(_U(value));
   GlobalDetectorAlignment::debug(value);
 }
-
-typedef GlobalAlignmentStack::StackEntry StackEntry;
 
 /** Convert volume objects
  *
@@ -88,19 +86,19 @@ typedef GlobalAlignmentStack::StackEntry StackEntry;
  *  @version 1.0
  *  @date    01/04/2014
  */
-template <> void Converter<volume>::operator()(xml_h e) const {
+template <> void dd4hep::Converter<dd4hep::volume>::operator()(xml_h e) const {
   Delta val;
   GlobalAlignmentStack* stack  = _option<GlobalAlignmentStack>();
-  pair<DetElement,string>* elt = _param<pair<DetElement,string> >();
-  string subpath    = e.attr<string>(_ALU(path));
+  std::pair<DetElement,std::string>* elt = _param<std::pair<DetElement,std::string> >();
+  std::string subpath = e.attr<std::string>(_ALU(path));
   bool   reset      = e.hasAttr(_ALU(reset)) ? e.attr<bool>(_ALU(reset)) : true;
   bool   reset_dau  = e.hasAttr(_ALU(reset_children)) ? e.attr<bool>(_ALU(reset_children)) : true;
   bool   check      = e.hasAttr(_ALU(check_overlaps));
   bool   check_val  = check ? e.attr<bool>(_ALU(check_overlaps)) : false;
   bool   overlap    = e.hasAttr(_ALU(overlap));
   double ovl        = overlap ? e.attr<double>(_ALU(overlap)) : 0.001;
-  string elt_place  = elt->first.placementPath();
-  string placement  = subpath[0]=='/' ? subpath : elt_place + "/" + subpath;
+  std::string elt_place  = elt->first.placementPath();
+  std::string placement  = subpath[0]=='/' ? subpath : elt_place + "/" + subpath;
 
   printout(INFO,"Alignment<vol>","    path:%s placement:%s reset:%s children:%s",
            subpath.c_str(), placement.c_str(), yes_no(reset), yes_no(reset_dau));
@@ -115,7 +113,7 @@ template <> void Converter<volume>::operator()(xml_h e) const {
 
   dd4hep_ptr<StackEntry> entry(new StackEntry(elt->first,placement,val,ovl));
   stack->insert(entry);
-  pair<DetElement,string> vol_param(elt->first,subpath);
+  std::pair<DetElement,std::string> vol_param(elt->first,subpath);
   xml_coll_t(e,_U(volume)).for_each(Converter<volume>(description,&vol_param));
 }
 
@@ -135,10 +133,10 @@ template <> void Converter<volume>::operator()(xml_h e) const {
  *  @version 1.0
  *  @date    01/04/2014
  */
-template <> void Converter<detelement>::operator()(xml_h e) const {
+template <> void dd4hep::Converter<dd4hep::detelement>::operator()(xml_h e) const {
   DetElement det(_param<DetElement::Object>());
   GlobalAlignmentStack* stack = _option<GlobalAlignmentStack>();
-  string path      = e.attr<string>(_ALU(path));
+  std::string path = e.attr<std::string>(_ALU(path));
   bool   check     = e.hasAttr(_ALU(check_overlaps));
   bool   check_val = check ? e.attr<bool>(_ALU(check_overlaps)) : false;
   bool   reset     = e.hasAttr(_ALU(reset)) ? e.attr<bool>(_ALU(reset)) : false;
@@ -146,11 +144,11 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
   bool   overlap   = e.hasAttr(_ALU(overlap));
   double ovl       = overlap ? e.attr<double>(_ALU(overlap)) : 0.001;
   DetElement elt   = detail::tools::findDaughterElement(det,path);
-  string placement = elt.isValid() ? elt.placementPath() : string("-----");
+  std::string placement = elt.isValid() ? elt.placementPath() : std::string("-----");
 
   if ( !elt.isValid() )   {
-    string err = "dd4hep: DetElement "+det.path()+" has no child:"+path+" [No such child]";
-    throw runtime_error(err);
+    except("GlocalAlignmentParser",
+           "dd4hep: DetElement %s has no child: %s [No such child]", det.path().c_str(), path.c_str());
   }
 
   Delta delta;
@@ -165,7 +163,8 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
   if ( reset_dau   ) delta.flags |= GlobalAlignmentStack::RESET_CHILDREN;
   if ( check_val   ) delta.flags |= GlobalAlignmentStack::CHECKOVL_VALUE;
 
-  printout(INFO,"Alignment<det>","path:%s [%s] placement:%s matrix:%s reset:%s children:%s",
+  printout(INFO,
+           "Alignment<det>","path:%s [%s] placement:%s matrix:%s reset:%s children:%s",
            path.c_str(),
            elt.isValid() ? elt.path().c_str() : "-----",
            placement.c_str(),
@@ -175,7 +174,7 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
   dd4hep_ptr<StackEntry> entry(new StackEntry(elt,placement,delta,ovl));
   stack->insert(entry);
 
-  pair<DetElement,string> vol_param(elt,"");
+  std::pair<DetElement, std::string> vol_param(elt,"");
   xml_coll_t(e,_U(volume)).for_each(Converter<volume>(description,&vol_param,optional));
   xml_coll_t(e,_ALU(detelement)).for_each(Converter<detelement>(description,elt.ptr(),optional));
   xml_coll_t(e,_U(include)).for_each(Converter<include_file>(description,elt.ptr(),optional));
@@ -192,10 +191,10 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
  *  @version 1.0
  *  @date    01/04/2014
  */
-template <> void Converter<include_file>::operator()(xml_h element) const {
+template <> void dd4hep::Converter<dd4hep::include_file>::operator()(xml_h element) const {
   xml::DocumentHolder doc(xml::DocumentHandler().load(element, element.attr_value(_U(ref))));
   xml_h node = doc.root();
-  string tag = node.tag();
+  std::string tag = node.tag();
   if ( tag == "alignment" )
     Converter<alignment>(description,param,optional)(node);
   else if ( tag == "global_alignment" )
@@ -205,7 +204,7 @@ template <> void Converter<include_file>::operator()(xml_h element) const {
   else if ( tag == "subdetectors" || tag == "detelements" )
     xml_coll_t(node,_ALU(detelements)).for_each(Converter<detelement>(description,param,optional));
   else
-    throw runtime_error("Undefined tag name in XML structure:"+tag+" XML parsing abandoned.");
+    except("GlocalAlignmentParser", "Undefined tag name in XML structure: %s XML parsing abandoned.", tag.c_str());
 }
 
 /** Convert alignment objects
@@ -220,7 +219,7 @@ template <> void Converter<include_file>::operator()(xml_h element) const {
  *  @version 1.0
  *  @date    01/04/2014
  */
-template <> void Converter<alignment>::operator()(xml_h e)  const  {
+template <> void dd4hep::Converter<dd4hep::alignment>::operator()(xml_h e)  const  {
   /// Now we process all allowed elements within the alignment tag:
   /// <detelement/>, <detelements/>, <subdetectors/> and <include/>
   xml_coll_t(e,_ALU(debug)).for_each(Converter<debug>(description,param,optional));
@@ -236,9 +235,9 @@ template <> void Converter<alignment>::operator()(xml_h e)  const  {
  *  @version 1.0
  *  @date    01/04/2014
  */
-static long setup_Alignment(Detector& description, const xml_h& e) {
-  static dd4hep_mutex_t s_mutex;
-  dd4hep_lock_t lock(s_mutex);
+long dd4hep::setup_Alignment(dd4hep::Detector& description, const xml_h& e)  {
+  static dd4hep::dd4hep_mutex_t s_mutex;
+  dd4hep::dd4hep_lock_t lock(s_mutex);
   bool open_trans  = e.hasChild(_ALU(open_transaction));
   bool close_trans = e.hasChild(_ALU(close_transaction));
 
@@ -251,8 +250,10 @@ static long setup_Alignment(Detector& description, const xml_h& e) {
     GlobalAlignmentStack::create();
   }
   if ( !GlobalAlignmentStack::exists() )  {
-    printout(ERROR,"GlobalAlignment","Request process global alignments without cache.");
-    printout(ERROR,"GlobalAlignment","Call plugin DD4hep_GlobalAlignmentInstall first OR add XML tag <open_transaction/>");
+    printout(ERROR,"GlobalAlignment",
+             "Request process global alignments without cache.");
+    printout(ERROR,"GlobalAlignment",
+             "Call plugin DD4hep_GlobalAlignmentInstall first OR add XML tag <open_transaction/>");
     except("GlobalAlignment","Request process global alignments without cache.");
   }
   GlobalAlignmentStack& stack = GlobalAlignmentStack::get();
@@ -277,7 +278,7 @@ DECLARE_XML_DOC_READER(global_alignment,setup_Alignment)
  *  @version 1.0
  *  @date    01/04/2014
  */
-static long install_Alignment(Detector& description, int, char**) {
+static long install_Alignment(dd4hep::Detector& description, int, char**) {
   GlobalAlignmentCache::install(description);
   return 1;
 }

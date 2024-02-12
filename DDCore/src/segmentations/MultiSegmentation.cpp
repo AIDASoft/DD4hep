@@ -11,20 +11,19 @@
 #include <iomanip>
 #include <stdexcept>
 
-using namespace std;
-
 namespace dd4hep {
+
   namespace DDSegmentation {
 
     /// default constructor using an encoding string
-    MultiSegmentation::MultiSegmentation(const string& cellEncoding)
+    MultiSegmentation::MultiSegmentation(const std::string& cellEncoding)
       :	Segmentation(cellEncoding), m_discriminator(0), m_debug(0)
     {
       // define type and description
       _type        = "MultiSegmentation";
       _description = "Multi-segmenation wrapper segmentation";
       //registerParameter<int>("debug", "Debug flag", m_debug, 0);
-      registerParameter<string>("key",   "Diskriminating field", m_discriminatorId, "");
+      registerParameter<std::string>("key",   "Diskriminating field", m_discriminatorId, "");
     }
 
     /// Default constructor used by derived classes passing an existing decoder
@@ -35,7 +34,7 @@ namespace dd4hep {
       _type        = "MultiSegmentation";
       _description = "Multi-segmenation wrapper segmentation";
       //registerParameter<int>("debug", "Debug flag", m_debug, 0);
-      registerParameter<string>("key",   "Diskriminating field", m_discriminatorId, "");
+      registerParameter<std::string>("key",   "Diskriminating field", m_discriminatorId, "");
     }
 
     /// destructor
@@ -82,7 +81,8 @@ namespace dd4hep {
           }
         }
       }
-      throw runtime_error("MultiSegmentation: Invalid sub-segmentation identifier!");;
+      except("MultiSegmentation", "Invalid sub-segmentation identifier!");
+      throw std::string("Invalid sub-segmentation identifier!");
     }
      
     /// determine the position based on the cell ID
@@ -95,13 +95,9 @@ namespace dd4hep {
       return subsegmentation(vID).cellID(localPosition, globalPosition, vID);
     }
 
-    vector<double> MultiSegmentation::cellDimensions(const CellID& cID) const {
+    std::vector<double> MultiSegmentation::cellDimensions(const CellID& cID) const {
       return subsegmentation(cID).cellDimensions(cID);
     }
 
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
-
-// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
-// needs also #include "DD4hep/Factories.h"
-// DECLARE_SEGMENTATION(MultiSegmentation,create_segmentation<dd4hep::DDSegmentation::MultiSegmentation>)

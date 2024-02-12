@@ -12,28 +12,21 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Factories.h"
-#include "DD4hep/Primitives.h"
-#include "DDG4/Geant4DataDump.h"
-#include "DDG4/Geant4Particle.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Factories.h>
+#include <DD4hep/Primitives.h>
+#include <DDG4/Geant4DataDump.h>
+#include <DDG4/Geant4Particle.h>
 
 // ROOT include files
-#include "TInterpreter.h"
-#include "TSystem.h"
-#include "TFile.h"
-#include "TTree.h"
-#include "TROOT.h"
-
-using namespace std;
-using namespace dd4hep;
-using namespace dd4hep::sim;
-
-typedef Geant4DataDump::Particles Particles;
-typedef Geant4DataDump::TrackerHits TrackerHits;
-typedef Geant4DataDump::CalorimeterHits CalorimeterHits;
+#include <TInterpreter.h>
+#include <TSystem.h>
+#include <TFile.h>
+#include <TTree.h>
+#include <TROOT.h>
 
 static long usage()   {
+  using namespace dd4hep;
   printout(FATAL,"Geant4ROOTDump","usage: Geant4ROOTDump -opt (app-opts) --opt=value (plugin-opts)");
   printout(FATAL,"Geant4ROOTDump","       app-opts: ");
   printout(FATAL,"Geant4ROOTDump","       -print INFO      Print container summaries only.");
@@ -46,10 +39,10 @@ static long usage()   {
   return 'H';
 }
 
-static pair<TClass*,void*> load(TBranch* branch, int entry)   {
+static std::pair<TClass*,void*> load(TBranch* branch, int entry)   {
   TClass* cl = gROOT->GetClass(branch->GetClassName(),kTRUE);
   if ( !cl )   {
-    return pair<TClass*,void*>(0,0);
+    return std::pair<TClass*,void*>(0,0);
   }
   void *obj = cl->New();
   branch->SetAddress(&obj);
@@ -57,12 +50,13 @@ static pair<TClass*,void*> load(TBranch* branch, int entry)   {
   int nb = branch->GetEntry(entry);
   if ( nb < 0 )    {
     cl->Destructor(obj);
-    return pair<TClass*,void*>(0,0);
+    return std::pair<TClass*,void*>(0,0);
   }
-  return pair<TClass*,void*>(cl,obj);
+  return std::pair<TClass*,void*>(cl,obj);
 }
 
-static long dump_root(Detector&, int argc, char** argv) {
+static long dump_root(dd4hep::Detector&, int argc, char** argv) {
+  using namespace dd4hep;
   std::string input = "", tag="Geant4ROOTDump";
   int entry = -1;
 
@@ -76,8 +70,8 @@ static long dump_root(Detector&, int argc, char** argv) {
       return 1;
     }
     if ( idx > 0 )  {
-      string p1 = a.substr(0,idx);
-      string p2 = a.substr(idx+1);
+      std::string p1 = a.substr(0,idx);
+      std::string p2 = a.substr(idx+1);
       if ( strncmp(p1.c_str(),"input",3)==0 )  {
         input = p2;
       }
@@ -101,19 +95,18 @@ static long dump_root(Detector&, int argc, char** argv) {
     return usage();
   }
 
-
-  Geant4DataDump dump("Geant4Data");
+  dd4hep::sim::Geant4DataDump dump("Geant4Data");
   TFile* f = TFile::Open(input.c_str());
 
   if ( f && !f->IsZombie() )  {
     TTree* tree = (TTree*)f->Get("EVENT");
-    TClass* cl_calo = gROOT->GetClass(typeid(CalorimeterHits));
-    TClass* cl_tracker = gROOT->GetClass(typeid(TrackerHits));
-    TClass* cl_particles = gROOT->GetClass(typeid(Particles));
+    TClass* cl_calo = gROOT->GetClass(typeid(dd4hep::sim::Geant4DataDump::CalorimeterHits));
+    TClass* cl_tracker = gROOT->GetClass(typeid(dd4hep::sim::Geant4DataDump::TrackerHits));
+    TClass* cl_particles = gROOT->GetClass(typeid(dd4hep::sim::Geant4DataDump::Particles));
     TObjArray* branches  = tree->GetListOfBranches();
     Int_t nbranches = branches->GetEntriesFast();
-    typedef pair<TClass*,void*> ENTRY;
-    typedef map<string,ENTRY> ENTRIES;
+    typedef std::pair<TClass*,void*> ENTRY;
+    typedef std::map<std::string,ENTRY> ENTRIES;
 
     for(Int_t ievt=entry<0 ? 0 : entry, nevt=entry<0 ? tree->GetEntries() : entry+1; ievt<nevt; ++ievt)  {
       ENTRIES event;
@@ -124,31 +117,31 @@ static long dump_root(Detector&, int argc, char** argv) {
       // First suck in all data
       for (Int_t i=0;i<nbranches;i++)  {
         TBranch* branch = (TBranch*)branches->UncheckedAt(i);
-        pair<TClass*,void*> data = load(branch,ievt);
+        std::pair<TClass*,void*> data = load(branch,ievt);
         if ( data.first ) event[branch->GetName()] = data;
       }
       // Now dump the stuff
       for(ENTRIES::const_iterator i=event.begin(); i!=event.end(); ++i)  {
-        pair<TClass*,void*> data = (*i).second;
+        std::pair<TClass*,void*> data = (*i).second;
         if ( data.first == cl_particles )  {
-          Particles* parts = (Particles*)data.second;
+          auto* parts = (dd4hep::sim::Geant4DataDump::Particles*)data.second;
           dump.print(INFO, (*i).first, parts);
-          for_each(parts->begin(), parts->end(), detail::DestroyObject<Geant4Particle*>());
+          for_each(parts->begin(), parts->end(), detail::DestroyObject<dd4hep::sim::Geant4Particle*>());
         }
       }
       for(ENTRIES::const_iterator i=event.begin(); i!=event.end(); ++i)  {
-        pair<TClass*,void*> data = (*i).second;
+        std::pair<TClass*,void*> data = (*i).second;
         if ( data.first == cl_particles )  {
         }
         else if ( data.first == cl_tracker )   {
-          TrackerHits* hits = (TrackerHits*)data.second;
+          auto* hits = (dd4hep::sim::Geant4DataDump::TrackerHits*)data.second;
           dump.print(INFO, (*i).first, hits);
-          for_each(hits->begin(), hits->end(), detail::DestroyObject<Geant4Tracker::Hit*>());
+          for_each(hits->begin(), hits->end(), detail::DestroyObject<dd4hep::sim::Geant4Tracker::Hit*>());
         }
         else if ( data.first == cl_calo )   {
-          CalorimeterHits* hits = (CalorimeterHits*)data.second;
+          auto* hits = (dd4hep::sim::Geant4DataDump::CalorimeterHits*)data.second;
           dump.print(INFO, (*i).first, hits);
-          for_each(hits->begin(), hits->end(), detail::DestroyObject<Geant4Calorimeter::Hit*>());
+          for_each(hits->begin(), hits->end(), detail::DestroyObject<dd4hep::sim::Geant4Calorimeter::Hit*>());
         }
         if ( data.first ) data.first->Destructor(data.second);
       }

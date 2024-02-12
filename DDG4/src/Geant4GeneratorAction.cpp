@@ -12,16 +12,14 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4GeneratorAction.h"
-#include "DDG4/Geant4Kernel.h"
-// Geant4 headers
-#include "G4Threading.hh"
-#include "G4AutoLock.hh"
-// C/C++ include files
-#include <stdexcept>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4GeneratorAction.h>
+#include <DDG4/Geant4Kernel.h>
 
-using namespace std;
+// Geant4 headers
+#include <G4Threading.hh>
+#include <G4AutoLock.hh>
+
 using namespace dd4hep::sim;
 
 namespace {
@@ -29,7 +27,7 @@ namespace {
 }
 
 /// Standard constructor
-Geant4GeneratorAction::Geant4GeneratorAction(Geant4Context* ctxt, const string& nam)
+Geant4GeneratorAction::Geant4GeneratorAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
@@ -40,7 +38,7 @@ Geant4GeneratorAction::~Geant4GeneratorAction() {
 }
 
 /// Standard constructor
-Geant4SharedGeneratorAction::Geant4SharedGeneratorAction(Geant4Context* ctxt, const string& nam)
+Geant4SharedGeneratorAction::Geant4SharedGeneratorAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4GeneratorAction(ctxt, nam), m_action(0)
 {
   InstanceCount::increment(this);
@@ -64,7 +62,7 @@ void Geant4SharedGeneratorAction::use(Geant4GeneratorAction* action)   {
     m_action = action;
     return;
   }
-  throw runtime_error("Geant4SharedGeneratorAction: Attempt to use invalid actor!");
+  throw std::runtime_error("Geant4SharedGeneratorAction: Attempt to use invalid actor!");
 }
 
 /// User generator callback
@@ -78,7 +76,7 @@ void Geant4SharedGeneratorAction::operator()(G4Event* event)  {
 }
 
 /// Standard constructor
-Geant4GeneratorActionSequence::Geant4GeneratorActionSequence(Geant4Context* ctxt, const string& nam)
+Geant4GeneratorActionSequence::Geant4GeneratorActionSequence(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt, nam) {
   m_needsControl = true;
   InstanceCount::increment(this);
@@ -104,7 +102,7 @@ void Geant4GeneratorActionSequence::configureFiber(Geant4Context* thread_context
 }
 
 /// Get an action by name
-Geant4GeneratorAction* Geant4GeneratorActionSequence::get(const string& nam) const   {
+Geant4GeneratorAction* Geant4GeneratorActionSequence::get(const std::string& nam) const   {
   return m_actors.get(FindByName(TypeName::split(nam).second));
 }
 
@@ -116,7 +114,7 @@ void Geant4GeneratorActionSequence::adopt(Geant4GeneratorAction* action) {
     m_actors.add(action);
     return;
   }
-  throw runtime_error("Geant4GeneratorActionSequence: Attempt to add invalid actor!");
+  except("Attempt to add invalid actor!");
 }
 
 /// Generator callback

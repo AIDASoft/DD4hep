@@ -1,25 +1,40 @@
-#include "DD4hep/SpecParRegistry.h"
-#include "DD4hep/Detector.h"
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
+
+// Framework includes
+#include <DD4hep/SpecParRegistry.h>
+#include <DD4hep/Detector.h>
+
+// C/C++ include files
 #include <algorithm>
 
-using namespace std;
 using namespace dd4hep;
 
-string_view SpecPar::strValue(const string& key) const {
+std::string_view SpecPar::strValue(const std::string& key) const {
   auto const& item = spars.find(key);
   if (item == end(spars))
-    return string_view();
+    return std::string_view();
   return *begin(item->second);
 }
 
-bool SpecPar::hasValue(const string& key) const {
+bool SpecPar::hasValue(const std::string& key) const {
   if (numpars.find(key) != end(numpars))
     return true;
   else
     return false;
 }
 
-bool SpecPar::hasPath(const string& path) const {
+bool SpecPar::hasPath(const std::string& path) const {
   auto result = std::find(std::begin(paths), std::end(paths), path);
   if (result != end(paths))
     return true;
@@ -28,7 +43,7 @@ bool SpecPar::hasPath(const string& path) const {
 }
 
 template <>
-std::vector<double> SpecPar::value<std::vector<double>>(const string& key) const {
+std::vector<double> SpecPar::value<std::vector<double>>(const std::string& key) const {
   std::vector<double> result;
 
   auto const& nitem = numpars.find(key);
@@ -47,7 +62,7 @@ std::vector<double> SpecPar::value<std::vector<double>>(const string& key) const
 }
 
 template <>
-std::vector<int> SpecPar::value<std::vector<int>>(const string& key) const {
+std::vector<int> SpecPar::value<std::vector<int>>(const std::string& key) const {
   std::vector<int> result;
 
   auto const& nitem = numpars.find(key);
@@ -66,7 +81,7 @@ std::vector<int> SpecPar::value<std::vector<int>>(const string& key) const {
 }
 
 template <>
-std::vector<std::string> SpecPar::value<std::vector<std::string>>(const string& key) const {
+std::vector<std::string> SpecPar::value<std::vector<std::string>>(const std::string& key) const {
   std::vector<std::string> result;
 
   auto const& nitem = numpars.find(key);
@@ -86,7 +101,7 @@ std::vector<std::string> SpecPar::value<std::vector<std::string>>(const string& 
   return result;
 }
 
-double SpecPar::dblValue(const string& key) const {
+double SpecPar::dblValue(const std::string& key) const {
   auto const& item = numpars.find(key);
   if (item == end(numpars))
     return 0;

@@ -24,7 +24,6 @@
 // C/C++ include files
 #include <stdexcept>
 
-using namespace std;
 using namespace dd4hep;
 
 ClassImp(DDG4EventHandler)
@@ -48,12 +47,12 @@ DECLARE_CONSTRUCTOR(DD4hep_DDEve_DDG4EventHandler,_create)
 DDG4EventHandler::DDG4EventHandler() : EventHandler(), m_file(0,0), m_entry(-1) {
   void* ptr = PluginService::Create<void*>("DD4hep_DDEve_DDG4HitAccess",(const char*)"");
   if ( 0 == ptr )   {
-    throw runtime_error("FATAL: Failed to access function pointer from factory DD4hep_DDEve_DDG4HitAccess");
+    throw std::runtime_error("FATAL: Failed to access function pointer from factory DD4hep_DDEve_DDG4HitAccess");
   }
   m_simhitConverter = FCN(ptr).hits;
   ptr = PluginService::Create<void*>("DD4hep_DDEve_DDG4ParticleAccess",(const char*)"");
   if ( 0 == ptr )   {
-    throw runtime_error("FATAL: Failed to access function pointer from factory DD4hep_DDEve_DDG4ParticleAccess");
+    throw std::runtime_error("FATAL: Failed to access function pointer from factory DD4hep_DDEve_DDG4ParticleAccess");
   }
   m_particleConverter = FCN(ptr).particles;
 }
@@ -181,9 +180,9 @@ Int_t DDG4EventHandler::ReadEvent(Long64_t event_number)   {
       return nbytes;
     }
     printout(ERROR,"DDG4EventHandler","+++ ReadEvent: Cannot read event data for entry:%d",event_number);
-    throw runtime_error("+++ EventHandler::readEvent: Failed to read event");
+    throw std::runtime_error("+++ EventHandler::readEvent: Failed to read event");
   }
-  throw runtime_error("+++ EventHandler::readEvent: No file open!");
+  throw std::runtime_error("+++ EventHandler::readEvent: No file open!");
 }
 
 /// Open new data file
@@ -203,7 +202,7 @@ bool DDG4EventHandler::Open(const std::string&, const std::string& name)   {
       for(Int_t i=0; i<br->GetSize(); ++i)  {
         TBranch* b = (TBranch*)br->At(i);
         if ( !b ) continue;
-        m_branches[b->GetName()] = make_pair(b,(void*)0);
+        m_branches[b->GetName()] = std::make_pair(b,(void*)0);
         printout(INFO,"DDG4EventHandler::open","+++ Branch %s has %ld entries.",b->GetName(),b->GetEntries());
       }
       for(Int_t i=0; i<br->GetSize(); ++i)  {
@@ -214,7 +213,7 @@ bool DDG4EventHandler::Open(const std::string&, const std::string& name)   {
       m_hasFile = true;
       return true;
     }
-    throw runtime_error("+++ Failed to access tree EVENT in ROOT file:"+name);
+    throw std::runtime_error("+++ Failed to access tree EVENT in ROOT file:"+name);
   }
-  throw runtime_error("+++ Failed to open ROOT file:"+name);
+  throw std::runtime_error("+++ Failed to open ROOT file:"+name);
 }

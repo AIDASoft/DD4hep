@@ -474,9 +474,7 @@ template <> void Converter<elementarymaterial>::operator()(xml_h element) const 
 #endif
     mix->AddElement(elt, 1.0);
     mix->SetRadLen(0e0);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
     mix->ComputeDerivedQuantities();
-#endif
     /// Create medium from the material
     TGeoMedium* medium = mgr.GetMedium(matname);
     if (0 == medium) {
@@ -516,9 +514,7 @@ template <> void Converter<compositematerial>::operator()(xml_h element) const  
                fracname.c_str());
     }
     mix->SetRadLen(0e0);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
     mix->ComputeDerivedQuantities();
-#endif
     printout(_ns.context->debug.materials ? ALWAYS : DEBUG, "DDCMS",
              "++  Converting material %-48s  Density: %8.3f [g/cm3] ROOT: %8.3f [g/cm3]",
              ('"'+nam+'"').c_str(), density, mix->GetDensity());

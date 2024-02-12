@@ -14,7 +14,6 @@
 // Framework include files
 #include "DDG4/Geant4Data.h"
 
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Namespace for the AIDA detector description toolkit

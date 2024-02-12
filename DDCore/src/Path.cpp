@@ -13,14 +13,14 @@
 //
 //==========================================================================
 
-#include "DD4hep/Path.h"
+/// Framework include files
+#include <DD4hep/Path.h>
+
+/// C/C++ include files
 #include <climits>
 #include <cstring>
 #include <vector>
 #include <stdexcept>
-
-using namespace std;
-using namespace dd4hep;
 
 namespace {
   const char dot = '.';
@@ -31,11 +31,11 @@ namespace {
   
   inline bool is_separator(char c)  { return c == separator;  }
 
-  bool is_root_separator(const string& str, size_t pos)
+  bool is_root_separator(const std::string& str, size_t pos)
   // pos is position of the separator
   {
     if ( str.empty() || is_separator(str[pos]) ) {
-      throw runtime_error("precondition violation");
+      throw std::runtime_error("precondition violation");
     }
     // subsequent logic expects pos to be for leftmost slash of a set
     while (pos > 0 && is_separator(str[pos-1]))
@@ -51,7 +51,7 @@ namespace {
     return str.find_first_of(separators, 2) == pos;
   }
 
-  size_t filename_pos(const string& str,size_t end_pos)
+  size_t filename_pos(const std::string& str,size_t end_pos)
   // return 0 if str itself is filename (or empty)
   {
     // case: "//"
@@ -66,33 +66,35 @@ namespace {
     // set pos to start of last element
     size_t pos(str.find_last_of(separators, end_pos-1));
 
-    return (pos == string::npos // path itself must be a filename (or empty)
+    return (pos == std::string::npos // path itself must be a filename (or empty)
             || (pos == 1 && is_separator(str[0]))) // or net
       ? 0 // so filename is entire string
       : pos + 1; // or starts after delimiter
   }
 
   // return npos if no root_directory found
-  size_t root_directory_start(const string& path, size_t size)  {
+  size_t root_directory_start(const std::string& path, size_t size)  {
     // case "//"
     if (size == 2
         && is_separator(path[0])
-        && is_separator(path[1])) return string::npos;
+        && is_separator(path[1])) return std::string::npos;
     // case "//net {/}"
     if (size > 3
         && is_separator(path[0])
         && is_separator(path[1])
         && !is_separator(path[2]))
     {
-      string::size_type pos(path.find_first_of(separators, 2));
-      return pos < size ? pos : string::npos;
+      std::string::size_type pos(path.find_first_of(separators, 2));
+      return pos < size ? pos : std::string::npos;
     }
     
     // case "/"
     if (size > 0 && is_separator(path[0])) return 0;
-    return string::npos;
+    return std::string::npos;
   }
 }
+
+using Path = dd4hep::Path;
 
 const Path& Path::detail::dot_path()   {
   static Path p(".");
@@ -113,7 +115,7 @@ Path Path::normalize()  const {
   if (empty())
     return *this;
 
-  vector<string> pathes;
+  std::vector<std::string> pathes;
   char tmp[PATH_MAX];
   ::strncpy(tmp, string_data(), sizeof(tmp));
   tmp[sizeof(tmp)-1] = 0;
@@ -124,10 +126,10 @@ Path Path::normalize()  const {
     token = ::strtok_r(0,separators,&save);
   }
   Path temp;
-  vector<string>::const_iterator start(pathes.begin());
-  vector<string>::const_iterator last(pathes.end());
-  vector<string>::const_iterator stop(last--);
-  for (vector<string>::const_iterator itr(start); itr != stop; ++itr)  {
+  std::vector<std::string>::const_iterator start(pathes.begin());
+  std::vector<std::string>::const_iterator last(pathes.end());
+  std::vector<std::string>::const_iterator stop(last--);
+  for (std::vector<std::string>::const_iterator itr(start); itr != stop; ++itr)  {
     // ignore "." except at start and last
     Path itr_path(*itr);
     if (itr_path.native().size() == 1
@@ -136,7 +138,7 @@ Path Path::normalize()  const {
         && itr != last) continue;
 
     // ignore a name and following ".."
-    if ( temp.empty() && itr_path.find(colon) != string::npos )  {
+    if ( temp.empty() && itr_path.find(colon) != std::string::npos )  {
       temp = itr_path;
       continue;
     }
@@ -145,7 +147,7 @@ Path Path::normalize()  const {
         && (itr_path.native())[0] == dot
         && (itr_path.native())[1] == dot) // dot dot
     {
-      string lf(temp.filename().native());  
+      std::string lf(temp.filename().native());  
       if (lf.size() > 0
           && (lf.size() != 1 || (lf[0] != dot && lf[0] != separator))
           && (lf.size() != 2 || (lf[0] != dot && lf[1] != dot))   )
@@ -165,7 +167,7 @@ Path Path::normalize()  const {
         //  }
         //}
 
-        vector<string>::const_iterator next(itr);
+        std::vector<std::string>::const_iterator next(itr);
         if (temp.empty() && ++next != stop && next == last && *last == detail::dot_path())  {
           temp /= detail::dot_path();
         }
@@ -192,7 +194,7 @@ size_t Path::parent_path_end() const  {
          ;
        --end_pos) {}
 
-  return (end_pos == 1 && root_dir_pos == 0 && filename_was_separator) ? string::npos : end_pos;
+  return (end_pos == 1 && root_dir_pos == 0 && filename_was_separator) ? std::string::npos : end_pos;
 }
 
 
@@ -203,7 +205,7 @@ Path& Path::remove_filename()   {
 
 Path  Path::parent_path() const  {
   size_t end_pos(parent_path_end());
-  return end_pos == string::npos ? Path() : Path(string_data(), string_data() + end_pos);
+  return end_pos == std::string::npos ? Path() : Path(string_data(), string_data() + end_pos);
 }
 
 Path Path::filename() const

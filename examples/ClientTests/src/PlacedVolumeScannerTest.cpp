@@ -19,7 +19,7 @@
    geoPluginRun -destroy -plugin DD4hep_VolumeScannerTest -opt [-opt]
 
 */
-// Framework include files
+/// Framework include files
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Detector.h"
 #include "DD4hep/Printout.h"
@@ -27,6 +27,8 @@
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/VolumeProcessor.h"
 #include "TClass.h"
+
+/// C/C++ include files
 #include <iomanip>
 
 namespace   {
@@ -61,7 +63,6 @@ namespace   {
   };
 }
 
-using namespace std;
 using namespace dd4hep;
 
 /// Plugin function: Test example of the volume scanner using a customized callback functor
@@ -73,7 +74,7 @@ using namespace dd4hep;
  */
 static int scan_volumes (Detector& detector, int argc, char** argv)  {
   bool help = false;
-  string det_element_path, placed_vol_path;
+  std::string det_element_path, placed_vol_path;
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-help",argv[i],4) )
       help = true;
@@ -86,13 +87,13 @@ static int scan_volumes (Detector& detector, int argc, char** argv)  {
   }
   if ( help )   {
     /// Help printout describing the basic command line interface
-    cout <<
+    std::cout <<
       "Usage: -plugin <name> -arg [-arg]                                                  \n"
       "     name:   factory name     DD4hep_PlacedVolumeScannerTest                       \n"
       "     -detector <name>         Path to the detector element where to start the scan.\n"
       "     -path     <name>         Alternatively specify the physical volume path.      \n"
       "     -help                    Ahow this help.                                      \n"
-      "\tArguments given: " << arguments(argc,argv) << endl << flush;
+      "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
     ::exit(EINVAL);
   }
 

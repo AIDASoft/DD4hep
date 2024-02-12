@@ -12,16 +12,12 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4Mapping.h"
-
-#include "DD4hep/Printout.h"
-#include "DD4hep/VolumeManager.h"
-#include "G4PVPlacement.hh"
-#include <stdexcept>
+#include <DDG4/Geant4Mapping.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/VolumeManager.h>
+#include <G4PVPlacement.hh>
 
 using namespace dd4hep::sim;
-using namespace dd4hep;
-using namespace std;
 
 /// Initializing Constructor
 Geant4Mapping::Geant4Mapping(const Detector& description_ref)
@@ -45,7 +41,7 @@ Geant4Mapping& Geant4Mapping::instance() {
 void Geant4Mapping::checkValidity() const {
   if (m_dataPtr)
     return;
-  throw runtime_error("Geant4Mapping: Attempt to access an invalid data block!");
+  except("Geant4Mapping", "Attempt to access an invalid data block!");
 }
 
 /// Create new data block. Delete old data block if present.
@@ -77,11 +73,12 @@ Geant4VolumeManager Geant4Mapping::volumeManager() const {
     }
     return Geant4VolumeManager(Handle < Geant4GeometryInfo > (m_dataPtr));
   }
-  throw runtime_error(format("Geant4Mapping", "Cannot create volume manager without Geant4 geometry info [Invalid-Info]"));
+  except("Geant4Mapping", "Cannot create volume manager without Geant4 geometry info [Invalid-Info]");
+  return {};
 }
 
 /// Accessor to resolve geometry placements
-PlacedVolume Geant4Mapping::placement(const G4VPhysicalVolume* node) const {
+dd4hep::PlacedVolume Geant4Mapping::placement(const G4VPhysicalVolume* node) const {
   checkValidity();
   const Geant4GeometryMaps::PlacementMap& pm = m_dataPtr->g4Placements;
   for( const auto& entry : pm )  {

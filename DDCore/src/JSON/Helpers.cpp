@@ -12,8 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "JSON/Dimension.inl"
-#include "JSON/ChildValue.inl"
+#include <JSON/Dimension.inl>
+#include <JSON/ChildValue.inl>
 
 // Instantiate here the concrete implementations
 #define DD4HEP_DIMENSION_NS json

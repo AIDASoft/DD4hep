@@ -12,10 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4ActionPhase.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4ActionPhase.h>
 
-using namespace std;
 using namespace dd4hep::sim;
 
 /// Standard constructor
@@ -37,8 +36,8 @@ dd4hep::Callback Geant4PhaseAction::callback()    {
 }
 
 /// Standard constructor
-Geant4ActionPhase::Geant4ActionPhase(Geant4Context* ctxt, const string& nam, const type_info& arg_type0,
-                                     const type_info& arg_type1, const type_info& arg_type2)
+Geant4ActionPhase::Geant4ActionPhase(Geant4Context* ctxt, const std::string& nam, const std::type_info& arg_type0,
+                                     const std::type_info& arg_type1, const std::type_info& arg_type2)
   : Geant4Action(ctxt, nam) {
   m_argTypes[0] = &arg_type0;
   m_argTypes[1] = &arg_type1;
@@ -64,7 +63,7 @@ bool Geant4ActionPhase::add(Geant4Action* action, Callback callback) {
 /// Remove an existing member from the phase. If not existing returns false
 bool Geant4ActionPhase::remove(Geant4Action* action, Callback callback) {
   if (action && callback.func.first) {
-    Members::iterator i = find(m_members.begin(), m_members.end(), make_pair(action,callback));
+    Members::iterator i = find(m_members.begin(), m_members.end(), std::make_pair(action,callback));
     if (i != m_members.end()) {
       (*i).first->release();
       m_members.erase(i);
@@ -92,12 +91,12 @@ void Geant4ActionPhase::execute(void* argument) {
 
 class G4HCofThisEvent;
 class G4TouchableHistory;
-#include "DDG4/Geant4RunAction.h"
-#include "DDG4/Geant4EventAction.h"
-#include "DDG4/Geant4TrackingAction.h"
-#include "DDG4/Geant4SteppingAction.h"
-#include "DDG4/Geant4StackingAction.h"
-#include "DDG4/Geant4GeneratorAction.h"
+#include <DDG4/Geant4RunAction.h>
+#include <DDG4/Geant4EventAction.h>
+#include <DDG4/Geant4TrackingAction.h>
+#include <DDG4/Geant4SteppingAction.h>
+#include <DDG4/Geant4StackingAction.h>
+#include <DDG4/Geant4GeneratorAction.h>
 namespace dd4hep {
   namespace sim {
     /// Callback in Begin stacking action

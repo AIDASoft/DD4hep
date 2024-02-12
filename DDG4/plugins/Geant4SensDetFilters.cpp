@@ -12,8 +12,8 @@
 //==========================================================================
 
 /// Framework include files
-#include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4FastSimSpot.h"
+#include <DDG4/Geant4SensDetAction.h>
+#include <DDG4/Geant4FastSimSpot.h>
 
 /// Geant4 include files
 
@@ -51,15 +51,15 @@ namespace dd4hep {
       bool isGeantino(const G4Track* track) const;
       /// Access to the track from step
       const G4Track* getTrack(const G4Step* step)   const   {
-	return step->GetTrack();
+        return step->GetTrack();
       }
       /// Access to the track from step
       const G4Track* getTrack(const Geant4FastSimSpot* spot)   const   {
-	return spot->primary;
+        return spot->primary;
       }
       /// Access originator track from G4 fast track
       const G4Track* getTrack(const G4FastTrack* fast)   const   {
-	return fast->GetPrimaryTrack();
+        return fast->GetPrimaryTrack();
       }
     };
 
@@ -76,11 +76,11 @@ namespace dd4hep {
       virtual ~ParticleRejectFilter();
       /// Filter action. Return true if hits should be processed
       virtual bool operator()(const G4Step* step) const  override  final   {
-	return !isSameType(getTrack(step));
+        return !isSameType(getTrack(step));
       }
       /// GFlash/FastSim interface: Filter action. Return true if hits should be processed
       virtual bool operator()(const Geant4FastSimSpot* spot) const  override  final   {
-	return !isSameType(getTrack(spot));
+        return !isSameType(getTrack(spot));
       }
     };
 
@@ -97,11 +97,11 @@ namespace dd4hep {
       virtual ~ParticleSelectFilter();
       /// Filter action. Return true if hits should be processed
       virtual bool operator()(const G4Step* step) const  override  final   {
-	return isSameType(getTrack(step));
+        return isSameType(getTrack(step));
       }
       /// GFlash/FastSim interface: Filter action. Return true if hits should be processed
       virtual bool operator()(const Geant4FastSimSpot* spot) const  override  final   {
-	return isSameType(getTrack(spot));
+        return isSameType(getTrack(spot));
       }
     };
 
@@ -118,11 +118,11 @@ namespace dd4hep {
       virtual ~GeantinoRejectFilter();
       /// Filter action. Return true if hits should be processed
       virtual bool operator()(const G4Step* step) const  override  final   {
-	return !isGeantino(getTrack(step));
+        return !isGeantino(getTrack(step));
       }
       /// GFlash/FastSim interface: Filter action. Return true if hits should be processed
       virtual bool operator()(const Geant4FastSimSpot* spot) const  override  final   {
-	return !isGeantino(getTrack(spot));
+        return !isGeantino(getTrack(spot));
       }
     };
 
@@ -142,30 +142,28 @@ namespace dd4hep {
       virtual ~EnergyDepositMinimumCut();
       /// Filter action. Return true if hits should be processed
       virtual bool operator()(const G4Step* step) const  override  final  {
-	return step->GetTotalEnergyDeposit() > m_energyCut;
+        return step->GetTotalEnergyDeposit() > m_energyCut;
       }
       /// GFlash/FastSim interface: Filter action. Return true if hits should be processed
       virtual bool operator()(const Geant4FastSimSpot* spot) const  override  final  {
-	return spot->energy() > m_energyCut;
+        return spot->energy() > m_energyCut;
       }
     };
   }
 }
 
 /// Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Factories.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Factories.h>
 
 // Geant4 include files
-#include "G4ParticleTable.hh"
-#include "G4ChargedGeantino.hh"
-#include "G4Geantino.hh"
-#include "G4Track.hh"
-#include "G4Step.hh"
+#include <G4ParticleTable.hh>
+#include <G4ChargedGeantino.hh>
+#include <G4Geantino.hh>
+#include <G4Track.hh>
+#include <G4Step.hh>
 
 using namespace dd4hep::sim;
-using namespace dd4hep;
-using namespace std;
 
 //DECLARE_GEANT4ACTION()
 DECLARE_GEANT4ACTION(GeantinoRejectFilter)
@@ -191,7 +189,7 @@ const G4ParticleDefinition* ParticleFilter::definition() const  {
   if ( m_definition ) return m_definition;
   m_definition = G4ParticleTable::GetParticleTable()->FindParticle(m_particle);
   if ( 0 == m_definition )  {
-    throw runtime_error("Invalid particle name:'"+m_particle+"' [Not-in-particle-table]");
+    throw std::runtime_error("Invalid particle name:'"+m_particle+"' [Not-in-particle-table]");
   }
   return m_definition;
 }

@@ -12,14 +12,13 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/detail/OpticalSurfaceManagerInterna.h"
-#include "DD4hep/detail/Handle.inl"
+#include <DD4hep/detail/OpticalSurfaceManagerInterna.h>
+#include <DD4hep/detail/Handle.inl>
 
 // C/C++ includes
 #include <sstream>
 #include <iomanip>
 
-using namespace std;
 using namespace dd4hep;
 
 using detail::OpticalSurfaceManagerObject;

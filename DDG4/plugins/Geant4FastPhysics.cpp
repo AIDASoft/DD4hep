@@ -87,7 +87,6 @@ namespace dd4hep  {
 // Geant4 include files
 #include <G4FastSimulationPhysics.hh>
 
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Standard constructor

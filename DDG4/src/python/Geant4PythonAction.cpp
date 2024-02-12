@@ -13,23 +13,17 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Factories.h"
-#include "DDG4/Python/Geant4PythonAction.h"
-#include "DDG4/Python/Geant4PythonCall.h"
-#include "DDG4/Python/DDPython.h"
+#include <DDG4/Factories.h>
+#include <DDG4/Python/Geant4PythonAction.h>
+#include <DDG4/Python/Geant4PythonCall.h>
+#include <DDG4/Python/DDPython.h>
 
-// C/C++ include files
-#include <stdexcept>
-#include <fstream>
-
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 DECLARE_GEANT4ACTION(Geant4PythonAction)
 
 /// Standard constructor, initializes variables
-Geant4PythonAction::Geant4PythonAction(Geant4Context* ctxt, const string& nam)
+Geant4PythonAction::Geant4PythonAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt,nam)
 {
   m_needsControl = true;

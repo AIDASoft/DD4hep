@@ -12,28 +12,26 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Objects.h"
-#include "DD4hep/DetElement.h"
-#include "DD4hep/Volumes.h"
-#include "DD4hep/Printout.h"
-#include "DDEve/Utilities.h"
-#include "DDEve/EventHandler.h"
-#include "DDEve/ElementList.h"
+#include <DD4hep/Objects.h>
+#include <DD4hep/DetElement.h>
+#include <DD4hep/Volumes.h>
+#include <DD4hep/Printout.h>
+#include <DDEve/Utilities.h>
+#include <DDEve/EventHandler.h>
+#include <DDEve/ElementList.h>
 
-#include "TGeoNode.h"
-#include "TGeoShape.h"
-#include "TGeoVolume.h"
-#include "TGeoManager.h"
-#include "TGeoShapeAssembly.h"
+#include <TGeoNode.h>
+#include <TGeoShape.h>
+#include <TGeoVolume.h>
+#include <TGeoManager.h>
+#include <TGeoShapeAssembly.h>
 
-#include "TEveGeoShape.h"
-#include "TEveGeoNode.h"
-#include "TEveElement.h"
-#include "TEveTrans.h"
+#include <TEveGeoShape.h>
+#include <TEveGeoNode.h>
+#include <TEveElement.h>
+#include <TEveTrans.h>
 
 using namespace dd4hep;
-using namespace dd4hep::detail;
-using namespace std;
 
 /// Set the rendering flags for the object and the next level children
 void Utilities::SetRnrChildren(TEveElementList* l, bool b)  {
@@ -84,7 +82,7 @@ Utilities::createEveShape(int level,
   TGeoVolume* vol = n ? n->GetVolume() : 0;
   bool created = false;
 
-  if ( 0 == vol || level > max_level ) return make_pair(created,(TEveElement*)0);
+  if ( 0 == vol || level > max_level ) return std::make_pair(created,(TEveElement*)0);
 
   VisAttr vis(Volume(vol).visAttributes());
   TGeoShape* geoShape = vol->GetShape();
@@ -154,20 +152,20 @@ Utilities::createEveShape(int level,
     TGeoHMatrix dau_mat(mat);
     TGeoMatrix* matrix = daughter->GetMatrix();
     dau_mat.Multiply(matrix);
-    pair<bool,TEveElement*> dau_shape = 
+    std::pair<bool,TEveElement*> dau_shape = 
       createEveShape(level+1, max_level, element, daughter, dau_mat, daughter->GetName());
     if ( dau_shape.first )  {
       element->AddElement(dau_shape.second);
     }
   }
-  return make_pair(created,element);
+  return std::make_pair(created,element);
 }
 
-int Utilities::findNodeWithMatrix(TGeoNode* p, TGeoNode* n, TGeoHMatrix* mat, string* sub_path)  {
+int Utilities::findNodeWithMatrix(TGeoNode* p, TGeoNode* n, TGeoHMatrix* mat, std::string* sub_path)  {
   if ( p == n ) return 1;
   TGeoHMatrix dau_mat;
   for (Int_t idau = 0, ndau = p->GetNdaughters(); idau < ndau; ++idau) {
-    string spath;
+    std::string spath;
     TGeoNode*   daughter = p->GetDaughter(idau);
     TGeoHMatrix* daughter_matrix = 0;
     if ( mat )  {
@@ -203,5 +201,5 @@ std::pair<bool,TEveElement*> Utilities::LoadDetElement(DetElement de,int levels,
       return e;
     }
   }
-  return make_pair(false,(TEveGeoShape*)0);
+  return std::make_pair(false,(TEveGeoShape*)0);
 }

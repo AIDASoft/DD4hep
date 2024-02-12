@@ -14,13 +14,11 @@
 // Framework include files
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4EventAction.h"
+
 // Geant4 headers
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
-// C/C++ include files
-#include <stdexcept>
 
-using namespace std;
 using namespace dd4hep::sim;
 
 namespace {
@@ -28,7 +26,7 @@ namespace {
 }
 
 /// Standard constructor
-Geant4EventAction::Geant4EventAction(Geant4Context* ctxt, const string& nam)
+Geant4EventAction::Geant4EventAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt, nam) 
 {
   InstanceCount::increment(this);
@@ -48,7 +46,7 @@ void Geant4EventAction::end(const G4Event* ) {
 }
 
 /// Standard constructor
-Geant4SharedEventAction::Geant4SharedEventAction(Geant4Context* ctxt, const string& nam)
+Geant4SharedEventAction::Geant4SharedEventAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4EventAction(ctxt, nam)
 {
   InstanceCount::increment(this);
@@ -73,7 +71,7 @@ void Geant4SharedEventAction::use(Geant4EventAction* action)   {
     m_action = action;
     return;
   }
-  throw runtime_error("Geant4SharedEventAction: Attempt to use invalid actor!");
+  except("Geant4SharedEventAction: Attempt to use invalid actor!");
 }
 
 /// Begin-of-event callback
@@ -97,7 +95,7 @@ void Geant4SharedEventAction::end(const G4Event* event)   {
 }
 
 /// Standard constructor
-Geant4EventActionSequence::Geant4EventActionSequence(Geant4Context* ctxt, const string& nam)
+Geant4EventActionSequence::Geant4EventActionSequence(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt, nam) {
   m_needsControl = true;
   InstanceCount::increment(this);
@@ -125,7 +123,7 @@ void Geant4EventActionSequence::configureFiber(Geant4Context* thread_context)   
 }
 
 /// Get an action by name
-Geant4EventAction* Geant4EventActionSequence::get(const string& nam) const   {
+Geant4EventAction* Geant4EventActionSequence::get(const std::string& nam) const   {
   return m_actors.get(FindByName(TypeName::split(nam).second));
 }
 
@@ -137,7 +135,7 @@ void Geant4EventActionSequence::adopt(Geant4EventAction* action) {
     m_actors.add(action);
     return;
   }
-  throw runtime_error("Geant4EventActionSequence: Attempt to add invalid actor!");
+  except("Geant4EventActionSequence: Attempt to add invalid actor!");
 }
 
 /// Pre-track action callback

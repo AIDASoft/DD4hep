@@ -96,7 +96,6 @@ namespace dd4hep {
 #include <G4Material.hh>
 #include <G4VSolid.hh>
 
-using namespace std;
 using namespace dd4hep::sim;
 
 #include <DDG4/Factories.h>
@@ -106,7 +105,7 @@ DECLARE_GEANT4ACTION(Geant4GeometryScanner)
 Geant4GeometryScanner::StepInfo::StepInfo(const Position& prePos,
                                           const Position& postPos,
                                           const G4LogicalVolume* vol,
-                                          const string& p)
+                                          const std::string& p)
 : pre(prePos), post(postPos), path(p), volume(vol)
 {
 }
@@ -126,7 +125,7 @@ Geant4GeometryScanner::StepInfo& Geant4GeometryScanner::StepInfo::operator=(cons
 }
 
 /// Standard constructor
-Geant4GeometryScanner::Geant4GeometryScanner(Geant4Context* ctxt, const string& nam)
+Geant4GeometryScanner::Geant4GeometryScanner(Geant4Context* ctxt, const std::string& nam)
   : Geant4SteppingAction(ctxt,nam)
 {
   m_needsControl = true;

@@ -12,11 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4TrackingPreAction.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4TrackingPreAction.h>
 
 // Geant4 include files
-#include "G4TrackingManager.hh"
+#include <G4TrackingManager.hh>
 
 using namespace dd4hep::sim;
 

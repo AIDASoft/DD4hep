@@ -12,21 +12,19 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/detail/DetectorInterna.h"
-#include "DD4hep/detail/ConditionsInterna.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
-#include "DD4hep/AlignmentTools.h"
-#include "DD4hep/DetectorTools.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/World.h"
-#include "DD4hep/Detector.h"
+#include <DD4hep/detail/DetectorInterna.h>
+#include <DD4hep/detail/ConditionsInterna.h>
+#include <DD4hep/detail/AlignmentsInterna.h>
+#include <DD4hep/AlignmentTools.h>
+#include <DD4hep/DetectorTools.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/World.h>
+#include <DD4hep/Detector.h>
 
-using namespace std;
 using namespace dd4hep;
-using dd4hep::Alignment;
     
 namespace {
-  static string s_empty_string;
+  static std::string s_empty_string;
 }
 
 /// Default constructor
@@ -38,26 +36,26 @@ DetElement::Processor::~Processor()   {
 }
 
 /// Clone constructor
-DetElement::DetElement(Object* det_data, const string& det_name, const string& det_type)
+DetElement::DetElement(Object* det_data, const std::string& det_name, const std::string& det_type)
   : Handle<DetElementObject>(det_data)
 {
   this->assign(det_data, det_name, det_type);
 }
 
 /// Constructor for a new subdetector element
-DetElement::DetElement(const string& det_name, const string& det_type, int det_id) {
+DetElement::DetElement(const std::string& det_name, const std::string& det_type, int det_id) {
   assign(new Object(det_name,det_id), det_name, det_type);
   ptr()->id = det_id;
 }
 
 /// Constructor for a new subdetector element
-DetElement::DetElement(const string& det_name, int det_id) {
+DetElement::DetElement(const std::string& det_name, int det_id) {
   assign(new Object(det_name,det_id), det_name, "");
   ptr()->id = det_id;
 }
 
 /// Constructor for a new subdetector element
-DetElement::DetElement(DetElement det_parent, const string& det_name, int det_id) {
+DetElement::DetElement(DetElement det_parent, const std::string& det_name, int det_id) {
   assign(new Object(det_name,det_id), det_name, det_parent.type());
   ptr()->id = det_id;
   det_parent.add(*this);
@@ -84,7 +82,7 @@ void DetElement::removeAtUpdate(unsigned int typ, void* pointer)  const {
 }
 
 /// Access to the full path to the placed object
-const string& DetElement::placementPath() const {
+const std::string& DetElement::placementPath() const {
   Object* o = ptr();
   if ( o ) {
     if (o->placementPath.empty()) {
@@ -96,12 +94,12 @@ const string& DetElement::placementPath() const {
 }
 
 /// Access detector type (structure, tracker, calorimeter, etc.).
-string DetElement::type() const {
+std::string DetElement::type() const {
   return m_element ? m_element->GetTitle() : "";
 }
 
 /// Set the type of the sensitive detector
-DetElement& DetElement::setType(const string& typ) {
+DetElement& DetElement::setType(const std::string& typ) {
   access()->SetTitle(typ.c_str());
   return *this;
 }
@@ -156,7 +154,7 @@ int DetElement::level()  const   {
 }
 
 /// Access the full path of the detector element
-const string& DetElement::path() const {
+const std::string& DetElement::path() const {
   Object* o = ptr();
   if ( o ) {
     if ( !o->path.empty() )
@@ -210,28 +208,28 @@ const DetElement::Children& DetElement::children() const {
 }
 
 /// Access to individual children by name
-DetElement DetElement::child(const string& child_name) const {
+DetElement DetElement::child(const std::string& child_name) const {
   if (isValid()) {
     const Children& c = ptr()->children;
     Children::const_iterator i = c.find(child_name);
     if ( i != c.end() ) return (*i).second;
-    throw runtime_error("dd4hep: DetElement::child Unknown child with name: "+child_name);
+    throw std::runtime_error("dd4hep: DetElement::child Unknown child with name: "+child_name);
   }
-  throw runtime_error("dd4hep: DetElement::child: Self is not defined [Invalid Handle]");
+  throw std::runtime_error("dd4hep: DetElement::child: Self is not defined [Invalid Handle]");
 }
 
 /// Access to individual children by name. Have option to not throw an exception
-DetElement DetElement::child(const string& child_name, bool throw_if_not_found) const {
+DetElement DetElement::child(const std::string& child_name, bool throw_if_not_found) const {
   if (isValid()) {
     const Children& c = ptr()->children;
     Children::const_iterator i = c.find(child_name);
     if ( i != c.end() ) return (*i).second;
     if ( throw_if_not_found )   {
-      throw runtime_error("dd4hep: DetElement::child Unknown child with name: "+child_name);
+      throw std::runtime_error("dd4hep: DetElement::child Unknown child with name: "+child_name);
     }
   }
   if ( throw_if_not_found )   {
-    throw runtime_error("dd4hep: DetElement::child: Self is not defined [Invalid Handle]");
+    throw std::runtime_error("dd4hep: DetElement::child: Self is not defined [Invalid Handle]");
   }
   return DetElement();
 }
@@ -249,24 +247,26 @@ DetElement DetElement::world()  const   {
 }
 
 /// Simple checking routine
-void DetElement::check(bool cond, const string& msg) const {
+void DetElement::check(bool cond, const std::string& msg) const {
   if (cond) {
-    throw runtime_error("dd4hep: " + msg);
+    throw std::runtime_error("dd4hep: " + msg);
   }
 }
 
 /// Add a new child subdetector element
 DetElement& DetElement::add(DetElement sdet) {
   if (isValid()) {
-    pair<Children::iterator, bool> r = object<Object>().children.emplace(sdet.name(), sdet);
+    auto r = object<Object>().children.emplace(sdet.name(), sdet);
     if (r.second) {
       sdet.access()->parent = *this;
       return *this;
     }
-    throw runtime_error("dd4hep: DetElement::add: Element " + string(sdet.name()) + 
-                        " is already present in path " + path() + " [Double-Insert]");
+    except("dd4hep",
+           "DetElement::add: Element %s is already present in path %s [Double-Insert]",
+           sdet.name(), this->path().c_str());
   }
-  throw runtime_error("dd4hep: DetElement::add: Self is not defined [Invalid Handle]");
+  except("dd4hep", "DetElement::add: Self is not defined [Invalid Handle]");
+  throw std::runtime_error("dd4hep: DetElement::add");
 }
 
 /// Clone (Deep copy) the DetElement structure
@@ -278,11 +278,11 @@ DetElement DetElement::clone(int flg) const   {
   return n;
 }
 
-DetElement DetElement::clone(const string& new_name) const {
+DetElement DetElement::clone(const std::string& new_name) const {
   return clone(new_name, access()->id);
 }
 
-DetElement DetElement::clone(const string& new_name, int new_id) const {
+DetElement DetElement::clone(const std::string& new_name, int new_id) const {
   Object* o = access();
   Object* n = o->clone(new_id, COPY_PLACEMENT);
   n->SetName(new_name.c_str());
@@ -290,21 +290,21 @@ DetElement DetElement::clone(const string& new_name, int new_id) const {
   return n;
 }
 
-pair<DetElement,Volume> DetElement::reflect(const string& new_name) const {
+std::pair<DetElement,Volume> DetElement::reflect(const std::string& new_name) const {
   return reflect(new_name, access()->id);
 }
 
-pair<DetElement,Volume> DetElement::reflect(const string& new_name, int new_id) const {
+std::pair<DetElement,Volume> DetElement::reflect(const std::string& new_name, int new_id) const {
   return reflect(new_name, new_id, SensitiveDetector(0));
 }
 
-pair<DetElement,Volume> DetElement::reflect(const string& new_name, int new_id, SensitiveDetector sd) const {
+std::pair<DetElement,Volume> DetElement::reflect(const std::string& new_name, int new_id, SensitiveDetector sd) const {
   if ( placement().isValid() )   {
     return m_element->reflect(new_name, new_id, sd);
   }
   except("DetElement","reflect: Only placed DetElement objects can be reflected: %s",
          path().c_str());
-  return make_pair(DetElement(),Volume());
+  return std::make_pair(DetElement(),Volume());
 }
 
 /// Access to the ideal physical volume of this detector element
@@ -335,7 +335,8 @@ DetElement& DetElement::setPlacement(const PlacedVolume& pv) {
     }
     return *this;
   }
-  throw runtime_error("dd4hep: DetElement::setPlacement: Placement is not defined [Invalid Handle]");
+  except("dd4hep", "DetElement::setPlacement: Placement is not defined [Invalid Handle]");
+  throw std::runtime_error("dd4hep: DetElement::add");
 }
 
 /// The cached VolumeID of this subdetector element
@@ -356,19 +357,19 @@ Solid DetElement::solid() const    {
   return volume()->GetShape();
 }
 
-DetElement& DetElement::setVisAttributes(const Detector& description, const string& nam, const Volume& vol) {
+DetElement& DetElement::setVisAttributes(const Detector& description, const std::string& nam, const Volume& vol) {
   vol.setVisAttributes(description, nam);
   return *this;
 }
 
-DetElement& DetElement::setRegion(const Detector& description, const string& nam, const Volume& vol) {
+DetElement& DetElement::setRegion(const Detector& description, const std::string& nam, const Volume& vol) {
   if (!nam.empty()) {
     vol.setRegion(description.region(nam));
   }
   return *this;
 }
 
-DetElement& DetElement::setLimitSet(const Detector& description, const string& nam, const Volume& vol) {
+DetElement& DetElement::setLimitSet(const Detector& description, const std::string& nam, const Volume& vol) {
   if (!nam.empty()) {
     vol.setLimitSet(description.limitSet(nam));
   }
@@ -377,15 +378,15 @@ DetElement& DetElement::setLimitSet(const Detector& description, const string& n
 
 DetElement& DetElement::setAttributes(const Detector& description,
                                       const Volume& vol,
-                                      const string& region,
-                                      const string& limits,
-                                      const string& vis)
+                                      const std::string& region,
+                                      const std::string& limits,
+                                      const std::string& vis)
 {
   return setRegion(description, region, vol).setLimitSet(description, limits, vol).setVisAttributes(description, vis, vol);
 }
 
 /// Constructor
-SensitiveDetector::SensitiveDetector(const string& nam, const string& typ) {
+SensitiveDetector::SensitiveDetector(const std::string& nam, const std::string& typ) {
   /*
     <calorimeter ecut="0" eunit="MeV" hits_collection="EcalEndcapHits" name="EcalEndcap" verbose="0">
     <global_grid_xy grid_size_x="3.5" grid_size_y="3.5"/>
@@ -398,13 +399,13 @@ SensitiveDetector::SensitiveDetector(const string& nam, const string& typ) {
 }
 
 /// Set the type of the sensitive detector
-SensitiveDetector& SensitiveDetector::setType(const string& typ) {
+SensitiveDetector& SensitiveDetector::setType(const std::string& typ) {
   access()->SetTitle(typ.c_str());
   return *this;
 }
 
 /// Access the type of the sensitive detector
-string SensitiveDetector::type() const {
+std::string SensitiveDetector::type() const {
   return m_element ? m_element->GetTitle() : s_empty_string;
 }
 
@@ -436,13 +437,13 @@ double SensitiveDetector::energyCutoff() const {
 }
 
 /// Assign the name of the hits collection
-SensitiveDetector& SensitiveDetector::setHitsCollection(const string& collection) {
+SensitiveDetector& SensitiveDetector::setHitsCollection(const std::string& collection) {
   access()->hitsCollection = collection;
   return *this;
 }
 
 /// Access the hits collection name
-const string& SensitiveDetector::hitsCollection() const {
+const std::string& SensitiveDetector::hitsCollection() const {
   return access()->hitsCollection;
 }
 

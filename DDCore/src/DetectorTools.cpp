@@ -13,17 +13,17 @@
 
 // Framework include files
 #define DETECTORTOOLS_CPP
-#include "DD4hep/DetectorTools.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/detail/DetectorInterna.h"
+#include <DD4hep/DetectorTools.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/detail/DetectorInterna.h>
 
 // C/C++ include files
 #include <stdexcept>
 #include <memory>
 
 // ROOT include files
-#include "TGeoMatrix.h"
+#include <TGeoMatrix.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -51,7 +51,6 @@ namespace dd4hep {
     }}
 }
 
-using namespace std;
 using namespace dd4hep;
 
 /// Find path between the child element and the parent element
@@ -62,7 +61,7 @@ bool detail::tools::isParentElement(DetElement parent, DetElement child)   {
       if ( par.ptr() == parent.ptr() ) return true;
     }
   }
-  throw runtime_error("Search for parent detector element with invalid handles not allowed.");
+  throw std::runtime_error("Search for parent detector element with invalid handles not allowed.");
 }
 
 /// Find Child of PlacedVolume and assemble on the fly the path of PlacedVolumes
@@ -149,9 +148,9 @@ void detail::tools::elementPath(DetElement parent, DetElement child, ElementPath
         return;
       }
     }
-    throw runtime_error(string("The detector element ")+parent.name()+string(" is no parent of ")+child.name());
+    throw std::runtime_error(std::string("The detector element ")+parent.name()+std::string(" is no parent of ")+child.name());
   }
-  throw runtime_error("Search for parent detector element with invalid handles not allowed.");
+  throw std::runtime_error("Search for parent detector element with invalid handles not allowed.");
 }
 
 /// Collect detector elements placements to the top detector element (world) [fast, but may have holes!]
@@ -163,7 +162,7 @@ void detail::tools::elementPath(DetElement parent, DetElement element, Placement
     }
     if ( par.ptr() == parent.ptr() ) return;
   }
-  throw runtime_error(string("The detector element ")+parent.name()+string(" is no parent of ")+element.name());
+  throw std::runtime_error(std::string("The detector element ")+parent.name()+std::string(" is no parent of ")+element.name());
 }
 
 /// Collect detector elements placements to the top detector element (world) [fast, but may have holes!]
@@ -177,64 +176,64 @@ void detail::tools::elementPath(DetElement element, PlacementPath& det_nodes) {
 }
 
 /// Assemble the path of the PlacedVolume selection
-string detail::tools::elementPath(const PlacementPath& nodes, bool reverse)   {
-  string path = "";
+std::string detail::tools::elementPath(const PlacementPath& nodes, bool reverse)   {
+  std::string path = "";
   if ( reverse )  {
     for(auto i=nodes.rbegin(); i != nodes.rend(); ++i)
-      path += "/" + string((*i).name());
+      path += "/" + std::string((*i).name());
   }
   else  {
     for(auto i=begin(nodes); i != end(nodes); ++i)
-      path += "/" + string((*i)->GetName());
+      path += "/" + std::string((*i)->GetName());
   }
   return path;
 }
 
 /// Assemble the path of the PlacedVolume selection
-string detail::tools::elementPath(const ElementPath& nodes, bool reverse)  {
-  string path = "";
+std::string detail::tools::elementPath(const ElementPath& nodes, bool reverse)  {
+  std::string path = "";
   if ( reverse )  {
     for(ElementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
-      path += "/" + string((*i)->GetName());
+      path += "/" + std::string((*i)->GetName());
   }
   else  {
     for(ElementPath::const_iterator i=nodes.begin();i!=nodes.end();++i)
-      path += "/" + string((*i)->GetName());
+      path += "/" + std::string((*i)->GetName());
   }
   return path;
 }
 
 /// Assemble the path of a particular detector element
-string detail::tools::elementPath(DetElement element)  {
+std::string detail::tools::elementPath(DetElement element)  {
   ElementPath nodes;
   elementPath(element,nodes);
   return elementPath(nodes);
 }
 
 /// Find DetElement as child of the top level volume by its absolute path
-DetElement detail::tools::findElement(const Detector& description, const string& path)   {
+DetElement detail::tools::findElement(const Detector& description, const std::string& path)   {
   return findDaughterElement(description.world(),path);
 }
 
 /// Find DetElement as child of a parent by its relative or absolute path
-DetElement detail::tools::findDaughterElement(DetElement parent, const string& subpath)  {
+DetElement detail::tools::findDaughterElement(DetElement parent, const std::string& subpath)  {
   if ( parent.isValid() )   {
     size_t idx = subpath.find('/',1);
     if ( subpath[0] == '/' )   {
       DetElement top = topElement(parent);
-      if ( idx == string::npos ) return top;
+      if ( idx == std::string::npos ) return top;
       return findDaughterElement(top,subpath.substr(idx+1));
     }
-    if ( idx == string::npos )
+    if ( idx == std::string::npos )
       return parent.child(subpath);
-    string name = subpath.substr(0,idx);
+    std::string name = subpath.substr(0,idx);
     DetElement node = parent.child(name);
     if ( node.isValid() )   {
       return findDaughterElement(node,subpath.substr(idx+1));
     }
-    throw runtime_error("dd4hep: DetElement "+parent.path()+" has no child named:"+name+" [No such child]");
+    throw std::runtime_error("dd4hep: DetElement "+parent.path()+" has no child named:"+name+" [No such child]");
   }
-  throw runtime_error("dd4hep: Cannot determine child with path "+subpath+" from invalid parent [invalid handle]");
+  throw std::runtime_error("dd4hep: Cannot determine child with path "+subpath+" from invalid parent [invalid handle]");
 }
 
 /// Determine top level element (=world) for any element walking up the detector element tree
@@ -244,14 +243,14 @@ DetElement detail::tools::topElement(DetElement child)   {
       return topElement(child.parent());
     return child;
   }
-  throw runtime_error("dd4hep: DetElement cannot determine top parent (world) [invalid handle]");
+  throw std::runtime_error("dd4hep: DetElement cannot determine top parent (world) [invalid handle]");
 }
 
 static void detail::tools::makePlacementPath(PlacementPath det_nodes, PlacementPath& all_nodes)   {
   for (size_t i = 0, n = det_nodes.size(); n > 0 && i < n-1; ++i)   {
     if (!findChildByName(det_nodes[i + 1], det_nodes[i], all_nodes))   {
-      throw runtime_error("dd4hep: DetElement cannot determine placement path of "
-                          + string(det_nodes[i].name()) + " [internal error]");
+      throw std::runtime_error("dd4hep: DetElement cannot determine placement path of "
+                               + std::string(det_nodes[i].name()) + " [internal error]");
     }
   }
   if ( det_nodes.size() > 0 )   {
@@ -274,37 +273,36 @@ void detail::tools::placementPath(DetElement parent, DetElement element, Placeme
 }
 
 /// Assemble the path of the PlacedVolume selection
-string detail::tools::placementPath(DetElement element)  {
+std::string detail::tools::placementPath(DetElement element)  {
   PlacementPath path;
   placementPath(element,path);
   return placementPath(path);
 }
 
 /// Assemble the path of the PlacedVolume selection
-string detail::tools::placementPath(const PlacementPath& nodes, bool reverse)  {
-  string path = "";
+std::string detail::tools::placementPath(const PlacementPath& nodes, bool reverse)  {
+  std::string path = "";
   if ( reverse )  {
     for(PlacementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
-      path += "/" + string((*i)->GetName());
+      path += "/" + std::string((*i)->GetName());
   }
   else  {
     for(PlacementPath::const_iterator i=nodes.begin();i!=nodes.end();++i)
-      path += "/" + string((*i)->GetName());
+      path += "/" + std::string((*i)->GetName());
   }
   return path;
 }
 
 /// Assemble the path of the PlacedVolume selection
-string detail::tools::placementPath(const vector<const TGeoNode*>& nodes, bool reverse)   {
-  string path = "";
+std::string detail::tools::placementPath(const std::vector<const TGeoNode*>& nodes, bool reverse)   {
+  std::string path = "";
   if ( reverse )  {
-    for(vector<const TGeoNode*>::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
-      path += "/" + string((*i)->GetName());
+    for(std::vector<const TGeoNode*>::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
+      path += "/" + std::string((*i)->GetName());
+    return path;
   }
-  else  {
-    for(vector<const TGeoNode*>::const_iterator i=nodes.begin();i!=nodes.end();++i)
-      path += "/" + string((*i)->GetName());
-  }
+  for( const auto* n : nodes )
+    path += "/" + std::string(n->GetName());
   return path;
 }
 
@@ -327,7 +325,7 @@ void detail::tools::placementTrafo(const PlacementPath& nodes, bool inverse, TGe
 }
 
 /// Find a given node in the hierarchy starting from the top node (absolute placement!)
-PlacedVolume detail::tools::findNode(PlacedVolume top_place, const string& place)   {
+PlacedVolume detail::tools::findNode(PlacedVolume top_place, const std::string& place)   {
   TGeoNode* top = top_place.ptr();
   const char* path = place.c_str();
   // Check if a geometry path is valid without changing the state of the navigator.
@@ -377,16 +375,16 @@ PlacedVolume detail::tools::findNode(PlacedVolume top_place, const string& place
 }
 
 /// Convert VolumeID to string
-string detail::tools::toString(const PlacedVolume::VolIDs& ids)   {
-  stringstream log;
+std::string detail::tools::toString(const PlacedVolume::VolIDs& ids)   {
+  std::stringstream log;
   for( const auto& v : ids )
     log << v.first << "=" << v.second << "; ";
   return log.str();
 }
 
 /// Convert VolumeID to string
-string detail::tools::toString(const IDDescriptor& dsc, const PlacedVolume::VolIDs& ids, VolumeID code)   {
-  stringstream log;
+std::string detail::tools::toString(const IDDescriptor& dsc, const PlacedVolume::VolIDs& ids, VolumeID code)   {
+  std::stringstream log;
   for( const auto& id : ids )  {
     const BitFieldElement* f = dsc.field(id.first);
     VolumeID value = f->value(code);
@@ -396,14 +394,14 @@ string detail::tools::toString(const IDDescriptor& dsc, const PlacedVolume::VolI
 }
 
 /// Extract all the path elements from a path
-vector<string> detail::tools::pathElements(const string& path)   {
-  vector<string> result;
+std::vector<std::string> detail::tools::pathElements(const std::string& path)   {
+  std::vector<std::string> result;
   if ( !path.empty() )  {
-    string tmp = path[0]=='/' ? path.substr(1) : path;
-    for(size_t idx=tmp.find('/'); idx != string::npos; idx=tmp.find('/'))  {
-      string val = tmp.substr(0,idx);
+    std::string tmp = path[0]=='/' ? path.substr(1) : path;
+    for(size_t idx=tmp.find('/'); idx != std::string::npos; idx=tmp.find('/'))  {
+      std::string val = tmp.substr(0,idx);
       result.emplace_back(val);
-      tmp = tmp.length()>idx ? tmp.substr(idx+1) : string();
+      tmp = tmp.length()>idx ? tmp.substr(idx+1) : std::string();
     }
     if ( !tmp.empty() )  {
       result.emplace_back(tmp);

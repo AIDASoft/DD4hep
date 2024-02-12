@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/ConditionDerived.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/ConditionDerived.h>
 
 // C/C++ include files
 

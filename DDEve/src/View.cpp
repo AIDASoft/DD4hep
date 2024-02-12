@@ -13,12 +13,12 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/View.h"
-#include "DDEve/Display.h"
-#include "DDEve/ElementList.h"
-#include "DDEve/Utilities.h"
-#include "DDEve/Annotation.h"
-#include "DD4hep/InstanceCount.h"
+#include <DDEve/View.h>
+#include <DDEve/Display.h>
+#include <DDEve/ElementList.h>
+#include <DDEve/Utilities.h>
+#include <DDEve/Annotation.h>
+#include <DD4hep/InstanceCount.h>
 
 // Eve include files
 #include <TEveManager.h>
@@ -26,18 +26,17 @@
 #include <TEveCalo.h>
 #include <TGLViewer.h>
 
-using namespace std;
 using namespace dd4hep;
 
 template <typename T>
-static inline typename T::const_iterator find(const T& cont,const string& str)  {
+static inline typename T::const_iterator find(const T& cont,const std::string& str)  {
   for(typename T::const_iterator i=cont.begin(); i!=cont.end(); ++i)  
     if ( (*i).name == str ) return i;
   return cont.end();
 }
 
 /// Initializing constructor
-View::View(Display* eve, const string& nam)
+View::View(Display* eve, const std::string& nam)
   : m_eve(eve), m_view(0), m_geoScene(0), m_eveScene(0), m_global(0), m_name(nam), m_showGlobal(false)
 {
   m_config = m_eve->GetViewConfiguration(m_name);
@@ -79,7 +78,7 @@ void View::Initialize()  {
 }
 
 /// Add the view to the global list of eve objects
-TEveElementList* View::AddToGlobalItems(const string& nam)   {
+TEveElementList* View::AddToGlobalItems(const std::string& nam)   {
   if ( 0 == m_global )   {
     m_global = new ElementList(nam.c_str(), nam.c_str(), true, true);
     if ( m_geoScene ) m_global->AddElement(geoScene());
@@ -119,16 +118,16 @@ TEveElement* View::ImportEventElement(TEveElement* el, TEveElementList* list)  {
 }
 
 /// Access the global instance of the subdetector geometry
-pair<bool,TEveElement*> 
+std::pair<bool,TEveElement*> 
 View::GetGlobalGeometry(DetElement de, const DisplayConfiguration::Config& /* cfg */)   {
   SensitiveDetector sd = m_eve->detectorDescription().sensitiveDetector(de.name());
   TEveElementList& global = m_eve->GetGeoTopic(sd.isValid() ? "Sensitive" : "Structure");
   TEveElement* elt = global.FindChild(de.name());
-  return pair<bool,TEveElement*>(true,elt);
+  return std::pair<bool,TEveElement*>(true,elt);
 }
 
 /// Create a new instance of the geometry of a sub-detector
-pair<bool,TEveElement*> 
+std::pair<bool,TEveElement*> 
 View::CreateGeometry(DetElement de, const DisplayConfiguration::Config& cfg)   {
   SensitiveDetector sd = m_eve->detectorDescription().sensitiveDetector(de.name());
   TEveElementList& topic = GetGeoTopic(sd.isValid() ? "Sensitive" : "Structure");
@@ -157,14 +156,14 @@ void View::ConfigureGeometryFromGlobal()    {
 
 /// Configure a single geometry view
 void View::ConfigureGeometry(const DisplayConfiguration::ViewConfig& config)    {
-  string dets;
+  std::string dets;
   DisplayConfiguration::Configurations::const_iterator ic;
   float legend_y = Annotation::DefaultTextSize()+Annotation::DefaultMargin();
   DetElement world = m_eve->detectorDescription().world();
   const DetElement::Children& c = world.children();
   for( ic=config.subdetectors.begin(); ic != config.subdetectors.end(); ++ic)   {
     const DisplayConfiguration::Config& cfg = *ic;
-    string nam = cfg.name;
+    std::string nam = cfg.name;
     if ( nam == "global" ) {
       m_view->AddScene(m_eve->manager().GetGlobalScene());
       m_view->AddScene(m_eve->manager().GetEventScene());
@@ -186,7 +185,7 @@ void View::ConfigureGeometry(const DisplayConfiguration::ViewConfig& config)    
         DetElement de = (*i).second;
         SensitiveDetector sd = m_eve->detectorDescription().sensitiveDetector(nam);
         TEveElementList& topic = GetGeoTopic(sd.isValid() ? "Sensitive" : "Structure");
-        pair<bool,TEveElement*> e(false,0);
+        std::pair<bool,TEveElement*> e(false,0);
         if ( cfg.data.defaults.load_geo > 0 )       // Create a new instance
           e = CreateGeometry(de,cfg);               // with the given number of levels
         else if ( cfg.data.defaults.load_geo < 0 )  // Use the global geometry instance
@@ -203,7 +202,7 @@ void View::ConfigureGeometry(const DisplayConfiguration::ViewConfig& config)    
 }
 
 /// Call to import geometry topics
-void View::ImportGeoTopics(const string& title)   {
+void View::ImportGeoTopics(const std::string& title)   {
   printout(INFO,"View","+++ %s: Import geometry topics.",c_name());
   for(Topics::iterator i=m_geoTopics.begin(); i!=m_geoTopics.end(); ++i)  {
     printout(INFO,"ViewConfiguration","+++     Add topic %s",(*i).second->GetName());
@@ -213,7 +212,7 @@ void View::ImportGeoTopics(const string& title)   {
 }
 
 /// Call to import geometry elements by topic
-void View::ImportGeo(const string& topic, TEveElement* element)  { 
+void View::ImportGeo(const std::string& topic, TEveElement* element)  { 
   ImportGeoElement(element,&GetGeoTopic(topic));
 }
 
@@ -248,7 +247,7 @@ void View::ConfigureEvent(const DisplayConfiguration::ViewConfig& config)  {
   DisplayConfiguration::Configurations::const_iterator ic;
   for( ic=config.subdetectors.begin(); ic != config.subdetectors.end(); ++ic)  {
     const DisplayConfiguration::Config& cfg = *ic;
-    string nam = cfg.name;
+    std::string nam = cfg.name;
     if ( nam == "global" )  {
       continue;
     }
@@ -293,7 +292,7 @@ void View::ImportEvent(TEveElement* el)  {
 }
 
 /// Access/Create a topic by name
-TEveElementList& View::GetGeoTopic(const string& nam)    {
+TEveElementList& View::GetGeoTopic(const std::string& nam)    {
   Topics::iterator i=m_geoTopics.find(nam);
   if ( i == m_geoTopics.end() )  {
     TEveElementList* topic = new ElementList(nam.c_str(), nam.c_str(), true, true);
@@ -314,8 +313,8 @@ View& View::CreateScenes()  {
 /// Create the event scene
 View& View::CreateEventScene()   {
   if ( 0 == m_eveScene ) {
-    string nam  = m_name+" - Event Data";
-    string tool = m_name+" - Scene holding projected event-data for the view.";
+    std::string nam  = m_name+" - Event Data";
+    std::string tool = m_name+" - Scene holding projected event-data for the view.";
     m_eveScene = m_eve->manager().SpawnNewScene(nam.c_str(), tool.c_str());
   }
   return *this;
@@ -324,8 +323,8 @@ View& View::CreateEventScene()   {
 /// Create the geometry scene
 View& View::CreateGeoScene()  {
   if ( 0 == m_geoScene )   {
-    string nam  = m_name+" - Geometry";
-    string tool = m_name+" - Scene holding projected geometry for the view.";
+    std::string nam  = m_name+" - Geometry";
+    std::string tool = m_name+" - Scene holding projected geometry for the view.";
     m_geoScene = m_eve->manager().SpawnNewScene(nam.c_str(), tool.c_str());
   }
   return *this;

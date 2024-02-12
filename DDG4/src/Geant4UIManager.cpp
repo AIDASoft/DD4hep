@@ -31,16 +31,15 @@
 #include <functional>
 
 using namespace dd4hep::sim;
-using namespace std;
 
 namespace   {
-  string make_cmd(const string& cmd)  {
-    return string( "/control/execute "+cmd);
+  std::string make_cmd(const std::string& cmd)  {
+    return std::string( "/control/execute "+cmd);
   }
 }
 
 /// Initializing constructor
-Geant4UIManager::Geant4UIManager(Geant4Context* ctxt, const string& nam)
+Geant4UIManager::Geant4UIManager(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt,nam), m_vis(0), m_ui(0)
 {
   declareProperty("SetupUI",            m_uiSetup="");
@@ -56,9 +55,9 @@ Geant4UIManager::Geant4UIManager(Geant4Context* ctxt, const string& nam)
   declareProperty("HaveVIS",            m_haveVis=false);
   declareProperty("HaveUI",             m_haveUI=true);
   declareProperty("Prompt",             m_prompt);
-  context()->kernel().register_configure(bind(&Geant4UIManager::configure,this));
-  context()->kernel().register_initialize(bind(&Geant4UIManager::initialize,this));
-  context()->kernel().register_terminate(bind(&Geant4UIManager::terminate,this));
+  context()->kernel().register_configure(std::bind(&Geant4UIManager::configure,this));
+  context()->kernel().register_initialize(std::bind(&Geant4UIManager::initialize,this));
+  context()->kernel().register_terminate(std::bind(&Geant4UIManager::terminate,this));
   enableUI();
 }
 
@@ -113,7 +112,7 @@ void Geant4UIManager::terminate() {
 }
 
 /// Apply single command
-void Geant4UIManager::applyCommand(const string& command)   {
+void Geant4UIManager::applyCommand(const std::string& command)   {
   /// Get the pointer to the User Interface manager
   G4UImanager* mgr = G4UImanager::GetUIpointer();
   if ( mgr )    {
@@ -248,7 +247,7 @@ void Geant4UIManager::start() {
 
   /// No UI. Pure batch mode: Simply execute requested number of events
   long numEvent = context()->kernel().property("NumEvents").value<long>();
-  if(numEvent < 0) numEvent = numeric_limits<int>::max();
+  if(numEvent < 0) numEvent = std::numeric_limits<int>::max();
   info("++ Start run with %d events.",numEvent);
   try {
     context()->kernel().runManager().BeamOn(numEvent);
