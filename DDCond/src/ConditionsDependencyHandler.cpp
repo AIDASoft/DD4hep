@@ -26,7 +26,7 @@ namespace {
     return d->target.name;
 #else
     char text[64];
-    ConditionKey::KeyMaker key(d->target.hash);
+    dd4hep::ConditionKey::KeyMaker key(d->target.hash);
     ::snprintf(text,sizeof(text),"%08X %08X",key.values.det_key, key.values.item_key);
     return text;
 #endif

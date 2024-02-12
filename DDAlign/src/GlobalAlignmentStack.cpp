@@ -95,6 +95,7 @@ GlobalAlignmentStack::~GlobalAlignmentStack()   {
 GlobalAlignmentStack& GlobalAlignmentStack::get()  {
   if ( _stack().get() ) return *_stack();
   except("GlobalAlignmentStack", "Stack not allocated -- may not be retrieved!");
+  throw std::runtime_error("Stack not allocated");
 }
 
 /// Create an alignment stack instance. The creation of a second instance will be refused.
