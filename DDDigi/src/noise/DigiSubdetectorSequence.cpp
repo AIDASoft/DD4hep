@@ -27,11 +27,10 @@
 // C/C++ include files
 #include <stdexcept>
 
-using namespace std;
 using namespace dd4hep::digi;
 
 /// Standard constructor
-DigiSubdetectorSequence::DigiSubdetectorSequence(const DigiKernel& kernel, const string& nam)
+DigiSubdetectorSequence::DigiSubdetectorSequence(const DigiKernel& kernel, const std::string& nam)
   : DigiActionSequence(kernel, nam)
 {
   declareProperty("detector",m_detectorName);
@@ -69,13 +68,13 @@ void DigiSubdetectorSequence::scan_sensitive(PlacedVolume pv, VolumeID vid, Volu
   Volume vol = pv.volume();
   if ( vol.isSensitive() )    {
     Solid sol = vol.solid();
-    auto  key = make_pair(sol->IsA(), m_segmentation);
+    auto  key = std::make_pair(sol->IsA(), m_segmentation);
     auto  is  = m_scanners.find(key);
     if ( is == m_scanners.end() )  {
-      is = m_scanners.insert(make_pair(key, create_cell_scanner(sol, m_segmentation))).first;
+      is = m_scanners.insert(std::make_pair(key, create_cell_scanner(sol, m_segmentation))).first;
     }
   }
-  for (int idau = 0, ndau = pv->GetNdaughters(); idau < ndau; ++idau) {
+  for ( int idau = 0, ndau = pv->GetNdaughters(); idau < ndau; ++idau ) {
     PlacedVolume  p(pv->GetDaughter(idau));
     const VolIDs& new_ids = p.volIDs();
     if ( !new_ids.empty() )   {
@@ -99,8 +98,8 @@ void DigiSubdetectorSequence::scan_detector(DetElement de, VolumeID vid, VolumeI
     for (const auto& id : new_ids)   {
       if ( id.first == m_segmentName )   {
         VolumeID rid = detail::reverseBits<VolumeID>(new_vid);
-        m_parallelVid.emplace(make_pair(rid, Context(de, new_vid, rid, new_msk)));
-        m_parallelDet.emplace(make_pair(de, new_vid));
+        m_parallelVid.emplace(std::make_pair(rid, Context(de, new_vid, rid, new_msk)));
+        m_parallelDet.emplace(std::make_pair(de, new_vid));
         scan_sensitive(de.placement(), new_vid, new_msk);
         return;
       }
@@ -114,12 +113,12 @@ void DigiSubdetectorSequence::scan_detector(DetElement de, VolumeID vid, VolumeI
 void DigiSubdetectorSequence::process_cell(DigiContext&, const DigiCellScanner& , const DigiCellData& /* data */)  const   {
 #if 0
   Segmentation seg  = m_sensDet.readout().segmentation();
-    string       desc = m_idDesc.str(data.cell_id);
-    info("Sensitive: [%s/%s]   vid:%s %s",
-         data.solid->IsA()->GetName(),
-         seg.type().c_str(),
-         volumeID(data.cell_id).c_str(),
-         desc.c_str());
+  std::string       desc = m_idDesc.str(data.cell_id);
+  info("Sensitive: [%s/%s]   vid:%s %s",
+       data.solid->IsA()->GetName(),
+       seg.type().c_str(),
+       volumeID(data.cell_id).c_str(),
+       desc.c_str());
   if ( data.cell_id )  {
   }
 #endif
@@ -133,7 +132,7 @@ void DigiSubdetectorSequence::process_context(DigiContext& context,
 {
   Volume vol = pv.volume();
   if ( vol.isSensitive() )    {
-    auto key = make_pair(vol->GetShape()->IsA(), m_segmentation);
+    auto key = std::make_pair(vol->GetShape()->IsA(), m_segmentation);
     auto is  = m_scanners.find(key);
     if ( is == m_scanners.end() )   {
       except("Fatal error in process_context: Invalid cell scanner. vid: %016X",vid);
@@ -157,7 +156,7 @@ void DigiSubdetectorSequence::execute(DigiContext& context)  const   {
     const Context& c = d.second;
     auto vid = c.detector_id;
     auto det = c.detector;
-    string id_desc   = m_idDesc.str(vid);
+    std::string id_desc = m_idDesc.str(vid);
     info("  Order:%-64s    vid:%s %s %s",
          det.path().c_str(), volumeID(d.first).c_str(), volumeID(vid).c_str(), id_desc.c_str());
     process_context(context, c, c.detector.placement(), c.detector_id, c.detector_mask);
@@ -168,11 +167,11 @@ void DigiSubdetectorSequence::execute(DigiContext& context)  const   {
 }
 
 /// Access subdetector from the detector description
-dd4hep::DetElement DigiSubdetectorSequence::subdetector(const string& nam)   const   {
+dd4hep::DetElement DigiSubdetectorSequence::subdetector(const std::string& nam)   const   {
   return m_kernel.detectorDescription().detector(nam);
 }
 
 /// Access sensitive detector from the detector description
-dd4hep::SensitiveDetector DigiSubdetectorSequence::sensitiveDetector(const string& nam)   const   {
+dd4hep::SensitiveDetector DigiSubdetectorSequence::sensitiveDetector(const std::string& nam)   const   {
   return m_kernel.detectorDescription().sensitiveDetector(nam);
 }

@@ -12,24 +12,21 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4ParticlePrint.h"
-#include "DDG4/Geant4Data.h"
-#include "DDG4/Geant4HitCollection.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4ParticlePrint.h>
+#include <DDG4/Geant4Data.h>
+#include <DDG4/Geant4HitCollection.h>
 
 // Geant4 include files
-#include "G4Event.hh"
+#include <G4Event.hh>
 
 // C/C++ include files
 #include <cstring>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
-
-typedef detail::ReferenceBitMask<const int> PropertyMask;
+using PropertyMask = dd4hep::detail::ReferenceBitMask<const int>;
 
 /// Standard constructor
 Geant4ParticlePrint::Geant4ParticlePrint(Geant4Context* ctxt, const std::string& nam)
@@ -80,8 +77,8 @@ void Geant4ParticlePrint::printParticle(const std::string& prefix, const G4Event
   char equiv[32];
   PropertyMask mask(p->reason);
   PropertyMask status(p->status);
-  string proc_name = p.processName();
-  string proc_type = p.processTypeName();
+  std::string proc_name = p.processName();
+  std::string proc_type = p.processTypeName();
   int parent_id = p->parents.empty() ? -1 : *(p->parents.begin());
 
   equiv[0] = 0;
@@ -207,10 +204,8 @@ void Geant4ParticlePrint::printParticleTree(const G4Event* e,
   }
   
   printParticle(txt, e, p);
-  const set<int>& daughters = p->daughters;
   // For all particles, the set of daughters must be contained in the record.
-  for(set<int>::const_iterator id=daughters.begin(); id!=daughters.end(); ++id)   {
-    int id_dau = *id;
+  for( int id_dau : p->daughters )  {
     Geant4ParticleHandle dau = (*particles.find(id_dau)).second;
     printParticleTree(e, particles, level+1, dau);
   }

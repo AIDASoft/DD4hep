@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/ConditionsMap.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/ConditionsMap.h>
+#include <DD4hep/detail/ConditionsInterna.h>
 
 using namespace dd4hep;
 

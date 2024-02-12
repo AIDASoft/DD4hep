@@ -12,18 +12,16 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/detail/ConditionsInterna.h"
-#include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsOperators.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/detail/ConditionsInterna.h>
+#include <DDCond/ConditionsPool.h>
+#include <DDCond/ConditionsIOVPool.h>
+#include <DDCond/ConditionsOperators.h>
 
 // C/C++ include files
 #include <cstring>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 /// Select all condition from the conditions manager registered at the Detector object

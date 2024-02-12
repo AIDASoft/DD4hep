@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "XML/Printout.h"
-#include "XML/UriReader.h"
-#include "XML/DocumentHandler.h"
+#include <XML/Printout.h>
+#include <XML/UriReader.h>
+#include <XML/DocumentHandler.h>
 
 // C/C++ include files
 #include <memory>
@@ -25,41 +25,39 @@
 #ifndef _WIN32
 #include <libgen.h>
 #endif
-#include "TSystem.h"
+#include <TSystem.h>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::xml;
 
 namespace {
-  string undressed_file_name(const string& fn)   {
+  std::string undressed_file_name(const std::string& fn)   {
     if ( !fn.empty() )   {
       TString tfn(fn);
       gSystem->ExpandPathName(tfn);
-      return string(tfn.Data());
+      return std::string(tfn.Data());
     }
     return fn;
   }
-  int s_minPrintLevel = INFO;
+  int s_minPrintLevel = dd4hep::INFO;
 }
 
 #ifndef __TIXML__
-#include "xercesc/framework/LocalFileFormatTarget.hpp"
-#include "xercesc/framework/StdOutFormatTarget.hpp"
-#include "xercesc/framework/MemBufFormatTarget.hpp"
-#include "xercesc/framework/MemBufInputSource.hpp"
-#include "xercesc/sax/SAXParseException.hpp"
-#include "xercesc/sax/EntityResolver.hpp"
-#include "xercesc/sax/InputSource.hpp"
-#include "xercesc/parsers/XercesDOMParser.hpp"
-#include "xercesc/util/XMLEntityResolver.hpp"
-#include "xercesc/util/PlatformUtils.hpp"
-#include "xercesc/util/XercesDefs.hpp"
-#include "xercesc/util/XMLUni.hpp"
-#include "xercesc/util/XMLURL.hpp"
-#include "xercesc/util/XMLString.hpp"
-#include "xercesc/dom/DOM.hpp"
-#include "xercesc/sax/ErrorHandler.hpp"
+#include <xercesc/framework/LocalFileFormatTarget.hpp>
+#include <xercesc/framework/StdOutFormatTarget.hpp>
+#include <xercesc/framework/MemBufFormatTarget.hpp>
+#include <xercesc/framework/MemBufInputSource.hpp>
+#include <xercesc/sax/SAXParseException.hpp>
+#include <xercesc/sax/EntityResolver.hpp>
+#include <xercesc/sax/InputSource.hpp>
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/util/XMLEntityResolver.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
+#include <xercesc/util/XercesDefs.hpp>
+#include <xercesc/util/XMLUni.hpp>
+#include <xercesc/util/XMLURL.hpp>
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/sax/ErrorHandler.hpp>
 
 using namespace xercesc;
 
@@ -95,7 +93,7 @@ namespace dd4hep {
 
     /// Dom Error handler callback
     bool DocumentErrorHandler::handleError(const DOMError& domError) {
-      string err = "DOM UNKNOWN: ";
+      std::string err = "DOM UNKNOWN: ";
       switch (domError.getSeverity()) {
       case DOMError::DOM_SEVERITY_WARNING:
         err = "DOM WARNING: ";
@@ -120,22 +118,22 @@ namespace dd4hep {
     }
     /// Error handler
     void DocumentErrorHandler::error(const SAXParseException& e) {
-      string m(_toString(e.getMessage()));
-      if (m.find("The values for attribute 'name' must be names or name tokens") != string::npos
-          || m.find("The values for attribute 'ID' must be names or name tokens") != string::npos
-          || m.find("for attribute 'name' must be Name or Nmtoken") != string::npos
-          || m.find("for attribute 'ID' must be Name or Nmtoken") != string::npos
-          || m.find("for attribute 'name' is invalid Name or NMTOKEN value") != string::npos
-          || m.find("for attribute 'ID' is invalid Name or NMTOKEN value") != string::npos)
+      std::string m(_toString(e.getMessage()));
+      if (m.find("The values for attribute 'name' must be names or name tokens") != std::string::npos
+          || m.find("The values for attribute 'ID' must be names or name tokens") != std::string::npos
+          || m.find("for attribute 'name' must be Name or Nmtoken") != std::string::npos
+          || m.find("for attribute 'ID' must be Name or Nmtoken") != std::string::npos
+          || m.find("for attribute 'name' is invalid Name or NMTOKEN value") != std::string::npos
+          || m.find("for attribute 'ID' is invalid Name or NMTOKEN value") != std::string::npos)
         return;
-      string sys(_toString(e.getSystemId()));
+      std::string sys(_toString(e.getSystemId()));
       printout(ERROR,"XercesC","+++ Error at file \"%s\", Line %d Column: %d Message:%s",
                sys.c_str(), int(e.getLineNumber()), int(e.getColumnNumber()), m.c_str());
     }
     /// Fatal error handler
     void DocumentErrorHandler::fatalError(const SAXParseException& e) {
-      string m(_toString(e.getMessage()));
-      string sys(_toString(e.getSystemId()));
+      std::string m(_toString(e.getMessage()));
+      std::string sys(_toString(e.getSystemId()));
       printout(FATAL,"XercesC","+++ FATAL Error at file \"%s\", Line %d Column: %d Message:%s",
                sys.c_str(), int(e.getLineNumber()), int(e.getColumnNumber()), m.c_str());
     }
@@ -171,13 +169,13 @@ namespace dd4hep {
         /// Entity resolver overload to use uri reader
         InputSource *read_uri(XMLResourceIdentifier *id)   {
           if ( m_reader )   {
-            string buf, systemID(_toString(id->getSystemId()));
+            std::string buf, systemID(_toString(id->getSystemId()));
             if ( m_reader->load(systemID, buf) )  {
               const XMLByte* input = (const XMLByte*)XMLString::replicate(buf.c_str());
 #if 0
-              string baseURI(_toString(id->getBaseURI()));
-              string schema(_toString(id->getSchemaLocation()));
-              string ns(_toString(id->getNameSpace()));
+              std::string baseURI(_toString(id->getBaseURI()));
+              std::string schema(_toString(id->getSchemaLocation()));
+              std::string ns(_toString(id->getNameSpace()));
               if ( s_minPrintLevel <= INFO ) {
                 printout(INFO,"XercesC","+++ Resolved URI: sysID:%s uri:%s ns:%s schema:%s",
                          systemID.c_str(), baseURI.c_str(), ns.c_str(), schema.c_str());
@@ -208,7 +206,7 @@ namespace dd4hep {
     }
 
     /// Dump DOM tree using XercesC handles
-    void dumpTree(DOMNode* doc, ostream& os) {
+    void dumpTree(DOMNode* doc, std::ostream& os) {
       if ( doc )  {
         DOMImplementation  *imp = DOMImplementationRegistry::getDOMImplementation(Strng_t("LS"));
         MemBufFormatTarget *tar = new MemBufFormatTarget();
@@ -217,7 +215,7 @@ namespace dd4hep {
         out->setByteStream(tar);
         wrt->getDomConfig()->setParameter(Strng_t("format-pretty-print"), true);
         wrt->write(doc, out);
-        os << tar->getRawBuffer() << endl << flush;
+        os << tar->getRawBuffer() << std::endl << std::flush;
         out->release();
         wrt->release();
         return;
@@ -226,15 +224,15 @@ namespace dd4hep {
     }
 
     /// Dump DOM tree using XercesC handles
-    void dump_doc(DOMDocument* doc, ostream& os) {
+    void dump_doc(DOMDocument* doc, std::ostream& os) {
       dumpTree(doc,os);
     }
     /// Dump DOM tree using XercesC handles
-    void dump_tree(Handle_t elt, ostream& os) {
+    void dump_tree(Handle_t elt, std::ostream& os) {
       dumpTree((DOMNode*)elt.ptr(),os);
     }
     /// Dump DOM tree using XercesC handles
-    void dump_tree(Document doc, ostream& os) {
+    void dump_tree(Document doc, std::ostream& os) {
       dump_doc((DOMDocument*)doc.ptr(),os);
     }
   }
@@ -242,36 +240,36 @@ namespace dd4hep {
 
 #ifdef DD4HEP_NONE
 /// System ID of a given XML entity
-string DocumentHandler::system_path(Handle_t base, const string& fn)   {
-  string path = system_path(base);
-  string dir  = ::dirname((char*)path.c_str());
+std::string DocumentHandler::system_path(Handle_t base, const std::string& fn)   {
+  std::string path = system_path(base);
+  std::string dir  = ::dirname((char*)path.c_str());
   return dir+fn;
 }
 #else
 
-#include "TUri.h"
-#include "TUrl.h"
+#include <TUri.h>
+#include <TUrl.h>
 #endif
 
 /// System ID of a given XML entity
-string DocumentHandler::system_path(Handle_t base, const string& fn)   {
-  string path, dir = system_path(base);
+std::string DocumentHandler::system_path(Handle_t base, const std::string& fn)   {
+  std::string path, dir = system_path(base);
   TUri uri_base(dir.c_str()), uri_rel(fn.c_str());
   TUrl url_base(dir.c_str());
   path = TUri::MergePaths(uri_rel,uri_base);
   TUri final(path.c_str());
   final.Normalise();
-  path = url_base.GetProtocol()+string("://")+final.GetUri().Data();
+  path = url_base.GetProtocol()+std::string("://")+final.GetUri().Data();
   if ( path[path.length()-1]=='/' ) path = path.substr(0,path.length()-1);
   return path;
 }
 
 /// System ID of a given XML entity
-string DocumentHandler::system_path(Handle_t base)   {
+std::string DocumentHandler::system_path(Handle_t base)   {
   DOMElement* elt = (DOMElement*)base.ptr();
-  string path = _toString(elt->getBaseURI());
+  std::string path = _toString(elt->getBaseURI());
   if ( path[0] == '/' )  {
-    string tmp = "file:"+path;
+    std::string tmp = "file:"+path;
     return tmp;
   }
   return path;
@@ -279,7 +277,7 @@ string DocumentHandler::system_path(Handle_t base)   {
 
 /// Load secondary XML file with relative addressing with respect to handle
 Document DocumentHandler::load(Handle_t base, const XMLCh* fname, UriReader* reader) const {
-  string path;
+  std::string path;
   DOMElement* elt = (DOMElement*)base.ptr();
   try  {
     Document doc;
@@ -294,21 +292,21 @@ Document DocumentHandler::load(Handle_t base, const XMLCh* fname, UriReader* rea
     }
     return load(path, reader);
   }
-  catch(const exception& exc)   {
-    string b = _toString(elt->getBaseURI());
-    string e = _toString(fname);
+  catch(const std::exception& exc)   {
+    std::string b = _toString(elt->getBaseURI());
+    std::string e = _toString(fname);
     printout(DEBUG,"DocumentHandler","+++ URI exception: %s -> %s [%s]",b.c_str(),e.c_str(),exc.what());
   }
   catch(...)   {
-    string b = _toString(elt->getBaseURI());
-    string e = _toString(fname);
+    std::string b = _toString(elt->getBaseURI());
+    std::string e = _toString(fname);
     printout(DEBUG,"DocumentHandler","+++ URI exception: %s -> %s",b.c_str(),e.c_str());
   }
   if ( reader )   {
-    string buf, sys = system_path(base,fname);
+    std::string buf, sys = system_path(base,fname);
 #if 0
-    string buf, sys, dir = _toString(elt->getBaseURI());
-    string fn = _toString(fname);
+    std::string buf, sys, dir = _toString(elt->getBaseURI());
+    std::string fn = _toString(fname);
     dir = ::dirname((char*)dir.c_str());
     while( fn.substr(0,3) == "../" )  {
       dir = ::dirname((char*)dir.c_str());
@@ -329,21 +327,21 @@ Document DocumentHandler::load(Handle_t base, const XMLCh* fname, UriReader* rea
 }
 
 /// Load XML file and parse it using URI resolver to read data.
-Document DocumentHandler::load(const string& fname, UriReader* reader) const   {
-  string path;
+Document DocumentHandler::load(const std::string& fname, UriReader* reader) const   {
+  std::string path;
   printout(DEBUG,"DocumentHandler","+++ Loading document URI: %s",fname.c_str());
   try  {
     size_t idx = fname.find(':');
     size_t idq = fname.find('/');
-    if ( idq == string::npos ) idq = 0;
-    XMLURL xerurl = (const XMLCh*) Strng_t(idx==string::npos || idx>idq ? "file:"+fname : fname);
-    string proto  = _toString(xerurl.getProtocolName());
+    if ( idq == std::string::npos ) idq = 0;
+    XMLURL xerurl = (const XMLCh*) Strng_t(idx==std::string::npos || idx>idq ? "file:"+fname : fname);
+    std::string proto  = _toString(xerurl.getProtocolName());
     path = _toString(xerurl.getPath());
     printout(DEBUG,"DocumentHandler","+++             protocol:%s path:%s",proto.c_str(), path.c_str());
   }
   catch(...)   {
   }
-  unique_ptr < XercesDOMParser > parser(make_parser(reader));
+  std::unique_ptr < XercesDOMParser > parser(make_parser(reader));
   try {
     if ( !path.empty() )  {
       parser->parse(path.c_str());
@@ -358,13 +356,13 @@ Document DocumentHandler::load(const string& fname, UriReader* reader) const   {
       return (XmlDocument*)0;
     }
   }
-  catch (const exception& e) {
+  catch (const std::exception& e) {
     printout(ERROR,"DocumentHandler","+++ Exception(XercesC): parse(path):%s",e.what());
     try {
       parser->parse(fname.c_str());
       if ( reader ) reader->parserLoaded(path);
     }
-    catch (const exception& ex) {
+    catch (const std::exception& ex) {
       printout(FATAL,"DocumentHandler","+++ Exception(XercesC): parse(URI):%s",ex.what());
       throw;
     }
@@ -375,7 +373,7 @@ Document DocumentHandler::load(const string& fname, UriReader* reader) const   {
 
 /// Parse a standalong XML string into a document.
 Document DocumentHandler::parse(const char* bytes, size_t length, const char* sys_id, UriReader* rdr) const {
-  unique_ptr < XercesDOMParser > parser(make_parser(rdr));
+  std::unique_ptr < XercesDOMParser > parser(make_parser(rdr));
   MemBufInputSource src((const XMLByte*)bytes, length, sys_id, false);
   parser->parse(src);
   DOMDocument* doc = parser->adoptDocument();
@@ -385,7 +383,7 @@ Document DocumentHandler::parse(const char* bytes, size_t length, const char* sy
 }
 
 /// Write xml document to output file (stdout if file name empty)
-int DocumentHandler::output(Document doc, const string& fname) const {
+int DocumentHandler::output(Document doc, const std::string& fname) const {
   XMLFormatTarget *tar = 0;
   DOMImplementation *imp = DOMImplementationRegistry::getDOMImplementation(Strng_t("LS"));
   DOMLSOutput *out = imp->createLSOutput();
@@ -394,7 +392,7 @@ int DocumentHandler::output(Document doc, const string& fname) const {
   if (fname.empty())
     tar = new StdOutFormatTarget();
   else   {
-    string fn = undressed_file_name(fname);
+    std::string fn = undressed_file_name(fname);
     tar = new LocalFileFormatTarget(Strng_t(fn));
   }
   out->setByteStream(tar);
@@ -408,7 +406,7 @@ int DocumentHandler::output(Document doc, const string& fname) const {
 
 #else
 
-#include "XML/tinyxml.h"
+#include <XML/tinyxml.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -434,7 +432,7 @@ namespace dd4hep {
   }}
 
 namespace {
-  static string _clean_fname(const string& s) {
+  static std::string _clean_fname(const std::string& s) {
     std::string const& temp = getEnviron(s);
     std::string temp2 = undressed_file_name(temp.empty() ? s : temp);
     if ( strncmp(temp2.c_str(),"file:",5)==0 ) return temp2.substr(5);
@@ -443,13 +441,13 @@ namespace {
 }
 
 /// System ID of a given XML entity
-string DocumentHandler::system_path(Handle_t base, const string& fname)   {
-  string fn, clean = _clean_fname(fname);
+std::string DocumentHandler::system_path(Handle_t base, const std::string& fname)   {
+  std::string fn, clean = _clean_fname(fname);
   struct stat st;
   Element elt(base);
   // Poor man's URI handling. Xerces is much much better here
   if ( elt ) {
-    string bn = Xml(elt.document()).d->Value();
+    std::string bn = Xml(elt.document()).d->Value();
 #ifdef _WIN32
     char drive[_MAX_DRIVE], dir[_MAX_DIR], file[_MAX_FNAME], ext[_MAX_EXT];
     ::_splitpath(bn.c_str(),drive,dir,file,ext);
@@ -472,8 +470,8 @@ string DocumentHandler::system_path(Handle_t base, const string& fname)   {
 }
 
 /// System ID of a given XML entity
-string DocumentHandler::system_path(Handle_t base)   {
-  string fn;
+std::string DocumentHandler::system_path(Handle_t base)   {
+  std::string fn;
   Element elt(base);
   // Poor man's URI handling. Xerces is much much better here
   if ( elt ) {
@@ -484,7 +482,7 @@ string DocumentHandler::system_path(Handle_t base)   {
 
 /// Load XML file and parse it using URI resolver to read data.
 Document DocumentHandler::load(const std::string& fname, UriReader* reader) const  {
-  string clean = _clean_fname(fname);
+  std::string clean = _clean_fname(fname);
   if ( reader )   {
     printout(WARNING,"DocumentHandler","+++ Loading document URI: %s %s",
              fname.c_str(),"[URI Resolution is not supported by TiXML]");
@@ -526,7 +524,7 @@ Document DocumentHandler::load(const std::string& fname, UriReader* reader) cons
 
 /// Load XML file and parse it using URI resolver to read data.
 Document DocumentHandler::load(Handle_t base, const XmlChar* fname, UriReader* reader) const  {
-  string path = system_path(base, fname);
+  std::string path = system_path(base, fname);
   return load(path,reader);
 }
 
@@ -543,7 +541,7 @@ Document DocumentHandler::parse(const char* bytes, size_t length, const char* /*
       size_t len = length;
       // TiXml does not support white spaces at the end. Check and remove.
       if ( str_len+1 != len || bytes[str_len] != 0 || ::isspace(bytes[str_len-1]) )   {
-        unique_ptr<char[]> data(new char[len+1]);
+        std::unique_ptr<char[]> data(new char[len+1]);
         char* buff = data.get();
         try  {
           ::memcpy(buff, bytes, len+1);
@@ -567,13 +565,13 @@ Document DocumentHandler::parse(const char* bytes, size_t length, const char* /*
         printout(FATAL,"DocumentHandler",
                  "+++ XML Document error: %s Location Line:%d Column:%d",
                  doc->Value(), doc->ErrorRow(), doc->ErrorCol());
-        throw runtime_error(string("dd4hep: ")+doc->ErrorDesc());
+        throw std::runtime_error(std::string("dd4hep: ")+doc->ErrorDesc());
       }
-      throw runtime_error("dd4hep: Unknown error while parsing XML document string with TiXml.");
+      throw std::runtime_error("dd4hep: Unknown error while parsing XML document string with TiXml.");
     }
-    throw runtime_error("dd4hep: FAILED to parse invalid document string [NULL] with TiXml.");
+    throw std::runtime_error("dd4hep: FAILED to parse invalid document string [NULL] with TiXml.");
   }
-  catch(exception& e) {
+  catch(std::exception& e) {
     printout(ERROR,"DocumentHandler","+++ Exception (TinyXML): parse(string):%s",e.what());
   }
   delete doc;
@@ -581,8 +579,8 @@ Document DocumentHandler::parse(const char* bytes, size_t length, const char* /*
 }
 
 /// Write xml document to output file (stdout if file name empty)
-int DocumentHandler::output(Document doc, const string& fname) const {
-  string fn = undressed_file_name(fname);
+int DocumentHandler::output(Document doc, const std::string& fname) const {
+  std::string fn = undressed_file_name(fname);
   FILE* file = fn.empty() ? stdout : ::fopen(fn.c_str(),"w");
   if ( !file ) {
     printout(ERROR,"DocumentHandler","+++ Failed to open output file: %s",fname.c_str());
@@ -595,7 +593,7 @@ int DocumentHandler::output(Document doc, const string& fname) const {
 }
 
 /// Dump partial or full XML trees
-void dd4hep::xml::dump_tree(Handle_t elt, ostream& os) {
+void dd4hep::xml::dump_tree(Handle_t elt, std::ostream& os) {
   TiXmlNode* node = (TiXmlNode*)elt.ptr();
   TiXmlPrinter printer;
   printer.SetStreamPrinting();
@@ -604,7 +602,7 @@ void dd4hep::xml::dump_tree(Handle_t elt, ostream& os) {
 }
 
 /// Dump partial or full XML documents
-void dd4hep::xml::dump_tree(Document doc, ostream& os) {
+void dd4hep::xml::dump_tree(Document doc, std::ostream& os) {
   TiXmlDocument* node = (TiXmlDocument*)doc.ptr();
   TiXmlPrinter printer;
   printer.SetStreamPrinting();
@@ -659,29 +657,29 @@ Document DocumentHandler::parse(const char* bytes, size_t length) const {
 }
 
 /// System ID of a given XML entity
-string DocumentHandler::system_path(Handle_t base, const XmlChar* fname)   {
-  string fn = _toString(fname);
+std::string DocumentHandler::system_path(Handle_t base, const XmlChar* fname)   {
+  std::string fn = _toString(fname);
   return system_path(base, fn);
 }
 
 /// System directory of a given XML entity
-string DocumentHandler::system_directory(Handle_t base, const XmlChar* fname)   {
-  string path = system_path(base,fname);
-  string dir = ::dirname((char*)path.c_str());
+std::string DocumentHandler::system_directory(Handle_t base, const XmlChar* fname)   {
+  std::string path = system_path(base,fname);
+  std::string dir = ::dirname((char*)path.c_str());
   return dir;
 }
 
 /// System directory of a given XML entity
-string DocumentHandler::system_directory(Handle_t base)   {
-  string path = system_path(base);
-  string dir = ::dirname((char*)path.c_str());
+std::string DocumentHandler::system_directory(Handle_t base)   {
+  std::string path = system_path(base);
+  std::string dir = ::dirname((char*)path.c_str());
   return dir;
 }
 
 /// Create new XML document by parsing empty xml buffer
 Document DocumentHandler::create(const char* tag, const char* comment) const {
-  string top(tag);
-  string empty = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+  std::string top(tag);
+  std::string empty = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
   empty += "<" + top + "/>\0\0";
   Document doc = parse(empty.c_str(), empty.length() + 1);
   if (comment) {
@@ -698,10 +696,10 @@ Document DocumentHandler::create(const std::string& tag, const std::string& comm
 
 /// Dump partial or full XML trees to stdout
 void dd4hep::xml::dump_tree(Handle_t elt) {
-  dump_tree(elt,cout);
+  dump_tree(elt,std::cout);
 }
 
 /// Dump partial or full XML documents to stdout
 void dd4hep::xml::dump_tree(Document doc) {
-  dump_tree(doc,cout);
+  dump_tree(doc,std::cout);
 }

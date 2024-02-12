@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/ConditionsListener.h"
+#include <DD4hep/ConditionsListener.h>
 
 using namespace dd4hep::cond;
 

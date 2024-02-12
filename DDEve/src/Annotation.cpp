@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/Annotation.h"
-#include "DD4hep/InstanceCount.h"
-#include "TEveViewer.h"
-#include "TGLViewer.h"
+#include <DDEve/Annotation.h>
+#include <DD4hep/InstanceCount.h>
+#include <TEveViewer.h>
+#include <TGLViewer.h>
 
 // C/C++ include files
 

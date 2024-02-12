@@ -12,11 +12,10 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/ConditionsProcessor.h"
-#include "DD4hep/detail/ContainerHelpers.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/ConditionsProcessor.h>
+#include <DD4hep/detail/ContainerHelpers.h>
 
-using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::cond;
 
@@ -48,14 +47,14 @@ namespace dd4hep {
   namespace cond   {
 
     //template class ConditionsCollector<ConditionsMap>;
-    template class ConditionsCollector<list<Condition> >;
-    template class ConditionsCollector<vector<Condition> >;
-    template class ConditionsCollector<map<DetElement,Condition> >;
-    template class ConditionsCollector<vector<pair<DetElement,Condition> > >;
-    template class ConditionsCollector<vector<pair<string,Condition> > >;
+    template class ConditionsCollector<std::list<Condition> >;
+    template class ConditionsCollector<std::vector<Condition> >;
+    template class ConditionsCollector<std::map<DetElement,Condition> >;
+    template class ConditionsCollector<std::vector<std::pair<DetElement,Condition> > >;
+    template class ConditionsCollector<std::vector<std::pair<std::string,Condition> > >;
 
-    template class ConditionsCollector<multimap<DetElement,Condition> >;
-    template class ConditionsCollector<map<string,Condition> >;
-    template class ConditionsCollector<multimap<string,Condition> >;
+    template class ConditionsCollector<std::multimap<DetElement,Condition> >;
+    template class ConditionsCollector<std::map<std::string,Condition> >;
+    template class ConditionsCollector<std::multimap<std::string,Condition> >;
   }       /* End namespace cond               */
 }         /* End namespace dd4hep                   */

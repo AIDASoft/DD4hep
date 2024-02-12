@@ -29,20 +29,17 @@
 #include <sstream>
 
 using namespace dd4hep::sim::Geant4GeometryMaps;
-using namespace dd4hep::detail::tools;
-using namespace dd4hep::detail;
 using namespace dd4hep::sim;
 using namespace dd4hep;
-using namespace std;
 
 #include <DDG4/Geant4AssemblyVolume.h>
-typedef pair<VolumeID,vector<pair<const BitFieldElement*, VolumeID> > > VolIDDescriptor;
+typedef std::pair<VolumeID,std::vector<std::pair<const BitFieldElement*, VolumeID> > > VolIDDescriptor;
 namespace {
 
   /// Helper class to populate the Geant4 volume manager
   struct Populator {
-    typedef vector<const TGeoNode*> Chain;
-    typedef map<VolumeID,Geant4GeometryInfo::Geant4PlacementPath> Registries;
+    typedef std::vector<const TGeoNode*> Chain;
+    typedef std::map<VolumeID,Geant4GeometryInfo::Geant4PlacementPath> Registries;
     /// Reference to the Detector instance
     const Detector& m_detDesc;
     /// Set of already added entries
@@ -74,10 +71,10 @@ namespace {
       }
       /// Needed to compute the cellID of parameterized volumes
       for( const auto& pv : m_geo.g4Placements )   {
-	if ( pv.second->IsParameterised() )
-	  m_geo.g4Parameterised[pv.second] = pv.first;
-	if ( pv.second->IsReplicated() )
-	  m_geo.g4Replicated[pv.second] = pv.first;
+        if ( pv.second->IsParameterised() )
+          m_geo.g4Parameterised[pv.second] = pv.first;
+        if ( pv.second->IsReplicated() )
+          m_geo.g4Replicated[pv.second] = pv.first;
       }
     }
 
@@ -133,14 +130,14 @@ namespace {
           node = *(k);
           PlacementMap::const_iterator g4pit = m_geo.g4Placements.find(node);
           if (g4pit != m_geo.g4Placements.end()) {
-	    G4VPhysicalVolume* phys = (*g4pit).second;
-	    if ( phys->IsParameterised() )   {
-	      PlacedVolume pv(n);
-	      PlacedVolumeExtension* ext = pv.data();
-	      if ( nullptr == ext->params->field )   {
-		ext->params->field = iddesc.field(ext->volIDs.at(0).first);
-	      }
-	    }
+            G4VPhysicalVolume* phys = (*g4pit).second;
+            if ( phys->IsParameterised() )   {
+              PlacedVolume pv(n);
+              PlacedVolumeExtension* ext = pv.data();
+              if ( nullptr == ext->params->field )   {
+                ext->params->field = iddesc.field(ext->volIDs.at(0).first);
+              }
+            }
             path.emplace_back(phys);
             printout(print_chain, "Geant4VolumeManager", "+++     Chain: Node OK: %s [%s]",
                      node->GetName(), phys->GetName().c_str());
@@ -171,21 +168,21 @@ namespace {
           printout(print_res, "Geant4VolumeManager", "+++     Map %016X to Geant4 Path:%s",
                    (void*)code, Geant4GeometryInfo::placementPath(path).c_str());
           if ( m_geo.g4Paths.find(path) == m_geo.g4Paths.end() ) {
-	    Geant4GeometryInfo::PlacementFlags opt;
-	    for(const auto* phys : path)   {
-	      opt.flags.path_has_parametrised = phys->IsParameterised() ? 1 : 0;
-	      opt.flags.path_has_replicated   = phys->IsReplicated()    ? 1 : 0;
-	    }
-	    opt.flags.parametrised = path.front()->IsParameterised() ? 1 : 0;
-	    opt.flags.replicated   = path.front()->IsReplicated()    ? 1 : 0;
+            Geant4GeometryInfo::PlacementFlags opt;
+            for(const auto* phys : path)   {
+              opt.flags.path_has_parametrised = phys->IsParameterised() ? 1 : 0;
+              opt.flags.path_has_replicated   = phys->IsReplicated()    ? 1 : 0;
+            }
+            opt.flags.parametrised = path.front()->IsParameterised() ? 1 : 0;
+            opt.flags.replicated   = path.front()->IsReplicated()    ? 1 : 0;
             m_geo.g4Paths[path] = { code, opt.value };
             m_entries.emplace(code,path);
             return;
           }
-	  /// This is a normal case for parametrized volumes and no error
-	  if ( !path.empty() && (path.front()->IsParameterised() || path.front()->IsReplicated()) )   {
-	    return;
-	  }
+          /// This is a normal case for parametrized volumes and no error
+          if ( !path.empty() && (path.front()->IsParameterised() || path.front()->IsReplicated()) )   {
+            return;
+          }
           printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Geant4 path!!!! %s %s",
                    " [THIS SHOULD NEVER HAPPEN]",Geant4GeometryInfo::placementPath(path).c_str());
           goto Err;
@@ -195,10 +192,10 @@ namespace {
         goto Err;
       }
       else  {
-	/// This is a normal case for parametrized volumes and no error
-	if ( !path.empty() && (path.front()->IsParameterised() || path.front()->IsReplicated()) )   {
-	  return;
-	}
+        /// This is a normal case for parametrized volumes and no error
+        if ( !path.empty() && (path.front()->IsParameterised() || path.front()->IsReplicated()) )   {
+          return;
+        }
       }
       printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Volume entry: 0x%X"
                " [THIS SHOULD NEVER HAPPEN]", code);
@@ -211,7 +208,7 @@ namespace {
       if ( !nodes.empty() )
         printout(ERROR,"Geant4VolumeManager","     TGeo path: %s",detail::tools::placementPath(nodes,false).c_str());
       printout(ERROR,"Geant4VolumeManager",  " Offend.VolIDs: %s",detail::tools::toString(ro.idSpec(),ids,code).c_str());
-      throw runtime_error("Failed to populate Geant4 volume manager!");
+      throw std::runtime_error("Failed to populate Geant4 volume manager!");
     }
   };
 }
@@ -224,11 +221,11 @@ Geant4VolumeManager::Geant4VolumeManager(const Detector& description, Geant4Geom
     p.populate(description.world());
     return;
   }
-  throw runtime_error(format("Geant4VolumeManager", "Attempt populate from invalid Geant4 geometry info [Invalid-Info]"));
+  except("Geant4VolumeManager", "Attempt populate from invalid Geant4 geometry info [Invalid-Info]");
 }
 
 /// Helper: Generate placement path from touchable object
-vector<const G4VPhysicalVolume*>
+std::vector<const G4VPhysicalVolume*>
 Geant4VolumeManager::placementPath(const G4VTouchable* touchable, bool exception) const {
   Geant4TouchableHandler handler(touchable);
   return handler.placementPath(exception);
@@ -237,17 +234,17 @@ Geant4VolumeManager::placementPath(const G4VTouchable* touchable, bool exception
 /// Check the validity of the information before accessing it.
 bool Geant4VolumeManager::checkValidity() const {
   if (!isValid()) {
-    throw runtime_error(format("Geant4VolumeManager", "Attempt to use invalid Geant4 volume manager [Invalid-Handle]"));
+    except("Geant4VolumeManager", "Attempt to use invalid Geant4 volume manager [Invalid-Handle]");
   }
   else if (!ptr()->valid) {
-    throw runtime_error(format("Geant4VolumeManager", "Attempt to use invalid Geant4 geometry info [Invalid-Info]"));
+    except("Geant4VolumeManager", "Attempt to use invalid Geant4 geometry info [Invalid-Info]");
   }
   return true;
 }
 
 #if 0
 /// Access CELLID by placement path
-VolumeID Geant4VolumeManager::volumeID(const vector<const G4VPhysicalVolume*>& path) const {
+VolumeID Geant4VolumeManager::volumeID(const std::vector<const G4VPhysicalVolume*>& path) const {
   if (!path.empty() && checkValidity()) {
     const auto& mapping = ptr()->g4Paths;
     auto i = mapping.find(path);
@@ -268,7 +265,7 @@ VolumeID Geant4VolumeManager::volumeID(const vector<const G4VPhysicalVolume*>& p
 /// Access CELLID by Geant4 touchable object
 VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const {
   Geant4TouchableHandler handler(touchable);
-  vector<const G4VPhysicalVolume*> path = handler.placementPath();
+  std::vector<const G4VPhysicalVolume*> path = handler.placementPath();
   if (!path.empty() && checkValidity()) {
     const auto& mapping = ptr()->g4Paths;
     auto i = mapping.find(path);
@@ -276,36 +273,36 @@ VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const {
       const auto& e = (*i).second;
       /// No parametrization or replication.
       if ( e.flags == 0 )  {
-	return e.volumeID;
+        return e.volumeID;
       }
       VolumeID volid = e.volumeID;
       const auto& paramterised = ptr()->g4Parameterised;
       const auto& replicated   = ptr()->g4Replicated;
       /// This is incredibly slow .... but what can I do ? Need a better idea.
       for ( std::size_t j=0; j < path.size(); ++j )   {
-	const auto* phys = path[j];
-	if ( phys->IsParameterised() )   {
-	  int copy_no = touchable->GetCopyNumber(j);
-	  const auto it = paramterised.find(phys);
-	  if ( it != paramterised.end() )   {
-	    //printout(INFO,"Geant4VolumeManager",
-	    //         "Copy number:   %ld  <--> %ld", copy_no, long(phys->GetCopyNo()));
-	    const auto* field = (*it).second.data()->params->field;
-	    volid |= IDDescriptor::encode(field, copy_no);
-	    continue;
-	  }
-	  except("Geant4VolumeManager","Error  Geant4VolumeManager::volumeID(const G4VTouchable* touchable)");
-	}
-	else if ( phys->IsReplicated() )    {
-	  int copy_no = touchable->GetCopyNumber(j);
-	  const auto it = replicated.find(phys);
-	  if ( it != replicated.end() )   {
-	    const auto* field = (*it).second.data()->params->field;
-	    volid |= IDDescriptor::encode(field, copy_no);
-	    continue;
-	  }
-	  except("Geant4VolumeManager","Error  Geant4VolumeManager::volumeID(const G4VTouchable* touchable)");
-	}
+        const auto* phys = path[j];
+        if ( phys->IsParameterised() )   {
+          int copy_no = touchable->GetCopyNumber(j);
+          const auto it = paramterised.find(phys);
+          if ( it != paramterised.end() )   {
+            //printout(INFO,"Geant4VolumeManager",
+            //         "Copy number:   %ld  <--> %ld", copy_no, long(phys->GetCopyNo()));
+            const auto* field = (*it).second.data()->params->field;
+            volid |= IDDescriptor::encode(field, copy_no);
+            continue;
+          }
+          except("Geant4VolumeManager","Error  Geant4VolumeManager::volumeID(const G4VTouchable* touchable)");
+        }
+        else if ( phys->IsReplicated() )    {
+          int copy_no = touchable->GetCopyNumber(j);
+          const auto it = replicated.find(phys);
+          if ( it != replicated.end() )   {
+            const auto* field = (*it).second.data()->params->field;
+            volid |= IDDescriptor::encode(field, copy_no);
+            continue;
+          }
+          except("Geant4VolumeManager","Error  Geant4VolumeManager::volumeID(const G4VTouchable* touchable)");
+        }
       }
       return volid;
     }
@@ -320,7 +317,7 @@ VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const {
 }
 
 /// Accessfully decoded volume fields  by placement path
-void Geant4VolumeManager::volumeDescriptor(const vector<const G4VPhysicalVolume*>& path,
+void Geant4VolumeManager::volumeDescriptor(const std::vector<const G4VPhysicalVolume*>& path,
                                            VolIDDescriptor& vol_desc) const
 {
   vol_desc.second.clear();

@@ -82,13 +82,12 @@ namespace dd4hep {
 
 // C/C++ include files
 
-using namespace std;
 using namespace dd4hep::digi;
 
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiRandomNoise)
 
 /// Standard constructor
-DigiRandomNoise::DigiRandomNoise(const DigiKernel& kernel, const string& nam)
+DigiRandomNoise::DigiRandomNoise(const DigiKernel& kernel, const std::string& nam)
   : DigiEventAction(kernel, nam)
 {
   declareProperty("Probability", m_probability);

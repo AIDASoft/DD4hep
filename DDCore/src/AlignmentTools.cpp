@@ -12,16 +12,16 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/IOV.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/MatrixHelpers.h"
-#include "DD4hep/AlignmentTools.h"
-#include "DD4hep/DetectorTools.h"
-#include "DD4hep/detail/DetectorInterna.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
+#include <DD4hep/IOV.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/MatrixHelpers.h>
+#include <DD4hep/AlignmentTools.h>
+#include <DD4hep/DetectorTools.h>
+#include <DD4hep/detail/DetectorInterna.h>
+#include <DD4hep/detail/AlignmentsInterna.h>
 
 // ROOT include files
-#include "TGeoMatrix.h"
+#include <TGeoMatrix.h>
 
 using     dd4hep::PlacedVolume;
 using     dd4hep::Alignment;

@@ -12,35 +12,35 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Handle.h"
-#include "DDG4/Geant4RunAction.h"
-#include "DDG4/Geant4EventAction.h"
-#include "DDG4/Geant4SteppingAction.h"
-#include "DDG4/Geant4TrackingAction.h"
-#include "DDG4/Geant4StackingAction.h"
-#include "DDG4/Geant4GeneratorAction.h"
-#include "DDG4/Geant4UserInitialization.h"
-#include "DDG4/Geant4DetectorConstruction.h"
-#include "DDG4/Geant4PhysicsList.h"
-#include "DDG4/Geant4UIManager.h"
-#include "DDG4/Geant4Kernel.h"
-#include "DDG4/Geant4Random.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Handle.h>
+#include <DDG4/Geant4RunAction.h>
+#include <DDG4/Geant4EventAction.h>
+#include <DDG4/Geant4SteppingAction.h>
+#include <DDG4/Geant4TrackingAction.h>
+#include <DDG4/Geant4StackingAction.h>
+#include <DDG4/Geant4GeneratorAction.h>
+#include <DDG4/Geant4UserInitialization.h>
+#include <DDG4/Geant4DetectorConstruction.h>
+#include <DDG4/Geant4PhysicsList.h>
+#include <DDG4/Geant4UIManager.h>
+#include <DDG4/Geant4Kernel.h>
+#include <DDG4/Geant4Random.h>
 
 // Geant4 include files
-#include "G4Version.hh"
-#include "G4UserRunAction.hh"
-#include "G4UserEventAction.hh"
-#include "G4UserTrackingAction.hh"
-#include "G4UserStackingAction.hh"
-#include "G4UserSteppingAction.hh"
-#include "G4VUserPhysicsList.hh"
-#include "G4VModularPhysicsList.hh"
-#include "G4VUserPrimaryGeneratorAction.hh"
-#include "G4VUserActionInitialization.hh"
-#include "G4VUserDetectorConstruction.hh"
+#include <G4Version.hh>
+#include <G4UserRunAction.hh>
+#include <G4UserEventAction.hh>
+#include <G4UserTrackingAction.hh>
+#include <G4UserStackingAction.hh>
+#include <G4UserSteppingAction.hh>
+#include <G4VUserPhysicsList.hh>
+#include <G4VModularPhysicsList.hh>
+#include <G4VUserPrimaryGeneratorAction.hh>
+#include <G4VUserActionInitialization.hh>
+#include <G4VUserDetectorConstruction.hh>
 
 // C/C++ include files
 #include <memory>
@@ -56,6 +56,8 @@ namespace dd4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim {
 
+    class Geant4DetectorConstructionSequence;
+    
     /// Sequence handler implementing common actions to all sequences.
     /** @class SequenceHdl
      *
@@ -489,38 +491,36 @@ namespace dd4hep {
         m_sequence->buildMaster();
       }
     }
+    
+    /// Compatibility actions for running Geant4 in single threaded mode
+    /** @class Geant4Compatibility
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    class Geant4Compatibility {
+    public:
+      /// Default constructor
+      Geant4Compatibility() = default;
+      /// Default destructor
+      virtual ~Geant4Compatibility() = default;
+      /// Detector construction invocation in compatibility mode
+      Geant4DetectorConstructionSequence* buildDefaultDetectorConstruction(Geant4Kernel& kernel);
+    };
+
   }
 }
 
-#include "DD4hep/Detector.h"
-#include "DD4hep/Plugins.h"
-#include "DDG4/Geant4DetectorConstruction.h"
-#include "DDG4/Geant4Kernel.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Plugins.h>
+#include <DDG4/Geant4DetectorConstruction.h>
+#include <DDG4/Geant4Kernel.h>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 // Geant4 include files
-#include "G4RunManager.hh"
-#include "G4PhysListFactory.hh"
-
-
-/// Compatibility actions for running Geant4 in single threaded mode
-/** @class Geant4Compatibility
- *
- * @author  M.Frank
- * @version 1.0
- */
-class Geant4Compatibility {
-public:
-  /// Default constructor
-  Geant4Compatibility() = default;
-  /// Default destructor
-  virtual ~Geant4Compatibility() = default;
-  /// Detector construction invocation in compatibility mode
-  Geant4DetectorConstructionSequence* buildDefaultDetectorConstruction(Geant4Kernel& kernel);
-};
+#include <G4RunManager.hh>
+#include <G4PhysListFactory.hh>
 
 /// Detector construction invocation in compatibility mode
 Geant4DetectorConstructionSequence* Geant4Compatibility::buildDefaultDetectorConstruction(Geant4Kernel& kernel)  {
@@ -531,19 +531,19 @@ Geant4DetectorConstructionSequence* Geant4Compatibility::buildDefaultDetectorCon
   printout(WARNING, "Geant4Exec", "+++ Building default Geant4DetectorConstruction for single threaded compatibility.");
 
   /// Attach first the geometry converter from dd4hep to Geant4
-  cr = PluginService::Create<Geant4Action*>("Geant4DetectorGeometryConstruction",ctx,string("ConstructGeometry"));
+  cr = PluginService::Create<Geant4Action*>("Geant4DetectorGeometryConstruction",ctx,std::string("ConstructGeometry"));
   det_cr = dynamic_cast<Geant4DetectorConstruction*>(cr);
   if ( det_cr ) 
     seq->adopt(det_cr);
   else
-    throw runtime_error("Panic! Failed to build Geant4DetectorGeometryConstruction.");
+    throw std::runtime_error("Panic! Failed to build Geant4DetectorGeometryConstruction.");
   /// Attach the sensitive detector manipulator:
-  cr = PluginService::Create<Geant4Action*>("Geant4DetectorSensitivesConstruction",ctx,string("ConstructSensitives"));
+  cr = PluginService::Create<Geant4Action*>("Geant4DetectorSensitivesConstruction",ctx,std::string("ConstructSensitives"));
   det_cr = dynamic_cast<Geant4DetectorConstruction*>(cr);
   if ( det_cr )
     seq->adopt(det_cr);
   else
-    throw runtime_error("Panic! Failed to build Geant4DetectorSensitivesConstruction.");
+    throw std::runtime_error("Panic! Failed to build Geant4DetectorSensitivesConstruction.");
   return seq;
 }
 
@@ -574,7 +574,7 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   /// Get the detector constructed
   Geant4DetectorConstructionSequence* user_det = kernel.detectorConstruction(false);
   if ( nullptr == user_det && kernel.isMultiThreaded() )   {
-    throw runtime_error("Panic! No valid detector construction sequencer present. [Mandatory MT]");
+    throw std::runtime_error("Panic! No valid detector construction sequencer present. [Mandatory MT]");
   }
   if ( nullptr == user_det && !kernel.isMultiThreaded() )   {
     user_det = Geant4Compatibility().buildDefaultDetectorConstruction(kernel);
@@ -585,13 +585,13 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   /// Get the physics list constructed
   Geant4PhysicsListActionSequence* phys_seq = kernel.physicsList(false);
   if ( nullptr == phys_seq )   {
-    string phys_model = "QGSP_BERT";
+    std::string phys_model = "QGSP_BERT";
     phys_seq = kernel.physicsList(true);
     phys_seq->property("extends").set(phys_model);
   }
   G4VUserPhysicsList* physics = phys_seq->extensionList();
   if (nullptr == physics) {
-    throw runtime_error("Panic! No valid user physics list present!");
+    throw std::runtime_error("Panic! No valid user physics list present!");
   }
 #if 0
   /// Not here: Use seperate object to do this!
@@ -606,7 +606,7 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   /// Construct the remaining user initialization in multi-threaded mode
   Geant4UserInitializationSequence* user_init = kernel.userInitialization(false);
   if ( nullptr == user_init && kernel.isMultiThreaded() )   {
-    throw runtime_error("Panic! No valid user initialization sequencer present. [Mandatory MT]");
+    throw std::runtime_error("Panic! No valid user initialization sequencer present. [Mandatory MT]");
   }
   else if ( nullptr == user_init && !kernel.isMultiThreaded() )  {
     /// Use default actions registered to the default kernel. Will do the right thing...
@@ -632,7 +632,7 @@ int Geant4Exec::initialize(Geant4Kernel& kernel) {
 /// Run the simulation
 int Geant4Exec::run(Geant4Kernel& kernel) {
   Property& p = kernel.property("UI");
-  string value = p.value<string>();
+  std::string value = p.value<std::string>();
 
   kernel.executePhase("start",0);
   if ( !value.empty() )  {
@@ -646,7 +646,7 @@ int Geant4Exec::run(Geant4Kernel& kernel) {
       }
       ui->except("++ Geant4Exec: Failed to start UI interface.");
     }
-    throw runtime_error(format("Geant4Exec","++ Failed to locate UI interface %s.",value.c_str()));
+    throw std::runtime_error(format("Geant4Exec","++ Failed to locate UI interface %s.",value.c_str()));
   }
   long nevt = kernel.property("NumEvents").value<long>();
   kernel.runManager().BeamOn(nevt);

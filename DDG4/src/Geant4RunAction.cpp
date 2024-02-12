@@ -12,15 +12,13 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4RunAction.h"
-// Geant4 headers
-#include "G4Threading.hh"
-#include "G4AutoLock.hh"
-// C/C++ include files
-#include <stdexcept>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4RunAction.h>
 
-using namespace std;
+// Geant4 headers
+#include <G4Threading.hh>
+#include <G4AutoLock.hh>
+
 using namespace dd4hep::sim;
 
 namespace {
@@ -29,7 +27,7 @@ namespace {
 }
 
 /// Standard constructor
-Geant4RunAction::Geant4RunAction(Geant4Context* ctxt, const string& nam)
+Geant4RunAction::Geant4RunAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
@@ -48,7 +46,7 @@ void Geant4RunAction::end(const G4Run*) {
 }
 
 /// Standard constructor
-Geant4SharedRunAction::Geant4SharedRunAction(Geant4Context* ctxt, const string& nam)
+Geant4SharedRunAction::Geant4SharedRunAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4RunAction(ctxt, nam)
 {
   InstanceCount::increment(this);
@@ -73,7 +71,7 @@ void Geant4SharedRunAction::use(Geant4RunAction* action)   {
     m_action = action;
     return;
   }
-  throw runtime_error("Geant4SharedRunAction: Attempt to use invalid actor!");
+  except("Geant4SharedRunAction: Attempt to use invalid actor!");
 }
 
 /// Begin-of-run callback
@@ -97,7 +95,7 @@ void Geant4SharedRunAction::end(const G4Run* run)   {
 }
 
 /// Standard constructor
-Geant4RunActionSequence::Geant4RunActionSequence(Geant4Context* ctxt, const string& nam)
+Geant4RunActionSequence::Geant4RunActionSequence(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt, nam) {
   m_needsControl = true;
   InstanceCount::increment(this);
@@ -124,7 +122,7 @@ void Geant4RunActionSequence::configureFiber(Geant4Context* thread_context)   {
 }
 
 /// Get an action by name
-Geant4RunAction* Geant4RunActionSequence::get(const string& nam) const   {
+Geant4RunAction* Geant4RunActionSequence::get(const std::string& nam) const   {
   return m_actors.get(FindByName(TypeName::split(nam).second));
 }
 
@@ -136,7 +134,7 @@ void Geant4RunActionSequence::adopt(Geant4RunAction* action) {
     m_actors.add(action);
     return;
   }
-  throw runtime_error("Geant4RunActionSequence: Attempt to add invalid actor!");
+  except("Geant4RunActionSequence: Attempt to add invalid actor!");
 }
 
 /// Pre-track action callback

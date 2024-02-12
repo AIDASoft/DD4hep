@@ -12,19 +12,17 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/DD4hepUnits.h"
-#include "DDG4/Geant4SensDetAction.inl"
-#include "DDG4/Geant4SteppingAction.h"
-#include "DDG4/Geant4TrackingAction.h"
-#include "DDG4/Geant4EventAction.h"
-#include "G4Event.hh"
-#include "G4VSolid.hh"
+#include <DD4hep/DD4hepUnits.h>
+#include <DDG4/Geant4SensDetAction.inl>
+#include <DDG4/Geant4SteppingAction.h>
+#include <DDG4/Geant4TrackingAction.h>
+#include <DDG4/Geant4EventAction.h>
+#include <G4Event.hh>
+#include <G4VSolid.hh>
 
 #include <map>
 #include <limits>
 #include <sstream>
-
-using namespace std;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -224,7 +222,7 @@ namespace dd4hep {
             break;
           }
 
-          if ( ended == kSurface || distance_to_outside < numeric_limits<float>::epsilon() )
+          if ( ended == kSurface || distance_to_outside < std::numeric_limits<float>::epsilon() )
             hit_flag |= Geant4Tracker::Hit::HIT_ENDED_SURFACE;
           else if ( ended == kInside )
             hit_flag |= Geant4Tracker::Hit::HIT_ENDED_INSIDE;
@@ -477,5 +475,5 @@ namespace dd4hep {
 
 using namespace dd4hep::sim;
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 DECLARE_GEANT4SENSITIVE(Geant4TrackerWeightedAction)

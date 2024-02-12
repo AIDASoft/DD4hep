@@ -13,107 +13,92 @@
 #ifndef DD4HEP_NONE
 
 // Framework include files
-#include "DD4hep/Primitives.h"
-#include "XML/XMLDetector.h"
-#include "XML/Layering.h"
-#include "XML/XMLTags.h"
+#include <DD4hep/Primitives.h>
+#include <DD4hep/Printout.h>
+#include <XML/Layering.h>
+#include <XML/XML.h>
 
-// C/C++ include files
-#include <algorithm>
-#include <stdexcept>
-#include <cfloat>
-#include <cmath>
-
-using namespace std;
-using namespace dd4hep;
-using namespace dd4hep::xml;
-
-void Layer::compute() {
+void dd4hep::Layer::compute() {
   _thickness = 0.;
-  for (vector<LayerSlice>::const_iterator i = _slices.begin(); i != _slices.end(); ++i)
+  for (std::vector<LayerSlice>::const_iterator i = _slices.begin(); i != _slices.end(); ++i)
     _thickness += (*i)._thickness;
 }
 
-double LayerStack::sectionThickness(size_t is, size_t ie) const {
+double dd4hep::LayerStack::sectionThickness(std::size_t is, std::size_t ie) const {
   double thick = 0.;
   if (is > ie)
-    throw runtime_error(
-                        "LayerStack::sectionThickness: First index (" + _toString(is) + ") "
-                        "must be <= second index (" + _toString(ie) + ")!");
+    except("LayerStack",
+           "sectionThickness: First index (%ld) must be <= second index (%ld)!", is, ie);
   else if (is > _layers.size())
-    throw runtime_error(
-                        "LayerStack::sectionThickness: First index (" + _toString(is) + ") "
-                        "out of range. #layers=" + _toString(_layers.size())
-                        + ").");
+    except("LayerStack",
+           "sectionThickness: First index (%ld) out of range. #layers=%ld).", is, _layers.size());
   else if (ie > _layers.size())
-    throw runtime_error(
-                        "LayerStack::sectionThickness: Second index (" + _toString(is) + ") "
-                        "out of range. #layers=" + _toString(_layers.size())
-                        + ").");
-  for (size_t i = is; i <= ie; ++i)
+    except("LayerStack",
+           "sectionThickness: Second index (%ld) out of range. #layers=%ld).", is, _layers.size());
+  for (std::size_t i = is; i <= ie; ++i)
     thick += _layers[i]->thicknessWithPreOffset();
   return thick;
 }
 
-Layering::Layering(Element e) {
-  LayeringCnv(e).fromCompact(*this);
-}
-
-const Layer* Layering::layer(size_t which) const {
-  return _stack.layers()[which];
-}
-
-void LayeringCnv::fromCompact(Layering& layering) const {
-  vector<Layer*>& layers = layering.layers();
+void dd4hep::xml::LayeringCnv::fromCompact(Layering& layering) const {
+  std::vector<Layer*>& layers = layering.layers();
   int count = 0;
   for_each(layers.begin(), layers.end(), detail::deletePtr<Layer>);
-  for (Collection_t c(m_element, _U (layer)); c; ++c) {
+  for( xml_coll_t c(m_element, _U (layer)); c; ++c ) {
     Layer lay;
-    Component layer = c;
+    xml_comp_t layer = c;
     int repeat = layer.hasAttr(_U(repeat)) ? layer.repeat() : 1;
     ++count;
-    for (Collection_t s(c, _U(slice)); s; ++s) {
-      Component slice = s;
-      string mat = slice.materialStr();
-      LayerSlice lslice(slice.isSensitive(), slice.thickness(), mat);
+    for (xml_coll_t s(c, _U(slice)); s; ++s) {
+      xml_comp_t  slice = s;
+      std::string material = slice.materialStr();
+      LayerSlice  lslice(slice.isSensitive(), slice.thickness(), material);
       lay.add(lslice);
     }
     lay.compute();
     // Add layer to stack once for each repetition
-    for (int k = 0; k < repeat; ++k)
+    for( int k = 0; k < repeat; ++k )
       layers.emplace_back(new Layer(lay));
   }
   if (0 == count) {
-    throw runtime_error("LayeringCnv::fromCompact: No layer children to be build!");
+    throw std::runtime_error("LayeringCnv::fromCompact: No layer children to be build!");
   }
 }
 
-double Layering::singleLayerThickness(xml::Element e) const {
-  Component lay = e;
+dd4hep::Layering::Layering(xml_elt_t e)  {
+  xml::LayeringCnv(e).fromCompact(*this);
+}
+
+const dd4hep::Layer* dd4hep::Layering::layer(std::size_t which) const {
+  return _stack.layers()[which];
+}
+
+double dd4hep::Layering::singleLayerThickness(xml_elt_t e) const {
+  xml_comp_t lay = e;
   double thickness = 0e0;
-  for (Collection_t s(lay, _U(slice)); s; ++s) {
-    Component slice = s;
+  for (xml_coll_t s(lay, _U(slice)); s; ++s) {
+    xml_comp_t slice = s;
     thickness += slice.thickness();
   }
   return thickness;
 }
 
-double Layering::absorberThicknessInLayer(xml::Element e) const {
-  Component lay = e;
+double dd4hep::Layering::absorberThicknessInLayer(xml_elt_t e) const {
+  xml_comp_t lay = e;
   double thickness = 0e0;
-  for (Collection_t s(lay, _U(slice)); s; ++s) {
-    Component slice = s;
+  for (xml_coll_t s(lay, _U(slice)); s; ++s) {
+    xml_comp_t slice = s;
     if (slice.isRadiator())
         thickness += slice.thickness();
   }
   return thickness;
 }
 
-void Layering::sensitivePositionsInLayer(xml::Element e, std::vector<double>& sens_pos) const {
-  Component lay = e;
-  double pos=-singleLayerThickness(e)/2.0;
-  for (Collection_t s(lay, _U(slice)); s; ++s) {
-    Component slice = s;
+void dd4hep::Layering::sensitivePositionsInLayer(xml_elt_t e, std::vector<double>& sens_pos) const {
+  xml_comp_t lay = e;
+  double pos =- singleLayerThickness(e)/2.0;
+  for (xml_coll_t s(lay, _U(slice)); s; ++s) {
+    xml_comp_t slice = s;
     pos += slice.thickness();
     if (slice.isSensitive()){
         //store the position at the center of the slice
@@ -123,8 +108,8 @@ void Layering::sensitivePositionsInLayer(xml::Element e, std::vector<double>& se
 }
 
 
-Layering::~Layering(){
-  vector<Layer*>& layers = this->layers();
+dd4hep::Layering::~Layering(){
+  std::vector<Layer*>& layers = this->layers();
   for_each(layers.begin(), layers.end(), detail::deletePtr<Layer>);
   layers.clear();
 }

@@ -14,11 +14,11 @@
 #define DDCOND_CONDITIONSMAPPEDPOOL_H
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/detail/ConditionsInterna.h>
 
-#include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsSelectors.h"
+#include <DDCond/ConditionsPool.h>
+#include <DDCond/ConditionsSelectors.h>
 
 // C/C++ include files
 #include <map>
@@ -54,7 +54,7 @@ namespace dd4hep {
       Mapping          m_entries;
       
       /// Helper function to loop over the conditions container and apply a functor
-      template <typename R,typename T> size_t loop(R& result, T functor) {
+      template <typename R,typename T> std::size_t loop(R& result, T functor) {
         size_t len = result.size();
         for_each(m_entries.begin(),m_entries.end(),functor);
         return result.size() - len;
@@ -198,8 +198,8 @@ namespace dd4hep {
 //==========================================================================
 
 // Framework include files
-//#include "DDCond/ConditionsMappedPool.h"
-#include "DD4hep/InstanceCount.h"
+//#include <DDCond/ConditionsMappedPool.h>
+#include <DD4hep/InstanceCount.h>
 
 using dd4hep::Handle;
 using namespace dd4hep::cond;
@@ -219,9 +219,8 @@ ConditionsMappedPool<MAPPING,BASE>::~ConditionsMappedPool()  {
   InstanceCount::decrement(this);
 }
 
-#include "DD4hep/Factories.h"
+#include <DD4hep/Factories.h>
 namespace {
-  using namespace dd4hep;
   ConditionsManager _mgr(int argc, char** argv)  {
     if ( argc > 0 )  {
       ConditionsManagerObject* m = (ConditionsManagerObject*)argv[0];
@@ -231,7 +230,7 @@ namespace {
     return ConditionsManager(0);
   }
 #define _CR(fun,x,b,y) void* fun(dd4hep::Detector&, int argc, char** argv) \
-  {  return new b<x<Condition::key_type,Condition::Object*>,y>(_mgr(argc,argv));  }
+  {  return new b<x<dd4hep::Condition::key_type,dd4hep::Condition::Object*>,y>(_mgr(argc,argv));  }
 
   /// Create a conditions pool based on STL maps
   _CR(create_map_pool,std::map,ConditionsMappedPool,ConditionsPool)

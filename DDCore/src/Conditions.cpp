@@ -12,25 +12,24 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/detail/ConditionsInterna.h>
 
 // C/C++ include files
 #include <climits>
 #include <iomanip>
 #include <cstdio>
 
-using namespace std;
 using namespace dd4hep;
 
 namespace {
   int s_have_inventory = 0;
   struct KeyTracer    {
-    map<Condition::itemkey_type,string> item_names;
-    mutex lock;
-    void add(Condition::itemkey_type key,const string& item)   {
+    std::map<Condition::itemkey_type,std::string> item_names;
+    std::mutex lock;
+    void add(Condition::itemkey_type key,const std::string& item)   {
       if ( s_have_inventory > 0 )   {
-        std::lock_guard<mutex> protect(lock);
+        std::lock_guard<std::mutex> protect(lock);
         item_names.emplace(key, item);
       }
     }
@@ -40,7 +39,7 @@ namespace {
         return (*i).second;
       }
       char text[32];
-      ::snprintf(text,sizeof(text),"%08X",key);
+      std::snprintf(text,sizeof(text),"%08X",key);
       return text;
     }
   } s_key_tracer;
@@ -75,7 +74,7 @@ Condition::Condition(key_type hash_key) : Handle<Object>()
 }
 
 /// Initializing constructor for a pure, undecorated conditions object
-Condition::Condition(const string& nam, const string& typ) : Handle<Object>()
+Condition::Condition(const std::string& nam, const std::string& typ) : Handle<Object>()
 {
   Object* o = new Object();
   assign(o,nam,typ);
@@ -83,7 +82,7 @@ Condition::Condition(const string& nam, const string& typ) : Handle<Object>()
 }
 
 /// Initializing constructor for a pure, undecorated conditions object with payload buffer
-Condition::Condition(const string& nam,const string& typ, size_t memory)
+Condition::Condition(const std::string& nam,const std::string& typ, size_t memory)
   : Handle<Object>()
 {
   void* ptr = ::operator new(sizeof(Object)+memory);
@@ -93,12 +92,12 @@ Condition::Condition(const string& nam,const string& typ, size_t memory)
 }
 
 /// Output method
-string Condition::str(int flags)  const   {
-  stringstream output;
+std::string Condition::str(int flags)  const   {
+  std::stringstream output;
   Object* o = access(); 
 #if defined(DD4HEP_CONDITIONS_HAVE_NAME)
   if ( 0 == (flags&NO_NAME) )
-    output << setw(16) << left << o->name;
+    output << std::setw(16) << std::left << o->name;
 #endif
   if ( flags&WITH_IOV )  {
     const IOV* ptr_iov = o->iovData();
@@ -143,28 +142,28 @@ const dd4hep::IOV& Condition::iov() const   {
 
 #if !defined(DD4HEP_MINIMAL_CONDITIONS)
 /// Access the type field of the condition
-const string& Condition::type()  const   {
+const std::string& Condition::type()  const   {
   return access()->type;
 }
 
 /// Access the value field of the condition as a string
-const string& Condition::value()  const   {
+const std::string& Condition::value()  const   {
   return access()->value;
 }
 
 /// Access the comment field of the condition
-const string& Condition::comment()  const   {
+const std::string& Condition::comment()  const   {
   return access()->comment;
 }
 
 /// Access the address string [e.g. database identifier]
-const string& Condition::address()  const   {
+const std::string& Condition::address()  const   {
   return access()->address;
 }
 #endif
 
 /// Access to the type information
-const type_info& Condition::typeInfo() const   {
+const std::type_info& Condition::typeInfo() const   {
   return descriptor().type();
 }
 
@@ -210,7 +209,7 @@ const dd4hep::BasicGrammar& Condition::descriptor() const   {
     invalidHandleError<Condition>();
     // This code is never reached, since function above throws exception!
     // Needed to satisfay CppCheck
-    throw runtime_error("Null pointer in Grammar object");
+    throw std::runtime_error("Null pointer in Grammar object");
   }
   return *grammar;
 }
@@ -220,7 +219,7 @@ ConditionsSelect::~ConditionsSelect()   {
 }
 
 /// Constructor from string
-ConditionKey::KeyMaker::KeyMaker(DetElement detector, const string& value)   {
+ConditionKey::KeyMaker::KeyMaker(DetElement detector, const std::string& value)   {
   KeyMaker key_maker(detector.key(), detail::hash32(value));
   hash = key_maker.hash;
   s_key_tracer.add(key_maker.values.item_key, value);
@@ -232,14 +231,14 @@ ConditionKey::KeyMaker::KeyMaker(DetElement detector, Condition::itemkey_type it
 }
 
 /// Constructor from string
-ConditionKey::KeyMaker::KeyMaker(Condition::detkey_type det_key, const string& value)   {
+ConditionKey::KeyMaker::KeyMaker(Condition::detkey_type det_key, const std::string& value)   {
   KeyMaker key_maker(det_key, detail::hash32(value));
   hash = key_maker.hash;
   s_key_tracer.add(key_maker.values.item_key, value);
 }
 
 /// Constructor from string
-ConditionKey::ConditionKey(DetElement detector, const string& value)  {
+ConditionKey::ConditionKey(DetElement detector, const std::string& value)  {
   KeyMaker key_maker(detector.key(), value);
   hash = key_maker.hash;
   s_key_tracer.add(key_maker.values.item_key, value);
@@ -249,7 +248,7 @@ ConditionKey::ConditionKey(DetElement detector, const string& value)  {
 }
 
 /// Constructor from detector element key and item sub-key
-ConditionKey::ConditionKey(Condition::detkey_type det_key, const string& value)    {
+ConditionKey::ConditionKey(Condition::detkey_type det_key, const std::string& value)    {
   KeyMaker key_maker(det_key, value);
   s_key_tracer.add(key_maker.values.item_key, value);
   hash = key_maker.hash;
@@ -278,7 +277,7 @@ Condition::key_type ConditionKey::hashCode(DetElement detector, const char* valu
 }
 
 /// Hash code generation from input string
-Condition::key_type ConditionKey::hashCode(DetElement detector, const string& value)  {
+Condition::key_type ConditionKey::hashCode(DetElement detector, const std::string& value)  {
   KeyMaker key_maker(detector.key(), value);
   s_key_tracer.add(key_maker.values.item_key, value);
   return key_maker.hash;
@@ -292,20 +291,20 @@ Condition::itemkey_type ConditionKey::itemCode(const char* value)  {
 }
 
 /// 32 bit hashcode of the item
-Condition::itemkey_type ConditionKey::itemCode(const string& value)   {
+Condition::itemkey_type ConditionKey::itemCode(const std::string& value)   {
   Condition::itemkey_type code = detail::hash32(value);
   s_key_tracer.add(code, value);
   return code;
 }
 
 /// Conversion to string
-string ConditionKey::toString()  const    {
+std::string ConditionKey::toString()  const    {
   dd4hep::ConditionKey::KeyMaker key(hash);
   char text[64];
   ::snprintf(text,sizeof(text),"%08X-%08X",key.values.det_key, key.values.item_key);
 #if defined(DD4HEP_CONDITIONS_HAVE_NAME)
   if ( !name.empty() )   {
-    stringstream str;
+    std::stringstream str;
     str << "(" << name << ") " << text;
     return str.str();
   }

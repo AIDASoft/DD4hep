@@ -14,11 +14,11 @@
 #define DDCOND_CONDITIONSLINEARPOOL_H
 
 // Framework include files
-#include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsManager.h"
-#include "DDCond/ConditionsSelectors.h"
+#include <DDCond/ConditionsPool.h>
+#include <DDCond/ConditionsManager.h>
+#include <DDCond/ConditionsSelectors.h>
 
-#include "DD4hep/Printout.h"
+#include <DD4hep/Printout.h>
 
 // C/C++ include files
 #include <list>
@@ -185,10 +185,9 @@ namespace dd4hep {
 //==========================================================================
 
 // Framework include files
-//#include "DDCond/ConditionsLinearPool.h"
-#include "DD4hep/InstanceCount.h"
+//#include <DDCond/ConditionsLinearPool.h>
+#include <DD4hep/InstanceCount.h>
 
-using dd4hep::Handle;
 using namespace dd4hep::cond;
 
 /// Default constructor
@@ -196,7 +195,6 @@ template<typename MAPPING, typename BASE>
 ConditionsLinearPool<MAPPING,BASE>::ConditionsLinearPool(ConditionsManager mgr, IOV* i)
   : BASE(mgr, i)
 {
-  
   this->BASE::SetName(i ? i->str().c_str() : "Unknown IOV");
   this->BASE::SetTitle("ConditionsLinearPool");
   InstanceCount::increment(this);
@@ -219,10 +217,8 @@ namespace dd4hep {
   } /* End namespace cond             */
 } /* End namespace dd4hep                   */
 
-#include "DD4hep/Factories.h"
+#include <DD4hep/Factories.h>
 namespace {
-  using namespace dd4hep;
-  
   ConditionsManager _mgr(int argc, char** argv)  {
     if ( argc > 0 )  {
       ConditionsManager::Object* m = (ConditionsManager::Object*)argv[0];
@@ -231,9 +227,9 @@ namespace {
     dd4hep::except("ConditionsLinearPool","++ Insufficient arguments: arg[0] = ConditionManager!");
     return ConditionsManager(0);
   }
-  IOV* _iov(int argc, char** argv)  {
+  dd4hep::IOV* _iov(int argc, char** argv)  {
     if ( argc > 1 )  {
-      IOV* i = (IOV*)argv[1];
+      dd4hep::IOV* i = (dd4hep::IOV*)argv[1];
       return i;
     }
     dd4hep::except("ConditionsLinearPool","++ Insufficient arguments: arg[1] = IOV!");
@@ -241,7 +237,7 @@ namespace {
   }
 
 #define _CR(fun,x,b,y) void* fun(dd4hep::Detector&, int argc, char** argv) \
-  {  return new b<x<Condition::Object*>,y>(_mgr(argc,argv), _iov(argc,argv));  }
+  {  return new b<x<dd4hep::Condition::Object*>,y>(_mgr(argc,argv), _iov(argc,argv));  }
   /// Create a conditions pool based on STL vectors
   _CR(create_vector_pool,std::vector,ConditionsLinearPool,ConditionsPool)
   /// Create a conditions pool based on STL lists

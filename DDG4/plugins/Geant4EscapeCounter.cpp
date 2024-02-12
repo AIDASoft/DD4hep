@@ -14,9 +14,9 @@
 #define DD4HEP_DDG4_GEANT4ESCAPECOUNTER_H
 
 // Framework include files
-#include "DD4hep/DetElement.h"
-#include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4SteppingAction.h"
+#include <DD4hep/DetElement.h>
+#include <DDG4/Geant4SensDetAction.h>
+#include <DDG4/Geant4SteppingAction.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -63,27 +63,26 @@ namespace dd4hep {
 // Author     : M.Frank
 //
 //====================================================================
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
+// Framework include files
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
 
-#include "DDG4/Geant4TouchableHandler.h"
-#include "DDG4/Geant4TrackHandler.h"
-#include "DDG4/Geant4StepHandler.h"
-#include "DDG4/Geant4Mapping.h"
-#include "DDG4/Geant4Data.h"
+#include <DDG4/Geant4TouchableHandler.h>
+#include <DDG4/Geant4TrackHandler.h>
+#include <DDG4/Geant4StepHandler.h>
+#include <DDG4/Geant4Mapping.h>
+#include <DDG4/Geant4Data.h>
 
-#include "CLHEP/Units/SystemOfUnits.h"
-#include "G4VProcess.hh"
+#include <CLHEP/Units/SystemOfUnits.h>
+#include <G4VProcess.hh>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Standard constructor
-Geant4EscapeCounter::Geant4EscapeCounter(Geant4Context* ctxt, const string& nam, DetElement det, Detector& description_ref)
+Geant4EscapeCounter::Geant4EscapeCounter(Geant4Context* ctxt, const std::string& nam, DetElement det, Detector& description_ref)
   : Geant4Sensitive(ctxt, nam, det, description_ref)
 {
-  string coll_name = name()+"Hits";
+  std::string coll_name = name()+"Hits";
   m_needsControl = true;
   declareProperty("Shells",m_detectorNames);
   m_collectionID = defineCollection<SimpleTracker::Hit>(coll_name);
@@ -100,7 +99,7 @@ bool Geant4EscapeCounter::process(const G4Step* step, G4TouchableHistory* /* his
   Geant4StepHandler  h(step);
   Geant4TrackHandler th(h.track);
   Geant4TouchableHandler handler(step);
-  string   hdlr_path  = handler.path();
+  std::string hdlr_path  = handler.path();
   Position prePos     = h.prePos();
   Position postPos    = h.postPos();
   Geant4HitCollection* coll = collection(m_collectionID);
@@ -132,6 +131,6 @@ bool Geant4EscapeCounter::process(const G4Step* step, G4TouchableHistory* /* his
   return true;
 }
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 DECLARE_GEANT4SENSITIVE(Geant4EscapeCounter)
 

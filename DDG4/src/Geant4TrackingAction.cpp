@@ -12,24 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4TrackingAction.h"
-#include "DDG4/Geant4MonteCarloTruth.h"
-#include "DDG4/Geant4TrackInformation.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4TrackingAction.h>
+#include <DDG4/Geant4MonteCarloTruth.h>
+#include <DDG4/Geant4TrackInformation.h>
 
 // Geant4 include files
-#include "G4Track.hh"
-#include "G4Threading.hh"
-#include "G4AutoLock.hh"
-#include "G4TrackingManager.hh"
-#include "G4VUserTrackInformation.hh"
+#include <G4Track.hh>
+#include <G4Threading.hh>
+#include <G4AutoLock.hh>
+#include <G4TrackingManager.hh>
+#include <G4VUserTrackInformation.hh>
 
-// C/C++ include files
-#include <stdexcept>
-
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
+
 class G4Step;
 class G4TouchableHistory;
 namespace {
@@ -37,7 +33,7 @@ namespace {
 }
 
 /// Standard constructor
-Geant4TrackingActionSequence::Geant4TrackingActionSequence(Geant4Context* ctxt, const string& nam)
+Geant4TrackingActionSequence::Geant4TrackingActionSequence(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt, nam) {
   m_needsControl = true;
   InstanceCount::increment(this);
@@ -66,7 +62,7 @@ void Geant4TrackingActionSequence::configureFiber(Geant4Context* thread_context)
 }
 
 /// Get an action by name
-Geant4TrackingAction* Geant4TrackingActionSequence::get(const string& nam) const   {
+Geant4TrackingAction* Geant4TrackingActionSequence::get(const std::string& nam) const   {
   return m_actors.get(FindByName(TypeName::split(nam).second));
 }
 
@@ -78,7 +74,7 @@ void Geant4TrackingActionSequence::adopt(Geant4TrackingAction* action) {
     m_actors.add(action);
     return;
   }
-  throw runtime_error("Geant4TrackingActionSequence: Attempt to add invalid actor!");
+  throw std::runtime_error("Geant4TrackingActionSequence: Attempt to add invalid actor!");
 }
 
 /// Pre-track action callback
@@ -96,7 +92,7 @@ void Geant4TrackingActionSequence::end(const G4Track* track) {
 }
 
 /// Standard constructor
-Geant4TrackingAction::Geant4TrackingAction(Geant4Context* ctxt, const string& nam)
+Geant4TrackingAction::Geant4TrackingAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
@@ -121,7 +117,7 @@ void Geant4TrackingAction::mark(const G4Track* track) const    {
 }
 
 /// Standard constructor
-Geant4SharedTrackingAction::Geant4SharedTrackingAction(Geant4Context* ctxt, const string& nam)
+Geant4SharedTrackingAction::Geant4SharedTrackingAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4TrackingAction(ctxt, nam), m_action(0)
 {
   InstanceCount::increment(this);
@@ -146,7 +142,7 @@ void Geant4SharedTrackingAction::use(Geant4TrackingAction* action)   {
     m_action = action;
     return;
   }
-  throw runtime_error("Geant4SharedTrackingAction: Attempt to use invalid actor!");
+  except("Attempt to use invalid actor!");
 }
 
 /// Begin-of-track callback

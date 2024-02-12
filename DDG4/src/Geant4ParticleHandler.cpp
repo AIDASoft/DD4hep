@@ -40,14 +40,11 @@
 #include <stdexcept>
 #include <algorithm>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
-
-typedef detail::ReferenceBitMask<int> PropertyMask;
+using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
 
 /// Standard constructor
-Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* ctxt, const string& nam)
+Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* ctxt, const std::string& nam)
   : Geant4GeneratorAction(ctxt,nam), Geant4MonteCarloTruth(),
     m_ownsParticles(false), m_userHandler(0), m_primaryMap(0)
 {
@@ -159,7 +156,7 @@ void Geant4ParticleHandler::mark(const G4Track* track)   {
   G4LogicalVolume*       vol = track->GetVolume()->GetLogicalVolume();
   G4VSensitiveDetector*   g4 = vol->GetSensitiveDetector();
   Geant4ActionSD* sd = dynamic_cast<Geant4ActionSD*>(g4);
-  string typ = sd ? sd->sensitiveType() : string();
+  std::string typ = sd ? sd->sensitiveType() : std::string();
   if ( typ == "calorimeter" )
     mask.set(G4PARTICLE_CREATED_CALORIMETER_HIT);
   else if ( typ == "tracker" )
@@ -184,7 +181,7 @@ void Geant4ParticleHandler::operator()(G4Event* event)  {
 
 /// User stepping callback
 void Geant4ParticleHandler::step(const G4Step* step_value, G4SteppingManager* mgr)   {
-  typedef vector<const G4Track*> _Sec;
+  typedef std::vector<const G4Track*> _Sec;
   ++m_currTrack.steps;
   if ( (m_currTrack.reason&G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )  {
     //
@@ -428,7 +425,7 @@ void Geant4ParticleHandler::beginEvent(const G4Event* event)  {
 
 /// Debugging: Dump Geant4 particle map
 void Geant4ParticleHandler::dumpMap(const char* tag)  const  {
-  const string& n = name();
+  const std::string& n = name();
   Geant4ParticleHandle::header4(INFO,n,tag);
   for(ParticleMap::const_iterator iend=m_particleMap.end(), i=m_particleMap.begin(); i!=iend; ++i)  {
     Geant4ParticleHandle((*i).second).dump4(INFO,n,tag);
@@ -621,7 +618,7 @@ bool Geant4ParticleHandler::defaultKeepParticle(Particle& particle)   {
 /// Clean the monte carlo record. Remove all unwanted stuff.
 /// This is the core of the object executed at the end of each event action.
 int Geant4ParticleHandler::recombineParents()  {
-  set<int> remove;
+  std::set<int> remove;
 
   /// Need to start from BACK, to clean first the latest produced stuff.
   for(ParticleMap::reverse_iterator i=m_particleMap.rbegin(); i!=m_particleMap.rend(); ++i)  {
@@ -705,7 +702,7 @@ void Geant4ParticleHandler::checkConsistency()  const   {
     Geant4ParticleHandle p(particle);
     PropertyMask mask(p->reason);
     PropertyMask status(p->status);
-    set<int>& daughters = p->daughters;
+    std::set<int>& daughters = p->daughters;
     ParticleMap::const_iterator j;
     // For all particles, the set of daughters must be contained in the record.
     for( int id_dau : daughters )   {

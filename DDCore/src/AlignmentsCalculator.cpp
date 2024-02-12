@@ -12,20 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Conditions.h"
-#include "DD4hep/ConditionsMap.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/MatrixHelpers.h"
-#include "DD4hep/ConditionDerived.h"
-#include "DD4hep/DetectorProcessor.h"
-#include "DD4hep/AlignmentsProcessor.h"
-#include "DD4hep/AlignmentsCalculator.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Conditions.h>
+#include <DD4hep/ConditionsMap.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/MatrixHelpers.h>
+#include <DD4hep/ConditionDerived.h>
+#include <DD4hep/DetectorProcessor.h>
+#include <DD4hep/AlignmentsProcessor.h>
+#include <DD4hep/AlignmentsCalculator.h>
+#include <DD4hep/detail/AlignmentsInterna.h>
 
 using namespace dd4hep;
 using namespace dd4hep::align;
-typedef AlignmentsCalculator::Result Result;
+using Result = AlignmentsCalculator::Result;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -72,8 +72,8 @@ namespace dd4hep {
 
       class Calculator::Context  {
       public:
-        typedef std::map<DetElement,size_t,AlignmentsCalculator::PathOrdering>  DetectorMap;
-        typedef std::map<unsigned int,size_t>             Keys;
+        typedef std::map<DetElement,std::size_t,AlignmentsCalculator::PathOrdering>  DetectorMap;
+        typedef std::map<unsigned int,std::size_t>             Keys;
         typedef std::vector<Entry>                        Entries;
 
         DetectorMap    detectors;
@@ -324,5 +324,5 @@ size_t AlignmentsCalculator::extract_deltas(DetElement start,
   return deltas.size();
 }
 
-#include "DD4hep/GrammarUnparsed.h"
+#include <DD4hep/GrammarUnparsed.h>
 static auto s_registry = GrammarRegistry::pre_note<AlignmentsCalculator::OrderedDeltas>(1);

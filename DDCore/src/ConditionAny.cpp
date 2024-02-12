@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/ConditionAny.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/ConditionAny.h>
+#include <DD4hep/detail/ConditionsInterna.h>
 
 // C/C++ include files
 #include <iomanip>

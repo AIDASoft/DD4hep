@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/ConditionsData.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/ConditionsData.h>
 
 using namespace dd4hep::cond;
 
@@ -76,5 +76,5 @@ AbstractMap& AbstractMap::operator=(const AbstractMap& c)  {
   return *this;
 }
 
-#include "DD4hep/GrammarUnparsed.h"
+#include <DD4hep/GrammarUnparsed.h>
 static auto s_registry = dd4hep::GrammarRegistry::pre_note<AbstractMap>(1);

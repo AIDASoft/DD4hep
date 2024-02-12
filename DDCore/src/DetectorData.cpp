@@ -26,7 +26,6 @@
 #include <TClass.h>
 #include <TROOT.h>
 
-
 namespace dd4hep {  namespace detail {    class DetectorImp;  }}
 
 using namespace dd4hep;

@@ -12,30 +12,29 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4GeneratorWrapper.h"
+#include <DDG4/Geant4GeneratorWrapper.h>
 
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Printout.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4Primary.h"
-#include "DDG4/Geant4InputHandling.h"
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Printout.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4Primary.h>
+#include <DDG4/Geant4InputHandling.h>
 
 // Geant4 include files
-#include "G4Event.hh"
-#include "G4PrimaryVertex.hh"
-#include "G4PrimaryParticle.hh"
-#include "G4VPrimaryGenerator.hh"
+#include <G4Event.hh>
+#include <G4PrimaryVertex.hh>
+#include <G4PrimaryParticle.hh>
+#include <G4VPrimaryGenerator.hh>
 
 // C/C++ include files
 #include <stdexcept>
 #include <set>
 
 using namespace dd4hep::sim;
-using namespace std;
 
 /// Standard constructor
-Geant4GeneratorWrapper::Geant4GeneratorWrapper(Geant4Context* ctxt, const string& nam)
+Geant4GeneratorWrapper::Geant4GeneratorWrapper(Geant4Context* ctxt, const std::string& nam)
   : Geant4GeneratorAction(ctxt,nam), m_generator(0)
 {
   declareProperty("Uses", m_generatorType);
@@ -56,8 +55,8 @@ G4VPrimaryGenerator* Geant4GeneratorWrapper::generator()   {
       PluginDebug dbg;
       m_generator = PluginService::Create<G4VPrimaryGenerator*>(m_generatorType);
       if ( !m_generator )  {
-        throw runtime_error("Geant4GeneratorWrapper: FATAL Failed to "
-                            "create G4VPrimaryGenerator of type " + m_generatorType + ".");
+        except("Geant4GeneratorWrapper: FATAL Failed to create G4VPrimaryGenerator of type %s.",
+               m_generatorType.c_str());
       }
     }
   }
@@ -68,7 +67,7 @@ G4VPrimaryGenerator* Geant4GeneratorWrapper::generator()   {
 void Geant4GeneratorWrapper::operator()(G4Event* event)  {
   Geant4PrimaryEvent* prim = context()->event().extension<Geant4PrimaryEvent>();
   Geant4PrimaryMap*   primaryMap = context()->event().extension<Geant4PrimaryMap>();
-  set<G4PrimaryVertex*> primaries;
+  std::set<G4PrimaryVertex*> primaries;
   
   // Now generate the new interaction
   generator()->GeneratePrimaryVertex(event);

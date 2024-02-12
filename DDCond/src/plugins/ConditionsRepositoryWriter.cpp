@@ -14,9 +14,9 @@
 #define DD4HEP_DDCOND_CONDITIONSREPOSITORYWRITER_H
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "XML/XMLElements.h"
-#include "DDCond/ConditionsManager.h"
+#include <DD4hep/Detector.h>
+#include <XML/XMLElements.h>
+#include <DDCond/ConditionsManager.h>
 
 // C/C++ include files
 
@@ -90,20 +90,20 @@ namespace dd4hep {
 //==========================================================================
 
 // Framework include files
-#include "XML/XMLElements.h"
-#include "XML/DocumentHandler.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Alignments.h"
-#include "DD4hep/AlignmentData.h"
-#include "DD4hep/OpaqueDataBinder.h"
-#include "DD4hep/ConditionsProcessor.h"
-#include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/detail/ConditionsInterna.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
+#include <XML/XMLElements.h>
+#include <XML/DocumentHandler.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Alignments.h>
+#include <DD4hep/AlignmentData.h>
+#include <DD4hep/OpaqueDataBinder.h>
+#include <DD4hep/ConditionsProcessor.h>
+#include <DD4hep/DetFactoryHelper.h>
+#include <DD4hep/detail/ConditionsInterna.h>
+#include <DD4hep/detail/AlignmentsInterna.h>
 
-#include "DDCond/ConditionsTags.h"
-#include "DDCond/ConditionsSlice.h"
-#include "DDCond/ConditionsManagerObject.h"
+#include <DDCond/ConditionsTags.h>
+#include <DDCond/ConditionsSlice.h>
+#include <DDCond/ConditionsManagerObject.h>
 
 // C/C++ include files
 #include <stdexcept>
@@ -112,18 +112,17 @@ namespace dd4hep {
 #include <list>
 #include <set>
 
-using std::string;
-using std::shared_ptr;
-using std::stringstream;
-using namespace dd4hep;
 using namespace dd4hep::cond;
 namespace units = dd4hep;
+namespace xml = dd4hep::xml;
+using dd4hep::printout;
+using dd4hep::_toString;
 
 /// Anonymous local stuff only used in this module
 namespace {
 
   /// Module print level
-  static PrintLevel s_printLevel = INFO;
+  static dd4hep::PrintLevel s_printLevel = dd4hep::INFO;
 
   class pressure;
   class temperature;
@@ -134,9 +133,9 @@ namespace {
     xml::Element root;
   public:
     PropertyDumper(xml::Element p) : root(p)  {}
-    void operator()(const std::pair<string,Property>& p)  const  {
+    void operator()(const std::pair<std::string, dd4hep::Property>& p)  const  {
       xml::Element e = xml::Element(root.document(),_UC(property));
-      string val = p.second.str();
+      std::string val = p.second.str();
       if ( val[0] == '\'' ) val = p.second.str().c_str()+1;
       if ( !val.empty() && val[val.length()-1] == '\'' ) val[val.length()-1] = 0;
       e.setAttr(_U(name), p.first);
@@ -145,9 +144,9 @@ namespace {
     }
   };
   
-  template <typename T> xml::Element _convert(xml::Element par, Condition c);
+  template <typename T> xml::Element _convert(xml::Element par, dd4hep::Condition c);
   
-  xml::Element make(xml::Element e, Condition c)  {
+  xml::Element make(xml::Element e, dd4hep::Condition c)  {
     char hash[64];
     std::string nam = c.name();
     std::string cn = nam.substr(nam.find('#')+1);
@@ -156,22 +155,22 @@ namespace {
     e.setAttr(_U(key),hash);
     return e;
   }
-  xml::Element _convert(xml::Element par, const Translation3D& tr)  {
+  xml::Element _convert(xml::Element par, const dd4hep::Translation3D& tr)  {
     xml::Element e = xml::Element(par.document(),_U(pivot));
-    const Translation3D::Vector& v = tr.Vect();
+    const dd4hep::Translation3D::Vector& v = tr.Vect();
     e.setAttr(_U(x),_toString(v.X()/dd4hep::mm,"%f*mm"));
     e.setAttr(_U(y),_toString(v.Y()/dd4hep::mm,"%f*mm"));
     e.setAttr(_U(z),_toString(v.Z()/dd4hep::mm,"%f*mm"));
     return e;
   }
-  xml::Element _convert(xml::Element par, const Position& pos)  {
+  xml::Element _convert(xml::Element par, const dd4hep::Position& pos)  {
     xml::Element e = xml::Element(par.document(),_U(position));
     e.setAttr(_U(x),_toString(pos.X()/dd4hep::mm,"%f*mm"));
     e.setAttr(_U(y),_toString(pos.Y()/dd4hep::mm,"%f*mm"));
     e.setAttr(_U(z),_toString(pos.Z()/dd4hep::mm,"%f*mm"));
     return e;
   }
-  xml::Element _convert(xml::Element par, const RotationZYX& rot)  {
+  xml::Element _convert(xml::Element par, const dd4hep::RotationZYX& rot)  {
     xml::Element e = xml::Element(par.document(),_U(rotation));
     double z, y, x;
     rot.GetComponents(z,y,x);
@@ -180,80 +179,80 @@ namespace {
     e.setAttr(_U(z),_toString(z/dd4hep::rad,"%f*rad"));
     return e;
   }
-  template <> xml::Element _convert<value>(xml::Element par, Condition c)  {
+  template <> xml::Element _convert<value>(xml::Element par, dd4hep::Condition c)  {
     xml::Element v = make(xml::Element(par.document(),_U(value)),c);
-    OpaqueData& data = c.data();
+    dd4hep::OpaqueData& data = c.data();
     v.setAttr(_U(type),data.dataType());
     v.setAttr(_U(value),data.str());
     return v;
   }
-  template <> xml::Element _convert<pressure>(xml::Element par, Condition c)  {
+  template <> xml::Element _convert<pressure>(xml::Element par, dd4hep::Condition c)  {
     xml::Element press = make(xml::Element(par.document(),_UC(pressure)),c);
     press.setAttr(_U(value),c.get<double>()/(100e0*units::pascal));
     press.setAttr(_U(unit),"hPa");
     return press;
   }
-  template <> xml::Element _convert<temperature>(xml::Element par, Condition c)  {
+  template <> xml::Element _convert<temperature>(xml::Element par, dd4hep::Condition c)  {
     xml::Element temp = make(xml::Element(par.document(),_UC(temperature)),c);
     temp.setAttr(_U(value),c.get<double>()/units::kelvin);
     temp.setAttr(_U(unit),"kelvin");
     return temp;
   }
-  template <> xml::Element _convert<Delta>(xml::Element par, Condition c)  {
-    xml::Element       align = make(xml::Element(par.document(),_UC(alignment_delta)),c);
-    const Delta&       delta = c.get<Delta>();
-    if ( delta.flags&Delta::HAVE_TRANSLATION )
+  template <> xml::Element _convert<dd4hep::Delta>(xml::Element par, dd4hep::Condition c)  {
+    xml::Element         align = make(xml::Element(par.document(),_UC(alignment_delta)),c);
+    const dd4hep::Delta& delta = c.get<dd4hep::Delta>();
+    if ( delta.flags&dd4hep::Delta::HAVE_TRANSLATION )
       align.append(_convert(align,delta.translation));
-    if ( delta.flags&Delta::HAVE_ROTATION )
+    if ( delta.flags&dd4hep::Delta::HAVE_ROTATION )
       align.append(_convert(align,delta.rotation));
-    if ( delta.flags&Delta::HAVE_PIVOT )
+    if ( delta.flags&dd4hep::Delta::HAVE_PIVOT )
       align.append(_convert(align,delta.pivot));
     return align;
   }
-  template <> xml::Element _convert<Alignment>(xml::Element par, Condition c)  {
+  template <> xml::Element _convert<dd4hep::Alignment>(xml::Element par, dd4hep::Condition c)  {
     char hash[64];
-    typedef ConditionKey::KeyMaker KM;
-    AlignmentCondition  acond = c;
-    KM                  km(c.key());
-    const Delta&        delta = acond.data().delta;
-    xml::Element        align(xml::Element(par.document(),_UC(alignment_delta)));
-    Condition::key_type key = KM(km.values.det_key,align::Keys::deltaKey).hash;
+    typedef dd4hep::ConditionKey::KeyMaker KM;
+    dd4hep::AlignmentCondition   acond = c;
+    KM                           km(c.key());
+    const dd4hep::Delta&         delta = acond.data().delta;
+    xml::Element                 align(xml::Element(par.document(),_UC(alignment_delta)));
+    dd4hep::Condition::key_type  key = KM(km.values.det_key,dd4hep::align::Keys::deltaKey).hash;
     ::snprintf(hash,sizeof(hash),"%llX",key);
-    align.setAttr(_U(name),align::Keys::deltaName);
+    align.setAttr(_U(name), dd4hep::align::Keys::deltaName);
     align.setAttr(_U(key),hash);
-    if ( delta.flags&Delta::HAVE_TRANSLATION )
+    if ( delta.flags&dd4hep::Delta::HAVE_TRANSLATION )
       align.append(_convert(align,delta.translation));
-    if ( delta.flags&Delta::HAVE_ROTATION )
+    if ( delta.flags&dd4hep::Delta::HAVE_ROTATION )
       align.append(_convert(align,delta.rotation));
-    if ( delta.flags&Delta::HAVE_PIVOT )
+    if ( delta.flags&dd4hep::Delta::HAVE_PIVOT )
       align.append(_convert(align,delta.pivot));
     return align;
   }
-  xml::Element _seq(xml::Element v, Condition c, const char* tag, const char* match)  {
-    OpaqueData& data = c.data();
-    string typ = data.dataType();
+  xml::Element _seq(xml::Element v, dd4hep::Condition c, const char* tag, const char* match)  {
+    dd4hep::OpaqueData& data = c.data();
+    std::string typ = data.dataType();
     size_t len = ::strlen(match);
     size_t idx = typ.find(match);
     size_t idq = typ.find(',',idx+len);
-    if ( idx != string::npos && idq != string::npos )   {
-      string subtyp = tag;
+    if ( idx != std::string::npos && idq != std::string::npos )   {
+      std::string subtyp = tag;
       subtyp += "["+typ.substr(idx+len,idq-idx-len)+"]";
       v.setAttr(_U(type),subtyp);
       xml::Handle_t(v.ptr()).setText(data.str());
       return v;
     }
-    except("Writer","++ Unknwon XML conversion to type: %s",typ.c_str());
+    dd4hep::except("Writer","++ Unknwon XML conversion to type: %s",typ.c_str());
     return v;
   }
-  template <> xml::Element _convert<std::vector<void*> >(xml::Element par, Condition c)  {
+  template <> xml::Element _convert<std::vector<void*> >(xml::Element par, dd4hep::Condition c)  {
     xml::Element v = make(xml::Element(par.document(),_UC(sequence)),c);
     return _seq(v,c,"vector","::vector<");
   }
-  template <> xml::Element _convert<std::list<void*> >(xml::Element par, Condition c)  {
+  template <> xml::Element _convert<std::list<void*> >(xml::Element par, dd4hep::Condition c)  {
     xml::Element v = make(xml::Element(par.document(),_UC(sequence)),c);
     return _seq(v,c,"list","::list<");
   }
-  template <> xml::Element _convert<std::set<void*> >(xml::Element par, Condition c)  {
+  template <> xml::Element _convert<std::set<void*> >(xml::Element par, dd4hep::Condition c)  {
     xml::Element v = make(xml::Element(par.document(),_UC(sequence)),c);
     return _seq(v,c,"set","::set<");
   }
@@ -291,9 +290,9 @@ size_t ConditionsXMLRepositoryWriter::collect(xml::Element root, ConditionsSlice
 
   root.append(repo);
   repo.append(iov);
-  ::snprintf(text,sizeof(text),"%ld,%ld#%s",
-             long(validity.keyData.first), long(validity.keyData.second),
-             validity.iovType->name.c_str());
+  std::snprintf(text,sizeof(text),"%ld,%ld#%s",
+                long(validity.keyData.first), long(validity.keyData.second),
+                validity.iovType->name.c_str());
   iov.setAttr(_UC(validity),text);
   return collect(iov,slice,slice.manager->detectorDescription().world());
 }
@@ -334,7 +333,7 @@ size_t ConditionsXMLRepositoryWriter::collect(xml::Element root,
     std::vector<Condition> conds;
     conditionsCollector(slice,conds)(detector);
     if ( !conds.empty() )   {
-      stringstream comment;
+      std::stringstream comment;
       Condition cond_align, cond_delta;
       xml::Element conditions = xml::Element(root.document(),_UC(detelement));
       conditions.setAttr(_U(path),detector.path());
@@ -366,7 +365,7 @@ size_t ConditionsXMLRepositoryWriter::collect(xml::Element root,
           cond_delta = c;
         }
         else {
-          const OpaqueData&    data = c.data();
+          const dd4hep::OpaqueData& data = c.data();
           const std::type_info& typ = data.typeInfo();
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
           if ( typ == typeid(char)   || typ == typeid(unsigned char)  ||
@@ -374,11 +373,11 @@ size_t ConditionsXMLRepositoryWriter::collect(xml::Element root,
                typ == typeid(int)    || typ == typeid(unsigned int)   ||
                typ == typeid(long)   || typ == typeid(unsigned long)  ||
                typ == typeid(float)  || typ == typeid(double)         ||
-               typ == typeid(bool)   || typ == typeid(string) )
+               typ == typeid(bool)   || typ == typeid(std::string) )
 #else
             if ( typ == typeid(int)    || typ == typeid(long)           ||
                  typ == typeid(float)  || typ == typeid(double)         ||
-                 typ == typeid(bool)   || typ == typeid(string) )
+                 typ == typeid(bool)   || typ == typeid(std::string) )
 #endif
             {
               conditions.append(_convert<value>(conditions,c));
@@ -416,7 +415,7 @@ size_t ConditionsXMLRepositoryWriter::collect(xml::Element root,
         ++m_numConverted;
       }
       else if ( cond_delta.isValid() )   {
-        conditions.append(_convert<Delta>(conditions,cond_delta));
+        conditions.append(_convert<dd4hep::Delta>(conditions,cond_delta));
         ++m_numConverted;
       }
     }
@@ -428,8 +427,8 @@ size_t ConditionsXMLRepositoryWriter::collect(xml::Element root,
 // ======================================================================================
 
 /// Write the XML document structure to a file.
-long ConditionsXMLRepositoryWriter::write(xml::Document doc, const string& output)   const {
-  xml::DocumentHandler docH;
+long ConditionsXMLRepositoryWriter::write(xml::Document doc, const std::string& output)   const {
+  xml_handler_t docH;
   long ret = docH.output(doc, output);
   if ( !output.empty() )  {
     printout(INFO,"Writer","++ Successfully wrote %ld conditions (%ld unconverted) to file: %s",
@@ -444,12 +443,12 @@ long ConditionsXMLRepositoryWriter::write(xml::Document doc, const string& outpu
  *  \version 1.0
  *  \date    01/04/2014
  */
-static long write_repository_conditions(Detector& description, int argc, char** argv)  {
+static long write_repository_conditions(dd4hep::Detector& description, int argc, char** argv)  {
   ConditionsManager manager  =  ConditionsManager::from(description);
-  const IOVType*    iovtype  =  0;
-  long              iovvalue = -1;
-  long              mgr_prop = 0;
-  string            output;
+  const dd4hep::IOVType* iovtype  =  0;
+  long                   iovvalue = -1;
+  long                   mgr_prop = 0;
+  std::string            output;
 
   for(int i=0; i<argc; ++i)  {
     if ( ::strncmp(argv[i],"-iov_type",7) == 0 )
@@ -461,26 +460,26 @@ static long write_repository_conditions(Detector& description, int argc, char** 
     else if ( ::strncmp(argv[i],"-manager",4) == 0 )
       mgr_prop = 1;
     else if ( ::strncmp(argv[i],"-help",2) == 0 )  {
-      printout(ALWAYS,"Plugin-Help","Usage: dd4hep_XMLConditionsRepositoryWriter --opt [--opt]           ");
-      printout(ALWAYS,"Plugin-Help","  -output    <string>   Output file name. Default: stdout           ");
-      printout(ALWAYS,"Plugin-Help","  -manager   <string>   Add manager properties to the output.       ");
-      printout(ALWAYS,"Plugin-Help","  -iov_type  <string>   IOV type to be selected.                    ");
-      printout(ALWAYS,"Plugin-Help","  -iov_value <string>   IOV value to create the conditions snapshot.");
+      printout(dd4hep::ALWAYS,"Plugin-Help","Usage: dd4hep_XMLConditionsRepositoryWriter --opt [--opt]           ");
+      printout(dd4hep::ALWAYS,"Plugin-Help","  -output    <string>   Output file name. Default: stdout           ");
+      printout(dd4hep::ALWAYS,"Plugin-Help","  -manager   <string>   Add manager properties to the output.       ");
+      printout(dd4hep::ALWAYS,"Plugin-Help","  -iov_type  <string>   IOV type to be selected.                    ");
+      printout(dd4hep::ALWAYS,"Plugin-Help","  -iov_value <string>   IOV value to create the conditions snapshot.");
       ::exit(EINVAL);
     }
   }
   if ( 0 == iovtype )
-    except("ConditionsPrepare","++ Unknown IOV type supplied.");
+    dd4hep::except("ConditionsPrepare","++ Unknown IOV type supplied.");
   if ( 0 > iovvalue )
-    except("ConditionsPrepare",
-           "++ Unknown IOV value supplied for iov type %s.",iovtype->str().c_str());
+    dd4hep::except("ConditionsPrepare",
+                   "++ Unknown IOV value supplied for iov type %s.",iovtype->str().c_str());
 
-  IOV iov(iovtype,iovvalue);
-  shared_ptr<ConditionsContent> content(new ConditionsContent());
-  shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
-  cond::fill_content(manager,*content,*iovtype);
+  dd4hep::IOV iov(iovtype,iovvalue);
+  std::shared_ptr<ConditionsContent> content(new ConditionsContent());
+  std::shared_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
+  dd4hep::cond::fill_content(manager,*content,*iovtype);
   ConditionsManager::Result cres = manager.prepare(iov, *slice);
-  printout(INFO,"Conditions",
+  printout(dd4hep::INFO, "Conditions",
            "++ Selected conditions: %7ld conditions (S:%ld,L:%ld,C:%ld,M:%ld) for IOV:%-12s",
            cres.total(), cres.selected, cres.loaded, cres.computed, cres.missing,
            iovtype ? iov.str().c_str() : "???");
@@ -507,16 +506,16 @@ DECLARE_APPLY(DD4hep_ConditionsXMLRepositoryWriter,write_repository_conditions)
  *  \version 1.0
  *  \date    01/04/2014
  */
-static long write_repository_manager(Detector& description, int argc, char** argv)  {
+static long write_repository_manager(dd4hep::Detector& description, int argc, char** argv)  {
   ConditionsManager manager  =  ConditionsManager::from(description);
-  string            output;
+  std::string       output;
 
   for(int i=0; i<argc; ++i)  {
     if ( ::strncmp(argv[i],"-output",4) == 0 && argc>i+1)
       output = argv[++i];
     else if ( ::strncmp(argv[i],"-help",2) == 0 )  {
-      printout(ALWAYS,"Plugin-Help","Usage: dd4hep_XMLConditionsManagerWriter --opt [--opt]           ");
-      printout(ALWAYS,"Plugin-Help","  -output    <string>   Output file name. Default: stdout        ");
+      printout(dd4hep::ALWAYS,"Plugin-Help","Usage: dd4hep_XMLConditionsManagerWriter --opt [--opt]           ");
+      printout(dd4hep::ALWAYS,"Plugin-Help","  -output    <string>   Output file name. Default: stdout        ");
       ::exit(EINVAL);
     }
   }

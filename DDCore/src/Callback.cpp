@@ -12,13 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Callback.h"
-#include "DD4hep/Exceptions.h"
-
-using namespace dd4hep;
+#include <DD4hep/Callback.h>
+#include <DD4hep/Exceptions.h>
 
 /// Check the compatibility of two typed objects. The test is the result of a dynamic_cast
-void CallbackSequence::checkTypes(const std::type_info& typ1, const std::type_info& typ2, void* test) {
+void dd4hep::CallbackSequence::checkTypes(const std::type_info& typ1, const std::type_info& typ2, void* test) {
   if (!test) {
     throw unrelated_type_error(typ1, typ2, "Cannot install a callback for these 2 types.");
   }

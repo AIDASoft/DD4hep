@@ -25,12 +25,11 @@
 // C/C++ include files
 #include <stdexcept>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::digi;
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
+
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
  
@@ -75,14 +74,14 @@ namespace dd4hep {
     template <typename TYPE> TYPE* _create_object(const DigiKernel& kernel, const TypeName& typ)    {
       TYPE* object = _raw_create<TYPE>(typ.first, kernel, typ.second);
       if (!object && typ.first == typ.second) {
-        string _t = typeName(typeid(TYPE));
+        std::string _t = typeName(typeid(TYPE));
         printout(DEBUG, "DigiHandle", "Object factory for %s not found. Try out %s",
                  typ.second.c_str(), _t.c_str());
         object = _raw_create<TYPE>(_t, kernel, typ.second);
         if (!object) {
           size_t idx = _t.rfind(':');
-          if (idx != string::npos)
-            _t = string(_t.substr(idx + 1));
+          if (idx != std::string::npos)
+            _t = std::string(_t.substr(idx + 1));
           printout(DEBUG, "DigiHandle", "Try out object factory for %s",_t.c_str());
           object = _raw_create<TYPE>(_t, kernel, typ.second);
         }
@@ -95,7 +94,7 @@ namespace dd4hep {
     }
 
     template <typename TYPE> 
-    DigiHandle<TYPE>::DigiHandle(const DigiKernel& kernel, const string& type_name)  {
+    DigiHandle<TYPE>::DigiHandle(const DigiKernel& kernel, const std::string& type_name)  {
       value = _create_object<TYPE>(kernel,TypeName::split(type_name));
     }
 
@@ -124,7 +123,7 @@ namespace dd4hep {
         value->addRef();
     }
 
-    template <typename TYPE> Property& DigiHandle<TYPE>::operator[](const string& property_name) const {
+    template <typename TYPE> Property& DigiHandle<TYPE>::operator[](const std::string& property_name) const {
       PropertyManager& pm = checked_value(value)->properties();
       return pm[property_name];
     }
@@ -185,7 +184,7 @@ namespace dd4hep {
     KernelHandle::KernelHandle(DigiKernel* k) : value(k)  {
     }
 
-    Property& KernelHandle::operator[](const string& property_name) const {
+    Property& KernelHandle::operator[](const std::string& property_name) const {
       PropertyManager& pm = checked_value(value)->properties();
       return pm[property_name];
     }
@@ -200,6 +199,7 @@ namespace dd4hep {
 namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
+
     template class DigiHandle<DigiAction>;
     template class DigiHandle<DigiInputAction>;
     template class DigiHandle<DigiEventAction>;

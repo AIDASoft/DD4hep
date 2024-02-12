@@ -12,15 +12,14 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsCleanup.h"
-#include "DDCond/ConditionsDataLoader.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDCond/ConditionsIOVPool.h>
+#include <DDCond/ConditionsCleanup.h>
+#include <DDCond/ConditionsDataLoader.h>
 
-#include "DD4hep/detail/ConditionsInterna.h"
+#include <DD4hep/detail/ConditionsInterna.h>
 
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 /// Default constructor
