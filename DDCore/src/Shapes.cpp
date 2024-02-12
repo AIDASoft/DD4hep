@@ -510,7 +510,7 @@ void EllipticalTube::make(const std::string& nam, double a, double b, double dz)
 /// Internal helper method to support TwistedTube object construction
 void TwistedTube::make(const std::string& nam, double twist_angle, double rmin, double rmax,
                        double zneg, double zpos, int nsegments, double totphi)   {
-  _assign(new TwistedTubeObject(nam.c_str(), twist_angle, rmin, rmax, zneg, zpos, nsegments, totphi/units::deg),
+  _assign(new TwistedTubeObject(nam.c_str(), twist_angle/units::deg, rmin, rmax, zneg, zpos, nsegments, totphi/units::deg),
           "", TWISTEDTUBE_TAG, true);
 }
 
