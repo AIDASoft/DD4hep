@@ -15,7 +15,7 @@
 
 // Framework include files
 //#include "Geant4SurfaceTest.h"
-#include "DDG4/Geant4EventAction.h"
+#include <DDG4/Geant4EventAction.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -48,32 +48,31 @@ namespace dd4hep {
 #endif // DD4HEP_DDG4_GEANT4SURFACETEST_H
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/InstanceCount.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/InstanceCount.h>
 
-#include "DDG4/Factories.h"
-#include "DDG4/Geant4Data.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4HitCollection.h"
+#include <DDG4/Factories.h>
+#include <DDG4/Geant4Data.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4SensDetAction.h>
+#include <DDG4/Geant4HitCollection.h>
 
-#include "DDRec/Surface.h"
-#include "DDRec/DetectorSurfaces.h"
-#include "DDRec/SurfaceManager.h"
-#include "DDRec/SurfaceHelper.h"
+#include <DDRec/Surface.h>
+#include <DDRec/DetectorSurfaces.h>
+#include <DDRec/SurfaceManager.h>
+#include <DDRec/SurfaceHelper.h>
 
 // Geant 4 includes
-#include "G4VHitsCollection.hh"
-#include "G4HCofThisEvent.hh"
-#include "G4Event.hh"
+#include <G4VHitsCollection.hh>
+#include <G4HCofThisEvent.hh>
+#include <G4Event.hh>
 
 // C/C++ include files
 #include <stdexcept>
 #include <map>
 #include <sstream>
 
-using namespace std;
 using namespace dd4hep::DDRec;
 using namespace dd4hep::detail;
 using namespace dd4hep::sim;

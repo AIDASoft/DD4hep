@@ -12,22 +12,21 @@
 //==========================================================================
 
 // Framework includes
-#include "Parsers/Parsers.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/AlignmentsPrinter.h"
-#include "DD4hep/AlignmentsProcessor.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
+#include <Parsers/Parsers.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/AlignmentsPrinter.h>
+#include <DD4hep/AlignmentsProcessor.h>
+#include <DD4hep/detail/AlignmentsInterna.h>
+#include <TClass.h>
 
 // C/C++ include files
 #include <sstream>
-#include "TClass.h"
 
-using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::align;
 
 /// Initializing constructor
-AlignmentsPrinter::AlignmentsPrinter(ConditionsMap* cond_map, const string& pref, int flg)
+AlignmentsPrinter::AlignmentsPrinter(ConditionsMap* cond_map, const std::string& pref, int flg)
   : mapping(cond_map), name("Alignment"), prefix(pref), printLevel(INFO), m_flag(flg)
 {
 }
@@ -41,7 +40,7 @@ int AlignmentsPrinter::operator()(Alignment a)  const  {
 /// Callback to output alignments information of an entire DetElement
 int AlignmentsPrinter::operator()(DetElement de, int level)  const   {
   if ( mapping )   {
-    vector<Alignment> alignments;
+    std::vector<Alignment> alignments;
     alignmentsCollector(*mapping,alignments)(de, level);
     printout(printLevel, name, "++ %s %-3ld Alignments for DE %s",
              prefix.c_str(), alignments.size(), de.path().c_str()); 
@@ -55,7 +54,7 @@ int AlignmentsPrinter::operator()(DetElement de, int level)  const   {
 }
 
 /// Initializing constructor
-AlignedVolumePrinter::AlignedVolumePrinter(ConditionsMap* cond_map, const string& pref,int flg)
+AlignedVolumePrinter::AlignedVolumePrinter(ConditionsMap* cond_map, const std::string& pref,int flg)
   : AlignmentsPrinter(cond_map, pref, flg)
 {
   name = "Alignment";
@@ -68,12 +67,12 @@ int AlignedVolumePrinter::operator()(Alignment a)  const  {
 }
 
 /// Default printout of an alignment entry
-void dd4hep::align::printAlignment(PrintLevel lvl, const string& prefix, Alignment a)   {
+void dd4hep::align::printAlignment(PrintLevel lvl, const std::string& prefix, Alignment a)   {
   if ( a.isValid() )   {
     Alignment::Object* ptr = a.ptr();
     const AlignmentData& data = a.data();
     const Delta& D = data.delta;
-    string new_prefix = prefix;
+    std::string new_prefix = prefix;
     new_prefix.assign(prefix.length(),' ');
     printout(lvl,prefix,"++ %s \t [%p] Typ:%s",
              new_prefix.c_str(), a.ptr(),
@@ -90,14 +89,14 @@ void dd4hep::align::printAlignment(PrintLevel lvl, const string& prefix, Alignme
   }
 }
 
-static string replace_all(const string& in, const string& from, const string& to)  {
-  string res = in;
-  size_t idx;
-  while( string::npos != (idx=res.find(from)) )
+static std::string replace_all(const std::string& in, const std::string& from, const std::string& to)  {
+  std::string res = in;
+  std::size_t idx;
+  while( std::string::npos != (idx=res.find(from)) )
     res.replace(idx,from.length(),to);
   return res;
 }
-static string _transformPoint2World(const AlignmentData& data, const Position& local)  {
+static std::string _transformPoint2World(const AlignmentData& data, const Position& local)  {
   char text[256];
   Position world = data.localToWorld(local);
   ::snprintf(text,sizeof(text),"Local: (%7.3f , %7.3f , %7.3f )  -- > World:  (%7.3f , %7.3f , %7.3f )",
@@ -105,7 +104,7 @@ static string _transformPoint2World(const AlignmentData& data, const Position& l
   return text;
 }
 
-static string _transformPoint2Detector(const AlignmentData& data, const Position& local)  {
+static std::string _transformPoint2Detector(const AlignmentData& data, const Position& local)  {
   char text[256];
   Position world = data.localToDetector(local);
   ::snprintf(text,sizeof(text),"Local: (%7.3f , %7.3f , %7.3f )  -- > Parent: (%7.3f , %7.3f , %7.3f )",
@@ -113,14 +112,14 @@ static string _transformPoint2Detector(const AlignmentData& data, const Position
   return text;
 }
 
-void dd4hep::align::printAlignment(PrintLevel lvl, const string& prefix,
-                                        const string& opt, DetElement de, Alignment alignment)
+void dd4hep::align::printAlignment(PrintLevel lvl, const std::string& prefix,
+                                   const std::string& opt, DetElement de, Alignment alignment)
 {
-  const string& tag = prefix;
+  const std::string& tag = prefix;
   const AlignmentData& align_data = alignment.data();
   Condition  align_cond;// = align_data.condition;
   const Delta& align_delta = align_data.delta;
-  string par = de.parent().isValid() ? de.parent().path() : string();
+  std::string par = de.parent().isValid() ? de.parent().path() : std::string();
   Box bbox = de.placement().volume().solid();
   /// The edge positions of the bounding box:
   Position p1( bbox.x(), bbox.y(), bbox.z());
@@ -148,22 +147,22 @@ void dd4hep::align::printAlignment(PrintLevel lvl, const string& prefix,
              alignment.ptr());
   }
   if ( align_delta.hasTranslation() )  {
-    stringstream str;
+    std::stringstream str;
     Position copy(align_delta.translation * (1./dd4hep::cm));
     Parsers::toStream(copy, str);
     printout(lvl,tag,"++ %s DELTA Translation: %s [cm]",
              opt.c_str(), replace_all(str.str(),"\n","").c_str());
   }
   if ( align_delta.hasPivot() )  {
-    stringstream str;
+    std::stringstream str;
     Delta::Pivot copy(align_delta.pivot.Vect() * (1./dd4hep::cm));
     Parsers::toStream(copy, str);
-    string res = replace_all(str.str(),"\n","");
+    std::string res = replace_all(str.str(),"\n","");
     res = "( "+replace_all(res,"  "," , ")+" )";
     printout(lvl,tag,"++ %s DELTA Pivot:       %s [cm]", opt.c_str(), res.c_str());
   }
   if ( align_delta.hasRotation() )  {
-    stringstream str;
+    std::stringstream str;
     Parsers::toStream(align_delta.rotation, str);
     printout(lvl,tag,"++ %s DELTA Rotation:    %s [rad]", opt.c_str(), replace_all(str.str(),"\n","").c_str());
   }
@@ -193,10 +192,10 @@ void dd4hep::align::printAlignment(PrintLevel lvl, const string& prefix,
 }
 
 /// Default printout of a detector element entry
-void dd4hep::align::printElement(PrintLevel prt_level, const string& prefix, DetElement de, ConditionsMap& pool)   {
-  string tag = prefix+"Element";
+void dd4hep::align::printElement(PrintLevel prt_level, const std::string& prefix, DetElement de, ConditionsMap& pool)   {
+  std::string tag = prefix+"Element";
   if ( de.isValid() )  {
-    vector<Alignment> alignments;
+    std::vector<Alignment> alignments;
     alignmentsCollector(pool,alignments)(de);
     printout(prt_level,tag,"++ Alignments of DE %s [%d entries]",
              de.path().c_str(), int(alignments.size()));
@@ -208,13 +207,13 @@ void dd4hep::align::printElement(PrintLevel prt_level, const string& prefix, Det
 }
 
 /// PrintElement placement with/without alignment applied
-void dd4hep::align::printElementPlacement(PrintLevel lvl, const string& prefix, DetElement de, ConditionsMap& pool)   {
-  string tag = prefix+"Element";
+void dd4hep::align::printElementPlacement(PrintLevel lvl, const std::string& prefix, DetElement de, ConditionsMap& pool)   {
+  std::string tag = prefix+"Element";
   if ( de.isValid() )  {
     char text[132];
     Alignment    nominal = de.nominal();
     Box bbox = de.placement().volume().solid();
-    vector<Alignment> alignments;
+    std::vector<Alignment> alignments;
 
     alignmentsCollector(pool,alignments)(de);
     ::memset(text,'=',sizeof(text));

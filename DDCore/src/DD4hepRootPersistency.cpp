@@ -12,20 +12,19 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/DD4hepRootPersistency.h"
-#include "DD4hep/detail/ObjectsInterna.h"
-#include "DD4hep/detail/SegmentationsInterna.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/DD4hepRootPersistency.h>
+#include <DD4hep/detail/ObjectsInterna.h>
+#include <DD4hep/detail/SegmentationsInterna.h>
 
 // ROOT include files
-#include "TFile.h"
-#include "TTimeStamp.h"
+#include <TFile.h>
+#include <TTimeStamp.h>
 #include <memory>
 
 ClassImp(DD4hepRootPersistency)
 
 using namespace dd4hep;
-using namespace std;
 
 namespace {
   /// Ensure nominal alignments are loaded before saving
@@ -95,7 +94,7 @@ int DD4hepRootPersistency::save(Detector& description, const char* fname, const 
       DetectorData::unpatchRootStreamer(TGeoNode::Class());
       return nBytes;
     }
-    catch (const exception& e) {
+    catch (const std::exception& e) {
       DetectorData::unpatchRootStreamer(TGeoVolume::Class());
       DetectorData::unpatchRootStreamer(TGeoNode::Class());
       except("DD4hepRootPersistency","Exception %s while saving file %s",e.what(), fname);
@@ -118,7 +117,7 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
   if ( f && !f->IsZombie()) {
     try  {
       TTimeStamp start;
-      unique_ptr<DD4hepRootPersistency> persist((DD4hepRootPersistency*)f->Get(instance));
+      std::unique_ptr<DD4hepRootPersistency> persist((DD4hepRootPersistency*)f->Get(instance));
       if ( persist.get() )   {
         DetectorData* source = persist->m_data;
 #if 0
@@ -189,7 +188,7 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
       f->ls();
       delete f;
     }
-    catch (const exception& e) {
+    catch (const std::exception& e) {
       DetectorData::unpatchRootStreamer(TGeoVolume::Class());
       DetectorData::unpatchRootStreamer(TGeoNode::Class());
       except("DD4hepRootPersistency","Exception %s while loading file %s",e.what(), fname);
@@ -207,22 +206,20 @@ int DD4hepRootPersistency::load(Detector& description, const char* fname, const 
   return 0;
 }
 
+#include <DD4hep/detail/DetectorInterna.h>
+#include <DD4hep/detail/ConditionsInterna.h>
+#include <DD4hep/detail/AlignmentsInterna.h>
 
-#include "DD4hep/detail/DetectorInterna.h"
-#include "DD4hep/detail/ConditionsInterna.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
 namespace {
 
   class PersistencyChecks  {
-
   public:
-    
     size_t errors = 0;
 
     /// Default constructor
     PersistencyChecks() = default;
 
-    size_t checkConstant(const std::pair<string,Constant>& obj)  {
+    size_t checkConstant(const std::pair<std::string,Constant>& obj)  {
       if ( obj.first.empty() || obj.second->name.empty() )  {
         printout(ERROR,"chkConstant","+++ Invalid constant: key error %s <> %s [%s]",
                  obj.first.c_str(), obj.second->GetName(), obj.second->GetTitle());
@@ -238,7 +235,7 @@ namespace {
       return 1;
     }
     
-    size_t checkProperty(const std::pair<string,map<string,string> >& obj)  {
+    size_t checkProperty(const std::pair<std::string, std::map<std::string,std::string> >& obj)  {
       if ( obj.first.empty() || obj.second.empty() )  {
         printout(ERROR,"chkProperty","+++ Empty property set: %s",obj.first.c_str());
         ++errors;

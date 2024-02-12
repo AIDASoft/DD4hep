@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4GDMLDetector.h"
+#include <DDG4/Geant4GDMLDetector.h>
 
 // C/C++ include files
 #include <iostream>
@@ -22,9 +22,6 @@
 #ifdef GEANT4_HAS_GDML
 #include "G4GDMLParser.hh"
 #endif
-
-using namespace std;
-using namespace dd4hep;
 
 dd4hep::sim::Geant4GDMLDetector::Geant4GDMLDetector(const std::string& gdmlFile)
   : m_fileName(gdmlFile), m_world(0) {

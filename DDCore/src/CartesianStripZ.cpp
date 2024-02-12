@@ -12,10 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/CartesianStripZ.h"
-#include "DDSegmentation/CartesianStripZ.h"
+#include <DD4hep/CartesianStripZ.h>
+#include <DDSegmentation/CartesianStripZ.h>
 
-using namespace std;
 using namespace dd4hep;
 
 /// determine the position based on the cell ID
@@ -44,7 +43,7 @@ double CartesianStripZ::offsetZ() const { return access()->implementation->offse
 void CartesianStripZ::setOffsetZ(double offset) const { access()->implementation->setOffsetZ(offset); }
 
 /// access the field name used for Z
-const string& CartesianStripZ::fieldNameZ() const { return access()->implementation->fieldNameZ(); }
+const std::string& CartesianStripZ::fieldNameZ() const { return access()->implementation->fieldNameZ(); }
 
 /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
     in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
@@ -55,6 +54,6 @@ const string& CartesianStripZ::fieldNameZ() const { return access()->implementat
     -# size in x
     -# size in y
 */
-vector<double> CartesianStripZ::cellDimensions(const CellID& id) const {
+std::vector<double> CartesianStripZ::cellDimensions(const CellID& id) const {
     return access()->implementation->cellDimensions(id);
 }

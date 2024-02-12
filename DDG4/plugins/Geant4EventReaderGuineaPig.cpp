@@ -14,16 +14,16 @@
 /** \addtogroup Geant4EventReader
  *
  @{
-  \package Geant4EventReaderGuineaPig
+ \package Geant4EventReaderGuineaPig
  * \brief Reader for ascii files with e+e- pairs created from GuineaPig.
  *
  *
-@}
- */
+ @}
+*/
 
 
 // Framework include files
-#include "DDG4/Geant4InputAction.h"
+#include <DDG4/Geant4InputAction.h>
 
 // C/C++ include files
 #include <fstream>
@@ -71,15 +71,14 @@ namespace dd4hep {
 
 
 // Framework include files
-#include "DDG4/Factories.h"
-#include "DD4hep/Printout.h"
-#include "CLHEP/Units/SystemOfUnits.h"
-#include "CLHEP/Units/PhysicalConstants.h"
+#include <DDG4/Factories.h>
+#include <DD4hep/Printout.h>
+#include <CLHEP/Units/SystemOfUnits.h>
+#include <CLHEP/Units/PhysicalConstants.h>
 
 // C/C++ include files
 #include <cerrno>
 
-using namespace std;
 using namespace dd4hep::sim;
 typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
 
@@ -87,15 +86,15 @@ typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
 DECLARE_GEANT4_EVENT_READER(Geant4EventReaderGuineaPig)
 
 /// Initializing constructor
-Geant4EventReaderGuineaPig::Geant4EventReaderGuineaPig(const string& nam)
+Geant4EventReaderGuineaPig::Geant4EventReaderGuineaPig(const std::string& nam)
 : Geant4EventReader(nam), m_input(), m_part_num(-1) 
 {
   // Now open the input file:
-  m_input.open(nam.c_str(),ifstream::in);
+  m_input.open(nam.c_str(), std::ifstream::in);
   if ( !m_input.good() )   {
-    string err = "+++ Geant4EventReaderGuineaPig: Failed to open input stream:"+nam+
-      " Error:"+string(strerror(errno));
-    throw runtime_error(err);
+    std::string err = "+++ Geant4EventReaderGuineaPig: Failed to open input stream:"+nam+
+      " Error:"+std::string(strerror(errno));
+    throw std::runtime_error(err);
   }
 }
 
@@ -145,7 +144,7 @@ Geant4EventReaderGuineaPig::moveToEvent(int event_number) {
       }
 
       for (unsigned i = 0; i<nSkipParticles; ++i){
-        if (m_input.ignore(numeric_limits<streamsize>::max(), m_input.widen('\n'))){
+        if (m_input.ignore(std::numeric_limits<std::streamsize>::max(), m_input.widen('\n'))){
           //just skipping the line
         }
         else
@@ -162,14 +161,12 @@ Geant4EventReaderGuineaPig::moveToEvent(int event_number) {
 Geant4EventReader::EventReaderStatus
 Geant4EventReaderGuineaPig::readParticles(int /* event_number */, 
                                           Vertices& vertices,
-                                          vector<Particle*>& particles)   {
+                                          std::vector<Particle*>& particles)   {
 
 
   // if no number of particles per event set, we will read the whole file
   if ( m_part_num < 0 )
     m_part_num = std::numeric_limits<int>::max() ; 
-
-
 
   // First check the input file status
   if ( m_input.eof() )   {
@@ -212,8 +209,8 @@ Geant4EventReaderGuineaPig::readParticles(int /* event_number */,
     std::stringstream m_input_str( lineStr ) ;
 
     m_input_str  >> Energy
-		 >> betaX   >> betaY >> betaZ
-		 >> posX    >> posY  >> posZ ;
+                 >> betaX   >> betaY >> betaZ
+                 >> posX    >> posY  >> posZ ;
 
     
     //    printf(" ------- %e  %e  %e  %e  %e  %e  %e \n", Energy,betaX, betaY,betaZ,posX,posY,posZ ) ;

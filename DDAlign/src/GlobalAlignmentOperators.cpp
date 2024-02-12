@@ -12,17 +12,15 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/detail/DetectorInterna.h"
-#include "DDAlign/GlobalAlignmentOperators.h"
-#include "DDAlign/GlobalDetectorAlignment.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/detail/DetectorInterna.h>
+#include <DDAlign/GlobalAlignmentOperators.h>
+#include <DDAlign/GlobalDetectorAlignment.h>
 
 // C/C++ include files
 #include <stdexcept>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::align;
 
 void GlobalAlignmentOperator::insert(GlobalAlignment alignment)  const   {
@@ -33,7 +31,7 @@ void GlobalAlignmentOperator::insert(GlobalAlignment alignment)  const   {
 
 void GlobalAlignmentSelector::operator()(Entries::value_type e)  const {
   TGeoPhysicalNode* pn = 0;
-  nodes.emplace(e->path,make_pair(pn,e));
+  nodes.emplace(e->path,std::make_pair(pn,e));
 }
 
 void GlobalAlignmentSelector::operator()(const Cache::value_type& entry)  const {
@@ -44,11 +42,11 @@ void GlobalAlignmentSelector::operator()(const Cache::value_type& entry)  const 
       const char* p = pn->GetName();
       bool reset_children = GlobalAlignmentStack::resetChildren(*e);
       if ( reset_children && ::strstr(p,e->path.c_str()) == p )   {
-        nodes.emplace(p,make_pair(pn,e));
+        nodes.emplace(p,std::make_pair(pn,e));
         break;
       }
       else if ( e->path == p )  {
-        nodes.emplace(p,make_pair(pn,e));
+        nodes.emplace(p,std::make_pair(pn,e));
         break;
       }
     }
@@ -75,12 +73,12 @@ template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_delete>:
 
 template <> void GlobalAlignmentActor<DDAlign_standard_operations::node_reset>::operator()(Nodes::value_type& n) const  {
   TGeoPhysicalNode* p = n.second.first;
-  string np;
+  std::string np;
   if ( p->IsAligned() )   {
     for (Int_t i=0, nLvl=p->GetLevel(); i<=nLvl; i++) {
       TGeoNode* node = p->GetNode(i);
       TGeoMatrix* mat = node->GetMatrix();  // Node's relative matrix
-      np += string("/")+node->GetName();
+      np += std::string("/")+node->GetName();
       if ( !mat->IsIdentity() && i > 0 )  {    // Ignore the 'world', is identity anyhow
         GlobalAlignment a = cache.get(np);
         if ( a.isValid() )  {

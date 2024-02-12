@@ -30,12 +30,10 @@
 #include <G4AutoLock.hh>
 
 // C/C++ include files
-#include <stdexcept>
 #include <algorithm>
 #include <pthread.h>
 #include <memory>
 
-using namespace std;
 using namespace dd4hep::sim;
 
 namespace {
@@ -44,16 +42,17 @@ namespace {
   void description_unexpected()    {
     try  {
       throw;
-    }  catch( exception& e )  {
-      cout << "\n"
+    }
+    catch( std::exception& e )  {
+      std::cout << "\n"
            << "**************************************************** \n"
            << "*  A runtime error has occured :                     \n"
-           << "*    " << e.what()   << endl
+           << "*    " << e.what()   <<  std::endl
            << "*  the program will have to be terminated - sorry.   \n"
            << "**************************************************** \n"
-           << endl ;
+           <<  std::endl;
       // this provokes ROOT seg fault and stack trace (comment out to avoid it)
-      exit(1) ;
+      ::exit(1) ;
     }
   }
 }
@@ -80,7 +79,7 @@ Geant4Kernel::PhaseSelector& Geant4Kernel::PhaseSelector::operator=(const PhaseS
 Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& nam) const {
   if( Geant4ActionPhase* action_phase = m_kernel->getPhase(nam) )
     return *action_phase;
-  throw runtime_error(format("Geant4Kernel", "Attempt to access the nonexisting phase '%s'", nam.c_str()));
+  throw except("Geant4Kernel", "Attempt to access the nonexisting phase '%s'", nam.c_str());
 }
 
 /// Standard constructor
@@ -186,7 +185,8 @@ Geant4Kernel& Geant4Kernel::createWorker()   {
     printout(INFO,"Geant4Kernel","+++ Created worker instance id=%ul",identifier);
     return *w;
   }
-  throw runtime_error(format("Geant4Kernel", "DDG4: Only the master instance may create workers."));
+  except("Geant4Kernel", "DDG4: Only the master instance may create workers.");
+  throw std::runtime_error("Geant4Kernel::createWorker");
 }
 
 /// Access worker instance by its identifier
@@ -206,7 +206,8 @@ Geant4Kernel& Geant4Kernel::worker(unsigned long identifier, bool create_if)    
   else if ( create_if )  {
     return createWorker();
   }
-  throw runtime_error(format("Geant4Kernel", "DDG4: The Kernel object 0x%p does not exists!",(void*)identifier));
+  except("Geant4Kernel", "DDG4: The Kernel object 0x%p does not exists!",(void*)identifier);
+  throw std::runtime_error("Geant4Kernel::worker");
 }
 
 /// Access number of workers
@@ -273,7 +274,7 @@ G4RunManager& Geant4Kernel::runManager() {
     Geant4Action* mgr =
       PluginService::Create<Geant4Action*>(m_runManagerType,
                                            m_context,
-                                           string("Geant4RunManager"));
+                                           std::string("Geant4RunManager"));
     if ( !mgr )   {
       except("Geant4Kernel",
              "+++ Invalid Geant4RunManager class: %s. Aborting.",
@@ -291,7 +292,7 @@ G4RunManager& Geant4Kernel::runManager() {
   }
   except("Geant4Kernel", 
          "+++ Only the master thread may instantiate a G4RunManager object!");
-  throw runtime_error("Is never called -- just to satisfy compiler!");
+  throw std::runtime_error("Is never called -- just to satisfy compiler!");
 }
 
 /// Construct detector geometry using description plugin
@@ -352,7 +353,7 @@ int Geant4Kernel::run() {
     G4cout << G4endl;
     return result;
   }
-  catch(const exception& e)   {
+  catch(const std::exception& e)   {
     printout(FATAL,"Geant4Kernel","+++ Exception while simulating:%s",e.what());
   }
   catch(...)   {
@@ -397,7 +398,7 @@ int Geant4Kernel::terminate() {
  */
 Geant4Kernel& Geant4Kernel::registerGlobalAction(Geant4Action* action) {
   if( action ) {
-    const string& nam = action->name();
+    const std::string& nam = action->name();
     if( auto i=m_globalActions.find(nam); i == m_globalActions.end() ) {
       action->addRef();
       m_globalActions[nam] = action;
@@ -419,7 +420,7 @@ Geant4Action* Geant4Kernel::globalAction(const std::string& nam, bool throw_if_n
     return (*i).second;
   if( throw_if_not_present )   {
     except("Geant4Kernel", "DDG4: The action '%s' is not globally "
-	   "registered. [Action-Missing]", nam.c_str());
+           "registered. [Action-Missing]", nam.c_str());
   }
   return nullptr;
 }
@@ -431,7 +432,7 @@ Geant4Action* Geant4Kernel::globalAction(const std::string& nam, bool throw_if_n
  */
 Geant4Kernel& Geant4Kernel::registerGlobalFilter(Geant4Action* filter) {
   if( filter )   {
-    const string& nam = filter->name();
+    const std::string& nam = filter->name();
     if( auto i=m_globalFilters.find(nam); i == m_globalFilters.end()) {
       filter->addRef();
       m_globalFilters[nam] = filter;
@@ -451,7 +452,7 @@ Geant4Action* Geant4Kernel::globalFilter(const std::string& filter_name, bool th
     return (*i).second;
   if (throw_if_not_present) {
     except("Geant4Kernel", "DDG4: The filter '%s' is not already globally "
-	   "registered. [Filter-Missing]", filter_name.c_str());
+           "registered. [Filter-Missing]", filter_name.c_str());
   }
   return nullptr;
 }
@@ -479,8 +480,12 @@ Geant4ActionPhase* Geant4Kernel::addSimplePhase(const std::string& name, bool th
 }
 
 /// Add a new phase
-Geant4ActionPhase* Geant4Kernel::addPhase(const std::string& nam, const type_info& arg0, const type_info& arg1,
-                                          const type_info& arg2, bool throw_on_exist) {
+Geant4ActionPhase* Geant4Kernel::addPhase(const std::string& nam,
+                                          const std::type_info& arg0,
+                                          const std::type_info& arg1,
+                                          const std::type_info& arg2,
+                                          bool throw_on_exist)
+{
   if( auto i=m_phases.find(nam); i == m_phases.end() )   {
     Geant4ActionPhase* p = new Geant4ActionPhase(workerContext(), nam, arg0, arg1, arg2);
     m_phases.emplace(nam, p);

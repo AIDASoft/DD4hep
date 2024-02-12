@@ -12,45 +12,44 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "Parsers/Parsers.h"
-#include "DD4hep/ComponentProperties.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <Parsers/Parsers.h>
+#include <DD4hep/ComponentProperties.h>
 
 // C/C++ include files
 #include <stdexcept>
 #include <cstring>
 
-using namespace std;
 using namespace dd4hep;
 
 /// Property type name
-string Property::type(const Property& property) {
+std::string Property::type(const Property& property) {
   return type(property.grammar().type());
 }
 
 /// Property type name
-string Property::type(const type_info& typ) {
+std::string Property::type(const std::type_info& typ) {
   return typeName(typ);
 }
 
 /// Property type name
-string Property::type() const {
+std::string Property::type() const {
   return Property::type(grammar().type());
 }
 
 const BasicGrammar& Property::grammar() const {
   if ( m_hdl )
     return *m_hdl;
-  throw runtime_error("Attempt to access property grammar from invalid object.");
+  throw std::runtime_error("Attempt to access property grammar from invalid object.");
 }
 
 /// Conversion to string value
-string Property::str() const {
+std::string Property::str() const {
   if ( m_hdl && m_par ) {
     return m_hdl->str(m_par);
   }
-  throw runtime_error("Attempt to access property grammar from invalid object.");
+  throw std::runtime_error("Attempt to access property grammar from invalid object.");
 }
 
 /// Conversion from string value
@@ -59,7 +58,7 @@ const Property& Property::str(const std::string& input)   const {
     m_hdl->fromString(m_par,input);
     return *this;
   }
-  throw runtime_error("Attempt to access property grammar from invalid object.");
+  throw std::runtime_error("Attempt to access property grammar from invalid object.");
 }
 
 /// Conversion from string value
@@ -68,16 +67,16 @@ Property& Property::str(const std::string& input)    {
     m_hdl->fromString(m_par,input);
     return *this;
   }
-  throw runtime_error("Attempt to access property grammar from invalid object.");
+  throw std::runtime_error("Attempt to access property grammar from invalid object.");
 }
 
 /// Assignment operator / set new balue
 Property& Property::operator=(const char* val) {
   if ( val ) {
-    this->set < string > (val);
+    this->set < std::string > (val);
     return *this;
   }
-  throw runtime_error("Attempt to set invalid string to property!");
+  throw std::runtime_error("Attempt to set invalid string to property!");
 }
 
 /// Default constructor
@@ -106,53 +105,53 @@ bool PropertyManager::exists(const std::string& name) const   {
 }
 
 /// Verify that this property does not exist (throw exception if the name was found)
-void PropertyManager::verifyNonExistence(const string& name) const {
+void PropertyManager::verifyNonExistence(const std::string& name) const {
   Properties::const_iterator i = m_properties.find(name);
   if (i == m_properties.end())
     return;
-  throw runtime_error("The property:" + name + " already exists for this component.");
+  throw std::runtime_error("The property:" + name + " already exists for this component.");
 }
 
 /// Verify that this property exists (throw exception if the name was not found)
 PropertyManager::Properties::const_iterator
-PropertyManager::verifyExistence(const string& name) const {
+PropertyManager::verifyExistence(const std::string& name) const {
   Properties::const_iterator i = m_properties.find(name);
   if (i != m_properties.end())
     return i;
-  throw runtime_error("PropertyManager: Unknown property:" + name);
+  throw std::runtime_error("PropertyManager: Unknown property:" + name);
 }
 
 /// Verify that this property exists (throw exception if the name was not found)
 PropertyManager::Properties::iterator
-PropertyManager::verifyExistence(const string& name) {
+PropertyManager::verifyExistence(const std::string& name) {
   Properties::iterator i = m_properties.find(name);
   if (i != m_properties.end())
     return i;
-  throw runtime_error("PropertyManager: Unknown property:" + name);
+  throw std::runtime_error("PropertyManager: Unknown property:" + name);
 }
 
 /// Access property by name (CONST)
-Property& PropertyManager::property(const string& name) {
+Property& PropertyManager::property(const std::string& name) {
   return (*verifyExistence(name)).second;
 }
 
 /// Access property by name
-const Property& PropertyManager::property(const string& name) const {
+const Property& PropertyManager::property(const std::string& name) const {
   return (*verifyExistence(name)).second;
 }
 
 /// Access property by name
-Property& PropertyManager::operator[](const string& name) {
+Property& PropertyManager::operator[](const std::string& name) {
   return (*verifyExistence(name)).second;
 }
 
 /// Access property by name
-const Property& PropertyManager::operator[](const string& name) const {
+const Property& PropertyManager::operator[](const std::string& name) const {
   return (*verifyExistence(name)).second;
 }
 
 /// Add a new property
-void PropertyManager::add(const string& name, const Property& prop) {
+void PropertyManager::add(const std::string& name, const Property& prop) {
   verifyNonExistence(name);
   m_properties.emplace(name, prop);
 }
@@ -173,16 +172,16 @@ PropertyConfigurable::~PropertyConfigurable()   {
 }
 
 /// Check property for existence
-bool PropertyConfigurable::hasProperty(const string& nam) const    {
+bool PropertyConfigurable::hasProperty(const std::string& nam) const    {
   return m_properties.exists(nam);
 }
 
 /// Access single property
-Property& PropertyConfigurable::property(const string& nam)   {
+Property& PropertyConfigurable::property(const std::string& nam)   {
   return properties()[nam];
 }
 
-#include "DD4hep/GrammarParsed.h"
+#include <DD4hep/GrammarParsed.h>
 namespace dd4hep { 
   namespace Parsers {
     template <> int parse(Property& result, const std::string& input) {

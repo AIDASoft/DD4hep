@@ -15,9 +15,9 @@
 #define DD4HEP_CONDITIONS_CONDIITONSSNAPSHOTROOTLOADER_H
 
 // Framework include files
-#include "DDCond/ConditionsDataLoader.h"
-#include "DDCond/ConditionsRootPersistency.h"
-#include "DD4hep/Printout.h"
+#include <DDCond/ConditionsDataLoader.h>
+#include <DDCond/ConditionsRootPersistency.h>
+#include <DD4hep/Printout.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -61,24 +61,22 @@ namespace dd4hep {
 }      /* End namespace dd4hep                            */
 #endif /* DD4HEP_CONDITIONS_CONDIITONSSNAPSHOTROOTLOADER_H  */
 
-//#include "ConditionsSnapshotRootLoader.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Factories.h"
-#include "DD4hep/PluginCreators.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+//#include <ConditionsSnapshotRootLoader.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Factories.h>
+#include <DD4hep/PluginCreators.h>
+#include <DD4hep/detail/ConditionsInterna.h>
 
-#include "TFile.h"
+#include <TFile.h>
 
 // C/C++ include files
 #include <string>
 
 // Forward declartions
-using std::string;
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 namespace {
-  void* create_loader(Detector& description, int argc, char** argv)   {
+  void* create_loader(dd4hep::Detector& description, int argc, char** argv)   {
     const char* name = argc>0 ? argv[0] : "XMLLoader";
     ConditionsManagerObject* mgr = (ConditionsManagerObject*)(argc>0 ? argv[1] : 0);
     return new ConditionsSnapshotRootLoader(description,ConditionsManager(mgr),name);

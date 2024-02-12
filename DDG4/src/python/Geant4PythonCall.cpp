@@ -17,10 +17,6 @@
 #include <DDG4/Python/DDPython.h>
 #include <TPyReturn.h>
 
-// C/C++ include files
-#include <stdexcept>
-
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Standard constructor, initializes variables

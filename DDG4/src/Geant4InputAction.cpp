@@ -13,20 +13,19 @@
 //====================================================================
 
 // Framework include files
-#include "DD4hep/Memory.h"
-#include "DD4hep/Plugins.h"
-#include "DDG4/Geant4Primary.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4Kernel.h"
-#include "DDG4/Geant4InputAction.h"
-#include "DDG4/Geant4RunAction.h"
+#include <DD4hep/Memory.h>
+#include <DD4hep/Plugins.h>
+#include <DDG4/Geant4Primary.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4Kernel.h>
+#include <DDG4/Geant4InputAction.h>
+#include <DDG4/Geant4RunAction.h>
 
-#include "G4Event.hh"
+#include <G4Event.hh>
 
-using namespace std;
 using namespace dd4hep::sim;
-typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
-typedef Geant4InputAction::Vertices Vertices ;
+using Vertices = Geant4InputAction::Vertices;
+using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
 
 
 /// Initializing constructor
@@ -118,7 +117,7 @@ Geant4EventReader::moveToEvent(int /* event_number */)   {
 #endif
 
 /// Standard constructor
-Geant4InputAction::Geant4InputAction(Geant4Context* ctxt, const string& nam)
+Geant4InputAction::Geant4InputAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4GeneratorAction(ctxt,nam), m_reader(0), m_currentEventNumber(0)
 {
   declareProperty("Input",          m_input);
@@ -148,7 +147,7 @@ void Geant4InputAction::createReader() {
   if ( m_input.empty() )  {
     except("InputAction: No input file declared!");
   }
-  string err;
+  std::string err;
   TypeName tn = TypeName::split(m_input,"|");
   try  {
     m_reader = PluginService::Create<Geant4EventReader*>(tn.first,tn.second);
@@ -163,7 +162,7 @@ void Geant4InputAction::createReader() {
     m_reader->checkParameters( m_parameters );
     m_reader->setInputAction( this );
     m_reader->registerRunParameters();
-  } catch(const exception& e)  {
+  } catch(const std::exception& e)  {
     err = e.what();
   }
   if ( !err.empty() )  {
@@ -173,8 +172,8 @@ void Geant4InputAction::createReader() {
 
 
 /// helper to report Geant4 exceptions
-string Geant4InputAction::issue(int i)  const  {
-  stringstream str;
+std::string Geant4InputAction::issue(int i)  const  {
+  std::stringstream str;
   str << "Geant4InputAction[" << name() << "]: Event " << i << " ";
   return str.str();
 }
@@ -197,7 +196,7 @@ int Geant4InputAction::readParticles(int evt_number,
   }
 
   if ( Geant4EventReader::EVENT_READER_OK != status )  {
-    string msg = issue(evid)+"Error when moving to event - ";
+    std::string msg = issue(evid)+"Error when moving to event - ";
     if ( status == Geant4EventReader::EVENT_READER_EOF ) msg += " EOF: [end of file].";
     else msg += " Unknown error condition";
     if ( m_abort )  {
@@ -217,9 +216,8 @@ int Geant4InputAction::readParticles(int evt_number,
     }
   }
 
-
   if ( Geant4EventReader::EVENT_READER_OK != status )  {
-    string msg = issue(evid)+"Error when moving to event - ";
+    std::string msg = issue(evid)+"Error when moving to event - ";
     if ( status == Geant4EventReader::EVENT_READER_EOF ) msg += " EOF: [end of file].";
     else msg += " Unknown error condition";
     if ( m_abort )  {
@@ -234,7 +232,7 @@ int Geant4InputAction::readParticles(int evt_number,
 
 /// Callback to generate primary particles
 void Geant4InputAction::operator()(G4Event* event)   {
-  vector<Particle*>         primaries;
+  std::vector<Particle*>    primaries;
   Geant4Event&              evt = context()->event();
   Geant4PrimaryEvent*       prim = evt.extension<Geant4PrimaryEvent>();
   Vertices                  vertices ;

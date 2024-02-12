@@ -15,7 +15,7 @@
 #define DD4HEP_DDG4_GEANT4USERACTIONINITIALIZATION_H
 
 // Framework include files
-#include "DDG4/Geant4UserInitialization.h"
+#include <DDG4/Geant4UserInitialization.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -60,19 +60,16 @@ namespace dd4hep {
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Factories.h"
-//#include "DDG4/Geant4UserActionInitialization.h"
-#include "DDG4/Geant4Context.h"
+#include <DDG4/Factories.h>
+//#include <DDG4/Geant4UserActionInitialization.h>
+#include <DDG4/Geant4Context.h>
 
-// C/C++ include files
-
-using namespace std;
 using namespace dd4hep::sim;
 
 //DECLARE_GEANT4ACTION(Geant4UserActionInitialization)
 
 /// Standard constructor, initializes variables
-Geant4UserActionInitialization::Geant4UserActionInitialization(Geant4Context* ctxt, const string& nam)
+Geant4UserActionInitialization::Geant4UserActionInitialization(Geant4Context* ctxt, const std::string& nam)
   : Geant4UserInitialization(ctxt,nam)
 {
 }

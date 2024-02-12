@@ -12,17 +12,13 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4UserInitialization.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4UserInitialization.h>
 
-// C/C++ include files
-#include <stdexcept>
-
-using namespace std;
 using namespace dd4hep::sim;
 
 /// Standard constructor
-Geant4UserInitialization::Geant4UserInitialization(Geant4Context* ctxt, const string& nam)
+Geant4UserInitialization::Geant4UserInitialization(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt, nam) {
   m_needsControl = false;
   InstanceCount::increment(this);
@@ -42,7 +38,7 @@ void Geant4UserInitialization::buildMaster()  const  {
 }
 
 /// Standard constructor
-Geant4UserInitializationSequence::Geant4UserInitializationSequence(Geant4Context* ctxt, const string& nam)
+Geant4UserInitializationSequence::Geant4UserInitializationSequence(Geant4Context* ctxt, const std::string& nam)
   : Geant4UserInitialization(ctxt, nam) {
   m_needsControl = false;
   InstanceCount::increment(this);
@@ -64,7 +60,7 @@ void Geant4UserInitializationSequence::adopt(Geant4UserInitialization* action)  
     m_actors.add(action);
     return;
   }
-  throw runtime_error("Geant4UserInitializationSequence: Attempt to add invalid actor!");
+  except("Attempt to add invalid actor!");
 }
 
 /// Callback function to build setup for the MT worker thread

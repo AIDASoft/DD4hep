@@ -12,22 +12,19 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DDCond/ConditionsSlice.h"
-#include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsRootPersistency.h"
+#include <DD4hep/Printout.h>
+#include <DDCond/ConditionsSlice.h>
+#include <DDCond/ConditionsIOVPool.h>
+#include <DDCond/ConditionsRootPersistency.h>
 
-#include "TFile.h"
-#include "TTimeStamp.h"
+#include <TFile.h>
+#include <TTimeStamp.h>
 
 typedef dd4hep::cond::ConditionsRootPersistency __ConditionsRootPersistency;
 
 /// ROOT Class implementation directive
 ClassImp(__ConditionsRootPersistency)
 
-
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 // Local namespace for anonymous stuff
@@ -39,12 +36,12 @@ namespace  {
    *  \version 1.0
    *  \ingroup DD4HEP_CONDITIONS
    */
-  struct Scanner : public Condition::Processor   {
+  struct Scanner : public dd4hep::Condition::Processor   {
     ConditionsRootPersistency::pool_type& pool;
     /// Constructor
     Scanner(ConditionsRootPersistency::pool_type& p) : pool(p) {}
     /// Conditions callback for object processing
-    virtual int process(Condition c)  const override  {
+    virtual int process(dd4hep::Condition c)  const override  {
       pool.emplace_back(c.ptr());
       return 1;
     }
@@ -66,7 +63,7 @@ ConditionsRootPersistency::ConditionsRootPersistency() : TNamed()   {
 }
 
 /// Initializing constructor
-ConditionsRootPersistency::ConditionsRootPersistency(const string& name, const string& title)
+ConditionsRootPersistency::ConditionsRootPersistency(const std::string& name, const std::string& title)
   : TNamed(name.c_str(), title.c_str())
 {
 }
@@ -77,11 +74,12 @@ ConditionsRootPersistency::~ConditionsRootPersistency()    {
 }
 
 /// Add conditions content to be saved. Note, that dependent conditions shall not be saved!
-size_t ConditionsRootPersistency::add(const std::string& identifier,
-                                      const IOV& iov,
-                                      std::vector<Condition>& conditions)   {
+std::size_t ConditionsRootPersistency::add(const std::string& identifier,
+                                           const IOV& iov,
+                                           std::vector<Condition>& conditions)
+{
   DurationStamp stamp(this);
-  conditionPools.emplace_back(pair<iov_key_type, pool_type>());
+  conditionPools.emplace_back(std::pair<iov_key_type, pool_type>());
   pool_type&    ent = conditionPools.back().second;
   iov_key_type& key = conditionPools.back().first;
   key.first         = identifier;
@@ -93,9 +91,9 @@ size_t ConditionsRootPersistency::add(const std::string& identifier,
 }
 
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
-size_t ConditionsRootPersistency::add(const string& identifier, ConditionsPool& pool)    {
+size_t ConditionsRootPersistency::add(const std::string& identifier, ConditionsPool& pool)    {
   DurationStamp stamp(this);
-  conditionPools.emplace_back(pair<iov_key_type, pool_type>());
+  conditionPools.emplace_back(std::pair<iov_key_type, pool_type>());
   pool_type&    ent = conditionPools.back().second;
   iov_key_type& key = conditionPools.back().first;
   const IOV*    iov = pool.iov;
@@ -108,11 +106,11 @@ size_t ConditionsRootPersistency::add(const string& identifier, ConditionsPool& 
 }
 
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
-size_t ConditionsRootPersistency::add(const string& identifier, const ConditionsIOVPool& pool)    {
+size_t ConditionsRootPersistency::add(const std::string& identifier, const ConditionsIOVPool& pool)    {
   size_t count = 0;
   DurationStamp stamp(this);
   for( const auto& p : pool.elements )  {
-    iovPools.emplace_back(pair<iov_key_type, pool_type>());
+    iovPools.emplace_back(std::pair<iov_key_type, pool_type>());
     pool_type&    ent = iovPools.back().second;
     iov_key_type& key = iovPools.back().first;
     const IOV*    iov = p.second->iov;
@@ -127,9 +125,9 @@ size_t ConditionsRootPersistency::add(const string& identifier, const Conditions
 }
 
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
-size_t ConditionsRootPersistency::add(const string& identifier, const UserPool& pool)    {
+size_t ConditionsRootPersistency::add(const std::string& identifier, const UserPool& pool)    {
   DurationStamp stamp(this);
-  userPools.emplace_back(pair<iov_key_type, pool_type>());
+  userPools.emplace_back(std::pair<iov_key_type, pool_type>());
   pool_type&    ent = userPools.back().second;
   iov_key_type& key = userPools.back().first;
   const IOV&    iov = pool.validity();
@@ -142,7 +140,7 @@ size_t ConditionsRootPersistency::add(const string& identifier, const UserPool& 
 }
 
 /// Open ROOT file in read mode
-TFile* ConditionsRootPersistency::openFile(const string& fname)     {
+TFile* ConditionsRootPersistency::openFile(const std::string& fname)     {
   TDirectory::TContext context;
   TFile* file = TFile::Open(fname.c_str());
   if ( file && !file->IsZombie()) return file;
@@ -171,7 +169,7 @@ void ConditionsRootPersistency::clear()  {
 
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
 std::unique_ptr<ConditionsRootPersistency>
-ConditionsRootPersistency::load(TFile* file,const string& obj)   {
+ConditionsRootPersistency::load(TFile* file,const std::string& obj)   {
   std::unique_ptr<ConditionsRootPersistency> p;
   if ( file && !file->IsZombie())    {
     TTimeStamp start;
@@ -304,7 +302,7 @@ int ConditionsRootPersistency::save(TFile* file)    {
 }
 
 /// Save the data content to a root file
-int ConditionsRootPersistency::save(const string& fname)    {
+int ConditionsRootPersistency::save(const std::string& fname)    {
   DurationStamp stamp(this);
   //TDirectory::TContext context;
   TFile* file = TFile::Open(fname.c_str(),"RECREATE");

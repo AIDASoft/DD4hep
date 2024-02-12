@@ -52,7 +52,6 @@
 #include <climits>
 #include <set>
 
-using namespace std;
 using namespace dd4hep;
 
 /// Namespace for the AIDA detector description toolkit
@@ -105,9 +104,9 @@ namespace dd4hep {
 
 namespace {
   static UInt_t unique_mat_id = 0xAFFEFEED;
-  void throw_print(const string& msg) {
+  void throw_print(const std::string& msg) {
     printout(ERROR, "Compact", msg.c_str());
-    throw runtime_error(msg);
+    throw std::runtime_error(msg);
   }
   class DebugOptions  {
   public:
@@ -130,7 +129,7 @@ namespace {
 static Ref_t create_ConstantField(Detector& /* description */, xml_h e) {
   CartesianField obj;
   xml_comp_t field(e), strength(e.child(_U(strength)));
-  string t = e.attr<string>(_U(field));
+  std::string t = e.attr<std::string>(_U(field));
   ConstantField* ptr = new ConstantField();
   ptr->field_type = ::toupper(t[0]) == 'E' ? CartesianField::ELECTRIC : CartesianField::MAGNETIC;
   ptr->direction.SetX(strength.x());
@@ -194,17 +193,17 @@ DECLARE_XMLELEMENT(solenoid,create_SolenoidField)
 static Ref_t create_DipoleField(Detector& /* description */, xml_h e) {
   xml_comp_t c(e);
   CartesianField obj;
-  DipoleField* ptr = new DipoleField();
-  double lunit = c.hasAttr(_U(lunit)) ? c.attr<double>(_U(lunit)) : 1.0;
-  double funit = c.hasAttr(_U(funit)) ? c.attr<double>(_U(funit)) : 1.0;
-  double val, mult = funit;
+  DipoleField*   ptr   = new DipoleField();
+  double         lunit = c.hasAttr(_U(lunit)) ? c.attr<double>(_U(lunit)) : 1.0;
+  double         funit = c.hasAttr(_U(funit)) ? c.attr<double>(_U(funit)) : 1.0;
+  double         val, mult = funit;
 
   if (c.hasAttr(_U(zmin)))
-    ptr->zmin = _multiply<double>(c.attr<string>(_U(zmin)), lunit);
+    ptr->zmin = _multiply<double>(c.attr<std::string>(_U(zmin)), lunit);
   if (c.hasAttr(_U(zmax)))
-    ptr->zmax = _multiply<double>(c.attr<string>(_U(zmax)), lunit);
+    ptr->zmax = _multiply<double>(c.attr<std::string>(_U(zmax)), lunit);
   if (c.hasAttr(_U(rmax)))
-    ptr->rmax = _multiply<double>(c.attr<string>(_U(rmax)), lunit);
+    ptr->rmax = _multiply<double>(c.attr<std::string>(_U(rmax)), lunit);
   for (xml_coll_t coll(c, _U(dipole_coeff)); coll; ++coll, mult /= lunit) {
     xml_dim_t coeff = coll;
     if ( coeff.hasAttr(_U(value)) )
@@ -223,13 +222,13 @@ DECLARE_XMLELEMENT(DipoleMagnet,create_DipoleField)
 
 static Ref_t create_MultipoleField(Detector& description, xml_h e) {
   xml_dim_t c(e), child;
-  CartesianField obj;
+  CartesianField  obj;
   MultipoleField* ptr = new MultipoleField();
-  double lunit = c.hasAttr(_U(lunit)) ? c.attr<double>(_U(lunit)) : 1.0;
-  double funit = c.hasAttr(_U(funit)) ? c.attr<double>(_U(funit)) : 1.0;
-  double val, mult = funit, bz = 0.0;
-  RotationZYX rot;
-  Position pos;
+  double          lunit = c.hasAttr(_U(lunit)) ? c.attr<double>(_U(lunit)) : 1.0;
+  double          funit = c.hasAttr(_U(funit)) ? c.attr<double>(_U(funit)) : 1.0;
+  double          val, mult = funit, bz = 0.0;
+  RotationZYX     rot;
+  Position        pos;
 
   if (c.hasAttr(_U(Z))) bz = c.Z() * funit;
   if ((child = c.child(_U(position), false))) {   // Position is not mandatory!
@@ -239,7 +238,7 @@ static Ref_t create_MultipoleField(Detector& description, xml_h e) {
     rot.SetComponents(child.z(), child.y(), child.x());
   }
   if ((child = c.child(_U(shape), false))) {      // Shape is not mandatory
-    string type = child.typeStr();
+    std::string type = child.typeStr();
     ptr->volume = xml::createShape(description, type, child);
   }
   ptr->B_z = bz;
@@ -296,7 +295,7 @@ bool check_process_file(Detector& description, std::string filename) {
 template <> void Converter<Debug>::operator()(xml_h e) const {
   for (xml_coll_t coll(e, _U(type)); coll; ++coll) {
     int    val = coll.attr<int>(_U(value));
-    string nam = coll.attr<string>(_U(name));
+    std::string nam = coll.attr<std::string>(_U(name));
     if      ( nam.substr(0,6) == "isotop" ) s_debug.isotopes     = (0 != val);
     else if ( nam.substr(0,6) == "elemen" ) s_debug.elements     = (0 != val);
     else if ( nam.substr(0,6) == "materi" ) s_debug.materials    = (0 != val);
@@ -320,25 +319,25 @@ template <> void Converter<Debug>::operator()(xml_h e) const {
  *
  */
 template <> void Converter<Plugin>::operator()(xml_h e) const {
-  xml_comp_t plugin(e);
-  string name = plugin.nameStr();
-  string type = "default";
+  xml_comp_t  plugin(e);
+  std::string name = plugin.nameStr();
+  std::string type = "default";
 
   if ( xml_attr_t typ_attr = e.attr_nothrow(_U(type)) )   {
-    type = e.attr<string>(typ_attr);
+    type = e.attr<std::string>(typ_attr);
   }
   if ( type == "default" )  {
-    vector<char*> argv;
-    vector<string> arguments;
+    std::vector<char*> argv;
+    std::vector<std::string> arguments;
     for (xml_coll_t coll(e, _U(arg)); coll; ++coll) {
-      string val = coll.attr<string>(_U(value));
+      std::string val = coll.attr<std::string>(_U(value));
       arguments.emplace_back(val);
     }
     for (xml_coll_t coll(e, _U(argument)); coll; ++coll) {
-      string val = coll.attr<string>(_U(value));
+      std::string val = coll.attr<std::string>(_U(value));
       arguments.emplace_back(val);
     }
-    for(vector<string>::iterator i=arguments.begin(); i!=arguments.end(); ++i)
+    for(std::vector<std::string>::iterator i=arguments.begin(); i!=arguments.end(); ++i)
       argv.emplace_back(&((*i)[0]));
     description.apply(name.c_str(),int(argv.size()), &argv[0]);
     return;
@@ -366,9 +365,9 @@ template <> void Converter<Plugin>::operator()(xml_h e) const {
 template <> void Converter<Constant>::operator()(xml_h e) const {
   if ( e.tag() != "include" )   {
     xml_ref_t constant(e);
-    string nam = constant.attr<string>(_U(name));
-    string val = constant.attr<string>(_U(value));
-    string typ = constant.hasAttr(_U(type)) ? constant.attr<string>(_U(type)) : "number";
+    std::string nam = constant.attr<std::string>(_U(name));
+    std::string val = constant.attr<std::string>(_U(value));
+    std::string typ = constant.hasAttr(_U(type)) ? constant.attr<std::string>(_U(type)) : "number";
     Constant c(nam, val, typ);
     _toDictionary(nam, val, typ);
     description.addConstant(c);
@@ -393,11 +392,11 @@ template <> void Converter<Constant>::operator()(xml_h e) const {
  */
 template <> void Converter<Header>::operator()(xml_h e) const {
   xml_comp_t c(e);
-  Header h(e.attr<string>(_U(name)), e.attr<string>(_U(title), "Undefined"));
-  h.setUrl(e.attr<string>(_U(url), "Undefined"));
-  h.setAuthor(e.attr<string>(_U(author), "Undefined"));
-  h.setStatus(e.attr<string>(_U(status), "development"));
-  h.setVersion(e.attr<string>(_U(version), "Undefined"));
+  Header h(e.attr<std::string>(_U(name)), e.attr<std::string>(_U(title), "Undefined"));
+  h.setUrl(e.attr<std::string>(_U(url), "Undefined"));
+  h.setAuthor(e.attr<std::string>(_U(author), "Undefined"));
+  h.setStatus(e.attr<std::string>(_U(status), "development"));
+  h.setVersion(e.attr<std::string>(_U(version), "Undefined"));
   h.setComment(e.hasChild(_U(comment)) ? e.child(_U(comment)).text() : "No Comment");
   description.setHeader(h);
 }
@@ -438,7 +437,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
 
     if ( !density.ptr() ) {
       throw_print("Compact2Objects[ERROR]: material without density tag ( <D  unit=\"g/cm3\" value=\"..\"/> ) provided: "
-                  + string( matname ) ) ;
+                  + std::string( matname ) ) ;
     }
     if ( density.hasAttr(_U(unit)) )   {
       dens_unit = density.attr<double>(_U(unit))/xml::_toDouble(_Unicode(gram/cm3));
@@ -446,15 +445,15 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     if ( dens_unit != 1.0 )  {
       dens_val *= dens_unit;
       printout(s_debug.materials ? ALWAYS : DEBUG, "Compact","Density unit: %.3f [%s] raw: %.3f normalized: %.3f ",
-               dens_unit, density.attr<string>(_U(unit)).c_str(), dens_val, (dens_val*dens_unit));
+               dens_unit, density.attr<std::string>(_U(unit)).c_str(), dens_val, (dens_val*dens_unit));
     }
     mat = mix = new TGeoMixture(matname, composites.size(), dens_val);
-    size_t         ifrac = 0;
-    vector<double> composite_fractions;
-    double         composite_fractions_total = 0.0;
+    std::size_t         ifrac = 0;
+    std::vector<double> composite_fractions;
+    double              composite_fractions_total = 0.0;
     for (composites.reset(); composites; ++composites)   {
-      string nam      = composites.attr<string>(_U(ref));
-      double fraction = composites.attr<double>(_U(n));
+      std::string nam      = composites.attr<std::string>(_U(ref));
+      double      fraction = composites.attr<double>(_U(n));
       if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
         fraction *= comp_mat->GetA();
       else if (0 != (comp_elt = table->FindElement(nam.c_str())))
@@ -465,16 +464,16 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       composite_fractions.emplace_back(fraction);
     }
     for (composites.reset(), ifrac=0; composites; ++composites, ++ifrac) {
-      string nam      = composites.attr<string>(_U(ref));
-      double fraction = composite_fractions[ifrac]/composite_fractions_total;
+      std::string nam      = composites.attr<std::string>(_U(ref));
+      double      fraction = composite_fractions[ifrac]/composite_fractions_total;
       if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
         mix->AddElement(comp_mat, fraction);
       else if (0 != (comp_elt = table->FindElement(nam.c_str())))
         mix->AddElement(comp_elt, fraction);
     }
     for (fractions.reset(); fractions; ++fractions) {
-      string nam      = fractions.attr<string>(_U(ref));
-      double fraction = fractions.attr<double>(_U(n));
+      std::string nam      = fractions.attr<std::string>(_U(ref));
+      double      fraction = fractions.attr<double>(_U(n));
       if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
         mix->AddElement(comp_mat, fraction);
       else if (0 != (comp_elt = table->FindElement(nam.c_str())))
@@ -490,7 +489,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
         temp_unit = temperature.attr<double>(_U(unit));
       temp_val = temperature.attr<double>(_U(value)) * temp_unit;
     }
-    xml_h pressure = x_mat.child(_U(P), false);
+    xml_h  pressure     = x_mat.child(_U(P), false);
     double pressure_val = description.stdConditions().pressure;
     if ( pressure.ptr() )   {
       double pressure_unit = _toDouble("pascal");
@@ -516,11 +515,11 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     for(xml_coll_t properties(x_mat, _U(constant)); properties; ++properties) {
       xml_elt_t p = properties;
       if ( p.hasAttr(_U(ref)) )   {
-        bool   err = kFALSE;
-        string ref = p.attr<string>(_U(ref));
+        bool        err = kFALSE;
+        std::string ref = p.attr<std::string>(_U(ref));
         mgr.GetProperty(ref.c_str(), &err); /// Check existence
         if ( err == kFALSE )  {
-          string prop_nam = p.attr<string>(_U(name));
+          std::string prop_nam = p.attr<std::string>(_U(name));
           mat->AddConstProperty(prop_nam.c_str(), ref.c_str());
           printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
                    "++            material %-16s  add constant property: %s  ->  %s.",
@@ -531,8 +530,8 @@ template <> void Converter<Material>::operator()(xml_h e) const {
         throw_print("Compact2Objects[ERROR]: Converting material:" + mname + " ConstProperty missing in TGeoManager: " + ref);
       }
       else if ( p.hasAttr(_U(value)) )   {
-        stringstream str;
-        string ref, prop_nam = p.attr<string>(_U(name));
+        std::stringstream str;
+        std::string       ref, prop_nam = p.attr<std::string>(_U(name));
         str << prop_nam << "_" << (void*)mat;
         ref = str.str();
         mgr.AddProperty(ref.c_str(), p.attr<double>(_U(value))); /// Check existence
@@ -542,8 +541,8 @@ template <> void Converter<Material>::operator()(xml_h e) const {
                  mat->GetName(), prop_nam.c_str(), ref.c_str());
       }
       else if ( p.hasAttr(_U(option)) )   {
-        string prop_nam = p.attr<string>(_U(name));
-        string prop_typ = p.attr<string>(_U(option));
+        std::string prop_nam = p.attr<std::string>(_U(name));
+        std::string prop_typ = p.attr<std::string>(_U(option));
         mat->AddConstProperty(prop_nam.c_str(), prop_typ.c_str());
         printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
                  "++            material %-16s  add constant property: %s  ->  %s.",
@@ -554,10 +553,10 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     for(xml_coll_t properties(x_mat, _U(property)); properties; ++properties) {
       xml_elt_t p = properties;
       if ( p.hasAttr(_U(ref)) )   {
-        string ref = p.attr<string>(_U(ref));
+        std::string  ref     = p.attr<std::string>(_U(ref));
         TGDMLMatrix* gdmlMat = mgr.GetGDMLMatrix(ref.c_str());
         if ( gdmlMat )  {
-          string prop_nam = p.attr<string>(_U(name));
+          std::string prop_nam = p.attr<std::string>(_U(name));
           mat->AddProperty(prop_nam.c_str(), ref.c_str());
           printout(s_debug.materials ? ALWAYS : DEBUG, "Compact",
                    "++            material %-16s  add property: %s  ->  %s.",
@@ -579,7 +578,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
   // TGeo has no notion of a material "formula"
   // Hence, treat the formula the same way as the material itself
   if (x_mat.hasAttr(_U(formula))) {
-    string form = x_mat.attr<string>(_U(formula));
+    std::string form = x_mat.attr<std::string>(_U(formula));
     if (form != matname) {
       medium = mgr.GetMedium(form.c_str());
       if (0 == medium) {
@@ -601,18 +600,18 @@ template <> void Converter<Material>::operator()(xml_h e) const {
 template <> void Converter<Isotope>::operator()(xml_h e) const {
   xml_dim_t isotope(e);
   TGeoManager&      mgr = description.manager();
-  string            nam = isotope.nameStr();
+  std::string       nam = isotope.nameStr();
   TGeoElementTable* tab = mgr.GetElementTable();
   TGeoIsotope*      iso = tab->FindIsotope(nam.c_str());
 
   // Create the isotope object in the event it is not yet present from the XML data
   if ( !iso )   {
-    xml_ref_t atom(isotope.child(_U(atom)));
-    int    n     = isotope.attr<int>(_U(N));
-    int    z     = isotope.attr<int>(_U(Z));
-    double value = atom.attr<double>(_U(value));
-    string unit  = atom.attr<string>(_U(unit));
-    double a     = value * _multiply<double>(unit,"mol/g");
+    xml_ref_t   atom(isotope.child(_U(atom)));
+    std::string unit  = atom.attr<std::string>(_U(unit));
+    double      value = atom.attr<double>(_U(value));
+    double      a     = value * _multiply<double>(unit,"mol/g");
+    int         n     = isotope.attr<int>(_U(N));
+    int         z     = isotope.attr<int>(_U(Z));
     iso = new TGeoIsotope(nam.c_str(), z, n, a);
     printout(s_debug.isotopes ? ALWAYS : DEBUG, "Compact",
              "++ Converting isotope  %-16s  Z:%3d N:%3d A:%8.4f [g/mol]",
@@ -647,12 +646,12 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
   TGeoElement*      elt  = tab->FindElement(name.c_str());
   if ( !elt ) {
     if ( elem.hasChild(_U(atom)) )  {
-      xml_ref_t atom(elem.child(_U(atom)));
-      string formula = elem.attr<string>(_U(formula));
-      double value   = atom.attr<double>(_U(value));
-      string unit    = atom.attr<string>(_U(unit));
-      int    z       = elem.attr<int>(_U(Z));
-      double a       = value*_multiply<double>(unit,"mol/g");
+      xml_ref_t   atom(elem.child(_U(atom)));
+      std::string formula = elem.attr<std::string>(_U(formula));
+      double      value   = atom.attr<double>(_U(value));
+      std::string unit    = atom.attr<std::string>(_U(unit));
+      int         z       = elem.attr<int>(_U(Z));
+      double      a       = value*_multiply<double>(unit,"mol/g");
       printout(s_debug.elements ? ALWAYS : DEBUG, "Compact",
                "++ Converting element  %-16s  [%-3s] Z:%3d A:%8.4f [g/mol]",
                name.c_str(), formula.c_str(), z, a);
@@ -660,15 +659,15 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
     }
     else  {
       int num_isotopes = 0;
-      string formula   = elem.hasAttr(_U(formula)) ? elem.attr<string>(_U(formula)) : name.str();
+      std::string formula = elem.hasAttr(_U(formula)) ? elem.attr<std::string>(_U(formula)) : name.str();
       for( xml_coll_t i(elem,_U(fraction)); i; ++i)
         ++num_isotopes;
       elt = new TGeoElement(name.c_str(), formula.c_str(), num_isotopes);
       tab->AddElement(elt);
       for( xml_coll_t i(elem,_U(fraction)); i; ++i)  {
-        double frac = i.attr<double>(_U(n));
-        string ref  = i.attr<string>(_U(ref));
-        TGeoIsotope* iso = tab->FindIsotope(ref.c_str());
+        double       frac = i.attr<double>(_U(n));
+        std::string  ref  = i.attr<std::string>(_U(ref));
+        TGeoIsotope* iso  = tab->FindIsotope(ref.c_str());
         if ( !iso )  {
           except("Compact","Element %s cannot be constructed. Isotope '%s' (fraction: %.3f) missing!",
                  name.c_str(), ref.c_str(), frac);
@@ -716,7 +715,7 @@ template <> void Converter<STD_Conditions>::operator()(xml_h e) const {
         temp_unit = temperature.attr<double>(_U(unit));
       temp_val = temperature.attr<double>(_U(value)) * temp_unit;
     }
-    xml_h pressure = cond.child(_U(P), false);
+    xml_h  pressure     = cond.child(_U(P), false);
     double pressure_val = description.stdConditions().pressure;
     if ( pressure.ptr() )   {
       double pressure_unit = _toDouble("pascal");
@@ -738,17 +737,17 @@ template <> void Converter<STD_Conditions>::operator()(xml_h e) const {
 template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
   xml_elt_t    e = element;
   TGeoManager& mgr = description.manager();
-  std::string  sname = e.attr<string>(_U(name));
-  string       ref, pname;
+  std::string  sname = e.attr<std::string>(_U(name));
+  std::string  ref, pname;
   
   // Defaults from Geant4
   OpticalSurface::EModel  model  = OpticalSurface::Model::kMglisur;
   OpticalSurface::EFinish finish = OpticalSurface::Finish::kFpolished;
   OpticalSurface::EType   type   = OpticalSurface::Type::kTdielectric_metal;
   Double_t value = 1.0;
-  if ( e.hasAttr(_U(type))   ) type   = OpticalSurface::stringToType(e.attr<string>(_U(type)));
-  if ( e.hasAttr(_U(model))  ) model  = OpticalSurface::stringToModel(e.attr<string>(_U(model)));
-  if ( e.hasAttr(_U(finish)) ) finish = OpticalSurface::stringToFinish(e.attr<string>(_U(finish)));
+  if ( e.hasAttr(_U(type))   ) type   = OpticalSurface::stringToType(e.attr<std::string>(_U(type)));
+  if ( e.hasAttr(_U(model))  ) model  = OpticalSurface::stringToModel(e.attr<std::string>(_U(model)));
+  if ( e.hasAttr(_U(finish)) ) finish = OpticalSurface::stringToFinish(e.attr<std::string>(_U(finish)));
   if ( e.hasAttr(_U(value))  ) value  = e.attr<double>(_U(value));
   OpticalSurface surf(description, sname, model, finish, type, value);
   if ( s_debug.surface )    {
@@ -756,10 +755,10 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
              sname.c_str(), int(type), int(model), int(finish), value);
   }
   for (xml_coll_t props(e, _U(property)); props; ++props)  {
-    pname = props.attr<string>(_U(name));
+    pname = props.attr<std::string>(_U(name));
     if ( props.hasAttr(_U(ref)) )  {
       bool err = kFALSE;
-      ref = props.attr<string>(_U(ref));
+      ref = props.attr<std::string>(_U(ref));
       mgr.GetProperty(ref.c_str(), &err); /// Check existence
       surf->AddProperty(pname.c_str(), ref.c_str());
       if ( s_debug.surface )  {
@@ -767,11 +766,11 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
       }
       continue;
     }
-    size_t       cols = props.attr<long>(_U(coldim));
-    xml_attr_t   opt  = props.attr_nothrow(_U(option));
-    stringstream str(props.attr<string>(_U(values))), str_nam;
-    string val;
-    vector<double> values;
+    std::size_t         cols = props.attr<long>(_U(coldim));
+    xml_attr_t          opt  = props.attr_nothrow(_U(option));
+    std::stringstream   str(props.attr<std::string>(_U(values))), str_nam;
+    std::string         val;
+    std::vector<double> values;
     while ( !str.eof() )   {
       val = "";
       str >> val;
@@ -781,13 +780,13 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
     /// Create table and register table
     TGDMLMatrix* table = new TGDMLMatrix("",values.size()/cols, cols);
     if ( opt )   {
-      string tit = e.attr<string>(opt);
+      std::string tit = e.attr<std::string>(opt);
       str_nam << tit << "|";
     }
     str_nam << pname << "__" << (void*)table;
     table->SetName(str_nam.str().c_str());
     table->SetTitle(pname.c_str());
-    for (size_t i=0, n=values.size(); i<n; ++i)
+    for (std::size_t i=0, n=values.size(); i<n; ++i)
       table->Set(i/cols, i%cols, values[i]);
     surf->AddProperty(pname.c_str(), table->GetName());
     description.manager().AddGDMLMatrix(table);
@@ -797,10 +796,10 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
   // In case there were constant surface properties specified: convert them here
   for(xml_coll_t properties(e, _U(constant)); properties; ++properties) {
     xml_elt_t p = properties;
-    pname = p.attr<string>(_U(name));
+    pname = p.attr<std::string>(_U(name));
     if ( p.hasAttr(_U(ref)) )   {
       bool err = kFALSE;
-      ref = p.attr<string>(_U(ref));
+      ref = p.attr<std::string>(_U(ref));
       mgr.GetProperty(ref.c_str(), &err); /// Check existence
       if ( err == kFALSE )  {
         surf->AddConstProperty(pname.c_str(), ref.c_str());
@@ -814,7 +813,7 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
                   " ConstProperty missing in TGeoManager: " + ref);
     }
     else if ( p.hasAttr(_U(value)) )   {
-      stringstream str;
+      std::stringstream str;
       str << pname << "_" << (void*)surf.ptr();
       ref = str.str();
       mgr.AddProperty(ref.c_str(), p.attr<double>(_U(value))); /// Check existence
@@ -824,7 +823,7 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
                surf->GetName(), pname.c_str(), ref.c_str());
     }
     else if ( p.hasAttr(_U(option)) )   {
-      string ptyp = p.attr<string>(_U(option));
+      std::string ptyp = p.attr<std::string>(_U(option));
       surf->AddConstProperty(pname.c_str(), ptyp.c_str());
       printout(s_debug.surface ? ALWAYS : DEBUG, "Compact",
                "++            surface  %-16s  add constant property: %s  ->  %s.",
@@ -840,8 +839,8 @@ template <> void Converter<OpticalSurface>::operator()(xml_h element) const {
  *
  */
 template <> void Converter<PropertyConstant>::operator()(xml_h e) const    {
-  double value = e.attr<double>(_U(value));
-  string name  = e.attr<string>(_U(name));
+  double      value = e.attr<double>(_U(value));
+  std::string name  = e.attr<std::string>(_U(name));
   description.manager().AddProperty(name.c_str(), value);
   if ( s_debug.matrix )    {
     printout(ALWAYS,"Compact","+++ Reading property %s : %f",name.c_str(), value);
@@ -849,7 +848,7 @@ template <> void Converter<PropertyConstant>::operator()(xml_h e) const    {
 #if 0
   xml_attr_t opt = e.attr_nothrow(_U(title));
   if ( opt )    {
-    string  val = e.attr<string>(opt);
+    std::string  val = e.attr<std::string>(opt);
     TNamed* nam = description.manager().GetProperty(name.c_str());
     if ( !nam )   {
       except("Compact","Failed to access just added manager property: %s",name.c_str());
@@ -865,35 +864,35 @@ template <> void Converter<PropertyConstant>::operator()(xml_h e) const    {
  *
  */
 template <> void Converter<PropertyTable>::operator()(xml_h e) const {
-  vector<double> vals;
-  size_t         cols = e.attr<unsigned long>(_U(coldim));
-  stringstream   str(e.attr<string>(_U(values)));
+  std::vector<double> vals;
+  std::size_t         cols = e.attr<unsigned long>(_U(coldim));
+  std::stringstream   str(e.attr<std::string>(_U(values)));
 
   if ( s_debug.matrix )    {
     printout(ALWAYS,"Compact","+++ Reading property table %s with %d columns.",
-             e.attr<string>(_U(name)).c_str(), cols);
+             e.attr<std::string>(_U(name)).c_str(), cols);
   }
   vals.reserve(1024);
   while ( !str.eof() )   {
-    string item;
+    std::string item;
     str >> item;
     if ( item.empty() && !str.good() ) break;
     vals.emplace_back(_toDouble(item));
     if ( s_debug.matrix )    {
-      cout << " state:" << (str.good() ? "OK " : "BAD") << " '" << item << "'";
-      if ( 0 == (vals.size()%cols) ) cout << endl;
+      std::cout << " state:" << (str.good() ? "OK " : "BAD") << " '" << item << "'";
+      if ( 0 == (vals.size()%cols) ) std::cout << std::endl;
     }
   }
   if ( s_debug.matrix )    {
-    cout << endl;
+    std::cout << std::endl;
   }
   /// Create table and register table
   xml_attr_t    opt = e.attr_nothrow(_U(option));
   PropertyTable tab(description,
-                    e.attr<string>(_U(name)),
-                    opt ? e.attr<string>(opt).c_str() : "",
+                    e.attr<std::string>(_U(name)),
+                    opt ? e.attr<std::string>(opt).c_str() : "",
                     vals.size()/cols, cols);
-  for( size_t i=0, n=vals.size(); i < n; ++i )
+  for( std::size_t i=0, n=vals.size(); i < n; ++i )
     tab->Set(i/cols, i%cols, vals[i]);
   //if ( s_debug.matrix ) tab->Print();
 }
@@ -913,7 +912,7 @@ template <> void Converter<PropertyTable>::operator()(xml_h e) const {
  *       alpha="0.5"/>
  */
 template <> void Converter<VisAttr>::operator()(xml_h e) const {
-  VisAttr attr(e.attr<string>(_U(name)));
+  VisAttr attr(e.attr<std::string>(_U(name)));
   float alpha = 1.0;
   float red   = 1.0;
   float green = 1.0;
@@ -921,10 +920,10 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
   bool use_ref = false;
   if(e.hasAttr(_U(ref))) {
     use_ref = true;
-    auto refName = e.attr<string>(_U(ref));
+    auto refName = e.attr<std::string>(_U(ref));
     const auto refAttr = description.visAttributes(refName);
     if(!refAttr.isValid() )  {
-      throw runtime_error("reference VisAttr " + refName + " does not exist");
+      except("Compact","+++ Reference VisAttr %s does not exist", refName.c_str());
     }
     // Just copying things manually.
     // I think a handle's copy constructor/assignment would reuse the underlying pointer... maybe?
@@ -948,7 +947,7 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
   if (e.hasAttr(_U(visible)))
     attr.setVisible(e.attr<bool>(_U(visible)));
   if (e.hasAttr(_U(lineStyle))) {
-    string ls = e.attr<string>(_U(lineStyle));
+    std::string ls = e.attr<std::string>(_U(lineStyle));
     if (ls == "unbroken")
       attr.setLineStyle(VisAttr::SOLID);
     else if (ls == "broken")
@@ -959,7 +958,7 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
       attr.setLineStyle(VisAttr::SOLID);
   }
   if (e.hasAttr(_U(drawingStyle))) {
-    string ds = e.attr<string>(_U(drawingStyle));
+    std::string ds = e.attr<std::string>(_U(drawingStyle));
     if (ds == "wireframe")
       attr.setDrawingStyle(VisAttr::WIREFRAME);
     else if (ds == "solid")
@@ -984,7 +983,7 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
 template <> void Converter<Region>::operator()(xml_h elt) const {
   xml_dim_t       e = elt;
   Region          region(e.nameStr());
-  vector<string>& limits       = region.limits();
+  auto&           limits       = region.limits();
   xml_attr_t      cut          = elt.attr_nothrow(_U(cut));
   xml_attr_t      threshold    = elt.attr_nothrow(_U(threshold));
   xml_attr_t store_secondaries = elt.attr_nothrow(_U(store_secondaries));
@@ -1002,7 +1001,7 @@ template <> void Converter<Region>::operator()(xml_h elt) const {
     region.setStoreSecondaries(elt.attr<bool>(store_secondaries));
   }
   for (xml_coll_t user_limits(e, _U(limitsetref)); user_limits; ++user_limits)
-    limits.emplace_back(user_limits.attr<string>(_U(name)));
+    limits.emplace_back(user_limits.attr<std::string>(_U(name)));
   description.addRegion(region);
 }
 
@@ -1015,9 +1014,9 @@ template <> void Converter<Region>::operator()(xml_h elt) const {
  * </readout>
  */
 template <> void Converter<Segmentation>::operator()(xml_h seg) const {
-  string type = seg.attr<string>(_U(type));
-  string name = seg.hasAttr(_U(name)) ? seg.attr<string>(_U(name)) : string();
-  std::pair<Segmentation,IDDescriptor>* opt = _option<pair<Segmentation,IDDescriptor> >();
+  std::string type = seg.attr<std::string>(_U(type));
+  std::string name = seg.hasAttr(_U(name)) ? seg.attr<std::string>(_U(name)) : std::string();
+  std::pair<Segmentation,IDDescriptor>* opt = _option<std::pair<Segmentation,IDDescriptor> >();
 
   const BitFieldCoder* bitfield = &opt->second->decoder;
   Segmentation segment(type, name, bitfield);
@@ -1028,7 +1027,7 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
     for(const auto p : pars )  {
       xml::Strng_t pNam(p->name());
       if ( seg.hasAttr(pNam) ) {
-        string pType = p->type();
+        std::string pType = p->type();
         if ( pType.compare("int") == 0 ) {
           typedef DDSegmentation::TypedSegmentationParameter<int> ParInt;
           static_cast<ParInt*>(p)->setTypedValue(seg.attr<int>(pNam));
@@ -1036,22 +1035,22 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
           typedef DDSegmentation::TypedSegmentationParameter<float> ParFloat;
           static_cast<ParFloat*>(p)->setTypedValue(seg.attr<float>(pNam));
         } else if ( pType.compare("doublevec") == 0 ) {
-          vector<double> valueVector;
-          string par = seg.attr<string>(pNam);
+          std::vector<double> valueVector;
+          std::string par = seg.attr<std::string>(pNam);
           printout(s_debug.segmentation ? ALWAYS : DEBUG, "Compact",
-                   "++ Converting this string structure: %s.",par.c_str());
-          vector<string> elts = DDSegmentation::splitString(par);
-          for (const string& spar : elts )  {
+                   "++ Converting this std::string structure: %s.",par.c_str());
+          std::vector<std::string> elts = DDSegmentation::splitString(par);
+          for (const std::string& spar : elts )  {
             if ( spar.empty() ) continue;
             valueVector.emplace_back(_toDouble(spar));
           }
-          typedef DDSegmentation::TypedSegmentationParameter< vector<double> > ParDouVec;
+          typedef DDSegmentation::TypedSegmentationParameter< std::vector<double> > ParDouVec;
           static_cast<ParDouVec*>(p)->setTypedValue(valueVector);
         } else if ( pType.compare("double" ) == 0) {
           typedef DDSegmentation::TypedSegmentationParameter<double>ParDouble;
           static_cast<ParDouble*>(p)->setTypedValue(seg.attr<double>(pNam));
         } else {
-          p->setValue(seg.attr<string>(pNam));
+          p->setValue(seg.attr<std::string>(pNam));
         }
       } else if (not p->isOptional()) {
         throw_print("FAILED to create segmentation: " + type +
@@ -1075,7 +1074,7 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
           key_max = x_seg.key_max();
         }
         else  {
-          stringstream tree;
+          std::stringstream tree;
           xml::dump_tree(sub,tree);
           throw_print("Nested segmentations: Invalid key specification:"+tree.str());
         }
@@ -1102,8 +1101,8 @@ template <> void Converter<Segmentation>::operator()(xml_h seg) const {
  */
 template <> void Converter<Readout>::operator()(xml_h e) const {
   xml_h seg = e.child(_U(segmentation), false);
-  xml_h id = e.child(_U(id));
-  string name = e.attr<string>(_U(name));
+  xml_h id  = e.child(_U(id));
+  std::string name = e.attr<std::string>(_U(name));
   std::pair<Segmentation,IDDescriptor> opt;
   Readout ro(name);
   
@@ -1131,16 +1130,16 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
            ro.name(), id ? "ID: " : "", id ? id.text().c_str() : "");
   
   for(xml_coll_t colls(e,_U(hits_collections)); colls; ++colls)   {
-    string hits_key;
-    if ( colls.hasAttr(_U(key)) ) hits_key = colls.attr<string>(_U(key));
+    std::string hits_key;
+    if ( colls.hasAttr(_U(key)) ) hits_key = colls.attr<std::string>(_U(key));
     for(xml_coll_t coll(colls,_U(hits_collection)); coll; ++coll)   {
       xml_dim_t c(coll);
-      string coll_name = c.nameStr();
-      string coll_key  = hits_key;
+      std::string coll_name = c.nameStr();
+      std::string coll_key  = hits_key;
       long   key_min = 0, key_max = 0;
 
       if ( c.hasAttr(_U(key)) )   {
-        coll_key = c.attr<string>(_U(key));
+        coll_key = c.attr<std::string>(_U(key));
       }
       if ( c.hasAttr(_U(key_value)) )   {
         key_max = key_min = c.key_value();
@@ -1150,7 +1149,7 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
         key_max = c.key_max();
       }
       else   {
-        stringstream tree;
+        std::stringstream tree;
         xml::dump_tree(e,tree);
         throw_print("Readout: Invalid specification for multiple hit collections."+tree.str());
       }
@@ -1180,14 +1179,14 @@ DECLARE_XML_DOC_READER(readout,load_readout)
  */
 template <> void Converter<LimitSet>::operator()(xml_h e) const {
   Limit limit;
-  LimitSet ls(e.attr<string>(_U(name)));
+  LimitSet ls(e.attr<std::string>(_U(name)));
   printout(s_debug.limits ? ALWAYS : DEBUG, "Compact",
            "++ Converting LimitSet structure: %s.",ls.name());
   for (xml_coll_t c(e, _U(limit)); c; ++c) {
-    limit.name      = c.attr<string>(_U(name));
-    limit.particles = c.attr<string>(_U(particles));
-    limit.content   = c.attr<string>(_U(value));
-    limit.unit      = c.attr<string>(_U(unit));
+    limit.name      = c.attr<std::string>(_U(name));
+    limit.particles = c.attr<std::string>(_U(particles));
+    limit.content   = c.attr<std::string>(_U(value));
+    limit.unit      = c.attr<std::string>(_U(unit));
     limit.value     = _multiply<double>(limit.content, limit.unit);
     ls.addLimit(limit);
     printout(s_debug.limits ? ALWAYS : DEBUG, "Compact",
@@ -1197,9 +1196,9 @@ template <> void Converter<LimitSet>::operator()(xml_h e) const {
   }
   limit.name      = "cut";
   for (xml_coll_t c(e, _U(cut)); c; ++c) {
-    limit.particles = c.attr<string>(_U(particles));
-    limit.content   = c.attr<string>(_U(value));
-    limit.unit      = c.attr<string>(_U(unit));
+    limit.particles = c.attr<std::string>(_U(particles));
+    limit.content   = c.attr<std::string>(_U(value));
+    limit.unit      = c.attr<std::string>(_U(unit));
     limit.value     = _multiply<double>(limit.content, limit.unit);
     ls.addCut(limit);
     printout(s_debug.limits ? ALWAYS : DEBUG, "Compact",
@@ -1217,17 +1216,17 @@ template <> void Converter<LimitSet>::operator()(xml_h e) const {
  *  ... </properties>
  */
 template <> void Converter<Property>::operator()(xml_h e) const {
-  string name = e.attr<string>(_U(name));
+  std::string name = e.attr<std::string>(_U(name));
   Detector::Properties& prp  = description.properties();
   if ( name.empty() )
     throw_print("Failed to convert properties. No name given!");
 
-  vector<xml_attr_t> a = e.attributes();
+  std::vector<xml_attr_t> a = e.attributes();
   if ( prp.find(name) == prp.end() )
     prp.emplace(name, Detector::PropertyValues());
 
   for (xml_attr_t i : a )
-    prp[name].emplace(xml_tag_t(e.attr_name(i)).str(),e.attr<string>(i));
+    prp[name].emplace(xml_tag_t(e.attr_name(i)).str(),e.attr<std::string>(i));
 }
 
 /** Specialized converter for electric and magnetic fields
@@ -1239,9 +1238,9 @@ template <> void Converter<Property>::operator()(xml_h e) const {
  *     </field>
  */
 template <> void Converter<CartesianField>::operator()(xml_h e) const {
-  string msg  = "updated";
-  string name = e.attr<string>(_U(name));
-  string type = e.attr<string>(_U(type));
+  std::string msg  = "updated";
+  std::string name = e.attr<std::string>(_U(name));
+  std::string type = e.attr<std::string>(_U(type));
   CartesianField field = description.field(name);
   if ( !field.isValid() ) {
     // The field is not present: We create it and add it to Detector
@@ -1258,13 +1257,13 @@ template <> void Converter<CartesianField>::operator()(xml_h e) const {
   // Now update the field structure with the generic part ie. set its properties
   CartesianField::Properties& prp = field.properties();
   for ( xml_coll_t c(e, _U(properties)); c; ++c ) {
-    string props_name = c.attr<string>(_U(name));
-    vector<xml_attr_t>a = c.attributes();
+    std::string props_name = c.attr<std::string>(_U(name));
+    std::vector<xml_attr_t>a = c.attributes();
     if ( prp.find(props_name) == prp.end() ) {
       prp.emplace(props_name, Detector::PropertyValues());
     }
     for ( xml_attr_t i : a )
-      prp[props_name].emplace(xml_tag_t(c.attr_name(i)).str(), c.attr<string>(i));
+      prp[props_name].emplace(xml_tag_t(c.attr_name(i)).str(), c.attr<std::string>(i));
 
     if (c.hasAttr(_U(global)) && c.attr<bool>(_U(global))) {
       description.field().properties() = prp;
@@ -1287,12 +1286,12 @@ template <> void Converter<CartesianField>::operator()(xml_h e) const {
  *
  */
 template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
-  string name = element.attr<string>(_U(name));
+  std::string name = element.attr<std::string>(_U(name));
   try {
     SensitiveDetector sd = description.sensitiveDetector(name);
     xml_attr_t type = element.attr_nothrow(_U(type));
     if ( type )  {
-      sd.setType(element.attr<string>(type));
+      sd.setType(element.attr<std::string>(type));
     }
     xml_attr_t verbose = element.attr_nothrow(_U(verbose));
     if ( verbose ) {
@@ -1304,7 +1303,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
     }
     xml_attr_t limits = element.attr_nothrow(_U(limits));
     if ( limits ) {
-      string l = element.attr<string>(limits);
+      std::string l = element.attr<std::string>(limits);
       LimitSet ls = description.limitSet(l);
       if (!ls.isValid()) {
         throw_print("Converter<SensitiveDetector>: Request for non-existing limitset:" + l);
@@ -1313,7 +1312,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
     }
     xml_attr_t region = element.attr_nothrow(_U(region));
     if ( region ) {
-      string r = element.attr<string>(region);
+      std::string r = element.attr<std::string>(region);
       Region reg = description.region(r);
       if (!reg.isValid()) {
         throw_print("Converter<SensitiveDetector>: Request for non-existing region:" + r);
@@ -1322,7 +1321,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
     }
     xml_attr_t hits = element.attr_nothrow(_U(hits_collection));
     if (hits) {
-      sd.setHitsCollection(element.attr<string>(hits));
+      sd.setHitsCollection(element.attr<std::string>(hits));
     }
     xml_attr_t ecut = element.attr_nothrow(_U(ecut));
     xml_attr_t eunit = element.attr_nothrow(_U(eunit));
@@ -1339,7 +1338,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
     if (sequence) {
     }
   }
-  catch (const exception& e) {
+  catch (const std::exception& e) {
     printout(ERROR, "Compact", "++ FAILED    to convert sensitive detector: %s: %s", name.c_str(), e.what());
   }
   catch (...) {
@@ -1347,7 +1346,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
   }
 }
 
-static void setChildTitles(const pair<string, DetElement>& e) {
+static void setChildTitles(const std::pair<std::string, DetElement>& e) {
   DetElement parent = e.second.parent();
   const DetElement::Children& children = e.second.children();
   if (::strlen(e.second->GetTitle()) == 0) {
@@ -1361,10 +1360,10 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
   static const char* req_typs = ::getenv("REQUIRED_DETECTOR_TYPES");
   static const char* ign_dets = ::getenv("IGNORED_DETECTORS");
   static const char* ign_typs = ::getenv("IGNORED_DETECTOR_TYPES");
-  string type = element.attr<string>(_U(type));
-  string name = element.attr<string>(_U(name));
-  string name_match = ":" + name + ":";
-  string type_match = ":" + type + ":";
+  std::string type = element.attr<std::string>(_U(type));
+  std::string name = element.attr<std::string>(_U(name));
+  std::string name_match = ":" + name + ":";
+  std::string type_match = ":" + type + ":";
 
   if (req_dets && !strstr(req_dets, name_match.c_str()))
     return;
@@ -1385,13 +1384,13 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
     }
   }
   try {
-    string par_name;
+    std::string par_name;
     xml_attr_t attr_par = element.attr_nothrow(_U(parent));
     xml_elt_t  elt_par(0);
     if (attr_par)
-      par_name = element.attr<string>(attr_par);
+      par_name = element.attr<std::string>(attr_par);
     else if ( (elt_par=element.child(_U(parent),false)) )
-      par_name = elt_par.attr<string>(_U(name));
+      par_name = elt_par.attr<std::string>(_U(name));
     if ( !par_name.empty() ) {
       // We have here a nested detector. If the mother volume is not yet registered
       // it must be done here, so that the detector constructor gets the correct answer from
@@ -1407,9 +1406,9 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
     SensitiveDetector sd;
     Segmentation seg;
     if ( attr_ro )   {
-      Readout ro = description.readout(element.attr<string>(attr_ro));
+      Readout ro = description.readout(element.attr<std::string>(attr_ro));
       if (!ro.isValid()) {
-        throw runtime_error("No Readout structure present for detector:" + name);
+        except("Compact","No Readout structure present for detector:" + name);
       }
       seg = ro.segmentation();
       sd = SensitiveDetector(name, "sensitive");
@@ -1420,7 +1419,7 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
     Ref_t sens = sd;
     DetElement det(Ref_t(PluginService::Create<NamedObject*>(type, &description, &element, &sens)));
     if (det.isValid()) {
-      setChildTitles(make_pair(name, det));
+      setChildTitles(std::make_pair(name, det));
       if ( sd.isValid() )  {
         det->flag |= DetElement::Object::HAVE_SENSITIVE_DETECTOR;
       }
@@ -1436,19 +1435,19 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
     if (!det.isValid())  {
       PluginDebug dbg;
       PluginService::Create<NamedObject*>(type, &description, &element, &sens);
-      throw runtime_error("Failed to execute subdetector creation plugin. " + dbg.missingFactory(type));
+      except("Compact","Failed to execute subdetector creation plugin. %s", dbg.missingFactory(type).c_str());
     }
     description.addDetector(det);
     description.surfaceManager().registerSurfaces(det);
     return;
   }
-  catch (const exception& e)  {
+  catch (const std::exception& e)  {
     printout(ERROR, "Compact", "++ FAILED    to convert subdetector: %s: %s", name.c_str(), e.what());
-    terminate();
+    std::terminate();
   }
   catch (...)  {
     printout(ERROR, "Compact", "++ FAILED    to convert subdetector: %s: %s", name.c_str(), "UNKNONW Exception");
-    terminate();
+    std::terminate();
   }
 }
 
@@ -1475,27 +1474,27 @@ template <> void Converter<IncludeFile>::operator()(xml_h element) const   {
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<JsonFile>::operator()(xml_h element) const {
-  string base = xml::DocumentHandler::system_directory(element);
-  string file = element.attr<string>(_U(ref));
-  vector<char*>  argv{&file[0], &base[0]};
+  std::string base = xml::DocumentHandler::system_directory(element);
+  std::string file = element.attr<std::string>(_U(ref));
+  std::vector<char*>  argv{&file[0], &base[0]};
   description.apply("DD4hep_JsonProcessor",int(argv.size()), &argv[0]);
 }
 
 /// Read alignment entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<XMLFile>::operator()(xml_h element) const {
-  PrintLevel level = s_debug.includes ? ALWAYS : DEBUG;
-  string fname = element.attr<string>(_U(ref));
-  size_t idx = fname.find("://");
+  PrintLevel  level = s_debug.includes ? ALWAYS : DEBUG;
+  std::string fname = element.attr<std::string>(_U(ref));
+  std::size_t idx   = fname.find("://");
   std::error_code ec;
 
-  if ( idx == string::npos && filesystem::exists(fname, ec) )  {
+  if ( idx == std::string::npos && std::filesystem::exists(fname, ec) )  {
     // Regular file without protocol specification
     printout(level, "Compact","++ Processing xml document %s.", fname.c_str());
     this->description.fromXML(fname);
   }
-  else if ( idx == string::npos )  {
+  else if ( idx == std::string::npos )  {
     // File relative to location of xml tag (protocol specification not possible)
-    string location = xml::DocumentHandler::system_path(element, fname);
+    std::string location = xml::DocumentHandler::system_path(element, fname);
     printout(level, "Compact","++ Processing xml document %s.", location.c_str());
     this->description.fromXML(location);
   }
@@ -1516,8 +1515,8 @@ template <> void Converter<World>::operator()(xml_h element) const {
   xml_elt_t  x_world(element);
   xml_comp_t x_shape = x_world.child(_U(shape), false);
   xml_attr_t att = x_world.getAttr(_U(material));
-  Material   mat = att ? description.material(x_world.attr<string>(att)) : description.air();
-  Volume world_vol;
+  Material   mat = att ? description.material(x_world.attr<std::string>(att)) : description.air();
+  Volume     world_vol;
 
   /// Create the shape and the corresponding volume
   if ( x_shape )   {
@@ -1562,15 +1561,15 @@ template <> void Converter<Parallelworld_Volume>::operator()(xml_h element) cons
   xml_comp_t   shape  = parallel.child(_U(shape));
   xml_dim_t    pos    = element.child(_U(position),false);
   xml_dim_t    rot    = element.child(_U(rotation),false);
-  string       name   = element.attr<string>(_U(name));
-  string       path   = element.attr<string>(_U(anchor));
+  std::string  name   = element.attr<std::string>(_U(name));
+  std::string  path   = element.attr<std::string>(_U(anchor));
   bool         conn   = element.attr<bool>(_U(connected),false);
   DetElement   anchor(detail::tools::findElement(description, path));
   Position     position = pos ? Position(pos.x(), pos.y(), pos.z())    : Position();
   RotationZYX  rotation = rot ? RotationZYX(rot.z(), rot.y(), rot.x()) : RotationZYX();
 
   Material mat = parallel.hasAttr(_U(material))
-    ? description.material(parallel.attr<string>(_U(material)))
+    ? description.material(parallel.attr<std::string>(_U(material)))
     : description.air();
   VisAttr vis = parallel.hasAttr(_U(vis))
     ? description.invisible()
@@ -1610,7 +1609,7 @@ template <> void Converter<Parallelworld_Volume>::operator()(xml_h element) cons
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
-  string type = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("xml");
+  std::string type = element.hasAttr(_U(type)) ? element.attr<std::string>(_U(type)) : std::string("xml");
   if ( type == "xml" )  {
     xml::DocumentHolder doc(xml::DocumentHandler().load(element, element.attr_value(_U(ref))));
     if ( s_debug.include_guard ) {
@@ -1622,7 +1621,7 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
       printout(ALWAYS, "Compact","++ Processing xml document %s.",doc.uri().c_str());
     }
     xml_h node = doc.root();
-    string tag = node.tag();
+    std::string tag = node.tag();
     if ( tag == "lccdd" )
       Converter<Compact>(this->description)(node);
     else if ( tag == "define" )
@@ -1683,7 +1682,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
     if ( steer.hasAttr(_U(reflect)) )
       build_reflections = steer.attr<bool>(_U(reflect));
     for (xml_coll_t clr(steer, _U(clear)); clr; ++clr) {
-      string nam = clr.hasAttr(_U(name)) ? clr.attr<string>(_U(name)) : string();
+      std::string nam = clr.hasAttr(_U(name)) ? clr.attr<std::string>(_U(name)) : std::string();
       if ( nam.substr(0,6) == "elemen" )   {
         TGeoElementTable*	table = description.manager().GetElementTable();
         table->TGeoElementTable::~TGeoElementTable();

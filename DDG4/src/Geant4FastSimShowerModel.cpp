@@ -26,7 +26,6 @@
 // C/C++ include files
 #include <sstream>
 
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Namespace for the AIDA detector description toolkit

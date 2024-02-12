@@ -20,7 +20,6 @@
 // C/C++ include files
 #include <algorithm>
 
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Intializing constructor
@@ -89,7 +88,7 @@ Geant4Event& Geant4Context::event()  const   {
 }
 
 /// Access to detector description
-Detector& Geant4Context::detectorDescription() const {
+dd4hep::Detector& Geant4Context::detectorDescription() const {
   return m_kernel->detectorDescription();
 }
 

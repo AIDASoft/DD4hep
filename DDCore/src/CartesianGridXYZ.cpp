@@ -12,12 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/CartesianGridXYZ.h"
-#include "DDSegmentation/CartesianGridXYZ.h"
+#include <DD4hep/CartesianGridXYZ.h>
+#include <DDSegmentation/CartesianGridXYZ.h>
 
-// C/C++ include files
-
-using namespace std;
 using namespace dd4hep;
 
 /// determine the position based on the cell ID
@@ -94,17 +91,17 @@ void CartesianGridXYZ::setOffsetZ(double offset) const   {
 }
 
 /// access the field name used for X
-const string& CartesianGridXYZ::fieldNameX() const {
+const std::string& CartesianGridXYZ::fieldNameX() const {
   return access()->implementation->fieldNameX();
 }
 
 /// access the field name used for Y
-const string& CartesianGridXYZ::fieldNameY() const {
+const std::string& CartesianGridXYZ::fieldNameY() const {
   return access()->implementation->fieldNameY();
 }
 
 /// access the field name used for Z
-const string& CartesianGridXYZ::fieldNameZ() const {
+const std::string& CartesianGridXYZ::fieldNameZ() const {
   return access()->implementation->fieldNameZ();
 }
 
@@ -118,6 +115,6 @@ const string& CartesianGridXYZ::fieldNameZ() const {
     -# size in y
     -# size in z
 */
-vector<double> CartesianGridXYZ::cellDimensions(const CellID& id) const  {
+std::vector<double> CartesianGridXYZ::cellDimensions(const CellID& id) const  {
   return access()->implementation->cellDimensions(id);
 }

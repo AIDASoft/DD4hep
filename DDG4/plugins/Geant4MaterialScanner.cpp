@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Objects.h"
-#include "DDG4/Defs.h"
-#include "DDG4/Geant4SteppingAction.h"
+#include <DD4hep/Objects.h>
+#include <DDG4/Defs.h>
+#include <DDG4/Geant4SteppingAction.h>
 
 // Forward declarations
 class G4LogicalVolume;
@@ -84,20 +84,19 @@ namespace dd4hep {
 //====================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Printout.h"
-#include "DDG4/Geant4TouchableHandler.h"
-#include "DDG4/Geant4StepHandler.h"
-#include "DDG4/Geant4EventAction.h"
-#include "DDG4/Geant4TrackingAction.h"
-#include "CLHEP/Units/SystemOfUnits.h"
-#include "G4LogicalVolume.hh"
-#include "G4Material.hh"
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Printout.h>
+#include <DDG4/Geant4TouchableHandler.h>
+#include <DDG4/Geant4StepHandler.h>
+#include <DDG4/Geant4EventAction.h>
+#include <DDG4/Geant4TrackingAction.h>
+#include <CLHEP/Units/SystemOfUnits.h>
+#include <G4LogicalVolume.hh>
+#include <G4Material.hh>
 
-using namespace std;
 using namespace dd4hep::sim;
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 DECLARE_GEANT4ACTION(Geant4MaterialScanner)
 
 /// Initializing constructor
@@ -108,7 +107,7 @@ Geant4MaterialScanner::StepInfo::StepInfo(const Position& prePos, const Position
 
 /// Copy constructor
 Geant4MaterialScanner::StepInfo::StepInfo(const StepInfo& c)
-: pre(c.pre), post(c.post), volume(c.volume)
+  : pre(c.pre), post(c.post), volume(c.volume)
 {
 }
 
@@ -121,7 +120,7 @@ Geant4MaterialScanner::StepInfo& Geant4MaterialScanner::StepInfo::operator=(cons
 }
 
 /// Standard constructor
-Geant4MaterialScanner::Geant4MaterialScanner(Geant4Context* ctxt, const string& nam)
+Geant4MaterialScanner::Geant4MaterialScanner(Geant4Context* ctxt, const std::string& nam)
   : Geant4SteppingAction(ctxt,nam)
 {
   m_needsControl = true;
@@ -141,9 +140,9 @@ void Geant4MaterialScanner::operator()(const G4Step* step, G4SteppingManager*) {
   Geant4StepHandler h(step);
 #if 0
   Geant4TouchableHandler pre_handler(step);
-  string prePath = pre_handler.path();
+  std::string prePath = pre_handler.path();
   Geant4TouchableHandler post_handler(step);
-  string postPath = post_handler.path();
+  std::string postPath = post_handler.path();
 #endif
   G4LogicalVolume* logVol = h.logvol(h.pre);
   m_steps.emplace_back(new StepInfo(h.prePos(), h.postPos(), logVol));

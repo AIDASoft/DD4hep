@@ -12,29 +12,25 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4UserLimits.h"
-#include "DDG4/Geant4Particle.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/Printout.h"
+#include <DDG4/Geant4UserLimits.h>
+#include <DDG4/Geant4Particle.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/Printout.h>
 
 // Geant 4 include files
-#include "G4Track.hh"
-#include "G4ParticleDefinition.hh"
-#include "CLHEP/Units/SystemOfUnits.h"
+#include <G4Track.hh>
+#include <G4ParticleDefinition.hh>
+#include <CLHEP/Units/SystemOfUnits.h>
 
-// C/C++ include files
-#include <stdexcept>
-
-using namespace std;
 using namespace dd4hep::sim;
 
 namespace  {
   bool user_limit_debug = false;
 }
 
-      /// Allow for debugging user limits (very verbose)
+/// Allow for debugging user limits (very verbose)
 bool Geant4UserLimits::enable_debug(bool value)   {
   bool tmp = user_limit_debug;
   user_limit_debug = value;
@@ -48,21 +44,21 @@ double Geant4UserLimits::Handler::value(const G4Track& track) const    {
     auto i = particleLimits.find(track.GetDefinition());
     if ( i != particleLimits.end() )  {
       if ( user_limit_debug )   {
-	dd4hep::printout(dd4hep::INFO,"Geant4UserLimits", "Apply explicit limit %f to track: %s",
-			 def->GetParticleName().c_str());
+        dd4hep::printout(dd4hep::INFO,"Geant4UserLimits", "Apply explicit limit %f to track: %s",
+                         def->GetParticleName().c_str());
       }
       return (*i).second;
     }
   }
   if ( user_limit_debug )   {
     dd4hep::printout(dd4hep::INFO,"Geant4UserLimits", "Apply default limit %f to track: %s",
-		     def->GetParticleName().c_str());
+                     def->GetParticleName().c_str());
   }
   return defaultValue;
 }
 
 /// Set the handler value(s)
-void Geant4UserLimits::Handler::set(const string& particles, double val)   {
+void Geant4UserLimits::Handler::set(const std::string& particles, double val)   {
   if ( particles == "*" || particles == ".(.*)" )   {
     defaultValue = val;
     return;
@@ -108,28 +104,28 @@ void Geant4UserLimits::update(LimitSet limitset)    {
     else if (l.name == "range_min")
       minRange.set(l.particles, l.value);
     else
-      throw runtime_error("Unknown Geant4 user limit: " + l.toString());
+      except("Geant4UserLimits", "Unknown Geant4 user limit: %s ", l.toString().c_str());
   }
 }
 
 /// Setters may not be called!
 void Geant4UserLimits::SetMaxAllowedStep(G4double /* ustepMax */)  {
-  dd4hep::notImplemented(string(__PRETTY_FUNCTION__)+" May not be called!");
+  dd4hep::notImplemented(std::string(__PRETTY_FUNCTION__)+" May not be called!");
 }
 
 void Geant4UserLimits::SetUserMaxTrackLength(G4double /* utrakMax */)  {
-  dd4hep::notImplemented(string(__PRETTY_FUNCTION__)+" May not be called!");
+  dd4hep::notImplemented(std::string(__PRETTY_FUNCTION__)+" May not be called!");
 }
 
 void Geant4UserLimits::SetUserMaxTime(G4double /* utimeMax */)  {
-  dd4hep::notImplemented(string(__PRETTY_FUNCTION__)+" May not be called!");
+  dd4hep::notImplemented(std::string(__PRETTY_FUNCTION__)+" May not be called!");
 }
 
 void Geant4UserLimits::SetUserMinEkine(G4double /* uekinMin */)  {
-  dd4hep::notImplemented(string(__PRETTY_FUNCTION__)+" May not be called!");
+  dd4hep::notImplemented(std::string(__PRETTY_FUNCTION__)+" May not be called!");
 }
 
 void Geant4UserLimits::SetUserMinRange(G4double /* urangMin */)  {
-  dd4hep::notImplemented(string(__PRETTY_FUNCTION__)+" May not be called!");
+  dd4hep::notImplemented(std::string(__PRETTY_FUNCTION__)+" May not be called!");
 }
 

@@ -12,22 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "XML/Conversions.h"
-#include "XML/XMLElements.h"
-#include "XML/DocumentHandler.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/DetectorTools.h"
-#include "DD4hep/DetFactoryHelper.h"
+#include <DD4hep/Detector.h>
+#include <XML/Conversions.h>
+#include <XML/XMLElements.h>
+#include <XML/DocumentHandler.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/DetectorTools.h>
+#include <DD4hep/DetFactoryHelper.h>
 
-#include "DDCond/ConditionsTags.h"
-#include "DDCond/ConditionsEntry.h"
-#include "DDCond/ConditionsManager.h"
-#include "DDCond/ConditionsDataLoader.h"
+#include <DDCond/ConditionsTags.h>
+#include <DDCond/ConditionsEntry.h>
+#include <DDCond/ConditionsManager.h>
+#include <DDCond/ConditionsDataLoader.h>
 
-/*
- *   dd4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {
 
   namespace {
@@ -57,8 +55,6 @@ namespace dd4hep  {
   template <> void Converter<conditions>::operator()(xml_h seq)  const;
 }
   
-using std::string;
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 /// Namespace for the AIDA detector description toolkit
@@ -75,19 +71,19 @@ namespace dd4hep {
   };
 
   /// Helper: Extract the validity from the xml element
-  string _getValidity(xml_h elt)  {
+  std::string _getValidity(xml_h elt)  {
     if ( !elt.ptr() )
       return "Infinite";
     else if ( !elt.hasAttr(_UC(validity)) )
       return _getValidity(elt.parent());
-    return elt.attr<string>(_UC(validity));
+    return elt.attr<std::string>(_UC(validity));
   }
 
   /// Helper: Extract the required detector element from the parsing information
   DetElement _getDetector(void* param, xml_h e)  {
     ConversionArg* arg  = static_cast<ConversionArg*>(param);
     DetElement detector = arg ? arg->detector : DetElement();
-    string     subpath  = e.hasAttr(_U(path)) ? e.attr<string>(_U(path)) : string();
+    std::string     subpath  = e.hasAttr(_U(path)) ? e.attr<std::string>(_U(path)) : std::string();
     return subpath.empty() ? detector : detail::tools::findDaughterElement(detector,subpath);
   }
 
@@ -95,7 +91,7 @@ namespace dd4hep {
   Entry* _createStackEntry(void* param, xml_h element)  {
     xml_comp_t e(element);
     DetElement elt = _getDetector(param, element);
-    string name = e.hasAttr(_U(name)) ? e.nameStr() : e.tag();
+    std::string name = e.hasAttr(_U(name)) ? e.nameStr() : e.tag();
     return new Entry(elt,name,e.tag(),_getValidity(element),detail::hash32(name));
   }
 
@@ -133,7 +129,7 @@ namespace dd4hep {
    */
   template <> void Converter<arbitrary>::operator()(xml_h e) const {
     xml_comp_t elt(e);
-    string tag = elt.tag();
+    std::string tag = elt.tag();
     ConversionArg* arg  = _param<ConversionArg>();
     if ( !arg )
       except("ConditionsParser","++ Invalid parser argument [Internal Error]");
@@ -153,7 +149,7 @@ namespace dd4hep {
       xml_coll_t(e,_U(star)).for_each(Converter<conditions>(description,param,optional));
     else if ( tag == "alignment" )   {
       dd4hep_ptr<Entry> val(_createStackEntry(param,e));
-      val->value = elt.attr<string>(_U(ref));
+      val->value = elt.attr<std::string>(_U(ref));
       if ( !arg->stack )
         except("ConditionsParser","Non-existing Conditions stack:%s %d",__FILE__, __LINE__);
       else
@@ -210,15 +206,15 @@ namespace dd4hep {
  *  @version 1.0
  *  @date    01/04/2014
  */
-static void* setup_global_Conditions(Detector& description, int argc, char** argv)  {
+static void* setup_global_Conditions(dd4hep::Detector& description, int argc, char** argv)  {
   if ( argc == 2 )  {
     xml_h e = xml_h::Elt_t(argv[0]);
     ConditionsStack* stack = (ConditionsStack*)argv[1];
-    ConversionArg args(description.world(), stack);
-    (dd4hep::Converter<conditions>(description,&args))(e);
+    dd4hep::ConversionArg args(description.world(), stack);
+    (dd4hep::Converter<dd4hep::conditions>(description,&args))(e);
     return &description;
   }
-  except("XML_DOC_READER","Invalid number of arguments to interprete conditions: %d != %d.",argc,2);
+  dd4hep::except("XML_DOC_READER","Invalid number of arguments to interprete conditions: %d != %d.",argc,2);
   return 0;
 }
 DECLARE_DD4HEP_CONSTRUCTOR(XMLConditionsParser,setup_global_Conditions)

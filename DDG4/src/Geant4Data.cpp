@@ -24,7 +24,6 @@
 #include <G4Allocator.hh>
 #include <G4OpticalPhoton.hh>
 
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Default constructor

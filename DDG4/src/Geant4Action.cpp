@@ -25,7 +25,6 @@
 // C/C++ include files
 #include <algorithm>
 
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 TypeName TypeName::split(const std::string& type_name, const std::string& delim) {
@@ -86,7 +85,7 @@ long Geant4Action::release() {
 }
 
 /// Set the output level; returns previous value
-PrintLevel Geant4Action::setOutputLevel(PrintLevel new_level)  {
+dd4hep::PrintLevel Geant4Action::setOutputLevel(PrintLevel new_level)  {
   int old = m_outputLevel;
   m_outputLevel = new_level;
   return (PrintLevel)old;
@@ -98,7 +97,7 @@ bool Geant4Action::hasProperty(const std::string& nam) const    {
 }
 
 /// Access single property
-Property& Geant4Action::property(const std::string& nam)   {
+dd4hep::Property& Geant4Action::property(const std::string& nam)   {
   return properties()[nam];
 }
 

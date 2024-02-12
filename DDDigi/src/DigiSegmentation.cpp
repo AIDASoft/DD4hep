@@ -18,7 +18,6 @@
 #include <DD4hep/Plugins.h>
 #include <DD4hep/Shapes.h>
 
-
 std::shared_ptr<dd4hep::digi::DigiCellScanner>
 dd4hep::digi::create_cell_scanner(Solid solid, Segmentation segment)   {
   std::string typ = "DigiCellScanner" +
@@ -29,7 +28,6 @@ dd4hep::digi::create_cell_scanner(Solid solid, Segmentation segment)   {
 
 std::shared_ptr<dd4hep::digi::DigiCellScanner>
 dd4hep::digi::create_cell_scanner(const std::string& typ, Segmentation segment)   {
-  using namespace dd4hep;
   SegmentationObject* seg = segment.ptr();
   DigiCellScanner*   scan = PluginService::Create<DigiCellScanner*>(typ, seg);
   if ( !scan )   {

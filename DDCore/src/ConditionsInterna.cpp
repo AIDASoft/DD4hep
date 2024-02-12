@@ -12,12 +12,11 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/IOV.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/detail/Handle.inl"
-#include "DD4hep/detail/ConditionsInterna.h"
+#include <DD4hep/IOV.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/detail/Handle.inl>
+#include <DD4hep/detail/ConditionsInterna.h>
 
-using namespace std;
 using namespace dd4hep;
 
 #if defined(DD4HEP_CONDITIONS_HAVE_NAME)
@@ -45,10 +44,10 @@ detail::ConditionObject::ConditionObject()
 
 /// Standard constructor
 #if defined(DD4HEP_CONDITIONS_HAVE_NAME)
-detail::ConditionObject::ConditionObject(const string& nam,const string& tit)
+detail::ConditionObject::ConditionObject(const std::string& nam,const std::string& tit)
   : NamedObject(nam, tit), data()
 #else
-detail::ConditionObject::ConditionObject(const string& ,const string& )
+detail::ConditionObject::ConditionObject(const std::string& ,const std::string& )
   : data()
 #endif
 {
@@ -68,7 +67,7 @@ void detail::ConditionObject::release()  {
 /// Data offset from the opaque data block pointer to the condition
 size_t detail::ConditionObject::offset()   {
   static _P p((void*)0x1000);
-  static size_t off = _P(&p.o->data.grammar).character - p.character + sizeof(OpaqueData::grammar);
+  static std::size_t off = _P(&p.o->data.grammar).character - p.character + sizeof(OpaqueData::grammar);
   return off;
 }
 
@@ -97,5 +96,5 @@ const dd4hep::IOVType* detail::ConditionObject::iovType() const    {
 }
 
 
-#include "DD4hep/GrammarUnparsed.h"
-static auto s_registry = GrammarRegistry::pre_note<vector<Condition> >(1);
+#include <DD4hep/GrammarUnparsed.h>
+static auto s_registry = GrammarRegistry::pre_note<std::vector<Condition> >(1);

@@ -12,19 +12,17 @@
 //=========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4TestActions.h"
-#include "G4Run.hh"
-#include "G4Event.hh"
-#include "G4Step.hh"
-#include "G4Track.hh"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4TestActions.h>
+#include <G4Run.hh>
+#include <G4Event.hh>
+#include <G4Step.hh>
+#include <G4Track.hh>
 
 // C/C++ include files
 #include <stdexcept>
 
-using namespace std;
-using namespace dd4hep::sim;
 using namespace dd4hep::sim::Test;
 
 namespace {

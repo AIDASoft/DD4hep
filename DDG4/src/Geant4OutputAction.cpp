@@ -12,22 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4Particle.h"
-#include "DDG4/Geant4RunAction.h"
-#include "DDG4/Geant4OutputAction.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4Particle.h>
+#include <DDG4/Geant4RunAction.h>
+#include <DDG4/Geant4OutputAction.h>
 
 // Geant 4 includes
-#include "G4HCofThisEvent.hh"
-#include "G4Event.hh"
+#include <G4HCofThisEvent.hh>
+#include <G4Event.hh>
 
 using namespace dd4hep::sim;
-using namespace dd4hep;
-using namespace std;
 
 /// Standard constructor
-Geant4OutputAction::Geant4OutputAction(Geant4Context* ctxt, const string& nam)
+Geant4OutputAction::Geant4OutputAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4EventAction(ctxt, nam), m_truth(0)
 {
   InstanceCount::increment(this);
@@ -73,7 +71,7 @@ void Geant4OutputAction::end(const G4Event* evt) {
           saveCollection(ctxt, hc);
         }
       }
-      catch(const exception& e)   {
+      catch(const std::exception& e)   {
         printout(ERROR,name(),"+++ [Event:%d] Exception while saving event:%s",
                  evt->GetEventID(),e.what());
         if ( m_errorFatal ) throw;
@@ -85,7 +83,7 @@ void Geant4OutputAction::end(const G4Event* evt) {
       }
       commit(ctxt);
     }
-    catch(const exception& e)   {
+    catch(const std::exception& e)   {
       printout(ERROR,name(),"+++ [Event:%d] Exception while saving event:%s",
                evt->GetEventID(),e.what());
       if ( m_errorFatal ) throw;

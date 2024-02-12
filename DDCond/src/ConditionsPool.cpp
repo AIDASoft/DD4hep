@@ -12,16 +12,14 @@
 //==========================================================================
 
 // Framework include files
-#include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsManagerObject.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/detail/Handle.inl"
-#include "DD4hep/ConditionsPrinter.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+#include <DDCond/ConditionsPool.h>
+#include <DDCond/ConditionsManagerObject.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/detail/Handle.inl>
+#include <DD4hep/ConditionsPrinter.h>
+#include <DD4hep/detail/ConditionsInterna.h>
 
-using std::string;
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(UpdatePool);
@@ -47,7 +45,7 @@ void ConditionsPool::print()   const  {
 }
 
 /// Print pool basics
-void ConditionsPool::print(const string& opt)   const  {
+void ConditionsPool::print(const std::string& opt)   const  {
   printout(INFO,"ConditionsPool","+++ %s Conditions for pool with IOV: %-32s age:%3d [%4d entries]",
            opt.c_str(), GetName(), age_value, size());
   if ( opt == "*" || opt == "ALL" )   {

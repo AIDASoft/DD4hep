@@ -12,16 +12,15 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4Random.h"
-#include "DDG4/Geant4IsotropeGenerator.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4Random.h>
+#include <DDG4/Geant4IsotropeGenerator.h>
 
-using namespace std;
 using namespace dd4hep::sim;
 
 /// Standard constructor
-Geant4IsotropeGenerator::Geant4IsotropeGenerator(Geant4Context* ctxt, const string& nam)
+Geant4IsotropeGenerator::Geant4IsotropeGenerator(Geant4Context* ctxt, const std::string& nam)
   : Geant4ParticleGenerator(ctxt, nam)
 {
   InstanceCount::increment(this);

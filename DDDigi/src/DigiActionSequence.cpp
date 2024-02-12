@@ -18,11 +18,10 @@
 // C/C++ include files
 #include <stdexcept>
 
-using namespace std;
 using namespace dd4hep::digi;
 
 /// Standard constructor
-DigiActionSequence::DigiActionSequence(const DigiKernel& kernel, const string& nam)
+DigiActionSequence::DigiActionSequence(const DigiKernel& kernel, const std::string& nam)
   : DigiSynchronize(kernel, nam)
 {
   InstanceCount::increment(this);
@@ -50,7 +49,7 @@ void DigiActionSequence::execute(DigiContext& context)  const   {
 }
 
 /// Standard constructor
-DigiSequentialActionSequence::DigiSequentialActionSequence(const DigiKernel& kernel, const string& nam)
+DigiSequentialActionSequence::DigiSequentialActionSequence(const DigiKernel& kernel, const std::string& nam)
   : DigiActionSequence(kernel, nam)
 {
   this->m_parallel = false;
@@ -63,7 +62,7 @@ DigiSequentialActionSequence::~DigiSequentialActionSequence() {
 }
 
 /// Standard constructor
-DigiParallelActionSequence::DigiParallelActionSequence(const DigiKernel& kernel, const string& nam)
+DigiParallelActionSequence::DigiParallelActionSequence(const DigiKernel& kernel, const std::string& nam)
   : DigiActionSequence(kernel, nam)
 {
   this->m_parallel = true;

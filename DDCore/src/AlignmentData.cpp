@@ -12,18 +12,19 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/AlignmentData.h"
-#include "DD4hep/MatrixHelpers.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/DetElement.h"
-#include "DD4hep/OpaqueData.h"
-#include "DD4hep/Primitives.h"
+#include <DD4hep/AlignmentData.h>
+#include <DD4hep/MatrixHelpers.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/DetElement.h>
+#include <DD4hep/OpaqueData.h>
+#include <DD4hep/Primitives.h>
 
 // ROOT include files
-#include "TGeoMatrix.h"
+#include <TGeoMatrix.h>
+
+// C/C++ include files
 #include <sstream>
 
-using namespace std;
 using namespace dd4hep;
 
 /// Copy constructor
@@ -84,12 +85,12 @@ void Delta::computeMatrix(TGeoHMatrix& tr_delta)  const   {
 }
 
 /// print alignment delta object
-ostream& operator << (ostream& ostr, const Delta& data)   {
-  string res;
-  stringstream str;
+std::ostream& operator << (std::ostream& ostr, const Delta& data)   {
+  std::string res;
+  std::stringstream str;
   str << "[" << data.translation << "," << data.rotation << "," << data.pivot << "]";
   res = str.str();
-  for(size_t i=0; i<res.length(); ++i)
+  for(std::size_t i=0; i<res.length(); ++i)
     if ( res[i]=='\n' ) res[i] = ' ';
   return ostr << res;
 }
@@ -131,8 +132,8 @@ AlignmentData& AlignmentData::operator=(const AlignmentData& copy)  {
 }
 
 /// print Conditions object
-ostream& operator << (ostream& ostr, const AlignmentData& data)   {
-  stringstream str;
+std::ostream& operator << (std::ostream& ostr, const AlignmentData& data)   {
+  std::stringstream str;
   str << data.delta;
   return ostr << str.str();
 }
@@ -229,7 +230,7 @@ Alignment AlignmentData::nominal() const   {
   return detector.nominal();
 }
 
-#include "DD4hep/GrammarUnparsed.h"
+#include <DD4hep/GrammarUnparsed.h>
 static auto s_registry = GrammarRegistry::pre_note<Delta>(1)
               .pre_note<AlignmentData>(1)
               .pre_note<std::map<DetElement, Delta> >(1);

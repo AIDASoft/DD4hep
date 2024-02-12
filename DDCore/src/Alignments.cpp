@@ -12,22 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/AlignmentData.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+#include <DD4hep/AlignmentData.h>
+#include <DD4hep/detail/AlignmentsInterna.h>
+#include <DD4hep/detail/ConditionsInterna.h>
 
 // C/C++ include files
 #include <sstream>
 
-
-using namespace std;
 using namespace dd4hep;
 
-const string dd4hep::align::Keys::deltaName("alignment_delta");
+const std::string dd4hep::align::Keys::deltaName("alignment_delta");
 const dd4hep::Condition::itemkey_type  dd4hep::align::Keys::deltaKey =
   dd4hep::ConditionKey::itemCode("alignment_delta");
 
-const string dd4hep::align::Keys::alignmentName("alignment");
+const std::string dd4hep::align::Keys::alignmentName("alignment");
 const dd4hep::Condition::itemkey_type dd4hep::align::Keys::alignmentKey =
   dd4hep::ConditionKey::itemCode("alignment");
 
@@ -36,7 +34,7 @@ Alignment::Processor::Processor() {
 }
 
 /// Initializing constructor to create a new object (Specialized for AlignmentNamedObject)
-Alignment::Alignment(const string& nam)  {
+Alignment::Alignment(const std::string& nam)  {
   char*   p = (char*)::operator new(sizeof(Object)+sizeof(AlignmentData));
   Object* o = new(p) Object(nam, "alignment", p+sizeof(Object), sizeof(AlignmentData));
   assign(o, nam, "alignment");
@@ -44,7 +42,7 @@ Alignment::Alignment(const string& nam)  {
 }
 
 /// Initializing constructor to create a new object (Specialized for AlignmentObject)
-AlignmentCondition::AlignmentCondition(const string& nam)   {
+AlignmentCondition::AlignmentCondition(const std::string& nam)   {
   char*   p = (char*)::operator new(sizeof(Object)+sizeof(AlignmentData));
   Object* o = new(p) Object(nam, "alignment", p+sizeof(Object), sizeof(AlignmentData));
   assign(o, nam, "alignment");
@@ -77,7 +75,7 @@ const TGeoHMatrix& Alignment::detectorTransformation() const   {
 }
 
 /// Access to the node list
-const vector<PlacedVolume>& Alignment::nodes() const   {
+const std::vector<PlacedVolume>& Alignment::nodes() const   {
   return access()->values().nodes;
 }
 
