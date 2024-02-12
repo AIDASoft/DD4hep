@@ -203,7 +203,7 @@ void Geant4TestStackAction::prepare(G4StackManager*) {
   PRINT("%s> calling prepare()", m_type.c_str());
 }
 /// Return TrackClassification with enum G4ClassificationOfNewTrack or NoTrackClassification
-TrackClassification Geant4TestStackAction::classifyNewTrack(G4StackManager*, const G4Track* trk) {
+dd4hep::sim::TrackClassification Geant4TestStackAction::classifyNewTrack(G4StackManager*, const G4Track* trk) {
   PRINT("%s> calling classifyNewTrack(track=%d, parent=%d, position=(%f,%f,%f) Context: run=%p evt=%p)",
         m_type.c_str(), trk->GetTrackID(),
         trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z(),
