@@ -20,6 +20,7 @@
 #include <DD4hep/DetFactoryHelper.h>
 #include <Math/Polar2D.h>
 
+// Forward declarations
 class TObject;
 
 using namespace dd4hep::xml::tools;
@@ -174,8 +175,7 @@ dd4hep::Volume dd4hep::xml::createPlacedEnvelope( dd4hep::Detector& description,
     rot = RotationZYX( env_rot.z(),env_rot.y(),env_rot.x() ) ;
   }
 
-  Volume  envelope  ;
-
+  Volume  envelope;
   if(  x_shape.typeStr() == "Assembly" ){
     envelope = Assembly( det_name+"_assembly" ) ;
   } else { 
@@ -183,8 +183,9 @@ dd4hep::Volume dd4hep::xml::createPlacedEnvelope( dd4hep::Detector& description,
     Box  env_solid = xml_comp_t( x_shape ).createShape();
     
     if( !env_solid.isValid() ){
-      dd4hep::except("createPlacedEnvelope","Cannot create envelope volume : %s for detector %s.",
-                     x_shape.typeStr(), det_name.c_str());
+      dd4hep::except("createPlacedEnvelope",
+                     "Cannot create envelope volume : %s for detector %s.",
+                     x_shape.typeStr().c_str(), det_name.c_str());
     }
     Material      env_mat   = description.material( x_shape.materialStr() );
     envelope = Volume( det_name+"_envelope", env_solid, env_mat );
