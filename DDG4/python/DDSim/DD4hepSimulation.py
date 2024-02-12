@@ -348,6 +348,20 @@ class DD4hepSimulation(object):
     self.geometry.constructGeometry(kernel, geant4, self.output.geometry)
 
     # ----------------------------------------------------------------------------------
+    # Configure run, event, track, step, and stack actions, if present
+    for action_list, DDG4_Action, kernel_Action in \
+        [(self.action.run, DDG4.RunAction, kernel.runAction),
+         (self.action.event, DDG4.EventAction, kernel.eventAction),
+         (self.action.track, DDG4.TrackingAction, kernel.trackingAction),
+         (self.action.step, DDG4.SteppingAction, kernel.steppingAction),
+         (self.action.stack, DDG4.StackingAction, kernel.stackingAction)]:
+      for action_dict in action_list:
+        action = DDG4_Action(kernel, action_dict["name"])
+        for parameter, value in action_dict.get('parameter', {}).items():
+          setattr(action, parameter, value)
+        kernel_Action().add(action)
+
+    # ----------------------------------------------------------------------------------
     # Configure Run actions
     run1 = DDG4.RunAction(kernel, 'Geant4TestRunAction/RunInit')
     kernel.registerGlobalAction(run1)

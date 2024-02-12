@@ -13,8 +13,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/RhoPhiProjection.h"
-#include "DDEve/Factories.h"
+#include <DDEve/RhoPhiProjection.h>
+#include <DDEve/Factories.h>
 
 using namespace dd4hep;
 

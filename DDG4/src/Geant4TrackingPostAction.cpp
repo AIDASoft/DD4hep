@@ -12,17 +12,16 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4TrackingPostAction.h"
-#include "DDG4/Geant4TrackHandler.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4TrackingPostAction.h>
+#include <DDG4/Geant4TrackHandler.h>
 
 // Geant4 include files
-#include "G4TrackingManager.hh"
+#include <G4TrackingManager.hh>
 
 // C/C++ include files
 #include <algorithm>
 
-using namespace std;
 using namespace dd4hep::sim;
 
 /// Helper class to manipulate strings
@@ -81,7 +80,7 @@ void Geant4TrackingPostAction::end(const G4Track* tr) {
 
   Geant4TrackHandler track(tr);
   //Geant4TrackInformation* info = track.info<Geant4TrackInformation>();
-  const string& proc = track.creatorProcess()->GetProcessName();
+  const std::string& proc = track.creatorProcess()->GetProcessName();
   StringV::const_iterator trIt = find_if(m_ignoredProcs.begin(), m_ignoredProcs.end(), FindString(proc));
   if (trIt != m_ignoredProcs.end()) {
     warning("Particles created by processes of type %s are not kept!", (*trIt).c_str());

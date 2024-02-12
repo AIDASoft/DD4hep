@@ -15,6 +15,7 @@
 #include <DD4hep/Printout.h>
 #include <DD4hep/Primitives.h>
 #include <DD4hep/InstanceCount.h>
+
 #include <DDG4/Geant4Kernel.h>
 #include <DDG4/Geant4Mapping.h>
 #include <DDG4/Geant4StepHandler.h>
@@ -36,27 +37,24 @@
 #define MM_2_CM 0.1
 #endif
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 #if 0
 namespace {
-  Geant4ActionSD* _getSensitiveDetector(const string& name) {
+  Geant4ActionSD* _getSensitiveDetector(const std::string& name) {
     G4SDManager* mgr = G4SDManager::GetSDMpointer();
     G4VSensitiveDetector* sd = mgr->FindSensitiveDetector(name);
     if (0 == sd) {
-      throw runtime_error(format("Geant4Sensitive", "DDG4: You requested to configure actions "
-                                 "for the sensitive detector %s,\nDDG4: which is not known to Geant4. "
-                                 "Are you sure you already converted the geometry?", name.c_str()));
+      dd4hep::except("Geant4Sensitive", "DDG4: You requested to configure actions "
+                     "for the sensitive detector %s,\nDDG4: which is not known to Geant4. "
+                     "Are you sure you already converted the geometry?", name.c_str());
     }
     Geant4ActionSD* action_sd = dynamic_cast<Geant4ActionSD*>(sd);
     if (0 == action_sd) {
-      throw runtime_error(
-                          format("Geant4Sensitive", "DDG4: You may only configure actions "
-                                 "for sensitive detectors of type Geant4ActionSD.\n"
-                                 "DDG4: The sensitive detector of %s is of type %s, which is incompatible.", name.c_str(),
-                                 typeName(typeid(*sd)).c_str()));
+      throw dd4hep::except("Geant4Sensitive", "DDG4: You may only configure actions "
+                           "for sensitive detectors of type Geant4ActionSD.\n"
+                           "DDG4: The sensitive detector of %s is of type %s, which is incompatible.", name.c_str(),
+                           typeName(typeid(*sd)).c_str());
     }
     return action_sd;
   }
@@ -97,12 +95,12 @@ bool Geant4Filter::operator()(const Geant4FastSimSpot*) const {
 }
 
 /// Constructor. The detector element is identified by the name
-Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& nam, DetElement det, Detector& det_ref)
+Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const std::string& nam, DetElement det, Detector& det_ref)
   : Geant4Action(ctxt, nam), m_detDesc(det_ref), m_detector(det)
 {
   InstanceCount::increment(this);
   if (!det.isValid()) {
-    throw runtime_error(format("Geant4Sensitive", "DDG4: Detector elemnt for %s is invalid.", nam.c_str()));
+    except("DDG4: Detector elemnt for %s is invalid.", nam.c_str());
   }
   declareProperty("HitCreationMode", m_hitCreationMode = SIMPLE_MODE);
   m_sequence     = context()->kernel().sensitiveAction(m_detector.name());
@@ -131,7 +129,7 @@ void Geant4Sensitive::adopt(Geant4Filter* filter) {
     m_filters.add(filter);
     return;
   }
-  throw runtime_error("Geant4Sensitive: Attempt to add invalid sensitive filter!");
+  except("Attempt to add invalid sensitive filter!");
 }
 
 /// Add an actor responding to all callbacks. Sequence takes ownership.
@@ -147,7 +145,7 @@ void Geant4Sensitive::adopt_front(Geant4Filter* filter) {
     m_filters.add_front(filter);
     return;
   }
-  throw runtime_error("Geant4Sensitive: Attempt to add invalid sensitive filter!");
+  except("Attempt to add invalid sensitive filter!");
 }
 
 /// Callback before hit processing starts. Invoke all filters.
@@ -175,8 +173,8 @@ Geant4ActionSD& Geant4Sensitive::detector() const {
     return *m_sensitiveDetector;
   //m_sensitiveDetector = _getSensitiveDetector(m_detector.name());
   //if (  m_sensitiveDetector ) return *m_sensitiveDetector;
-  throw runtime_error(format("Geant4Sensitive", "DDG4: The sensitive detector for action %s "
-                             "was not properly configured.", name().c_str()));
+  except("DDG4: The sensitive detector for action %s was not properly configured.", name().c_str());
+  throw std::runtime_error("Geant4Sensitive::detector");
 }
 
 /// Access to the hosting sequence
@@ -185,12 +183,12 @@ Geant4SensDetActionSequence& Geant4Sensitive::sequence() const {
 }
 
 /// Access the detector desciption object
-Detector& Geant4Sensitive::detectorDescription() const {
+dd4hep::Detector& Geant4Sensitive::detectorDescription() const {
   return m_detDesc;
 }
 
 /// Access HitCollection container names
-const string& Geant4Sensitive::hitCollectionName(std::size_t which) const {
+const std::string& Geant4Sensitive::hitCollectionName(std::size_t which) const {
   return sequence().hitCollectionName(which);
 }
 
@@ -289,7 +287,7 @@ long long int Geant4Sensitive::cellID(const G4VTouchable* touchable, const G4Thr
 }
 
 /// Standard constructor
-Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* ctxt, const string& nam)
+Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* ctxt, const std::string& nam)
   : Geant4Action(ctxt, nam), m_hce(0), m_detector(0)
 {
   m_needsControl = true;
@@ -329,7 +327,7 @@ void Geant4SensDetActionSequence::adopt(Geant4Sensitive* sensitive) {
     m_actors.add(sensitive);
     return;
   }
-  throw runtime_error("Geant4SensDetActionSequence: Attempt to add invalid sensitive actor!");
+  except("Attempt to add invalid sensitive actor!");
 }
 
 /// Add an actor responding to all callbacks. Sequence takes ownership.
@@ -339,7 +337,7 @@ void Geant4SensDetActionSequence::adopt(Geant4Filter* filter) {
     m_filters.add(filter);
     return;
   }
-  throw runtime_error("Geant4SensDetActionSequence: Attempt to add invalid sensitive filter!");
+  except("Attempt to add invalid sensitive filter!");
 }
 
 /// Initialize the usage of a hit collection. Returns the collection identifier
@@ -366,7 +364,7 @@ const std::string& Geant4SensDetActionSequence::hitCollectionName(std::size_t wh
   if (which < m_collections.size()) {
     return m_collections[which].first;
   }
-  static string blank = "";
+  static std::string blank = "";
   except("The collection name index for subdetector %s is out of range!", c_name());
   return blank;
 }
@@ -470,17 +468,18 @@ Geant4SensDetSequences::~Geant4SensDetSequences() {
 }
 
 /// Access sequence member by name
-Geant4SensDetActionSequence* Geant4SensDetSequences::operator[](const string& name) const {
-  string nam = "SD_Seq_" + name;
-  Members::const_iterator i = m_sequences.find(nam);
+Geant4SensDetActionSequence* Geant4SensDetSequences::operator[](const std::string& nam) const {
+  std::string n = "SD_Seq_" + nam;
+  Members::const_iterator i = m_sequences.find(n);
   if (i != m_sequences.end())
     return (*i).second;
-  throw runtime_error("Attempt to access undefined SensDetActionSequence!");
+  except("Attempt to access undefined SensDetActionSequence: %s ", nam.c_str());
+  return nullptr;
 }
 
 /// Access sequence member by name
 Geant4SensDetActionSequence* Geant4SensDetSequences::find(const std::string& name) const {
-  string nam = "SD_Seq_" + name;
+  std::string nam = "SD_Seq_" + name;
   Members::const_iterator i = m_sequences.find(nam);
   if (i != m_sequences.end())
     return (*i).second;
@@ -488,15 +487,14 @@ Geant4SensDetActionSequence* Geant4SensDetSequences::find(const std::string& nam
 }
 
 /// Insert sequence member
-void Geant4SensDetSequences::insert(const string& name, Geant4SensDetActionSequence* seq) {
+void Geant4SensDetSequences::insert(const std::string& name, Geant4SensDetActionSequence* seq) {
   if (seq) {
-    string nam = "SD_Seq_" + name;
+    std::string nam = "SD_Seq_" + name;
     seq->addRef();
     m_sequences[nam] = seq;
     return;
   }
-  throw runtime_error(format("Geant4SensDetSequences", "Attempt to add invalid sensitive "
-                             "sequence with name:%s", name.c_str()));
+  except("Attempt to add invalid sensitive sequence with name:%s", name.c_str());
 }
 
 /// Clear the sequence list

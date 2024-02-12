@@ -13,11 +13,11 @@
 #ifndef DD4HEP_NONE
 
 // Framework include files
-#include "JSON/Detector.h"
+#include <JSON/Detector.h>
 
 // Instantiate here the concrete implementations
 #define DD4HEP_DIMENSION_NS json
 using namespace dd4hep::DD4HEP_DIMENSION_NS;
 
-#include "Parsers/detail/Detector.imp"
+#include <Parsers/detail/Detector.imp>
 #endif

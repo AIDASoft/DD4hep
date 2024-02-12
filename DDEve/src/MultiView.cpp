@@ -12,14 +12,13 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/MultiView.h"
-#include "DDEve/Factories.h"
-#include "DDEve/DisplayConfiguration.h"
-#include "DD4hep/Plugins.h"
+#include <DDEve/MultiView.h>
+#include <DDEve/Factories.h>
+#include <DDEve/DisplayConfiguration.h>
+#include <DD4hep/Plugins.h>
 
 #include <iostream>
 
-using namespace std;
 using namespace dd4hep;
 
 ClassImp(MultiView)
@@ -35,7 +34,7 @@ static void _build(Display* display, View* v, TEveWindowSlot* slot)  {
 }
 
 /// Initializing constructor
-MultiView::MultiView(Display* eve, const string& nam) : View(eve, nam)
+MultiView::MultiView(Display* eve, const std::string& nam) : View(eve, nam)
 {
 }
 
@@ -72,7 +71,7 @@ View& MultiView::Build(TEveWindow* slot)   {
   /// First panel
   if ( panels.size()>0)   {
     const DisplayConfiguration::Config& cfg = panels[0];
-    string typ = "DD4hep_DDEve_"+cfg.use;
+    std::string typ = "DD4hep_DDEve_"+cfg.use;
     v = PluginService::Create<View*>(typ.c_str(),m_eve,cfg.name.c_str());
   }
   else  {
@@ -84,7 +83,7 @@ View& MultiView::Build(TEveWindow* slot)   {
   /// Second panel
   if ( panels.size()>1)   {
     const DisplayConfiguration::Config& cfg = panels[1];
-    string typ = "DD4hep_DDEve_"+cfg.use;
+    std::string typ = "DD4hep_DDEve_"+cfg.use;
     v = PluginService::Create<View*>(typ.c_str(),m_eve,cfg.name.c_str());
   }
   else  {

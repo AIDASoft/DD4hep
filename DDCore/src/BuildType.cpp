@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/BuildType.h"
+#include <DD4hep/BuildType.h>
 
 // C/C++ include files
 #include <stdexcept>

@@ -12,27 +12,26 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4Primary.h"
-#include "DDG4/Geant4ParticleGenerator.h"
-#include "DDG4/Geant4Random.h"
-#include "CLHEP/Units/SystemOfUnits.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4Primary.h>
+#include <DDG4/Geant4ParticleGenerator.h>
+#include <DDG4/Geant4Random.h>
+#include <CLHEP/Units/SystemOfUnits.h>
 
 // Geant4 include files
-#include "G4ParticleTable.hh"
-#include "G4ParticleDefinition.hh"
+#include <G4ParticleTable.hh>
+#include <G4ParticleDefinition.hh>
 
 // C/C++ include files
 #include <stdexcept>
 #include <cmath>
 
-using namespace std;
 using namespace dd4hep::sim;
 
 /// Standard constructor
-Geant4ParticleGenerator::Geant4ParticleGenerator(Geant4Context* ctxt, const string& nam)
+Geant4ParticleGenerator::Geant4ParticleGenerator(Geant4Context* ctxt, const std::string& nam)
   : Geant4GeneratorAction(ctxt, nam), m_direction(0,1,0), m_position(0,0,0), m_particle(0)
 {
   InstanceCount::increment(this);
@@ -125,7 +124,7 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
     m_particle = particleTable->FindParticle(m_particleName);
     if (0 == m_particle) {
-      throw runtime_error("Geant4ParticleGenerator: Bad particle type:"+m_particleName+"!");
+      except("Geant4ParticleGenerator: Bad particle type: %s!", m_particleName.c_str());
     }
   }
   Geant4Event& evt = context()->event();
@@ -177,6 +176,5 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
              p->id, m_particleName.c_str(), momentum/CLHEP::GeV,
 	     vtx->x/CLHEP::mm, vtx->y/CLHEP::mm, vtx->z/CLHEP::mm,
 	     direction.X(), direction.Y(), direction.Z());
-
   }
 }

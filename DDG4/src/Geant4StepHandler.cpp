@@ -12,16 +12,15 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4StepHandler.h"
-#include "DDSegmentation/Segmentation.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "CLHEP/Units/SystemOfUnits.h"
+#include <DDG4/Geant4StepHandler.h>
+#include <DDSegmentation/Segmentation.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <CLHEP/Units/SystemOfUnits.h>
 
 // Geant4 include files
-#include "G4Version.hh"
+#include <G4Version.hh>
 
 namespace units = dd4hep;
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Returns the step status in form of a string

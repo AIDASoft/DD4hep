@@ -24,8 +24,8 @@
 #include <DDG4/Geant4Random.h>
 
 // Geant4 include files
-#include "G4SystemOfUnits.hh"
-#include "G4FastStep.hh"
+#include <G4SystemOfUnits.hh>
+#include <G4FastStep.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {
@@ -48,38 +48,38 @@ namespace dd4hep  {
       double            NoiseEnergyResolution     { -1e0 };
 
       double resolution(double momentum)   const    {
-	double res = -1e0;
-	double mom = momentum/CLHEP::GeV;
-	if ( this->StocasticEnergyResolution > 0 && 
-	     this->ConstantEnergyResolution  > 0 &&
-	     this->NoiseEnergyResolution > 0 )    {
-	  res = std::sqrt(std::pow( this->StocasticEnergyResolution / std::sqrt( mom ), 2 ) +  // stochastic
-			  std::pow( this->ConstantEnergyResolution, 2 ) +                      // constant
-			  std::pow( this->NoiseEnergyResolution / mom, 2 ) );                  // noise
-	}
-	else if ( this->StocasticEnergyResolution > 0 &&
-		  this->ConstantEnergyResolution > 0 )    {
-	  res = std::sqrt(std::pow( this->StocasticEnergyResolution / std::sqrt( mom ), 2 ) +  // stochastic
-			  std::pow( this->ConstantEnergyResolution, 2 ) );                     // constant
-	}
-	else if ( this->StocasticEnergyResolution > 0 )    {
-	  res = this->StocasticEnergyResolution / std::sqrt( mom );                            // stochastic
-	}
-	else if ( this->ConstantEnergyResolution > 0 )    {
-	  res = this->ConstantEnergyResolution;                                                // constant
-	}
-	return res;
+        double res = -1e0;
+        double mom = momentum/CLHEP::GeV;
+        if ( this->StocasticEnergyResolution > 0 && 
+             this->ConstantEnergyResolution  > 0 &&
+             this->NoiseEnergyResolution > 0 )    {
+          res = std::sqrt(std::pow( this->StocasticEnergyResolution / std::sqrt( mom ), 2 ) +  // stochastic
+                          std::pow( this->ConstantEnergyResolution, 2 ) +                      // constant
+                          std::pow( this->NoiseEnergyResolution / mom, 2 ) );                  // noise
+        }
+        else if ( this->StocasticEnergyResolution > 0 &&
+                  this->ConstantEnergyResolution > 0 )    {
+          res = std::sqrt(std::pow( this->StocasticEnergyResolution / std::sqrt( mom ), 2 ) +  // stochastic
+                          std::pow( this->ConstantEnergyResolution, 2 ) );                     // constant
+        }
+        else if ( this->StocasticEnergyResolution > 0 )    {
+          res = this->StocasticEnergyResolution / std::sqrt( mom );                            // stochastic
+        }
+        else if ( this->ConstantEnergyResolution > 0 )    {
+          res = this->ConstantEnergyResolution;                                                // constant
+        }
+        return res;
       }
 
       double smearEnergy(double mom)   const  {
-	double resolution = this->resolution(mom);
-	double smeared    = mom;
-	if ( resolution > 0e0 )  {
-	  for( smeared = -1e0; smeared < 0e0; ) {  // Ensure that the resulting value is not negative
-	    smeared = mom * Geant4Random::instance()->gauss(1e0, resolution);
-	  }
-	}
-	return smeared;
+        double resolution = this->resolution(mom);
+        double smeared    = mom;
+        if ( resolution > 0e0 )  {
+          for( smeared = -1e0; smeared < 0e0; ) {  // Ensure that the resulting value is not negative
+            smeared = mom * Geant4Random::instance()->gauss(1e0, resolution);
+          }
+        }
+        return smeared;
       }
     };
     
@@ -113,7 +113,7 @@ namespace dd4hep  {
       // Consider only primary tracks and smear according to the parametrized resolution
       // ELSE: simply set the value of the (initial) energy of the particle is deposited in the step
       if ( !spot.primary->GetParentID() ) {
-	deposit = locals.smearEnergy(deposit);
+        deposit = locals.smearEnergy(deposit);
       }
       hit.SetEnergy(deposit);
       step.ProposeTotalEnergyDeposited(deposit);

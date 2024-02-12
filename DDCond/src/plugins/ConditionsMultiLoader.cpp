@@ -16,8 +16,8 @@
 #define DD4HEP_CONDITIONS_MULTICONDITONSLOADER_H
 
 // Framework include files
-#include "DDCond/ConditionsDataLoader.h"
-#include "DD4hep/Printout.h"
+#include <DDCond/ConditionsDataLoader.h>
+#include <DD4hep/Printout.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -86,14 +86,13 @@ namespace dd4hep {
 //==========================================================================
 
 // Framework include files
-//#include "ConditionsMultiLoader.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Factories.h"
-#include "DD4hep/PluginCreators.h"
-#include "DDCond/ConditionsManager.h"
+//#include <ConditionsMultiLoader.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Factories.h>
+#include <DD4hep/PluginCreators.h>
+#include <DDCond/ConditionsManager.h>
 
 // Forward declartions
-using std::string;
 using namespace dd4hep::cond;
 
 namespace {
@@ -106,7 +105,7 @@ namespace {
 DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_Conditions_multi_Loader,create_loader)
 
 /// Standard constructor, initializes variables
-ConditionsMultiLoader::ConditionsMultiLoader(Detector& description, ConditionsManager mgr, const string& nam) 
+ConditionsMultiLoader::ConditionsMultiLoader(Detector& description, ConditionsManager mgr, const std::string& nam) 
 : ConditionsDataLoader(description, mgr, nam)
 {
 }
@@ -122,15 +121,15 @@ ConditionsMultiLoader::load_source(const std::string& nam,
   OpenSources::iterator iop = m_openSources.find(nam);
   if ( iop == m_openSources.end() )  {
     size_t idx = nam.find(':');
-    if ( idx == string::npos )   {
+    if ( idx == std::string::npos )   {
       except("ConditionsMultiLoader","Invalid data source specification: "+nam);
     }
-    string ident = nam.substr(0,idx);
+    std::string ident = nam.substr(0,idx);
     Loaders::iterator ild = m_loaders.find(ident);
     ConditionsDataLoader* loader = 0;
     if ( ild == m_loaders.end() )  {
-      string typ = "DD4hep_Conditions_"+ident+"_Loader";
-      string fac = ident+"_ConditionsDataLoader";
+      std::string typ = "DD4hep_Conditions_"+ident+"_Loader";
+      std::string fac = ident+"_ConditionsDataLoader";
       const void* argv[] = {fac.c_str(), m_mgr.ptr(), 0};
       loader = createPlugin<ConditionsDataLoader>(typ,m_detector,2,argv);
       if ( !loader )  {
@@ -160,7 +159,7 @@ size_t ConditionsMultiLoader::load_range(key_type key,
     const IOV& iov = (*i).second;
     if ( iov.type == req_validity.type )  {
       if ( IOV::key_partially_contained(iov.keyData,req_validity.keyData) )  { 
-        const string& nam = (*i).first;
+        const std::string& nam = (*i).first;
         ConditionsDataLoader* loader = load_source(nam, req_validity);
         loader->load_range(key, req_validity, conditions);
       }
@@ -180,7 +179,7 @@ size_t ConditionsMultiLoader::load_single(key_type key,
     const IOV& iov = (*i).second;
     if ( iov.type == req_validity.type )  {
       if ( IOV::key_partially_contained(iov.keyData,req_validity.keyData) )  {
-        const string& nam = (*i).first;
+        const std::string& nam = (*i).first;
         ConditionsDataLoader* loader = load_source(nam, req_validity);
         loader->load_single(key, req_validity, conditions);
       }

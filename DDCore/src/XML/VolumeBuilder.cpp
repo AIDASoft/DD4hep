@@ -13,21 +13,17 @@
 #ifndef DD4HEP_NONE
 
 // Framework include files
-#include "XML/VolumeBuilder.h"
-#include "XML/Utilities.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/DetFactoryHelper.h"
-#include "Math/Polar2D.h"
+#include <XML/VolumeBuilder.h>
+#include <XML/Utilities.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/DetFactoryHelper.h>
+#include <Math/Polar2D.h>
 
-#include "TClass.h"
+#include <TClass.h>
 
-
-using namespace std;
-using namespace dd4hep;
-using namespace dd4hep::detail;
-using namespace dd4hep::xml::tools;
+using dd4hep::xml::tools::VolumeBuilder;
 
 /// Initializing constructor
 VolumeBuilder::VolumeBuilder(Detector& dsc, xml_h x_parent, SensitiveDetector sd)
@@ -42,13 +38,13 @@ VolumeBuilder::VolumeBuilder(Detector& dsc, xml_h x_parent, SensitiveDetector sd
 }
 
 /// Collect a set of materials from the leafs of an xml tag
-size_t VolumeBuilder::collectMaterials(xml_h element)   {
-  size_t len = materials.size();
+std::size_t VolumeBuilder::collectMaterials(xml_h element)   {
+  std::size_t len = materials.size();
   for( xml_coll_t c(element,_U(material)); c; ++c )   {
-    xml_comp_t x_c = c;
-    string   nam = x_c.nameStr();
-    string   val = x_c.valueStr();
-    Material mat = description.material(val);
+    xml_comp_t  x_c = c;
+    std::string nam = x_c.nameStr();
+    std::string val = x_c.valueStr();
+    Material    mat = description.material(val);
     materials[nam] = mat;
   }
   return materials.size()-len;
@@ -58,7 +54,7 @@ size_t VolumeBuilder::collectMaterials(xml_h element)   {
 void VolumeBuilder::registerShape(const std::string& nam, Solid shape)   {
   auto is = shapes.find(nam);
   if ( is == shapes.end() )  {
-    shapes[nam] = make_pair(xml_h(0), shape);
+    shapes[nam] = std::make_pair(xml_h(0), shape);
     return;
   }
   except("VolumeBuilder","+++ Shape %s is already known to this builder unit. ",nam.c_str());
@@ -74,14 +70,14 @@ void VolumeBuilder::registerVolume(const std::string& nam, Volume volume)   {
              volume.solid()->IsA()->GetName(),
              volume.visAttributes().name(),
              yes_no(volume.isSensitive()));
-    volumes[nam] = make_pair(xml_h(0), volume);
+    volumes[nam] = std::make_pair(xml_h(0), volume);
     return;
   }
   except("VolumeBuilder","+++ Volume %s is already known to this builder unit. ",nam.c_str());
 }
 
 /// Access a registered volume by name
-Volume VolumeBuilder::volume(const std::string& nam)  const    {
+dd4hep::Volume VolumeBuilder::volume(const std::string& nam)  const    {
   auto iv = volumes.find(nam);
   if ( iv == volumes.end() )  {
     auto ib = vol_veto.find(nam);
@@ -99,7 +95,7 @@ Volume VolumeBuilder::volume(const std::string& nam)  const    {
 }
 
 /// Access element from shape cache by name. Invalid returns means 'veto'. Otherwise exception
-Solid VolumeBuilder::getShape(const string& nam)  const   {
+dd4hep::Solid VolumeBuilder::getShape(const std::string& nam)  const   {
   auto is = shapes.find(nam);
   if ( is == shapes.end() )  {
     auto ib = shape_veto.find(nam);
@@ -117,12 +113,12 @@ Solid VolumeBuilder::getShape(const string& nam)  const   {
 }
 
 /// Create a new shape from the information given in the xml handle
-Solid VolumeBuilder::makeShape(xml_h handle)   {
-  xml_comp_t x = handle;
-  string     nam;
-  xml_attr_t a = handle.attr_nothrow(_U(name));
+dd4hep::Solid VolumeBuilder::makeShape(xml_h handle)   {
+  xml_comp_t  x = handle;
+  xml_attr_t  a = handle.attr_nothrow(_U(name));
+  std::string nam;
   if ( a )   {
-    nam = handle.attr<string>(a);
+    nam = handle.attr<std::string>(a);
     auto is = shapes.find(nam);
     if ( is != shapes.end() )  {
       except("VolumeBuilder","+++ The named shape %s is already known to this builder unit. "
@@ -139,7 +135,7 @@ Solid VolumeBuilder::makeShape(xml_h handle)   {
   /// Check if this volume is part of the volumes to be built for this description type
   a = handle.attr_nothrow(_U(build));
   if ( a )   {
-    string build = handle.attr<string>(a);
+    std::string build = handle.attr<std::string>(a);
     if ( !buildMatch(build,buildType) )  {
       printout(INFO,"VolumeBuilder",
                "+++ Shape %s does NOT match build requirements. [Ignored]",nam.c_str());
@@ -148,7 +144,7 @@ Solid VolumeBuilder::makeShape(xml_h handle)   {
     }
   }
   /// Now we create the shape....
-  string type = x.attr<string>(_U(type));
+  std::string type = x.attr<std::string>(_U(type));
   Solid solid = xml::createShape(description, type, x);
   if ( !solid.isValid() )   {
     except("VolumeBuilder","+++ Failed to create shape %s of type: %s",
@@ -157,7 +153,7 @@ Solid VolumeBuilder::makeShape(xml_h handle)   {
   /// And register it if it is not anonymous
   if ( !nam.empty() )   {
     solid.setName(nam);
-    shapes.emplace(nam,make_pair(handle,solid));
+    shapes.emplace(nam,std::make_pair(handle,solid));
   }
   printout(debug ? ALWAYS : DEBUG, "VolumeBuilder",
            "+++ Created shape of type: %s name: %s",type.c_str(), nam.c_str());
@@ -165,17 +161,17 @@ Solid VolumeBuilder::makeShape(xml_h handle)   {
 }
 
 /// Build all <shape/> identifiers in the passed parent xml element
-size_t VolumeBuilder::buildShapes(xml_h handle)    {
-  size_t len = shapes.size();
+std::size_t VolumeBuilder::buildShapes(xml_h handle)    {
+  std::size_t len = shapes.size();
   for( xml_coll_t c(handle,_U(shape)); c; ++c )   {
     xml_elt_t x = c;
-    string nam = x.attr<string>(_U(name));
+    std::string nam = x.attr<std::string>(_U(name));
     auto is = shapes.find(nam);
     if ( is == shapes.end() )  {
       /// Check if this volume is part of the volumes to be built for this description type
       xml_attr_t x_build = c.attr_nothrow(_U(build));
       if ( x_build )   {
-        string build = c.attr<string>(x_build);
+        std::string build = c.attr<std::string>(x_build);
         if ( !buildMatch(build,buildType) )  {
           printout(INFO,"VolumeBuilder",
                    "+++ Shape %s does NOT match build requirements. [Ignored]",nam.c_str());
@@ -183,7 +179,7 @@ size_t VolumeBuilder::buildShapes(xml_h handle)    {
           continue;
         }
       }
-      string type  = x.attr<string>(_U(type));
+      std::string type  = x.attr<std::string>(_U(type));
       Solid  solid = xml::createShape(description, type, c);
       if ( !solid.isValid() )   {
         except("VolumeBuilder","+++ Failed to create shape %s of type: %s",
@@ -192,7 +188,7 @@ size_t VolumeBuilder::buildShapes(xml_h handle)    {
       printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
                "+++ Building shape  from XML: %s of type: %s",
                nam.c_str(), solid->IsA()->GetName());
-      shapes.emplace(nam,make_pair(c,solid));
+      shapes.emplace(nam,std::make_pair(c,solid));
       continue;
     }
     except("VolumeBuilder","+++ Shape %s is already known to this builder unit. "
@@ -202,17 +198,17 @@ size_t VolumeBuilder::buildShapes(xml_h handle)    {
 }
 
 /// Build all <volume/> identifiers in the passed parent xml element
-size_t VolumeBuilder::buildVolumes(xml_h handle)    {
-  size_t len = volumes.size();
+std::size_t VolumeBuilder::buildVolumes(xml_h handle)    {
+  std::size_t len = volumes.size();
   xml_elt_t  x_comp(0);
   for( xml_coll_t c(handle,_U(volume)); c; ++c )   {
-    Solid solid;
-    xml_comp_t x    = c;
-    string     nam  = x.attr<string>(_U(name));
+    Solid       solid;
+    xml_comp_t  x = c;
+    std::string nam  = x.attr<std::string>(_U(name));
     xml_attr_t attr = c.attr_nothrow(_U(build));
     /// Check if this volume is part of the volumes to be built for this description type
     if ( attr )   {
-      string build = c.attr<string>(attr);
+      std::string build = c.attr<std::string>(attr);
       if ( !buildMatch(build,buildType) )  {
         printout(INFO,"VolumeBuilder",
                  "+++ Volume %s does NOT match build requirements. [Ignored]",nam.c_str());
@@ -222,10 +218,10 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
     bool   is_sensitive = c.attr_nothrow(_U(sensitive));
     /// Check if the volume is implemented by a factory
     if ( (attr=c.attr_nothrow(_U(type))) )   {
-      string typ = c.attr<string>(attr);
+      std::string typ = c.attr<std::string>(attr);
       Volume vol = xml::createVolume(description, typ, c);
       vol.setAttributes(description,x.regionStr(),x.limitsStr(),x.visStr());
-      volumes.emplace(nam,make_pair(c,vol));
+      volumes.emplace(nam,std::make_pair(c,vol));
       /// Check if the volume is sensitive
       if ( is_sensitive )   {
         vol.setSensitiveDetector(sensitive);
@@ -241,7 +237,7 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
     
     /// Check if the volume has a shape attribute --> shape reference
     if ( (attr=c.attr_nothrow(_U(shape))) )   {
-      string ref = c.attr<string>(attr);
+      std::string ref = c.attr<std::string>(attr);
       if ( !(solid=getShape(ref)).isValid() ) continue;
     }
     /// Else use anonymous shape embedded in volume
@@ -251,11 +247,11 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
 
     /// We have a real volume here with a concrete shape:
     if ( solid.isValid() )   {
-      Material  mat = description.material(x.attr<string>(_U(material)));
+      Material  mat = description.material(x.attr<std::string>(_U(material)));
       Volume    vol(nam, solid, mat);
       placeDaughters(detector, vol, x);
       vol.setAttributes(description,x.regionStr(),x.limitsStr(),x.visStr());
-      volumes.emplace(nam,make_pair(c,vol));
+      volumes.emplace(nam,std::make_pair(c,vol));
       /// Check if the volume is sensitive
       if ( is_sensitive )   {
         vol.setSensitiveDetector(sensitive);
@@ -274,7 +270,7 @@ size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       Assembly vol(nam);
       placeDaughters(detector, vol, x);
       vol.setAttributes(description,x.regionStr(),x.limitsStr(),x.visStr());
-      volumes.emplace(nam,make_pair(c,vol));
+      volumes.emplace(nam,std::make_pair(c,vol));
       printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
                "+++ Building assembly from XML: %-20s shape:%-24s vis:%s",
                nam.c_str(), vol->GetShape()->IsA()->GetName(), x.visStr().c_str());
@@ -296,7 +292,7 @@ void VolumeBuilder::_placeSingleVolume(DetElement parent, Volume vol, xml_h c)  
   if ( !attr )   {
     except("VolumeBuilder","+++ The xml volume element has no 'logvol' or 'volume' attribute!");
   }
-  string nam = c.attr<string>(attr);
+  std::string nam = c.attr<std::string>(attr);
   if ( vol_veto.find(nam) != vol_veto.end() )   {
     return;
   }
@@ -310,12 +306,11 @@ void VolumeBuilder::_placeSingleVolume(DetElement parent, Volume vol, xml_h c)  
   Volume daughter = (*iv).second.second;
   attr = c.attr_nothrow(_U(transformation));
   if ( attr )   {
-    string tr_nam = c.attr<string>(attr);
+    std::string tr_nam = c.attr<std::string>(attr);
     auto it = transformations.find(tr_nam);
     if ( it == transformations.end() )   {
       except("VolumeBuilder",
-             "+++ Failed to locate name transformation %s "
-             "[typo somewhere in the XML?]",
+             "+++ Failed to locate name transformation %s [typo in the XML?]",
              nam.c_str());      
     }
     const Transform3D& tr = (*it).second.second;
@@ -327,7 +322,7 @@ void VolumeBuilder::_placeSingleVolume(DetElement parent, Volume vol, xml_h c)  
   }
   xml_attr_t attr_nam = c.attr_nothrow(_U(name));
   if ( attr_nam )  {
-    string phys_nam = c.attr<string>(attr_nam);
+    std::string phys_nam = c.attr<std::string>(attr_nam);
     pv->SetName(phys_nam.c_str());
   }
   attr = c.attr_nothrow(_U(element));
@@ -338,11 +333,11 @@ void VolumeBuilder::_placeSingleVolume(DetElement parent, Volume vol, xml_h c)  
   }
   else if ( attr )  {
     int    elt_id = parent.id();
-    string elt = c.attr<string>(attr);
+    std::string elt = c.attr<std::string>(attr);
     attr = c.attr_nothrow(_U(id));
     if ( attr )   {
       elt_id = c.attr<int>(attr);
-      elt += c.attr<string>(attr);
+      elt += c.attr<std::string>(attr);
     }
     DetElement de(parent, elt, elt_id);
     de.setPlacement(pv);
@@ -364,7 +359,7 @@ void VolumeBuilder::_placeParamVolumes(DetElement parent, Volume vol, xml_h c)  
   if ( !attr )   {
     except("VolumeBuilder","+++ The xml volume element has no 'logvol' or 'volume' attribute!");
   }
-  string nam = x_phys.attr<string>(attr);
+  std::string nam = x_phys.attr<std::string>(attr);
   if ( vol_veto.find(nam) != vol_veto.end() )   {
     return;
   }
@@ -384,7 +379,7 @@ void VolumeBuilder::_placeParamVolumes(DetElement parent, Volume vol, xml_h c)  
   attr_tr = c.attr_nothrow(_U(transformation));
   Transform3D tr;
   if ( attr_tr )   {
-    string tr_nam = c.attr<string>(attr_tr);
+    std::string tr_nam = c.attr<std::string>(attr_tr);
     auto it = transformations.find(tr_nam);
     if ( it == transformations.end() )   {
       except("VolumeBuilder",
@@ -399,14 +394,14 @@ void VolumeBuilder::_placeParamVolumes(DetElement parent, Volume vol, xml_h c)  
   }
   Transform3D transformation(Position(0,0,0));
   int elt_id = -1;
-  string elt, phys_nam;
+  std::string elt, phys_nam;
   attr_nam = x_phys.attr_nothrow(_U(name));
   if ( attr_nam )  {
-    phys_nam = x_phys.attr<string>(_U(name))+"_%d";
+    phys_nam = x_phys.attr<std::string>(_U(name))+"_%d";
   }
   if ( attr_elt )  {
     elt_id = parent.id();
-    elt = c.attr<string>(attr_elt);
+    elt = c.attr<std::string>(attr_elt);
   }
   int number = c.attr<int>(_U(number));
   printout(debug ? ALWAYS : DEBUG,"VolumeBuilder","+++ Mother:%s place volume %s  %d times.",
@@ -414,7 +409,7 @@ void VolumeBuilder::_placeParamVolumes(DetElement parent, Volume vol, xml_h c)  
   for(int i=0; i<number; ++i)    {
     PlacedVolume pv = vol.placeVolume(daughter, transformation);
     if ( attr_nam )  {
-      //pv->SetName(_toString(i,phys_nam.c_str()).c_str());
+      //pv->SetName(_toStd::String(i,phys_nam.c_str()).c_str());
     }
     if ( attr_elt )  {
       DetElement de(parent,elt,elt_id);
@@ -429,15 +424,15 @@ void VolumeBuilder::_placeParamVolumes(DetElement parent, Volume vol, xml_h c)  
 }
 
 /// Load include tags contained in the passed XML handle
-size_t VolumeBuilder::load(xml_h element, const string& tag)  {
-  size_t count = 0;
+std::size_t VolumeBuilder::load(xml_h element, const std::string& tag)  {
+  std::size_t count = 0;
   for( xml_coll_t c(element,Unicode(tag)); c; ++c )   {
-    string ref = c.attr<string>(_U(ref));
-    unique_ptr<xml::DocumentHolder> doc(new xml::DocumentHolder(xml::DocumentHandler().load(element, c.attr_value(_U(ref)))));
+    std::string ref = c.attr<std::string>(_U(ref));
+    std::unique_ptr<xml::DocumentHolder> doc(new xml::DocumentHolder(xml::DocumentHandler().load(element, c.attr_value(_U(ref)))));
     xml_h vols = doc->root();
     printout(debug ? ALWAYS : DEBUG, "VolumeBuilder",
              "++ Processing xml document %s.", doc->uri().c_str());
-    included_docs[ref] = unique_ptr<xml::DocumentHolder>(doc.release());
+    included_docs[ref] = std::unique_ptr<xml::DocumentHolder>(doc.release());
     buildShapes(vols);
     buildVolumes(vols);
     ++count;
@@ -461,22 +456,22 @@ VolumeBuilder& VolumeBuilder::placeDaughters(DetElement parent, Volume vol, xml_
 }
 
 /// Build all <transformation/> identifiers in the passed parent xml element
-size_t VolumeBuilder::buildTransformations(Handle_t handle)   {
-  size_t len = transformations.size();
+std::size_t VolumeBuilder::buildTransformations(Handle_t handle)   {
+  std::size_t len = transformations.size();
   for( xml_coll_t c(handle,_U(transformation)); c; ++c )   {
-    string nam = xml_comp_t(c).nameStr();
-    transformations.emplace(nam,make_pair(c,xml::createTransformation(c)));
+    std::string nam = xml_comp_t(c).nameStr();
+    transformations.emplace(nam,std::make_pair(c,xml::createTransformation(c)));
   }
   return transformations.size() - len;
 }
 
 /// Place the detector object into the mother volume returned by the Detector instance
-PlacedVolume VolumeBuilder::placeDetector(Volume vol)    {
+dd4hep::PlacedVolume VolumeBuilder::placeDetector(Volume vol)    {
   return placeDetector(vol, x_det);
 }
 
 /// Place the detector object into the mother volume returned by the Detector instance
-PlacedVolume VolumeBuilder::placeDetector(Volume vol, xml_h handle)    {
+dd4hep::PlacedVolume VolumeBuilder::placeDetector(Volume vol, xml_h handle)    {
   xml_comp_t   x     = handle;
   xml_dim_t    x_pos = x_det.child(_U(position),false);
   xml_dim_t    x_rot = x_det.child(_U(rotation),false);

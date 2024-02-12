@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DDEve/Projection.h"
-#include "DDEve/Display.h"
-#include "DDEve/Utilities.h"
+#include <DD4hep/Printout.h>
+#include <DDEve/Projection.h>
+#include <DDEve/Display.h>
+#include <DDEve/Utilities.h>
 
 // Eve include files
 #include <TEveManager.h>
@@ -23,11 +23,10 @@
 #include <TEveWindow.h>
 #include <TGLViewer.h>
 
-using namespace std;
 using namespace dd4hep;
 
 /// Initializing constructor
-Projection::Projection(Display* eve, const string& nam)
+Projection::Projection(Display* eve, const std::string& nam)
   : View(eve, nam), m_projMgr(0), m_axis(0)
 {
 }

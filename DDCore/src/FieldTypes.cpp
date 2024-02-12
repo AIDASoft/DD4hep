@@ -11,11 +11,10 @@
 //
 //==========================================================================
 
-#include "DD4hep/FieldTypes.h"
-#include "DD4hep/detail/Handle.inl"
+#include <DD4hep/FieldTypes.h>
+#include <DD4hep/detail/Handle.inl>
 #include <cmath>
 
-using namespace std;
 using namespace dd4hep;
 
 #ifndef INFINITY
@@ -159,7 +158,7 @@ void MultipoleField::fieldComponents(const double* pos, double* field) {
     case 0:      // Nothing, but still valid
       break;
     default:     // Error condition
-      throw runtime_error("Invalid multipole field definition!");
+      throw std::runtime_error("Invalid multipole field definition!");
     }
     Transform3D::Point f = this->rotation * Transform3D::Point(bx, by, B_z);
     field[0] += f.X();

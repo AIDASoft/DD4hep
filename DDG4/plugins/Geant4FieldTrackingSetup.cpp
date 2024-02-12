@@ -147,28 +147,26 @@ namespace dd4hep {
 #include <G4PropagatorInField.hh>
 #include <limits>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Local declaration in anonymous namespace
 namespace {
 
   struct Geant4SetupPropertyMap {
-    const map<string,string>& vals;
-    Geant4SetupPropertyMap(const map<string,string>& v) : vals(v) {}
-    string value(const string& key) const;
-    double toDouble(const string& key) const;
-    bool operator[](const string& key) const  { return vals.find(key) != vals.end(); }
+    const std::map<std::string,std::string>& vals;
+    Geant4SetupPropertyMap(const std::map<std::string,std::string>& v) : vals(v) {}
+    std::string value(const std::string& key) const;
+    double toDouble(const std::string& key) const;
+    bool operator[](const std::string& key) const  { return vals.find(key) != vals.end(); }
   };
   
-  string Geant4SetupPropertyMap::value(const string& key) const {
-    Detector::PropertyValues::const_iterator iV = vals.find(key);
+  std::string Geant4SetupPropertyMap::value(const std::string& key) const {
+    dd4hep::Detector::PropertyValues::const_iterator iV = vals.find(key);
     return iV == vals.end() ? "" : (*iV).second;
   }
 
-  double Geant4SetupPropertyMap::toDouble(const string& key) const {
-    return _toDouble(this->value(key));
+  double Geant4SetupPropertyMap::toDouble(const std::string& key) const {
+    return dd4hep::_toDouble(this->value(key));
   }
 
 }
@@ -238,14 +236,17 @@ int Geant4FieldTrackingSetup::execute(Detector& description)   {
   return 1;
 }
 
-static long setup_fields(Detector& description, const dd4hep::detail::GeoHandler& /* cnv */, const map<string,string>& vals) {
+static long setup_fields(dd4hep::Detector& description,
+                         const dd4hep::detail::GeoHandler& /* cnv */,
+                         const std::map<std::string,std::string>& vals)
+{
   struct XMLFieldTrackingSetup : public Geant4FieldTrackingSetup {
-    XMLFieldTrackingSetup(const map<string,string>& values) : Geant4FieldTrackingSetup() {
+    XMLFieldTrackingSetup(const std::map<std::string,std::string>& values) : Geant4FieldTrackingSetup() {
       Geant4SetupPropertyMap pm(values);
-      Detector::PropertyValues::const_iterator iV = values.find("min_chord_step");
+      dd4hep::Detector::PropertyValues::const_iterator iV = values.find("min_chord_step");
       eq_typ      = pm.value("equation");
       stepper_typ = pm.value("stepper");
-      min_chord_step = _toDouble((iV==values.end()) ? string("1e-2 * mm") : (*iV).second);
+      min_chord_step = dd4hep::_toDouble((iV==values.end()) ? std::string("1e-2 * mm") : (*iV).second);
       if ( pm["eps_min"] ) eps_min = pm.toDouble("eps_min");
       if ( pm["eps_max"] ) eps_max = pm.toDouble("eps_max");
       if ( pm["delta_chord"] ) delta_chord = pm.toDouble("delta_chord");

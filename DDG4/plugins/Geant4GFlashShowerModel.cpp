@@ -123,7 +123,6 @@ namespace dd4hep  {
 // C/C++ include files
 #include <sstream>
 
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Standard constructor

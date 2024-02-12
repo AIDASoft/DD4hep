@@ -12,22 +12,21 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4Primary.h"
-#include "DDG4/Geant4ParticleGun.h"
-#include "DDG4/Geant4InputHandling.h"
-#include "CLHEP/Units/SystemOfUnits.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4Primary.h>
+#include <DDG4/Geant4ParticleGun.h>
+#include <DDG4/Geant4InputHandling.h>
+#include <CLHEP/Units/SystemOfUnits.h>
 
 // C/C++ include files
 #include <limits>
 
-using namespace std;
 using namespace dd4hep::sim;
 
 /// Standard constructor
-Geant4ParticleGun::Geant4ParticleGun(Geant4Context* ctxt, const string& nam)
+Geant4ParticleGun::Geant4ParticleGun(Geant4Context* ctxt, const std::string& nam)
   : Geant4IsotropeGenerator(ctxt,nam), m_shotNo(0)
 {
   InstanceCount::increment(this);
@@ -59,7 +58,7 @@ void Geant4ParticleGun::getParticleDirection(int num, ROOT::Math::XYZVector& dir
 
 /// Callback to generate primary particles
 void Geant4ParticleGun::operator()(G4Event* event)   {
-  double r = m_direction.R(), eps = numeric_limits<float>::epsilon();
+  double r = m_direction.R(), eps = std::numeric_limits<float>::epsilon();
   if ( r > eps )  {
     m_direction.SetXYZ(m_direction.X()/r, m_direction.Y()/r, m_direction.Z()/r);
   }

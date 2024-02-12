@@ -15,7 +15,7 @@
 #define XML_LAYERING_H
 
 // Framework include files
-#include "XML/XMLElements.h"
+#include <XML/XMLElements.h>
 
 // C/C++ include files
 #include <vector>

@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
+#include <DD4hep/Printout.h>
 
 // C/C++ include files
 #include <mutex>
@@ -21,6 +21,7 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+
 // Disable some diagnostics for ROOT dictionaries
 #ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wvarargs"

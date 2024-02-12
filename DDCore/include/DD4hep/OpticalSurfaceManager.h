@@ -14,10 +14,10 @@
 #define DD4HEP_OPTICALSURFACEMANAGER_H
 
 // Framework include files
-#include "DD4hep/OpticalSurfaces.h"
+#include <DD4hep/OpticalSurfaces.h>
 
 // ROOT include files
-#include "TGeoManager.h"
+#include <TGeoManager.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -58,7 +58,6 @@ namespace dd4hep {
     /// static accessor calling DD4hepOpticalSurfaceManagerPlugin if necessary
     static OpticalSurfaceManager getOpticalSurfaceManager(Detector& description);
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
     /// Access skin surface by its full name
     SkinSurface    skinSurface(const std::string& full_name)  const;
     /// Access skin surface by its identifier tuple (DetElement, name)
@@ -80,7 +79,6 @@ namespace dd4hep {
 
     /// Register the temporary surface objects with the TGeoManager
     void registerSurfaces(DetElement subdetector);
-#endif
   };
 }         /* End namespace dd4hep                  */
 #endif // DD4HEP_OPTICALSURFACEMANAGER_H

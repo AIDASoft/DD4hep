@@ -12,21 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4Random.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4Random.h>
 
-#include "CLHEP/Random/EngineFactory.h"
-#include "CLHEP/Random/RandGamma.h"
-#include "CLHEP/Random/Random.h"
+#include <CLHEP/Random/EngineFactory.h>
+#include <CLHEP/Random/RandGamma.h>
+#include <CLHEP/Random/Random.h>
 
 // ROOT include files
-#include "TRandom1.h"
+#include <TRandom1.h>
 
 // C/C++ include files
 #include <cmath>
 
-using namespace std;
 using namespace dd4hep::sim;
 
 namespace CLHEP   {
@@ -113,7 +112,7 @@ Geant4Random::~Geant4Random()  {
 /// Access the main Geant4 random generator instance. Must be created before used!
 Geant4Random* Geant4Random::instance(bool throw_exception)   {
   if ( !s_instance && throw_exception )  {
-    throw runtime_error("No global random number generator defined!");
+    dd4hep::except("Geant4Random", "No global random number generator defined!");
   }  
   return s_instance;
 }
@@ -125,10 +124,10 @@ Geant4Random* Geant4Random::setMainInstance(Geant4Random* ptr)   {
   }
   if ( s_instance != ptr )   {
     if ( !ptr )  {
-      throw runtime_error("Attempt to declare invalid Geant4Random instance.");
+      dd4hep::except("Geant4Random","Attempt to declare invalid Geant4Random instance.");
     }
     if ( !ptr->m_inited )  {  
-      throw runtime_error("Attempt to declare uninitialized Geant4Random instance.");
+      dd4hep::except("Geant4Random","Attempt to declare uninitialized Geant4Random instance.");
     }
     Geant4Random* old = s_instance;
     CLHEP::HepRandomEngine* curr = CLHEP::HepRandom::getTheEngine();
@@ -146,19 +145,19 @@ Geant4Random* Geant4Random::setMainInstance(Geant4Random* ptr)   {
   return 0;
 }
 
-#include "CLHEP/Random/DualRand.h"
-#include "CLHEP/Random/JamesRandom.h"
-#include "CLHEP/Random/MTwistEngine.h"
-#include "CLHEP/Random/RanecuEngine.h"
-#include "CLHEP/Random/Ranlux64Engine.h"
-#include "CLHEP/Random/RanluxEngine.h"
-#include "CLHEP/Random/RanshiEngine.h"
-#include "CLHEP/Random/NonRandomEngine.h"
+#include <CLHEP/Random/DualRand.h>
+#include <CLHEP/Random/JamesRandom.h>
+#include <CLHEP/Random/MTwistEngine.h>
+#include <CLHEP/Random/RanecuEngine.h>
+#include <CLHEP/Random/Ranlux64Engine.h>
+#include <CLHEP/Random/RanluxEngine.h>
+#include <CLHEP/Random/RanshiEngine.h>
+#include <CLHEP/Random/NonRandomEngine.h>
 
 /// Initialize the instance. 
 void Geant4Random::initialize()   {
   if ( !m_file.empty() )  {
-    ifstream in(m_file.c_str(), std::ios::in);
+    std::ifstream in(m_file.c_str(), std::ios::in);
     m_engine = CLHEP::EngineFactory::newEngine(in);
     if ( !m_engine )    {
       except("Failed to create CLHEP random engine from file:%s.",m_file.c_str());

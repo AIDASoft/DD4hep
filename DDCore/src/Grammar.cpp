@@ -12,15 +12,15 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/Exceptions.h"
-#include "DD4hep/Grammar.h"
-#include "Evaluator/Evaluator.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/Exceptions.h>
+#include <DD4hep/Grammar.h>
+#include <Evaluator/Evaluator.h>
 
 // ROOT include files
-#include "TDataType.h"
-#include "TROOT.h"
+#include <TDataType.h>
+#include <TROOT.h>
 
 // C/C++ include files
 #include <algorithm>

@@ -14,7 +14,7 @@
 #define DD4HEP_DDG4_GEANT4PARTICLEDUMPACTION_H
 
 // Framework include files
-#include "DDG4/Geant4EventAction.h"
+#include <DDG4/Geant4EventAction.h>
 
 // Forward declarations
 class G4VHitsCollection;
@@ -67,20 +67,18 @@ namespace dd4hep {
 //====================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4DataDump.h"
-#include "DDG4/Geant4HitCollection.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4DataDump.h>
+#include <DDG4/Geant4HitCollection.h>
 
 // Geant 4 includes
-#include "G4HCofThisEvent.hh"
-#include "G4Event.hh"
+#include <G4HCofThisEvent.hh>
+#include <G4Event.hh>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Standard constructor
-Geant4ParticleDumpAction::Geant4ParticleDumpAction(Geant4Context* ctxt, const string& nam)
+Geant4ParticleDumpAction::Geant4ParticleDumpAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4EventAction(ctxt, nam)
 {
   m_needsControl = true;
@@ -107,5 +105,5 @@ void Geant4ParticleDumpAction::end(const G4Event* event)    {
   warning("+++ [Event:%d] No particle map available!",event->GetEventID());
 }
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 DECLARE_GEANT4ACTION(Geant4ParticleDumpAction)

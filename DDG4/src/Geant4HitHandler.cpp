@@ -19,44 +19,43 @@
 // Geant4 include files
 #include <G4NavigationHistory.hh>
 
-using namespace dd4hep;
 using namespace dd4hep::sim;
 
 /// Coordinate transformation to global coordinate.
-Position Geant4HitHandler::localToGlobal(const DDSegmentation::Vector3D& local)  const   {
+dd4hep::Position Geant4HitHandler::localToGlobal(const DDSegmentation::Vector3D& local)  const   {
   return localToGlobal(G4ThreeVector(local.X / dd4hep::mm,local.Y / dd4hep::mm,local.Z / dd4hep::mm));
 }
 
 /// Coordinate transformation to global coordinates.
-Position Geant4HitHandler::localToGlobal(const Position& local)  const   {
+dd4hep::Position Geant4HitHandler::localToGlobal(const Position& local)  const   {
   return localToGlobal(G4ThreeVector(local.X(),local.Y(),local.Z()));
 }
 
 /// Coordinate transformation to global coordinates
-Position Geant4HitHandler::localToGlobal(double x, double y, double z)  const    {
+dd4hep::Position Geant4HitHandler::localToGlobal(double x, double y, double z)  const    {
   return localToGlobal(G4ThreeVector(x,y,z));
 }
 
 /// Coordinate transformation to global coordinates
-Position Geant4HitHandler::localToGlobal(const G4ThreeVector& loc)  const    {
+dd4hep::Position Geant4HitHandler::localToGlobal(const G4ThreeVector& loc)  const    {
   G4ThreeVector p = touchable_ptr->GetHistory()->GetTopTransform().Inverse().TransformPoint(loc);
   return Position(p.x(),p.y(),p.z());
 }
 
 /// Coordinate transformation to local coordinates
-Position Geant4HitHandler::globalToLocal(double x, double y, double z)  const    {
+dd4hep::Position Geant4HitHandler::globalToLocal(double x, double y, double z)  const    {
   G4ThreeVector p = globalToLocalG4(G4ThreeVector(x,y,z));
   return Position(p.x(),p.y(),p.z());
 }
 
 /// Coordinate transformation to local coordinates
-Position Geant4HitHandler::globalToLocal(const Position& global)  const    {
+dd4hep::Position Geant4HitHandler::globalToLocal(const Position& global)  const    {
   G4ThreeVector p = globalToLocalG4(G4ThreeVector(global.X(),global.Y(),global.Z()));
   return Position(p.x(),p.y(),p.z());
 }
 
 /// Coordinate transformation to local coordinates
-Position Geant4HitHandler::globalToLocal(const G4ThreeVector& global)  const    {
+dd4hep::Position Geant4HitHandler::globalToLocal(const G4ThreeVector& global)  const    {
   G4ThreeVector p = globalToLocalG4(global);
   return Position(p.x(),p.y(),p.z());
 }

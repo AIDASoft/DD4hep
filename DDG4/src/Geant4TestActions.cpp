@@ -12,19 +12,17 @@
 //=========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4TestActions.h"
-#include "G4Run.hh"
-#include "G4Event.hh"
-#include "G4Step.hh"
-#include "G4Track.hh"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4TestActions.h>
+#include <G4Run.hh>
+#include <G4Event.hh>
+#include <G4Step.hh>
+#include <G4Track.hh>
 
 // C/C++ include files
 #include <stdexcept>
 
-using namespace std;
-using namespace dd4hep::sim;
 using namespace dd4hep::sim::Test;
 
 namespace {
@@ -49,6 +47,7 @@ Geant4TestBase::Geant4TestBase(Geant4Action* a, const std::string& typ)
 }
 /// Default destructor
 Geant4TestBase::~Geant4TestBase() {
+  printout(VERBOSE, m_type, "properties at destruction: %d, %f, %s", m_value1, m_value2, m_value3.c_str());
   InstanceCount::decrement(this);
 }
 
@@ -183,6 +182,33 @@ Geant4TestStepAction::~Geant4TestStepAction() {
 /// User stepping callback
 void Geant4TestStepAction::operator()(const G4Step*, G4SteppingManager*) {
   PRINT("%s> calling operator()", m_type.c_str());
+}
+
+/// Standard constructor with initializing arguments
+Geant4TestStackAction::Geant4TestStackAction(Geant4Context* c, const std::string& n)
+  : Geant4StackingAction(c, n), Geant4TestBase(this, "Geant4TestStackAction") {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+Geant4TestStackAction::~Geant4TestStackAction() {
+  InstanceCount::decrement(this);
+}
+/// New-stage callback
+void Geant4TestStackAction::newStage(G4StackManager*) {
+  PRINT("%s> calling newStage()", m_type.c_str());
+}
+/// Preparation callback
+void Geant4TestStackAction::prepare(G4StackManager*) {
+  PRINT("%s> calling prepare()", m_type.c_str());
+}
+/// Return TrackClassification with enum G4ClassificationOfNewTrack or NoTrackClassification
+dd4hep::sim::TrackClassification Geant4TestStackAction::classifyNewTrack(G4StackManager*, const G4Track* trk) {
+  PRINT("%s> calling classifyNewTrack(track=%d, parent=%d, position=(%f,%f,%f) Context: run=%p evt=%p)",
+        m_type.c_str(), trk->GetTrackID(),
+        trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z(),
+        &context()->run(), &context()->event());
+  return TrackClassification();
 }
 
 /// Standard constructor with initializing arguments

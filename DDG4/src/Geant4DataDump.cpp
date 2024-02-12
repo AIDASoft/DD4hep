@@ -12,14 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Primitives.h"
-#include "DDG4/Geant4DataDump.h"
+#include <DD4hep/Primitives.h>
+#include <DDG4/Geant4DataDump.h>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::sim;
-
-typedef detail::ReferenceBitMask<const int> PropertyMask;
+using PropertyMask = dd4hep::detail::ReferenceBitMask<const int>;
 
 /// Default constructor
 Geant4DataDump::Geant4DataDump(const std::string& tag) : m_tag(tag) {

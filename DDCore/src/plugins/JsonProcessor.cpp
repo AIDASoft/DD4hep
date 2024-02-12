@@ -46,11 +46,9 @@ namespace {
   class detector;
 }
 
-using namespace std;
 using namespace dd4hep;
-using namespace dd4hep::detail;
 
-static void setChildTitles(const pair<string, DetElement>& e) {
+static void setChildTitles(const std::pair<std::string, DetElement>& e) {
   DetElement parent = e.second.parent();
   const DetElement::Children& children = e.second.children();
   if (::strlen(e.second->GetTitle()) == 0) {
@@ -65,10 +63,10 @@ namespace dd4hep  {
 
 /// This is the identical converter as it is used for the XML compact!
 template <> void Converter<detector>::operator()(json_h element) const {
-  string type = element.attr<string>(_U(type));
-  string name = element.attr<string>(_U(name));
-  string name_match = ":" + name + ":";
-  string type_match = ":" + type + ":";
+  std::string type = element.attr<std::string>(_U(type));
+  std::string name = element.attr<std::string>(_U(name));
+  std::string name_match = ":" + name + ":";
+  std::string type_match = ":" + type + ":";
 
   try {
     json_attr_t attr_par = element.attr_nothrow(_U(parent));
@@ -76,7 +74,7 @@ template <> void Converter<detector>::operator()(json_h element) const {
       // We have here a nested detector. If the mother volume is not yet registered
       // it must be done here, so that the detector constructor gets the correct answer from
       // the call to Detector::pickMotherVolume(DetElement).
-      string par_name = element.attr<string>(attr_par);
+      std::string par_name = element.attr<std::string>(attr_par);
       DetElement parent_detector = description.detector(par_name);
       if ( !parent_detector.isValid() )  {
         except("Compact","Failed to access valid parent detector of %s",name.c_str());
@@ -87,9 +85,9 @@ template <> void Converter<detector>::operator()(json_h element) const {
     SensitiveDetector sd;
     Segmentation seg;
     if ( attr_ro )   {
-      Readout ro = description.readout(element.attr<string>(attr_ro));
+      Readout ro = description.readout(element.attr<std::string>(attr_ro));
       if (!ro.isValid()) {
-        throw runtime_error("No Readout structure present for detector:" + name);
+        throw std::runtime_error("No Readout structure present for detector:" + name);
       }
       seg = ro.segmentation();
       sd = SensitiveDetector(name, "sensitive");
@@ -100,7 +98,7 @@ template <> void Converter<detector>::operator()(json_h element) const {
     Handle<NamedObject> sens = sd;
     DetElement det(PluginService::Create<NamedObject*>(type, &description, &element, &sens));
     if (det.isValid()) {
-      setChildTitles(make_pair(name, det));
+      setChildTitles(std::make_pair(name, det));
       if ( sd.isValid() )  {
         det->flag |= DetElement::Object::HAVE_SENSITIVE_DETECTOR;
       }
@@ -116,18 +114,18 @@ template <> void Converter<detector>::operator()(json_h element) const {
     if (!det.isValid()) {
       PluginDebug dbg;
       PluginService::Create<NamedObject*>(type, &description, &element, &sens);
-      throw runtime_error("Failed to execute subdetector creation plugin. " + dbg.missingFactory(type));
+      throw std::runtime_error("Failed to execute subdetector creation plugin. " + dbg.missingFactory(type));
     }
     description.addDetector(det);
     return;
   }
-  catch (const exception& e) {
+  catch (const std::exception& e) {
     printout(ERROR, "Compact", "++ FAILED    to convert subdetector: %s: %s", name.c_str(), e.what());
-    terminate();
+    std::terminate();
   }
   catch (...) {
     printout(ERROR, "Compact", "++ FAILED    to convert subdetector: %s: %s", name.c_str(), "UNKNONW Exception");
-    terminate();
+    std::terminate();
   }
 }
 
@@ -140,8 +138,8 @@ static long handle_json(Detector& description, int argc, char** argv) {
              "\n");
     exit(EINVAL);
   }
-  string file = argv[0];
-  if ( file[0] != '/' ) file = string(argv[1]) + "/" + file;
+  std::string file = argv[0];
+  if ( file[0] != '/' ) file = std::string(argv[1]) + "/" + file;
 
   printout(INFO,"JsonProcessor","++ Processing JSON input: %s",file.c_str());
   json::DocumentHolder doc(json::DocumentHandler().load(file.c_str()));

@@ -12,21 +12,18 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DDCond/ConditionsSlice.h"
-#include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsTreePersistency.h"
+#include <DD4hep/Printout.h>
+#include <DDCond/ConditionsSlice.h>
+#include <DDCond/ConditionsIOVPool.h>
+#include <DDCond/ConditionsTreePersistency.h>
 
-#include "TFile.h"
-#include "TTimeStamp.h"
+#include <TFile.h>
+#include <TTimeStamp.h>
 
 typedef dd4hep::cond::ConditionsTreePersistency __ConditionsTreePersistency;
 /// ROOT Class implementation directive
 ClassImp(__ConditionsTreePersistency)
 
-
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::cond;
 
 // Local namespace for anonymous stuff
@@ -38,12 +35,12 @@ namespace  {
    *  \version 1.0
    *  \ingroup DD4HEP_CONDITIONS
    */
-  struct Scanner : public Condition::Processor   {
+  struct Scanner : public dd4hep::Condition::Processor   {
     ConditionsTreePersistency::pool_type& pool;
     /// Constructor
     Scanner(ConditionsTreePersistency::pool_type& p) : pool(p) {}
     /// Conditions callback for object processing
-    virtual int process(Condition c)  const override  {
+    virtual int process(dd4hep::Condition c)  const override  {
       pool.emplace_back(c.ptr());
       return 1;
     }
@@ -65,7 +62,7 @@ ConditionsTreePersistency::ConditionsTreePersistency() : TNamed()   {
 }
 
 /// Initializing constructor
-ConditionsTreePersistency::ConditionsTreePersistency(const string& name, const string& title)
+ConditionsTreePersistency::ConditionsTreePersistency(const std::string& name, const std::string& title)
   : TNamed(name.c_str(), title.c_str())
 {
 }
@@ -76,11 +73,12 @@ ConditionsTreePersistency::~ConditionsTreePersistency()    {
 }
 
 /// Add conditions content to be saved. Note, that dependent conditions shall not be saved!
-size_t ConditionsTreePersistency::add(const std::string& identifier,
-                                      const IOV& iov,
-                                      std::vector<Condition>& conditions)   {
+std::size_t ConditionsTreePersistency::add(const std::string& identifier,
+                                           const IOV& iov,
+                                           std::vector<Condition>& conditions)
+{
   DurationStamp stamp(this);
-  conditionPools.emplace_back(pair<iov_key_type, pool_type>());
+  conditionPools.emplace_back(std::pair<iov_key_type, pool_type>());
   pool_type&    ent = conditionPools.back().second;
   iov_key_type& key = conditionPools.back().first;
   key.first         = identifier;
@@ -92,9 +90,9 @@ size_t ConditionsTreePersistency::add(const std::string& identifier,
 }
 
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
-size_t ConditionsTreePersistency::add(const string& identifier, ConditionsPool& pool)    {
+std::size_t ConditionsTreePersistency::add(const std::string& identifier, ConditionsPool& pool)    {
   DurationStamp stamp(this);
-  conditionPools.emplace_back(pair<iov_key_type, pool_type>());
+  conditionPools.emplace_back(std::pair<iov_key_type, pool_type>());
   pool_type&    ent = conditionPools.back().second;
   iov_key_type& key = conditionPools.back().first;
   const IOV*    iov = pool.iov;
@@ -107,11 +105,11 @@ size_t ConditionsTreePersistency::add(const string& identifier, ConditionsPool& 
 }
 
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
-size_t ConditionsTreePersistency::add(const string& identifier, const ConditionsIOVPool& pool)    {
-  size_t count = 0;
+std::size_t ConditionsTreePersistency::add(const std::string& identifier, const ConditionsIOVPool& pool)    {
+  std::size_t count = 0;
   DurationStamp stamp(this);
   for( const auto& p : pool.elements )  {
-    iovPools.emplace_back(pair<iov_key_type, pool_type>());
+    iovPools.emplace_back(std::pair<iov_key_type, pool_type>());
     pool_type&    ent = iovPools.back().second;
     iov_key_type& key = iovPools.back().first;
     const IOV*    iov = p.second->iov;
@@ -126,7 +124,7 @@ size_t ConditionsTreePersistency::add(const string& identifier, const Conditions
 }
 
 /// Open ROOT file in read mode
-TFile* ConditionsTreePersistency::openFile(const string& fname)     {
+TFile* ConditionsTreePersistency::openFile(const std::string& fname)     {
   TDirectory::TContext context;
   TFile* file = TFile::Open(fname.c_str());
   if ( file && !file->IsZombie()) return file;
@@ -154,7 +152,7 @@ void ConditionsTreePersistency::clear()  {
 
 /// Add conditions content to the saved. Note, that dependent conditions shall not be saved!
 std::unique_ptr<ConditionsTreePersistency>
-ConditionsTreePersistency::load(TFile* file,const string& obj)   {
+ConditionsTreePersistency::load(TFile* file,const std::string& obj)   {
   std::unique_ptr<ConditionsTreePersistency> p;
   if ( file && !file->IsZombie())    {
     TTimeStamp start;
@@ -174,13 +172,14 @@ ConditionsTreePersistency::load(TFile* file,const string& obj)   {
 }
 
 /// Load ConditionsPool(s) and populate conditions manager
-size_t ConditionsTreePersistency::_import(ImportStrategy     strategy,
-                                          persistent_type&   persistent_pools,
-                                          const std::string& id,
-                                          const std::string& iov_type,
-                                          const IOV::Key&    iov_key,
-                                          ConditionsManager  mgr)   {
-  size_t count = 0;
+std::size_t ConditionsTreePersistency::_import(ImportStrategy     strategy,
+                                               persistent_type&   persistent_pools,
+                                               const std::string& id,
+                                               const std::string& iov_type,
+                                               const IOV::Key&    iov_key,
+                                               ConditionsManager  mgr)
+{
+  std::size_t count = 0;
   std::pair<bool,const IOVType*> iovTyp(false,0);
   for (auto& iovp : persistent_pools )   {
     bool use = false;
@@ -243,29 +242,29 @@ size_t ConditionsTreePersistency::_import(ImportStrategy     strategy,
 }
 
 /// Load ConditionsIOVPool and populate conditions manager
-size_t ConditionsTreePersistency::importIOVPool(const std::string& identifier,
-                                                const std::string& iov_type,
-                                                ConditionsManager  mgr)
+std::size_t ConditionsTreePersistency::importIOVPool(const std::string& identifier,
+                                                     const std::string& iov_type,
+                                                     ConditionsManager  mgr)
 {
   DurationStamp stamp(this);
   return _import(IMPORT_ALL,iovPools,identifier,iov_type,IOV::Key(),mgr);
 }
 
 /// Load ConditionsIOVPool and populate conditions manager
-size_t ConditionsTreePersistency::importConditionsPool(const std::string& identifier,
-                                                       const std::string& iov_type,
-                                                       ConditionsManager  mgr)
+std::size_t ConditionsTreePersistency::importConditionsPool(const std::string& identifier,
+                                                            const std::string& iov_type,
+                                                            ConditionsManager  mgr)
 {
   DurationStamp stamp(this);
   return _import(IMPORT_ALL,conditionPools,identifier,iov_type,IOV::Key(),mgr);
 }
 
 /// Load conditions pool and populate conditions manager. Allow tro be selective also for the key
-size_t ConditionsTreePersistency::importConditionsPool(ImportStrategy     strategy,
-                                                       const std::string& identifier,
-                                                       const std::string& iov_type,
-                                                       const IOV::Key&    iov_key,
-                                                       ConditionsManager  mgr)   {
+std::size_t ConditionsTreePersistency::importConditionsPool(ImportStrategy     strategy,
+                                                            const std::string& identifier,
+                                                            const std::string& iov_type,
+                                                            const IOV::Key&    iov_key,
+                                                            ConditionsManager  mgr)   {
   return _import(strategy,conditionPools,identifier,iov_type,iov_key,mgr);
 }
 
@@ -278,7 +277,7 @@ int ConditionsTreePersistency::save(TFile* file)    {
 }
 
 /// Save the data content to a root file
-int ConditionsTreePersistency::save(const string& fname)    {
+int ConditionsTreePersistency::save(const std::string& fname)    {
   DurationStamp stamp(this);
   //TDirectory::TContext context;
   TFile* file = TFile::Open(fname.c_str(),"RECREATE");

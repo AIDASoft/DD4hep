@@ -12,12 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/NoSegmentation.h"
-#include "DDSegmentation/NoSegmentation.h"
+#include <DD4hep/NoSegmentation.h>
+#include <DDSegmentation/NoSegmentation.h>
 
-// C/C++ include files
-
-using namespace std;
 using namespace dd4hep;
 
 Position NoSegmentation::position(const CellID& id) const   {
@@ -26,8 +23,8 @@ Position NoSegmentation::position(const CellID& id) const   {
 
 /// determine the cell ID based on the position
 dd4hep::CellID NoSegmentation::cellID(const Position& local,
-                                       const Position& global,
-                                       const VolumeID& volID) const
+                                      const Position& global,
+                                      const VolumeID& volID) const
 {
   return access()->implementation->cellID(local, global, volID);
 }

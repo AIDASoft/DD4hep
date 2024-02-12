@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Primitives.h"
-#include "DD4hep/Exceptions.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/Primitives.h>
+#include <DD4hep/Exceptions.h>
+#include <DD4hep/Printout.h>
 
 // C/C++ include files
 #include <cstring>

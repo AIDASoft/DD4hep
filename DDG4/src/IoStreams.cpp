@@ -12,18 +12,16 @@
 //==========================================================================
 
 // Framework includes
-#include "DDG4/IoStreams.h"
+#include <DDG4/IoStreams.h>
+
+// ROOT include files
+#include <TFile.h>
 
 // C/C++ include files
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <cstdio>
-
-// ROOT include files
-#include "TFile.h"
-
-using namespace dd4hep;
 
 namespace {
   /// Anonymous cast class to get access to protected members of TFile ;-)

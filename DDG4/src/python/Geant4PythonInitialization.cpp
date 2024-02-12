@@ -13,18 +13,17 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Factories.h"
-#include "DDG4/Geant4Kernel.h"
-#include "DDG4/Python/DDPython.h"
-#include "DDG4/Python/Geant4PythonInitialization.h"
+#include <DDG4/Factories.h>
+#include <DDG4/Geant4Kernel.h>
+#include <DDG4/Python/DDPython.h>
+#include <DDG4/Python/Geant4PythonInitialization.h>
 
-using namespace std;
 using namespace dd4hep::sim;
 
 DECLARE_GEANT4ACTION(Geant4PythonInitialization)
 
 /// Standard constructor, initializes variables
-Geant4PythonInitialization::Geant4PythonInitialization(Geant4Context* ctxt, const string& nam)
+Geant4PythonInitialization::Geant4PythonInitialization(Geant4Context* ctxt, const std::string& nam)
 : Geant4UserInitialization(ctxt,nam), m_masterSetup(), m_workerSetup()
 {
   m_needsControl = true;
@@ -41,7 +40,7 @@ void Geant4PythonInitialization::setWorkerSetup(PyObject* callable, PyObject* ar
 }
 
 /// Execute command in the python interpreter
-void Geant4PythonInitialization::exec(const string& desc, const Geant4PythonCall& cmd)  const   {
+void Geant4PythonInitialization::exec(const std::string& desc, const Geant4PythonCall& cmd)  const   {
   if ( cmd.isValid() )  { 
     int ret = cmd.execute<int>();
     if ( ret != 1 )  {

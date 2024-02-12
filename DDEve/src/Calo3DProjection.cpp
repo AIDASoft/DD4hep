@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DDEve/Calo3DProjection.h"
-#include "DDEve/Factories.h"
-#include "DD4hep/InstanceCount.h"
+#include <DDEve/Calo3DProjection.h>
+#include <DDEve/Factories.h>
+#include <DD4hep/InstanceCount.h>
 
 using namespace dd4hep;
 

@@ -12,25 +12,24 @@
 //==========================================================================
 
 // Framework includes
-#include "DDAlign/GlobalAlignmentWriter.h"
-#include "DDAlign/GlobalAlignmentCache.h"
-#include "DDAlign/GlobalDetectorAlignment.h"
-#include "DDAlign/AlignmentTags.h"
+#include <DDAlign/GlobalAlignmentWriter.h>
+#include <DDAlign/GlobalAlignmentCache.h>
+#include <DDAlign/GlobalDetectorAlignment.h>
+#include <DDAlign/AlignmentTags.h>
 
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/MatrixHelpers.h"
-#include "DD4hep/detail/DetectorInterna.h"
-#include "XML/DocumentHandler.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/MatrixHelpers.h>
+#include <DD4hep/detail/DetectorInterna.h>
+#include <XML/DocumentHandler.h>
 
-#include "TGeoMatrix.h"
+#include <TGeoMatrix.h>
 
 // C/C++ include files
 #include <stdexcept>
 
 using namespace dd4hep::align;
-using namespace dd4hep;
-using namespace std;
+namespace xml = dd4hep::xml;
 
 /// Initializing Constructor
 GlobalAlignmentWriter::GlobalAlignmentWriter(Detector& description) : m_detDesc(description)
@@ -47,19 +46,19 @@ GlobalAlignmentWriter::~GlobalAlignmentWriter()  {
 /// Create the element corresponding to one single detector element without children
 xml::Element GlobalAlignmentWriter::createElement(xml::Document doc, DetElement element)  const  {
   xml::Element e(0), placement(0), elt = xml::Element(doc,_ALU(detelement));
-  string path = element.placementPath();
+  std::string path = element.placementPath();
   GlobalAlignment a = element->global_alignment;
   GlobalDetectorAlignment det(element);
-  const vector<GlobalAlignment>& va = det.volumeAlignments();
 
   elt.setAttr(_ALU(path),element.path());
   if ( a.isValid() )  {
     addNode(elt,a);
   }
-  for(vector<GlobalAlignment>::const_iterator i=va.begin(); i!=va.end();++i)  {
+  const std::vector<GlobalAlignment>& vol_alignments = det.volumeAlignments();
+  for(const auto& alignment : vol_alignments )  {
     e = xml::Element(doc,_U(volume));
-    e.setAttr(_ALU(path),(*i)->GetName());
-    addNode(e,*i);
+    e.setAttr(_ALU(path), alignment->GetName());
+    addNode(e, alignment);
     elt.append(e);
   }
   return elt;
@@ -77,9 +76,9 @@ void GlobalAlignmentWriter::addNode(xml::Element elt, GlobalAlignment a)  const 
 
   printout(INFO,"GlobalAlignmentWriter","Write Delta constants for %s",a->GetName());
   //mat.Print();
-  if ( fabs(t[0]) > numeric_limits<double>::epsilon() ||
-       fabs(t[1]) > numeric_limits<double>::epsilon() ||
-       fabs(t[2]) > numeric_limits<double>::epsilon() ) {
+  if ( fabs(t[0]) > std::numeric_limits<double>::epsilon() ||
+       fabs(t[1]) > std::numeric_limits<double>::epsilon() ||
+       fabs(t[2]) > std::numeric_limits<double>::epsilon() ) {
     xml::Element e = xml::Element(elt.document(),_U(position));
     e.setAttr(_U(x),_toString(t[0]/dd4hep::mm,"%f*mm"));
     e.setAttr(_U(y),_toString(t[1]/dd4hep::mm,"%f*mm"));
@@ -88,9 +87,9 @@ void GlobalAlignmentWriter::addNode(xml::Element elt, GlobalAlignment a)  const 
   }
   if ( mat.IsRotation() )  {
     XYZAngles rot = detail::matrix::_xyzAngles(&mat);
-    if ( fabs(rot.X()) > numeric_limits<double>::epsilon() ||
-         fabs(rot.Y()) > numeric_limits<double>::epsilon() ||
-         fabs(rot.Z()) > numeric_limits<double>::epsilon() )    {
+    if ( fabs(rot.X()) > std::numeric_limits<double>::epsilon() ||
+         fabs(rot.Y()) > std::numeric_limits<double>::epsilon() ||
+         fabs(rot.Z()) > std::numeric_limits<double>::epsilon() )    {
 
       xml::Element e = xml::Element(elt.document(),_U(rotation));
       // Don't know why the angles have the wrong sign....
@@ -133,7 +132,7 @@ xml::Document GlobalAlignmentWriter::dump(DetElement top, bool enable_transactio
 }
 
 /// Write the XML document structure to a file.
-long GlobalAlignmentWriter::write(xml::Document doc, const string& output)   const {
+long GlobalAlignmentWriter::write(xml::Document doc, const std::string& output)   const {
   xml::DocumentHandler docH;
   return docH.output(doc, output);
 }

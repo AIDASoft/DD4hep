@@ -12,17 +12,16 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/IOV.h"
-#include "DD4hep/World.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/detail/Handle.inl"
-#include "DD4hep/detail/DetectorInterna.h"
-#include "DD4hep/detail/AlignmentsInterna.h"
+#include <DD4hep/IOV.h>
+#include <DD4hep/World.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/detail/Handle.inl>
+#include <DD4hep/detail/DetectorInterna.h>
+#include <DD4hep/detail/AlignmentsInterna.h>
 
-using namespace std;
 using namespace dd4hep;
-using namespace dd4hep::detail;
+using AlignmentObject = detail::AlignmentObject;
 
 DD4HEP_INSTANTIATE_HANDLE_UNNAMED(AlignmentData);
 #if defined(DD4HEP_MINIMAL_CONDITIONS)
@@ -42,7 +41,7 @@ AlignmentObject::AlignmentObject()
 }
 
 /// Standard constructor
-AlignmentObject::AlignmentObject(const string& nam, const string& tit, void* p, size_t len)
+AlignmentObject::AlignmentObject(const std::string& nam, const std::string& tit, void* p, size_t len)
   : ConditionObject(nam, tit), alignment_data(0)
 {
   InstanceCount::increment(this);
@@ -67,5 +66,5 @@ void AlignmentObject::clear()   {
   flags = Condition::ALIGNMENT_DERIVED;
 }
 
-#include "DD4hep/GrammarUnparsed.h"
+#include <DD4hep/GrammarUnparsed.h>
 static auto s_registry = GrammarRegistry::pre_note<AlignmentObject>();

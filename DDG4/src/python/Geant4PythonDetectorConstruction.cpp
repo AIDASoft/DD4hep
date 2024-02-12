@@ -12,21 +12,20 @@
 //
 //==========================================================================
 // Framework include files
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4Kernel.h"
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4Kernel.h>
 
-#include "DDG4/Python/DDPython.h"
-#include "DDG4/Python/Geant4PythonAction.h"
-#include "DDG4/Python/Geant4PythonDetectorConstruction.h"
+#include <DDG4/Python/DDPython.h>
+#include <DDG4/Python/Geant4PythonAction.h>
+#include <DDG4/Python/Geant4PythonDetectorConstruction.h>
 
-using namespace std;
 using namespace dd4hep::sim;
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 DECLARE_GEANT4ACTION(Geant4PythonDetectorConstruction)
 
 /// Standard constructor, initializes variables
-Geant4PythonDetectorConstruction::Geant4PythonDetectorConstruction(Geant4Context* ctxt, const string& nam)
+Geant4PythonDetectorConstruction::Geant4PythonDetectorConstruction(Geant4Context* ctxt, const std::string& nam)
 : Geant4DetectorConstruction(ctxt,nam), 
   m_constructSD(), m_constructFLD(), m_constructGEO()
 {
@@ -49,7 +48,7 @@ void Geant4PythonDetectorConstruction::setConstructSensitives(PyObject* callable
 }
 
 /// Execute command in the python interpreter
-void Geant4PythonDetectorConstruction::exec(const string& desc, const Geant4PythonCall& cmd)  const   {
+void Geant4PythonDetectorConstruction::exec(const std::string& desc, const Geant4PythonCall& cmd)  const   {
   if ( cmd.isValid() )  {
     int ret = cmd.execute<int>();
     if ( ret != 1 )  {

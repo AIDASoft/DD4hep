@@ -12,47 +12,46 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/OpaqueData.h"
-#include "DD4hep/InstanceCount.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/OpaqueData.h>
+#include <DD4hep/InstanceCount.h>
 
 // C/C++ header files
 #include <cstring>
 
-using namespace std;
 using namespace dd4hep;
 
 /// Create data block from string representation
-bool OpaqueData::fromString(const string& rep)   {
+bool OpaqueData::fromString(const std::string& rep)   {
   if ( pointer && grammar )  {
     return grammar->fromString(pointer,rep);
   }
-  throw runtime_error("Opaque data block is unbound. Cannot parse string representation.");
+  throw std::runtime_error("Opaque data block is unbound. Cannot parse string representation.");
 }
 
 /// Create string representation of the data block
-string OpaqueData::str()  const  {
+std::string OpaqueData::str()  const  {
   if ( pointer && grammar )  {
     return grammar->str(pointer);
   }
-  throw runtime_error("Opaque data block is unbound. Cannot create string representation.");
+  throw std::runtime_error("Opaque data block is unbound. Cannot create string representation.");
 }
 
 /// Access type id of the condition
-const type_info& OpaqueData::typeInfo() const  {
+const std::type_info& OpaqueData::typeInfo() const  {
   if ( pointer && grammar ) {
     return grammar->type();
   }
-  throw runtime_error("Opaque data block is unbound. Cannot determine type information!");
+  throw std::runtime_error("Opaque data block is unbound. Cannot determine type information!");
 }
 
 /// Access type name of the condition data block
-const string& OpaqueData::dataType() const   {
+const std::string& OpaqueData::dataType() const   {
   if ( pointer && grammar ) {
     return grammar->type_name();
   }
-  throw runtime_error("Opaque data block is unbound. Cannot determine type information!"); 
+  throw std::runtime_error("Opaque data block is unbound. Cannot determine type information!"); 
 }
 
 /// Standard initializing constructor
@@ -71,7 +70,7 @@ OpaqueDataBlock::OpaqueDataBlock(const OpaqueDataBlock& c)
   }
   else  {
     except("OpaqueDataBlock","Grammar type %s does not support object copy. Operation not allowed.",
-	   this->grammar->type_name().c_str());
+           this->grammar->type_name().c_str());
   }
   InstanceCount::increment(this);
 }
@@ -103,10 +102,10 @@ OpaqueDataBlock& OpaqueDataBlock::operator=(const OpaqueDataBlock& c)   {
       type = c.type;
       grammar = 0;
       if ( c.grammar )   {
-	if ( !c.grammar->specialization.copy )  {
-	  except("OpaqueDataBlock","Grammar type %s does not support object copy. Operation not allowed.",
-		 c.grammar->type_name().c_str());
-	}
+        if ( !c.grammar->specialization.copy )  {
+          except("OpaqueDataBlock","Grammar type %s does not support object copy. Operation not allowed.",
+                 c.grammar->type_name().c_str());
+        }
         bind(c.grammar);
         grammar->specialization.copy(pointer,c.pointer);
         return *this;
@@ -180,5 +179,5 @@ void* OpaqueDataBlock::bind(void* ptr, size_t size, const BasicGrammar* g)   {
   return 0;
 }
 
-#include "DD4hep/GrammarUnparsed.h"
+#include <DD4hep/GrammarUnparsed.h>
 static auto s_registry = GrammarRegistry::pre_note<OpaqueDataBlock>(1);

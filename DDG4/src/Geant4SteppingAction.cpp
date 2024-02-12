@@ -12,22 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4SteppingAction.h"
-// Geant4 headers
-#include "G4Threading.hh"
-#include "G4AutoLock.hh"
-// C/C++ include files
-#include <stdexcept>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4SteppingAction.h>
 
-using namespace std;
+// Geant4 headers
+#include <G4Threading.hh>
+#include <G4AutoLock.hh>
+
 using namespace dd4hep::sim;
 namespace {
   G4Mutex action_mutex=G4MUTEX_INITIALIZER;
 }
 
 /// Standard constructor
-Geant4SteppingAction::Geant4SteppingAction(Geant4Context* ctxt, const string& nam)
+Geant4SteppingAction::Geant4SteppingAction(Geant4Context* ctxt, const std::string& nam)
 : Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
@@ -42,7 +40,7 @@ void Geant4SteppingAction::operator()(const G4Step*, G4SteppingManager*) {
 }
 
 /// Standard constructor
-Geant4SharedSteppingAction::Geant4SharedSteppingAction(Geant4Context* ctxt, const string& nam)
+Geant4SharedSteppingAction::Geant4SharedSteppingAction(Geant4Context* ctxt, const std::string& nam)
   : Geant4SteppingAction(ctxt, nam), m_action(0)
 {
   InstanceCount::increment(this);
@@ -62,7 +60,7 @@ void Geant4SharedSteppingAction::use(Geant4SteppingAction* action)   {
     m_action = action;
     return;
   }
-  throw runtime_error("Geant4SharedSteppingAction: Attempt to use invalid actor!");
+  except("Attempt to use invalid actor!");
 }
 
 /// Set or update client for the use in a new thread fiber
@@ -81,7 +79,7 @@ void Geant4SharedSteppingAction::operator()(const G4Step* s, G4SteppingManager* 
 }
 
 /// Standard constructor
-Geant4SteppingActionSequence::Geant4SteppingActionSequence(Geant4Context* ctxt, const string& nam)
+Geant4SteppingActionSequence::Geant4SteppingActionSequence(Geant4Context* ctxt, const std::string& nam)
 : Geant4Action(ctxt, nam) {
   m_needsControl = true;
   InstanceCount::increment(this);
@@ -107,7 +105,7 @@ void Geant4SteppingActionSequence::updateContext(Geant4Context* ctxt)    {
 }
 
 /// Get an action by name
-Geant4SteppingAction* Geant4SteppingActionSequence::get(const string& nam) const   {
+Geant4SteppingAction* Geant4SteppingActionSequence::get(const std::string& nam) const   {
   return m_actors.get(FindByName(TypeName::split(nam).second));
 }
 
@@ -125,5 +123,5 @@ void Geant4SteppingActionSequence::adopt(Geant4SteppingAction* action) {
     m_actors.add(action);
     return;
   }
-  throw runtime_error("Geant4SteppingActionSequence: Attempt to add invalid actor!");
+  except("Attempt to add invalid actor!");
 }

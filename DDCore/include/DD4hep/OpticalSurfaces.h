@@ -14,13 +14,11 @@
 #define DD4HEP_OPTICALSURFACES_H
 
 // Framework include files
-#include "DD4hep/Volumes.h"
-#include "DD4hep/DetElement.h"
-
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
+#include <DD4hep/Volumes.h>
+#include <DD4hep/DetElement.h>
 
 // ROOT include files
-#include "TGeoOpticalSurface.h"
+#include <TGeoOpticalSurface.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -192,8 +190,5 @@ namespace dd4hep {
     /// Access the right node of the border surface
     PlacedVolume   right()  const;
   };
-
-
-}         /* End namespace dd4hep              */
-#endif    /* ROOT_VERSION                      */
+}      /* End namespace dd4hep              */
 #endif // DD4HEP_OPTICALSURFACES_H

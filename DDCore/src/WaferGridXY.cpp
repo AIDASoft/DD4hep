@@ -12,12 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/WaferGridXY.h"
-#include "DDSegmentation/WaferGridXY.h"
+#include <DD4hep/WaferGridXY.h>
+#include <DDSegmentation/WaferGridXY.h>
 
-// C/C++ include files
-
-using namespace std;
 using namespace dd4hep;
 
 /// determine the position based on the cell ID
@@ -63,12 +60,12 @@ double WaferGridXY::waferOffsetY(int inGroup, int inWafer) const  {
 }
 
 /// access the field name used for X
-const string& WaferGridXY::fieldNameX() const {
+const std::string& WaferGridXY::fieldNameX() const {
   return access()->implementation->fieldNameX();
 }
 
 /// access the field name used for Y
-const string& WaferGridXY::fieldNameY() const {
+const std::string& WaferGridXY::fieldNameY() const {
   return access()->implementation->fieldNameY();
 }
 
@@ -81,6 +78,6 @@ const string& WaferGridXY::fieldNameY() const {
     -# size in x
     -# size in y
 */
-vector<double> WaferGridXY::cellDimensions(const CellID& id) const  {
+std::vector<double> WaferGridXY::cellDimensions(const CellID& id) const  {
   return access()->implementation->cellDimensions(id);
 }

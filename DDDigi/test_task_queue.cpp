@@ -12,8 +12,6 @@
 //==========================================================================
 #include <tbb/tbb.h>
 #include <iostream>
-using namespace tbb;
-using namespace std;
 
 class say_hello {
   int cnt = 0;
@@ -26,10 +24,9 @@ public:
   }
 };
 
-int main( )
-{
-  task_scheduler_init init(2);
-  task_group tg1, tg2, tg3;
+int main()   {
+  tbb::task_scheduler_init init(2);
+  tbb::task_group tg1, tg2, tg3;
   for(int i=0; i<200; ++i)  {
     tg1.run(std::move(say_hello("child(1)",i)));
     tg2.run(std::move(say_hello("child(2)",i)));

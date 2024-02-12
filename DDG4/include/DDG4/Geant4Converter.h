@@ -14,8 +14,8 @@
 #define DDG4_GEANT4CONVERTER_H
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DDG4/Geant4Mapping.h"
+#include <DD4hep/Printout.h>
+#include <DDG4/Geant4Mapping.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -72,7 +72,6 @@ namespace dd4hep {
       /// Create geometry conversion
       Geant4Converter& create(DetElement top);
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
       /// Convert the geometry type material into the corresponding Geant4 object(s).
       virtual void* handleMaterialProperties(TObject* matrix) const;
 
@@ -84,7 +83,7 @@ namespace dd4hep {
 
       /// Convert the border surface to Geant4
       void* handleBorderSurface(TObject* surface) const;
-#endif
+
       /// Convert the geometry type material into the corresponding Geant4 object(s).
       virtual void* handleMaterial(const std::string& name, Material medium) const;
 
@@ -128,5 +127,4 @@ namespace dd4hep {
     };
   }    // End namespace sim
 }      // End namespace dd4hep
-
 #endif // DDG4_GEANT4CONVERTER_H

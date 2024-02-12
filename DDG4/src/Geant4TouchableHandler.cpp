@@ -12,14 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4TouchableHandler.h"
-#include "DDG4/Geant4GeometryInfo.h"
+#include <DDG4/Geant4TouchableHandler.h>
+#include <DDG4/Geant4GeometryInfo.h>
 
-#include "G4Step.hh"
-#include "G4VTouchable.hh"
-
-// C/C++ include files
-#include <stdexcept>
+#include <G4Step.hh>
+#include <G4VTouchable.hh>
 
 using namespace dd4hep::sim;
 
@@ -52,7 +49,7 @@ Geant4TouchableHandler::Geant4PlacementPath Geant4TouchableHandler::placementPat
     return path_val;
   }
   if ( exception )   {
-    throw std::runtime_error("Attempt to access invalid G4 touchable object.");
+    except("Geant4TouchableHandler", "Attempt to access invalid G4 touchable object.");
   }
   return path_val;
 }

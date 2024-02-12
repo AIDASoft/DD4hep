@@ -12,25 +12,29 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Conditions.h"
-#include "DD4hep/PluginCreators.h"
-#include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/ConditionsPrinter.h"
-#include "DD4hep/DetectorProcessor.h"
-#include "DD4hep/ConditionsProcessor.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Conditions.h>
+#include <DD4hep/PluginCreators.h>
+#include <DD4hep/DetFactoryHelper.h>
+#include <DD4hep/ConditionsPrinter.h>
+#include <DD4hep/DetectorProcessor.h>
+#include <DD4hep/ConditionsProcessor.h>
+#include <DD4hep/ConditionsPrinter.h>
+#include <DD4hep/AlignmentsPrinter.h>
+#include <DD4hep/PluginTester.h>
 
-#include "DDCond/ConditionsPool.h"
-#include "DDCond/ConditionsSlice.h"
-#include "DDCond/ConditionsManager.h"
-#include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsRepository.h"
-#include "DDCond/ConditionsManagerObject.h"
+#include <DDCond/ConditionsPool.h>
+#include <DDCond/ConditionsSlice.h>
+#include <DDCond/ConditionsManager.h>
+#include <DDCond/ConditionsIOVPool.h>
+#include <DDCond/ConditionsRepository.h>
+#include <DDCond/ConditionsManagerObject.h>
+
+// C/C++ include files
 #include <memory>
 
-using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::cond;
 
@@ -47,7 +51,7 @@ static int ddcond_install_cond_mgr (Detector& description, int argc, char** argv
   Handle<ConditionsManagerObject> mgr(description.extension<ConditionsManagerObject>(false));
   if ( !mgr.isValid() )  {
     bool arg_error = false;
-    string factory = "DD4hep_ConditionsManager_Type1";
+    std::string factory = "DD4hep_ConditionsManager_Type1";
     for(int i = 0; i < argc && argv[i]; ++i)  {
       if ( 0 == ::strncmp("-type",argv[i],4) )
         factory = argv[++i];
@@ -58,14 +62,14 @@ static int ddcond_install_cond_mgr (Detector& description, int argc, char** argv
     }
     if ( arg_error )   {
       /// Help printout describing the basic command line interface
-      cout <<
+      std::cout <<
         "Usage: -plugin <name> -arg [-arg]                                             \n"
         "     name:   factory name     DD4hep_ConditionsManagerInstaller               \n"
         "     -type   <string>         Manager type.                                   \n"
         "                              Default: ConditionsManagerObject_Type1_t        \n"
         "     -handle <pointer>        Pointer to Handle<NamedObject> to pass pointer  \n"
         "                              to the caller.                                  \n"
-        "\tArguments given: " << arguments(argc,argv) << endl << flush;
+        "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
       ::exit(EINVAL);
     }
     ConditionsManagerObject* obj = createPlugin<ConditionsManagerObject>(factory,description);
@@ -99,7 +103,7 @@ DECLARE_APPLY(DD4hep_ConditionsManagerInstaller,ddcond_install_cond_mgr)
  *  \version 1.0
  *  \date    01/04/2016
  */
-static ConditionsSlice* ddcond_prepare(Detector& description, const string& iov_typ, long iov_val, int argc, char** argv)  {
+static ConditionsSlice* ddcond_prepare(Detector& description, const std::string& iov_typ, long iov_val, int argc, char** argv)  {
   const IOVType*    iovtype  = 0;
   long              iovvalue = iov_val;
   ConditionsManager manager  = ConditionsManager::from(description);
@@ -119,8 +123,8 @@ static ConditionsSlice* ddcond_prepare(Detector& description, const string& iov_
            "++ Unknown IOV value supplied for iov type %s.",iovtype->str().c_str());
 
   IOV iov(iovtype,iovvalue);
-  shared_ptr<ConditionsContent> content(new ConditionsContent());
-  unique_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
+  std::shared_ptr<ConditionsContent> content(new ConditionsContent());
+  std::unique_ptr<ConditionsSlice>   slice(new ConditionsSlice(manager,content));
   cond::fill_content(manager,*content,*iovtype);
   manager.prepare(iov, *slice);
   printout(INFO,"Conditions",
@@ -139,7 +143,7 @@ static ConditionsSlice* ddcond_prepare(Detector& description, const string& iov_
  *  \date    01/04/2016
  */
 static int ddcond_conditions_pool_processor(Detector& description, bool process_pool, bool process_conditions, int argc, char** argv)   {
-  unique_ptr<Condition::Processor> proc(createProcessor<Condition::Processor>(description,argc,argv));
+  std::unique_ptr<Condition::Processor> proc(createProcessor<Condition::Processor>(description,argc,argv));
   ConditionsManager manager = ConditionsManager::from(description);
   const auto types = manager.iovTypesUsed();
 
@@ -194,7 +198,7 @@ static int ddcond_conditions_pool_print(Detector& description, bool print_condit
   if ( argc > 0 )   {
     for(int i = 0; i < argc; ++i)  {
       if ( argv[i] && 0 == ::strncmp(argv[i],"-processor",3) )  {
-        vector<char*> args;
+        std::vector<char*> args;
         for(int j=i; j<argc && argv[j] && 0 != ::strncmp(argv[i],"-end-processor",8); ++j)
           args.emplace_back(argv[j]);
         args.emplace_back(nullptr);
@@ -250,7 +254,7 @@ static int ddcond_detelement_dump(Detector& description, int argc, char** argv) 
       ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s #Dau:%%d VolID:%%08X %%c",level+1,2*level+1);
       printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(children.size()),
                (unsigned long)de.volumeID(), sens);
-      printer.prefix = string(tmp)+de.name();
+      printer.prefix = std::string(tmp)+de.name();
       (printer)(de, level);
       return 1;
     }
@@ -339,7 +343,7 @@ DECLARE_APPLY(DD4hep_DetElementConditionsProcessor,ddcond_detelement_processor)
  */
 static long ddcond_synchronize_conditions(Detector& description, int argc, char** argv) {
   if ( argc >= 2 )   {
-    string iov_typ = argv[0];
+    std::string iov_typ = argv[0];
     IOV::Key::first_type iov_key = *(IOV::Key::first_type*)argv[1];
     dd4hep_ptr<ConditionsSlice> slice(ddcond_prepare(description,iov_typ,iov_key,argc,argv));
     UserPool* pool = slice->pool.get();
@@ -365,8 +369,8 @@ DECLARE_APPLY(DD4hep_ConditionsSynchronize,ddcond_synchronize_conditions)
  */
 static long ddcond_clean_conditions(Detector& description, int argc, char** argv) {
   if ( argc > 0 )   {
-    string iov_type = argv[0];
-    int    max_age  = *(int*)argv[1];
+    std::string iov_type = argv[0];
+    int         max_age  = *(int*)argv[1];
     printout(INFO,"Conditions",
              "+++ ConditionsUpdate: Cleaning conditions... type:%s max age:%d",
              iov_type.c_str(), max_age);
@@ -389,11 +393,10 @@ DECLARE_APPLY(DD4hep_ConditionsClean,ddcond_clean_conditions)
  *  \version 1.0
  *  \date    17/11/2016
  */
-#include "DD4hep/PluginTester.h"
 template <typename WRAPPER,typename PRINTER>
 static void* create_printer(Detector& description, int argc,char** argv)  {
-  PrintLevel print_level = INFO;
-  string prefix = "", name = "";
+  PrintLevel  print_level = INFO;
+  std::string prefix = "", name = "";
   int    flags = 0, have_pool = 0, arg_error = false;
   for(int i=0; i<argc && argv[i]; ++i)  {
     if ( 0 == ::strncmp("-prefix",argv[i],4) )
@@ -411,7 +414,7 @@ static void* create_printer(Detector& description, int argc,char** argv)  {
   }
   if ( arg_error )   {
     /// Help printout describing the basic command line interface
-    cout <<
+    std::cout <<
       "Usage: -plugin <name> -arg [-arg]                                             \n"
       "     name:   factory name(s)  DD4hep_ConditionsPrinter,                       \n"
       "                              dd4hep_AlignmentsPrinter                        \n"
@@ -421,7 +424,7 @@ static void* create_printer(Detector& description, int argc,char** argv)  {
       "     -pool                    Attach conditions user pool from                \n"
       "                              PluginTester's slice instance attached.       \n\n"
       "     -print <value>           Printout level for the printer object.          \n"
-      "\tArguments given: " << arguments(argc,argv) << endl << flush;
+      "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
     ::exit(EINVAL);
   }
   DetElement world = description.world();
@@ -436,8 +439,7 @@ static void* create_printer(Detector& description, int argc,char** argv)  {
   if ( !name.empty() ) p->name = name;
   return (void*)dynamic_cast<WRAPPER*>(createProcessorWrapper(p));
 }
-#include "DD4hep/ConditionsPrinter.h"
-#include "DD4hep/AlignmentsPrinter.h"
+
 static void* create_cond_printer(Detector& description, int argc,char** argv)
 {  return create_printer<Condition::Processor,ConditionsPrinter>(description,argc,argv);  }
                                                                         
@@ -456,7 +458,7 @@ DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_ConditionsPrinter,create_cond_printer)
  */
 static long ddcond_create_repository(Detector& description, int argc, char** argv) {
   bool arg_error = false;
-  string output = "";
+  std::string output = "";
   for(int i=0; i<argc && argv[i]; ++i)  {      
     if ( 0 == ::strncmp("-output",argv[i],4) )
       output = argv[++i];
@@ -465,11 +467,11 @@ static long ddcond_create_repository(Detector& description, int argc, char** arg
   }
   if ( arg_error || output.empty() )  {
     /// Help printout describing the basic command line interface
-    cout <<
+    std::cout <<
       "Usage: -plugin <name> -arg [-arg]                                             \n"
       "     name:   factory name     DD4hep_ConditionsCreateRepository             \n\n"
       "     -output <string>         Output file name.                             \n\n"
-      "\tArguments given: " << arguments(argc,argv) << endl << flush;
+      "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
     ::exit(EINVAL);
   }
   printout(INFO,"Conditions",
@@ -492,7 +494,7 @@ DECLARE_APPLY(DD4hep_ConditionsCreateRepository,ddcond_create_repository)
 static long ddcond_dump_repository(Detector& /* description */, int argc, char** argv)   {
   typedef ConditionsRepository::Data Data;
   bool arg_error = false;
-  string input = "";
+  std::string input = "";
   Data data;
   for(int i=0; i<argc && argv[i]; ++i)  {      
     if ( 0 == ::strncmp("-input",argv[i],4) )
@@ -502,11 +504,11 @@ static long ddcond_dump_repository(Detector& /* description */, int argc, char**
   }
   if ( arg_error || input.empty() )  {
     /// Help printout describing the basic command line interface
-    cout <<
+    std::cout <<
       "Usage: -plugin <name> -arg [-arg]                                             \n"
       "     name:   factory name     DD4hep_ConditionsDumpRepository               \n\n"
       "     -input <string>          Input file name.                              \n\n"
-      "\tArguments given: " << arguments(argc,argv) << endl << flush;
+      "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
     ::exit(EINVAL);
   }
   printout(INFO,"Conditions","+++ ConditionsRepository: Dumping %s",input.c_str());
@@ -514,7 +516,7 @@ static long ddcond_dump_repository(Detector& /* description */, int argc, char**
     printout(INFO,"Repository","%-8s  %-60s %-60s","Key","Name","Address");
     for(Data::const_iterator i=data.begin(); i!=data.end(); ++i)  {
       const ConditionsRepository::Entry& e = *i;
-      string add = e.address;
+      std::string add = e.address;
       if ( add.length() > 80 ) add = e.address.substr(0,60) + "...";
       printout(INFO,"Repository","%16llX  %s",e.key,e.name.c_str());
       printout(INFO,"Repository","          -> %s",e.address.c_str());
@@ -538,7 +540,7 @@ TO BE DONE!!!
  */
 static long ddcond_load_repository(Detector& /* description */, int argc, char** argv) {
   if ( argc > 0 )   {
-    string input = argv[0];
+    std::string input = argv[0];
     printout(INFO,"Conditions","+++ ConditionsRepository: Loading %s",input.c_str());
     ConditionsRepository::Data data;
     ConditionsRepository().load(input, data);

@@ -12,10 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Plugins.h"
+#include <DD4hep/Plugins.h>
 #include <cstdlib>
 
-using namespace std;
 using namespace dd4hep;
 
 namespace {
@@ -85,10 +84,10 @@ namespace   {
     if ( !fp.fptr.ptr ) fp.fptr.ptr = ::dlsym(0, entry);
 #endif
     if ( 0 == fp.fptr.ptr )      {
-      string err = "dd4hep:PluginService: Failed to access symbol "
-        "\""+string(entry)+"\" in plugin library "+string(plugin)+
-        " ["+string(::strerror(errno))+"]";
-      throw runtime_error(err);
+      std::string err = "dd4hep:PluginService: Failed to access symbol "
+        "\""+std::string(entry)+"\" in plugin library "+std::string(plugin)+
+        " ["+std::string(::strerror(errno))+"]";
+      throw std::runtime_error(err);
     }
     return fp.fptr.fcn;
   }
@@ -118,7 +117,7 @@ namespace   {
       _guard._handle = handle = ::dlopen(plugin_name, RTLD_LAZY | RTLD_GLOBAL);
     }
     if ( !handle )   {
-      throw runtime_error("Failed to load plugin manager library: "+string(plugin_name));
+      throw std::runtime_error("Failed to load plugin manager library: "+std::string(plugin_name));
     }
 #else
     if ( 0 != gSystem->Load(plugin_name) ) {}
@@ -145,9 +144,9 @@ PluginDebug::~PluginDebug()   noexcept(false)   {
 }
 
 /// Helper to check factory existence
-string PluginDebug::missingFactory(const string& name) const {
-  string factoryname = "Create("+name+")";
-  string msg = "\t\tNo factory with name " + factoryname + " for type " + name + " found.\n"
+std::string PluginDebug::missingFactory(const std::string& name) const {
+  std::string factoryname = "Create("+name+")";
+  std::string msg = "\t\tNo factory with name " + factoryname + " for type " + name + " found.\n"
     "\t\tPlease check library load path and/or plugin factory name.";
   return msg;
 }
@@ -174,7 +173,7 @@ void PluginService::print_bad_cast(const std::string& id,
                                    const char* msg)   {
   bool dbg = PluginInterface::instance().getDebug();
   if ( dbg )   {
-    stringstream str;
+    std::stringstream str;
     str << "Factory requested: " << id << " (" << typeid(signature).name() << ") :" << msg;
     printout(ERROR,"PluginService","%s", str.str().c_str());
     str.str("");

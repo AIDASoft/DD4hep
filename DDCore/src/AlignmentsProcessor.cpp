@@ -12,13 +12,12 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/AlignmentsProcessor.h"
-#include "DD4hep/ConditionsProcessor.h"
-#include "DD4hep/detail/ContainerHelpers.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/AlignmentsProcessor.h>
+#include <DD4hep/ConditionsProcessor.h>
+#include <DD4hep/detail/ContainerHelpers.h>
+#include <DD4hep/detail/ConditionsInterna.h>
 
-using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::align;
 
@@ -27,7 +26,7 @@ template <typename T>
 int DeltaCollector<T>::operator()(DetElement de, int level)  const  {
   if ( de.isValid() )  {
     int count = 0;
-    vector<Condition> conditions;
+    std::vector<Condition> conditions;
     cond::conditionsCollector(mapping,conditions)(de,level);
     for( auto cond : conditions )   {
       if ( cond->testFlag(Condition::ALIGNMENT_DELTA) )  {
@@ -46,7 +45,7 @@ template <typename T>
 int AlignmentsCollector<T>::operator()(DetElement de, int level)  const  {
   if ( de.isValid() )  {
     int count = 0;
-    vector<Condition> conditions;
+    std::vector<Condition> conditions;
     cond::conditionsCollector(mapping,conditions)(de,level);
     for( auto cond : conditions )   {
       if ( cond->testFlag(Condition::ALIGNMENT_DERIVED) )  {
@@ -68,26 +67,26 @@ namespace dd4hep {
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace align {
 
-    template class DeltaCollector<list<Delta> >;
-    template class DeltaCollector<vector<Delta> >;
-    template class DeltaCollector<map<DetElement,Delta> >;
-    template class DeltaCollector<vector<pair<DetElement,Delta> > >;
-    template class DeltaCollector<vector<pair<string,Delta> > >;
+    template class DeltaCollector<std::list<Delta> >;
+    template class DeltaCollector<std::vector<Delta> >;
+    template class DeltaCollector<std::map<DetElement,Delta> >;
+    template class DeltaCollector<std::vector<std::pair<DetElement,Delta> > >;
+    template class DeltaCollector<std::vector<std::pair<std::string,Delta> > >;
 
-    template class DeltaCollector<multimap<DetElement,Delta> >;
-    template class DeltaCollector<map<string,Delta> >;
-    template class DeltaCollector<multimap<string,Delta> >;
+    template class DeltaCollector<std::multimap<DetElement,Delta> >;
+    template class DeltaCollector<std::map<std::string,Delta> >;
+    template class DeltaCollector<std::multimap<std::string,Delta> >;
 
 
-    template class AlignmentsCollector<list<Alignment> >;
-    template class AlignmentsCollector<vector<Alignment> >;
-    template class AlignmentsCollector<map<DetElement,Alignment> >;
-    template class AlignmentsCollector<vector<pair<DetElement,Alignment> > >;
-    template class AlignmentsCollector<vector<pair<string,Alignment> > >;
+    template class AlignmentsCollector<std::list<Alignment> >;
+    template class AlignmentsCollector<std::vector<Alignment> >;
+    template class AlignmentsCollector<std::map<DetElement,Alignment> >;
+    template class AlignmentsCollector<std::vector<std::pair<DetElement,Alignment> > >;
+    template class AlignmentsCollector<std::vector<std::pair<std::string,Alignment> > >;
 
-    template class AlignmentsCollector<multimap<DetElement,Alignment> >;
-    template class AlignmentsCollector<map<string,Alignment> >;
-    template class AlignmentsCollector<multimap<string,Alignment> >;
+    template class AlignmentsCollector<std::multimap<DetElement,Alignment> >;
+    template class AlignmentsCollector<std::map<std::string,Alignment> >;
+    template class AlignmentsCollector<std::multimap<std::string,Alignment> >;
 
   }    /* End namespace align  */
 }      /* End namespace dd4hep      */

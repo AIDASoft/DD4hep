@@ -12,22 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Objects.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDAlign/GlobalAlignmentStack.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Objects.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDAlign/GlobalAlignmentStack.h>
 
-using namespace std;
-using namespace dd4hep;
 using namespace dd4hep::align;
 
-static dd4hep_ptr<GlobalAlignmentStack>& _stack()  {
-  static dd4hep_ptr<GlobalAlignmentStack> s;
+static dd4hep::dd4hep_ptr<GlobalAlignmentStack>& _stack()  {
+  static dd4hep::dd4hep_ptr<GlobalAlignmentStack> s;
   return s;
 }
-static dd4hep_ptr<GlobalAlignmentStack>& _stack(GlobalAlignmentStack* obj)  {
-  dd4hep_ptr<GlobalAlignmentStack>& stk = _stack();
+static dd4hep::dd4hep_ptr<GlobalAlignmentStack>& _stack(GlobalAlignmentStack* obj)  {
+  dd4hep::dd4hep_ptr<GlobalAlignmentStack>& stk = _stack();
   stk.adopt(obj);
   return stk;
 }
@@ -96,13 +94,14 @@ GlobalAlignmentStack::~GlobalAlignmentStack()   {
 /// Static client accessor
 GlobalAlignmentStack& GlobalAlignmentStack::get()  {
   if ( _stack().get() ) return *_stack();
-  throw runtime_error("GlobalAlignmentStack> Stack not allocated -- may not be retrieved!");
+  except("GlobalAlignmentStack", "Stack not allocated -- may not be retrieved!");
+  throw std::runtime_error("Stack not allocated");
 }
 
 /// Create an alignment stack instance. The creation of a second instance will be refused.
 void GlobalAlignmentStack::create()   {
   if ( _stack().get() )   {
-    throw runtime_error("GlobalAlignmentStack> Stack already allocated. Multiple copies are not allowed!");
+    except("GlobalAlignmentStack", "Stack already allocated. Multiple copies are not allowed!");
   }
   _stack(new GlobalAlignmentStack());
 }
@@ -118,16 +117,17 @@ void GlobalAlignmentStack::release()    {
     _stack(0);
     return;
   }
-  throw runtime_error("GlobalAlignmentStack> Attempt to delete non existing stack.");
+  except("GlobalAlignmentStack", "Attempt to delete non existing stack.");
 }
 
 /// Add a new entry to the cache. The key is the placement path
-bool GlobalAlignmentStack::insert(const string& full_path, dd4hep_ptr<StackEntry>& entry)  {
+bool GlobalAlignmentStack::insert(const std::string& full_path, dd4hep_ptr<StackEntry>& entry)  {
   if ( entry.get() && !full_path.empty() )  {
     entry->path = full_path;
     return add(entry);
   }
-  throw runtime_error("GlobalAlignmentStack> Attempt to apply an invalid alignment entry.");
+  except("GlobalAlignmentStack", "Attempt to apply an invalid alignment entry.");
+  return false;
 }
 
 /// Add a new entry to the cache. The key is the placement path
@@ -143,33 +143,35 @@ bool GlobalAlignmentStack::add(dd4hep_ptr<StackEntry>& entry)  {
       StackEntry* e = entry.get();
       // Need to make some checks BEFORE insertion
       if ( !e->detector.isValid() )   {
-        throw runtime_error("GlobalAlignmentStack> Invalid alignment entry [No such detector]");
+        except("GlobalAlignmentStack", "Invalid alignment entry [No such detector]");
       }
       printout(INFO,"GlobalAlignmentStack","Add node:%s",e->path.c_str());
       m_stack.emplace(e->path,entry.release());
       return true;
     }
-    throw runtime_error("GlobalAlignmentStack> The entry with path "+entry->path+
-                        " cannot be re-aligned twice in one transaction.");
+    except("GlobalAlignmentStack", "The entry with path "+entry->path+
+           " cannot be re-aligned twice in one transaction.");
   }
-  throw runtime_error("GlobalAlignmentStack> Attempt to apply an invalid alignment entry.");
+  except("GlobalAlignmentStack", "Attempt to apply an invalid alignment entry.");
+  return false;
 }
 
 /// Retrieve an alignment entry of the current stack
-dd4hep_ptr<GlobalAlignmentStack::StackEntry> GlobalAlignmentStack::pop()   {
+dd4hep::dd4hep_ptr<GlobalAlignmentStack::StackEntry> GlobalAlignmentStack::pop()   {
   Stack::iterator i = m_stack.begin();
   if ( i != m_stack.end() )   {
     dd4hep_ptr<StackEntry> e((*i).second);
     m_stack.erase(i);
     return e;
   }
-  throw runtime_error("GlobalAlignmentStack> Alignment stack is empty. "
-                      "Cannot pop entries - check size first!");
+  except("GlobalAlignmentStack", "Alignment stack is empty. "
+         "Cannot pop entries - check size first!");
+  return {};
 }
 
 /// Get all pathes to be aligned
-vector<const GlobalAlignmentStack::StackEntry*> GlobalAlignmentStack::entries() const    {
-  vector<const StackEntry*> result;
+std::vector<const GlobalAlignmentStack::StackEntry*> GlobalAlignmentStack::entries() const    {
+  std::vector<const StackEntry*> result;
   result.reserve(m_stack.size());
   transform(begin(m_stack),end(m_stack),back_inserter(result),detail::select2nd(m_stack));
   return result;

@@ -63,10 +63,12 @@
     <opticalsurface finish="Rough_LUT" model="DAVIS" name="OpticalSurface#1" type="dielectric_LUTDAVIS" value="0">
       <property name="REFLECTIVITY" ref="REFLECTIVITY0x123aff00"/>
       <property name="EFFICIENCY"   ref="EFFICIENCY0x8b77240"/>
+      <constant name="SURFACEROUGHNESS" value="0.1*mm"/>
     </opticalsurface>
     <opticalsurface finish="ground" model="unified" name="OpticalSurface#2" type="dielectric_dielectric" value="1">
       <property name="REFLECTIVITY" ref="REFLECTIVITY0x123aff00"/>
       <property name="EFFICIENCY"   ref="EFFICIENCY0x8b77240"/>
+      <constant name="SURFACEROUGHNESS" value="0.1*mm"/>
     </opticalsurface>
   </surfaces>
 

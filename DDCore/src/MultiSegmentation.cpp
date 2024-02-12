@@ -12,12 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/MultiSegmentation.h"
-#include "DDSegmentation/MultiSegmentation.h"
+#include <DD4hep/MultiSegmentation.h>
+#include <DDSegmentation/MultiSegmentation.h>
 
-// C/C++ include files
-
-using namespace std;
 using namespace dd4hep;
 
 /// access the field name used to discriminate sub-segmentations
@@ -43,8 +40,8 @@ Position MultiSegmentation::position(const CellID& id) const   {
 
 /// determine the cell ID based on the position
 dd4hep::CellID MultiSegmentation::cellID(const Position& local,
-                                   const Position& global,
-                                   const VolumeID& volID) const
+                                         const Position& global,
+                                         const VolumeID& volID) const
 {
   return access()->implementation->cellID(local, global, volID);
 }
@@ -58,6 +55,6 @@ dd4hep::CellID MultiSegmentation::cellID(const Position& local,
     -# size in x
     -# size in y
 */
-vector<double> MultiSegmentation::cellDimensions(const CellID& id) const  {
+std::vector<double> MultiSegmentation::cellDimensions(const CellID& id) const  {
   return access()->implementation->cellDimensions(id);
 }

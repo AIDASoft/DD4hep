@@ -10,14 +10,14 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#include "DD4hep/Factories.h"
-#include "DD4hep/Shapes.h"
-#include "DD4hep/Volumes.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/MatrixHelpers.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Path.h"
+#include <DD4hep/Factories.h>
+#include <DD4hep/Shapes.h>
+#include <DD4hep/Volumes.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/MatrixHelpers.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Path.h>
 
 // C/C++ include files
 #include <stdexcept>
@@ -26,12 +26,11 @@
 #include <fstream>
 
 // ROOT includes
-#include "TClass.h"
-#include "TGeoMatrix.h"
-#include "TGeoBoolNode.h"
-#include "TGeoCompositeShape.h"
+#include <TClass.h>
+#include <TGeoMatrix.h>
+#include <TGeoBoolNode.h>
+#include <TGeoCompositeShape.h>
 
-using namespace std;
 using namespace dd4hep;
 
 namespace {
@@ -57,68 +56,68 @@ namespace {
 
     Actor() = default;
     ~Actor() = default;
-    ostream& handleHeader   (ostream& log);
-    ostream& handleTrailer  (ostream& log);
-    ostream& handleSolid    (ostream& log, const TGeoShape*  sh);
-    ostream& handleMatrix   (ostream& log, TGeoMatrix* mat);
-    ostream& handleElement  (ostream& log, TGeoElement* elt);
-    ostream& handleMaterial (ostream& log, TGeoMedium* mat);
-    ostream& handlePlacement(ostream& log, TGeoNode*   parent, TGeoNode* node);
+    std::ostream& handleHeader   (std::ostream& log);
+    std::ostream& handleTrailer  (std::ostream& log);
+    std::ostream& handleSolid    (std::ostream& log, const TGeoShape*  sh);
+    std::ostream& handleMatrix   (std::ostream& log, TGeoMatrix* mat);
+    std::ostream& handleElement  (std::ostream& log, TGeoElement* elt);
+    std::ostream& handleMaterial (std::ostream& log, TGeoMedium* mat);
+    std::ostream& handlePlacement(std::ostream& log, TGeoNode*   parent, TGeoNode* node);
   };
   typedef void* pvoid_t;
 
-  ostream& newline(ostream& log)    {
-    return log << endl << prefix;
+  std::ostream& newline(std::ostream& log)    {
+    return log << std::endl << prefix;
   }
 
-  ostream& Actor::handleHeader   (ostream& log)    {
-    log << "#include \"TClass.h\"" << endl
-        << "#include \"TGeoNode.h\"" << endl
-        << "#include \"TGeoExtension.h\"" << endl
-        << "#include \"TGeoShapeAssembly.h\"" << endl
-        << "#include \"TGeoMedium.h\"" << endl
-        << "#include \"TGeoVolume.h\"" << endl
-        << "#include \"TGeoShape.h\"" << endl
-        << "#include \"TGeoPhysicalNode.h\"" << endl
-        << "#include \"TGeoCone.h\"" << endl
-        << "#include \"TGeoParaboloid.h\"" << endl
-        << "#include \"TGeoPgon.h\"" << endl
-        << "#include \"TGeoPcon.h\"" << endl
-        << "#include \"TGeoSphere.h\"" << endl
-        << "#include \"TGeoArb8.h\"" << endl
-        << "#include \"TGeoTrd1.h\"" << endl
-        << "#include \"TGeoTrd2.h\"" << endl
-        << "#include \"TGeoTube.h\"" << endl
-        << "#include \"TGeoEltu.h\"" << endl
-        << "#include \"TGeoXtru.h\"" << endl
-        << "#include \"TGeoHype.h\"" << endl
-        << "#include \"TGeoTorus.h\"" << endl
-        << "#include \"TGeoHalfSpace.h\"" << endl
-        << "#include \"TGeoCompositeShape.h\"" << endl
-        << "#include \"TGeoShapeAssembly.h\"" << endl
-        << "#include \"TGeoMatrix.h\"" << endl
-        << "#include \"TGeoBoolNode.h\"" << endl
-        << "#include \"TGeoCompositeShape.h\"" << endl
-        << "#include \"TGeoManager.h\"" << endl
-        << "#include <vector>" << endl
-        << "#include <map>" << endl
-        << "#include <set>" << endl << endl << endl;
+  std::ostream& Actor::handleHeader   (std::ostream& log)    {
+    log << "#include \"TClass.h\"" << std::endl
+        << "#include \"TGeoNode.h\"" << std::endl
+        << "#include \"TGeoExtension.h\"" << std::endl
+        << "#include \"TGeoShapeAssembly.h\"" << std::endl
+        << "#include \"TGeoMedium.h\"" << std::endl
+        << "#include \"TGeoVolume.h\"" << std::endl
+        << "#include \"TGeoShape.h\"" << std::endl
+        << "#include \"TGeoPhysicalNode.h\"" << std::endl
+        << "#include \"TGeoCone.h\"" << std::endl
+        << "#include \"TGeoParaboloid.h\"" << std::endl
+        << "#include \"TGeoPgon.h\"" << std::endl
+        << "#include \"TGeoPcon.h\"" << std::endl
+        << "#include \"TGeoSphere.h\"" << std::endl
+        << "#include \"TGeoArb8.h\"" << std::endl
+        << "#include \"TGeoTrd1.h\"" << std::endl
+        << "#include \"TGeoTrd2.h\"" << std::endl
+        << "#include \"TGeoTube.h\"" << std::endl
+        << "#include \"TGeoEltu.h\"" << std::endl
+        << "#include \"TGeoXtru.h\"" << std::endl
+        << "#include \"TGeoHype.h\"" << std::endl
+        << "#include \"TGeoTorus.h\"" << std::endl
+        << "#include \"TGeoHalfSpace.h\"" << std::endl
+        << "#include \"TGeoCompositeShape.h\"" << std::endl
+        << "#include \"TGeoShapeAssembly.h\"" << std::endl
+        << "#include \"TGeoMatrix.h\"" << std::endl
+        << "#include \"TGeoBoolNode.h\"" << std::endl
+        << "#include \"TGeoCompositeShape.h\"" << std::endl
+        << "#include \"TGeoManager.h\"" << std::endl
+        << "#include <vector>" << std::endl
+        << "#include <map>" << std::endl
+        << "#include <set>" << std::endl << std::endl << std::endl;
     log << "TGeoVolume* generate_geometry()   {" << newline;
     return log;
   }
 
-  ostream& Actor::handleTrailer   (ostream& log)    {
-    log << endl << "}" << endl << endl;
+  std::ostream& Actor::handleTrailer   (std::ostream& log)    {
+    log << std::endl << "}" << std::endl << std::endl;
     log << "void " << function << "() {" << newline
         << "if ( !gGeoManager ) gGeoManager = new TGeoManager();" << newline
         << "TGeoVolume* vol_top = generate_geometry();" << newline
         << "gGeoManager->SetTopVolume(vol_top);" << newline
         << "vol_top->Draw(\"ogl\");" << newline
-        << endl << "}" << endl;
+        << std::endl << "}" << std::endl;
     return log;
   }
 
-  ostream& Actor::handlePlacement(ostream& log, TGeoNode* parent, TGeoNode* node)  {
+  std::ostream& Actor::handlePlacement(std::ostream& log, TGeoNode* parent, TGeoNode* node)  {
     if ( node && nodes.find(node) == nodes.end() )  {
       TGeoVolume* vol = node->GetVolume();
       TGeoMatrix* mat = node->GetMatrix();
@@ -163,13 +162,13 @@ namespace {
             << "->GetNode(" << ndau << ");" << newline;
       }
       else   {
-        log << "return vol_" << pvoid_t(vol) << ";" << endl;
+        log << "return vol_" << pvoid_t(vol) << ";" << std::endl;
       }
     }
     return log;
   }
 
-  ostream& Actor::handleElement  (ostream& log, TGeoElement* elt)   {
+  std::ostream& Actor::handleElement  (std::ostream& log, TGeoElement* elt)   {
     if ( elt && elements.find(elt) == elements.end() )  {
       elements.insert(elt);
       log << "TGeoElement* elt_" << pvoid_t(elt) << " = new TGeoElement(\""
@@ -191,7 +190,7 @@ namespace {
     return log;
   }
 
-  ostream& Actor::handleMaterial(ostream& log, TGeoMedium* medium)   {
+  std::ostream& Actor::handleMaterial(std::ostream& log, TGeoMedium* medium)   {
     if ( medium && materials.find(medium) == materials.end() )  {
       materials.insert(medium);
       if ( !dump_mat )    {
@@ -218,9 +217,7 @@ namespace {
               << newline;
         }
         mix->SetRadLen(0e0);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,12,0)
         mix->ComputeDerivedQuantities();
-#endif
       }
       else {
         double z = mat->GetZ(), a = mat->GetA();
@@ -245,7 +242,7 @@ namespace {
     return log;
   }
   
-  ostream& Actor::handleMatrix(ostream& log, TGeoMatrix* mat)   {
+  std::ostream& Actor::handleMatrix(std::ostream& log, TGeoMatrix* mat)   {
     if ( mat && matrices.find(mat) == matrices.end() )  {
       const Double_t*	rot = mat->GetRotationMatrix();
       const Double_t*	tra = mat->GetTranslation();
@@ -282,7 +279,7 @@ namespace {
   }
   
   /// Pretty print of solid attributes
-  ostream& Actor::handleSolid(ostream& log,  const TGeoShape* shape)    {
+  std::ostream& Actor::handleSolid(std::ostream& log,  const TGeoShape* shape)    {
     if ( !shape || solids.find(shape) != solids.end() )  {
       return log;
     }
@@ -399,7 +396,7 @@ namespace {
     }
     else if (cl == TGeoPgon::Class()) {
       const TGeoPgon* sh = (const TGeoPgon*) shape;
-      vector<double> params;
+      std::vector<double> params;
       params.emplace_back(sh->GetPhi1());
       params.emplace_back(sh->GetDphi());
       params.emplace_back(double(sh->GetNedges()));
@@ -415,7 +412,7 @@ namespace {
     }
     else if (cl == TGeoPcon::Class()) {
       const TGeoPcon* sh = (const TGeoPcon*) shape;
-      vector<double> params;
+      std::vector<double> params;
       params.emplace_back(sh->GetPhi1());
       params.emplace_back(sh->GetDphi());
       params.emplace_back(double(sh->GetNz()));
@@ -534,7 +531,7 @@ namespace {
 }
 
 static long generate_cxx(Detector& description, int argc, char** argv) {
-  string output;
+  std::string output;
   Actor actor;
 
   for(int i=0; i<argc; ++i)  {
@@ -551,21 +548,21 @@ static long generate_cxx(Detector& description, int argc, char** argv) {
     else if ( c == 'm' )
       actor.dump_mat = true;
     else   {
-      cout <<
+      std::cout <<
         "Usage: -plugin DD4hep_CxxRootGenerator -arg [-arg]                                  \n"
         "     -output   <string> Set output file for generated code. Default: stdout         \n"
         "     -visualization     Also dump visualization attributes of volumes               \n"
         "     -materials         Also dump proper materials. Default to IRON                 \n"
         "     -help              Show thi help message                                       \n"
-        "\tArguments given: " << arguments(argc,argv) << endl << flush;
+        "\tArguments given: " << arguments(argc,argv) << std::endl << std::flush;
       ::exit(EINVAL);
     }
   }
-  unique_ptr<ofstream> out;
-  ostream* os = &cout;
+  std::unique_ptr<std::ofstream> out;
+  std::ostream* os = &std::cout;
   if ( !output.empty() )   {
     Path path(output);
-    out.reset(new ofstream(path.c_str()));
+    out.reset(new std::ofstream(path.c_str()));
     if ( !out->good() )   {
       out.reset();
       except("CxxRootGenerator",
@@ -574,7 +571,7 @@ static long generate_cxx(Detector& description, int argc, char** argv) {
     }
     os = out.get();
     actor.function = path.filename();
-    if ( actor.function.rfind('.') != string::npos )
+    if ( actor.function.rfind('.') != std::string::npos )
       actor.function = actor.function.substr(0, actor.function.rfind('.'));
     printout(INFO, "CxxRootGenerator",
              "++ Dump generated code to output files: %s [function: %s()]",

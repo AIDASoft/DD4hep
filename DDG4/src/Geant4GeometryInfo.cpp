@@ -12,21 +12,17 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4GeometryInfo.h"
-#include "DDG4/Geant4AssemblyVolume.h"
+#include <DDG4/Geant4GeometryInfo.h>
+#include <DDG4/Geant4AssemblyVolume.h>
+#include <DD4hep/Printout.h>
 
 // Geant4 include files
-#include "G4VPhysicalVolume.hh"
+#include <G4VPhysicalVolume.hh>
 
-// C/C++ include files
-#include <stdexcept>
-
-using namespace std;
 using namespace dd4hep::sim;
 
-
-string Geant4GeometryInfo::placementPath(const Geant4PlacementPath& path, bool reverse)   {
-  string path_name;
+std::string Geant4GeometryInfo::placementPath(const Geant4PlacementPath& path, bool reverse)   {
+  std::string path_name;
   if ( reverse )  {
     for (Geant4PlacementPath::const_reverse_iterator pIt = path.rbegin(); pIt != path.rend(); ++pIt) {
       path_name += "/"; path_name += (*pIt)->GetName();
@@ -55,7 +51,8 @@ Geant4GeometryInfo::~Geant4GeometryInfo() {
 /// The world placement
 G4VPhysicalVolume* Geant4GeometryInfo::world() const   {
   if ( m_world ) return m_world;
-  throw runtime_error("Geant4GeometryInfo: Attempt to access invalid world placement");
+  except("Geant4GeometryInfo", "Attempt to access invalid world placement");
+  return m_world;
 }
 
 /// Set the world placement
@@ -63,7 +60,7 @@ void Geant4GeometryInfo::setWorld(const TGeoNode* node)    {
   Geant4GeometryMaps::PlacementMap::const_iterator g4it = g4Placements.find(node);
   G4VPhysicalVolume* g4 = (g4it == g4Placements.end()) ? 0 : (*g4it).second;
   if (!g4) {
-    throw runtime_error("Geant4GeometryInfo: Attempt to SET invalid world placement");
+    except("Geant4GeometryInfo", "Attempt to SET invalid world placement");
   }
   m_world = g4;
 }

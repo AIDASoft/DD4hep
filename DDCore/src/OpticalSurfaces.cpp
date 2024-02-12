@@ -12,22 +12,19 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/OpticalSurfaces.h"
-#include "DD4hep/NamedObject.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/World.h"
+#include <DD4hep/OpticalSurfaces.h>
+#include <DD4hep/NamedObject.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/World.h>
 
-#include "DD4hep/detail/Handle.inl"
+#include <DD4hep/detail/Handle.inl>
 
 // C/C++ includes
 #include <sstream>
 #include <iomanip>
 
-using namespace std;
 using namespace dd4hep;
-
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,17,0)
 
 DD4HEP_INSTANTIATE_HANDLE(TGeoSkinSurface);
 DD4HEP_INSTANTIATE_HANDLE(TGeoBorderSurface);
@@ -35,13 +32,13 @@ DD4HEP_INSTANTIATE_HANDLE(TGeoOpticalSurface);
 
 /// Initializing constructor.
 OpticalSurface::OpticalSurface(Detector& detector,
-                               const string& full_name,
+                               const std::string& full_name,
                                EModel  model,
                                EFinish finish,
                                EType   type,
                                double  value)
 {
-  unique_ptr<Object> obj(new Object(full_name.c_str(), model, finish, type, value));
+  std::unique_ptr<Object> obj(new Object(full_name.c_str(), model, finish, type, value));
   detector.manager().AddOpticalSurface(m_element=obj.release());
 }
 
@@ -56,12 +53,12 @@ OpticalSurface::Property OpticalSurface::property(const std::string& nam)  const
 }
 
 /// Initializing constructor: Creates the object and registers it to the manager
-SkinSurface::SkinSurface(Detector& detector, DetElement de, const string& nam, OpticalSurface surf, Volume vol)
+SkinSurface::SkinSurface(Detector& detector, DetElement de, const std::string& nam, OpticalSurface surf, Volume vol)
 {
   if ( de.isValid() )  {
     if ( vol.isValid() )  {
       if ( surf.isValid() )  {
-        unique_ptr<Object> obj(new Object(nam.c_str(), surf->GetName(), surf.ptr(), vol.ptr()));
+        std::unique_ptr<Object> obj(new Object(nam.c_str(), surf->GetName(), surf.ptr(), vol.ptr()));
         detector.surfaceManager().addSkinSurface(de, m_element=obj.release());
         return;
       }
@@ -98,7 +95,7 @@ Volume   SkinSurface::volume()   const    {
 /// Initializing constructor: Creates the object and registers it to the manager
 BorderSurface::BorderSurface(Detector&      detector,
                              DetElement     de,
-                             const string&  nam,
+                             const std::string&  nam,
                              OpticalSurface surf,
                              PlacedVolume   lft,
                              PlacedVolume   rht)
@@ -106,7 +103,7 @@ BorderSurface::BorderSurface(Detector&      detector,
   if ( de.isValid() )  {
     if ( lft.isValid() && rht.isValid() )  {
       if ( surf.isValid() )   {
-        unique_ptr<Object> obj(new Object(nam.c_str(), surf->GetName(), surf.ptr(), lft.ptr(), rht.ptr()));
+        std::unique_ptr<Object> obj(new Object(nam.c_str(), surf->GetName(), surf.ptr(), lft.ptr(), rht.ptr()));
         detector.surfaceManager().addBorderSurface(de, m_element=obj.release());
         return;
       }
@@ -144,4 +141,4 @@ PlacedVolume   BorderSurface::left()   const    {
 PlacedVolume   BorderSurface::right()  const    {
   return access()->GetNode2();
 }
-#endif
+
