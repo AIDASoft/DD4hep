@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+
+  <info name="Sensor"
+	title="Sensor for New experiment"
+        author="Anastasia Karachaliou"
+        status="development"
+        url="/afs/cern.ch/user/a/akaracha/workspace/MyExperiment/DetDesc/xmlDDescr/geometry_myexper.xml"
+        version= "v0r1">
+    <comment>simple Detector as a small box</comment>
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_side"             value="2*m"/>
+    <constant name="world_x"                value="world_side/2"/>
+    <constant name="world_y"                value="world_side/2"/>
+    <constant name="world_z"                value="world_side/2"/>
+    <constant name="CrossingAngle"          value="0.020"/>
+  </define>
+
+  <materials>
+  </materials>
+
+
+  <display>
+    <vis name="DetVis"  alpha="1.0"   r="0"   g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
+    <vis name="ModVis"  alpha="1.0"   r="1"   g="0.0" b="0.0"  showDaughters="true"  visible="false"/>
+  </display>
+
+  <detectors>
+    <detector name="MyLHCBdetector1" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="1" sensitive="true" readout="MyLHCBdetector1Hits" limits="minitel_limits_1" region="minitel_region_1">
+
+      <dimensions z="1*mm" y="10*cm" x="10*cm" />
+      <module_position z="30*mm" y="0*cm" x="0*cm" />
+      <module_position z="40*mm" y="0*cm" x="0*cm" />
+      <module_position z="50*mm" y="0*cm" x="0*cm" />
+      <module_position z="60*mm" y="0*cm" x="0*cm" />
+      <module_position z="70*mm" y="0*cm" x="0*cm" />
+      <module_position z="80*mm" y="0*cm" x="0*cm" />
+      <module_position z="90*mm" y="0*cm" x="0*cm" />
+      <module_position z="100*mm" y="0*cm" x="0*cm" />
+      <module_position z="110*mm" y="0*cm" x="0*cm" />
+      <module_position z="120*mm" y="0*cm" x="0*cm" />
+      <module name="pixel" type="MiniTelPixel" material="Silicon" x="6*mm" y="6*mm" z="1*mm" vis="ModVis" alpha="-2.*radian" beta="-2.*radian" gamma="-0.*radian" />
+      <missing_module_placements number="2"/>
+    </detector>
+  </detectors>
+
+  <limits>
+    <limitset name="minitel_limits_1">
+      <limit name="step_length_max" particles="e[+-]" value="1.0" unit="mm" />
+      <limit name="step_length_max" particles="mu[+-]" value="3.0" unit="mm" />
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+      <limit name="track_length_max" particles="*" value="5.0" unit="mm" />
+      <limit name="time_max"         particles="*" value="5.0" unit="ns" />
+      <limit name="ekin_min"         particles="*" value="0.01" unit="MeV" />
+      <limit name="range_min"        particles="*" value="5.0" unit="mm" />
+      <cut   particles="e+"          value="2.0"   unit="mm" />
+      <cut   particles="e-"          value="2.0"   unit="mm" />
+      <cut   particles="gamma"       value="5.0"   unit="mm" />
+    </limitset>
+    <limitset name="minitel_limits">
+      <limit name="step_length_max" particles="e[+-]" value="1.0" unit="mm" />
+      <limit name="step_length_max" particles="mu[+-]" value="3.0" unit="mm" />
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+
+  <regions>
+    <region name="minitel_region_1" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="minitel_limits_1"/>
+    </region>
+    <region name="minitel_region" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="minitel_limits"/>
+    </region>
+  </regions>
+
+  <readouts>
+    <readout name="MyLHCBdetector1Hits">
+      <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
+      <id>system:6,side:2,module:8,x:28:-12,y:52:-12</id>
+    </readout>
+  </readouts>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="0.0*tesla"
+	   outer_field="0.0*tesla" 
+	   zmax="2*m"
+	   outer_radius="2*m">
+    </field>
+  </fields>
+
+</lccdd>
