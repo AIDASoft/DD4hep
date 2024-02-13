@@ -1480,15 +1480,17 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
       }
     }
     IDDescriptor get_id_descriptor(PlacedVolume pv)   {
-      Volume v = pv.volume();
-      SensitiveDetector sd = v.sensitiveDetector();
-      if ( sd.isValid() )   {
-        IDDescriptor dsc = sd.readout().idSpec();
-        if ( dsc.isValid() ) return dsc;
-      }
-      for (Int_t idau = 0, ndau = v->GetNdaughters(); idau < ndau; ++idau)  {
-        IDDescriptor dsc = get_id_descriptor(v->GetNode(idau));
-        if ( dsc.isValid() ) return dsc;
+      if ( pv.isValid() )  {
+        Volume v = pv.volume();
+        SensitiveDetector sd = v.sensitiveDetector();
+        if ( sd.isValid() )   {
+          IDDescriptor dsc = sd.readout().idSpec();
+          if ( dsc.isValid() ) return dsc;
+        }
+        for (Int_t idau = 0, ndau = v->GetNdaughters(); idau < ndau; ++idau)  {
+          IDDescriptor dsc = get_id_descriptor(v->GetNode(idau));
+          if ( dsc.isValid() ) return dsc;
+        }
       }
       return IDDescriptor();
     }
@@ -1498,51 +1500,53 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
     }
 
     long dump(DetElement de, int level, IDDescriptor& id_desc, VolIDs chain)   {
+      char fmt[256];
       PlacedVolume place = de.placement();
       const DetElement::Children& children = de.children();
-      bool  use_elt = path.empty() || de.path().find(path) != std::string::npos;
+      bool use_elt = path.empty() || de.path().find(path) != std::string::npos;
 
       if ( have_match < 0 && use_elt )  {
         have_match = level;
       }
-      use_elt = use_elt && ((level-have_match) <= analysis_level);
-      if ( de != det_world )    {
+
+      use_elt &= ((level-have_match) <= analysis_level);
+      if ( !place.isValid() )    {
+        std::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s DetElement with INVALID PLACEMENT!", level+1, 2*level+1);
+        printout(ERROR,"DetectorDump", fmt, "", de.path().c_str());
+        use_elt = false;
+      }
+
+      if ( place.isValid() && de != det_world )    {
         chain.insert(chain.end(), place.volIDs().begin(), place.volIDs().end());
       }
       if ( use_elt )   {
         if ( !sensitive_only || 0 != de.volumeID() )  {
           char sens = place.isValid() && place.volume().isSensitive() ? 'S' : ' ';
-          char fmt[128];
-          switch(flag)  {
+          switch( flag )  {
           case 0:
             ++count;
             if ( de.placement() == de.idealPlacement() )  {
-              std::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p  %%c",level+1,2*level+1);
-              printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(children.size()),
+              std::snprintf(fmt, sizeof(fmt), "%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p  %%c", level+1, 2*level+1);
+              printout(INFO, "DetectorDump", fmt, "", de.path().c_str(), int(children.size()),
                        (unsigned long)de.volumeID(), (void*)place.ptr(), sens);
               break;
             }
-            std::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p [ideal:%%p aligned:%%p]  %%c",
-                          level+1,2*level+1);
-            printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(children.size()),
+            std::snprintf(fmt, sizeof(fmt), "%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p [ideal:%%p aligned:%%p]  %%c",
+                          level+1, 2*level+1);
+            printout(INFO, "DetectorDump", fmt, "", de.path().c_str(), int(children.size()),
                      (unsigned long)de.volumeID(), (void*)de.idealPlacement().ptr(),
                      (void*)place.ptr(), sens);
             break;
           case 1:
             ++count;
-            std::snprintf(fmt,sizeof(fmt),
-                          "%03d %%-%ds Detector: %%s NumDau:%%d VolID:%%p",
-                          level+1,2*level+1);
-            printout(INFO,"DetectorDump", fmt, "", de.path().c_str(), int(children.size()), (void*)de.volumeID());
+            std::snprintf(fmt, sizeof(fmt), "%03d %%-%ds Detector: %%s NumDau:%%d VolID:%%p", level+1, 2*level+1);
+            printout(INFO, "DetectorDump", fmt, "", de.path().c_str(), int(children.size()), (void*)de.volumeID());
             if ( de.placement() == de.idealPlacement() )  {
-              std::snprintf(fmt,sizeof(fmt),
-                            "%03d %%-%ds Placement: %%s  %%c",
-                            level+1,2*level+3);
+              std::snprintf(fmt, sizeof(fmt), "%03d %%-%ds Placement: %%s  %%c", level+1, 2*level+3);
               printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(), sens);
               break;
             }
-            std::snprintf(fmt,sizeof(fmt),
-                          "%03d %%-%ds Placement: %%s  [ideal:%%p aligned:%%p] %%c",
+            std::snprintf(fmt,sizeof(fmt), "%03d %%-%ds Placement: %%s  [ideal:%%p aligned:%%p] %%c",
                           level+1,2*level+3);
             printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(),
                      (void*)de.idealPlacement().ptr(), (void*)place.ptr(), sens);          
@@ -1591,11 +1595,11 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
       return 1;
     }
   };
-  VolIDs chain;
-  IDDescriptor id_desc;
-  Actor  a(description);
-  a.parse_args(argc, argv);
-  return a.dump(description.world(), 0, id_desc, chain);
+  VolIDs       chain;
+  IDDescriptor id_descriptor;
+  Actor        actor(description);
+  actor.parse_args(argc, argv);
+  return actor.dump(description.world(), 0, id_descriptor, chain);
 }
 DECLARE_APPLY(DD4hep_DetectorDump,dump_detelement_tree<0>)
 DECLARE_APPLY(DD4hep_DetectorVolumeDump,dump_detelement_tree<1>)

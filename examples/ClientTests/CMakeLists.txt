@@ -374,6 +374,15 @@ foreach (test BoxTrafos CaloEndcapReflection IronCylinder MiniTel SiliconBlock N
 endforeach()
 #
 #
+# Test Minitel for missing DetElement placements
+dd4hep_add_test_reg( MiniTel_check_missing_placements
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTel_err_place.xml
+              -plugin DD4hep_DetectorDump --volids --shapes --materials --positions
+  REGEX_PASS "ERROR 004         /MyLHCBdetector1/side_0/module_9 DetElement with INVALID PLACEMENT"
+  REGEX_FAIL "Exception;EXCEPTION"
+)
+#
 # Checksum test of the Minitel3 sub-detector
 dd4hep_add_test_reg( MiniTel_check_checksum_Minitel3
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"

@@ -77,10 +77,9 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
   if ( x_det.isSensitive() ) {
     sens.setType("tracker");
   }
-  int count = 0;
   PlacedVolume pv;
   DetElement   side_det;
-  double       epsilon = 1e-10; 
+  double       epsilon = 1e-10;
   Position     side_pos(0,0,30*dd4hep::mm);
   Position     env_dim_min(sensor_box.x()+epsilon, sensor_box.y()+epsilon, +100000.0);
   Position     env_dim_max(sensor_box.x()+epsilon, sensor_box.y()+epsilon, -100000.0);
@@ -114,14 +113,22 @@ static Ref_t create_detector(Detector &description, xml_h e, SensitiveDetector s
     printout(ALWAYS,"","side_pos = %f",side_pos.z());
   }
 
+  Unicode tag("missing_module_placements");
+  xml_dim_t miss = x_det.child(tag, false);
+  int missing_placement = miss ? miss.number() : 0;
   pv = assembly.placeVolume(side_vol, side_pos);
   pv.addPhysVolID("side",0);
   side_det.setPlacement(pv);
+  int count = 0;
   for( xml_coll_t mpos(x_det, _U(module_position)); mpos; mpos++ )    {
     xml_comp_t x_pos = mpos;
     DetElement module(side_det, _toString(count, "module_%d"), count);
     pv = side_vol.placeVolume(sensor_vol,Transform3D(Position(x_pos.x(),x_pos.y(),x_pos.z())));
     pv.addPhysVolID("module", ++count);
+    if ( missing_placement > 0 && count%missing_placement == 0 )   {
+      printout(WARNING,"","Drop placement of DetElement: %s", module.path().c_str());
+      continue;
+    }
     module.setPlacement(pv);
   }
 
