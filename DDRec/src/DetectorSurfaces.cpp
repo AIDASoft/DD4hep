@@ -35,8 +35,10 @@ namespace dd4hep {
       const VolSurfaceList* vsL = volSurfaceList(det) ;
 
       try {
-        _sL = det.extension< SurfaceList >() ;
-
+        _sL = det.extension< SurfaceList >(false) ;
+        if (not _sL) {
+          _sL = det.addExtension<SurfaceList >(  new SurfaceList( true )  ) ;
+        }
       } catch(const std::exception& e) { 
         _sL = det.addExtension<SurfaceList >(  new SurfaceList( true )  ) ; 
       }
