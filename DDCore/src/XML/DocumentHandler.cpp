@@ -508,7 +508,7 @@ Document DocumentHandler::load(const std::string& fname, UriReader* reader) cons
       except("dd4hep:XML","++ Unknown error (TinyXML) while parsing:%s",fname.c_str());
     }
   }
-  catch(exception& e) {
+  catch(std::exception& e) {
     printout(ERROR,"DocumentHandler","+++ Exception (TinyXML): parse(path):%s",e.what());
   }
   if ( result ) {
