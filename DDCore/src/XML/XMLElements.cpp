@@ -989,13 +989,13 @@ static unsigned int adler32(unsigned int adler, const XmlChar* xml_buff, size_t 
 typedef unsigned int (fcn_t)(unsigned int, const XmlChar*, size_t);
 unsigned int Handle_t::checksum(unsigned int param, fcn_t fcn) const {
 #ifdef DD4HEP_USE_TINYXML
-  typedef map<std::string, std::string> StringMap;
+  typedef std::map<std::string, std::string> StringMap;
   TiXmlNode* n = Xml(m_node).n;
   if ( n ) {
     if ( 0 == fcn ) fcn = adler32;
     switch (n->Type()) {
     case TiXmlNode::ELEMENT: {
-      map<std::string,std::string> m;
+      std::map<std::string,std::string> m;
       TiXmlElement* e = n->ToElement();
       TiXmlAttribute* p=e->FirstAttribute();
       for(; p; p=p->Next()) m.emplace(p->Name(),p->Value());
