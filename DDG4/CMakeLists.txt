@@ -92,10 +92,10 @@ endif()
 
 #---------------------------  Plugin library for the simulation framework  ---------
 #---------------------------  LCIO Plugins for new simulation framework  -----------
-IF(TARGET LCIO::LCIO)
+IF(TARGET LCIO::lcio)
   dd4hep_add_plugin(DDG4LCIO
     SOURCES lcio/*.cpp
-    USES    DD4hep::DDG4 LCIO::LCIO
+    USES    DD4hep::DDG4 LCIO::lcio
     )
   install(TARGETS DDG4LCIO EXPORT DD4hep LIBRARY DESTINATION lib)
   set_target_properties(DDG4LCIO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
