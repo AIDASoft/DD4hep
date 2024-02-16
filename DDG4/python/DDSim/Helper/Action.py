@@ -18,7 +18,7 @@ class Action(ConfigHelper):
 
   >>> SIM = DD4hepSimulation()
   >>> SIM.action.trackerSDTypes = ['tracker', 'myTrackerSensType']
-  >>> SIM.calor.calorimeterSDTypes = ['calorimeter', 'myCaloSensType']
+  >>> SIM.action.calorimeterSDTypes = ['calorimeter', 'myCaloSensType']
 
   For specific subdetectors specific sensitive detectors can be set based on patterns in the name of the subdetector.
 
