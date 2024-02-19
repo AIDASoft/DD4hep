@@ -106,10 +106,18 @@ namespace dd4hep {
 
     template <> G4VSolid* convertShape<TwistedTubeObject>(const TGeoShape* shape)  {
       const TwistedTubeObject* sh = (const TwistedTubeObject*) shape;
+      if ( std::fabs(std::fabs(sh->GetNegativeEndZ()) - std::fabs(sh->GetPositiveEndZ())) < 1e-10 )   {
+        return new G4TwistedTubs(sh->GetName(),sh->GetPhiTwist() * DEGREE_2_RAD,
+                                 sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM,
+                                 sh->GetNegativeEndZ() * CM_2_MM,
+                                 sh->GetNsegments(),
+                                 (sh->GetPhi2()-sh->GetPhi1()) * DEGREE_2_RAD);
+      }
       return new G4TwistedTubs(sh->GetName(),sh->GetPhiTwist() * DEGREE_2_RAD,
                                sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM,
                                sh->GetNegativeEndZ() * CM_2_MM, sh->GetPositiveEndZ() * CM_2_MM,
-                               sh->GetNsegments(), (sh->GetPhi2()-sh->GetPhi1()) * DEGREE_2_RAD);
+                               sh->GetNsegments(),
+                               (sh->GetPhi2()-sh->GetPhi1()) * DEGREE_2_RAD);
     }
 
     template <> G4VSolid* convertShape<TGeoTrd1>(const TGeoShape* shape)  {
