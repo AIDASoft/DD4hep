@@ -1,3 +1,83 @@
+# v01-28
+
+* 2024-02-19 Markus Frank ([PR#1228](https://github.com/aidasoft/dd4hep/pull/1228))
+  - Fix DD4hep_DetectorDump plugin to avoid crash if a DetElement placement is invalid,
+     which is not allowed, but also should not end up in a crash.
+  - Add test to check if DetElements have proper placement set using MiniTel example
+    (see examples/ClientTests/compact/MiniTel_err_place.xml) and
+    test MiniTel_check_missing_placements
+  - The fake DD4hep object TwistedTube  did not correctly emulate the different constructors when converted
+    to Geant4. This should be fixed with this PR.
+
+* 2024-02-16 Andre Sailer ([PR#1231](https://github.com/aidasoft/dd4hep/pull/1231))
+  - CMake: use the LCIO::lcio target instead of LCIO::LCIO
+
+* 2024-02-15 Andre Sailer ([PR#1230](https://github.com/aidasoft/dd4hep/pull/1230))
+  - XML: add missing std:: when building with TinyXML
+  - DetectorSurfaces: silence printout when creating SurfaceList, fixes #1229
+
+* 2024-02-13 Wouter Deconinck ([PR#1225](https://github.com/aidasoft/dd4hep/pull/1225))
+  - upgrade CI to checkout@v4, cvmfs@v4, upload-artifact@v4
+
+* 2024-02-12 Alvaro Tolosa Delgado ([PR#1227](https://github.com/aidasoft/dd4hep/pull/1227))
+  - Twisted tube: twisted angle unit conversion now works properly
+
+* 2024-02-12 Markus Frank ([PR#1226](https://github.com/aidasoft/dd4hep/pull/1226))
+  Multiple commits. Most important one (on user request):
+  - Implement CONST properties to optical sufaces. (Requires new release of ROOT)
+    See issue: https://github.com/AIDASoft/DD4hep/issues/1223
+  
+  Otherwise:
+  - Remove support for very old versions of ROOT < 6.10.0
+  - Remove support for very old versions of ROOT < 6.26.0. 
+  - Remove default use of std namespace from most implementation files.
+
+* 2024-02-12 Wouter Deconinck ([PR#1218](https://github.com/aidasoft/dd4hep/pull/1218))
+  - add command line options to pass stepping (etc) action plugins to ddsim
+
+* 2024-02-08 tmadlener ([PR#1219](https://github.com/aidasoft/dd4hep/pull/1219))
+  - Make the upcoming renaming of `edm4hep::TrackerHit` to `edm4hep::TrackerHit3D` (https://github.com/key4hep/EDM4hep/pull/252) transparent as far as DD4hep is concerned.
+
+* 2024-02-07 jmcarcell ([PR#1221](https://github.com/aidasoft/dd4hep/pull/1221))
+  - Change ROOTFrame{Writer,Reader} to ROOT{Writer,Reader} following https://github.com/AIDASoft/podio/pull/549
+
+* 2024-02-02 tmadlener ([PR#1198](https://github.com/aidasoft/dd4hep/pull/1198))
+  - Set the momenta of the `edm4hep::MCParticle` as double instead of float once it becomes possible.
+
+* 2024-01-18 Markus Frank ([PR#1217](https://github.com/aidasoft/dd4hep/pull/1217))
+  - Enable energy deposit collection in FiberTubeCalorimeter example.
+
+* 2024-01-18 Markus Frank ([PR#1216](https://github.com/aidasoft/dd4hep/pull/1216))
+  - Update FiberTubeCalorimeter example
+  - Fix overlapping volumes
+
+* 2024-01-17 Markus Frank ([PR#1215](https://github.com/aidasoft/dd4hep/pull/1215))
+  - Fix creation of tessellated shapes from CAD files.
+  -  Properly hand quadri-linear facets from CAD files.
+  -  See also: https://github.com/root-project/root/pull/14327
+  -  See also: https://github.com/AIDASoft/DD4hep/pull/1212
+
+* 2024-01-16 Markus Frank ([PR#1214](https://github.com/aidasoft/dd4hep/pull/1214))
+  - Fix to MR https://github.com/AIDASoft/DD4hep/pull/1212
+
+* 2024-01-15 Markus Frank ([PR#1213](https://github.com/aidasoft/dd4hep/pull/1213))
+  - Adapt material scan to be aware of the different compilation modes for TGeo units and Geant4 units.
+    See also issue https://github.com/AIDASoft/DD4hep/issues/1163.
+
+* 2024-01-15 Andre Sailer ([PR#1212](https://github.com/aidasoft/dd4hep/pull/1212))
+  - Assimp: adapt to changes in TGeoTessellated for ROOT 6.32
+  - ShapeUtilities: adapt to changes in TGeoTessellated for ROOT 6.32
+
+* 2024-01-12 Markus Frank ([PR#1211](https://github.com/aidasoft/dd4hep/pull/1211))
+  - Implement required chnges for new ROOT 6.31.X.
+    See issue https://github.com/AIDASoft/DD4hep/issues/1210 for details.
+
+* 2024-01-08 Markus Frank ([PR#1209](https://github.com/aidasoft/dd4hep/pull/1209))
+  - Restore behavior of teveDisplay. See issue https://github.com/AIDASoft/DD4hep/issues/1208 for details.
+
+* 2023-12-19 Andre Sailer ([PR#1206](https://github.com/aidasoft/dd4hep/pull/1206))
+  - CI: Coverity: use el9 based stack
+
 # v01-27-02
 
 * 2023-12-15 Andre Sailer ([PR#1205](https://github.com/aidasoft/dd4hep/pull/1205))
