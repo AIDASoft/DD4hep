@@ -830,15 +830,15 @@ std::vector<double> zPlaneRmax() const;
 
 \item \texttt{TubeSegment} shape represented by the \tgeo{TGeoTubeSeg}{\texttt TGeoTubeSeg} class. To create a new tube segment object call one of the following constructors:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
-Tube(double rmin, double rmax, double z, double deltaPhi=2*M_PI)
-Tube(double rmin, double rmax, double z, double startPhi, double deltaPhi)
+Tube(double rmin, double rmax, double z, double endPhi=2*M_PI)
+Tube(double rmin, double rmax, double z, double startPhi, double endPhi)
 
-template<typename RMIN, typename RMAX, typename Z, typename DELTAPHI>
-Tube(const RMIN& rmin, const RMAX& rmax, const Z& z, const DELTAPHI& deltaPhi)  
+template<typename RMIN, typename RMAX, typename Z, typename ENDPHI>
+Tube(const RMIN& rmin, const RMAX& rmax, const Z& z, const ENDPHI& endPhi)  
 
-template<typename RMIN, typename RMAX, typename Z, typename STARTPHI, typename DELTAPHI>
+template<typename RMIN, typename RMAX, typename Z, typename STARTPHI, typename ENDPHI>
 Tube(const std::string& name, const RMIN& rmin, const RMAX& rmax, const Z& z, 
-     const STARTPHI& startPhi, const DELTAPHI& deltaPhi)  
+     const STARTPHI& startPhi, const ENDPHI& endPhi)  
 
 /// Accessor: start-phi value
 double startPhi() const;
