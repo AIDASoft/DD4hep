@@ -58,6 +58,8 @@ body:
         - If possible, as a self-contained  list of instructions starting from a clean shell
           - git checkout, setup environment (Geant4/ROOT version, LCG/iLCSoft/Key4hep release), cmake, build, run...
         - Don't forget to attach any required input files
+    validations:
+      required: true
   - type: textarea
     id: additional-context
     attributes:
