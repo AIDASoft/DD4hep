@@ -1,0 +1,66 @@
+name: Bug Report
+description: Use this template for reporting Bugs or Errors
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: To facilitate faster and easier response to your issue please provide in addition to the description of the issue also the following information
+  - type: checkboxes
+    id: check-duplicates
+    attributes:
+      label: Check duplicate issues.
+      description: Please search in [GitHub](https://github.com/aidasoft/dd4hep/issues?q=is%3Aissue) or existing reports of your issue and their solutions
+      options:
+        - label: Checked for duplicates
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: A short description of what you are trying to achieve
+    validations:
+      required: true
+  - type: textarea
+    id: os
+    attributes:
+      label: Description
+      description: Operating system and version: e.g. Alma Linux 9
+    validations:
+      required: true
+  - type: textarea
+    id: compiler-version
+    attributes:
+      label: compiler
+      description: Name and Version of the compiler used: e.g. GCC 13
+    validations:
+      required: true
+  - type: textarea
+    id: root-version
+    attributes:
+      label: ROOT version
+      description: 
+    validations:
+      required: true
+  - type: textarea
+    id: dd4hep-version
+    attributes:
+      label: dd4hep
+      description: Version of DD4hep used: tag, commit ID, or GitHub branch
+    validations:
+      required: true
+  - type: textarea
+    id: to-reproduce
+    attributes:
+      label: Reproducer
+      description: |
+        Step-by-step instructions to reproduce the issue.
+        - If possible, as a self-contained  list of instructions starting from a clean shell
+          - git checkout, setup environment (Geant4/ROOT version, LCG/iLCSoft/Key4hep release), cmake, build, run...
+        - Don't forget to attach any required input files
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+    validations:
+      required: false
