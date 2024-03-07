@@ -21,32 +21,32 @@ body:
       description: A short description of what you are trying to achieve
     validations:
       required: true
-  - type: textarea
+  - type: input
     id: os
     attributes:
       label: Description
-      description: "Operating system and version: e.g. Alma Linux 9"
+      placeholder: "Operating system and version: e.g. Alma Linux 9"
     validations:
       required: true
-  - type: textarea
+  - type: input
     id: compiler-version
     attributes:
       label: compiler
-      description: "Name and Version of the compiler used: e.g. GCC 13"
+      placeholder: "Name and Version of the compiler used: e.g. GCC 13"
     validations:
       required: true
-  - type: textarea
+  - type: input
     id: root-version
     attributes:
-      label: ROOT version
-      description: 
+      label: ROOT Version
+      placeholder: Version of ROOT
     validations:
       required: true
-  - type: textarea
+  - type: input
     id: dd4hep-version
     attributes:
-      label: dd4hep
-      description: "Version of DD4hep used: tag, commit ID, or GitHub branch"
+      label: DD4hep Version
+      placeholder: "Version of DD4hep used: tag, commit ID, or GitHub branch"
     validations:
       required: true
   - type: textarea
