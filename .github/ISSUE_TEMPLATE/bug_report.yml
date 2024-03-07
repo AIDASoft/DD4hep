@@ -25,14 +25,14 @@ body:
     id: os
     attributes:
       label: Description
-      description: Operating system and version: e.g. Alma Linux 9
+      description: "Operating system and version: e.g. Alma Linux 9"
     validations:
       required: true
   - type: textarea
     id: compiler-version
     attributes:
       label: compiler
-      description: Name and Version of the compiler used: e.g. GCC 13
+      description: "Name and Version of the compiler used: e.g. GCC 13"
     validations:
       required: true
   - type: textarea
@@ -46,7 +46,7 @@ body:
     id: dd4hep-version
     attributes:
       label: dd4hep
-      description: Version of DD4hep used: tag, commit ID, or GitHub branch
+      description: "Version of DD4hep used: tag, commit ID, or GitHub branch"
     validations:
       required: true
   - type: textarea
