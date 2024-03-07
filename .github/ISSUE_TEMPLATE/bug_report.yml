@@ -24,29 +24,29 @@ body:
   - type: input
     id: os
     attributes:
-      label: Description
-      placeholder: "Operating system and version: e.g. Alma Linux 9"
+      label: Operating System and Version
+      placeholder: "e.g. Alma Linux 9"
     validations:
       required: true
   - type: input
     id: compiler-version
     attributes:
       label: compiler
-      placeholder: "Name and Version of the compiler used: e.g. GCC 13"
+      placeholder: "e.g. GCC 13"
     validations:
       required: true
   - type: input
     id: root-version
     attributes:
       label: ROOT Version
-      placeholder: Version of ROOT
+      placeholder: e.g. 6.10/02
     validations:
       required: true
   - type: input
     id: dd4hep-version
     attributes:
       label: DD4hep Version
-      placeholder: "Version of DD4hep used: tag, commit ID, or GitHub branch"
+      placeholder: "tag, commit ID, or GitHub branch"
     validations:
       required: true
   - type: textarea
