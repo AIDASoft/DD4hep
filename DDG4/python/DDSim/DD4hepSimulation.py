@@ -71,6 +71,7 @@ class DD4hepSimulation(object):
 
     self.numberOfEvents = 0
     self.skipNEvents = 0
+    self.numberOfThreads = 1
     self.physicsList = None  # deprecated use physics.list
     self.crossingAngleBoost = 0.0
     self.macroFile = ''
@@ -180,6 +181,9 @@ class DD4hepSimulation(object):
     parser.add_argument("--skipNEvents", action="store", dest="skipNEvents", default=self.skipNEvents, type=int,
                         help="Skip first N events when reading a file")
 
+    parser.add_argument("--numberOfThreads", "-j", action="store", dest="numberOfThreads", default=self.numberOfThreads,
+                        type=int, help="Number of threads for simulation")
+
     parser.add_argument("--physicsList", action="store", dest="physicsList", default=self.physicsList,
                         help="Physics list to use in simulation. Deprecated, use physics.list")
 
@@ -247,6 +251,7 @@ class DD4hepSimulation(object):
 
     self.numberOfEvents = parsed.numberOfEvents
     self.skipNEvents = parsed.skipNEvents
+    self.numberOfThreads = parsed.numberOfThreads
     self.physicsList = parsed.physicsList
     self.crossingAngleBoost = parsed.crossingAngleBoost
     self.macroFile = parsed.macroFile
