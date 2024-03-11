@@ -565,8 +565,8 @@ class DD4hepSimulation(object):
       if processedEvents != 0:
         eventTime = totalTimeUser - startUpTime
         perEventTime = eventTime / processedEvents
-        logger.info("StartUp Time: %3.2f s, Processing and Init: %3.2f s (~%3.2f s/Event) "
-                    % (startUpTime, eventTime, perEventTime))
+        logger.info("StartUp Time: %3.2f s, Processing and Init: %3.2f s (~%3.2f s/Event @ %d threads) "
+                    % (startUpTime, eventTime, perEventTime, self.numberOfThreads))
     return exitCode
 
   def __setMagneticFieldOptions(self, geant4):
