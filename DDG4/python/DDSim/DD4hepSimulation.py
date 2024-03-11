@@ -571,7 +571,10 @@ class DD4hepSimulation(object):
 
   def __setMagneticFieldOptions(self, geant4):
     """ create and configure the magnetic tracking setup """
-    field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
+    if self.numberOfThreads > 1:
+      seq, field = geant4.addDetectorConstruction("Geant4FieldTrackingConstruction/MagFieldTrackingSetup")
+    else:
+      field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
     field.stepper = self.field.stepper
     field.equation = self.field.equation
     field.eps_min = self.field.eps_min
