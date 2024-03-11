@@ -540,12 +540,14 @@ endfunction()
 #  DEFINITIONS    -> Additional compiler definitions to compile the sources
 #  OUTPUT         -> 
 #
+#  USE_COMMAND_TO_GENERATE -> Go back to previous way of generating dictionary without creating temporary files
+#
 #  \author  A.Sailer
 #  \version 1.0
 #
 #---------------------------------------------------------------------------------------------------
 function(dd4hep_add_dictionary dictionary )
-  cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS;USES;DEFINITIONS;INCLUDES;OUTPUT" ${ARGN} )
+  cmake_parse_arguments(ARG "USE_COMMAND_TO_GENERATE" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS;USES;DEFINITIONS;INCLUDES;OUTPUT" ${ARGN} )
   dd4hep_print ( "|++++> Building dictionary ... ${dictionary}" )
 
   file(GLOB headers ${ARG_SOURCES})
@@ -593,21 +595,35 @@ function(dd4hep_add_dictionary dictionary )
   endif()
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E make_directory ${output_dir})
 
-  add_custom_command(OUTPUT ${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
-    COMMAND ${ROOT_rootcling_CMD}
-    ARGS -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader
-    ${ARG_OPTIONS}
-   "$<$<BOOL:$<JOIN:${comp_defs},>>:-D$<JOIN:${comp_defs},;-D>>"
-   "$<$<BOOL:$<JOIN:${inc_dirs},>>:-I$<JOIN:${inc_dirs},;-I>>"
-   "$<JOIN:${headers},;>" "$<JOIN:${linkdefs},;>"
-
-   DEPENDS ${headers} ${linkdefs}
-   COMMAND_EXPAND_LISTS
-    )
   add_custom_target(${dictionary}
-    DEPENDS ${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
+    DEPENDS ${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm ${headers} ${linkdefs}
+  )
+  if(NOT ARG_USE_COMMAND_TO_GENERATE)
+    file(GENERATE OUTPUT create_${dictionary}_$<CONFIG>$<COMPILE_LANGUAGE>.sh
+      CONTENT "${ROOT_rootcling_CMD} -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader ${ARG_OPTIONS} $<$<BOOL:$<JOIN:${comp_defs},>>:-D$<JOIN:${comp_defs},;-D>> $<$<BOOL:$<JOIN:${inc_dirs},>>:-I$<JOIN:${inc_dirs},;-I>> $<JOIN:${headers},;> $<JOIN:${linkdefs},;>"
+      TARGET ${ARG_TARGET}
     )
+    add_custom_command(OUTPUT fixed_create_${dictionary}_$<CONFIG>CXX.sh
+      COMMAND sed "s/\;/ /g" create_${dictionary}_$<CONFIG>CXX.sh > fixed_create_${dictionary}_$<CONFIG>CXX.sh
+      DEPENDS create_${dictionary}_$<CONFIG>CXX.sh
+    )
+    add_custom_command(OUTPUT ${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
+      COMMAND /bin/sh fixed_create_${dictionary}_$<CONFIG>CXX.sh
+      DEPENDS fixed_create_${dictionary}_$<CONFIG>CXX.sh
+    )
+  else()
+    add_custom_command(OUTPUT ${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
+      COMMAND ${ROOT_rootcling_CMD}
+      ARGS -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader
+      ${ARG_OPTIONS}
+      "$<$<BOOL:$<JOIN:${comp_defs},>>:-D$<JOIN:${comp_defs},;-D>>"
+      "$<$<BOOL:$<JOIN:${inc_dirs},>>:-I$<JOIN:${inc_dirs},;-I>>"
+      "$<JOIN:${headers},;>" "$<JOIN:${linkdefs},;>"
 
+      DEPENDS ${headers} ${linkdefs}
+      COMMAND_EXPAND_LISTS
+    )
+  endif()
   set_source_files_properties(${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
     PROPERTIES
     GENERATED TRUE
