@@ -600,8 +600,7 @@ function(dd4hep_add_dictionary dictionary )
   )
   if(NOT ARG_USE_COMMAND_TO_GENERATE)
     file(GENERATE OUTPUT create_${dictionary}_$<CONFIG>$<COMPILE_LANGUAGE>.sh
-      CONTENT "${ROOT_rootcling_CMD} -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader ${ARG_OPTIONS} $<$<BOOL:$<JOIN:${comp_defs},>>:-D$<JOIN:${comp_defs},;-D>> $<$<BOOL:$<JOIN:${inc_dirs},>>:-I$<JOIN:${inc_dirs},;-I>> $<JOIN:${headers},;> $<JOIN:${linkdefs},;>"
-      TARGET ${ARG_TARGET}
+      CONTENT "${ROOT_rootcling_CMD} -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader ${ARG_OPTIONS} $<$<BOOL:$<JOIN:${comp_defs},>>:-D$<JOIN:$<REMOVE_DUPLICATES:${comp_defs}>,;-D>> $<$<BOOL:$<JOIN:${inc_dirs},>>:-I$<JOIN:$<REMOVE_DUPLICATES:${inc_dirs}>,;-I>> $<JOIN:${headers},;> $<JOIN:${linkdefs},;>"
     )
     add_custom_command(OUTPUT fixed_create_${dictionary}_$<CONFIG>CXX.sh
       COMMAND sed "s/\;/ /g" create_${dictionary}_$<CONFIG>CXX.sh > fixed_create_${dictionary}_$<CONFIG>CXX.sh
@@ -616,8 +615,8 @@ function(dd4hep_add_dictionary dictionary )
       COMMAND ${ROOT_rootcling_CMD}
       ARGS -f ${dictionary}.cxx -s ${output_dir}/${dictionary} -inlineInputHeader
       ${ARG_OPTIONS}
-      "$<$<BOOL:$<JOIN:${comp_defs},>>:-D$<JOIN:${comp_defs},;-D>>"
-      "$<$<BOOL:$<JOIN:${inc_dirs},>>:-I$<JOIN:${inc_dirs},;-I>>"
+      "$<$<BOOL:$<JOIN:${comp_defs},>>:-D$<JOIN:$<REMOVE_DUPLICATES:${comp_defs}>,;-D>>"
+      "$<$<BOOL:$<JOIN:${inc_dirs},>>:-I$<JOIN:$<REMOVE_DUPLICATES:${inc_dirs}>,;-I>>"
       "$<JOIN:${headers},;>" "$<JOIN:${linkdefs},;>"
 
       DEPENDS ${headers} ${linkdefs}
