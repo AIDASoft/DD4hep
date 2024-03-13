@@ -608,7 +608,7 @@ function(dd4hep_add_dictionary dictionary )
     )
     add_custom_command(OUTPUT ${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
       COMMAND /bin/sh fixed_create_${dictionary}_$<CONFIG>CXX.sh
-      DEPENDS fixed_create_${dictionary}_$<CONFIG>CXX.sh
+      DEPENDS fixed_create_${dictionary}_$<CONFIG>CXX.sh ${headers} ${linkdefs}
     )
   else()
     add_custom_command(OUTPUT ${dictionary}.cxx ${output_dir}/${dictionary}_rdict.pcm
