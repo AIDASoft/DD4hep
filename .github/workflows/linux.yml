@@ -9,13 +9,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_100/x86_64-centos7-gcc10-opt",    # g4 10.7
-              "LCG_101/x86_64-centos7-gcc11-opt",    # g4 10.7
+        LCG: ["LCG_101/x86_64-centos7-gcc11-opt",    # g4 10.7
               "LCG_102/x86_64-centos9-gcc11-opt",    # g4 11
-              "LCG_102/x86_64-centos7-clang12-opt",  # g4 11
-              "LCG_102/x86_64-ubuntu2004-gcc9-opt",  # g4 11
-              "dev3/x86_64-centos7-gcc11-opt",
-              "dev4/x86_64-centos7-gcc11-opt"]
+              "LCG_104/x86_64-el9-clang16-opt",      # g4 11
+              "LCG_105/x86_64-ubuntu2204-gcc11-opt",  # g4 11
+              "dev3/x86_64-el9-gcc13-opt",
+              "dev4/x86_64-el9-gcc13-opt"]
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
@@ -27,6 +26,10 @@ jobs:
           cd build
           unset CPATH
           echo "::group::CMakeConfig"
+          CMAKE_CXX_STANDARD=17
+          if [[ "${{ matrix.LCG }}" =~ "gcc13|clang16" ]]; then
+            CMAKE_CXX_STANDARD=20
+          fi
           cmake -GNinja \
             -DDD4HEP_USE_GEANT4=ON \
             -DBoost_NO_BOOST_CMAKE=ON \
@@ -40,8 +43,8 @@ jobs:
             -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
-            -DCMAKE_CXX_STANDARD=17 ..
-          if [ "${{ matrix.LCG }}" = "dev3/x86_64-centos7-gcc11-opt" ]; then
+            -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD} ..
+          if [ "${{ matrix.LCG }}" =~ "dev3" ]; then
             cmake -DDD4HEP_HEPMC3_COMPRESSION_SUPPORT=ON ..
           fi
           echo "::group::Compile"
@@ -56,7 +59,7 @@ jobs:
           cmake -GNinja \
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_STANDARD=17 ..
+            -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD} ..
           echo "::group::CompileExamples"
           ninja install
           echo "::group::TestExamples"
@@ -146,7 +149,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_102/x86_64-centos7-gcc11-opt"]
+        LCG: ["LCG_105/x86_64-centos7-gcc11-opt"]
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
@@ -181,7 +184,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["dev3/x86_64-centos7-gcc11-opt"]
+        LCG: ["dev3/x86_64-el9-gcc13-opt"]
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
@@ -207,7 +210,7 @@ jobs:
             -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
-            -DCMAKE_CXX_STANDARD=17 ..
+            -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::Compile"
           ninja install
           . ../bin/thisdd4hep.sh
