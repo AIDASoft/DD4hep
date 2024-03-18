@@ -810,16 +810,16 @@ void DetectorImp::init() {
 
 /// Read any geometry description or alignment file
 void DetectorImp::fromXML(const std::string& xmlfile, DetectorBuildType build_type) {
-  TypePreserve build_type_preserve(m_buildType = build_type);
   std::lock_guard<std::recursive_mutex> lock(s_detector_apply_lock);
-  processXML(xmlfile,0);
+  m_buildType = build_type;
+  processXML(xmlfile, 0);
 }
 
 /// Read any geometry description or alignment file with external XML entity resolution
 void DetectorImp::fromXML(const std::string& fname, xml::UriReader* entity_resolver, DetectorBuildType build_type)  {
-  TypePreserve build_type_preserve(m_buildType = build_type);
   std::lock_guard<std::recursive_mutex> lock(s_detector_apply_lock);
-  processXML(fname,entity_resolver);
+  m_buildType = build_type;
+  processXML(fname, entity_resolver);
 }
 
 void DetectorImp::dump() const {

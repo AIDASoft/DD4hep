@@ -1469,7 +1469,7 @@ template <> void Converter<IncludeFile>::operator()(xml_h element) const   {
     xml_coll_t(root, _U(material)).for_each(Converter<Material>(this->description));
     return;
   }
-  this->description.fromXML(doc.uri());
+  this->description.fromXML(doc.uri(), this->description.buildType());
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
@@ -1490,23 +1490,23 @@ template <> void Converter<XMLFile>::operator()(xml_h element) const {
   if ( idx == std::string::npos && std::filesystem::exists(fname, ec) )  {
     // Regular file without protocol specification
     printout(level, "Compact","++ Processing xml document %s.", fname.c_str());
-    this->description.fromXML(fname);
+    this->description.fromXML(fname, this->description.buildType());
   }
   else if ( idx == std::string::npos )  {
     // File relative to location of xml tag (protocol specification not possible)
     std::string location = xml::DocumentHandler::system_path(element, fname);
     printout(level, "Compact","++ Processing xml document %s.", location.c_str());
-    this->description.fromXML(location);
+    this->description.fromXML(location, this->description.buildType());
   }
   else if ( idx > 0 )   {
     // File with protocol specification: must trust the location and the parser capabilities
     printout(level, "Compact","++ Processing xml document %s.", fname.c_str());
-    this->description.fromXML(fname);
+    this->description.fromXML(fname, this->description.buildType());
   }
   else  {
     // Are there any other possibilities ?
     printout(level, "Compact","++ Processing xml document %s.", fname.c_str());
-    this->description.fromXML(fname);
+    this->description.fromXML(fname, this->description.buildType());
   }
 }
 

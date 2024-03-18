@@ -74,7 +74,7 @@ Handle<NamedObject> detail::DD4hepUI::conditionsMgr()  const  {
 long detail::DD4hepUI::loadConditions(const std::string& fname)  const  {
   Handle<NamedObject> h = conditionsMgr();
   if ( h.isValid() )  {
-    m_detDesc.fromXML(fname, BUILD_DEFAULT);
+    m_detDesc.fromXML(fname, m_detDesc.buildType());
     return 1;
   }
   return 0;

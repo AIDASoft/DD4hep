@@ -460,6 +460,15 @@ dd4hep_add_test_reg( minitel_config_world
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
+# Test setting build type to BUILD_DISPLAY rather than the default BUILD_DEFAULT/BUILD_SIMU
+dd4hep_add_test_reg( box_shape_build_type
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/Check_Shape_Box.xml -build_type BUILD_DISPLAY
+             -print DEBUG -destroy -load 
+  REGEX_PASS "\\+\\+\\+ Create shape: Shape_Box build type is: BUILD_DISPLAY"
+  REGEX_FAIL "Exception;EXCEPTION;ERROR"
+)
+#
 #      EXEC_ARGS  test_with_root.sh ${script}
 #
 if (DD4HEP_USE_GEANT4)

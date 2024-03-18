@@ -247,7 +247,7 @@ template <> void Converter<include>::operator()(xml_h e)  const  {
   if ( e )  {
     DetectorLoad* load = dynamic_cast<DetectorLoad*>(&this->description);
     if ( load )   {
-      load->processXML(e,e.attr<std::string>(_U(ref)));
+      load->processXML(e, e.attr<std::string>(_U(ref)));
       return;
     }
     except("DisplayConfiguration","++ Invalid DetectorLoad instance in XML converter <include>");

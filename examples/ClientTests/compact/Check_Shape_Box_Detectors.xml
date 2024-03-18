@@ -12,9 +12,7 @@
      #==========================================================================
 -->
 
-  <includes>
-    <gdmlFile ref="CheckShape.xml"/>
-  </includes>
-
-  <include ref="Check_Shape_Box_Detectors.xml"/>
+  <detectors>
+    <include ref="Check_Shape_Box_Det.xml"/>
+  </detectors>
 </lccdd>

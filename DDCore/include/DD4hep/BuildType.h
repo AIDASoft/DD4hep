@@ -22,6 +22,9 @@
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
+  /// Forward declarations
+  class Detector;
+  
   /// Detector description build types.
   /** enum DetectorBuildType Detector.h  dd4hep/Detector.h
    * The corresponding flag is ONLY valid while parsing the
@@ -42,6 +45,12 @@ namespace dd4hep {
 
   /// Translate string representation of the geometry build type to value
   DetectorBuildType buildType(const std::string& value);
+
+  /// Translate the geometry build type to value to the string representation
+  std::string buildTypeName(DetectorBuildType type);
+
+  /// Translate the geometry build type to value to the string representation
+  std::string buildTypeName(Detector& detector);
 
   /// Check if a build type matches the current 
   bool buildMatch(const std::string& value, DetectorBuildType match);
