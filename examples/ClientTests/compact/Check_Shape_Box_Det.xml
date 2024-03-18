@@ -11,10 +11,14 @@
      #
      #==========================================================================
 -->
-
-  <includes>
-    <gdmlFile ref="CheckShape.xml"/>
-  </includes>
-
-  <include ref="Check_Shape_Box_Detectors.xml"/>
+  <detectors>
+    <detector id="1" name="Shape_Box" type="DD4hep_TestShape_Creator">
+      <check vis="Shape1_vis">
+        <shape type="Box" dx="30*cm" dy="20*cm" dz="10*cm"/>
+        <position x="30*cm"  y="30*cm"   z="30*cm"/>
+        <rotation x="0*rad"  y="0*rad"   z="0*rad"/>
+      </check>
+      <test  type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_Box.txt" create="CheckShape_create"/>
+    </detector>
+  </detectors>
 </lccdd>

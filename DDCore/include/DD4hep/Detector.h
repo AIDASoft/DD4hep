@@ -302,13 +302,15 @@ namespace dd4hep {
     virtual Detector& addField(const Handle<NamedObject>& field) = 0;
     
     /// Deprecated call (use fromXML): Read compact geometry description or alignment file
-    virtual void fromCompact(const std::string& fname, DetectorBuildType type = BUILD_DEFAULT) = 0;
+    virtual void fromCompact(const std::string& fname,
+                             DetectorBuildType type = BUILD_DEFAULT) = 0;
     /// Read any geometry description or alignment file
-    virtual void fromXML(const std::string& fname, DetectorBuildType type = BUILD_DEFAULT) = 0;
+    virtual void fromXML    (const std::string& fname,
+                             DetectorBuildType type = BUILD_DEFAULT) = 0;
     /// Read any geometry description or alignment file with external XML entity resolution
-    virtual void fromXML(const std::string& fname,
-                         xml::UriReader* entity_resolver,
-                         DetectorBuildType type = BUILD_DEFAULT) = 0;
+    virtual void fromXML    (const std::string& fname,
+                             xml::UriReader* entity_resolver,
+                             DetectorBuildType type = BUILD_DEFAULT) = 0;
 
     /// Stupid legacy method
     virtual void dump() const = 0;

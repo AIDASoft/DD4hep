@@ -744,11 +744,11 @@ static long load_xml(Detector& description, int argc, char** argv) {
       type = buildType(argv[1]);
       printout(INFO,"XMLLoader","+++ Processing XML file: %s with flag %s",
                input.c_str(), argv[1]);
-      description.fromXML(input,type);
+      description.fromXML(input, type);
       return 1;
     }
     printout(INFO,"XMLLoader","+++ Processing XML file: %s",input.c_str());
-    description.fromXML(input);
+    description.fromXML(input, description.buildType());
     return 1;
   }
   return 0;

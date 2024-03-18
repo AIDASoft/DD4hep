@@ -13,6 +13,7 @@
 
 // Framework includes
 #include <DD4hep/BuildType.h>
+#include <DD4hep/Detector.h>
 
 // C/C++ include files
 #include <stdexcept>
@@ -47,6 +48,31 @@ dd4hep::DetectorBuildType dd4hep::buildType(const char* value)   {
 /// Translate string representation of the geometry build type to value
 dd4hep::DetectorBuildType dd4hep::buildType(const std::string& value)   {
   return buildType(value.c_str());
+}
+
+/// Translate the geometry build type to value to the string representation
+std::string dd4hep::buildTypeName(dd4hep::DetectorBuildType type)   {
+  switch(type)   {
+  case BUILD_NONE:
+    return "BUILD_NONE";
+  case BUILD_DEFAULT:
+    return "BUILD_DEFAULT";
+    //case BUILD_SIMU:
+    //return "BUILD_SIMU";
+  case BUILD_RECO:
+    return "BUILD_RECO";
+  case BUILD_DISPLAY:
+    return "BUILD_DISPLAY";
+  case BUILD_ENVELOPE:
+    return "BUILD_ENVELOPE";
+  default:
+    throw std::runtime_error("Invalid build type value: "+std::to_string(int(type)));
+  }
+}
+
+/// Translate the geometry build type to value to the string representation
+std::string dd4hep::buildTypeName(dd4hep::Detector& detector)   {
+  return buildTypeName(detector.buildType());
 }
 
 /// Check if a build type matches the current 

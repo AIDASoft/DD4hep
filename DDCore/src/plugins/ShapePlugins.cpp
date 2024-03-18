@@ -948,6 +948,8 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
   PlacedVolume pv;
   int count = 0;
   
+  printout(DEBUG,"TestShape","+++ Create shape: %s build type is: %s",
+           name.c_str(), buildTypeName(description.buildType()).c_str());
   if ( x_det.hasChild(_U(material)) )  {
     mat = description.material(x_det.child(_U(material)).attr<std::string>(_U(name)));
     printout(INFO,"TestShape","+++ Volume material is %s", mat.name());      
