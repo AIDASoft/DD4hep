@@ -262,12 +262,28 @@ long long int Geant4Sensitive::cellID(const G4Step* step) {
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
   VolumeID volID = volMgr.volumeID(h.preTouchable());
   if ( m_segmentation.isValid() )  {
+    std::exception_ptr eptr;
     G4ThreeVector global = 0.5 * (h.prePosG4()+h.postPosG4());
     G4ThreeVector local  = h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);
     Position loc(local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
     Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
-    VolumeID cID = m_segmentation.cellID(loc,glob,volID);
-    return cID;
+    try  {
+      VolumeID cID = m_segmentation.cellID(loc, glob, volID);
+      return cID;
+    }
+    catch(const std::exception& e)   {
+      eptr = std::current_exception();
+      error("cellID: failed to access segmentation for VolumeID: %016lX [%ld]  [%s]", volID, volID, e.what());
+      error("....... G4-local:   (%f, %f, %f) G4-global:   (%f, %f, %f)",
+	    local.x(), local.y(), local.z(), global.x(), global.y(), global.z());
+      error("....... TGeo-local: (%f, %f, %f) TGeo-global: (%f, %f, %f)",
+	    loc.x(), loc.y(), loc.z(), glob.x(), glob.y(), glob.z());
+      if ( h.pre )
+	error("....... Pre-step:  %s  SD: %s", h.volName(h.pre), h.sdName(h.pre));
+      if ( h.post )
+	error("....... Post-step: %s  SD: %s", h.volName(h.post), h.sdName(h.post));
+      std::rethrow_exception(eptr);
+    }
   }
   return volID;
 }
@@ -277,11 +293,27 @@ long long int Geant4Sensitive::cellID(const G4VTouchable* touchable, const G4Thr
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
   VolumeID volID = volMgr.volumeID(touchable);
   if ( m_segmentation.isValid() )  {
+    std::exception_ptr eptr;
     G4ThreeVector local  = touchable->GetHistory()->GetTopTransform().TransformPoint(global);
     Position loc (local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
     Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
-    VolumeID cID = m_segmentation.cellID(loc,glob,volID);
-    return cID;
+    try  {
+      VolumeID cID = m_segmentation.cellID(loc, glob, volID);
+      return cID;
+    }
+    catch(const std::exception& e)   {
+      auto* pvol = touchable->GetVolume();
+      auto* vol = pvol->GetLogicalVolume();
+      auto* sd = vol->GetSensitiveDetector();
+      eptr = std::current_exception();
+      error("cellID: failed to access segmentation for VolumeID: %016lX [%ld]  [%s]", volID, volID, e.what());
+      error("....... G4-local:   (%f, %f, %f) G4-global:   (%f, %f, %f)",
+	    local.x(), local.y(), local.z(), global.x(), global.y(), global.z());
+      error("....... TGeo-local: (%f, %f, %f) TGeo-global: (%f, %f, %f)",
+	    loc.x(), loc.y(), loc.z(), glob.x(), glob.y(), glob.z());
+      error("....... Touchable:  %s  SD: %s", vol->GetName().c_str(), sd ? sd->GetName().c_str() : "???");
+      std::rethrow_exception(eptr);
+    }
   }
   return volID;
 }
