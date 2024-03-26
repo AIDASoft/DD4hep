@@ -223,8 +223,10 @@ class DD4hepSimulation(object):
     self._dumpSteeringFile = parsed.dumpSteeringFile
 
     self.compactFile = ConfigHelper.makeList(parsed.compactFile)
+    self.__checkFilesExist(self.compactFile, fileType='compact')
     self.inputFiles = parsed.inputFiles
     self.inputFiles = self.__checkFileFormat(self.inputFiles, POSSIBLEINPUTFILES)
+    self.__checkFilesExist(self.inputFiles, fileType='input')
     self.outputFile = parsed.outputFile
     self.__checkFileFormat(self.outputFile, ('.root', '.slcio'))
     self.runType = parsed.runType
@@ -538,6 +540,19 @@ class DD4hepSimulation(object):
     field.delta_intersection = self.field.delta_intersection
     field.delta_one_step = self.field.delta_one_step
     field.largest_step = self.field.largest_step
+
+  def __checkFilesExist(self, fileNames, fileType=''):
+    """Make sure all files in the given list exist, add to errorMessage otherwise.
+
+
+    :param list fileNames: list of files to check for existence
+    :param str fileType: type if file, for nicer error message
+    """
+    if isinstance(fileNames, str):
+      fileNames = [fileNames]
+    for fileName in fileNames:
+      if not os.path.exists(fileName):
+        self._errorMessages.append(f"ERROR: The {fileType}file '{fileName}' does not exist")
 
   def __checkFileFormat(self, fileNames, extensions):
     """check if the fileName is allowed, note that the filenames are case
