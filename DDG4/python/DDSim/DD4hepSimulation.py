@@ -561,7 +561,7 @@ class DD4hepSimulation(object):
     if isinstance(fileNames, str):
       fileNames = [fileNames]
     if not all(fileName.endswith(tuple(extensions)) for fileName in fileNames):
-      self._errorMessages.append("ERROR: Unknown fileformat for file: %s" % fileNames)
+      self._errorMessages.append(f"ERROR: Unknown fileformat for file(s): {','.join(fileNames)}")
     is_hepmc3_extension = any(fileName.endswith(tuple(HEPMC3_SUPPORTED_EXTENSIONS)) for fileName in fileNames)
     if not self.hepmc3.useHepMC3 and is_hepmc3_extension:
       self._errorMessages.append("ERROR: HepMC3 files or compressed HepMC2 require the use of HepMC3 library")
