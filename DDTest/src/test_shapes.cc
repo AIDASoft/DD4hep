@@ -19,7 +19,7 @@ int main(int /* argc */, char** /* argv */ ){
     // Polycone
 
     // add single plane with addZPlanes
-    Polycone polycone(0, 2*M_PI, {0, 0}, {1, 1}, {0, 1});
+    dd4hep::Polycone polycone(0, 2*M_PI, {0, 0}, {1, 1}, {0, 1});
     polycone.addZPlanes({0}, {1}, {0.5});
 
     // --------------------------------------------------------------------
