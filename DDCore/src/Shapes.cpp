@@ -268,7 +268,7 @@ void Polycone::addZPlanes(const std::vector<double>& rmin, const std::vector<dou
   TGeoPcon* sh = *this;
   std::vector<double> params;
   std::size_t num = sh->GetNz();
-  if (rmin.size() < 2)   {
+  if (num + rmin.size() < 2)   {
     except("PolyCone","++ addZPlanes: Not enough Z planes. minimum is 2!");
   }
   params.emplace_back(sh->GetPhi1());
