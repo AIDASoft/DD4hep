@@ -22,7 +22,7 @@ if __name__ == "__main__":
   RUNNER.parseOptions()
 
   try:
-    RUNNER.run()
+    sys.exit(RUNNER.run())
   except NameError as e:
     if "global name" in str(e):
       globalToSet = str(e).split("'")[1]
