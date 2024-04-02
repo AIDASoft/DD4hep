@@ -331,7 +331,7 @@ class DD4hepSimulation(object):
       uiaction = geant4.setupUI(typ="tcsh", vis=False, macro=None, ui=False)
     else:
       logger.error("unknown runType")
-      exit(1)
+      return 1
 
     # User Configuration for the Geant4Phases
     uiaction.ConfigureCommands = self.ui._commandsConfigure
@@ -476,7 +476,7 @@ class DD4hepSimulation(object):
       self.filter.setupFilters(kernel)
     except RuntimeError as e:
       logger.error("%s", e)
-      exit(1)
+      return 1
 
     # =================================================================================
     # get lists of trackers and calorimeters in detectorDescription
@@ -515,8 +515,13 @@ class DD4hepSimulation(object):
 
     startUpTime, _sysTime, _cuTime, _csTime, _elapsedTime = os.times()
 
-    kernel.run()
-    kernel.terminate()
+    exitCode = 0
+    if not kernel.run():
+      logger.error("Simulation failed!")
+      exitCode += 1
+    if not kernel.terminate():
+      exitCode += 1
+      logger.error("Termination failed!")
 
     totalTimeUser, totalTimeSys, _cuTime, _csTime, _elapsedTime = os.times()
     if self.printLevel <= 3:
@@ -527,6 +532,7 @@ class DD4hepSimulation(object):
         perEventTime = eventTime / self.numberOfEvents
         logger.info("DDSim            INFO  StartUp Time: %3.2f s, Event Processing: %3.2f s (%3.2f s/Event) "
                     % (startUpTime, eventTime, perEventTime))
+    return exitCode
 
   def __setMagneticFieldOptions(self, geant4):
     """ create and configure the magnetic tracking setup """
