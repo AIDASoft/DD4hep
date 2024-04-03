@@ -354,14 +354,11 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
       const G4ParticleDefinition* def = p.definition();
       auto mcp = m_particles.create();
       mcp.setPDG(p->pdgID);
+      // Because EDM4hep is switching between vector3f[loat] and vector3d[ouble]
+      using MT = decltype(std::declval<edm4hep::MCParticle>().getMomentum().x);
+      mcp.setMomentum( {MT(p->psx/CLHEP::GeV),MT(p->psy/CLHEP::GeV),MT(p->psz/CLHEP::GeV)} );
+      mcp.setMomentumAtEndpoint( {MT(p->pex/CLHEP::GeV),MT(p->pey/CLHEP::GeV),MT(p->pez/CLHEP::GeV)} );
 
-#if edm4hep_VERSION < EDM4HEP_VERSION(0, 10, 3)
-      mcp.setMomentum( {float(p->psx/CLHEP::GeV),float(p->psy/CLHEP::GeV),float(p->psz/CLHEP::GeV)} );
-      mcp.setMomentumAtEndpoint( {float(p->pex/CLHEP::GeV),float(p->pey/CLHEP::GeV),float(p->pez/CLHEP::GeV)} );
-#else
-      mcp.setMomentum( {p->psx/CLHEP::GeV, p->psy/CLHEP::GeV, p->psz/CLHEP::GeV} );
-      mcp.setMomentumAtEndpoint( {p->pex/CLHEP::GeV, p->pey/CLHEP::GeV, p->pez/CLHEP::GeV} );
-#endif
       double vs_fa[3] = { p->vsx/CLHEP::mm, p->vsy/CLHEP::mm, p->vsz/CLHEP::mm } ;
       mcp.setVertex( vs_fa );
 
