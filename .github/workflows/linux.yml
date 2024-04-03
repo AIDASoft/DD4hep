@@ -26,25 +26,41 @@ jobs:
           cd build
           unset CPATH
           echo "::group::CMakeConfig"
-          CMAKE_CXX_STANDARD=17
-          if [[ "${{ matrix.LCG }}" =~ "gcc13|clang16" ]]; then
-            CMAKE_CXX_STANDARD=20
+          if [[ ${{ matrix.LCG }} =~ gcc13|clang16 ]]; then
+            echo "::group::CMakeConfig C++20"
+            cmake -GNinja \
+              -DDD4HEP_USE_GEANT4=ON \
+              -DBoost_NO_BOOST_CMAKE=ON \
+              -DDD4HEP_USE_LCIO=ON \
+              -DDD4HEP_USE_EDM4HEP=OFF \
+              -DDD4HEP_USE_TBB=ON \
+              -DDD4HEP_USE_HEPMC3=ON \
+              -DDD4HEP_BUILD_DEBUG=OFF \
+              -DBUILD_TESTING=ON \
+              -DDD4HEP_DEBUG_CMAKE=ON \
+              -DDD4HEP_USE_XERCESC=ON \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always" \
+              -DCMAKE_CXX_STANDARD=20 ..
+            else
+              echo "::group::CMakeConfig C++17"
+              cmake -GNinja \
+                -DDD4HEP_USE_GEANT4=ON \
+                -DBoost_NO_BOOST_CMAKE=ON \
+                -DDD4HEP_USE_LCIO=ON \
+                -DDD4HEP_USE_EDM4HEP=OFF \
+                -DDD4HEP_USE_TBB=ON \
+                -DDD4HEP_USE_HEPMC3=ON \
+                -DDD4HEP_BUILD_DEBUG=OFF \
+                -DBUILD_TESTING=ON \
+                -DDD4HEP_DEBUG_CMAKE=ON \
+                -DDD4HEP_USE_XERCESC=ON \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always" \
+                -DCMAKE_CXX_STANDARD=17 ..
           fi
-          cmake -GNinja \
-            -DDD4HEP_USE_GEANT4=ON \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_LCIO=ON \
-            -DDD4HEP_USE_EDM4HEP=OFF \
-            -DDD4HEP_USE_TBB=ON \
-            -DDD4HEP_USE_HEPMC3=ON \
-            -DDD4HEP_BUILD_DEBUG=OFF \
-            -DBUILD_TESTING=ON \
-            -DDD4HEP_DEBUG_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
-            -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD} ..
-          if [ "${{ matrix.LCG }}" =~ "dev3" ]; then
+          if [[ ${{ matrix.LCG }} =~ dev3 ]]; then
+            echo "::group::CMakeConfig 2"
             cmake -DDD4HEP_HEPMC3_COMPRESSION_SUPPORT=ON ..
           fi
           echo "::group::Compile"
@@ -56,10 +72,17 @@ jobs:
           cd ../examples/
           mkdir build
           cd build
+          if [[ ${{ matrix.LCG }} =~ gcc13|clang16 ]]; then
           cmake -GNinja \
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD} ..
+            -DCMAKE_CXX_STANDARD=20 ..
+          else
+            cmake -GNinja \
+            -DBoost_NO_BOOST_CMAKE=ON \
+            -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_CXX_STANDARD=17 ..
+          fi
           echo "::group::CompileExamples"
           ninja install
           echo "::group::TestExamples"
@@ -223,7 +246,7 @@ jobs:
           cmake -GNinja \
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_STANDARD=17 ..
+            -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::CompileExamples"
           ninja install
           echo "::group::TestExamples"
