@@ -11,9 +11,10 @@ jobs:
       matrix:
         LCG: ["LCG_101/x86_64-centos7-gcc11-opt",    # g4 10.7
               "LCG_102/x86_64-centos9-gcc11-opt",    # g4 11
-              "LCG_104/x86_64-el9-clang16-opt",      # g4 11
+              "LCG_104/x86_64-el9-gcc13-opt",         # g4 11
               "LCG_105/x86_64-ubuntu2204-gcc11-opt",  # g4 11
               "dev3/x86_64-el9-gcc13-opt",
+              "dev3/x86_64-el9-clang16-opt",          # g4 11
               "dev4/x86_64-el9-gcc13-opt"]
     steps:
     - uses: actions/checkout@v4
