@@ -16,12 +16,16 @@
 #include "DigiIO.h"
 
 // podio/edm4hep include files
-#include <podio/Frame.h>
-#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
+#include <podio/podioVersion.h>
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
 #include <podio/ROOTReader.h>
 #else
 #include <podio/ROOTFrameReader.h>
+namespace podio {
+  using ROOTReader = podio::ROOTFrameReader;
+}
 #endif
+#include <podio/Frame.h>
 
 #include <edm4hep/SimTrackerHit.h>
 #include <edm4hep/SimCalorimeterHit.h>
@@ -51,11 +55,7 @@ namespace dd4hep {
       const podio::CollectionBase* get(const std::string& nam) const { return frame.get(nam); }
     };
     
-#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
     using reader_t = podio::ROOTReader;
-#else
-    using reader_t = podio::ROOTFrameReader;
-#endif
     using frame_t  = edm4hep_read_frame_t;
 
     /// EDM4HEP Digi input reader: Collection descriptor definition
