@@ -525,7 +525,11 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
       sth.setEDep(hit->energyDeposit/CLHEP::GeV);
       sth.setPathLength(hit->length/CLHEP::mm);
       sth.setTime(hit->truth.time/CLHEP::ns);
+#if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 10, 99)
+      sth.setParticle(mcp);
+#else
       sth.setMCParticle(mcp);
+#endif
       sth.setPosition( {pos.x()/CLHEP::mm, pos.y()/CLHEP::mm, pos.z()/CLHEP::mm} );
       sth.setMomentum( {float(mom.x()/CLHEP::GeV),float(mom.y()/CLHEP::GeV),float(mom.z()/CLHEP::GeV)} );
       auto particleIt = pm->particles().find(trackID);
