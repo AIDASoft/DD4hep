@@ -20,11 +20,14 @@
 #include "DigiIO.h"
 
 /// edm4hep include files
-#include <podio/CollectionBase.h>
-#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
+#include <podio/podioVersion.h>
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
 #include <podio/ROOTWriter.h>
 #else
 #include <podio/ROOTFrameWriter.h>
+namespace podio {
+  using ROOTWriter = podio::ROOTFrameWriter;
+}
 #endif
 #include <podio/Frame.h>
 #include <edm4hep/SimTrackerHit.h>
@@ -53,11 +56,7 @@ namespace dd4hep {
       using headercollection_t   = std::pair<std::string,std::unique_ptr<edm4hep::EventHeaderCollection> >;
       DigiEdm4hepOutput*                      m_parent    { nullptr };
       /// Reference to podio writer
-#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
       std::unique_ptr<podio::ROOTWriter>      m_writer    { };
-#else
-      std::unique_ptr<podio::ROOTFrameWriter> m_writer    { };
-#endif
       /// edm4hep event header collection
       headercollection_t                      m_header    { };
       /// MC particle collection
@@ -197,11 +196,7 @@ namespace dd4hep {
       clear();
       m_writer.reset();
       std::string fname = m_parent->next_stream_name();
-#if PODIO_VERSION_MAJOR > 0 || (PODIO_VERSION_MAJOR == 0 && PODIO_VERSION_MINOR >= 99)
       m_writer = std::make_unique<podio::ROOTWriter>(fname);
-#else
-      m_writer = std::make_unique<podio::ROOTFrameWriter>(fname);
-#endif
       m_parent->info("+++ Opened EDM4HEP output file %s", fname.c_str());
     }
 
