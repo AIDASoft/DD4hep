@@ -121,7 +121,7 @@ def importConstants(description, namespace=None, debug=False):
           logger.info('+++ FAILED to import: "' + k + '" = "' + str(v) + '"')
       logger.info('+++ %s' % (100 * '=',))
 
-    for k, v in todo.items():
+    for k, v in list(todo.items()):
       if not hasattr(ns, k):
         val = evaluator.evaluate(v)
         status = evaluator.status()
