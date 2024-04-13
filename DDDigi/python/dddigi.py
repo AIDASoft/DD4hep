@@ -9,6 +9,7 @@
 #
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
+import cppyy
 from dd4hep_base import *  # noqa: F401, F403
 
 logger = None
@@ -276,6 +277,8 @@ def _set(self, name, value):
   import dd4hep as dd4hep
   act = _get_action(self)
   nam = dd4hep.unicode_2_string(name)
+  if isinstance(value, (list,)):  # cppyy.gbl.string showing up for some reason
+    value = [x.decode('utf-8') if isinstance(x, cppyy.gbl.std.string) else x for x in value]
   if isinstance(value, str):
     val = dd4hep.unicode_2_string(value)
   else:
