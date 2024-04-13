@@ -118,6 +118,8 @@ def unicode_2_string(value):
     value = value
   elif isinstance(value, six.string_types):
     value = str(value)
+  elif isinstance(value, bytes):
+    value = value.decode()
   elif isinstance(value, (list, set, tuple)):
     value = [unicode_2_string(x) for x in value]
   elif isinstance(value, dict):
