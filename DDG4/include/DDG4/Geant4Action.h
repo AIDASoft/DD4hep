@@ -79,18 +79,20 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class TypeName : public std::pair<std::string, std::string> {
+    class TypeName {
     public:
+      std::string first;
+      std::string second;
       /// Default constructor
       TypeName() = default;
       /// Copy constructor
       TypeName(const TypeName& copy) = default;
       /// Copy constructor from pair
       TypeName(const std::pair<std::string, std::string>& c)
-        : std::pair<std::string, std::string>(c) {      }
+        : first(c.first), second(c.second) { }
       /// Initializing constructor
       TypeName(const std::string& typ, const std::string& nam)
-        : std::pair<std::string, std::string>(typ, nam) {      }
+        : first(typ), second(nam) { }
       /// Assignment operator
       TypeName& operator=(const TypeName& copy) = default;
       /// Split string pair according to default delimiter ('/')
