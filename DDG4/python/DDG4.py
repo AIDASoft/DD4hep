@@ -93,9 +93,9 @@ def importConstants(description, namespace=None, debug=False):
   strings = {}
   for c in description.constants():
     if c.second.dataType == 'string':
-      strings[c.first] = c.second.GetTitle()
+      strings[str(c.first)] = c.second.GetTitle()
     else:
-      todo[c.first] = c.second.GetTitle().replace('(int)', '')
+      todo[str(c.first)] = c.second.GetTitle().replace('(int)', '')
   while len(todo) and cnt < 100:
     cnt = cnt + 1
     if cnt == 100:
