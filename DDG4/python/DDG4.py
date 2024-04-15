@@ -10,6 +10,7 @@
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
 import logging
+import cppyy
 from dd4hep_base import *  # noqa: F403
 import ddsix as six
 
@@ -134,9 +135,11 @@ def _registerGlobalFilter(self, filter):  # noqa: A002
 def _evalProperty(data):
   """
     Function necessary to extract real strings from the property value.
-    Strings may be embraced by quotes: '<value>'
+    Strings may be embraced by quotes: '<value>', or could be cppyy.gbl.std.string with extra "b''"
   """
   try:
+    if isinstance(data, (cppyy.gbl.std.string, )):
+      return _evalProperty(data.decode('utf-8'))
     if isinstance(data, str):
       import ast
       return ast.literal_eval(data)
