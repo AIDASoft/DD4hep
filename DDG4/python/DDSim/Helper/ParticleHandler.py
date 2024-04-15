@@ -143,7 +143,7 @@ class ParticleHandler(ConfigHelper):
       except AttributeError as e:
         logger.debug("Attribute tracker_region_zmin for asymmetric tracker region missing %s", e)
         logger.debug("  will use symmetric region defined by tracker_region_zmax")
-        user.TrackingVolume_Zmin = str(-float(user.TrackingVolume_Zmax))
+        user.TrackingVolume_Zmin = str(-float(DDG4.tracker_region_zmax))
 
       logger.info(" *** definition of tracker region *** ")
       logger.info("    tracker_region_zmin = %s", user.TrackingVolume_Zmin)
