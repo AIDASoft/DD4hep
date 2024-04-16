@@ -23,6 +23,9 @@ jobs:
       with:
         release-platform: ${{ matrix.LCG }}
         run: |
+          if [[ ${{ matrix.LCG }} =~ clang16 ]]; then
+            source /cvmfs/sft.cern.ch/lcg/contrib/clang/16/x86_64-el9/setup-wrapper.sh
+          fi
           mkdir build
           cd build
           unset CPATH
