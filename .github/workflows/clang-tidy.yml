@@ -34,7 +34,7 @@ jobs:
             -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
-            -DCMAKE_CXX_STANDARD=17 ..
+            -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::Tidy"
           cd ..
           HEADER_FILES=$(find */include/* -name "*.h" | grep -v "/detail/\|/src/\|DDGear.h")
