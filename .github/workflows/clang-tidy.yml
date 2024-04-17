@@ -16,6 +16,8 @@ jobs:
       with:
         release-platform: ${{ matrix.LCG }}
         run: |
+          # clang-tidy does not work with the clang-wrapper, we setup the direct clang here
+          source /cvmfs/sft.cern.ch/lcg/contrib/clang/16/x86_64-el9/setup.sh
           mkdir build
           cd build
           unset CPATH
