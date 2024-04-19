@@ -126,10 +126,10 @@ ELSE()
 ENDIF()
 
 #---------------------------  Specialized PYTHON plugin ----------------------------
-IF(TARGET ${DD4HEP_ROOT_PYTHON})
+IF(TARGET ROOT::ROOTTPython)
   dd4hep_add_plugin(DDPythonPlugins
     SOURCES src/python/*.cpp
-    USES DDCore ROOT::Core ${DD4HEP_ROOT_PYTHON}
+    USES DDCore ROOT::Core ROOT::ROOTTPython
     )
   set_target_properties(DDPythonPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   LIST(APPEND OPTIONAL_TARGETS DDPythonPlugins)
