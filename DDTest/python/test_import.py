@@ -44,10 +44,10 @@ def test_module(moduleName):
     print(traceback.print_exc())
 
     if moduleName in ALLOWED_TO_FAIL:
-      warnings.warn(msg)
+      warnings.warn(msg, stacklevel=2)
       pytest.skip("WARN: " + msg)
     elif moduleName in GRAPHIC_MODULES:
-      warnings.warn(msg + "(Possibly due to system graphic libraries not present)")
+      warnings.warn(msg + "(Possibly due to system graphic libraries not present)", stacklevel=2)
       pytest.skip("WARN: " + msg + "(Possibly due to system graphic libraries not present)")
     else:
       pytest.fail("ERROR: " + msg)

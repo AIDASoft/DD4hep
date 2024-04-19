@@ -2,9 +2,9 @@
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 import datetime
+import io
 import os
 import logging
-from io import open
 
 logger = logging.getLogger(__name__)
 
@@ -76,12 +76,12 @@ class Meta(ConfigHelper):
 
     # steeringFile content
     if sim.steeringFile and os.path.exists(sim.steeringFile) and os.path.isfile(sim.steeringFile):
-      with open(sim.steeringFile) as sFile:
+      with io.open(sim.steeringFile) as sFile:
         runHeader["SteeringFileContent"] = sFile.read()
 
     # macroFile content
     if sim.macroFile and os.path.exists(sim.macroFile) and os.path.isfile(sim.macroFile):
-      with open(sim.macroFile) as mFile:
+      with io.open(sim.macroFile) as mFile:
         runHeader["MacroFileContent"] = mFile.read()
 
     # add command line

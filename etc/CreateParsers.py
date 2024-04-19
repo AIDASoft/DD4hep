@@ -13,8 +13,9 @@ python CreateParsers.py
 """
 
 from __future__ import absolute_import, unicode_literals
+import io
 import os
-from io import open
+
 
 LICENSE = """// $Id$
 //==========================================================================
@@ -75,7 +76,7 @@ IMPLEMENT_MAPPED_PARSERS(pair,%(type)s)
   fileContent = LICENSE + fileContent
   if os.path.exists(filename):
     os.remove(filename)
-  with open(filename, "w") as parseFile:
+  with io.open(filename, "w") as parseFile:
     parseFile.write(fileContent)
 
 
@@ -92,7 +93,7 @@ IMPLEMENT_STL_PARSER(%(cont)s,%(type)s)
   fileContent = LICENSE + fileContent
   if os.path.exists(filename):
     os.remove(filename)
-  with open(filename, "w") as parseFile:
+  with io.open(filename, "w") as parseFile:
     parseFile.write(fileContent)
 
 
@@ -110,7 +111,7 @@ IMPLEMENT_STL_MAP_PARSER(std::map,%(mtype)s,%(type)s)
   fileContent = LICENSE + fileContent
   if os.path.exists(filename):
     os.remove(filename)
-  with open(filename, "w") as parseFile:
+  with io.open(filename, "w") as parseFile:
     parseFile.write(fileContent)
 
 

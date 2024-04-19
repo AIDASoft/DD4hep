@@ -29,7 +29,7 @@ from DDSim.Helper.Gun import Gun
 from DDSim.Helper.UI import UI
 import argparse
 import logging
-from io import open
+import io
 
 logger = logging.getLogger('DDSim')
 
@@ -110,7 +110,7 @@ class DD4hepSimulation(object):
     if not self.steeringFile:
       return
     sFileTemp = self.steeringFile
-    exec(compile(open(self.steeringFile).read(), self.steeringFile, 'exec'), globs, locs)
+    exec(compile(io.open(self.steeringFile).read(), self.steeringFile, 'exec'), globs, locs)
     for _name, obj in locs.items():
       if isinstance(obj, DD4hepSimulation):
         self.__dict__ = obj.__dict__

@@ -39,7 +39,7 @@ def detector_Shelf(description, det):
                      description.material('Carbon'))
   b_vol.setVisAttributes(description, book.vis)
   x, y, z = plane.x - book.x, plane.y, -plane.z + book.z
-  for n in range(book.number):
+  for _n in range(book.number):
     e_vol.placeVolume(b_vol, Position(x, y, z))  # noqa: F821
     z += 2 * book.z + book.getF('dz')
 
@@ -53,7 +53,7 @@ def detector_Shelf(description, det):
   phv.addPhysVolID('id', det.id)
   de.addPlacement(phv)
   x, y, z = 0, book.y + plane.y - 2 * plane.getF('dy'), 0
-  for n in range(plane.number):
+  for _n in range(plane.number):
     g_vol.placeVolume(e_vol, Position(x, y, z))  # noqa: F821
     y += plane.getF('dy')
   # ---Return detector element---------------------------------------------------------------------------------
