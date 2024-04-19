@@ -71,7 +71,7 @@ Python:
   script:
     - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
     - echo "RUNNING FLAKE8 CHECK"
-    - find . -name "*.py" -and -not -name 'ddsix.py' -exec flake8 {} +
+    - find . -name "*.py" -exec flake8 {} +
 
 
 

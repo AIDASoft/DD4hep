@@ -15,7 +15,6 @@ import time
 import DDG4
 from DDG4 import OutputLevel as Output
 from g4units import GeV, MeV
-from ddsix.moves import range
 #
 #
 """
