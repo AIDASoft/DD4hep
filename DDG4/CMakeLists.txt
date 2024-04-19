@@ -53,7 +53,7 @@ dd4hep_add_plugin(DDG4Plugins
   )
 #---------------------------  Plugin library for the simulation framework  ---------
 
-if(TARGET Python::Python AND TARGET ${DD4HEP_ROOT_PYTHON})
+if(TARGET Python::Python AND TARGET ROOT::ROOTTPython)
   dd4hep_print("|++> Python found, creating DDG4Python Dictionary")
   dd4hep_add_dictionary(G__DDG4Python
     SOURCES src/python/DDG4Python.C
@@ -67,7 +67,7 @@ if(TARGET Python::Python AND TARGET ${DD4HEP_ROOT_PYTHON})
   dd4hep_print("|++> ROOT Has Python, creating DDPython library and plugins")
   add_library(DDPython G__DDPython.cxx tpython/DDPython.cpp)
   add_library(DD4hep::DDPython ALIAS DDPython)
-  target_link_libraries(DDPython DD4hep::DDG4 ROOT::Core Python::Python ${DD4HEP_ROOT_PYTHON})
+  target_link_libraries(DDPython DD4hep::DDG4 ROOT::Core Python::Python ROOT::ROOTTPython)
   IF(${CMAKE_CXX_STANDARD} GREATER 16)
     # python header not cxx17 compatible, gives error in clang
     target_compile_options(DDPython PUBLIC -Wno-register)
@@ -79,7 +79,7 @@ if(TARGET Python::Python AND TARGET ${DD4HEP_ROOT_PYTHON})
     )
   #---Helper to overcome deficiency of the python executable concerning multi-threading
   add_executable(pyddg4 pyddg4.cpp)
-  target_link_libraries(pyddg4 PUBLIC DD4hep::DDPython ROOT::Core ${DD4HEP_ROOT_PYTHON})
+  target_link_libraries(pyddg4 PUBLIC DD4hep::DDPython ROOT::Core ROOT::ROOTTPython)
 
   # install these libraries
   set_target_properties(DDPython DDG4Python PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
