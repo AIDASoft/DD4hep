@@ -16,4 +16,4 @@ jobs:
         release-platform: ${{ matrix.LCG }}
         run: |
           echo "RUNNING FLAKE8 CHECK"
-          find . -name "*.py" -and -not -name 'ddsix.py' -exec flake8 {} +
+          find . -name "*.py" -exec flake8 {} +

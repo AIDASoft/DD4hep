@@ -113,10 +113,9 @@ def unicode_2_string(value):
 
   :return: always a str
   """
-  import ddsix as six
-  if isinstance(value, (bool, float, six.integer_types)):
+  if isinstance(value, (bool, float, int)):
     value = value
-  elif isinstance(value, six.string_types):
+  elif isinstance(value, str):
     value = str(value)
   elif isinstance(value, bytes):
     value = value.decode()

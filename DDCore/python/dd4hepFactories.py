@@ -16,7 +16,6 @@ import sys
 import optparse
 import logging
 import errno
-from ddsix.moves import input
 from io import open
 
 logger = logging.getLogger(__name__)
