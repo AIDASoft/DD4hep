@@ -55,7 +55,7 @@ def run():
                         # direction=(0.866025,0,0.5),
                         position='(0,0,12650)')
   # position='(0,0,0)')
-  setattr(gun, 'print', True)
+  gun.print = True
   """
   gen =  DDG4.GeneratorAction(kernel,"Geant4InputAction/Input")
   # gen.Input = "Geant4EventReaderHepMC|"+

@@ -16,7 +16,7 @@ import sys
 import optparse
 import logging
 import errno
-from io import open
+import io
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class ComponentDumper:
 
   def readComponents(self, fname):
     logger.info('+== Search component file:  ' + fname)
-    file = open(fname, "r")
+    file = io.open(fname, "r")
     lines = file.readlines()
     dirname = os.path.dirname(fname)
     for line in lines:

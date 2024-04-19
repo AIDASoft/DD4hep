@@ -254,9 +254,9 @@ def _setup(obj):
     self.__adopt(action.get())
   _import_class('Sim', obj)
   o = getattr(current, obj)
-  setattr(o, '__adopt', getattr(o, 'adopt'))
-  setattr(o, 'adopt', _adopt)
-  setattr(o, 'add', _adopt)
+  o.__adopt = o.adopt
+  o.adopt = _adopt
+  o.add = _adopt
 
 
 def _setup_callback(obj):
@@ -264,8 +264,8 @@ def _setup_callback(obj):
     self.__adopt(action.get(), action.callback())
   _import_class('Sim', obj)
   o = getattr(current, obj)
-  setattr(o, '__adopt', getattr(o, 'add'))
-  setattr(o, 'add', _adopt)
+  o.__adopt = o.add
+  o.add = _adopt
 
 
 _setup_callback('Geant4ActionPhase')
@@ -443,7 +443,8 @@ class Geant4:
 
     \author  M.Frank
     """
-    ui_name = getattr(self.master(), 'UI')
+    # calls __getattr__ implicitly, which calls getKernelProperty
+    ui_name = self.master().UI
     return self.master().globalAction(ui_name)
 
   def addUserInitialization(self, worker, worker_args=None, master=None, master_args=None):

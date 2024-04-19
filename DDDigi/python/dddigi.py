@@ -203,14 +203,14 @@ def _kernel_terminate(self):
 
 
 def _default_adopt(self, action):
-  getattr(self, '__adopt')(action.get())
+  self.__adopt(action.get())
 # ---------------------------------------------------------------------------
 
 
 def _adopt_event_action(self, action):
   " Helper to convert DigiActions objects to DigiEventAction "
   proc = Interface.toEventAction(_get_action(action))
-  attr = getattr(self, '__adopt')
+  attr = self.__adopt
   attr(proc)
 # ---------------------------------------------------------------------------
 
@@ -218,7 +218,7 @@ def _adopt_event_action(self, action):
 def _adopt_container_processor(self, action, processor_argument):
   " Helper to convert DigiActions objects to DigiEventAction "
   parent = Interface.toContainerSequenceAction(_get_action(self))
-  attr = getattr(parent, 'adopt_processor')
+  attr = parent.adopt_processor
   proc = Interface.toContainerProcessor(_get_action(action))
   attr(proc, processor_argument)
 # ---------------------------------------------------------------------------
@@ -226,7 +226,7 @@ def _adopt_container_processor(self, action, processor_argument):
 
 def _adopt_segment_processor(self, action, processor_argument):
   " Helper to convert DigiActions objects to DigiEventAction "
-  attr = getattr(_get_action(self), '__adopt_segment_processor')
+  attr = _get_action(self).__adopt_segment_processor
   proc = Interface.toContainerProcessor(_get_action(action))
   attr(proc, processor_argument)
 # ---------------------------------------------------------------------------
@@ -245,7 +245,7 @@ def _adopt_sequence_action(self, name, **options):
 
 def _adopt_processor(self, action, containers):
   proc = Interface.toContainerProcessor(_get_action(action))
-  attr = getattr(_get_action(self), '__adopt_processor')
+  attr = _get_action(self).__adopt_processor
   attr(proc, containers)
 # ---------------------------------------------------------------------------
 
