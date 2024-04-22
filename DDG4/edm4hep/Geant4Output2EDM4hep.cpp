@@ -26,6 +26,7 @@
 #include <edm4hep/SimCalorimeterHitCollection.h>
 #include <edm4hep/EDM4hepVersion.h>
 /// podio include files
+#include <podio/CollectionBase.h>
 #include <podio/podioVersion.h>
 #include <podio/Frame.h>
 #if PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
