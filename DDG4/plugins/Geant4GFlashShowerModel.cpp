@@ -231,19 +231,19 @@ void Geant4GFlashShowerModel::constructSensitives(Geant4DetectorConstructionCont
 
   for(const auto& prop : this->m_eMin)    {
     G4ParticleDefinition* def = this->getParticleDefinition(prop.first);
-    double val = dd4hep::_toDouble(prop.second) * dd4hep::GeV/CLHEP::GeV;
+    double val = dd4hep::_toDouble(prop.second) / CLHEP::GeV;
     this->m_particleBounds->SetMinEneToParametrise(*def, val);
     this->info("SetMinEneToParametrise [%-16s] = %8.4f GeV", prop.first.c_str(), val);
   }
   for(const auto& prop : this->m_eMax)    {
     G4ParticleDefinition* def = this->getParticleDefinition(prop.first);
-    double val = dd4hep::_toDouble(prop.second) * dd4hep::GeV/CLHEP::GeV;
+    double val = dd4hep::_toDouble(prop.second) / CLHEP::GeV;
     this->m_particleBounds->SetMaxEneToParametrise(*def, val);
     this->info("SetMaxEneToParametrise [%-16s] = %8.4f GeV", prop.first.c_str(), val);
   }
   for(const auto& prop : this->m_eKill)    {
     G4ParticleDefinition* def = this->getParticleDefinition(prop.first);
-    double val = dd4hep::_toDouble(prop.second) * dd4hep::GeV/CLHEP::GeV;
+    double val = dd4hep::_toDouble(prop.second) / CLHEP::GeV;
     this->m_particleBounds->SetEneToKill(*def, val);
     this->info("SetEneToKill           [%-16s] = %8.4f GeV", prop.first.c_str(), val);
   }
