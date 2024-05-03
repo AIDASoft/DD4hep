@@ -30,6 +30,8 @@ Geant4GeneratorActionInit::Geant4GeneratorActionInit(Geant4Context* ctxt, const 
   InstanceCount::increment(this);
   context()->kernel().runAction().callAtEnd(this,&Geant4GeneratorActionInit::end);
   context()->kernel().runAction().callAtBegin(this,&Geant4GeneratorActionInit::begin);
+  declareProperty("numberOfEvents", m_evtTotal);
+  declareProperty("numberOfRuns",  m_evtRun);
 }
 
 /// Default destructor
