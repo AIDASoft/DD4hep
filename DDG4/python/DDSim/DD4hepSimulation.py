@@ -445,9 +445,10 @@ class DD4hepSimulation(object):
       actionList.append(gen)
       self.__applyBoostOrSmear(kernel, actionList, index)
 
+    generationInit = None
     if actionList:
-      self._buildInputStage(geant4, actionList, output_level=self.output.inputStage,
-                            have_mctruth=self._enablePrimaryHandler())
+      generationInit = self._buildInputStage(geant4, actionList, output_level=self.output.inputStage,
+                                             have_mctruth=self._enablePrimaryHandler())
 
     # ================================================================================================
 
@@ -524,13 +525,20 @@ class DD4hepSimulation(object):
       logger.error("Termination failed!")
 
     totalTimeUser, totalTimeSys, _cuTime, _csTime, _elapsedTime = os.times()
+    processedEvents = self.numberOfEvents
+    if generationInit:
+      processedEvents = int(generationInit.numberOfEvents)
+      if self.numberOfEvents < 0:
+        processedEvents -= 1
+        logger.debug(f"Correcting number of events to: {processedEvents}")
+
     if self.printLevel <= 3:
-      logger.info("DDSim            INFO  Total Time:   %3.2f s (User), %3.2f s (System)" %
+      logger.info("Total Time:   %3.2f s (User), %3.2f s (System)" %
                   (totalTimeUser, totalTimeSys))
-      if self.numberOfEvents != 0:
+      if processedEvents != 0:
         eventTime = totalTimeUser - startUpTime
-        perEventTime = eventTime / self.numberOfEvents
-        logger.info("DDSim            INFO  StartUp Time: %3.2f s, Event Processing: %3.2f s (%3.2f s/Event) "
+        perEventTime = eventTime / processedEvents
+        logger.info("StartUp Time: %3.2f s, Event Processing: %3.2f s (%3.2f s/Event) "
                     % (startUpTime, eventTime, perEventTime))
     return exitCode
 
@@ -752,6 +760,7 @@ class DD4hepSimulation(object):
 
     # Register Generation initialization action
     gen = GeneratorAction(geant4.kernel(), "Geant4GeneratorActionInit/GenerationInit")
+    generationInit = gen
     if output_level is not None:
       gen.OutputLevel = output_level
     ga.adopt(gen)
@@ -781,7 +790,7 @@ class DD4hepSimulation(object):
         gen.OutputLevel = output_level
       ga.adopt(gen)
     # Puuuhh! All done.
-    return None
+    return generationInit
 
 
 ################################################################################
