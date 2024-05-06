@@ -12,6 +12,7 @@
 //==========================================================================
 
 // Framework include files
+#include <DD4hep/Printout.h>
 #include <DDG4/Geant4InputHandling.h>
 #include <DDG4/Geant4Primary.h>
 #include <DDG4/Geant4Context.h>
@@ -22,12 +23,13 @@
 
 // Geant4 include files
 #include <G4Event.hh>
-#include <G4ParticleDefinition.hh>
-#include <G4PrimaryParticle.hh>
 #include <G4PrimaryVertex.hh>
+#include <G4PrimaryParticle.hh>
+#include <G4ParticleDefinition.hh>
 
 // C/C++ include files
 #include <stdexcept>
+#include <limits>
 #include <cmath>
 
 using namespace dd4hep::sim;
@@ -345,14 +347,29 @@ int dd4hep::sim::smearInteraction(const Geant4Action* caller,
 
 static G4PrimaryParticle* createG4Primary(const Geant4ParticleHandle p)  {
   G4PrimaryParticle* g4 = 0;
+  const G4ParticleDefinition* def = p.definition();
+  /// First check against particle masses, which may be unequal to the generator particle mass.
+  double energy = p.energy();
+  double mom2   = (p->psx*p->psx) + (p->psy*p->psy) + (p->psz*p->psz);
+  double mass2  = energy*energy - mom2;
+  if ( mass2 < 0e0 )   {
+    if ( def )   {
+      mass2 = def->GetPDGMass() * def->GetPDGMass();
+    }
+    energy = std::sqrt(mom2 + mass2);
+    if ( std::fabs(p.energy()-energy) > 0e0 /* 1e-10 */ )  {
+      dd4hep::printout(dd4hep::INFO,"createG4Primary",
+                       "Change particle %s energy from %10.5f MeV by %g ppm to avoid negative Energy^2",
+                       (def) ? def->GetParticleName().c_str() : "???", p.energy(), std::fabs(p.energy()-energy)*1e6);
+    }
+  }
   if ( 0 != p->pdgID )   {
     // For ions we use the pdgID of the definition, in case we had to zero the excitation level, see Geant4Particle.cpp
     const int pdgID =  p->pdgID < 1000000000 ? p->pdgID : p.definition()->GetPDGEncoding();
-    g4 = new G4PrimaryParticle(pdgID, p->psx, p->psy, p->psz, p.energy());
+    g4 = new G4PrimaryParticle(pdgID, p->psx, p->psy, p->psz, energy);
   }
   else   {
-    const G4ParticleDefinition* def = p.definition();
-    g4 = new G4PrimaryParticle(def, p->psx, p->psy, p->psz, p.energy());
+    g4 = new G4PrimaryParticle(def, p->psx, p->psy, p->psz, energy);
     g4->SetCharge(double(p.charge())/3.0);
   }
   // The particle is fully defined with the 4-vector set above, setting the mass isn't necessary, not
