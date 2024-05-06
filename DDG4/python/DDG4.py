@@ -304,11 +304,11 @@ def _get(self, name):
   a = Interface.toAction(self)
   ret = Interface.getProperty(a, name)
   if ret.status > 0:
-    return ret.data
+    return _evalProperty(ret.data)
   elif hasattr(self.action, name):
-    return getattr(self.action, name)
+    return _evalProperty(getattr(self.action, name))
   elif hasattr(a, name):
-    return getattr(a, name)
+    return _evalProperty(getattr(a, name))
   msg = 'Geant4Action::GetProperty [Unhandled]: Cannot access property ' + a.name() + '.' + name
   raise KeyError(msg)
 
