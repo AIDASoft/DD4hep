@@ -14,9 +14,9 @@
 
 // Framework include files
 #include <XML/Utilities.h>
-#include <DD4hep/Printout.h>
 #include <DD4hep/Plugins.h>
 #include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
 #include <DD4hep/DetFactoryHelper.h>
 #include <Math/Polar2D.h>
 
@@ -98,29 +98,98 @@ dd4hep::Solid dd4hep::xml::createShape(Detector& description,
 
 /// Create a volume using the plugin mechanism from the attributes of the XML element
 dd4hep::Volume dd4hep::xml::createStdVolume(Detector& description, xml::Element element)    {
-  xml_dim_t e(element);
-  if ( e.hasAttr(_U(material)) )   {
-    xml_dim_t x_s = e.child(_U(shape));
-    std::string    typ = x_s.typeStr();
-    Material  mat = description.material(e.attr<std::string>(_U(material)));
-    Solid     sol = createShape(description, typ, x_s);
-    Volume    vol("volume", sol, mat);
-    if ( e.hasAttr(_U(name)) ) vol->SetName(e.attr<std::string>(_U(name)).c_str());
-    vol.setAttributes(description,e.regionStr(),e.limitsStr(),e.visStr());
+  Volume      vol;
+  int         dbg = 1;
+  xml_dim_t   elt(element);
+  std::string typ, tag = elt.tag();
+  PrintLevel  lvl   = dbg ? ALWAYS : DEBUG;
+
+  printout(lvl, "xml::createStdVolume", "++ Processing tag: %-12s", tag.c_str());
+  if ( elt.hasAttr(_U(material)) )   {
+    xml_dim_t x_s = elt.child(_U(shape));
+    Solid     sol = createShape(description, x_s.typeStr(), x_s);
+    Material  mat = description.material(elt.attr<std::string>(_U(material)));
+    vol = Volume("volume", sol, mat);
+    if ( elt.hasAttr(_U(name)) ) vol->SetName(elt.nameStr().c_str());
+    vol.setAttributes(description,elt.regionStr(),elt.limitsStr(),elt.visStr());
+    printout(lvl, "xml::createStdVolume", "++ --> name: %s vis: %s region: %s limits: %s",
+             vol.name(),
+             elt.visStr("").c_str(),
+             elt.regionStr("").c_str(),
+             elt.limitsStr("").c_str());
+    elt = x_s;
+  }
+  else if ( elt.hasAttr(_U(type)) )  {
+    typ = elt.typeStr();
+    if ( typ == "CAD_Assembly" || typ == "CAD_MultiVolume" || typ == "GenVolume" )
+      vol = xml::createVolume(description, typ, elt);
+    else if ( typ.substr(1) == "ssembly" )
+      vol = Assembly("assembly");
+    if ( elt.hasAttr(_U(name)) ) vol->SetName(elt.nameStr().c_str());
+    vol.setAttributes(description,elt.regionStr(),elt.limitsStr(),elt.visStr());
+    printout(lvl, "xml::createStdVolume", "++ --> name: %s vis: %s region: %s limits: %s",
+             vol.name(),
+             elt.visStr("").c_str(),
+             elt.regionStr("").c_str(),
+             elt.limitsStr("").c_str());
+  }
+  if ( vol.isValid() )  {
+    for( xml_coll_t xv(elt, _U(volume)); xv; ++xv )    {
+      xml_dim_t xvol = xv;
+      xml_dim_t xshap = xv.child(_U(shape), false);
+      /** Trigger on:
+       *
+       *  <volume name="..." type="Assembly">
+       *  or
+       *  <volume name="..." material="Air">
+       *
+       *    <shape  ....  />
+       *    or 
+       *    <volume  ....  />
+       *
+       *    optional:
+       *    <position x="0" ... />
+       *    <rotation x="0" ... />
+       *  </volume>
+       */
+      if ( xvol && ((xvol.hasAttr(_U(material)) && xshap) || xvol.hasAttr(_U(type))) )  {
+        RotationZYX rot;
+        Position    pos;
+        xml_comp_t  x_rot = xvol.child( _U(rotation), false );
+        xml_comp_t  x_pos = xvol.child( _U(position), false );
+        Volume      child = xml::createStdVolume( description, xvol );
+        if ( x_rot ) rot = RotationZYX( x_rot.z(0),x_rot.y(0),x_rot.x(0) );
+        if ( x_pos ) pos = Position( x_pos.x(0),x_pos.y(0),x_pos.z(0) );
+        Transform3D trafo(Rotation3D(rot), pos);
+        vol.placeVolume( child, trafo );
+      }
+    }
+    for( xml_coll_t xs(elt, _U(shape)); xs; ++xs )    {
+      xml_dim_t xshap = xs;
+      /** Trigger on:
+       *  - typical for CAD multi-volume shapes
+       *
+       *  <shape name="Assembly" type="Assembly">
+       *    <shape  ....  />
+       *    <position x="0" ... />
+       *    <rotation x="0" ... />
+       *  </shape>
+       */
+      if ( xshap && xshap.hasAttr(_U(type)) )  {
+        RotationZYX rot;
+        Position    pos;
+        xml_comp_t  x_rot = xshap.child( _U(rotation), false );
+        xml_comp_t  x_pos = xshap.child( _U(position), false );
+        Volume      child = xml::createStdVolume( description, xshap );
+        if ( x_rot ) rot = RotationZYX( x_rot.z(0),x_rot.y(0),x_rot.x(0) );
+        if ( x_pos ) pos = Position( x_pos.x(0),x_pos.y(0),x_pos.z(0) );
+        Transform3D trafo(Rotation3D(rot), pos);
+        vol.placeVolume( child, trafo );
+      }
+    }
     return vol;
   }
-  xml_h h = e;
-  xml_attr_t a = h.attr_nothrow(_U(type));
-  if ( a )   {
-    std::string typ = h.attr<std::string>(a);
-    if ( typ.substr(1) == "ssembly" )  {
-      Assembly vol("assembly");
-      if ( e.hasAttr(_U(name)) ) vol->SetName(e.attr<std::string>(_U(name)).c_str());
-      vol.setAttributes(description,e.regionStr(),e.limitsStr(),e.visStr());
-      return vol;
-    }
-  }
-  dd4hep::except("xml::createVolume","Failed to create volume. No material specified!");
+  dd4hep::except("xml::createStdVolume","Failed to create volume. No material specified!");
   return Volume();
 }
 
@@ -155,29 +224,28 @@ dd4hep::Volume dd4hep::xml::createPlacedEnvelope( dd4hep::Detector& description,
   xml_det_t     x_det     = e;
   std::string   det_name  = x_det.nameStr();
   
-  xml_comp_t    x_env     =  x_det.child( dd4hep::xml::Strng_t("envelope") ) ;
+  xml_comp_t    x_env     =  x_det.child( dd4hep::xml::Strng_t("envelope") );
   xml_comp_t    x_shape   =  x_env.child( _U(shape) ); 
-  
-  
-  bool useRot = false ;
-  bool usePos = false ; 
-  Position    pos ;
-  RotationZYX rot ;
+
+  bool useRot = false;
+  bool usePos = false; 
+  Position    pos;
+  RotationZYX rot;
 
   if( x_env.hasChild( _U(position) ) ) {
-    usePos = true ;
+    usePos = true;
     xml_comp_t env_pos = x_env.position();
     pos = Position( env_pos.x(),env_pos.y(),env_pos.z() );  
   }
   if( x_env.hasChild( _U(rotation) ) ) {
-    useRot = true ;
+    useRot = true;
     xml_comp_t    env_rot     = x_env.rotation();
-    rot = RotationZYX( env_rot.z(),env_rot.y(),env_rot.x() ) ;
+    rot = RotationZYX( env_rot.z(),env_rot.y(),env_rot.x() );
   }
 
   Volume  envelope;
   if(  x_shape.typeStr() == "Assembly" ){
-    envelope = Assembly( det_name+"_assembly" ) ;
+    envelope = Assembly( det_name+"_assembly" );
   } else { 
     // ---- create a shape from the specified xml element --------
     Box  env_solid = xml_comp_t( x_shape ).createShape();
@@ -187,28 +255,28 @@ dd4hep::Volume dd4hep::xml::createPlacedEnvelope( dd4hep::Detector& description,
                      "Cannot create envelope volume : %s for detector %s.",
                      x_shape.typeStr().c_str(), det_name.c_str());
     }
-    Material      env_mat   = description.material( x_shape.materialStr() );
+    Material env_mat   = description.material( x_shape.materialStr() );
     envelope = Volume( det_name+"_envelope", env_solid, env_mat );
   }
-  PlacedVolume  env_pv  ; 
+  PlacedVolume  env_pv; 
   Volume        mother = description.pickMotherVolume(sdet);
   // ---- place the envelope into the mother volume 
   //      only specify transformations given in xml
   //      to allow for optimization 
 
   if( useRot && usePos ){
-    env_pv =  mother.placeVolume( envelope , Transform3D( rot, pos )  ) ;
+    env_pv =  mother.placeVolume( envelope , Transform3D( rot, pos )  );
   } else if( useRot ){
-    env_pv =  mother.placeVolume( envelope , rot  ) ;
+    env_pv =  mother.placeVolume( envelope , rot  );
   } else if( usePos ){
-    env_pv =  mother.placeVolume( envelope , pos  ) ;
+    env_pv =  mother.placeVolume( envelope , pos  );
   } else {
     env_pv = mother.placeVolume( envelope );
   }
 
   // ----------------------------------------------
   env_pv.addPhysVolID("system", sdet.id());
-  sdet.setPlacement( env_pv ) ;
+  sdet.setPlacement( env_pv );
   envelope.setAttributes( description,x_det.regionStr(),x_det.limitsStr(),x_env.visStr());
   return envelope;
 }
@@ -218,10 +286,10 @@ void  dd4hep::xml::setDetectorTypeFlag( dd4hep::xml::Handle_t e, dd4hep::DetElem
   std::string   det_name  = x_det.nameStr();
   
   try{
-    xml_comp_t  x_dettype = x_det.child( dd4hep::xml::Strng_t("type_flags") ) ;
-    unsigned int typeFlag = x_dettype.type() ;
-    printout(DEBUG,"Utilities","+++ setDetectorTypeFlags for detector: %s set to 0x%x", det_name.c_str(), typeFlag ) ;
-    sdet.setTypeFlag( typeFlag ) ;
+    xml_comp_t  x_dettype = x_det.child( dd4hep::xml::Strng_t("type_flags") );
+    unsigned int typeFlag = x_dettype.type();
+    printout(DEBUG,"Utilities","+++ setDetectorTypeFlags for detector: %s set to 0x%x", det_name.c_str(), typeFlag );
+    sdet.setTypeFlag( typeFlag );
   }
   catch(const std::runtime_error& err)   {
     printout(INFO,"Utilities",
