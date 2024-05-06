@@ -122,18 +122,18 @@ public:
 
     /// tan(stereoangle) = R(z=0)   / (L/2) * tan( twist_angle/2)
     DCH_angle_t stereoangle_z0(DCH_length_t r_z0) const {
-        return atan( r_z0/Lhalf*tan(twist_angle/2));
+        return atan( r_z0/Lhalf*tan(twist_angle/2/dd4hep::rad));
     }
 
     /// tan(stereoangle) = R(z=L/2) / (L/2) * sin( twist_angle/2)
     DCH_angle_t stereoangle_zLhalf(DCH_length_t r_zLhalf) const {
-        return atan( r_zLhalf/Lhalf*sin(twist_angle/2));
+        return atan( r_zLhalf/Lhalf*sin(twist_angle/2/dd4hep::rad));
     }
 
     /// WireLength = 2*dch_Lhalf/cos(atan(Pitch_z0(r_z0)/(2*dch_Lhalf)))/cos(stereoangle_z0(r_z0))
     DCH_length_t WireLength(int nlayer, DCH_length_t r_z0) const {
         auto Pitch_z0 = database.at(nlayer).Pitch_z0(r_z0);
-        return  2*Lhalf/cos(atan(Pitch_z0/(2*Lhalf)))/cos(stereoangle_z0(r_z0)) ;
+        return  2*Lhalf/cos(atan(Pitch_z0/(2*Lhalf)))/cos(stereoangle_z0(r_z0)/dd4hep::rad) ;
     };
 
     /// Internal helper struct for defining the layer layout
