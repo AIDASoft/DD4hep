@@ -954,7 +954,7 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
     mat = description.material(x_det.child(_U(material)).attr<std::string>(_U(name)));
     printout(INFO,"TestShape","+++ Volume material is %s", mat.name());      
   }
-  for ( xml_coll_t itm(e, _U(check)); itm; ++itm, ++count )   {
+  for ( xml_coll_t itm(e, _U(check)); itm; ++itm, ++count )  {
     xml_dim_t   x_check  = itm;
     xml_comp_t  shape      (x_check.child(_U(shape)));
     xml_dim_t   pos        (x_check.child(_U(position), false));
@@ -964,11 +964,19 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
     bool        reflectY = x_check.hasChild(_U(reflect_y));
     bool        reflectX = x_check.hasChild(_U(reflect_x));
     std::string shape_type = shape.typeStr();
-    Solid       solid;
     Volume      volume;
+    Solid       solid;
 
-    if ( shape_type == "CAD_Assembly" || shape_type == "CAD_MultiVolume" )   {
+    if ( shape_type == "CAD_Assembly" || shape_type == "CAD_MultiVolume" )  {
       volume = xml::createVolume(description, shape_type, shape);
+      solid  = volume->GetShape();
+    }
+    else if ( shape_type == "StdVolume" )  {
+      volume = xml::createStdVolume(description, shape.child(_U(volume)));
+      solid  = volume->GetShape();
+    }
+    else if ( shape_type == "GenVolume" )  {
+      volume = xml::createVolume(description, shape_type, shape.child(_U(volume)));
       solid  = volume->GetShape();
     }
     else   {
