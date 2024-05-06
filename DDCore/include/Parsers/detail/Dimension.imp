@@ -310,9 +310,19 @@ std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::regionStr() const {
   return m_element.hasAttr(_U(region)) ? m_element.attr < std::string > (_U(region)) : std::string();
 }
 
+/// Access "region" attribute as STL std::string. If not present returns empty string.
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::regionStr(const std::string& default_value) const {
+  return m_element.hasAttr(_U(region)) ? m_element.attr < std::string > (_U(region)) : default_value;
+}
+
 /// Access "limits" attribute as STL std::string. If not present returns empty string.
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::limitsStr() const {
   return m_element.hasAttr(_U(limits)) ? m_element.attr < std::string > (_U(limits)) : std::string();
+}
+
+/// Access "limits" attribute as STL std::string. If not present returns empty string.
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::limitsStr(const std::string& default_value) const {
+  return m_element.hasAttr(_U(limits)) ? m_element.attr < std::string > (_U(limits)) : default_value;
 }
 
 /// Access "vis" attribute as STL std::string. If not present returns empty string.
@@ -320,12 +330,27 @@ std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::visStr() const {
   return m_element.hasAttr(_U(vis)) ? m_element.attr < std::string > (_U(vis)) : std::string();
 }
 
+/// Access "vis" attribute as STL std::string. If not present returns empty string.
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::visStr(const std::string& default_value) const {
+  return m_element.hasAttr(_U(vis)) ? m_element.attr < std::string > (_U(vis)) : default_value;
+}
+
 /// Access "readout" attribute as STL std::string. If not present returns empty string.
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::readoutStr() const {
   return m_element.hasAttr(_U(readout)) ? m_element.attr < std::string > (_U(readout)) : std::string();
 }
 
+/// Access "readout" attribute as STL std::string. If not present returns empty string.
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::readoutStr(const std::string& default_value) const {
+  return m_element.hasAttr(_U(readout)) ? m_element.attr < std::string > (_U(readout)) : default_value;
+}
+
 /// Access "module" attribute as STL std::string. If not present returns empty string.
 std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::moduleStr() const {
   return m_element.hasAttr(_U(module)) ? m_element.attr < std::string > (_U(module)) : std::string();
+}
+
+/// Access "module" attribute as STL std::string. If not present returns empty string.
+std::string dd4hep::DD4HEP_DIMENSION_NS::Dimension::moduleStr(const std::string& default_value) const {
+  return m_element.hasAttr(_U(module)) ? m_element.attr < std::string > (_U(module)) : default_value;
 }
