@@ -1,5 +1,5 @@
-#ifndef DCH_INFO_H_INCLUDED
-#define DCH_INFO_H_INCLUDED
+#ifndef DDREC_DCH_INFO_H
+#define DDREC_DCH_INFO_H
 
 #include "TMath.h"
 
@@ -345,4 +345,4 @@ inline void DCH_info_struct::Show_DCH_info_database(std::ostream & oss) const
 }
 }} // end namespace dd4hep::rec::
 
-#endif // DCH_INFO_H_INCLUDED
+#endif // DDREC_DCH_INFO_H
