@@ -746,11 +746,11 @@ namespace dd4hep {
       std::string refStr() const;
       /// Access "module" attribute as STL string
       std::string moduleStr() const;
-      /// Access "module" attribute as STL string
+      /// Access "module" attribute as STL string. Return default value if not present
       std::string moduleStr(const std::string& default_value) const;
       /// Access "readout" attribute as STL string
       std::string readoutStr() const;
-      /// Access "readout" attribute as STL string
+      /// Access "readout" attribute as STL string. Return default value if not present
       std::string readoutStr(const std::string& default_value) const;
       /// Access vis attribute as STL string. If not present empty return empty string
       std::string visStr() const;
