@@ -31,8 +31,9 @@
 #include "Parsers/Parsers.h"
 
 // C/C++ include files
-#include <vector>
 #include <memory>
+#include <set>
+#include <vector>
 
 // Forward declarations
 class G4Event;
@@ -178,6 +179,9 @@ namespace dd4hep  {
       /// Property: named parameters to configure file readers or input actions
       std::map< std::string, std::string> m_parameters;
 
+      /// Property: set of alternative decay statuses that MC generators might use for unstable particles
+      std::set<int> m_alternativeDecayStatuses = {};
+
       /// Perform some actions before the run starts, like opening the event inputs
       void beginRun(const G4Run*);
 
@@ -188,6 +192,10 @@ namespace dd4hep  {
       int readParticles(int event_number,
                         Vertices&  vertices,
                         Particles& particles);
+      using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
+      /// Convert the generator status into a common set of generator status bits
+      void setGeneratorStatus(int generatorStatus, PropertyMask& status);
+
       /// helper to report Geant4 exceptions
       std::string issue(int i) const;
 
