@@ -95,7 +95,6 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
     const float spin[]  = {0.0, 0.0, 0.0}; //mcp->getSpin(); // FIXME
     const int   color[] = {colorFlow[0][mcp->id()], colorFlow[1][mcp->id()]};
     const int   pdg     = mcp->pid();
-    PropertyMask status(p->status);
     p->pdgID        = pdg;
     p->charge       = 0; // int(mcp->getCharge()*3.0); // FIXME
     p->psx          = mom.get_component(0) * mom_unit;
@@ -122,16 +121,11 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
     for(int num=par.size(), k=0; k<num; ++k)
       p->parents.insert(GET_ENTRY(mcparts,par[k]));
 
+    PropertyMask status(p->status);
     int genStatus = mcp->status();
-    if ( genStatus == 0 ) status.set(G4PARTICLE_GEN_EMPTY);
-    else if ( genStatus == 1 ) status.set(G4PARTICLE_GEN_STABLE);
-    else if ( genStatus == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
-    else if ( genStatus == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
-    else if ( genStatus == 4 ) status.set(G4PARTICLE_GEN_BEAM);
-    else
-      status.set(G4PARTICLE_GEN_OTHER);
     // Copy raw generator status
     p->genStatus = genStatus&G4PARTICLE_GEN_STATUS_MASK;
+    m_inputAction->setGeneratorStatus(genStatus, status);
 
     if ( p->parents.size() == 0 )  {
       // A particle without a parent in HepMC3 can only be (something like) a beam particle, and it is attached to the

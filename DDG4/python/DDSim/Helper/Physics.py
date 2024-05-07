@@ -26,6 +26,7 @@ class Physics(ConfigHelper):
                         4101, 4103, 4201, 4203, 4301, 4303, 4403,  # c? diquarks
                         5101, 5103, 5201, 5203, 5301, 5303, 5401, 5403, 5503}  # b? diquarks
     self._zeroTimePDGs = {11, 13, 15, 17}
+    self._alternativeDecayStatuses = set()
     self._userFunctions = []
     self._closeProperties()
 
@@ -52,6 +53,16 @@ class Physics(ConfigHelper):
   @zeroTimePDGs.setter
   def zeroTimePDGs(self, val):
     self._zeroTimePDGs = self.makeSet(val)
+
+  @property
+  def alternativeDecayStatuses(self):
+    """Set of Generator Statuses that are used to mark unstable particles that should decay inside of Geant4.
+    """
+    return self._alternativeDecayStatuses
+
+  @alternativeDecayStatuses.setter
+  def alternativeDecayStatuses(self, val):
+    self._alternativeDecayStatuses = self.makeSet(val)
 
   @property
   def rangecut(self):

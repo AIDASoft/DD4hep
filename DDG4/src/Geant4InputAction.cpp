@@ -126,6 +126,7 @@ Geant4InputAction::Geant4InputAction(Geant4Context* ctxt, const std::string& nam
   declareProperty("MomentumScale",  m_momScale = 1.0);
   declareProperty("HaveAbort",      m_abort = true);
   declareProperty("Parameters",     m_parameters = {});
+  declareProperty("AlternativeDecayStatuses", m_alternativeDecayStatuses = {});
   m_needsControl = true;
 
   runAction().callAtBegin(this, &Geant4InputAction::beginRun);
@@ -284,4 +285,17 @@ void Geant4InputAction::operator()(G4Event* event)   {
     inter->particles.emplace(p->id,p);
     p.dumpWithMomentumAndVertex(outputLevel()-1,name(),"->");
   }
+}
+
+void Geant4InputAction::setGeneratorStatus(int genStatus, PropertyMask& status) {
+  if ( genStatus == 0 ) status.set(G4PARTICLE_GEN_EMPTY);
+  else if ( genStatus == 1 ) status.set(G4PARTICLE_GEN_STABLE);
+  else if ( genStatus == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
+  else if ( genStatus == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
+  else if ( genStatus == 4 ) status.set(G4PARTICLE_GEN_BEAM);
+  else if ( m_alternativeDecayStatuses.count(genStatus) ) status.set(G4PARTICLE_GEN_DECAYED);
+  else
+    status.set(G4PARTICLE_GEN_OTHER);
+
+  return;
 }
