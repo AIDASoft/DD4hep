@@ -1,0 +1,93 @@
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+
+-->
+
+  <info name=   "DDCAD_test"
+	title=  "Checking issue 1134"
+	author= "Markus Frank"
+	url=    "http://www.cern.ch/lhcb"
+	status= "development"
+	version="1.0">
+    <comment>CAD Shape tester</comment>        
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+  
+  <materials>
+    <material name="DefaultMaterial">
+      <D value="7.85" unit="g/cm3"/>
+      <fraction n="0.998" ref="Fe"/>
+      <fraction n=".002"  ref="C"/>
+    </material>
+    <material name="Material01">
+      <D value="7.85" unit="g/cm3"/>
+      <fraction n="1.0" ref="Fe"/>
+    </material>
+  </materials>
+
+
+  <define>
+    <constant name="world_side"  value="15*m"/>
+    <constant name="world_x"     value="world_side"/>
+    <constant name="world_y"     value="world_side"/>
+    <constant name="world_z"     value="world_side"/>
+    <constant name="unit_length" value="1*10"/>
+    <constant name="unit_pos"    value="unit_length/10"/>
+    <constant name="CheckShape_create"   value="0"/>
+    <constant name="tracker_region_zmax" value="15*m"/>
+    <constant name="tracker_region_rmax" value="5*m"/>
+  </define>
+
+  <display>
+    <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithDaughters"    showDaughters="true"  visible="false"/>
+    <vis name="Shape1_vis_20"    alpha="0.2" r="0.9" g="0.8" b="0.8" showDaughters="true" visible="true"/>
+    <vis name="ShapeGray_vis_50" alpha="0.5" r="0.9" g="0.8" b="0.8" showDaughters="true" visible="true"/>
+    <vis name="Shape0_vis"       alpha="1.0" r="0"   g="1"   b="1"   showDaughters="true" visible="true"/>
+    <vis name="Shape1_vis"       alpha="1.0" r="1"   g="0"   b="0"   showDaughters="true" visible="true"/>
+    <vis name="Shape2_vis"       alpha="1.0" r="0"   g="1"   b="0"   showDaughters="true" visible="true"/>
+    <vis name="Shape3_vis"       alpha="1.0" r="0"   g="0"   b="1"   showDaughters="true" visible="true"/>
+    <vis name="Shape_grey"       alpha="0.5" r="0.0" g="0.4" b="0.4" showDaughters="true" visible="true"/>
+  </display>
+
+  <detectors>
+    <detector id="1" name="Shape_STL" type="DD4hep_TestShape_Creator">
+      <check>
+        <shape type="StdVolume">
+          <volume name="Assembly" type="Assembly" vis="ShapeGray_vis_50">
+            <volume material="Air" vis="ShapeGray_vis_50">
+              <!-- create a box to place the CAD inside. The box can then be placed into the assembly's origin
+                   and rotated/positioned as desired.  -->
+              <shape name="box" type="Box" dx="8*cm" dy="8*cm" dz="30*cm">
+                <volume type="CAD_MultiVolume"
+    	          ref="${DD4hepExamplesINSTALL}/examples/DDCAD/models/STL/DD4hep_Issue_1134.stl"
+	          unit="cm">
+                  <!-- select shape # 0 from the multi-shape CAD and place it in the origin of the box -->
+      	          <volume id="0" name="s1" vis="Shape3_vis" material="Gold"/>
+                  <position x="454*mm" y="-9*mm" z="-385*mm"/>
+                  <rotation x="0*pi/8*rad" y="-2*pi/8*rad" z="0*rad"/>
+                </volume>
+              </shape>
+            </volume>
+          </volume>
+        </shape>
+
+        <rotation x="2*pi/8*rad" y="0*pi/8*rad" z="0*rad"/>  
+
+      </check>
+    </detector>
+  </detectors>
+</lccdd>
