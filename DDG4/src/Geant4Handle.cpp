@@ -88,8 +88,9 @@ namespace dd4hep {
         if (ptr)  {
           return ptr;
         }
-        except("Geant4Handle", "Failed to convert object of type %s to handle of type %s!",
-               typ.first.c_str(),typ.second.c_str());
+        std::string _t = typeName(typeid(TYPE));
+        except("Geant4Handle", "Failed to convert object of type '%s' with name '%s' to handle of type '%s'!",
+               typ.first.c_str(),typ.second.c_str(),_t.c_str());
       }
       except("Geant4Handle", "Failed to create object of type %s!", typ.first.c_str());
       return 0;
