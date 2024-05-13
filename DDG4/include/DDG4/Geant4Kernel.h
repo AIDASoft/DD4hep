@@ -98,11 +98,11 @@ namespace dd4hep {
       /// Property: Output level
       int         m_outputLevel;
 
-      /// Property: Running in multi threaded context
-      //bool        m_multiThreaded;
       /// Master property: Number of execution threads in multi threaded mode.
       int         m_numThreads;
-
+      /// Master property: Instantiate the Geant4 scoring manager object
+      int         m_haveScoringMgr;
+      
       /// Registered action callbacks on configure
       UserCallbacks m_actionConfigure;
       /// Registered action callbacks on initialize
