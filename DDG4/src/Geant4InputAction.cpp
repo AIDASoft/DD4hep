@@ -183,7 +183,7 @@ int Geant4InputAction::readParticles(int evt_number,
                                      Vertices& vertices,
                                      std::vector<Particle*>& particles)
 {
-  //in case readParticles is called diractly outside of having a run, we make sure a reader exists
+  //in case readParticles is called directly outside of having a run, we make sure a reader exists
   createReader();
   int evid = evt_number + m_firstEvent;
   int status = m_reader->moveToEvent(evid);

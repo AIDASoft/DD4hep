@@ -221,11 +221,13 @@ namespace dd4hep {
       std::string processName() const;
       /// Access to the creator process type name
       std::string processTypeName() const;
-      /// Access patricle momentum, energy as 4 vector
+      /// Access particle momentum, energy as 4 vector
       FourVector pxPyPzM() const;
-      /// Access patricle momentum, energy as 4 vector
+      /// Access particle momentum, energy as 4 vector
+      template <typename T> std::vector<T> pxPyPzM(T unit) const;
+      /// Access particle momentum, energy as 4 vector
       ThreeVector startVertex() const;
-      /// Access patricle momentum, energy as 4 vector
+      /// Access particle momentum, energy as 4 vector
       ThreeVector endVertex()  const;
       /// Access the Geant4 particle definition object (expensive!)
       const G4ParticleDefinition *definition() const;
