@@ -25,6 +25,7 @@
 
 // Geant4 include files
 #include <G4RunManager.hh>
+#include <G4ScoringManager.hh>
 #include <G4UIdirectory.hh>
 #include <G4Threading.hh>
 #include <G4AutoLock.hh>
@@ -88,16 +89,16 @@ Geant4Kernel::Geant4Kernel(Detector& description_ref)
     m_numThreads(0), m_id(Geant4Kernel::thread_self()), m_master(this), m_shared(0),
     m_threadContext(0), phase(this)
 {
-  //m_detDesc->addExtension < Geant4Kernel > (this);
   m_ident = -1;
-  declareProperty("UI",m_uiName);
-  declareProperty("OutputLevel",      m_outputLevel = DEBUG);
-  declareProperty("NumEvents",        m_numEvent = 10);
-  declareProperty("OutputLevels",     m_clientLevels);
-  declareProperty("NumberOfThreads",  m_numThreads);
+  declareProperty("UI", m_uiName);
+  declareProperty("OutputLevel",          m_outputLevel = DEBUG);
+  declareProperty("NumEvents",            m_numEvent = 10);
+  declareProperty("OutputLevels",         m_clientLevels);
+  declareProperty("NumberOfThreads",      m_numThreads);
+  declareProperty("HaveScoringManager",   m_haveScoringMgr = false);
+  declareProperty("SensitiveTypes",       m_sensitiveDetectorTypes);
+  declareProperty("RunManagerType",       m_runManagerType = "G4RunManager");
   declareProperty("DefaultSensitiveType", m_dfltSensitiveDetectorType = "Geant4SensDet");
-  declareProperty("SensitiveTypes",   m_sensitiveDetectorTypes);
-  declareProperty("RunManagerType",   m_runManagerType = "G4RunManager");
   m_controlName = "/ddg4/";
   m_control = new G4UIdirectory(m_controlName.c_str());
   m_control->SetGuidance("Control for named Geant4 actions");
@@ -282,6 +283,11 @@ G4RunManager& Geant4Kernel::runManager() {
     }
     mgr->property("NumberOfThreads").set(m_numThreads);
     mgr->enableUI();
+    if ( this->m_haveScoringMgr )  {
+      if ( nullptr == G4ScoringManager::GetScoringManager() )  {
+        except("Geant4Kernel", "+++ FAILED to create the G4ScoringManager instance.");
+      }
+    }
     m_runManager = dynamic_cast<G4RunManager*>(mgr);
     if ( m_runManager )  {
       return *m_runManager;
