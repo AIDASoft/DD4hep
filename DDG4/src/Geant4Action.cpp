@@ -45,7 +45,7 @@ void Geant4Action::ContextUpdate::operator()(Geant4Action* action) const  {
   action->m_context = context;
   if ( 0 == action->m_context )   {
 
-    cout << "EERIOR" << endl;
+    cout << "ERROR" << endl;
 
   }
 }
