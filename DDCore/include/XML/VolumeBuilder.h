@@ -187,6 +187,8 @@ namespace dd4hep {
         /// Collect a set of materials from the leafs of an xml tag
         size_t collectMaterials(Handle_t element);
         
+        /// Access element from transformation cache by name
+        Transform3D getTransform(const std::string& nam)  const;
         /// Access element from shape cache by name. Invalid returns means 'veto'. Otherwise exception
         Solid getShape(const std::string& nam)  const;
         /// Create a new shape from the information given in the xml handle

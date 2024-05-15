@@ -94,6 +94,15 @@ dd4hep::Volume VolumeBuilder::volume(const std::string& nam)  const    {
   return vol;
 }
 
+/// Access element from transformation cache by name
+dd4hep::Transform3D VolumeBuilder::getTransform(const std::string& nam)  const   {
+  auto it = transformations.find(nam);
+  if ( it == transformations.end() )  {
+    except("VolumeBuilder","+++ Tranformation %s is not known to this builder unit. ",nam.c_str());
+  }
+  return (*it).second.second;
+}
+
 /// Access element from shape cache by name. Invalid returns means 'veto'. Otherwise exception
 dd4hep::Solid VolumeBuilder::getShape(const std::string& nam)  const   {
   auto is = shapes.find(nam);
@@ -434,6 +443,7 @@ std::size_t VolumeBuilder::load(xml_h element, const std::string& tag)  {
              "++ Processing xml document %s.", doc->uri().c_str());
     included_docs[ref] = std::unique_ptr<xml::DocumentHolder>(doc.release());
     buildShapes(vols);
+    buildTransformations(vols);
     buildVolumes(vols);
     ++count;
   }
