@@ -50,12 +50,15 @@ namespace  {
       std::unique_ptr<TGeoHMatrix> mother(new TGeoHMatrix(to_global));
       mother->Multiply(p->GetMatrix());
 
-      if ( use )
-        cont.push_back(std::make_pair(p, mother.get()));
-      if ( recursive )
-        _collect(cont, recursive, *mother, p);  
-      if ( use )
-        mother.release();
+      if ( use )  {
+        TGeoHMatrix* m = mother.release();
+        cont.push_back(std::make_pair(p, m));
+        if ( recursive )
+          _collect(cont, recursive, *m, p);
+      }
+      else if ( recursive )  {
+        _collect(cont, recursive, *mother, p);
+      }
     }
   }
   bool equals(Vertex const &lhs, Vertex const &rhs)  {

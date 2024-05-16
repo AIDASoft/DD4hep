@@ -206,8 +206,11 @@ void Geant4ParticlePrint::printParticleTree(const G4Event* e,
   printParticle(txt, e, p);
   // For all particles, the set of daughters must be contained in the record.
   for( int id_dau : p->daughters )  {
-    Geant4ParticleHandle dau = (*particles.find(id_dau)).second;
-    printParticleTree(e, particles, level+1, dau);
+    auto iter = particles.find(id_dau);
+    if ( iter != particles.end() )  {
+      Geant4ParticleHandle dau = iter->second;
+      printParticleTree(e, particles, level+1, dau);
+    }
   }
 }
 

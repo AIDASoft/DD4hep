@@ -146,6 +146,12 @@ GlobalDetectorAlignment::GlobalDetectorAlignment(DetElement e)
 {
 }
 
+/// Initializing constructor
+GlobalDetectorAlignment::GlobalDetectorAlignment(DetElement&& e)
+  : DetElement(e)
+{
+}
+
 /// Access debugging flag
 bool GlobalDetectorAlignment::debug()   {
   return s_GlobalDetectorAlignment_debug;

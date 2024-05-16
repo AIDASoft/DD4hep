@@ -332,9 +332,11 @@ void HepMC::fix_particles(EventStream& info)  {
     Geant4Vertex* v = iv.second;
     for (int pout : v->out)   {
       EventStream::Particles::iterator ipp = parts.find(pout);
-      Geant4Particle* p = (*ipp).second;
-      for (int d : v->in)   {
-        p->parents.insert(d);
+      if ( ipp != parts.end() )  {
+        Geant4Particle* p = (*ipp).second;
+        for (int d : v->in)   {
+          p->parents.insert(d);
+        }
       }
     }
   }

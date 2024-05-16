@@ -52,6 +52,7 @@ namespace dd4hep {
             if ( iter->second.flag&EnergyDeposit::KILLED )   {
               m->remove(iter);
               iter = (last_cell != ~0x0ULL) ? m->data.find(last_cell) : m->begin();
+              if ( iter == m->end() ) iter = m->begin();
               continue;
             }
             last_cell = iter->first;

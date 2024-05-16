@@ -365,7 +365,7 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
       const Geant4Particle* p = p_part[i];
       MCParticleImpl* q = p_lcio[i];
       const Geant4Particle::Particles& dau = p->daughters;
-      for(Geant4Particle::Particles::const_iterator j=dau.begin(); j!=dau.end(); ++j)  {
+      for( Geant4Particle::Particles::const_iterator j=dau.begin(); j != dau.end(); ++j )  {
         int idau = *j;
         if ( (k=p_ids.find(idau)) == p_ids.end() )  {  // Error!!!
           printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find daughter with ID:%d",p->id,idau);
@@ -376,15 +376,17 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
         qdau->addParent(q);
       }
       const Geant4Particle::Particles& par = p->parents;
-      for(Geant4Particle::Particles::const_iterator j=par.begin(); j!=par.end(); ++j)  {
+      for( Geant4Particle::Particles::const_iterator j=par.begin(); j != par.end(); ++j )  {
         int ipar = *j; // A parent ID iof -1 means NO parent, because a base of 0 is perfectly leagal!
-        if ( ipar>=0 && (k=p_ids.find(ipar)) == p_ids.end() )  {  // Error!!!
-          printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find parent with ID:%d",p->id,ipar);
-          continue;
+        if ( ipar >= 0 )   {
+          if( (k=p_ids.find(ipar)) == p_ids.end() )  {  // Error!!!
+            printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find parent with ID:%d",p->id,ipar);
+            continue;
+          }
+          int iqpar = (*k).second;
+          MCParticleImpl* qpar = p_lcio[iqpar];
+          q->addParent(qpar);
         }
-        int iqpar = (*k).second;
-        MCParticleImpl* qpar = p_lcio[iqpar];
-        q->addParent(qpar);
       }
     }
   }

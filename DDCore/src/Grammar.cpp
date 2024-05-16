@@ -117,14 +117,14 @@ dd4hep::BasicGrammar::~BasicGrammar()   {
 #include <iostream>
 /// Prenote loadable grammar
 void dd4hep::BasicGrammar::pre_note(const std::type_info& info,
-				    const BasicGrammar& (*fcn)(),
-				    specialization_t specs)   {
+                                    const BasicGrammar& (*fcn)(),
+                                    specialization_t specs)   {
   key_type hash = dd4hep::detail::hash64(typeName(info));
 #ifdef DD4HEP_DEBUG_PROPERTIES
   std::cout << "pre_note(1) " << typeName(info) 
-	    << " " << (void*)specs.str
-	    << " " << (void*)specs.fromString
-	    << std::endl;
+            << " " << (void*)specs.str
+            << " " << (void*)specs.fromString
+            << std::endl;
 #endif
   if ( !prenote_registry().emplace(hash, std::make_pair(fcn,specs)).second )  {
     auto j = prenote_registry().find(hash);
@@ -132,9 +132,9 @@ void dd4hep::BasicGrammar::pre_note(const std::type_info& info,
 #ifdef DD4HEP_DEBUG_PROPERTIES
     const auto& gramm = entry.first();
     std::cout << "pre_note(2) " << typeName(info) 
-	      << " " << (void*)gramm.specialization.fromString
-	      << " " << (void*)entry.second.fromString
-	      << std::endl;
+              << " " << (void*)gramm.specialization.fromString
+              << " " << (void*)entry.second.fromString
+              << std::endl;
 #endif
     if ( !(entry.first == fcn && entry.second == specs) )   {
       // Error: Already existing grammar.
@@ -157,10 +157,10 @@ const dd4hep::BasicGrammar& dd4hep::BasicGrammar::get(key_type hash)   {
     const auto& entry = (*i).second;
     const auto& gramm = *entry;
     std::cout << "get(1) " << hash
-	      << " grammar: " << (void*)&gramm
-	      << " " << (void*)gramm.specialization.fromString
-	      << " " << (void*)entry->specialization.fromString
-	      << std::endl;
+              << " grammar: " << (void*)&gramm
+              << " " << (void*)gramm.specialization.fromString
+              << " " << (void*)entry->specialization.fromString
+              << std::endl;
 #endif
     return *(i->second);
   }
@@ -170,9 +170,9 @@ const dd4hep::BasicGrammar& dd4hep::BasicGrammar::get(key_type hash)   {
     const auto& entry = (*j).second;
     const auto& gramm = entry.first();
     std::cout << "get(2) " << hash
-	      << " " << (void*)gramm.specialization.fromString
-	      << " " << (void*)entry.second.fromString
-	      << std::endl;
+              << " " << (void*)gramm.specialization.fromString
+              << " " << (void*)entry.second.fromString
+              << std::endl;
 #endif
     return (j->second.first)();
   }
@@ -270,7 +270,7 @@ bool dd4hep::BasicGrammar::fromString(void* ptr, const std::string& value) const
   if ( specialization.fromString )
     return specialization.fromString(*this, ptr, value);
   except("Grammar", "Cannot deserialize object with incomplete grammar: %s [%s]  %p fromString: %s",
-	 type_name().c_str(), this->name.c_str(), (void*)this, (void*)specialization.fromString);
+         type_name().c_str(), this->name.c_str(), (void*)this, (void*)specialization.fromString);
   return false;
 }
 
@@ -310,7 +310,7 @@ std::string dd4hep::detail::grammar_pre_parse_map(const std::string& in)   {
       if ( str_open ) { str_open = false; }
       break;
     case ':':
-      if ( str_open ) { res += '\''; str_open = false; }
+      if ( str_open ) { res += '\''; }
       res += *c;
       res += ' ';
       res += '\'';
@@ -340,8 +340,8 @@ std::string dd4hep::detail::grammar_pre_parse_map(const std::string& in)   {
     case ']':
     case '}':
       if ( str_open ) {
-	res += '\'';
-	str_open = false;
+        res += '\'';
+        str_open = false;
       }
       res += *c ;
       break;
@@ -350,9 +350,9 @@ std::string dd4hep::detail::grammar_pre_parse_map(const std::string& in)   {
       break;
     default:
       if ( start ) {
-	if ( !obj_open ) res += '\'';
-	start = false;
-	str_open = true;
+        if ( !obj_open ) res += '\'';
+        start = false;
+        str_open = true;
       }
       ignore_blanks = false;
       res += *c;
@@ -379,7 +379,7 @@ std::string dd4hep::detail::grammar_pre_parse_cont(const std::string& in)   {
       if ( str_open ) { str_open = false; }
       break;
     case ':':
-      if ( str_open ) { res += '\''; str_open = false; }
+      if ( str_open ) { res += '\''; }
       res += *c;
       res += ' ';
       res += '\'';
@@ -410,9 +410,9 @@ std::string dd4hep::detail::grammar_pre_parse_cont(const std::string& in)   {
       break;
     default:
       if ( start ) {
-	res += '\'';
-	start = false;
-	str_open = true;
+        res += '\'';
+        start = false;
+        str_open = true;
       }
       ignore_blanks = false;
       res += *c;

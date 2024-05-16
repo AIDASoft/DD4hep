@@ -37,6 +37,8 @@ namespace dd4hep {
     public:
       /// Initializing constructor
       GlobalDetectorAlignment(DetElement e);
+      /// Initializing constructor
+      GlobalDetectorAlignment(DetElement&& e);
       /// Access debugging flag
       static bool debug();
       /// Set debugging flag

@@ -1021,9 +1021,9 @@ xml_h LCDDConverter::handleField(const std::string& /* name */, OverlayedField f
     if (!fld.isValid()) {
       PluginDebug dbg;
       PluginService::Create<NamedObject*>(type + "_Convert2Detector", &m_detDesc, &field, &fld);
-      throw std::runtime_error("Failed to locate plugin to convert electromagnetic field:"
-                          + std::string(f->GetName()) + " of type " + type + ". "
-                          + dbg.missingFactory(type));
+      except("LCDDConverter", "Failed to locate plugin to convert electromagnetic field:"
+             + std::string(f->GetName()) + " of type " + type + ". "
+             + dbg.missingFactory(type));
     }
     geo.doc_fields.append(field);
   }
@@ -1055,23 +1055,28 @@ void LCDDConverter::handleProperties(Detector::Properties& prp) const {
     const GeoHandler* ptr = this;
     std::string nam = (*i).second;
     const Detector::PropertyValues& vals = prp[nam];
-    std::string type = vals.find("type")->second;
-    std::string tag = type + "_Geant4_action";
-    long result = PluginService::Create<long>(tag, &m_detDesc, ptr, &vals);
-    if (0 == result) {
-      PluginDebug dbg;
-      result = PluginService::Create<long>(tag, &m_detDesc, ptr, &vals);
+    auto iter = vals.find("type");
+    if ( iter != vals.end() )  {
+      std::string type = iter->second;
+      std::string tag = type + "_Geant4_action";
+      long result = PluginService::Create<long>(tag, &m_detDesc, ptr, &vals);
       if (0 == result) {
-        throw std::runtime_error("Failed to locate plugin to interprete files of type"
-                            " \"" + tag + "\" - no factory:" + type + ". " +
-                            dbg.missingFactory(tag));
+        PluginDebug dbg;
+        result = PluginService::Create<long>(tag, &m_detDesc, ptr, &vals);
+        if (0 == result) {
+          except("LCDDConverter", "Failed to locate plugin to interprete files of type"
+                 " \"" + tag + "\" - no factory:" + type + ". " +
+                 dbg.missingFactory(tag));
+        }
       }
+      result = *(long*) result;
+      if (result != 1) {
+        except("LCDDConverter", "Failed to invoke the plugin " + tag + " of type " + type);
+      }
+      printout(INFO,"","+++ Executed Successfully Detector setup module %s.", type.c_str());
+      continue;
     }
-    result = *(long*) result;
-    if (result != 1) {
-      throw std::runtime_error("Failed to invoke the plugin " + tag + " of type " + type);
-    }
-    printout(INFO,"","+++ Executed Successfully Detector setup module %s.",type.c_str());
+    printout(INFO,"","+++ FAILED to execute Detector setup module %s.", nam.c_str());    
   }
 }
 
@@ -1317,15 +1322,18 @@ static long create_visASCII(Detector& description, int /* argc */, char** argv) 
   for (xml_coll_t c(geo.doc_structure, _U(volume)); c; ++c) {
     xml_comp_t vol = c;
     xml_comp_t ref = c.child(_U(visref));
-    xml_comp_t vis = (*vis_map.find(ref.refStr())).second;
-    xml_comp_t col = vis.child(_U(color));
-    os << "vol:" << vol.nameStr() << sep << "vis:" << vis.nameStr() << sep 
-       << "visible:" << vis.visible() << sep << "r:"
-       << col.R() << sep << "g:" << col.G() << sep << "b:" << col.B() << sep 
-       << "alpha:" << col.alpha() << sep << "line_style:"
-       << vis.attr < std::string > (_U(line_style)) << sep 
-       << "drawing_style:" << vis.attr < std::string> (_U(drawing_style)) << sep 
-       << "show_daughters:" << vis.show_daughters() << sep << std::endl;
+    auto iter = vis_map.find(ref.refStr());
+    if ( iter != vis_map.end() )  {
+      xml_comp_t vis = iter->second;
+      xml_comp_t col = vis.child(_U(color));
+      os << "vol:" << vol.nameStr() << sep << "vis:" << vis.nameStr() << sep 
+         << "visible:" << vis.visible() << sep << "r:"
+         << col.R() << sep << "g:" << col.G() << sep << "b:" << col.B() << sep 
+         << "alpha:" << col.alpha() << sep << "line_style:"
+         << vis.attr < std::string > (_U(line_style)) << sep 
+         << "drawing_style:" << vis.attr < std::string> (_U(drawing_style)) << sep 
+         << "show_daughters:" << vis.show_daughters() << sep << std::endl;
+    }
   }
   os.close();
   return 1;

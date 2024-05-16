@@ -65,14 +65,14 @@ public:
     for( auto& i : inputs )   {
       Key  key(i.first);
       if ( combine->use_key(key) )   {
-	keys.emplace_back(key);
-	work.emplace_back(&i.second);
-	items.insert(key.item());
+        keys.emplace_back(key);
+        work.emplace_back(&i.second);
+        items.insert(key.item());
       }
     }
     ::snprintf(format, sizeof(format),
-	       "%s Thread:%%2d+++ %%-32s Out-Mask: $%04X In-Mask: $%%04X Merged %%6ld %%s",
-	       event.id(), combine->m_deposit_mask);
+               "%s Thread:%%2d+++ %%-32s Out-Mask: $%04X In-Mask: $%%04X Merged %%6ld %%s",
+               event.id(), combine->m_deposit_mask);
     format[sizeof(format)-1] = 0;
   }
 
@@ -107,17 +107,17 @@ public:
     DepositVector out(nam, combine->m_deposit_mask, SegmentEntry::UNKNOWN);
     for( std::size_t j = start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
-	if ( DepositMapping* m = std::any_cast<DepositMapping>(work[j]) )
-	  merge_depos(out, *m, thr);
-	else if ( DepositVector* v = std::any_cast<DepositVector>(work[j]) )
-	  merge_depos(out, *v, thr);
-	else
-	  break;
-	used_keys_insert(keys[j]);
+        if ( DepositMapping* m = std::any_cast<DepositMapping>(work[j]) )
+          merge_depos(out, *m, thr);
+        else if ( DepositVector* v = std::any_cast<DepositVector>(work[j]) )
+          merge_depos(out, *v, thr);
+        else
+          break;
+        used_keys_insert(keys[j]);
       }
     }
     key.set_mask(combine->m_deposit_mask);
-    outputs.emplace(key, std::move(out));
+    outputs.emplace(std::move(key), std::move(out));
   }
 
   /// Merge history records: implicitly assume identical item types are mapped sequentially
@@ -127,19 +127,19 @@ public:
     DetectorHistory out(nam, combine->m_deposit_mask);
     for( std::size_t j=start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
-	DetectorHistory* next = std::any_cast<DetectorHistory>(work[j]);
-	if ( next )   {
-	  std::string next_name = next->name;
-	  cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
-	  combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "histories");
-	  used_keys_insert(keys[j]);
-	  cnt_hist += cnt;
-	  cnt_conts++;
-	}
+        DetectorHistory* next = std::any_cast<DetectorHistory>(work[j]);
+        if ( next )   {
+          std::string next_name = next->name;
+          cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
+          combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "histories");
+          used_keys_insert(keys[j]);
+          cnt_hist += cnt;
+          cnt_conts++;
+        }
       }
     }
     key.set_mask(combine->m_deposit_mask);
-    outputs.emplace(key, std::move(out));
+    outputs.emplace(std::move(key), std::move(out));
   }
 
   /// Merge detector rsponse records: implicitly assume identical item types are mapped sequentially
@@ -149,19 +149,19 @@ public:
     DetectorResponse out(nam, combine->m_deposit_mask);
     for( std::size_t j=start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
-	DetectorResponse* next = std::any_cast<DetectorResponse>(work[j]);
-	if ( next )   {
-	  std::string next_name = next->name;
-	  cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
-	  combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "responses"); 
-	  used_keys_insert(keys[j]);
-	  cnt_response += cnt;
-	  cnt_conts++;
-	}
+        DetectorResponse* next = std::any_cast<DetectorResponse>(work[j]);
+        if ( next )   {
+          std::string next_name = next->name;
+          cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
+          combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "responses"); 
+          used_keys_insert(keys[j]);
+          cnt_response += cnt;
+          cnt_conts++;
+        }
       }
     }
     key.set_mask(combine->m_deposit_mask);
-    outputs.emplace(key, std::move(out));
+    outputs.emplace(std::move(key), std::move(out));
   }
 
   /// Merge particle objects: implicitly assume identical item types are mapped sequentially
@@ -171,17 +171,19 @@ public:
     ParticleMapping out(nam, combine->m_deposit_mask);
     for( std::size_t j=start; j < keys.size(); ++j )   {
       if ( keys[j].item() == key.item() )   {
-	ParticleMapping* next = std::any_cast<ParticleMapping>(work[j]);
-	std::string next_name = next->name;
-	cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
-	combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "particles"); 
-	used_keys_insert(keys[j]);
-	cnt_parts += cnt;
-	cnt_conts++;
+        ParticleMapping* next = std::any_cast<ParticleMapping>(work[j]);
+        if ( next )   {
+          std::string next_name = next->name;
+          cnt = (combine->m_erase_combined) ? out.merge(std::move(*next)) : out.insert(*next);
+          combine->info(format, thr, next_name.c_str(), keys[j].mask(), cnt, "particles"); 
+          used_keys_insert(keys[j]);
+          cnt_parts += cnt;
+          cnt_conts++;
+        }
       }
     }
     key.set_mask(combine->m_deposit_mask);
-    outputs.emplace(key, std::move(out));
+    outputs.emplace(std::move(key), std::move(out));
   }
 
   /// Merge single item type
@@ -189,26 +191,26 @@ public:
     const std::string& opt = combine->m_output_name_flag;
     for( std::size_t i=0; i < keys.size(); ++i )   {
       if ( keys[i].item() != itm )
-	continue;
+        continue;
       /// Merge deposit mapping
       if ( DepositMapping* depom = std::any_cast<DepositMapping>(work[i]) )   {
-	if ( combine->m_merge_deposits  ) merge(depom->name+opt, i, thr);
+        if ( combine->m_merge_deposits  ) merge(depom->name+opt, i, thr);
       }
       /// Merge deposit vector
       else if ( DepositVector* depov = std::any_cast<DepositVector>(work[i]) )   {
-	if ( combine->m_merge_deposits  ) merge(depov->name+opt, i, thr);
+        if ( combine->m_merge_deposits  ) merge(depov->name+opt, i, thr);
       }
       /// Merge detector response
       else if ( DetectorResponse* resp = std::any_cast<DetectorResponse>(work[i]) )   {
-	if ( combine->m_merge_response  ) merge_response(resp->name+opt, i, thr);
+        if ( combine->m_merge_response  ) merge_response(resp->name+opt, i, thr);
       }
       /// Merge response history
       else if ( DetectorHistory* hist = std::any_cast<DetectorHistory>(work[i]) )   {
-	if ( combine->m_merge_history   ) merge_hist(hist->name+opt, i, thr);
+        if ( combine->m_merge_history   ) merge_hist(hist->name+opt, i, thr);
       }
       /// Merge particle container
       else if ( ParticleMapping* parts = std::any_cast<ParticleMapping>(work[i]) )   {
-	if ( combine->m_merge_particles ) merge_parts(parts->name+opt, i, thr);
+        if ( combine->m_merge_particles ) merge_parts(parts->name+opt, i, thr);
       }
       break;
     }
@@ -221,8 +223,8 @@ public:
 };
 
 template <> void DigiParallelWorker<DigiContainerCombine,
-				    DigiContainerCombine::work_definition_t,
-				    std::size_t>::execute(void* data) const  {
+                                    DigiContainerCombine::work_definition_t,
+                                    std::size_t>::execute(void* data) const  {
   calldata_t* args = reinterpret_cast<calldata_t*>(data);
   std::size_t cnt = 0;
   for( auto itm : args->items )  {
@@ -301,9 +303,9 @@ bool DigiContainerCombine::use_key(Key key)  const   {
 
 /// Combine selected containers to one single deposit container
 std::size_t DigiContainerCombine::combine_containers(DigiContext& context,
-						     DigiEvent&   event,
-						     DataSegment& inputs,
-						     DataSegment& outputs)  const
+                                                     DigiEvent&   event,
+                                                     DataSegment& inputs,
+                                                     DataSegment& outputs)  const
 {
   work_definition_t def(this, event, inputs, outputs, m_used_keys_lock);
   if ( m_parallel )  {
