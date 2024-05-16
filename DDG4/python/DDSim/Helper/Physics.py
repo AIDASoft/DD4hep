@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class Physics(ConfigHelper):
-  """Configuration for the PhysicsList"""
+  """Configuration for the PhysicsList and Monte Carlo particle selection."""
 
   def __init__(self):
     super(Physics, self).__init__()
@@ -29,6 +29,7 @@ class Physics(ConfigHelper):
     self._alternativeDecayStatuses = set()
     self._userFunctions = []
     self._closeProperties()
+    Physics.__doc__ += "\n\n" + self.setupUserPhysics.__doc__
 
   @property
   def rejectPDGs(self):
@@ -161,7 +162,7 @@ class Physics(ConfigHelper):
     return seq
 
   def setupUserPhysics(self, userFunction):
-    """Add a function to setup physics plugins.
+    """To load arbitrary plugins, add a function to be executed.
 
     The function must take the DDG4.Kernel() object as the only argument.
 
@@ -185,5 +186,7 @@ class Physics(ConfigHelper):
         return None
 
       SIM.physics.setupUserPhysics(setupCerenkov)
+
+    # End of example
     """
     self._userFunctions.append(userFunction)
