@@ -56,9 +56,9 @@ namespace dd4hep {
       bool printSensitives  = false;
 
       /// Property: Check geometrical overlaps for volume placements and G4 imprints 
-      bool       checkOverlaps;
+      bool       checkOverlaps = true;
       /// Property: Output level for debug printing
-      PrintLevel outputLevel;
+      PrintLevel outputLevel = INFO;
 
       /// Initializing Constructor
       Geant4Converter(const Detector& description);

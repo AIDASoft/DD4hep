@@ -26,7 +26,7 @@ using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4OutputAction::Geant4OutputAction(Geant4Context* ctxt, const std::string& nam)
-  : Geant4EventAction(ctxt, nam), m_truth(0)
+  : Geant4EventAction(ctxt, nam)
 {
   InstanceCount::increment(this);
   declareProperty("Output", m_output);

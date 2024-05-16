@@ -25,10 +25,10 @@
 #define DDG4_GEANT4INPUTACTION_H
 
 // Framework include files
-#include "DDG4/Geant4Vertex.h"
-#include "DDG4/Geant4Particle.h"
-#include "DDG4/Geant4GeneratorAction.h"
-#include "Parsers/Parsers.h"
+#include <DDG4/Geant4Vertex.h>
+#include <DDG4/Geant4Particle.h>
+#include <DDG4/Geant4GeneratorAction.h>
+#include <Parsers/Parsers.h>
 
 // C/C++ include files
 #include <memory>
@@ -78,11 +78,11 @@ namespace dd4hep  {
       /// File name to be opened and read
       std::string m_name;
       /// Flag if direct event access is supported. To be explicitly set by subclass constructors
-      bool m_directAccess;
+      bool m_directAccess  { false };
       /// Current event number
-      int  m_currEvent;
+      int  m_currEvent     { 0 };
       /// The input action context
-      Geant4InputAction *m_inputAction;
+      Geant4InputAction *m_inputAction   { nullptr };
 
       /// transform the string parameter value into the type of parameter
       /**

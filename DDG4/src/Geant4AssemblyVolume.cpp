@@ -42,8 +42,8 @@ Geant4AssemblyVolume::~Geant4AssemblyVolume()   {
 
 /// Place logical daughter volume into the assembly
 long Geant4AssemblyVolume::placeVolume(const TGeoNode* n,
-				       G4LogicalVolume* pPlacedVolume,
-				       G4Transform3D& transformation)
+                                       G4LogicalVolume* pPlacedVolume,
+                                       G4Transform3D& transformation)
 {
   size_t id = m_assembly->TotalTriplets();
   m_entries.emplace_back(n);
@@ -54,8 +54,8 @@ long Geant4AssemblyVolume::placeVolume(const TGeoNode* n,
 
 /// Place daughter assembly into the assembly
 long Geant4AssemblyVolume::placeAssembly(const TGeoNode* n,
-					 Geant4AssemblyVolume* pPlacedVolume,
-					 G4Transform3D& transformation)
+                                         Geant4AssemblyVolume* pPlacedVolume,
+                                         G4Transform3D& transformation)
 {
   size_t id = m_assembly->TotalTriplets();
   m_entries.emplace_back(n);

@@ -17,11 +17,11 @@
 #include <DDG4/Defs.h>
 
 // Geant4 include files
-#include "G4Version.hh"
+#include <G4Version.hh>
 
 #if G4VERSION_NUMBER < 1070
 
-#include "G4ThreeVector.hh"
+#include <G4ThreeVector.hh>
 
 class G4FastHit
 {

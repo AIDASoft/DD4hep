@@ -42,7 +42,7 @@ namespace dd4hep {
      */
     class Geant4FastSimHandler  : public Geant4HitHandler  {
     public:
-      const Geant4FastSimSpot* spot;
+      const Geant4FastSimSpot* spot { nullptr };
 
       /// Inhibit default constructor
       Geant4FastSimHandler() = delete;

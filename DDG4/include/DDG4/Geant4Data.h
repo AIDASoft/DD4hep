@@ -50,9 +50,9 @@ namespace dd4hep {
     class SimpleRun {
     public:
       /// Run identifiers
-      int runID;
+      int runID     { -1 };
       /// Number of events in this run
-      int numEvents;
+      int numEvents {  0 };
       /// Default constructor
       SimpleRun();
       /// Default destructor
@@ -71,11 +71,11 @@ namespace dd4hep {
     public:
       typedef std::vector<long> Seeds;
       /// Run identifiers
-      int    runID;
+      int    runID   { -1 };
       /// Event identifier
-      int    eventID;
+      int    eventID { -1 };
       /// Random number generator seeds
-      Seeds  seeds;
+      Seeds  seeds { };
       /// Default constructor
       SimpleEvent();
       /// Default destructor
@@ -269,9 +269,9 @@ namespace dd4hep {
         /// Hit direction
         Direction     momentum;
         /// Length of the track segment contributing to this hit
-        double        length;
+        double        length  { 0e0 };
         /// Energy deposit in the tracker hit
-        double        energyDeposit;
+        double        energyDeposit { 0e0 };
         /// Monte Carlo / Geant4 information
         Contribution  truth;
       public:
@@ -325,11 +325,11 @@ namespace dd4hep {
         typedef Geant4HitData base_t;
 
         /// Hit position
-        Position      position;
+        Position      position      {     };
         /// Hit contributions by individual particles
-        Contributions truth;
+        Contributions truth         {     };
         /// Total energy deposit
-        double        energyDeposit;
+        double        energyDeposit { 0e0 };
       public:
         /// Default constructor (for ROOT)
         Hit();

@@ -35,7 +35,7 @@ using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4GeneratorWrapper::Geant4GeneratorWrapper(Geant4Context* ctxt, const std::string& nam)
-  : Geant4GeneratorAction(ctxt,nam), m_generator(0)
+  : Geant4GeneratorAction(ctxt,nam)
 {
   declareProperty("Uses", m_generatorType);
   declareProperty("Mask", m_mask = 1);

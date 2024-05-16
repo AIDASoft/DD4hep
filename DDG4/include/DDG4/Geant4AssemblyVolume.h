@@ -43,9 +43,9 @@ namespace dd4hep {
     public:
 
       typedef std::vector<const TGeoNode*> Chain;
-      std::vector<const TGeoNode*> m_entries;
+      std::vector<const TGeoNode*>       m_entries;
       std::vector<Geant4AssemblyVolume*> m_places;
-      G4AssemblyVolume*            m_assembly;
+      G4AssemblyVolume*                  m_assembly { nullptr };
 
     public:
       /// Default constructor with initialization

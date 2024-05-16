@@ -14,8 +14,8 @@
 #define DDG4_GEANT4ACTIONPHASE_H
 
 // Framework include files
-#include "DD4hep/Exceptions.h"
-#include "DDG4/Geant4Action.h"
+#include <DD4hep/Exceptions.h>
+#include <DDG4/Geant4Action.h>
 
 // C/C++ include files
 #include <vector>
@@ -70,9 +70,9 @@ namespace dd4hep {
       typedef std::vector<std::pair<Geant4Action*, Callback> > Members;
     protected:
       /// Phase members (actions) being called for a particular phase
-      Members m_members;
+      Members m_members  { };
       /// Type information of the argument type of the callback
-      const std::type_info* m_argTypes[3];
+      const std::type_info* m_argTypes[3] = { nullptr, nullptr, nullptr };
 
     public:
       /// Standard constructor

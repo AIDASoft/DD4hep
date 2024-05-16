@@ -14,7 +14,7 @@
 #define DDG4_GEANT4OUTPUTACTION_H
 
 // Framework include files
-#include "DDG4/Geant4EventAction.h"
+#include <DDG4/Geant4EventAction.h>
 
 // Forward declarations
 class G4Run;
@@ -53,11 +53,11 @@ namespace dd4hep {
       };
 
       /// Property: "Output" output destination
-      std::string m_output;
+      std::string        m_output  {  };
       /// Property: "HandleErrorsAsFatal" Handle errors as fatal and rethrow eventual exceptions
-      bool        m_errorFatal;
+      bool               m_errorFatal { true };
       /// Reference to MC truth object
-      Geant4ParticleMap* m_truth;
+      Geant4ParticleMap* m_truth   { nullptr };
     public:
       /// Inhibit default constructor
       Geant4OutputAction() = delete;

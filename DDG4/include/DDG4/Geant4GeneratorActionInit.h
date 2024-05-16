@@ -15,7 +15,7 @@
 #define DDG4_GEANT4GENERATORACTIONINIT_H
 
 // Framework include files
-#include "DDG4/Geant4GeneratorAction.h"
+#include <DDG4/Geant4GeneratorAction.h>
 
 // Forward declarations
 class G4Event;
@@ -54,11 +54,11 @@ namespace dd4hep {
     class Geant4GeneratorActionInit : public Geant4GeneratorAction    {
     protected:
       /// Current run identifier
-      int m_run;
+      int m_run      {  0 };
       /// Counter for total number of events
-      int m_evtTotal;
+      int m_evtTotal {  0 };
       /// Counter for total number of events in current run
-      int m_evtRun;
+      int m_evtRun   {  0 };
     public:
       /// Standard constructor
       Geant4GeneratorActionInit(Geant4Context* context, const std::string& nam);

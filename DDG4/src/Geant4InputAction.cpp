@@ -29,8 +29,7 @@ using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
 
 
 /// Initializing constructor
-Geant4EventReader::Geant4EventReader(const std::string& nam)
-  : m_name(nam), m_directAccess(false), m_currEvent(0), m_inputAction(0)
+Geant4EventReader::Geant4EventReader(const std::string& nam) : m_name(nam)
 {
 }
 

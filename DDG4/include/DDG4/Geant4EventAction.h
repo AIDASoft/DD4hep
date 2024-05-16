@@ -15,7 +15,7 @@
 #define DDG4_GEANT4EVENTACTION_H
 
 // Framework include files
-#include "DDG4/Geant4Action.h"
+#include <DDG4/Geant4Action.h>
 
 // Forward declarations
 class G4Event;
@@ -85,7 +85,7 @@ namespace dd4hep {
     class Geant4SharedEventAction : public Geant4EventAction {
     protected:
       /// Reference to the shared action
-      Geant4EventAction* m_action = 0;
+      Geant4EventAction* m_action { nullptr };
 
     protected:
       /// Define standard assignments and constructors
