@@ -127,7 +127,7 @@ namespace dd4hep {
         printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first.c_str());
         frame.putParameter(p.first, p.second);
       }
-#if podio_VERSION_MAJOR > 0 || podio_VERSION_MINOR > 16 || podio_VERSION_PATCH > 2
+#if PODIO_BUILD_VERSION > PODIO_VERSION(0, 16, 2)
       // This functionality is only present in podio > 0.16.2
       for (auto const& p: this->dblParameters()) {
         printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first.c_str());
@@ -149,7 +149,7 @@ namespace dd4hep {
         printout(DEBUG, "Geant4OutputEDM4hep", "Saving run parameter: %s", p.first.c_str());
         frame.putParameter(p.first, p.second);
       }
-#if podio_VERSION_MAJOR > 0 || podio_VERSION_MINOR > 16 || podio_VERSION_PATCH > 2
+#if PODIO_BUILD_VERSION > PODIO_VERSION(0, 16, 2)
       // This functionality is only present in podio > 0.16.2
       for (auto const& p: this->dblParameters()) {
         printout(DEBUG, "Geant4OutputEDM4hep", "Saving run parameter: %s", p.first.c_str());
@@ -442,7 +442,7 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
     runNumber = parameters->runNumber() + runNumberOffset;
     eventNumber = parameters->eventNumber() + eventNumberOffset;
     parameters->extractParameters(m_frame);
-#if podio_VERSION_MAJOR > 0 || podio_VERSION_MINOR > 16 || podio_VERSION_PATCH > 2
+#if PODIO_BUILD_VERSION > PODIO_VERSION(0, 16, 2)
     // This functionality is only present in podio > 0.16.2
     eventWeight = m_frame.getParameter<double>("EventWeights");
 #endif
