@@ -94,7 +94,7 @@ Geant4Kernel::Geant4Kernel(Detector& description_ref)
   declareProperty("OutputLevel",          m_outputLevel = DEBUG);
   declareProperty("NumEvents",            m_numEvent = 10);
   declareProperty("OutputLevels",         m_clientLevels);
-  declareProperty("NumberOfThreads",      m_numThreads);
+  declareProperty("NumberOfThreads",      m_numThreads = 0);
   declareProperty("HaveScoringManager",   m_haveScoringMgr = false);
   declareProperty("SensitiveTypes",       m_sensitiveDetectorTypes);
   declareProperty("RunManagerType",       m_runManagerType = "G4RunManager");

@@ -74,7 +74,7 @@ template <> std::string DigiStoreDump::data_header(Key key, const std::string& t
 }
 
 template <> std::string DigiStoreDump::data_header(Key key, const std::string& tag, const std::any& data)  const  {
-  return data_header(key, tag, data.type());
+  return data_header(std::move(key), tag, data.type());
 }
 
 template <> std::vector<std::string>

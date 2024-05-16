@@ -61,17 +61,17 @@ namespace dd4hep {
 
     protected:
       /// Reference to the run manager
-      G4RunManager*      m_runManager;
+      G4RunManager*      m_runManager  { nullptr };
       /// Top level control directory
-      G4UIdirectory*     m_control;
+      G4UIdirectory*     m_control     { nullptr };
       /// Reference to Geant4 track manager
-      G4TrackingManager* m_trackMgr;
+      G4TrackingManager* m_trackMgr    { nullptr };
       /// Detector description object
-      Detector*          m_detDesc;
+      Detector*          m_detDesc     { nullptr };
       /// Property pool
-      PropertyManager    m_properties;
+      PropertyManager    m_properties          { };
       /// Reference to the user framework
-      UserFramework      m_userFramework;
+      UserFramework      m_userFramework       { };
 
       /// Action phases
       Phases        m_phases;
@@ -99,27 +99,27 @@ namespace dd4hep {
       int         m_outputLevel;
 
       /// Master property: Number of execution threads in multi threaded mode.
-      int         m_numThreads;
+      int         m_numThreads = 0;
       /// Master property: Instantiate the Geant4 scoring manager object
-      int         m_haveScoringMgr;
+      int         m_haveScoringMgr = false;
       
       /// Registered action callbacks on configure
-      UserCallbacks m_actionConfigure;
+      UserCallbacks m_actionConfigure  { };
       /// Registered action callbacks on initialize
-      UserCallbacks m_actionInitialize;
+      UserCallbacks m_actionInitialize { };
       /// Registered action callbacks on terminate
-      UserCallbacks m_actionTerminate;
+      UserCallbacks m_actionTerminate  { };
 
 
       /// Flag: Master instance (id<0) or worker (id >= 0)
-      unsigned long      m_id, m_ident;
+      unsigned long      m_id = 0, m_ident = 0;
       /// Access to geometry world
       G4VPhysicalVolume* m_world  = 0;
 
       /// Parent reference
-      Geant4Kernel*      m_master;
-      Geant4Kernel*      m_shared;
-      Geant4Context*     m_threadContext;
+      Geant4Kernel*      m_master         { nullptr };
+      Geant4Kernel*      m_shared         { nullptr };
+      Geant4Context*     m_threadContext  { nullptr };
 
       bool isMaster() const  { return this == m_master; }
       bool isWorker() const  { return this != m_master; }

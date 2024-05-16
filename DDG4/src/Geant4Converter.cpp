@@ -1263,19 +1263,24 @@ void Geant4Converter::handleProperties(Detector::Properties& prp) const {
   for( const auto& p : processors ) {
     const GeoHandler* hdlr = this;
     const Detector::PropertyValues& vals = prp[p.second];
-    std::string type = vals.find("type")->second;
-    std::string tag  = type + "_Geant4_action";
-    Detector* det = const_cast<Detector*>(&m_detDesc);
-    long      res = PluginService::Create<long>(tag, det, hdlr, &vals);
-    if ( 0 == res ) {
-      throw std::runtime_error("Failed to locate plugin to interprete files of type"
-                               " \"" + tag + "\" - no factory:" + type);
+    auto iter = vals.find("type");
+    if ( iter != vals.end() )  {
+      std::string type = iter->second;
+      std::string tag  = type + "_Geant4_action";
+      Detector* det = const_cast<Detector*>(&m_detDesc);
+      long      res = PluginService::Create<long>(tag, det, hdlr, &vals);
+      if ( 0 == res ) {
+        throw std::runtime_error("Failed to locate plugin to interprete files of type"
+                                 " \"" + tag + "\" - no factory:" + type);
+      }
+      res = *(long*)res;
+      if ( res != 1 ) {
+        throw std::runtime_error("Failed to invoke the plugin " + tag + " of type " + type);
+      }
+      printout(outputLevel, "Geant4Converter", "+++++ Executed Successfully Geant4 setup module *%s*.", type.c_str());
+      continue;
     }
-    res = *(long*)res;
-    if ( res != 1 ) {
-      throw std::runtime_error("Failed to invoke the plugin " + tag + " of type " + type);
-    }
-    printout(outputLevel, "Geant4Converter", "+++++ Executed Successfully Geant4 setup module *%s*.", type.c_str());
+    printout(outputLevel, "Geant4Converter", "+++++ FAILED to execute Geant4 setup module *%s*.", p.second.c_str());    
   }
 }
 
@@ -1599,11 +1604,13 @@ void Geant4Converter::printSensitive(SensitiveDetector sens_det, const std::set<
 
   for (const auto i : volset )  {
     std::map<Volume, G4LogicalVolume*>::iterator v = info.g4Volumes.find(i);
-    G4LogicalVolume* vol = (*v).second;
-    str.str("");
-    str << "                                   | " << "Volume:" << std::setw(24) << std::left << vol->GetName() << " "
-        << vol->GetNoDaughters() << " daughters.";
-    printout(INFO, "Geant4Converter", str.str().c_str());
+    if ( v != info.g4Volumes.end() )   {
+      G4LogicalVolume* vol = (*v).second;
+      str.str("");
+      str << "                                   | " << "Volume:" << std::setw(24) << std::left << vol->GetName() << " "
+          << vol->GetNoDaughters() << " daughters.";
+      printout(INFO, "Geant4Converter", str.str().c_str());
+    }
   }
 }
 

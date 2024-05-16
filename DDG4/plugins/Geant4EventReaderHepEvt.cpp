@@ -317,7 +317,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
     //
     //  As with the parents, look for range, 2 discreet or 1 discreet
     //  daughter.
-    if( (fd > -1) && (ld > -1) )  {
+    if( (fd > -1) && (fd < int(particles.size())) && (ld > -1) && (ld < int(particles.size())) )  {
       if(ld >= fd)   {
         for(int id=fd;id<ld+1;id++)   {
           //
@@ -339,11 +339,11 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
         theParticle.addDaughter(particles[ld]);
       }
     }
-    else if(fd > -1)      {
+    else if(fd > -1 && fd < int(particles.size()))  {
       ParticleHandler part(particles[fd]);
       if ( !part.findParent(mcp) ) part.addParent(mcp);
     }
-    else if(ld > -1)      {
+    else if(ld > -1 && ld < int(particles.size()))  {
       ParticleHandler part(particles[ld]);
       if ( !part.findParent(mcp) ) part.addParent(mcp);
     }
@@ -358,7 +358,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
   //    based on the generator status, as this varies widely with different
   //    generators.
 
-  for(std::size_t i=0; i<particles.size(); ++i )   {
+  for( std::size_t i=0; i < particles.size(); ++i )   {
     Geant4ParticleHandle p(particles[i]);
     if ( p->parents.size() == 0 )  {
       Geant4Vertex* vtx = new Geant4Vertex ;
