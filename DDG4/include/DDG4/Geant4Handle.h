@@ -15,8 +15,8 @@
 #define DDG4_GEANT4HANDLE_H
 
 /// Framework include files
-#include "DD4hep/ComponentProperties.h"
-#include "DD4hep/Detector.h"
+#include <DD4hep/ComponentProperties.h>
+#include <DD4hep/Detector.h>
 
 /// C/C++ include files
 #include <string>

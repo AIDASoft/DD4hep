@@ -14,7 +14,7 @@
 #define DDG4_GEANT4KERNEL_H
 
 // Framework include files
-#include "DDG4/Geant4ActionContainer.h"
+#include <DDG4/Geant4ActionContainer.h>
 
 // C/C++ include files
 #include <map>
@@ -74,19 +74,19 @@ namespace dd4hep {
       UserFramework      m_userFramework       { };
 
       /// Action phases
-      Phases        m_phases;
+      Phases        m_phases                   { };
       /// Worker threads
-      Workers       m_workers;
+      Workers       m_workers                  { };
       /// Globally registered actions
-      GlobalActions m_globalActions;
+      GlobalActions m_globalActions            { };
       /// Globally registered filters of sensitive detectors
-      GlobalActions m_globalFilters;
+      GlobalActions m_globalFilters            { };
       /// Property: Client output levels
-      ClientOutputLevels m_clientLevels;
+      ClientOutputLevels m_clientLevels        { };
       /// Property: Name of the G4UI command tree
-      std::string m_controlName;
+      std::string   m_controlName              { };
       /// Property: Name of the UI action. Must be member of the global actions
-      std::string m_uiName;
+      std::string   m_uiName                   { };
       /// Property: Name of the G4 run manager factory to be used. Default: Geant4RunManager
       std::string m_runManagerType;
       /// Property: Name of the default factory to create G4VSensitiveDetector instances
@@ -96,7 +96,7 @@ namespace dd4hep {
       /// Property: Number of events to be executed in batch mode
       long        m_numEvent = 10;
       /// Property: Output level
-      int         m_outputLevel;
+      int         m_outputLevel = 0;
 
       /// Master property: Number of execution threads in multi threaded mode.
       int         m_numThreads = 0;

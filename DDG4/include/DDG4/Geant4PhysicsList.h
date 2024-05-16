@@ -15,7 +15,7 @@
 #define DDG4_GEANT4PHYSICSLIST_H
 
 // Framework include files
-#include "DDG4/Geant4Action.h"
+#include <DDG4/Geant4Action.h>
 
 // C/C++ include files
 #include <map>
@@ -237,9 +237,9 @@ namespace dd4hep {
       virtual void constructDecays(G4VUserPhysicsList* physics);
     public:
       /// Flag if particle transportation is to be added
-      bool m_transportation;
+      bool m_transportation  { false };
       /// Flag if particle decays are to be added
-      bool m_decays;
+      bool m_decays          { false };
       /// Property: Store name of basic predefined Geant4 physics list
       std::string m_extends;
       /// global range cut for secondary productions

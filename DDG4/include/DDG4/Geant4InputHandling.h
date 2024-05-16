@@ -15,7 +15,7 @@
 #define DDG4_GEANT4INPUTHANDLING_H
 
 // Framework include files
-#include "DDG4/Geant4Primary.h"
+#include <DDG4/Geant4Primary.h>
 
 // Forward declarations
 class G4Event;

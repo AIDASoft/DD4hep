@@ -52,8 +52,7 @@ void Geant4Action::ContextUpdate::operator()(Geant4Action* action) const  {
 #endif
 /// Standard constructor
 Geant4Action::Geant4Action(Geant4Context* ctxt, const std::string& nam)
-  : m_context(ctxt), m_control(0), m_outputLevel(INFO), m_needsControl(false), m_name(nam), 
-    m_refCount(1) 
+  : m_context(ctxt), m_outputLevel(INFO), m_name(nam)
 {
   InstanceCount::increment(this);
   m_outputLevel = ctxt ? ctxt->kernel().getOutputLevel(nam) : (printLevel()-1);

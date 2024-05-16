@@ -27,8 +27,7 @@
 using namespace dd4hep::sim;
 
 /// Default constructor
-SimpleRun::SimpleRun()
-  : runID(-1), numEvents(0) {
+SimpleRun::SimpleRun()  {
   InstanceCount::increment(this);
 }
 
@@ -38,8 +37,7 @@ SimpleRun::~SimpleRun() {
 }
 
 /// Default constructor
-SimpleEvent::SimpleEvent()
-  : runID(-1), eventID(-1) {
+SimpleEvent::SimpleEvent()  {
   InstanceCount::increment(this);
 }
 
@@ -103,9 +101,7 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const Geant4FastS
 }
 
 /// Default constructor
-Geant4Tracker::Hit::Hit()
-: Geant4HitData(), position(), momentum(), length(0.0), energyDeposit(0.0), truth()
-{
+Geant4Tracker::Hit::Hit()  {
   InstanceCount::increment(this);
 }
 
@@ -199,14 +195,12 @@ Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const Geant4FastSimSpot* spot
 }
 
 /// Default constructor (for ROOT)
-Geant4Calorimeter::Hit::Hit()
-: Geant4HitData(), position(), truth(), energyDeposit(0) {
+Geant4Calorimeter::Hit::Hit()  {
   InstanceCount::increment(this);
 }
 
 /// Standard constructor
-Geant4Calorimeter::Hit::Hit(const Position& pos)
-: Geant4HitData(), position(pos), truth(), energyDeposit(0) {
+Geant4Calorimeter::Hit::Hit(const Position& pos) : position(pos)  {
   InstanceCount::increment(this);
 }
 

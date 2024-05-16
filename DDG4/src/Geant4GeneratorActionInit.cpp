@@ -12,20 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4Kernel.h"
-#include "DDG4/Geant4RunAction.h"
-#include "DDG4/Geant4GeneratorActionInit.h"
-#include "DDG4/Geant4InputHandling.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4Kernel.h>
+#include <DDG4/Geant4RunAction.h>
+#include <DDG4/Geant4GeneratorActionInit.h>
+#include <DDG4/Geant4InputHandling.h>
 
-#include "G4Run.hh"
+#include <G4Run.hh>
 
 using namespace dd4hep::sim;
 
 /// Standard constructor
 Geant4GeneratorActionInit::Geant4GeneratorActionInit(Geant4Context* ctxt, const std::string& nam)
-  : Geant4GeneratorAction(ctxt,nam), m_run(0), m_evtTotal(0), m_evtRun(0)
+  : Geant4GeneratorAction(ctxt,nam)
 {
   InstanceCount::increment(this);
   context()->kernel().runAction().callAtEnd(this,&Geant4GeneratorActionInit::end);

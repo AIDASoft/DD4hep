@@ -40,7 +40,7 @@ namespace dd4hep {
       G4VPhysicalVolume* Construct();
     private:
       std::string m_fileName;
-      G4VPhysicalVolume* m_world;
+      G4VPhysicalVolume* m_world { nullptr };
     };
   }
 }

@@ -24,7 +24,7 @@
 #endif
 
 dd4hep::sim::Geant4GDMLDetector::Geant4GDMLDetector(const std::string& gdmlFile)
-  : m_fileName(gdmlFile), m_world(0) {
+  : m_fileName(gdmlFile) {
 }
 
 G4VPhysicalVolume* dd4hep::sim::Geant4GDMLDetector::Construct() {

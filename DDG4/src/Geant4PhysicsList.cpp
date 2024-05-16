@@ -313,7 +313,8 @@ void Geant4PhysicsList::enable(G4VUserPhysicsList* /* physics */)  {
 
 /// Standard constructor
 Geant4PhysicsListActionSequence::Geant4PhysicsListActionSequence(Geant4Context* ctxt, const std::string& nam)
-  : Geant4Action(ctxt, nam), m_transportation(false), m_decays(false), m_rangecut(0.7*CLHEP::mm)  {
+  : Geant4Action(ctxt, nam), m_rangecut(0.7*CLHEP::mm)
+{
   declareProperty("transportation", m_transportation);
   declareProperty("extends",  m_extends);
   declareProperty("decays",   m_decays);

@@ -294,10 +294,9 @@ Geant4Converter::Geant4Converter(const Detector& description_ref)
 
 /// Initializing Constructor
 Geant4Converter::Geant4Converter(const Detector& description_ref, PrintLevel level)
-  : Geant4Mapping(description_ref), checkOverlaps(true) {
+  : Geant4Mapping(description_ref), outputLevel(level)  {
   this->Geant4Mapping::init();
   m_propagateRegions = true;
-  outputLevel = level;
 }
 
 /// Standard destructor

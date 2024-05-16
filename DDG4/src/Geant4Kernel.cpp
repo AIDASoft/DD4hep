@@ -85,12 +85,11 @@ Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& na
 
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(Detector& description_ref)
-  : Geant4ActionContainer(), m_runManager(0), m_control(0), m_trackMgr(0), m_detDesc(&description_ref), 
-    m_numThreads(0), m_id(Geant4Kernel::thread_self()), m_master(this), m_shared(0),
-    m_threadContext(0), phase(this)
+  : Geant4ActionContainer(), m_detDesc(&description_ref), 
+    m_id(Geant4Kernel::thread_self()), m_master(this), phase(this)
 {
   m_ident = -1;
-  declareProperty("UI", m_uiName);
+  declareProperty("UI",                   m_uiName);
   declareProperty("OutputLevel",          m_outputLevel = DEBUG);
   declareProperty("NumEvents",            m_numEvent = 10);
   declareProperty("OutputLevels",         m_clientLevels);
@@ -109,11 +108,10 @@ Geant4Kernel::Geant4Kernel(Detector& description_ref)
 
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(Geant4Kernel* krnl, unsigned long ident)
-  : Geant4ActionContainer(), m_runManager(0), m_control(0), m_trackMgr(0), m_detDesc(0),
-    m_numThreads(1), m_id(ident), m_master(krnl), m_shared(0),
-    m_threadContext(0), phase(this)
+  : Geant4ActionContainer(), m_id(ident), m_master(krnl), phase(this)
 {
   char text[64];
+  m_numThreads     = 1; // Slave instance for one single thread
   m_detDesc        = m_master->m_detDesc;
   m_world          = m_master->m_world;
   m_ident          = m_master->m_workers.size();

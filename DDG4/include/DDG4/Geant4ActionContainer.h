@@ -14,9 +14,9 @@
 #define DDG4_GEANT4ACTIONCONTAINER_H
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DDG4/Geant4Primitives.h"
-#include "DDG4/Geant4Action.h"
+#include <DD4hep/Printout.h>
+#include <DDG4/Geant4Action.h>
+#include <DDG4/Geant4Primitives.h>
 
 // C/C++ include files
 #include <map>
@@ -61,29 +61,29 @@ namespace dd4hep {
     protected:
 
       /// Geant4 worker context (thread specific)
-      Geant4Context*                      m_context;
+      Geant4Context*                      m_context             { nullptr };
 
       /// Reference to the Geant4 primary generator action
-      Geant4GeneratorActionSequence*      m_generatorAction;
+      Geant4GeneratorActionSequence*      m_generatorAction     { nullptr };
       /// Reference to the Geant4 run action
-      Geant4RunActionSequence*            m_runAction;
+      Geant4RunActionSequence*            m_runAction           { nullptr };
       /// Reference to the Geant4 event action
-      Geant4EventActionSequence*          m_eventAction;
+      Geant4EventActionSequence*          m_eventAction         { nullptr };
       /// Reference to the Geant4 track action
-      Geant4TrackingActionSequence*       m_trackingAction;
+      Geant4TrackingActionSequence*       m_trackingAction      { nullptr };
       /// Reference to the Geant4 step action
-      Geant4SteppingActionSequence*       m_steppingAction;
+      Geant4SteppingActionSequence*       m_steppingAction      { nullptr };
       /// Reference to the Geant4 stacking action
-      Geant4StackingActionSequence*       m_stackingAction;
+      Geant4StackingActionSequence*       m_stackingAction      { nullptr };
       /// Reference to the Geant4 detector construction sequence
-      Geant4DetectorConstructionSequence* m_constructionAction;
+      Geant4DetectorConstructionSequence* m_constructionAction  { nullptr };
 
       /// Reference to the Geant4 sensitive action sequences
-      Geant4SensDetSequences*             m_sensDetActions;
+      Geant4SensDetSequences*             m_sensDetActions      { nullptr };
       /// Reference to the Geant4 physics list
-      Geant4PhysicsListActionSequence*    m_physicsList;
+      Geant4PhysicsListActionSequence*    m_physicsList         { nullptr };
       /// Reference to the user initialization object
-      Geant4UserInitializationSequence*   m_userInit;
+      Geant4UserInitializationSequence*   m_userInit            { nullptr };
 
       /// Helper to register an action sequence
       template <typename C> bool registerSequence(C*& seq, const std::string& name);
