@@ -444,7 +444,11 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
     parameters->extractParameters(m_frame);
 #if PODIO_BUILD_VERSION > PODIO_VERSION(0, 16, 2)
     // This functionality is only present in podio > 0.16.2
+#if PODIO_BUILD_VERSION > PODIO_VERSION(0, 99, 0)
+    eventWeight = m_frame.getParameter<double>("EventWeights").value_or(0.0);
+#else
     eventWeight = m_frame.getParameter<double>("EventWeights");
+#endif
 #endif
   } else { // ... or from DD4hep framework
     runNumber = m_runNo + runNumberOffset;
