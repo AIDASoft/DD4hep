@@ -99,10 +99,10 @@ dd4hep::Solid dd4hep::xml::createShape(Detector& description,
 /// Create a volume using the plugin mechanism from the attributes of the XML element
 dd4hep::Volume dd4hep::xml::createStdVolume(Detector& description, xml::Element element)    {
   Volume      vol;
-  int         dbg = 1;
   xml_dim_t   elt(element);
   std::string typ, tag = elt.tag();
-  PrintLevel  lvl   = dbg ? ALWAYS : DEBUG;
+  PrintLevel  lvl   = ALWAYS;
+  //PrintLevel  lvl   = DEBUG;
 
   printout(lvl, "xml::createStdVolume", "++ Processing tag: %-12s", tag.c_str());
   if ( elt.hasAttr(_U(material)) )   {

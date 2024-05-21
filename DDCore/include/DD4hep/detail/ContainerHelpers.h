@@ -14,7 +14,7 @@
 #define DD4HEP_DETAIL_CONTAINERHELPERS_H
 
 // Framework include files
-#include "DD4hep/Primitives.h"
+#include <DD4hep/Primitives.h>
 
 // C/C++ include files
 #include <map>

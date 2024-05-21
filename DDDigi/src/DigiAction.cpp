@@ -46,8 +46,9 @@ DigiAction::DigiAction(const DigiKernel& krnl, const std::string& nam)
 
 /// Default destructor
 DigiAction::~DigiAction() {
-  for(auto* ptr : m_opt_properties)
-    ::operator delete(ptr);
+  for( auto& ptr : m_extensions )
+    ptr.second->destruct();
+  m_extensions.clear();
   m_opt_properties.clear();
   InstanceCount::decrement(this);
 }
@@ -114,6 +115,21 @@ dd4hep::Property& DigiAction::property(const std::string& nam)   {
 /// Access single property
 const dd4hep::Property& DigiAction::property(const std::string& nam)   const  {
   return properties()[nam];
+}
+
+/// Add an extension object to the detector element
+uint64_t DigiAction::addExtension(uint64_t key, std::unique_ptr<ExtensionEntry>&& e)  {
+  if ( m_extensions.emplace(key, std::move(e)).second )
+    return key;
+  return 0UL;
+}
+
+/// Access an existing extension object from the detector element
+void* DigiAction::extension(uint64_t key)  {
+  auto iter = m_extensions.find(key);
+  if ( iter != m_extensions.end() )
+    return iter->second.get();
+  return nullptr;
 }
 
 /// Support of debug messages.
@@ -227,21 +243,22 @@ namespace dd4hep {
     int add_action_property(DigiAction* action, const std::string& name, VAL value)   {
       VAL* new_val = new VAL(value);
       action->addProperty(name, *(new_val));
+      action->addExtension(new_val);
       printout(INFO, "addProperty", "+++ Added property %s of type %s",
 	       name.c_str(), typeName(typeid(VAL)).c_str());
       return 1;
     }
 
-#define ADD_SINGLE_PROPERTY(X)						\
+#define ADD_SINGLE_PROPERTY(X)                                          \
     template int add_action_property<X>(DigiAction* action, const std::string& name, X value);
 
-#define ADD_MAPPED_PROPERTY(K,X)					\
+#define ADD_MAPPED_PROPERTY(K,X)                                        \
     template int add_action_property<std::map<std::string,X> >(DigiAction* action, const std::string& name, std::map<K,X> value);
 
-#define ADD_PROPERTY(X) \
-    ADD_SINGLE_PROPERTY(X)						\
-    ADD_SINGLE_PROPERTY(std::set<X>)					\
-    ADD_SINGLE_PROPERTY(std::list<X>)					\
+#define ADD_PROPERTY(X)                         \
+    ADD_SINGLE_PROPERTY(X)                      \
+    ADD_SINGLE_PROPERTY(std::set<X>)            \
+    ADD_SINGLE_PROPERTY(std::list<X>)           \
     ADD_SINGLE_PROPERTY(std::vector<X>)					\
     ADD_MAPPED_PROPERTY(std::string,X)
 

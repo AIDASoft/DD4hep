@@ -129,8 +129,10 @@ static dd4hep::Handle<TObject> create_CAD_Assembly(dd4hep::Detector& dsc, xml_h 
            "understandable tessellated volumes.", fname.c_str());
   }
   dd4hep::Assembly assembly("assembly");
-  for(std::size_t i=0; i < volumes.size(); ++i)
-    assembly.placeVolume(volumes[i].release());
+  for(std::size_t i=0; i < volumes.size(); ++i)  {
+    dd4hep::Volume vol(volumes[i].release());
+    assembly.placeVolume(vol);
+  }
 
   if ( elt.hasAttr(_U(name)) ) assembly->SetName(elt.attr<std::string>(_U(name)).c_str());
   return assembly;

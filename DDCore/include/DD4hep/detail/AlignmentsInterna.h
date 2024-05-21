@@ -22,9 +22,9 @@
 #define DD4HEP_DETAIL_ALIGNMENTSINTERNA_H
 
 // Framework include files
-#include "DD4hep/IOV.h"
-#include "DD4hep/Alignments.h"
-#include "DD4hep/detail/ConditionsInterna.h"
+#include <DD4hep/IOV.h>
+#include <DD4hep/Alignments.h>
+#include <DD4hep/detail/ConditionsInterna.h>
 
 // C/C++ include files
 #include <map>

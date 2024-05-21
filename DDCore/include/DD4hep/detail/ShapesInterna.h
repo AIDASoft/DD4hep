@@ -14,7 +14,7 @@
 #define DD4HEP_DETAIL_SHAPESINTERNA_H
 
 // Framework include files
-#include "DD4hep/Shapes.h"
+#include <DD4hep/Shapes.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

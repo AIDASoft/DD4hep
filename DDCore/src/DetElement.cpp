@@ -18,8 +18,8 @@
 #include <DD4hep/AlignmentTools.h>
 #include <DD4hep/DetectorTools.h>
 #include <DD4hep/Printout.h>
-#include <DD4hep/World.h>
 #include <DD4hep/Detector.h>
+#include <DD4hep/World.h>
 
 using namespace dd4hep;
     
@@ -104,6 +104,7 @@ DetElement& DetElement::setType(const std::string& typ) {
   return *this;
 }
 
+/// Access the type of the sensitive detector
 unsigned int DetElement::typeFlag() const {
   return m_element ? m_element->typeFlag :  0 ;
 }

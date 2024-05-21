@@ -22,10 +22,10 @@
 #define DD4HEP_DETAIL_CONDITIONSINTERNA_H
 
 // Framework include files
-#include "DD4hep/DetElement.h"
-#include "DD4hep/Conditions.h"
-#include "DD4hep/Grammar.h"
-#include "DD4hep/NamedObject.h"
+#include <DD4hep/DetElement.h>
+#include <DD4hep/Conditions.h>
+#include <DD4hep/Grammar.h>
+#include <DD4hep/NamedObject.h>
 
 // C/C++ include files
 #include <map>
