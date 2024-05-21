@@ -26,10 +26,10 @@
 #define Reflex_CollectionProxy 1
 #endif
 
-#include "DD4hep/Printout.h"
-#include "Reflex/PluginService.h"
-#include "Reflex/Reflex.h"
-#include "Reflex/Builder/ReflexBuilder.h"
+#include <DD4hep/Printout.h>
+#include <Reflex/PluginService.h>
+#include <Reflex/Reflex.h>
+#include <Reflex/Builder/ReflexBuilder.h>
 
 /// The dd4hep namespace declaration
 namespace dd4hep  {

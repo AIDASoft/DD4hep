@@ -53,6 +53,7 @@ namespace dd4hep {
               m->remove(iter);
               iter = (last_cell != ~0x0ULL) ? m->data.find(last_cell) : m->begin();
               if ( iter == m->end() ) iter = m->begin();
+              if ( iter == m->end() ) break;
               continue;
             }
             last_cell = iter->first;

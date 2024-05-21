@@ -14,11 +14,11 @@
 #define DD4HEP_DETAIL_OBJECTSINTERNA_H
 
 // Framework include files
-#include "DD4hep/Volumes.h"
-#include "DD4hep/NamedObject.h"
-#include "DD4hep/IDDescriptor.h"
-#include "DD4hep/Segmentations.h"
-#include "DD4hep/BitFieldCoder.h"
+#include <DD4hep/Volumes.h>
+#include <DD4hep/NamedObject.h>
+#include <DD4hep/IDDescriptor.h>
+#include <DD4hep/Segmentations.h>
+#include <DD4hep/BitFieldCoder.h>
 
 // C/C++ include files
 #include <set>

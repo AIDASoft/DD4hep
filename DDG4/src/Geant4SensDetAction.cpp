@@ -278,11 +278,10 @@ long long int Geant4Sensitive::cellID(const G4Step* step) {
 	    local.x(), local.y(), local.z(), global.x(), global.y(), global.z());
       error("....... TGeo-local: (%f, %f, %f) TGeo-global: (%f, %f, %f)",
 	    loc.x(), loc.y(), loc.z(), glob.x(), glob.y(), glob.z());
-      if ( h.pre )
-        error("....... Pre-step:  %s  SD: %s", h.volName(h.pre), h.sdName(h.pre).c_str());
+      error("....... Pre-step:  %s  SD: %s", h.volName(h.pre), h.sdName(h.pre).c_str());
       if ( h.post )
-	error("....... Post-step: %s  SD: %s", h.volName(h.post), h.sdName(h.post).c_str());
-      std::rethrow_exception(eptr);
+        error("....... Post-step: %s  SD: %s", h.volName(h.post), h.sdName(h.post).c_str());
+      std::rethrow_exception(std::move(eptr));
     }
   }
   return volID;

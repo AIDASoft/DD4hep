@@ -14,9 +14,9 @@
 #define DD4HEP_DETAIL_SEGMENTATIONSINTERNA_H
 
 // Framework include files
-#include "DD4hep/Handle.h"
-#include "DD4hep/Objects.h"
-#include "DD4hep/BitFieldCoder.h"
+#include <DD4hep/Handle.h>
+#include <DD4hep/Objects.h>
+#include <DD4hep/BitFieldCoder.h>
 
 // C/C++ include files
 

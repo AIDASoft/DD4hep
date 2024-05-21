@@ -39,7 +39,7 @@ using namespace dd4hep::sim;
 
 namespace {
   G4Mutex kernel_mutex=G4MUTEX_INITIALIZER;
-  dd4hep::dd4hep_ptr<Geant4Kernel> s_main_instance(0);
+  std::unique_ptr<Geant4Kernel> s_main_instance;
   void description_unexpected()    {
     try  {
       throw;
@@ -157,12 +157,12 @@ Geant4Kernel::~Geant4Kernel() {
 
 /// Instance accessor
 Geant4Kernel& Geant4Kernel::instance(Detector& description) {
-  if ( 0 == s_main_instance.get() )   {
+  if ( nullptr == s_main_instance.get() )   {
     G4AutoLock protection_lock(&kernel_mutex);    {
-      if ( 0 == s_main_instance.get() )   { // Need to check again!
+      if ( nullptr == s_main_instance.get() )   { // Need to check again!
         /// Install here the termination handler
         std::set_terminate(description_unexpected);
-        s_main_instance.adopt(new Geant4Kernel(description));
+        s_main_instance.reset(new Geant4Kernel(description));
       }
     }
   }
