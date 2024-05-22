@@ -14,7 +14,7 @@
 #define DD4HEP_DETECTORPROCESSOR_H
 
 // Framework includes
-#include "DD4hep/DetElement.h"
+#include <DD4hep/DetElement.h>
 
 // C/C++ include files
 #include <memory>

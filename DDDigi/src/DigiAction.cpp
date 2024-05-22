@@ -49,7 +49,6 @@ DigiAction::~DigiAction() {
   for( auto& ptr : m_extensions )
     ptr.second->destruct();
   m_extensions.clear();
-  m_opt_properties.clear();
   InstanceCount::decrement(this);
 }
 
@@ -241,11 +240,9 @@ namespace dd4hep {
   namespace digi {
     template <typename VAL>
     int add_action_property(DigiAction* action, const std::string& name, VAL value)   {
-      VAL* new_val = new VAL(value);
-      action->addProperty(name, *(new_val));
-      action->addExtension(new_val);
+      action->addProperty(name, value);
       printout(INFO, "addProperty", "+++ Added property %s of type %s",
-	       name.c_str(), typeName(typeid(VAL)).c_str());
+               name.c_str(), typeName(typeid(VAL)).c_str());
       return 1;
     }
 

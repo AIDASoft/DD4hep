@@ -19,7 +19,7 @@
 #ifndef DDSEGMENTATION_MEGATILELAYERGRIDXY_H
 #define DDSEGMENTATION_MEGATILELAYERGRIDXY_H
 
-#include "DDSegmentation/CartesianGrid.h"
+#include <DDSegmentation/CartesianGrid.h>
 
 #include <cassert>
 

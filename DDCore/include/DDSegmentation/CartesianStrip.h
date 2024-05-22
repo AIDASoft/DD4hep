@@ -8,7 +8,6 @@
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 //==========================================================================
-
 /*
  * CartesianStrip.h
  *
@@ -20,7 +19,7 @@
 #ifndef DDSEGMENTATION_CARTESIANSTRIP_H
 #define DDSEGMENTATION_CARTESIANSTRIP_H
 
-#include "DDSegmentation/Segmentation.h"
+#include <DDSegmentation/Segmentation.h>
 
 namespace dd4hep {
   namespace DDSegmentation {

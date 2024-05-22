@@ -12,20 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Memory.h"
-#include "DD4hep/DD4hepUI.h"
-#include "DD4hep/Factories.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/DetectorData.h"
-#include "DD4hep/DetectorTools.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Memory.h>
+#include <DD4hep/DD4hepUI.h>
+#include <DD4hep/Factories.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/DetectorData.h>
+#include <DD4hep/DetectorTools.h>
 
 // ROOT includes
-#include "TInterpreter.h"
-#include "TGeoElement.h"
-#include "TGeoManager.h"
-#include "TFile.h"
-#include "TUri.h"
+#include <TInterpreter.h>
+#include <TGeoElement.h>
+#include <TGeoManager.h>
+#include <TFile.h>
+#include <TUri.h>
 
 using namespace std;
 using namespace dd4hep;

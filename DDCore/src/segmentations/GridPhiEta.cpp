@@ -1,5 +1,15 @@
-#include "DDSegmentation/GridPhiEta.h"
-#include "DDSegmentation/SegmentationUtil.h"
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
+#include <DDSegmentation/GridPhiEta.h>
+#include <DDSegmentation/SegmentationUtil.h>
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -57,7 +67,3 @@ double GridPhiEta::phi(const CellID& cID) const {
 }
 }
 }
-
-// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
-// needs also #include "DD4hep/Factories.h"
-// DECLARE_SEGMENTATION(GridPhiEta,create_segmentation<dd4hep::DDSegmentation::GridPhiEta>)

@@ -15,7 +15,7 @@
 #define XML_DOCUMENTHANDLER_H
 
 // Framework include files
-#include "XML/XMLElements.h"
+#include <XML/XMLElements.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

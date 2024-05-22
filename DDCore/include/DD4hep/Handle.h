@@ -14,7 +14,7 @@
 #define DD4HEP_HANDLE_H
 
 // Framework include files
-#include "DD4hep/Primitives.h"
+#include <DD4hep/Primitives.h>
 
 #include <string>
 #include <typeinfo>

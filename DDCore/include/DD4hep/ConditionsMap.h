@@ -14,8 +14,8 @@
 #define DD4HEP_CONDITIONSMAP_H
 
 // Framework include files
-#include "DD4hep/Conditions.h"
-#include "DD4hep/DetElement.h"
+#include <DD4hep/Conditions.h>
+#include <DD4hep/DetElement.h>
 
 // C/C++ include files
 #include <map>

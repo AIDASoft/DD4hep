@@ -13,7 +13,7 @@
 #ifndef JSON_CONFIG_H
 #define JSON_CONFIG_H
 
-#include "Parsers/config.h"
+#include <Parsers/config.h>
 
 #define DD4HEP_USE_BOOST_JSON 1
 

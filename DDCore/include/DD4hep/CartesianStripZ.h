@@ -16,13 +16,14 @@
 #define DD4HEP_CARTESIANSTRIPZ_H 1
 
 // Framework include files
-#include "DD4hep/Segmentations.h"
+#include <DD4hep/Segmentations.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
+
 /// Namespace for base segmentations
 namespace DDSegmentation {
-class CartesianStripZ;
+  class CartesianStripZ;
 }
 
 /// We need some abbreviation to make the code more readable.

@@ -1,4 +1,3 @@
-// $Id$
 //==========================================================================
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -14,7 +13,7 @@
 #ifndef DDSEGMENTATION_MULTISEGMENTATION_H
 #define DDSEGMENTATION_MULTISEGMENTATION_H
 
-#include "DDSegmentation/Segmentation.h"
+#include <DDSegmentation/Segmentation.h>
 
 /// Main handle class to hold a TGeo alignment object of type TGeoPhysicalNode
 namespace dd4hep {

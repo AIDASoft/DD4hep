@@ -14,9 +14,9 @@
 #define DD4HEP_SURFACEINSTALLER_H 1
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/DetectorTools.h"
-#include "DD4hep/DetFactoryHelper.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/DetectorTools.h>
+#include <DD4hep/DetFactoryHelper.h>
 
 // C/C++ include files
 #include <map>
@@ -116,8 +116,8 @@ namespace dd4hep  {
 
 #if defined(DD4HEP_USE_SURFACEINSTALL_HELPER)
 
-#include "DDRec/Surface.h"
-#include "DDRec/DetectorData.h"
+#include <DDRec/Surface.h>
+#include <DDRec/DetectorData.h>
 
 #ifndef SURFACEINSTALLER_DATA
 typedef void* SURFACEINSTALLER_DATA;

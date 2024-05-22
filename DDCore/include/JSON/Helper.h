@@ -14,11 +14,11 @@
 #define JSON_HELPER_H
 
 // Framework include files
-#include "JSON/Detector.h"
-#include "JSON/ChildValue.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/Factories.h"
-#include "DD4hep/DD4hepUnits.h"
+#include <JSON/Detector.h>
+#include <JSON/ChildValue.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/Factories.h>
+#include <DD4hep/DD4hepUnits.h>
 
 // Shortcuts to elements of the JSON namespace
 typedef dd4hep::json::Attribute       json_attr_t;

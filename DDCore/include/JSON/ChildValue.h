@@ -14,10 +14,10 @@
 #define JSON_CHILDVALUE_H
 
 // Framework include files
-#include "JSON/Dimension.h"
+#include <JSON/Dimension.h>
 
 #define DD4HEP_DIMENSION_NS json
-#include "Parsers/detail/ChildValue.h"
+#include <Parsers/detail/ChildValue.h>
 #undef  DD4HEP_DIMENSION_NS
 
 

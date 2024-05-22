@@ -14,7 +14,7 @@
 #define DD4HEP_OPAQUEDATA_H
 
 // Framework include files
-#include "DD4hep/Grammar.h"
+#include <DD4hep/Grammar.h>
 
 // C/C++ include files
 #include <typeinfo>

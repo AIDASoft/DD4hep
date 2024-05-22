@@ -14,7 +14,7 @@
 #define DD4HEP_ALIGNMENTSNOMINALMAP_H
 
 // Framework include files
-#include "DD4hep/ConditionsMap.h"
+#include <DD4hep/ConditionsMap.h>
 
 // C/C++ include files
 

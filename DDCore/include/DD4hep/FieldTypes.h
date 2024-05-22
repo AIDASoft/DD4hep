@@ -14,8 +14,10 @@
 #define DD4HEP_FIELDTYPES_H
 
 // Framework include files
-#include "DD4hep/Fields.h"
-#include "DD4hep/Shapes.h"
+#include <DD4hep/Fields.h>
+#include <DD4hep/Shapes.h>
+
+// C/C++ include files
 #include <vector>
 
 /// Namespace for the AIDA detector description toolkit

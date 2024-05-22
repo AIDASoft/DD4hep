@@ -14,11 +14,11 @@
 #ifndef XML_XML_H
 #define XML_XML_H
 
-#include "XML/XMLTags.h"
-#include "XML/XMLDimension.h"
-#include "XML/XMLDetector.h"
-#include "XML/XMLChildValue.h"
-#include "XML/DocumentHandler.h"
+#include <XML/XMLTags.h>
+#include <XML/XMLDimension.h>
+#include <XML/XMLDetector.h>
+#include <XML/XMLChildValue.h>
+#include <XML/DocumentHandler.h>
 
 // Useful shortcuts to process XML structures.
 typedef dd4hep::xml::Strng_t         Unicode;

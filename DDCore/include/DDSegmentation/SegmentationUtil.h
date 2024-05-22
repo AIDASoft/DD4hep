@@ -1,3 +1,13 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
 /*
  * SegmentationUtil.h
  *
@@ -8,7 +18,7 @@
 #ifndef DDSEGMENTATION_SEGMENTATIONUTIL_H
 #define DDSEGMENTATION_SEGMENTATIONUTIL_H
 
-#include "DDSegmentation/Segmentation.h"
+#include <DDSegmentation/Segmentation.h>
 
 #include <cmath>
 #include <vector>

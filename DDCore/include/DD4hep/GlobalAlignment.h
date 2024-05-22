@@ -14,10 +14,10 @@
 #define DD4HEP_GLOBALALIGNMENT_H
 
 // Framework include files
-#include "DD4hep/Objects.h"
-#include "DD4hep/Volumes.h"
-#include "DD4hep/Alignments.h"
-#include "TGeoPhysicalNode.h"
+#include <DD4hep/Objects.h>
+#include <DD4hep/Volumes.h>
+#include <DD4hep/Alignments.h>
+#include <TGeoPhysicalNode.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

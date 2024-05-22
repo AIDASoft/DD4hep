@@ -26,7 +26,7 @@
 #endif
 
 // Framework include files
-#include "DD4hep/Grammar.h"
+#include <DD4hep/Grammar.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

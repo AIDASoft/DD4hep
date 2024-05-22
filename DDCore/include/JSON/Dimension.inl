@@ -14,10 +14,10 @@
 #define DD4HEP_JSONDIMENSION_INL
 
 // Framework include files
-#include "JSON/Dimension.h"
+#include <JSON/Dimension.h>
 
 #define DD4HEP_DIMENSION_NS json
-#include "Parsers/detail/Dimension.inl"
+#include <Parsers/detail/Dimension.inl>
 #undef DD4HEP_DIMENSION_NS
 
 #endif /* DD4HEP_JSONDIMENSION_INL  */

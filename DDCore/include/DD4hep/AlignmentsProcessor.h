@@ -14,10 +14,10 @@
 #define DD4HEP_ALIGNMENTSPROCESSOR_H
 
 // Framework includes
-#include "DD4hep/ConditionsMap.h"
-#include "DD4hep/AlignmentData.h"
-#include "DD4hep/Alignments.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/ConditionsMap.h>
+#include <DD4hep/AlignmentData.h>
+#include <DD4hep/Alignments.h>
+#include <DD4hep/Printout.h>
 
 // C/C++ include files
 #include <memory>

@@ -14,8 +14,8 @@
 #define DD4HEP_IDDESCRIPTOR_H
 
 // Framework include files
-#include "DD4hep/Handle.h"
-#include "DD4hep/BitFieldCoder.h"
+#include <DD4hep/Handle.h>
+#include <DD4hep/BitFieldCoder.h>
 
 // C++ include files
 #include <string>

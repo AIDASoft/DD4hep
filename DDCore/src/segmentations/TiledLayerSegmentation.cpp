@@ -1,3 +1,13 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
 /*
  * TiledLayerSegmentation.cpp
  *
@@ -5,7 +15,7 @@
  *      Author: cgrefe
  */
 
-#include "DDSegmentation/TiledLayerSegmentation.h"
+#include <DDSegmentation/TiledLayerSegmentation.h>
 
 // C/C++ includes
 #include <algorithm>

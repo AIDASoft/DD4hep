@@ -14,10 +14,10 @@
 #define XML_XMLDETECTOR_H
 
 // Framework include files
-#include "XML/XMLDimension.h"
+#include <XML/XMLDimension.h>
 
 #define DD4HEP_DIMENSION_NS xml
-#include "Parsers/detail/Detector.h"
+#include <Parsers/detail/Detector.h>
 #undef  DD4HEP_DIMENSION_NS
 
 #endif // XML_XMLDETECTOR_H

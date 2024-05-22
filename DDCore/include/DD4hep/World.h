@@ -14,7 +14,7 @@
 #define DD4HEP_WORLD_H
 
 // Framework include files
-#include "DD4hep/DetElement.h"
+#include <DD4hep/DetElement.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

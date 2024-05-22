@@ -14,7 +14,7 @@
 #define XML_CONVERSIONS_H
 
 #define DD4HEP_CONVERSION_NS xml
-#include "Parsers/detail/Conversions.h"
+#include <Parsers/detail/Conversions.h>
 #undef  DD4HEP_CONVERSION_NS
 
 #endif // XML_CONVERSIONS_H

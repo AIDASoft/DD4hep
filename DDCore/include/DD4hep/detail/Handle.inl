@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Handle.h"
+#include <DD4hep/Handle.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

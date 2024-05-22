@@ -17,7 +17,7 @@
 
 // Forward declaring header for package configuration
 
-#include "DD4hep/config.h"
-#include "Parsers/Printout.h"
+#include <DD4hep/config.h>
+#include <Parsers/Printout.h>
 
 #endif // DD4HEP_PRINTOUT_H

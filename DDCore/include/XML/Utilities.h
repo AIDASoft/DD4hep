@@ -15,10 +15,10 @@
 #define XML_UTILITIES_H
 
 // Framework include files
-#include "XML/Conversions.h"
-#include "XML/XMLElements.h"
-#include "XML/VolumeBuilder.h"
-#include "DD4hep/Detector.h"
+#include <XML/Conversions.h>
+#include <XML/XMLElements.h>
+#include <XML/VolumeBuilder.h>
+#include <DD4hep/Detector.h>
 
 // C/C++ include files
 #include <set>

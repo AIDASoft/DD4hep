@@ -1,3 +1,13 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
 /*
  * PolarGrid.cpp
  *
@@ -5,7 +15,7 @@
  *      Author: Marko Petric
  */
 
-#include "DDSegmentation/PolarGrid.h"
+#include <DDSegmentation/PolarGrid.h>
 
 namespace dd4hep {
   namespace DDSegmentation {

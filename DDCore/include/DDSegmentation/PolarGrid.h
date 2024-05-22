@@ -19,7 +19,7 @@
 #ifndef DDSEGMENTATION_POLARGRID_H
 #define DDSEGMENTATION_POLARGRID_H
 
-#include "DDSegmentation/Segmentation.h"
+#include <DDSegmentation/Segmentation.h>
 
 namespace dd4hep {
   namespace DDSegmentation {

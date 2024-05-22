@@ -14,7 +14,7 @@
 #define PARSERS_PRINTOUT_H
 
 // Framework include files
-#include "Parsers/config.h"
+#include <Parsers/config.h>
 
 // C/C++ include files
 #include <cstdio>

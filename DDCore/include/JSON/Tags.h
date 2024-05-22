@@ -16,7 +16,7 @@
 #define DECLARE_UNICODE_TAG(x)  
 
 // Framework include files
-#include "JSON/Elements.h"
+#include <JSON/Elements.h>
 
 // Helpers to access tags and attributes quickly without specifying explicitly namespaces
 #define _dd4hep_Unicode_Item(a) #a

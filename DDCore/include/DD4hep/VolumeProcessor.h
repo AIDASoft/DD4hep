@@ -14,8 +14,8 @@
 #define DD4HEP_VOLUMEPROCESSOR_H
 
 // Framework includes
-#include "DD4hep/DetElement.h"
-#include "DD4hep/Volumes.h"
+#include <DD4hep/DetElement.h>
+#include <DD4hep/Volumes.h>
 
 // C/C++ include files
 #include <memory>

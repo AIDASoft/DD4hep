@@ -14,9 +14,9 @@
 #define DD4HEP_ALIGNMENTS_H
 
 // Framework include files
-#include "DD4hep/IOV.h"
-#include "DD4hep/Volumes.h"
-#include "DD4hep/Conditions.h"
+#include <DD4hep/IOV.h>
+#include <DD4hep/Volumes.h>
+#include <DD4hep/Conditions.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

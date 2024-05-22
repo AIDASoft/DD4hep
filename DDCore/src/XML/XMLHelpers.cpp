@@ -12,12 +12,12 @@
 //==========================================================================
 
 // Framework include files
-#include "XML/XMLDimension.inl"
-#include "XML/XMLChildValue.inl"
+#include <XML/XMLDimension.inl>
+#include <XML/XMLChildValue.inl>
 
 // Instantiate here the concrete implementations
 #define DD4HEP_DIMENSION_NS xml
 using namespace dd4hep::DD4HEP_DIMENSION_NS;
 
-#include "Parsers/detail/Dimension.imp"
-#include "Parsers/detail/ChildValue.imp"
+#include <Parsers/detail/Dimension.imp>
+#include <Parsers/detail/ChildValue.imp>

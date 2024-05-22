@@ -14,9 +14,9 @@
 #define DD4HEP_CONDITIONSPRINTER_H
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/DetElement.h"
-#include "DD4hep/Conditions.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/DetElement.h>
+#include <DD4hep/Conditions.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

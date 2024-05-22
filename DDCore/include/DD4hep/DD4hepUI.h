@@ -14,8 +14,8 @@
 #define DD4HEP_DD4HEPUI_H
 
 // Framework includes
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

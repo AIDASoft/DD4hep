@@ -15,7 +15,7 @@
 
 // Framework include files
 #include <DD4hep/Printout.h>
-#include <DD4hep/ObjectExtensions.h>
+#include <DD4hep/ExtensionEntry.h>
 #include <DD4hep/ComponentProperties.h>
 #include <DDDigi/DigiContext.h>
 
@@ -118,12 +118,12 @@ namespace dd4hep {
         /// Default destructor
         virtual ~Extension() = default;
         /// Wrapper for the object destruction
-        virtual void* object()  const override      { return ptr;  }
+        virtual void* object()  const override    { return ptr;  }
         /// Wrapper for the object destruction
-        virtual void  destruct()  const override    { delete ptr;  }
-        virtual void* copy(void*) const override    { return nullptr; }
-        virtual ExtensionEntry* clone(void*) const override   { return nullptr; }
-        virtual unsigned long long int hash64() const override   { return uint64_t(ptr); }
+        virtual void  destruct()  const override  { delete ptr;  }
+        virtual void* copy(void*) const override  { invalidCall("copy"); return nullptr; }
+        virtual ExtensionEntry* clone(void*) const override  { invalidCall("clone"); return nullptr; }
+        virtual unsigned long long int hash64() const override  { return uint64_t(ptr); }
       };
 
 
@@ -144,8 +144,6 @@ namespace dd4hep {
       std::string        m_name;
       /// Property pool
       PropertyManager    m_properties;
-      ///
-      std::vector<void*> m_opt_properties;
       /// Object extensions if used
       extensions_t       m_extensions;
       /// Reference count. Initial value: 1
@@ -255,21 +253,21 @@ namespace dd4hep {
 
     /// Declare property
     template <typename T> DigiAction& DigiAction::declareProperty(const std::string& nam, T& val) {
-      m_properties.add(nam, val);
+      this->m_properties.add(nam, val);
       return *this;
     }
 
     /// Declare property
     template <typename T> DigiAction& DigiAction::declareProperty(const char* nam, T& val) {
-      m_properties.add(nam, val);
+      this->m_properties.add(nam, val);
       return *this;
     }
     /// Declare property
     template <typename T> DigiAction& DigiAction::addProperty(const std::string& nam, T& val) {
       void* ptr = ::operator new(sizeof(T));
       T* prop = new(ptr) T(val);
-      m_properties.add(nam, *prop);
-      m_opt_properties.emplace_back(ptr);
+      this->m_properties.add(nam, *prop);
+      this->addExtension(prop);
       return *this;
     }
 
@@ -277,8 +275,8 @@ namespace dd4hep {
     template <typename T> DigiAction& DigiAction::addProperty(const char* nam, T& val) {
       void* ptr = ::operator new(sizeof(T));
       T* prop = new(ptr) T(val);
-      m_properties.add(nam, *prop);
-      m_opt_properties.emplace_back(ptr);
+      this->m_properties.add(nam, *prop);
+      this->addExtension(prop);
       return *this;
     }
   }    // End namespace digi

@@ -19,7 +19,7 @@
 #ifndef DDSEGMENTATION_POLARGRIDRPHI_H
 #define DDSEGMENTATION_POLARGRIDRPHI_H
 
-#include "DDSegmentation/PolarGrid.h"
+#include <DDSegmentation/PolarGrid.h>
 #include <math.h>
 
 namespace dd4hep {

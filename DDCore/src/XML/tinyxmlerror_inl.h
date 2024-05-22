@@ -28,7 +28,7 @@
   and include from "marlin/tinyxml.h"
 */
 
-#include "XML/tinyxml.h"
+#include <XML/tinyxml.h>
 
 
 // The goal of the seperate error file is to make the first

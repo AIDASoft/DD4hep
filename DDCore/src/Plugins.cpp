@@ -39,9 +39,9 @@ bool PluginService::setDebug(bool new_value)   {
 #define DD4HEP_PARSERS_NO_ROOT
 #endif
 
-#include "DD4hep/Printout.h"
+#include <DD4hep/Printout.h>
 #if !defined(DD4HEP_PARSERS_NO_ROOT)
-#include "TSystem.h"
+#include <TSystem.h>
 #else
 #include <dlfcn.h>
 #endif

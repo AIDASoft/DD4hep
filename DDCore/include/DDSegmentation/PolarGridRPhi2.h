@@ -19,7 +19,7 @@
 #ifndef DDSEGMENTATION_POLARGRIDRPHI2_H
 #define DDSEGMENTATION_POLARGRIDRPHI2_H
 
-#include "DDSegmentation/PolarGrid.h"
+#include <DDSegmentation/PolarGrid.h>
 #include <cmath>
 #include <vector>
 

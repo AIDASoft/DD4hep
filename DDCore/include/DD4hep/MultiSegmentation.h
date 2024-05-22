@@ -16,8 +16,8 @@
 #define DD4HEP_MULTISEGMENTATION_H 1
 
 // Framework include files
-#include "DD4hep/Segmentations.h"
-#include "DDSegmentation/MultiSegmentation.h"
+#include <DD4hep/Segmentations.h>
+#include <DDSegmentation/MultiSegmentation.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

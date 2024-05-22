@@ -24,7 +24,7 @@
 #include <cstdio>
 
 #if !defined(WIN32) && !defined(__ICC)
-#include "cxxabi.h"
+#include <cxxabi.h>
 #endif
 
 namespace dd4hep {
@@ -377,7 +377,7 @@ namespace dd4hep  {
   }
 }
 
-#include "DDSegmentation/Segmentation.h"
+#include <DDSegmentation/Segmentation.h>
 typedef DDSegmentation::Segmentation _Segmentation;
 namespace dd4hep {
   template <> void Handle<_Segmentation>::assign(_Segmentation* s, const std::string& n, const std::string&) {

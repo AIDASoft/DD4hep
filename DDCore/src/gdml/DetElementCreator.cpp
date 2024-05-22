@@ -18,8 +18,8 @@
 #define DD4HEP_DETELEMENTCREATOR_H
 
 // Framework include files
-#include "DD4hep/VolumeProcessor.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/VolumeProcessor.h>
+#include <DD4hep/Printout.h>
 
 namespace dd4hep {
   
@@ -106,10 +106,10 @@ namespace dd4hep {
 #endif   /* DD4HEP_DETELEMENTCREATOR_H  */
 
 // Framework include files
-#include "DD4hep/detail/DetectorInterna.h"
-#include "DD4hep/DetFactoryHelper.h"
-#include "DD4hep/DetectorHelper.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/detail/DetectorInterna.h>
+#include <DD4hep/DetFactoryHelper.h>
+#include <DD4hep/DetectorHelper.h>
+#include <DD4hep/Printout.h>
 
 // C/C++ include files
 #include <sstream>

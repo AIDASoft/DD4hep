@@ -12,9 +12,8 @@
 #ifndef DDSEGMENTATION_GRIDPHIETA_H
 #define DDSEGMENTATION_GRIDPHIETA_H
 
-#include "DDSegmentation/Segmentation.h"
+#include <DDSegmentation/Segmentation.h>
 
-/* #include "DDSegmentation/SegmentationUtil.h" */
 #include <cmath>
 
 /** GridPhiEta DDSegmentation/include/DDSegmentation/GridPhiEta.h GridPhiEta.h

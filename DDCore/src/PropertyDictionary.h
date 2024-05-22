@@ -26,7 +26,7 @@
 #include <set>
 #include <string>
 
-#include "TRint.h"
+#include <TRint.h>
 namespace dd4hep {
   namespace detail {}
 }

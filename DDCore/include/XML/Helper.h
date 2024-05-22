@@ -14,9 +14,9 @@
 #define XML_HELPER_H
 
 // Framework include files
-#include "XML/XML.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/DD4hepUnits.h"
+#include <XML/XML.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/DD4hepUnits.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

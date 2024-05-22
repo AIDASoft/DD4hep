@@ -28,9 +28,9 @@
 #endif
 
 // Framework include files
-#include "DD4hep/DetectorData.h"
-#include "DD4hep/DetectorLoad.h"
-#include "TNamed.h"
+#include <DD4hep/DetectorData.h>
+#include <DD4hep/DetectorLoad.h>
+#include <TNamed.h>
 
 // Forward declarations
 class TGeoManager;
