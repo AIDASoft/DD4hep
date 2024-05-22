@@ -25,7 +25,7 @@ namespace dd4hep  {
 
 #else
 
-#include "boost/any.hpp"
+#include <boost/any.hpp>
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {
 

@@ -14,9 +14,9 @@
 #define DD4HEP_ALIGNMENTSPRINTER_H
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/DetElement.h"
-#include "DD4hep/Alignments.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/DetElement.h>
+#include <DD4hep/Alignments.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

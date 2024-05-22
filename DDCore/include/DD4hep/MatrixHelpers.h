@@ -14,7 +14,7 @@
 #define DD4HEP_MATRIXHELPERS_H
 
 // Framework include files
-#include "DD4hep/Objects.h"
+#include <DD4hep/Objects.h>
 
 // Forward declarations
 class TGeoTranslation;

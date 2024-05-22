@@ -15,10 +15,10 @@
 #define DD4HEP_DETECTORDATA_H
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/ObjectExtensions.h"
-#include "DD4hep/detail/VolumeManagerInterna.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/ObjectExtensions.h>
+#include <DD4hep/detail/VolumeManagerInterna.h>
 
 // C/C++ include files
 #include <stdexcept>

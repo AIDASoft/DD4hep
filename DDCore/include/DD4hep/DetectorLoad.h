@@ -14,7 +14,7 @@
 #define DD4HEP_DETECTORLOAD_H
 
 // Framework includes
-#include "DD4hep/Detector.h"
+#include <DD4hep/Detector.h>
 
 // C/C++ include files
 #include <stdexcept>

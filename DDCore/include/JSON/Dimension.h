@@ -14,11 +14,11 @@
 #define JSON_DIMENSION_H
 
 // Framework include files
-#include "JSON/Elements.h"
-#include "JSON/Tags.h"
+#include <JSON/Elements.h>
+#include <JSON/Tags.h>
 
 #define DD4HEP_DIMENSION_NS json
-#include "Parsers/detail/Dimension.h"
+#include <Parsers/detail/Dimension.h>
 #undef DD4HEP_DIMENSION_NS
 
 #endif // JSON_DIMENSION_H

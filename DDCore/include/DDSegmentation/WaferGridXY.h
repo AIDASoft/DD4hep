@@ -19,7 +19,7 @@
 #ifndef DDSEGMENTATION_WAFERGRIDXY_H
 #define DDSEGMENTATION_WAFERGRIDXY_H
 
-#include "DDSegmentation/CartesianGrid.h"
+#include <DDSegmentation/CartesianGrid.h>
 
 #define MAX_GROUPS 100
 #define MAX_WAFERS 100

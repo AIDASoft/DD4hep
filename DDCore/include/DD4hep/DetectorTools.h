@@ -14,7 +14,7 @@
 #define DD4HEP_DETECTORTOOLS_H
 
 // Framework include files
-#include "DD4hep/DetElement.h"
+#include <DD4hep/DetElement.h>
 
 // Forward declarations
 class TGeoHMatrix;

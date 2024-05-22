@@ -22,8 +22,8 @@
 #define DD4HEP_GRAMMAR_H
 
 // Framework include files
-#include "DD4hep/config.h"
-#include "DD4hep/Primitives.h"
+#include <DD4hep/config.h>
+#include <DD4hep/Primitives.h>
 
 // C/C++ include files
 #include <string>

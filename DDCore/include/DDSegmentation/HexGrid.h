@@ -19,7 +19,7 @@
 #ifndef DDSEGMENTATION_HEXGRID_H
 #define DDSEGMENTATION_HEXGRID_H
 
-#include "DDSegmentation/Segmentation.h"
+#include <DDSegmentation/Segmentation.h>
 
 namespace dd4hep {
   namespace DDSegmentation {

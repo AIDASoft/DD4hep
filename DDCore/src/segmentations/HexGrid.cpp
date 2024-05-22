@@ -12,8 +12,8 @@
  * Created on: August 9, 2023
  *      Author: Sebouh J. Paul, UC Riverside
  */
-#include "DD4hep/Factories.h"
-#include "DDSegmentation/HexGrid.h"
+#include <DD4hep/Factories.h>
+#include <DDSegmentation/HexGrid.h>
 
 namespace dd4hep {
   namespace DDSegmentation {

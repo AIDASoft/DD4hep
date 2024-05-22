@@ -14,7 +14,7 @@
 #define DD4HEP_OBJECTEXTENSIONS_H
 
 // Framework include files
-#include "DD4hep/ExtensionEntry.h"
+#include <DD4hep/ExtensionEntry.h>
 
 // C/C++ include files
 #include <map>

@@ -19,9 +19,9 @@
 #ifndef DDSEGMENTATION_SEGMENTATION_H
 #define DDSEGMENTATION_SEGMENTATION_H
 
-#include "DD4hep/detail/SegmentationsInterna.h"
-#include "DDSegmentation/BitFieldCoder.h"
-#include "DDSegmentation/SegmentationParameter.h"
+#include <DD4hep/detail/SegmentationsInterna.h>
+#include <DDSegmentation/BitFieldCoder.h>
+#include <DDSegmentation/SegmentationParameter.h>
 
 #include <map>
 #include <utility>

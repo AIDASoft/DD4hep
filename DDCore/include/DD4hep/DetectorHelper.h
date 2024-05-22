@@ -14,7 +14,7 @@
 #ifndef DD4HEP_DETECTORHELPER_H
 #define DD4HEP_DETECTORHELPER_H
 
-#include "DD4hep/Detector.h"
+#include <DD4hep/Detector.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

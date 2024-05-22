@@ -37,7 +37,7 @@
 #include <iostream>
 #endif
 
-#include "XML/tinyxml.h"
+#include <XML/tinyxml.h>
 
 
 bool TiXmlBase::condenseWhiteSpace = true;

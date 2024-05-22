@@ -17,7 +17,7 @@
 
 // Forward declaring header for package configuration
 
-#include "DD4hep/config.h"
-#include "Parsers/Primitives.h"
+#include <DD4hep/config.h>
+#include <Parsers/Primitives.h>
 
 #endif // DD4HEP_PRIMITIVES_H

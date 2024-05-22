@@ -15,9 +15,9 @@
 #define DDCORE_SRC_PLUGINS_LCDDCONVERTER_H
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/GeoHandler.h"
-#include "DD4hep/DetFactoryHelper.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/GeoHandler.h>
+#include <DD4hep/DetFactoryHelper.h>
 
 // C/C++ include files
 #include <set>

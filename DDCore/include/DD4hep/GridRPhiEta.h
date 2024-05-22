@@ -16,8 +16,8 @@
 #define DD4HEP_GRIDRPHIETA_H 1
 
 // Framework includes
-#include "DD4hep/Segmentations.h"
-#include "DDSegmentation/GridRPhiEta.h"
+#include <DD4hep/Segmentations.h>
+#include <DDSegmentation/GridRPhiEta.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

@@ -32,7 +32,7 @@
 #include <ctype.h>
 #include <stddef.h>
 
-#include "XML/tinyxml.h"
+#include <XML/tinyxml.h>
 
 //#define DEBUG_PARSER
 #if defined( DEBUG_PARSER )

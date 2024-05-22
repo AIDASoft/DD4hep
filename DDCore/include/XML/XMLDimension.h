@@ -14,11 +14,11 @@
 #define XML_XMLDIMENSION_H
 
 // Framework include files
-#include "XML/XMLElements.h"
-#include "XML/XMLTags.h"
+#include <XML/XMLElements.h>
+#include <XML/XMLTags.h>
 
 #define DD4HEP_DIMENSION_NS xml
-#include "Parsers/detail/Dimension.h"
+#include <Parsers/detail/Dimension.h>
 #undef  DD4HEP_DIMENSION_NS
 
 #endif // XML_XMLDIMENSION_H

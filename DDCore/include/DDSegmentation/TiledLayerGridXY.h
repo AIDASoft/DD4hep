@@ -19,7 +19,7 @@
 #ifndef DDSEGMENTATION_TILEDLAYERGRIDXY_H
 #define DDSEGMENTATION_TILEDLAYERGRIDXY_H
 
-#include "DDSegmentation/CartesianGrid.h"
+#include <DDSegmentation/CartesianGrid.h>
 
 // C/C++ includes
 #include <string>

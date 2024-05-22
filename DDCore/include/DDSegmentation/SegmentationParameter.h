@@ -8,7 +8,6 @@
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 //==========================================================================
-
 /*
  * SegmentationParameter.h
  *

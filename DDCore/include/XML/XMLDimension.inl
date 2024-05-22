@@ -14,10 +14,10 @@
 #ifndef DD4HEP_XMLDIMENSION_INL
 #define DD4HEP_XMLDIMENSION_INL
 
-#include "XML/XMLDimension.h"
+#include <XML/XMLDimension.h>
 
 #define DD4HEP_DIMENSION_NS xml
-#include "Parsers/detail/Dimension.inl"
+#include <Parsers/detail/Dimension.inl>
 #undef  DD4HEP_DIMENSION_NS
 
 #endif /* DD4HEP_XMLDIMENSION_INL  */

@@ -21,7 +21,8 @@
 #ifndef DD4HEP_EXTENSIONENTRY_H
 #define DD4HEP_EXTENSIONENTRY_H
 
-#include "DD4hep/Primitives.h"
+// Framework include files
+#include <DD4hep/Primitives.h>
 
 // C/C++ include files
 #include <typeinfo>

@@ -14,7 +14,7 @@
 #define DD4HEP_OPAQUEDATABINDER_H
 
 // Framework include files
-#include "DD4hep/Printout.h"
+#include <DD4hep/Printout.h>
 
 // C/C++ include files
 #include <string>

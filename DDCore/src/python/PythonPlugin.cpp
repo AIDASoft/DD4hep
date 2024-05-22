@@ -12,11 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Factories.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/Factories.h>
+#include <DD4hep/Printout.h>
 
 // ROOT includes
-#include "TPython.h"
+#include <TPython.h>
 
 using namespace std;
 using namespace dd4hep;

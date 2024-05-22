@@ -16,7 +16,7 @@
 #define DD4HEP_POLARGRIDRPHI2_H 1
 
 // Framework include files
-#include "DD4hep/Segmentations.h"
+#include <DD4hep/Segmentations.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

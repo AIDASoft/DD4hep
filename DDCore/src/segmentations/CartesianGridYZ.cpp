@@ -1,3 +1,13 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
 /* CartesianGridYZ.cpp
  *
  *  @date:     Sep 03, 2014
@@ -6,7 +16,7 @@
  *     direkt copy of CartesianGridXY
  *     by Christian Grefe, CERN
  */
-#include "DDSegmentation/CartesianGridYZ.h"
+#include <DDSegmentation/CartesianGridYZ.h>
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -79,7 +89,3 @@ std::vector<double> CartesianGridYZ::cellDimensions(const CellID&) const {
 
 } /* namespace DDSegmentation */
 } /* namespace dd4hep */
-
-// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
-// needs also #include "DD4hep/Factories.h"
-// DECLARE_SEGMENTATION(CartesianGridYZ,create_segmentation<dd4hep::DDSegmentation::CartesianGridYZ>)

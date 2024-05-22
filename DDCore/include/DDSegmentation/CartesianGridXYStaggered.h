@@ -8,10 +8,6 @@
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 //==========================================================================
-
-
-
-
 /*
  * CartesianGridXYStaggered.h
  *
@@ -22,7 +18,7 @@
 #ifndef DDSEGMENTATION_CARTESIANGRIDXYSTAGGERED_H
 #define DDSEGMENTATION_CARTESIANGRIDXYSTAGGERED_H
 
-#include "DDSegmentation/CartesianGrid.h"
+#include <DDSegmentation/CartesianGrid.h>
 
 namespace dd4hep {
   namespace DDSegmentation {

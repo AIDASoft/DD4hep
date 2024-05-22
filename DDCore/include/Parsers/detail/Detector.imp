@@ -21,8 +21,8 @@
 
 
 // Framework include files
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Detector.h"
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Detector.h>
 
 namespace detail { class Detector; }
 

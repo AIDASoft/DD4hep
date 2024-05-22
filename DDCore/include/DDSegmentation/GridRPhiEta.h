@@ -13,7 +13,7 @@
 #define DDSEGMENTATION_GRIDRPHIETA_H
 
 // Framework includes
-#include "DDSegmentation/GridPhiEta.h"
+#include <DDSegmentation/GridPhiEta.h>
 
 /** GridRPhiEta DDSegmentation/include/DDSegmentation/GridRPhiEta.h GridRPhiEta.h
  *

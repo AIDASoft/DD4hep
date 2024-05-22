@@ -14,7 +14,7 @@
 #define DD4HEP_ALIGNMENTTOOLS_H
 
 // Framework include files
-#include "DD4hep/Alignments.h"
+#include <DD4hep/Alignments.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

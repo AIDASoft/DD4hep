@@ -18,7 +18,7 @@
 #define DD4HEP_DETNOMINALCREATOR_H
 
 // Framework include files
-#include "DD4hep/DetElement.h"
+#include <DD4hep/DetElement.h>
 
 namespace dd4hep {
   
@@ -44,8 +44,8 @@ namespace dd4hep {
 #endif   /* DD4HEP_DETNOMINALCREATOR_H  */
 
 // Framework include files
-#include "DD4hep/DetectorProcessor.h"
-#include "DD4hep/DetFactoryHelper.h"
+#include <DD4hep/DetectorProcessor.h>
+#include <DD4hep/DetFactoryHelper.h>
 
 // C/C++ include files
 

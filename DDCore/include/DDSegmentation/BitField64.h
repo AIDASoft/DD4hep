@@ -19,7 +19,7 @@
 #include <map>
 #include <sstream>
 
-#include "DDSegmentation/BitFieldCoder.h"
+#include <DDSegmentation/BitFieldCoder.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

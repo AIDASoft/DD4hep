@@ -14,9 +14,9 @@
 #define DD4HEP_DDCORE_PANDORACONVERTER_H
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/GeoHandler.h"
-#include "DD4hep/DetFactoryHelper.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/GeoHandler.h>
+#include <DD4hep/DetFactoryHelper.h>
 
 /*
  *   dd4hep namespace declaration
@@ -82,10 +82,10 @@ namespace dd4hep {
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Detector.h"
-#include "DD4hep/GeoHandler.h"
-#include "DD4hep/DetFactoryHelper.h"
-#include "XML/DocumentHandler.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/GeoHandler.h>
+#include <DD4hep/DetFactoryHelper.h>
+#include <XML/DocumentHandler.h>
 
 // C/C++ include files
 #include <stdexcept>

@@ -17,7 +17,7 @@
 #define DECLARE_UNICODE_TAG(x)  namespace dd4hep { namespace xml { extern const Tag_t Unicode_##x (#x); }}
 
 // Framework include files
-#include "XML/XMLElements.h"
+#include <XML/XMLElements.h>
 #define UNICODE(x)  extern const Tag_t Unicode_##x
 
 /// Namespace for the AIDA detector description toolkit
@@ -25,7 +25,7 @@ namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace xml {
-#include "XML/UnicodeValues.h"
+#include <XML/UnicodeValues.h>
   }
 }
 

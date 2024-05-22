@@ -13,20 +13,20 @@
 
 // Framework include files
 #ifdef DD4HEP_USE_TINYXML
-#include "XML/tinyxml.h"
+#include <XML/tinyxml.h>
 #else
 #include <xercesc/util/Xerces_autoconf_config.hpp>
-#include "xercesc/util/XMLString.hpp"
-#include "xercesc/dom/DOMElement.hpp"
-#include "xercesc/dom/DOMDocument.hpp"
-#include "xercesc/dom/DOMNodeList.hpp"
-#include "xercesc/dom/DOM.hpp"
-#include "XML/config.h"
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/dom/DOMElement.hpp>
+#include <xercesc/dom/DOMDocument.hpp>
+#include <xercesc/dom/DOMNodeList.hpp>
+#include <xercesc/dom/DOM.hpp>
+#include <XML/config.h>
 #endif
 
-#include "XML/XMLElements.h"
-#include "XML/Printout.h"
-#include "XML/XMLTags.h"
+#include <XML/XMLElements.h>
+#include <XML/Printout.h>
+#include <XML/XMLTags.h>
 
 // C/C++ include files
 #include <iostream>
@@ -1266,7 +1266,7 @@ Handle_t Document::clone(Handle_t source) const {
 }
 
 #ifdef DD4HEP_USE_TINYXML
-#include "tinyxml_inl.h"
-#include "tinyxmlerror_inl.h"
-#include "tinyxmlparser_inl.h"
+#include <tinyxml_inl.h>
+#include <tinyxmlerror_inl.h>
+#include <tinyxmlparser_inl.h>
 #endif

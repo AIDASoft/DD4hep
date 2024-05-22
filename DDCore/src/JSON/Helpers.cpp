@@ -19,5 +19,5 @@
 #define DD4HEP_DIMENSION_NS json
 using namespace dd4hep::DD4HEP_DIMENSION_NS;
 
-#include "Parsers/detail/Dimension.imp"
-#include "Parsers/detail/ChildValue.imp"
+#include <Parsers/detail/Dimension.imp>
+#include <Parsers/detail/ChildValue.imp>

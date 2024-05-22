@@ -20,7 +20,7 @@
 #include <stdexcept>
 
 // Framework include files
-#include "XML/config.h"
+#include <XML/config.h>
 
 #ifndef RAD_2_DEGREE
 #define RAD_2_DEGREE 57.295779513082320876798154814105

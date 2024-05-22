@@ -12,18 +12,18 @@
 //==========================================================================
 
 // Framework includes
-#include "XML/Conversions.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/Objects.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/IDDescriptor.h"
+#include <XML/Conversions.h>
+#include <DD4hep/Detector.h>
+#include <DD4hep/Objects.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/IDDescriptor.h>
 
 // ROOT includes
-#include "TMap.h"
-#include "TROOT.h"
-#include "TColor.h"
-#include "TGeoMatrix.h"
-#include "TGeoManager.h"
+#include <TMap.h>
+#include <TROOT.h>
+#include <TColor.h>
+#include <TGeoMatrix.h>
+#include <TGeoManager.h>
 
 /// C/C++ include files
 #include <iostream>

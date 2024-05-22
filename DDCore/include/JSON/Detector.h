@@ -14,11 +14,11 @@
 #define JSON_DETECTOR_H
 
 // Framework include files
-#include "JSON/Dimension.h"
+#include <JSON/Dimension.h>
 
 /// Include the implementation in the proper namespace
 #define DD4HEP_DIMENSION_NS json
-#include "Parsers/detail/Detector.h"
+#include <Parsers/detail/Detector.h>
 #undef DD4HEP_DIMENSION_NS
 
 #endif // JSON_DETECTOR_H

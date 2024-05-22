@@ -12,12 +12,12 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/IDDescriptor.h"
-#include "DD4hep/detail/Handle.inl"
-#include "DD4hep/detail/ObjectsInterna.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Volumes.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/IDDescriptor.h>
+#include <DD4hep/detail/Handle.inl>
+#include <DD4hep/detail/ObjectsInterna.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Volumes.h>
+#include <DD4hep/Printout.h>
 
 // C/C++ include files
 #include <stdexcept>

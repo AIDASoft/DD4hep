@@ -19,7 +19,7 @@
 #ifndef DDSEGMENTATION_NOSEGMENTATION_H
 #define DDSEGMENTATION_NOSEGMENTATION_H
 
-#include "DDSegmentation/Segmentation.h"
+#include <DDSegmentation/Segmentation.h>
 
 namespace dd4hep {
   namespace DDSegmentation {

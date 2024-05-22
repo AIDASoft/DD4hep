@@ -14,14 +14,14 @@
 #define DD4HEP_DETELEMENT_H
 
 // Framework include files
-#include "DD4hep/Handle.h"
-#include "DD4hep/Callback.h"
-#include "DD4hep/Objects.h"
-#include "DD4hep/Volumes.h"
-#include "DD4hep/Readout.h"
-#include "DD4hep/Alignments.h"
-#include "DD4hep/Segmentations.h"
-#include "DD4hep/ObjectExtensions.h"
+#include <DD4hep/Handle.h>
+#include <DD4hep/Callback.h>
+#include <DD4hep/Objects.h>
+#include <DD4hep/Volumes.h>
+#include <DD4hep/Readout.h>
+#include <DD4hep/Alignments.h>
+#include <DD4hep/Segmentations.h>
+#include <DD4hep/ObjectExtensions.h>
 
 // C/C++ include files
 #include <map>
@@ -463,6 +463,6 @@ namespace dd4hep {
   };
 } /* End namespace dd4hep        */
 
-#include "DD4hep/AlignmentData.h"
+#include <DD4hep/AlignmentData.h>
 
 #endif // DD4HEP_DETELEMENT_H

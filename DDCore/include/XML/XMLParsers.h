@@ -16,8 +16,8 @@
 #define XML_XMLPARSERS_H
 
 // Framework include files
-#include "DD4hep/AlignmentData.h"
-#include "XML/XMLElements.h"
+#include <DD4hep/AlignmentData.h>
+#include <XML/XMLElements.h>
 
 // C/C++ include files
 

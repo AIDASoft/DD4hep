@@ -15,13 +15,13 @@
 #ifndef DD4HEP_NONE
 
 // Framework include files
-#include "DD4hep/Objects.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/OpaqueData.h"
-#include "DD4hep/OpaqueDataBinder.h"
-#include "XML/XMLParsers.h"
-#include "XML/XMLDimension.h"
-#include "XML/DocumentHandler.h"
+#include <DD4hep/Objects.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/OpaqueData.h>
+#include <DD4hep/OpaqueDataBinder.h>
+#include <XML/XMLParsers.h>
+#include <XML/XMLDimension.h>
+#include <XML/DocumentHandler.h>
 
 
 // C/C++ include files

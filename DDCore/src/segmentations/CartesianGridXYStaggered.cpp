@@ -1,3 +1,13 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
 /*
  * CartesianGridXYStaggered.cpp
  *
@@ -5,7 +15,7 @@
  *      Author: Sebouh J. Paul, UCR
  */
 
-#include "DDSegmentation/CartesianGridXYStaggered.h"
+#include <DDSegmentation/CartesianGridXYStaggered.h>
 
 namespace dd4hep {
 namespace DDSegmentation {

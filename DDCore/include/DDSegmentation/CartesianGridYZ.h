@@ -11,7 +11,7 @@
 #ifndef DDSEGMENTATION_CARTESIANGRIDYZ_H
 #define DDSEGMENTATION_CARTESIANGRIDYZ_H
 
-#include "DDSegmentation/CartesianGrid.h"
+#include <DDSegmentation/CartesianGrid.h>
 
 namespace dd4hep {
   namespace DDSegmentation {

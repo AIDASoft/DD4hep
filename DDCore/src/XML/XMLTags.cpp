@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "XML/XMLElements.h"
+#include <XML/XMLElements.h>
 #ifndef __TIXML__
-#include "xercesc/util/XMLString.hpp"
-#include "xercesc/util/PlatformUtils.hpp"
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
 #endif
 
 // C/C++ include files
@@ -66,7 +66,7 @@ namespace dd4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace xml {
-#include "XML/UnicodeValues.h"
+#include <XML/UnicodeValues.h>
   }
 }
 

@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/ObjectExtensions.h"
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Primitives.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/ObjectExtensions.h>
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Primitives.h>
+#include <DD4hep/Printout.h>
 
 using namespace dd4hep;
 

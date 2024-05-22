@@ -14,9 +14,9 @@
 #define DD4HEP_CONDITIONS_H
 
 // Framework include files
-#include "DD4hep/IOV.h"
-#include "DD4hep/Handle.h"
-#include "DD4hep/OpaqueData.h"
+#include <DD4hep/IOV.h>
+#include <DD4hep/Handle.h>
+#include <DD4hep/OpaqueData.h>
 
 // C/C++ include files
 #include <vector>

@@ -15,7 +15,7 @@
 #define DD4HEP_MEMORY_H
 
 // Framework include files
-#include "RVersion.h"
+#include <RVersion.h>
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push

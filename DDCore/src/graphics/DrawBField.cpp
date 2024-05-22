@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Printout.h"
-#include "DD4hep/FieldTypes.h"
-#include "DD4hep/MatrixHelpers.h"
-#include "DD4hep/DetFactoryHelper.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/FieldTypes.h>
+#include <DD4hep/MatrixHelpers.h>
+#include <DD4hep/DetFactoryHelper.h>
 #include <cmath>
 
 using namespace dd4hep;

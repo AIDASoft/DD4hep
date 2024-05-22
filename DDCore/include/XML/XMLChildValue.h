@@ -15,10 +15,10 @@
 #define XML_XMLCHILDVALUE_H
 
 // Framework include files
-#include "XML/XMLTags.h"
+#include <XML/XMLTags.h>
 
 #define DD4HEP_DIMENSION_NS xml
-#include "Parsers/detail/ChildValue.h"
+#include <Parsers/detail/ChildValue.h>
 #undef  DD4HEP_DIMENSION_NS
 
 #endif // XML_XMLCHILDVALUE_H

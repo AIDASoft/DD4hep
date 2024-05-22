@@ -14,9 +14,9 @@
 #define XML_VOLUMEBUILDER_H
 
 // Framework include files
-#include "XML/XMLElements.h"
-#include "XML/XMLDetector.h"
-#include "DD4hep/Detector.h"
+#include <XML/XMLElements.h>
+#include <XML/XMLDetector.h>
+#include <DD4hep/Detector.h>
 
 // C/C++ include files
 #include <set>

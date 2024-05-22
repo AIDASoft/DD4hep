@@ -14,8 +14,8 @@
 #define DD4HEP_FIELDS_H
 
 // Framework include files
-#include "DD4hep/NamedObject.h"
-#include "DD4hep/Objects.h"
+#include <DD4hep/NamedObject.h>
+#include <DD4hep/Objects.h>
 
 // C/C++ include files
 #include <vector>

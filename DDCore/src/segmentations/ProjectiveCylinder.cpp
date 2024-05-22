@@ -1,3 +1,13 @@
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
 /*
  * ProjectiveCylinder.cpp
  *
@@ -5,8 +15,8 @@
  *      Author: Christian Grefe, CERN
  */
 
-#include "DDSegmentation/ProjectiveCylinder.h"
-#include "DDSegmentation/SegmentationUtil.h"
+#include <DDSegmentation/ProjectiveCylinder.h>
+#include <DDSegmentation/SegmentationUtil.h>
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -84,6 +94,3 @@ double ProjectiveCylinder::phi(const CellID& cID) const {
 } /* namespace DDSegmentation */
 } /* namespace dd4hep */
 
-// This is done DDCore/src/plugins/ReadoutSegmentations.cpp so the plugin is not part of libDDCore
-// needs also #include "DD4hep/Factories.h"
-// DECLARE_SEGMENTATION(ProjectiveCylinder,create_segmentation<dd4hep::DDSegmentation::ProjectiveCylinder>)

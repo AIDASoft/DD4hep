@@ -13,7 +13,10 @@
 #ifndef DD4HEP_GEOHANDLER_H
 #define DD4HEP_GEOHANDLER_H
 
-#include "DD4hep/Detector.h"
+/// Framework include files
+#include <DD4hep/Detector.h>
+
+/// C/C++ include files
 #include <set>
 #include <map>
 #include <vector>

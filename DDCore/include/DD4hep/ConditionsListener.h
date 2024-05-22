@@ -14,7 +14,7 @@
 #define DD4HEP_CONDITIONSLISTENER_H
 
 // Framework include files
-#include "DD4hep/Conditions.h"
+#include <DD4hep/Conditions.h>
 
 // C/C++ include files
 

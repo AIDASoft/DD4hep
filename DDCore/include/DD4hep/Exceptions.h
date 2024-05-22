@@ -17,8 +17,8 @@
 
 // Forward declaring header for package configuration
 
-#include "DD4hep/config.h"
-#include "Parsers/Exceptions.h"
+#include <DD4hep/config.h>
+#include <Parsers/Exceptions.h>
 
 #endif // DD4HEP_EXCEPTIONS_H
 

@@ -19,7 +19,7 @@
 #ifndef DDSEGMENTATION_TILEDLAYERSEGMENTATION_H
 #define DDSEGMENTATION_TILEDLAYERSEGMENTATION_H
 
-#include "DDSegmentation/Segmentation.h"
+#include <DDSegmentation/Segmentation.h>
 
 // C/C++ includes
 #include <string>
