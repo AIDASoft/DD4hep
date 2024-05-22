@@ -25,8 +25,8 @@
 #define DD4HEP_DDG4_GEANT4TCUSERPARTICLEHANDLER_H
 
 // Framework include files
-#include "DD4hep/Primitives.h"
-#include "DDG4/Geant4UserParticleHandler.h"
+#include <DD4hep/Primitives.h>
+#include <DDG4/Geant4UserParticleHandler.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -79,9 +79,9 @@ namespace dd4hep {
 //
 //====================================================================
 // Framework include files
-//#include "DDG4/Geant4TCUserParticleHandler.h"
-#include "DDG4/Geant4Particle.h"
-#include "DDG4/Factories.h"
+//#include <DDG4/Geant4TCUserParticleHandler.h>
+#include <DDG4/Geant4Particle.h>
+#include <DDG4/Factories.h>
 
 
 using namespace dd4hep::sim;

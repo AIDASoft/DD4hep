@@ -15,9 +15,9 @@
 #define DDG4_GEANT4PARTICLEPRINT_H
 
 // Framework include files
-#include "DDG4/Geant4EventAction.h"
-#include "DDG4/Geant4GeneratorAction.h"
-#include "DDG4/Geant4Particle.h"
+#include <DDG4/Geant4EventAction.h>
+#include <DDG4/Geant4GeneratorAction.h>
+#include <DDG4/Geant4Particle.h>
 
 // Forward declarations
 class G4Event;

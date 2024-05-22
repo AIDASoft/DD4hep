@@ -14,7 +14,7 @@
 #define DDG4_LCIO_LCIOEVENTREADER_H
 
 // Framework include files
-#include "DDG4/Geant4InputAction.h"
+#include <DDG4/Geant4InputAction.h>
 
 // Forward declarations
 namespace EVENT { class LCCollection;    }

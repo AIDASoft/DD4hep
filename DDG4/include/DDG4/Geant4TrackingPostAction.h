@@ -14,7 +14,7 @@
 #define DDG4_GEANT4TRACKINGPOSTACTION_H
 
 // Framework include files
-#include "DDG4/Geant4TrackingAction.h"
+#include <DDG4/Geant4TrackingAction.h>
 #include <vector>
 
 /// Namespace for the AIDA detector description toolkit

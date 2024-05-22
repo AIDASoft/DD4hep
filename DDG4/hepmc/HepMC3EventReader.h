@@ -13,7 +13,7 @@
 #define DDG4_HEPMC_HEPMC3EVENTREADER_H
 
 // Framework include files
-#include "DDG4/Geant4InputAction.h"
+#include <DDG4/Geant4InputAction.h>
 
 namespace HepMC3{ class GenEvent; }
 

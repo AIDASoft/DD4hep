@@ -12,20 +12,20 @@
 //==========================================================================
 
 // Framework include files
-#include "Exceptions.h"
-#include "IMPL/LCCollectionVec.h"
-#include "IMPL/SimTrackerHitImpl.h"
-#include "IMPL/SimCalorimeterHitImpl.h"
-#include "IMPL/MCParticleImpl.h"
-#include "UTIL/Operators.h"
-#include "UTIL/ILDConf.h"
+#include <Exceptions.h>
+#include <IMPL/LCCollectionVec.h>
+#include <IMPL/SimTrackerHitImpl.h>
+#include <IMPL/SimCalorimeterHitImpl.h>
+#include <IMPL/MCParticleImpl.h>
+#include <UTIL/Operators.h>
+#include <UTIL/ILDConf.h>
 
-#include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4Data.h"
-#include "DDG4/Geant4StepHandler.h"
+#include <DDG4/Geant4SensDetAction.h>
+#include <DDG4/Geant4Data.h>
+#include <DDG4/Geant4StepHandler.h>
 
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
 
 using namespace dd4hep::sim;
 using namespace dd4hep;
@@ -159,5 +159,5 @@ namespace  Tests {
   typedef Geant4SensitiveAction<LcioTestTracker> LcioTestTrackerAction;
 } // namespace
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 DECLARE_GEANT4SENSITIVE_NS(Tests,LcioTestTrackerAction)

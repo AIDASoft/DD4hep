@@ -14,10 +14,10 @@
 #define DDG4_GEANT4USERLIMITS_H
 
 // Framework include files
-#include "DD4hep/Objects.h"
+#include <DD4hep/Objects.h>
 
 // Geant 4 include files
-#include "G4UserLimits.hh"
+#include <G4UserLimits.hh>
 
 // Forward declarations
 class G4ParticleDefinition;

@@ -6,14 +6,14 @@
 #ifndef DDG4_PLUGINS_GEANT4EXTRAPARTICLES_H
 #define DDG4_PLUGINS_GEANT4EXTRAPARTICLES_H 1
 
-#include "DDG4/Geant4PhysicsConstructor.h"
+#include <DDG4/Geant4PhysicsConstructor.h>
 
 // geant4
-#include "G4ProcessManager.hh"
-#include "G4Decay.hh"
-#include "G4hIonisation.hh"
-#include "G4hMultipleScattering.hh"
-#include "G4ParticleTable.hh"
+#include <G4ProcessManager.hh>
+#include <G4Decay.hh>
+#include <G4hIonisation.hh>
+#include <G4hMultipleScattering.hh>
+#include <G4ParticleTable.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

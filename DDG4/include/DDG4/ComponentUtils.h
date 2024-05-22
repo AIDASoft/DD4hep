@@ -15,8 +15,8 @@
 #define DDG4_COMPONENTUTILS_H
 
 // Framework include files
-#include "DD4hep/Primitives.h"
-#include "DD4hep/Exceptions.h"
+#include <DD4hep/Primitives.h>
+#include <DD4hep/Exceptions.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

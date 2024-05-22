@@ -15,7 +15,7 @@
 #define DDG4_GEANT4TRACKINFORMATION_H
 
 // Framework include files
-#include "G4VUserTrackInformation.hh"
+#include <G4VUserTrackInformation.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

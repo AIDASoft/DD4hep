@@ -17,12 +17,12 @@
 #include <DDG4/Geant4HitHandler.h>
 
 // Geant4 include files
-#include "G4Step.hh"
-#include "G4StepPoint.hh"
-#include "G4VTouchable.hh"
-#include "G4VSensitiveDetector.hh"
-#include "G4EmSaturation.hh"
-#include "G4Version.hh"
+#include <G4Step.hh>
+#include <G4StepPoint.hh>
+#include <G4VTouchable.hh>
+#include <G4VSensitiveDetector.hh>
+#include <G4EmSaturation.hh>
+#include <G4Version.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

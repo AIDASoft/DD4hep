@@ -14,9 +14,9 @@
 #define DDG4_GEANT4READOUTVOLUMEFILTER_H
 
 // Framework include files
-#include "DD4hep/Readout.h"
-#include "DD4hep/IDDescriptor.h"
-#include "DDG4/Geant4SensDetAction.h"
+#include <DD4hep/Readout.h>
+#include <DD4hep/IDDescriptor.h>
+#include <DDG4/Geant4SensDetAction.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

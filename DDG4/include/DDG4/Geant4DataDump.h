@@ -15,9 +15,9 @@
 #define DDG4_GEANT4DATADUMP_H
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DDG4/Geant4Data.h"
-#include "DDG4/Geant4Particle.h"
+#include <DD4hep/Printout.h>
+#include <DDG4/Geant4Data.h>
+#include <DDG4/Geant4Particle.h>
 
 // C/C++ include files
 #include <vector>

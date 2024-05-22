@@ -14,16 +14,16 @@
 
 // Framework include files
 #include "LCIOEventReader.h"
-#include "DD4hep/Printout.h"
-#include "DDG4/Geant4Primary.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Factories.h"
+#include <DD4hep/Printout.h>
+#include <DDG4/Geant4Primary.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Factories.h>
 
-#include "G4ParticleTable.hh"
-#include "EVENT/MCParticle.h"
-#include "EVENT/LCCollection.h"
+#include <G4ParticleTable.hh>
+#include <EVENT/MCParticle.h>
+#include <EVENT/LCCollection.h>
 
-#include "G4Event.hh"
+#include <G4Event.hh>
 
 using namespace std;
 using namespace dd4hep;

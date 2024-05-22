@@ -14,11 +14,11 @@
 #define DDG4_GEANT4MAPPING_H
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Volumes.h"
-#include "DD4hep/GeoHandler.h"
-#include "DDG4/Geant4GeometryInfo.h"
-#include "DDG4/Geant4VolumeManager.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Volumes.h>
+#include <DD4hep/GeoHandler.h>
+#include <DDG4/Geant4GeometryInfo.h>
+#include <DDG4/Geant4VolumeManager.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

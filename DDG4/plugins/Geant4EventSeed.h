@@ -14,7 +14,7 @@
 #define DDG4_PLUGINS_GEANT4EVENTSEED_H
 
 // Framework include files
-#include "DDG4/Geant4RunAction.h"
+#include <DDG4/Geant4RunAction.h>
 
 // fallthrough only exists from c++17
 #if defined __has_cpp_attribute

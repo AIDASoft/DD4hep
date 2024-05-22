@@ -28,10 +28,10 @@
 #define DDG4_Geant4DefaultRangeCut_h 1
 
 // Framework include files
-#include "DDG4/Geant4PhysicsList.h"
+#include <DDG4/Geant4PhysicsList.h>
 
 // geant4
-#include "G4VUserPhysicsList.hh"
+#include <G4VUserPhysicsList.hh>
 
 
 /// Namespace for the AIDA detector description toolkit
@@ -75,6 +75,6 @@ namespace dd4hep {
 }
 #endif   // DDG4_Geant4DefaultRangeCut_h
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 using namespace dd4hep::sim;
 DECLARE_GEANT4ACTION(Geant4DefaultRangeCut)

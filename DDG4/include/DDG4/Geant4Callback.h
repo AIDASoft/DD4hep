@@ -15,6 +15,6 @@
 #define DDG4_GEANT4CALLBACK_H
 
 // Just forward header for dd4hep callbacks
-#include "DD4hep/Callback.h"
+#include <DD4hep/Callback.h>
 
 #endif // DDG4_GEANT4CALLBACK_H

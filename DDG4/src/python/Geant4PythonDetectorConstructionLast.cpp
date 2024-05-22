@@ -52,5 +52,5 @@ namespace dd4hep {
 
 using namespace dd4hep::sim;
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 DECLARE_GEANT4ACTION(Geant4PythonDetectorConstructionLast)

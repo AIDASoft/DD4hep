@@ -34,9 +34,9 @@
 #endif
 
 // FRamework include files
-#include "DD4hep/Memory.h"
-#include "DDG4/Geant4Data.h"
-#include "DDG4/Geant4Particle.h"
+#include <DD4hep/Memory.h>
+#include <DDG4/Geant4Data.h>
+#include <DDG4/Geant4Particle.h>
 
 namespace dd4hep {
   namespace DDSegmentation { }

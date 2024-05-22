@@ -14,7 +14,7 @@
 #define DDG4_GEANT4OUTPUT2ROOT_H
 
 // Framework include files
-#include "DDG4/Geant4OutputAction.h"
+#include <DDG4/Geant4OutputAction.h>
 
 class TFile;
 class TTree;

@@ -15,9 +15,9 @@
 #define DDG4_GEANT4PRIMARY_H
 
 // Framework include files
-#include "DD4hep/Memory.h"
-#include "DDG4/Geant4Vertex.h"
-#include "DDG4/Geant4Particle.h"
+#include <DD4hep/Memory.h>
+#include <DDG4/Geant4Vertex.h>
+#include <DDG4/Geant4Particle.h>
 
 // C/C++ include files
 #include <set>

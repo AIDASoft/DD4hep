@@ -12,23 +12,23 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/detail/Plugins.inl"
-#include "DDG4/Factories.h"
-#include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4PhysicsList.h"
-#include "DDG4/Geant4InputAction.h"
+#include <DD4hep/detail/Plugins.inl>
+#include <DDG4/Factories.h>
+#include <DDG4/Geant4SensDetAction.h>
+#include <DDG4/Geant4PhysicsList.h>
+#include <DDG4/Geant4InputAction.h>
 
 // Geant4 include files
-#include "G4VSensitiveDetector.hh"
-#include "G4MagIntegratorStepper.hh"
-#include "G4EquationOfMotion.hh"
-#include "G4Mag_EqRhs.hh"
-#include "G4MagneticField.hh"
-#include "G4VProcess.hh"
-#include "G4VPhysicsConstructor.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4VUserPhysicsList.hh"
-#include "G4VPrimaryGenerator.hh"
+#include <G4VSensitiveDetector.hh>
+#include <G4MagIntegratorStepper.hh>
+#include <G4EquationOfMotion.hh>
+#include <G4Mag_EqRhs.hh>
+#include <G4MagneticField.hh>
+#include <G4VProcess.hh>
+#include <G4VPhysicsConstructor.hh>
+#include <G4ParticleDefinition.hh>
+#include <G4VUserPhysicsList.hh>
+#include <G4VPrimaryGenerator.hh>
 
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(G4VSensitiveDetector*, (std::string,dd4hep::Detector*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(dd4hep::sim::Geant4Sensitive*, (dd4hep::sim::Geant4Context*,

@@ -14,8 +14,8 @@
 #define DDG4_GEANT4TRACKINGACTION_H
 
 // Framework include files
-#include "DDG4/Geant4Action.h"
-#include "G4VUserTrackInformation.hh"
+#include <DDG4/Geant4Action.h>
+#include <G4VUserTrackInformation.hh>
 
 class G4TrackingManager;
 class G4Track;

@@ -15,10 +15,10 @@
 #define DDG4_GEANT4UIMESSENGER_H
 
 // Framework include files
-#include "DD4hep/ComponentProperties.h"
-#include "DD4hep/Callback.h"
-#include "G4UImessenger.hh"
-#include "G4UIdirectory.hh"
+#include <DD4hep/ComponentProperties.h>
+#include <DD4hep/Callback.h>
+#include <G4UImessenger.hh>
+#include <G4UIdirectory.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

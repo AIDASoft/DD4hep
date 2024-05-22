@@ -15,7 +15,7 @@
 #define DDG4_GEANT4RUNACTION_H
 
 // Framework include files
-#include "DDG4/Geant4Action.h"
+#include <DDG4/Geant4Action.h>
 
 // Forward declaration
 class G4Run;

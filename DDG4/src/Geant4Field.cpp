@@ -12,9 +12,9 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4Field.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "CLHEP/Units/SystemOfUnits.h"
+#include <DDG4/Geant4Field.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <CLHEP/Units/SystemOfUnits.h>
 namespace units = dd4hep;
 
 using namespace dd4hep::sim;

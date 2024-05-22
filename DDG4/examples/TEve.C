@@ -8,22 +8,22 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#include "DD4hep/Detector.h"
+#include <DD4hep/Detector.h>
 
 // ROOT include files
-#include "TGeoManager.h"
-#include "TEveGeoNode.h"
-#include "TGLViewer.h"
-#include "TGLUtil.h"
-#include "TGLClip.h"
-#include "TMap.h"
-#include "TEveElement.h"
-#include "TSysEvtHandler.h"
-#include "TTimer.h"
-#include "TVirtualPad.h"
+#include <TGeoManager.h>
+#include <TEveGeoNode.h>
+#include <TGLViewer.h>
+#include <TGLUtil.h>
+#include <TGLClip.h>
+#include <TMap.h>
+#include <TEveElement.h>
+#include <TSysEvtHandler.h>
+#include <TTimer.h>
+#include <TVirtualPad.h>
 
 #define private public
-#include "TEveManager.h"
+#include <TEveManager.h>
 
 using namespace dd4hep::detail;
 

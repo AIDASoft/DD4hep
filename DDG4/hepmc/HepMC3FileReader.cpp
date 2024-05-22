@@ -26,8 +26,8 @@
 
 #include "HepMC3EventReader.h"
 
-#include "DDG4/EventParameters.h"
-#include "DDG4/RunParameters.h"
+#include <DDG4/EventParameters.h>
+#include <DDG4/RunParameters.h>
 
 #include <HepMC3/ReaderFactory.h>
 #include <HepMC3/Version.h>
@@ -113,8 +113,8 @@ namespace dd4hep  {
   }
 }
 
-#include "DD4hep/Printout.h"
-#include "DDG4/Factories.h"
+#include <DD4hep/Printout.h>
+#include <DDG4/Factories.h>
 
 using dd4hep::sim::HEPMC3FileReader;
 using dd4hep::sim::Geant4EventReader;

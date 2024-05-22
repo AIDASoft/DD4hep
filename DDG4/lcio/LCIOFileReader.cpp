@@ -27,9 +27,9 @@
 // Framework include files
 #include "LCIOEventReader.h"
 
-#include "DDG4/EventParameters.h"
+#include <DDG4/EventParameters.h>
 
-#include "lcio.h"
+#include <lcio.h>
 
 using namespace lcio ;
 
@@ -93,9 +93,9 @@ namespace dd4hep  {
 }
 #endif // DD4HEP_DDG4_LCIOFILEREADER_H
 
-#include "DD4hep/Printout.h"
-#include "DDG4/Factories.h"
-#include "UTIL/ILDConf.h"
+#include <DD4hep/Printout.h>
+#include <DDG4/Factories.h>
+#include <UTIL/ILDConf.h>
 
 using namespace dd4hep::sim;
 

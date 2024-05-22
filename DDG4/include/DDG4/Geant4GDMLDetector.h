@@ -14,7 +14,7 @@
 #ifndef DDG4_GEANT4GDMLDETECTOR_H
 #define DDG4_GEANT4GDMLDETECTOR_H
 
-#include "G4VUserDetectorConstruction.hh"
+#include <G4VUserDetectorConstruction.hh>
 #include <string>
 
 /// Namespace for the AIDA detector description toolkit

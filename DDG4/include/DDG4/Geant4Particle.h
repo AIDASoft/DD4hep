@@ -17,7 +17,7 @@
 // Framework include files
 
 // ROOT includes
-#include "Math/Vector4D.h"
+#include <Math/Vector4D.h>
 
 // Geant4 forward declarations
 class G4ParticleDefinition;

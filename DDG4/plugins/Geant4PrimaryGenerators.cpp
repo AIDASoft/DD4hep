@@ -12,13 +12,13 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 
 // Geant 4 include files
-#include "G4ParticleGun.hh"
-#include "G4SingleParticleSource.hh"
-#include "G4GeneralParticleSource.hh"
-#include "G4AdjointPrimaryGenerator.hh"
+#include <G4ParticleGun.hh>
+#include <G4SingleParticleSource.hh>
+#include <G4GeneralParticleSource.hh>
+#include <G4AdjointPrimaryGenerator.hh>
 
 DECLARE_GEANT4_GENERATOR(G4ParticleGun)
 DECLARE_GEANT4_GENERATOR(G4SingleParticleSource)
