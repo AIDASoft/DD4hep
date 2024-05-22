@@ -14,8 +14,8 @@
 #define DDG4_GEANT4UIMANAGER_H
 
 // Framework include files
-#include "DDG4/Geant4Call.h"
-#include "DDG4/Geant4Action.h"
+#include <DDG4/Geant4Call.h>
+#include <DDG4/Geant4Action.h>
 
 /// Forward declarations
 class G4VisManager;

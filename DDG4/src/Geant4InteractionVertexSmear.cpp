@@ -12,12 +12,12 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4Random.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4InputHandling.h"
-#include "DDG4/Geant4InteractionVertexSmear.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4Random.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4InputHandling.h>
+#include <DDG4/Geant4InteractionVertexSmear.h>
 
 // C/C++ include files
 #include <cmath>

@@ -15,8 +15,8 @@
 #define DDG4_GEANT4CONTEXT_H
 
 // Framework incloude files
-#include "DD4hep/Primitives.h"
-#include "DD4hep/ObjectExtensions.h"
+#include <DD4hep/Primitives.h>
+#include <DD4hep/ObjectExtensions.h>
 
 // Forward declarations
 class G4Run;

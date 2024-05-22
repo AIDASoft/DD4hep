@@ -15,24 +15,24 @@
 #define DD4HEP_DDG4_GEANT4OUTPUT2LCIO_H
 
 // Framework include files
-#include "DD4hep/VolumeManager.h"
-#include "DDG4/Geant4OutputAction.h"
+#include <DD4hep/VolumeManager.h>
+#include <DDG4/Geant4OutputAction.h>
 
-#include "DDG4/EventParameters.h"
-#include "DDG4/RunParameters.h"
+#include <DDG4/EventParameters.h>
+#include <DDG4/RunParameters.h>
 // Geant4 headers
-#include "G4Threading.hh"
-#include "G4AutoLock.hh"
+#include <G4Threading.hh>
+#include <G4AutoLock.hh>
 
-#include "DD4hep/Detector.h"
+#include <DD4hep/Detector.h>
 #include <G4Version.hh>
 
 // lcio include files
-#include "lcio.h"
-#include "IO/LCWriter.h"
-#include "IMPL/LCEventImpl.h"
-#include "IMPL/LCCollectionVec.h"
-#include "EVENT/LCParameters.h"
+#include <lcio.h>
+#include <IO/LCWriter.h>
+#include <IMPL/LCEventImpl.h>
+#include <IMPL/LCCollectionVec.h>
+#include <EVENT/LCParameters.h>
 
 using namespace lcio ;
 
@@ -170,30 +170,30 @@ namespace dd4hep {
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Detector.h"
-#include "DDG4/Geant4HitCollection.h"
-#include "DDG4/Geant4DataConversion.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4Particle.h"
-#include "DDG4/Geant4Data.h"
-#include "DDG4/Geant4Action.h"
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Detector.h>
+#include <DDG4/Geant4HitCollection.h>
+#include <DDG4/Geant4DataConversion.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4Particle.h>
+#include <DDG4/Geant4Data.h>
+#include <DDG4/Geant4Action.h>
 
-//#include "DDG4/Geant4Output2LCIO.h"
-#include "G4ParticleDefinition.hh"
-#include "G4VProcess.hh"
-#include "G4Event.hh"
-#include "G4Run.hh"
+//#include <DDG4/Geant4Output2LCIO.h>
+#include <G4ParticleDefinition.hh>
+#include <G4VProcess.hh>
+#include <G4Event.hh>
+#include <G4Run.hh>
 
 // LCIO include files
-#include "IMPL/LCEventImpl.h"
-#include "IMPL/LCRunHeaderImpl.h"
-#include "IMPL/LCCollectionVec.h"
-#include "IMPL/ClusterImpl.h"
-#include "IMPL/SimTrackerHitImpl.h"
-#include "IMPL/SimCalorimeterHitImpl.h"
-#include "IMPL/MCParticleImpl.h"
-#include "UTIL/ILDConf.h"
+#include <IMPL/LCEventImpl.h>
+#include <IMPL/LCRunHeaderImpl.h>
+#include <IMPL/LCCollectionVec.h>
+#include <IMPL/ClusterImpl.h>
+#include <IMPL/SimTrackerHitImpl.h>
+#include <IMPL/SimCalorimeterHitImpl.h>
+#include <IMPL/MCParticleImpl.h>
+#include <UTIL/ILDConf.h>
 
 using namespace dd4hep::sim;
 using namespace dd4hep;
@@ -202,7 +202,7 @@ namespace {
   G4Mutex action_mutex=G4MUTEX_INITIALIZER;
 }
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 DECLARE_GEANT4ACTION(Geant4Output2LCIO)
 
 /// Standard constructor

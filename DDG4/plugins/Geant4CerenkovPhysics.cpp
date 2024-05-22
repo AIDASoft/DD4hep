@@ -25,21 +25,21 @@
 #define DDG4_GEANT4CERENKOVPHYSICS_H 1
 
 /// Framework include files
-#include "DDG4/Geant4PhysicsList.h"
+#include <DDG4/Geant4PhysicsList.h>
 
 /// Geant4 include files
-#include "G4ParticleTableIterator.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4ParticleTypes.hh"
-#include "G4ParticleTable.hh"
-#include "G4ProcessManager.hh"
-#include "G4Version.hh"
+#include <G4ParticleTableIterator.hh>
+#include <G4ParticleDefinition.hh>
+#include <G4ParticleTypes.hh>
+#include <G4ParticleTable.hh>
+#include <G4ProcessManager.hh>
+#include <G4Version.hh>
 
 #if G4VERSION_NUMBER >= 1070
-#include "G4OpticalParameters.hh"
+#include <G4OpticalParameters.hh>
 #endif
 
-#include "G4Cerenkov.hh"
+#include <G4Cerenkov.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -119,6 +119,6 @@ namespace dd4hep {
 }
 #endif   // DDG4_GEANT4CERENKOVPHYSICS_H
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 using namespace dd4hep::sim;
 DECLARE_GEANT4ACTION(Geant4CerenkovPhysics)

@@ -15,8 +15,8 @@
 #define DDG4_PYTHON_GEANT4PYTHONACTION_H
 
 // Framework include files
-#include "DDG4/Geant4Action.h"
-#include "TPyReturn.h"
+#include <DDG4/Geant4Action.h>
+#include <TPyReturn.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

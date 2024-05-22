@@ -16,11 +16,11 @@
 //
 //====================================================================
 // FRamework include files
-#include "DDG4/Python/Geant4PythonCall.h"
-#include "DDG4/Python/Geant4PythonAction.h"
-#include "DDG4/Python/Geant4PythonInitialization.h"
-#include "DDG4/Python/Geant4PythonDetectorConstruction.h"
-#include "DDG4/Python/PyDDG4.h"
+#include <DDG4/Python/Geant4PythonCall.h>
+#include <DDG4/Python/Geant4PythonAction.h>
+#include <DDG4/Python/Geant4PythonInitialization.h>
+#include <DDG4/Python/Geant4PythonDetectorConstruction.h>
+#include <DDG4/Python/PyDDG4.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace  {  class DDG4Python {};   }

@@ -17,11 +17,11 @@
 
 
 // Framework include files
-#include "DDG4/Geant4PhysicsList.h"
+#include <DDG4/Geant4PhysicsList.h>
 
 // Geant4 include files
-#include "G4ParticleTable.hh"
-#include "G4VPhysicsConstructor.hh"
+#include <G4ParticleTable.hh>
+#include <G4VPhysicsConstructor.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

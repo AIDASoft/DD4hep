@@ -15,14 +15,14 @@
 #include "Geant4EventSeed.h"
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/Printout.h"
+#include <DD4hep/InstanceCount.h>
+#include <DD4hep/Printout.h>
 
-#include "DDG4/Geant4EventAction.h"
-#include "DDG4/Geant4Random.h"
-#include "DDG4/Factories.h"
+#include <DDG4/Geant4EventAction.h>
+#include <DDG4/Geant4Random.h>
+#include <DDG4/Factories.h>
 
-#include "CLHEP/Random/EngineFactory.h"
+#include <CLHEP/Random/EngineFactory.h>
 
 //Geant includes
 #include <G4Run.hh>

@@ -33,8 +33,8 @@
 #include <DDG4/Geant4Random.h>
 
 // Geant4 include files
-#include "G4Gamma.hh"
-#include "G4SystemOfUnits.hh"
+#include <G4Gamma.hh>
+#include <G4SystemOfUnits.hh>
 
 // C/C++ include files
 

@@ -12,12 +12,12 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4EventAction.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4EventAction.h>
 
 // Geant4 headers
-#include "G4Threading.hh"
-#include "G4AutoLock.hh"
+#include <G4Threading.hh>
+#include <G4AutoLock.hh>
 
 using namespace dd4hep::sim;
 

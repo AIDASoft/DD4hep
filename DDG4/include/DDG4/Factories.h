@@ -14,11 +14,11 @@
 #define DDG4_FACTORIES_H
 
 // Framework include files
-#include "DDG4/Defs.h"
-#include "DD4hep/Plugins.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Factories.h"
-#include "DD4hep/Primitives.h"
+#include <DDG4/Defs.h>
+#include <DD4hep/Plugins.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Factories.h>
+#include <DD4hep/Primitives.h>
 
 // C/C++ include files
 #include <string>

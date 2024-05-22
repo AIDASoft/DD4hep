@@ -25,9 +25,9 @@
 #define DDG4_GEANT4PARTICLEHANDLER_H
 
 // Framework include files
-#include "DDG4/Geant4Primary.h"
-#include "DDG4/Geant4GeneratorAction.h"
-#include "DDG4/Geant4MonteCarloTruth.h"
+#include <DDG4/Geant4Primary.h>
+#include <DDG4/Geant4GeneratorAction.h>
+#include <DDG4/Geant4MonteCarloTruth.h>
 
 // Forward declarations
 class G4Step;

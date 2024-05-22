@@ -15,7 +15,7 @@
 #define DDG4_PYTHON_GEANT4PYTHONCALL_H
 
 // ROOT include files
-#include "TPyReturn.h"
+#include <TPyReturn.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

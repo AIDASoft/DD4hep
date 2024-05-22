@@ -12,11 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Geant4SensDetAction.inl"
-#include "DDG4/Geant4FastSimHandler.h"
-#include "DDG4/Geant4EventAction.h"
-#include "G4OpticalPhoton.hh"
-#include "G4VProcess.hh"
+#include <DDG4/Geant4SensDetAction.inl>
+#include <DDG4/Geant4FastSimHandler.h>
+#include <DDG4/Geant4EventAction.h>
+#include <G4OpticalPhoton.hh>
+#include <G4VProcess.hh>
 
 
 /// Namespace for the AIDA detector description toolkit
@@ -773,7 +773,7 @@ namespace dd4hep {
 
 using namespace dd4hep::sim;
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 // Special void entry point
 DECLARE_GEANT4SENSITIVE(Geant4VoidSensitiveAction)
 // Standard factories used for simulation

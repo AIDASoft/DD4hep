@@ -14,17 +14,18 @@
 #define DDG4_GEANT4TRACKHANDLER_H
 
 // Framework include files
-#include "DDG4/Defs.h"
+#include <DDG4/Defs.h>
 
 // Geant4 include files
-#include "G4Track.hh"
-#include "G4TrajectoryPoint.hh"
-#include "G4VTouchable.hh"
-#include "G4VSensitiveDetector.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4DynamicParticle.hh"
-#include "G4VProcess.hh"
+#include <G4Track.hh>
+#include <G4TrajectoryPoint.hh>
+#include <G4VTouchable.hh>
+#include <G4VSensitiveDetector.hh>
+#include <G4ParticleDefinition.hh>
+#include <G4DynamicParticle.hh>
+#include <G4VProcess.hh>
 
+// C/C++ include files
 #include <stdexcept>
 
 // Forward declarations

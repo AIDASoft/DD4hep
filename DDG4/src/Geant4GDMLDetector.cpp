@@ -20,7 +20,7 @@
 //#define GEANT4_HAS_GDML
 
 #ifdef GEANT4_HAS_GDML
-#include "G4GDMLParser.hh"
+#include <G4GDMLParser.hh>
 #endif
 
 dd4hep::sim::Geant4GDMLDetector::Geant4GDMLDetector(const std::string& gdmlFile)

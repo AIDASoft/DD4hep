@@ -13,29 +13,29 @@
 
 // Framework include files
 #define DDG4_MAKE_INSTANTIATIONS
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
-#include "DDG4/Geant4HitCollection.h"
-#include "DDG4/Geant4DataConversion.h"
-#include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Geant4Primary.h"
-#include "DDG4/Geant4Data.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
+#include <DDG4/Geant4HitCollection.h>
+#include <DDG4/Geant4DataConversion.h>
+#include <DDG4/Geant4SensDetAction.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4Primary.h>
+#include <DDG4/Geant4Data.h>
 
 // LCIO includes
-#include "lcio.h"
-#include "IMPL/LCCollectionVec.h"
+#include <lcio.h>
+#include <IMPL/LCCollectionVec.h>
 //
-#include "IMPL/LCEventImpl.h"
-#include "IMPL/ClusterImpl.h"
-#include "IMPL/SimTrackerHitImpl.h"
-#include "IMPL/SimCalorimeterHitImpl.h"
-#include "IMPL/MCParticleImpl.h"
+#include <IMPL/LCEventImpl.h>
+#include <IMPL/ClusterImpl.h>
+#include <IMPL/SimTrackerHitImpl.h>
+#include <IMPL/SimCalorimeterHitImpl.h>
+#include <IMPL/MCParticleImpl.h>
 //
-#include "UTIL/Operators.h"
-#include "UTIL/ILDConf.h"
+#include <UTIL/Operators.h>
+#include <UTIL/ILDConf.h>
 
-#include "CLHEP/Units/SystemOfUnits.h"
+#include <CLHEP/Units/SystemOfUnits.h>
 
 using namespace std;
 using namespace lcio ;

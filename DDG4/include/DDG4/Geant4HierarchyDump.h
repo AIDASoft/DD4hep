@@ -14,7 +14,7 @@
 #define DDG4_GEANT4HIERARCHYDUMP_H
 
 // Geant 4 include files
-#include "G4VPhysicalVolume.hh"
+#include <G4VPhysicalVolume.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

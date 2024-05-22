@@ -18,7 +18,7 @@
 #include <string>
 
 // ROOT include file(s)
-#include "TPyReturn.h"
+#include <TPyReturn.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {

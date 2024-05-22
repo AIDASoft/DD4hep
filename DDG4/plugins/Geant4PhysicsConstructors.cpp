@@ -12,7 +12,7 @@
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 
 // ==================================================================================
 // Predefined physics constructors
@@ -29,8 +29,8 @@
 // ==================================================================================
 
 // Geant4 physics lists
-#include "G4Version.hh"
-#include "G4DecayPhysics.hh"
+#include <G4Version.hh>
+#include <G4DecayPhysics.hh>
 
 // ==================================================================================
 #if G4VERSION_NUMBER>=960 and G4VERSION_NUMBER<1000

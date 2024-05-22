@@ -16,25 +16,25 @@
 //#define G4VIS_USE_OPENGL
 //#define G4UI_USE_TCSH
 
-#include "G4PVPlacement.hh"
-#include "G4RunManager.hh"
-#include "G4UImanager.hh"
-#include "G4UIsession.hh"
-#include "Randomize.hh"
+#include <G4PVPlacement.hh>
+#include <G4RunManager.hh>
+#include <G4UImanager.hh>
+#include <G4UIsession.hh>
+#include <Randomize.hh>
 
 #ifdef G4VIS_USE_OPENGLX
-#include "G4OpenGLImmediateX.hh"
-#include "G4OpenGLStoredX.hh"
+#include <G4OpenGLImmediateX.hh>
+#include <G4OpenGLStoredX.hh>
 #endif
 
-#include "G4VisManager.hh"
-#include "G4VisExecutive.hh"
-#include "G4UIExecutive.hh"
-#include "G4VUserPhysicsList.hh"
-#include "G4ParticleTypes.hh"
-#include "globals.hh"
+#include <G4VisManager.hh>
+#include <G4VisExecutive.hh>
+#include <G4UIExecutive.hh>
+#include <G4VUserPhysicsList.hh>
+#include <G4ParticleTypes.hh>
+#include <globals.hh>
 
-#include "DDG4/Geant4GDMLDetector.h"
+#include <DDG4/Geant4GDMLDetector.h>
 #include <cerrno>
 #include <stdexcept>
 

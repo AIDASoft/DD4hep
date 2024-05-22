@@ -13,6 +13,7 @@
 #ifndef DDG4_GEANT4PLACEMENTPARAMETERISATION_H
 #define DDG4_GEANT4PLACEMENTPARAMETERISATION_H
 
+/// Framework include files
 #include <DD4hep/Volumes.h>
 
 /// Geant4 include files

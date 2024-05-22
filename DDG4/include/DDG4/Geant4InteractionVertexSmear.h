@@ -25,10 +25,10 @@
 #define DDG4_GEANT4INTERACTIONVERTEXSMEAR_H
 
 // Framework include files
-#include "DDG4/Geant4GeneratorAction.h"
+#include <DDG4/Geant4GeneratorAction.h>
 
 // ROOT include files
-#include "Math/Vector4D.h"
+#include <Math/Vector4D.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

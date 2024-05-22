@@ -15,7 +15,7 @@
 #define DDG4_GEANT4ISOTROPEGENERATOR_H
 
 // Framework include files
-#include "DDG4/Geant4ParticleGenerator.h"
+#include <DDG4/Geant4ParticleGenerator.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

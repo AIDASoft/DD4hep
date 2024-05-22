@@ -14,10 +14,10 @@
 #define DDG4_GEANT4ASSEMBLYVOLUME_H
 
 /// ROOT includes
-#include "TGeoNode.h"
+#include <TGeoNode.h>
 
 /// Geant4 include files
-#include "G4AssemblyVolume.hh"
+#include <G4AssemblyVolume.hh>
 
 /// C/C++ include files
 #include <vector>

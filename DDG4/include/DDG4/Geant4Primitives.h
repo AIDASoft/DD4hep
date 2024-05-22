@@ -14,7 +14,7 @@
 #define DDG4_GEANT4PRIMITIVES_H
 
 // Framework include files
-#include "DD4hep/Primitives.h"
+#include <DD4hep/Primitives.h>
 
 /// Geant 4 forward declarations
 

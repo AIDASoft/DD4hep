@@ -118,7 +118,7 @@ namespace dd4hep {
 #include <G4Material.hh>
 #include <G4Version.hh>
 #include <G4VSolid.hh>
-#include "CLHEP/Units/SystemOfUnits.h"
+#include <CLHEP/Units/SystemOfUnits.h>
 
 #ifndef GEANT4_NO_GDML
 #include <G4GDMLParser.hh>

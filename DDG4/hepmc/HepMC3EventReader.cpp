@@ -16,10 +16,10 @@
 
 // Framework include files
 #include "HepMC3EventReader.h"
-#include "DD4hep/Printout.h"
-#include "DDG4/Geant4Primary.h"
-#include "DDG4/Geant4Context.h"
-#include "DDG4/Factories.h"
+#include <DD4hep/Printout.h>
+#include <DDG4/Geant4Primary.h>
+#include <DDG4/Geant4Context.h>
+#include <DDG4/Factories.h>
 
 #include <G4ParticleTable.hh>
 
@@ -29,7 +29,7 @@
 #include <HepMC3/GenVertex.h>
 #include <HepMC3/Units.h>
 
-#include "G4Event.hh"
+#include <G4Event.hh>
 
 
 using dd4hep::sim::HEPMC3EventReader;

@@ -27,21 +27,21 @@
 #define DDG4_GEANT4OPTICALPHOTONPHYSICS_H 1
 
 // Framework include files
-#include "DDG4/Geant4PhysicsList.h"
+#include <DDG4/Geant4PhysicsList.h>
 
 /// Geant4 include files
-#include "G4OpAbsorption.hh"
-#include "G4OpRayleigh.hh"
-#include "G4OpMieHG.hh"
-#include "G4OpBoundaryProcess.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4ParticleTypes.hh"
-#include "G4ParticleTable.hh"
-#include "G4ProcessManager.hh"
-#include "G4Version.hh"
+#include <G4OpAbsorption.hh>
+#include <G4OpRayleigh.hh>
+#include <G4OpMieHG.hh>
+#include <G4OpBoundaryProcess.hh>
+#include <G4ParticleDefinition.hh>
+#include <G4ParticleTypes.hh>
+#include <G4ParticleTable.hh>
+#include <G4ProcessManager.hh>
+#include <G4Version.hh>
 
 #if G4VERSION_NUMBER >= 1070
-#include "G4OpticalParameters.hh"
+#include <G4OpticalParameters.hh>
 #endif
 
 /// Namespace for the AIDA detector description toolkit
@@ -117,6 +117,6 @@ namespace dd4hep {
 }
 #endif   // DDG4_GEANT4OPTICALPHOTONPHYSICS_H
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 using namespace dd4hep::sim;
 DECLARE_GEANT4ACTION(Geant4OpticalPhotonPhysics)

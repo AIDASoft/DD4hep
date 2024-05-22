@@ -14,10 +14,10 @@
 #define DDG4_GEANT4HITCOLLECTION_H
 
 // Framework include files
-#include "DD4hep/Handle.h"
-#include "DDG4/ComponentUtils.h"
-#include "G4VHitsCollection.hh"
-#include "G4VHit.hh"
+#include <DD4hep/Handle.h>
+#include <DDG4/ComponentUtils.h>
+#include <G4VHitsCollection.hh>
+#include <G4VHit.hh>
 
 // C/C++ include files
 #include <vector>

@@ -12,20 +12,23 @@
 //==========================================================================
 
 // Framework include files
-#include "CLHEP/Units/SystemOfUnits.h"
-#include "DD4hep/DD4hepUnits.h"
-#include "DD4hep/Printout.h"
-#include "DD4hep/Detector.h"
-#include "DDG4/Geant4Particle.h"
-#include "DDG4/Geant4Data.h"
+#include <CLHEP/Units/SystemOfUnits.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/Printout.h>
+#include <DD4hep/Detector.h>
+#include <DDG4/Geant4Particle.h>
+#include <DDG4/Geant4Data.h>
+
+// C/C++ include files
 #include <vector>
 #include <cstdio>
 #include <memory>
 #include <cerrno>
 
-#include "TFile.h"
-#include "TTree.h"
-#include "TSystem.h"
+// ROOT include files
+#include <TFile.h>
+#include <TTree.h>
+#include <TSystem.h>
 
 using namespace std;
 using namespace dd4hep;

@@ -15,8 +15,8 @@
 #define DDG4_GEANT4DATACONVERSION_H
 
 // Framework include files
-#include "DD4hep/VolumeManager.h"
-#include "DD4hep/DetElement.h"
+#include <DD4hep/VolumeManager.h>
+#include <DD4hep/DetElement.h>
 #include <typeinfo>
 
 /// Namespace for the AIDA detector description toolkit

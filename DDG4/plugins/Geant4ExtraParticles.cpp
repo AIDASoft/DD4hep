@@ -18,17 +18,17 @@
  */
 
 #include "Geant4ExtraParticles.h"
-#include "DDG4/Geant4PhysicsConstructor.h"
-#include "DDG4/Geant4Kernel.h"
-#include "DDG4/Factories.h"
+#include <DDG4/Geant4PhysicsConstructor.h>
+#include <DDG4/Geant4Kernel.h>
+#include <DDG4/Factories.h>
 
-#include "G4ParticleTable.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4PhysicalConstants.hh"
-#include "G4Version.hh"
+#include <G4ParticleTable.hh>
+#include <G4ParticleDefinition.hh>
+#include <G4PhysicalConstants.hh>
+#include <G4Version.hh>
 
-#include "CLHEP/Units/SystemOfUnits.h"
-#include "CLHEP/Units/PhysicalConstants.h"
+#include <CLHEP/Units/SystemOfUnits.h>
+#include <CLHEP/Units/PhysicalConstants.h>
 
 #include <fstream>
 #include <sstream>

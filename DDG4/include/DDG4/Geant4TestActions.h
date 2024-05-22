@@ -14,16 +14,16 @@
 #define DDG4_GEANT4TESTACTIONS_H
 
 // Framework include files
-#include "DDG4/Geant4Handle.h"
-#include "DDG4/Geant4Kernel.h"
-#include "DDG4/Geant4GeneratorAction.h"
-#include "DDG4/Geant4RunAction.h"
-#include "DDG4/Geant4EventAction.h"
-#include "DDG4/Geant4TrackingAction.h"
-#include "DDG4/Geant4SteppingAction.h"
-#include "DDG4/Geant4StackingAction.h"
-#include "DDG4/Geant4ActionPhase.h"
-#include "DDG4/Geant4SensDetAction.h"
+#include <DDG4/Geant4Handle.h>
+#include <DDG4/Geant4Kernel.h>
+#include <DDG4/Geant4GeneratorAction.h>
+#include <DDG4/Geant4RunAction.h>
+#include <DDG4/Geant4EventAction.h>
+#include <DDG4/Geant4TrackingAction.h>
+#include <DDG4/Geant4SteppingAction.h>
+#include <DDG4/Geant4StackingAction.h>
+#include <DDG4/Geant4ActionPhase.h>
+#include <DDG4/Geant4SensDetAction.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

@@ -25,25 +25,25 @@
 #define DDG4_GEANT4SCINTILLATIONPHYSICS_H 1
 
 /// Framework include files
-#include "DDG4/Geant4PhysicsList.h"
+#include <DDG4/Geant4PhysicsList.h>
 
 /// Geant4 include files
-#include "G4Version.hh"
-#include "G4ParticleTableIterator.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4LossTableManager.hh"
-#include "G4ProcessManager.hh"
-#include "G4ParticleTypes.hh"
-#include "G4ParticleTable.hh"
-#include "G4EmSaturation.hh"
-#include "G4Threading.hh"
+#include <G4Version.hh>
+#include <G4ParticleTableIterator.hh>
+#include <G4ParticleDefinition.hh>
+#include <G4LossTableManager.hh>
+#include <G4ProcessManager.hh>
+#include <G4ParticleTypes.hh>
+#include <G4ParticleTable.hh>
+#include <G4EmSaturation.hh>
+#include <G4Threading.hh>
 
 #if G4VERSION_NUMBER >= 1070
-#include "G4OpticalParameters.hh"
+#include <G4OpticalParameters.hh>
 
 /// This is a beta release problem:
 #if G4VERSION_NUMBER == 110000
-#include "G4OpticalParameters.hh"
+#include <G4OpticalParameters.hh>
 #pragma message("Geant4 version 11 beta: temporary fix to be removed!")
 void G4OpticalParameters::SetScintExcitationRatio(double) {}
 void G4OpticalParameters::SetScintYieldFactor(double) {}
@@ -51,7 +51,7 @@ void G4OpticalParameters::SetScintYieldFactor(double) {}
 
 #endif
 
-#include "G4Scintillation.hh"
+#include <G4Scintillation.hh>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -196,6 +196,6 @@ namespace dd4hep {
 }
 #endif   // DDG4_GEANT4SCINTILLATIONPHYSICS_H
 
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 using namespace dd4hep::sim;
 DECLARE_GEANT4ACTION(Geant4ScintillationPhysics)

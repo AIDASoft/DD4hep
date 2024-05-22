@@ -11,7 +11,7 @@
 //====================================================================
 
 /// Framework include files
-#include "DDG4/EventParameters.h"
+#include <DDG4/EventParameters.h>
 
 /// C/C++ include files
 #include <map>

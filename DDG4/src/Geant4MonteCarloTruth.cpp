@@ -12,8 +12,8 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4MonteCarloTruth.h"
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4MonteCarloTruth.h>
 
 using namespace dd4hep::sim;
 

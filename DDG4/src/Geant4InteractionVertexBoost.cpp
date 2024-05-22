@@ -12,10 +12,10 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/InstanceCount.h"
-#include "DDG4/Geant4InputHandling.h"
-#include "DDG4/Geant4InteractionVertexBoost.h"
+#include <DD4hep/Printout.h>
+#include <DD4hep/InstanceCount.h>
+#include <DDG4/Geant4InputHandling.h>
+#include <DDG4/Geant4InteractionVertexBoost.h>
 
 using namespace dd4hep::sim;
 

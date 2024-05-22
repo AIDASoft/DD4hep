@@ -25,7 +25,7 @@
 // Geant4 include files
 #include <G4Run.hh>
 #include <G4Event.hh>
-#include "G4Version.hh"
+#include <G4Version.hh>
 #include <G4TouchableHistory.hh>
 #include <G4VSensitiveDetector.hh>
 #include <G4VGFlashSensitiveDetector.hh>

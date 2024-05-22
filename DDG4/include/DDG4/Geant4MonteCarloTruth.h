@@ -15,7 +15,7 @@
 #define DDG4_GEANT4MONTECARLOTRUTH_H
 
 // Framework include files
-#include "DDG4/Geant4Action.h"
+#include <DDG4/Geant4Action.h>
 
 // C/C++ include files
 #include <map>

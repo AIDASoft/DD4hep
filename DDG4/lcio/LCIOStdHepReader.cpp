@@ -25,7 +25,7 @@
 #define DD4HEP_DDG4_LCIOSTDHEPREADER_H
 
 // LCIO include files
-#include "UTIL/LCStdHepRdr.h"
+#include <UTIL/LCStdHepRdr.h>
 
 // Framework include files
 #include "LCIOEventReader.h"
@@ -76,7 +76,7 @@ namespace dd4hep  {
 //==========================================================================
 
 // Framework include files
-#include "DDG4/Factories.h"
+#include <DDG4/Factories.h>
 
 // Factory entry
 DECLARE_GEANT4_EVENT_READER_NS(dd4hep::sim,LCIOStdHepReader)

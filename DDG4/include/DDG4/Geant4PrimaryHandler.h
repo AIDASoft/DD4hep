@@ -25,8 +25,9 @@
 #define DDG4_GEANT4PRIMARYHANDLER_H
 
 // Framework include files
-#include "DDG4/Geant4GeneratorAction.h"
+#include <DDG4/Geant4GeneratorAction.h>
 
+// C/C++ include files
 #include <set>
 
 /// Namespace for the AIDA detector description toolkit

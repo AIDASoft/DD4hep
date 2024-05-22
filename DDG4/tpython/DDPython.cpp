@@ -35,7 +35,7 @@
 #ifdef _XOPEN_SOURCE
 #undef _XOPEN_SOURCE
 #endif /* _XOPEN_SOURCE */
-#include "Python.h"
+#include <Python.h>
 #endif
 
 namespace {
