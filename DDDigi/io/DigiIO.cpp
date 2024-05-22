@@ -474,7 +474,7 @@ namespace dd4hep {
                                        const std::vector<sim::Geant4Particle*>& input,
                                        ParticleMapping& particles)
     {
-      Key mkey = key;
+      Key mkey = std::move(key);
       for( auto* part_ptr : input )   {
         std::shared_ptr<sim::Geant4Particle> p(part_ptr);
         Particle part;

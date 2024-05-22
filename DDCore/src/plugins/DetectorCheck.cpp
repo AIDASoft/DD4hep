@@ -203,7 +203,7 @@ void DetectorCheck::execute(DetElement sdet, size_t depth)   {
   }
 
   if ( check_volmgr )   {
-    Chain chain;
+    Chain        chain;
     PlacedVolume pv  = m_det.placement();
     VolIDs       ids;
 
@@ -219,7 +219,7 @@ void DetectorCheck::execute(DetElement sdet, size_t depth)   {
     }
     m_sens_counters.reset();
     m_current_detector = m_det;
-    checkManagerVolumeTree(m_det, pv, ids, chain, 1, depth);
+    checkManagerVolumeTree(m_det, pv, std::move(ids), chain, 1, depth);
     count_volmgr_place = m_place_counters;
     count_volmgr_sens  = m_sens_counters;
     total += count_volmgr_place;
@@ -623,7 +623,7 @@ void DetectorCheck::checkManagerVolumeTree(DetElement detector, PlacedVolume pv,
       child_chain.emplace_back(place);
       child_ids.insert(child_ids.end(), place.volIDs().begin(), place.volIDs().end());
       checkManagerSingleVolume(de, place, child_ids, child_chain);
-      checkManagerVolumeTree(de, place, child_ids, child_chain, depth+1, mx_depth);
+      checkManagerVolumeTree(de, place, std::move(child_ids), child_chain, depth+1, mx_depth);
     }
   }
 }

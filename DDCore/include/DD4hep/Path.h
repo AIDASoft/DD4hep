@@ -48,15 +48,17 @@ namespace dd4hep {
     Path() : std::string()                            {                    }
     /// Initializing constructor
     Path(const std::string& copy) : std::string(copy) {                    }
+    /// Initializing constructor
+    Path(std::string&& copy) : std::string(std::move(copy)) {              }
     /// Copy constructor
     Path(const Path& copy) : std::string(copy)        {                    }
     /// Move constructor
-    Path(Path&& copy) : std::string(copy)             {                    }
+    Path(Path&& copy) : std::string(std::move(copy))  {                    }
     /// Assigning constructor
     template <class Iter> Path(Iter _begin,Iter _end) {
       if ( _begin != _end )  {
         std::string str(_begin, _end);
-        this->std::string::operator=(str);
+        this->std::string::operator=(std::move(str));
       }
     }
     /// Default destructor
@@ -73,12 +75,12 @@ namespace dd4hep {
     }
     /// Move assignment operator from Path object
     Path& operator=(Path&& copy)          {
-      this->std::string::operator=(copy);
+      this->std::string::operator=(std::move(copy));
       return *this;
     }
     /// Assignment operator from string object
     Path& operator=(std::string&& copy)   {
-      this->std::string::operator=(copy);
+      this->std::string::operator=(std::move(copy));
       return *this;
     }
     /// Append operation

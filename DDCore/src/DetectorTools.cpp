@@ -262,21 +262,21 @@ static void detail::tools::makePlacementPath(PlacementPath det_nodes, PlacementP
 void detail::tools::placementPath(DetElement element, PlacementPath& all_nodes)   {
   PlacementPath det_nodes;
   elementPath(element,det_nodes);
-  makePlacementPath(det_nodes, all_nodes);
+  makePlacementPath(std::move(det_nodes), all_nodes);
 }
 
 /// Collect detector elements placements to the parent detector element [no holes!]
 void detail::tools::placementPath(DetElement parent, DetElement element, PlacementPath& all_nodes)   {
   PlacementPath det_nodes;
   elementPath(parent,element,det_nodes);
-  makePlacementPath(det_nodes, all_nodes);
+  makePlacementPath(std::move(det_nodes), all_nodes);
 }
 
 /// Assemble the path of the PlacedVolume selection
 std::string detail::tools::placementPath(DetElement element)  {
   PlacementPath path;
   placementPath(element,path);
-  return placementPath(path);
+  return placementPath(std::move(path));
 }
 
 /// Assemble the path of the PlacedVolume selection

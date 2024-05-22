@@ -584,8 +584,8 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     }
   }
 #endif
-  m_equivalentTracks = equivalents;
-  m_particleMap = finalParticles;
+  m_equivalentTracks = std::move(equivalents);
+  m_particleMap = std::move(finalParticles);
 }
 
 /// Default callback to be answered if the particle should be kept if NO user handler is installed

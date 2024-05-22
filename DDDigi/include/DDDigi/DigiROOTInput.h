@@ -50,7 +50,7 @@ namespace dd4hep {
 	Key          key;
 	TBranch&     branch;
 	TClass&      clazz;
-      container_t(Key k, TBranch& b, TClass& c) : key(k), branch(b), clazz(c) {}
+        container_t(Key k, TBranch& b, TClass& c) : key(std::move(k)), branch(b), clazz(c) {}
       };
       class work_t   {
       public:

@@ -78,7 +78,7 @@ namespace dd4hep {
 
         predicate_t() = default;
         predicate_t(std::function<bool(const deposit_t&)> func, uint32_t i, const segmentation_t* s)
-          : callback(func), id(i), segmentation(s) {}
+          : callback(std::move(func)), id(i), segmentation(s) {}
         predicate_t(predicate_t&& copy) = default;
         predicate_t(const predicate_t& copy) = default;
         predicate_t& operator = (predicate_t&& copy) = default;

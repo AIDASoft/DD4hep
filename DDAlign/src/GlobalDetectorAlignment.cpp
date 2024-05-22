@@ -103,7 +103,7 @@ namespace {
   GlobalAlignment _alignment(const GlobalDetectorAlignment& det)  {
     dd4hep::DetElement::Object& e = det._data();
     if ( !e.global_alignment.isValid() )  {
-      std::string path = dd4hep::detail::tools::placementPath(det);
+      std::string path   = dd4hep::detail::tools::placementPath(det);
       e.global_alignment = dd4hep::Ref_t(new GlobalAlignmentData(path));
     }
     dd4hep::Handle<GlobalAlignmentData> h(e.global_alignment);
@@ -142,13 +142,13 @@ namespace {
 
 /// Initializing constructor
 GlobalDetectorAlignment::GlobalDetectorAlignment(DetElement e)
-  : DetElement(e)
+  : DetElement(std::move(e))
 {
 }
 
 /// Initializing constructor
 GlobalDetectorAlignment::GlobalDetectorAlignment(DetElement&& e)
-  : DetElement(e)
+  : DetElement(std::move(e))
 {
 }
 

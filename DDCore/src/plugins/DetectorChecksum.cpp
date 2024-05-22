@@ -1472,11 +1472,11 @@ static long create_checksum(Detector& description, int argc, char** argv) {
   DetectorChecksum wr(description);
   DetElement de = description.world();
   wr.precision = precision;
-  if ( !len_unit.empty()  ) wr.m_len_unit_nam = len_unit;
-  if ( !ang_unit.empty()  ) wr.m_ang_unit_nam = ang_unit;
-  if ( !ene_unit.empty()  ) wr.m_ene_unit_nam = ene_unit;
-  if ( !dens_unit.empty() ) wr.m_densunit_nam = dens_unit;
-  if ( !atom_unit.empty() ) wr.m_atomunit_nam = atom_unit;
+  if ( !len_unit.empty()  ) wr.m_len_unit_nam = std::move(len_unit);
+  if ( !ang_unit.empty()  ) wr.m_ang_unit_nam = std::move(ang_unit);
+  if ( !ene_unit.empty()  ) wr.m_ene_unit_nam = std::move(ene_unit);
+  if ( !dens_unit.empty() ) wr.m_densunit_nam = std::move(dens_unit);
+  if ( !atom_unit.empty() ) wr.m_atomunit_nam = std::move(atom_unit);
   if ( newline ) wr.newline = "\n";
   wr.have_hash_strings = have_hash_strings;
   wr.write_files  = write_files;

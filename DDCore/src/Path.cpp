@@ -139,7 +139,7 @@ Path Path::normalize()  const {
 
     // ignore a name and following ".."
     if ( temp.empty() && itr_path.find(colon) != std::string::npos )  {
-      temp = itr_path;
+      temp = std::move(itr_path);
       continue;
     }
     else if (!temp.empty()
