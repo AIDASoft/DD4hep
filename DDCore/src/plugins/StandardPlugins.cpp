@@ -1136,7 +1136,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       std::stringstream log;
       PlacedVolume pv(ideal);
       bool sensitive = false;
-      std::string opt_info, pref = prefix;
+      std::string opt_info, pref = std::move(prefix);
 
       if ( level >= m_printMaxLevel )    {
         return 1;
@@ -1599,7 +1599,7 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
   IDDescriptor id_descriptor;
   Actor        actor(description);
   actor.parse_args(argc, argv);
-  return actor.dump(description.world(), 0, id_descriptor, chain);
+  return actor.dump(description.world(), 0, id_descriptor, std::move(chain));
 }
 DECLARE_APPLY(DD4hep_DetectorDump,dump_detelement_tree<0>)
 DECLARE_APPLY(DD4hep_DetectorVolumeDump,dump_detelement_tree<1>)

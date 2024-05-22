@@ -122,7 +122,7 @@ void MultipoleField::fieldComponents(const double* pos, double* field) {
     this->transform.GetTranslation(this->translation);
   }
   Transform3D::Point p, p0(pos[0],pos[1],pos[2]);
-  if      ( flag&FIELD_IDENTITY      ) p = p0;
+  if      ( flag&FIELD_IDENTITY      ) p = std::move(p0);
   else if ( flag&FIELD_POSITION_ONLY ) p = p0 - this->translation;
   else      p = this->inverse * p0;
 

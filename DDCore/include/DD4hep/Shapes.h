@@ -152,7 +152,7 @@ namespace dd4hep {
     /// Direct assignment using the implementation pointer
     Solid_type(T* p) : Handle<T>(p) {  }
     /// Move Constructor from handle
-    Solid_type(Handle<T>&& e) : Handle<T>(e) {  }
+    Solid_type(Handle<T>&& e) : Handle<T>(std::move(e)) {  }
     /// Copy Constructor from handle
     Solid_type(const Handle<T>& e) : Handle<T>(e) {  }
     /// Constructor to be used when passing an already created object: need to check pointers

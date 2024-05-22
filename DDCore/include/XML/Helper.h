@@ -28,7 +28,7 @@ namespace dd4hep {
   template <typename T>
     T getAttrOrDefault(const dd4hep::xml::Element& e, const dd4hep::xml::XmlChar* attr_name, T default_value)
     {
-      return (e.hasAttr(attr_name)) ? e.attr<T>(attr_name) : default_value;
+      return (e.hasAttr(attr_name)) ? e.attr<T>(attr_name) : std::move(default_value);
     }
 
   /// Namespace for implementation details of the AIDA detector description toolkit

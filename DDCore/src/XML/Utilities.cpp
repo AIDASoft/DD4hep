@@ -117,7 +117,7 @@ dd4hep::Volume dd4hep::xml::createStdVolume(Detector& description, xml::Element 
              elt.visStr("").c_str(),
              elt.regionStr("").c_str(),
              elt.limitsStr("").c_str());
-    elt = x_s;
+    elt = std::move(x_s);
   }
   else if ( elt.hasAttr(_U(type)) )  {
     typ = elt.typeStr();

@@ -96,8 +96,8 @@ const Particle& dd4hep::digi::get_history_particle(const DigiEvent& event, Key h
   key.set_segment(history_key.segment());
   key.set_mask(history_key.mask());
   key.set_item(item_key.item());
-  const auto& particles = segment.get<ParticleMapping>(key);
-  return particles.get(history_key);
+  const auto& particles = segment.get<ParticleMapping>(std::move(key));
+  return particles.get(std::move(history_key));
 }
 
 const EnergyDeposit& dd4hep::digi::get_history_deposit(const DigiEvent& event, Key::itemkey_type container_item, Key history_key)   {
@@ -106,7 +106,7 @@ const EnergyDeposit& dd4hep::digi::get_history_deposit(const DigiEvent& event, K
   key.set_segment(history_key.segment());
   key.set_item(container_item);
   key.set_mask(history_key.mask());
-  const auto& hits = segment.get<DepositVector>(key);
+  const auto& hits = segment.get<DepositVector>(std::move(key));
   return hits.at(history_key.item());
 }
 
@@ -160,8 +160,8 @@ void EnergyDeposit::update_deposit_weighted(const EnergyDeposit& upda)  {
   double    err = depositError + upda.depositError;
   Position  pos = ((deposit / sum) * position) + ((upda.deposit / sum) * upda.position);
   Direction mom = ((deposit / sum) * momentum) + ((upda.deposit / sum) * upda.momentum);
-  position = pos;
-  momentum = mom;
+  position = std::move(pos);
+  momentum = std::move(mom);
   deposit  = sum;
   depositError = err;
   history.update(upda.history);
@@ -173,8 +173,8 @@ void EnergyDeposit::update_deposit_weighted(EnergyDeposit&& upda)  {
   double    err = depositError + upda.depositError;
   Position  pos = ((deposit / sum) * position) + ((upda.deposit / sum) * upda.position);
   Direction mom = ((deposit / sum) * momentum) + ((upda.deposit / sum) * upda.momentum);
-  position = pos;
-  momentum = mom;
+  position = std::move(pos);
+  momentum = std::move(mom);
   deposit  = sum; 
   depositError = err;
   history.update(std::move(upda.history));
@@ -506,7 +506,7 @@ const std::any* DataSegment::get_item(Key key, bool exc)  const   {
   it = this->data.find(key);
   if (it != this->data.end()) return &it->second;
 
-  if ( exc ) throw std::runtime_error(invalid_request(key));
+  if ( exc ) throw std::runtime_error(invalid_request(std::move(key)));
   return nullptr;
 }
 

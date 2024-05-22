@@ -119,8 +119,8 @@ DigiStoreDump::dump_history(DigiContext& context,
 
   str << Key::key_name(container_key) << "[" << seq_no << "]:";
   line = format("+----- %-30s Container: Segment:%04X Mask:%04X Item:%08X Cell:%016lX History: Hits:%ld Parts:%ld",
-		str.str().c_str(), container_key.segment(), container_key.mask(), container_key.item(),
-		cell, item.history.hits.size(), item.history.particles.size());
+                str.str().c_str(), int(container_key.segment()), int(container_key.mask()), int(container_key.item()),
+                cell, item.history.hits.size(), item.history.particles.size());
   records.emplace_back(line);
   for( std::size_t i=0; i<item.history.hits.size(); ++i )   {
     const auto& entry = item.history.hits[i];

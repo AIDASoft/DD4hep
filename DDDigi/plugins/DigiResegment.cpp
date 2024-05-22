@@ -131,7 +131,7 @@ namespace dd4hep {
                      );
               }
               EnergyDeposit d(dep.second);
-              d.position = global;
+              d.position = std::move(global);
               d.momentum = dep.second.momentum;
               m.emplace(new_cell, std::move(d));
             }

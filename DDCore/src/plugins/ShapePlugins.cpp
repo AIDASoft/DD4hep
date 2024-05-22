@@ -714,8 +714,8 @@ static Handle<TObject> create_BooleanShape(Detector&, xml_h element)   {
   xml_comp_t x_shape2( c ) ;
   
   // and create solids
-  Solid solid1( xml_comp_t( x_shape1 ).createShape()) ;
-  Solid solid2( xml_comp_t( x_shape2 ).createShape())  ;
+  Solid solid1( xml_comp_t( std::move(x_shape1) ).createShape()) ;
+  Solid solid2( xml_comp_t( std::move(x_shape2) ).createShape())  ;
 
 
   std::string op = e.attr<std::string>(_U(operation)) ;
