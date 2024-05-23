@@ -807,8 +807,7 @@ int Evaluator::Object::setVariable(const char * name, const char * expression)  
 
 void Evaluator::Object::setVariableNoLock(const char * name, double value)  {
   std::string item_name = name;
-  Item item(value);
-  imp->theDictionary[item_name] = item;
+  imp->theDictionary[item_name] = Item(value);
 }
 
 int Evaluator::Object::setFunction(const char * name,double (*fun)())   {
@@ -837,14 +836,12 @@ int Evaluator::Object::setFunction(const char * name, double (*fun)(double,doubl
 
 void Evaluator::Object::setFunctionNoLock(const char * name,double (*fun)(double))   {
   std::string item_name = "1"+std::string(name);
-  Item item(FCN(fun).ptr);
-  imp->theDictionary[item_name] = item;
+  imp->theDictionary[item_name] = Item(FCN(fun).ptr);
 }
 
 void Evaluator::Object::setFunctionNoLock(const char * name, double (*fun)(double,double))  {
   std::string item_name = "2"+std::string(name);
-  Item item(FCN(fun).ptr);
-  imp->theDictionary[item_name] = item;
+  imp->theDictionary[item_name] = Item(FCN(fun).ptr);
 }
 
 
