@@ -110,12 +110,12 @@ static void* create_object(Detector& description, int argc, char** argv)   {
     if ( argv[i] )    {
       if ( ::strncmp(argv[i],"-vis",6) == 0 )   {
         VisAttr vis = description.visAttributes(argv[++i]);
-        if ( vis.isValid() ) proc->minVis = vis;
+        if ( vis.isValid() ) proc->minVis = std::move(vis);
         continue;
       }
       else if ( ::strncmp(argv[i],"-min-vis",6) == 0 )   {
         VisAttr vis = description.visAttributes(argv[++i]);
-        if ( vis.isValid() ) proc->minVis = vis;
+        if ( vis.isValid() ) proc->minVis = std::move(vis);
         continue;
       }
       else if ( ::strncmp(argv[i],"-min-density",6) == 0 )   {
@@ -125,7 +125,7 @@ static void* create_object(Detector& description, int argc, char** argv)   {
       }
       else if ( ::strncmp(argv[i],"-name",4) == 0 )   {
         std::string name = argv[++i];
-        proc->name = name;
+        proc->name = std::move(name);
         continue;
       }
       else if ( ::strncmp(argv[i],"-show",4) == 0 )   {
