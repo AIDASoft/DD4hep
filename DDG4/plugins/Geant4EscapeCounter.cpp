@@ -37,6 +37,7 @@ namespace dd4hep {
       size_t m_collectionID;
       /// Detector name set
       std::vector<std::string> m_detectorNames;
+
     public:
       /// Standard constructor
       Geant4EscapeCounter(Geant4Context* ctxt, const std::string& name, DetElement det, Detector& description);
@@ -101,7 +102,6 @@ bool Geant4EscapeCounter::process(const G4Step* step, G4TouchableHistory* /* his
   Geant4TouchableHandler handler(step);
   std::string hdlr_path  = handler.path();
   Position prePos     = h.prePos();
-  Position postPos    = h.postPos();
   Geant4HitCollection* coll = collection(m_collectionID);
   SimpleTracker::Hit*  hit = new SimpleTracker::Hit();
   hit->g4ID          = th.id();
@@ -110,7 +110,7 @@ bool Geant4EscapeCounter::process(const G4Step* step, G4TouchableHistory* /* his
   hit->energyDeposit = th.energy();
   hit->position      = prePos;
   hit->momentum      = h.trkMom();
-  hit->length        = (postPos-prePos).R();
+  hit->length        = (h.postPos()-prePos).R();
   hit->truth.trackID = th.id();
   hit->truth.deposit = h.deposit();
   hit->truth.pdgID   = th.pdgID();

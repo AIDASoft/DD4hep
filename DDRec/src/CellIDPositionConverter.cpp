@@ -11,12 +11,12 @@
 //
 //==========================================================================
 
-#include "DDRec/CellIDPositionConverter.h"
+#include <DDRec/CellIDPositionConverter.h>
 
-#include "DD4hep/Detector.h"
-#include "DD4hep/detail/VolumeManagerInterna.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/detail/VolumeManagerInterna.h>
 
-#include "TGeoManager.h"
+#include <TGeoManager.h>
 
 namespace dd4hep {
   namespace rec {
@@ -221,7 +221,7 @@ namespace dd4hep {
 	// see if we have a child DetElement that contains the point ...
 
 	DetElement result ;
-	for( auto it : det.children() ){
+	for( const auto& it : det.children() ){
 	  // std::cout << " -   " << global << it.second.name()  << " " << containsPoint( it.second , global )
 	  // 	    << " nChild: " << it.second.children().size() << " isValid: " <<  it.second.isValid()
 	  // 	    << std::endl ;

@@ -382,12 +382,12 @@ void FalphaNoise::normalize(size_t shots)    {
 /// Internal usage to normalize using user defined random engine
 void FalphaNoise::normalizeVariance(const random_engine_wrapper& generator, size_t shots)  {
   double mean = 0e0, mean2 = 0e0, var;
-  auto tmp = m_multipliers;
-  double val = 1e0;
+  auto tmp    = m_multipliers;
+  double val  = 1e0;
   /// We have to correct for the case of white noise: alpha=0
   for ( size_t i=0; i<m_poles; ++i)   {
     val *= (double(i) - 0.5) / double(i+1);
-    m_multipliers[i] = val;
+    tmp[i] = val;
   }
   for ( size_t i=0; i < shots; i++)  {
     var = (*this)(generator);
@@ -397,7 +397,6 @@ void FalphaNoise::normalizeVariance(const random_engine_wrapper& generator, size
   mean  /= double(shots);
   var = std::sqrt(mean2/double(shots) - mean*mean);
   m_variance *= m_variance/var;
-  m_multipliers = tmp;
   m_distribution = std::normal_distribution<double>(0.0, m_variance);
 }
 

@@ -382,7 +382,7 @@ void DigiKernel::submit (DigiContext& context, ParallelCall*const algorithms[], 
       std::exception_ptr eptr = std::current_exception();
       internals->stop = true;
       error("%s+++ C++ exception. STOP event loop. [%s]", tag, e.what());
-      std::rethrow_exception(eptr);
+      std::rethrow_exception(std::move(eptr));
     }
     return;
   }

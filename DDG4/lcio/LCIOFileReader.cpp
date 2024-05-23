@@ -44,23 +44,26 @@ namespace dd4hep  {
 
     /// get the parameters from the input LCIO Event and store them in the EventParameters extension
     template <class T=EVENT::LCParameters> void EventParameters::ingestParameters(T const& source) {
-      EVENT::StringVec intKeys; source.getIntKeys(intKeys);
-      EVENT::StringVec floatKeys; source.getFloatKeys(floatKeys);
-      EVENT::StringVec stringKeys; source.getStringKeys(stringKeys);
+      EVENT::StringVec intKeys;
+      EVENT::StringVec floatKeys;
+      EVENT::StringVec stringKeys;
+      source.getIntKeys(intKeys);
+      source.getFloatKeys(floatKeys);
+      source.getStringKeys(stringKeys);
       for(auto const& key: intKeys) {
         EVENT::IntVec intVec;
         source.getIntVals(key,intVec);
-        m_intValues[key] = intVec;
+        m_intValues[key] = std::move(intVec);
       }
       for(auto const& key: floatKeys) {
         EVENT::FloatVec floatVec;
         source.getFloatVals(key,floatVec);
-        m_fltValues[key] = floatVec;
+        m_fltValues[key] = std::move(floatVec);
       }
       for(auto const& key: stringKeys) {
         EVENT::StringVec stringVec;
         source.getStringVals(key,stringVec);
-        m_strValues[key] = stringVec;
+        m_strValues[key] = std::move(stringVec);
       }
     }
 

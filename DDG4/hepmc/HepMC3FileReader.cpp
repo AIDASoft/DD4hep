@@ -139,7 +139,7 @@ HEPMC3FileReader::HEPMC3FileReader(const std::string& nam)
   // so we can open the file again from the start
   m_reader = HepMC3::deduce_reader(nam);
   // and set the run info object now
-  m_reader->set_run_info(runInfo);
+  m_reader->set_run_info(std::move(runInfo));
 #endif
   m_directAccess = false;
 }

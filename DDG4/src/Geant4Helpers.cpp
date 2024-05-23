@@ -39,7 +39,7 @@ namespace  {
     MyTransform3D(const double* t)
       : G4Transform3D(1.0, 0.0, 0.0, t[0]*CM_2_MM, 0.0, 1.0, 0.0, t[1]*CM_2_MM, 0.0, 0.0, 1.0, t[2]*CM_2_MM)  {
     }
-    MyTransform3D(Transform3D&& copy) : Transform3D(copy) {}
+    MyTransform3D(Transform3D&& copy) : Transform3D(std::move(copy)) {}
   };
   /// Overload to access protected constructor
   class MyG4RotationMatrix : public G4RotationMatrix   {

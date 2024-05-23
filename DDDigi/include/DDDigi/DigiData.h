@@ -74,6 +74,7 @@ namespace dd4hep {
         mask_type    mask;
         itemkey_type item;
       } values;
+
     public:
       /// Default constructor
       Key();
@@ -884,13 +885,13 @@ namespace dd4hep {
     public: 
       template <typename T> using map_type_t = std::map<std::string, std::vector<T> >;
       struct header_data  {
-	map_type_t<std::string> stringParams;
-	map_type_t<float>       floatParams;
-	map_type_t<int>         intParams;
-	std::int32_t            run_number    {  -1 };
-	std::int32_t            event_number  {  -1 };
-	std::int64_t            time_stamp    {   0 };
-	double                  event_weight  { 0e0 };
+        map_type_t<std::string> stringParams;
+        map_type_t<float>       floatParams;
+        map_type_t<int>         intParams;
+        std::int32_t            run_number    {  -1 };
+        std::int32_t            event_number  {  -1 };
+        std::int64_t            time_stamp    {   0 };
+        double                  event_weight  { 0e0 };
       };
       std::shared_ptr<header_data> data;
     public: 
@@ -912,35 +913,35 @@ namespace dd4hep {
       std::size_t size()  const;
       /// Access the event number
       std::int32_t getEventNumber() const   {
-	return data->event_number;
+        return data->event_number;
       }
       /// Access the run number
       std::int32_t getRunNumber() const   {
-	return data->run_number;
+        return data->run_number;
       }
       /// Access the time stamp
       std::uint64_t getTimeStamp() const   {
-	return data->time_stamp;
+        return data->time_stamp;
       }
       /// Access the event weight
       float getWeight() const   {
-	return data->event_weight;
+        return data->event_weight;
       }
       /// Set the event number
       void setEventNumber(std::int32_t value)   {
-	data->event_number = value;
+        data->event_number = value;
       }
       /// Set the run number
       void setRunNumber(std::int32_t value)   {
-	data->run_number = value;
+        data->run_number = value;
       }
       /// Set the time stamp
       void setTimeStamp(std::uint64_t value)   {
-	data->time_stamp = value;
+        data->time_stamp = value;
       }
       /// Set the event weight
       void setWeight(float value)   {
-	data->event_weight = value;
+        data->event_weight = value;
       }
     };
 
@@ -1053,24 +1054,24 @@ namespace dd4hep {
     template<typename DATA> inline DATA& DataSegment::get(Key key)     {
       if ( DATA* ptr = std::any_cast<DATA>(this->get_item(key, true)) )
         return *ptr;
-      throw std::runtime_error(this->invalid_cast(key, typeid(DATA)));
+      throw std::runtime_error(this->invalid_cast(std::move(key), typeid(DATA)));
     }
     /// Access data as reference by key. If not existing, an exception is thrown
     template<typename DATA> inline const DATA& DataSegment::get(Key key)  const   {
       if ( const DATA* ptr = std::any_cast<DATA>(this->get_item(key, true)) )
         return *ptr;
-      throw std::runtime_error(this->invalid_cast(key, typeid(DATA)));
+      throw std::runtime_error(this->invalid_cast(std::move(key), typeid(DATA)));
     }
 
     /// Access data as pointers by key. If not existing, nullptr is returned
     template<typename DATA> inline DATA* DataSegment::pointer(Key key)     {
-      if ( DATA* ptr = std::any_cast<DATA>(this->get_item(key, false)) )
+      if ( DATA* ptr = std::any_cast<DATA>(this->get_item(std::move(key), false)) )
         return ptr;
       return nullptr;
     }
     /// Access data as pointers by key. If not existing, nullptr is returned
     template<typename DATA> inline const DATA* DataSegment::pointer(Key key)  const   {
-      if ( const DATA* ptr = std::any_cast<DATA>(this->get_item(key, false)) )
+      if ( const DATA* ptr = std::any_cast<DATA>(this->get_item(std::move(key), false)) )
         return ptr;
       return nullptr;
     }
@@ -1080,14 +1081,14 @@ namespace dd4hep {
       key.set_segment(this->id);
       value.key.set_segment(this->id);
       std::any item = std::make_any<DATA>(std::move(value));
-      return this->emplace_any(key, std::move(item));
+      return this->emplace_any(std::move(key), std::move(item));
     }
 
     /// Helper to place data to data segment
     template <typename KEY, typename DATA> 
     bool put_data(DataSegment& segment, KEY key, DATA&& value)    {
       std::any item = std::make_any<DATA>(std::move(value));
-      return segment.emplace_any(key, std::move(item));
+      return segment.emplace_any(std::move(key), std::move(item));
     }
 
     ///  User event data for DDDigi

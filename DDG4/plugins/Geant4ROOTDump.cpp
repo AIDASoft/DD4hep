@@ -118,7 +118,7 @@ static long dump_root(dd4hep::Detector&, int argc, char** argv) {
       for (Int_t i=0;i<nbranches;i++)  {
         TBranch* branch = (TBranch*)branches->UncheckedAt(i);
         std::pair<TClass*,void*> data = load(branch,ievt);
-        if ( data.first ) event[branch->GetName()] = data;
+        if ( data.first ) event[branch->GetName()] = std::move(data);
       }
       // Now dump the stuff
       for(ENTRIES::const_iterator i=event.begin(); i!=event.end(); ++i)  {

@@ -436,7 +436,7 @@ static void* create_printer(Detector& description, int argc,char** argv)  {
   }
   PRINTER* p = (flags) ? new PRINTER(slice, prefix, flags) : new PRINTER(slice, prefix);
   p->printLevel = print_level;
-  if ( !name.empty() ) p->name = name;
+  if ( !name.empty() ) p->name = std::move(name);
   return (void*)dynamic_cast<WRAPPER*>(createProcessorWrapper(p));
 }
 

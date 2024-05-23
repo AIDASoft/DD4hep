@@ -54,7 +54,7 @@ namespace  {
 
     explicit Item()              : what(UNKNOWN),   variable(0),expression(), function(0) {}
     explicit Item(double x)      : what(VARIABLE),  variable(x),expression(), function(0) {}
-    explicit Item(std::string x) : what(EXPRESSION),variable(0),expression(x),function(0) {}
+    explicit Item(std::string x) : what(EXPRESSION),variable(0),expression(std::move(x)),function(0) {}
     explicit Item(void  *x)      : what(FUNCTION),  variable(0),expression(), function(x) {}
   };
 
@@ -757,14 +757,14 @@ int Evaluator::Object::setEnviron(const char* name, const char* value)  {
   item.variable = 0;
   dic_type::iterator iter = imp->theDictionary.find(item_name);
   if (iter != imp->theDictionary.end()) {
-    iter->second = item;
+    iter->second = std::move(item);
     if (item_name == name) {
       return EVAL::WARNING_EXISTING_VARIABLE;
     }else{
       return EVAL::WARNING_EXISTING_FUNCTION;
     }
   }else{
-    imp->theDictionary[item_name] = item;
+    imp->theDictionary[item_name] = std::move(item);
     return EVAL::OK;
   }
 }

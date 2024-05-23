@@ -146,7 +146,7 @@ ConditionsContent::addDependency(DetElement de,
                                  Condition::itemkey_type item,
                                  std::shared_ptr<ConditionUpdateCall> callback)
 {
-  ConditionDependency* dep = new ConditionDependency(de, item, callback);
+  ConditionDependency* dep = new ConditionDependency(de, item, std::move(callback));
   return addDependency(dep);
 }
 

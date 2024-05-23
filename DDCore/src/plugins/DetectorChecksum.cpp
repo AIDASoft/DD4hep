@@ -138,13 +138,17 @@ DetectorChecksum::~DetectorChecksum() {
 template <typename T> std::string DetectorChecksum::refName(T handle)  const  {
   std::string nam = handle->GetName();
   std::size_t idx = nam.find("_0x");
-  return idx == std::string::npos ? nam : nam.substr(0, idx);
+  if ( idx == std::string::npos ) return nam;
+  return nam.substr(0, idx);
 }
+
 template <> std::string DetectorChecksum::refName(Segmentation handle)  const  {
   std::string nam = handle->name();
   std::size_t idx = nam.find("_0x");
-  return idx == std::string::npos ? nam : nam.substr(0, idx);
+  if ( idx == std::string::npos ) return nam;
+  return nam.substr(0, idx);
 }
+
 template <typename T> std::string DetectorChecksum::attr_name(T handle)  const  {
   std::string n = " name=\"" + refName(handle)+"\"";
   return n;

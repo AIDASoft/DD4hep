@@ -128,17 +128,17 @@ namespace dd4hep {
     /// Access to geometry hub
     Detector& detectorDescription() const;
     /// Access to the EVE manager
-    TEveManager& manager() const                         { return *m_eve;             }
+    TEveManager& manager() const                           { return *m_eve;             }
     /// Access View configurations
-    const ViewConfigurations& viewConfigurations() const { return m_viewConfigs;      }
+    const ViewConfigurations& viewConfigurations() const   { return m_viewConfigs;      }
     /// Set Vis level in geo manager (either from XML or BEFORE XML file was loaded)
-    void setVisLevel(int new_level)                      { m_visLevel = new_level;    }
+    void setVisLevel(int new_level)                        { m_visLevel = new_level;    }
     /// Set Eve Geometry load level in manager (either from XML or BEFORE XML file was loaded)
-    void setLoadLevel(int new_level)                     { m_loadLevel = new_level;   }
-    /// Set Event Handler Plugin name
-    void setEventHandlerName(std::string eventHandlerName) {m_eventHandlerName = eventHandlerName;}
+    void setLoadLevel(int new_level)                       { m_loadLevel = new_level;   }
     /// Get Event Handler Plugin name
-    std::string getEventHandlerName() {return m_eventHandlerName;}
+    std::string getEventHandlerName()                      { return m_eventHandlerName; }
+    /// Set Event Handler Plugin name
+    void setEventHandlerName(const std::string& nam)       { m_eventHandlerName = nam;  }
 
     /// Access to X-client
     TGClient& client() const;

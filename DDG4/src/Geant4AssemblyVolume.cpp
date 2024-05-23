@@ -159,7 +159,7 @@ void Geant4AssemblyVolume::imprint(const Geant4Converter& cnv,
     }
     else if ( triplet.GetAssembly() )  {
       // Place volumes in this assembly with composed transformation
-      imprint(cnv, parent, new_chain, avol, pMotherLV, Tfinal, i*100+copyNumBase, surfCheck );
+      imprint(cnv, parent, std::move(new_chain), avol, pMotherLV, Tfinal, i*100+copyNumBase, surfCheck );
     }
     else   {
       G4Exception("Geant4AssemblyVolume::imprint(..)", "GeomVol0003", FatalException,

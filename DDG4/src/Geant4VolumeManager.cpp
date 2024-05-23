@@ -64,10 +64,11 @@ namespace {
           PlacedVolume::VolIDs ids;
           m_entries.clear();
           chain.emplace_back(m_detDesc.world().placement().ptr());
-          scanPhysicalVolume(pv.ptr(), ids, sd, chain);
+          scanPhysicalVolume(pv.ptr(), std::move(ids), sd, chain);
           continue;
         }
-        printout(WARNING, "Geant4VolumeManager", "++ Detector element %s of type %s has no placement.", de.name(), de.type().c_str());
+        printout(WARNING, "Geant4VolumeManager",
+                 "++ Detector element %s of type %s has no placement.", de.name(), de.type().c_str());
       }
       /// Needed to compute the cellID of parameterized volumes
       for( const auto& pv : m_geo.g4Placements )   {

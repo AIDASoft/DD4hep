@@ -228,8 +228,7 @@ static void* create_object(Detector& description, int argc, char** argv)   {
         printout(ERROR,"VisMaterialProcessor","++ Invalid DetElement path: %s",path.c_str());
       }
       else if ( ::strncmp(argv[i],"-name",4) == 0 )   {
-        std::string name = argv[++i];
-        proc->name = name;
+        proc->name = argv[++i];
         continue;
       }
       else if ( ::strncmp(argv[i],"-show",4) == 0 )   {

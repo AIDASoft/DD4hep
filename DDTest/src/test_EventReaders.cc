@@ -73,7 +73,7 @@ int main(int argc, char** argv ){
 
       //Reset Reader to check what happens if moving to far in the file
       if (not skipEOF) {
-        thisReader = dd4hep::PluginService::Create<dd4hep::sim::Geant4EventReader*>(readerType, inputFile);
+        thisReader = dd4hep::PluginService::Create<dd4hep::sim::Geant4EventReader*>(readerType, std::move(inputFile));
         sc = thisReader->moveToEvent(1000000);
         test( sc != dd4hep::sim::Geant4EventReader::EVENT_READER_OK , readerType + std::string("EventReader False") );
       }
