@@ -237,8 +237,13 @@ void MaterialScan::print(const Vector3D& p0, const Vector3D& p1, double epsilon)
 	       p0[0]/dd4hep::cm, p0[1]/dd4hep::cm, p0[2]/dd4hep::cm);
     }
     else   {
-      ::printf(fmt, std::to_string(i+1).c_str(), mname.c_str(), next_mat->GetZ(), next_mat->GetA(),
-	       next_mat->GetDensity(), next_mat->GetRadLen()/dd4hep::cm, next_mat->GetIntLen()/dd4hep::cm,
+      double next_dens = next_mat ? next_mat->GetDensity() : 0e0;
+      double next_rad  = next_mat ? next_mat->GetRadLen() : 0e0;
+      double next_int  = next_mat ? next_mat->GetIntLen() : 0e0;
+      double next_Z    = next_mat ? next_mat->GetZ() : 0e0;
+      double next_A    = next_mat ? next_mat->GetA() : 0e0;
+      ::printf(fmt, std::to_string(i+1).c_str(), mname.c_str(), next_Z, next_A,
+	       next_dens, next_rad/dd4hep::cm, next_int/dd4hep::cm,
 	       length/dd4hep::cm, path_length/dd4hep::cm, sum_x0, sum_lambda,
 	       end[0]/dd4hep::cm, end[1]/dd4hep::cm, end[2]/dd4hep::cm);
     }

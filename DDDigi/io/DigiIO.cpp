@@ -498,18 +498,16 @@ namespace dd4hep {
       Key history_key;
       EnergyDeposit dep { };
       const auto* h = depo.second.get();
-      Position pos = h->position;
-      pos *= 1./dd4hep::mm;
 
       dep.flag = h->flag;
       dep.deposit = h->energyDeposit;
-      dep.position = pos;
+      dep.position = (h->position / dd4hep::mm);
 
       history_key.set_mask(key.mask());
       history_key.set_item(out.size());
       history_key.set_segment(key.segment());
       dep.history.hits.emplace_back(history_key, dep.deposit);
-      add_particle_history(h, history_key, dep.history);
+      add_particle_history(h, std::move(history_key), dep.history);
       out.emplace(depo.first, std::move(dep));
     }
 

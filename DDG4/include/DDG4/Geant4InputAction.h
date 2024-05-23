@@ -97,7 +97,7 @@ namespace dd4hep  {
           dd4hep::Parsers::parse( parameter, parameters.at( parameterName ) );
           parameters.erase( parameterName );
         } else {
-          parameter = defaultValue;
+          parameter = std::move(defaultValue);
         }
       }
 

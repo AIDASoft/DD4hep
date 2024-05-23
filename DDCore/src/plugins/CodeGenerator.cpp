@@ -302,7 +302,7 @@ namespace {
         log << "\t structure[" << pointer(de) << "] = de; " << newline
             << "}"   << newline;
       }
-      for(auto d : de.children() )  {
+      for(const auto& d : de.children() )  {
         handleStructure(log, de, d.second);
       }
       if ( !parent.isValid() )   {

@@ -80,7 +80,7 @@ extern "C"  {
     using namespace Gaudi::PluginService::v2;
     Details::Registry::Properties props = {};
     std::string lib_name = "";
-    Details::Registry::instance().add( id, {lib_name, std::move( stub ), std::move( props )} );
+    Details::Registry::instance().add( id, {std::move(lib_name), std::move( stub ), std::move( props )} );
   }
 #elif GAUDI_PLUGIN_SERVICE_VERSION==1
   /// Add a new factory to the registry

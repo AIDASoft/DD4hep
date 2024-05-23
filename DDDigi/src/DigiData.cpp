@@ -494,7 +494,7 @@ std::any* DataSegment::get_item(Key key, bool exc)   {
   it = this->data.find(key);
   if (it != this->data.end()) return &it->second;
 
-  if ( exc ) throw std::runtime_error(invalid_request(key));
+  if ( exc ) throw std::runtime_error(invalid_request(std::move(key)));
   return nullptr;
 }
 

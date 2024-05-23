@@ -513,9 +513,10 @@ int HepMC::read_vertex(EventStream &info, std::istream& is, std::istringstream &
   v->x *= info.pos_unit;
   v->y *= info.pos_unit;
   v->z *= info.pos_unit;
-  weights.resize(weights_size);
   for (int i1 = 0; i1 < weights_size; ++i1) {
-    input >> weights[i1];
+    float value = 0e0;
+    input >> value;
+    weights.emplace_back(value);
     if( !input ) {
       delete v;
       return 0;
@@ -591,21 +592,28 @@ int HepMC::read_event_header(EventStream &info, std::istringstream & input, Even
   input.clear();
   if( input.fail() ) return 0;
 
-  header.random.resize(random_states_size);
-  for(int i = 0; i < random_states_size; ++i )
-    input >> header.random[i];
+  
+  for(int i = 0; i < random_states_size; ++i )  {
+    long val = 0e0;
+    input >> val;
+    header.random.emplace_back(val);
+    if( input.fail() ) return 0;
+  }
 
   size_t weights_size = 0;
   input >> weights_size;
   if( input.fail() ) return 0;
 
-  std::vector<float> wgt(weights_size);
-  for(size_t ii = 0; ii < weights_size; ++ii )
-    input >> wgt[ii];
-  if( input.fail() ) return 0;
+  std::vector<float> wgt;
+  for(size_t ii = 0; ii < weights_size; ++ii )  {
+    float val = 0e0;
+    input >> val;
+    wgt.emplace_back(val);
+    if( input.fail() ) return 0;
+  }
 
   // weight names will be added later if they exist
-  if( weights_size > 0 ) header.weights = wgt;
+  if( weights_size > 0 ) header.weights = std::move(wgt);
   return 1;
 }
 

@@ -311,7 +311,7 @@ long long int Geant4Sensitive::cellID(const G4VTouchable* touchable, const G4Thr
       error("....... TGeo-local: (%f, %f, %f) TGeo-global: (%f, %f, %f)",
 	    loc.x(), loc.y(), loc.z(), glob.x(), glob.y(), glob.z());
       error("....... Touchable:  %s  SD: %s", vol->GetName().c_str(), sd ? sd->GetName().c_str() : "???");
-      std::rethrow_exception(eptr);
+      std::rethrow_exception(std::move(eptr));
     }
   }
   return volID;

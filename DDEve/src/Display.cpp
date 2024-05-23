@@ -231,14 +231,14 @@ Display::CalodataContext& Display::GetCaloHistogram(const std::string& nam)   {
       else   {
         CalodataContext c = GetCaloHistogram(use);
         ctx = c;
-        ctx.config.use = use;
-        ctx.config.hits = hits;
+        ctx.config.use  = std::move(use);
+        ctx.config.hits = std::move(hits);
         ctx.config.name = nam;
       }
-      i = m_calodata.emplace(nam,ctx).first;
+      i = m_calodata.emplace(nam, ctx).first;
       return (*i).second;      
     }
-    throw std::runtime_error("Cannot access calodata configuration "+nam);
+    throw std::runtime_error("Cannot access calodata configuration " + nam);
   }
   return (*i).second;
 }

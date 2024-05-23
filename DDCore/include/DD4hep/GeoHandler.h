@@ -51,17 +51,6 @@ namespace dd4hep {
      */
     class GeoHandlerTypes {
     public:
-#if 0
-      typedef std::set<const TGeoVolume*> ConstVolumeSet;
-      typedef std::map<SensitiveDetector, ConstVolumeSet> SensitiveVolumes;
-      typedef std::map<Region,   ConstVolumeSet>          RegionVolumes;
-      typedef std::map<LimitSet, ConstVolumeSet>          LimitVolumes;
-      typedef std::map<int, std::set<const TGeoNode*> >   Data;
-      typedef std::set<SensitiveDetector>                 SensitiveDetectorSet;
-      typedef std::set<Region>                            RegionSet;
-      typedef std::set<LimitSet>                          LimitSetSet;
-      typedef std::set<TNamed*>                           ObjectSet;
-#endif
       /// Data container to store information obtained during the geometry scan
       /**
        *  \author  M.Frank
@@ -97,13 +86,13 @@ namespace dd4hep {
     class GeoHandler: public GeoHandlerTypes {
 
     protected:
-      bool  m_propagateRegions;
-      std::map<int, std::set<const TGeoNode*> >* m_data;
-
+      bool  m_propagateRegions { false };
+      std::map<int, std::set<const TGeoNode*> >*    m_data      { nullptr };
+      std::map<const TGeoNode*, std::vector<TGeoNode*> >* m_daughters { nullptr };
       /// Internal helper to collect geometry information from traversal
       GeoHandler& i_collect(const TGeoNode* parent,
-			    const TGeoNode* node,
-			    int level, Region rg, LimitSet ls);
+                            const TGeoNode* node,
+                            int level, Region rg, LimitSet ls);
 
     private:
       /// Never call Copy constructor
@@ -118,7 +107,8 @@ namespace dd4hep {
       /// Default constructor
       GeoHandler();
       /// Initializing constructor
-      GeoHandler(std::map<int, std::set<const TGeoNode*> >* ptr);
+      GeoHandler(std::map<int, std::set<const TGeoNode*> >* ptr,
+                 std::map<const TGeoNode*, std::vector<TGeoNode*> >* daus = nullptr);
       /// Default destructor
       virtual ~GeoHandler();
       /// Propagate regions. Returns the previous value

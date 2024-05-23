@@ -96,7 +96,8 @@ namespace dd4hep {
       G4ThreeVector   highNorm(hn[0], hn[1], hn[2]);
       return new G4CutTubs(sh->GetName(),
                            sh->GetRmin() * CM_2_MM, sh->GetRmax() * CM_2_MM, sh->GetDz() * CM_2_MM,
-                           sh->GetPhi1() * DEGREE_2_RAD, (sh->GetPhi2()-sh->GetPhi1()) * DEGREE_2_RAD, lowNorm, highNorm);
+                           sh->GetPhi1() * DEGREE_2_RAD, (sh->GetPhi2()-sh->GetPhi1()) * DEGREE_2_RAD,
+                           std::move(lowNorm), std::move(highNorm));
     }
 
     template <> G4VSolid* convertShape<TGeoEltu>(const TGeoShape* shape)  {

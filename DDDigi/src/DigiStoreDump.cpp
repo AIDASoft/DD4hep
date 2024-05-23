@@ -54,23 +54,23 @@ void DigiStoreDump::initialize()   {
 
 template <typename T> std::string DigiStoreDump::data_header(Key key, const std::string& tag, const T& container)  const  {
   return this->format("%04X %04X %08X %-32s: %6ld %-12s [%s]", 
-		      key.segment(), key.mask(), key.item(),
-		      ('"'+Key::key_name(key)+'"').c_str(), container.size(), tag.c_str(),
-		      digiTypeName(typeid(T)).c_str());
+                      key.segment(), key.mask(), key.item(),
+                      ('"'+Key::key_name(key)+'"').c_str(), container.size(), tag.c_str(),
+                      digiTypeName(typeid(T)).c_str());
 }
 
 template <> std::string DigiStoreDump::data_header(Key key, const std::string& tag, const std::type_info& info)  const  {
   std::string typ = digiTypeName(info);
   if ( tag.empty() )   {
     return this->format("%04X %04X %08X %-32s: %6s %s",
-			key.segment(), key.mask(), key.item(),
-			('"'+Key::key_name(key)+'"').c_str(), "",
-			typ.c_str());
+                        key.segment(), key.mask(), key.item(),
+                        ('"'+Key::key_name(key)+'"').c_str(), "",
+                        typ.c_str());
   }
   return this->format("%04X %04X %08X %-32s: %-12s %s",
-		      key.segment(), key.mask(), key.item(),
-		      ('"'+Key::key_name(key)+'"').c_str(), tag.c_str(),
-		      typ.c_str());
+                      key.segment(), key.mask(), key.item(),
+                      ('"'+Key::key_name(key)+'"').c_str(), tag.c_str(),
+                      typ.c_str());
 }
 
 template <> std::string DigiStoreDump::data_header(Key key, const std::string& tag, const std::any& data)  const  {
@@ -95,11 +95,11 @@ DigiStoreDump::dump_history(DigiContext& context,
   str << Key::key_name(key) << "[" << seq_no << "]:";
   std::string line =
     format("|----  %-18s Segment:%04X Mask:%04X Item:%04X %016lX",
-	   str.str().c_str(), particle_key.segment(), particle_key.mask(), particle_key.item(),
-	   long(&data.second));
+           str.str().c_str(), particle_key.segment(), particle_key.mask(), particle_key.item(),
+           long(&data.second));
   records.emplace_back(line);
   line = format("|        PDG:%6d Charge:%-2d Mass:%7.2f v:%7.5g %7.5g %7.5g  p:%12g %12g %12g      %016lX",
-		par.pdgID, int(par.charge), par.mass, vtx.X(), vtx.Y(), vtx.Z(), mom.X(), mom.Y(), mom.Z(), long(&par));
+                par.pdgID, int(par.charge), par.mass, vtx.X(), vtx.Y(), vtx.Z(), mom.X(), mom.Y(), mom.Z(), long(&par));
   records.emplace_back(line);
   return records;
 }
@@ -131,10 +131,10 @@ DigiStoreDump::dump_history(DigiContext& context,
     str.str("");
     str << "|        Hit-history[" << i << "]:";
     line = format("%-30s Segment:%04X Mask:%04X Cell:%08X  Weight:%.8g",
-		  str.str().c_str(), k.segment(), k.mask(), k.item(), entry.weight);
+                  str.str().c_str(), k.segment(), k.mask(), k.item(), entry.weight);
     records.emplace_back(line);
     line = format("|              pos: %7.3f %7.3f %7.3f   p: %7.3f %7.3f %7.3f deposit: %7.3f",
-		  pos.X(), pos.Y(), pos.Z(), mom.X(), mom.Y(), mom.Z(), dep.deposit);
+                  pos.X(), pos.Y(), pos.Z(), mom.X(), mom.Y(), mom.Z(), dep.deposit);
     records.emplace_back(line);
   }
   for( std::size_t i=0; i<item.history.particles.size(); ++i )   {
@@ -146,10 +146,10 @@ DigiStoreDump::dump_history(DigiContext& context,
     str.str("");
     str << "|        Part-history[" << i << "]:";
     line = format("%-30s Segment:%04X Mask:%04X Key: %08X  %.8g",
-		  str.str().c_str(), key.segment(), key.mask(), key.item(), ent.weight);
+                  str.str().c_str(), key.segment(), key.mask(), key.item(), ent.weight);
     records.emplace_back(line);
     line = format("|              PDG:%6d Charge:%-2d Mass:%7.3f v:%7.3f %7.3f %7.3f   p:%7.3f %7.3f %7.3f",
-		  par.pdgID, int(par.charge), par.mass, vtx.X(), vtx.Y(), vtx.Z(), mom.X(), mom.Y(), mom.Z());
+                  par.pdgID, int(par.charge), par.mass, vtx.X(), vtx.Y(), vtx.Z(), mom.X(), mom.Y(), mom.Z());
     records.emplace_back(line);
   }
   return records;
@@ -157,9 +157,9 @@ DigiStoreDump::dump_history(DigiContext& context,
 
 template <> std::vector<std::string> 
 DigiStoreDump::dump_history(DigiContext& context,
-			    Key container_key,
-			    const std::pair<const CellID, History>& data,
-			    std::size_t seq_no)  const
+                            Key container_key,
+                            const std::pair<const CellID, History>& data,
+                            std::size_t seq_no)  const
 {
   std::string line;
   std::stringstream str;
@@ -170,8 +170,8 @@ DigiStoreDump::dump_history(DigiContext& context,
 
   str << Key::key_name(container_key) << "[" << seq_no << "]:";
   line = format("+----- %-30s Container: Segment:%04X Mask:%04X Item:%08X Cell:%016lX Hist: Hits:%ld Parts:%ld",
-		str.str().c_str(), container_key.segment(), container_key.mask(), container_key.item(),
-		cell, history.hits.size(), history.particles.size());
+                str.str().c_str(), container_key.segment(), container_key.mask(), container_key.item(),
+                cell, history.hits.size(), history.particles.size());
   records.emplace_back(line);
   for( std::size_t i=0; i<history.hits.size(); ++i )   {
     const auto& entry = history.hits[i];
@@ -182,10 +182,10 @@ DigiStoreDump::dump_history(DigiContext& context,
     str.str("");
     str << "|        Hit-history[" << i << "]:";
     line = format("%-30s Segment:%04X Mask:%04X Cell:%08X  Weight:%.8g",
-		  str.str().c_str(), k.segment(), k.mask(), k.item(), entry.weight);
+                  str.str().c_str(), k.segment(), k.mask(), k.item(), entry.weight);
     records.emplace_back(line);
     line = format("|              pos: %7.3f %7.3f %7.3f   p: %7.3f %7.3f %7.3f deposit: %7.3f",
-		  pos.X(), pos.Y(), pos.Z(), mom.X(), mom.Y(), mom.Z(), dep.deposit);
+                  pos.X(), pos.Y(), pos.Z(), mom.X(), mom.Y(), mom.Z(), dep.deposit);
     records.emplace_back(line);
   }
   for( std::size_t i=0; i<history.particles.size(); ++i )   {
@@ -197,10 +197,10 @@ DigiStoreDump::dump_history(DigiContext& context,
     str.str("");
     str << "|        Part-history[" << i << "]:";
     line = format("%-30s Segment:%04X Mask:%04X Key: %08X  %.8g",
-		  str.str().c_str(), key.segment(), key.mask(), key.item(), ent.weight);
+                  str.str().c_str(), key.segment(), key.mask(), key.item(), ent.weight);
     records.emplace_back(line);
     line = format("|              PDG:%6d Charge:%-2d Mass:%7.3f v:%7.3f %7.3f %7.3f   p:%7.3f %7.3f %7.3f",
-		  par.pdgID, int(par.charge), par.mass, vtx.X(), vtx.Y(), vtx.Z(), mom.X(), mom.Y(), mom.Z());
+                  par.pdgID, int(par.charge), par.mass, vtx.X(), vtx.Y(), vtx.Z(), mom.X(), mom.Y(), mom.Z());
     records.emplace_back(line);
   }
   return records;
@@ -250,9 +250,9 @@ DigiStoreDump::dump_particle_history(DigiContext& context, Key container_key, co
 
 /// Dump hit container
 void DigiStoreDump::dump_history(DigiContext& context,
-				 const std::string& tag,
-				 const DigiEvent& event,
-				 const DataSegment& segment)  const
+                                 const std::string& tag,
+                                 const DigiEvent& event,
+                                 const DataSegment& segment)  const
 {
   std::vector<std::string> records;
   std::lock_guard<std::mutex> lock(segment.lock);
@@ -269,22 +269,22 @@ void DigiStoreDump::dump_history(DigiContext& context,
     if ( use )   {
       std::vector<std::string> rec;
       if ( const auto* mapping = std::any_cast<DepositMapping>(&data) )   {
-	rec = dump_deposit_history(context, key, *mapping);
+        rec = dump_deposit_history(context, std::move(key), *mapping);
       }
       else if ( const auto* vector = std::any_cast<DepositVector>(&data) )   {
-	rec = dump_deposit_history(context, key, *vector);
+        rec = dump_deposit_history(context, std::move(key), *vector);
       }
       else if ( const auto* parts = std::any_cast<ParticleMapping>(&data) )   {
-	rec = dump_particle_history(context, key, *parts);
+        rec = dump_particle_history(context, std::move(key), *parts);
       }
       else if ( const auto* adcs = std::any_cast<DetectorResponse>(&data) )   {
-	rec = { format("|----  %s", data_header(key, "ADC values", *adcs).c_str()) };
+        rec = { format("|----  %s", data_header(std::move(key), "ADC values", *adcs).c_str()) };
       }
       else if ( const auto* hist = std::any_cast<DetectorHistory>(&data) )   {
-	rec = { format("|----  %s", data_header(key, "histories", *hist).c_str()) };
+        rec = { format("|----  %s", data_header(std::move(key), "histories", *hist).c_str()) };
       }
       else   {
-	rec = { format("|----  %s", data_header(key, "", data).c_str()) };
+        rec = { format("|----  %s", data_header(std::move(key), "", data).c_str()) };
       }
       records.insert(records.end(), rec.begin(), rec.end());
     }
@@ -296,8 +296,8 @@ void DigiStoreDump::dump_history(DigiContext& context,
 
 /// Dump hit container
 void DigiStoreDump::dump_headers(const std::string& tag,
-				 const DigiEvent&   event,
-				 const DataSegment& segment)  const
+                                 const DigiEvent&   event,
+                                 const DataSegment& segment)  const
 {
   int first = 1;
   std::string str;
@@ -309,19 +309,19 @@ void DigiStoreDump::dump_headers(const std::string& tag,
     Key key {entry.first};
     const std::any& data = entry.second;
     if ( const auto* mapping = std::any_cast<DepositMapping>(&data) )
-      str = "| " + data_header(key, "deposits", *mapping);
+      str = "| " + data_header(std::move(key), "deposits", *mapping);
     else if ( const auto* vector = std::any_cast<DepositVector>(&data) )
-      str = "| " + data_header(key, "deposits", *vector);
+      str = "| " + data_header(std::move(key), "deposits", *vector);
     else if ( const auto* parts = std::any_cast<ParticleMapping>(&data) )
-      str = "| " + data_header(key, "particles", *parts);
+      str = "| " + data_header(std::move(key), "particles", *parts);
     else if ( const auto* adcs = std::any_cast<DetectorResponse>(&data) )
-      str = "| " + data_header(key, "ADC values", *adcs);
+      str = "| " + data_header(std::move(key), "ADC values", *adcs);
     else if ( const auto* hist = std::any_cast<DetectorHistory>(&data) )
-      str = "| " + data_header(key, "histories", *hist);
+      str = "| " + data_header(std::move(key), "histories", *hist);
     else if ( data.type() == typeid(void) )
-      str = "| " + data_header(key, "void data", data);
+      str = "| " + data_header(std::move(key), "void data", data);
     else
-      str = "| " + data_header(key, "", data);
+      str = "| " + data_header(std::move(key), "", data);
     if ( first )   {
       first = false;
     }

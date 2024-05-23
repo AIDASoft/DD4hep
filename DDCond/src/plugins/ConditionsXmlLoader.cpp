@@ -175,6 +175,6 @@ std::size_t ConditionsXmlLoader::load_range(key_type key,
     }
     keep.emplace_back(condition);
   }
-  m_buffer = keep;
+  m_buffer = std::move(keep);
   return conditions.size()-len;
 }

@@ -67,7 +67,7 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
   for(int i=0; i<NHEP; ++i ) {
     auto p = genEvent.particles().at(i);
     mcparts[p] = i;
-    mcpcoll[i] = p;
+    mcpcoll[i] = std::move(p);
   }
 
   //treat event attributes, flow[12]
