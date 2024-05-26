@@ -1266,7 +1266,8 @@ Handle_t Document::clone(Handle_t source) const {
 }
 
 #ifdef DD4HEP_USE_TINYXML
-#include <tinyxml_inl.h>
-#include <tinyxmlerror_inl.h>
-#include <tinyxmlparser_inl.h>
+//These files are located parallel to this one, we cannot use angle brackets for include
+#include "tinyxml_inl.h"
+#include "tinyxmlerror_inl.h"
+#include "tinyxmlparser_inl.h"
 #endif
