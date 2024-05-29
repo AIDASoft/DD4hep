@@ -59,7 +59,8 @@ namespace dd4hep {
        */
       class GeometryInfo {
       public:
-        std::set<TGeoShape*>   solids;
+        std::vector<TGeoShape*>   solids;
+        std::set<TGeoShape*>   solid_set;
         std::set<Volume>       volumeSet;
         std::vector<Volume>    volumes;
         std::set<VisAttr>      vis;

@@ -44,7 +44,9 @@ namespace {
       collectSolid(geo, name + "_left", name + "_left", boolean->GetLeftShape(), boolean->GetLeftMatrix());
       collectSolid(geo, name + "_right", name + "_right", boolean->GetRightShape(), boolean->GetRightMatrix());
     }
-    geo.solids.emplace(shape);
+    if(geo.solid_set.emplace(shape).second) {
+      geo.solids.push_back(shape);
+    }
     geo.trafos.emplace_back(node, matrix);
   }
 }
