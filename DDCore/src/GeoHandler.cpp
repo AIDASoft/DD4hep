@@ -23,6 +23,7 @@
 #include <TClass.h>
 
 // C/C++ include files
+#include <algorithm>
 #include <iostream>
 
 using namespace dd4hep;
@@ -53,11 +54,11 @@ namespace {
 
 /// Default constructor
 detail::GeoHandler::GeoHandler()  {
-  m_data = new std::map<int, std::set<const TGeoNode*> >();
+  m_data = new std::map<int, std::vector<const TGeoNode*> >();
 }
 
 /// Initializing constructor
-detail::GeoHandler::GeoHandler(std::map<int, std::set<const TGeoNode*> >* ptr,
+detail::GeoHandler::GeoHandler(std::map<int, std::vector<const TGeoNode*> >* ptr,
                                std::map<const TGeoNode*, std::vector<TGeoNode*> >* daus)
   : m_data(ptr), m_daughters(daus)
 {
@@ -70,8 +71,8 @@ detail::GeoHandler::~GeoHandler() {
   m_data = nullptr;
 }
 
-std::map<int, std::set<const TGeoNode*> >* detail::GeoHandler::release() {
-  std::map<int, std::set<const TGeoNode*> >* d = m_data;
+std::map<int, std::vector<const TGeoNode*> >* detail::GeoHandler::release() {
+  std::map<int, std::vector<const TGeoNode*> >* d = m_data;
   m_data = nullptr;
   return d;
 }
@@ -149,7 +150,10 @@ detail::GeoHandler& detail::GeoHandler::i_collect(const TGeoNode* /* parent */,
     }
   }
   /// Collect the hierarchy of placements
-  (*m_data)[level].emplace(current);
+  auto& vec = (*m_data)[level];
+  if(std::find(vec.begin(), vec.end(), current) == vec.end()) {
+    (*m_data)[level].push_back(current);
+  }
   int num = nodes ? nodes->GetEntriesFast() : 0;
   for (int i = 0; i < num; ++i)
     i_collect(current, (TGeoNode*)nodes->At(i), level + 1, region, limits);

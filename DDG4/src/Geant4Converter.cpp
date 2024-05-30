@@ -1689,7 +1689,7 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   handleRMap(this, *m_data,     &Geant4Converter::handleAssembly);
   // Now place all this stuff appropriately
   //handleRMap(this, *m_data,     &Geant4Converter::handlePlacement);
-  std::map<int, std::set<const TGeoNode*> >::const_reverse_iterator i = m_data->rbegin();
+  std::map<int, std::vector<const TGeoNode*> >::const_reverse_iterator i = m_data->rbegin();
   for ( ; i != m_data->rend(); ++i )  {
     for ( const TGeoNode* node : i->second )  {
 #if 0
