@@ -1,3 +1,125 @@
+# v01-29
+
+* 2024-06-06 Andre Sailer ([PR#1277](https://github.com/aidasoft/DD4hep/pull/1277))
+  - Geant4Converter: fix the order of the TGeoNode conversion to Geant4 volumes, using vector instead of set. Maybe fixes #1271
+
+* 2024-05-26 Andre Sailer ([PR#1276](https://github.com/aidasoft/DD4hep/pull/1276))
+  - XMLElements: fix build when not using XercesC, failing to include header files
+
+* 2024-05-23 Markus Frank ([PR#1275](https://github.com/aidasoft/DD4hep/pull/1275))
+  - The battle agains coverity
+  - The last defects I know how to solve. For the rest more expertise is required.
+
+* 2024-05-23 MarkusFrankATcernch ([PR#1274](https://github.com/aidasoft/DD4hep/pull/1274))
+  - Allow coverity scans being started manually
+
+* 2024-05-23 Markus Frank ([PR#1272](https://github.com/aidasoft/DD4hep/pull/1272))
+  - The battle agains coverity. Try to fix various defects.
+
+* 2024-05-22 Markus Frank ([PR#1270](https://github.com/aidasoft/DD4hep/pull/1270))
+  - The battle agains coverity: Attack and reduce coverity errors
+
+* 2024-05-22 Markus Frank ([PR#1269](https://github.com/aidasoft/DD4hep/pull/1269))
+  - Code maintenance: change quoted include statements to angular brackets in subpackage DDG4.
+
+* 2024-05-22 Markus Frank ([PR#1268](https://github.com/aidasoft/DD4hep/pull/1268))
+  Code maintenance: 
+  - change quoted include statements in DDCore to angular brackets
+  - Add the odd licence statement
+  - Remove obsolete file DD4hep/TGeoUnits.h: Take TGeoUnits from ROOT if needed. 
+    This file dates back to the time TGeoUnits.h did not exist in ROOT.
+
+* 2024-05-21 Markus Frank ([PR#1267](https://github.com/aidasoft/DD4hep/pull/1267))
+  - Try to eliminate more coverity code deficiencies
+   (See https://scan.coverity.com/projects/dd4hep?tab=overview)
+
+* 2024-05-16 Andre Sailer ([PR#1266](https://github.com/aidasoft/DD4hep/pull/1266))
+  - DDSim: make setupUserFunction be documented in the steering file
+  - Fix random typos in comments and doxygen strings
+  - Geant4Handle: Fix error message when plugin casting did not succeed
+
+* 2024-05-16 Markus Frank ([PR#1265](https://github.com/aidasoft/DD4hep/pull/1265))
+  - Fix some coverity problems
+
+* 2024-05-16 tmadlener ([PR#1264](https://github.com/aidasoft/DD4hep/pull/1264))
+  - EDM4hepOUTPUT: Introduce pre-processor checks to transparently switch to the new `std::optional` return values of `podio::Frame::getParameter` (introduced with [AIDASoft/podio#580](https://github.com/AIDASoft/podio/pull/580))
+
+* 2024-05-16 Thomas Latham ([PR#1263](https://github.com/aidasoft/DD4hep/pull/1263))
+  - Enhance handling of transformations in VolumeBuilder
+
+* 2024-05-15 Markus Frank ([PR#1262](https://github.com/aidasoft/DD4hep/pull/1262))
+  - Add optional instantiation of the G4ScoringManager together with the G4RunManager.
+    The instantiation can be steered by option to the Geant4Kernel:
+  ```
+  import DDG4
+  g4 = DDG4.Geant4()
+  g4.kernel().HaveScoringManager = True
+  ```
+  For rational, please see issue: https://github.com/AIDASoft/DD4hep/issues/1261
+
+* 2024-05-13 Alvaro Tolosa Delgado ([PR#1253](https://github.com/aidasoft/DD4hep/pull/1253))
+  - DDRec/DCH_info.h: Add data extension class for FCCee Drift Chamber. This class provides data storage and ancillary functionalities needed to build the geometry.
+
+* 2024-05-10 Andre Sailer ([PR#1260](https://github.com/aidasoft/DD4hep/pull/1260))
+  - DDG4/DDSim: allow configuring of the unstable generator status codes with SIM.physics.alternativeDecayStatuses. This allows one to tweak which particles are passed to the Geant4 simulation. Fixes #1256 
+  - DDG4: Geant4InputAction: move setting of generator status bits to a common place, reduce code duplication.
+
+* 2024-05-07 Markus Frank ([PR#1259](https://github.com/aidasoft/DD4hep/pull/1259))
+  - Protect Geant4 Primary creation against negative masses.
+  - See issue https://github.com/AIDASoft/DD4hep/issues/1233 for a detailed discussion of the problem.
+  - Allow shapes to be defined recursively using shape creation plugin.
+  - Show how to properly use CAD shapes with a non-zero origin (Issue : https://github.com/AIDASoft/DD4hep/issues/1200)
+     examples/DDCAD/compact/DD4hep_Issue_1134_resolved.xml
+     Once the CAD shape (aka volume) is placed correctly into the origin of a mother mother, the mother can then be placed 
+     rotated and shifted according to the the boxed mother's origin like any other volume.
+
+* 2024-05-07 Andre Sailer ([PR#1258](https://github.com/aidasoft/DD4hep/pull/1258))
+  - DDSim: correct the number of events when running over all events (-1), fixes #1257 
+  - GenerationActionInit: declare properties to access number of processed runs (numberOfRuns) and events (numberOfEVents)
+  - DDG4: decode or eval all properties out of str or cppyy.gbl.string types
+
+* 2024-04-23 Andre Sailer ([PR#1255](https://github.com/aidasoft/DD4hep/pull/1255))
+  - Geant4GFlashShowerModel: remove wrong unit conversions from particleBound properties. Caused particle bounds to be off by 1e3 when GEANT_UNITS were enabled.
+
+* 2024-04-22 tmadlener ([PR#1252](https://github.com/aidasoft/DD4hep/pull/1252))
+  - DDDigiEDM4hep: Switch to the correct podio pre-processor version checks for switching to the non-deprecated readers / writers. Also simplify this such that choosing which type(name) to use is handled in one place rather than several.
+  - Geant4Output2EDM4hep: Switch to a non-deprecated setter for setting the MCParticle for a SimTrackerHit once EDM4hep ships with it.
+
+* 2024-04-19 Andre Sailer ([PR#1254](https://github.com/aidasoft/DD4hep/pull/1254))
+  - CMake: drop possible use of ROOT::PyROOT target, always use ROOT::ROOTTPython
+  - Python: remove the use of (dd)six, fix issues pointed out by new version of flake8
+
+* 2024-04-18 Andre Sailer ([PR#1242](https://github.com/aidasoft/DD4hep/pull/1242))
+  - CI: change which LCG_releases/ROOT versions DD4hep is tested.
+  - Fix various issues with latest version of ROOT (6-32-patches, master) and cppyy in ROOT.
+     - :warning: : You may encounter issues with python setup complaining about mismatched types, strings, conversions
+
+* 2024-04-04 Andre Sailer ([PR#1251](https://github.com/aidasoft/DD4hep/pull/1251))
+  - EDM4hepOutput: determine momentum vector type automagically. Make it work with any EDM4hep version correctly, fixes #1250
+
+* 2024-04-02 Andre Sailer ([PR#1248](https://github.com/aidasoft/DD4hep/pull/1248))
+  - ddsim now exits with non-zero exit code when something went wrong during simulation
+
+* 2024-04-02 Wouter Deconinck ([PR#1245](https://github.com/aidasoft/DD4hep/pull/1245))
+  - fix adding individual planes to existing Polycone
+
+* 2024-03-26 Andre Sailer ([PR#1247](https://github.com/aidasoft/DD4hep/pull/1247))
+  - DDSim: add checks that input files and compact files exist before doing anything extensive and provide proper error message. Fixes #1246
+
+* 2024-03-21 Markus Frank ([PR#1244](https://github.com/aidasoft/DD4hep/pull/1244))
+  * The build type flag was lost when including files from compact. This PR fixes this deficiency and ensures the flag propagation. Example:  'box_shape_build_type'
+
+* 2024-03-20 Alvaro Tolosa Delgado ([PR#1243](https://github.com/aidasoft/DD4hep/pull/1243))
+  - Fixed TwistedTube when only half-length is provided, making the tube is symmetric along Z axis
+
+* 2024-03-13 Andre Sailer ([PR#1241](https://github.com/aidasoft/DD4hep/pull/1241))
+  - CMake: dd4hep_add_dictionary: use temporary files to create dictionary to allow dependencies to use COMPILE_LANGUAGE, fixes #1239 . Add USE_COMMAND_TO_GENERATE option to fall back to previous implementation
+  - CMake: dd4hep_add_dictionary: remove duplicates from definition and include_directory options when calling rootcling
+
+* 2024-02-29 Markus Frank ([PR#1238](https://github.com/aidasoft/DD4hep/pull/1238))
+  - Adapt documentation for Tube(...) constructor to reality.
+    See issue https://github.com/AIDASoft/DD4hep/issues/1236
+
 # v01-28
 
 * 2024-02-19 Markus Frank ([PR#1228](https://github.com/aidasoft/dd4hep/pull/1228))
