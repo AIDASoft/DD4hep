@@ -91,6 +91,7 @@ namespace dd4hep {
 
 // C/C++ include files
 #include <cerrno>
+#include <climits>
 #include <algorithm>
 
 using namespace dd4hep::sim;
@@ -502,6 +503,10 @@ int HepMC::read_vertex(EventStream &info, std::istream& is, std::istringstream &
   input >> id >> dummy >> v->x >> v->y >> v->z >> v->time
         >> num_orphans_in >> num_particles_out >> weights_size;
   if( !input ) {
+    delete v;
+    return 0;
+  }
+  if ( weights_size < 0 || weights_size > USHRT_MAX )  {
     delete v;
     return 0;
   }

@@ -27,11 +27,10 @@
 
 #include <sstream>
 
-using namespace std ;
-using namespace dd4hep ;
+using namespace std;
+using namespace dd4hep;
 using namespace dd4hep::detail;
-using namespace dd4hep::rec ;
-
+using namespace dd4hep::rec;
 using namespace lcio;
 
 
@@ -181,16 +180,15 @@ int main_wrapper(int argc, char** argv ){
   std::cout << "\n ----------------------- summary  ----------------------   " << std::endl ;
 
   
-  for( auto res : tMap ){
-    
-    std::string name = res.first ;
-    unsigned total = res.second.position.passed+res.second.position.failed ;
+  for( const auto& res : tMap )  {
+    const std::string& name = res.first;
+    unsigned total      = res.second.position.passed+res.second.position.failed ;
     unsigned pos_failed = res.second.position.failed ;
-    unsigned id_failed = res.second.cellid.failed ;
+    unsigned id_failed  = res.second.cellid.failed ;
 
     
     printf(" %-30s \t  failed position: %5d  failed cellID:  %5d    of total: %5d   \n",
-	   name.c_str(), pos_failed , id_failed, total ) ;
+           name.c_str(), pos_failed , id_failed, total ) ;
 
   }
   std::cout << "\n -------------------------------------------------------- " << std::endl ;
