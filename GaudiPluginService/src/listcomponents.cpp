@@ -88,7 +88,7 @@ int main( int argc, char* argv[] ) {
       ++i;
     }
     if ( libs.empty() ) {
-      usage( argv0 );
+      usage( std::move(argv0) );
       return EXIT_FAILURE;
     }
   }

@@ -18,22 +18,23 @@
 //
 //==========================================================================
 
-#include "TError.h"
+#include <TError.h>
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/DetType.h"
-#include "DD4hep/Printout.h"
-#include "DDRec/MaterialManager.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/DetType.h>
+#include <DD4hep/Printout.h>
+#include <DDRec/MaterialManager.h>
 
-// #include "TGeoVolume.h"
-// #include "TGeoManager.h"
-// #include "TGeoNode.h"
-#include "TFile.h"
-#include "TH1F.h"
+// #include <TGeoVolume.h>
+// #include <TGeoManager.h>
+// #include <TGeoNode.h>
+#include <TFile.h>
+#include <TH1F.h>
 
 #include <cerrno>
 #include <fstream>
+#include <climits>
 
 #include "main.h"
 
@@ -219,6 +220,11 @@ int main_wrapper(int argc, char** argv)   {
   std::cout  << "theta:f/" ;
   for(auto& det : subdets){ std::cout  << det.name << "_x0:f/" << det.name << "_lam:f/" ; }
   std::cout  << std::endl ;
+
+  if ( nbins <= 0 || nbins > USHRT_MAX )  {
+    std::cout << "Unreasonable number of bins: " << nbins << std::endl;
+    ::exit(EINVAL);
+  }
   
   for(int i=0 ; i< nbins ;++i){
 

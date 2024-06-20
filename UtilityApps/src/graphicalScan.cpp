@@ -23,17 +23,17 @@
 //
 //==========================================================================
 
-#include "TError.h"
-
-#include "TFile.h"
-#include "TH2F.h"
+#include <TError.h>
+#include <TFile.h>
+#include <TH2F.h>
 
 // Framework include files
-#include "DD4hep/Detector.h"
-#include "DD4hep/Printout.h"
-#include "DDRec/MaterialManager.h"
+#include <DD4hep/Detector.h>
+#include <DD4hep/Printout.h>
+#include <DDRec/MaterialManager.h>
 
 #include <iostream>
+#include <climits>
 #include <cerrno>
 #include <string>
 #include <map>
@@ -123,9 +123,9 @@ int main_wrapper(int argc, char** argv)   {
   if ( y0>y1 ) { double temp=y0; y0=y1; y1=temp; }
   if ( z0>z1 ) { double temp=z0; z0=z1; z1=temp; }
 
-  if ( ! ( nbins>0 && nslice>0 ) ) {
+  if ( ! (nbins>0 && nbins<USHRT_MAX && nslice>0 && nslice<USHRT_MAX) ) {
     cout << "funny # bins/slices " << endl;
-    return 1;
+    ::exit(EINVAL);
   }
 
   bool scanField(false);
