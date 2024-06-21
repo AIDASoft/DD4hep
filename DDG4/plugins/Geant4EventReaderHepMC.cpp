@@ -575,7 +575,7 @@ int HepMC::read_vertex(EventStream &info, std::istream& is, std::istringstream &
 
 int HepMC::read_event_header(EventStream &info, std::istringstream & input, EventHeader& header)   {
   // read values into temp variables, then fill GenEvent
-  int random_states_size = 0;
+  int size = 0;
   input >> header.id;
   if( info.io_type == gen || info.io_type == extascii ) {
     int nmpi = -1;
@@ -592,33 +592,36 @@ int HepMC::read_event_header(EventStream &info, std::istringstream & input, Even
   if( info.io_type == gen || info.io_type == extascii )
     input >> header.bp1 >> header.bp2;
 
-  input >> random_states_size;
   printout(DEBUG,"HepMC","++ Event header: %s",input.str().c_str());
+  input >> size;
   input.clear();
-  if( input.fail() ) return 0;
-
+  if( input.fail() )
+    return 0;
+  if( size < 0 || size > USHRT_MAX )
+    return 0;
   
-  for(int i = 0; i < random_states_size; ++i )  {
+  for(int i = 0; i < size; ++i )  {
     long val = 0e0;
     input >> val;
     header.random.emplace_back(val);
     if( input.fail() ) return 0;
   }
 
-  size_t weights_size = 0;
-  input >> weights_size;
-  if( input.fail() ) return 0;
+  input >> size;
+  if( input.fail() )
+    return 0;
+  if( size < 0 || size > USHRT_MAX )
+    return 0;
 
   std::vector<float> wgt;
-  for(size_t ii = 0; ii < weights_size; ++ii )  {
+  for( int ii = 0; ii < size; ++ii )  {
     float val = 0e0;
     input >> val;
     wgt.emplace_back(val);
     if( input.fail() ) return 0;
   }
-
   // weight names will be added later if they exist
-  if( weights_size > 0 ) header.weights = std::move(wgt);
+  if( !wgt.empty() ) header.weights = std::move(wgt);
   return 1;
 }
 

@@ -71,22 +71,22 @@ namespace {
       TGeoMatrix* mm = n->GetNode()->GetMatrix();
       bool dbg = GlobalDetectorAlignment::debug();
       if ( dbg )  {
-        printout(dd4hep::INFO,"Alignment","DELTA matrix of %s",n->GetName());
+        printout(dd4hep::INFO,"Alignment","DELTA matrix of %s", n->GetName());
         transform->Print();
-        dd4hep::printout(dd4hep::INFO,"Alignment","OLD matrix of %s",n->GetName());
+        dd4hep::printout(dd4hep::INFO,"Alignment","OLD matrix of %s", n->GetName());
         mm->Print();
       }
       transform->MultiplyLeft(mm); // orig * delta
       n->Align(transform, 0, check, overlap);
       if ( dbg )   {
-        dd4hep::printout(dd4hep::INFO,"Alignment","NEW matrix of %s",n->GetName());
+        dd4hep::printout(dd4hep::INFO,"Alignment","NEW matrix of %s", n->GetName());
         n->GetNode()->GetMatrix()->Print();
       }
       /*
         printout(dd4hep::INFO,"Alignment","Apply new relative matrix  mother to daughter:");
         transform->Print();
         transform->MultiplyLeft(mm); // orig * delta
-        printout(dd4hep::INFO,"Alignment","With deltas %s ....",n->GetName());
+        printout(dd4hep::INFO,"Alignment","With deltas %s ....", n->GetName());
         transform->Print();
         n->Align(transform, 0, check, overlap);
 
