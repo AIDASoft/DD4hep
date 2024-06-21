@@ -18,19 +18,15 @@
 //
 //==========================================================================
 
-#include <TError.h>
-
 // Framework include files
-#include <DD4hep/Detector.h>
 #include <DD4hep/DetType.h>
 #include <DD4hep/Printout.h>
+#include <DD4hep/Detector.h>
 #include <DDRec/MaterialManager.h>
 
-// #include <TGeoVolume.h>
-// #include <TGeoManager.h>
-// #include <TGeoNode.h>
 #include <TFile.h>
 #include <TH1F.h>
+#include <TError.h>
 
 #include <cerrno>
 #include <fstream>
@@ -61,8 +57,8 @@ namespace {
     double  theta0 = atan2( r, z ) ;
 
     Vector3D v = (   theta > theta0      ?
-		     Vector3D(       r           , phi , r / tan( theta ) , Vector3D::cylindrical )  :
-		     Vector3D( z * tan( theta )  , phi ,      z           , Vector3D::cylindrical )  ) ;
+                     Vector3D(       r           , phi , r / tan( theta ) , Vector3D::cylindrical )  :
+                     Vector3D( z * tan( theta )  , phi ,      z           , Vector3D::cylindrical )  ) ;
     return v ;
   }
 
@@ -81,7 +77,7 @@ int main_wrapper(int argc, char** argv)   {
       std::cout << " usage: materialBudget compact.xml steering.txt" << std::endl 
                 << "     -> create histograms with the material budget as seen from the IP within fixed ranges of (rmin, rmax, zmin. zmax)" << std::endl 
                 << "        see example steering file for details ..." << std::endl 
-		<< "  -x   : dump example steering file " << std::endl
+                << "  -x   : dump example steering file " << std::endl
                 << std::endl;
       exit(1);
     }
@@ -155,9 +151,9 @@ int main_wrapper(int argc, char** argv)   {
       subdets.emplace_back( det );
     }
 
-    if ( !iss.eof() || iss.fail() ){
+    if ( iss.fail() ){
       std::cout << " ERROR parsing line : " << line << std::endl ;
-      exit(1) ;
+      ::exit(EINVAL);
     }    
   }
 
@@ -172,17 +168,13 @@ int main_wrapper(int argc, char** argv)   {
   Detector& description = Detector::getInstance();
   description.fromXML(compactFile ) ;
 
-
   //----- open root file and book histograms
   TFile* rootFile = new TFile(outFileName.c_str(),"recreate");
-
-  for(auto& det : subdets){
-
+  for( auto& det : subdets )  {
     std::string hxn(det.name), hxnn(det.name) ;
     std::string hln(det.name), hlnn(det.name) ;
 
-    if( etaMax > 0. ) {  // use eta
-
+    if( etaMax > 0. )  {  // use eta
       hxn += "x0" ;
       hxnn += " integrated X0 vs eta" ;
       det.hx = new TH1F( hxn.c_str(), hxnn.c_str(), nbins, etaMin , etaMax ) ;
@@ -190,9 +182,8 @@ int main_wrapper(int argc, char** argv)   {
       hln += "lambda" ;
       hlnn += " integrated int. lengths vs eta" ;
       det.hl = new TH1F( hln.c_str(), hlnn.c_str(), nbins, etaMin , etaMax ) ;
-
-    } else {   // use polar angle
-
+    }
+    else {   // use polar angle
       hxn += "x0" ;
       hxnn += " integrated X0 vs -theta" ;
       det.hx = new TH1F( hxn.c_str(), hxnn.c_str(), nbins, -thetaMax , -thetaMin ) ;
@@ -201,7 +192,6 @@ int main_wrapper(int argc, char** argv)   {
       hlnn += " integrated int. lengths vs -theta" ;
       det.hl = new TH1F( hln.c_str(), hlnn.c_str(), nbins, -thetaMax , -thetaMin ) ;
     }
-
   }
   //-------------------------
       
@@ -216,7 +206,6 @@ int main_wrapper(int argc, char** argv)   {
   double dEta  = (etaMax-etaMin)/nbins ;
 
   std::cout  << "====================================================================================================" << std::endl ;
-
   std::cout  << "theta:f/" ;
   for(auto& det : subdets){ std::cout  << det.name << "_x0:f/" << det.name << "_lam:f/" ; }
   std::cout  << std::endl ;
@@ -225,58 +214,42 @@ int main_wrapper(int argc, char** argv)   {
     std::cout << "Unreasonable number of bins: " << nbins << std::endl;
     ::exit(EINVAL);
   }
-  
+
   for(int i=0 ; i< nbins ;++i){
-
     double theta = ( etaMax > 0. ?  2. * atan ( exp ( - ( etaMin + (0.5+i)*dEta) ) ) : ( thetaMin + (0.5+i)*dTheta ) ) ;
+    std::stringstream line;
 
-    std::cout << std::scientific << theta << " " ;
-    
-    for(auto& det : subdets){
-      
+    line << std::scientific << theta << " " ;
+    for( auto& det : subdets )  {
       Vector3D p0 = pointOnCylinder( theta, det.r0 , det.z0 , phi0  ) ;// double theta, double r, double z, double phi)
-      
       Vector3D p1 = pointOnCylinder( theta, det.r1 , det.z1 , phi0  ) ;// double theta, double r, double z, double phi)
-      
       const MaterialVec& materials = matMgr.materialsBetween(p0, p1);
-
       double sum_x0(0.), sum_lambda(0.),path_length(0.);
 
-      for( auto amat : materials ){
-	TGeoMaterial* mat =  amat.first->GetMaterial();
-	double length = amat.second;
-	double nx0 = length / mat->GetRadLen();
-	sum_x0 += nx0;
-	double nLambda = length / mat->GetIntLen();
-	sum_lambda += nLambda;
-	path_length += length;
+      for( auto amat : materials )  {
+        TGeoMaterial* mat =  amat.first->GetMaterial();
+        double length = amat.second;
+        double nx0 = length / mat->GetRadLen();
+        sum_x0 += nx0;
+        double nLambda = length / mat->GetIntLen();
+        sum_lambda += nLambda;
+        path_length += length;
       }
 
-
       double binX = ( etaMax > 0. ? (etaMin + (0.5+i)*dEta) : -theta/M_PI*180. ) ;
-
       det.hx->Fill( binX , sum_x0 ) ;
       det.hl->Fill( binX , sum_lambda ) ;
-
-      std::cout  << std::scientific  << sum_x0 << "  " << sum_lambda << "  " ; // << path_length ;
-
+      line  << std::scientific  << sum_x0 << "  " << sum_lambda << "  " ; // << path_length ;
     }
-    std::cout  << std::endl ;
+    std::cout << line.str() << std::endl;
   }  
   std::cout  << "====================================================================================================" << std::endl ;
-
-
   rootFile->Write();
   rootFile->Close();
-   
   return 0;
 }
 
-
-
 void dumpExampleSteering(){
-
-
   std::cout << "# Example steering file for materialBudget  (taken from ILD_l5_v02)" << std::endl ;
   std::cout <<  std::endl ;
   std::cout << "# root output file"  << std::endl ;
@@ -302,6 +275,5 @@ void dumpExampleSteering(){
   std::cout << "subdet tpc    0. 0. 1.692100e+02 2.225000e+02" << std::endl ;
   std::cout << "subdet outtpc 0. 0. 1.769800e+02 2.350000e+02" << std::endl ;
   std::cout << "subdet set    0. 0. 1.775200e+02 2.300000e+02" << std::endl ;
-
-  exit(0);
+  ::exit(0);
 }
