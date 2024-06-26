@@ -6,6 +6,9 @@ Based on M. Frank and F. Gaede runSim.py
    @version 0.1
 
 """
+import argparse
+import io
+import logging
 import os
 import sys
 import textwrap
@@ -27,9 +30,6 @@ from DDSim.Helper.MagneticField import MagneticField
 from DDSim.Helper.ParticleHandler import ParticleHandler
 from DDSim.Helper.Gun import Gun
 from DDSim.Helper.UI import UI
-import argparse
-import logging
-import io
 
 logger = logging.getLogger('DDSim')
 
