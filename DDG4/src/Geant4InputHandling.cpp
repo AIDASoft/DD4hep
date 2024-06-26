@@ -392,7 +392,15 @@ getRelevant(std::set<int>& visited,
   visited.insert(p->id);
   PropertyMask status(p->status);
   if ( status.isSet(G4PARTICLE_GEN_STABLE) )  {
-    if ( prim.find(p->id) == prim.end() )  {
+    bool rejectParticle = false
+      or (primaryConfig.m_rejectPDGs.count(abs(p->pdgID)) != 0) // quarks, gluon, "strings", W, Z etc.
+      ;
+    printout(dd4hep::DEBUG, "Input",
+             "Checking rejection of stable: PDG(%-10d), Definition(%s), reject(%s)",
+             p->pdgID,
+             p.definition() ? "true" : "false",
+             rejectParticle ? "true" : "false");
+    if (not rejectParticle and prim.find(p->id) == prim.end() )  {
       G4PrimaryParticle* p4 = createG4Primary(p);
       prim[p->id] = p4;
       res.emplace_back(p,p4);
