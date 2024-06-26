@@ -13,6 +13,7 @@ import os
 import sys
 import textwrap
 import traceback
+from urllib.parse import urlparse
 from DDSim.Helper.Meta import Meta
 from DDSim.Helper.LCIO import LCIO
 from DDSim.Helper.HepMC3 import HepMC3
@@ -566,7 +567,7 @@ class DD4hepSimulation(object):
     if isinstance(fileNames, str):
       fileNames = [fileNames]
     for fileName in fileNames:
-      if not os.path.exists(fileName):
+      if not os.path.exists(fileName) and not urlparse(fileName).scheme:
         self._errorMessages.append(f"ERROR: The {fileType}file '{fileName}' does not exist")
 
   def __checkFileFormat(self, fileNames, extensions):
