@@ -13,8 +13,8 @@
 #ifndef DDALIGN_ALIGNMENTTAGS_H
 #define DDALIGN_ALIGNMENTTAGS_H
 
-// Framework include files
-#include "XML/XMLElements.h"
+/// Framework include files
+#include <XML/XMLElements.h>
 #ifndef UNICODE
 #define UNICODE(x)  extern const ::dd4hep::xml::Tag_t Unicode_##x 
 #endif
@@ -45,7 +45,7 @@ namespace dd4hep {
 }
 
 #undef UNICODE // Do not miss this one!
-#include "XML/XMLTags.h"
+#include <XML/XMLTags.h>
 
 #define _ALU(a) ::dd4hep::DDAlign::Unicode_##a
 

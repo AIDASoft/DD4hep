@@ -1157,12 +1157,15 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         pref += aligned->GetName();
       }
       /// 
+      TGeoVolume* mother = ideal ? ideal->GetMotherVolume() : nullptr;
       if ( m_printPositions || m_printVolIDs )  {
         if ( m_printPointers )    {
           if ( ideal != aligned )
-            std::snprintf(fmt,sizeof(fmt),"Ideal:%p Aligned:%p ",(void*)ideal,(void*)aligned);
+            std::snprintf(fmt,sizeof(fmt),"Ideal:%p Aligned:%p ",
+                          (void*)ideal,(void*)aligned);
           else
-            std::snprintf(fmt,sizeof(fmt),"Ideal:%p ",(void*)ideal);
+            std::snprintf(fmt,sizeof(fmt),"Ideal:%p MotherVol:%p",
+                          (void*)ideal, (void*)mother);
           log << fmt;
         }
         // Top level volume! have no volume ids
@@ -1204,8 +1207,8 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         char  sens = vol.isSensitive() ? 'S' : ' ';
         if ( m_printPointers )    {
           if ( ideal == aligned )  {
-            std::snprintf(fmt,sizeof(fmt),"%03d %%s [Ideal:%p] %%-%ds %%-16s Vol:%%s shape:%%s \t %c %%s",
-                          level+1,(void*)ideal,2*level+1,sens);
+            std::snprintf(fmt,sizeof(fmt),"%03d %%s [Ideal:%p Vol:%p MotherVol:%p] %%-%ds %%-16s Vol:%%s shape:%%s \t %c %%s",
+                          level+1,(void*)ideal,(void*)vol, (void*)mother, 2*level+1, sens);
           }
           else  {
             std::snprintf(fmt,sizeof(fmt),"%03d %%s Ideal:%p Aligned:%p %%-%ds %%-16s Vol:%%s shape:%%s %c %%s",

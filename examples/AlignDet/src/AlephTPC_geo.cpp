@@ -12,8 +12,11 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/DetFactoryHelper.h"
-#include "TGeoArb8.h"
+#include <DD4hep/DetFactoryHelper.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <TGeoArb8.h>
+
+// C/C++ include files
 #include <iomanip>
 
 using namespace std;
@@ -50,7 +53,7 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   cylinder_t env        = { x_envelope.inner_r(), x_envelope.outer_r(), x_envelope.zhalf() };
   cylinder_t inner_wall = { x_inner.inner_r(), x_inner.inner_r()+x_inner.thickness(), env.zhalf };
   cylinder_t outer_wall = { x_outer.outer_r()-x_outer.thickness(), x_outer.outer_r(), env.zhalf };
-  cylinder_t gas        = { inner_wall.outer, outer_wall.inner, x_gas.zhalf() };
+  cylinder_t gas        = { inner_wall.outer+5*dd4hep::cm, outer_wall.inner-5*dd4hep::cm, x_gas.zhalf()-5*dd4hep::cm };
 
   // TPC sensitive detector
   sens_det.setType("tracker");
@@ -80,15 +83,13 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   outerVol.setVisAttributes(description.visAttributes(x_outer.visStr()));
   envVol.placeVolume(outerVol);
 
-#if 0
   // TPC gas chamber envelope
   Material gasMat = description.material(x_gas.materialStr());
   Tube     gasTub(gas.inner,gas.outer,gas.zhalf);
   Volume   gasVol(name+"_chamber",gasTub,gasMat);
   gasVol.setVisAttributes(description.visAttributes(x_gas.visStr()));
-  //gasVol.setVisAttributes(description.invisible());
+  gasVol.setSensitiveDetector(sens_det);
   envVol.placeVolume(gasVol);
-#endif
   
   // TPC HV plane
   Tube    hvTub(gas.inner,gas.outer,x_cathode.thickness()/2);

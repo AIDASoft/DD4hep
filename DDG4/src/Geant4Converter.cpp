@@ -908,9 +908,9 @@ void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* n
           return nullptr;
         }
         g4->placeAssembly(dau, (*ia).second, transform);
-        printout(lvl, "Geant4Converter", "+++ Assembly: AddPlacedAssembly : dau:%s "
+        printout(lvl, "Geant4Converter", "+++ Assembly: AddPlacedAssembly %p: dau:%s "
                  "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
-                 dau_vol->GetName(), mot_vol->GetName(),
+                 (void*)dau_vol, dau_vol->GetName(), mot_vol->GetName(),
                  transform.dx(), transform.dy(), transform.dz());
       }
       else   {
@@ -922,9 +922,9 @@ void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* n
                  __FILE__, __LINE__, name.c_str(), dau->GetName());
         }
         g4->placeVolume(dau,(*iv).second, transform);
-        printout(lvl, "Geant4Converter", "+++ Assembly: AddPlacedVolume : dau:%s "
+        printout(lvl, "Geant4Converter", "+++ Assembly: AddPlacedVolume %p: dau:%s "
                  "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
-                 dau_vol->GetName(), mot_vol->GetName(),
+                 (void*)dau_vol, dau_vol->GetName(), mot_vol->GetName(),
                  transform.dx(), transform.dy(), transform.dz());
       }
     }
@@ -1003,7 +1003,7 @@ void* Geant4Converter::handlePlacement(const std::string& name, const TGeoNode* 
         return nullptr;
       }
       else if ( node != info.manager->GetTopNode() && volIt == info.g4Volumes.end() )  {
-        throw std::logic_error("Geant4Converter: Invalid mother volume found!");
+        //throw std::logic_error("Geant4Converter: Invalid mother volume found!");
       }
       PlacedVolume pv(node);
       const auto*  pv_data = pv.data();
@@ -1692,51 +1692,7 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   std::map<int, std::vector<const TGeoNode*> >::const_reverse_iterator i = m_data->rbegin();
   for ( ; i != m_data->rend(); ++i )  {
     for ( const TGeoNode* node : i->second )  {
-#if 0
-      TGeoVolume* vm = node->GetMotherVolume();
-      if ( vm )   {
-        for(int iv=0; iv < vm->GetNdaughters(); ++iv)  {
-          TGeoNode* n = vm->GetNode(iv);
-          this->handlePlacement(n->GetName(), n);
-        }
-      }
-#endif
       this->handlePlacement(node->GetName(), node);
-#if 0
-#if 0
-      auto idau = m_daughters->find(Volume(node->GetVolume()));
-      std::vector<std::pair<TGeoNode*, G4VPhysicalVolume*> > vol_daughters;
-      if ( idau != m_daughters->end() )  {
-        for( auto* d : idau->second )  {
-          void* dau = handlePlacement(d->GetName(), d);
-          vol_daughters.push_back({ d, (G4VPhysicalVolume*)dau });
-        }
-      }
-      G4VPhysicalVolume* pl = (G4VPhysicalVolume*)handlePlacement(node->GetName(), node);
-      if ( pl )  {
-        // Now run check:
-        G4LogicalVolume* lv = pl->GetLogicalVolume();
-        for(int ik=0; ik<node->GetNdaughters(); ++ik)   {
-          const auto& p = vol_daughters[ik];
-          printout(INFO, "Geant4Converter", "+++ %i TGEO Parent: %s daughter: %s",
-                   ik, node->GetName(), node->GetDaughter(ik)->GetName());
-          printout(INFO, "Geant4Converter", "+++ %i G4   Parent: %s daughter: %s",
-                   ik, pl->GetName().c_str(),   lv->GetDaughter(ik)->GetName().c_str());
-          if ( p.first != node->GetDaughter(ik) || p.second != lv->GetDaughter(ik) )  {
-            printout(INFO, "Geant4Converter", "+++  BAD Volume order: %s", p.first->GetName());          
-          }
-        }
-      }
-#else
-      auto id = m_daughters->find(node);
-      if ( id != m_daughters->end() )  {
-        for( auto* dau : id->second )  {
-          handlePlacement(dau->GetName(), dau);
-        }
-      }
-      handlePlacement(node->GetName(), node);
-#endif
-#endif
     }
   }
   /// Handle concrete surfaces

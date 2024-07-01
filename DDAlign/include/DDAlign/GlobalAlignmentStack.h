@@ -14,10 +14,9 @@
 #define DDALIGN_GLOBALALIGNMENTSTACK_H
 
 // Framework include files
-#include "DD4hep/Alignments.h"
-#include "DD4hep/AlignmentData.h"
-//#include "DD4hep/Objects.h"
-#include "DD4hep/Memory.h"
+#include <DD4hep/Alignments.h>
+#include <DD4hep/AlignmentData.h>
+#include <DD4hep/Memory.h>
 
 
 /// Namespace for the AIDA detector description toolkit

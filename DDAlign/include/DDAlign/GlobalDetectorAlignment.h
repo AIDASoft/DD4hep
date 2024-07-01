@@ -14,8 +14,8 @@
 #define DDALIGN_GLOBALDETECTORALIGNMENT_H
 
 // Framework include files
-#include "DD4hep/DetElement.h"
-#include "DD4hep/GlobalAlignment.h"
+#include <DD4hep/DetElement.h>
+#include <DD4hep/GlobalAlignment.h>
 
 // Forward declarations
 class TGeoHMatrix;

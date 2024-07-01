@@ -14,11 +14,11 @@
 #define DDALIGN_ALIGNMENTSCALIB_H
 
 // Framework includes
-#include "DD4hep/DetElement.h"
-#include "DD4hep/Alignments.h"
-#include "DD4hep/AlignmentData.h"
-#include "DD4hep/ConditionsMap.h"
-#include "DD4hep/AlignmentsCalculator.h"
+#include <DD4hep/DetElement.h>
+#include <DD4hep/Alignments.h>
+#include <DD4hep/AlignmentData.h>
+#include <DD4hep/ConditionsMap.h>
+#include <DD4hep/AlignmentsCalculator.h>
 
 // C/C++ include files
 #include <set>
