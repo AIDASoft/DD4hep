@@ -207,10 +207,6 @@ void dd4hep::DDPython::restoreThread()   {
 }
 
 int dd4hep::DDPython::setArgs(int argc, char** argv)  const   {
-  // Need to protect against API change from Python 2 to Python 3
-#if PY_VERSION_HEX < 0x03000000
-  ::PySys_SetArgv(argc,argv);
-#else
   std::vector<std::wstring> wargs;
   std::vector<const wchar_t*> wargv;
   for(int i=0; i<argc;++i)  {
@@ -226,8 +222,17 @@ int dd4hep::DDPython::setArgs(int argc, char** argv)  const   {
     wargs.push_back(wstr);
   }
   for(auto& s : wargs ) wargv.push_back(s.c_str());
-  ::PySys_SetArgv(argc,(wchar_t**)&wargv[0]);
-#endif
+
+  PyStatus status;
+
+  PyConfig config;
+  PyConfig_InitPythonConfig( &config );
+
+  status = PyConfig_SetString( &config, &config.program_name, wargv[0] );
+  status = PyConfig_SetArgv( &config, 1, (wchar_t**)&wargv[0] );
+  status = Py_InitializeFromConfig( &config );
+  PyConfig_Clear( &config );
+
   return 1;
 }
 
@@ -326,9 +331,6 @@ bool dd4hep::DDPython::isMainThread()   {
 
 /// Start the interpreter in normal mode without hacks like 'pythopn.exe' does.
 int dd4hep::DDPython::run_interpreter(int argc, char** argv)   {
-#if PY_VERSION_HEX < 0x03000000
-  return ::Py_Main(argc, argv);
-#else
   std::vector<std::wstring> wargs;
   std::vector<const wchar_t*> wargv;
   for(int i=0; i<argc;++i)  {
@@ -345,5 +347,4 @@ int dd4hep::DDPython::run_interpreter(int argc, char** argv)   {
   }
   for( auto& s : wargs ) wargv.push_back(s.c_str());
   return ::Py_Main(argc, (wchar_t**)&wargv[0]);
-#endif
 }
