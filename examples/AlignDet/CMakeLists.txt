@@ -152,7 +152,7 @@ dd4hep_add_test_reg( AlignDet_AlephTPC_load
   EXEC_ARGS  geoPluginRun
              -input file:${AlignDet_INSTALL}/compact/AlephTPC.xml
              -destroy -no-interpreter -plugin DD4hep_GlobalAlignmentInstall
-  REGEX_PASS "189 nodes/ 24 volume UID's in Detector Geometry"
+  REGEX_PASS "190 nodes/ 25 volume UID's in Detector Geometry"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
 #
