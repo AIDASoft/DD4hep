@@ -37,7 +37,6 @@
 
 // C/C++ include files
 #include <set>
-#include <stdexcept>
 #include <algorithm>
 
 using namespace dd4hep::sim;
@@ -508,11 +507,11 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
       Geant4ParticleHandle p = (*ipar).second;
       equivalents[(*ie).first] = p->id;  // requires (1) to be filled properly!
       const G4ParticleDefinition* def = p.definition();
-      int pdg = int(fabs(def->GetPDGEncoding())+0.1);
+      int pdg = int(std::abs(def->GetPDGEncoding())+0.1);
       if ( pdg != 0 && pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
         error("+++ ERROR: Geant4 particle for track:%d last known is:%d -- is gluon or quark!",equiv,g4_equiv);
       }
-      pdg = int(fabs(p->pdgID)+0.1);
+      pdg = int(std::abs(p->pdgID)+0.1);
       if ( pdg != 0 && pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
         error("+++ ERROR(2): Geant4 particle for track:%d last known is:%d -- is gluon or quark!",equiv,g4_equiv);
       }

@@ -87,7 +87,6 @@ std::vector<std::string> DigiSegmentSplitter::collection_names()  const   {
 /// Initialization function
 void DigiSegmentSplitter::initialize()   {
   char text[256];
-  std::size_t count = 0;
 
   m_split_tool.set_detector(m_detector_name);
   m_keys          = m_split_tool.collection_keys();
@@ -135,7 +134,6 @@ void DigiSegmentSplitter::initialize()   {
     auto* w = new worker_t(proc, m_split_context);
     w->options.enable(id);
     m_workers.insert(w);
-    ++count;
   }
   info("+++ Detector splitter is now fully initialized!");
 }
