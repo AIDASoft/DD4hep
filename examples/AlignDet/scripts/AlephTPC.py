@@ -13,7 +13,6 @@
 #
 from __future__ import absolute_import, unicode_literals
 import os
-import time
 import DDG4
 from DDG4 import OutputLevel as Output
 from g4units import GeV, MeV, m, cm
