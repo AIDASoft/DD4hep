@@ -13,47 +13,42 @@
 
 // Framework include files
 #include <DD4hep/GlobalAlignment.h>
-#include <DD4hep/InstanceCount.h>
 #include <DD4hep/MatrixHelpers.h>
 #include <DD4hep/Printout.h>
 
 // ROOT include files
-#include <TGeoMatrix.h>
 #include <TGeoManager.h>
-
-using namespace dd4hep;
-using namespace dd4hep::align;
 
 namespace  {
   struct CheckHandle  {
-    CheckHandle(const GlobalAlignment& a)  {
+    CheckHandle(const dd4hep::align::GlobalAlignment& a)  {
       if ( a.isValid() ) return;
-      except("dd4hep:GlobalAlignment", "Attempt to access invalid alignment object. [Invalid Handle]");
+      dd4hep::except("dd4hep:GlobalAlignment", "Attempt to access invalid alignment object. [Invalid Handle]");
     }
     ~CheckHandle() {}
   };
 }
 
 /// Initializing constructor to create a new object
-GlobalAlignment::GlobalAlignment(const std::string& path) {
+dd4hep::align::GlobalAlignment::GlobalAlignment(const std::string& path) {
   //cout << "GlobalAlignment: path=" << path << endl;
   m_element = new TGeoPhysicalNode(path.c_str());
 }
 
 /// Number of nodes in this branch
-int GlobalAlignment::numNodes() const  {
+int dd4hep::align::GlobalAlignment::numNodes() const  {
   CheckHandle verify_handle(*this);
   return ptr()->GetLevel();
 }
 
 /// Access the placement of this node
-PlacedVolume GlobalAlignment::placement()   const   {
+dd4hep::PlacedVolume dd4hep::align::GlobalAlignment::placement()   const   {
   CheckHandle verify_handle(*this);
   return ptr()->GetNode(0);
 }
 
 /// Access the placement of a node in the chain of placements for this branch
-PlacedVolume GlobalAlignment::nodePlacement(int level)   const   {
+dd4hep::PlacedVolume dd4hep::align::GlobalAlignment::nodePlacement(int level)   const   {
   CheckHandle verify_handle(*this);
   TGeoNode* n = ptr()->GetNode(level);
   if ( n ) return n;
@@ -63,7 +58,7 @@ PlacedVolume GlobalAlignment::nodePlacement(int level)   const   {
 }
 
 /// Access the placement of the mother of this node
-PlacedVolume GlobalAlignment::motherPlacement(int level_up)   const    {
+dd4hep::PlacedVolume dd4hep::align::GlobalAlignment::motherPlacement(int level_up)   const    {
   CheckHandle verify_handle(*this);
   Int_t ind = ptr()->GetLevel()-level_up;
   if ( ind >= 0 )  {
@@ -75,13 +70,13 @@ PlacedVolume GlobalAlignment::motherPlacement(int level_up)   const    {
 }
 
 /// Access the currently applied alignment/placement matrix
-Transform3D GlobalAlignment::toGlobal(int level) const   {
+dd4hep::Transform3D dd4hep::align::GlobalAlignment::toGlobal(int level) const   {
   CheckHandle verify_handle(*this);
   return detail::matrix::_transform(ptr()->GetMatrix(level));
 }
 
 /// Transform a point from local coordinates of a given level to global coordinates
-Position GlobalAlignment::toGlobal(const Position& localPoint, int level) const   {
+dd4hep::Position dd4hep::align::GlobalAlignment::toGlobal(const Position& localPoint, int level) const   {
   CheckHandle verify_handle(*this);
   Position result;
   TGeoHMatrix* matrix = ptr()->GetMatrix(level);
@@ -90,7 +85,7 @@ Position GlobalAlignment::toGlobal(const Position& localPoint, int level) const 
 }
 
 /// Transform a point from local coordinates of a given level to global coordinates
-Position GlobalAlignment::globalToLocal(const Position& globalPoint, int level) const   {
+dd4hep::Position dd4hep::align::GlobalAlignment::globalToLocal(const Position& globalPoint, int level) const   {
   CheckHandle verify_handle(*this);
   Position result;
   TGeoHMatrix* matrix = ptr()->GetMatrix(level);
@@ -99,19 +94,19 @@ Position GlobalAlignment::globalToLocal(const Position& globalPoint, int level) 
 }
 
 /// Access the currently applied alignment/placement matrix
-Transform3D GlobalAlignment::toMother(int level) const   {
+dd4hep::Transform3D dd4hep::align::GlobalAlignment::toMother(int level) const   {
   CheckHandle verify_handle(*this);
   return detail::matrix::_transform(ptr()->GetNode(level)->GetMatrix());
 }
 
 /// Access the currently applied alignment/placement matrix
-Transform3D GlobalAlignment::nominal() const   {
+dd4hep::Transform3D dd4hep::align::GlobalAlignment::nominal() const   {
   CheckHandle verify_handle(*this);
   return detail::matrix::_transform(ptr()->GetOriginalMatrix());
 }
 
 /// Access the currently applied correction matrix (delta)
-Transform3D GlobalAlignment::delta() const   {
+dd4hep::Transform3D dd4hep::align::GlobalAlignment::delta() const   {
   // It may be useful at some point to cache some of these matrices....
   CheckHandle verify_handle(*this);
   TGeoPhysicalNode* n = ptr();
@@ -122,7 +117,7 @@ Transform3D GlobalAlignment::delta() const   {
 }
 
 /// Access the inverse of the currently applied correction matrix (delta) (mother to daughter)
-Transform3D GlobalAlignment::invDelta() const   {
+dd4hep::Transform3D dd4hep::align::GlobalAlignment::invDelta() const   {
   // It may be useful at some point to cache some of these matrices....
   CheckHandle verify_handle(*this);
   TGeoPhysicalNode* n = ptr();

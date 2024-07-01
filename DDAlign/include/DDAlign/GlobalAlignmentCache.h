@@ -14,9 +14,9 @@
 #define DDALIGN_GLOBALALIGNMENTCACHE_H
 
 // Framework include files
-#include "DD4hep/ExtensionEntry.h"
-#include "DD4hep/GlobalAlignment.h"
-#include "DDAlign/GlobalAlignmentStack.h"
+#include <DD4hep/ExtensionEntry.h>
+#include <DD4hep/GlobalAlignment.h>
+#include <DDAlign/GlobalAlignmentStack.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

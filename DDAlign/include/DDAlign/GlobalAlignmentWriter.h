@@ -14,9 +14,9 @@
 #define DDALIGN_GLOBALALIGNMENTWRITER_H
 
 // Framework include files
-#include "XML/XMLElements.h"
-#include "DD4hep/DetElement.h"
-#include "DD4hep/GlobalAlignment.h"
+#include <XML/XMLElements.h>
+#include <DD4hep/DetElement.h>
+#include <DD4hep/GlobalAlignment.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
