@@ -728,17 +728,13 @@ void HepMC::EventStream::clear()   {
 bool HepMC::EventStream::read()   {
   EventStream& info = *this;
   bool event_read = false;
-  static int num_evt = 0;
-  int num_line = 0, num_line_accepted = 0;
 
   detail::releaseObjects(vertices());
   detail::releaseObjects(particles());
 
-  ++num_evt;
   while( instream.good() ) {
     char value = instream.peek();
     std::istringstream input_line;
-    ++num_line;
     if      ( value == 'E' && event_read )
       break;
     else if ( instream.eof() && event_read )
@@ -755,7 +751,6 @@ bool HepMC::EventStream::read()   {
     if( !input_line || value < 0 )
       goto Skip;
 
-    ++num_line_accepted;
     switch( value )   {
     case 'H':  {
       int iotype = 0;

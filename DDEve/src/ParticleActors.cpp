@@ -89,13 +89,11 @@ void MCParticleCreator::addCompound(const std::string& name, TEveLine* e)   {
 void MCParticleCreator::addCompoundLight(const std::string& name, TEveLine* e)   {
   Compounds::const_iterator i = types.find(name);
   if ( i == types.end() )  {
-    static int icol = 0;
     TEveCompound* o = new TEveCompound(name.c_str(),name.c_str());
     particles->AddElement(o);
     i = types.emplace(name,o).first;
     o->SetMainColor(kBlack);
     o->CSCApplyMainColorToAllChildren();
-    ++icol;
   }
   TEveCompound* c = (*i).second;
   e->SetLineWidth(1);

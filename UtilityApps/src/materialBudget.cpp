@@ -217,14 +217,15 @@ int main_wrapper(int argc, char** argv)   {
 
   for(int i=0 ; i< nbins ;++i){
     double theta = ( etaMax > 0. ?  2. * atan ( exp ( - ( etaMin + (0.5+i)*dEta) ) ) : ( thetaMin + (0.5+i)*dTheta ) ) ;
-    std::stringstream line;
+    std::stringstream paramLine;
 
-    line << std::scientific << theta << " " ;
+    paramLine << std::scientific << theta << " " ;
     for( auto& det : subdets )  {
       Vector3D p0 = pointOnCylinder( theta, det.r0 , det.z0 , phi0  ) ;// double theta, double r, double z, double phi)
       Vector3D p1 = pointOnCylinder( theta, det.r1 , det.z1 , phi0  ) ;// double theta, double r, double z, double phi)
       const MaterialVec& materials = matMgr.materialsBetween(p0, p1);
-      double sum_x0(0.), sum_lambda(0.),path_length(0.);
+      double sum_x0(0.), sum_lambda(0.);
+      // double path_length(0.);
 
       for( auto amat : materials )  {
         TGeoMaterial* mat =  amat.first->GetMaterial();
@@ -233,15 +234,15 @@ int main_wrapper(int argc, char** argv)   {
         sum_x0 += nx0;
         double nLambda = length / mat->GetIntLen();
         sum_lambda += nLambda;
-        path_length += length;
+        // path_length += length;
       }
 
       double binX = ( etaMax > 0. ? (etaMin + (0.5+i)*dEta) : -theta/M_PI*180. ) ;
       det.hx->Fill( binX , sum_x0 ) ;
       det.hl->Fill( binX , sum_lambda ) ;
-      line  << std::scientific  << sum_x0 << "  " << sum_lambda << "  " ; // << path_length ;
+      paramLine  << std::scientific  << sum_x0 << "  " << sum_lambda << "  " ; // << path_length ;
     }
-    std::cout << line.str() << std::endl;
+    std::cout << paramLine.str() << std::endl;
   }  
   std::cout  << "====================================================================================================" << std::endl ;
   rootFile->Write();

@@ -536,9 +536,8 @@ static long generate_cxx(Detector& description, int argc, char** argv) {
 
   for(int i=0; i<argc; ++i)  {
     char c = ::tolower(argv[i][0]);
-    char* p = argv[i];
-    if ( c == '-' ) { ++p; c = ::tolower(argv[i][1]); }
-    if ( c == '-' ) { ++p; c = ::tolower(argv[i][1]); }
+    if ( c == '-' ) { c = ::tolower(argv[i][1]); }
+    if ( c == '-' ) { c = ::tolower(argv[i][1]); }
     if ( c == 'o' && i+1<argc )
       output = argv[++i];
     else if ( c == 'f' && i+1<argc )
