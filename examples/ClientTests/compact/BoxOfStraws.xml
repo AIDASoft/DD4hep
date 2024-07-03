@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+ 
+  <info name="BoxOfStraws"
+	title="Test with silicon boxes"
+	author="Markus Frank"
+	url="http://www.cern.ch/frankm"
+	status="development"
+	version="1.0">
+    <comment>Alignment test with 2 simple boxes</comment>        
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="3*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="VisibleRed"   alpha="0.4" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="VisibleBlue"  alpha="1.0" r="0.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+    <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" drawingStyle="solid" lineStyle="solid" showDaughters="true" visible="true"/>
+  </display>
+
+  <limits>
+    <limitset name="BoxOfStrawsLimitSet">
+      <limit name="step_length_max"  particles="*" value="1.0" unit="mm" />
+      <limit name="track_length_max" particles="*" value="1.0" unit="mm" />
+    </limitset>
+  </limits>
+
+  <regions>
+    <region name="StrawRegion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="BoxOfStrawsLimitSet"/>
+    </region>
+  </regions>
+
+  <detectors>
+    <detector id="1" name="BoxOfStrawsDet" type="DD4hep_BoxOfStraws" readout="BoxOfStrawsHits" vis="VisibleGreen" region="StrawRegion" limits="BoxOfStrawsLimitSet">
+      <box      x="1*m"    y="1*m" z="1000*mm"  limits="BoxOfStrawsLimitSet" vis="VisibleRed"/>
+      <straw rmax="1*mm"   y="1*m" vis="VisibleBlue">
+        <material name="Iron"/>
+        <non_sensitive/>
+      </straw>
+      <position x="0*m"   y="0*m"   z="0*m"/>
+      <rotation x="0"     y="0"     z="0"/>
+    </detector>
+  </detectors>
+  
+  <readouts>
+    <readout name="BoxOfStrawsHits">
+      <id>system:8,module:16,straw:16,y:-12</id>
+    </readout>
+  </readouts>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="2*m"
+	   outer_radius="2*m">
+    </field>
+  </fields>
+
+</lccdd>
