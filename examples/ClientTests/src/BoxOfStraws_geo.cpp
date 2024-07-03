@@ -52,14 +52,14 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   Volume box_vol(nam, box, description.air());
   box_vol.setAttributes(description, x_box.regionStr(), x_box.limitsStr(), x_box.visStr());
 
-  Box    row(x_box.x(), x_box.y(), x_straw.rmax());
-  Volume row_vol("row", row, description.air());
-  row_vol.setVisAttributes(description.visAttributes("InvisibleWithChildren"));
+  Box    layer(x_box.x(), x_box.y(), x_straw.rmax());
+  Volume layer_vol("layer", layer, description.air());
+  layer_vol.setVisAttributes(description.visAttributes("InvisibleWithChildren"));
   
-  printout(INFO, "BoxOfStraws", "%s: Row:   nx: %7d nz: %7d delta: %7.3f", nam.c_str(), num_x, num_z, delta);
+  printout(INFO, "BoxOfStraws", "%s: Layer:   nx: %7d nz: %7d delta: %7.3f", nam.c_str(), num_x, num_z, delta);
   for( int ix=0; ix < num_x; ++ix )  {
     double x = -box.x() + (double(ix)+0.5) * delta;
-    PlacedVolume pv = row_vol.placeVolume(straw_vol, Position(x, 0e0, 0e0));
+    PlacedVolume pv = layer_vol.placeVolume(straw_vol, Position(x, 0e0, 0e0));
     pv.addPhysVolID("straw", ix);
   }
 
@@ -67,10 +67,10 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   Rotation3D rot(RotationZYX(0e0, 0e0, M_PI/2e0));
   for( int iz=0; iz < num_z; ++iz )  {
     double z = -box.z() + (double(iz)+0.5) * delta;
-    PlacedVolume pv = box_vol.placeVolume(row_vol, Transform3D(rot, Position(0e0, 0e0, z)));
-    pv.addPhysVolID("module", iz);
+    PlacedVolume pv = box_vol.placeVolume(layer_vol, Transform3D(rot, Position(0e0, 0e0, z)));
+    pv.addPhysVolID("layer", iz);
   }
-  printout(INFO, "BoxOfStraws", "%s: Created %d rows of %d straws each.", nam.c_str(), num_z, num_x);
+  printout(INFO, "BoxOfStraws", "%s: Created %d layers of %d straws each.", nam.c_str(), num_z, num_x);
   
   DetElement   sdet  (nam, x_det.id());
   Volume       mother(description.pickMotherVolume(sdet));

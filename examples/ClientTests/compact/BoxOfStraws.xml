@@ -68,7 +68,7 @@
   
   <readouts>
     <readout name="BoxOfStrawsHits">
-      <id>system:8,module:16,straw:16,y:-12</id>
+      <id>system:8,layer:16,straw:16,y:-12</id>
     </readout>
   </readouts>
 
