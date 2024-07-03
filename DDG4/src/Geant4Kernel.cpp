@@ -202,7 +202,7 @@ Geant4Kernel& Geant4Kernel::worker(unsigned long identifier, bool create_if)    
       return *this;
     }
   }
-  else if ( create_if )  {
+  else if( create_if )  {
     return createWorker();
   }
   except("Geant4Kernel", "DDG4: The Kernel object 0x%p does not exists!",(void*)identifier);
@@ -216,14 +216,30 @@ int Geant4Kernel::numWorkers() const   {
 
 /// Access to geometry world
 G4VPhysicalVolume* Geant4Kernel::world()  const   {
-  if ( this != m_master ) return m_master->world();
+  if( this != m_master ) return m_master->world();
   return m_world;
 }
 
 /// Set the geometry world
 void Geant4Kernel::setWorld(G4VPhysicalVolume* volume)  {
-  if ( this == m_master ) m_world = volume;
+  if( this == m_master ) m_world = volume;
   else m_master->setWorld(volume);
+}
+
+/// Add new sensitive type to factory list
+void Geant4Kernel::defineSensitiveDetectorType(const std::string& type, const std::string& factory)  {
+  auto iter = m_sensitiveDetectorTypes.find(type);
+  if( iter == m_sensitiveDetectorTypes.end() )  {
+    printout(INFO,"Geant4Kernel","+++ Define sensitive type: %s -> %s", type.c_str(), factory.c_str());
+    m_sensitiveDetectorTypes.emplace(type, factory);
+    return;
+  }
+  else if( iter->first == type && iter->second == factory )  {
+    return;
+  }
+  except("Geant4Kernel",
+         "+++ The sensitive type %s is already defined and used %s. Cannot overwrite with %s",
+         type.c_str(), iter->second.c_str(), factory.c_str());
 }
 
 void Geant4Kernel::printProperties()  const  {

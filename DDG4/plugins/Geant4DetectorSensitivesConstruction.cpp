@@ -86,36 +86,18 @@ void Geant4DetectorSensitivesConstruction::constructSensitives(Geant4DetectorCon
   const std::string&  dflt   = kernel.defaultSensitiveDetectorType();
   for( const auto& iv : p->sensitives )  {
     SensitiveDetector sd = iv.first;
-    std::string nam = sd.name();
-    auto iter = types.find(nam);
-    std::string typ = (iter != types.end()) ? (*iter).second : dflt;
-    G4VSensitiveDetector* g4sd = 
-      PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->description);
-    if (g4sd) {
-      print("Geant4SDConstruction", "+++ Subdetector: %-32s  type: %-16s factory: %s.",
-            nam.c_str(), sd.type().c_str(), typ.c_str());
-    }
-    else  {
-      PluginDebug dbg;
-      g4sd = PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->description);
-      if ( !g4sd )  {
-        throw std::runtime_error("ConstructSDandField: FATAL Failed to "
-                                 "create Geant4 sensitive detector " + nam + 
-                                 " (" + sd.type() + ") of type " + typ + ".");
-      }
-      print("Geant4SDConstruction", "+++ Subdetector: %-32s  type: %-16s factory: %s.",
-            nam.c_str(), sd.type().c_str(), typ.c_str());
-    }
-    g4sd->Activate(true);
-    G4SDManager::GetSDMpointer()->AddNewDetector(g4sd);
-    for(const TGeoVolume* vol : iv.second )  {
+    std::string nam  = sd.name();
+    auto        iter = types.find(nam);
+    std::string typ  = (iter != types.end()) ? (*iter).second : dflt;
+    G4VSensitiveDetector* g4sd = this->createSensitiveDetector(typ, nam);
+    for( const TGeoVolume* vol : iv.second )  {
       G4LogicalVolume* g4v = p->g4Volumes[vol];
-      if ( !g4v )  {
-        throw std::runtime_error("ConstructSDandField: Failed to access G4LogicalVolume for SD "+
-                                 nam + " of type " + typ + ".");
+      if( !g4v )  {
+        except("ConstructSDandField: Failed to access G4LogicalVolume for SD %s of type %s.",
+               nam.c_str(), typ.c_str());
       }
-      ctxt->setSensitiveDetector(g4v,g4sd);
+      ctxt->setSensitiveDetector(g4v, g4sd);
     }
   }
-  print("Geant4SDConstruction", "+++ Handled %ld sensitive detectors.",p->sensitives.size());
+  print("+++ Handled %ld sensitive detectors.",p->sensitives.size());
 }

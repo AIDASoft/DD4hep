@@ -24,7 +24,8 @@ namespace SomeExperiment {
   public:
     typedef MyTrackerHit Hit;
     // If we need special data to personalize the action, be put it here
-    int mumDeposits = 0;
+    bool   haveCellID = true;
+    int    mumDeposits = 0;
     double integratedDeposit = 0;
   };
 }
@@ -48,7 +49,20 @@ namespace dd4hep {
      *
      * @}
      */
-
+    template <>
+    Geant4SensitiveAction<MyTrackerSD>::Geant4SensitiveAction(Geant4Context* ctxt,
+                                                              const std::string& nam,
+                                                              DetElement det,
+                                                              Detector& description_ref)
+      : Geant4Sensitive(ctxt,nam,det,description_ref), m_collectionName(), m_collectionID(0)
+    {
+      declareProperty("HaveCellID",     m_userData.haveCellID = true);
+      declareProperty("ReadoutName",    m_readoutName);
+      declareProperty("CollectionName", m_collectionName);
+      initialize();
+      InstanceCount::increment(this);
+    }
+    
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<MyTrackerSD>::defineCollections()    {
       m_collectionID = declareReadoutFilteredCollection<MyTrackerSD::Hit>();
@@ -67,20 +81,20 @@ namespace dd4hep {
       double    tim       = h.track->GetGlobalTime();
       // Somehow extract here the physics you want
       MyTrackerSD::Hit* hit = 
-	new MyTrackerSD::Hit(h.trkID(), h.trkPdgID(), depo, tim, hit_len, pos, mom);
+        new MyTrackerSD::Hit(h.trkID(), h.trkPdgID(), depo, tim, hit_len, pos, mom);
       Geant4HitData::MonteCarloContrib contrib = Geant4HitData::extractContribution(step);
-      hit->cellID        = cellID(step);
+      hit->cellID        = this->m_userData.haveCellID ? cellID(step) : 0;
       hit->step_length   = hit_len;
       hit->prePos        = prePos;
       hit->postPos       = postPos;
       collection(m_collectionID)->add(hit);
       mark(h.track);
-      if ( 0 == hit->cellID )  {
+      if ( this->m_userData.haveCellID && 0 == hit->cellID )  {
         hit->cellID = volumeID(step);
         except("+++ Invalid CELL ID for hit!");
       }
       printP1("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
-	      depo, pos.X(), pos.Y(), pos.Z(), (void*)hit->cellID);
+              depo, pos.X(), pos.Y(), pos.Z(), (void*)hit->cellID);
       Geant4TouchableHandler handler(step);
       print("    Geant4 path:%s", handler.path().c_str());
 
@@ -91,9 +105,9 @@ namespace dd4hep {
       /// Let's play with the Geant4TrackInformation
       /// See issue https://github.com/AIDASoft/DD4hep/issues/1073
       if ( nullptr == h.track->GetUserInformation() )   {
-	auto data = std::make_unique<ParticleUserData>();
-	data->absolute_momentum = h.track->GetMomentum().mag();
-	h.track->SetUserInformation(new Geant4ParticleInformation(std::move(data)));
+        auto data = std::make_unique<ParticleUserData>();
+        data->absolute_momentum = h.track->GetMomentum().mag();
+        h.track->SetUserInformation(new Geant4ParticleInformation(std::move(data)));
       }
       return true;
     }

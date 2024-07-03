@@ -34,6 +34,7 @@
 
 // ROOT includes
 #include <TClass.h>
+#include <TTimeStamp.h>
 #include <TGeoBoolNode.h>
 
 // Geant4 include files
@@ -1648,7 +1649,8 @@ void* Geant4Converter::printPlacement(const std::string& name, const TGeoNode* n
   printout(outputLevel, "G4Placement", str.str().c_str());
   printout(outputLevel, "G4Placement", printSolid(sol).c_str());
   str.str("");
-  str << "                  |" << " Ndau:" << vol->GetNoDaughters() << " physvols." << " Mat:" << vol->GetMaterial()->GetName()
+  str << "                  |" << " Ndau:" << vol->GetNoDaughters()
+      << " physvols." << " Mat:" << vol->GetMaterial()->GetName()
       << " Mother:" << (char*) (mot ? mot->GetName().c_str() : "---");
   printout(outputLevel, "G4Placement", str.str().c_str());
   str.str("");
@@ -1660,6 +1662,7 @@ void* Geant4Converter::printPlacement(const std::string& name, const TGeoNode* n
 /// Create geometry conversion
 Geant4Converter& Geant4Converter::create(DetElement top) {
   typedef std::map<const TGeoNode*, std::vector<TGeoNode*> > _DAU;
+  TTimeStamp start;
   _DAU daughters;
   Geant4GeometryInfo& geo = this->init();
   World wrld = top.world();
@@ -1710,6 +1713,9 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   m_daughters = nullptr;
   geo.setWorld(top.placement().ptr());
   geo.valid = true;
-  printout(INFO, "Geant4Converter", "+++  Successfully converted geometry to Geant4.");
+  TTimeStamp stop;
+  printout(INFO, "Geant4Converter",
+           "+++  Successfully converted geometry to Geant4. [%7.3f seconds]",
+           stop.AsDouble()-start.AsDouble() );
   return *this;
 }
