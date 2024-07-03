@@ -670,7 +670,7 @@ class Geant4:
       return (seq, acts)
     return (seq, acts[0])
 
-  def setupCalorimeter(self, name, type=None, collections=None):  # noqa: A001,A002
+  def setupCalorimeter(self, name, type=None, collections=None):  # noqa: A001
     """
     Setup subdetector of type 'calorimeter' and assign the proper sensitive action
 
@@ -686,7 +686,7 @@ class Geant4:
       typ = self.sensitive_types[typ]
     return self.setupDetector(name, typ, collections)
 
-  def setupTracker(self, name, type=None, collections=None):  # noqa: A001,A002
+  def setupTracker(self, name, type=None, collections=None):  # noqa: A001
     """
     Setup subdetector of type 'tracker' and assign the proper sensitive action
 

@@ -69,6 +69,7 @@ def run():
   #
   # Setup particle gun
   gun = geant4.setupGun("Gun", particle='e+', energy=10 * GeV, multiplicity=1)
+  gun.enableUI()
   #
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
