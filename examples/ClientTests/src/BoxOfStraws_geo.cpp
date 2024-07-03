@@ -17,12 +17,13 @@
 //
 //==========================================================================
 #include <DD4hep/DetFactoryHelper.h>
+#include <DD4hep/DD4hepUnits.h>
 #include <DD4hep/Printout.h>
 
 using namespace dd4hep;
 
 static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
-  double       tol     = 1e-2;
+  double       tol     = 1e-5 * dd4hep::mm;
   xml_det_t    x_det   = e;
   xml_dim_t    x_box   = x_det.child(_U(box));
   xml_dim_t    x_rot   = x_det.child(_U(rotation));
