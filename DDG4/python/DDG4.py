@@ -680,7 +680,10 @@ class Geant4:
     self.description.sensitiveDetector(str(name))
     # sd.setType('calorimeter')
     if typ is None:
+      type = 'calorimeter'
       typ = self.sensitive_types['calorimeter']
+    elif typ is not None and self.sensitive_types.get(typ):
+      typ = self.sensitive_types[typ]
     return self.setupDetector(name, typ, collections)
 
   def setupTracker(self, name, type=None, collections=None):  # noqa: A002
@@ -693,7 +696,10 @@ class Geant4:
     self.description.sensitiveDetector(str(name))
     # sd.setType('tracker')
     if typ is None:
+      type = 'tracker'
       typ = self.sensitive_types['tracker']
+    elif typ is not None and self.sensitive_types.get(typ):
+      typ = self.sensitive_types[typ]
     return self.setupDetector(name, typ, collections)
 
   def _private_setupField(self, field, stepper, equation, prt):

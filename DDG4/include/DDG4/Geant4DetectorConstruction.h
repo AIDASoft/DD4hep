@@ -73,7 +73,7 @@ namespace dd4hep {
       /// G4 User detector initializer
       G4VUserDetectorConstruction* detector  { nullptr };
       /// Initializing Constructor
-      Geant4DetectorConstructionContext(Detector& l,G4VUserDetectorConstruction* d)
+      Geant4DetectorConstructionContext(Detector& l, G4VUserDetectorConstruction* d)
         : description(l), world(0), geometry(0), detector(d)  { }
       /// Default destructor
       ~Geant4DetectorConstructionContext()             { }
@@ -111,6 +111,9 @@ namespace dd4hep {
       virtual void constructField(Geant4DetectorConstructionContext* ctxt);
       /// Sensitive detector construction callback. Called at "ConstructSDandField()"
       virtual void constructSensitives(Geant4DetectorConstructionContext* ctxt);
+      /// Create Geant4 sensitive detector object using the factory mechanism
+      virtual G4VSensitiveDetector* createSensitiveDetector(const std::string& type,
+                                                            const std::string& name);
     };
 
     /// Concrete basic implementation of the Geant4 detector construction sequencer.

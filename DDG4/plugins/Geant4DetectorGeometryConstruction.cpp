@@ -194,7 +194,7 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
 
 std::pair<std::string, dd4hep::PlacedVolume>
 Geant4DetectorGeometryConstruction::resolve_path(const char* vol_path)  const {
-  std::string       p   = vol_path;
+  std::string  p   = vol_path;
   Detector&    det = context()->kernel().detectorDescription();
   PlacedVolume top = det.world().placement();
   PlacedVolume pv  = detail::tools::findNode(top, p);
@@ -437,7 +437,7 @@ int Geant4DetectorGeometryConstruction::writeGDML(const char* output)  {
 
 void Geant4DetectorGeometryConstruction::printG4(const std::string& prefix, const G4VPhysicalVolume* g4pv)    const   {
   std::string path = prefix + "/";
-  printP2(  "+++  GEANT4 volume: %s", prefix.c_str());
+  printP2("+++  GEANT4 volume: %s", prefix.c_str());
   auto* g4v = g4pv->GetLogicalVolume();
   for(size_t i=0, n=g4v->GetNoDaughters(); i<n; ++i)    {
     auto* dau = g4v->GetDaughter(i);
@@ -480,5 +480,3 @@ void Geant4DetectorGeometryConstruction::installCommandMessenger()   {
   m_control->addCall("printMaterial", "Print Geant4 material properties [uses argument]",
                      Callback(this).make(&Geant4DetectorGeometryConstruction::printMaterial),1);
 }
-
-

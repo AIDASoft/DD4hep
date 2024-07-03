@@ -296,7 +296,7 @@ namespace dd4hep {
       }
       Hit* hit = coll->findByKey<Hit>(cell);
       if ( !hit ) {
-	Geant4TouchableHandler   handler(h.touchable());
+        Geant4TouchableHandler   handler(h.touchable());
         DDSegmentation::Vector3D pos = m_segmentation.position(cell);
         Position global = h.localToGlobal(pos);
         hit = new Hit(global);
@@ -507,7 +507,7 @@ namespace dd4hep {
       }
       Hit* hit = coll->findByKey<Hit>(cell);
       if ( !hit ) {
-	Geant4TouchableHandler   handler(h.touchable());
+        Geant4TouchableHandler   handler(h.touchable());
         DDSegmentation::Vector3D pos = m_segmentation.position(cell);
         Position global = h.localToGlobal(pos);
         hit = new Hit(global);
@@ -577,13 +577,13 @@ namespace dd4hep {
       }
       void start(const G4Step* step, const G4StepPoint* point)   {
         pre.storePoint(step,point);
-	start_collecting(step->GetTrack());
-	firstSpotVolume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+        start_collecting(step->GetTrack());
+        firstSpotVolume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
       }
       void start(const Geant4FastSimSpot* spot)   {
         pre.storePoint(spot);
-	start_collecting(spot->primary);
-	firstSpotVolume = spot->volume();
+        start_collecting(spot->primary);
+        firstSpotVolume = spot->volume();
       }
 
       /// Update energy and track information during hit info accumulation
@@ -604,11 +604,11 @@ namespace dd4hep {
       }
       void update(const Geant4StepHandler& h) {
         post.storePoint(h.step, h.post);
-	update_collected_hit(h.preTouchable(), h.avgPositionG4()); // Compute cellID
+        update_collected_hit(h.preTouchable(), h.avgPositionG4()); // Compute cellID
       }
       void update(const Geant4FastSimHandler& h)   {
         post.storePoint(h.spot);
-	update_collected_hit(h.touchable(), h.avgPositionG4());       // Compute cellID
+        update_collected_hit(h.touchable(), h.avgPositionG4());       // Compute cellID
       }
 
       /// Clear collected information and restart for new hit
@@ -620,7 +620,7 @@ namespace dd4hep {
         current = -1;
         combined = 0;
         cell = 0;
-	firstSpotVolume = nullptr;
+        firstSpotVolume = nullptr;
       }
 
       /// Helper function to decide if the hit has to be extracted and saved in the collection
@@ -653,10 +653,8 @@ namespace dd4hep {
       /// Method for generating hit(s) using the information of G4Step object.
       G4bool process(const G4Step* step, G4TouchableHistory* ) {
         Geant4StepHandler h(step);
-
-	// std::cout << " process called - pre pos: " << h.prePos() << " post pos " << h.postPos() 
-	// 	  << " edep: " << h.deposit() << std::endl ;
-
+        // std::cout << " process called - pre pos: " << h.prePos() << " post pos " << h.postPos() 
+        // 	  << " edep: " << h.deposit() << std::endl ;
         void *prePV = h.volume(h.pre), *postPV = h.volume(h.post);
 
         Geant4HitCollection* coll = sensitive->collection(0);
@@ -689,7 +687,7 @@ namespace dd4hep {
 
       /// Method for generating hit(s) using the information of fast simulation spot object.
       G4bool process(const Geant4FastSimSpot* spot, G4TouchableHistory* ) {
-	Geant4FastSimHandler h(spot);
+        Geant4FastSimHandler h(spot);
         G4VPhysicalVolume*   prePV = firstSpotVolume, *postPV = h.volume();
         Geant4HitCollection* coll  = sensitive->collection(0);
         /// If we are handling a new track, then store the content of the previous one.
@@ -716,7 +714,7 @@ namespace dd4hep {
         else if ( h.track->GetTrackStatus() == fStopAndKill ) {
           extractHit(coll);
         }
-	return true;
+        return true;
       }
 
       /// Post-event action callback

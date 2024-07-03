@@ -88,20 +88,20 @@ namespace dd4hep {
       /// Property: Name of the UI action. Must be member of the global actions
       std::string   m_uiName                   { };
       /// Property: Name of the G4 run manager factory to be used. Default: Geant4RunManager
-      std::string m_runManagerType;
+      std::string   m_runManagerType;
       /// Property: Name of the default factory to create G4VSensitiveDetector instances
-      std::string m_dfltSensitiveDetectorType;
+      std::string   m_dfltSensitiveDetectorType;
       /// Property: Names with specialized factories to create G4VSensitiveDetector instances
       std::map<std::string, std::string> m_sensitiveDetectorTypes;
       /// Property: Number of events to be executed in batch mode
-      long        m_numEvent = 10;
+      long          m_numEvent = 10;
       /// Property: Output level
-      int         m_outputLevel = 0;
+      int           m_outputLevel = 0;
 
       /// Master property: Number of execution threads in multi threaded mode.
-      int         m_numThreads = 0;
+      int           m_numThreads = 0;
       /// Master property: Instantiate the Geant4 scoring manager object
-      int         m_haveScoringMgr = false;
+      int           m_haveScoringMgr = false;
       
       /// Registered action callbacks on configure
       UserCallbacks m_actionConfigure  { };
@@ -205,6 +205,13 @@ namespace dd4hep {
       const std::map<std::string, std::string>& sensitiveDetectorTypes()  const   {
         return m_sensitiveDetectorTypes;
       }
+      /// Add new sensitive type to factory list
+      /** This is present mainly for debugging purposes and tests.
+       * Never necessary in real life!
+       * For all practical purpose the default type Geant4SensDet is sufficient.
+       *
+       */
+      void defineSensitiveDetectorType(const std::string& type, const std::string& factory);
       /// Access to geometry world
       G4VPhysicalVolume* world()  const;
       /// Set the geometry world
