@@ -39,11 +39,11 @@ namespace dd4hep {
     class Geant4RegexSensitivesConstruction : public Geant4DetectorConstruction   {
     public:
       std::string detector_name;
-      std::string regex_value;
+      std::vector<std::string> regex_values;
       std::size_t collect_volumes(std::set<Volume>&  volumes,
                                   PlacedVolume       pv,
                                   const std::string& path,
-                                  std::regex&        match);
+                                  const std::vector<std::regex>& matches);
     public:
       /// Initializing constructor for DDG4
       Geant4RegexSensitivesConstruction(Geant4Context* ctxt, const std::string& nam);
@@ -82,8 +82,8 @@ DECLARE_GEANT4ACTION(Geant4RegexSensitivesConstruction)
 Geant4RegexSensitivesConstruction::Geant4RegexSensitivesConstruction(Geant4Context* ctxt, const std::string& nam)
 : Geant4DetectorConstruction(ctxt,nam)
 {
-  declareProperty("Detector",      detector_name);
-  declareProperty("Regex",         regex_value);
+  declareProperty("Detector", detector_name);
+  declareProperty("Match",    regex_values);
   InstanceCount::increment(this);
 }
 
@@ -96,24 +96,27 @@ std::size_t
 Geant4RegexSensitivesConstruction::collect_volumes(std::set<Volume>&  volumes,
                                                    PlacedVolume       pv,
                                                    const std::string& path,
-                                                   std::regex&        match)
+                                                   const std::vector<std::regex>& matches)
 {
   std::size_t count = 0;
   // Try to minimize a bit the number of regex matches.
   if ( volumes.find(pv.volume()) == volumes.end() )  {
     if( !path.empty() )  {
-      std::smatch sm;
-      bool stat = std::regex_match(path, sm, match);
-      if( stat )  {
-        volumes.insert(pv.volume());
+      for( const auto& m : matches )  {
+        std::smatch sm;
+        bool stat = std::regex_match(path, sm, m);
+        if( stat )  {
+          volumes.insert(pv.volume());
+          ++count;
+          break;
+        }
       }
-      ++count;
     }
     // Now recurse down the daughters
     for( int i=0, num = pv->GetNdaughters(); i < num; ++i )  {
       PlacedVolume daughter = pv->GetDaughter(i);
       std::string  daughter_path = path + "/" + daughter.name();
-      count += this->collect_volumes(volumes, daughter, daughter_path, match);
+      count += this->collect_volumes(volumes, daughter, daughter_path, matches);
     }
   }
   return count;
@@ -142,22 +145,24 @@ void Geant4RegexSensitivesConstruction::constructSensitives(Geant4DetectorConstr
 
   std::set<Volume> volumes;
   int flags = std::regex_constants::icase | std::regex_constants::ECMAScript;
-  std::regex expression(regex_value, (std::regex_constants::syntax_option_type)flags);
-
+  std::vector<std::regex> expressions;
+  for( const auto& val : regex_values )  {
+    std::regex e(val, (std::regex_constants::syntax_option_type)flags);
+    expressions.emplace_back(e);
+  }
   TTimeStamp start;
   print("+++ Detector: %s Starting to scan volume....", det);
-  std::size_t num_nodes = this->collect_volumes(volumes, de.placement(), de.placementPath(), expression);
+  std::size_t num_nodes = this->collect_volumes(volumes, de.placement(), de.placementPath(), expressions);
   for( const auto& vol : volumes )  {
     G4LogicalVolume* g4vol = g4info->g4Volumes[vol];
     if( !g4vol )  {
-      except("+++ Failed to access G4LogicalVolume for SD %s of type %s",
-             nam.c_str(), typ.c_str());
+      except("+++ Failed to access G4LogicalVolume for SD %s of type %s", nam.c_str(), typ.c_str());
     }
     print("+++ Detector: %s Assign sensitive detector [%s] to volume: %s.",
           nam.c_str(), typ.c_str(), vol.name());
     ctxt->setSensitiveDetector(g4vol, g4sd);
   }
   TTimeStamp stop;
-  print("+++ Detector: %s Handled %ld nodes with %ld sensitive volume type. Total of %7.3f seconds.",
+  print("+++ Detector: %s Handled %ld nodes with %ld sensitive volume type(s). Total of %7.3f seconds.",
         det, num_nodes, volumes.size(), stop.AsDouble()-start.AsDouble() );
 }
