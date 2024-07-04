@@ -32,11 +32,10 @@ def run():
   args = DDG4.CommandLine()
   kernel = DDG4.Kernel()
   logger = DDG4.Logger('BoxOfStraws')
-  install_dir = os.environ['DD4hepExamplesINSTALL']
-  kernel.loadGeometry(str("file:" + install_dir + "/examples/ClientTests/compact/BoxOfStraws.xml"))
+  kernel.loadGeometry(str("file:" + os.environ['DD4hepExamplesINSTALL'] + "/examples/ClientTests/compact/BoxOfStraws.xml"))
 
   DDG4.importConstants(kernel.detectorDescription(), debug=False)
-  geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
+  geant4 = DDG4.Geant4(kernel)
   geant4.printDetectors()
   # Configure UI
   if args.macro:
@@ -45,8 +44,6 @@ def run():
     ui = geant4.setupCshUI()
   if args.batch:
     ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
-  if args.print:
-    logger.setPrintLevel(int(args.print))
   #
   # Configure field
   geant4.setupTrackingField(prt=True)
@@ -62,13 +59,14 @@ def run():
   seq, act = geant4.addDetectorConstruction("Geant4RegexSensitivesConstruction/ConstructSDRegEx")
   act.Detector = 'BoxOfStrawsDet'
   act.OutputLevel = Output.ALWAYS
-  act.Regex = '/world_volume_(.*)/BoxOfStrawsDet_(.*)/row_(.*)/straw_(.*)'
+  act.Regex = '/world_volume_(.*)/BoxOfStrawsDet_(.*)/layer_(.*)/straw_(.*)/gas_(.*)'
+  act.Regex = '/world_volume_(.*)/BoxOfStrawsDet_(.*)/layer_(.*)/straw_(.*)'
   #
   # Configure I/O
   geant4.setupROOTOutput('RootOutput', 'BoxOfStraws_' + time.strftime('%Y-%m-%d_%H-%M'))
   #
   # Setup particle gun
-  gun = geant4.setupGun("Gun", particle='e+', energy=10 * GeV, multiplicity=1)
+  gun = geant4.setupGun("Gun", particle='pi+', energy=100 * GeV, multiplicity=1)
   gun.enableUI()
   #
   # And handle the simulation particles.

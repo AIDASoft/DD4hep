@@ -30,22 +30,26 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   xml_dim_t    x_pos   = x_det.child(_U(position));
   xml_det_t    x_straw = x_det.child(_Unicode(straw));
   std::string  nam     = x_det.nameStr();
+  const double thick   = x_straw.thickness();
   const double delta   = 2e0*x_straw.rmax();
   const int    num_x   = int(2e0*x_box.x() / delta);
   const int    num_z   = int(2e0*x_box.z() / delta);
 
-  // Have box like straws: voxelization should be more efficient and for our test it does not matter.
   Tube   straw(0., x_straw.rmax()-tol, x_straw.y()-tol);
-  //Box    straw(x_straw.rmax()-tol, x_straw.rmax()-tol, x_straw.y()-tol);
-  Volume straw_vol("straw", straw, description.material(x_straw.materialStr()));
+  Volume straw_vol("straw", straw, description.material("Iron"));
+  
+  Tube   straw_gas(0., x_straw.rmax()-tol-thick, x_straw.y()-tol-thick);
+  Volume straw_gas_vol("gas", straw_gas, description.material(x_straw.materialStr()));
 
   straw_vol.setAttributes(description, x_straw.regionStr(), x_straw.limitsStr(), x_straw.visStr());
+  straw_vol.placeVolume(straw_gas_vol);
+
   printout(INFO, "BoxOfStraws", "%s: Straw: rmax: %7.3f y: %7.3f mat: %s vis: %s solid: %s",
            nam.c_str(), x_straw.rmax(), x_straw.y(), x_straw.materialStr().c_str(),
            x_straw.visStr().c_str(), straw.type());
   if ( x_straw.hasChild(_U(sensitive)) )  {
     sens.setType("tracker");
-    straw_vol.setSensitiveDetector(sens);
+    straw_gas_vol.setSensitiveDetector(sens);
   }
 
   Box    box(x_box.x(), x_box.y(), x_box.z());
