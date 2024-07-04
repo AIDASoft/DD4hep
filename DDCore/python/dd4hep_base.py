@@ -336,6 +336,21 @@ class Logger:
 
   def setPrintLevel(self, level):
     "Adjust printout level of dd4hep"
+    if isinstance(level, str):
+      if level == 'VERBOSE':
+        level = OutputLevel.VERBOSE
+      elif level == 'DEBUG':
+        level = OutputLevel.DEBUG
+      elif level == 'INFO':
+        level = OutputLevel.INFO
+      elif level == 'WARNING':
+        level = OutputLevel.WARNING
+      elif level == 'ERROR':
+        level = OutputLevel.ERROR
+      elif level == 'FATAL':
+        level = OutputLevel.FATAL
+      else:
+        level = int(level)
     dd4hep.setPrintLevel(level)
 
   def always(self, msg):
@@ -407,6 +422,9 @@ class CommandLine:
          have_help = True
     if have_help and help_call:
       help_call()
+    if self.data.get('print_level'):
+      log = Logger('CommandLine')
+      log.setPrintLevel(self.data.get('print_level'))
 
   def __getattr__(self, attr):
     if self.data.get(attr):
