@@ -32,7 +32,8 @@ def run():
   args = DDG4.CommandLine()
   kernel = DDG4.Kernel()
   logger = DDG4.Logger('BoxOfStraws')
-  kernel.loadGeometry(str("file:" + os.environ['DD4hepExamplesINSTALL'] + "/examples/ClientTests/compact/BoxOfStraws.xml"))
+  install_dir = os.environ['DD4hepExamplesINSTALL']
+  kernel.loadGeometry(str('file:' + install_dir + '/examples/ClientTests/compact/BoxOfStraws.xml'))
 
   DDG4.importConstants(kernel.detectorDescription(), debug=False)
   geant4 = DDG4.Geant4(kernel)
@@ -49,32 +50,32 @@ def run():
   geant4.setupTrackingField(prt=True)
   #
   # Configure G4 geometry setup
-  seq, act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
+  seq, act = geant4.addDetectorConstruction('Geant4DetectorGeometryConstruction/ConstructGeo')
   act.DebugVolumes = True
   #
   # Assign sensitive detectors according to the declarations 'tracker' or 'calorimeter', etc
-  seq, act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
+  seq, act = geant4.addDetectorConstruction('Geant4DetectorSensitivesConstruction/ConstructSD')
   #
   # Assign sensitive detectors in Geant4 by matching a regular expression in the detector sub-tree
-  seq, act = geant4.addDetectorConstruction("Geant4RegexSensitivesConstruction/ConstructSDRegEx")
+  seq, act = geant4.addDetectorConstruction('Geant4RegexSensitivesConstruction/ConstructSDRegEx')
   act.Detector = 'BoxOfStrawsDet'
   act.OutputLevel = Output.ALWAYS
-  act.Regex = '/world_volume_(.*)/BoxOfStrawsDet_(.*)/layer_(.*)/straw_(.*)/gas_(.*)'
-  act.Regex = '/world_volume_(.*)/BoxOfStrawsDet_(.*)/layer_(.*)/straw_(.*)'
+  act.Match = ['/world_volume_(.*)/BoxOfStrawsDet_(.*)/layer_(.*)/straw_(.*)/gas_(.*)']
+  act.Match = ['/world_volume_(.*)/BoxOfStrawsDet_(.*)/layer_(.*)/straw_(.*)']
   #
   # Configure I/O
   geant4.setupROOTOutput('RootOutput', 'BoxOfStraws_' + time.strftime('%Y-%m-%d_%H-%M'))
   #
   # Setup particle gun
-  gun = geant4.setupGun("Gun", particle='pi+', energy=100 * GeV, multiplicity=1)
+  gun = geant4.setupGun('Gun', particle='pi+', energy=100 * GeV, multiplicity=1)
   gun.enableUI()
   #
   # And handle the simulation particles.
-  part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
+  part = DDG4.GeneratorAction(kernel, 'Geant4ParticleHandler/ParticleHandler')
   kernel.generatorAction().adopt(part)
   part.SaveProcesses = ['Decay']
-  part.MinimalKineticEnergy = 100 * MeV
-  user = DDG4.Action(kernel, "Geant4TCUserParticleHandler/UserParticleHandler")
+  part.MinimalKineticEnergy = 50 * MeV
+  user = DDG4.Action(kernel, 'Geant4TCUserParticleHandler/UserParticleHandler')
   user.TrackingVolume_Zmax = 2.5 * m
   user.TrackingVolume_Rmax = 2.5 * m
   part.adopt(user)
