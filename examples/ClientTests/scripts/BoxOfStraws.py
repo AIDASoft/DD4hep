@@ -33,7 +33,11 @@ def run():
   kernel = DDG4.Kernel()
   logger = DDG4.Logger('BoxOfStraws')
   install_dir = os.environ['DD4hepExamplesINSTALL']
-  kernel.loadGeometry(str('file:' + install_dir + '/examples/ClientTests/compact/BoxOfStraws.xml'))
+
+  if args.sensitive:
+    kernel.loadGeometry(str('file:' + install_dir + '/examples/ClientTests/compact/BoxOfStraws_sensitive.xml'))
+  else:
+    kernel.loadGeometry(str('file:' + install_dir + '/examples/ClientTests/compact/BoxOfStraws.xml'))
 
   DDG4.importConstants(kernel.detectorDescription(), debug=False)
   geant4 = DDG4.Geant4(kernel)
@@ -54,19 +58,25 @@ def run():
   prt.OutputType = 3  # Print both: table and tree
   kernel.eventAction().adopt(prt)
   #
+  seq, act = geant4.addDetectorConstruction('Geant4DetectorConstructionResources/ResourcesBeforeConstruction')
+  act.When = "geometry";
+  #
   # Configure G4 geometry setup
   seq, act = geant4.addDetectorConstruction('Geant4DetectorGeometryConstruction/ConstructGeo')
   act.DebugVolumes = True
   #
-  # Assign sensitive detectors according to the declarations 'tracker' or 'calorimeter', etc
-  seq, act = geant4.addDetectorConstruction('Geant4DetectorSensitivesConstruction/ConstructSD')
+  if args.sensitive:
+    # Assign sensitive detectors according to the declarations 'tracker' or 'calorimeter', etc
+    seq, act = geant4.addDetectorConstruction('Geant4DetectorSensitivesConstruction/ConstructSD')
+  else:
+    # Assign sensitive detectors in Geant4 by matching a regular expression in the detector sub-tree
+    seq, act = geant4.addDetectorConstruction('Geant4RegexSensitivesConstruction/ConstructSDRegEx')
+    act.Detector = 'BoxOfStrawsDet'
+    act.OutputLevel = Output.ALWAYS
+    act.Match = ['/world_volume_(.*)/BoxOfStrawsDet_(.*)/layer_(.*)/straw_(.*)/gas_(.*)']
   #
-  # Assign sensitive detectors in Geant4 by matching a regular expression in the detector sub-tree
-  seq, act = geant4.addDetectorConstruction('Geant4RegexSensitivesConstruction/ConstructSDRegEx')
-  act.Detector = 'BoxOfStrawsDet'
-  act.OutputLevel = Output.ALWAYS
-  act.Match = ['/world_volume_(.*)/BoxOfStrawsDet_(.*)/layer_(.*)/straw_(.*)/gas_(.*)']
-  act.Match = ['/world_volume_(.*)/BoxOfStrawsDet_(.*)/layer_(.*)/straw_(.*)']
+  seq, act = geant4.addDetectorConstruction('Geant4DetectorConstructionResources/ResourcesAfterConstruction')
+  act.When = "sensitives";
   #
   # Configure I/O
   geant4.setupROOTOutput('RootOutput', 'BoxOfStraws_' + time.strftime('%Y-%m-%d_%H-%M'))
@@ -100,7 +110,12 @@ def run():
   # Now build the physics list:
   phys = geant4.setupPhysics(str('QGSP_BERT'))
   phys.dump()
-  geant4.execute()
+  if args.simultate:
+    geant4.execute()
+  else:
+    geant4.kernel().configure()
+    geant4.kernel().initialize()
+    geant4.kernel().terminate()
 
 
 if __name__ == "__main__":

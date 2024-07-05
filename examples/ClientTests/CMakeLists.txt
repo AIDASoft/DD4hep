@@ -614,4 +614,22 @@ if (DD4HEP_USE_GEANT4)
       REGEX_FAIL "Error;ERROR; Exception"
     )
   endif()
+  #
+  # Test Geant4VolumeManager resource usage
+  dd4hep_add_test_reg(ClientTests_g4_setup_BoxOfStraws_sensitive
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+      EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/BoxOfStraws.py
+                 -print_level 3 -sensitive
+      REGEX_PASS "ResourcesAfterConstruction       ConstructSD:   VmRSS"
+      REGEX_FAIL "Error;ERROR; Exception"
+  )
+  #
+  # Test without Geant4VolumeManager, but sensitive detector assignment using regex
+  dd4hep_add_test_reg(ClientTests_g4_setup_BoxOfStraws_non_sensitive
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+      EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/BoxOfStraws.py
+                 -print_level 3
+      REGEX_PASS "ResourcesAfterConstruction       ConstructSD:   VmRSS"
+      REGEX_FAIL "Error;ERROR; Exception"
+  )
 endif(DD4HEP_USE_GEANT4)
