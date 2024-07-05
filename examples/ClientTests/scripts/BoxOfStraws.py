@@ -49,6 +49,11 @@ def run():
   # Configure field
   geant4.setupTrackingField(prt=True)
   #
+  prt = DDG4.EventAction(kernel, 'Geant4ParticlePrint/ParticlePrint')
+  prt.OutputLevel = Output.DEBUG
+  prt.OutputType = 3  # Print both: table and tree
+  kernel.eventAction().adopt(prt)
+  #
   # Configure G4 geometry setup
   seq, act = geant4.addDetectorConstruction('Geant4DetectorGeometryConstruction/ConstructGeo')
   act.DebugVolumes = True
@@ -67,7 +72,8 @@ def run():
   geant4.setupROOTOutput('RootOutput', 'BoxOfStraws_' + time.strftime('%Y-%m-%d_%H-%M'))
   #
   # Setup particle gun
-  gun = geant4.setupGun('Gun', particle='pi+', energy=100 * GeV, multiplicity=1)
+  gun = geant4.setupGun('Gun', particle='pi+', energy=10 * GeV, multiplicity=1)
+  gun.OutputLevel = Output.INFO
   gun.enableUI()
   #
   # And handle the simulation particles.
@@ -83,7 +89,12 @@ def run():
   # Map sensitive detectors of type 'BoxOfStraws' to Geant4CalorimeterAction
   sd = geant4.description.sensitiveDetector(str('BoxOfStrawsDet'))
   logger.info(f'+++ BoxOfStraws: SD type: {str(sd.type())}')
+  filter = DDG4.Filter(kernel, 'EnergyDepositMinimumCut')
+  filter.Cut = 1.0 * MeV
+  filter.enableUI()
+  kernel.registerGlobalFilter(filter)
   seq, act = geant4.setupDetector(name='BoxOfStrawsDet', action='MyTrackerSDAction')
+  seq.adopt(filter)
   act.HaveCellID = False
   #
   # Now build the physics list:
