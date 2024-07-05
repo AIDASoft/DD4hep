@@ -59,7 +59,7 @@ def run():
   kernel.eventAction().adopt(prt)
   #
   seq, act = geant4.addDetectorConstruction('Geant4DetectorConstructionResources/ResourcesBeforeConstruction')
-  act.When = "geometry";
+  act.When = "geometry"
   #
   # Configure G4 geometry setup
   seq, act = geant4.addDetectorConstruction('Geant4DetectorGeometryConstruction/ConstructGeo')
@@ -76,7 +76,7 @@ def run():
     act.Match = ['/world_volume_(.*)/BoxOfStrawsDet_(.*)/layer_(.*)/straw_(.*)/gas_(.*)']
   #
   seq, act = geant4.addDetectorConstruction('Geant4DetectorConstructionResources/ResourcesAfterConstruction')
-  act.When = "sensitives";
+  act.When = "sensitives"
   #
   # Configure I/O
   geant4.setupROOTOutput('RootOutput', 'BoxOfStraws_' + time.strftime('%Y-%m-%d_%H-%M'))
