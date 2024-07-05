@@ -34,7 +34,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   const double thick   = x_straw.thickness();
   const double delta   = 2e0*x_straw.rmax();
   const int    num_x   = int(2e0*x_box.x() / delta);
-  const int    num_z   = int(2e0*x_box.z() / delta);
+  const int    num_z   = int(2e0*x_box.z() / (delta+2*tol));
 
   Tube   straw(0., x_straw.rmax()-tol, x_straw.y()-tol);
   Volume straw_vol("straw", straw, description.material(x_straw.materialStr()));
@@ -54,26 +54,26 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
     straw_gas_vol.setSensitiveDetector(sens);
   }
 
-  Box    box(x_box.x(), x_box.y(), x_box.z());
+  // Envelope: make envelope box 'tol' bigger on each side, so that the straws
+  Box    box(x_box.x()+tol, x_box.y()+tol, x_box.z()+tol);
   Volume box_vol(nam, box, description.air());
   box_vol.setAttributes(description, x_box.regionStr(), x_box.limitsStr(), x_box.visStr());
 
   Box    layer(x_box.x(), x_box.y(), x_straw.rmax());
   Volume layer_vol("layer", layer, description.air());
-  layer_vol.setVisAttributes(description.visAttributes("InvisibleWithChildren"));
+  layer_vol.setVisAttributes(description.visAttributes("VisibleGray"));
   
   printout(INFO, "BoxOfStraws", "%s: Layer:   nx: %7d nz: %7d delta: %7.3f", nam.c_str(), num_x, num_z, delta);
+  Rotation3D rot(RotationZYX(0e0, 0e0, M_PI/2e0));
   for( int ix=0; ix < num_x; ++ix )  {
-    double x = -box.x() + (double(ix)+0.5) * delta;
-    PlacedVolume pv = layer_vol.placeVolume(straw_vol, Position(x, 0e0, 0e0));
+    double x = -box.x() + (double(ix)+0.5) * (delta + 2e0*tol);
+    PlacedVolume pv = layer_vol.placeVolume(straw_vol, Transform3D(rot,Position(x, 0e0, 0e0)));
     pv.addPhysVolID("straw", ix);
   }
-
-  // Not terribly clever: better would be to place layers instead of single straws....
-  Rotation3D rot(RotationZYX(0e0, 0e0, M_PI/2e0));
   for( int iz=0; iz < num_z; ++iz )  {
-    double z = -box.z() + (double(iz)+0.5) * delta;
-    PlacedVolume pv = box_vol.placeVolume(layer_vol, Transform3D(rot, Position(0e0, 0e0, z)));
+    // leave 'tol' space between the layers
+    double z = -box.z() + (double(iz)+0.5) * (2.0*tol + delta);
+    PlacedVolume pv = box_vol.placeVolume(layer_vol, Position(0e0, 0e0, z));
     pv.addPhysVolID("layer", iz);
   }
   printout(INFO, "BoxOfStraws", "%s: Created %d layers of %d straws each.", nam.c_str(), num_z, num_x);
