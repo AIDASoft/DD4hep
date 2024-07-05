@@ -89,12 +89,12 @@ def run():
   # Map sensitive detectors of type 'BoxOfStraws' to Geant4CalorimeterAction
   sd = geant4.description.sensitiveDetector(str('BoxOfStrawsDet'))
   logger.info(f'+++ BoxOfStraws: SD type: {str(sd.type())}')
-  filter = DDG4.Filter(kernel, 'EnergyDepositMinimumCut')
-  filter.Cut = 1.0 * MeV
-  filter.enableUI()
-  kernel.registerGlobalFilter(filter)
+  energy_filter = DDG4.Filter(kernel, 'EnergyDepositMinimumCut')
+  energy_filter.Cut = 1.0 * MeV
+  energy_filter.enableUI()
+  kernel.registerGlobalFilter(energy_filter)
   seq, act = geant4.setupDetector(name='BoxOfStrawsDet', action='MyTrackerSDAction')
-  seq.adopt(filter)
+  seq.adopt(energy_filter)
   act.HaveCellID = False
   #
   # Now build the physics list:
