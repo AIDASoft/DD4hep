@@ -102,9 +102,9 @@ Geant4RegexSensitivesConstruction::collect_volumes(std::set<Volume>&  volumes,
   // Try to minimize a bit the number of regex matches.
   if ( volumes.find(pv.volume()) == volumes.end() )  {
     if( !path.empty() )  {
-      for( const auto& m : matches )  {
+      for( const auto& match : matches )  {
         std::smatch sm;
-        bool stat = std::regex_match(path, sm, m);
+        bool stat = std::regex_match(path, sm, match);
         if( stat )  {
           volumes.insert(pv.volume());
           ++count;
