@@ -14,6 +14,7 @@
 
 // Framework include files
 #include <DDG4/Geant4DetectorConstruction.h>
+#include <unistd.h>
 
 // C/C++ include files
 
