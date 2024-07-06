@@ -18,7 +18,7 @@ TEveStraightLineSet* lineset(Int_t nlines = 40, Int_t nmarkers = 4) ;
 
 void next_event(){
 
-  static int count = 1 ;
+  // static int count = 1 ;
 
   std::cout <<  " next_event called - nothing to do ... " << std::endl ;
 
@@ -32,7 +32,7 @@ void next_event(){
   
   gEve->Redraw3D();
   
-  count += 3 ;
+  // count += 3 ;
 }
 
 

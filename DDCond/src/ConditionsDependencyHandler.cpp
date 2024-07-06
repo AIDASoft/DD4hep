@@ -108,7 +108,6 @@ void ConditionsDependencyHandler::compute()   {
 /// 2nd pass:  Handler callback for the second turn to resolve missing dependencies
 void ConditionsDependencyHandler::resolve()    {
   PrintLevel prt_lvl = INFO;
-  size_t num_resolved = 0;
   std::vector<Condition> tmp;
   std::map<IOV::Key,std::vector<Condition> > work_pools;
   Work* w;
@@ -120,7 +119,6 @@ void ConditionsDependencyHandler::resolve()    {
     if ( w->state != RESOLVED )   {
       w->resolve(m_currentWork);
     }
-    ++num_resolved;
     // Fill an empty map of condition vectors for the block inserts
     auto ret = work_pools.emplace(w->iov->keyData,tmp);
     if ( ret.second )   {
