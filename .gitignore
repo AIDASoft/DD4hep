@@ -48,3 +48,9 @@ Version.h
 
 # XML files for DDUpgrade that are downloaded with cmake
 /examples/DDUpgrade/data
+
+# clangd files
+.cache
+
+# CMake commands database
+compile_commands.json
