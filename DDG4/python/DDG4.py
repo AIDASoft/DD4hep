@@ -670,35 +670,40 @@ class Geant4:
       return (seq, acts)
     return (seq, acts[0])
 
-  def setupCalorimeter(self, name, type=None, collections=None):  # noqa: A002
+  def setupCaloOrTracker(self, name, detType=None, collections=None, isCalo=True):  # noqa: A002
+    """
+    Setup subdetector of type 'calorimeter' and assign the proper sensitive action
+    """
+    self.description.sensitiveDetector(str(name))
+    retType = detType
+    if detType is None:
+      retType = self.sensitive_types['calorimeter' if isCalo else 'tracker']
+    elif detType is not None:
+      try:
+        retType = self.sensitive_types[detType]
+      # KeyError = not found in the dictionary
+      # TypeError = detType is not a hashable type
+      except (KeyError, TypeError):
+        pass
+      except Exception as X:
+        raise X
+    return self.setupDetector(name, retType, collections)
+
+  def setupCalorimeter(self, name, caloType=None, collections=None):  # noqa: A002
     """
     Setup subdetector of type 'calorimeter' and assign the proper sensitive action
 
     \author  M.Frank
     """
-    typ = type    # noqa: A002
-    self.description.sensitiveDetector(str(name))
-    # sd.setType('calorimeter')
-    if typ is None:
-      typ = self.sensitive_types['calorimeter']
-    elif typ is not None and self.sensitive_types.get(typ):
-      typ = self.sensitive_types[typ]
-    return self.setupDetector(name, typ, collections)
+    return self.setupCaloOrTracker(name, caloType, collections, True)
 
-  def setupTracker(self, name, type=None, collections=None):  # noqa: A002
+  def setupTracker(self, name, trackerType=None, collections=None):  # noqa: A002
     """
     Setup subdetector of type 'tracker' and assign the proper sensitive action
 
     \author  M.Frank
     """
-    typ = type
-    self.description.sensitiveDetector(str(name))
-    # sd.setType('tracker')
-    if typ is None:
-      typ = self.sensitive_types['tracker']
-    elif typ is not None and self.sensitive_types.get(typ):
-      typ = self.sensitive_types[typ]
-    return self.setupDetector(name, typ, collections)
+    return self.setupCaloOrTracker(name, trackerType, collections, False)
 
   def _private_setupField(self, field, stepper, equation, prt):
     import g4units
