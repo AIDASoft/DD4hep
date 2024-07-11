@@ -173,3 +173,6 @@ DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::ProjectiveCylinder);
 
 #include <DDSegmentation/MultiSegmentation.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::MultiSegmentation);
+
+#include <DDSegmentation/CylindricalGridPhiZ.h>
+DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CylindricalGridPhiZ);

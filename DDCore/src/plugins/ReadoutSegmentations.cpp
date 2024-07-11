@@ -81,3 +81,6 @@ DECLARE_SEGMENTATION(MultiSegmentation,create_segmentation<dd4hep::DDSegmentatio
 
 #include <DDSegmentation/HexGrid.h>
 DECLARE_SEGMENTATION(HexGrid,create_segmentation<dd4hep::DDSegmentation::HexGrid>)
+
+#include <DDSegmentation/CylindricalGridPhiZ.h>
+DECLARE_SEGMENTATION(CylindricalGridPhiZ,create_segmentation<dd4hep::DDSegmentation::CylindricalGridPhiZ>)

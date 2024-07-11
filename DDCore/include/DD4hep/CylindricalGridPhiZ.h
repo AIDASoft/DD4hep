@@ -12,8 +12,8 @@
 //  \version  1.0
 //
 //==========================================================================
-#ifndef DD4HEP_CARTESIANGRIDXYZ_H
-#define DD4HEP_CARTESIANGRIDXYZ_H 1
+#ifndef DD4HEP_CYLINDRICALGRIDPHIZ_H
+#define DD4HEP_CYLINDRICALGRIDPHIZ_H 1
 
 // Framework include files
 #include <DD4hep/Segmentations.h>
@@ -22,12 +22,12 @@
 namespace dd4hep {
 
   /// Namespace for base segmentations
-  namespace DDSegmentation  {    class CartesianGridXYZ;  }
-  
+  namespace DDSegmentation  {    class CylindricalGridPhiZ;  }
+    
   /// We need some abbreviation to make the code more readable.
-  typedef Handle<SegmentationWrapper<DDSegmentation::CartesianGridXYZ> > CartesianGridXYZHandle;
-  
-  /// Implementation class for the grid XYZ segmentation.
+  typedef Handle<SegmentationWrapper<DDSegmentation::CylindricalGridPhiZ> > CylindricalGridPhiZHandle;
+ 
+  /// Implementation class for the grid PhiZ segmentation.
   /**
    *  Concrete user handle to serve specific needs of client code
    *  which requires access to the base functionality not served
@@ -48,56 +48,52 @@ namespace dd4hep {
    *  \version 1.0
    *  \ingroup DD4HEP_CORE
    */
-  class CartesianGridXYZ : public CartesianGridXYZHandle {
+  class CylindricalGridPhiZ : public  CylindricalGridPhiZHandle {
   public:
     /// Default constructor
-    CartesianGridXYZ() = default;
+    CylindricalGridPhiZ() = default;
     /// Copy constructor
-    CartesianGridXYZ(const CartesianGridXYZ& e) = default;
+    CylindricalGridPhiZ(const CylindricalGridPhiZ& e) = default;
     /// Copy Constructor from segmentation base object
-    CartesianGridXYZ(const Segmentation& e) : Handle<Object>(e) {}
+    CylindricalGridPhiZ(const Segmentation& e) : Handle<Object>(e) {}
     /// Copy constructor from handle
-    CartesianGridXYZ(const Handle<Object>& e) : Handle<Object>(e) {}
+    CylindricalGridPhiZ(const Handle<Object>& e) : Handle<Object>(e) {}
     /// Copy constructor from other polymorph/equivalent handle
     template <typename Q>
-    CartesianGridXYZ(const Handle<Q>& e) : Handle<Object>(e) {}
+    CylindricalGridPhiZ(const Handle<Q>& e) : Handle<Object>(e) {}
     /// Assignment operator
-    CartesianGridXYZ& operator=(const CartesianGridXYZ& seg) = default;
+    CylindricalGridPhiZ& operator=(const CylindricalGridPhiZ& seg) = default;
     /// Equality operator
-    bool operator==(const CartesianGridXYZ& seg) const
-    {  return m_element == seg.m_element;    }
+    bool operator==(const CylindricalGridPhiZ& seg) const
+    {  return m_element == seg.m_element;           }
+
     /// determine the position based on the cell ID
     Position position(const CellID& cellID) const;
     /// determine the cell ID based on the position
     CellID cellID(const Position& local, const Position& global, const VolumeID& volID) const;
-    /// access the grid size in X
-    double gridSizeX() const;
-    /// access the grid size in Y
-    double gridSizeY() const;
+    /// access the grid size in phi
+    double gridSizePhi() const;
     /// access the grid size in Z
     double gridSizeZ() const;
-    /// set the grid size in X
-    void setGridSizeX(double cellSize) const;
-    /// set the grid size in Y
-    void setGridSizeY(double cellSize) const;
-    /// set the grid size in Z
-    void setGridSizeZ(double cellSize) const;
-    /// access the coordinate offset in X
-    double offsetX() const;
-    /// access the coordinate offset in Y
-    double offsetY() const;
+    /// access the radius
+    double radius() const;
+    /// access the coordinate offset in phi
+    double offsetPhi() const;
     /// access the coordinate offset in Z
     double offsetZ() const;
-    /// set the coordinate offset in X
-    void setOffsetX(double offset) const;
-    /// set the coordinate offset in Y
-    void setOffsetY(double offset) const;
+    
+    /// set the grid size in phi
+    void setGridSizePhi(double cellSize) const;
+    /// set the grid size in Z
+    void setGridSizeZ(double cellSize) const;
+    /// set the coordinate offset in phi
+    void setOffsetPhi(double offset) const;
     /// set the coordinate offset in Z
     void setOffsetZ(double offset) const;
-    /// access the field name used for X
-    const std::string& fieldNameX() const;
-    /// access the field name used for Y
-    const std::string& fieldNameY() const;
+    /// set the radius
+    void setRadius(double radius);
+    /// access the field name used for phi
+    const std::string& fieldNamePhi() const;
     /// access the field name used for Z
     const std::string& fieldNameZ() const;
     /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
@@ -105,12 +101,11 @@ namespace dd4hep {
 
         Returns a vector of the cellDimensions of the given cell ID
         \param cellID is ignored as all cells have the same dimension
-        \return std::vector<double> size 3:
+        \return std::vector<double> size 2:
         -# size in x
-        -# size in y
         -# size in z
     */
     std::vector<double> cellDimensions(const CellID& cellID) const;
   };
 }       /* End namespace dd4hep                */
-#endif // DD4HEP_CARTESIANGRIDXYZ_H
+#endif // DD4HEP_CYLINDRICALGRIDPHIZ_H

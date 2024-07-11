@@ -31,6 +31,7 @@
 #include <DDSegmentation/CartesianStripY.h>
 #include <DDSegmentation/CartesianStripZ.h>
 #include <DDSegmentation/CylindricalSegmentation.h>
+#include <DDSegmentation/CylindricalGridPhiZ.h>
 #include <DDSegmentation/GridPhiEta.h>
 #include <DDSegmentation/GridRPhiEta.h>
 #include <DDSegmentation/MegatileLayerGridXY.h>
@@ -77,6 +78,7 @@ typedef dd4hep::DDSegmentation::CellID CellID;
 #pragma link C++ class dd4hep::DDSegmentation::CartesianStripY+;
 #pragma link C++ class dd4hep::DDSegmentation::CartesianStripZ+;
 #pragma link C++ class dd4hep::DDSegmentation::CylindricalSegmentation+;
+#pragma link C++ class dd4hep::DDSegmentation::CylindricalGridPhiZ+;
 #pragma link C++ class dd4hep::DDSegmentation::GridPhiEta+;
 #pragma link C++ class dd4hep::DDSegmentation::GridRPhiEta+;
 #pragma link C++ class dd4hep::DDSegmentation::MegatileLayerGridXY+;
