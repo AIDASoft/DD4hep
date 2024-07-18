@@ -89,6 +89,7 @@ namespace dd4hep {
     protected:
       bool  m_propagateRegions { false };
       std::map<int, std::vector<const TGeoNode*> >*    m_data      { nullptr };
+      std::map<int, std::set<const TGeoNode*> >* m_set_data { nullptr };
       std::map<const TGeoNode*, std::vector<TGeoNode*> >* m_daughters { nullptr };
       /// Internal helper to collect geometry information from traversal
       GeoHandler& i_collect(const TGeoNode* parent,
@@ -109,6 +110,7 @@ namespace dd4hep {
       GeoHandler();
       /// Initializing constructor
       GeoHandler(std::map<int, std::vector<const TGeoNode*> >* ptr,
+		 std::map<int, std::set<const TGeoNode*> >* ptr_set,
                  std::map<const TGeoNode*, std::vector<TGeoNode*> >* daus = nullptr);
       /// Default destructor
       virtual ~GeoHandler();

@@ -1668,6 +1668,7 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   World wrld = top.world();
 
   m_data->clear();
+  m_set_data->clear();
   m_daughters = &daughters;
   geo.manager = &wrld.detectorDescription().manager();
   this->collect(top, geo);
