@@ -45,15 +45,7 @@ void CartesianStripX::setOffsetX(double offset) const { access()->implementation
 /// access the field name used for X
 const std::string& CartesianStripX::fieldNameX() const { return access()->implementation->fieldNameX(); }
 
-/** \brief Returns a vector<double> of the cellDimensions of the given cell ID
-    in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
-
-    Returns a vector of the cellDimensions of the given cell ID
-    \param cellID is ignored as all cells have the same dimension
-    \return vector<double> size 2:
-    -# size in x
-    -# size in y
-*/
+// Returns a vector<double> of the cellDimensions of the given cell ID
 std::vector<double> CartesianStripX::cellDimensions(const CellID& id) const {
     return access()->implementation->cellDimensions(id);
 }

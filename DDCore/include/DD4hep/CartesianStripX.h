@@ -42,7 +42,7 @@ typedef Handle<SegmentationWrapper<DDSegmentation::CartesianStripX> > CartesianS
  *  fiddled with the handled object directly.....
  *
  *  Note:
- *  The handle base corrsponding to this object in for
+ *  The handle base corresponding to this object in for
  *  conveniance reasons instantiated in dd4hep/src/Segmentations.cpp.
  *
  *  \author  M.Frank
