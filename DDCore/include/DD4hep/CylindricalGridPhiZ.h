@@ -97,12 +97,12 @@ namespace dd4hep {
     /// access the field name used for Z
     const std::string& fieldNameZ() const;
     /** \brief Returns a vector<double> of the cellDimensions of the given cell ID
-        in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
+        in the following order: R*dPhi,dZ
 
         Returns a vector of the cellDimensions of the given cell ID
         \param cellID is ignored as all cells have the same dimension
         \return std::vector<double> size 2:
-        -# size in x
+        -# size in x = R * size in phi
         -# size in z
     */
     std::vector<double> cellDimensions(const CellID& cellID) const;

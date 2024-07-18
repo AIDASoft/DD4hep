@@ -9,7 +9,7 @@
 //
 //==========================================================================
 /*
- * CartesianGridXY.h
+ * CartesianGridXZ.h
  *
  *  Created on: Jun 28, 2013
  *      Author: Christian Grefe, CERN

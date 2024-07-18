@@ -42,7 +42,7 @@ typedef Handle<SegmentationWrapper<DDSegmentation::CartesianStripY> > CartesianS
  *  fiddled with the handled object directly.....
  *
  *  Note:
- *  The handle base corrsponding to this object in for
+ *  The handle base corresponding to this object in for
  *  conveniance reasons instantiated in dd4hep/src/Segmentations.cpp.
  *
  *  \author  M.Frank
@@ -87,7 +87,7 @@ class CartesianStripY : public CartesianStripYHandle {
         Returns a vector of the cellDimensions of the given cell ID
         \param cellID is ignored as all cells have the same dimension
         \return std::vector<double> size 1:
-        -# size in x
+        -# size in y
     */
     std::vector<double> cellDimensions(const CellID& cellID) const;
 };
