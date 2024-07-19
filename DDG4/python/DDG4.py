@@ -678,15 +678,9 @@ class Geant4:
     retType = detType
     if detType is None:
       retType = self.sensitive_types['calorimeter' if isCalo else 'tracker']
-    elif detType is not None:
-      try:
-        retType = self.sensitive_types[detType]
-      # KeyError = not found in the dictionary
-      # TypeError = detType is not a hashable type
-      except (KeyError, TypeError):
-        pass
-      except Exception as X:
-        raise X
+    # detType is a tuple when an action with parameters in a dictionary is passed
+    elif not isinstance(detType, tuple) and detType in self.sensitive_types:
+      retType = self.sensitive_types[detType]
     return self.setupDetector(name, retType, collections)
 
   def setupCalorimeter(self, name, caloType=None, collections=None):  # noqa: A002
