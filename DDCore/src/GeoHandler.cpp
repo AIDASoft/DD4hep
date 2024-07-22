@@ -166,7 +166,7 @@ detail::GeoHandler& detail::GeoHandler::i_collect(const TGeoNode* /* parent */,
     }
   }
   /// Collect the hierarchy of placements
-  /// perform lookup using std::set::emplace (faster than std::find for the large number of geometries)
+  /// perform lookup using std::set::emplace (faster than std::find for very large number of volumes)
   if ( (*m_set_data)[level].emplace(current).second ) {
     (*m_data)[level].push_back(current);
   }
