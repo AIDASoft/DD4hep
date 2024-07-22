@@ -118,7 +118,7 @@ jobs:
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v3
       with:
-        container: centos7
+        container: el9
         view-path: ${{ matrix.view-path }}
         run: |
           mkdir build
@@ -138,7 +138,7 @@ jobs:
             -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
-            -DCMAKE_CXX_STANDARD=17 ..
+            -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::Compile"
           ninja install
           . ../bin/thisdd4hep.sh
@@ -151,7 +151,7 @@ jobs:
           cmake -GNinja \
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_STANDARD=17 ..
+            -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::CompileExamples"
           ninja install
           echo "::group::TestExamples"
