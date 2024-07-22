@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        LCG: ["dev4/x86_64-centos7-gcc11-opt"]
+        LCG: ["dev4/x86_64-el9-gcc13-opt"]
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
