@@ -78,9 +78,13 @@ detail::GeoHandler::~GeoHandler() {
 }
 
 std::map<int, std::vector<const TGeoNode*> >* detail::GeoHandler::release() {
+  /// release the std::vector geometry container (preserves order)
   std::map<int, std::vector<const TGeoNode*> >* d = m_data;
   m_data = nullptr;
 
+  /// the std::set container (for lookup purpose) is not needed anymore, so delete it
+  /// the container is always present since the call of the constructor
+  /// we never expect to call release() twice (will release nullptr)
   delete m_set_data;
   m_set_data = nullptr;
 
@@ -162,6 +166,7 @@ detail::GeoHandler& detail::GeoHandler::i_collect(const TGeoNode* /* parent */,
     }
   }
   /// Collect the hierarchy of placements
+  /// perform lookup using std::set::emplace (faster than std::find for the large number of geometries)
   if ( (*m_set_data)[level].emplace(current).second ) {
     (*m_data)[level].push_back(current);
   }
