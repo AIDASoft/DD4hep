@@ -20,10 +20,10 @@
 #include <XML/DocumentHandler.h>
 
 // C/C++ include files
-#include <stdexcept>
 #include <csignal>
 #include <cstdlib>
 #include <iostream>
+#include <stdexcept>
 
 #ifndef __TIXML__
 #include <xercesc/dom/DOMException.hpp>
