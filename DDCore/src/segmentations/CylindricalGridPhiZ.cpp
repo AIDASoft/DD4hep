@@ -91,14 +91,7 @@ Vector3D CylindricalGridPhiZ::position(const CellID& cID) const {
 }
 
 std::vector<double> CylindricalGridPhiZ::cellDimensions(const CellID&) const {
-#if __cplusplus >= 201103L
   return {_radius*_gridSizePhi, _gridSizeZ};
-#else
-  std::vector<double> cellDims(2,0.0);
-  cellDims[0] = _radius*_gridSizePhi;
-  cellDims[1] = _gridSizeZ;
-  return cellDims;
-#endif
 }
 
 
