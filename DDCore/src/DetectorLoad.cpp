@@ -51,18 +51,6 @@ DetectorLoad::~DetectorLoad() {
 /// Process XML unit and adopt all data from source structure.
 void DetectorLoad::processXML(const std::string& xmlfile, xml::UriReader* entity_resolver) {
 
-  // Install signal handler for SIGINT (Ctrl-C)
-  struct sigaction sigIntHandler;
-
-  sigIntHandler.sa_handler = [](int) {
-    std::cerr << "Caught signal SIGINT, exiting..." << std::endl;
-    exit(1);
-  };
-  sigemptyset(&sigIntHandler.sa_mask);
-  sigIntHandler.sa_flags = 0;
-
-  sigaction(SIGINT, &sigIntHandler, NULL);
-
   try {
     xml::DocumentHolder doc(xml::DocumentHandler().load(xmlfile,entity_resolver));
     if ( doc )   {
@@ -143,6 +131,19 @@ void DetectorLoad::processXMLString(const char* xmldata, xml::UriReader* entity_
 
 /// Process a given DOM (sub-) tree
 void DetectorLoad::processXMLElement(const std::string& xmlfile, const xml::Handle_t& xml_root) {
+
+  // Install signal handler for SIGINT (Ctrl-C)
+  struct sigaction sigIntHandler;
+
+  sigIntHandler.sa_handler = [](int) {
+    std::cerr << "Caught signal SIGINT, exiting..." << std::endl;
+    exit(1);
+  };
+  sigemptyset(&sigIntHandler.sa_mask);
+  sigIntHandler.sa_flags = 0;
+
+  sigaction(SIGINT, &sigIntHandler, NULL);
+
   if ( xml_root.ptr() )   {
     std::string tag = xml_root.tag();
     std::string type = tag + "_XML_reader";
@@ -167,6 +168,19 @@ void DetectorLoad::processXMLElement(const std::string& xmlfile, const xml::Hand
 
 /// Process a given DOM (sub-) tree
 void DetectorLoad::processXMLElement(const xml::Handle_t& xml_root, DetectorBuildType /* type */) {
+
+  // Install signal handler for SIGINT (Ctrl-C)
+  struct sigaction sigIntHandler;
+
+  sigIntHandler.sa_handler = [](int) {
+    std::cerr << "Caught signal SIGINT, exiting..." << std::endl;
+    exit(1);
+  };
+  sigemptyset(&sigIntHandler.sa_mask);
+  sigIntHandler.sa_flags = 0;
+
+  sigaction(SIGINT, &sigIntHandler, NULL);
+
   if ( xml_root.ptr() )   {
     std::string tag = xml_root.tag();
     std::string type = tag + "_XML_reader";
