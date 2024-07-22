@@ -21,6 +21,9 @@
 
 // C/C++ include files
 #include <stdexcept>
+#include <csignal>
+#include <cstdlib>
+#include <iostream>
 
 #ifndef __TIXML__
 #include <xercesc/dom/DOMException.hpp>
@@ -47,6 +50,19 @@ DetectorLoad::~DetectorLoad() {
 
 /// Process XML unit and adopt all data from source structure.
 void DetectorLoad::processXML(const std::string& xmlfile, xml::UriReader* entity_resolver) {
+
+  // Install signal handler for SIGINT (Ctrl-C)
+  struct sigaction sigIntHandler;
+
+  sigIntHandler.sa_handler = [](int) {
+    std::cerr << "Caught signal SIGINT, exiting..." << std::endl;
+    exit(1);
+  };
+  sigemptyset(&sigIntHandler.sa_mask);
+  sigIntHandler.sa_flags = 0;
+
+  sigaction(SIGINT, &sigIntHandler, NULL);
+
   try {
     xml::DocumentHolder doc(xml::DocumentHandler().load(xmlfile,entity_resolver));
     if ( doc )   {
