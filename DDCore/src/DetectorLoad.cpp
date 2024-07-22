@@ -50,7 +50,6 @@ DetectorLoad::~DetectorLoad() {
 
 /// Process XML unit and adopt all data from source structure.
 void DetectorLoad::processXML(const std::string& xmlfile, xml::UriReader* entity_resolver) {
-
   try {
     xml::DocumentHolder doc(xml::DocumentHandler().load(xmlfile,entity_resolver));
     if ( doc )   {
