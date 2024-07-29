@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -72,7 +72,7 @@ namespace dd4hep {
 #endif // DD4HEP_DDG4_GEANT4TCUSERPARTICLEHANDLER_H
 
 //====================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------
 //
 //  Author     : M.Frank
@@ -82,6 +82,7 @@ namespace dd4hep {
 //#include <DDG4/Geant4TCUserParticleHandler.h>
 #include <DDG4/Geant4Particle.h>
 #include <DDG4/Factories.h>
+#include "Geant4UserParticleHandlerHelper.h"
 
 
 using namespace dd4hep::sim;
@@ -106,16 +107,6 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
     && z_prod <= m_zTrackerMax
   )  ;
 
-  dd4hep::detail::ReferenceBitMask<int> reason(p.reason);
-
-  if( reason.isSet(G4PARTICLE_PRIMARY) ) {
-    //do nothing
-  } else if( starts_in_trk_vol && ! reason.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )  {
-    // created in tracking volume but below energy cut
-    p.reason = 0;
-    return;
-  }
-
   double r_end  = std::sqrt(p.vex*p.vex + p.vey*p.vey);
   double z_end  = p.vez;
   bool ends_in_trk_vol =  ( r_end <= m_rTracker
@@ -123,41 +114,8 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
      && z_end <= m_zTrackerMax
   ) ;
 
-  // created and ended in calo but not primary particle
-  //
-  // we can have particles from the generator only in the calo, if we have a
-  // long particle with preassigned decay, we need to keep the reason or the
-  // MChistory will not be updated later on
-  if( not reason.isSet(G4PARTICLE_PRIMARY) ) {
-    if( !starts_in_trk_vol ) {
-      if( !ends_in_trk_vol ){
-	p.reason = 0;
-      }
-      //fg: dont keep backscatter that did not create a tracker hit
-      else if( ! reason.isSet(G4PARTICLE_CREATED_TRACKER_HIT) ) {
-	p.reason = 0;
-      }
-    }
-  }
-
-  // Set the simulator status bits
-  dd4hep::detail::ReferenceBitMask<int> simStatus(p.status);
-
-  if( ends_in_trk_vol ) {
-    simStatus.set(G4PARTICLE_SIM_DECAY_TRACKER);
-  }
-
-  // if the particle doesn't end in the tracker volume it must have ended in the calorimeter
-  if( not ends_in_trk_vol && not simStatus.isSet(G4PARTICLE_SIM_LEFT_DETECTOR) ) {
-    simStatus.set(G4PARTICLE_SIM_DECAY_CALO);
-  }
-
-  if( not starts_in_trk_vol && ends_in_trk_vol ) {
-    simStatus.set(G4PARTICLE_SIM_BACKSCATTER);
-  }
-
-  return ;
-
+  setReason(p, starts_in_trk_vol, ends_in_trk_vol);
+  setSimulatorStatus(p, starts_in_trk_vol, ends_in_trk_vol);
 }
 
 /// Post-event action callback
