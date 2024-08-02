@@ -17,6 +17,7 @@
 #include "DD4hep/Detector.h"
 #include <string>
 #include <map>
+#include <set>
 
 namespace dd4hep {
   namespace rec {
@@ -34,7 +35,7 @@ namespace dd4hep {
      */
     class SurfaceManager {
 
-      typedef std::map< std::string,  SurfaceMap > SurfaceMapsMap ;
+      typedef std::map< std::string,  std::pair<bool, SurfaceMap>> SurfaceMapsMap;
 
     public:
       /// The constructor
@@ -59,7 +60,7 @@ namespace dd4hep {
        *  type of detectors, e.g. map("tracker") returns a map with all surfaces
        *  assigned to tracking detectors. Returns 0 if no map exists.
        */
-      const SurfaceMap* map( const std::string name ) const ;
+      const SurfaceMap* map( const std::string name );
 
 
       ///create a string with all available maps and their size (number of surfaces)
@@ -71,7 +72,14 @@ namespace dd4hep {
       /// initialize all known surface maps
       void initialize(const Detector& theDetector) ;
 
+      /// name has to be the name of a single detector! not e.g. tracker or world.
+      const SurfaceMap& getOrConstruct(const std::string name);
+
       SurfaceMapsMap _map ;
+      const Detector& m_detector;
+      std::set<std::string> m_detectorNames;
+      std::set<std::string> m_detectorTypes;
+      std::map<std::string, std::set<std::string>> m_missingDetectors;
     };
 
   } /* namespace rec */
