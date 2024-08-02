@@ -146,43 +146,6 @@ namespace dd4hep {
       return maps[0].get().second;
     }
 
-    void SurfaceManager::initialize(const Detector& description) {
-
-      const std::vector<std::string>& types = description.detectorTypes() ;
-
-      for(unsigned i=0,N=types.size();i<N;++i){
-
-        const std::vector<DetElement>& dets = description.detectors( types[i] ) ;
-
-        for(unsigned j=0,M=dets.size();j<M;++j){
-
-          std::string name = dets[j].name() ;
-
-          SurfaceHelper surfH( dets[j] ) ;
-
-          const SurfaceList& detSL = surfH.surfaceList() ;
-
-          // add an empty map for this detector in case there are no surfaces attached
-          _map.emplace(name , SurfaceMap());
-
-          for( SurfaceList::const_iterator it = detSL.begin() ; it != detSL.end() ; ++it ){
-            ISurface* surf =  *it ;
-
-            // enter surface into map for this detector
-            _map[ name ].emplace(surf->id(), surf );
-
-            // enter surface into map for detector type
-            _map[ types[i] ].emplace(surf->id(), surf );
-
-            // enter surface into world map
-            _map[ "world" ].emplace(surf->id(), surf );
-
-          }
-        }
-      }
-
-    }
-
     std::string SurfaceManager::toString() const {
 
       std::stringstream sstr ;

@@ -68,10 +68,6 @@ namespace dd4hep {
 
     protected :
 
-
-      /// initialize all known surface maps
-      void initialize(const Detector& theDetector) ;
-
       /// name has to be the name of a single detector! not e.g. tracker or world.
       const SurfaceMap& getOrConstruct(const std::string name);
 
