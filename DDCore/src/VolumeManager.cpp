@@ -187,8 +187,10 @@ namespace dd4hep {
                 // used e.g. to model a very fine grained sensitive volume structure
                 // without always having DetElements.
               }
-              add_entry(sd, parent, e, node, vol_encoding, chain);
-              ++count;
+              if (is_sensitive) {
+                add_entry(sd, parent, e, node, vol_encoding, chain);
+                ++count;
+              }
               if ( m_debug )  {
                 IDDescriptor id(sd.readout().idSpec());
                 printout(INFO,"VolumeManager","Parent: %-44s id:%016llx Encoding: %s",
