@@ -104,7 +104,7 @@ Geant4RegexSensitivesConstruction::collect_volumes(std::set<Volume>&  volumes,
     if( !path.empty() )  {
       for( const auto& match : matches )  {
         std::smatch sm;
-        bool stat = std::regex_match(path, sm, match);
+        bool stat = std::regex_search(path, sm, match);
         if( stat )  {
           volumes.insert(pv.volume());
           ++count;
