@@ -75,6 +75,8 @@ namespace dd4hep {
     double VolSurfaceBase::innerThickness() const { return _th_i ; }
     double VolSurfaceBase::outerThickness() const { return _th_o ; }
     
+    double VolSurfaceBase::phiTot() const { return _phiTot ; }
+    double VolSurfaceBase::phi0() const { return _phi0 ; }
 
     double VolSurfaceBase::length_along_u() const {
       
@@ -235,7 +237,7 @@ namespace dd4hep {
     }
 
 
-    std::vector< std::pair<Vector3D, Vector3D> > VolSurfaceBase::getLines(unsigned ) {
+    std::vector< std::pair<Vector3D, Vector3D> > VolSurfaceBase::getLines(unsigned) {
       // dummy implementation returning empty set
       std::vector< std::pair<Vector3D, Vector3D> >  lines ;
       return lines ;
@@ -256,6 +258,8 @@ namespace dd4hep {
     const IMaterial&  VolSurface::outerMaterial() const  { return _surf->outerMaterial()  ; }
     double VolSurface::innerThickness() const { return _surf->innerThickness() ; }
     double VolSurface::outerThickness() const { return _surf->outerThickness() ; }
+    double VolSurface::phiTot() const { return _surf->phiTot() ; }
+    double VolSurface::phi0() const { return _surf->phi0() ; }
     double VolSurface::length_along_u() const { return _surf->length_along_u() ; }
     double VolSurface::length_along_v() const { return _surf->length_along_v() ; }
     double VolSurface::distance(const Vector3D& point ) const  {  return _surf->distance( point ) ; }
@@ -275,9 +279,8 @@ namespace dd4hep {
     //======================================================================================================
 
     VolCylinderImpl::VolCylinderImpl( Volume vol, SurfaceType typ, 
-                                      double thickness_inner ,double thickness_outer,  Vector3D o ) :
-
-      VolSurfaceBase(typ, thickness_inner, thickness_outer, Vector3D() , Vector3D() , Vector3D() , o , vol, 0) {
+                                      double thickness_inner ,double thickness_outer,  Vector3D o, double phiTot, double phi0 ) :
+      VolSurfaceBase(typ, thickness_inner, thickness_outer, Vector3D() , Vector3D() , Vector3D() , o , vol, 0, phiTot, phi0) {
       Vector3D v_val( 0., 0., 1. ) ;
       Vector3D o_rphi( o.x() , o.y() , 0. ) ;
       Vector3D n =  o_rphi.unit() ; 
@@ -341,7 +344,7 @@ namespace dd4hep {
     VolConeImpl::VolConeImpl( Volume vol, SurfaceType typ, 
                               double thickness_inner ,double thickness_outer, Vector3D v_val,  Vector3D o_val ) :
       
-      VolSurfaceBase(typ, thickness_inner, thickness_outer, Vector3D() , v_val ,  Vector3D() , Vector3D() , vol, 0) {
+      VolSurfaceBase(typ, thickness_inner, thickness_outer, Vector3D() , v_val ,  Vector3D() , Vector3D() , vol, 0, 2.*M_PI, 0. ) {
 
       Vector3D o_rphi( o_val.x() , o_val.y() , 0. ) ;
 
@@ -618,6 +621,8 @@ namespace dd4hep {
     const Vector3D& Surface::origin() const { return _o ;}
     double Surface::innerThickness() const { return _volSurf.innerThickness() ; }
     double Surface::outerThickness() const { return _volSurf.outerThickness() ; }
+    double Surface::phiTot() const { return _volSurf.phiTot() ; }
+    double Surface::phi0() const { return _volSurf.phi0() ; }
     double Surface::length_along_u() const { return _volSurf.length_along_u() ; }
     double Surface::length_along_v() const { return _volSurf.length_along_v() ; }
 
@@ -1182,12 +1187,14 @@ namespace dd4hep {
 
 
           unsigned n = nMax / 4 ;
-          double dPhi = 2.* ROOT::Math::Pi() / double( n ) ; 
+          double dPhi = phiTot() / double( n ) ; 
+
+          std::cout << "Using phiTot=" << phiTot() << " and phi0=" << phi0() << std::endl;
 
           for( unsigned i = 0 ; i < n ; ++i ) {
-
-            Vector3D rv0(  r*sin(  i   *dPhi ) , r*cos(  i   *dPhi )  , 0. ) ;
-            Vector3D rv1(  r*sin( (i+1)*dPhi ) , r*cos( (i+1)*dPhi )  , 0. ) ;
+            double phi_offset = phi0();
+            Vector3D rv0( r*sin( phi_offset +  i   *dPhi ) , r*cos( phi_offset + i   *dPhi )  , 0. ) ;
+            Vector3D rv1( r*sin( phi_offset + (i+1)*dPhi ) , r*cos( phi_offset + (i+1)*dPhi )  , 0. ) ;
 
             // 4 points on local cylinder
 
