@@ -188,6 +188,7 @@ if (DD4HEP_USE_GEANT4)
       EXEC_ARGS  root.exe -b -x -n -q -l "${DD4hep_ROOT}/examples/DDG4/examples/run.C(\"${CLICSiDEx_INSTALL}/scripts/${script}\")"
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=2"
       REGEX_FAIL "EXCEPTION;ERROR;Error" )
+    set_property(TEST t_CLICSiD_DDG4_${script}_as_AClick_LONGTEST PROPERTY RESOURCE_LOCK "INIT_SID_ACLICK")
     #
     # Execute identical source linked executable 
     dd4hep_add_test_reg( CLICSiD_DDG4_${script}_as_exe_LONGTEST
