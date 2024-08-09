@@ -104,7 +104,7 @@ Geant4RegexSensitivesConstruction::collect_volumes(std::set<Volume>&  volumes,
     if( !path.empty() )  {
       for( const auto& match : matches )  {
         std::smatch sm;
-        bool stat = std::regex_match(path, sm, match);
+        bool stat = std::regex_search(path, sm, match);
         if( stat )  {
           volumes.insert(pv.volume());
           ++count;
@@ -151,18 +151,18 @@ void Geant4RegexSensitivesConstruction::constructSensitives(Geant4DetectorConstr
     expressions.emplace_back(e);
   }
   TTimeStamp start;
-  print("+++ Detector: %s Starting to scan volume....", det);
+  info("%s Starting to scan volume....", det);
   std::size_t num_nodes = this->collect_volumes(volumes, de.placement(), de.placementPath(), expressions);
   for( const auto& vol : volumes )  {
     G4LogicalVolume* g4vol = g4info->g4Volumes[vol];
     if( !g4vol )  {
       except("+++ Failed to access G4LogicalVolume for SD %s of type %s", nam.c_str(), typ.c_str());
     }
-    print("+++ Detector: %s Assign sensitive detector [%s] to volume: %s.",
+    debug("%s Assign sensitive detector [%s] to volume: %s.",
           nam.c_str(), typ.c_str(), vol.name());
     ctxt->setSensitiveDetector(g4vol, g4sd);
   }
   TTimeStamp stop;
-  print("+++ Detector: %s Handled %ld nodes with %ld sensitive volume type(s). Total of %7.3f seconds.",
-        det, num_nodes, volumes.size(), stop.AsDouble()-start.AsDouble() );
+  info("%s Handled %ld nodes with %ld sensitive volume type(s). Total of %7.3f seconds.",
+       det, num_nodes, volumes.size(), stop.AsDouble()-start.AsDouble() );
 }
