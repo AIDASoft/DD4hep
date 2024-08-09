@@ -73,7 +73,7 @@ def run():
     seq, act = geant4.addDetectorConstruction('Geant4RegexSensitivesConstruction/ConstructSDRegEx')
     act.Detector = 'BoxOfStrawsDet'
     act.OutputLevel = Output.ALWAYS
-    act.Match = ['/world_volume_(.*)/BoxOfStrawsDet_(.*)/layer_(.*)/straw_(.*)/gas_(.*)']
+    act.Match = ['gas_']
   #
   seq, act = geant4.addDetectorConstruction('Geant4DetectorConstructionResources/ResourcesAfterConstruction')
   act.When = "sensitives"
