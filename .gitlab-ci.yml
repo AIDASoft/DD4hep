@@ -108,7 +108,7 @@ usermanuals:
       - docker
     image: ghcr.io/aidasoft/el9:latest
     script:
-        - yum install -y ghostscript poppler-utils perl
+        - yum install -y ghostscript poppler-utils perl libxcrypt-compat
         - source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
         - export PATH=/cvmfs/sft.cern.ch/lcg/external/texlive/2024/bin/x86_64-linux:$PATH
         - export max_print_line=200
