@@ -63,18 +63,6 @@ mac11-clang12-XERCESC:
     reports:
       junit: junit*.xml
 
-Python:
-  stage: build
-  tags:
-    - docker
-  image: ghcr.io/aidasoft/centos7:latest
-  script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
-    - echo "RUNNING FLAKE8 CHECK"
-    - find . -name "*.py" -exec flake8 {} +
-
-
-
 #############################
 # Documentation Compilation #
 #############################
