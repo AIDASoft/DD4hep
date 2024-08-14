@@ -35,7 +35,45 @@ class Geometry(ConfigHelper):
 
     self._dumpDGDML_EXTRA = {"help": "If not empty, filename to dump the Geometry as GDML"}
     self.dumpGDML = ""
+
+    self._regexSDDetectorList = []
+
     self._closeProperties()
+
+  @property
+  def regexSensitiveDetector(self):
+    """Configure a sensitive detector for a given detector matched by regular expression (regex).
+
+    'Detector' and 'Match' are mandatory elements of the dictionary, other Keys are assigned as property to the object.
+
+    >>> SIM.geometry.regexSensitiveDetector = {'Detector': 'DRcalo',
+                                               'Match': ['(core|clad)'],
+                                               'OutputLevel': 3,
+                                              }
+
+    This can be assigned repeatedly to add multiple RegexSDs
+    """
+    return self._regexSDDetectorList
+
+  @regexSensitiveDetector.setter
+  def regexSensitiveDetector(self, val):
+    if not val:
+      return
+    if isinstance(val, dict):
+      self.__checkRegexKeys(val)
+      self._regexSDDetectorList.append(val)
+    elif isinstance(val, list):
+      for value in val:
+        self.__checkRegexKeys(value)
+        self._regexSDDetectorList.append(value)
+    raise RuntimeError(f"Unsupported type for regexSensitiveDetector: {val!r}")
+
+  @staticmethod
+  def __checkRegexKeys(val):
+    """Check the regex SD arguments for required keys."""
+    requiredKeys = ('Detector', 'Match')
+    if not all(key in val for key in requiredKeys):
+      raise RuntimeError(f"RegexSD configuration {val} is missing mandatory key(s): {', '.join(requiredKeys)}")
 
   def constructGeometry(self, kernel, geant4, geoPrintLevel=2, numberOfThreads=1):
     """Construct Geant4 geometry."""
@@ -60,3 +98,9 @@ class Geometry(ConfigHelper):
     sensitives = DetectorConstruction(kernel, str('Geant4DetectorSensitivesConstruction/ConstructSD'))
     sensitives.enableUI()
     seq.adopt(sensitives)
+
+    for index, regexDetectors in enumerate(self._regexSDDetectorList):
+      seq, act = geant4.addDetectorConstruction(f'Geant4RegexSensitivesConstruction/ConstrSDRegEx_{index}')
+      # this will set Match and Detector, and other properties if possible
+      for key, value in regexDetectors.items():
+        setattr(act, key, value)

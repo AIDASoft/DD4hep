@@ -63,18 +63,6 @@ mac11-clang12-XERCESC:
     reports:
       junit: junit*.xml
 
-Python:
-  stage: build
-  tags:
-    - docker
-  image: ghcr.io/aidasoft/centos7:latest
-  script:
-    - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
-    - echo "RUNNING FLAKE8 CHECK"
-    - find . -name "*.py" -exec flake8 {} +
-
-
-
 #############################
 # Documentation Compilation #
 #############################
@@ -86,9 +74,9 @@ doxygen:
     needs: []
     tags:
         - docker
-    image: ghcr.io/aidasoft/centos7:latest
+    image: ghcr.io/aidasoft/el9:latest
     script:
-        - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
+        - source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
         - mkdir -p public
         - mkdir build
         - cd build
@@ -106,11 +94,11 @@ usermanuals:
     needs: []
     tags:
       - docker
-    image: ghcr.io/aidasoft/centos7:latest
+    image: ghcr.io/aidasoft/el9:latest
     script:
-        - yum install -y ghostscript poppler-utils perl
-        - source /cvmfs/sft.cern.ch/lcg/views/LCG_102/x86_64-centos7-gcc11-opt/setup.sh
-        - export PATH=/cvmfs/sft.cern.ch/lcg/external/texlive/2017/bin/x86_64-linux:$PATH
+        - yum install -y ghostscript poppler-utils perl libxcrypt-compat
+        - source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
+        - export PATH=/cvmfs/sft.cern.ch/lcg/external/texlive/2024/bin/x86_64-linux:$PATH
         - export max_print_line=200
         - mkdir -p public/usermanuals
         - mkdir build
