@@ -166,8 +166,10 @@ namespace dd4hep {
       /// Checks if the given point lies within the surface
       virtual bool insideBounds(const Vector3D& point, double epsilon=1e-4 ) const ;
 
+      /** Width in radian of surface */
       virtual double phiTot() const;
 
+      /** Offset in radian of surface position */
       virtual double phi0() const;
 
       virtual std::vector< std::pair<Vector3D, Vector3D> > getLines(unsigned nMax=100) ;
@@ -265,8 +267,10 @@ namespace dd4hep {
       /** Thickness of outer material */
       virtual double outerThickness() const ;
 
+      /** Width in radian of surface */
       virtual double phiTot() const;
 
+      /** Offset in radian of surface position */
       virtual double phi0() const;
 
       /** The length of the surface along direction u at the origin. For 'regular' boundaries, like rectangles, 
@@ -584,8 +588,10 @@ namespace dd4hep {
       /** Thickness of outer material */
       virtual double outerThickness() const ;
 
+      /** Width in radian of surface */
       virtual double phiTot() const;
 
+      /** Offset in radian of surface position */
       virtual double phi0() const;
       
       /// Access to the material in opposite direction of the normal
