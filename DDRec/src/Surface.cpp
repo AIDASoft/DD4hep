@@ -1189,7 +1189,6 @@ namespace dd4hep {
           unsigned n = nMax / 4 ;
           double dPhi = phiTot() / double( n ) ; 
 
-          std::cout << "Using phiTot=" << phiTot() << " and phi0=" << phi0() << std::endl;
 
           for( unsigned i = 0 ; i < n ; ++i ) {
             double phi_offset = phi0();
