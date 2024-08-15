@@ -66,7 +66,8 @@ class Geometry(ConfigHelper):
       for value in val:
         self.__checkRegexKeys(value)
         self._regexSDDetectorList.append(value)
-    raise RuntimeError(f"Unsupported type for regexSensitiveDetector: {val!r}")
+    else:
+        raise RuntimeError(f"Unsupported type for regexSensitiveDetector: {val!r}")
 
   @staticmethod
   def __checkRegexKeys(val):
