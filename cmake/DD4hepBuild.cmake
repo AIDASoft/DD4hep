@@ -675,13 +675,9 @@ function(dd4hep_add_plugin binary)
     dd4hep_generate_rootmap(${binary})
   ENDIF()
   if(NOT ${ARG_NOINSTALL})
-    set(install_destination "lib")
-    if(CMAKE_INSTALL_LIBDIR)
-      set(install_destination ${CMAKE_INSTALL_LIBDIR})
-    endif()
     install(TARGETS ${binary}
-      ARCHIVE DESTINATION ${install_destination}
-      LIBRARY DESTINATION ${install_destination}
+      ARCHIVE DESTINATION lib
+      LIBRARY DESTINATION lib
       )
   endif()
 endfunction(dd4hep_add_plugin)
