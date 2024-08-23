@@ -86,11 +86,7 @@ function(dd4hep_generate_rootmap library)
                      )
 
   add_custom_target(Components_${library} ALL DEPENDS ${rootmapfile})
-  SET( install_destination "lib" )
-  if( CMAKE_INSTALL_LIBDIR )
-    SET( install_destination ${CMAKE_INSTALL_LIBDIR} )
-  endif()
   install(FILES $<TARGET_FILE_DIR:${library}>/${rootmapfile}
-    DESTINATION ${install_destination}
+    DESTINATION lib
   )
 endfunction()
