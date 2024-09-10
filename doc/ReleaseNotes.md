@@ -1,3 +1,111 @@
+# v01-30
+
+* 2024-08-25 Andre Sailer ([PR#1317](https://github.com/aidasoft/dd4hep/pull/1317))
+  - DDSim: regexSD fix infinite loop, but change the interface from assignment to dictionary entries. Have to ensure only a single entry of a detector is given to the RegexSD
+
+* 2024-08-15 Sanghyun Ko ([PR#1315](https://github.com/aidasoft/dd4hep/pull/1315))
+  - DDSim: prevent Geometry.regexSensitiveDetector from always throwing exception when called with argument.
+
+* 2024-08-13 Andre Sailer ([PR#1312](https://github.com/aidasoft/dd4hep/pull/1312))
+  - GitlabCI: drop Flake check, since we have that on github as well
+
+* 2024-08-12 Andre Sailer ([PR#1310](https://github.com/aidasoft/dd4hep/pull/1310))
+  - GitlabCI: Use an el9 container to build documentation for the webpage
+
+* 2024-08-12 Andre Sailer ([PR#1309](https://github.com/aidasoft/dd4hep/pull/1309))
+  - CLICSiD AClick tests: avoid running in parallel, tests might break
+
+* 2024-08-12 Andre Sailer ([PR#1308](https://github.com/aidasoft/dd4hep/pull/1308))
+  - Geant4RegexSensitivesConstruction: allow using regex that don't match the full volume path, reduce time by 40% or so
+  - DDSim: add interface for Geant4RegexSensitivesConstruction to geometry construction
+
+* 2024-07-30 Leonhard Reichenbach ([PR#1303](https://github.com/aidasoft/dd4hep/pull/1303))
+  - Added a Geant4TVUserParticleHandler that can utilise an arbitrary tracking volume as introduced in https://github.com/AIDASoft/DD4hep/pull/384
+
+* 2024-07-24 ybedfer ([PR#1294](https://github.com/aidasoft/dd4hep/pull/1294))
+  - Adding a "CylindricalGridPhiZ" segmentation class.
+     - N.B.: the class has a "radius" data member, registered by the constructors.
+
+* 2024-07-22 Markus Frank ([PR#1301](https://github.com/aidasoft/dd4hep/pull/1301))
+  - See issue https://github.com/AIDASoft/DD4hep/issues/1292 and PR https://github.com/AIDASoft/DD4hep/pull/1293 , fix crash when action dictionary not hashable.
+
+* 2024-07-22 Andre Sailer ([PR#1299](https://github.com/aidasoft/dd4hep/pull/1299))
+  - CI: use alma9 stack for python lint check
+  - CI: move key4hep stack to alma9
+
+* 2024-07-22 Sanghyun Ko ([PR#1298](https://github.com/aidasoft/dd4hep/pull/1298))
+  - Geant4Converter: Improve lookup speed of `GeoHandler::i_collect` by using `std::set` instead of `std::find` (issue #1291)
+
+* 2024-07-06 jmcarcell ([PR#1290](https://github.com/aidasoft/dd4hep/pull/1290))
+  - Add the missing header unistd.h in a file to find `::open` and `::close`
+  - Fix a few warnings about unused variables or shadowing
+  - Add .cache and compile_commands.json to .gitignore
+
+* 2024-07-05 Markus Frank ([PR#1289](https://github.com/aidasoft/dd4hep/pull/1289))
+  * Add RegexSD example for illustration: See https://github.com/AIDASoft/DD4hep/pull/1288
+
+* 2024-07-05 Markus Frank ([PR#1288](https://github.com/aidasoft/dd4hep/pull/1288))
+  - As reported in this issue https://github.com/AIDASoft/DD4hep/issues/1285 under certain circumstances the memory usage of DDG4 goes through the roof. This was traced back to the creation of excessive maps in the `Geant4VolumeManager`, if the number of sensitive pathes is very high like e.g. for straw detectors.
+  - To solve the problem, geometry constructors may not declare any sensitive volumes. Hence the `Geant4VolumeManager` will not be populated. To still make Geant4 functioning, the sensitive volumes may be declared a posterior after conversion using regular expressions as implemented in the class `Geant4RegexSensitivesConstruction`. This class is only an example how such functionality may be achieved: other solutions are possible as well. This functionality can be switched at the level of each subdetector participating in the experiment setup.
+  - To illustrate, an example detector `BoxOfStraws` was constructed with a flag in the xml description:
+  ```
+      <detector id="1" name="BoxOfStrawsDet" type="DD4hep_BoxOfStraws" readout="BoxOfStrawsHits" vis="VisibleGreen" region="StrawRegion" limits="BoxOfStrawsLimitSet">
+        <box      x="1*m"    y="1*m" z="1000*mm"  limits="BoxOfStrawsLimitSet" vis="VisibleRed"/>
+        <straw rmax="0.5*mm" y="1*m" thickness="0.1*mm" vis="VisibleBlue">
+          <material name="Iron"/>
+        </straw>
+        <gas vis="VisibleGreen">
+          <material name="Argon"/>
+          <non_sensitive/>
+        </gas>
+        <position x="0*m"   y="0*m"   z="0*m"/>
+        <rotation x="0"     y="0"     z="0"/>
+      </detector>
+  ```
+  Change `<non_sensitive/>` to `<sensitive/>` and the different behavor of memory allocation when starting Geant4 can be observed.
+  The corresponding Geant4 python script can be found here:
+  ```
+  <DD4hep>/examples/ClientTests/scripts/BoxOfStraws.py
+  ```
+  The memory consumption differs then as follows (depending on the thickness of the straws, which determine the number of sensitive pathes):
+  ```
+  With explicit sensitive volumes:   
+  before Geant4VolumeManager:    Virtual: 903.3m   resident: 690.5m
+  after Geant4VolumeManager:     Virtual: 1848.2m  resident: 1.6g   
+  
+  
+  With Sensitives matching regex and not sensitive volumes declared:
+  before Geant4VolumeManager:    Virtual: 903.3m   Resident: 690.6m 
+  after Geant4VolumeManager:     Virtual: 903.3m   Resident: 690.6m 
+  Simulating:                    Virtual: 903.5m   Resident: 692.6m 
+  ```
+  Hence this is a possibility to significantly reduce memory consumption for highly granular subdetectors.
+
+* 2024-07-01 Markus Frank ([PR#1287](https://github.com/aidasoft/dd4hep/pull/1287))
+  - As noted by Ben, the global alignment does not work in the presence of assemblies.
+    This PR together with https://github.com/root-project/root/pull/15905 fixes this deficiency.
+  - An example was added to convert a globally misaligned geometry to Geant4:
+    ` $ python examples/AlignDet/scripts/AlephTPC.py -batch -events 5 -alignments examples/AlignDet/compact/AlephTPC_alignment.xml`
+
+* 2024-07-01 jmcarcell ([PR#1286](https://github.com/aidasoft/dd4hep/pull/1286))
+  - Fix warnings related to unused variables and shadowing of already existing variables
+  - Don't use the deprecated `PySys_SetArgv`
+
+* 2024-06-26 Andre Sailer ([PR#1284](https://github.com/aidasoft/dd4hep/pull/1284))
+  - DDG4.inputHandling: do not simulate rejectPDG particles even if they are called stable by the generator file, fixes #1282
+
+* 2024-06-26 Andre Sailer ([PR#1283](https://github.com/aidasoft/dd4hep/pull/1283))
+  - DDSim: Do not check for existence of files behind a URL like root://, fixes #1281
+
+* 2024-06-24 jmcarcell ([PR#1280](https://github.com/aidasoft/dd4hep/pull/1280))
+  - CMake: Allow finding version 1.0 (and newer) for podio
+
+* 2024-06-21 Markus Frank ([PR#1279](https://github.com/aidasoft/dd4hep/pull/1279))
+  - The conquest against tainted variables in coverity
+
+* 2024-06-20 Markus Frank ([PR#1278](https://github.com/aidasoft/dd4hep/pull/1278))
+  - Fight coverity tainted variables.
+
 # v01-29
 
 * 2024-06-06 Andre Sailer ([PR#1277](https://github.com/aidasoft/DD4hep/pull/1277))
