@@ -48,6 +48,7 @@
   - As reported in this issue https://github.com/AIDASoft/DD4hep/issues/1285 under certain circumstances the memory usage of DDG4 goes through the roof. This was traced back to the creation of excessive maps in the `Geant4VolumeManager`, if the number of sensitive pathes is very high like e.g. for straw detectors.
   - To solve the problem, geometry constructors may not declare any sensitive volumes. Hence the `Geant4VolumeManager` will not be populated. To still make Geant4 functioning, the sensitive volumes may be declared a posterior after conversion using regular expressions as implemented in the class `Geant4RegexSensitivesConstruction`. This class is only an example how such functionality may be achieved: other solutions are possible as well. This functionality can be switched at the level of each subdetector participating in the experiment setup.
   - To illustrate, an example detector `BoxOfStraws` was constructed with a flag in the xml description:
+
   ```
       <detector id="1" name="BoxOfStrawsDet" type="DD4hep_BoxOfStraws" readout="BoxOfStrawsHits" vis="VisibleGreen" region="StrawRegion" limits="BoxOfStrawsLimitSet">
         <box      x="1*m"    y="1*m" z="1000*mm"  limits="BoxOfStrawsLimitSet" vis="VisibleRed"/>
@@ -62,12 +63,16 @@
         <rotation x="0"     y="0"     z="0"/>
       </detector>
   ```
+
   Change `<non_sensitive/>` to `<sensitive/>` and the different behavor of memory allocation when starting Geant4 can be observed.
   The corresponding Geant4 python script can be found here:
+
   ```
   <DD4hep>/examples/ClientTests/scripts/BoxOfStraws.py
   ```
+
   The memory consumption differs then as follows (depending on the thickness of the straws, which determine the number of sensitive pathes):
+
   ```
   With explicit sensitive volumes:   
   before Geant4VolumeManager:    Virtual: 903.3m   resident: 690.5m
@@ -79,6 +84,7 @@
   after Geant4VolumeManager:     Virtual: 903.3m   Resident: 690.6m 
   Simulating:                    Virtual: 903.5m   Resident: 692.6m 
   ```
+
   Hence this is a possibility to significantly reduce memory consumption for highly granular subdetectors.
 
 * 2024-07-01 Markus Frank ([PR#1287](https://github.com/aidasoft/dd4hep/pull/1287))
