@@ -40,7 +40,7 @@ namespace {
   }
   int s_minPrintLevel = dd4hep::INFO;
 
-  static std::string _clean_fname(const std::string& s) {
+  std::string _clean_fname(const std::string& s) {
     std::string const& temp = getEnviron(s);
     std::string temp2 = undressed_file_name(temp.empty() ? s : temp);
     if ( strncmp(temp2.c_str(),"file:",5)==0 ) return temp2.substr(5);
