@@ -40,9 +40,10 @@ namespace {
   }
   int s_minPrintLevel = dd4hep::INFO;
 
-  std::string _clean_fname(const std::string& s) {
-    std::string const& temp = getEnviron(s);
-    std::string temp2 = undressed_file_name(temp.empty() ? s : temp);
+  std::string _clean_fname(const std::string& filepath) {
+    // This function seems to resolve environment variables inside the filepath string and return resolved string
+    std::string const& temp = getEnviron(filepath);
+    std::string temp2 = undressed_file_name( temp.empty() ? filepath : temp );
     if ( strncmp(temp2.c_str(),"file:",5)==0 ) return temp2.substr(5);
     return temp2;
   }
