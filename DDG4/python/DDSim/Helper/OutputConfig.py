@@ -12,9 +12,9 @@ DD4HEP_USE_EDM4HEP = "@DD4HEP_USE_EDM4HEP@" != "OFF"
 
 
 def defaultOutputFile():
-  if DD4HEP_USE_LCIO:
-    return "dummyOutput.slcio"
-  return "dummyOutput.root"
+  if DD4HEP_USE_LCIO and not DD4HEP_USE_EDM4HEP:
+    return "ddsimOutput.slcio"
+  return "ddsimOutput.root"
 
 
 class OutputConfig(ConfigHelper):
