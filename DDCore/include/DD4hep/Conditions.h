@@ -101,10 +101,7 @@ namespace dd4hep {
       LAST_DET_KEY        = ~0x0U
     };
     /// Flags to indicate global conditions ranges
-    enum {
-      FIRST_KEY           =  0x0ULL,
-      LAST_KEY            = ~0x0ULL        
-    };
+    static constexpr unsigned long long int FIRST_KEY =  0x0ULL, LAST_KEY  = ~0x0ULL;
 
     /// Abstract base for processing callbacks to conditions objects
     /**
