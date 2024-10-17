@@ -21,6 +21,7 @@
 
 #include <DDG4/Geant4Kernel.h>
 #include <DDG4/Geant4Context.h>
+#include <DDG4/Geant4Interrupts.h>
 #include <DDG4/Geant4ActionPhase.h>
 
 // Geant4 include files
@@ -33,12 +34,14 @@
 // C/C++ include files
 #include <algorithm>
 #include <pthread.h>
+#include <csignal>
 #include <memory>
 
 using namespace dd4hep::sim;
 
 namespace {
-  G4Mutex kernel_mutex=G4MUTEX_INITIALIZER;
+
+  G4Mutex kernel_mutex = G4MUTEX_INITIALIZER;
   std::unique_ptr<Geant4Kernel> s_main_instance;
   void description_unexpected()    {
     try  {
@@ -98,11 +101,11 @@ Geant4Kernel::Geant4Kernel(Detector& description_ref)
   declareProperty("SensitiveTypes",       m_sensitiveDetectorTypes);
   declareProperty("RunManagerType",       m_runManagerType = "G4RunManager");
   declareProperty("DefaultSensitiveType", m_dfltSensitiveDetectorType = "Geant4SensDet");
+  m_interrupts = new Geant4Interrupts(*this);
   m_controlName = "/ddg4/";
   m_control = new G4UIdirectory(m_controlName.c_str());
   m_control->SetGuidance("Control for named Geant4 actions");
   setContext(new Geant4Context(this));
-  //m_shared = new Geant4Kernel(description_ref, this, -2);
   InstanceCount::increment(this);
 }
 
@@ -120,9 +123,9 @@ Geant4Kernel::Geant4Kernel(Geant4Kernel* krnl, unsigned long ident)
   m_sensitiveDetectorTypes      = m_master->m_sensitiveDetectorTypes;
   m_dfltSensitiveDetectorType   = m_master->m_dfltSensitiveDetectorType;
   declareProperty("UI",m_uiName = m_master->m_uiName);
-  declareProperty("OutputLevel", m_outputLevel = m_master->m_outputLevel);
-  declareProperty("OutputLevels",m_clientLevels = m_master->m_clientLevels);
-  ::snprintf(text,sizeof(text),"/ddg4.%d/",(int)(m_master->m_workers.size()));
+  declareProperty("OutputLevel",  m_outputLevel  = m_master->m_outputLevel);
+  declareProperty("OutputLevels", m_clientLevels = m_master->m_clientLevels);
+  ::snprintf(text, sizeof(text), "/ddg4.%d/", (int)(m_master->m_workers.size()));
   m_controlName = text;
   m_control = new G4UIdirectory(m_controlName.c_str());
   m_control->SetGuidance("Control for thread specific Geant4 actions");
@@ -139,6 +142,7 @@ Geant4Kernel::~Geant4Kernel() {
   if ( isMaster() )  {
     detail::releaseObjects(m_globalFilters);
     detail::releaseObjects(m_globalActions);
+    detail::deletePtr(m_interrupts);
   }
   destroyPhases();
   detail::deletePtr(m_runManager);
@@ -169,6 +173,40 @@ Geant4Kernel& Geant4Kernel::instance(Detector& description) {
   return *(s_main_instance.get());
 }
 
+/// Access interrupt handler. Will be created on the first call
+Geant4Interrupts& Geant4Kernel::interruptHandler()  const  {
+  if ( isMaster() )
+    return *this->m_interrupts;	
+  return this->m_master->interruptHandler();
+}
+
+/// Trigger smooth end-of-event-loop with finishing currently processing event
+void Geant4Kernel::triggerStop()  {
+  printout(INFO, "Geant4Kernel",
+	   "+++ Stop signal seen. Will finish after current event(s) have been processed.");
+  printout(INFO, "Geant4Kernel",
+	   "+++ Depending on the complexity of the simulation, this may take some time ...");
+  this->m_master->m_processEvents = EVENTLOOP_HALT;
+}
+
+/// Access flag if event loop is enabled
+bool Geant4Kernel::processEvents()  const  {
+  return this->m_master->m_processEvents == EVENTLOOP_RUNNING;
+}
+
+/// Install DDG4 default handler for a given signal. If no handler: return false
+bool Geant4Kernel::registerInterruptHandler(int sig_num)   {
+  if ( sig_num == SIGINT )  {
+    return interruptHandler().registerHandler_SIGINT();
+  }
+  return false;
+}
+
+/// (Re-)apply registered interrupt handlers to override potentially later registrations by other libraries
+void Geant4Kernel::applyInterruptHandlers()  {
+  interruptHandler().applyHandlers();
+}
+
 /// Access thread identifier
 unsigned long int Geant4Kernel::thread_self()    {
   unsigned long int thr_id = (unsigned long int)::pthread_self();
@@ -181,7 +219,7 @@ Geant4Kernel& Geant4Kernel::createWorker()   {
     unsigned long identifier = thread_self();
     Geant4Kernel* w = new Geant4Kernel(this, identifier);
     m_workers[identifier] = w;
-    printout(INFO,"Geant4Kernel","+++ Created worker instance id=%ul",identifier);
+    printout(INFO, "Geant4Kernel", "+++ Created worker instance id=%ul",identifier);
     return *w;
   }
   except("Geant4Kernel", "DDG4: Only the master instance may create workers.");
@@ -243,10 +281,10 @@ void Geant4Kernel::defineSensitiveDetectorType(const std::string& type, const st
 }
 
 void Geant4Kernel::printProperties()  const  {
-  printout(ALWAYS,"Geant4Kernel","OutputLevel:  %d", m_outputLevel);
-  printout(ALWAYS,"Geant4Kernel","UI:           %s", m_uiName.c_str());
-  printout(ALWAYS,"Geant4Kernel","NumEvents:    %ld",m_numEvent);
-  printout(ALWAYS,"Geant4Kernel","NumThreads:   %d", m_numThreads);
+  printout(ALWAYS,"Geant4Kernel","OutputLevel:  %d",  m_outputLevel);
+  printout(ALWAYS,"Geant4Kernel","UI:           %s",  m_uiName.c_str());
+  printout(ALWAYS,"Geant4Kernel","NumEvents:    %ld", m_numEvent);
+  printout(ALWAYS,"Geant4Kernel","NumThreads:   %d",  m_numThreads);
   for( const auto& [name, level] : m_clientLevels )
     printout(ALWAYS,"Geant4Kernel","OutputLevel[%s]:  %d", name.c_str(), level);
 }
