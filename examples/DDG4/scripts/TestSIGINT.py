@@ -67,7 +67,7 @@ def run():
   act = DDG4.EventAction(kernel, 'TestSignalAction/SigAction', True)
   act.signal_event = 3
   kernel.eventAction().add(act)
-  
+
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
