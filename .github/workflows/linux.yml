@@ -126,6 +126,7 @@ jobs:
           unset CPATH
           echo "::group::CMakeConfig"
           cmake -GNinja \
+            -D CMAKE_INSTALL_LIBDIR=lib \
             -DDD4HEP_USE_GEANT4=ON \
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_LCIO=ON \
@@ -149,6 +150,7 @@ jobs:
           mkdir build
           cd build
           cmake -GNinja \
+            -D CMAKE_INSTALL_LIBDIR=lib \
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_CXX_STANDARD=20 ..
