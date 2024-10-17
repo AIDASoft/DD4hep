@@ -375,6 +375,7 @@ namespace dd4hep {
       createClientContext(run);
       kernel().executePhase("begin-run",(const void**)&run);
       if ( m_sequence ) m_sequence->begin(run); // Action not mandatory
+      kernel().applyInterruptHandlers();
     }
 
     /// End-of-run callback
@@ -624,6 +625,7 @@ int Geant4Exec::initialize(Geant4Kernel& kernel) {
   ///
   /// Initialize G4 engine
   ///
+  kernel.applyInterruptHandlers();
   kernel.executePhase("initialize",0);
   runManager.Initialize();
   return 1;
@@ -649,6 +651,7 @@ int Geant4Exec::run(Geant4Kernel& kernel) {
     throw std::runtime_error(format("Geant4Exec","++ Failed to locate UI interface %s.",value.c_str()));
   }
   long nevt = kernel.property("NumEvents").value<long>();
+  kernel.applyInterruptHandlers();
   kernel.runManager().BeamOn(nevt);
   kernel.executePhase("stop",0);
   return 1;

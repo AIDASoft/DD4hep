@@ -112,4 +112,12 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
   #
+  # Test G4 SIGINT handler
+  dd4hep_add_test_reg( DDG4_SIGINT_handler
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${DDG4examples_INSTALL}/scripts/TestSIGINT.py
+    REGEX_PASS "Event loop STOP signalled. Processing stops"
+    REGEX_FAIL " ERROR ;EXCEPTION"
+  )
+  #
 endif()

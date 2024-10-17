@@ -9,27 +9,26 @@
 #
 # ==========================================================================
 #
-#
 from __future__ import absolute_import, unicode_literals
-import os
-import time
-import DDG4
-from DDG4 import OutputLevel as Output
-from g4units import GeV, MeV, m
+import logging
+#
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 #
 #
 """
 
    dd4hep simulation example setup using the python configuration
 
-   @author  M.Frank
-   @version 1.0
-
 """
 
 
 def run():
-  args = DDG4.CommandLine()
+  import os
+  import DDG4
+  from DDG4 import OutputLevel as Output
+  from g4units import GeV, keV
+
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/examples/ClientTests/compact/SiliconBlock.xml"))
@@ -39,12 +38,7 @@ def run():
   geant4.registerInterruptHandler()
   geant4.printDetectors()
   # Configure UI
-  if args.macro:
-    ui = geant4.setupCshUI(macro=args.macro)
-  else:
-    ui = geant4.setupCshUI()
-  if args.batch:
-    ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
+  geant4.setupUI(typ="tcsh", vis=False, macro=None, ui=False)
 
   # Configure field
   geant4.setupTrackingField(prt=True)
@@ -62,40 +56,31 @@ def run():
   act.DebugElements = False
   act.DebugVolumes = True
   act.DebugShapes = True
-  seq, act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
-
-  # Configure I/O
-  geant4.setupROOTOutput('RootOutput', 'SiliconBlock_' + time.strftime('%Y-%m-%d_%H-%M'))
+  act.DebugSurfaces = True
 
   # Setup particle gun
-  gun = geant4.setupGun("Gun", particle='e+', energy=20 * GeV, multiplicity=1)
+  gun = geant4.setupGun("Gun", particle='gamma', energy=1 * GeV, multiplicity=1)
+  gun.direction = (0.0, 0.0, 1.0)
   gun.OutputLevel = generator_output_level
+  kernel.NumEvents = 10
 
+  act = DDG4.EventAction(kernel, 'TestSignalAction/SigAction', True)
+  act.signal_event = 3
+  kernel.eventAction().add(act)
+  
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
-  part.SaveProcesses = ['Decay']
-  part.MinimalKineticEnergy = 100 * MeV
-  part.OutputLevel = Output.INFO  # generator_output_level
+  part.SaveProcesses = ['conv', 'Decay']
+  part.MinimalKineticEnergy = 1 * keV
+  part.KeepAllParticles = False
+  part.PrintEndTracking = True
   part.enableUI()
-  user = DDG4.Action(kernel, "Geant4TCUserParticleHandler/UserParticleHandler")
-  user.TrackingVolume_Zmax = 3.0 * m
-  user.TrackingVolume_Rmax = 3.0 * m
-  user.enableUI()
-  part.adopt(user)
-
-  geant4.setupTracker('SiliconBlockUpper')
-  geant4.setupTracker('SiliconBlockDown')
 
   # Now build the physics list:
   phys = geant4.setupPhysics('QGSP_BERT')
-  ph = DDG4.PhysicsList(kernel, str('Geant4PhysicsList/Myphysics'))
-  ph.addParticleConstructor(str('G4Geantino'))
-  ph.addParticleConstructor(str('G4BosonConstructor'))
-  ph.enableUI()
-  phys.adopt(ph)
   phys.dump()
-
+  # Start the engine...
   geant4.execute()
 
 

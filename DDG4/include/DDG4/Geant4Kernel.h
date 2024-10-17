@@ -21,13 +21,6 @@
 #include <typeinfo>
 #include <functional>
 
-class DD4hep_End_Of_File : public std::exception {
-public:
-  DD4hep_End_Of_File() : std::exception() {}
-  virtual const char* what() const noexcept { return "Reached end of input file"; }
-
-};
-
 // Forward declarations
 class G4RunManager;
 class G4UIdirectory;
@@ -36,11 +29,29 @@ class G4VPhysicalVolume;
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
+  // Forward declarations
+  class Geant4Interrupts;
+
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim {
 
     // Forward declarations
+    class Geant4Interrupts;
     class Geant4ActionPhase;
+
+    /// Helper class to indicate the of file
+    class DD4hep_End_Of_File : public std::exception {
+    public:
+      DD4hep_End_Of_File() : std::exception() {}
+      virtual const char* what() const noexcept { return "Reached end of input file"; }
+    };
+
+    /// Helper class to indicate the of file
+    class DD4hep_Stop_Processing : public std::exception {
+    public:
+      DD4hep_Stop_Processing() : std::exception() {}
+      virtual const char* what() const noexcept { return "Event loop STOP signalled. Processing stops"; }
+    };
 
     /// Class, which allows all Geant4Action derivatives to access the DDG4 kernel structures.
     /**
@@ -59,6 +70,11 @@ namespace dd4hep {
       typedef std::pair<void*, const std::type_info*>   UserFramework;
       using UserCallbacks = std::vector<std::function<void()> >;
 
+      enum event_loop_status  {
+	EVENTLOOP_HALT = 0,
+	EVENTLOOP_RUNNING = 1,
+      };
+      
     protected:
       /// Reference to the run manager
       G4RunManager*      m_runManager  { nullptr };
@@ -94,14 +110,17 @@ namespace dd4hep {
       /// Property: Names with specialized factories to create G4VSensitiveDetector instances
       std::map<std::string, std::string> m_sensitiveDetectorTypes;
       /// Property: Number of events to be executed in batch mode
-      long          m_numEvent = 10;
+      long          m_numEvent       = 10;
       /// Property: Output level
-      int           m_outputLevel = 0;
+      int           m_outputLevel    = 0;
 
       /// Master property: Number of execution threads in multi threaded mode.
-      int           m_numThreads = 0;
+      int           m_numThreads     = 0;
       /// Master property: Instantiate the Geant4 scoring manager object
       int           m_haveScoringMgr = false;
+      /// Master property: Flag if event loop is enabled
+      int           m_processEvents  = EVENTLOOP_RUNNING;
+
       
       /// Registered action callbacks on configure
       UserCallbacks m_actionConfigure  { };
@@ -118,8 +137,10 @@ namespace dd4hep {
 
       /// Parent reference
       Geant4Kernel*      m_master         { nullptr };
-      Geant4Kernel*      m_shared         { nullptr };
+      /// Thread context reference
       Geant4Context*     m_threadContext  { nullptr };
+      /// Interrupt/signal handler: only on master instance
+      Geant4Interrupts*  m_interrupts     { nullptr };
 
       bool isMaster() const  { return this == m_master; }
       bool isWorker() const  { return this != m_master; }
@@ -135,9 +156,6 @@ namespace dd4hep {
 
       /// Thread's master context
       Geant4Kernel& master()  const  { return *m_master; }
-
-      /// Shared action context
-      Geant4Kernel& shared()  const  { return *m_shared; }
 
       //bool isMultiThreaded() const { return m_multiThreaded; }
       bool isMultiThreaded() const { return m_numThreads > 0; }
@@ -248,6 +266,19 @@ namespace dd4hep {
       /// Register terminate callback. Signature:   (function)()
       void register_terminate(const std::function<void()>& callback);
 
+      /// Access interrupt handler. Will be created on the first call
+      Geant4Interrupts& interruptHandler()  const;
+      /// Trigger smooth end-of-event-loop with finishing currently processing event
+      void triggerStop();
+      /// Check if event processing should be continued
+      bool processEvents()  const;
+      /// Install DDG4 default handler for a given signal. If no handler: return false
+      bool registerInterruptHandler(int sig_num);
+      /// (Re-)apply registered interrupt handlers to override potentially later registrations by other libraries
+      /** In this case we overwrite signal handlers applied by Geant4.
+       */
+      void applyInterruptHandlers();
+      
       /// Register action by name to be retrieved when setting up and connecting action objects
       /** Note: registered actions MUST be unique.
        *  However, not all actions need to registered....
