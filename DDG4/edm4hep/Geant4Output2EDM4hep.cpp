@@ -25,6 +25,7 @@
 #include <edm4hep/CaloHitContributionCollection.h>
 #include <edm4hep/SimCalorimeterHitCollection.h>
 #include <edm4hep/EDM4hepVersion.h>
+#include <edm4hep/Constants.h>
 /// podio include files
 #include <podio/CollectionBase.h>
 #include <podio/podioVersion.h>
@@ -267,7 +268,7 @@ void Geant4Output2EDM4hep::endRun(const G4Run* run)  {
 void Geant4Output2EDM4hep::saveFileMetaData() {
   podio::Frame metaFrame{};
   for (const auto& [name, encodingStr] : m_cellIDEncodingStrings) {
-    metaFrame.putParameter(name + "__CellIDEncoding", encodingStr);
+    metaFrame.putParameter(name + "__" + edm4hep::labels::CellIDEncoding, encodingStr);
   }
 
   m_file->writeFrame(metaFrame, "metadata");
