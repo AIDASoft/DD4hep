@@ -172,8 +172,6 @@ get_filename_component(PYTHON_INTERPRETER_BINARY ${Python_EXECUTABLE} NAME)
 configure_file(python/DDSim/bin/ddsim.in.py ${CMAKE_BINARY_DIR}/bin/ddsim @ONLY)
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/ddsim DESTINATION bin)
 
-install(PROGRAMS python/bin/checkOverlaps.py DESTINATION bin RENAME checkOverlaps)
-install(PROGRAMS python/bin/checkGeometry.py DESTINATION bin RENAME checkGeometry)
 install(PROGRAMS python/bin/g4MaterialScan.py DESTINATION bin RENAME g4MaterialScan)
 install(PROGRAMS python/bin/g4GeometryScan.py DESTINATION bin RENAME g4GeometryScan)
 
