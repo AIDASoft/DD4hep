@@ -453,7 +453,7 @@ class Geant4:
     Enable interrupt handling: smooth handling of CTRL-C
       - Finish processing of the current event(s)
       - Drain the event loop
-      - Properly finalyze the job
+      - Properly finalize the job
 
     \author  M.Frank
     """

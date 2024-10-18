@@ -39,14 +39,14 @@ namespace dd4hep {
     class Geant4Interrupts;
     class Geant4ActionPhase;
 
-    /// Helper class to indicate the of file
+    /// Helper class to indicate the end of the input file
     class DD4hep_End_Of_File : public std::exception {
     public:
       DD4hep_End_Of_File() : std::exception() {}
       virtual const char* what() const noexcept { return "Reached end of input file"; }
     };
 
-    /// Helper class to indicate the of file
+    /// Helper class to indicate the stop of processing
     class DD4hep_Stop_Processing : public std::exception {
     public:
       DD4hep_Stop_Processing() : std::exception() {}
