@@ -212,7 +212,7 @@ void SignalHandler::implementation::handler(int signum, siginfo_t *info, void *p
   SigMap::iterator iter_handler = m.find(signum);
   s_exit_handler_active = true;
   if ( iter_handler != m.end() ) {
-    __sighandler_t hdlr = iter_handler->second.old_action.sa_handler;
+    auto hdlr = iter_handler->second.old_action.sa_handler;
     func_cast<void (*)(int)> dsc0(hdlr);
     func_cast<void (*)(int,siginfo_t*, void*)> dsc(dsc0.ptr);
 
