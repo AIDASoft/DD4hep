@@ -11,6 +11,7 @@ jobs:
     - name: Brew install
       run: |
         brew install root boost cmake ninja
+        pip install pytest
     - name: Compile
       run: |
         mkdir build
