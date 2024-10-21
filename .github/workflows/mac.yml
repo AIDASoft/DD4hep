@@ -15,7 +15,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -GNinja -DDD4HEP_USE_GEANT4=OFF -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=OFF -DBUILD_TESTING=ON  -DDD4HEP_USE_XERCESC=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=20 ..
+        cmake -GNinja -DDD4HEP_USE_GEANT4=OFF -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=OFF -DBUILD_TESTING=ON -DDD4HEP_USE_XERCESC=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=20 -DDD4HEP_RELAX_PYVER=ON ..
         ninja
         ninja install
         . ../bin/thisdd4hep.sh
