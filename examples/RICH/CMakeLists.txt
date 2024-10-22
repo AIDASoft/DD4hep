@@ -39,6 +39,10 @@ install(TARGETS RICHExample LIBRARY DESTINATION lib)
 install(DIRECTORY compact scripts DESTINATION ${RICH_INSTALL} )
 dd4hep_configure_scripts( RICH DEFAULT_SETUP WITH_TESTS)
 
+if(NOT TARGET DD4hep::DDG4)
+  return()
+endif()
+
 # ---Test: run simulation
 dd4hep_add_test_reg( RICH_simulation
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_RICH.sh"
