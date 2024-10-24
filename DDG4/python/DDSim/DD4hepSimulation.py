@@ -76,6 +76,7 @@ class DD4hepSimulation(object):
     self.vertexSigma = [0.0, 0.0, 0.0, 0.0]
     self.vertexOffset = [0.0, 0.0, 0.0, 0.0]
     self.enableDetailedShowerMode = False
+    self.disableSignalHandler = False
 
     self._errorMessages = []
     self._dumpParameter = False
@@ -208,6 +209,10 @@ class DD4hepSimulation(object):
                         default=self.enableDetailedShowerMode,
                         help="use detailed shower mode")
 
+    parser.add_argument("--disableSignalHandler", action="store_true", dest="disableSignalHandler",
+                        default=self.disableSignalHandler,
+                        help="disable the Signal Handler of DD4hep")
+
     parser.add_argument("--dumpSteeringFile", action="store_true", dest="dumpSteeringFile",
                         default=self._dumpSteeringFile, help="print an example steering file to stdout")
 
@@ -317,6 +322,8 @@ class DD4hepSimulation(object):
     # simple = DDG4.Geant4( kernel, tracker='Geant4TrackerAction',calo='Geant4CalorimeterAction')
     # geant4 = DDG4.Geant4( kernel, tracker='Geant4TrackerCombineAction',calo='Geant4ScintillatorCalorimeterAction')
     geant4 = DDG4.Geant4(kernel, tracker=self.action.tracker, calo=self.action.calo)
+    if not self.disableSignalHandler:
+      geant4.registerInterruptHandler()
 
     geant4.printDetectors()
 
