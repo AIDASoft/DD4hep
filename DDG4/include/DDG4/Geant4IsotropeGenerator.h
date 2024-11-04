@@ -45,7 +45,7 @@ namespace dd4hep {
       /** Use this function to implement isotrop guns, multiple guns etc. 
           User must return a UNIT vector, which gets scaled with momentum.
       */
-      virtual void getParticleDirection(int num, ROOT::Math::XYZVector& direction, double& momentum) const;
+      virtual void getParticleDirection(int num, ROOT::Math::XYZVector& direction, double& momentum) const  override;
       /// e+e- --> ffbar particle distribution ~ 1 + cos^2(theta)
       void getParticleDirectionFFbar(int num, ROOT::Math::XYZVector& direction, double& momentum) const;
       /// e+e- --> ffbar particle distribution ~ 1 + cos^2(theta)

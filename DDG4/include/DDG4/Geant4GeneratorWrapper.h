@@ -62,7 +62,7 @@ namespace dd4hep {
       /// Access the G4VPrimaryGenerator instance
       G4VPrimaryGenerator* generator();
       /// Event generation action callback
-      virtual void operator()(G4Event* event);
+      virtual void operator()(G4Event* event)  override;
     };
   }    // End namespace sim
 }      // End namespace dd4hep

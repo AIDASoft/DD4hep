@@ -90,13 +90,13 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4SharedRunAction();
       /// Set or update client for the use in a new thread fiber
-      virtual void configureFiber(Geant4Context* thread_context);
+      virtual void configureFiber(Geant4Context* thread_context)  override;
       /// Underlying object to be used during the execution of this thread
       virtual void use(Geant4RunAction* action);
       /// Begin-of-run callback
-      virtual void begin(const G4Run* run);
+      virtual void begin(const G4Run* run)  override;
       /// End-of-run callback
-      virtual void end(const G4Run* run);
+      virtual void end(const G4Run* run)  override;
     };
 
     /// Concrete basic implementation of the Geant4 run action sequencer.
@@ -134,9 +134,9 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4RunActionSequence();
       /// Set or update client context
-      virtual void updateContext(Geant4Context* ctxt);
+      virtual void updateContext(Geant4Context* ctxt)  override;
       /// Set or update client for the use in a new thread fiber
-      virtual void configureFiber(Geant4Context* thread_context);
+      virtual void configureFiber(Geant4Context* thread_context)  override;
       /// Get an action by name
       Geant4RunAction* get(const std::string& name) const;
       /// Register begin-of-run callback. Types Q and T must be polymorph!

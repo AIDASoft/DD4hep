@@ -37,7 +37,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4GDMLDetector() {
       }
-      G4VPhysicalVolume* Construct();
+      G4VPhysicalVolume* Construct()  override;
     private:
       std::string m_fileName;
       G4VPhysicalVolume* m_world { nullptr };

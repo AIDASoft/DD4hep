@@ -43,14 +43,14 @@ namespace dd4hep {
     class DD4hep_End_Of_File : public std::exception {
     public:
       DD4hep_End_Of_File() : std::exception() {}
-      virtual const char* what() const noexcept { return "Reached end of input file"; }
+      virtual const char* what() const noexcept override { return "Reached end of input file"; }
     };
 
     /// Helper class to indicate the stop of processing
     class DD4hep_Stop_Processing : public std::exception {
     public:
       DD4hep_Stop_Processing() : std::exception() {}
-      virtual const char* what() const noexcept { return "Event loop STOP signalled. Processing stops"; }
+      virtual const char* what() const noexcept override { return "Event loop STOP signalled. Processing stops"; }
     };
 
     /// Class, which allows all Geant4Action derivatives to access the DDG4 kernel structures.
@@ -71,8 +71,8 @@ namespace dd4hep {
       using UserCallbacks = std::vector<std::function<void()> >;
 
       enum event_loop_status  {
-	EVENTLOOP_HALT = 0,
-	EVENTLOOP_RUNNING = 1,
+        EVENTLOOP_HALT = 0,
+        EVENTLOOP_RUNNING = 1,
       };
       
     protected:
@@ -349,7 +349,7 @@ namespace dd4hep {
       /// Run the simulation: Simulate the number of events "num_events" and modify the property "NumEvents"
       virtual int runEvents(int num_events);
       /// Run the simulation: Terminate Geant4
-      virtual int terminate();
+      virtual int terminate()  override;
     };
     /// Declare property
     template <typename T> Geant4Kernel& Geant4Kernel::declareProperty(const std::string& nam, T& val) {

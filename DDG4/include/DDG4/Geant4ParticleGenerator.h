@@ -83,7 +83,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4ParticleGenerator();
       /// Callback to generate primary particles
-      virtual void operator()(G4Event* event);
+      virtual void operator()(G4Event* event)  override;
     };
   }    // End namespace sim
 }      // End namespace dd4hep

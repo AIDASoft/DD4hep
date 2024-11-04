@@ -66,7 +66,7 @@ namespace dd4hep {
         /// Default destructor
         virtual ~Geant4TestGeneratorAction();
         /// Callback to generate primary particles
-        virtual void operator()(G4Event*);
+        virtual void operator()(G4Event*)  override;
       };
 
       /// Example run action doing nothing, but print
@@ -82,9 +82,9 @@ namespace dd4hep {
         /// Default destructor
         virtual ~Geant4TestRunAction();
         /// begin-of-run callback
-        void begin(const G4Run*);
+        void begin(const G4Run*)  override;
         /// End-of-run callback
-        void end(const G4Run*);
+        void end(const G4Run*)  override;
         /// begin-of-event callback
         void beginEvent(const G4Event*);
         /// End-of-event callback
@@ -104,9 +104,9 @@ namespace dd4hep {
         /// Default destructor
         virtual ~Geant4TestEventAction();
         /// begin-of-event callback
-        virtual void begin(const G4Event*);
+        virtual void begin(const G4Event*)  override;
         /// End-of-event callback
-        virtual void end(const G4Event*);
+        virtual void end(const G4Event*)  override;
         /// begin-of-run callback
         void beginRun(const G4Run*);
         /// End-of-run callback
