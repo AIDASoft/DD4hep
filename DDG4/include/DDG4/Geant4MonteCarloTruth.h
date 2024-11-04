@@ -70,13 +70,13 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4DummyTruthHandler();
       /// Mark a Geant4 track to be kept for later MC truth analysis. Default flag: CREATED_HIT
-      virtual void mark(const G4Track* track);
+      virtual void mark(const G4Track* track)  override;
       /// Store a track, with a flag
-      virtual void mark(const G4Track* track, int reason);
+      virtual void mark(const G4Track* track, int reason)  override;
       /// Mark a Geant4 track of the step to be kept for later MC truth analysis. Default flag: CREATED_HIT
-      virtual void mark(const G4Step* step);
+      virtual void mark(const G4Step* step)  override;
       /// Store a track produced in a step to be kept for later MC truth analysis
-      virtual void mark(const G4Step* step, int reason);
+      virtual void mark(const G4Step* step, int reason)  override;
     };
 
   }    // End namespace sim

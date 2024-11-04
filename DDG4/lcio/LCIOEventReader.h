@@ -44,7 +44,8 @@ namespace dd4hep  {
                                               Vertices& vertices,
                                               std::vector<Particle*>& particles);
       /// Read an event and return a LCCollectionVec of MCParticles.
-      virtual EventReaderStatus readParticleCollection(int event_number, EVENT::LCCollection** particles) = 0;
+      virtual EventReaderStatus readParticleCollection(int event_number,
+                                                       EVENT::LCCollection** particles) = 0;
     };
 
   }     /* End namespace sim   */

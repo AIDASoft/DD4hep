@@ -121,7 +121,7 @@ namespace dd4hep {
       void dump();
 
       /// Install command control messenger if wanted
-      virtual void installCommandMessenger();
+      virtual void installCommandMessenger()  override;
       /// Access all physics processes
       PhysicsProcesses& processes() {
         return m_processes;
@@ -253,7 +253,7 @@ namespace dd4hep {
       /// Dump content to stdout
       void dump();
       /// Install command control messenger if wanted
-      virtual void installCommandMessenger();
+      virtual void installCommandMessenger()  override;
       /// Update transportation flag
       void setTransportation(bool value) {
         m_transportation = value;

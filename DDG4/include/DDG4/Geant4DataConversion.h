@@ -132,7 +132,7 @@ namespace dd4hep {
         this->self_t::conversions().emplace(&typeid(TAG),this);
         //std::cout << "Registered " << typeName(typeid(*this)) << std::endl;
       }
-      virtual OUTPUT* operator()(const ARGS& args) const;
+      virtual OUTPUT* operator()(const ARGS& args) const  override;
     };
 
   }    // End namespace sim

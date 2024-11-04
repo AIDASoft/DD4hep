@@ -78,7 +78,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4PhysicsConstructor();
       /// constructPhysics callback
-      virtual void constructPhysics(G4VModularPhysicsList* physics);
+      virtual void constructPhysics(G4VModularPhysicsList* physics)  override;
       /// Callback to construct processes (uses the G4 particle table)
       virtual void constructProcess(Constructor& ctor);
       /// Callback to construct particles
