@@ -183,7 +183,7 @@ public:
 
 };
 typedef StructExtension<DCH_info_struct> DCH_info ;
-std::ostream& operator<<( std::ostream& io , const DCH_info& d ){d.Show_DCH_info_database(io); return io;}
+inline std::ostream& operator<<( std::ostream& io , const DCH_info& d ){d.Show_DCH_info_database(io); return io;}
 
 inline void DCH_info_struct::BuildLayerDatabase()
 {
