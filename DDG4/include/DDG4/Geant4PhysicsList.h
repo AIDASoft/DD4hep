@@ -244,6 +244,8 @@ namespace dd4hep {
       std::string m_extends;
       /// global range cut for secondary productions
       double m_rangecut;
+      /// verbosity level for the physics list
+      int m_verbosity = 1;
 
     public:
       /// Standard constructor

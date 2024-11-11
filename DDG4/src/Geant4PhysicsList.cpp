@@ -28,6 +28,8 @@
 #include <G4RunManager.hh>
 #include <G4VProcess.hh>
 #include <G4Decay.hh>
+#include <G4EmParameters.hh>
+#include <G4HadronicParameters.hh>
 
 // C/C++ include files
 #include <stdexcept>
@@ -319,6 +321,7 @@ Geant4PhysicsListActionSequence::Geant4PhysicsListActionSequence(Geant4Context* 
   declareProperty("extends",  m_extends);
   declareProperty("decays",   m_decays);
   declareProperty("rangecut", m_rangecut);
+  declareProperty("verbosity", m_verbosity);
   m_needsControl = true;
   InstanceCount::increment(this);
 }
@@ -362,6 +365,12 @@ G4VUserPhysicsList* Geant4PhysicsListActionSequence::extensionList()    {
   // Ownership is transferred to the physics list.
   // Do not delete this pointer afterwards....
   physics->RegisterPhysics(new ParticlePhysics(this,physics));
+
+  //Setting verbosity for pieces of the physics
+  physics->SetVerboseLevel(m_verbosity);
+  G4EmParameters::Instance()->SetVerbose(m_verbosity);
+  G4HadronicParameters::Instance()->SetVerboseLevel(m_verbosity);
+
   return physics;
 }
 
@@ -377,6 +386,7 @@ void Geant4PhysicsListActionSequence::dump()    {
   printout(ALWAYS,name(),"+++ Transportation flag: %d",m_transportation);
   printout(ALWAYS,name(),"+++ Program decays:      %d",m_decays);
   printout(ALWAYS,name(),"+++ RangeCut:            %f",m_rangecut);
+  printout(ALWAYS,name(),"+++ Verbosity:           %i",m_verbosity);
   m_actors(&Geant4PhysicsList::dump);
 }
 

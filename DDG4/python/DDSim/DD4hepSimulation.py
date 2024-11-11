@@ -506,6 +506,7 @@ class DD4hepSimulation(object):
   # =================================================================================
     # Now build the physics list:
     _phys = self.physics.setupPhysics(kernel, name=self.physicsList)
+    _phys.verbosity = self.output.physics
 
     # add the G4StepLimiterPhysics to activate the max step limits in volumes
     ph = DDG4.PhysicsList(kernel, 'Geant4PhysicsList/Myphysics')
