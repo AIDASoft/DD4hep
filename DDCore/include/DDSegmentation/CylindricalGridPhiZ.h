@@ -104,6 +104,9 @@ namespace dd4hep {
       */
       virtual std::vector<double> cellDimensions(const CellID& cellID) const;
 
+      /// Set the underlying decoder (setting, inter alia, whether phi isSigned)
+      virtual void setDecoder(const BitFieldCoder* decoder);
+
     protected:
       /// the grid size in phi
       double _gridSizePhi;
@@ -119,7 +122,8 @@ namespace dd4hep {
       std::string _phiId;
       /// the field name used for Z
       std::string _zId;
-      /// encoding field used for the module
+      /// the isSigned attribute of the bitfield used for phi
+      bool _phiIsSigned;
     };
 
   } /* namespace DDSegmentation */
