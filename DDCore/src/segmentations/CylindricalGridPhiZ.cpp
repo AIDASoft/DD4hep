@@ -62,6 +62,13 @@ CylindricalGridPhiZ::~CylindricalGridPhiZ() {
 
 }
 
+/// Set the underlying decoder and assign isSigned attribute to phi identifier
+void CylindricalGridPhiZ::setDecoder(const BitFieldCoder* newDecoder) {
+  this->Segmentation::setDecoder(newDecoder);
+  const BitFieldElement* m_phi = &((*_decoder)[_phiId]);
+  _phiIsSigned = m_phi->isSigned();
+}
+
 /// determine the position based on the cell ID
 Vector3D CylindricalGridPhiZ::position(const CellID& cID) const {
 	vector<double> localPosition(3);
@@ -80,7 +87,7 @@ Vector3D CylindricalGridPhiZ::position(const CellID& cID) const {
   CellID CylindricalGridPhiZ::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
 	double phi = atan2(localPosition.Y,localPosition.X);
 	double Z = localPosition.Z;
-	if ( phi < _offsetPhi) {
+	if (!_phiIsSigned && phi < _offsetPhi) {
 	  phi += 2*M_PI;
 	}
         CellID cID = vID ;
