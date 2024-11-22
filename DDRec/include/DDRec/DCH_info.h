@@ -5,6 +5,7 @@
 
 #include "DDRec/DetectorData.h"
 #include <map>
+#include "TVector3.h"
 
 namespace dd4hep {  namespace rec {
 
@@ -180,6 +181,16 @@ public:
     inline void BuildLayerDatabase();
     inline void Show_DCH_info_database(std::ostream& io) const;
 
+    /// Check if outer volume is not zero (0 < Lhalf*rout), and if the database was filled
+    inline bool IsValid() const {return ((0 < Lhalf*rout) && (not IsDatabaseEmpty() ) );  }
+    //--------
+    // The following functions are used in the digitization/reconstruction
+    // Notation: ILayer is the correlative number of the layer. Layer is reserved to number within a superlayer
+    inline DCH_layer CalculateILayerFromCellIDFields(int layer, int superlayer) const { DCH_layer ilayer = layer + (this->nlayersPerSuperlayer)*superlayer + 1; return ilayer;}
+    inline TVector3 Calculate_hitpos_to_wire_vector(int ilayer, int nphi, const TVector3& hit_position /*in cm*/) const;
+    inline TVector3 Calculate_wire_vector_ez       (int ilayer, int nphi) const;
+    inline TVector3 Calculate_wire_z0_point        (int ilayer, int nphi) const;
+    inline double   Calculate_wire_phi_z0          (int ilayer, int nphi) const;
 
 };
 typedef StructExtension<DCH_info_struct> DCH_info ;
@@ -343,6 +354,88 @@ inline void DCH_info_struct::Show_DCH_info_database(std::ostream & oss) const
     }
     return;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+/////       Ancillary functions for calculating the distance to the wire       ////////
+///////////////////////////////////////////////////////////////////////////////////////
+
+inline TVector3 DCH_info_struct::Calculate_wire_vector_ez(int ilayer, int nphi) const {
+  auto& l = this->database.at(ilayer);
+
+  // See original paper Hoshina et al, Computer Physics Communications 153 (2003) 3
+  // eq. 2.9, for the definition of ez, vector along the wire
+
+  // initialize some variables
+  int    stereosign = l.StereoSign();
+  double rz0        = l.radius_sw_z0;
+  double dphi       = this->twist_angle;
+  // kappa is the same as in eq. 2.9
+  double kappa = (1. / this->Lhalf) * tan(dphi / 2);
+
+  //--- calculating wire position
+  // the points p1 and p2 correspond to the ends of the wire
+
+  // point 1
+  double x1 = rz0;                                      // m
+  double y1 = -stereosign * rz0 * kappa * this->Lhalf;  // m
+  double z1 = -this->Lhalf;                             // m
+
+  TVector3 p1(x1, y1, z1);
+
+  // point 2
+  double x2 = rz0;                                     // m
+  double y2 = stereosign * rz0 * kappa * this->Lhalf;  // m
+  double z2 = this->Lhalf;                             // m
+
+  TVector3 p2(x2, y2, z2);
+
+  // calculate phi rotation of whole twisted tube, ie, rotation at z=0
+  double phi_z0 = Calculate_wire_phi_z0(ilayer, nphi);
+  p1.RotateZ(phi_z0);
+  p2.RotateZ(phi_z0);
+
+  //--- end calculating wire position
+
+  return (p2 - p1).Unit();
+}
+
+inline TVector3 DCH_info_struct::Calculate_wire_z0_point(int ilayer, int nphi) const {
+  auto&    l   = this->database.at(ilayer);
+  double   rz0 = l.radius_sw_z0;
+  TVector3 p1(rz0, 0, 0);
+  double   phi_z0 = Calculate_wire_phi_z0(ilayer, nphi);
+  p1.RotateZ(phi_z0);
+  return p1;
+}
+
+// calculate phi rotation of whole twisted tube, ie, rotation at z=0
+inline double DCH_info_struct::Calculate_wire_phi_z0(int ilayer, int nphi) const {
+  auto&  l       = this->database.at(ilayer);
+  int    ncells  = l.nwires / 2;
+  double phistep = TMath::TwoPi() / ncells;
+  double phi_z0  = (nphi + 0.25 * (l.layer % 2)) * phistep;
+  return phi_z0;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////  Calculate vector from hit position to wire   /////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+inline TVector3 DCH_info_struct::Calculate_hitpos_to_wire_vector(int ilayer, int nphi, const TVector3& hit_position /*in cm*/) const {
+  // Solution distance from a point to a line given here:
+  // https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line#Vector_formulation
+  TVector3 n = this->Calculate_wire_vector_ez(ilayer, nphi);
+  TVector3 a = this->Calculate_wire_z0_point(ilayer, nphi);
+  // Remember using cm as natural units of DD4hep consistently!
+  // TVector3 p {hit_position.x()*MM_TO_CM,hit_position.y()*MM_TO_CM,hit_position.z()*MM_TO_CM};
+
+  TVector3 a_minus_p       = a - hit_position;
+  double   a_minus_p_dot_n = a_minus_p.Dot(n);
+  TVector3 scaled_n        = a_minus_p_dot_n * n;
+  //hit_to_wire_vector = a_minus_p - scaled_n;
+  return (a_minus_p - scaled_n);
+}
+
 }} // end namespace dd4hep::rec::
 
 #endif // DDREC_DCH_INFO_H
