@@ -183,8 +183,8 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */,
   //check loop variable read from input file and chack that is reasonable
   // should fix coverity issue: "Using tainted variable NHEP as a loop boundary."
 
-  if( NHEP > 1e6 ){ 
-    printout(ERROR,"EventReaderHepEvt::readParticles","Cannot read in more than million particles, but  %d requested", NHEP );
+  if( NHEP > 5e7 ){
+    printout(ERROR,"EventReaderHepEvt::readParticles","Cannot read in too many particles, %d requested but an (arbitrary) limit has been set to 50 M", NHEP );
     return EVENT_READER_EOF; 
   }
 
