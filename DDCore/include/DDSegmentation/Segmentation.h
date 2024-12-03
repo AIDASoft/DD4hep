@@ -127,6 +127,12 @@ namespace dd4hep {
           \return vector<double> in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
       */
       virtual std::vector<double> cellDimensions(const CellID& cellID) const;
+      /// Return true if this segmentation can gang together regions
+      /// from multiple volumes.
+      virtual bool isGanged() const
+      {
+        return false;
+      }
 
     protected:
       /// Default constructor used by derived classes passing the encoding string

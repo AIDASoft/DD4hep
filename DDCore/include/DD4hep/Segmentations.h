@@ -93,6 +93,10 @@ namespace dd4hep {
      *   \return vector<double> in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
      */
     std::vector<double> cellDimensions(const CellID& cellID) const;
+    /// Return true if this segmentation can gang together regions
+    /// from multiple volumes.
+    /// In that case, a working volumeID() implementation is required.
+    bool isGanged() const;
       
     /// Access to the base DDSegmentation object. WARNING: Deprecated call!
     DDSegmentation::Segmentation* segmentation() const;
