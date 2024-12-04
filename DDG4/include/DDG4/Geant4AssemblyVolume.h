@@ -71,7 +71,6 @@ namespace dd4hep {
                    Geant4AssemblyVolume*  pAssembly,
                    G4LogicalVolume*       pMotherLV,
                    G4Transform3D&         transformation,
-                   G4int                  copyNumBase,
                    G4bool                 surfCheck );
     };
   }
