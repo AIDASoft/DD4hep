@@ -141,7 +141,7 @@ void Geant4AssemblyVolume::imprint(const Geant4Converter& cnv,
                                                   triplet.GetVolume(),
                                                   pMotherLV,
                                                   false,
-                                                  numberOfDaughters + i,
+                                                  node->GetNumber(),
                                                   surfCheck );
 
       info.g4VolumeImprints[vol].emplace_back(new_chain,pvPlaced.first);
