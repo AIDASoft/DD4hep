@@ -82,10 +82,7 @@ void Geant4AssemblyVolume::imprint(const Geant4Converter& cnv,
   TGeoVolume*       vol = parent->GetVolume();
   G4AssemblyVolume* par_ass = pParentAssembly->m_assembly;
   Geant4GeometryInfo&  info = cnv.data();
-  unsigned int numberOfDaughters = (copyNumBase == 0) ? pMotherLV->GetNoDaughters() : copyNumBase;
 
-  // We start from the first available index
-  numberOfDaughters++;
   _Wrap::imprintsCountPlus(par_ass);
 
   path = detail::tools::placementPath(chain);
