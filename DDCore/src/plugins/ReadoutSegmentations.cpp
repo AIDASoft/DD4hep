@@ -37,6 +37,9 @@ DECLARE_SEGMENTATION(CartesianGridXZ,create_segmentation<dd4hep::DDSegmentation:
 #include <DDSegmentation/CartesianGridYZ.h>
 DECLARE_SEGMENTATION(CartesianGridYZ,create_segmentation<dd4hep::DDSegmentation::CartesianGridYZ>)
 
+#include <DDSegmentation/CartesianGridXYZ.h>
+DECLARE_SEGMENTATION(CartesianGridXYZ,create_segmentation<dd4hep::DDSegmentation::CartesianGridXYZ>)
+
 #include <DDSegmentation/CartesianGridUV.h>
 DECLARE_SEGMENTATION(CartesianGridUV,create_segmentation<dd4hep::DDSegmentation::CartesianGridUV>)
 
