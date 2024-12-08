@@ -135,6 +135,9 @@ DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridXZ);
 #include <DDSegmentation/CartesianGridYZ.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridYZ);
 
+#include <DDSegmentation/CartesianGridUV.h>
+DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridUV);
+
 #include <DDSegmentation/CartesianGridXYZ.h>
 DD4HEP_INSTANTIATE_SEGMENTATION_HANDLE(DDSegmentation::CartesianGridXYZ);
 
