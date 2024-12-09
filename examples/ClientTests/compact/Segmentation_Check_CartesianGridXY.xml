@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<readout name="SegmentationHits">
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+    <segmentation type="CartesianGridXY" grid_size_x="10*mm" grid_size_y="10*mm"/>
+    <id>system:8,x:24:-12,y:-12</id>
+</readout>

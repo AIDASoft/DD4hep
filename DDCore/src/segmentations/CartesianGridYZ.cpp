@@ -7,15 +7,12 @@
 // For the licensing terms see $DD4hepINSTALL/LICENSE.
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
+//  Created: Sep 03, 2014
+//  Author:  F.Gaede CERN/Desy
+//
 //==========================================================================
-/* CartesianGridYZ.cpp
- *
- *  @date:     Sep 03, 2014
- *  @author:   F.Gaede CERN/Desy
- *  @version:  1.0
- *     direkt copy of CartesianGridXY
- *     by Christian Grefe, CERN
- */
+
+/// Framework include files
 #include <DDSegmentation/CartesianGridYZ.h>
 
 namespace dd4hep {

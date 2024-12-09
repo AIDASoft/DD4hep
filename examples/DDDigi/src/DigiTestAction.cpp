@@ -76,6 +76,7 @@ namespace dd4hep {
 //#include "DDDigi/DigiTestAction.h"
 
 // C/C++ include files
+#include <unistd.h>
 
 #ifdef __APPLE__
 static void noop(int) {}
