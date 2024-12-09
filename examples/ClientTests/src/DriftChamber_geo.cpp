@@ -37,10 +37,11 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   double        cyl_rmax   = x_dim.rmax();
   double        cyl_dz     = x_dim.dz();
   double        layer_cnt  = x_dim.layers();
+
   xml_comp_t    x_wire     = x_det.child(_Unicode(wire));
   size_t        wire_cnt   = x_wire.count();
   double        wire_thick = x_wire.thickness();
-  
+
   double        layer_thickness = (cyl_rmax - cyl_rmin)/double(layer_cnt+1);
   double        delta_phi = 2.0 * M_PI / double(wire_cnt);
   double        phi_start = 0e0;
@@ -57,7 +58,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   sdet_vol.setAttributes(description, x_det.regionStr(), x_det.limitsStr(), x_det.visStr());
 
   wire_vol.setSmartlessValue(2);
-  wire_vol.setVisAttributes(description.visAttributes(x_det.visStr()));
+  wire_vol.setVisAttributes(description.visAttributes(x_wire.visStr()));
 
   for( std::size_t l=0; l<layer_cnt; ++l )  {
     double radius = cyl_rmin + (0.5+double(l)) * layer_thickness;

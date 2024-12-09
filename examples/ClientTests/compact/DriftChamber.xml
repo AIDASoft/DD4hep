@@ -18,28 +18,27 @@
   </includes>
 
   <define>
-    <constant name="world_size" value="4*m"/>
+    <constant name="world_size" value="2*m"/>
     <constant name="world_x" value="world_size"/>
     <constant name="world_y" value="world_size"/>
     <constant name="world_z" value="world_size"/>
     <constant name="DriftChamber_rmin" value="30*cm"/>
     <constant name="DriftChamber_rmax" value="100*cm"/>
-    <constant name="DriftChamber_zmax" value="300*cm"/>
+    <constant name="DriftChamber_zmax" value="100*cm"/>
   </define>
 
   <display>
     <vis name="Invisible" showDaughters="false" visible="false"/>
     <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
     <vis name="VisibleRed"  r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
-    <vis name="VisibleBlue" alpha="0.3" r="0.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
-    <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" drawingStyle="solid" lineStyle="solid" showDaughters="true" visible="true"/>
+    <vis name="VisibleBlue" alpha="0.3" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
   </display>
 
   <detectors>
     <detector id="1" name="DriftChamber" type="DD4hep_DriftChamber" readout="DriftChamberHits" vis="VisibleBlue">
       <comment>A barrel hadronic calorimeter inspired on the ATLAS Tile hadronic calorimeter</comment>
-      <dimensions rmin="DriftChamber_rmin" rmax="DriftChamber_rmax" dz="DriftChamber_zmax" layers="200" />
-      <wire count="360" thickness="0.03*mm" material="Cu" vis="VisibleRed"/>
+      <dimensions rmin="DriftChamber_rmin" rmax="DriftChamber_rmax" dz="DriftChamber_zmax" layers="20" />
+      <wire       count="60" thickness="3*mm" material="Cu" vis="VisibleRed"/>
     </detector>
   </detectors>
 
