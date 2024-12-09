@@ -81,15 +81,8 @@ CellID CartesianGridUV::cellID(const Vector3D& localPosition,
 	return cID;
 }
 
-  std::vector<double> CartesianGridUV::cellDimensions(const CellID& /* cellID */) const {
-#if __cplusplus >= 201103L
-  return {_gridSizeU, _gridSizeV};
-#else
-  std::vector<double> cellDims(2,0.0);
-  cellDims[0] = _gridSizeU;
-  cellDims[1] = _gridSizeV;
-  return cellDims;
-#endif
+std::vector<double> CartesianGridUV::cellDimensions(const CellID& /* cellID */) const {
+	return {_gridSizeU, _gridSizeV};
 }
 
 
