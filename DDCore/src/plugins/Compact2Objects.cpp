@@ -1607,7 +1607,7 @@ template <> void Converter<Parallelworld_Volume>::operator()(xml_h element) cons
            vol.name(), anchor.path().c_str(), vis.name());
 }
 
-/// Read material entries from a seperate file in one of the include sections of the geometry
+/// Process include statements in various sub-tags of compact
 template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
   std::string type = element.hasAttr(_U(type)) ? element.attr<std::string>(_U(type)) : std::string("xml");
   if ( type == "xml" )  {
@@ -1626,8 +1626,12 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
       Converter<Compact>(this->description)(node);
     else if ( tag == "define" )
       xml_coll_t(node, _U(constant)).for_each(Converter<Constant>(this->description));
+    else if ( tag == "readout" )
+      Converter<Readout>(this->description)(node);
     else if ( tag == "readouts" )
       xml_coll_t(node, _U(readout)).for_each(Converter<Readout>(this->description));
+    else if ( tag == "region" )
+      Converter<Region>(this->description)(node);
     else if ( tag == "regions" )
       xml_coll_t(node, _U(region)).for_each(Converter<Region>(this->description));
     else if ( tag == "limits" || tag == "limitsets" )
@@ -1656,6 +1660,7 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
   }
 }
 
+/// Main compact conversion entry point
 template <> void Converter<Compact>::operator()(xml_h element) const {
   static int num_calls = 0;
   char text[32];
@@ -1720,8 +1725,8 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   if (element.hasChild(_U(info)))
     (Converter<Header>(description))(xml_h(compact.child(_U(info))));
 
-  xml_coll_t(compact, _U(properties)).for_each(_U(attributes), Converter<Property>(description));
   /// These two must be parsed early, because they are needed by the detector constructors
+  xml_coll_t(compact, _U(properties)).for_each(_U(attributes), Converter<Property>(description));
   xml_coll_t(compact, _U(properties)).for_each(_U(constant), Converter<PropertyConstant>(description));
   xml_coll_t(compact, _U(properties)).for_each(_U(matrix),   Converter<PropertyTable>(description));
   xml_coll_t(compact, _U(properties)).for_each(_U(plugin),   Converter<Plugin> (description));
@@ -1730,13 +1735,15 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(materials)).for_each(_U(element),  Converter<Atom>(description));
   xml_coll_t(compact, _U(materials)).for_each(_U(material), Converter<Material>(description));
   xml_coll_t(compact, _U(materials)).for_each(_U(plugin),   Converter<Plugin> (description));
-  
+
   printout(DEBUG, "Compact", "++ Converting visualization attributes...");
   xml_coll_t(compact, _U(display)).for_each(_U(include),    Converter<DetElementInclude>(description));
   xml_coll_t(compact, _U(display)).for_each(_U(vis),        Converter<VisAttr>(description));
+
   printout(DEBUG, "Compact", "++ Converting limitset structures...");
   xml_coll_t(compact, _U(limits)).for_each(_U(include),     Converter<DetElementInclude>(description));
   xml_coll_t(compact, _U(limits)).for_each(_U(limitset),    Converter<LimitSet>(description));
+
   printout(DEBUG, "Compact", "++ Converting region   structures...");
   xml_coll_t(compact, _U(regions)).for_each(_U(include),    Converter<DetElementInclude>(description));
   xml_coll_t(compact, _U(regions)).for_each(_U(region),     Converter<Region>(description));
@@ -1746,7 +1753,9 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   }
   if ( open_geometry ) description.init();
   printout(DEBUG, "Compact", "++ Converting readout  structures...");
+  xml_coll_t(compact, _U(readouts)).for_each(_U(include), Converter<DetElementInclude>(description));
   xml_coll_t(compact, _U(readouts)).for_each(_U(readout), Converter<Readout>(description));
+
   printout(DEBUG, "Compact", "++ Converting included files with subdetector structures...");
   xml_coll_t(compact, _U(detectors)).for_each(_U(include), Converter<DetElementInclude>(description));
   printout(DEBUG, "Compact", "++ Converting detector structures...");
@@ -1767,6 +1776,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
     ReflectionBuilder rb(description);
     rb.execute();
   }
+  /// Load plugin and process them as indicated
   xml_coll_t(compact, _U(plugins)).for_each(_U(plugin),  Converter<Plugin>  (description));
   xml_coll_t(compact, _U(plugins)).for_each(_U(include), Converter<XMLFile> (description));
   xml_coll_t(compact, _U(plugins)).for_each(_U(xml),     Converter<XMLFile> (description));

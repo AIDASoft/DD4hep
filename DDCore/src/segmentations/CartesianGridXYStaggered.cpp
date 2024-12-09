@@ -7,18 +7,17 @@
 // For the licensing terms see $DD4hepINSTALL/LICENSE.
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
+// Created: Sept 15, 2023
+// Author: Sebouh J. Paul, UCR
+//
 //==========================================================================
-/*
- * CartesianGridXYStaggered.cpp
- *
- *  Created on: Sept 15, 2023
- *      Author: Sebouh J. Paul, UCR
- */
 
+/// Framework include files
 #include <DDSegmentation/CartesianGridXYStaggered.h>
 
 namespace dd4hep {
-namespace DDSegmentation {
+
+  namespace DDSegmentation {
 
 /// default constructor using an encoding string
 CartesianGridXYStaggered::CartesianGridXYStaggered(const std::string& cellEncoding)

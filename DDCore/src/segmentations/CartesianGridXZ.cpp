@@ -7,14 +7,12 @@
 // For the licensing terms see $DD4hepINSTALL/LICENSE.
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
+//  Created: Jun 28, 2013
+//  Author:  Christian Grefe, CERN
+//
 //==========================================================================
-/*
- * CartesianGridXZ.cpp
- *
- *  Created on: Jun 28, 2013
- *      Author: Christian Grefe, CERN
- */
 
+/// Framework include files
 #include <DDSegmentation/CartesianGridXZ.h>
 
 namespace dd4hep {

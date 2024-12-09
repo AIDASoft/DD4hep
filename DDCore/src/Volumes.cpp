@@ -87,7 +87,8 @@ namespace {
   PlacedVolume::Object* _data(const PlacedVolume& v) {
     PlacedVolume::Object* o = _userExtension(v);
     if (o) return o;
-    throw std::runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
+    except("PlacedVolume::_data", "+++ Attempt to access invalid handle of type: PlacedVolume");
+    return nullptr;
   }
   /// Accessor to the data part of the Volume
   Volume::Object* _data(const Volume& v, bool throw_exception = true) {
@@ -97,7 +98,8 @@ namespace {
       return o;
     else if (!throw_exception)
       return nullptr;
-    throw std::runtime_error("dd4hep: Attempt to access invalid handle of type: PlacedVolume");
+    except("Volume::_data", "+++ Attempt to access invalid handle of type: Volume");
+    return nullptr;
   }
 
   class VolumeImport   {
@@ -297,7 +299,6 @@ namespace {
 
 }
 
-
 /// Perform scan
 void ReflectionBuilder::execute()  const   {
   TGeoIterator next(detector.manager().GetTopVolume());
@@ -374,6 +375,21 @@ PlacedVolumeExtension::PlacedVolumeExtension(const PlacedVolumeExtension& c)
 PlacedVolumeExtension::~PlacedVolumeExtension() {
   if ( this->params ) this->params->release();
   DECREMENT_COUNTER;
+}
+
+/// Move assignment
+PlacedVolumeExtension& PlacedVolumeExtension::operator=(PlacedVolumeExtension&& copy)  {
+  magic  = std::move(copy.magic);
+  params = std::move(copy.params);
+  volIDs = std::move(copy.volIDs);
+  return *this;
+}
+/// Assignment operator
+PlacedVolumeExtension& PlacedVolumeExtension::operator=(const PlacedVolumeExtension& copy) {
+  magic  = copy.magic;
+  params = copy.params;
+  volIDs = copy.volIDs;
+  return *this;
 }
 
 /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
@@ -707,6 +723,19 @@ bool Volume::isReflected()   const    {
 bool Volume::isAssembly()   const   {
   return m_element ? m_element->IsAssembly() : false;
 }    
+
+/// Set the smartless option for G4 voxelization. Returns previous value
+unsigned char Volume::setSmartlessValue(unsigned char new_value)  {
+  Object* obj = _data(*this);
+  unsigned char tmp = obj->smartLess;
+  obj->smartLess = new_value;
+  return tmp;
+}
+
+/// access the smartless option for G4 voxelization
+unsigned char Volume::smartlessValue()  const  {
+  return _data(*this)->smartLess;
+}
 
 /// Divide volume into subsections (See the ROOT manuloa for details)
 Volume Volume::divide(const std::string& divname, int iaxis, int ndiv,

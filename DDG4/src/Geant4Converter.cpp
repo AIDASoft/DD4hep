@@ -796,7 +796,12 @@ void* Geant4Converter::handleVolume(const std::string& name, const TGeoVolume* v
     else  {
       g4vol = new G4LogicalVolume(g4solid, g4medium, vnam, nullptr, nullptr, nullptr);
     }
-
+    /// Set smartless optimization
+    unsigned char smart_less_value = _v.smartlessValue();
+    if ( smart_less_value != Volume::NO_SMARTLESS_OPTIMIZATION )  {
+      g4vol->SetSmartless(smart_less_value);
+    }
+    /// Assign limits if necessary
     if ( g4limits )   {
       g4vol->SetUserLimits(g4limits);
     }
