@@ -74,8 +74,8 @@ Vector3D CartesianGridUV::position(const CellID& cID) const {
 CellID CartesianGridUV::cellID(const Vector3D& localPosition,
                                const Vector3D& /* globalPosition */,
                                const VolumeID& vID) const {
-  CellID cID = vID;
-  const Vector3D& localUV = RotationZ(_gridAngle)*localPosition;
+	CellID cID = vID;
+	const Vector3D& localUV = RotationZ(_gridAngle)*localPosition;
 	_decoder->set( cID,_uId, positionToBin(localUV.X, _gridSizeU, _offsetU) );
 	_decoder->set( cID,_vId, positionToBin(localUV.Y, _gridSizeV, _offsetV) );
 	return cID;
