@@ -151,7 +151,7 @@ void myanalysis::HitTupleAction::end(const G4Event* event)    {
       //                      Name                   Option      Title
       m_outFile = TFile::Open(m_outFileName.c_str(), "RECREATE", "DDG4 User file");
       if ( m_outFile && !m_outFile->IsZombie() )   {
-        m_outTree = new TTree("DDG4 User Test","DDG4 data");
+        m_outTree = new TTree("DDG4_User_Test","DDG4_data");
         printout(ALWAYS,"HitTupleAction","+++ Successfully opened ROOT file %s and created TTree:%s",
                  m_outFile->GetName(), "DDG4 User Test");
         if ( m_containers.size() == 1 && (m_containers[0] == "*" || m_containers[0] == "ALL") )  {
