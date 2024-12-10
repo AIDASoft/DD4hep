@@ -548,7 +548,7 @@ class DD4hepSimulation(object):
       if processedEvents != 0:
         eventTime = totalTimeUser - startUpTime
         perEventTime = eventTime / processedEvents
-        logger.info("StartUp Time: %3.2f s, Event Processing: %3.2f s (%3.2f s/Event) "
+        logger.info("StartUp Time: %3.2f s, Processing and Init: %3.2f s (~%3.2f s/Event) "
                     % (startUpTime, eventTime, perEventTime))
     return exitCode
 
