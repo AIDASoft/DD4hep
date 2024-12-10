@@ -14,8 +14,11 @@ from __future__ import absolute_import, unicode_literals
 import os
 import time
 import DDG4
+import logging
 from DDG4 import OutputLevel as Output
 from g4units import GeV, MeV, m
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 #
 #
 """
@@ -47,6 +50,7 @@ def run():
   cmds = []
   if args.verbose:
     cmds.append('/run/verbose ' + str(args.verbose))
+
   if args.events:
     cmds.append('/run/beamOn ' + str(args.events))
     cmds.append('/ddg4/UI/terminate')
@@ -54,55 +58,83 @@ def run():
   if len(cmds) > 0:
     ui.Commands = cmds
 
-  # Configure field
-  geant4.setupTrackingField(prt=True)
-  # Configure Event actions
-  prt = DDG4.EventAction(kernel, 'Geant4ParticlePrint/ParticlePrint')
-  prt.OutputLevel = Output.DEBUG
-  prt.OutputType = 3  # Print both: table and tree
-  kernel.eventAction().adopt(prt)
 
-  generator_output_level = Output.INFO
+  logger.info("#  Configure G4 magnetic field tracking")
+  geant4.setupTrackingField()
 
-  # Configure G4 geometry setup
-  seq, act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
-  act.DebugMaterials = True
-  act.DebugElements = False
-  act.DebugVolumes = True
-  act.DebugShapes = True
-  seq, act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
+  logger.info("#  Setup random generator")
+  rndm = DDG4.Action(kernel, 'Geant4Random/Random')
+  rndm.Seed = 987654321
+  if args.seed_time:
+    rndm.Seed = int(time.time())
+  rndm.initialize()
 
-  # Configure I/O
+  logger.info("""
+  Configure I/O
+  """)
   geant4.setupROOTOutput('RootOutput', 'DriftChamber_' + time.strftime('%Y-%m-%d_%H-%M'))
 
-  # Setup particle gun
-  gun = geant4.setupGun("Gun", particle='e+', energy=20 * GeV, multiplicity=1)
-  gun.OutputLevel = generator_output_level
+  gen = DDG4.GeneratorAction(kernel, "Geant4GeneratorActionInit/GenerationInit")
+  kernel.generatorAction().adopt(gen)
 
-  # And handle the simulation particles.
+  logger.info("""
+  Generation of isotrope tracks of a given multiplicity with overlay:
+  """)
+  logger.info("#  First particle generator: pi+")
+  gen = DDG4.GeneratorAction(kernel, "Geant4IsotropeGenerator/IsotropPi+")
+  gen.Mask = 1
+  gen.Particle = 'pi+'
+  gen.Energy = 100 * GeV
+  gen.Multiplicity = 2
+  gen.Distribution = 'cos(theta)'
+  kernel.generatorAction().adopt(gen)
+  logger.info("#  Install vertex smearing for this interaction")
+
+  logger.info("#  Merge all existing interaction records")
+  gen = DDG4.GeneratorAction(kernel, "Geant4InteractionMerger/InteractionMerger")
+  gen.OutputLevel = 4  # generator_output_level
+  gen.enableUI()
+  kernel.generatorAction().adopt(gen)
+  #
+  logger.info("#  Finally generate Geant4 primaries")
+  gen = DDG4.GeneratorAction(kernel, "Geant4PrimaryHandler/PrimaryHandler")
+  gen.OutputLevel = 4  # generator_output_level
+  gen.enableUI()
+  kernel.generatorAction().adopt(gen)
+  #
+  logger.info("#  ....and handle the simulation particles.")
   part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
+  # part.SaveProcesses = ['conv','Decay']
   part.SaveProcesses = ['Decay']
   part.MinimalKineticEnergy = 100 * MeV
-  part.OutputLevel = Output.INFO  # generator_output_level
+  part.OutputLevel = 5  # generator_output_level
   part.enableUI()
   user = DDG4.Action(kernel, "Geant4TCUserParticleHandler/UserParticleHandler")
-  user.TrackingVolume_Zmax = 3.0 * m
-  user.TrackingVolume_Rmax = 3.0 * m
+  user.TrackingVolume_Zmax = 2*m
+  user.TrackingVolume_Rmax = 2*m
   user.enableUI()
   part.adopt(user)
-
-  geant4.setupTracker('DriftChamber')
-
-  # Now build the physics list:
+  #
+  seq, act = geant4.setupTracker('DriftChamber')
+  #
+  logger.info("#  Now build the physics list:")
   phys = geant4.setupPhysics('QGSP_BERT')
-  ph = DDG4.PhysicsList(kernel, str('Geant4PhysicsList/Myphysics'))
-  ph.addParticleConstructor(str('G4BosonConstructor'))
-  ph.enableUI()
-  phys.adopt(ph)
+  ph = geant4.addPhysics(str('Geant4PhysicsList/Myphysics'))
+  ph.addPhysicsConstructor(str('G4StepLimiterPhysics'))
+  #
+  # Add special particle types from specialized physics constructor
+  part = geant4.addPhysics(str('Geant4ExtraParticles/ExtraParticles'))
+  part.pdgfile = os.path.join(install_dir, 'examples/DDG4/examples/particle.tbl')
+  #
   phys.dump()
+  #
+  kernel.configure()
+  kernel.initialize()
 
-  geant4.execute()
+  # DDG4.setPrintLevel(Output.DEBUG)
+  kernel.run()
+  kernel.terminate()
 
 
 if __name__ == "__main__":
