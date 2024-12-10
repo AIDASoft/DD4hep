@@ -641,7 +641,8 @@ if (DD4HEP_USE_GEANT4)
       REGEX_PASS "ResourcesAfterConstruction       ConstructSD:   VmRSS"
       REGEX_FAIL "Error;ERROR; Exception"
   )
-
+  #
+  #
   dd4hep_add_test_reg(ClientTests_ddsim_setup_BoxOfStraws
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  ddsim
@@ -650,9 +651,18 @@ if (DD4HEP_USE_GEANT4)
                  --enableGun
                  --numberOfEvents 1
                  --outputFile regex.slcio
-
       REGEX_PASS "BoxOfStrawsDet Handled 1 nodes with 1 sensitive volume type"
       REGEX_FAIL "Error;ERROR; Exception"
   )
-
+  #
+  #  Test Changing Geant4 voxelization
+  dd4hep_add_test_reg( ClientTests_geant4_change_voxelization
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/DriftChamber.py
+    	       -verbose 2 -events 1
+    REGEX_PASS "100.00         0...         0...            0k DriftChamber_vol"
+    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL"
+  )
+  #
+  #
 endif(DD4HEP_USE_GEANT4)

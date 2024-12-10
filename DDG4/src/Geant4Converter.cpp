@@ -785,7 +785,7 @@ void* Geant4Converter::handleVolume(const std::string& name, const TGeoVolume* v
     }
 
     G4LogicalVolume* g4vol = nullptr;
-    if ( _v.hasProperties() && !_v.getProperty(GEANT4_TAG_PLUGIN,"").empty() )   {
+    if( _v.hasProperties() && !_v.getProperty(GEANT4_TAG_PLUGIN,"").empty() )   {
       Detector* det = const_cast<Detector*>(&m_detDesc); 
       std::string plugin = _v.getProperty(GEANT4_TAG_PLUGIN,"");
       g4vol = PluginService::Create<G4LogicalVolume*>(plugin, det, _v, g4solid, g4medium);
@@ -796,17 +796,19 @@ void* Geant4Converter::handleVolume(const std::string& name, const TGeoVolume* v
     else  {
       g4vol = new G4LogicalVolume(g4solid, g4medium, vnam, nullptr, nullptr, nullptr);
     }
+    PrintLevel plevel = (debugVolumes||debugRegions||debugLimits) ? ALWAYS : outputLevel;
     /// Set smartless optimization
     unsigned char smart_less_value = _v.smartlessValue();
-    if ( smart_less_value != Volume::NO_SMARTLESS_OPTIMIZATION )  {
-      g4vol->SetSmartless(smart_less_value);
+    if( smart_less_value != Volume::NO_SMARTLESS_OPTIMIZATION )  {
+      printout(ALWAYS, "Geant4Converter", "++ Volume %s Set Smartless value to %d",
+               vnam, int(smart_less_value));
+      g4vol->SetSmartless( smart_less_value );
     }
     /// Assign limits if necessary
-    if ( g4limits )   {
+    if( g4limits )   {
       g4vol->SetUserLimits(g4limits);
     }
-    if ( g4region )   {
-      PrintLevel plevel = (debugVolumes||debugRegions||debugLimits) ? ALWAYS : outputLevel;
+    if( g4region )   {
       printout(plevel, "Geant4Converter", "++ Volume     + Apply REGION settings: %-24s to volume %s.",
                reg.name(), vnam);
       // Handle the region settings for the world volume seperately.

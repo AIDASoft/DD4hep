@@ -22,8 +22,8 @@
     <constant name="world_x" value="world_size"/>
     <constant name="world_y" value="world_size"/>
     <constant name="world_z" value="world_size"/>
-    <constant name="DriftChamber_rmin" value="30*cm"/>
-    <constant name="DriftChamber_rmax" value="100*cm"/>
+    <constant name="DriftChamber_rmin" value="20*cm"/>
+    <constant name="DriftChamber_rmax" value="800*cm"/>
     <constant name="DriftChamber_zmax" value="100*cm"/>
   </define>
 
@@ -36,9 +36,11 @@
 
   <detectors>
     <detector id="1" name="DriftChamber" type="DD4hep_DriftChamber" readout="DriftChamberHits" vis="VisibleBlue">
-      <comment>A barrel hadronic calorimeter inspired on the ATLAS Tile hadronic calorimeter</comment>
-      <dimensions rmin="DriftChamber_rmin" rmax="DriftChamber_rmax" dz="DriftChamber_zmax" layers="20" />
-      <wire       count="60" thickness="3*mm" material="Cu" vis="VisibleRed"/>
+<!--  Geant4 default:
+      <dimensions rmin="DriftChamber_rmin" rmax="DriftChamber_rmax" dz="DriftChamber_zmax" layers="200" option="2"/>
+-->
+      <dimensions rmin="DriftChamber_rmin" rmax="DriftChamber_rmax" dz="DriftChamber_zmax" layers="200" option="0"/>
+      <wire       count="360" thickness="0.03*mm" material="Cu" vis="VisibleRed"/>
     </detector>
   </detectors>
 

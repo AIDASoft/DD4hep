@@ -79,8 +79,9 @@ def run():
   if args.batch:
     cmds.append('/ddg4/UI/terminate')
 
-  ui.Commands = cmds
-  
+  if len(cmds) > 0:
+    ui.Commands = cmds
+
   logger.info("#  Configure G4 magnetic field tracking")
   geant4.setupTrackingField()
 

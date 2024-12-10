@@ -54,12 +54,17 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   Volume        wire_vol("Wire_vol", wire_cyl, wire_mat);
   PlacedVolume  pv;
 
-  sdet_vol.setSmartlessValue(2);
+  /// The Geant4 voxelization change must be applied to the parent volume
+  if ( x_dim.hasAttr(_U(option)) )  {
+    int value = x_dim.attr<int>(_U(option));
+    printout(ALWAYS, "DriftChamber", "+++ Setting smartlessValue to %d for %s",
+             value, sdet_vol.name());
+    sdet_vol.setSmartlessValue(value);
+  }
+  /// Set volume attributes
   sdet_vol.setAttributes(description, x_det.regionStr(), x_det.limitsStr(), x_det.visStr());
-
-  wire_vol.setSmartlessValue(2);
   wire_vol.setVisAttributes(description.visAttributes(x_wire.visStr()));
-
+  /// Place the wires in layers around the origin
   for( std::size_t l=0; l<layer_cnt; ++l )  {
     double radius = cyl_rmin + (0.5+double(l)) * layer_thickness;
     double phi_s  = phi_start + delta_phi * 0.5 * ((l%2) - 1.0);
