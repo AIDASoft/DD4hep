@@ -15,7 +15,6 @@ import os
 import time
 import DDG4
 import logging
-from DDG4 import OutputLevel as Output
 from g4units import GeV, MeV, m
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -57,7 +56,6 @@ def run():
 
   if len(cmds) > 0:
     ui.Commands = cmds
-
 
   logger.info("#  Configure G4 magnetic field tracking")
   geant4.setupTrackingField()
@@ -111,8 +109,8 @@ def run():
   part.OutputLevel = 5  # generator_output_level
   part.enableUI()
   user = DDG4.Action(kernel, "Geant4TCUserParticleHandler/UserParticleHandler")
-  user.TrackingVolume_Zmax = 2*m
-  user.TrackingVolume_Rmax = 2*m
+  user.TrackingVolume_Zmax = 1.5 * m
+  user.TrackingVolume_Rmax = 1.5 * m
   user.enableUI()
   part.adopt(user)
   #
