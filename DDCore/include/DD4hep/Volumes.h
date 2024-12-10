@@ -453,7 +453,7 @@ namespace dd4hep {
     /// If we import volumes from external sources, we have to attach the extensions to the tree
     Volume& import();
 
-    /// Divide volume into subsections (See the ROOT manuloa for details)
+    /// Divide volume into subsections (See the ROOT manual for details)
     Volume divide(const std::string& divname, int iaxis, int ndiv, double start, double step, int numed = 0, const char* option = "");
     /** Daughter placements with auto-generated copy number for the daughter volume  */
     /// Place daughter volume. The position and rotation are the identity
