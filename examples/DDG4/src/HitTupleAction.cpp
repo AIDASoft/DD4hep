@@ -50,7 +50,7 @@ namespace myanalysis {
     /// We want to write a separate branch for all deposits of one container(sub-detector)
     typedef std::pair<double, std::vector<double> > Data;
     /// The intermediate storage of the hit deposits to be written to ROOT
-    std::map<std::string, std::pair<TBranch*, Data*> > m_deposits;
+    std::map<std::string, std::pair<TBranch*, Data> > m_deposits;
     
   public:
     /// Standard constructor
@@ -162,12 +162,11 @@ void myanalysis::HitTupleAction::end(const G4Event* event)    {
         // Seperate loop. We need fixed addresses when creating the branches
         for(const auto& c : m_containers)   {
           m_deposits[c].first = 0;
-          m_deposits[c].second = new Data();
-          m_deposits[c].second->first = 0e0;
-          m_deposits[c].second->second.clear();
+          m_deposits[c].second.first = 0e0;
+          m_deposits[c].second.second.clear();
         }
         for(const auto& c : m_containers)   {
-          std::pair<TBranch*, Data*>& e = m_deposits[c];
+          std::pair<TBranch*, Data>& e = m_deposits[c];
           e.first = m_outTree->Branch(c.c_str(), &e.second);
           e.first->SetAutoDelete(false);
           printout(ALWAYS,"HitTupleAction","+++ Prepare hit branch %s in root file.",c.c_str());
@@ -186,11 +185,11 @@ void myanalysis::HitTupleAction::end(const G4Event* event)    {
       if ( find(m_containers.begin(),m_containers.end(),nam) != m_containers.end() )   {
         Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(hc);
         if ( coll )    {
-          std::pair<TBranch*, Data*>& e = m_deposits[nam];
+          std::pair<TBranch*, Data>& e = m_deposits[nam];
           size_t nhits = coll->GetSize();
-          Data* d = e.second;
-          d->first = 0e0;
-          d->second.clear();
+          Data& d = e.second;
+          d.first = 0e0;
+          d.second.clear();
 
           for ( size_t j=0; j<nhits; ++j )   {
             double dep = 0e0;
@@ -207,8 +206,8 @@ void myanalysis::HitTupleAction::end(const G4Event* event)    {
                 continue;
             }
             if ( dep > 0 )  {
-              d->first += dep;
-              d->second.push_back(dep);
+              d.first += dep;
+              d.second.push_back(dep);
             }
           }
         }
