@@ -67,11 +67,6 @@ def run():
     rndm.Seed = int(time.time())
   rndm.initialize()
 
-  logger.info("""
-  Configure I/O
-  """)
-  geant4.setupROOTOutput('RootOutput', 'DriftChamber_' + time.strftime('%Y-%m-%d_%H-%M'))
-
   gen = DDG4.GeneratorAction(kernel, "Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
 
@@ -103,7 +98,6 @@ def run():
   logger.info("#  ....and handle the simulation particles.")
   part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
-  # part.SaveProcesses = ['conv','Decay']
   part.SaveProcesses = ['Decay']
   part.MinimalKineticEnergy = 100 * MeV
   part.OutputLevel = 5  # generator_output_level
@@ -120,10 +114,6 @@ def run():
   phys = geant4.setupPhysics('QGSP_BERT')
   ph = geant4.addPhysics(str('Geant4PhysicsList/Myphysics'))
   ph.addPhysicsConstructor(str('G4StepLimiterPhysics'))
-  #
-  # Add special particle types from specialized physics constructor
-  part = geant4.addPhysics(str('Geant4ExtraParticles/ExtraParticles'))
-  part.pdgfile = os.path.join(install_dir, 'examples/DDG4/examples/particle.tbl')
   #
   phys.dump()
   #
