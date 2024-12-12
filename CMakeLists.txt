@@ -70,6 +70,7 @@ math(EXPR DD4HEP_HIGH_MEM_POOL_DEPTH "${HOST_RAM_MB} / 2000" OUTPUT_FORMAT DECIM
 
 option(DD4HEP_USE_XERCESC       "Enable 'Detector Builders' based on XercesC"   OFF)
 option(DD4HEP_USE_GEANT4        "Enable the simulation part based on Geant4"    OFF)
+option(DD4HEP_USE_CELERITAS     "Enable offloading tracks to Celeritas" OFF)
 option(DD4HEP_IGNORE_GEANT4_TLS "Ignore the tls flag Geant4 was compiled with"  OFF)
 option(DD4HEP_USE_GEAR          "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO          "Build lcio extensions"                         OFF)
@@ -152,6 +153,10 @@ if(DD4HEP_USE_GEANT4)
   # we don't do this inside DD4hep_SETUP_GEANT4_TARGETS, because that is also used in
   # DD4hepConfig by users of DD4hep
   SET_DIRECTORY_PROPERTIES(PROPERTIES INCLUDE_DIRECTORIES "")
+endif()
+
+if(DD4HEP_USE_CELERITAS)
+  find_package(Celeritas REQUIRED)
 endif()
 
 if(DD4HEP_USE_LCIO)
