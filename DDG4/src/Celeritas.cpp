@@ -14,14 +14,15 @@
 
 #include <memory>
 
-using namespace celeritas;
+
+using namespace dd4hep::sim;
 
 // Global shared setup options
-SetupOptions& CelerSetupOptions()
+celeritas::SetupOptions& CelerSetupOptions()
 {
-  static SetupOptions options = [] {
+  static celeritas::SetupOptions options = [] {
     // Construct setup options the first time CelerSetupOptions is invoked
-    SetupOptions so;
+    celeritas::SetupOptions so;
 
     // Set along-step factory
     so.make_along_step = celeritas::UniformAlongStepFactory();
@@ -50,23 +51,23 @@ SetupOptions& CelerSetupOptions()
 }
 
 // Shared data and GPU setup
-SharedParams& CelerSharedParams()
+celeritas::SharedParams& CelerSharedParams()
 {
-  static SharedParams sp;
+  static celeritas::SharedParams sp;
   return sp;
 }
 
 // Thread-local transporter
-LocalTransporter& CelerLocalTransporter()
+celeritas::LocalTransporter& CelerLocalTransporter()
 {
-  static G4ThreadLocal LocalTransporter lt;
+  static G4ThreadLocal celeritas::LocalTransporter lt;
   return lt;
 }
 
 // Thread-local offload interface
-SimpleOffload& CelerSimpleOffload()
+celeritas::SimpleOffload& CelerSimpleOffload()
 {
-  static G4ThreadLocal SimpleOffload so;
+  static G4ThreadLocal celeritas::SimpleOffload so;
   return so;
 }
 
@@ -76,7 +77,7 @@ void EMPhysicsConstructor::ConstructProcess()
     G4EmStandardPhysics::ConstructProcess();
 
     // Add Celeritas tracking manager to electron, positron, gamma.
-    auto* celer_tracking = new TrackingManagerOffload(
+    auto* celer_tracking = new celeritas::TrackingManagerOffload(
         &CelerSharedParams(), &CelerLocalTransporter());
     
     G4Electron::Definition()->SetTrackingManager(celer_tracking);

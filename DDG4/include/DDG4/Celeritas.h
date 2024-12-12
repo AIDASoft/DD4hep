@@ -4,8 +4,12 @@
 #include <accel/SimpleOffload.hh>
 #include <G4EmStandardPhysics.hh>
 
-namespace celeritas
-{
+/// Namespace for the AIDA detector description toolkit
+namespace dd4hep  {
+
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
+  namespace sim  {
+
     class LocalTransporter;
     struct SetupOptions;
     class SharedParams;
@@ -17,15 +21,18 @@ namespace celeritas
 
         void ConstructProcess() override;
     };
-}
+   
+    // Global shared setup options
+    celeritas::SetupOptions& CelerSetupOptions();
+    // Shared data and GPU setup
+    celeritas::SharedParams& CelerSharedParams();
+    // Thread-local transporter
+    celeritas::LocalTransporter& CelerLocalTransporter();
+    // Thread-local offload
+    celeritas::SimpleOffload& CelerSimpleOffload();
+    
+  } /* End namespace sim */  
+} /* End namespace dd4hep*/
 
-// Global shared setup options
-celeritas::SetupOptions& CelerSetupOptions();
-// Shared data and GPU setup
-celeritas::SharedParams& CelerSharedParams();
-// Thread-local transporter
-celeritas::LocalTransporter& CelerLocalTransporter();
-// Thread-local offload
-celeritas::SimpleOffload& CelerSimpleOffload();
 
 #endif

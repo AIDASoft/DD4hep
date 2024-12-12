@@ -380,7 +380,7 @@ G4VUserPhysicsList* Geant4PhysicsListActionSequence::activateCeleritas()    {
     ? new EmptyPhysics()
     : G4PhysListFactory().GetReferencePhysList(m_extends);
 
-physics->ReplacePhysics(new celeritas::EMPhysicsConstructor);
+physics->ReplacePhysics(new EMPhysicsConstructor);
 
 return physics;
 }
