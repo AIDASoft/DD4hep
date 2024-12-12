@@ -131,7 +131,7 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 ########################
 
 # Configure ROOT
-find_package (ROOT 6.08 REQUIRED CONFIG)
+find_package (ROOT 6.08 COMPONENTS ROOTEve REQUIRED CONFIG)
 DD4HEP_SETUP_ROOT_TARGETS()
 
 # Configure BOOST
