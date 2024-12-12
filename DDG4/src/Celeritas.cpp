@@ -27,8 +27,6 @@ SetupOptions& CelerSetupOptions()
     so.make_along_step = celeritas::UniformAlongStepFactory();
     // NOTE: these numbers are appropriate for CPU execution
     so.max_num_tracks = 1024;
-    // This will eventually go
-    so.max_num_events = 100000;
     so.initializer_capacity = 1024 * 128;
     // Celeritas does not support EmStandard MSC physics above 100 MeV
     so.ignore_processes = {"CoulombScat"};
