@@ -87,7 +87,7 @@ namespace  {
           result = TPython::Exec(c.second.c_str());
           break;
         case 'c':
-          TPython::Eval(c.second.c_str());
+          TPython::Exec(c.second.c_str());
           result = kTRUE;
           break;
         case 'p':
