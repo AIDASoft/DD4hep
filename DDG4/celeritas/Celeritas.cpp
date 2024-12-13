@@ -20,7 +20,7 @@
 using namespace dd4hep::sim;
 
 // Global shared setup options
-celeritas::SetupOptions& CelerSetupOptions()
+celeritas::SetupOptions& dd4hep::sim::CelerSetupOptions()
 {
   static celeritas::SetupOptions options = [] {
     // Construct setup options the first time CelerSetupOptions is invoked
@@ -53,21 +53,21 @@ celeritas::SetupOptions& CelerSetupOptions()
 }
 
 // Shared data and GPU setup
-celeritas::SharedParams& CelerSharedParams()
+celeritas::SharedParams& dd4hep::sim::CelerSharedParams()
 {
   static celeritas::SharedParams sp;
   return sp;
 }
 
 // Thread-local transporter
-celeritas::LocalTransporter& CelerLocalTransporter()
+celeritas::LocalTransporter& dd4hep::sim::CelerLocalTransporter()
 {
   static G4ThreadLocal celeritas::LocalTransporter lt;
   return lt;
 }
 
 // Thread-local offload interface
-celeritas::SimpleOffload& CelerSimpleOffload()
+celeritas::SimpleOffload& dd4hep::sim::CelerSimpleOffload()
 {
   static G4ThreadLocal celeritas::SimpleOffload so;
   return so;
