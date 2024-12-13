@@ -10,10 +10,6 @@ namespace dd4hep  {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim  {
 
-    class LocalTransporter;
-    struct SetupOptions;
-    class SharedParams;
-
     class EMPhysicsConstructor final : public G4EmStandardPhysics
     {
     public:
@@ -21,18 +17,17 @@ namespace dd4hep  {
 
         void ConstructProcess() override;
     };
-   
-    // Global shared setup options
-    celeritas::SetupOptions& CelerSetupOptions();
-    // Shared data and GPU setup
-    celeritas::SharedParams& CelerSharedParams();
-    // Thread-local transporter
-    celeritas::LocalTransporter& CelerLocalTransporter();
-    // Thread-local offload
-    celeritas::SimpleOffload& CelerSimpleOffload();
     
   } /* End namespace sim */  
 } /* End namespace dd4hep*/
 
+// Global shared setup options
+celeritas::SetupOptions& CelerSetupOptions();
+// Shared data and GPU setup
+celeritas::SharedParams& CelerSharedParams();
+// Thread-local transporter
+celeritas::LocalTransporter& CelerLocalTransporter();
+// Thread-local offload
+celeritas::SimpleOffload& CelerSimpleOffload();
 
 #endif
