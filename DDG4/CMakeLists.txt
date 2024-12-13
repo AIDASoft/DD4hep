@@ -25,6 +25,8 @@ target_link_libraries(DDG4
   PUBLIC
   DD4hep::DDCore
   Geant4::Interface
+  Celeritas::corecel
+  Celeritas::accel
   )
 #
 #Ensure our own includes come before those of the system
