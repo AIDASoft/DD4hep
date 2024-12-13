@@ -19,7 +19,6 @@
 #include <DD4hep/InstanceCount.h>
 #include <DD4hep/Printout.h>
 #include <DD4hep/Plugins.h>
-#include <DDG4/celeritas/Celeritas.h>
 
 // Geant4 include files
 #include <G4VPhysicsConstructor.hh>
@@ -374,17 +373,6 @@ G4VUserPhysicsList* Geant4PhysicsListActionSequence::extensionList()    {
 
   return physics;
 }
-
-G4VUserPhysicsList* Geant4PhysicsListActionSequence::activateCeleritas()    {
-  G4VModularPhysicsList* physics = ( m_extends.empty() )
-    ? new EmptyPhysics()
-    : G4PhysListFactory().GetReferencePhysList(m_extends);
-
-physics->ReplacePhysics(new EMPhysicsConstructor);
-
-return physics;
-}
-
 
 /// Install command control messenger if wanted
 void Geant4PhysicsListActionSequence::installCommandMessenger()   {

@@ -292,8 +292,6 @@ namespace dd4hep {
       virtual void enable(G4VUserPhysicsList* physics);
       /// Extend physics list from factory:
       G4VUserPhysicsList* extensionList();
-      /// Activate Celeritas tracking offload within EM physics constructor
-      G4VUserPhysicsList* activateCeleritas();
     };
 
   }    // End namespace sim

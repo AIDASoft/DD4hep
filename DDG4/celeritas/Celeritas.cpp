@@ -1,4 +1,4 @@
-#include <DDG4/Celeritas.h>
+#include "Celeritas.h"
 
 #include <G4Threading.hh>
 #include <accel/AlongStepFactory.hh>
@@ -11,6 +11,8 @@
 #include <G4Electron.hh>
 #include <G4Positron.hh>
 #include <G4Gamma.hh>
+#include <G4VPhysicsConstructor.hh>
+#include <G4PhysListFactory.hh>
 
 #include <memory>
 
@@ -84,3 +86,19 @@ void EMPhysicsConstructor::ConstructProcess()
     G4Positron::Definition()->SetTrackingManager(celer_tracking);
     G4Gamma::Definition()->SetTrackingManager(celer_tracking);
 }
+
+struct EmptyPhysics : public G4VModularPhysicsList {
+    EmptyPhysics() = default;       // Default constructor, does nothing
+    virtual ~EmptyPhysics() = default;  // Virtual destructor, does nothing
+};
+
+G4VUserPhysicsList* CeleritasPhysicsListActionSequence::activateCeleritas()    {
+  G4VModularPhysicsList* physics = ( m_extends.empty() )
+    ? new EmptyPhysics()
+    : G4PhysListFactory().GetReferencePhysList(m_extends);
+
+physics->ReplacePhysics(new EMPhysicsConstructor);
+
+return physics;
+}
+
