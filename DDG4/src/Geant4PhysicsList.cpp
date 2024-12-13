@@ -19,7 +19,7 @@
 #include <DD4hep/InstanceCount.h>
 #include <DD4hep/Printout.h>
 #include <DD4hep/Plugins.h>
-#include <DDG4/Celeritas.h>
+#include <DDG4/celeritas/Celeritas.h>
 
 // Geant4 include files
 #include <G4VPhysicsConstructor.hh>

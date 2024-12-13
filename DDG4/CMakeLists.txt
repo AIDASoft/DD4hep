@@ -25,8 +25,6 @@ target_link_libraries(DDG4
   PUBLIC
   DD4hep::DDCore
   Geant4::Interface
-  Celeritas::corecel
-  Celeritas::accel
   )
 #
 #Ensure our own includes come before those of the system
@@ -101,6 +99,18 @@ IF(TARGET LCIO::lcio)
     )
   install(TARGETS DDG4LCIO EXPORT DD4hep LIBRARY DESTINATION lib)
   set_target_properties(DDG4LCIO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+
+ENDIF()
+
+IF(DD4HEP_USE_CELERITAS)
+
+  dd4hep_add_plugin(DDG4Celeritas
+    SOURCES celeritas/*.cpp
+    INCLUDES $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/celeritas>
+    USES    DD4hep::DDG4 Celeritas::accel Celeritas::corecel
+    )
+  install(TARGETS DDG4Celeritas EXPORT DD4hep LIBRARY DESTINATION lib)
+  set_target_properties(DDG4Celeritas PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 ENDIF()
 
