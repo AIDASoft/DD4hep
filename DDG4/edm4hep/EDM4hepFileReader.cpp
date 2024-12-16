@@ -34,7 +34,9 @@ typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
 
 namespace dd4hep::sim {
 
-  using MCPARTICLE_MAP=std::map<const edm4hep::MCParticle*, int>;
+  // we use the index of the objectID to identify particles
+  // we will not support MCParticles from different collections
+  using MCPARTICLE_MAP=std::map<int, int>;
   
   /// get the parameters from the input EDM4hep frame and store them in the EventParameters extension
   template <class T=podio::Frame&> void EventParameters::ingestParameters(T const& source) {
@@ -96,8 +98,8 @@ dd4hep::sim::EDM4hepFileReader::EDM4hepFileReader(const std::string& nam)
 
   
 namespace {
-  inline int GET_ENTRY(MCPARTICLE_MAP const& mcparts, edm4hep::MCParticle* part)  {
-    MCPARTICLE_MAP::const_iterator ip=mcparts.find(part);
+  inline int GET_ENTRY(MCPARTICLE_MAP const& mcparts, int partID)  {
+    MCPARTICLE_MAP::const_iterator ip = mcparts.find(partID);
     if ( ip == mcparts.end() )  {
       throw std::runtime_error("Unknown particle identifier look-up!");
     }
@@ -142,12 +144,12 @@ EDM4hepFileReader::readParticles(int event_number, Vertices& vertices, std::vect
   }
   
   MCPARTICLE_MAP mcparts;
-  std::vector<const edm4hep::MCParticle*>  mcpcoll;
-  mcpcoll.resize(NHEP,0);
+  std::vector<int>  mcpcoll;
+  mcpcoll.resize(NHEP);
   for(int i=0; i<NHEP; ++i ) {
     edm4hep::MCParticle p = primaries.at(i);
-    mcparts[&p] = i;
-    mcpcoll[i] = &p;
+    mcparts[p.getObjectID().index] = i;
+    mcpcoll[i] = p.getObjectID().index;
   }
 
   // build collection of MCParticles
@@ -183,11 +185,11 @@ EDM4hepFileReader::readParticles(int event_number, Vertices& vertices, std::vect
     const auto par = mcp.getParents(), &dau=mcp.getDaughters();
     for(int num=dau.size(),k=0; k<num; ++k) {
       edm4hep::MCParticle dau_k = dau[k];
-      p->daughters.insert(GET_ENTRY(mcparts,&dau_k));
+      p->daughters.insert(GET_ENTRY(mcparts,dau_k.getObjectID().index));
     }
     for(int num=par.size(),k=0; k<num; ++k) {
       auto par_k = par[k];
-      p->parents.insert(GET_ENTRY(mcparts, &par_k));
+      p->parents.insert(GET_ENTRY(mcparts, par_k.getObjectID().index));
     }
 
     PropertyMask status(p->status);
