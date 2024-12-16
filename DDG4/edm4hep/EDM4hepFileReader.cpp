@@ -23,6 +23,7 @@
 
 #include <CLHEP/Units/SystemOfUnits.h>
 #include <DDG4/EventParameters.h>
+#include <DDG4/RunParameters.h>
 #include <DDG4/Factories.h>
 #include <DDG4/Geant4InputAction.h>
 #include <edm4hep/MCParticleCollection.h>
@@ -38,18 +39,45 @@ namespace dd4hep::sim {
   // we will not support MCParticles from different collections
   using MCPARTICLE_MAP=std::map<int, int>;
   
-  /// get the parameters from the input EDM4hep frame and store them in the EventParameters extension
-  template <class T=podio::Frame&> void EventParameters::ingestParameters(T const& source) {
-    //   for(auto const& key: intKeys) {
-    //     m_intValues[key] = std::move(intVec);
-    //   }
-    //   for(auto const& key: floatKeys) {
-    //     m_fltValues[key] = std::move(floatVec);
-    //   }
-    //   for(auto const& key: stringKeys) {
-    //     m_strValues[key] = std::move(stringVec);
-    //   }
-    // }
+  /// get the parameters from the GenericParameters of the input EDM4hep frame and store them in the EventParameters extension
+  template <class T=podio::GenericParameters> void EventParameters::ingestParameters(T const& source) {
+    auto const& intKeys = source.template getKeys<int>();
+    for(auto const& key: intKeys) {
+      m_intValues[key] = source.template get<std::vector<int>>(key).value();
+    }
+    auto const& floatKeys = source.template getKeys<float>();
+    for(auto const& key: floatKeys) {
+      m_fltValues[key] = source.template get<std::vector<float>>(key).value();
+    }
+    auto const& doubleKeys = source.template getKeys<double>();
+    for(auto const& key: doubleKeys) {
+      m_dblValues[key] = source.template get<std::vector<double>>(key).value();
+    }
+    using std::string;
+    auto const& stringKeys = source.template getKeys<string>();
+    for(auto const& key: stringKeys) {
+      m_strValues[key] = source.template get<std::vector<string>>(key).value();
+    }
+  }
+
+  template <class T=podio::GenericParameters> void RunParameters::ingestParameters(T const& source) {
+    auto const& intKeys = source.template getKeys<int>();
+    for(auto const& key: intKeys) {
+      m_intValues[key] = source.template get<std::vector<int>>(key).value();
+    }
+    auto const& floatKeys = source.template getKeys<float>();
+    for(auto const& key: floatKeys) {
+      m_fltValues[key] = source.template get<std::vector<float>>(key).value();
+    }
+    auto const& doubleKeys = source.template getKeys<double>();
+    for(auto const& key: doubleKeys) {
+      m_dblValues[key] = source.template get<std::vector<double>>(key).value();
+    }
+    using std::string;
+    auto const& stringKeys = source.template getKeys<string>();
+    for(auto const& key: stringKeys) {
+      m_strValues[key] = source.template get<std::vector<string>>(key).value();
+    }
   }
 
 
@@ -68,12 +96,14 @@ namespace dd4hep::sim {
     EDM4hepFileReader(const std::string& nam);
 
     /// Read an event and fill a vector of MCParticles.
-    virtual EventReaderStatus readParticleCollection(int event_number, const edm4hep::MCParticleCollection** particles);
     virtual EventReaderStatus setParameters(std::map< std::string, std::string >& parameters);
 
     /// Read an event and fill a vector of MCParticles.
     virtual EventReaderStatus readParticles(int event_number, Vertices& vertices, std::vector<Particle*>& particles);
     /// Read an event and return a LCCollectionVec of MCParticles.
+
+    void registerRunParameters();
+
   };
 
 
@@ -86,18 +116,25 @@ dd4hep::sim::EDM4hepFileReader::EDM4hepFileReader(const std::string& nam)
 {
   printout(INFO,"EDM4hepFileReader","Created file reader. Try to open input %s",nam.c_str());
   m_reader.openFile(nam);
-  auto categories = m_reader.getAvailableCategories();
-  for(auto cat: categories) {
-    std::cout << "Category " << cat  << std::endl;
-  }
-
-    
-  
   m_directAccess = true;
+}
+
+
+void EDM4hepFileReader::registerRunParameters() {
+  try {
+    auto *parameters = new RunParameters();
+    podio::Frame metaFrame = m_reader.readEntry("metadata", 0);
+    parameters->ingestParameters(metaFrame.getParameters());
+    context()->run().addExtension<RunParameters>(parameters);
+
+  } catch(std::exception &e) {
+    printout(ERROR,"EDM4hepFileReader::registerRunParameters","Failed to register run parameters: %s", e.what());
+  }
 }
 
   
 namespace {
+  /// Helper function to look up MCParticles from mapping
   inline int GET_ENTRY(MCPARTICLE_MAP const& mcparts, int partID)  {
     MCPARTICLE_MAP::const_iterator ip = mcparts.find(partID);
     if ( ip == mcparts.end() )  {
@@ -125,7 +162,7 @@ EDM4hepFileReader::readParticles(int event_number, Vertices& vertices, std::vect
       EventParameters *parameters = new EventParameters();
       parameters->setRunNumber(runNumber);
       parameters->setEventNumber(eventNumber);
-      parameters->ingestParameters(frame);
+      parameters->ingestParameters(frame.getParameters());
       ctx->event().addExtension<EventParameters>(parameters);
     }
     catch(std::exception &) {}
@@ -230,46 +267,6 @@ EDM4hepFileReader::readParticles(int event_number, Vertices& vertices, std::vect
   }
   return EVENT_READER_OK;
 }
-
-
-/// Read an event and fill a vector of MCParticles.
-Geant4EventReader::EventReaderStatus
-dd4hep::sim::EDM4hepFileReader::readParticleCollection(int event_number, const edm4hep::MCParticleCollection** particles) {
-  std::cout << "Reading event number " << event_number  << std::endl;
-
-  podio::Frame frame = m_reader.readEntry("events", event_number);
-
-  *particles = (&frame.get<edm4hep::MCParticleCollection>(m_collectionName));
-  // std::cout << "collection is valid?: " << particles->isValid()  << std::endl;
-  // std::cout << "size " << particles->size()  << std::endl;
-  // std::cout << particles->getTypeName()  << std::endl;
-
-  
-  (*particles)->print(std::cout);
-
-  if ( (*particles)->isValid() ) {
-    auto eventNumber = frame.getParameter<int>("EventNumber").value_or(event_number);
-    auto runNumber = frame.getParameter<int>("RunNumber").value_or(0);
-    printout(INFO,"EDM4hepFileReader","read collection %s from event %d in run %d ", 
-             m_collectionName.c_str(), eventNumber, runNumber);
-      
-    // Create input event parameters context
-    try {
-      Geant4Context* ctx = context();
-      EventParameters *parameters = new EventParameters();
-      parameters->setRunNumber(runNumber);
-      parameters->setEventNumber(eventNumber);
-      parameters->ingestParameters(frame);
-      ctx->event().addExtension<EventParameters>(parameters);
-    }
-    catch(std::exception &) {}
-
-    return EVENT_READER_OK;
-  }
-  return EVENT_READER_EOF;
-}
-
-
 
 /// Set the parameters for the class, in particular the name of the MCParticle
 /// list
