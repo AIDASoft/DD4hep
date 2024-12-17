@@ -121,7 +121,10 @@ LCIOEventReader::readParticles(int event_number,
     int genStatus = mcp->getGeneratorStatus();
     // Copy raw generator status
     p->genStatus = genStatus&G4PARTICLE_GEN_STATUS_MASK;
-    m_inputAction->setGeneratorStatus(genStatus, status);
+    if(m_inputAction) {
+      // in some tests we do not set up the inputAction
+      m_inputAction->setGeneratorStatus(genStatus, status);
+    }
 
     //fg: we simply add all particles without parents as with their own vertex.
     //    This might include the incoming beam particles, e.g. in
