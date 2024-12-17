@@ -46,6 +46,9 @@ int main(int argc, char** argv ){
   tests.push_back( TestTuple( "HEPMC3FileReader", "g4pythia.hepmc", /*skipEOF= */ true) );
   tests.push_back( TestTuple( "HEPMC3FileReader", "Pythia_output.hepmc", /*skipEOF= */ true) );
   #endif
+  #ifdef DD4HEP_USE_EDM4HEP
+  tests.push_back( TestTuple( "EDM4hepFileReader", "ZH250_ISR.edm4hep.root", /*skipEOF= */ true) );
+  #endif
 
   try{
     for(std::vector<TestTuple>::const_iterator it = tests.begin(); it != tests.end(); ++it) {
