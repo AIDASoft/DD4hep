@@ -22,11 +22,15 @@
 */
 
 #include <CLHEP/Units/SystemOfUnits.h>
+
 #include <DDG4/EventParameters.h>
-#include <DDG4/RunParameters.h>
 #include <DDG4/Factories.h>
 #include <DDG4/Geant4InputAction.h>
+#include <DDG4/RunParameters.h>
+
+#include <edm4hep/EventHeaderCollection.h>
 #include <edm4hep/MCParticleCollection.h>
+
 #include <podio/Frame.h>
 #include <podio/ROOTReader.h>
 
@@ -38,7 +42,7 @@ namespace dd4hep::sim {
   // we use the index of the objectID to identify particles
   // we will not support MCParticles from different collections
   using MCPARTICLE_MAP=std::map<int, int>;
-  
+
   /// get the parameters from the GenericParameters of the input EDM4hep frame and store them in the EventParameters extension
   template <class T=podio::GenericParameters> void EventParameters::ingestParameters(T const& source) {
     auto const& intKeys = source.template getKeys<int>();
@@ -91,6 +95,8 @@ namespace dd4hep::sim {
     /// Reference to reader object
     podio::ROOTReader m_reader {};
     std::string m_collectionName;
+    std::string m_eventHeaderCollectionName;
+
   public:
     /// Initializing constructor
     EDM4hepFileReader(const std::string& nam);
@@ -113,6 +119,7 @@ namespace dd4hep::sim {
 dd4hep::sim::EDM4hepFileReader::EDM4hepFileReader(const std::string& nam)
 : Geant4EventReader(nam)
 , m_collectionName("MCParticles")
+, m_eventHeaderCollectionName("EventHeader")
 {
   printout(INFO,"EDM4hepFileReader","Created file reader. Try to open input %s",nam.c_str());
   m_reader.openFile(nam);
@@ -123,7 +130,9 @@ dd4hep::sim::EDM4hepFileReader::EDM4hepFileReader(const std::string& nam)
 void EDM4hepFileReader::registerRunParameters() {
   try {
     auto *parameters = new RunParameters();
-    podio::Frame metaFrame = m_reader.readEntry("runs", 0);
+    podio::Frame runFrame = m_reader.readEntry("runs", 0);
+    parameters->ingestParameters(runFrame.getParameters());
+    podio::Frame metaFrame = m_reader.readEntry("metadata", 0);
     parameters->ingestParameters(metaFrame.getParameters());
     context()->run().addExtension<RunParameters>(parameters);
 
@@ -132,7 +141,7 @@ void EDM4hepFileReader::registerRunParameters() {
   }
 }
 
-  
+
 namespace {
   /// Helper function to look up MCParticles from mapping
   inline int GET_ENTRY(MCPARTICLE_MAP const& mcparts, int partID)  {
@@ -144,42 +153,57 @@ namespace {
   }
 }
 
-  
+
 /// Read an event and fill a vector of MCParticles.
 EDM4hepFileReader::EventReaderStatus
 EDM4hepFileReader::readParticles(int event_number, Vertices& vertices, std::vector<Particle*>& particles) {
 
   podio::Frame frame = m_reader.readEntry("events", event_number);
   const auto& primaries = frame.get<edm4hep::MCParticleCollection>(m_collectionName);
-  if ( primaries.isValid() ) {
-    auto eventNumber = frame.getParameter<int>("EventNumber").value_or(event_number);
-    auto runNumber = frame.getParameter<int>("RunNumber").value_or(0);
-    printout(INFO,"EDM4hepFileReader","read collection %s from event %d in run %d ", 
-             m_collectionName.c_str(), eventNumber, runNumber);
-    // Create input event parameters context
-    try {
+  if (primaries.isValid()) {
+    //Read the event header collection and add it to the context as an extension
+    const auto& eventHeaderCollection = frame.get<edm4hep::EventHeaderCollection>(m_eventHeaderCollectionName);
+    if(eventHeaderCollection.isValid() && eventHeaderCollection.size() == 1){
+      const auto& eh = eventHeaderCollection.at(0);
+      auto eventNumber = eh.getEventNumber();
+      auto runNumber = eh.getRunNumber();
       Geant4Context* ctx = context();
-      EventParameters *parameters = new EventParameters();
-      parameters->setRunNumber(runNumber);
-      parameters->setEventNumber(eventNumber);
-      parameters->ingestParameters(frame.getParameters());
-      ctx->event().addExtension<EventParameters>(parameters);
+      auto clonedEh = new edm4hep::MutableEventHeader(eh.clone());
+      ctx->event().addExtension<edm4hep::MutableEventHeader>(clonedEh);
+
+      printout(INFO,"EDM4hepFileReader","read collection %s from event %d in run %d ",
+               m_collectionName.c_str(), eventNumber, runNumber);
+      // Create input event parameters context
+      try {
+        EventParameters *parameters = new EventParameters();
+        parameters->setRunNumber(runNumber);
+        parameters->setEventNumber(eventNumber);
+        parameters->ingestParameters(frame.getParameters());
+        ctx->event().addExtension<EventParameters>(parameters);
+      } catch(std::exception &) {}
+    } else {
+      printout(WARNING,"EDM4hepFileReader","No EventHeader collection found");
+      try {
+        Geant4Context* ctx = context();
+        EventParameters *parameters = new EventParameters();
+        parameters->setRunNumber(0);
+        parameters->setEventNumber(event_number);
+        parameters->ingestParameters(frame.getParameters());
+        ctx->event().addExtension<EventParameters>(parameters);
+      } catch(std::exception &) {}
     }
-    catch(std::exception &) {}
   } else {
     return EVENT_READER_EOF;
   }
 
   printout(INFO,"EDM4hepFileReader", "We read the particle collection");
-  primaries.print(std::cout);
-  std::cout << "is valid after " << primaries.isValid()  << std::endl;
   int NHEP = primaries.size();
   // check if there is at least one particle
   if ( NHEP == 0 ) {
     printout(WARNING,"EDM4hepFileReader", "We have no particles");
     return EVENT_READER_NO_PRIMARIES;
   }
-  
+
   MCPARTICLE_MAP mcparts;
   std::vector<int>  mcpcoll;
   mcpcoll.resize(NHEP);
@@ -277,7 +301,7 @@ dd4hep::sim::EDM4hepFileReader::setParameters( std::map< std::string, std::strin
 }
 
 
-  
+
 } //end dd4hep::sim
 
 DECLARE_GEANT4_EVENT_READER_NS(dd4hep::sim,EDM4hepFileReader)
