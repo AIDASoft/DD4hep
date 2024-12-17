@@ -43,7 +43,8 @@ namespace dd4hep::sim {
   // we will not support MCParticles from different collections
   using MCPARTICLE_MAP=std::map<int, int>;
 
-  /// get the parameters from the GenericParameters of the input EDM4hep frame and store them in the EventParameters extension
+  /// get the parameters from the GenericParameters of the input EDM4hep frame and store them in the EventParameters
+  /// extension
   template <class T=podio::GenericParameters> void EventParameters::ingestParameters(T const& source) {
     auto const& intKeys = source.template getKeys<int>();
     for(auto const& key: intKeys) {
@@ -64,6 +65,8 @@ namespace dd4hep::sim {
     }
   }
 
+  /// get the parameters from the GenericParameters of the input EDM4hep run frame and store them in the RunParameters
+  /// extension
   template <class T=podio::GenericParameters> void RunParameters::ingestParameters(T const& source) {
     auto const& intKeys = source.template getKeys<int>();
     for(auto const& key: intKeys) {
@@ -84,8 +87,7 @@ namespace dd4hep::sim {
     }
   }
 
-
-  /// Base class to read EDM4hep files
+  /// Class to read EDM4hep files
   /**
    *  \version 1.0
    *  \ingroup DD4HEP_SIMULATION
@@ -94,213 +96,212 @@ namespace dd4hep::sim {
   protected:
     /// Reference to reader object
     podio::ROOTReader m_reader {};
+    /// Name of the MCParticle collection to read
     std::string m_collectionName;
+    /// Name of the EventHeader collection to read
     std::string m_eventHeaderCollectionName;
 
   public:
     /// Initializing constructor
     EDM4hepFileReader(const std::string& nam);
 
-    /// Read an event and fill a vector of MCParticles.
+    /// Read parameters set for this action
     virtual EventReaderStatus setParameters(std::map< std::string, std::string >& parameters);
 
     /// Read an event and fill a vector of MCParticles.
     virtual EventReaderStatus readParticles(int event_number, Vertices& vertices, std::vector<Particle*>& particles);
-    /// Read an event and return a LCCollectionVec of MCParticles.
-
+    /// Call to register the run parameters
     void registerRunParameters();
 
   };
 
-
-
-
-/// Initializing constructor
-dd4hep::sim::EDM4hepFileReader::EDM4hepFileReader(const std::string& nam)
-: Geant4EventReader(nam)
-, m_collectionName("MCParticles")
-, m_eventHeaderCollectionName("EventHeader")
-{
-  printout(INFO,"EDM4hepFileReader","Created file reader. Try to open input %s",nam.c_str());
-  m_reader.openFile(nam);
-  m_directAccess = true;
-}
-
-
-void EDM4hepFileReader::registerRunParameters() {
-  try {
-    auto *parameters = new RunParameters();
-    podio::Frame runFrame = m_reader.readEntry("runs", 0);
-    parameters->ingestParameters(runFrame.getParameters());
-    podio::Frame metaFrame = m_reader.readEntry("metadata", 0);
-    parameters->ingestParameters(metaFrame.getParameters());
-    context()->run().addExtension<RunParameters>(parameters);
-
-  } catch(std::exception &e) {
-    printout(ERROR,"EDM4hepFileReader::registerRunParameters","Failed to register run parameters: %s", e.what());
+  /// Initializing constructor
+  dd4hep::sim::EDM4hepFileReader::EDM4hepFileReader(const std::string& nam)
+    : Geant4EventReader(nam)
+    , m_collectionName("MCParticles")
+    , m_eventHeaderCollectionName("EventHeader")
+  {
+    printout(INFO,"EDM4hepFileReader","Created file reader. Try to open input %s",nam.c_str());
+    m_reader.openFile(nam);
+    m_directAccess = true;
   }
-}
 
-
-namespace {
-  /// Helper function to look up MCParticles from mapping
-  inline int GET_ENTRY(MCPARTICLE_MAP const& mcparts, int partID)  {
-    MCPARTICLE_MAP::const_iterator ip = mcparts.find(partID);
-    if ( ip == mcparts.end() )  {
-      throw std::runtime_error("Unknown particle identifier look-up!");
+  void EDM4hepFileReader::registerRunParameters() {
+    try {
+      auto *parameters = new RunParameters();
+      podio::Frame runFrame = m_reader.readEntry("runs", 0);
+      parameters->ingestParameters(runFrame.getParameters());
+      podio::Frame metaFrame = m_reader.readEntry("metadata", 0);
+      parameters->ingestParameters(metaFrame.getParameters());
+      context()->run().addExtension<RunParameters>(parameters);
+    } catch(std::exception &e) {
+      printout(ERROR,"EDM4hepFileReader::registerRunParameters","Failed to register run parameters: %s", e.what());
     }
-    return (*ip).second;
   }
-}
 
+  namespace {
+    /// Helper function to look up MCParticles from mapping
+    inline int GET_ENTRY(MCPARTICLE_MAP const& mcparts, int partID)  {
+      MCPARTICLE_MAP::const_iterator ip = mcparts.find(partID);
+      if ( ip == mcparts.end() )  {
+        throw std::runtime_error("Unknown particle identifier look-up!");
+      }
+      return (*ip).second;
+    }
+  }
 
-/// Read an event and fill a vector of MCParticles.
-EDM4hepFileReader::EventReaderStatus
-EDM4hepFileReader::readParticles(int event_number, Vertices& vertices, std::vector<Particle*>& particles) {
-
-  podio::Frame frame = m_reader.readEntry("events", event_number);
-  const auto& primaries = frame.get<edm4hep::MCParticleCollection>(m_collectionName);
-  if (primaries.isValid()) {
-    //Read the event header collection and add it to the context as an extension
-    const auto& eventHeaderCollection = frame.get<edm4hep::EventHeaderCollection>(m_eventHeaderCollectionName);
-    if(eventHeaderCollection.isValid() && eventHeaderCollection.size() == 1){
-      const auto& eh = eventHeaderCollection.at(0);
-      auto eventNumber = eh.getEventNumber();
-      auto runNumber = eh.getRunNumber();
-      Geant4Context* ctx = context();
-      auto clonedEh = new edm4hep::MutableEventHeader(eh.clone());
-      ctx->event().addExtension<edm4hep::MutableEventHeader>(clonedEh);
-
+  /// Read an event and fill a vector of MCParticles
+  EDM4hepFileReader::EventReaderStatus
+  EDM4hepFileReader::readParticles(int event_number, Vertices& vertices, std::vector<Particle*>& particles) {
+    m_currEvent = event_number;
+    podio::Frame frame = m_reader.readEntry("events", event_number);
+    const auto& primaries = frame.get<edm4hep::MCParticleCollection>(m_collectionName);
+    int eventNumber = event_number, runNumber = 0;
+    if (primaries.isValid()) {
+      //Read the event header collection and add it to the context as an extension
+      const auto& eventHeaderCollection = frame.get<edm4hep::EventHeaderCollection>(m_eventHeaderCollectionName);
+      if(eventHeaderCollection.isValid() && eventHeaderCollection.size() == 1){
+        const auto& eh = eventHeaderCollection.at(0);
+        eventNumber = eh.getEventNumber();
+        runNumber = eh.getRunNumber();
+        try {
+          Geant4Context* ctx = context();
+          ctx->event().addExtension<edm4hep::MutableEventHeader>(new edm4hep::MutableEventHeader(eh.clone()));
+        } catch(std::exception& ) {}
+        // Create input event parameters context
+        try {
+          Geant4Context* ctx = context();
+          EventParameters *parameters = new EventParameters();
+          parameters->setRunNumber(runNumber);
+          parameters->setEventNumber(eventNumber);
+          parameters->ingestParameters(frame.getParameters());
+          ctx->event().addExtension<EventParameters>(parameters);
+        } catch(std::exception &) {}
+      } else {
+        printout(WARNING,"EDM4hepFileReader","No EventHeader collection found or too many event headers!");
+        try {
+          Geant4Context* ctx = context();
+          EventParameters *parameters = new EventParameters();
+          parameters->setRunNumber(0);
+          parameters->setEventNumber(event_number);
+          parameters->ingestParameters(frame.getParameters());
+          ctx->event().addExtension<EventParameters>(parameters);
+        } catch(std::exception &) {}
+      }
       printout(INFO,"EDM4hepFileReader","read collection %s from event %d in run %d ",
                m_collectionName.c_str(), eventNumber, runNumber);
-      // Create input event parameters context
-      try {
-        EventParameters *parameters = new EventParameters();
-        parameters->setRunNumber(runNumber);
-        parameters->setEventNumber(eventNumber);
-        parameters->ingestParameters(frame.getParameters());
-        ctx->event().addExtension<EventParameters>(parameters);
-      } catch(std::exception &) {}
+
     } else {
-      printout(WARNING,"EDM4hepFileReader","No EventHeader collection found");
-      try {
-        Geant4Context* ctx = context();
-        EventParameters *parameters = new EventParameters();
-        parameters->setRunNumber(0);
-        parameters->setEventNumber(event_number);
-        parameters->ingestParameters(frame.getParameters());
-        ctx->event().addExtension<EventParameters>(parameters);
-      } catch(std::exception &) {}
-    }
-  } else {
-    return EVENT_READER_EOF;
-  }
-
-  printout(INFO,"EDM4hepFileReader", "We read the particle collection");
-  int NHEP = primaries.size();
-  // check if there is at least one particle
-  if ( NHEP == 0 ) {
-    printout(WARNING,"EDM4hepFileReader", "We have no particles");
-    return EVENT_READER_NO_PRIMARIES;
-  }
-
-  MCPARTICLE_MAP mcparts;
-  std::vector<int>  mcpcoll;
-  mcpcoll.resize(NHEP);
-  for(int i=0; i<NHEP; ++i ) {
-    edm4hep::MCParticle p = primaries.at(i);
-    mcparts[p.getObjectID().index] = i;
-    mcpcoll[i] = p.getObjectID().index;
-  }
-
-  // build collection of MCParticles
-  for(int i=0; i<NHEP; ++i )   {
-    const auto& mcp = primaries.at(i);
-    Geant4ParticleHandle p(new Particle(i));
-    const auto mom   = mcp.getMomentum();
-    const auto vsx   = mcp.getVertex();
-    const auto vex   = mcp.getEndpoint();
-    const auto spin  = mcp.getSpin();
-    const auto color = mcp.getColorFlow();
-    const int  pdg   = mcp.getPDG();
-    p->pdgID        = pdg;
-    p->charge       = int(mcp.getCharge()*3.0);
-    p->psx          = mom[0]*CLHEP::GeV;
-    p->psy          = mom[1]*CLHEP::GeV;
-    p->psz          = mom[2]*CLHEP::GeV;
-    p->time         = mcp.getTime()*CLHEP::ns;
-    p->properTime   = mcp.getTime()*CLHEP::ns;
-    p->vsx          = vsx[0]*CLHEP::mm;
-    p->vsy          = vsx[1]*CLHEP::mm;
-    p->vsz          = vsx[2]*CLHEP::mm;
-    p->vex          = vex[0]*CLHEP::mm;
-    p->vey          = vex[1]*CLHEP::mm;
-    p->vez          = vex[2]*CLHEP::mm;
-    p->process      = 0;
-    p->spin[0]      = spin[0];
-    p->spin[1]      = spin[1];
-    p->spin[2]      = spin[2];
-    p->colorFlow[0] = color[0];
-    p->colorFlow[1] = color[1];
-    p->mass         = mcp.getMass()*CLHEP::GeV;
-    const auto par = mcp.getParents(), &dau=mcp.getDaughters();
-    for(int num=dau.size(),k=0; k<num; ++k) {
-      edm4hep::MCParticle dau_k = dau[k];
-      p->daughters.insert(GET_ENTRY(mcparts,dau_k.getObjectID().index));
-    }
-    for(int num=par.size(),k=0; k<num; ++k) {
-      auto par_k = par[k];
-      p->parents.insert(GET_ENTRY(mcparts, par_k.getObjectID().index));
+      return EVENT_READER_EOF;
     }
 
-    PropertyMask status(p->status);
-    int genStatus = mcp.getGeneratorStatus();
-    // Copy raw generator status
-    p->genStatus = genStatus&G4PARTICLE_GEN_STATUS_MASK;
-    m_inputAction->setGeneratorStatus(genStatus, status);
-
-    //fg: we simply add all particles without parents as with their own vertex.
-    //    This might include the incoming beam particles, e.g. in
-    //    the case of lcio files written with Whizard2, which is slightly odd,
-    //    however should be treated correctly in Geant4InputHandling.cpp.
-    //    We no longer make an attempt to identify the incoming particles
-    //    based on the generator status, as this varies widely with different
-    //    generators.
-
-    if ( p->parents.size() == 0 )  {
-
-      Geant4Vertex* vtx = new Geant4Vertex ;
-      vertices.emplace_back( vtx );
-      vtx->x = p->vsx;
-      vtx->y = p->vsy;
-      vtx->z = p->vsz;
-      vtx->time = p->time;
-
-      vtx->out.insert(p->id) ;
+    printout(INFO,"EDM4hepFileReader", "We read the particle collection");
+    int NHEP = primaries.size();
+    // check if there is at least one particle
+    if ( NHEP == 0 ) {
+      printout(WARNING,"EDM4hepFileReader", "We have no particles");
+      return EVENT_READER_NO_PRIMARIES;
     }
 
-    if ( mcp.isCreatedInSimulation() )       status.set(G4PARTICLE_SIM_CREATED);
-    if ( mcp.isBackscatter() )               status.set(G4PARTICLE_SIM_BACKSCATTER);
-    if ( mcp.vertexIsNotEndpointOfParent() ) status.set(G4PARTICLE_SIM_PARENT_RADIATED);
-    if ( mcp.isDecayedInTracker() )          status.set(G4PARTICLE_SIM_DECAY_TRACKER);
-    if ( mcp.isDecayedInCalorimeter() )      status.set(G4PARTICLE_SIM_DECAY_CALO);
-    if ( mcp.hasLeftDetector() )             status.set(G4PARTICLE_SIM_LEFT_DETECTOR);
-    if ( mcp.isStopped() )                   status.set(G4PARTICLE_SIM_STOPPED);
-    if ( mcp.isOverlay() )                   status.set(G4PARTICLE_SIM_OVERLAY);
-    particles.emplace_back(p);
+    MCPARTICLE_MAP mcparts;
+    std::vector<int>  mcpcoll;
+    mcpcoll.resize(NHEP);
+    for(int i=0; i<NHEP; ++i ) {
+      edm4hep::MCParticle p = primaries.at(i);
+      mcparts[p.getObjectID().index] = i;
+      mcpcoll[i] = p.getObjectID().index;
+    }
+
+    // build collection of MCParticles
+    for(int i=0; i<NHEP; ++i )   {
+      const auto& mcp = primaries.at(i);
+      Geant4ParticleHandle p(new Particle(i));
+      const auto mom   = mcp.getMomentum();
+      const auto vsx   = mcp.getVertex();
+      const auto vex   = mcp.getEndpoint();
+      const auto spin  = mcp.getSpin();
+      const auto color = mcp.getColorFlow();
+      const int  pdg   = mcp.getPDG();
+      p->pdgID        = pdg;
+      p->charge       = int(mcp.getCharge()*3.0);
+      p->psx          = mom[0]*CLHEP::GeV;
+      p->psy          = mom[1]*CLHEP::GeV;
+      p->psz          = mom[2]*CLHEP::GeV;
+      p->time         = mcp.getTime()*CLHEP::ns;
+      p->properTime   = mcp.getTime()*CLHEP::ns;
+      p->vsx          = vsx[0]*CLHEP::mm;
+      p->vsy          = vsx[1]*CLHEP::mm;
+      p->vsz          = vsx[2]*CLHEP::mm;
+      p->vex          = vex[0]*CLHEP::mm;
+      p->vey          = vex[1]*CLHEP::mm;
+      p->vez          = vex[2]*CLHEP::mm;
+      p->process      = 0;
+      p->spin[0]      = spin[0];
+      p->spin[1]      = spin[1];
+      p->spin[2]      = spin[2];
+      p->colorFlow[0] = color[0];
+      p->colorFlow[1] = color[1];
+      p->mass         = mcp.getMass()*CLHEP::GeV;
+      const auto par = mcp.getParents(), &dau=mcp.getDaughters();
+      for(int num=dau.size(),k=0; k<num; ++k) {
+        edm4hep::MCParticle dau_k = dau[k];
+        p->daughters.insert(GET_ENTRY(mcparts,dau_k.getObjectID().index));
+      }
+      for(int num=par.size(),k=0; k<num; ++k) {
+        auto par_k = par[k];
+        p->parents.insert(GET_ENTRY(mcparts, par_k.getObjectID().index));
+      }
+
+      PropertyMask status(p->status);
+      int genStatus = mcp.getGeneratorStatus();
+      // Copy raw generator status
+      p->genStatus = genStatus&G4PARTICLE_GEN_STATUS_MASK;
+      if(m_inputAction) {
+        // in some tests we do not set up the inputAction
+        m_inputAction->setGeneratorStatus(genStatus, status);
+      }
+
+      //fg: we simply add all particles without parents as with their own vertex.
+      //    This might include the incoming beam particles, e.g. in
+      //    the case of lcio files written with Whizard2, which is slightly odd,
+      //    however should be treated correctly in Geant4InputHandling.cpp.
+      //    We no longer make an attempt to identify the incoming particles
+      //    based on the generator status, as this varies widely with different
+      //    generators.
+
+      if ( p->parents.size() == 0 )  {
+
+        Geant4Vertex* vtx = new Geant4Vertex ;
+        vertices.emplace_back( vtx );
+        vtx->x = p->vsx;
+        vtx->y = p->vsy;
+        vtx->z = p->vsz;
+        vtx->time = p->time;
+
+        vtx->out.insert(p->id) ;
+      }
+
+      if ( mcp.isCreatedInSimulation() )       status.set(G4PARTICLE_SIM_CREATED);
+      if ( mcp.isBackscatter() )               status.set(G4PARTICLE_SIM_BACKSCATTER);
+      if ( mcp.vertexIsNotEndpointOfParent() ) status.set(G4PARTICLE_SIM_PARENT_RADIATED);
+      if ( mcp.isDecayedInTracker() )          status.set(G4PARTICLE_SIM_DECAY_TRACKER);
+      if ( mcp.isDecayedInCalorimeter() )      status.set(G4PARTICLE_SIM_DECAY_CALO);
+      if ( mcp.hasLeftDetector() )             status.set(G4PARTICLE_SIM_LEFT_DETECTOR);
+      if ( mcp.isStopped() )                   status.set(G4PARTICLE_SIM_STOPPED);
+      if ( mcp.isOverlay() )                   status.set(G4PARTICLE_SIM_OVERLAY);
+      particles.emplace_back(p);
+    }
+    return EVENT_READER_OK;
   }
-  return EVENT_READER_OK;
-}
 
-/// Set the parameters for the class, in particular the name of the MCParticle
-/// list
-Geant4EventReader::EventReaderStatus
-dd4hep::sim::EDM4hepFileReader::setParameters( std::map< std::string, std::string > & parameters ) {
-  _getParameterValue( parameters, "MCParticleCollectionName", m_collectionName, m_collectionName);
-  return EVENT_READER_OK;
-}
-
-
+  /// Set the parameters for the class, in particular the name of the MCParticle
+  /// list
+  Geant4EventReader::EventReaderStatus
+  dd4hep::sim::EDM4hepFileReader::setParameters( std::map< std::string, std::string > & parameters ) {
+    _getParameterValue(parameters, "MCParticleCollectionName", m_collectionName, m_collectionName);
+    _getParameterValue(parameters, "EventHeaderCollectionName", m_eventHeaderCollectionName, m_eventHeaderCollectionName);
+    return EVENT_READER_OK;
+  }
 
 } //end dd4hep::sim
 
