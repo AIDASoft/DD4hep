@@ -123,7 +123,7 @@ dd4hep::sim::EDM4hepFileReader::EDM4hepFileReader(const std::string& nam)
 void EDM4hepFileReader::registerRunParameters() {
   try {
     auto *parameters = new RunParameters();
-    podio::Frame metaFrame = m_reader.readEntry("metadata", 0);
+    podio::Frame metaFrame = m_reader.readEntry("runs", 0);
     parameters->ingestParameters(metaFrame.getParameters());
     context()->run().addExtension<RunParameters>(parameters);
 
