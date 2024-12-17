@@ -467,14 +467,24 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
 
   // this does not compile as create() is we only get a const ref - need to review PODIO EventStore API
   edm4hep::EventHeaderCollection header_collection;
+
   auto header = header_collection.create();
   header.setRunNumber(runNumber);
   header.setEventNumber(eventNumber);
   header.setWeight(eventWeight);
   //not implemented in EDM4hep ?  header.setDetectorName(context()->detectorDescription().header().name());
-  header.setTimeStamp( std::time(nullptr) ) ;
-  m_frame.put( std::move(header_collection), "EventHeader");
+  header.setTimeStamp(std::time(nullptr));
 
+  // extract event header, in case we come from edm4hep input
+  auto* meh = context()->event().extension<edm4hep::MutableEventHeader>(false);
+  if(meh) {
+    header.setTimeStamp(meh->getTimeStamp());
+    for (auto const& weight: meh->getWeights()) {
+      header.addToWeights(weight);
+    }
+  }
+
+  m_frame.put(std::move(header_collection), "EventHeader");
   saveEventParameters<int>(m_eventParametersInt);
   saveEventParameters<float>(m_eventParametersFloat);
   saveEventParameters<std::string>(m_eventParametersString);
