@@ -46,44 +46,34 @@ namespace dd4hep::sim {
   /// get the parameters from the GenericParameters of the input EDM4hep frame and store them in the EventParameters
   /// extension
   template <class T=podio::GenericParameters> void EventParameters::ingestParameters(T const& source) {
-    auto const& intKeys = source.template getKeys<int>();
-    for(auto const& key: intKeys) {
+    for(auto const& key: source.template getKeys<int>()) {
       m_intValues[key] = source.template get<std::vector<int>>(key).value();
     }
-    auto const& floatKeys = source.template getKeys<float>();
-    for(auto const& key: floatKeys) {
+    for(auto const& key: source.template getKeys<float>()) {
       m_fltValues[key] = source.template get<std::vector<float>>(key).value();
     }
-    auto const& doubleKeys = source.template getKeys<double>();
-    for(auto const& key: doubleKeys) {
+    for(auto const& key: source.template getKeys<double>()) {
       m_dblValues[key] = source.template get<std::vector<double>>(key).value();
     }
-    using std::string;
-    auto const& stringKeys = source.template getKeys<string>();
-    for(auto const& key: stringKeys) {
-      m_strValues[key] = source.template get<std::vector<string>>(key).value();
+    for(auto const& key: source.template getKeys<std::string>()) {
+      m_strValues[key] = source.template get<std::vector<std::string>>(key).value();
     }
   }
 
   /// get the parameters from the GenericParameters of the input EDM4hep run frame and store them in the RunParameters
   /// extension
   template <class T=podio::GenericParameters> void RunParameters::ingestParameters(T const& source) {
-    auto const& intKeys = source.template getKeys<int>();
-    for(auto const& key: intKeys) {
+    for(auto const& key: source.template getKeys<int>()) {
       m_intValues[key] = source.template get<std::vector<int>>(key).value();
     }
-    auto const& floatKeys = source.template getKeys<float>();
-    for(auto const& key: floatKeys) {
+    for(auto const& key: source.template getKeys<float>()) {
       m_fltValues[key] = source.template get<std::vector<float>>(key).value();
     }
-    auto const& doubleKeys = source.template getKeys<double>();
-    for(auto const& key: doubleKeys) {
+    for(auto const& key: source.template getKeys<double>()) {
       m_dblValues[key] = source.template get<std::vector<double>>(key).value();
     }
-    using std::string;
-    auto const& stringKeys = source.template getKeys<string>();
-    for(auto const& key: stringKeys) {
-      m_strValues[key] = source.template get<std::vector<string>>(key).value();
+    for(auto const& key: source.template getKeys<std::string>()) {
+      m_strValues[key] = source.template get<std::vector<std::string>>(key).value();
     }
   }
 
