@@ -32,7 +32,7 @@
 #include <edm4hep/MCParticleCollection.h>
 
 #include <podio/Frame.h>
-#include <podio/ROOTReader.h>
+#include <podio/Reader.h>
 
 typedef dd4hep::detail::ReferenceBitMask<int> PropertyMask;
 
@@ -85,7 +85,7 @@ namespace dd4hep::sim {
   class EDM4hepFileReader : public Geant4EventReader {
   protected:
     /// Reference to reader object
-    podio::ROOTReader m_reader {};
+    podio::Reader m_reader;
     /// Name of the MCParticle collection to read
     std::string m_collectionName;
     /// Name of the EventHeader collection to read
@@ -108,11 +108,11 @@ namespace dd4hep::sim {
   /// Initializing constructor
   dd4hep::sim::EDM4hepFileReader::EDM4hepFileReader(const std::string& nam)
     : Geant4EventReader(nam)
+    , m_reader(podio::makeReader(nam))
     , m_collectionName("MCParticles")
     , m_eventHeaderCollectionName("EventHeader")
   {
     printout(INFO,"EDM4hepFileReader","Created file reader. Try to open input %s",nam.c_str());
-    m_reader.openFile(nam);
     m_directAccess = true;
   }
 
@@ -120,7 +120,7 @@ namespace dd4hep::sim {
     try {
       auto *parameters = new RunParameters();
       try {
-        podio::Frame runFrame = m_reader.readEntry("runs", 0);
+        podio::Frame runFrame = m_reader.readFrame("runs", 0);
         parameters->ingestParameters(runFrame.getParameters());
       } catch (std::runtime_error& e) {
         // we ignore if we do not have runs information
@@ -128,7 +128,7 @@ namespace dd4hep::sim {
         // we ignore if we do not have runs information
       }
       try {
-        podio::Frame metaFrame = m_reader.readEntry("metadata", 0);
+        podio::Frame metaFrame = m_reader.readFrame("metadata", 0);
         parameters->ingestParameters(metaFrame.getParameters());
       } catch (std::runtime_error& e) {
         // we ignore if we do not have metadata information
@@ -156,7 +156,7 @@ namespace dd4hep::sim {
   EDM4hepFileReader::EventReaderStatus
   EDM4hepFileReader::readParticles(int event_number, Vertices& vertices, std::vector<Particle*>& particles) {
     m_currEvent = event_number;
-    podio::Frame frame = m_reader.readEntry("events", event_number);
+    podio::Frame frame = m_reader.readFrame("events", event_number);
     const auto& primaries = frame.get<edm4hep::MCParticleCollection>(m_collectionName);
     int eventNumber = event_number, runNumber = 0;
     if (primaries.isValid()) {

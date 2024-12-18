@@ -105,7 +105,7 @@ ENDIF()
 IF(TARGET EDM4HEP::edm4hep)
   dd4hep_add_plugin(DDG4EDM4HEP
     SOURCES edm4hep/*.cpp
-    USES    DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict podio::podio podio::podioDict podio::podioRootIO
+    USES    DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict podio::podio podio::podioDict podio::podioRootIO podio::podioIO
     )
   install(TARGETS DDG4EDM4HEP EXPORT DD4hep LIBRARY DESTINATION lib)
   set_target_properties(DDG4EDM4HEP PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
