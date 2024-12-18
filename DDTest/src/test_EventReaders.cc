@@ -46,6 +46,9 @@ int main(int argc, char** argv ){
   tests.push_back( TestTuple( "HEPMC3FileReader", "g4pythia.hepmc", /*skipEOF= */ true) );
   tests.push_back( TestTuple( "HEPMC3FileReader", "Pythia_output.hepmc", /*skipEOF= */ true) );
   #endif
+  #ifdef DD4HEP_USE_EDM4HEP
+  tests.push_back( TestTuple( "EDM4hepFileReader", "ZH250_ISR.edm4hep.root", /*skipEOF= */ true) );
+  #endif
 
   try{
     for(std::vector<TestTuple>::const_iterator it = tests.begin(); it != tests.end(); ++it) {
@@ -61,29 +64,27 @@ int main(int argc, char** argv ){
         continue;
       }
       test( thisReader->currentEventNumber() == 0 , readerType + std::string("Initial Event Number") );
-      thisReader->moveToEvent(1);
-      test( thisReader->currentEventNumber() == 1 , readerType + std::string("Event Number after Skip") );
+      if (!thisReader->hasDirectAccess()) {
+        thisReader->moveToEvent(1);
+        test( thisReader->currentEventNumber() == 1 , readerType + std::string("Event Number after Skip") );
+      }
       std::vector<Particle*> particles;
       std::vector<Vertex*> vertices ;
-
-      dd4hep::sim::Geant4EventReader::EventReaderStatus sc = thisReader->readParticles(3,vertices,particles);
+      dd4hep::sim::Geant4EventReader::EventReaderStatus sc = thisReader->readParticles(2,vertices,particles);
       std::for_each(particles.begin(),particles.end(),dd4hep::detail::deleteObject<Particle>);
       test( thisReader->currentEventNumber() == 2 && sc == dd4hep::sim::Geant4EventReader::EVENT_READER_OK,
             readerType + std::string("Event Number Read") );
 
-      //Reset Reader to check what happens if moving to far in the file
+      //Reset Reader to check what happens if moving too far in the file
       if (not skipEOF) {
         thisReader = dd4hep::PluginService::Create<dd4hep::sim::Geant4EventReader*>(readerType, std::move(inputFile));
         sc = thisReader->moveToEvent(1000000);
         test( sc != dd4hep::sim::Geant4EventReader::EVENT_READER_OK , readerType + std::string("EventReader False") );
       }
     }
-
   } catch( std::exception &e ){
-    //} catch( ... ){
-
-    test.log( e.what() );
-    test.error( "exception occurred" );
+    test.error("Exception occurred:");
+    test.log(e.what());
   }
   return 0;
 }

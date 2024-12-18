@@ -49,6 +49,7 @@ POSSIBLEINPUTFILES = [
     ".stdhep", ".slcio", ".HEPEvt", ".hepevt",
     ".pairs",
     ".hepmc",
+    ".root",
     ] + HEPMC3_SUPPORTED_EXTENSIONS
 
 
@@ -445,6 +446,9 @@ class DD4hepSimulation(object):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index)
         gen.Input = "Geant4EventReaderGuineaPig|" + inputFile
         gen.Parameters = self.guineapig.getParameters()
+      elif inputFile.endswith(".root"):
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/EDM4hep%d" % index)
+        gen.Input = "EDM4hepFileReader|" + inputFile
       else:
         # this should never happen because we already check at the top, but in case of some LogicError...
         raise RuntimeError("Unknown input file type: %s" % inputFile)
