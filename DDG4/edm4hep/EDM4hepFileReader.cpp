@@ -232,7 +232,6 @@ namespace dd4hep::sim {
       const auto vsx   = mcp.getVertex();
       const auto vex   = mcp.getEndpoint();
       const auto spin  = mcp.getSpin();
-      const auto color = mcp.getColorFlow();
       const int  pdg   = mcp.getPDG();
       p->pdgID        = pdg;
       p->charge       = int(mcp.getCharge()*3.0);
@@ -251,8 +250,8 @@ namespace dd4hep::sim {
       p->spin[0]      = spin[0];
       p->spin[1]      = spin[1];
       p->spin[2]      = spin[2];
-      p->colorFlow[0] = color[0];
-      p->colorFlow[1] = color[1];
+      p->colorFlow[0] = 0;
+      p->colorFlow[1] = 0;
       p->mass         = mcp.getMass()*CLHEP::GeV;
       const auto par = mcp.getParents(), &dau=mcp.getDaughters();
       for(int num=dau.size(),k=0; k<num; ++k) {
