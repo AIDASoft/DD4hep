@@ -117,3 +117,11 @@ void CeleritasEventAction::begin(const G4Event* event){
 void CeleritasEventAction::end(const G4Event* event){
   CelerSimpleOffload().EndOfEventAction(event);
 }
+
+void CeleritasInitialization::build(){
+  CelerSimpleOffload().Build(&CelerSetupOptions(), &CelerSharedParams(), &CelerLocalTransporter());
+}
+
+void CeleritasInitialization::buildMaster(){
+  CelerSimpleOffload().BuildForMaster(&CelerSetupOptions(), &CelerSharedParams());
+}
