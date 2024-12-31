@@ -102,3 +102,18 @@ physics->ReplacePhysics(new EMPhysicsConstructor);
 return physics;
 }
 
+void CeleritasRunAction::begin(const G4Run* run) {
+  CelerSimpleOffload().BeginOfRunAction(run);
+} 
+
+void CeleritasRunAction::end(const G4Run* run){
+  CelerSimpleOffload().EndOfRunAction(run); 
+}
+
+void CeleritasEventAction::begin(const G4Event* event){
+  CelerSimpleOffload().BeginOfEventAction(event);
+}
+
+void CeleritasEventAction::end(const G4Event* event){
+  CelerSimpleOffload().EndOfEventAction(event);
+}

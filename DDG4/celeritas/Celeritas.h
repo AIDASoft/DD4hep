@@ -2,6 +2,8 @@
 #define Celeritas_h 1
 
 #include <DDG4/Geant4PhysicsList.h>
+#include <DDG4/Geant4RunAction.h>
+#include <DDG4/Geant4EventAction.h>
 #include <accel/SimpleOffload.hh>
 #include <G4EmStandardPhysics.hh>
 
@@ -39,7 +41,31 @@ namespace dd4hep  {
       
       G4VUserPhysicsList* activateCeleritas();
     }; 
-    
+   
+    class CeleritasRunAction : public Geant4RunAction 
+    {
+      /// Standard constructor
+      CeleritasRunAction(Geant4Context* context, const std::string& nam);
+      /// Default destructor
+      virtual ~CeleritasRunAction();
+      /// Begin-of-run callback
+      virtual void begin(const G4Run* run) override;
+      /// End-of-run callback
+      virtual void end(const G4Run* run) override;  
+    };
+
+    class CeleritasEventAction : public Geant4EventAction
+    { 
+      /// Standard constructor
+      CelritasEventAction(Geant4Context* context, const std::string& nam);
+      /// Default destructor
+      virtual ~CeleritasEventAction();
+      /// Begin-of-run callback
+      virtual void begin(const G4Event* event) override;
+      /// End-of-run callback
+      virtual void end(const G4Event* event) override;
+    }
+
   } /* End namespace sim */  
 } /* End namespace dd4hep*/
 
