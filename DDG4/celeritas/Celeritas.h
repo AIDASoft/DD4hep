@@ -57,14 +57,14 @@ namespace dd4hep  {
     class CeleritasEventAction : public Geant4EventAction
     { 
       /// Standard constructor
-      CelritasEventAction(Geant4Context* context, const std::string& nam);
+      CeleritasEventAction(Geant4Context* context, const std::string& nam);
       /// Default destructor
       virtual ~CeleritasEventAction();
       /// Begin-of-run callback
       virtual void begin(const G4Event* event) override;
       /// End-of-run callback
       virtual void end(const G4Event* event) override;
-    }
+    };
 
     class CeleritasInitialization : public Geant4Action
     {
@@ -76,7 +76,7 @@ namespace dd4hep  {
       virtual void build() const;
       /// Callback function to setup celeritas for the MT master thread
       virtual void buildMaster() const;
-    }
+    };
 
   } /* End namespace sim */  
 } /* End namespace dd4hep*/
