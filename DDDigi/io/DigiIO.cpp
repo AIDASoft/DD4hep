@@ -202,7 +202,6 @@ namespace dd4hep {
       mcp.setGeneratorStatus( p.getGeneratorStatus() );
       mcp.setSimulatorStatus( p.getSimulatorStatus() );
       mcp.setSpin(p.getSpin());
-      mcp.setColorFlow(p.getColorFlow());
     }
 
     template <> template <>
@@ -588,7 +587,6 @@ namespace dd4hep {
         mcp.setGeneratorStatus( 0 );
 
       mcp.setSpin(p.spin);
-      mcp.setColorFlow(p.colorFlow);
     }
 
     template <> template <> 

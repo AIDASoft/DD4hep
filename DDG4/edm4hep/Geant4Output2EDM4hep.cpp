@@ -394,7 +394,6 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
         mcp.setGeneratorStatus( 0 )  ;
 
       mcp.setSpin(p->spin);
-      mcp.setColorFlow(p->colorFlow);
 
       p_ids[id] = cnt++;
       p_part.push_back(p);
