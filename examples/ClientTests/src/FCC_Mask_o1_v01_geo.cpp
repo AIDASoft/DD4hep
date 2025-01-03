@@ -14,9 +14,7 @@
 #define endmsg std::endl
 #define lLog std::cout
 namespace MSG {
-const std::string ERROR = " Error: ";
 const std::string DEBUG = " Debug: ";
-const std::string INFO  = " Info: ";
 }
 
 #include "DD4hep/DD4hepUnits.h"
