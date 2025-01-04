@@ -114,7 +114,7 @@ class DD4hepSimulation(object):
     DD4hepSimulation object present in the steering file.
     """
     globs = {}
-    locs = {}
+    locs = {"SIM": self}
     if not self.steeringFile:
       return
     sFileTemp = self.steeringFile
