@@ -25,13 +25,24 @@ def compileAClick(dictionary, g4=True):
   """
   from ROOT import gInterpreter, gSystem
   import os.path
-  dd4hep = os.environ['DD4hepINSTALL']
-  inc = ' -I' + os.environ['ROOTSYS'] + '/include -I' + dd4hep + '/include '
-  lib = ' -L' + dd4hep + '/lib -lDDCore -lDDG4 -lDDSegmentation '
+  if os.getenv("DD4hepINSTALL") is not None:
+    dd4hep = os.environ['DD4hepINSTALL']
+  else:
+    dd4hep = "/usr"
+  if os.getenv("ROOTSYS") is not None:
+    rootsys = os.environ['ROOTSYS']
+  else:
+    rootsys = "/usr"
+
+  inc = ' -I' + rootsys + '/include -I' + dd4hep + '/include '
+  lib = ' -L' + dd4hep + '/lib64 '+ ' -L' + dd4hep + '/lib -lDDCore -lDDG4 -lDDSegmentation '
   if g4:
-    geant4 = os.environ['G4INSTALL']
+    if os.getenv("G4INSTALL") is not None:
+      geant4 = os.environ['G4INSTALL']
+    else:
+      geant4 = "/usr"
     inc = inc + ' -I' + geant4 + '/include/Geant4 -Wno-shadow -g -O0 '
-    lib = lib + ' -L' + geant4 + '/lib  -L' + geant4 + '/lib64 -lG4event -lG4tracking -lG4particles '
+    lib = lib + ' -L' + geant4 + '/lib64  -L' + geant4 + '/lib -lG4event -lG4tracking -lG4particles '
 
   gSystem.AddIncludePath(inc)
   gSystem.AddLinkedLibs(lib)
@@ -50,7 +61,14 @@ def loaddd4hep():
   import os
   import sys
   # Add ROOT to the python path in case it is not yet there....
-  sys.path.append(os.environ['ROOTSYS'] + os.sep + 'lib')
+  if os.getenv("ROOTSYS") is not None:
+    rootsys = os.environ['ROOTSYS']
+  else:
+    rootsys = "/usr"
+  sys.path.append(rootsys + os.sep + 'lib')
+  sys.path.append(rootsys + os.sep + 'lib64')
+  sys.path.append(rootsys + os.sep + 'lib' + os.sep +'root')
+  sys.path.append(rootsys + os.sep + 'lib64' + os.sep +'root')
   from ROOT import gSystem
 
   import platform

@@ -156,9 +156,10 @@ namespace Gaudi {
           const char  sep    = ':';
 #endif
           char* search_path = ::getenv( envVar );
-          if ( search_path ) {
+          if ( true ) {
             logger().debug( std::string( "searching factories in " ) + envVar );
-            std::string            path( search_path );
+            std::string            path;
+            if ( search_path ) path = std::string(search_path); else path="/usr/lib64:/usr/lib:/usr/local/lib";
             std::string::size_type pos    = 0;
             std::string::size_type newpos = 0;
             while ( pos != std::string::npos ) {

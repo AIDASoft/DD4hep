@@ -158,7 +158,7 @@ namespace Gaudi {
 
           std::string search_path;
           const char* envPtr = std::getenv( envVar.c_str() );
-          if ( envPtr ) search_path = envPtr;
+          if ( envPtr ) search_path = envPtr; else search_path="/usr/lib64:/usr/lib:/usr/local/lib";
           if ( search_path.empty() ) {
             return;
           }
