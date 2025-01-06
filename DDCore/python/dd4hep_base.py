@@ -35,7 +35,7 @@ def compileAClick(dictionary, g4=True):
     rootsys = "/usr"
 
   inc = ' -I' + rootsys + '/include -I' + dd4hep + '/include '
-  lib = ' -L' + dd4hep + '/lib64 '+ ' -L' + dd4hep + '/lib -lDDCore -lDDG4 -lDDSegmentation '
+  lib = ' -L' + dd4hep + '/lib64 ' + ' -L' + dd4hep + '/lib -lDDCore -lDDG4 -lDDSegmentation '
   if g4:
     if os.getenv("G4INSTALL") is not None:
       geant4 = os.environ['G4INSTALL']
@@ -67,8 +67,8 @@ def loaddd4hep():
     rootsys = "/usr"
   sys.path.append(rootsys + os.sep + 'lib')
   sys.path.append(rootsys + os.sep + 'lib64')
-  sys.path.append(rootsys + os.sep + 'lib' + os.sep +'root')
-  sys.path.append(rootsys + os.sep + 'lib64' + os.sep +'root')
+  sys.path.append(rootsys + os.sep + 'lib' + os.sep + 'root')
+  sys.path.append(rootsys + os.sep + 'lib64' + os.sep + 'root')
   from ROOT import gSystem
 
   import platform
