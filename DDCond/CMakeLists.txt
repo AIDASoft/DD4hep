@@ -24,7 +24,7 @@ add_library(DD4hep::DDCond ALIAS DDCond)
 target_include_directories(DDCond
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
 target_link_libraries(DDCond PUBLIC DD4hep::DDCore)
@@ -36,7 +36,6 @@ dd4hep_add_plugin(DDCondPlugins
 
 set_target_properties(DDCond DDCondPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
-install(DIRECTORY include/DDCond DESTINATION include)
+install(DIRECTORY include/DDCond DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(TARGETS DDCond DDCondPlugins EXPORT DD4hep
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
+   DESTINATION ${CMAKE_INSTALL_LIBDIR})

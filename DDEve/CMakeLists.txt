@@ -15,7 +15,7 @@ add_library(DD4hep::DDEve_Interface ALIAS DDEve_Interface)
 target_include_directories(DDEve_Interface
   INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 target_link_libraries(DDEve_Interface INTERFACE ROOT::Core ROOT::Rint ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL ROOT::EG)
@@ -60,8 +60,7 @@ if(DD4HEP_USE_GEANT4)
   target_link_libraries(DDG4IO DD4hep::DDG4 DD4hep::DDEve_Interface)
   set_target_properties(DDG4IO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   install(TARGETS DDG4IO EXPORT DD4hep
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
 endif()
 
@@ -73,9 +72,11 @@ set_target_properties(DDEvePlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSIO
 
 
 install(DIRECTORY DDEve DESTINATION examples )
-install(DIRECTORY include/DDEve DESTINATION include)
-install(TARGETS ddeve DDEvePlugins DDEve_Interface EXPORT DD4hep
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+install(DIRECTORY include/DDEve DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(TARGETS ddeve EXPORT DD4hep
+DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+
+install(TARGETS DDEvePlugins DDEve_Interface EXPORT DD4hep
+DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )

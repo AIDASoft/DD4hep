@@ -31,7 +31,7 @@ target_link_libraries(DDG4
 target_include_directories(DDG4 BEFORE
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 if(NOT Geant4_gdml_FOUND)

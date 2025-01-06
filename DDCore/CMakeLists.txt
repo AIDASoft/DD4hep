@@ -87,7 +87,7 @@ endif()
 target_include_directories(DDCore
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
 target_link_libraries(DDCore
@@ -152,11 +152,10 @@ install(DIRECTORY
   include/JSON
   include/Parsers
   include/ROOT
-  DESTINATION include
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   )
 
 set_target_properties(DDCore DDCorePlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 install(TARGETS DDCore DDCorePlugins ${OPTIONAL_TARGETS} EXPORT DD4hep
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
+DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
-PROJECT( DD4hep LANGUAGES NONE)
+PROJECT( DD4hep LANGUAGES CXX)
 SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DD4hep)
+
+include("GNUInstallDirs")
 
 #################
 # Setup version #
@@ -273,9 +275,9 @@ configure_file(cmake/thisdd4hep.sh       bin/thisdd4hep.sh       @ONLY)
 configure_file(cmake/thisdd4hep_only.sh  bin/thisdd4hep_only.sh  @ONLY)
 configure_file(cmake/run_test.sh         bin/run_test.sh         @ONLY)
 
-install(FILES    ${CMAKE_BINARY_DIR}/bin/thisdd4hep.sh DESTINATION bin )
-install(FILES    ${CMAKE_BINARY_DIR}/bin/thisdd4hep_only.sh DESTINATION bin )
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/run_test.sh         DESTINATION bin )
+install(FILES    ${CMAKE_BINARY_DIR}/bin/thisdd4hep.sh DESTINATION ${CMAKE_INSTALL_BINDIR} )
+install(FILES    ${CMAKE_BINARY_DIR}/bin/thisdd4hep_only.sh DESTINATION ${CMAKE_INSTALL_BINDIR} )
+install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/run_test.sh         DESTINATION ${CMAKE_INSTALL_BINDIR} )
 
 install(DIRECTORY cmake
   DESTINATION ${CMAKE_INSTALL_PREFIX}

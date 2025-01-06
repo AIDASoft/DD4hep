@@ -58,7 +58,7 @@ function ( dd4hep_instantiate_package PackageName )
   configure_file( ${DD4hep_DIR}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
 
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/this${PackageName}.sh
-    DESTINATION bin
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 
 

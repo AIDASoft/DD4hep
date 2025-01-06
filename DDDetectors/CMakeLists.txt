@@ -26,7 +26,6 @@ dd4hep_add_plugin(DDDetectors
 
 set_target_properties(DDDetectors PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 install(TARGETS DDDetectors EXPORT DD4hep
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
+   DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
 install(DIRECTORY compact DESTINATION DDDetectors)

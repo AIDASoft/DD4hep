@@ -30,7 +30,7 @@ if (DD4HEP_USE_GEANT4)
   
   add_executable(CLICSiDAClick  scripts/CLICSiDAClick.C)
   target_link_libraries(CLICSiDAClick DD4hep::DDCore DD4hep::DDG4)
-  install(TARGETS CLICSiDXML CLICSiDAClick DESTINATION bin)
+  install(TARGETS CLICSiDXML CLICSiDAClick DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 #
 #
