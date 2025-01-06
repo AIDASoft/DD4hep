@@ -30,8 +30,8 @@ namespace {
 
   constexpr long double piRadians(M_PI);
   constexpr long double degPerRad = 180. / piRadians;  // Degrees per radian
-  constexpr double operator"" _mm(long double length) { return length * 0.1; }
-  constexpr long double operator"" _deg(long double value) { return value / degPerRad; }
+  constexpr double operator""_mm(long double length) { return length * 0.1; }
+  constexpr long double operator""_deg(long double value) { return value / degPerRad; }
 
   // Define Endcap Supercrystal class
   class DDEcalEndcapTrap {
