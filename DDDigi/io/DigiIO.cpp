@@ -171,8 +171,8 @@ namespace dd4hep {
       mcp.setCharge(3.0*p.charge);
       mcp.setVertex( _toVectorD(p.start_position) );
       mcp.setEndpoint( _toVectorD(p.end_position) );
-      mcp.setMomentum( _toVectorD(p.momentum) );
-      mcp.setMomentumAtEndpoint( _toVectorD(p.momentum) );
+      mcp.setMomentum( _toVectorF(p.momentum) );
+      mcp.setMomentumAtEndpoint( _toVectorF(p.momentum) );
     }
 
     template <> template <>
@@ -552,8 +552,8 @@ namespace dd4hep {
       const PropertyMask mask(status);
       mcp.setPDG(p.pdgID);
 
-      mcp.setMomentum( _toVectorD( { p.psx, p.psy, p.psz } ) );
-      mcp.setMomentumAtEndpoint( _toVectorD( {p.pex, p.pey, p.pez} ) );
+      mcp.setMomentum( _toVectorF( { p.psx, p.psy, p.psz } ) );
+      mcp.setMomentumAtEndpoint( _toVectorF( {p.pex, p.pey, p.pez} ) );
       mcp.setVertex( _toVectorD( { p.vsx, p.vsy, p.vsz } ) );
       mcp.setEndpoint( _toVectorD( { p.vex, p.vey, p.vez } ) );
 
