@@ -45,12 +45,17 @@ HEPMC3_SUPPORTED_EXTENSIONS = [
     ".hepmc3", ".hepmc3.gz", ".hepmc3.xz", ".hepmc3.bz2",
     ".hepmc3.tree.root",
     ]
+EDM4HEP_INPUT_EXTENSIONS = [
+    ".root",
+    ".sio",
+    ]
 POSSIBLEINPUTFILES = [
     ".stdhep", ".slcio", ".HEPEvt", ".hepevt",
     ".pairs",
     ".hepmc",
-    ".root",
-    ] + HEPMC3_SUPPORTED_EXTENSIONS
+    ]
+POSSIBLEINPUTFILES += HEPMC3_SUPPORTED_EXTENSIONS
+POSSIBLEINPUTFILES += EDM4HEP_INPUT_EXTENSIONS
 
 
 class DD4hepSimulation(object):
@@ -446,7 +451,7 @@ class DD4hepSimulation(object):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index)
         gen.Input = "Geant4EventReaderGuineaPig|" + inputFile
         gen.Parameters = self.guineapig.getParameters()
-      elif inputFile.endswith(".root"):
+      elif inputFile.endswith(tuple(EDM4HEP_INPUT_EXTENSIONS)):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/EDM4hep%d" % index)
         gen.Input = "EDM4hepFileReader|" + inputFile
       else:
