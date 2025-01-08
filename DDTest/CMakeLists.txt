@@ -50,13 +50,19 @@ endforeach()
 
 ADD_TEST( t_test_python_import "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
   pytest ${PROJECT_SOURCE_DIR}/DDTest/python/test_import.py)
-SET_TESTS_PROPERTIES( t_test_python_import PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+SET_TESTS_PROPERTIES( t_test_python_import PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error"
+                      # Disable a Gaudi pytest plugin that dumps the source
+                      # of each test to the log, resulting in a spurious
+                      # match for the string ERROR.
+                      ENVIRONMENT "DISABLE_CTEST_MEASUREMENTS=1" )
 
 if (DD4HEP_USE_GEANT4)
 
   ADD_TEST( t_test_python_import_ddg4 "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
     pytest ${PROJECT_SOURCE_DIR}/DDTest/python/test_import_ddg4.py)
-  SET_TESTS_PROPERTIES( t_test_python_import_ddg4 PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+  SET_TESTS_PROPERTIES( t_test_python_import_ddg4 PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error"
+                        # See above.
+                        ENVIRONMENT "DISABLE_CTEST_MEASUREMENTS=1" )
 
   if(DD4HEP_USE_HEPMC3)
     set(TEST_HEPMC3_EXTENSIONS)
