@@ -16,6 +16,7 @@
 ///  Framework include files
 #include <DD4hep/Detector.h>
 #include <DDG4/EventParameters.h>
+#include <DDG4/FileParameters.h>
 #include <DDG4/Geant4OutputAction.h>
 #include <DDG4/RunParameters.h>
 
@@ -167,6 +168,27 @@ namespace dd4hep {
       }
 #endif
     }
+    template <> void FileParameters::extractParameters(podio::Frame& frame)   {
+      for(auto const& p: this->intParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving meta parameter: %s", p.first.c_str());
+        frame.putParameter(p.first, p.second);
+      }
+      for(auto const& p: this->fltParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving meta parameter: %s", p.first.c_str());
+        frame.putParameter(p.first, p.second);
+      }
+      for(auto const& p: this->strParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving meta parameter: %s", p.first.c_str());
+        frame.putParameter(p.first, p.second);
+      }
+#if PODIO_BUILD_VERSION > PODIO_VERSION(0, 16, 2)
+      // This functionality is only present in podio > 0.16.2
+      for (auto const& p: this->dblParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving meta parameter: %s", p.first.c_str());
+        frame.putParameter(p.first, p.second);
+      }
+#endif
+    }
 
   }    // End namespace sim
 }      // End namespace dd4hep
@@ -311,7 +333,7 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   // --- write an edm4hep::RunHeader ---------
   // Runs are just Frames with different contents in EDM4hep / podio. We simply
   // store everything as parameters for now
-  podio::Frame runHeader  {};
+  podio::Frame runHeader {};
   for (const auto& [key, value] : m_runHeader)
     runHeader.putParameter(key, value);
 
@@ -320,13 +342,21 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   runHeader.putParameter("GEANT4Version", G4Version);
   runHeader.putParameter("DD4hepVersion", versionString());
   runHeader.putParameter("detectorName", context()->detectorDescription().header().name());
-
-  RunParameters* parameters = context()->run().extension<RunParameters>(false);
-  if ( parameters ) {
-    parameters->extractParameters(runHeader);
+  {
+    RunParameters* parameters = context()->run().extension<RunParameters>(false);
+    if ( parameters ) {
+      parameters->extractParameters(runHeader);
+    }
+    m_file->writeFrame(runHeader, "runs");
   }
-
-  m_file->writeFrame(runHeader, "runs");
+  {
+    podio::Frame metaFrame {};
+    FileParameters* parameters = context()->run().extension<FileParameters>(false);
+    if ( parameters ) {
+      parameters->extractParameters(metaFrame);
+    }
+    m_file->writeFrame(metaFrame, "meta");
+  }
 }
 
 void Geant4Output2EDM4hep::begin(const G4Event* event)  {

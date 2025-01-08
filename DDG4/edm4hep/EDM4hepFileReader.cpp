@@ -25,6 +25,7 @@
 
 #include <DDG4/EventParameters.h>
 #include <DDG4/Factories.h>
+#include <DDG4/FileParameters.h>
 #include <DDG4/Geant4InputAction.h>
 #include <DDG4/RunParameters.h>
 
@@ -63,6 +64,21 @@ namespace dd4hep::sim {
   /// get the parameters from the GenericParameters of the input EDM4hep run frame and store them in the RunParameters
   /// extension
   template <class T=podio::GenericParameters> void RunParameters::ingestParameters(T const& source) {
+    for(auto const& key: source.template getKeys<int>()) {
+      m_intValues[key] = source.template get<std::vector<int>>(key).value();
+    }
+    for(auto const& key: source.template getKeys<float>()) {
+      m_fltValues[key] = source.template get<std::vector<float>>(key).value();
+    }
+    for(auto const& key: source.template getKeys<double>()) {
+      m_dblValues[key] = source.template get<std::vector<double>>(key).value();
+    }
+    for(auto const& key: source.template getKeys<std::string>()) {
+      m_strValues[key] = source.template get<std::vector<std::string>>(key).value();
+    }
+  }
+
+  template <class T=podio::GenericParameters> void FileParameters::ingestParameters(T const& source) {
     for(auto const& key: source.template getKeys<int>()) {
       m_intValues[key] = source.template get<std::vector<int>>(key).value();
     }
@@ -127,15 +143,18 @@ namespace dd4hep::sim {
       } catch(std::invalid_argument&) {
         // we ignore if we do not have runs information
       }
+      context()->run().addExtension<RunParameters>(parameters);
+
+      auto *fileParameters = new FileParameters();
       try {
         podio::Frame metaFrame = m_reader.readFrame("metadata", 0);
-        parameters->ingestParameters(metaFrame.getParameters());
+        fileParameters->ingestParameters(metaFrame.getParameters());
       } catch (std::runtime_error& e) {
         // we ignore if we do not have metadata information
       } catch(std::invalid_argument&) {
         // we ignore if we do not have metadata information
       }
-      context()->run().addExtension<RunParameters>(parameters);
+      context()->run().addExtension<FileParameters>(fileParameters);
     } catch(std::exception &e) {
       printout(ERROR,"EDM4hepFileReader::registerRunParameters","Failed to register run parameters: %s", e.what());
     }
