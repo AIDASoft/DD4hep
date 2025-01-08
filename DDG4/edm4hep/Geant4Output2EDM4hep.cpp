@@ -25,10 +25,13 @@
 #include <edm4hep/CaloHitContributionCollection.h>
 #include <edm4hep/SimCalorimeterHitCollection.h>
 #include <edm4hep/EDM4hepVersion.h>
-#include <edm4hep/Constants.h>
-#if EDM4HEP_VERSION_MAJOR == 0 && EDM4HEP_VERSION_MINOR < 99
+#if EDM4HEP_BUILD_VERSION <= EDM4HEP_VERSION(0, 10, 2)
+  constexpr const char* CellIDEncoding = "CellIDEncoding";
+#elif EDM4HEP_BUILD_VERSION < EDM4HEP_VERSION(0, 99, 0)
+  #include <edm4hep/Constants.h>
   using edm4hep::CellIDEncoding;
 #else
+  #include <edm4hep/Constants.h>
   using edm4hep::labels::CellIDEncoding;
 #endif
 /// podio include files
