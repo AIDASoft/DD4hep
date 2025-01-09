@@ -16,7 +16,6 @@
 #include <DD4hep/Printout.h>
 #include "DigiIO.h"
 
-#include <edm4hep/EDM4hepVersion.h>
 
 /// C/C++ include files
 #include <limits>
@@ -42,6 +41,7 @@ namespace edm4hep {
 #include <edm4hep/CalorimeterHitCollection.h>
 #include <edm4hep/SimCalorimeterHitCollection.h>
 #include <edm4hep/EventHeaderCollection.h>
+#include <edm4hep/EDM4hepVersion.h>
 #include <podio/GenericParameters.h>
 
 /// Namespace for the AIDA detector description toolkit
