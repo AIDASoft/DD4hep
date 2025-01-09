@@ -27,10 +27,7 @@ class ComponentDumper:
     self.all_components = []
 
   def scanPath(self):
-    if os.getenv("LD_LIBRARY_PATH") is not None:
-      ldp = os.environ['LD_LIBRARY_PATH'].split(':')
-    else:
-      ldp = ['/usr/lib64', '/usr/lib/', '/usr/local/lib', '/usr/lib64/root', '/usr/lib/root', '/usr/local/lib/root']
+    ldp = os.getenv("LD_LIBRARY_PATH","/usr/lib64:/usr/lib/:/usr/local/lib:/usr/lib64/root:/usr/lib/root:/usr/local/lib/root").split(':')
     for p in ldp:
       if len(p):
         logger.info('+== Search component directory: ' + p)
