@@ -68,6 +68,7 @@ jobs:
             echo "::group::CMakeConfig 2"
             cmake -DDD4HEP_HEPMC3_COMPRESSION_SUPPORT=ON ..
           fi
+          # Make sure DD4hep can be built with an older version of EDM4hep (0.10.5 for LCG_106)
           if [[ ${{ matrix.LCG }} =~ 106 ]]; then
             echo "::group::CMakeConfig Enable EDM4hep"
             cmake -DDD4HEP_USE_EDM4HEP=ON ..
