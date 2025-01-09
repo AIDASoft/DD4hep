@@ -25,22 +25,13 @@ def compileAClick(dictionary, g4=True):
   """
   from ROOT import gInterpreter, gSystem
   import os.path
-  if os.getenv("DD4hepINSTALL") is not None:
-    dd4hep = os.environ['DD4hepINSTALL']
-  else:
-    dd4hep = "/usr"
-  if os.getenv("ROOTSYS") is not None:
-    rootsys = os.environ['ROOTSYS']
-  else:
-    rootsys = "/usr"
+  dd4hep = os.getenv("DD4hepINSTALL", "/usr")
+  rootsys = os.getenv("ROOTSYS", "/usr")
 
   inc = ' -I' + rootsys + '/include -I' + dd4hep + '/include '
   lib = ' -L' + dd4hep + '/lib64 ' + ' -L' + dd4hep + '/lib -lDDCore -lDDG4 -lDDSegmentation '
   if g4:
-    if os.getenv("G4INSTALL") is not None:
-      geant4 = os.environ['G4INSTALL']
-    else:
-      geant4 = "/usr"
+    geant4 = os.getenv('G4INSTALL', "/usr")
     inc = inc + ' -I' + geant4 + '/include/Geant4 -Wno-shadow -g -O0 '
     lib = lib + ' -L' + geant4 + '/lib64  -L' + geant4 + '/lib -lG4event -lG4tracking -lG4particles '
 
@@ -61,14 +52,11 @@ def loaddd4hep():
   import os
   import sys
   # Add ROOT to the python path in case it is not yet there....
-  if os.getenv("ROOTSYS") is not None:
-    rootsys = os.environ['ROOTSYS']
-  else:
-    rootsys = "/usr"
-  sys.path.append(rootsys + os.sep + 'lib')
-  sys.path.append(rootsys + os.sep + 'lib64')
-  sys.path.append(rootsys + os.sep + 'lib' + os.sep + 'root')
-  sys.path.append(rootsys + os.sep + 'lib64' + os.sep + 'root')
+  rootsys = os.getenv("ROOTSYS","/usr")
+  sys.path.append(os.path.join(rootsys, 'lib'))
+  sys.path.append(os.path.join(rootsys, 'lib64'))
+  sys.path.append(os.path.join(rootsys, 'lib', 'root'))
+  sys.path.append(os.path.join(rootsys, 'lib64', 'root'))
   from ROOT import gSystem
 
   import platform
