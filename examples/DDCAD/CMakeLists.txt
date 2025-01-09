@@ -52,7 +52,11 @@ set(ClientTestsEx_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
 # Single shape tests:
 
 #Reference for test depends on assimp version
-if(assimp_VERSION VERSION_GREATER_EQUAL 5.2.0)
+# The difference here was introduced by commit ad766cb in assimp 5.2.0
+# and was reverted by commit 47ef796 in assimp 5.4.3.
+if(assimp_VERSION VERSION_GREATER_EQUAL 5.4.3)
+  set(assimp_duck_VERSION 5.0.0)
+elseif(assimp_VERSION VERSION_GREATER_EQUAL 5.2.0)
   set(assimp_duck_VERSION 5.2.0)
 else()
   set(assimp_duck_VERSION 5.0.0)
