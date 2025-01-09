@@ -23,6 +23,13 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
  MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
+if( NOT DEFINED CMAKE_INSTALL_LIBDIR )
+  # Set this explicitly if not already set.  Otherwise the Qt6 config
+  # (included via Geant4) may set this to lib64, which will cause
+  # some libraries to be installed to the wrong place.
+  set( CMAKE_INSTALL_LIBDIR "lib" )
+endif()
+
 ###############################################
 # Setup the environment for the documentation #
 ###############################################

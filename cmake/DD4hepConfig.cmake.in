@@ -50,6 +50,14 @@ FIND_DEPENDENCY(Boost REQUIRED)
 
 if(DD4HEP_USE_GEANT4)
   MESSAGE(STATUS "@CMAKE_PROJECT_NAME@ uses Geant4")
+
+  if( NOT DEFINED CMAKE_INSTALL_LIBDIR )
+    # Set this explicitly if not already set.  Otherwise the Qt6 config
+    # (included via Geant4) may set this to lib64, which will cause
+    # some libraries to be installed to the wrong place.
+    set( CMAKE_INSTALL_LIBDIR "lib" )
+  endif()
+
   IF(DD4HEP_USE_CLHEP)
     find_dependency(CLHEP REQUIRED CONFIG)
     UNSET(CLHEP_INCLUDE_DIR)
