@@ -31,7 +31,7 @@ void Installer<UserData>::install(dd4hep::DetElement component, dd4hep::PlacedVo
     }
     else if ( !handleUsingCache(component,comp_vol) )  {
       dd4hep::DetElement par = component.parent();
-      const TGeoHMatrix& m = par.nominal().worldTransformation();
+      const TGeoHMatrix m = par.nominal().worldTransformation();
       double dz = m.GetTranslation()[2];
       const double* trans = placementTranslation(component);
       double half_mod_thickness  = (mod_shape->GetZ(1)-mod_shape->GetZ(0))/2.0;
