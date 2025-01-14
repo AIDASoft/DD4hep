@@ -95,11 +95,12 @@ std::vector<double> Segmentation::cellDimensions(const CellID& cell) const  {
   return access()->segmentation->cellDimensions(cell);
 }
 
-/// Return true if this segmentation can gang together regions
-/// from multiple volumes.
-bool Segmentation::isGanged() const
+/// Return true if this segmentation can have cells that span multiple
+/// volumes.  That is, points from multiple distinct volumes may
+/// be assigned to the same cell.
+bool Segmentation::cellsSpanVolumes() const
 {
-  return access()->segmentation->isGanged();
+  return access()->segmentation->cellsSpanVolumes();
 }
 
 /// Access to the base DDSegmentation object. WARNING: Deprecated call!

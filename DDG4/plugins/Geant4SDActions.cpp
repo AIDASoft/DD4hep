@@ -45,7 +45,7 @@ namespace dd4hep {
 
           // Convert the position relative to the local readout volume
           // to a global position.
-          if (!segmentation.isGanged()) {
+          if (!segmentation.cellsSpanVolumes()) {
             global = h.localToGlobal(pos);
           }
           else {
