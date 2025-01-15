@@ -300,7 +300,7 @@ namespace dd4hep {
         return true;
       }
 
-      handleCalorimeterHit (cell, contrib, *coll, h, *this, m_segmentation);
+      handleCalorimeterHit(cell, contrib, *coll, h, *this, m_segmentation);
       mark(h.track);
       return true;
     }
