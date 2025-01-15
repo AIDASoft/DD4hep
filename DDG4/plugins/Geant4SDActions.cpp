@@ -504,7 +504,7 @@ namespace dd4hep {
         std::cout << out.str();
         return true;
       }
-      handleCalorimeterHit (cell, contrib, *coll, h, *this, m_segmentation);
+      handleCalorimeterHit(cell, contrib, *coll, h, *this, m_segmentation);
       mark(h.track);
       return true;
     }
