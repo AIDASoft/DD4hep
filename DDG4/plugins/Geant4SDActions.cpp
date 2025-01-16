@@ -59,6 +59,7 @@ namespace dd4hep {
             VolumeID volID = segmentation.volumeID(cell);
             VolumeManager vman = VolumeManager::getVolumeManager(sd.detectorDescription());
             VolumeManagerContext* vc = vman.lookupContext(volID);
+            // explicit unit conversion; h.localToGlobal does it internally already
             global = vc->localToWorld(Position(pos)) / dd4hep::mm;
           }
           hit = new Hit(global);
