@@ -452,6 +452,7 @@ class DD4hepSimulation(object):
         gen.Input = "Geant4EventReaderGuineaPig|" + inputFile
         gen.Parameters = self.guineapig.getParameters()
       elif inputFile.endswith(tuple(EDM4HEP_INPUT_EXTENSIONS)):
+        # EDM4HEP must come after HEPMC3 because of .root also part of hepmc3 extensions
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/EDM4hep%d" % index)
         gen.Input = "EDM4hepFileReader|" + inputFile
       else:
