@@ -160,10 +160,10 @@ if(DD4HEP_USE_LCIO)
 endif()
 
 if(DD4HEP_USE_EDM4HEP)
-  find_package(EDM4HEP REQUIRED)
+  find_package(EDM4HEP 0.10.5 REQUIRED)
   # we need podio with Frame support (>=0.16.3)
   # podio is "SameMajorVersion" compatible
-  find_package(podio 0.16.3)  # this will not find 1.0 and newer
+  find_package(podio 0.16.7)  # this will not find 1.0 and newer
   if(NOT podio_FOUND)
     # we try to find a newer version now
     find_package(podio 1.0 REQUIRED)
