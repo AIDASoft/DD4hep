@@ -497,9 +497,11 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
   auto* meh = context()->event().extension<edm4hep::MutableEventHeader>(false);
   if(meh) {
     header.setTimeStamp(meh->getTimeStamp());
+#if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 0)
     for (auto const& weight: meh->getWeights()) {
       header.addToWeights(weight);
     }
+#endif
   }
 
   m_frame.put(std::move(header_collection), "EventHeader");
