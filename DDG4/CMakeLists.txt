@@ -109,7 +109,7 @@ IF(TARGET EDM4HEP::edm4hep)
     )
   install(TARGETS DDG4EDM4HEP EXPORT DD4hep LIBRARY DESTINATION lib)
   set_target_properties(DDG4EDM4HEP PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-  if(TARGET(podio::podioIO))
+  if(TARGET podio::podioIO)
       dd4hep_add_plugin(DDG4EDM4HEPReader
         SOURCES edm4hep/EDM4hepFileReader.cpp
         USES    DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict podio::podio podio::podioDict podio::podioIO
