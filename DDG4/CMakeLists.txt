@@ -118,7 +118,7 @@ IF(TARGET EDM4HEP::edm4hep)
       set_target_properties(DDG4EDM4HEPReader PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
       MESSAGE(STATUS "EDM4hepFileReader enabled")
   else()
-      MESSAGE(STATUS "EDM4hepFileReader requires a new version of EDM4hep, disabled")
+      MESSAGE(STATUS "EDM4hepFileReader requires at least PODIO 1.0, disabled")
   endif()
 ENDIF()
 
