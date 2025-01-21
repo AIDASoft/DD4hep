@@ -86,7 +86,7 @@ void Geant4AssemblyVolume::imprint(const Geant4Converter& cnv,
 
   path = detail::tools::placementPath(chain);
   printout(cnv.debugPlacements ? ALWAYS : DEBUG, "Geant4Converter",
-	   "++ Assembly: %s", path.c_str());
+           "++ Assembly: %s", path.c_str());
   std::vector<G4AssemblyTriplet>::iterator iter = par_ass->GetTripletsIterator();
   for( unsigned int i = 0, n = par_ass->TotalTriplets(); i < n; i++, iter++ )  {
     Chain            new_chain = chain;
@@ -97,14 +97,14 @@ void Geant4AssemblyVolume::imprint(const Geant4Converter& cnv,
     new_chain.emplace_back(node);
     path = detail::tools::placementPath(new_chain);
     printout(cnv.debugPlacements ? ALWAYS : DEBUG, "Geant4Converter",
-	     " Assembly: Entry: %s", path.c_str());
+             " Assembly: Entry: %s", path.c_str());
 
     G4Transform3D Ta( *(triplet.GetRotation()), triplet.GetTranslation() );
-    if ( triplet.IsReflection() )  {
+    if( triplet.IsReflection() )  {
       Ta = Ta * G4ReflectZ3D();
     }
     G4Transform3D Tfinal = transformation * Ta;
-    if ( triplet.GetVolume() )    {
+    if( triplet.GetVolume() )  {
       // Generate the unique name for the next PV instance
       // The name has format:
       //
@@ -119,9 +119,9 @@ void Geant4AssemblyVolume::imprint(const Geant4Converter& cnv,
       pvName << "AV_"
              << m_assembly->GetAssemblyID()
              << '!'
-	     << parent->GetName()
-	     << '#'
-	     << parent->GetNumber()
+             << parent->GetName()
+             << '#'
+             << parent->GetNumber()
              << '!'
              << node->GetName()
              << '#'
@@ -140,24 +140,24 @@ void Geant4AssemblyVolume::imprint(const Geant4Converter& cnv,
                                                   node->GetNumber(),
                                                   surfCheck );
 
-      info.g4VolumeImprints[vol].emplace_back(new_chain,pvPlaced.first);
+      info.g4VolumeImprints[vol].emplace_back(new_chain, pvPlaced.first);
       printout(cnv.debugPlacements ? ALWAYS : DEBUG,
-	       "Geant4Converter", "++ Place %svolume %s in assembly.",
-	       triplet.IsReflection() ? "REFLECTED " : "", path.c_str());
+               "Geant4Converter", "++ Place %svolume %s in assembly.",
+               triplet.IsReflection() ? "REFLECTED " : "", path.c_str());
       printout(cnv.debugPlacements ? ALWAYS : DEBUG,
-	       "Geant4Converter", " Assembly:Parent: %s %s %p G4:%s",
-	       parent->GetName(), node->GetName(),
-	       (void*)node, pvName.str().c_str());
-      if ( pvPlaced.second )  {
+               "Geant4Converter", " Assembly:Parent: %s %s %p G4:%s",
+               parent->GetName(), node->GetName(),
+               (void*)node, pvName.str().c_str());
+      if( pvPlaced.second )  {
         G4Exception("Geant4AssemblyVolume::imprint(..)", "GeomVol0003", FatalException,
                     "Fancy construct popping new mother from the stack!");
       }
     }
-    else if ( triplet.GetAssembly() )  {
+    else if( triplet.GetAssembly() )  {
       // Place volumes in this assembly with composed transformation
       imprint(cnv, parent, std::move(new_chain), avol, pMotherLV, Tfinal, surfCheck );
     }
-    else   {
+    else  {
       G4Exception("Geant4AssemblyVolume::imprint(..)", "GeomVol0003", FatalException,
                   "Triplet has no volume and no assembly");
     }

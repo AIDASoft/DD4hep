@@ -21,21 +21,6 @@
 
 using namespace dd4hep::sim;
 
-std::string Geant4GeometryInfo::placementPath(const Geant4PlacementPath& path, bool reverse)   {
-  std::string path_name;
-  if ( reverse )  {
-    for (Geant4PlacementPath::const_reverse_iterator pIt = path.rbegin(); pIt != path.rend(); ++pIt) {
-      path_name += "/"; path_name += (*pIt)->GetName();
-    }
-  }
-  else  {
-    for (Geant4PlacementPath::const_iterator pIt = path.begin(); pIt != path.end(); ++pIt) {
-      path_name += "/"; path_name += (*pIt)->GetName();
-    }
-  }
-  return path_name;
-}
-
 /// Default constructor
 Geant4GeometryInfo::Geant4GeometryInfo()
   : TNamed("Geant4GeometryInfo", "Geant4GeometryInfo"), m_world(0), printLevel(DEBUG), valid(false) {
