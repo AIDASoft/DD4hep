@@ -328,10 +328,20 @@ VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const  {
       }
       return volid;
     }
-    if( !path[0] )
+    if( !path[0] )  {
+      printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' Path empty: %s [invalid path]",
+	       Geant4TouchableHandler::placementPath(path).c_str(), yes_no(path.empty()));
       return InvalidPath;
-    else if( !path[0]->GetLogicalVolume()->GetSensitiveDetector() )
+    }
+    else if( !path[0]->GetLogicalVolume()->GetSensitiveDetector() )  {
+      printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' Path empty: %s [insensitive]",
+	       Geant4TouchableHandler::placementPath(path).c_str(), yes_no(path.empty()));
       return Insensitive;
+    }
+
+    printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' Path empty: %s [missing entry]",
+	     Geant4TouchableHandler::placementPath(path).c_str(), yes_no(path.empty()));
+    return NonExisting;
   }
   printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' Path empty: %s",
            Geant4TouchableHandler::placementPath(path).c_str(), yes_no(path.empty()));
