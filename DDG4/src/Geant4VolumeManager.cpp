@@ -338,9 +338,10 @@ VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const  {
 	       Geant4TouchableHandler::placementPath(path).c_str(), yes_no(path.empty()));
       return Insensitive;
     }
-
-    printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' Path empty: %s [missing entry (%ld)]",
-	     Geant4TouchableHandler::placementPath(path).c_str(), yes_no(path.empty()), ptr()->g4Paths.size());
+    printout(INFO, "Geant4VolumeManager",
+	     "+++   Bad Geant4 volume path: \'%s\' [missing entry] size: %ld valid: %s has_volmgr: %s",
+	     Geant4TouchableHandler::placementPath(path).c_str(), ptr()->g4Paths.size(),
+	     yes_no(ptr()->valid), yes_no(ptr()->has_volmgr));
     return NonExisting;
   }
   printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' Path empty: %s",
