@@ -81,6 +81,7 @@ namespace  {
     /// Populate the Volume manager
     void populate(DetElement e)  {
       const DetElement::Children& c = e.children();
+      m_entries.clear();
       for( const auto& i : c )  {
         DetElement de = i.second;
         PlacedVolume pv = de.placement();
@@ -88,7 +89,6 @@ namespace  {
           Chain chain;
           SensitiveDetector sd;
           PlacedVolume::VolIDs ids;
-          m_entries.clear();
           chain.emplace_back(m_detDesc.world().placement().ptr());
           scanPhysicalVolume(pv.ptr(), std::move(ids), sd, chain);
           continue;

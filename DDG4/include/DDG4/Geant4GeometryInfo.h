@@ -140,8 +140,8 @@ namespace dd4hep {
       std::map<LimitSet,         std::set<const TGeoVolume*> > limits;
       G4VPhysicalVolume*                                       m_world;
       PrintLevel                                               printLevel;
-      bool                                                     has_volmgr;
-      bool                                                     valid;
+      bool                                                     has_volmgr { false };
+      bool                                                     valid      { false };
 
       /// Assemble Geant4 volume path
       static std::string placementPath(const Geant4TouchableHandler::Geant4PlacementPath& path, bool reverse=true)  {
