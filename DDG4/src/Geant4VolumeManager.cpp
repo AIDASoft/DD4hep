@@ -369,4 +369,3 @@ void Geant4VolumeManager::volumeDescriptor(const G4VTouchable* touchable,
                                            VolIDDescriptor&    vol_desc)  const  {
   volumeDescriptor(placementPath(touchable), vol_desc);
 }
-
