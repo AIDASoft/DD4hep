@@ -269,6 +269,19 @@ bool Geant4VolumeManager::checkValidity() const  {
   return true;
 }
 
+namespace  {
+  std::string debug_status(const Geant4VolumeManager* mgr)  {
+    char text[256];
+    auto* p = mgr->ptr();
+    if ( p )  {
+      ::snprintf(text, sizeof(text), "==> #path entries: %ld valid: %s has_volmgr: %s",
+		 p->g4Paths.size(), yes_no(p->valid), yes_no(p->has_volmgr));
+      return { text };
+    }
+    return { "Invalid handle to Geant4GeometryInfo" };
+  }
+}
+
 /// Access CELLID by Geant4 touchable object
 VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const  {
   Geant4TouchableHandler handler(touchable);
@@ -329,22 +342,21 @@ VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const  {
       return volid;
     }
     if( !path[0] )  {
-      printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' Path empty: %s [invalid path]",
-	       Geant4TouchableHandler::placementPath(path).c_str(), yes_no(path.empty()));
+      printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' [invalid path] %s",
+	       Geant4TouchableHandler::placementPath(path).c_str(), debug_status(this).c_str());
       return InvalidPath;
     }
     else if( !path[0]->GetLogicalVolume()->GetSensitiveDetector() )  {
-      printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' Path empty: %s [insensitive]",
-	       Geant4TouchableHandler::placementPath(path).c_str(), yes_no(path.empty()));
+      printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' [insensitive] %s",
+	       Geant4TouchableHandler::placementPath(path).c_str(), debug_status(this).c_str());
       return Insensitive;
     }
     printout(INFO, "Geant4VolumeManager",
-	     "+++   Bad Geant4 volume path: \'%s\' [missing entry] size: %ld valid: %s has_volmgr: %s",
-	     Geant4TouchableHandler::placementPath(path).c_str(), ptr()->g4Paths.size(),
-	     yes_no(ptr()->valid), yes_no(ptr()->has_volmgr));
+	     "+++   Bad Geant4 volume path: \'%s\' [missing entry] %s",
+	     Geant4TouchableHandler::placementPath(path).c_str(), debug_status(this).c_str());
     return NonExisting;
   }
-  printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' Path empty: %s",
+  printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' %s",
            Geant4TouchableHandler::placementPath(path).c_str(), yes_no(path.empty()));
   return NonExisting;
 }

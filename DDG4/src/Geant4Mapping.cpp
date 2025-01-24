@@ -68,7 +68,7 @@ void Geant4Mapping::attach(Geant4GeometryInfo* data_ptr) {
 /// Access the volume manager
 Geant4VolumeManager Geant4Mapping::volumeManager() const {
   if ( m_dataPtr ) {
-    if ( m_dataPtr->has_volmgr ) {
+    if ( !m_dataPtr->has_volmgr ) {
       return Geant4VolumeManager(m_detDesc, m_dataPtr);
     }
     return Geant4VolumeManager(Handle < Geant4GeometryInfo > (m_dataPtr));
