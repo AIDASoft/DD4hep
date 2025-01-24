@@ -286,8 +286,8 @@ VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const  {
 	     Geant4TouchableHandler::placementPath(path).c_str());
     return NonExisting;
   }
-  else if( checkValidity() && !path.empty() )  {
-    auto hash = detail::hash64(&path[0], sizeof(path[0])*path.size());
+  else  {
+    uint64_t hash = detail::hash64(&path[0], sizeof(path[0])*path.size());
     auto i = ptr()->g4Paths.find(hash);
     if( i != ptr()->g4Paths.end() )  {
       const auto& e = (*i).second;
@@ -333,8 +333,8 @@ VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const  {
     else if( !path[0]->GetLogicalVolume()->GetSensitiveDetector() )
       return Insensitive;
   }
-  printout(INFO, "Geant4VolumeManager", "+++   Bad volume Geant4 Hash:%016X Path: %s",
-           Geant4TouchableHandler::placementPath(path).c_str());
+  printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' Path empty: %s",
+           Geant4TouchableHandler::placementPath(path).c_str(), yes_no(path.empty()));
   return NonExisting;
 }
 
