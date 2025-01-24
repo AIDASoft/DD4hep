@@ -273,8 +273,20 @@ bool Geant4VolumeManager::checkValidity() const  {
 VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const  {
   Geant4TouchableHandler handler(touchable);
   std::vector<const G4VPhysicalVolume*> path = handler.placementPath();
-
-  if( checkValidity() && !path.empty() )  {
+  if( !isValid() )  {
+    printout(INFO, "Geant4VolumeManager", "+++   INVALID Geant4VolumeManager handle.");
+    return NonExisting;
+  }
+  else if( !ptr()->valid )  {
+    printout(INFO, "Geant4VolumeManager", "+++   INVALID Geant4VolumeManager [Not initialized]");
+    return NonExisting;
+  }
+  else if( path.empty() )  {
+    printout(INFO, "Geant4VolumeManager", "+++   EMPTY volume Geant4 Path: %s",
+	     Geant4TouchableHandler::placementPath(path).c_str());
+    return NonExisting;
+  }
+  else if( checkValidity() && !path.empty() )  {
     auto hash = detail::hash64(&path[0], sizeof(path[0])*path.size());
     auto i = ptr()->g4Paths.find(hash);
     if( i != ptr()->g4Paths.end() )  {
@@ -321,7 +333,7 @@ VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const  {
     else if( !path[0]->GetLogicalVolume()->GetSensitiveDetector() )
       return Insensitive;
   }
-  printout(INFO, "Geant4VolumeManager", "+++   Bad volume Geant4 Path: %s",
+  printout(INFO, "Geant4VolumeManager", "+++   Bad volume Geant4 Hash:%016X Path: %s",
            Geant4TouchableHandler::placementPath(path).c_str());
   return NonExisting;
 }
