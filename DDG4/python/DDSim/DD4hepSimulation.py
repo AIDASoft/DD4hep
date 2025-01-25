@@ -114,13 +114,13 @@ class DD4hepSimulation(object):
     DD4hepSimulation object present in the steering file.
     """
     globs = {}
-    locs = {}
+    locs = {"SIM": self}
     if not self.steeringFile:
       return
     sFileTemp = self.steeringFile
     exec(compile(io.open(self.steeringFile).read(), self.steeringFile, 'exec'), globs, locs)
     for _name, obj in locs.items():
-      if isinstance(obj, DD4hepSimulation):
+      if isinstance(obj, DD4hepSimulation) and obj is not self:
         self.__dict__ = obj.__dict__
     self.steeringFile = os.path.abspath(sFileTemp)
 
