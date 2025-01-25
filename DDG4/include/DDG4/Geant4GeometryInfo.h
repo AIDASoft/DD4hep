@@ -104,7 +104,9 @@ namespace dd4hep {
         int      flags;
       };
 
-      TGeoManager*                         manager = 0;
+      class DebugInfo;
+      TGeoManager*                         manager     { nullptr };
+      DebugInfo*                           g4DebugInfo { nullptr };
       Geant4GeometryMaps::IsotopeMap       g4Isotopes;
       Geant4GeometryMaps::ElementMap       g4Elements;
       Geant4GeometryMaps::MaterialMap      g4Materials;
@@ -129,12 +131,7 @@ namespace dd4hep {
       std::map<Region,           G4Region*>                    g4Regions;
       std::map<VisAttr,          G4VisAttributes*>             g4Vis;
       std::map<LimitSet,         G4UserLimits*>                g4Limits;
-#ifdef OLD_VOLMGR_TYPE
-      typedef std::vector<const G4VPhysicalVolume*>  Geant4PlacementPath;
-      std::map<Geant4PlacementPath,         Placement>         g4Paths;
-#else
       std::map<uint64_t,         Placement>                    g4Paths;
-#endif      
       std::map<SensitiveDetector,std::set<const TGeoVolume*> > sensitives;
       std::map<Region,           std::set<const TGeoVolume*> > regions;
       std::map<LimitSet,         std::set<const TGeoVolume*> > limits;
