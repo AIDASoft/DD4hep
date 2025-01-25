@@ -30,6 +30,23 @@
 // C/C++ include files
 #include <sstream>
 
+#define VOLMGR_HAVE_DEBUG_INFO  1
+
+#ifdef VOLMGR_HAVE_DEBUG_INFO
+/// Namespace for the AIDA detector description toolkit
+namespace dd4hep {
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
+  namespace sim {
+
+    class Geant4GeometryInfo::DebugInfo  {
+    public:
+      typedef std::vector<const G4VPhysicalVolume*>  Geant4PlacementPath;
+      std::map<Geant4PlacementPath, Placement>       g4Paths;
+    };
+  }    // End namespace sim
+}      // End namespace dd4hep
+#endif
+
 using namespace dd4hep::sim;
 using namespace dd4hep;
 
@@ -61,6 +78,11 @@ namespace  {
     Populator(const Detector& description, Geant4GeometryInfo& g)
       : m_detDesc(description), m_geo(g)
     {
+#ifdef VOLMGR_HAVE_DEBUG_INFO
+      if ( nullptr == g.g4DebugInfo )  {
+	g.g4DebugInfo = new Geant4GeometryInfo::DebugInfo();
+      }
+#endif
     }
 
     typedef std::pair<VolumeID, VolumeID> Encoding;
@@ -89,6 +111,7 @@ namespace  {
           Chain chain;
           SensitiveDetector sd;
           PlacedVolume::VolIDs ids;
+          m_entries.clear();
           chain.emplace_back(m_detDesc.world().placement().ptr());
           scanPhysicalVolume(pv.ptr(), std::move(ids), sd, chain);
           continue;
@@ -195,7 +218,26 @@ namespace  {
           printout(print_res, "Geant4VolumeManager", "+++     Map %016X to Geant4 Path:%s",
                    (void*)code, Geant4TouchableHandler::placementPath(path).c_str());
           auto hash = detail::hash64(&path[0], path.size()*sizeof(path[0]));
-          if ( m_geo.g4Paths.find(hash) == m_geo.g4Paths.end() ) {
+	  bool missing_hash_path = m_geo.g4Paths.find(hash) == m_geo.g4Paths.end();
+#ifdef VOLMGR_HAVE_DEBUG_INFO
+	  {
+	    bool missing_real_path = m_geo.g4DebugInfo->g4Paths.find(path) == m_geo.g4DebugInfo->g4Paths.end();
+	    if ( missing_real_path != missing_hash_path )   {
+	      if ( !path.empty() )
+		printout(ERROR,"Geant4VolumeManager"," New   G4 path: %s", Geant4TouchableHandler::placementPath(path).c_str());
+	      if ( !nodes.empty() )
+		printout(ERROR,"Geant4VolumeManager","     TGeo path: %s", detail::tools::placementPath(nodes,false).c_str());
+	      printout(ERROR,"Geant4VolumeManager",  " Offend.VolIDs: %s", detail::tools::toString(rdout.idSpec(),ids,code).c_str());
+	    }
+	    if ( missing_real_path ) {
+	      Geant4GeometryInfo::PlacementFlags opt;
+	      opt.flags.parametrised = path.front()->IsParameterised() ? 1 : 0;
+	      opt.flags.replicated   = path.front()->IsReplicated()    ? 1 : 0;
+	      m_geo.g4DebugInfo->g4Paths[path] = { code, opt.value };
+	    }
+	  }
+#endif
+	  if ( missing_hash_path ) {
             Geant4GeometryInfo::PlacementFlags opt;
             opt.flags.parametrised = path.front()->IsParameterised() ? 1 : 0;
             opt.flags.replicated   = path.front()->IsReplicated()    ? 1 : 0;
