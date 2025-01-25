@@ -30,7 +30,7 @@
 // C/C++ include files
 #include <sstream>
 
-#define VOLMGR_HAVE_DEBUG_INFO  1
+//#define VOLMGR_HAVE_DEBUG_INFO  1
 
 #ifdef VOLMGR_HAVE_DEBUG_INFO
 /// Namespace for the AIDA detector description toolkit
@@ -84,7 +84,16 @@ namespace  {
       }
 #endif
     }
-
+    /// Default destructor
+    ~Populator()  {
+#ifdef VOLMGR_HAVE_DEBUG_INFO
+      if ( g.g4DebugInfo )  {
+	delete g.g4DebugInfo;
+	g.g4DebugInfo = nullptr;
+      }
+#endif
+    }
+    
     typedef std::pair<VolumeID, VolumeID> Encoding;
     /// Compute the encoding for a set of VolIDs within a readout descriptor
     static Encoding encoding(const IDDescriptor iddesc, const PlacedVolume::VolIDs& ids)  {
