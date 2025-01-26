@@ -45,11 +45,17 @@ HEPMC3_SUPPORTED_EXTENSIONS = [
     ".hepmc3", ".hepmc3.gz", ".hepmc3.xz", ".hepmc3.bz2",
     ".hepmc3.tree.root",
     ]
+EDM4HEP_INPUT_EXTENSIONS = [
+    ".root",
+    ".sio",
+    ]
 POSSIBLEINPUTFILES = [
     ".stdhep", ".slcio", ".HEPEvt", ".hepevt",
     ".pairs",
     ".hepmc",
-    ] + HEPMC3_SUPPORTED_EXTENSIONS
+    ]
+POSSIBLEINPUTFILES += HEPMC3_SUPPORTED_EXTENSIONS
+POSSIBLEINPUTFILES += EDM4HEP_INPUT_EXTENSIONS
 
 
 class DD4hepSimulation(object):
@@ -108,13 +114,13 @@ class DD4hepSimulation(object):
     DD4hepSimulation object present in the steering file.
     """
     globs = {}
-    locs = {}
+    locs = {"SIM": self}
     if not self.steeringFile:
       return
     sFileTemp = self.steeringFile
     exec(compile(io.open(self.steeringFile).read(), self.steeringFile, 'exec'), globs, locs)
     for _name, obj in locs.items():
-      if isinstance(obj, DD4hepSimulation):
+      if isinstance(obj, DD4hepSimulation) and obj is not self:
         self.__dict__ = obj.__dict__
     self.steeringFile = os.path.abspath(sFileTemp)
 
@@ -445,6 +451,10 @@ class DD4hepSimulation(object):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index)
         gen.Input = "Geant4EventReaderGuineaPig|" + inputFile
         gen.Parameters = self.guineapig.getParameters()
+      elif inputFile.endswith(tuple(EDM4HEP_INPUT_EXTENSIONS)):
+        # EDM4HEP must come after HEPMC3 because of .root also part of hepmc3 extensions
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/EDM4hep%d" % index)
+        gen.Input = "EDM4hepFileReader|" + inputFile
       else:
         # this should never happen because we already check at the top, but in case of some LogicError...
         raise RuntimeError("Unknown input file type: %s" % inputFile)

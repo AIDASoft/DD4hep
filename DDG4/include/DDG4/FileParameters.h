@@ -9,8 +9,8 @@
 //
 //
 //==========================================================================
-#ifndef DDG4_EVENTPARAMETERS_H
-#define DDG4_EVENTPARAMETERS_H
+#ifndef DDG4_FILEPARAMETERS_H
+#define DDG4_FILEPARAMETERS_H
 
 #include <DDG4/ExtensionParameters.h>
 
@@ -20,24 +20,13 @@ namespace dd4hep  {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace sim  {
 
-    /// Event extension to pass input event data to output event
+    /// Extension to pass input run data to output run data
     /**
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class EventParameters : public ExtensionParameters {
-    protected:
-      int m_runNumber = -1;
-      int m_eventNumber = -1;
-
+    class FileParameters: public ExtensionParameters {
     public:
-      /// Set the event parameters
-      void setRunNumber(int runNumber);
-      void setEventNumber(int eventNumber);
-      /// Get the run number
-      int runNumber() const { return m_runNumber; }
-      /// Get the event number
-      int eventNumber() const { return m_eventNumber; }
       /// Copy the parameters from source
       template <class T> void ingestParameters(T const& source);
       /// Put parameters into destination
@@ -46,4 +35,4 @@ namespace dd4hep  {
 
   }     /* End namespace sim   */
 }       /* End namespace dd4hep */
-#endif // DDG4_EVENTPARAMETERS_H
+#endif // DDG4_FILEPARAMETERS_H

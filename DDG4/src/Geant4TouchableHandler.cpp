@@ -54,8 +54,24 @@ Geant4TouchableHandler::Geant4PlacementPath Geant4TouchableHandler::placementPat
   return path_val;
 }
 
+/// Assemble Geant4 volume path
+std::string Geant4TouchableHandler::placementPath(const Geant4PlacementPath& path, bool reverse)   {
+  std::string path_name;
+  if ( reverse )  {
+    for (Geant4PlacementPath::const_reverse_iterator pIt = path.rbegin(); pIt != path.rend(); ++pIt) {
+      path_name += "/"; path_name += (*pIt)->GetName();
+    }
+  }
+  else  {
+    for (Geant4PlacementPath::const_iterator pIt = path.begin(); pIt != path.end(); ++pIt) {
+      path_name += "/"; path_name += (*pIt)->GetName();
+    }
+  }
+  return path_name;
+}
+
 /// Helper: Access the placement path of a Geant4 touchable object as a string
 std::string Geant4TouchableHandler::path()  const   {
-  return Geant4GeometryInfo::placementPath(this->placementPath());
+  return Geant4TouchableHandler::placementPath(this->placementPath());
 }
 
