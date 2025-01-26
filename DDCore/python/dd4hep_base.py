@@ -52,7 +52,7 @@ def loaddd4hep():
   import os
   import sys
   # Add ROOT to the python path in case it is not yet there....
-  rootsys = os.getenv("ROOTSYS","/usr")
+  rootsys = os.getenv("ROOTSYS", "/usr")
   sys.path.append(os.path.join(rootsys, 'lib'))
   sys.path.append(os.path.join(rootsys, 'lib64'))
   sys.path.append(os.path.join(rootsys, 'lib', 'root'))
