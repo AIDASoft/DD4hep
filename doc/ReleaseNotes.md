@@ -1,3 +1,174 @@
+# v01-31
+
+* 2025-01-27 Andrii Verbytskyi ([PR#1378](https://github.com/aidasoft/DD4hep/pull/1378))
+  - Use standard locations if the LD_LIBRARY_PATH or ROOTSYS are empty, i.e. /usr/lib,usr/lib64, etc.
+
+* 2025-01-25 Markus Frank ([PR#1390](https://github.com/aidasoft/DD4hep/pull/1390))
+  -  Optimize the Geant4VolumeManager. Instead of mapping the Geant4 pathes as vectors of pointers,
+      hash64 the pointers of the path and lookup pathes from the touchable history using this key.
+  -  Relevant changes are in the files DDG4/Geant4GeometryInfo.h and src/Geant4VolumeManager.cpp.
+      Everything else is only cosmetics.
+
+* 2025-01-22 Dmitry Kalinkin ([PR#1376](https://github.com/aidasoft/DD4hep/pull/1376))
+  - DDSim: Steering files can now omit instantiating a new `SIM = DD4hepSimulation()`, and instead use a pre-defined variable with name `SIM`. This allows for steering files that preserve the existing state of `DD4hepSimulation` that a custom user code had set prior to the `parseOptions()` call.
+
+* 2025-01-21 Markus Frank ([PR#1387](https://github.com/aidasoft/DD4hep/pull/1387))
+  Update the reference files for the Pseudotrap shape checks after mesh creation updates in ROOT.
+  Pseudotrap tests are disabled for G4 units due to numerical discrepancies when using G4 units vs. TGeo units.
+
+* 2025-01-20 Andre Sailer ([PR#1371](https://github.com/aidasoft/DD4hep/pull/1371))
+  - DDSim: add a reader for EDM4hep files, fixes #1369 
+    - DDSim can now read EDM4hep files in root format.
+
+* 2025-01-16 sss ([PR#1384](https://github.com/aidasoft/DD4hep/pull/1384))
+  - DD4hep::Segmentations: add cellsSpanVolumes function to mark segmentations that that can have cells that span multiple volumes, such as the Allegro ECal.
+
+* 2025-01-16 jmcarcell ([PR#1380](https://github.com/aidasoft/DD4hep/pull/1380))
+  - Revert some of the changes of https://github.com/AIDASoft/DD4hep/pull/1375 to build a vector of floats instead of doubles since the necessary constructor doesn't exist in 0.10.X.
+  - Use `edm4hep::labels::CellIDEncoding` only when they are available (starting at version 0.99)
+
+* 2025-01-13 sss ([PR#1386](https://github.com/aidasoft/DD4hep/pull/1386))
+  - Fix potential use of dangling temporary in exampe.
+
+* 2025-01-13 scott snyder ([PR#1385](https://github.com/aidasoft/DD4hep/pull/1385))
+  - DDSim.ACtion: Fix a wrong variable in a docstring.
+
+* 2025-01-09 jmcarcell ([PR#1374](https://github.com/aidasoft/DD4hep/pull/1374))
+  - Do not set or read the color flow for MCParticles from EDM4hep, 
+  needed after https://github.com/key4hep/EDM4hep/pull/389
+
+* 2025-01-06 jmcarcell ([PR#1375](https://github.com/aidasoft/DD4hep/pull/1375))
+  - Fix a few compiler warnings (clang 18) about:
+    - Set but unused variables and unused variables or declarations
+    - Deprecated constructor for a Vector3d from a Vector3f from EDM4hep
+    - Missing override
+    - Having a space after `operator""` is deprecated
+
+* 2024-12-10 Andre Sailer ([PR#1368](https://github.com/aidasoft/DD4hep/pull/1368))
+  - HitTupleAction: change how the tree is written and filled, because that caused segfaults in LCG stack runs of dd4hep example tests.
+
+* 2024-12-10 Markus Frank ([PR#1367](https://github.com/aidasoft/DD4hep/pull/1367))
+  - If memory is an issue, the Geant4 memory consumption can be reduced using the smartless option of
+    G4LogicalVolume entities. This MR exposes this feature of Geant4 to dd4hep.
+    Example fragment of the code:
+    ```
+      Volume vol = ....;
+      // 2 is the Geant4 voxelization default. 0 means no voxelization,
+      // values bigger than 2 will need more memory.
+      int value =  0 .... 5; 
+      vol.setSmartlessValue(value);
+    ```
+    Fixes #1361
+    - An example (+test) is supplied as well: 
+      - ClientTests/compact/DriftChamber.xml
+      - ClientTests/scripts/DriftChamber.py
+      where the voxelization is reduced.
+
+* 2024-12-10 Andre Sailer ([PR#1366](https://github.com/aidasoft/DD4hep/pull/1366))
+  - DDSim: Clarify that event processing includes Initialisation time, fixes #1364
+
+* 2024-12-09 ybedfer ([PR#1365](https://github.com/aidasoft/DD4hep/pull/1365))
+  - Adding a `CartesianGridUV` segmentation class, providing for a stereo readout, *i.e.* a readout at an angle w.r.t. the axes of the sensitive volume. 
+  - The class is a straightforward derivation of `CartesianGridXY`, with only few extras needed to register the _angle_ parameter and execute the rotation.
+
+* 2024-12-05 Andre Sailer ([PR#1362](https://github.com/aidasoft/DD4hep/pull/1362))
+  - Geant4AssemblyVolume: use the same copy ID for the Geant4 Volume as was set in DD4hep geometry construction, fixes #1360 .
+
+* 2024-11-28 BrieucF ([PR#1359](https://github.com/aidasoft/DD4hep/pull/1359))
+  - Increased the limit on the maximum number of particles one can provide with the hepevt format from 1 to 50 M, fixes #1356
+
+* 2024-11-22 Alvaro Tolosa Delgado ([PR#1358](https://github.com/aidasoft/DD4hep/pull/1358))
+  - Drift chamber data extension `DCH_info_struct` has been extended with functions to calculate the projection of a point into a wire
+
+* 2024-11-21 ybedfer ([PR#1357](https://github.com/aidasoft/DD4hep/pull/1357))
+  Bug fix in `CylindricalGridPhiZ`:
+     - In the `cellId` member method, one now refrains from reducing the phi parameter modulo 2pi when its IDdescriptor is signed.
+     - When the offset is null, this means that the phi range is now [-pi,pi], instead of the previously [0,2pi] which is not appropriate for a signed quantity.
+
+* 2024-11-19 Andre Sailer ([PR#1355](https://github.com/aidasoft/DD4hep/pull/1355))
+  - CMake: fix for using Geant4 with internal CLHEP, fix linking error where -lG4clhep was not found. Fixes #1354
+
+* 2024-11-11 Andre Sailer ([PR#1352](https://github.com/aidasoft/DD4hep/pull/1352))
+  - DDG4: add possibility to control verbosity for physics constructors
+  - DDSim: add new `--output.physics` parameter to control output level for physics constructors, fixes #1351
+
+* 2024-11-07 Andre Sailer ([PR#1349](https://github.com/aidasoft/DD4hep/pull/1349))
+  - PythonPlugin: replace deprecated Eval with Exec (root 6.36 need)
+
+* 2024-11-07 Alvaro Tolosa Delgado ([PR#1348](https://github.com/aidasoft/DD4hep/pull/1348))
+  - DDRec/DCH_info.h: make inline definition of insertion operator of DCH_info class. This fixes 'multiple definition' compilation error when header is included more than once.
+
+* 2024-11-04 Markus Frank ([PR#1347](https://github.com/aidasoft/DD4hep/pull/1347))
+  - Remove plenty of override warnings from DDG4 compilation
+  - Spotted by accidence when checking LHCb nightly builds.
+
+* 2024-10-24 Andre Sailer ([PR#1342](https://github.com/aidasoft/DD4hep/pull/1342))
+  - DDSim: add SignalHandler, add disableSignalHandler flag to turn it off (cf. #1330)
+  - Examples: make RICH depend on DDG4 for the test
+  - DDCad: make two tests depend on DDG4
+
+* 2024-10-22 Markus Frank ([PR#1341](https://github.com/aidasoft/DD4hep/pull/1341))
+  - Addendum to MR https://github.com/AIDASoft/DD4hep/pull/1300.
+
+* 2024-10-21 Markus Frank ([PR#1339](https://github.com/aidasoft/DD4hep/pull/1339))
+  - Addendum to MR https://github.com/AIDASoft/DD4hep/pull/1336 which fixes a compilation error on MACOS.
+
+* 2024-10-21 Andre Sailer ([PR#1338](https://github.com/aidasoft/DD4hep/pull/1338))
+  - CI: add macOS build again
+
+* 2024-10-18 Andre Sailer ([PR#1337](https://github.com/aidasoft/DD4hep/pull/1337))
+  - CMake: explicitly ask for ROOTEve component if it exists so we potentially find the non-builtin nlohmann_json
+
+* 2024-10-18 Markus Frank ([PR#1336](https://github.com/aidasoft/DD4hep/pull/1336))
+  Add implementation for signal handling. 
+  - The generic signal handler in DDCore may be used and specialized by applications as shon in the DDG4 package (see for details src/Geant4Kernel.h)
+  - Use generic signal handler in DDG4 for controlled shutdown on CTRL-C. 
+  - Add test DDG4_SIGINT_handler in examples/DDG4
+    to enable the signal handling use from python:
+    ```
+    geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
+    geant4.registerInterruptHandler() 
+    ```
+    Please note: The signal handler must be explicitly installed. DDG4 is a library framework and does not intervene in actions which users possibly want to handle themselves! This mechanism looks simple enough that it should not be annoying.
+  - This MR should implement [issue#1330](https://github.com/AIDASoft/DD4hep/issues/1330) and supposedly supersedes [PR#1300](https://github.com/AIDASoft/DD4hep/pull/1300)
+
+* 2024-10-17 Andre Sailer ([PR#1334](https://github.com/aidasoft/DD4hep/pull/1334))
+  - checkOverlaps: move from DDG4 to DDCore as this does not depend on Geant4, no impact on users
+  - checkGeometry: move from DDG4 to DDCore as this does not depend on Geant4, no impact on users
+  - CI: Key4hep: set CMAKE_INSTALL_LIBDIR=lib because Qt6 sets GNUInstallDir
+
+* 2024-10-17 jmcarcell ([PR#1333](https://github.com/aidasoft/DD4hep/pull/1333))
+  - Use `edm4hep::labels::CellIDEncoding` instead of "CellIDEncoding"
+  - Use `podio::collMetadataParamName` instead of hardcoding the convention of adding `__`
+
+* 2024-10-17 Andre Sailer ([PR#1332](https://github.com/aidasoft/DD4hep/pull/1332))
+  - ImportTest: change 'error' to 'fehler' to avoid triggering test failures for spurious warning from gosam package in lcg stacks
+
+* 2024-10-16 Andre Sailer ([PR#1331](https://github.com/aidasoft/DD4hep/pull/1331))
+  - Conditions: change FIRST_KEY, LAST_KEY to constexpr instead of anonymous enum
+
+* 2024-10-15 BrieucF ([PR#1329](https://github.com/aidasoft/DD4hep/pull/1329))
+  - ddsim: Set `edm4hep` the default output format in case DD4hep is compiled with both `DDD4HEP_USE_LCIO` `DD4HEP_USE_EDM4HEP` ON
+  - ddsim: Change the name of the default output file from dummyOutput to ddsimOutput
+
+* 2024-10-15 Bohdan Dudar ([PR#1326](https://github.com/aidasoft/DD4hep/pull/1326))
+  - Add xercesc parsing of environment variables in the xml path https://github.com/iLCSoft/Marlin/issues/60
+
+* 2024-10-03 Dmitry Kalinkin ([PR#1327](https://github.com/aidasoft/DD4hep/pull/1327))
+  * ASSIMPWriter: fix "warning: unqualified call to 'std::move'"
+
+* 2024-09-19 Markus Frank ([PR#1324](https://github.com/aidasoft/DD4hep/pull/1324))
+  Add warning if TGeo materialScan hits TGeoTessellated volumes. 
+  
+  The DDRec MaterialManager and hence the corresponding MaterialScan use TGeo tracking through volumes.
+  Tracking in TGeo is not implemented for tessellated shapes as they result from CAD shapes. Though TGeo tracking is used
+  in the material scanner.... In TGeo tessellated surfaces behave like their bounding box. Hence they have no real shape 
+  and for this reason you only see a "box". 
+  TGeo tracking for tessellated shapes will only be implemented once TGeo moves to VecGeom. This will still take some time.
+  
+  
+  See github issue https://github.com/AIDASoft/DD4hep/issues/1322 for details about the discussion.
+
 # v01-30
 
 * 2024-08-25 Andre Sailer ([PR#1317](https://github.com/aidasoft/dd4hep/pull/1317))

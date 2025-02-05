@@ -9,7 +9,7 @@ include("GNUInstallDirs")
 #################
 
 SET( DD4hep_VERSION_MAJOR 1 )
-SET( DD4hep_VERSION_MINOR 30 )
+SET( DD4hep_VERSION_MINOR 31 )
 SET( DD4hep_VERSION_PATCH 0 )
 
 #######################
