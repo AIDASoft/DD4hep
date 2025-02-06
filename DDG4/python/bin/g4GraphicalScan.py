@@ -144,6 +144,7 @@ elif sliceType=='ZY':
     h2 = ROOT.TH2F('hMat','h2',nBins, zRange[0], zRange[1], nBins, yRange[0], yRange[1] )
     h2.GetXaxis().SetTitle('z [mm]')
     h2.GetYaxis().SetTitle('y [mm]')
+h2.Fill(0,0,0.0) # to ensure there is at least one entry...otherwise doesn't get drawn...
 
 edgeOfWorld=-15000. # mm
 #
@@ -340,43 +341,42 @@ for iDir in range(0,2): # the two directions
                     hists[matStr] = h2.Clone( h2.GetName()+'_'+matStr )
                     hists[matStr].SetTitle( hists[matStr].GetTitle().replace('1/X_{0}', matStr ) )
                     hists[matStr].Reset()
-
+                    hists[matStr].Fill(0,0,0.0) # to ensure there is at least one entry...otherwise doesn't get drawn...
+                    
                 iy1=scanaxis.FindBin(begpos)
                 iy2=scanaxis.FindBin(endpos)
 
                 if iy1==iy2: # this step entirely within one histo bin
                     if iDir==1:
-                        hists['x0']  .SetBinContent( iy1, jj, hists['x0']  .GetBinContent( iy1, jj ) + thick/radlen/hxbw )
-                        hists[matStr].SetBinContent( iy1, jj, hists[matStr].GetBinContent( iy1, jj ) + thick/hxbw )
+                        hists['x0']  .AddBinContent( iy1, jj, thick/radlen/hxbw )
+                        hists[matStr].AddBinContent( iy1, jj, thick/hxbw )
                     else:
-                        hists['x0']  .SetBinContent( jj, iy1, hists['x0']  .GetBinContent( jj, iy1 ) + thick/radlen/hxbw )
-                        hists[matStr].SetBinContent( jj, iy1, hists[matStr].GetBinContent( jj, iy1 ) + thick/hxbw )
-                        
+                        hists['x0']  .AddBinContent( jj, iy1, thick/radlen/hxbw )
+                        hists[matStr].AddBinContent( jj, iy1, thick/hxbw )
                 else: # this step extends over two or more bins
                     firstBinStubLength = scanaxis.GetBinUpEdge(iy1)-begpos;
                     lastBinStubLength = endpos-scanaxis.GetBinLowEdge(iy2);
-                    
                     if iDir==1:
-                        hists['x0'].SetBinContent( iy1, jj, hists['x0'].GetBinContent( iy1, jj ) + firstBinStubLength/radlen/hxbw )
-                        hists['x0'].SetBinContent( iy2, jj, hists['x0'].GetBinContent( iy2, jj ) + lastBinStubLength/radlen/hxbw )
+                        hists['x0'].AddBinContent( iy1, jj, firstBinStubLength/radlen/hxbw )
+                        hists['x0'].AddBinContent( iy2, jj, lastBinStubLength/radlen/hxbw )
                         
-                        hists[matStr].SetBinContent( iy1, jj, hists[matStr].GetBinContent( iy1, jj ) + firstBinStubLength/hxbw )
-                        hists[matStr].SetBinContent( iy2, jj, hists[matStr].GetBinContent( iy2, jj ) + lastBinStubLength/hxbw )
+                        hists[matStr].AddBinContent( iy1, jj, firstBinStubLength/hxbw )
+                        hists[matStr].AddBinContent( iy2, jj, lastBinStubLength/hxbw )
                     else:
-                        hists['x0'].SetBinContent( jj, iy1, hists['x0'].GetBinContent( jj, iy1 ) + firstBinStubLength/radlen/hxbw )
-                        hists['x0'].SetBinContent( jj, iy2, hists['x0'].GetBinContent( jj, iy2 ) + lastBinStubLength/radlen/hxbw )
+                        hists['x0'].AddBinContent( jj, iy1, firstBinStubLength/radlen/hxbw )
+                        hists['x0'].AddBinContent( jj, iy2, lastBinStubLength/radlen/hxbw )
                         
-                        hists[matStr].SetBinContent( jj, iy1, hists[matStr].GetBinContent( jj, iy1 ) + firstBinStubLength/hxbw )
-                        hists[matStr].SetBinContent( jj, iy2, hists[matStr].GetBinContent( jj, iy2 ) + lastBinStubLength/hxbw )
+                        hists[matStr].AddBinContent( jj, iy1, firstBinStubLength/hxbw )
+                        hists[matStr].AddBinContent( jj, iy2, lastBinStubLength/hxbw )
 
                     if iy2-iy1>1: # fill the bins in between first and last
                         for i in range( iy1+1, iy2 ):
                             if iDir==1:
-                                hists['x0']  .SetBinContent( i, jj, hists['x0']  .GetBinContent( i, jj )+ 1./radlen )
-                                hists[matStr].SetBinContent( i, jj, hists[matStr].GetBinContent( i, jj ) + 1. )
+                                hists['x0']  .AddBinContent( i, jj, 1./radlen )
+                                hists[matStr].AddBinContent( i, jj, 1. )
                             else:
-                                hists['x0']  .SetBinContent( jj, i, hists['x0']  .GetBinContent( jj, i )+1./radlen )
-                                hists[matStr].SetBinContent( jj, i, hists[matStr].GetBinContent( jj, i ) + 1. )
+                                hists['x0']  .AddBinContent( jj, i, 1./radlen )
+                                hists[matStr].AddBinContent( jj, i, 1. )
             
             curpos=endpos
 
