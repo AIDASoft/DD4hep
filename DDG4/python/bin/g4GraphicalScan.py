@@ -299,7 +299,7 @@ for iDir in range(0, 2):   # the two directions
 
         curpos = edgeOfWorld
 
-        for key, value in scandat.items():
+        for value in scandat.values():
             begpos = curpos
 
             endx = value[3]
