@@ -1,23 +1,26 @@
 ###############################################################
 #!/usr/bin/env python3
-###############################################################
-# make a 2d slice through a dd4hep detector model
-#  present results as a series of TH2F
-#    - density (1/X0), materials
-# in each bin, we consider the material along 2 lines,
-#  parallel to the histogram axes and passing through the bin center
-#
-# the g4 geometry is scanned by shooting a geantino along various paths
-#
-# D. Jeans, KEK. 2025/2/3
-#
-# for usage instructions:
-#   python3 g4GraphicalScan.py -h
-#
-# e.g. for a scan at z=1000mm, in the range -10mm < x,y < 10mm, with 100x100 bins :
-# > python3 g4GraphicalScan.py -c myModel.xml -s XY -x -10,10 -y -10,10 -z 1000 -n 100 -o scanOutput.root
-#
-###############################################################
+"""
+Make a 2d slice through a dd4hep detector model.
+Present results as a series of TH2F
+ 
+- density (1/X0), materials
+
+in each bin, we consider the material along two lines,
+parallel to the histogram axes and passing through the bin centre.
+
+The G4 geometry is scanned by shooting a geantino along various paths
+
+D. Jeans, KEK. 2025/2/3
+
+for usage instructions:
+
+  python3 g4GraphicalScan.py -h
+
+e.g. for a scan at z=1000mm, in the range -10mm < x,y < 10mm, with 100x100 bins:
+
+  python3 g4GraphicalScan.py -c myModel.xml -s XY -x -10,10 -y -10,10 -z 1000 -n 100 -o scanOutput.root
+"""
 import os
 import sys
 import optparse
