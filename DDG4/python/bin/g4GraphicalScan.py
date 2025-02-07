@@ -1,4 +1,3 @@
-###############################################################
 #!/usr/bin/env python3
 """
 Make a 2d slice through a dd4hep detector model.
