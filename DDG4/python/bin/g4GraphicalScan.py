@@ -1,4 +1,6 @@
 ###############################################################
+#!/usr/bin/env python3
+###############################################################
 # make a 2d slice through a dd4hep detector model
 #  present results as a series of TH2F
 #    - density (1/X0), materials
