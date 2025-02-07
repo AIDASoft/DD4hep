@@ -2,7 +2,6 @@
 """
 Make a 2d slice through a dd4hep detector model.
 Present results as a series of TH2F
- 
 - density (1/X0), materials
 
 in each bin, we consider the material along two lines,
