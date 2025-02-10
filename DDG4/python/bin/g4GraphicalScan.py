@@ -70,7 +70,7 @@ parser.add_option('-o', '--outputFile',
                   metavar='<string>')
 parser.add_option("-P", "--noPilot",
                   action="store_true", dest="noPilot", default=False,
-                  help="don't print status messages to stdout")
+                  help="don't run the pilot job (e.g. if you're sure the geometry is good)")
 
 (opts, args) = parser.parse_args()
 #
