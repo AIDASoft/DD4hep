@@ -339,7 +339,7 @@ for line in result.stdout.splitlines():
         continue
     elif r"| Layer \ " in line:          # comment line
         continue
-    elif inScan and len(line.split()) == 16 and line.split()[0] == '|':   # this line contains material information
+    elif inScan and '(' in line and len(line.split('(')[0].split()) == 12 and line.split()[0] == '|': # this line contains material information
         index = int(line.split()[1])
         material = line.split()[2]
         radlen = 10 * float(line.split()[6])     # cm->mm
