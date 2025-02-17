@@ -165,7 +165,7 @@ dd4hep_add_test_reg( DDCAD_Issue1134_overlap_check
 if(TARGET DD4hep::DDG4)
   #
   #  Overlap check of Armin Ilg's example
-  dd4hep_add_test_reg( DDCAD_Issue1134_g4overlap_check
+  dd4hep_add_test_reg( DDCAD_sim_Issue1134_g4overlap_check
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
     EXEC_ARGS  ddsim --compactFile ${DDCADEx_INSTALL}/compact/DD4hep_Issue_1134.xml
     --enableG4Gun --runType run
@@ -175,7 +175,7 @@ if(TARGET DD4hep::DDG4)
   )
   #
   #  Geometry scan of Armin Ilg's example
-  dd4hep_add_test_reg( DDCAD_Issue1134_g4geometry_scan
+  dd4hep_add_test_reg( DDCAD_sim_Issue1134_g4geometry_scan
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
     EXEC_ARGS  g4GeometryScan
     --compact=file:${DDCADEx_INSTALL}/compact/DD4hep_Issue_1134.xml
