@@ -137,9 +137,9 @@ namespace {
 }
 
 std::string dd4hep::versionString(){
-  std::string vs("vXX-YY") ;
-  std::sprintf( &vs[0] , "v%2.2d-%2.2d", DD4HEP_MAJOR_VERSION, DD4HEP_MINOR_VERSION  ) ;
-  return vs;
+  char vsn[32];
+  std::snprintf(vsn, sizeof(vsn), "v%2.2d-%2.2d", DD4HEP_MAJOR_VERSION, DD4HEP_MINOR_VERSION);
+  return { vsn };
 }
 
 std::unique_ptr<Detector> Detector::make_unique(const std::string& name)   {
