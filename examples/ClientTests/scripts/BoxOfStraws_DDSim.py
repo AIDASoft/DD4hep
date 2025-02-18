@@ -4,8 +4,8 @@ SIM = DD4hepSimulation()
 # make ddsim find the sensitive detector for box of straws
 SIM.action.calorimeterSDTypes = ['sensitive']
 SIM.random.enableEventSeed = True
-## Fix random seed for all events (debugging only):
-## SIM.random.seed = <number> 
+# Fix random seed for all events (debugging only):
+# SIM.random.seed = <number> 
 SIM.filter.calo = ""
 
 # Configure the regexSD for the BoxOfStraws gas_
