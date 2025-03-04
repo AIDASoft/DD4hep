@@ -50,6 +50,7 @@ dd4hep_add_library_path()    {
     else
         dd4hep_add_path LD_LIBRARY_PATH       "$p"
     fi
+    dd4hep_add_path ROOT_LIBRARY_PATH "$p"
 }
 #-----------------------------------------------------------------------------
 #
@@ -110,7 +111,7 @@ dd4hep_add_path PYTHONPATH ${THIS}/@DD4HEP_PYTHON_INSTALL_DIR@;
 #----ROOT_INCLUDE_PATH--------------------------------------------------------
 dd4hep_add_path ROOT_INCLUDE_PATH ${THIS}/include;
 #----ROOT_LIBRARY_PATH--------------------------------------------------------
-dd4hep_add_path ROOT_LIBRARY_PATH ${THIS}/lib;
+dd4hep_add_path  ${THIS}/lib;
 #-----------------------------------------------------------------------------
 if [ @APPLE@ ];
 then
