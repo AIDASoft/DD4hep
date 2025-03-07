@@ -39,6 +39,9 @@ namespace dd4hep {
 
     const MaterialVec& MaterialManager::materialsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon) {
       if( ( p0 != _p0 ) || ( p1 != _p1 ) ) {	
+        // A backup is needed to restore the state of the navigator after the track is done
+        // see https://github.com/AIDASoft/DD4hep/issues/1413
+        _tgeoMgr->DoBackupState();
         //---------------------------------------	
         _mV.clear() ;
         _placeV.clear();
@@ -152,6 +155,8 @@ namespace dd4hep {
         _tgeoMgr->ClearTracks();
 
         _tgeoMgr->CleanGarbage();
+
+        _tgeoMgr->DoRestoreState();
 	
         //---------------------------------------	
 	
