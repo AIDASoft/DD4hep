@@ -50,8 +50,6 @@ div.lstlisting {
 }
 .sidebar .sectionToc, .sidebar .subsectionToc {
     display:block;
-    margin-top:-1em;
-    margin-bottom:0px;
 }
 .sidebar .sectionTOCS br {
     display:none;
