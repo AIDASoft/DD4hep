@@ -2,7 +2,7 @@
 <lccdd>
 
   <info name="CLD_o2_v07 VertexBarrel"
-	title="Reduced version of the CLD_o2_v07 VertexBarrel from k4geo for testing">
+	title="The CLD_o2_v07 VertexBarrel from k4geo for testing">
   </info>
 
     <includes>
