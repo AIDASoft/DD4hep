@@ -2,14 +2,15 @@ import os
 import argparse
 import dd4hep
 import DDRec
-det = dd4hep.Detector.getInstance()
-install_dir = os.environ['DD4hepExamplesINSTALL']
-det.fromCompact(f'{install_dir}/examples/ClientTests/compact/InnerOuterMaterial.xml')
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument('--call-inner-material', action='store_true', default=False)
 
 args = argparser.parse_args()
+
+det = dd4hep.Detector.getInstance()
+install_dir = os.environ['DD4hepExamplesINSTALL']
+det.fromCompact(f'{install_dir}/examples/ClientTests/compact/InnerOuterMaterial.xml')
 
 sm = det.extension[DDRec.SurfaceManager]()
 multimap = sm.map('world')
