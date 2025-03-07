@@ -668,5 +668,10 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL"
   )
   #
-  #
+  # Test if calling innerMaterial before outerMaterial changes the result
+  add_test(NAME  ClientTests_inner_outer_material
+    COMMAND bash -c "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/call_inner_outer_material.py &&
+                     ${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/call_inner_outer_material.py --call-inner-material &&
+                     diff surfaces_bad.txt surfaces_good.txt"
+  )
 endif(DD4HEP_USE_GEANT4)
