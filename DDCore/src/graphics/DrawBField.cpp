@@ -20,6 +20,7 @@
 
 using namespace dd4hep;
 
+// ROOT include files
 #include <TH2.h>
 #include <TPad.h>
 #include <TRint.h>
@@ -34,7 +35,6 @@ using namespace dd4hep;
 
 extern Hoption_t Hoption;
 extern Hparam_t  Hparam;
-
 
 namespace  {
   void help_bfield(int argc, char** argv)   {
@@ -69,20 +69,20 @@ namespace  {
     for(std::size_t i=0; i<s.length()+1; ++i)   {
       char c = s.c_str()[i];
       if ( c == ',' || i == s.length() )  {
-	switch(ival)   {
-	case 0:
-	  range.rmin = _toDouble(val);
-	  break;
-	case 1:
-	  range.rmax = _toDouble(val);
-	  break;
-	default:
-	  except("","+++ Too many value for range descriptor provided: %s", s.c_str());
-	  break;
-	}
-	val = "";
-	++ival;
-	continue;
+        switch(ival)   {
+        case 0:
+          range.rmin = _toDouble(val);
+          break;
+        case 1:
+          range.rmax = _toDouble(val);
+          break;
+        default:
+          except("","+++ Too many value for range descriptor provided: %s", s.c_str());
+          break;
+        }
+        val = "";
+        ++ival;
+        continue;
       }
       val += c;
     }
@@ -99,30 +99,30 @@ namespace  {
       fYaxis->SetTitle("Y coordinate [cm]");
       fXaxis->SetTitle("X coordinate [cm]");
       for(const auto& p : points)    {
-	double strength2 = p.bfield.mag2();
-	if ( strength2 > 1e-8 )   {
-	  double strength = sqrt(p.bfield.X()*p.bfield.X()+p.bfield.Y()*p.bfield.Y());
-	  int ix = fXaxis->FindBin(p.position.X());
-	  int iy = fYaxis->FindBin(p.position.Y());
-	  double xlo = fXaxis->GetBinLowEdge(ix);
-	  double xhi = fXaxis->GetBinLowEdge(ix+1);
-	  double ylo = fYaxis->GetBinLowEdge(iy);
-	  double yhi = fYaxis->GetBinLowEdge(iy+1);
-	  auto norm_field = p.bfield * ((xhi-xlo) / strength);
-	  double x1  = xlo + (xhi-xlo)/2.0;
-	  double x2  = x1 + norm_field.X();
-	  double y1  = ylo + (yhi-ylo)/2.0;
-	  double y2  = y1 + norm_field.Y();
-	  auto* arrow = new TArrow(x1, y1, x2, y2, 0.015, "|>");
-	  arrow->SetAngle(25);
-	  arrow->SetFillColor(kRed);
-	  arrow->SetLineColor(kRed);
-	  arrow->Draw();
-	  histo->Fill(p.position.X(), p.position.X(), strength);
-	  ::fprintf(stdout, "Arrow %+15.8e  %+15.8e  %+15.8e  %+15.8e    %+15.8e  %+15.8e\n",
-		    x1, y1, x2, y2, x2-x1, y2-y1);
-	  //delete arrow;
-	}
+        double strength2 = p.bfield.mag2();
+        if ( strength2 > 1e-8 )   {
+          double strength = sqrt(p.bfield.X()*p.bfield.X()+p.bfield.Y()*p.bfield.Y());
+          int ix = fXaxis->FindBin(p.position.X());
+          int iy = fYaxis->FindBin(p.position.Y());
+          double xlo = fXaxis->GetBinLowEdge(ix);
+          double xhi = fXaxis->GetBinLowEdge(ix+1);
+          double ylo = fYaxis->GetBinLowEdge(iy);
+          double yhi = fYaxis->GetBinLowEdge(iy+1);
+          auto norm_field = p.bfield * ((xhi-xlo) / strength);
+          double x1  = xlo + (xhi-xlo)/2.0;
+          double x2  = x1 + norm_field.X();
+          double y1  = ylo + (yhi-ylo)/2.0;
+          double y2  = y1 + norm_field.Y();
+          auto* arrow = new TArrow(x1, y1, x2, y2, 0.015, "|>");
+          arrow->SetAngle(25);
+          arrow->SetFillColor(kRed);
+          arrow->SetLineColor(kRed);
+          arrow->Draw();
+          histo->Fill(p.position.X(), p.position.X(), strength);
+          dd4hep::detail::printf("Arrow %+15.8e  %+15.8e  %+15.8e  %+15.8e    %+15.8e  %+15.8e\n",
+                                 x1, y1, x2, y2, x2-x1, y2-y1);
+          //delete arrow;
+        }
       }
       PaintPalette();
       return histo;
@@ -153,25 +153,25 @@ namespace  {
 
     for(int i = 0; i < argc && argv[i]; ++i)  {
       if ( 0 == ::strncmp("-rx",argv[i],4) )
-	srange_x.push_back(argv[++i]);
+        srange_x.push_back(argv[++i]);
       else if ( 0 == ::strncmp("-ry",argv[i],3) )
-	srange_y.push_back(argv[++i]);
+        srange_y.push_back(argv[++i]);
       else if ( 0 == ::strncmp("-rz",argv[i],3) )
-	srange_z.push_back(argv[++i]);
+        srange_z.push_back(argv[++i]);
       else if ( 0 == ::strncmp("-nx",argv[i],3) )
-	nbin_x = _toULong(argv[++i]);
+        nbin_x = _toULong(argv[++i]);
       else if ( 0 == ::strncmp("-ny",argv[i],3) )
-	nbin_y = _toULong(argv[++i]);
+        nbin_y = _toULong(argv[++i]);
       else if ( 0 == ::strncmp("-nz",argv[i],3) )
-	nbin_z = _toULong(argv[++i]);
+        nbin_z = _toULong(argv[++i]);
       else if ( 0 == ::strncmp("-z",argv[i],2) )
-	z_value = _toDouble(argv[++i]);
+        z_value = _toDouble(argv[++i]);
       else if ( 0 == ::strncmp("-draw",argv[i],4) )
         draw = true;
       else if ( 0 == ::strncmp("-output",argv[i],4) )
         output = argv[++i];
       else if ( 0 == ::strncmp("-help",argv[i],2) )
-	help_bfield(argc, argv);
+        help_bfield(argc, argv);
     }
     if ( srange_x.empty() || srange_y.empty() )   {
       help_bfield(argc, argv);
@@ -210,12 +210,12 @@ namespace  {
     double dx = (envelope_x.rmax - envelope_x.rmin) / double(nbin_x);
     double dy = (envelope_y.rmax - envelope_y.rmin) / double(nbin_y);
     double dz = nbin_z == 1 ? 0e0 : (envelope_z.rmax - envelope_z.rmin) / double(nbin_z);
-    printf("Range(x) min:%4ld bins %+15.8e cm max:%+15.8e cm dx:%+15.8e cm\n",
-	   nbin_x, envelope_x.rmin/cm, envelope_x.rmax/cm, dx/cm);
-    printf("Range(y) min:%4ld bins %+15.8e cm max:%+15.8e cm dx:%+15.8e cm\n",
-	   nbin_y, envelope_y.rmin/cm, envelope_y.rmax/cm, dy/cm);
-    if ( nbin_z > 1 ) printf("Range(z) min:%4ld bins %+15.8e cm max:%+15.8e cm dx:%+15.8e cm\n",
-			     nbin_z, envelope_z.rmin/cm, envelope_z.rmax/cm, dz/cm);
+    dd4hep::detail::printf("Range(x) min:%4ld bins %+15.8e cm max:%+15.8e cm dx:%+15.8e cm\n",
+                           nbin_x, envelope_x.rmin/cm, envelope_x.rmax/cm, dx/cm);
+    dd4hep::detail::printf("Range(y) min:%4ld bins %+15.8e cm max:%+15.8e cm dx:%+15.8e cm\n",
+                           nbin_y, envelope_y.rmin/cm, envelope_y.rmax/cm, dy/cm);
+    if ( nbin_z > 1 ) dd4hep::detail::printf("Range(z) min:%4ld bins %+15.8e cm max:%+15.8e cm dx:%+15.8e cm\n",
+                                             nbin_z, envelope_z.rmin/cm, envelope_z.rmax/cm, dz/cm);
 
     FILE* out_file = ::fopen(output.empty() ? "/dev/null" : output.c_str(), "w");
     ::fprintf(out_file,"#######################################################################################################\n");
@@ -224,30 +224,30 @@ namespace  {
     for( std::size_t i = 0; i < nbin_x; ++i )   {
       float x = envelope_x.rmin + double(i)*dx + dx/2e0;
       for( std::size_t j = 0; j < nbin_y; ++j )   {
-	float y = envelope_y.rmin + double(j)*dy + dy/2e0;
-	for( std::size_t k = 0; k < nbin_z; ++k )   {
-	  float z = nbin_z == 1 ? z_value : envelope_z.rmin + double(k)*dz + dz/2e0;
-	  field_t value;
-	  value.position = { x, y, z };
-	  value.bfield   = { 0e0, 0e0, 0e0 };
-	  value.bfield = description.field().magneticField(value.position);
-	  ::fprintf(out_file, " %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e\n",
-		 value.position.X()/cm, value.position.Y()/cm,  value.position.Z()/cm,
-		 value.bfield.X()/dd4hep::tesla, value.bfield.Y()/dd4hep::tesla, value.bfield.Z()/dd4hep::tesla);
-	  field_values.emplace_back(value);
-	}
+        float y = envelope_y.rmin + double(j)*dy + dy/2e0;
+        for( std::size_t k = 0; k < nbin_z; ++k )   {
+          float z = nbin_z == 1 ? z_value : envelope_z.rmin + double(k)*dz + dz/2e0;
+          field_t value;
+          value.position = { x, y, z };
+          value.bfield   = { 0e0, 0e0, 0e0 };
+          value.bfield = description.field().magneticField(value.position);
+          ::fprintf(out_file, " %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e  %+15.8e\n",
+                 value.position.X()/cm, value.position.Y()/cm,  value.position.Z()/cm,
+                 value.bfield.X()/dd4hep::tesla, value.bfield.Y()/dd4hep::tesla, value.bfield.Z()/dd4hep::tesla);
+          field_values.emplace_back(value);
+        }
       }
     }
     ::fclose(out_file);
     if ( draw )   {
       if ( 0 == gApplication )  {
-	std::pair<int, char**> a(argc,argv);
-	gApplication = new TRint("DD4hepRint", &a.first, a.second);
-	printout(INFO,"DD4hepRint","++ Created ROOT interpreter instance for DD4hepUI.");
+        std::pair<int, char**> a(argc,argv);
+        gApplication = new TRint("DD4hepRint", &a.first, a.second);
+        printout(INFO,"DD4hepRint","++ Created ROOT interpreter instance for DD4hepUI.");
       }
       auto* histo = new TH2F("Bfield", "B-Field strength in Tesla",
-			    nbin_x, envelope_x.rmin, envelope_x.rmax,
-			    nbin_y, envelope_y.rmin, envelope_y.rmax);
+                            nbin_x, envelope_x.rmin, envelope_x.rmax,
+                            nbin_y, envelope_y.rmin, envelope_y.rmax);
       MyHistPainter paint;
       paint.SetHistogram(histo);
       TCanvas* c1 = new TCanvas("B-Field");
@@ -260,7 +260,7 @@ namespace  {
       gPad->SetGridx();
       gPad->SetGridy();
       if ( !gApplication->IsRunning() )  {
-	gApplication->Run();
+        gApplication->Run();
       }
     }
     return 1;

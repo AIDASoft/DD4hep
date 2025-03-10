@@ -299,6 +299,13 @@ void* DetectorImp::userExtension(unsigned long long int key, bool alert) const {
   return m_extensions.extension(key,alert);
 }
 
+/// Access flag to steer the detail of building of the geometry/detector description
+DetectorBuildType DetectorImp::buildType() const {
+  std::lock_guard<std::recursive_mutex> lock(s_detector_apply_lock);
+  DetectorBuildType temp = m_buildType;
+  return temp;
+}
+
 /// Register new mother volume using the detector name.
 void DetectorImp::declareParent(const std::string& detector_name, const DetElement& parent)  {
   if ( !detector_name.empty() )  {

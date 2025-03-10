@@ -62,6 +62,13 @@ namespace dd4hep {
   typedef size_t (*output_function1_t)(void*, PrintLevel severity, const char*, const char*);
   typedef size_t (*output_function2_t)(void*, PrintLevel severity, const char*, const char*, va_list& args);
 
+  namespace detail {
+    /// Multi-thread save, locked printout to stdout
+    std::size_t printf(const char* fmt, ...);
+    /// Multi-thread save, locked printout to stderr
+    std::size_t errprintf(const char* fmt, ...);
+  }
+  
   /// Helper function to serialize argument list to a single string
   /**
    *  @arg argc       [int,read-only]      Number of arguments.
