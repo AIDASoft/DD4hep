@@ -319,7 +319,7 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
       m_frame.put( std::move(calorimeterHits.second), colName + "Contributions");
     }
     m_file->writeFrame(m_frame, m_section_name);
-    m_particles = std::move(edm4hep::MCParticleCollection());
+    m_particles = { };
     m_trackerHits.clear();
     m_calorimeterHits.clear();
     m_frame = {};
