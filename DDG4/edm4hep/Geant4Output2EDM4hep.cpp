@@ -46,6 +46,8 @@ namespace podio {
 }
 #endif
 
+#include <atomic>
+
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
@@ -70,6 +72,7 @@ namespace dd4hep {
       using calorimeterpair_t = std::pair< edm4hep::SimCalorimeterHitCollection, edm4hep::CaloHitContributionCollection >;
       using calorimetermap_t = std::map< std::string, calorimeterpair_t >;
       std::unique_ptr<writer_t>     m_file  { };
+      std::atomic_size_t            m_fileUseCount { 0 };
       podio::Frame                  m_frame { };
       edm4hep::MCParticleCollection m_particles { };
       trackermap_t                  m_trackerHits;
@@ -85,7 +88,7 @@ namespace dd4hep {
       int                           m_eventNo           { 0 };
       int                           m_eventNumberOffset { 0 };
       bool                          m_filesByRun        { false };
-      
+
       /// Data conversion interface for MC particles to EDM4hep format
       void saveParticles(Geant4ParticleMap* particles);
       /// Store the metadata frame with e.g. the cellID encoding strings
@@ -253,7 +256,6 @@ Geant4Output2EDM4hep::Geant4Output2EDM4hep(Geant4Context* ctxt, const std::strin
 /// Default destructor
 Geant4Output2EDM4hep::~Geant4Output2EDM4hep()  {
   G4AutoLock protection_lock(&action_mutex);
-  m_file.reset();
   InstanceCount::decrement(this);
 }
 
@@ -268,23 +270,31 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
       fname = m_output.substr(0, idx) + _toString(m_runNo, ".run%08d") + m_output.substr(idx);
     }
   }
-  if ( !fname.empty() )   {
+  // Create the file only when it has not yet beeen created in another thread
+  if ( !fname.empty() && !m_file )   {
     m_file = std::make_unique<podio::ROOTWriter>(fname);
     if ( !m_file )   {
       fatal("+++ Failed to open output file: %s", fname.c_str());
     }
     printout( INFO, "Geant4Output2EDM4hep" ,"Opened %s for output", fname.c_str() ) ;
   }
+  m_fileUseCount++;
 }
 
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::endRun(const G4Run* run)  {
   saveRun(run);
   saveFileMetaData();
-  if ( m_file )   {
+
+  // Close the file only when this is the last thread using it.
+  // Note: Although the use count is atomic, the file pointer is not,
+  // and testing it requires locking.
+  G4AutoLock protection_lock(&action_mutex);
+  if ( m_file && m_fileUseCount == 1 )   {
     m_file->finish();
     m_file.reset();
   }
+  m_fileUseCount--;
 }
 
 void Geant4Output2EDM4hep::saveFileMetaData() {
@@ -292,7 +302,7 @@ void Geant4Output2EDM4hep::saveFileMetaData() {
   for (const auto& [name, encodingStr] : m_cellIDEncodingStrings) {
     metaFrame.putParameter(podio::collMetadataParamName(name, CellIDEncoding), encodingStr);
   }
-
+  G4AutoLock protection_lock(&action_mutex);
   m_file->writeFrame(metaFrame, "metadata");
 }
 
@@ -309,7 +319,7 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
       m_frame.put( std::move(calorimeterHits.second), colName + "Contributions");
     }
     m_file->writeFrame(m_frame, m_section_name);
-    m_particles.clear();
+    m_particles = std::move(edm4hep::MCParticleCollection());
     m_trackerHits.clear();
     m_calorimeterHits.clear();
     m_frame = {};
@@ -334,19 +344,25 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   runHeader.putParameter("DD4hepVersion", versionString());
   runHeader.putParameter("detectorName", context()->detectorDescription().header().name());
   {
-    RunParameters* parameters = context()->run().extension<RunParameters>(false);
-    if ( parameters ) {
-      parameters->extractParameters(runHeader);
+    // In multithreaded running, the run is present in only one of the contexts
+    if (context()->runPtr() != nullptr) {
+      RunParameters* parameters = context()->run().extension<RunParameters>(false);
+      if ( parameters ) {
+        parameters->extractParameters(runHeader);
+      }
+      m_file->writeFrame(runHeader, "runs");
     }
-    m_file->writeFrame(runHeader, "runs");
   }
   {
-    podio::Frame metaFrame {};
-    FileParameters* parameters = context()->run().extension<FileParameters>(false);
-    if ( parameters ) {
-      parameters->extractParameters(metaFrame);
+    // In multithreaded running, the run is present in only one of the contexts
+    if (context()->runPtr() != nullptr) {
+      podio::Frame metaFrame {};
+      FileParameters* parameters = context()->run().extension<FileParameters>(false);
+      if ( parameters ) {
+        parameters->extractParameters(metaFrame);
+      }
+      m_file->writeFrame(metaFrame, "meta");
     }
-    m_file->writeFrame(metaFrame, "meta");
   }
 }
 
