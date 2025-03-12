@@ -42,7 +42,7 @@ using namespace dd4hep::sim;
 namespace {
 
   G4Mutex kernel_mutex = G4MUTEX_INITIALIZER;
-  std::unique_ptr<Geant4Kernel> s_main_instance;
+  Geant4Kernel* s_main_instance = nullptr;
   void description_unexpected()    {
     try  {
       throw;
@@ -135,8 +135,8 @@ Geant4Kernel::Geant4Kernel(Geant4Kernel* krnl, unsigned long ident)
 
 /// Default destructor
 Geant4Kernel::~Geant4Kernel() {
-  if ( this == s_main_instance.get() )   {
-    s_main_instance.release();
+  if ( this == s_main_instance )   {
+    s_main_instance = nullptr;
   }
   detail::destroyObjects(m_workers);
   if ( isMaster() )  {
@@ -161,16 +161,16 @@ Geant4Kernel::~Geant4Kernel() {
 
 /// Instance accessor
 Geant4Kernel& Geant4Kernel::instance(Detector& description) {
-  if ( nullptr == s_main_instance.get() )   {
+  if ( nullptr == s_main_instance )   {
     G4AutoLock protection_lock(&kernel_mutex);    {
-      if ( nullptr == s_main_instance.get() )   { // Need to check again!
+      if ( nullptr == s_main_instance )   { // Need to check again!
         /// Install here the termination handler
         std::set_terminate(description_unexpected);
-        s_main_instance.reset(new Geant4Kernel(description));
+        s_main_instance = new Geant4Kernel(description);
       }
     }
   }
-  return *(s_main_instance.get());
+  return *s_main_instance;
 }
 
 /// Access interrupt handler. Will be created on the first call
@@ -426,7 +426,7 @@ int Geant4Kernel::runEvents(int num_events) {
 }
 
 int Geant4Kernel::terminate() {
-  const Geant4Kernel* ptr = s_main_instance.get();
+  const Geant4Kernel* ptr = s_main_instance;
   printout(INFO,"Geant4Kernel","++ Terminate Geant4 and delete associated actions.");
   if ( ptr == this )  {
     auto calls = std::move(m_actionTerminate);

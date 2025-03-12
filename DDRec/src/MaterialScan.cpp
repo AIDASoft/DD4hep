@@ -243,11 +243,16 @@ void MaterialScan::print(const Vector3D& p0, const Vector3D& p1, double epsilon)
 	       0e0, 0e0, 0e0, 0e0,
 	       p0[0]/dd4hep::cm, p0[1]/dd4hep::cm, p0[2]/dd4hep::cm);
     }
-    else   {
+    else if( next_mat != nullptr )  {
       ::printf(fmt, std::to_string(i+1).c_str(), mname.c_str(), next_mat->GetZ(), next_mat->GetA(),
 	       next_mat->GetDensity(), next_mat->GetRadLen()/dd4hep::cm, next_mat->GetIntLen()/dd4hep::cm,
 	       length/dd4hep::cm, path_length/dd4hep::cm, sum_x0, sum_lambda,
 	       end[0]/dd4hep::cm, end[1]/dd4hep::cm, end[2]/dd4hep::cm);
+    }
+    else  {
+      ::printf(fmt, std::to_string(i+1).c_str(), (mname+" -> UNKNOWN").c_str(), -1e0, -1e0, -1e0, -1e0, -1e0,
+               length/dd4hep::cm, path_length/dd4hep::cm, sum_x0, sum_lambda,
+               end[0]/dd4hep::cm, end[1]/dd4hep::cm, end[2]/dd4hep::cm);
     }
   }
   ::printf("%s",line);

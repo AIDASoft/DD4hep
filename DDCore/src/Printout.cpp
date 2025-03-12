@@ -29,7 +29,6 @@
 
 namespace {
   std::mutex s_output_synchronization;
-
   size_t _the_printer_1(void*, dd4hep::PrintLevel lvl, const char* src, const char* text);
   size_t _the_printer_2(void* par, dd4hep::PrintLevel lvl, const char* src, const char* fmt, va_list& args);
 
@@ -89,6 +88,28 @@ namespace {
     char str[4096];
     ::vsnprintf(str, sizeof(str), fmt, args);
     return std::string(str);
+  }
+}
+
+namespace dd4hep  {
+  namespace detail {
+
+    std::size_t printf(const char* fmt, ...)  {
+      std::lock_guard<std::mutex> lock(s_output_synchronization);
+      va_list args;
+      va_start(args, fmt);
+      std::size_t len = ::vfprintf(stdout, fmt, args);
+      va_end(args);
+      return len;
+    }
+    std::size_t errprintf(const char* fmt, ...)  {
+      std::lock_guard<std::mutex> lock(s_output_synchronization);
+      va_list args;
+      va_start(args, fmt);
+      std::size_t len = ::vfprintf(stderr, fmt, args);
+      va_end(args);
+      return len;
+    }
   }
 }
 
