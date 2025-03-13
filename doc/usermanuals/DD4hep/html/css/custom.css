@@ -43,16 +43,13 @@ div.lstlisting {
 
 /* customize sidebar and toolbar */
 .sidebar {
-    position:fixed;
+    position:absolute;
     width:18em;
     top:120px;
-    left:100%;
-    margin-left:-20em;
+    left:150%;
 }
 .sidebar .sectionToc, .sidebar .subsectionToc {
     display:block;
-    margin-top:-1em;
-    margin-bottom:0px;
 }
 .sidebar .sectionTOCS br {
     display:none;

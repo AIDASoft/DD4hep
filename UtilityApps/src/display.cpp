@@ -23,7 +23,9 @@ int main(int argc,char** argv)  {
     if ( i==1 && argv[i][0] != '-' ) av.emplace_back("-input");
     if      ( strncmp(argv[i],"-load-only",4) == 0 ) dry  = true, av.emplace_back(argv[i]);
     else if ( strncmp(argv[i],"-dry-run",4)   == 0 ) dry  = true, av.emplace_back(argv[i]);
-    else if ( strncmp(argv[i],"-help",4)      == 0 ) help = true, av.emplace_back(argv[i]);
+    else if ( strncmp(argv[i],"-h",2)         == 0 ) help = true;
+    else if ( strncmp(argv[i],"-help",4)      == 0 ) help = true;
+    else if ( strncmp(argv[i],"--help",4)     == 0 ) help = true;
     else if ( strncmp(argv[i],"-visopt",4)    == 0 ) visopt   = argv[++i];
     else if ( strncmp(argv[i],"-level", 4)    == 0 ) level    = argv[++i];
     else if ( strncmp(argv[i],"-option",4)    == 0 ) opt      = argv[++i];

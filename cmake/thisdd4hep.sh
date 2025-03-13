@@ -50,6 +50,7 @@ dd4hep_add_library_path()    {
     else
         dd4hep_add_path LD_LIBRARY_PATH       "$p"
     fi
+    dd4hep_add_path ROOT_LIBRARY_PATH "$p"
 }
 #-----------------------------------------------------------------------------
 #

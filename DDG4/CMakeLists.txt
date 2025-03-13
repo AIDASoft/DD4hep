@@ -184,6 +184,7 @@ install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/ddsim DESTINATION bin)
 
 install(PROGRAMS python/bin/g4MaterialScan.py DESTINATION bin RENAME g4MaterialScan)
 install(PROGRAMS python/bin/g4GeometryScan.py DESTINATION bin RENAME g4GeometryScan)
+install(PROGRAMS python/bin/g4GraphicalScan.py DESTINATION bin RENAME g4GraphicalScan)
 
 # configure and install DD4hepSimulation files
 file(GLOB_RECURSE DDSIM_FILES RELATIVE ${CMAKE_CURRENT_LIST_DIR}/python/DDSim/ python/DDSim/*.py)

@@ -42,32 +42,32 @@ namespace dd4hep {
        */
       class __attribute__((__packed__)) StatusProcess {
       public:
-        char   comm[399];
-        char   state;
-        int    umask;
-        int    tgid;
-        int    ngid;
-        int    pid;
-        int    ppid;
-        int    uid;
-        int    gid;
-        int    utrace;
-        int    fdSize;
-        long   vmPeak;
-        long   vmSize;
-        long   vmLock;
-        long   vmPin;
-        long   vmHWM;
-        long   vmRSS;
-        long   vmRSSano;
-        long   vmRSSfil;
-        long   vmRSSshm;
-        long   vmData;
-        long   vmStack;
-        long   vmExe;
-        long   vmLib;
-        long   vmPTE;
-        long   vmSwap;
+        char   comm[399] = "";
+        char   state     { 0  };
+        int    umask     { 0  };
+        int    tgid      { 0  };
+        int    ngid      { 0  };
+        int    pid       { 0  };
+        int    ppid      { 0  };
+        int    uid       { 0  };
+        int    gid       { 0  };
+        int    utrace    { 0  };
+        int    fdSize    { 0  };
+        long   vmPeak    { 0L };
+        long   vmSize    { 0L };
+        long   vmLock    { 0L };
+        long   vmPin     { 0L };
+        long   vmHWM     { 0L };
+        long   vmRSS     { 0L };
+        long   vmRSSano  { 0L };
+        long   vmRSSfil  { 0L };
+        long   vmRSSshm  { 0L };
+        long   vmData    { 0L };
+        long   vmStack   { 0L };
+        long   vmExe     { 0L };
+        long   vmLib     { 0L };
+        long   vmPTE     { 0L };
+        long   vmSwap    { 0L };
         /// Default constructor
         StatusProcess() {}
       };
