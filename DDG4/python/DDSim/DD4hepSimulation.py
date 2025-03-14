@@ -578,9 +578,6 @@ class DD4hepSimulation(object):
     if not geant4.run():
       logger.error("Simulation failed!")
       exitCode += 1
-    if not geant4.terminate():
-      exitCode += 1
-      logger.error("Termination failed!")
 
     totalTimeUser, totalTimeSys, _cuTime, _csTime, _elapsedTime = os.times()
     processedEvents = self.numberOfEvents
