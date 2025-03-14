@@ -552,9 +552,9 @@ class DD4hepSimulation(object):
 
     logger.info("# Configure G4 sensitive detectors: python setup callback")
     seq, act = geant4.addDetectorConstruction(
-      "Geant4PythonDetectorConstruction/SetupSD",
-      sensitives=self.__setupSensitives,
-      sensitives_args=(geant4, detectorDescription,))
+        "Geant4PythonDetectorConstruction/SetupSD",
+        sensitives=self.__setupSensitives,
+        sensitives_args=(geant4, detectorDescription,))
     logger.info("# Configure G4 sensitive detectors: atach'em to the sensitive volumes")
     seq, act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
 
