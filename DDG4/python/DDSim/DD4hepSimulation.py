@@ -315,6 +315,7 @@ class DD4hepSimulation(object):
     kernel.registerGlobalAction(run)
     kernel.runAction().add(run)
 
+    # ----------------------------------------------------------------------------------
     # Configure run, event, track, step, and stack actions, if present
     for action_list, DDG4_Action, kernel_Action in \
         [(self.action.run, DDG4.RunAction, kernel.runAction),
@@ -413,6 +414,8 @@ class DD4hepSimulation(object):
       generationInit = self._buildInputStage(geant4, actionList, output_level=self.output.inputStage,
                                              have_mctruth=self._enablePrimaryHandler())
 
+    # ================================================================================================
+
     # And handle the simulation particles.
     part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
     kernel.generatorAction().adopt(part)
@@ -433,6 +436,8 @@ class DD4hepSimulation(object):
 
     return 1
 
+    # =================================================================================
+
   def __setupSensitives(self, geant4, detectorDescription):
     kernel = geant4.kernel()
 
@@ -443,7 +448,9 @@ class DD4hepSimulation(object):
       logger.error("%s", e)
       return 1
 
+    # =================================================================================
     # get lists of trackers and calorimeters in detectorDescription
+
     trk, cal, unk = self.getDetectorLists(detectorDescription)
     for detectors, function, defFilter, defAction, abort in \
         [(trk, geant4.setupTracker, self.filter.tracker, self.action.tracker, False),
