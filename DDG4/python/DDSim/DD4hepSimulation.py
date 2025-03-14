@@ -435,41 +435,41 @@ class DD4hepSimulation(object):
 
     return 1
 
-  def __setupSensitives(geant4, detectorDescription, sim):
+  def __setupSensitives(self, geant4, detectorDescription):
     kernel = geant4.kernel()
 
     # Setup global filters for use in sensitive detectors
     try:
-      sim.filter.setupFilters(kernel)
+      self.filter.setupFilters(kernel)
     except RuntimeError as e:
       logger.error("%s", e)
       return 1
 
     # get lists of trackers and calorimeters in detectorDescription
-    trk, cal, unk = sim.getDetectorLists(detectorDescription)
+    trk, cal, unk = self.getDetectorLists(detectorDescription)
     for detectors, function, defFilter, defAction, abort in \
-        [(trk, geant4.setupTracker, sim.filter.tracker, sim.action.tracker, False),
-         (cal, geant4.setupCalorimeter, sim.filter.calo, sim.action.calo, False),
+        [(trk, geant4.setupTracker, self.filter.tracker, self.action.tracker, False),
+         (cal, geant4.setupCalorimeter, self.filter.calo, self.action.calo, False),
          (unk, geant4.setupDetector, None, "No Default", True),
          ]:
       try:
-        sim.__setupSensitiveDetectors(detectors, function, defFilter, defAction, abort)
+        self.__setupSensitiveDetectors(detectors, function, defFilter, defAction, abort)
       except Exception as e:
         logger.error("Failed setting up sensitive detector %s", e)
         raise
 
     return 1
 
-  def __setupWorker(geant4, sim):
+  def __setupWorker(self, geant4):
     logger.debug("Setting up worker")
     kernel = geant4.kernel()
     logger.debug("Setting up actions")
-    sim.__setupActions(kernel)
+    self.__setupActions(kernel)
     logger.debug("Setting up generator actions")
-    sim.__setupGeneratorActions(kernel, geant4)
+    self.__setupGeneratorActions(kernel, geant4)
     return 1
 
-  def __setupMaster(geant4):
+  def __setupMaster(self, geant4):
     logger.debug("Setting up master")
     kernel = geant4.master()
     return 1
@@ -529,13 +529,13 @@ class DD4hepSimulation(object):
       kernel.RunManagerType = "G4MTRunManager"
       kernel.NumberOfThreads = self.numberOfThreads
       geant4.addUserInitialization(
-        worker=DD4hepSimulation.__setupWorker, worker_args=(geant4, self),
-        master=DD4hepSimulation.__setupMaster, master_args=(geant4,))
+        worker=self.__setupWorker, worker_args=(geant4,),
+        master=self.__setupMaster, master_args=(geant4,))
     else:
       kernel.RunManagerType = "G4RunManager"
       kernel.NumberOfThreads = 1
       geant4.addUserInitialization(
-        worker=DD4hepSimulation.__setupWorker, worker_args=(geant4, self))
+        worker=self.__setupWorker, worker_args=(geant4,self))
 
     # -----------------------------------------------------------------------------------
 
@@ -545,8 +545,8 @@ class DD4hepSimulation(object):
     logger.info("# Configure G4 sensitive detectors: python setup callback")
     seq, act = geant4.addDetectorConstruction(
       "Geant4PythonDetectorConstruction/SetupSD",
-      sensitives=DD4hepSimulation.__setupSensitives,
-      sensitives_args=(geant4, detectorDescription, self))
+      sensitives=self.__setupSensitives,
+      sensitives_args=(geant4, detectorDescription,))
     logger.info("# Configure G4 sensitive detectors: atach'em to the sensitive volumes")
     seq, act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
 
