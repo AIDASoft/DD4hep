@@ -467,6 +467,8 @@ class DD4hepSimulation(object):
     self.__setupActions(kernel)
     logger.debug("Setting up generator actions")
     self.__setupGeneratorActions(kernel, geant4)
+    logger.debug("Setting up output")
+    self.outputConfig.initialize(dd4hepsimulation=self, geant4=geant4)
     return 1
 
   def __setupMaster(self, geant4):
@@ -557,10 +559,6 @@ class DD4hepSimulation(object):
     # Configure the random seed, do it before the I/O because we might change the seed!
     logger.info("Initializing random")
     self.random.initialize(DDG4, kernel, self.output.random)
-
-    # Configure the output file format and plugin
-    logger.info("Initializing output")
-    self.outputConfig.initialize(dd4hepsimulation=self, geant4=geant4)
 
     # =================================================================================
     # Now build the physics list:
