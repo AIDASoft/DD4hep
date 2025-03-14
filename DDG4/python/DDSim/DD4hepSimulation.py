@@ -537,7 +537,7 @@ class DD4hepSimulation(object):
       kernel.RunManagerType = "G4RunManager"
       kernel.NumberOfThreads = 1
       geant4.addUserInitialization(
-        worker=self.__setupWorker, worker_args=(geant4,self))
+        worker=self.__setupWorker, worker_args=(geant4,))
 
     # -----------------------------------------------------------------------------------
 
