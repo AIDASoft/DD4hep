@@ -538,13 +538,13 @@ class DD4hepSimulation(object):
       kernel.RunManagerType = "G4MTRunManager"
       kernel.NumberOfThreads = self.numberOfThreads
       geant4.addUserInitialization(
-        worker=self.__setupWorker, worker_args=(geant4,),
-        master=self.__setupMaster, master_args=(geant4,))
+          worker=self.__setupWorker, worker_args=(geant4,),
+          master=self.__setupMaster, master_args=(geant4,))
     else:
       kernel.RunManagerType = "G4RunManager"
       kernel.NumberOfThreads = 1
       geant4.addUserInitialization(
-        worker=self.__setupWorker, worker_args=(geant4,))
+          worker=self.__setupWorker, worker_args=(geant4,))
 
     # -----------------------------------------------------------------------------------
 
