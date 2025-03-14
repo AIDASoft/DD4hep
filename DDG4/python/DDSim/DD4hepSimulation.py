@@ -478,7 +478,6 @@ class DD4hepSimulation(object):
 
   def __setupMaster(self, geant4):
     logger.debug("Setting up master")
-    kernel = geant4.master()
     return 1
 
   def run(self):
