@@ -599,6 +599,7 @@ class DD4hepSimulation(object):
 
     startUpTime, _sysTime, _cuTime, _csTime, _elapsedTime = os.times()
 
+    exitCode = 0
     if not PyDDG4.run(master):
       logger.error("Simulation failed!")
       exitCode += 1
