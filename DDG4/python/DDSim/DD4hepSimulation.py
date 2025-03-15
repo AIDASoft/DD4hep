@@ -578,12 +578,20 @@ class DD4hepSimulation(object):
 
     dd4hep.setPrintLevel(self.printLevel)
 
+    from ROOT import PyDDG4
+    master = geant4.master().get()
+
+    PyDDG4.configure(master)
+    PyDDG4.initialize(master)
+
     startUpTime, _sysTime, _cuTime, _csTime, _elapsedTime = os.times()
 
-    exitCode = 0
-    if not geant4.run():
+    if not PyDDG4.run(master):
       logger.error("Simulation failed!")
       exitCode += 1
+    if not PyDDG4.terminate(master):
+      exitCode += 1
+      logger.error("Termination failed!")
 
     totalTimeUser, totalTimeSys, _cuTime, _csTime, _elapsedTime = os.times()
     processedEvents = self.numberOfEvents
