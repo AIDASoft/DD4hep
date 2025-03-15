@@ -78,6 +78,8 @@ class DD4hepSimulation(object):
     self.enableGun = False
     self.enableG4GPS = False
     self.enableG4Gun = False
+    self._g4gun = []
+    self._g4gps = []
     self.vertexSigma = [0.0, 0.0, 0.0, 0.0]
     self.vertexOffset = [0.0, 0.0, 0.0, 0.0]
     self.enableDetailedShowerMode = False
@@ -353,6 +355,7 @@ class DD4hepSimulation(object):
       g4gun.Mask = 2
       logger.info("++++ Adding Geant4 Particle Gun ++++")
       actionList.append(g4gun)
+      self._g4gun.append(g4gun)
 
     if self.enableG4GPS:
       # GPS Create something
@@ -361,6 +364,7 @@ class DD4hepSimulation(object):
       g4gps.Mask = 3
       logger.info("++++ Adding Geant4 General Particle Source ++++")
       actionList.append(g4gps)
+      self._g4gps.append(g4gps)
 
     start = 4
     for index, plugin in enumerate(self.inputConfig.userInputPlugin, start=start):
@@ -583,6 +587,15 @@ class DD4hepSimulation(object):
 
     PyDDG4.configure(master)
     PyDDG4.initialize(master)
+
+    # GPS
+    # FIXME this applies to only 1 thread, and Geant4GeneratorWrapper doesn't work as shared=True
+    if self._g4gun is not []:
+      for g4gun in self._g4gun:
+        g4gun.generator()
+    if self._g4gps is not []:
+      for g4gps in self._g4gps:
+        g4gps.generator()
 
     startUpTime, _sysTime, _cuTime, _csTime, _elapsedTime = os.times()
 
