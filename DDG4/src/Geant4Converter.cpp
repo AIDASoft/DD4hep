@@ -745,7 +745,9 @@ void* Geant4Converter::handleVolume(const std::string& name, const TGeoVolume* v
   PrintLevel lvl = debugVolumes ? ALWAYS : outputLevel;
   Geant4GeometryMaps::VolumeMap::const_iterator volIt = info.g4Volumes.find(volume);
   if ( _v.testFlagBit(Volume::VETO_SIMU) )  {
-    printout(lvl, "Geant4Converter", "++ Volume %s not converted [Veto'ed for simulation]",volume->GetName());
+    printout(lvl, "Geant4Converter",
+	     "++ Volume %s not converted [Veto'ed for simulation]",
+	     volume->GetName());
     return nullptr;
   }
   else if (volIt == info.g4Volumes.end() ) {
@@ -785,8 +787,8 @@ void* Geant4Converter::handleVolume(const std::string& name, const TGeoVolume* v
     }
 
     G4LogicalVolume* g4vol = nullptr;
-    if ( _v.hasProperties() && !_v.getProperty(GEANT4_TAG_PLUGIN,"").empty() )   {
-      Detector* det = const_cast<Detector*>(&m_detDesc); 
+    if( _v.hasProperties() && !_v.getProperty(GEANT4_TAG_PLUGIN,"").empty() )   {
+      Detector*   det = const_cast<Detector*>(&m_detDesc); 
       std::string plugin = _v.getProperty(GEANT4_TAG_PLUGIN,"");
       g4vol = PluginService::Create<G4LogicalVolume*>(plugin, det, _v, g4solid, g4medium);
       if ( !g4vol )    {
@@ -796,14 +798,23 @@ void* Geant4Converter::handleVolume(const std::string& name, const TGeoVolume* v
     else  {
       g4vol = new G4LogicalVolume(g4solid, g4medium, vnam, nullptr, nullptr, nullptr);
     }
-
-    if ( g4limits )   {
+    PrintLevel plevel = (debugVolumes||debugRegions||debugLimits) ? ALWAYS : outputLevel;
+    /// Set smartless optimization
+    unsigned char smart_less_value = _v.smartlessValue();
+    if( smart_less_value != Volume::NO_SMARTLESS_OPTIMIZATION )  {
+      printout(ALWAYS, "Geant4Converter",
+	       "++ Volume %s Set Smartless value to %d",
+	       vnam, int(smart_less_value));
+      g4vol->SetSmartless( smart_less_value );
+    }
+    /// Assign limits if necessary
+    if( g4limits )   {
       g4vol->SetUserLimits(g4limits);
     }
-    if ( g4region )   {
-      PrintLevel plevel = (debugVolumes||debugRegions||debugLimits) ? ALWAYS : outputLevel;
-      printout(plevel, "Geant4Converter", "++ Volume     + Apply REGION settings: %-24s to volume %s.",
-               reg.name(), vnam);
+    if( g4region )   {
+      printout(plevel, "Geant4Converter",
+	       "++ Volume     + Apply REGION settings: %-24s to volume %s.",
+	       reg.name(), vnam);
       // Handle the region settings for the world volume seperately.
       // Geant4 does NOT WANT any regions assigned to the workd volume.
       // The world's region is created in the G4RunManagerKernel!
@@ -1000,7 +1011,7 @@ void* Geant4Converter::handlePlacement(const std::string& name, const TGeoNode* 
         Geant4AssemblyVolume* ass = (Geant4AssemblyVolume*)info.g4AssemblyVolumes[node];
         Geant4AssemblyVolume::Chain chain;
         chain.emplace_back(node);
-        ass->imprint(*this, node, chain, ass, (*volIt).second, transform, copy, checkOverlaps);
+        ass->imprint(*this, node, chain, ass, (*volIt).second, transform, checkOverlaps);
         return nullptr;
       }
       else if ( node != info.manager->GetTopNode() && volIt == info.g4Volumes.end() )  {

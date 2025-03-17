@@ -103,11 +103,11 @@ namespace dd4hep  {
       virtual ~Geant4FastSimShowerModel();
 
       /// Geometry construction callback. Called at "Construct()"
-      virtual void constructGeo(Geant4DetectorConstructionContext* ctxt);
+      virtual void constructGeo(Geant4DetectorConstructionContext* ctxt)  override;
       /// Electromagnetic field construction callback. Called at "ConstructSDandField()"
-      virtual void constructField(Geant4DetectorConstructionContext* ctxt);
+      virtual void constructField(Geant4DetectorConstructionContext* ctxt)  override;
       /// Sensitive detector construction callback. Called at "ConstructSDandField()"
-      virtual void constructSensitives(Geant4DetectorConstructionContext* ctxt);
+      virtual void constructSensitives(Geant4DetectorConstructionContext* ctxt)  override;
 
       /// User callback to determine if the model is applicable for the particle type
       virtual bool check_applicability(const G4ParticleDefinition& particle);

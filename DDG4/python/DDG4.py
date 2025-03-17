@@ -10,6 +10,7 @@
 # ==========================================================================
 from __future__ import absolute_import, unicode_literals
 import logging
+import signal
 import cppyy
 from dd4hep_base import *  # noqa: F403
 
@@ -446,6 +447,17 @@ class Geant4:
     # calls __getattr__ implicitly, which calls getKernelProperty
     ui_name = self.master().UI
     return self.master().globalAction(ui_name)
+
+  def registerInterruptHandler(self, signum=signal.SIGINT):
+    """
+    Enable interrupt handling: smooth handling of CTRL-C
+      - Finish processing of the current event(s)
+      - Drain the event loop
+      - Properly finalize the job
+
+    \author  M.Frank
+    """
+    return self.master().registerInterruptHandler(signum)
 
   def addUserInitialization(self, worker, worker_args=None, master=None, master_args=None):
     """

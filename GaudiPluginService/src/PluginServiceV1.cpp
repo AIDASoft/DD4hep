@@ -156,84 +156,82 @@ namespace Gaudi {
           const char  sep    = ':';
 #endif
           char* search_path = ::getenv( envVar );
-          if ( search_path ) {
-            logger().debug( std::string( "searching factories in " ) + envVar );
-            std::string            path( search_path );
-            std::string::size_type pos    = 0;
-            std::string::size_type newpos = 0;
-            while ( pos != std::string::npos ) {
-              std::string dirName;
-              // get the next entry in the path
-              newpos = path.find( sep, pos );
-              if ( newpos != std::string::npos ) {
-                dirName = path.substr( pos, newpos - pos );
-                pos     = newpos + 1;
-              } else {
-                dirName = path.substr( pos );
-                pos     = newpos;
-              }
-              logger().debug( std::string( " looking into " ) + dirName );
-              // look for files called "*.components" in the directory
-              DIR* dir = opendir( dirName.c_str() );
-              if ( dir ) {
-                struct dirent* entry;
-                while ( ( entry = readdir( dir ) ) ) {
-                  std::string name( entry->d_name );
-                  // check if the file name ends with ".components"
-                  std::string::size_type extpos = name.find( ".components" );
-                  if ( ( extpos != std::string::npos ) && ( ( extpos + 11 ) == name.size() ) ) {
-                    std::string fullPath = ( dirName + '/' + name );
-                    { // check if it is a regular file
-                      struct stat buf;
-                      if ( 0 != ::stat( fullPath.c_str(), &buf ) )
-			continue;
-                      else if ( !S_ISREG( buf.st_mode ) )
-			continue;
+          logger().debug( std::string( "searching factories in " ) + envVar );
+          std::string path = search_path ? std::string(search_path) : "/usr/lib64:/usr/lib:/usr/local/lib";
+          std::string::size_type pos    = 0;
+          std::string::size_type newpos = 0;
+          while ( pos != std::string::npos ) {
+            std::string dirName;
+            // get the next entry in the path
+            newpos = path.find( sep, pos );
+            if ( newpos != std::string::npos ) {
+              dirName = path.substr( pos, newpos - pos );
+              pos     = newpos + 1;
+            } else {
+              dirName = path.substr( pos );
+              pos     = newpos;
+            }
+            logger().debug( std::string( " looking into " ) + dirName );
+            // look for files called "*.components" in the directory
+            DIR* dir = opendir( dirName.c_str() );
+            if ( dir ) {
+              struct dirent* entry;
+              while ( ( entry = readdir( dir ) ) ) {
+                std::string name( entry->d_name );
+                // check if the file name ends with ".components"
+                std::string::size_type extpos = name.find( ".components" );
+                if ( ( extpos != std::string::npos ) && ( ( extpos + 11 ) == name.size() ) ) {
+                  std::string fullPath = ( dirName + '/' + name );
+                  { // check if it is a regular file
+                    struct stat buf;
+                    if ( 0 != ::stat( fullPath.c_str(), &buf ) )
+                      continue;
+                    else if ( !S_ISREG( buf.st_mode ) )
+                      continue;
+                  }
+                  // read the file
+                  logger().debug( std::string( "  reading " ) + name );
+                  std::ifstream factories{fullPath};
+                  std::string   line;
+                  int           factoriesCount = 0;
+                  int           lineCount      = 0;
+                  while ( !factories.eof() ) {
+                    ++lineCount;
+                    std::getline( factories, line );
+                    trim( line );
+                    // skip empty lines and lines starting with '#'
+                    if ( line.empty() || line[0] == '#' ) continue;
+                    // only accept "v1" factories
+                    if ( line.substr( 0, 4 ) == "v1::" )
+                      line = line.substr( 4 );
+                    else
+                      continue;
+                    // look for the separator
+                    auto pos = line.find( ':' );
+                    if ( pos == std::string::npos ) {
+                      logger().warning( "failed to parse line " + fullPath + ':' + std::to_string( lineCount ) );
+                      continue;
                     }
-                    // read the file
-                    logger().debug( std::string( "  reading " ) + name );
-                    std::ifstream factories{fullPath};
-                    std::string   line;
-                    int           factoriesCount = 0;
-                    int           lineCount      = 0;
-                    while ( !factories.eof() ) {
-                      ++lineCount;
-                      std::getline( factories, line );
-                      trim( line );
-                      // skip empty lines and lines starting with '#'
-                      if ( line.empty() || line[0] == '#' ) continue;
-                      // only accept "v1" factories
-                      if ( line.substr( 0, 4 ) == "v1::" )
-                        line = line.substr( 4 );
-                      else
-                        continue;
-                      // look for the separator
-                      auto pos = line.find( ':' );
-                      if ( pos == std::string::npos ) {
-                        logger().warning( "failed to parse line " + fullPath + ':' + std::to_string( lineCount ) );
-                        continue;
-                      }
-                      const std::string lib( line, 0, pos );
-                      const std::string fact( line, pos + 1 );
-                      m_factories.emplace( fact, FactoryInfo( lib ) );
+                    const std::string lib( line, 0, pos );
+                    const std::string fact( line, pos + 1 );
+                    m_factories.emplace( fact, FactoryInfo( lib ) );
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
-                      // add an alias for the factory using the Reflex convention
-                      std::string old_name = old_style_name( fact );
-                      if ( fact != old_name ) {
-                        FactoryInfo old_info( lib );
-                        old_info.properties["ReflexName"] = "true";
-                        m_factories.emplace( old_name, old_info );
-                      }
+                    // add an alias for the factory using the Reflex convention
+                    std::string old_name = old_style_name( fact );
+                    if ( fact != old_name ) {
+                      FactoryInfo old_info( lib );
+                      old_info.properties["ReflexName"] = "true";
+                      m_factories.emplace( old_name, old_info );
+                    }
 #endif
-                      ++factoriesCount;
-                    }
-                    if ( logger().level() <= Logger::Debug ) {
-                      logger().debug( "  found " + std::to_string( factoriesCount ) + " factories" );
-                    }
+                    ++factoriesCount;
+                  }
+                  if ( logger().level() <= Logger::Debug ) {
+                    logger().debug( "  found " + std::to_string( factoriesCount ) + " factories" );
                   }
                 }
-                closedir( dir );
               }
+              closedir( dir );
             }
           }
         }

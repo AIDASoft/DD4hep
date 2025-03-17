@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+
+  <info name="CLD_o2_v07 VertexBarrel"
+	title="The CLD_o2_v07 VertexBarrel from k4geo for testing">
+  </info>
+
+    <includes>
+       <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+       <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+    </includes>
+
+    <define>
+        <constant name="world_size" value="30*m"/>
+        <constant name="world_side" value="6100*mm"/>
+        <constant name="world_x" value="world_side"/>
+        <constant name="world_y" value="world_side"/>
+        <constant name="world_z" value="world_side"/>
+
+        <constant name="GlobalTrackerReadoutID" type="string" value="system:5,side:-2,layer:6,module:11,sensor:8"/>
+
+        <constant name="VertexBarrel_Sensitive_Thickness"   value="5.000000000e-02*mm"/>
+	<constant name="VertexBarrel_Support_Thickness"     value="23.500000000e-02*mm"/> <!-- +50% more material budget as in CLIC VTX -->
+	<constant name="VertexBarrel_DoubleLayer_Gap"       value="1.0*mm"/> <!-- FCC-ee VTX detector is "scaled" version of the CLIC VTX. However one want to keep constant width of double layers (which is not the case if one directly scale all dimentions). This is why gap was chosen to be 1mm to avoid holes in coverage as function of phi -->
+        <constant name="VertexBarrel_zmax" value="109*mm"/>
+
+	<constant name="VertexBarrel_r1" value="1.3*cm"/>
+        <constant name="VertexBarrel_r2" value="3.5*cm"/>
+        <constant name="VertexBarrel_r3" value="5.7*cm"/>
+
+        <constant name="VertexBarrel_Layer1_width" value="5.5*mm"/>
+        <constant name="VertexBarrel_Layer2_width" value="19.25*mm"/>
+        <constant name="VertexBarrel_Layer3_width" value="23.0948*mm"/>
+
+        <constant name="VertexBarrel_Layer1_offset" value="1.12903*mm"/>
+        <constant name="VertexBarrel_Layer2_offset" value="0.840909*mm"/>
+        <constant name="VertexBarrel_Layer3_offset" value="0.982759*mm"/>
+
+        <constant name="VertexBarrel_Layer1_Staves" value="16"/>
+        <constant name="VertexBarrel_Layer2_Staves" value="12"/>
+        <constant name="VertexBarrel_Layer3_Staves" value="16"/>
+
+        <constant name="OuterTracker_half_length" value="2300*mm"/>
+        <constant name="CentralBeamPipe_zmax" value="90*mm"/>
+
+	<constant name="ConeBeamPipe_Rmax" value="28.9*mm" />
+        <constant name="InnerTracker_half_length" value="2300*mm" />
+        <constant name="ConeBeamPipe_zmax" value="InnerTracker_half_length" />
+
+        <constant name="OuterTracker_outer_radius" value="2145*mm"/>  <!-- to avoid overlap with CaloFace, but it has to be large enough to accommodate OT-->
+    </define>
+
+    <parallelworld_volume name="tracking_volume" anchor="/world" material="Air" connected="true"
+        vis="VisibleBlue">
+        <shape type="Polycone" material="Air">
+            <!-- small-angle approximation for tan(theta) -->
+            <zplane z="-OuterTracker_half_length"   rmin="149*mrad * ConeBeamPipe_zmax" rmax="OuterTracker_outer_radius" />
+            <zplane z="-CentralBeamPipe_zmax"       rmin="0"                            rmax="OuterTracker_outer_radius" />
+            <zplane z="+CentralBeamPipe_zmax"       rmin="0"                            rmax="OuterTracker_outer_radius" />
+            <zplane z="+OuterTracker_half_length"   rmin="149*mrad * ConeBeamPipe_zmax" rmax="OuterTracker_outer_radius" />
+        </shape>
+    </parallelworld_volume>
+
+    <detectors>
+        <detector name="VertexBarrel" type="ZPlanarTracker" vis="VXDVis" id="0" readout="VertexBarrelCollection">
+
+            <layer nLadders="VertexBarrel_Layer1_Staves" phi0="0" id="0">
+                <ladder    distance="VertexBarrel_r1" thickness="VertexBarrel_Support_Thickness" width="VertexBarrel_Layer1_width" length="VertexBarrel_zmax" offset="VertexBarrel_Layer1_offset"    material="Silicon"  vis="SiVertexPassiveVis"/>
+                <sensitive distance="VertexBarrel_r1+VertexBarrel_Support_Thickness" thickness="VertexBarrel_Sensitive_Thickness" width="VertexBarrel_Layer1_width" length="VertexBarrel_zmax" offset="VertexBarrel_Layer1_offset" material="Silicon" vis="SiVertexSensitiveVis" />
+            </layer>
+
+            <layer nLadders="VertexBarrel_Layer2_Staves" phi0="0" id="2">
+                <ladder    distance="VertexBarrel_r2" thickness="VertexBarrel_Support_Thickness" width="VertexBarrel_Layer2_width" length="VertexBarrel_zmax" offset="VertexBarrel_Layer2_offset"    material="Silicon" vis="SiVertexPassiveVis" />
+                <sensitive distance="VertexBarrel_r2+VertexBarrel_Support_Thickness" thickness="VertexBarrel_Sensitive_Thickness" width="VertexBarrel_Layer2_width" length="VertexBarrel_zmax" offset="VertexBarrel_Layer2_offset" material="Silicon" vis="SiVertexSensitiveVis"/>
+            </layer>
+            <layer nLadders="VertexBarrel_Layer2_Staves" phi0="0" id="3">
+                <sensitive distance="VertexBarrel_r2+VertexBarrel_Support_Thickness+VertexBarrel_Sensitive_Thickness+VertexBarrel_DoubleLayer_Gap" thickness="VertexBarrel_Sensitive_Thickness" width="VertexBarrel_Layer2_width" length="VertexBarrel_zmax" offset="VertexBarrel_Layer2_offset" material="Silicon" vis="SiVertexSensitiveVis"/>
+                <ladder    distance="VertexBarrel_r2+VertexBarrel_Support_Thickness+VertexBarrel_Sensitive_Thickness+VertexBarrel_DoubleLayer_Gap+VertexBarrel_Sensitive_Thickness" thickness="VertexBarrel_Support_Thickness" width="VertexBarrel_Layer2_width" length="VertexBarrel_zmax" offset="VertexBarrel_Layer2_offset"    material="Silicon" vis="SiVertexPassiveVis" />
+            </layer>
+
+
+            <layer nLadders="VertexBarrel_Layer3_Staves" phi0="0" id="4">
+                <ladder    distance="VertexBarrel_r3" thickness="VertexBarrel_Support_Thickness" width="VertexBarrel_Layer3_width" length="VertexBarrel_zmax" offset="VertexBarrel_Layer3_offset"    material="Silicon" vis="SiVertexPassiveVis" />
+                <sensitive distance="VertexBarrel_r3+VertexBarrel_Support_Thickness" thickness="VertexBarrel_Sensitive_Thickness" width="VertexBarrel_Layer3_width" length="VertexBarrel_zmax" offset="VertexBarrel_Layer3_offset" material="Silicon" vis="SiVertexSensitiveVis"/>
+            </layer>
+            <layer nLadders="VertexBarrel_Layer3_Staves" phi0="0" id="5">
+                <sensitive distance="VertexBarrel_r3+VertexBarrel_Support_Thickness+VertexBarrel_Sensitive_Thickness+VertexBarrel_DoubleLayer_Gap" thickness="VertexBarrel_Sensitive_Thickness" width="VertexBarrel_Layer3_width" length="VertexBarrel_zmax" offset="VertexBarrel_Layer3_offset" material="Silicon" vis="SiVertexSensitiveVis"/>
+                <ladder    distance="VertexBarrel_r3+VertexBarrel_Support_Thickness+VertexBarrel_Sensitive_Thickness+VertexBarrel_DoubleLayer_Gap+VertexBarrel_Sensitive_Thickness" thickness="VertexBarrel_Support_Thickness" width="VertexBarrel_Layer3_width" length="VertexBarrel_zmax" offset="VertexBarrel_Layer3_offset"    material="Silicon" vis="SiVertexPassiveVis"/>
+            </layer>
+
+        </detector>
+    </detectors>
+
+    <readouts>
+        <readout name="VertexBarrelCollection">
+            <id>${GlobalTrackerReadoutID}</id>
+        </readout>
+    </readouts>
+
+    <plugins>
+      <plugin name="InstallSurfaceManager"/>
+    </plugins>
+
+</lccdd>

@@ -47,9 +47,9 @@ namespace dd4hep {
       /// Standard destructor
       virtual ~Geant4Field() {    }
       /// Access field values at a given point
-      virtual void GetFieldValue(const double pos[4], double *arr) const;
+      virtual void GetFieldValue(const double pos[4], double *arr) const  override;
       /// Does field change energy ?
-      virtual G4bool DoesFieldChangeEnergy() const;
+      virtual G4bool DoesFieldChangeEnergy() const  override;
     };
 
   }    // End namespace sim

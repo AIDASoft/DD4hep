@@ -68,7 +68,7 @@ namespace dd4hep {
       /// Standard constructor
       DigiEdm4hepOutput(const kernel_t& kernel, const std::string& nam);
       /// Initialization callback
-      virtual void initialize();
+      virtual void initialize() override;
       /// Check for valid output stream
       virtual bool have_output()  const  override final;
       /// Open new output stream

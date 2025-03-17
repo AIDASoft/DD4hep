@@ -143,7 +143,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4DetectorConstructionSequence();
       /// Set or update client context
-      virtual void updateContext(Geant4Context* ctxt);
+      virtual void updateContext(Geant4Context* ctxt)  override;
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4DetectorConstruction* action);
       /// Access an actor by name

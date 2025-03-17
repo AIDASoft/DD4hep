@@ -69,9 +69,9 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4ParticlePrint();
       /// Pre-event action callback
-      virtual void begin(const G4Event* event);
+      virtual void begin(const G4Event* event)  override;
       /// Post-event action callback
-      virtual void end(const G4Event* event);
+      virtual void end(const G4Event* event)  override;
       /// Generation action callback
       virtual void operator()(G4Event* event);
 

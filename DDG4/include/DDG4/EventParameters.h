@@ -12,10 +12,7 @@
 #ifndef DDG4_EVENTPARAMETERS_H
 #define DDG4_EVENTPARAMETERS_H
 
-#include <map>
-#include <string>
-#include <vector>
-
+#include <DDG4/ExtensionParameters.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep  {
@@ -28,21 +25,12 @@ namespace dd4hep  {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class EventParameters  {
+    class EventParameters : public ExtensionParameters {
     protected:
-      int                                             m_runNumber = -1;
-      int                                             m_eventNumber = -1;
-      std::map<std::string, std::vector<int>>         m_intValues {};
-      std::map<std::string, std::vector<float>>       m_fltValues {};
-      std::map<std::string, std::vector<std::string>> m_strValues {};
-      std::map<std::string, std::vector<double>>      m_dblValues {};
+      int m_runNumber = -1;
+      int m_eventNumber = -1;
 
     public:
-      /// Initializing constructor
-      EventParameters() = default;
-      /// Default destructor
-      ~EventParameters() = default;
-
       /// Set the event parameters
       void setRunNumber(int runNumber);
       void setEventNumber(int eventNumber);
@@ -50,21 +38,10 @@ namespace dd4hep  {
       int runNumber() const { return m_runNumber; }
       /// Get the event number
       int eventNumber() const { return m_eventNumber; }
-
       /// Copy the parameters from source
       template <class T> void ingestParameters(T const& source);
       /// Put parameters into destination
       template <class T> void extractParameters(T& destination);
-
-      /// Get the int event parameters
-      auto const& intParameters() const { return m_intValues; }
-      /// Get the float event parameters
-      auto const& fltParameters() const { return m_fltValues; }
-      /// Get the string event parameters
-      auto const& strParameters() const { return m_strValues; }
-      /// Get the double event parameters
-      auto const& dblParameters() const { return m_dblValues; }
-
     };
 
   }     /* End namespace sim   */

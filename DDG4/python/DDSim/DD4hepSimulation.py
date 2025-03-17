@@ -45,11 +45,17 @@ HEPMC3_SUPPORTED_EXTENSIONS = [
     ".hepmc3", ".hepmc3.gz", ".hepmc3.xz", ".hepmc3.bz2",
     ".hepmc3.tree.root",
     ]
+EDM4HEP_INPUT_EXTENSIONS = [
+    ".root",
+    ".sio",
+    ]
 POSSIBLEINPUTFILES = [
     ".stdhep", ".slcio", ".HEPEvt", ".hepevt",
     ".pairs",
     ".hepmc",
-    ] + HEPMC3_SUPPORTED_EXTENSIONS
+    ]
+POSSIBLEINPUTFILES += HEPMC3_SUPPORTED_EXTENSIONS
+POSSIBLEINPUTFILES += EDM4HEP_INPUT_EXTENSIONS
 
 
 class DD4hepSimulation(object):
@@ -76,6 +82,7 @@ class DD4hepSimulation(object):
     self.vertexSigma = [0.0, 0.0, 0.0, 0.0]
     self.vertexOffset = [0.0, 0.0, 0.0, 0.0]
     self.enableDetailedShowerMode = False
+    self.disableSignalHandler = False
 
     self._errorMessages = []
     self._dumpParameter = False
@@ -107,13 +114,13 @@ class DD4hepSimulation(object):
     DD4hepSimulation object present in the steering file.
     """
     globs = {}
-    locs = {}
+    locs = {"SIM": self}
     if not self.steeringFile:
       return
     sFileTemp = self.steeringFile
     exec(compile(io.open(self.steeringFile).read(), self.steeringFile, 'exec'), globs, locs)
     for _name, obj in locs.items():
-      if isinstance(obj, DD4hepSimulation):
+      if isinstance(obj, DD4hepSimulation) and obj is not self:
         self.__dict__ = obj.__dict__
     self.steeringFile = os.path.abspath(sFileTemp)
 
@@ -207,6 +214,10 @@ class DD4hepSimulation(object):
     parser.add_argument("--enableDetailedShowerMode", action="store_true", dest="enableDetailedShowerMode",
                         default=self.enableDetailedShowerMode,
                         help="use detailed shower mode")
+
+    parser.add_argument("--disableSignalHandler", action="store_true", dest="disableSignalHandler",
+                        default=self.disableSignalHandler,
+                        help="disable the Signal Handler of DD4hep")
 
     parser.add_argument("--dumpSteeringFile", action="store_true", dest="dumpSteeringFile",
                         default=self._dumpSteeringFile, help="print an example steering file to stdout")
@@ -317,6 +328,8 @@ class DD4hepSimulation(object):
     # simple = DDG4.Geant4( kernel, tracker='Geant4TrackerAction',calo='Geant4CalorimeterAction')
     # geant4 = DDG4.Geant4( kernel, tracker='Geant4TrackerCombineAction',calo='Geant4ScintillatorCalorimeterAction')
     geant4 = DDG4.Geant4(kernel, tracker=self.action.tracker, calo=self.action.calo)
+    if not self.disableSignalHandler:
+      geant4.registerInterruptHandler()
 
     geant4.printDetectors()
 
@@ -438,6 +451,10 @@ class DD4hepSimulation(object):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index)
         gen.Input = "Geant4EventReaderGuineaPig|" + inputFile
         gen.Parameters = self.guineapig.getParameters()
+      elif inputFile.endswith(tuple(EDM4HEP_INPUT_EXTENSIONS)):
+        # EDM4HEP must come after HEPMC3 because of .root also part of hepmc3 extensions
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/EDM4hep%d" % index)
+        gen.Input = "EDM4hepFileReader|" + inputFile
       else:
         # this should never happen because we already check at the top, but in case of some LogicError...
         raise RuntimeError("Unknown input file type: %s" % inputFile)
@@ -499,6 +516,7 @@ class DD4hepSimulation(object):
   # =================================================================================
     # Now build the physics list:
     _phys = self.physics.setupPhysics(kernel, name=self.physicsList)
+    _phys.verbosity = self.output.physics
 
     # add the G4StepLimiterPhysics to activate the max step limits in volumes
     ph = DDG4.PhysicsList(kernel, 'Geant4PhysicsList/Myphysics')
@@ -540,7 +558,7 @@ class DD4hepSimulation(object):
       if processedEvents != 0:
         eventTime = totalTimeUser - startUpTime
         perEventTime = eventTime / processedEvents
-        logger.info("StartUp Time: %3.2f s, Event Processing: %3.2f s (%3.2f s/Event) "
+        logger.info("StartUp Time: %3.2f s, Processing and Init: %3.2f s (~%3.2f s/Event) "
                     % (startUpTime, eventTime, perEventTime))
     return exitCode
 

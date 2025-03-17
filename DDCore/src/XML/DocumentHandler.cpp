@@ -39,6 +39,15 @@ namespace {
     return fn;
   }
   int s_minPrintLevel = dd4hep::INFO;
+
+  std::string _clean_fname(const std::string& filepath) {
+    // This function seems to resolve environment variables inside the filepath string and return resolved string
+    std::string const& temp = getEnviron(filepath);
+    std::string temp2 = undressed_file_name( temp.empty() ? filepath : temp );
+    if ( strncmp(temp2.c_str(),"file:",5)==0 ) return temp2.substr(5);
+    return temp2;
+  }
+
 }
 
 #ifndef __TIXML__
@@ -328,13 +337,14 @@ Document DocumentHandler::load(Handle_t base, const XMLCh* fname, UriReader* rea
 
 /// Load XML file and parse it using URI resolver to read data.
 Document DocumentHandler::load(const std::string& fname, UriReader* reader) const   {
+  auto fname_clean = _clean_fname(fname);
   std::string path;
-  printout(DEBUG,"DocumentHandler","+++ Loading document URI: %s",fname.c_str());
+  printout(DEBUG,"DocumentHandler","+++ Loading document URI: %s",fname_clean.c_str());
   try  {
-    size_t idx = fname.find(':');
-    size_t idq = fname.find('/');
+    size_t idx = fname_clean.find(':');
+    size_t idq = fname_clean.find('/');
     if ( idq == std::string::npos ) idq = 0;
-    XMLURL xerurl = (const XMLCh*) Strng_t(idx==std::string::npos || idx>idq ? "file:"+fname : fname);
+    XMLURL xerurl = (const XMLCh*) Strng_t(idx==std::string::npos || idx>idq ? "file:"+fname_clean : fname_clean);
     std::string proto  = _toString(xerurl.getProtocolName());
     path = _toString(xerurl.getPath());
     printout(DEBUG,"DocumentHandler","+++             protocol:%s path:%s",proto.c_str(), path.c_str());
@@ -348,7 +358,7 @@ Document DocumentHandler::load(const std::string& fname, UriReader* reader) cons
       if ( reader ) reader->parserLoaded(path);
     }
     else   {
-      if ( reader && reader->load(fname, path) )  {
+      if ( reader && reader->load(fname_clean, path) )  {
         MemBufInputSource src((const XMLByte*)path.c_str(), path.length(), fname.c_str(), false);
         parser->parse(src);
         return (XmlDocument*)parser->adoptDocument();
@@ -430,15 +440,6 @@ namespace dd4hep {
       XmlDocument* xd;
     };
   }}
-
-namespace {
-  static std::string _clean_fname(const std::string& s) {
-    std::string const& temp = getEnviron(s);
-    std::string temp2 = undressed_file_name(temp.empty() ? s : temp);
-    if ( strncmp(temp2.c_str(),"file:",5)==0 ) return temp2.substr(5);
-    return temp2;
-  }
-}
 
 /// System ID of a given XML entity
 std::string DocumentHandler::system_path(Handle_t base, const std::string& fname)   {

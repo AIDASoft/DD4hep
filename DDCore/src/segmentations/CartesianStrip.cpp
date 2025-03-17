@@ -7,15 +7,13 @@
 // For the licensing terms see $DD4hepINSTALL/LICENSE.
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
+//  Created: Jun 28, 2013
+//  Author:  Christian Grefe, CERN
+//           David Blyth, ANL
+//
 //==========================================================================
-/*
- * CartesianStrip.cpp
- *
- *  Created on: Jun 28, 2013
- *      Author: Christian Grefe, CERN
- *              David Blyth, ANL
- */
 
+/// Framework include files
 #include <DDSegmentation/CartesianStrip.h>
 
 namespace dd4hep {

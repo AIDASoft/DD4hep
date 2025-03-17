@@ -72,9 +72,9 @@ namespace dd4hep {
       /// Export all properties to the Geant4 UI
       void exportProperties(PropertyManager& mgr);
       /// Accept ne property value from Geant4 UI
-      void SetNewValue(G4UIcommand *c, G4String val);
+      void SetNewValue(G4UIcommand *c, G4String val)  override;
       /// Pass current property value to Geant4 UI
-      G4String GetCurrentValue(G4UIcommand *c);
+      G4String GetCurrentValue(G4UIcommand *c)  override;
     };
 
   }    // End namespace sim

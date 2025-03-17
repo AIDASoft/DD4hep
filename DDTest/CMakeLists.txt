@@ -109,6 +109,9 @@ if (DD4HEP_USE_GEANT4)
     if(DD4HEP_USE_HEPMC3)
       target_compile_definitions(${TEST_NAME} PRIVATE DD4HEP_USE_HEPMC3)
     endif()
+    if(DD4HEP_USE_EDM4HEP)
+      target_compile_definitions(${TEST_NAME} PRIVATE DD4HEP_USE_EDM4HEP)
+    endif()
     if(DD4HEP_USE_LCIO)
       target_compile_definitions(${TEST_NAME} PRIVATE DD4HEP_USE_LCIO)
     endif()
@@ -160,6 +163,15 @@ if (DD4HEP_USE_GEANT4)
   set_tests_properties( t_ddsimUserActions PROPERTIES
     PASS_REGULAR_EXPRESSION "Deleting object StepActionCLI1"
   )
+
+  if(DD4HEP_USE_EDM4HEP AND TARGET podio::podioIO)
+    add_test( t_ddsimEDM4hepPlugins "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=3
+      --outputFile=ddsim_edm4hep_ZH.root
+      --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root
+      --part.userParticleHandler=
+    )
+  endif()
 
 endif()
 install(DIRECTORY include/DD4hep DESTINATION include)

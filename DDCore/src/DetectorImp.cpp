@@ -137,9 +137,9 @@ namespace {
 }
 
 std::string dd4hep::versionString(){
-  std::string vs("vXX-YY") ;
-  std::sprintf( &vs[0] , "v%2.2d-%2.2d", DD4HEP_MAJOR_VERSION, DD4HEP_MINOR_VERSION  ) ;
-  return vs;
+  char vsn[32];
+  std::snprintf(vsn, sizeof(vsn), "v%2.2d-%2.2d", DD4HEP_MAJOR_VERSION, DD4HEP_MINOR_VERSION);
+  return { vsn };
 }
 
 std::unique_ptr<Detector> Detector::make_unique(const std::string& name)   {
@@ -297,6 +297,13 @@ void* DetectorImp::removeUserExtension(unsigned long long int key, bool destroy)
 /// Access an existing extension object from the Detector instance
 void* DetectorImp::userExtension(unsigned long long int key, bool alert) const {
   return m_extensions.extension(key,alert);
+}
+
+/// Access flag to steer the detail of building of the geometry/detector description
+DetectorBuildType DetectorImp::buildType() const {
+  std::lock_guard<std::recursive_mutex> lock(s_detector_apply_lock);
+  DetectorBuildType temp = m_buildType;
+  return temp;
 }
 
 /// Register new mother volume using the detector name.

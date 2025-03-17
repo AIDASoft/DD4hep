@@ -18,7 +18,9 @@
 #include <DD4hep/IDDescriptor.h>
 #include <DDG4/Geant4Primitives.h>
 
+// Geant4 include files
 #include <G4VTouchable.hh>
+
 // Geant4 forward declarations
 class G4VPhysicalVolume;
 
@@ -43,14 +45,9 @@ namespace dd4hep {
     protected:
       /// Check the validity of the information before accessing it.
       bool checkValidity() const;
-
-    public:
-      static const VolumeID InvalidPath = VolumeID(-1LL);
-      static const VolumeID Insensitive = VolumeID(-2LL);
-      static const VolumeID NonExisting = 0ULL;
-
-      /// Initializing constructor. The tree will automatically be built if possible
-      Geant4VolumeManager(const Detector& description, Geant4GeometryInfo* info);
+    protected:
+      friend class Geant4Mapping;
+      
       /// Default constructor
       Geant4VolumeManager() = default;
       /// Constructor to be used when reading the already parsed object
@@ -64,12 +61,18 @@ namespace dd4hep {
       }
       /// Assignment operator
       Geant4VolumeManager& operator=(const Geant4VolumeManager& c) = default;
+      
+    public:
+      static const VolumeID InvalidPath = VolumeID(-1LL);
+      static const VolumeID Insensitive = VolumeID(-2LL);
+      static const VolumeID NonExisting = 0ULL;
+
+      /// Initializing constructor. The tree will automatically be built if possible
+      Geant4VolumeManager(const Detector& description, Geant4GeometryInfo* info);
 
       /// Helper: Generate placement path from touchable object
       std::vector<const G4VPhysicalVolume*>
       placementPath(const G4VTouchable* touchable, bool exception = true) const;
-      /// Access CELLID by placement path
-      //VolumeID volumeID(const std::vector<const G4VPhysicalVolume*>& path) const;
       /// Access CELLID by Geant4 touchable object
       VolumeID volumeID(const G4VTouchable* touchable) const;
       /// Accessfully decoded volume fields  by placement path
@@ -79,7 +82,6 @@ namespace dd4hep {
       void volumeDescriptor(const G4VTouchable* touchable,
                             std::pair<VolumeID,std::vector<std::pair<const BitFieldElement*, VolumeID> > >& volume_desc) const;
     };
-
   }    // End namespace sim
 }      // End namespace dd4hep
 #endif // DDG4_GEANT4VOLUMEMANAGER_H

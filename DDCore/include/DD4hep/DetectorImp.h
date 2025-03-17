@@ -108,9 +108,7 @@ namespace dd4hep {
     }
 
     /// Access flag to steer the detail of building of the geometry/detector description
-    virtual DetectorBuildType buildType() const   override {
-      return m_buildType;
-    }
+    virtual DetectorBuildType buildType() const   override;
 
     /// Read compact geometry description or alignment file
     virtual void fromCompact(const std::string& fname, DetectorBuildType type = BUILD_DEFAULT)   override {

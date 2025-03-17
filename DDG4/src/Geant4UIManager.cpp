@@ -251,7 +251,8 @@ void Geant4UIManager::start() {
   info("++ Start run with %d events.",numEvent);
   try {
     context()->kernel().runManager().BeamOn(numEvent);
-  } catch (DD4hep_End_Of_File& e) {
+  }
+  catch (DD4hep_End_Of_File& e) {
     info("++ End of file reached, ending run...");
     context()->kernel().runManager().RunTermination();
   }

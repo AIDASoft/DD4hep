@@ -7,7 +7,7 @@ SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DD4hep)
 #################
 
 SET( DD4hep_VERSION_MAJOR 1 )
-SET( DD4hep_VERSION_MINOR 29 )
+SET( DD4hep_VERSION_MINOR 31 )
 SET( DD4hep_VERSION_PATCH 0 )
 
 #######################
@@ -126,6 +126,12 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 # Configure ROOT
 find_package (ROOT 6.08 REQUIRED CONFIG)
 DD4HEP_SETUP_ROOT_TARGETS()
+# ROOT no longer finds nlohmann_json unless we ask for the ROOTEve component, so we ask
+# for the ROOTEve component if the ROOTEve component exists.
+# DDEve and one executable in UtilityApps depend on this
+if(TARGET ROOT::ROOTEve)
+  find_package (ROOT REQUIRED COMPONENTS ROOTEve CONFIG)
+endif()
 
 # Configure BOOST
 find_package(Boost 1.49 REQUIRED)
@@ -154,10 +160,10 @@ if(DD4HEP_USE_LCIO)
 endif()
 
 if(DD4HEP_USE_EDM4HEP)
-  find_package(EDM4HEP REQUIRED)
+  find_package(EDM4HEP 0.10.5 REQUIRED)
   # we need podio with Frame support (>=0.16.3)
   # podio is "SameMajorVersion" compatible
-  find_package(podio 0.16.3)  # this will not find 1.0 and newer
+  find_package(podio 0.16.7)  # this will not find 1.0 and newer
   if(NOT podio_FOUND)
     # we try to find a newer version now
     find_package(podio 1.0 REQUIRED)

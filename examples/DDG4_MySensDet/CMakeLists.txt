@@ -52,7 +52,7 @@ if (DD4HEP_USE_GEANT4)
   install(TARGETS DDG4_MySensDet DESTINATION lib)
   
   # Geant4 material scan. From position=0,0,0 to end-of-world 
-  dd4hep_add_test_reg( DDG4_MySensDet_g4material_scan_SiliconBlock_LONGTEST
+  dd4hep_add_test_reg( DDG4_MySensDet_sim_g4material_scan_SiliconBlock_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4_MySensDet.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/g4MaterialScan --compact=file:${CMAKE_INSTALL_PREFIX}/examples/ClientTests/compact/SiliconBlock.xml
                "--position=0,0,0" "--direction=0,1,0"

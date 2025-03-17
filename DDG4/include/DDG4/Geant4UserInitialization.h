@@ -75,11 +75,11 @@ namespace dd4hep {
       void adopt(Geant4UserInitialization* action);
 
       /// Set client context
-      virtual void updateContext(Geant4Context* ctxt);
+      virtual void updateContext(Geant4Context* ctxt)  override;
       /// Callback function to build setup for the MT worker thread
-      virtual void build()  const;
+      virtual void build()  const  override;
       /// Callback function to build setup for the MT master thread
-      virtual void buildMaster()  const;
+      virtual void buildMaster()  const  override;
     };
 
   }    // End namespace sim

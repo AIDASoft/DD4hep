@@ -22,6 +22,7 @@
 #include <DD4hep/DD4hepUnits.h>
 #include <DD4hep/Detector.h>
 #include <DD4hep/Printout.h>
+#include <DD4hep/Shapes.h>
 
 /// C/C++ include files
 #include <cstdio>
@@ -193,6 +194,7 @@ void MaterialScan::print(const Vector3D& p0, const Vector3D& p1, double epsilon)
   ::printf(" | Layer   \\ %-16s            [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm)\n","");
   ::printf("%s",line);
   MaterialVec materials;
+  std::set<Solid> tessellated_solids;
   for( unsigned i=0, n=placements.size(); i<n; ++i){
     TGeoNode*  pv  = placements[i].first.ptr();
     double length  = placements[i].second;
@@ -223,6 +225,11 @@ void MaterialScan::print(const Vector3D& p0, const Vector3D& p1, double epsilon)
       mname += " -> ";
       mname += next_mat->GetName();
     }
+    Volume vol(placements[i].first->GetVolume());
+    Solid  shape(vol.solid());
+    if ( shape->IsA() == TGeoTessellated::Class() )  {
+      tessellated_solids.insert(shape);
+    }
     if ( 0 == i )  {
       ::printf(fmt, "(start)" , curr_mat->GetName(), curr_mat->GetZ(), curr_mat->GetA(),
 	       curr_mat->GetDensity(), curr_mat->GetRadLen()/dd4hep::cm, curr_mat->GetIntLen()/dd4hep::cm,
@@ -236,19 +243,19 @@ void MaterialScan::print(const Vector3D& p0, const Vector3D& p1, double epsilon)
 	       0e0, 0e0, 0e0, 0e0,
 	       p0[0]/dd4hep::cm, p0[1]/dd4hep::cm, p0[2]/dd4hep::cm);
     }
-    else   {
-      double next_dens = next_mat ? next_mat->GetDensity() : 0e0;
-      double next_rad  = next_mat ? next_mat->GetRadLen() : 0e0;
-      double next_int  = next_mat ? next_mat->GetIntLen() : 0e0;
-      double next_Z    = next_mat ? next_mat->GetZ() : 0e0;
-      double next_A    = next_mat ? next_mat->GetA() : 0e0;
-      ::printf(fmt, std::to_string(i+1).c_str(), mname.c_str(), next_Z, next_A,
-	       next_dens, next_rad/dd4hep::cm, next_int/dd4hep::cm,
+    else if( next_mat != nullptr )  {
+      ::printf(fmt, std::to_string(i+1).c_str(), mname.c_str(), next_mat->GetZ(), next_mat->GetA(),
+	       next_mat->GetDensity(), next_mat->GetRadLen()/dd4hep::cm, next_mat->GetIntLen()/dd4hep::cm,
 	       length/dd4hep::cm, path_length/dd4hep::cm, sum_x0, sum_lambda,
 	       end[0]/dd4hep::cm, end[1]/dd4hep::cm, end[2]/dd4hep::cm);
     }
+    else  {
+      ::printf(fmt, std::to_string(i+1).c_str(), (mname+" -> UNKNOWN").c_str(), -1e0, -1e0, -1e0, -1e0, -1e0,
+               length/dd4hep::cm, path_length/dd4hep::cm, sum_x0, sum_lambda,
+               end[0]/dd4hep::cm, end[1]/dd4hep::cm, end[2]/dd4hep::cm);
+    }
   }
-  printf("%s",line);
+  ::printf("%s",line);
   const MaterialData& avg = matMgr.createAveragedMaterial(materials);
   const char* fmt = avg.radiationLength() >= 1e5 ? fmt2 : fmt1;
   ::printf(fmt,"","Average Material",avg.Z(),avg.A(),avg.density(), 
@@ -257,7 +264,16 @@ void MaterialScan::print(const Vector3D& p0, const Vector3D& p1, double epsilon)
            path_length/avg.radiationLength(), 
            path_length/avg.interactionLength(),
            end[0]/dd4hep::cm, end[1]/dd4hep::cm, end[2]/dd4hep::cm);
-  printf("%s",line);
+  ::printf("%s",line);
+
+  if ( !tessellated_solids.empty() )  {
+    ::printf(" |  WARNING: %ld tessellated shape were encountered during the volume traversal:\n",
+	     tessellated_solids.size());
+    for(auto shape : tessellated_solids )
+      ::printf(" |           \t\t %s\n", shape.name());
+    ::printf(" |  WARNING: The results of this material scan are unreliable!\n");
+    ::printf("%s",line);
+  }
 }
 
 /// Scan along a line and print the materials traversed

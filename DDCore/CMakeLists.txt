@@ -141,6 +141,9 @@ ENDIF()
 file(GLOB DDCore_Python python/*.py)
 install(FILES ${DDCore_Python} DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
 
+install(PROGRAMS python/bin/checkOverlaps.py DESTINATION bin RENAME checkOverlaps)
+install(PROGRAMS python/bin/checkGeometry.py DESTINATION bin RENAME checkGeometry)
+
 # install header files
 install(DIRECTORY
   include/DDSegmentation

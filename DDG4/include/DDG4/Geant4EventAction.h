@@ -97,13 +97,13 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4SharedEventAction();
       /// Set or update client for the use in a new thread fiber
-      virtual void configureFiber(Geant4Context* thread_context);
+      virtual void configureFiber(Geant4Context* thread_context)  override;
       /// Underlying object to be used during the execution of this thread
       virtual void use(Geant4EventAction* action);
       /// Begin-of-event callback
-      virtual void begin(const G4Event* event);
+      virtual void begin(const G4Event* event)  override;
       /// End-of-event callback
-      virtual void end(const G4Event* event);
+      virtual void end(const G4Event* event)  override;
     };
 
     /// Concrete implementation of the Geant4 event action sequence
@@ -142,9 +142,9 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4EventActionSequence();
       /// Set or update client context
-      virtual void updateContext(Geant4Context* ctxt);
+      virtual void updateContext(Geant4Context* ctxt)  override;
       /// Set or update client for the use in a new thread fiber
-      virtual void configureFiber(Geant4Context* thread_context);
+      virtual void configureFiber(Geant4Context* thread_context)  override;
       /// Get an action by name
       Geant4EventAction* get(const std::string& name) const;
       /// Register begin-of-event callback

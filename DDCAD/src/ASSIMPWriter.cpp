@@ -99,7 +99,7 @@ namespace  {
                        dd4hep::yes_no(tes->IsDefined()));
     }
     std::cout << std::flush;
-    return move(tes);
+    return std::move(tes);
   }
 
   std::unique_ptr<TGeoTessellated> TessellateShape::build_mesh(int id, const std::string& name, TGeoShape* shape)      {
@@ -191,7 +191,7 @@ namespace  {
 #endif
       }
     }
-    return close_tessellated(id, shape, nskip, move(tes));
+    return close_tessellated(id, shape, nskip, std::move(tes));
   }
   
   RootCsg::TBaseMesh* TessellateShape::make_mesh(TGeoShape* sh)   const   {

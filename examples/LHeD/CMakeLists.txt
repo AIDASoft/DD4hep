@@ -86,7 +86,7 @@ if (DD4HEP_USE_GEANT4)
   #
   # Basic DDG4 component/unit tests
   foreach(script LHeDMagField LHeDPhysics LHeDRandom LHeDScan)
-    dd4hep_add_test_reg( LHeD_DDG4_${script}_LONGTEST
+    dd4hep_add_test_reg( LHeD_DDG4_sim_${script}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
       EXEC_ARGS  ${Python_EXECUTABLE} ${LHeDEx_INSTALL}/scripts/${script}.py
       REGEX_PASS "TEST_PASSED"
@@ -94,7 +94,7 @@ if (DD4HEP_USE_GEANT4)
   endforeach(script)
   #
   # Material scan
-  dd4hep_add_test_reg( LHeD_DDG4_g4material_scan_LONGTEST
+  dd4hep_add_test_reg( LHeD_DDG4_sim_g4material_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/g4MaterialScan --compact=file:${LHeDEx_INSTALL}/compact/compact.xml
                       "--position=0,0,0" "--direction=0,1,0"
@@ -104,15 +104,15 @@ if (DD4HEP_USE_GEANT4)
   foreach(script LHeDXML LHeDACLick)
     #
     # Build ACLick from the source file
-    dd4hep_add_test_reg( LHeD_DDG4_${script}_as_ACLick_LONGTEST
+    dd4hep_add_test_reg( LHeD_DDG4_sim_${script}_as_ACLick_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
       EXEC_ARGS  root.exe -b -x -n -q -l "${LHeDEx_INSTALL}/scripts/run.C(\"${LHeDEx_INSTALL}/scripts/${script}\")"
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=2"
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
-    set_property(TEST t_LHeD_DDG4_${script}_as_ACLick_LONGTEST PROPERTY RESOURCE_LOCK "INIT_ACLICK")
+    set_property(TEST t_LHeD_DDG4_sim_${script}_as_ACLick_LONGTEST PROPERTY RESOURCE_LOCK "INIT_ACLICK")
     #
     # Execute identical source linked executable 
-    dd4hep_add_test_reg( LHeD_DDG4_${script}_as_exe_LONGTEST
+    dd4hep_add_test_reg( LHeD_DDG4_sim_${script}_as_exe_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
       EXEC_ARGS  ${script}
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=2"

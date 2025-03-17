@@ -47,8 +47,15 @@ def run():
     ui = geant4.setupCshUI(macro=args.macro)
   else:
     ui = geant4.setupCshUI()
+
+  if args.verbose:
+    ui.Commands.append('/run/verbose ' + str(args.verbose))
   if args.batch:
-    ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
+    ui.Commands.append('/run/beamOn ' + str(args.events))
+
+  # Terminate sequence
+  if args.batch:
+    ui.Commands.append('/ddg4/UI/terminate')
   #
   # Configure field
   geant4.setupTrackingField(prt=True)

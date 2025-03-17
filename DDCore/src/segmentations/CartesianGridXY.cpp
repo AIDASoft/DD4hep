@@ -7,18 +7,17 @@
 // For the licensing terms see $DD4hepINSTALL/LICENSE.
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
+//  Created: Jun 28, 2013
+//  Author:  Christian Grefe, CERN
+//
 //==========================================================================
-/*
- * CartesianGridXY.cpp
- *
- *  Created on: Jun 28, 2013
- *      Author: Christian Grefe, CERN
- */
 
+/// Framework include files
 #include <DDSegmentation/CartesianGridXY.h>
 
 namespace dd4hep {
-namespace DDSegmentation {
+
+  namespace DDSegmentation {
 
 /// default constructor using an encoding string
 CartesianGridXY::CartesianGridXY(const std::string& cellEncoding) :

@@ -36,6 +36,7 @@ def run():
 
   DDG4.importConstants(kernel.detectorDescription(), debug=False)
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
+  geant4.registerInterruptHandler()
   geant4.printDetectors()
   # Configure UI
   if args.macro:

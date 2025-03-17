@@ -55,6 +55,9 @@ namespace dd4hep {
       /// Default constructor. Takes the step's pre-touchable
       Geant4TouchableHandler(const G4Step* step, bool use_post_step_point);
 
+      /// Assemble Geant4 volume path
+      static std::string placementPath(const Geant4PlacementPath& path, bool reverse=true);
+
       /// Helper: Generate placement path from touchable object
       Geant4PlacementPath placementPath(bool exception=false) const;
 
