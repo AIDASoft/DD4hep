@@ -19,6 +19,8 @@
 
 using namespace dd4hep;
 
+#define EXTENSION_DEBUG 0
+
 namespace {
   std::string obj_type(void* ptr)  {
     ObjectExtensions* o = (ObjectExtensions*)ptr;
@@ -67,6 +69,12 @@ void* ObjectExtensions::addExtension(unsigned long long int key, ExtensionEntry*
     if ( e->object() )  {
       auto j = extensions.find(key);
       if (j == extensions.end()) {
+#if EXTENSION_DEBUG
+        auto* p = e->object();
+        ExtensionEntry* ptr = (ExtensionEntry*)e;
+        printout(ALWAYS,"addExtension","+++ Add extension with key: %016llX  --> %p [%s]",
+                 key, p, typeName(typeid(*ptr)).c_str());
+#endif
         extensions[key] = e;
         return e->object();
       }
@@ -97,6 +105,9 @@ void* ObjectExtensions::removeExtension(unsigned long long int key, bool destroy
 /// Access an existing extension object from the detector element
 void* ObjectExtensions::extension(unsigned long long int key) const {
   const auto j = extensions.find(key);
+#if EXTENSION_DEBUG
+  printout(ALWAYS,"extension","+++ Get extension with key: %016llX", key);
+#endif
   if (j != extensions.end()) {
     return (*j).second->object();
   }
@@ -107,6 +118,9 @@ void* ObjectExtensions::extension(unsigned long long int key) const {
 /// Access an existing extension object from the detector element
 void* ObjectExtensions::extension(unsigned long long int key, bool alert) const {
   const auto j = extensions.find(key);
+#if EXTENSION_DEBUG
+  printout(ALWAYS,"extension","+++ Get extension with key: %016llX", key);
+#endif
   if (j != extensions.end()) {
     return (*j).second->object();
   }

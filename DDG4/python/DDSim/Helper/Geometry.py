@@ -35,7 +35,30 @@ class Geometry(ConfigHelper):
 
     self._dumpDGDML_EXTRA = {"help": "If not empty, filename to dump the Geometry as GDML"}
     self.dumpGDML = ""
+
+    self._regexSDDict = {}
+
     self._closeProperties()
+
+  @property
+  def regexSensitiveDetector(self):
+    """ The map key is the name of the Detector, and 'Match' is a mandatory elements of the dictionary, other Keys are
+        assigned as property to the object. OutputLevel _sets_ the outputlevel of the plugin, so lower numbers mean more
+        output from the plugin.
+
+        >>> SIM.geometry.regexSensitiveDetector['DRcalo'] = {
+                                                   'Match': ['(core|clad)'],
+                                                   'OutputLevel': 3,
+                                                  }
+    """
+    return self._regexSDDict
+
+  @regexSensitiveDetector.setter
+  def regexSensitiveDetector(self, val):
+    if isinstance(val, dict):
+      self._regexSDDict = val
+      return
+    raise RuntimeError(f"Unsupported type for regexSensitiveDetector: {val!r}")
 
   def constructGeometry(self, kernel, geant4, geoPrintLevel=2, numberOfThreads=1):
     """Construct Geant4 geometry."""
@@ -60,3 +83,10 @@ class Geometry(ConfigHelper):
     sensitives = DetectorConstruction(kernel, str('Geant4DetectorSensitivesConstruction/ConstructSD'))
     sensitives.enableUI()
     seq.adopt(sensitives)
+
+    for index, (detName, regexDetectors) in enumerate(sorted(self._regexSDDict.items())):
+      seq, act = geant4.addDetectorConstruction(f'Geant4RegexSensitivesConstruction/ConstrSDRegEx_{index}_{detName}')
+      act.Detector = detName
+      # this will set Match, and other properties if possible
+      for key, value in regexDetectors.items():
+        setattr(act, key, value)

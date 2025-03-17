@@ -52,7 +52,9 @@ set(ClientTestsEx_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
 # Single shape tests:
 
 #Reference for test depends on assimp version
-if(assimp_VERSION VERSION_GREATER_EQUAL 5.2.0)
+if(assimp_VERSION VERSION_GREATER_EQUAL 5.2.7)
+  set(assimp_duck_VERSION 5.2.7)
+elseif(assimp_VERSION VERSION_GREATER_EQUAL 5.2.0)
   set(assimp_duck_VERSION 5.2.0)
 else()
   set(assimp_duck_VERSION 5.0.0)
@@ -160,24 +162,26 @@ dd4hep_add_test_reg( DDCAD_Issue1134_overlap_check
   REGEX_PASS "Number of illegal overlaps/extrusions : 0"
   REGEX_FAIL "Exception;ERROR;FAILED"
 )
-#
-#  Overlap check of Armin Ilg's example
-dd4hep_add_test_reg( DDCAD_Issue1134_g4overlap_check
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
-  EXEC_ARGS  ddsim --compactFile ${DDCADEx_INSTALL}/compact/DD4hep_Issue_1134.xml
-                   --enableG4Gun --runType run
-                   --macroFile ${DDCADEx_INSTALL}/scripts/overlap.mac
-  REGEX_PASS "Checking overlaps for volume AV_2.Shape_STL_0.0.tessellated_.* .G4TessellatedSolid. ... OK"
-  REGEX_FAIL "EXCEPTION;ERROR;Error;FAILED"
-)
-#
-#  Geometry scan of Armin Ilg's example
-dd4hep_add_test_reg( DDCAD_Issue1134_g4geometry_scan
-  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
-  EXEC_ARGS  g4GeometryScan
-             --compact=file:${DDCADEx_INSTALL}/compact/DD4hep_Issue_1134.xml
-             --position=-35,-35,-300 --direction=7,7,60
-  REGEX_PASS ".  -1.29,  -1.29, -11.06.  Path:./world/AV_2.Shape_STL_0.0.tessellated_.* Shape:G4TessellatedSolid  Mat:Gold"
-  REGEX_FAIL "EXCEPTION;ERROR;Error;FAILED"
-)
-#
+if(TARGET DD4hep::DDG4)
+  #
+  #  Overlap check of Armin Ilg's example
+  dd4hep_add_test_reg( DDCAD_sim_Issue1134_g4overlap_check
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
+    EXEC_ARGS  ddsim --compactFile ${DDCADEx_INSTALL}/compact/DD4hep_Issue_1134.xml
+    --enableG4Gun --runType run
+    --macroFile ${DDCADEx_INSTALL}/scripts/overlap.mac
+    REGEX_PASS "Checking overlaps for volume AV_2.Shape_STL_0.0.tessellated_.* .G4TessellatedSolid. ... OK"
+    REGEX_FAIL "EXCEPTION;ERROR;Error;FAILED"
+  )
+  #
+  #  Geometry scan of Armin Ilg's example
+  dd4hep_add_test_reg( DDCAD_sim_Issue1134_g4geometry_scan
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
+    EXEC_ARGS  g4GeometryScan
+    --compact=file:${DDCADEx_INSTALL}/compact/DD4hep_Issue_1134.xml
+    --position=-35,-35,-300 --direction=7,7,60
+    REGEX_PASS ".  -1.29,  -1.29, -11.06.  Path:./world/AV_2.Shape_STL_0.0.tessellated_.* Shape:G4TessellatedSolid  Mat:Gold"
+    REGEX_FAIL "EXCEPTION;ERROR;Error;FAILED"
+  )
+  #
+endif()

@@ -665,11 +665,15 @@ namespace dd4hep {
       double eunit() const;
       /// Access min/max parameters: eunit
       double eunit(double default_value) const;
+      /// Access layers attribute
+      int    layers()  const;
+      /// Access layers attribute
+      int    layers(int default_value)  const;
       /// Access min/max parameters: lunit
       double lunit() const;
       /// Access min/max parameters: lunit
       double lunit(double default_value) const;
-
+      
       /// Access constants: temperature
       double temperature() const;
       /// Access constants: temperature

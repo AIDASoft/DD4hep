@@ -137,7 +137,6 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
 
     printout(INFO, "CODEX-b super station size"," Thick: % g, width: % g, height: % g", super_thick, super_width+30.0, super_height+30.0);
     double     face_x = -super_height;
-    double     super_x = -super_thick + st_thick;
     double     inner_x = -st_dist*((super_repeat-1)/2.0); 
     for (int j=0; j < super_repeat; ++j )    {
       if( super_name.compare("face_station") == 0 && j < 2 ) { 
@@ -161,7 +160,6 @@ static Ref_t create_element(Detector& description, xml_h e, Ref_t sens)  {
       pv.addPhysVolID("station", j+1);
       printout(INFO, "CODEX-b-station"," Station: %d x=%g y=%g z=%g", j+1, inner_x);
       super_stations[st_vol].push_back(pv);
-      super_x += st_dist + 2.0*st_thick;
       //inner_x += st_dist + 2.0*st_thick;
       inner_x += st_dist;
       face_x += 2.0*super_height + st_thick/10.;

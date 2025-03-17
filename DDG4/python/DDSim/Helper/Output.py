@@ -52,6 +52,9 @@ class Output(ConfigHelper):
 
     self._geometry_EXTRA = {'choices': OUTPUT_CHOICES, 'type': outputLevelType}
     self._geometry = outputLevel('DEBUG')
+
+    self._physics_EXTRA = {'choices': (0, 1, 2), 'type': outputLevelType}
+    self._physics = outputLevel(1)
     self._closeProperties()
 
   @property
@@ -98,3 +101,12 @@ class Output(ConfigHelper):
   @geometry.setter
   def geometry(self, level):
     self._geometry = outputLevel(level)
+
+  @property
+  def physics(self):
+    """Output level for physics and physics constructors: 0 (silent), 1, 2"""
+    return self._physics
+
+  @physics.setter
+  def physics(self, level):
+    self._physics = int(level)

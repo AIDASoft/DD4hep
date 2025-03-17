@@ -166,8 +166,9 @@ DetElementCreator::~DetElementCreator() noexcept(false)  {
     total_depth += l.second.second;
     ++total_cnt;
   }
-  printout(INFO,pref,"DetElementCreator: ++ Summary:     %-24s  %d.","Total DetElements:",total_cnt);
-  printout(INFO,pref,"DetElementCreator: +++++++++++++++ Readout structure generation  ++++++++++++++++++++++++");
+  if ( 0 == total_depth )  { }
+  printout(INFO, pref, "DetElementCreator: ++ Summary:     %-24s  %d.","Total DetElements:", total_cnt);
+  printout(INFO, pref, "DetElementCreator: +++++++++++++++ Readout structure generation  ++++++++++++++++++++++++");
   str << endl;
   for( const auto& f : fields )   {
     string ro_name = f.first.name() + string("Hits");
@@ -378,7 +379,7 @@ int DetElementCreator::process(PlacedVolume pv, int lvl, bool recursive)   {
           }
         }
 
-        for(size_t i=1; i<stack.size(); ++i)   {
+        for( size_t i=1; i<stack.size(); ++i )   {
           auto& d = stack[i];
           auto& p = stack[i-1];
           if ( !d.element.isValid() )    {

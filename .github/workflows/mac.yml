@@ -1,0 +1,20 @@
+name: macOS
+
+on: [push, pull_request]
+
+jobs:
+  macOS:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Brew install
+      run: |
+        brew install root boost cmake ninja
+        pip install pytest
+    - name: Compile
+      run: |
+        mkdir build
+        cd build
+        cmake -GNinja -DDD4HEP_USE_GEANT4=OFF -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=OFF -DBUILD_TESTING=ON -DDD4HEP_USE_XERCESC=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 -DDD4HEP_RELAX_PYVER=ON ..
+        ninja

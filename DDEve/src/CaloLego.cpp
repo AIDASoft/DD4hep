@@ -68,12 +68,12 @@ void CaloLego::ConfigureGeometry(const DisplayConfiguration::ViewConfig& config)
     DisplayConfiguration::Calodata& cd = calo.config.data.calodata;
     if ( calo.config.use.empty() )  {
       for(int isl = 0; isl<calo.eveHist->GetNSlices(); ++isl)  {
-	int nslice = ctx.eveHist->GetNSlices();
-	TH2F* h = new TH2F(*calo.eveHist->GetHist(isl));
-	ctx.eveHist->AddHistogram(h);
-	ctx.eveHist->RefSliceInfo(nslice).Setup(n,cd.threshold,cd.color,101);
-	Annotation* a = new Annotation(viewer(),n,Annotation::DefaultMargin(),legend_y,cd.color);
-	legend_y += a->GetTextSize();
+        int nslice = ctx.eveHist->GetNSlices();
+        TH2F* h = new TH2F(*calo.eveHist->GetHist(isl));
+        ctx.eveHist->AddHistogram(h);
+        ctx.eveHist->RefSliceInfo(nslice).Setup(n,cd.threshold,cd.color,101);
+        Annotation* a = new Annotation(viewer(),n,Annotation::DefaultMargin(),legend_y,cd.color);
+        legend_y += a->GetTextSize();
       }
     }
   }
@@ -113,10 +113,10 @@ void CaloLego::ConfigureEvent(const DisplayConfiguration::ViewConfig& config)  {
     const Display::CalodataContext& ctx = m_eve->GetCaloHistogram(n);
     if ( ctx.config.use.empty() )  {
       for(int isl = 0; isl<ctx.eveHist->GetNSlices(); ++isl)  {
-	TH2F* global = ctx.eveHist->GetHist(isl);
-	TH2F* local  = m_data.eveHist->GetHist(ihist);
-	*local = *global;
-	ihist++;
+        TH2F* global = ctx.eveHist->GetHist(isl);
+        TH2F* local  = m_data.eveHist->GetHist(ihist);
+        *local = *global;
+        ihist++;
       }
     }
   }

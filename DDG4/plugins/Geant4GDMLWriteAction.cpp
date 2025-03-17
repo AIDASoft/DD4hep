@@ -139,9 +139,12 @@ void Geant4GDMLWriteAction::writeGDML()   {
           fname.c_str());
     return;
   }
-  else if ( 0 == ::stat(fname.c_str(), &buff) )  {
-    warning("+++ GDML file %s already exists. Overwriting existing file.", fname.c_str());
+  else if ( 0 != ::stat(fname.c_str(), &buff) &&
+            S_ISREG(buff.st_mode) &&
+            buff.st_uid == getuid() &&
+            ::access(fname.c_str(), W_OK) )  {
     ::unlink(fname.c_str());
+    warning("+++ GDML file %s already exists. Overwriting existing file.", fname.c_str());
   }
 #ifdef GEANT4_NO_GDML
   warning("+++ writeGDML: GDML not found in the present Geant4 build! Output: %s not written", fname.c_str());

@@ -16,6 +16,7 @@
 ///  Framework include files
 #include <DD4hep/Detector.h>
 #include <DDG4/EventParameters.h>
+#include <DDG4/FileParameters.h>
 #include <DDG4/Geant4OutputAction.h>
 #include <DDG4/RunParameters.h>
 
@@ -25,10 +26,17 @@
 #include <edm4hep/CaloHitContributionCollection.h>
 #include <edm4hep/SimCalorimeterHitCollection.h>
 #include <edm4hep/EDM4hepVersion.h>
+#include <edm4hep/Constants.h>
+#if EDM4HEP_BUILD_VERSION < EDM4HEP_VERSION(0, 99, 0)
+  using edm4hep::CellIDEncoding;
+#else
+  using edm4hep::labels::CellIDEncoding;
+#endif
 /// podio include files
 #include <podio/CollectionBase.h>
 #include <podio/podioVersion.h>
 #include <podio/Frame.h>
+#include <podio/FrameCategories.h>
 #if PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
 #include <podio/ROOTWriter.h>
 #else
@@ -37,6 +45,8 @@ namespace podio {
   using ROOTWriter = podio::ROOTFrameWriter;
 }
 #endif
+
+#include <atomic>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -62,6 +72,7 @@ namespace dd4hep {
       using calorimeterpair_t = std::pair< edm4hep::SimCalorimeterHitCollection, edm4hep::CaloHitContributionCollection >;
       using calorimetermap_t = std::map< std::string, calorimeterpair_t >;
       std::unique_ptr<writer_t>     m_file  { };
+      std::atomic_size_t            m_fileUseCount { 0 };
       podio::Frame                  m_frame { };
       edm4hep::MCParticleCollection m_particles { };
       trackermap_t                  m_trackerHits;
@@ -77,7 +88,7 @@ namespace dd4hep {
       int                           m_eventNo           { 0 };
       int                           m_eventNumberOffset { 0 };
       bool                          m_filesByRun        { false };
-      
+
       /// Data conversion interface for MC particles to EDM4hep format
       void saveParticles(Geant4ParticleMap* particles);
       /// Store the metadata frame with e.g. the cellID encoding strings
@@ -127,13 +138,11 @@ namespace dd4hep {
         printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first.c_str());
         frame.putParameter(p.first, p.second);
       }
-#if PODIO_BUILD_VERSION > PODIO_VERSION(0, 16, 2)
       // This functionality is only present in podio > 0.16.2
       for (auto const& p: this->dblParameters()) {
         printout(DEBUG, "Geant4OutputEDM4hep", "Saving event parameter: %s", p.first.c_str());
         frame.putParameter(p.first, p.second);
       }
-#endif
     }
 
     template <> void RunParameters::extractParameters(podio::Frame& frame)   {
@@ -149,13 +158,30 @@ namespace dd4hep {
         printout(DEBUG, "Geant4OutputEDM4hep", "Saving run parameter: %s", p.first.c_str());
         frame.putParameter(p.first, p.second);
       }
-#if PODIO_BUILD_VERSION > PODIO_VERSION(0, 16, 2)
       // This functionality is only present in podio > 0.16.2
       for (auto const& p: this->dblParameters()) {
         printout(DEBUG, "Geant4OutputEDM4hep", "Saving run parameter: %s", p.first.c_str());
         frame.putParameter(p.first, p.second);
       }
-#endif
+    }
+    template <> void FileParameters::extractParameters(podio::Frame& frame)   {
+      for(auto const& p: this->intParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving meta parameter: %s", p.first.c_str());
+        frame.putParameter(p.first, p.second);
+      }
+      for(auto const& p: this->fltParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving meta parameter: %s", p.first.c_str());
+        frame.putParameter(p.first, p.second);
+      }
+      for(auto const& p: this->strParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving meta parameter: %s", p.first.c_str());
+        frame.putParameter(p.first, p.second);
+      }
+      // This functionality is only present in podio > 0.16.2
+      for (auto const& p: this->dblParameters()) {
+        printout(DEBUG, "Geant4OutputEDM4hep", "Saving meta parameter: %s", p.first.c_str());
+        frame.putParameter(p.first, p.second);
+      }
     }
 
   }    // End namespace sim
@@ -230,7 +256,6 @@ Geant4Output2EDM4hep::Geant4Output2EDM4hep(Geant4Context* ctxt, const std::strin
 /// Default destructor
 Geant4Output2EDM4hep::~Geant4Output2EDM4hep()  {
   G4AutoLock protection_lock(&action_mutex);
-  m_file.reset();
   InstanceCount::decrement(this);
 }
 
@@ -245,31 +270,39 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
       fname = m_output.substr(0, idx) + _toString(m_runNo, ".run%08d") + m_output.substr(idx);
     }
   }
-  if ( !fname.empty() )   {
+  // Create the file only when it has not yet beeen created in another thread
+  if ( !fname.empty() && !m_file )   {
     m_file = std::make_unique<podio::ROOTWriter>(fname);
     if ( !m_file )   {
       fatal("+++ Failed to open output file: %s", fname.c_str());
     }
     printout( INFO, "Geant4Output2EDM4hep" ,"Opened %s for output", fname.c_str() ) ;
   }
+  m_fileUseCount++;
 }
 
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::endRun(const G4Run* run)  {
   saveRun(run);
   saveFileMetaData();
-  if ( m_file )   {
+
+  // Close the file only when this is the last thread using it.
+  // Note: Although the use count is atomic, the file pointer is not,
+  // and testing it requires locking.
+  G4AutoLock protection_lock(&action_mutex);
+  if ( m_file && m_fileUseCount == 1 )   {
     m_file->finish();
     m_file.reset();
   }
+  m_fileUseCount--;
 }
 
 void Geant4Output2EDM4hep::saveFileMetaData() {
   podio::Frame metaFrame{};
   for (const auto& [name, encodingStr] : m_cellIDEncodingStrings) {
-    metaFrame.putParameter(name + "__CellIDEncoding", encodingStr);
+    metaFrame.putParameter(podio::collMetadataParamName(name, CellIDEncoding), encodingStr);
   }
-
+  G4AutoLock protection_lock(&action_mutex);
   m_file->writeFrame(metaFrame, "metadata");
 }
 
@@ -286,7 +319,7 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
       m_frame.put( std::move(calorimeterHits.second), colName + "Contributions");
     }
     m_file->writeFrame(m_frame, m_section_name);
-    m_particles.clear();
+    m_particles = { };
     m_trackerHits.clear();
     m_calorimeterHits.clear();
     m_frame = {};
@@ -301,7 +334,7 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   // --- write an edm4hep::RunHeader ---------
   // Runs are just Frames with different contents in EDM4hep / podio. We simply
   // store everything as parameters for now
-  podio::Frame runHeader  {};
+  podio::Frame runHeader {};
   for (const auto& [key, value] : m_runHeader)
     runHeader.putParameter(key, value);
 
@@ -310,13 +343,27 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   runHeader.putParameter("GEANT4Version", G4Version);
   runHeader.putParameter("DD4hepVersion", versionString());
   runHeader.putParameter("detectorName", context()->detectorDescription().header().name());
-
-  RunParameters* parameters = context()->run().extension<RunParameters>(false);
-  if ( parameters ) {
-    parameters->extractParameters(runHeader);
+  {
+    // In multithreaded running, the run is present in only one of the contexts
+    if (context()->runPtr() != nullptr) {
+      RunParameters* parameters = context()->run().extension<RunParameters>(false);
+      if ( parameters ) {
+        parameters->extractParameters(runHeader);
+      }
+      m_file->writeFrame(runHeader, "runs");
+    }
   }
-
-  m_file->writeFrame(runHeader, "runs");
+  {
+    // In multithreaded running, the run is present in only one of the contexts
+    if (context()->runPtr() != nullptr) {
+      podio::Frame metaFrame {};
+      FileParameters* parameters = context()->run().extension<FileParameters>(false);
+      if ( parameters ) {
+        parameters->extractParameters(metaFrame);
+      }
+      m_file->writeFrame(metaFrame, "meta");
+    }
+  }
 }
 
 void Geant4Output2EDM4hep::begin(const G4Event* event)  {
@@ -392,7 +439,6 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
         mcp.setGeneratorStatus( 0 )  ;
 
       mcp.setSpin(p->spin);
-      mcp.setColorFlow(p->colorFlow);
 
       p_ids[id] = cnt++;
       p_part.push_back(p);
@@ -442,13 +488,10 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
     runNumber = parameters->runNumber() + runNumberOffset;
     eventNumber = parameters->eventNumber() + eventNumberOffset;
     parameters->extractParameters(m_frame);
-#if PODIO_BUILD_VERSION > PODIO_VERSION(0, 16, 2)
-    // This functionality is only present in podio > 0.16.2
 #if PODIO_BUILD_VERSION > PODIO_VERSION(0, 99, 0)
     eventWeight = m_frame.getParameter<double>("EventWeights").value_or(0.0);
 #else
     eventWeight = m_frame.getParameter<double>("EventWeights");
-#endif
 #endif
   } else { // ... or from DD4hep framework
     runNumber = m_runNo + runNumberOffset;
@@ -458,14 +501,26 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
 
   // this does not compile as create() is we only get a const ref - need to review PODIO EventStore API
   edm4hep::EventHeaderCollection header_collection;
+
   auto header = header_collection.create();
   header.setRunNumber(runNumber);
   header.setEventNumber(eventNumber);
   header.setWeight(eventWeight);
   //not implemented in EDM4hep ?  header.setDetectorName(context()->detectorDescription().header().name());
-  header.setTimeStamp( std::time(nullptr) ) ;
-  m_frame.put( std::move(header_collection), "EventHeader");
+  header.setTimeStamp(std::time(nullptr));
 
+  // extract event header, in case we come from edm4hep input
+  auto* meh = context()->event().extension<edm4hep::MutableEventHeader>(false);
+  if(meh) {
+    header.setTimeStamp(meh->getTimeStamp());
+#if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 0)
+    for (auto const& weight: meh->getWeights()) {
+      header.addToWeights(weight);
+    }
+#endif
+  }
+
+  m_frame.put(std::move(header_collection), "EventHeader");
   saveEventParameters<int>(m_eventParametersInt);
   saveEventParameters<float>(m_eventParametersFloat);
   saveEventParameters<std::string>(m_eventParametersString);

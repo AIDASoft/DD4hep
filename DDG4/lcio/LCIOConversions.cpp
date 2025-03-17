@@ -213,7 +213,7 @@ namespace dd4hep {
         lc_hit->setCellID0((hit->cellID >>    0         ) & 0xFFFFFFFF);
         lc_hit->setCellID1((hit->cellID >> sizeof(int)*8) & 0xFFFFFFFF); // ????
         lc_hit->setPosition(pos);
-        ///No! Done when adding particle contrbutions: lc_hit->setEnergy( hit->energyDeposit );
+        ///No! Done when adding particle contributions: lc_hit->setEnergy( hit->energyDeposit );
         lc_coll->addElement(lc_hit);
         /// Now add the individual track contributions to the LCIO hit structure
         for(Contributions::const_iterator j=hit->truth.begin(); j!=hit->truth.end(); ++j)   {

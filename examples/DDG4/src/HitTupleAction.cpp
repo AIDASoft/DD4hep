@@ -151,7 +151,7 @@ void myanalysis::HitTupleAction::end(const G4Event* event)    {
       //                      Name                   Option      Title
       m_outFile = TFile::Open(m_outFileName.c_str(), "RECREATE", "DDG4 User file");
       if ( m_outFile && !m_outFile->IsZombie() )   {
-        m_outTree = new TTree("DDG4 User Test","DDG4 data");
+        m_outTree = new TTree("DDG4_User_Test","DDG4_data");
         printout(ALWAYS,"HitTupleAction","+++ Successfully opened ROOT file %s and created TTree:%s",
                  m_outFile->GetName(), "DDG4 User Test");
         if ( m_containers.size() == 1 && (m_containers[0] == "*" || m_containers[0] == "ALL") )  {
@@ -167,8 +167,7 @@ void myanalysis::HitTupleAction::end(const G4Event* event)    {
         }
         for(const auto& c : m_containers)   {
           std::pair<TBranch*, Data>& e = m_deposits[c];
-          TClass* cl = gROOT->GetClass(typeid(Data));
-          e.first = m_outTree->Branch(c.c_str(), cl->GetName(), (void*)0);
+          e.first = m_outTree->Branch(c.c_str(), &e.second);
           e.first->SetAutoDelete(false);
           printout(ALWAYS,"HitTupleAction","+++ Prepare hit branch %s in root file.",c.c_str());
         }
@@ -188,11 +187,10 @@ void myanalysis::HitTupleAction::end(const G4Event* event)    {
         if ( coll )    {
           std::pair<TBranch*, Data>& e = m_deposits[nam];
           size_t nhits = coll->GetSize();
-          Data* d = &e.second;
+          Data& d = e.second;
+          d.first = 0e0;
+          d.second.clear();
 
-          e.second.first = 0e0;
-          e.second.second.clear();
-          e.first->SetAddress(&d);
           for ( size_t j=0; j<nhits; ++j )   {
             double dep = 0e0;
             Geant4HitData* h = coll->hit(j);
@@ -208,8 +206,8 @@ void myanalysis::HitTupleAction::end(const G4Event* event)    {
                 continue;
             }
             if ( dep > 0 )  {
-              e.second.first += dep;
-              e.second.second.push_back(dep);
+              d.first += dep;
+              d.second.push_back(dep);
             }
           }
         }

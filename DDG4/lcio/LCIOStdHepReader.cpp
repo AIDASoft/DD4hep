@@ -53,9 +53,10 @@ namespace dd4hep  {
       /// Default destructor
       virtual ~LCIOStdHepReader();
       /// Read an event and fill a vector of MCParticles.
-      virtual EventReaderStatus readParticleCollection(int event_number, EVENT::LCCollection** particles);
-      virtual EventReaderStatus moveToEvent(int event_number);
-      virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
+      virtual EventReaderStatus readParticleCollection(int event_number,
+                                                       EVENT::LCCollection** particles)  override;
+      virtual EventReaderStatus moveToEvent(int event_number)  override;
+      virtual EventReaderStatus skipEvent()  override { return EVENT_READER_OK; }
 
     };
   }     /* End namespace lcio   */

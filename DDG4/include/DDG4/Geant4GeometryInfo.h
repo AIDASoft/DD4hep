@@ -19,10 +19,13 @@
 #include <DD4hep/GeoHandler.h>
 #include <DD4hep/PropertyTable.h>
 #include <DDG4/Geant4Primitives.h>
+#include <DDG4/Geant4TouchableHandler.h>
+
 
 // C/C++ include files
 #include <map>
 #include <vector>
+#include <cstdint>
 
 // Forward declarations (TGeo)
 class TGeoElement;
@@ -64,24 +67,19 @@ namespace dd4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     namespace Geant4GeometryMaps  {
-      //typedef std::vector<const G4VPhysicalVolume*>           Geant4PlacementPath;
-      typedef std::map<Atom, G4Element*>                      ElementMap;
-      typedef std::map<const TGeoIsotope*, G4Isotope*>        IsotopeMap;
-      typedef std::map<Material, G4Material*>                 MaterialMap;
-      //typedef std::map<LimitSet, G4UserLimits*>               LimitMap;
-      typedef std::map<PlacedVolume, G4VPhysicalVolume*>      PlacementMap;
-      //typedef std::map<Region, G4Region*>                     RegionMap;
-      typedef std::map<Volume, G4LogicalVolume*>              VolumeMap;
-      typedef std::map<PlacedVolume, Geant4AssemblyVolume*>   AssemblyMap;
+      typedef std::map<Atom, G4Element*>                            ElementMap;
+      typedef std::map<const TGeoIsotope*, G4Isotope*>              IsotopeMap;
+      typedef std::map<Material, G4Material*>                       MaterialMap;
+      typedef std::map<PlacedVolume, G4VPhysicalVolume*>            PlacementMap;
+      typedef std::map<Volume, G4LogicalVolume*>                    VolumeMap;
+      typedef std::map<PlacedVolume, Geant4AssemblyVolume*>         AssemblyMap;
 
-      typedef std::vector<const TGeoNode*>                    VolumeChain;
-      typedef std::pair<VolumeChain,const G4VPhysicalVolume*> ImprintEntry;
-      typedef std::vector<ImprintEntry>                       Imprints;
-      typedef std::map<Volume,Imprints>                       VolumeImprintMap;
-      typedef std::map<const TGeoShape*, G4VSolid*>           SolidMap;
-      //typedef std::map<VisAttr, G4VisAttributes*>             VisMap;
-      //typedef std::map<Geant4PlacementPath, VolumeID>         Geant4PathMap;
-      typedef std::map<const G4VPhysicalVolume*, PlacedVolume> G4PlacementMap;
+      typedef std::vector<const TGeoNode*>                          PlacedVolumeChain;
+      typedef std::pair<PlacedVolumeChain,const G4VPhysicalVolume*> ImprintEntry;
+      typedef std::vector<ImprintEntry>                             Imprints;
+      typedef std::map<Volume,Imprints>                             VolumeImprintMap;
+      typedef std::map<const TGeoShape*, G4VSolid*>                 SolidMap;
+      typedef std::map<const G4VPhysicalVolume*, PlacedVolume>      G4PlacementMap;
     }
 
     /// Concreate class holding the relation information between geant4 objects and dd4hep objects.
@@ -92,23 +90,23 @@ namespace dd4hep {
      */
     class Geant4GeometryInfo : public TNamed, public detail::GeoHandlerTypes::GeometryInfo {
     public:
-      struct Placement  {
-	VolumeID     volumeID;
-	int          flags;
-      };
       union PlacementFlags {
-	int value;
-	struct _flags  {
-	  unsigned     parametrised:1;
-	  unsigned     replicated:1;
-	  unsigned     path_has_parametrised:1;
-	  unsigned     path_has_replicated:1;
-	} flags;
-	PlacementFlags()      { this->value = 0; }
-	PlacementFlags(int v) { this->value = v; }
+        int value;
+        struct _flags  {
+          unsigned parametrised:1;
+          unsigned replicated:1;
+        } flags;
+        PlacementFlags()      { this->value = 0; }
+        PlacementFlags(int v) { this->value = v; }
       };
-      typedef std::vector<const G4VPhysicalVolume*>  Geant4PlacementPath;
-      TGeoManager*                         manager = 0;
+      struct Placement  {
+        VolumeID volumeID;
+        int      flags;
+      };
+
+      class DebugInfo;
+      TGeoManager*                         manager     { nullptr };
+      DebugInfo*                           g4DebugInfo { nullptr };
       Geant4GeometryMaps::IsotopeMap       g4Isotopes;
       Geant4GeometryMaps::ElementMap       g4Elements;
       Geant4GeometryMaps::MaterialMap      g4Materials;
@@ -126,35 +124,40 @@ namespace dd4hep {
         PropertyVector() = default;
         ~PropertyVector() = default;
       };
-      std::map<PropertyTable,  PropertyVector*>                g4OpticalProperties;
-      std::map<OpticalSurface, G4OpticalSurface*>              g4OpticalSurfaces;
-      std::map<SkinSurface,    G4LogicalSkinSurface*>          g4SkinSurfaces;
-      std::map<BorderSurface,  G4LogicalBorderSurface*>        g4BorderSurfaces;
-      std::map<Region, G4Region*>                              g4Regions;
-      std::map<VisAttr, G4VisAttributes*>                      g4Vis;
-      std::map<LimitSet, G4UserLimits*>                        g4Limits;
-      std::map<Geant4PlacementPath, Placement>                 g4Paths;
+      std::map<PropertyTable,    PropertyVector*>              g4OpticalProperties;
+      std::map<OpticalSurface,   G4OpticalSurface*>            g4OpticalSurfaces;
+      std::map<SkinSurface,      G4LogicalSkinSurface*>        g4SkinSurfaces;
+      std::map<BorderSurface,    G4LogicalBorderSurface*>      g4BorderSurfaces;
+      std::map<Region,           G4Region*>                    g4Regions;
+      std::map<VisAttr,          G4VisAttributes*>             g4Vis;
+      std::map<LimitSet,         G4UserLimits*>                g4Limits;
+      std::map<uint64_t,         Placement>                    g4Paths;
       std::map<SensitiveDetector,std::set<const TGeoVolume*> > sensitives;
       std::map<Region,           std::set<const TGeoVolume*> > regions;
       std::map<LimitSet,         std::set<const TGeoVolume*> > limits;
       G4VPhysicalVolume*                                       m_world;
       PrintLevel                                               printLevel;
-      bool                                                     valid;
+      bool                                                     has_volmgr { false };
+      bool                                                     valid      { false };
+
+      /// Assemble Geant4 volume path
+      static std::string placementPath(const Geant4TouchableHandler::Geant4PlacementPath& path, bool reverse=true)  {
+        return Geant4TouchableHandler::placementPath(path, reverse);
+      }
+
     private:
       friend class Geant4Mapping;
       /// Default constructor
       Geant4GeometryInfo();
       /// Default destructor
       virtual ~Geant4GeometryInfo();
+
     public:
       /// The world placement
       G4VPhysicalVolume* world() const;
       /// Set the world volume
       void setWorld(const TGeoNode* node);
-      /// Assemble Geant4 volume path
-      static std::string placementPath(const Geant4PlacementPath& path, bool reverse=true);
     };
-
   }    // End namespace sim
 }      // End namespace dd4hep
 #endif // DDG4_GEANT4GEOMETRYINFO_H

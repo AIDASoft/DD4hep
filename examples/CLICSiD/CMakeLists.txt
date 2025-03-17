@@ -151,7 +151,7 @@ if (DD4HEP_USE_GEANT4)
   #
   # Basic DDG4 component/unit tests
   foreach(script testDDPython CLICMagField CLICPhysics CLICRandom CLICSiDScan)
-    dd4hep_add_test_reg( CLICSiD_DDG4_${script}_LONGTEST
+    dd4hep_add_test_reg( CLICSiD_sim_DDG4_${script}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
       EXEC_ARGS  ${Python_EXECUTABLE} ${CLICSiDEx_INSTALL}/scripts/${script}.py
       REGEX_PASS "TEST_PASSED"
@@ -166,14 +166,14 @@ if (DD4HEP_USE_GEANT4)
   #    REGEX_FAIL "Exception;EXCEPTION;ERROR" )
   #
   # Material scan
-  dd4hep_add_test_reg( CLICSiD_DDG4_g4material_scan_LONGTEST
+  dd4hep_add_test_reg( CLICSiD_sim_DDG4_g4material_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/g4MaterialScan --compact=${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
                       "--position=0,0,0" "--direction=0,1,0"
     REGEX_PASS " Terminate Geant4 and delete associated actions." )
   #
   # Geometry scan
-  dd4hep_add_test_reg( CLICSiD_DDG4_g4geometry_scan_LONGTEST
+  dd4hep_add_test_reg( CLICSiD_sim_DDG4_g4geometry_scan_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/g4GeometryScan --compact=${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
                       "--position=0,0,0" "--direction=0,1,0"
@@ -183,14 +183,15 @@ if (DD4HEP_USE_GEANT4)
   foreach(script CLICSiDXML CLICSiDAClick)
     #
     # Build AClick from the source file
-    dd4hep_add_test_reg( CLICSiD_DDG4_${script}_as_AClick_LONGTEST
+    dd4hep_add_test_reg( CLICSiD_sim_DDG4_${script}_as_AClick_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
       EXEC_ARGS  root.exe -b -x -n -q -l "${DD4hep_ROOT}/examples/DDG4/examples/run.C(\"${CLICSiDEx_INSTALL}/scripts/${script}\")"
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=2"
       REGEX_FAIL "EXCEPTION;ERROR;Error" )
+    set_property(TEST t_CLICSiD_sim_DDG4_${script}_as_AClick_LONGTEST PROPERTY RESOURCE_LOCK "INIT_SID_ACLICK")
     #
     # Execute identical source linked executable 
-    dd4hep_add_test_reg( CLICSiD_DDG4_${script}_as_exe_LONGTEST
+    dd4hep_add_test_reg( CLICSiD_sim_DDG4_${script}_as_exe_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
       EXEC_ARGS  ${script}
       REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=2"

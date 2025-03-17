@@ -53,6 +53,9 @@ def run():
   description = kernel.detectorDescription()
   install_dir = os.environ['DD4hepINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/DDDetectors/compact/SiD.xml"))
+
+  if args.smartless:
+    description.worldVolume().setSmartlessValue(int(args.smartless))
   DDG4.importConstants(description)
 
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
@@ -60,8 +63,24 @@ def run():
   logger.info("#  Configure UI")
   ui = geant4.setupCshUI(macro=args.macro, vis=args.vis)
   kernel.UI = 'UI'
+
+  import pdb
+  pdb.set_trace()
+
+  cmds = []
+  if args.verbose:
+    cmds.append('/run/verbose ' + str(args.verbose))
   if args.batch:
-    ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
+    if not args.events:
+      args.events = '5'
+    cmds.append('/run/beamOn ' + str(args.events))
+
+  # Terminate sequence
+  if args.batch:
+    cmds.append('/ddg4/UI/terminate')
+
+  if len(cmds) > 0:
+    ui.Commands = cmds
 
   logger.info("#  Configure G4 magnetic field tracking")
   geant4.setupTrackingField()

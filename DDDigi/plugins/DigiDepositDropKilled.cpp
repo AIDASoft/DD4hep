@@ -46,17 +46,18 @@ namespace dd4hep {
           killed = total - v->size();
         }
         else if ( auto* m = work.get_input<DepositMapping>() )   {
-          CellID last_cell = ~0x0ULL;
+          CellID prev_cell = ~0x0ULL;
           total = m->size();
           for( auto iter = m->begin(); iter != m->end(); ++iter )   {
             if ( iter->second.flag&EnergyDeposit::KILLED )   {
+              CellID last_cell = prev_cell;
               m->remove(iter);
               iter = (last_cell != ~0x0ULL) ? m->data.find(last_cell) : m->begin();
               if ( iter == m->end() ) iter = m->begin();
               if ( iter == m->end() ) break;
               continue;
             }
-            last_cell = iter->first;
+            prev_cell = iter->first;
           }
           killed = total - m->size();
         }

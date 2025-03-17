@@ -119,6 +119,10 @@ void Geant4GeneratorActionSequence::adopt(Geant4GeneratorAction* action) {
 
 /// Generator callback
 void Geant4GeneratorActionSequence::operator()(G4Event* event) {
-  m_actors(&Geant4GeneratorAction::operator(), event);
-  m_calls(event);
+  if ( context()->kernel().processEvents() )  {
+    m_actors(&Geant4GeneratorAction::operator(), event);
+    m_calls(event);
+    return;
+  }
+  throw DD4hep_Stop_Processing();
 }

@@ -27,7 +27,58 @@ namespace dd4hep {
 
     namespace {
       struct Geant4VoidSensitive {};
+
+      /// Common code to handle the creation of a calorimeter hit.
+      template <class HANDLER>
+      void handleCalorimeterHit (VolumeID cell,
+                                 const HitContribution& contrib,
+                                 Geant4HitCollection& coll,
+                                 const HANDLER& h,
+                                 const Geant4Sensitive& sd,
+                                 const Segmentation& segmentation)
+      {
+        typedef Geant4Calorimeter::Hit Hit;
+        Hit* hit = coll.findByKey<Hit>(cell);
+        if ( !hit ) {
+          DDSegmentation::Vector3D pos = segmentation.position(cell);
+          Position global;
+
+          // Convert the position relative to the local readout volume
+          // to a global position.
+          if (!segmentation.cellsSpanVolumes()) {
+            global = h.localToGlobal(pos);
+          }
+          else {
+            // The segmentation can gang together multiple volumes.
+            // In this case, we can't use the transformation we get from
+            // the step --- the volume that actually contains the hit
+            // may not be the same volume that the segmentation uses
+            // for the local coordinate system.  We need to get the
+            // actual volID used from the segmentation and then look
+            // it up the volume manager to get the proper transformation.
+            VolumeID volID = segmentation.volumeID(cell);
+            VolumeManager vman = VolumeManager::getVolumeManager(sd.detectorDescription());
+            VolumeManagerContext* vc = vman.lookupContext(volID);
+            // explicit unit conversion; h.localToGlobal does it internally already
+            global = vc->localToWorld(Position(pos)) / dd4hep::mm;
+          }
+          hit = new Hit(global);
+          hit->cellID = cell;
+          coll.add(cell, hit);
+          Geant4TouchableHandler handler(h.touchable());
+          sd.printM2("%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s  [%s]",
+                     sd.c_name(),contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str(),
+                     coll.GetName().c_str());
+          if ( 0 == hit->cellID )  { // for debugging only!
+            hit->cellID = cell;
+            sd.except("+++ Invalid CELL ID for hit!");
+          }
+        }
+        hit->truth.emplace_back(contrib);
+        hit->energyDeposit += contrib.deposit;
+      }
     }
+
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     //               Geant4SensitiveAction<Geant4VoidSensitive>
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -250,25 +301,7 @@ namespace dd4hep {
         return true;
       }
 
-      //Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));
-      Hit* hit = coll->findByKey<Hit>(cell);
-      if ( !hit ) {
-        Geant4TouchableHandler handler(step);
-        DDSegmentation::Vector3D pos = m_segmentation.position(cell);
-        Position global = h.localToGlobal(pos);
-        hit = new Hit(global);
-        hit->cellID = cell;
-        coll->add(cell, hit);
-        printM2("%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s  [%s]",
-                c_name(),contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str(),
-                coll->GetName().c_str());
-        if ( 0 == hit->cellID )  { // for debugging only!
-          hit->cellID = cellID(step);
-          except("+++ Invalid CELL ID for hit!");
-        }
-      }
-      hit->truth.emplace_back(contrib);
-      hit->energyDeposit += contrib.deposit;
+      handleCalorimeterHit(cell, contrib, *coll, h, *this, m_segmentation);
       mark(h.track);
       return true;
     }
@@ -294,24 +327,7 @@ namespace dd4hep {
         std::cout << out.str();
         return true;
       }
-      Hit* hit = coll->findByKey<Hit>(cell);
-      if ( !hit ) {
-        Geant4TouchableHandler   handler(h.touchable());
-        DDSegmentation::Vector3D pos = m_segmentation.position(cell);
-        Position global = h.localToGlobal(pos);
-        hit = new Hit(global);
-        hit->cellID = cell;
-        coll->add(cell, hit);
-        printM2("%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s  [%s]",
-                c_name(),contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str(),
-                coll->GetName().c_str());
-        if ( 0 == hit->cellID )  { // for debugging only!
-          hit->cellID = cellID(h.touchable(), h.avgPositionG4());
-          except("+++ Invalid CELL ID for hit!");
-        }
-      }
-      hit->truth.emplace_back(contrib);
-      hit->energyDeposit += contrib.deposit;
+      handleCalorimeterHit(cell, contrib, *coll, h, *this, m_segmentation);
       mark(h.track);
       return true;
     }
@@ -462,23 +478,7 @@ namespace dd4hep {
         std::cout << out.str();
         return true;
       }
-      Hit* hit = coll->findByKey<Hit>(cell);
-      if ( !hit ) {
-        Geant4TouchableHandler handler(step);
-        DDSegmentation::Vector3D pos = m_segmentation.position(cell);
-        Position global = h.localToGlobal(pos);
-        hit = new Hit(global);
-        hit->cellID = cell;
-        coll->add(cell, hit);
-        printM2("CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
-                contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str());
-        if ( 0 == hit->cellID )  { // for debugging only!
-          hit->cellID = cellID(step);
-          except("+++ Invalid CELL ID for hit!");
-        }
-      }
-      hit->truth.emplace_back(contrib);
-      hit->energyDeposit += contrib.deposit;
+      handleCalorimeterHit(cell, contrib, *coll, h, *this, m_segmentation);
       mark(h.track);
       return true;
     }
@@ -505,23 +505,7 @@ namespace dd4hep {
         std::cout << out.str();
         return true;
       }
-      Hit* hit = coll->findByKey<Hit>(cell);
-      if ( !hit ) {
-        Geant4TouchableHandler   handler(h.touchable());
-        DDSegmentation::Vector3D pos = m_segmentation.position(cell);
-        Position global = h.localToGlobal(pos);
-        hit = new Hit(global);
-        hit->cellID = cell;
-        coll->add(cell, hit);
-        printM2("CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
-                contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str());
-        if ( 0 == hit->cellID )  { // for debugging only!
-          hit->cellID = cellID(h.touchable(), h.avgPositionG4());
-          except("+++ Invalid CELL ID for hit!");
-        }
-      }
-      hit->truth.emplace_back(contrib);
-      hit->energyDeposit += contrib.deposit;
+      handleCalorimeterHit(cell, contrib, *coll, h, *this, m_segmentation);
       mark(h.track);
       return true;
     }

@@ -72,14 +72,14 @@ namespace dd4hep {
       /// Close current output file
       virtual void closeOutput();
       /// Callback to store the Geant4 run information
-      virtual void beginRun(const G4Run* run);
+      virtual void beginRun(const G4Run* run)  override;
       /// Callback to store each Geant4 hit collection
-      virtual void saveCollection(OutputContext<G4Event>& ctxt, G4VHitsCollection* collection);
+      virtual void saveCollection(OutputContext<G4Event>& ctxt, G4VHitsCollection* collection)  override;
       /// Callback to store the Geant4 event
-      virtual void saveEvent(OutputContext<G4Event>& ctxt);
+      virtual void saveEvent(OutputContext<G4Event>& ctxt)  override;
 
       /// Commit data at end of filling procedure
-      virtual void commit(OutputContext<G4Event>& ctxt);
+      virtual void commit(OutputContext<G4Event>& ctxt)  override;
     };
 
   }    // End namespace sim

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+ 
+  <info name="SegmentationBox"
+	title="Test with 2 simple silicon boxes"
+	author="Markus Frank"
+	url="http://www.cern.ch/lhcb"
+	status="development"
+	version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $">
+    <comment>Shape to test segmentations</comment>        
+  </info>
+
+  <debug>
+    <type name="readout"       value="1"/>
+    <type name="includes"      value="0"/>
+    <type name="segmentations" value="1"/>
+  </debug>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="1.5*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" drawingStyle="solid" lineStyle="solid" showDaughters="true" visible="true"/>
+  </display>
+
+  <detectors>
+    <detector id="1" name="SegmentationBox" type="DD4hep_BoxSegment" readout="SegmentationHits" vis="VisibleGreen" sensitive="true">
+      <material name="Silicon"/>
+      <sensitive type="tracker"/>
+      <box      x="40*mm" y="40*cm" z="40*cm"/>
+    </detector>
+  </detectors>
+  <!-- Readout definitions  -->
+  <readouts>
+    <include ref="${READOUT_DEFINITION}"/>
+  </readouts>
+  <!-- Field definitions  -->
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="2*m"
+	   outer_radius="3*m">
+    </field>
+  </fields>
+  <!-- Plugins to be executing for checking the segmentation  -->
+  <plugins>
+    <plugin name="DD4hep_PrintSegmentation" type="default">
+      <argument value="/world_volume_1/SegmentationBox_vol_0"/>
+    </plugin>
+  </plugins>
+
+</lccdd>

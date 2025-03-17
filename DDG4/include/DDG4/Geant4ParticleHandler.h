@@ -148,7 +148,7 @@ namespace dd4hep {
       /// Adopt the user particle handler
       bool adopt(Geant4Action* action);
       /// Event generation action callback
-      virtual void operator()(G4Event* event);
+      virtual void operator()(G4Event* event)  override;
       /// User stepping callback
       virtual void step(const G4Step* step, G4SteppingManager* mgr);
       /// Pre-event action callback
@@ -161,13 +161,13 @@ namespace dd4hep {
       virtual void end(const G4Track* track);
 
       /// Mark a Geant4 track to be kept for later MC truth analysis. Default flag: CREATED_HIT
-      virtual void mark(const G4Track* track);
+      virtual void mark(const G4Track* track)  override;
       /// Store a track
-      virtual void mark(const G4Track* track, int reason);
+      virtual void mark(const G4Track* track, int reason)  override;
       /// Mark a Geant4 track of the step to be kept for later MC truth analysis. Default flag: CREATED_HIT
-      virtual void mark(const G4Step* step);
+      virtual void mark(const G4Step* step)  override;
       /// Store a track produced in a step to be kept for later MC truth analysis
-      virtual void mark(const G4Step* step, int reason);
+      virtual void mark(const G4Step* step, int reason)  override;
 
       /// Default callback to be answered if the particle should be kept if NO user handler is installed
       static bool defaultKeepParticle(Particle& particle);

@@ -69,7 +69,7 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4PrimaryHandler();
       /// Event generation action callback
-      virtual void operator()(G4Event* event);
+      virtual void operator()(G4Event* event)  override;
 
     public:
       Geant4PrimaryConfig m_primaryConfig{};

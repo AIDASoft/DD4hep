@@ -203,8 +203,12 @@ dd4hep_add_test_reg( ClientTests_Save_ROOT_MiniTel_LONGTEST
 set(ClientTests_ShapeTests)
 list(APPEND ClientTests_ShapeTests Box Cone ConeSegment Tube ElTube CutTube Hyperboloid Paraboloid)
 list(APPEND ClientTests_ShapeTests EightPointSolid Eightpoint_Reflect_Volume Eightpoint_Reflect_DetElement)
-list(APPEND ClientTests_ShapeTests Polycone Polyhedra PseudoTrap PseudoTrap1 PseudoTrap2 Sphere Torus Trap Trd1 Trd2)
+list(APPEND ClientTests_ShapeTests Polycone Polyhedra Sphere Torus Trap Trd1 Trd2)
 list(APPEND ClientTests_ShapeTests TruncatedTube ExtrudedPolygon)
+
+IF(NOT DD4HEP_USE_GEANT4_UNITS AND ROOT_VERSION VERSION_GREATER_EQUAL 6.35.01)
+  list(APPEND ClientTests_ShapeTests PseudoTrap PseudoTrap1 PseudoTrap2)
+ENDIF()
 #
 #
 if( ${ROOT_VERSION} VERSION_GREATER 6.21.00 )
@@ -335,7 +339,7 @@ foreach (test Assemblies BoxTrafos CaloEndcapReflection
   #
   # Geant4 material scan. From position=0,0,0 to end-of-world 
   if (DD4HEP_USE_GEANT4)
-    dd4hep_add_test_reg( ClientTests_g4material_scan_${test}_LONGTEST
+    dd4hep_add_test_reg( ClientTests_sim_geant4_g4material_scan_${test}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/g4MaterialScan
       		  --compact=file:${ClientTestsEx_INSTALL}/compact/${test}.xml
@@ -469,12 +473,21 @@ dd4hep_add_test_reg( box_shape_build_type
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
+# Test interrupt handling in the middle of the geometry construction
+dd4hep_add_test_reg( ClientTests_interrupt_geometry_construction
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoDisplay -compact ${ClientTestsEx_INSTALL}/compact/InterruptTrigger.xml 
+  -load -print INFO
+  REGEX_PASS "\\+\\+\\+ Caught signal: 2 context: 0xfeedbabe. exit process."
+  REGEX_FAIL "Exception;EXCEPTION;ERROR"
+)
+#
 #      EXEC_ARGS  test_with_root.sh ${script}
 #
 if (DD4HEP_USE_GEANT4)
   #
   #  Test Setting temperature and pressure to material
-  dd4hep_add_test_reg( ClientTests_sim_Check_Temp_Pressure_Air
+  dd4hep_add_test_reg( ClientTests_sim_geant4_Check_Temp_Pressure_Air
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/Check_Air.py
     	              -geometry  ${ClientTestsEx_INSTALL}/compact/Check_Air.xml batch
@@ -482,7 +495,7 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
   #
   # Geant4 test with gdml input file (LHCb:FT)
-  dd4hep_add_test_reg( ClientTests_g4_gdml_detector
+  dd4hep_add_test_reg( ClientTests_sim_geant4_gdml_detector
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/g4GeometryScan
     	              --compact=${ClientTestsEx_INSTALL}/compact/GdmlDetector.xml
@@ -491,7 +504,7 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
   #
   # Geant4 test with gdml input file (LHCb:MT)
-  dd4hep_add_test_reg( ClientTests_g4_gdml_MT
+  dd4hep_add_test_reg( ClientTests_sim_geant4_gdml_MT
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${DD4hep_ROOT}/bin/g4GeometryScan
     	              --compact=${ClientTestsEx_INSTALL}/compact/MT.xml
@@ -500,14 +513,14 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
   #
   # Geant4 test if production cuts are processed
-  dd4hep_add_test_reg( ClientTests_sim_MiniTel_prod_cuts
+  dd4hep_add_test_reg( ClientTests_sim_geant4_MiniTel_prod_cuts
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTelRegions.py batch
     REGEX_PASS "minitel_region_1: Set cut  \\[gamma/0\\] = 5.000"
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
   #
   # Geant4 test if production cuts are processed
-  dd4hep_add_test_reg( ClientTests_sim_MiniTel_limitset
+  dd4hep_add_test_reg( ClientTests_sim_geant4_MiniTel_limitset
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTelRegions.py batch
     REGEX_PASS "LimitSet:    Particle type: mu-                PDG: 13     : 3.000000"
@@ -519,14 +532,14 @@ if (DD4HEP_USE_GEANT4)
   #           Isomer level 9 may be ambiguous.
   #       *** This is just a warning message. ***
   # This is NOT an error!
-  dd4hep_add_test_reg( ClientTests_sim_UserAnalysis
+  dd4hep_add_test_reg( ClientTests_sim_geant4_UserAnalysis
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTelEnergyDeposits.py batch
     REGEX_PASS "Entries :      200 "
     REGEX_FAIL "EXCEPTION;ERROR;Error" )
   #
   # Test of an example user analysis creating an N-tuple instead of an output file with events
-  dd4hep_add_test_reg( ClientTests_sim_TrackingRegion
+  dd4hep_add_test_reg( ClientTests_sim_geant4_TrackingRegion
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/TrackingRegion.py batch
     REGEX_PASS "Placement tracking_volume_1 not converted \\[Veto'ed for simulation\\]"
@@ -534,7 +547,7 @@ if (DD4HEP_USE_GEANT4)
   #
   # Geant4 full simulation checks of simple detectors
   foreach(script Assemblies LheD_tracker MiniTel MiniTel_hepmc NestedDetectors )
-    dd4hep_add_test_reg( ClientTests_sim_${script}
+    dd4hep_add_test_reg( ClientTests_sim_geant4_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/${script}.py -batch
       REGEX_PASS NONE
@@ -543,7 +556,7 @@ if (DD4HEP_USE_GEANT4)
   #
   # Geant4 full simulation checks of multi-collection/segmentation detectors
   foreach(script MultiCollections MultiSegmentations MultiSegmentCollections )
-    dd4hep_add_test_reg( ClientTests_sim_${script}
+    dd4hep_add_test_reg( ClientTests_sim_geant4_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MultiCollections.py 
                  -compact ${ClientTestsEx_INSTALL}/compact/${script}.xml -batch
@@ -552,7 +565,7 @@ if (DD4HEP_USE_GEANT4)
   endforeach(script)
   #
   # Test setting properties to a single sub-detector
-  dd4hep_add_test_reg( minitel_config_region_subdet_geant4
+  dd4hep_add_test_reg( ClientTests_sim_geant4_minitel_config_region_subdet
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTel.py
     	       -batch -debug -events 1 -geometry /examples/ClientTests/compact/WorldSettings.xml
@@ -561,7 +574,7 @@ if (DD4HEP_USE_GEANT4)
   )
   #
   # Test setting properties to the world volume
-  dd4hep_add_test_reg( minitel_config_region_world_geant4
+  dd4hep_add_test_reg( ClientTests_sim_geant4_minitel_config_region_world
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTel.py
     	       -batch -debug -events 1 -geometry /examples/ClientTests/compact/WorldSettings.xml
@@ -570,7 +583,7 @@ if (DD4HEP_USE_GEANT4)
   )
   #
   # Test importing a geometry from ROOT and placing DetElements
-  dd4hep_add_test_reg( import_geo_place_det_elements
+  dd4hep_add_test_reg( ClientTests_import_geo_place_det_elements
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS geoPluginRun -destroy -input ${ClientTestsEx_INSTALL}/compact/lhcbfull_plugins.xml
     WORKING_DIRECTORY ${ClientTestsEx_INSTALL}/compact
@@ -584,7 +597,7 @@ if (DD4HEP_USE_GEANT4)
     # Geant4 full simulation checks of multi-collection/segmentation detectors
     dd4hep_print("|++> Geant4 fast simulation tests enabled for Geant4 ${Geant4_VERSION}")
     foreach(script SiliconBlockGFlash SiliconBlockFastSim)
-      dd4hep_add_test_reg( ClientTests_sim_${script}_LONGTEST
+      dd4hep_add_test_reg( ClientTests_sim_geant4_${script}_LONGTEST
         COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
         EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/${script}.py -batch -events 2
 		   -geometry ${ClientTestsEx_INSTALL}/compact/SiliconBlock.xml -batch -events 2
@@ -594,7 +607,7 @@ if (DD4HEP_USE_GEANT4)
   endif()
   #
   foreach(script ParamVolume1D ParamVolume2D ParamVolume3D)
-    dd4hep_add_test_reg( ClientTests_sim_${script}_LONGTEST
+    dd4hep_add_test_reg( ClientTests_sim_geant4_${script}_LONGTEST
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/ParamVolume.py
       		 -geometry ${script}.xml -batch -events 2
@@ -606,7 +619,7 @@ if (DD4HEP_USE_GEANT4)
   # Test EDM4HEP output module
   if (DD4HEP_USE_EDM4HEP)
     # Test EDM4HEP write (needs to be expanded)
-    dd4hep_add_test_reg(ClientTests_sim_MinitTel_edm4hep_write
+    dd4hep_add_test_reg(ClientTests_sim_geant4_MinitTel_edm4hep_write
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTelGenerate.py
                  -batch -events 5 -output MiniTel_ddg4_edm4hep.edm4hep.root
@@ -616,7 +629,7 @@ if (DD4HEP_USE_GEANT4)
   endif()
   #
   # Test Geant4VolumeManager resource usage
-  dd4hep_add_test_reg(ClientTests_g4_setup_BoxOfStraws_sensitive
+  dd4hep_add_test_reg(ClientTests_sim_g4_setup_BoxOfStraws_sensitive
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/BoxOfStraws.py
                  -print_level 3 -sensitive
@@ -625,11 +638,40 @@ if (DD4HEP_USE_GEANT4)
   )
   #
   # Test without Geant4VolumeManager, but sensitive detector assignment using regex
-  dd4hep_add_test_reg(ClientTests_g4_setup_BoxOfStraws_non_sensitive
+  dd4hep_add_test_reg(ClientTests_sim_geant4_setup_BoxOfStraws_non_sensitive
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/BoxOfStraws.py
                  -print_level 3
       REGEX_PASS "ResourcesAfterConstruction       ConstructSD:   VmRSS"
       REGEX_FAIL "Error;ERROR; Exception"
+  )
+  #
+  #
+  dd4hep_add_test_reg(ClientTests_sim_geant4_ddsim_setup_BoxOfStraws
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+      EXEC_ARGS  ddsim
+                 --steeringFile ${ClientTestsEx_INSTALL}/scripts/BoxOfStraws_DDSim.py
+                 --compactFile ${ClientTestsEx_INSTALL}/compact/BoxOfStraws.xml
+                 --enableGun
+                 --numberOfEvents 1
+                 --outputFile regex.slcio
+      REGEX_PASS "BoxOfStrawsDet Handled 1 nodes with 1 sensitive volume type"
+      REGEX_FAIL "Error;ERROR; Exception"
+  )
+  #
+  #  Test Changing Geant4 voxelization
+  dd4hep_add_test_reg( ClientTests_sim_geant4_change_voxelization
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/DriftChamber.py
+    	       -verbose 2 -events 1
+    REGEX_PASS "100.00         0...         0...            0k DriftChamber_vol"
+    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL"
+  )
+  #
+  # Test if calling innerMaterial before outerMaterial changes the result
+  add_test(NAME  ClientTests_inner_outer_material
+    COMMAND bash -c "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/call_inner_outer_material.py &&
+                     ${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/call_inner_outer_material.py --call-inner-material &&
+                     diff surfaces_bad.txt surfaces_good.txt"
   )
 endif(DD4HEP_USE_GEANT4)

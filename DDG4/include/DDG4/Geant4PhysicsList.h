@@ -121,7 +121,7 @@ namespace dd4hep {
       void dump();
 
       /// Install command control messenger if wanted
-      virtual void installCommandMessenger();
+      virtual void installCommandMessenger()  override;
       /// Access all physics processes
       PhysicsProcesses& processes() {
         return m_processes;
@@ -244,6 +244,8 @@ namespace dd4hep {
       std::string m_extends;
       /// global range cut for secondary productions
       double m_rangecut;
+      /// verbosity level for the physics list
+      int m_verbosity = 1;
 
     public:
       /// Standard constructor
@@ -253,7 +255,7 @@ namespace dd4hep {
       /// Dump content to stdout
       void dump();
       /// Install command control messenger if wanted
-      virtual void installCommandMessenger();
+      virtual void installCommandMessenger()  override;
       /// Update transportation flag
       void setTransportation(bool value) {
         m_transportation = value;

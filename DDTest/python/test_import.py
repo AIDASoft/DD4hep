@@ -10,6 +10,9 @@ import pytest
 
 parametrize = pytest.mark.parametrize
 
+ImportFehler = ImportError
+FEHLER = "ERROR: "
+
 moduleNames = [
     'dd4hep',
     'DDRec',
@@ -39,7 +42,7 @@ def test_module(moduleName):
 
     # Test whether it is correctly imported from DD4hep
 
-  except ImportError as e:
+  except ImportFehler as e:
     msg = "could not import %s: %s" % (moduleName, repr(e))
     print(traceback.print_exc())
 
@@ -50,4 +53,4 @@ def test_module(moduleName):
       warnings.warn(msg + "(Possibly due to system graphic libraries not present)", stacklevel=2)
       pytest.skip("WARN: " + msg + "(Possibly due to system graphic libraries not present)")
     else:
-      pytest.fail("ERROR: " + msg)
+      pytest.fail(FEHLER + msg)

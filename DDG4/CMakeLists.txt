@@ -104,12 +104,22 @@ ENDIF()
 
 IF(TARGET EDM4HEP::edm4hep)
   dd4hep_add_plugin(DDG4EDM4HEP
-    SOURCES edm4hep/*.cpp
+    SOURCES edm4hep/Geant4Output2EDM4hep.cpp
     USES    DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict podio::podio podio::podioDict podio::podioRootIO
     )
   install(TARGETS DDG4EDM4HEP EXPORT DD4hep LIBRARY DESTINATION lib)
   set_target_properties(DDG4EDM4HEP PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-
+  if(TARGET podio::podioIO)
+      dd4hep_add_plugin(DDG4EDM4HEPReader
+        SOURCES edm4hep/EDM4hepFileReader.cpp
+        USES    DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict podio::podio podio::podioDict podio::podioIO
+      )
+      install(TARGETS DDG4EDM4HEPReader EXPORT DD4hep LIBRARY DESTINATION lib)
+      set_target_properties(DDG4EDM4HEPReader PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+      MESSAGE(STATUS "EDM4hepFileReader enabled")
+  else()
+      MESSAGE(STATUS "EDM4hepFileReader requires at least PODIO 1.0, disabled")
+  endif()
 ENDIF()
 
 IF(DD4HEP_USE_HEPMC3)
@@ -172,10 +182,9 @@ get_filename_component(PYTHON_INTERPRETER_BINARY ${Python_EXECUTABLE} NAME)
 configure_file(python/DDSim/bin/ddsim.in.py ${CMAKE_BINARY_DIR}/bin/ddsim @ONLY)
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/ddsim DESTINATION bin)
 
-install(PROGRAMS python/bin/checkOverlaps.py DESTINATION bin RENAME checkOverlaps)
-install(PROGRAMS python/bin/checkGeometry.py DESTINATION bin RENAME checkGeometry)
 install(PROGRAMS python/bin/g4MaterialScan.py DESTINATION bin RENAME g4MaterialScan)
 install(PROGRAMS python/bin/g4GeometryScan.py DESTINATION bin RENAME g4GeometryScan)
+install(PROGRAMS python/bin/g4GraphicalScan.py DESTINATION bin RENAME g4GraphicalScan)
 
 # configure and install DD4hepSimulation files
 file(GLOB_RECURSE DDSIM_FILES RELATIVE ${CMAKE_CURRENT_LIST_DIR}/python/DDSim/ python/DDSim/*.py)
