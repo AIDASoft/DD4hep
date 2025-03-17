@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-project(GaudiPluginService)
+project(GaudiPluginService LANGUAGES CXX)
 find_package(ROOT REQUIRED)
 
 add_library(DD4hepGaudiPluginMgr src/PluginServiceV1.cpp src/PluginServiceV2.cpp interface/DD4hepV1.cpp interface/DD4hepV2.cpp)
