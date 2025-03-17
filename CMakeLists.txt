@@ -78,14 +78,24 @@ option(DD4HEP_USE_EDM4HEP       "Build edm4hep extensions"                      
 option(DD4HEP_USE_HEPMC3        "Build hepmc3 extensions"                       OFF)
 option(DD4HEP_USE_TBB           "Build features that require TBB"               OFF)
 option(DD4HEP_LOAD_ASSIMP       "Download and build ASSIMP from github"         OFF)
+option(DD4HEP_DISABLE           "Selectively disable DD4HEP sub-packages"       OFF)
 option(BUILD_TESTING            "Enable and build tests"                        ON)
 option(BUILD_SHARED_LIBS        "If OFF build STATIC Libraries"                 ON)
 option(DD4HEP_SET_RPATH         "Link libraries with built-in RPATH (run-time search path)" ON)
 option(DD4HEP_RELAX_PYVER       "Do not require exact python version match with ROOT" OFF)
-
+#
+#
 SET(DD4HEP_BUILD_PACKAGES "DDRec DDDetectors DDCond DDAlign DDCAD DDDigi DDG4 DDEve UtilityApps"
-  CACHE STRING "List of DD4hep packages to build")
+    CACHE STRING "List of DD4hep packages to build")
+#
 SEPARATE_ARGUMENTS(DD4HEP_BUILD_PACKAGES)
+IF( DD4HEP_DISABLE )
+    STRING(REPLACE "," ";" DISABLED_PACKAGES "${DD4HEP_DISABLE}" )
+    FOREACH( PKG ${DISABLED_PACKAGES} )
+      LIST(REMOVE_ITEM DD4HEP_BUILD_PACKAGES ${PKG})
+      MESSAGE(STATUS "Disable package: ${PKG}" )
+    ENDFOREACH()
+ENDIF()
 MESSAGE(STATUS "Will be building these packages: ${DD4HEP_BUILD_PACKAGES}")
 
 OPTION(DD4HEP_BUILD_EXAMPLES "Build all the examples" OFF)
