@@ -91,7 +91,7 @@ SET(DD4HEP_BUILD_PACKAGES "DDRec DDDetectors DDCond DDAlign DDCAD DDDigi DDG4 DD
     CACHE STRING "List of DD4hep packages to build")
 #
 SEPARATE_ARGUMENTS(DD4HEP_BUILD_PACKAGES)
-IF( DD4HEP_DISABLE )
+IF( DD4HEP_DISABLE_PACKAGES )
     STRING(REPLACE " " ";" DISABLED_PACKAGES "${DD4HEP_DISABLE_PACKAGES}" )
     STRING(REPLACE "," ";" DISABLED_PACKAGES "${DISABLED_PACKAGES}" )
     FOREACH( PKG ${DISABLED_PACKAGES} )
@@ -136,12 +136,6 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 # Configure ROOT
 find_package (ROOT 6.08 REQUIRED CONFIG)
 DD4HEP_SETUP_ROOT_TARGETS()
-# ROOT no longer finds nlohmann_json unless we ask for the ROOTEve component, so we ask
-# for the ROOTEve component if the ROOTEve component exists.
-# DDEve and one executable in UtilityApps depend on this
-if(TARGET ROOT::ROOTEve)
-  find_package (ROOT REQUIRED COMPONENTS ROOTEve CONFIG)
-endif()
 
 # Configure BOOST
 find_package(Boost 1.49 REQUIRED)

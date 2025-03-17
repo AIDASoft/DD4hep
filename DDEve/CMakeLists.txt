@@ -10,6 +10,8 @@
 #==========================================================================
 SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DDEve)
 
+find_package (ROOT REQUIRED COMPONENTS ROOTEve CONFIG)
+
 add_library(DDEve_Interface INTERFACE)
 add_library(DD4hep::DDEve_Interface ALIAS DDEve_Interface)
 target_include_directories(DDEve_Interface

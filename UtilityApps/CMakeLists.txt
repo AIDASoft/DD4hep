@@ -42,10 +42,13 @@ if(TARGET Geant4::Interface)
 endif()
 
 # the web display tool depends on the ROOT7 version of DDEve
-if(TARGET ROOT::ROOTEve)
+find_package (ROOT COMPONENTS ROOTEve)
+if(ROOTEve_FOUND)
   add_executable(geoWebDisplay src/webdisplay.cpp)
   target_link_libraries(geoWebDisplay DD4hep::DDCore)
   LIST(APPEND OPTIONAL_EXECUTABLES geoWebDisplay)
+else()
+  MESSAGE(STATUS "ROOT:Eve not found: not building geoWebDisplay")
 endif()
 
 # #-----------------------------------------------------------------------------------
@@ -81,8 +84,13 @@ if (DD4HEP_USE_LCIO)
 endif()
 
 # #-----------------------------------------------------------------------------------
-add_executable(teveDisplay src/teve_display.cpp src/next_event_dummy.cpp G__eve.cxx)
-target_link_libraries(teveDisplay DD4hep::DDRec ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL )
+if(ROOTEve_FOUND)
+  add_executable(teveDisplay src/teve_display.cpp src/next_event_dummy.cpp G__eve.cxx)
+  target_link_libraries(teveDisplay DD4hep::DDRec ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL )
+  LIST(APPEND OPTIONAL_EXECUTABLES teveDisplay)
+else()
+  MESSAGE(STATUS "ROOT::Eve not found: not building teveDisplay")
+endif()
 
 INSTALL(TARGETS geoDisplay
   geoConverter
@@ -92,7 +100,6 @@ INSTALL(TARGETS geoDisplay
   materialScan
   materialBudget
   graphicalScan
-  teveDisplay
   ${OPTIONAL_EXECUTABLES}
   EXPORT DD4hep
   RUNTIME DESTINATION bin
