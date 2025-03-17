@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
-PROJECT( DD4hep LANGUAGES NONE)
+PROJECT( DD4hep LANGUAGES CXX)
 SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DD4hep)
 
 #################
@@ -40,13 +40,6 @@ ENDIF()
 IF(BUILD_DOCS_ONLY)
   RETURN()
 ENDIF()
-
-#############################################################
-# Enable CXX as project language to perform compiler checks #
-#############################################################
-
-ENABLE_LANGUAGE(CXX)
-ENABLE_LANGUAGE(C)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ standard used for compiling")
