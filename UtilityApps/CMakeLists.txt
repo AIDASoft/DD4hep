@@ -69,7 +69,7 @@ dd4hep_add_dictionary( G__eve
   )
 
 # #-----------------------------------------------------------------------------------
-if (DD4HEP_USE_LCIO AND TARGET ROOT:Eve)
+if (DD4HEP_USE_LCIO AND TARGET ROOT::Eve)
   dd4hep_add_dictionary( G__eve1
     SOURCES src/EvNavHandler.h
     LINKDEF src/LinkDef.h
