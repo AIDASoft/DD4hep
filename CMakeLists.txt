@@ -41,6 +41,11 @@ IF(BUILD_DOCS_ONLY)
   RETURN()
 ENDIF()
 
+#############################################################
+# Enable CXX as project language to perform compiler checks #
+#############################################################
+
+ENABLE_LANGUAGE(CXX)
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ standard used for compiling")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
