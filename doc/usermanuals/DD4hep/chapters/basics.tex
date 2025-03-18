@@ -20,7 +20,7 @@ The package {\texttt{DDCore}} contains the definition of the basic classes of th
 \label{sec:dd4hep-user-manual-platforms}
 Actively supported and tested platforms for DD4hep are :
 \begin{itemize}
-\item \texttt{Scientific Linux CERN 6}
+\item \texttt{AlmaLinux 9}
 \item \texttt{CERN CentOS 7}
 \item \texttt{Apple macOS}
 \end{itemize}
@@ -31,7 +31,7 @@ Support for any other platform will well be taken into account, but can only be 
 
 DD4hep depends on a number of external packages. The user will need to install these in his/her system before building and running the examples
 \begin{itemize}
-\item \texttt{CMake} version 3.4 or higher 
+\item \texttt{CMake} version 3.14 or higher
 \item \texttt{ROOT 6} installations.
 \item \texttt{Xerces-C} if used to parse compact descriptions an installation of {Xerces-C} will is required.
 \item To build DDG4 it is mandatory to have an installation of the \texttt{Boost} header files.
@@ -434,7 +434,7 @@ All the values are populated either directly from \texttt{XML} or from \textit{d
 
 \section{Detector Description Persistency in \texttt{XML}}
 \label{sec:compact-xml-structure}
-As explained in a previous section, the mechanism involved in the data loading  allow an application to be fairly independent of the technology used to populate the transient detector representation. However, if one wants to use a given technology, she/he has to get/provide the corresponding conversion mechanism. The choice of \texttt{XML} was driven mainly by its easiness of use and the number of tools provided for its manipulation and parsing. Moreover, \texttt{XML} data can be easily translated into many other format using tools like \texttt{XSLT}  processors. The grammar used for the \texttt{XML} data is pretty simple and straight forward, actually very similar to other geometry description languages based on \texttt{XML}. For example the material description is nearly identical to the material description in \texttt{GDML}~\cite{Chytracek:2006be}. The syntactic structure of the compact \texttt{XML} description was taken from the SiD detector description~\cite{Gaede:81331}. The following listing shows the basic layout of any the compact detector description file with its different sections:
+As explained in a previous section, the mechanism involved in the data loading allows an application to be fairly independent of the technology used to populate the transient detector representation. However, if one wants to use a given technology, she/he has to get/provide the corresponding conversion mechanism. The choice of \texttt{XML} was driven mainly by its easiness of use and the number of tools provided for its manipulation and parsing. Moreover, \texttt{XML} data can be easily translated into many other format using tools like \texttt{XSLT}  processors. The grammar used for the \texttt{XML} data is pretty simple and straight forward, actually very similar to other geometry description languages based on \texttt{XML}. For example the material description is nearly identical to the material description in \texttt{GDML}~\cite{Chytracek:2006be}. The syntactic structure of the compact \texttt{XML} description was taken from the SiD detector description~\cite{Gaede:81331}. The following listing shows the basic layout of any the compact detector description file with its different sections:
 
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
 <lccdd>
@@ -522,7 +522,7 @@ The other allowed data type is {\texttt{string}}. {\texttt{string}} values are s
 </display>
 \end{minted}
 
-\item {\textbf{<Limisets>}} contain parameters passed to Geant4:
+\item {\textbf{<limitsets>}} contain parameters passed to Geant4:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
 <limits>
     <limitset name="cal_limits">
@@ -1200,7 +1200,7 @@ where the above default values for the \texttt{XML} attributes \texttt{rmin=0}, 
   double rmi1 = e.rmin1(0), rma1 = e.rmax1();
   Cone(e.z(0), rmi1, rma1, e.rmin2(rmi1), e.rmax2(rma1));
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="Cone" z="value" rmin1="value" rmax1="value" rmin2="value" rmax2="value"/>
 \end{minted}
@@ -1213,7 +1213,7 @@ ConeSegment(e.dz(), e.rmin1(0), e.rmax1(), e.rmin2(), e.rmax2(), e.startphi(), e
 where the above default values for the \texttt{XML} attributes \texttt{rmin1=0}, \texttt{rmin2=0},
 \texttt{rmax2=rmax1}, \texttt{startphi=0} and \texttt{deltaphi=$2\times\pi$}
 are used if not explicitly stated in the \texttt{XML} element \texttt{e}.
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="ConeSegment" rmin1="value" rmax="value" rmin2="value" rmax2="value" dz="value" startphi="value" deltaphi="value"/>
 \end{minted}
@@ -1236,7 +1236,7 @@ are used if not explicitly stated in the \texttt{XML} element \texttt{e}.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 Tube(e.rmin(0.0), e.rmax(), e.dz(), e.startphi(), e.deltaphi())
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="Tube" rmin="value" rmax="value" dz="value" startphi="value" deltaphi="value"/>
 \end{minted}
@@ -1246,7 +1246,7 @@ where the defaults are \texttt{rmin=0}, \texttt{startphi=0} and \texttt{deltaphi
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 CutTube(e.rmin(0.0), e.rmax(), e.dz(), e.phi1(), e.phi2(), e.lx(), e.ly(), e.lz(), e.tx(), e.ty(), e.tz())
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="CutTube" rmin="value" rmax="value" dz="value" phi1="value" phi2="value"
                 lx="value" ly="value" lz="value" tx="value" ty="value" tz="value"/>
@@ -1257,7 +1257,7 @@ where the defaults are \texttt{rmin=0}.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 EllipticalTube(e.a(),e.b(),e.dz());
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="EllipticalTube" dz="value" a="value" b="value"/>
 \end{minted}
@@ -1270,7 +1270,7 @@ Alternatively, if the tag  \texttt{dz} is not present:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 Trap(e.z(0.0), e.theta(), e.phi(0), e.y1(), e.x1(), e.x2(), e.alpha1(), e.y2(), e.x3(), e.x4(), e.alpha2())
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="Trap" z="value" theta="value" phi="value"
                             y1="value" x1="value" x2="value" alpha1="value"
@@ -1282,7 +1282,7 @@ Defaults are: \texttt{theta=0},  \texttt{phi=0},  \texttt{alpha1=0},  \texttt{al
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 Trapezoid(e.x1(), e.x2(), e.y(), e.z(0))
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="Trapezoid" x1="value" x2="value" y="value" z="value"/>
 \end{minted}
@@ -1292,7 +1292,7 @@ The Trapezoid is also aliased to Trd2.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 Trd1(e.x1(), e.x2(), e.y1(), e.y2(), e.z(0));
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="Trd1" x1="value" x2="value" y1="value" y2="value" z="value"/>
 \end{minted}
@@ -1301,7 +1301,7 @@ The corrsponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 Torus(e.r(), e.rmin(), e.rmax(), e.startphi(), e.deltaphi())
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="Torus" r="value" rmin="value" rmax="value" startphi="value" deltaphi="value"/>
 \end{minted}
@@ -1311,7 +1311,7 @@ Defaults are: \texttt{rmin=0},  \texttt{startphi=$\pi$},  \texttt{deltaphi=$2\ti
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 Sphere(e.rmin(), e.rmax(), e.starttheta(), e.deltatheta(), e.startphi(), e.deltaphi())
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="Sphere" rmin="value" rmax="value"
                 starttheta="value" deltatheta="value" startphi="value" deltaphi="value"/>
@@ -1323,7 +1323,7 @@ Defaults are: \texttt{rmin=0},  \texttt{starttheta=0},  \texttt{deltatheta=$\pi$
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 Paraboloid(e.rmin(0), e.rmax(), e.dz())
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="Paraboloid" rmin="value" rmax="value" dz="value"/>
 \end{minted}
@@ -1333,7 +1333,7 @@ Defaults are: \texttt{rmin=0}.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 Hyperboloid(e.rmin(0), e.inner_stereo(), e.rmax(), e.outer_stereo, e.dz())
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="Hyperboloid" rmin="value" inner_stereo="value" rmax="value" outer_stereo=="value" dz="value"/>
 \end{minted}
@@ -1342,7 +1342,7 @@ The corrsponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 PolyhedraRegular(e.numsides(), e.rmin(), e.rmax(), e.dz())
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="PolyhedraRegular" numsides="value" rmin="value" rmax="value" dz="value"/>
 \end{minted}
@@ -1351,7 +1351,7 @@ The corrsponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 PolyhedraRegular(e.numsides(), e.rmin(), e.startphi(), e.deltaphi(), vector<z>, vector<rmin>, vector<rmax>);
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="Polyhedra" numsides="value" startphi="value" deltaphi="value">
     <plane z="z-value" rmin="rmin-value" rmax="rmax-value"/>
@@ -1364,7 +1364,7 @@ The corrsponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{c++}
 EightPointSolid(e.dz(), vertices);
 \end{minted}
-The corrsponding XML snippet looks like this:
+The corresponding XML snippet looks like this:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{xml}
   <some_element type="EightPointSolid" dz="value">
     <vertex x="x-value" y="y-value"/>
@@ -1449,7 +1449,7 @@ bounding box from the contained children. In this corner also the implementation
   \vspace{-0.6cm}
 \end{figure}
 
-Detector elements (class \texttt{DetElement}) are entities which represent  subdetectors or sizable parts of a subdetector. As shown in Figure~\ref{fig:dd4hep-user-manual-detelement-drawing}, a \texttt{DetElement} instance has the means to provide to clients information about
+Detector elements (class \texttt{DetElement}) are entities which represent subdetectors or sizable parts of a subdetector. As shown in Figure~\ref{fig:dd4hep-user-manual-detelement-drawing}, a \texttt{DetElement} instance has the means to provide to clients information about
 
 \begin{itemize}
 \item generic properties like the detector type or the path within the \texttt{DetElement}s hierarchy:
@@ -1595,10 +1595,10 @@ These identifiers are the data input to  \texttt{segmentation classes}~\ref{sec:
 \subsection{Segmentations}
 \label{sec:dd4hep-manual-readout-segmentations}
 
-Segmentations define the user API to the low level interpretation of the energy deposits in a subdetector. For technical reasons and partial religious reasons are the segmentation implementation not part of the DD4hep  toolkit, but an independent package call \texttt{DDSegmentation}. Though the usage is an integral part of DD4hep.
+Segmentations define the user API to the low level interpretation of the energy deposits in a subdetector. For technical reasons and partial religious reasons the segmentation implementation is not part of the DD4hep toolkit, but an independent package called \texttt{DDSegmentation}. Though the usage is an integral part of DD4hep.
 
 \subsection{Volume Manager}
-The \texttt{VolumeManager} is a tool to seek a look-up table of placements of  sensitive volumes and their corresponding unique volume identifier, the \texttt{cellID}. The volume manager analyzes - once the geometry is closed - the hierarchical tree and stores the various placements in the hierarchy with respect to their identifiers. In other words the the tree is  reused volumes shown e.g. in Figure~\ref{fig:dd4hep-hierarchies} is degenerated  according to the full paths of the various volumes. This  use case is very common to reconstruction and analysis applications whenever a given raw-data (aka ``hit'') element must be related to its geometrical location.
+The \texttt{VolumeManager} is a tool to seek a look-up table of placements of sensitive volumes and their corresponding unique volume identifier, the \texttt{cellID}. The volume manager analyzes - once the geometry is closed - the hierarchical tree and stores the various placements in the hierarchy with respect to their identifiers. In other words the the tree is reused volumes shown e.g. in Figure~\ref{fig:dd4hep-hierarchies} is degenerated  according to the full paths of the various volumes. This  use case is very common to reconstruction and analysis applications whenever a given raw-data (aka ``hit'') element must be related to its geometrical location.
 
 Figure~\ref{fig:dd4hep-user-manual-volmgr} shows the design diagram of this component:
 \begin{figure}[h]
@@ -1990,7 +1990,7 @@ materialScan
  usage: print_materials compact.xml x0 y0 z0 x1 y1 z1 
         -> prints the materials on a straight line between the two given points ( unit is cm) 
 \end{minted}
-\texttt{materialScan} uses the python bindings provided by Geant4 and may be not  always availible. Alternatively the command \texttt{print\_materials} may be used, which does not use the python binding, but produces less pretty output.
+\texttt{materialScan} uses the python bindings provided by Geant4 and may be not  always available. Alternatively the command \texttt{print\_materials} may be used, which does not use the python binding, but produces less pretty output.
 
 
 \subsection{Plugin Test Program}
@@ -2066,7 +2066,7 @@ with \texttt{extern ``C''}.
 \subsection{Start the ROOT Interpreter}
 \label{sec:dd4hep-manual-plugin-root-interpreter}
 
-To trigger the start of the ROOT interpreter, invoke the plugin. Additional argumens are 
+To trigger the start of the ROOT interpreter, invoke the plugin. Additional arguments are 
 assumed to be command, which should be evaluated.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_Rint -arg [-arg]                                 
@@ -2079,8 +2079,8 @@ assumed to be command, which should be evaluated.
 \label{sec:dd4hep-manual-plugin-dd4hep-ui}
 
 The DD4hep UI is a mediator to interactively interact more easily with the DD4hep instance from the 
-ROOT command prompt. See the defintition file \texttt{DDCore/include/DD4hep/DD4hepUI.h} for details.
-An instance of the \texttt{DD4hepUI} class is generated and made availible to ROOT by the global pointer
+ROOT command prompt. See the definition file \texttt{DDCore/include/DD4hep/DD4hepUI.h} for details.
+An instance of the \texttt{DD4hepUI} class is generated and made available to ROOT by the global pointer
 gDD4hepUI. Any argument is ignored.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_InteractiveUI
@@ -2092,7 +2092,7 @@ gDD4hepUI. Any argument is ignored.
 \label{sec:dd4hep-manual-plugin-dump-gdml-tables}
 
 The plugin simply dumps the GDML tables associated to the \texttt{TGeoManager} instance to stdout.
-Useful to verify the parsed conent.
+Useful to verify the parsed content.
 Any argument is ignored.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_Dump_GDMLTables
@@ -2104,7 +2104,7 @@ Any argument is ignored.
 \label{sec:dd4hep-manual-plugin-dump-optical-surfaces}
 
 The plugin simply dumps the optical surfaces associated to the \texttt{TGeoManager} instance to stdout.
-Useful to verify the parsed conent.
+Useful to verify the parsed content.
 Any argument is ignored.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_Dump_OpticalSurfaces
@@ -2116,7 +2116,7 @@ Any argument is ignored.
 \label{sec:dd4hep-manual-plugin-dump-skin-surfaces}
 
 The plugin simply dumps the skin surfaces associated to the \texttt{TGeoManager} instance to stdout.
-Useful to verify the parsed conent.
+Useful to verify the parsed content.
 Any argument is ignored.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_Dump_SkinSurfaces
@@ -2128,7 +2128,7 @@ Any argument is ignored.
 \label{sec:dd4hep-manual-plugin-dump-border-surfaces}
 
 The plugin simply dumps the border surfaces associated to the TGeoManager instance to stdout.
-Useful to verify the parsed conent.
+Useful to verify the parsed content.
 Any argument is ignored.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage: -plugin DD4hep_Dump_BorderSurfaces
@@ -2142,7 +2142,7 @@ Any argument is ignored.
 The plugin dumps all elements stored in the TGeoManager instance to stdout or to file.
 Optionally the output can be generated in XML understood by DD4hep in order to e.g.
 export the elements used in the apparatus.
-Useful to verify the parsed conent.
+Useful to verify the parsed content.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     Usage:  -plugin DD4hep_ElementTable -opt [-opt]
                   -type   <string>    Output format: text or xml
@@ -2234,7 +2234,7 @@ Only ROOT is required to read this information.
 \label{sec:dd4hep-manual-plugin-dump-detelement-volume-tree}
 
 Dump for verification and debugging the \texttt{DetElement} or \texttt{Volume} tree
-of the detector description. Both plugin are very similar, once with emphsis on the
+of the detector description. Both plugin are very similar, once with emphasis on the
 ejected \texttt{DetElement} information, once with emphasis on the geometry information.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
    Usage -plugin DD4hep_DetectorDump / DD4hep_DetectorVolumeDump -arg [-arg]
@@ -2262,7 +2262,7 @@ ejected \texttt{DetElement} information, once with emphasis on the geometry info
 \subsection{Fill DetElement Cache}
 \label{sec:dd4hep-manual-plugin-chache-detelement-info}
 
-The DetElement instances may cache on demand the transfomattions of their ideal placements
+The DetElement instances may cache on demand the transformations of their ideal placements
 to the world coordinate system. To fill this cache immediately rather than on demand use this
 plugin. Depending on the top element passed, this caching mechanism can also be applied to
 some sub-detectors.
@@ -2296,8 +2296,8 @@ a given pattern. The constructor is accessible as follows:
 \end{minted}
 where the XML Element \texttt{element} must supply all required information to actually create the 
 shape of a given type.
-To create shapes with the fectory mechanism, the shape constructors as present in 
-\texttt{DDCore/inlude/DD4hep/Shapes.h} must be met.
+To create shapes with the factory mechanism, the shape constructors as present in 
+\texttt{DDCore/include/DD4hep/Shapes.h} must be met.
 
 \subsection{Assembly Shape Construction}
 \label{sec:dd4hep-manual-plugin-assembly-shape}
@@ -2393,7 +2393,7 @@ The xml entity 'element' must either look like the following:
    </some-tag>
 \end{minted}
 $name$ is optional, $startphi=0$, $deltaphi=2\pi$ have default values if not explicitly set.
-Otherwise the folowing pattern must be fulfilled (DEPRECATED):
+Otherwise the following pattern must be fulfilled (DEPRECATED):
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
    <some-tag name="my-polycone" rmin1="1*cm" rmax1="2.cm"  rmin1="2*cm" rmax1="3.cm" 
                                 phi1="0*rad" phi2="pi" ... further xml-attributes not looked at .... >
@@ -2416,7 +2416,7 @@ The xml entity 'element' must either look like the following:
    </some-tag>
 \end{minted}
 $name$ is optional, $startphi=0$, $deltaphi=2\pi$ have default values if not explicitly set.
-Otherwise the folowing pattern must be fulfilled (DEPRECATED):
+Otherwise the following pattern must be fulfilled (DEPRECATED):
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
     <some-tag name="my-tube" rmin="1*cm" rmax="2.cm" 
                              phi1="0*rad" phi2="pi" ... further xml-attributes not looked at .... >
@@ -2459,7 +2459,7 @@ The relationship between the two constructors is as follows:
   alpha2 = alpha1;
 \end{minted}
 
-\subsection{Regular Trapzoid (TRD1) Construction}
+\subsection{Regular Trapezoid (TRD1) Construction}
 \label{sec:dd4hep-manual-plugin-trd1-shape}
 
 The xml entity 'element' must look like the following:
@@ -2471,7 +2471,7 @@ The xml entity 'element' must look like the following:
 \end{minted}
 The name attribute is optional. If present the created \texttt{Solid} will be given the supplied identifier.
 
-\subsection{Irregular Trapzoid (TRD2) Construction}
+\subsection{Irregular Trapezoid (TRD2) Construction}
 \label{sec:dd4hep-manual-plugin-trd2-shape}
 
 The xml entity 'element' must look like the following:
@@ -2596,8 +2596,8 @@ To be written.
 \section{Readout Segmentation}
 \label{sec:dd4hep-manual-segmentation-plugins}
 
-Segmentation plugins are used to impose an artifical super-structure onto sensitive elements
+Segmentation plugins are used to impose an artificial super-structure onto sensitive elements
 such as a grid for pixel detectors etc. DD4hep supports several such segmentations, which 
-are internally created with the plugin mechansim, which also allows to easily extend 
-the existing pallete of segmentations.
+are internally created with the plugin mechanism, which also allows to easily extend 
+the existing palette of segmentations.
 
