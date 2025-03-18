@@ -69,7 +69,7 @@ dd4hep_add_dictionary( G__eve
   )
 
 # #-----------------------------------------------------------------------------------
-if (DD4HEP_USE_LCIO)
+if (DD4HEP_USE_LCIO AND TARGET ROOT:Eve)
   dd4hep_add_dictionary( G__eve1
     SOURCES src/EvNavHandler.h
     LINKDEF src/LinkDef.h
@@ -81,8 +81,13 @@ if (DD4HEP_USE_LCIO)
 endif()
 
 # #-----------------------------------------------------------------------------------
-add_executable(teveDisplay src/teve_display.cpp src/next_event_dummy.cpp G__eve.cxx)
-target_link_libraries(teveDisplay DD4hep::DDRec ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL )
+if (TARGET ROOT::Eve)
+  add_executable(teveDisplay src/teve_display.cpp src/next_event_dummy.cpp G__eve.cxx)
+  target_link_libraries(teveDisplay DD4hep::DDRec ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL )
+  LIST(APPEND OPTIONAL_EXECUTABLES teveDisplay)
+else()
+  MESSAGE(STATUS "ROOT::Eve not found: not building teveDisplay")
+endif()
 
 INSTALL(TARGETS geoDisplay
   geoConverter
@@ -92,7 +97,6 @@ INSTALL(TARGETS geoDisplay
   materialScan
   materialBudget
   graphicalScan
-  teveDisplay
   ${OPTIONAL_EXECUTABLES}
   EXPORT DD4hep
   RUNTIME DESTINATION bin
