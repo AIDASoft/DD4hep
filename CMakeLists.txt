@@ -134,7 +134,13 @@ dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL
 # Configure ROOT
 find_package (ROOT 6.08 REQUIRED CONFIG)
 DD4HEP_SETUP_ROOT_TARGETS()
-
+# ROOT no longer finds nlohmann_json unless we ask for the ROOTEve component, so we ask
+# for the ROOTEve component if the ROOTEve component exists.
+# DDEve and one executable in UtilityApps depend on this
+if(TARGET ROOT::ROOTEve)
+    find_package (ROOT REQUIRED COMPONENTS ROOTEve CONFIG)
+ endif()
+  
 # Configure BOOST
 find_package(Boost 1.49 REQUIRED)
 DD4HEP_SETUP_BOOST_TARGETS()

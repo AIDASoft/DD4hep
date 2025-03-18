@@ -42,13 +42,12 @@ if(TARGET Geant4::Interface)
 endif()
 
 # the web display tool depends on the ROOT7 version of DDEve
-find_package (ROOT COMPONENTS ROOTEve)
-if(ROOTEve_FOUND)
+if(TARGET ROOT::ROOTEve)
   add_executable(geoWebDisplay src/webdisplay.cpp)
   target_link_libraries(geoWebDisplay DD4hep::DDCore)
   LIST(APPEND OPTIONAL_EXECUTABLES geoWebDisplay)
 else()
-  MESSAGE(STATUS "ROOT:Eve not found: not building geoWebDisplay")
+  MESSAGE(STATUS "ROOT::ROOTEve not found: not building geoWebDisplay")
 endif()
 
 # #-----------------------------------------------------------------------------------
@@ -72,7 +71,7 @@ dd4hep_add_dictionary( G__eve
   )
 
 # #-----------------------------------------------------------------------------------
-if (DD4HEP_USE_LCIO)
+if (DD4HEP_USE_LCIO AND TARGET ROOT::Eve)
   dd4hep_add_dictionary( G__eve1
     SOURCES src/EvNavHandler.h
     LINKDEF src/LinkDef.h
@@ -84,7 +83,7 @@ if (DD4HEP_USE_LCIO)
 endif()
 
 # #-----------------------------------------------------------------------------------
-if(ROOTEve_FOUND)
+if(TARGET ROOT::Eve)
   add_executable(teveDisplay src/teve_display.cpp src/next_event_dummy.cpp G__eve.cxx)
   target_link_libraries(teveDisplay DD4hep::DDRec ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL )
   LIST(APPEND OPTIONAL_EXECUTABLES teveDisplay)
