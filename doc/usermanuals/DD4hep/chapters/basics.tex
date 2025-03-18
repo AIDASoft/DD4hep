@@ -1875,25 +1875,22 @@ Visualizing the geometry is an important tool to debug and validate the construc
 
 The command to create the display is part of the DD4hep release:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
-$> geoDisplay -compact <path to the \texttt{XML} file containing the detector description>
-
- DD4hepGeometryDisplay -opt [-opt]                                                  
-        -compact       <file>       Specify the compact geometry file              
-                     [REQUIRED]     At least one compact geo file is required!     
-        -build_type <number/string> Specify the build type                         
-                     [OPTIONAL]     MUST come immediately after the -compact input.
-                                    Default for each file is: BUILD_DEFAULT [=1]   
-                                    Allowed values: BUILD_SIMU [=1], BUILD_RECO [=2] or BUILD_DISPLAY [=3]
-        -destroy     [OPTIONAL]     Force destruction of the Detector instance         
-                                    before exiting the application                 
-        -volmgr      [OPTIONAL]     Load and populate phys.volume manager to       
-                                    check the volume ids for duplicates etc.       
-        -print      <number/string> Specify output level. Default: INFO(=3)        
-                     [OPTIONAL]     Allowed values: VERBOSE(=1), DEBUG(=2),        
-                                    INFO(=3), WARNING(=4), ERROR(=5), FATAL(=6)    
-                                    The lower the level, the more printout...      
-        -load_only   [OPTIONAL]     Dry-run to only load geometry without     
-                                    starting the display.                      
+$> geoDisplay -arg [arg-value] <path to the \texttt{XML} file containing the detector description>
+With -arg being (optionally):
+       -compact       <file>       Specify the compact geometry file
+                    [REQUIRED]     At least one compact geo file is required!
+       -detector      <string>     Top level DetElement path. Default: '/world'
+                    [OPTIONAL]
+       -option        <string>     ROOT Draw option.    Default: 'ogl'
+                    [OPTIONAL]
+       -level         <number>     Visualization level  [TGeoManager::SetVisLevel]  Default: 4
+                    [OPTIONAL]
+       -visopt        <number>     Visualization option [TGeoManager::SetVisOption] Default: 1
+                    [OPTIONAL]
+       -load                       Only load the geometry. Do not invoke the display
+                    [OPTIONAL]
+       -help                       Print this help output
+                    [OPTIONAL]
 \end{minted}
 
 
@@ -1907,18 +1904,24 @@ $> geoDisplay -compact <path to the \texttt{XML} file containing the detector de
 \end{itemize}
 Both conversions are supported in DD4hep with the geoConverter application:
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
-  geoConverter -opt [-opt]                                                
-        Action flags:               Usage is exclusive, 1 required!           
-        -compact2lcdd               Convert compact xml geometry to lcdd.     
-        -compact2gdml               Convert compact xml geometry to gdml.     
+  geoConverter -opt [-opt]
+        Action flags:               Usage is exclusive, 1 required!
+        -compact2description        Convert compact xml geometry to description.
+        -compact2gdml               Convert compact xml geometry to gdml.
+        -compact2pandora            Convert compact xml to pandora xml.
+        -compact2tgeo               Convert compact xml to TGeo in ROOT file.
         -compact2vis                Convert compact xml to visualisation attrs
 
-        -input  <file>  [REQUIRED]  Specify input file.                       
-        -output <file>  [OPTIONAL]  Specify output file.                      
+        -input  <file>  [REQUIRED]  Specify input file.
+        -output <file>  [OPTIONAL]  Specify output file.
                                     if no output file is specified, the output
-                                    device is stdout.                         
-        -ascii          [OPTIONAL]  Dump visualisation attrs in csv format.   
-                                    [Only valid for -compact2vis]             
+                                    device is stdout.
+        -ascii          [OPTIONAL]  Dump visualisation attrs in csv format.
+                                    [Only valid for -compact2vis]
+        -destroy        [OPTIONAL]  Force destruction of the Detector instance
+                                    before exiting the application
+        -volmgr         [OPTIONAL]  Load and populate phys.volume manager to
+                                    check the volume ids for duplicates etc.
 \end{minted}
 
 \subsection{Overlap checking}
@@ -1926,8 +1929,8 @@ Both conversions are supported in DD4hep with the geoConverter application:
 
 Overlap checks are an important tool to verify the consistency of the  implemented geometrical design. As in the real world, where overlaps are  impossible, also simulated geometries may not have overlaps. In simulation overlaps tend to create particle reflections possibly leading to infinite loops.
 \begin{minted}[frame=single,framesep=3pt,breaklines=true,tabsize=2,linenos,fontsize=\small]{bash}
-    python <install>/DD4hep/bin/checkOverlaps.py --help
     Usage: checkOverlaps.py [options]
+    python <install>/bin/checkOverlaps.py --help
 
     Check TGeo geometries for overlaps.
 
@@ -1963,9 +1966,9 @@ Perform extensive geometry checks. For details and up to date information  pleas
       -c <FILE>, --compact=<FILE>           Define LCCDD style compact xml input
       -f <boolean>, --full=<boolean>        Full geometry checking
       -n <integer>, --ntracks=<integer>     Number of tracks [requires 'full']
-      -x <double>, --vx=<double>            X-position of track origine vertex [requires 'full']
-      -y <double>, --vy=<double>            Y-position of track origine vertex [requires 'full']
-      -z <double>, --vz=<double>            Z-position of track origine vertex [requires 'full']
+      -x <double>, --vx=<double>            X-position of track origin vertex [requires 'full']
+      -y <double>, --vy=<double>            Y-position of track origin vertex [requires 'full']
+      -z <double>, --vz=<double>            Z-position of track origin vertex [requires 'full']
       -o <string>, --option=<string>        Geometry checking option default:ob
 \end{minted}
 
