@@ -96,11 +96,7 @@ Geant4Particle& Geant4Particle::get_data(Geant4Particle& c)   {
     //definition  = c.definition;
     daughters   = c.daughters;
     parents     = c.parents;
-#if __cplusplus >= 201103L
     extension.swap(c.extension);
-#else
-    extension   = c.extension;
-#endif
     //DD4hep_ptr<ParticleExtension>(c.extension.release());
   }
   return *this;

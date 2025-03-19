@@ -76,14 +76,7 @@ Vector3D CartesianGridXZ::position(const CellID& cID) const {
 }
 
 std::vector<double> CartesianGridXZ::cellDimensions(const CellID&) const {
-#if __cplusplus >= 201103L
   return {_gridSizeX, _gridSizeZ};
-#else
-  std::vector<double> cellDims(2,0.0);
-  cellDims[0] = _gridSizeX;
-  cellDims[1] = _gridSizeZ;
-  return cellDims;
-#endif
 }
 
 

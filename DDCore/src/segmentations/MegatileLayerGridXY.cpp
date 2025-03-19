@@ -183,14 +183,7 @@ namespace dd4hep {
       double xsize = _currentSegInfo.megaTileSizeX/_currentSegInfo.nCellsX;
       double ysize = _currentSegInfo.megaTileSizeY/_currentSegInfo.nCellsY;
 
-#if __cplusplus >= 201103L
       return {xsize, ysize};
-#else
-      std::vector<double> cellDims(2,0.0);
-      cellDims[0] = xsize;
-      cellDims[1] = ysize;
-      return cellDims;
-#endif
     }
 
 

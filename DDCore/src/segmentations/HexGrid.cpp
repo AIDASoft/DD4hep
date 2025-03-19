@@ -133,14 +133,7 @@ namespace dd4hep {
     }
 
     std::vector<double> HexGrid::cellDimensions(const CellID&) const {
-#if __cplusplus >= 201103L
-      return {2*_sideLength, std::sqrt(3)*_sideLength};
-#else
-      std::vector<double> cellDims(2,0.0);
-      cellDims[0] = 2*_sideLength;
-      cellDims[1] = std::sqrt(3)*_sideLength;
-      return cellDims;
-#endif
+    return {2*_sideLength, std::sqrt(3)*_sideLength};
 }
 
   } /* namespace DDSegmentation */
