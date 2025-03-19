@@ -133,8 +133,8 @@ namespace dd4hep {
     }
 
     std::vector<double> HexGrid::cellDimensions(const CellID&) const {
-    return {2*_sideLength, std::sqrt(3)*_sideLength};
-}
+      return {2*_sideLength, std::sqrt(3)*_sideLength};
+    }
 
   } /* namespace DDSegmentation */
 } /* namespace dd4hep */
