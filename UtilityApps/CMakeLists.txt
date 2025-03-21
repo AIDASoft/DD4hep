@@ -62,11 +62,6 @@ if(BUILD_TESTING)
   endif()
   #-----------------------------------------------------------------------------------
 endif()
-dd4hep_add_dictionary( G__eve
-  SOURCES src/EvNavHandler.h
-  LINKDEF src/LinkDef.h
-  USES    DD4hep::DDCore ROOT::Geom
-  )
 
 # #-----------------------------------------------------------------------------------
 if (DD4HEP_USE_LCIO AND TARGET ROOT::Eve)
@@ -82,6 +77,11 @@ endif()
 
 # #-----------------------------------------------------------------------------------
 if (TARGET ROOT::Eve)
+  dd4hep_add_dictionary( G__eve
+    SOURCES src/EvNavHandler.h
+    LINKDEF src/LinkDef.h
+    USES    DD4hep::DDCore ROOT::Geom
+  )
   add_executable(teveDisplay src/teve_display.cpp src/next_event_dummy.cpp G__eve.cxx)
   target_link_libraries(teveDisplay DD4hep::DDRec ROOT::Core ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL )
   LIST(APPEND OPTIONAL_EXECUTABLES teveDisplay)
