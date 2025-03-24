@@ -21,7 +21,7 @@
 
 // C/C++ include files
 #include <stdexcept>
-#include <algorithm>
+#include <string>
 
 using namespace dd4hep;
 

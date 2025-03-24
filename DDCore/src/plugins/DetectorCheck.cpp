@@ -23,8 +23,6 @@
 #include <DD4hep/detail/VolumeManagerInterna.h>
 
 // C/C++ include files
-#include <stdexcept>
-#include <algorithm>
 #include <cstdlib>
 
 using namespace dd4hep;

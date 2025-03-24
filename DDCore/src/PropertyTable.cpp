@@ -20,8 +20,6 @@
 #include <DD4hep/detail/Handle.inl>
 
 // C/C++ includes
-#include <sstream>
-#include <iomanip>
 
 using namespace dd4hep;
 

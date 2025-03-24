@@ -16,9 +16,9 @@
 #include <DD4hep/SignalHandler.h>
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
-#include <iostream>
 #include <unistd.h>
 #include <execinfo.h>
 

@@ -20,7 +20,6 @@
 // C++ include files
 #include <string>
 #include <vector>
-#include <map>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

@@ -25,7 +25,6 @@
 
 // C/C++ include files
 #include <cstdlib>
-#include <cstdint>
 
 #ifndef  __TIXML__
 // This is the absolute minimal include necessary to comply with XercesC

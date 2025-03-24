@@ -23,8 +23,6 @@
 #include <TClass.h>
 
 // C/C++ include files
-#include <algorithm>
-#include <iostream>
 
 using namespace dd4hep;
 
@@ -196,9 +194,8 @@ detail::GeoScan::GeoScan(DetElement e, bool propagate) {
 
 /// Default destructor
 detail::GeoScan::~GeoScan() {
-  if (m_data)
-    delete m_data;
-  m_data = 0;
+  delete m_data;
+  m_data = nullptr;
 }
 
 /// Work callback

@@ -18,8 +18,6 @@
 
 #include <string>
 #include <typeinfo>
-#include <stdexcept>
-#include <type_traits>
 
 // Conversion factor from radians to degree: 360/(2*PI)
 #ifndef RAD_2_DEGREE

@@ -22,7 +22,6 @@
 // C/C++ include files
 #include <set>
 #include <map>
-#include <vector>
 
 // Forward declarations
 class TGeoVolume;

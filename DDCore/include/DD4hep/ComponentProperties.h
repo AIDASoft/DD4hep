@@ -18,10 +18,7 @@
 
 // C/C++ include files
 #include <algorithm>
-#include <stdexcept>
 #include <typeinfo>
-#include <iostream>
-#include <sstream>
 #include <string>
 #include <map>
 

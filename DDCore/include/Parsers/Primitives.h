@@ -18,12 +18,8 @@
 
 // C/C++ include files
 #include <map>
-#include <list>
 #include <vector>
 #include <string>
-#if __cplusplus >= 201703 || (__clang__ && __APPLE__)
-#include <string_view>
-#endif
 #include <limits>
 #include <cstdint>
 

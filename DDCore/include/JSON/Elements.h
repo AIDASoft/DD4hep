@@ -17,7 +17,6 @@
 #include <cmath>
 #include <string>
 #include <vector>
-#include <stdexcept>
 
 // Framework include files
 #include <JSON/config.h>

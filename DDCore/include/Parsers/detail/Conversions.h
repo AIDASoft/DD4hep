@@ -22,12 +22,6 @@
  */
 
 
-// C/C++ include files
-#include <map>
-#include <iostream>
-
-// Framework include files
-
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

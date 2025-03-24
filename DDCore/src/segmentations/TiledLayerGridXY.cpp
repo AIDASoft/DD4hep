@@ -19,10 +19,8 @@
 #include <DD4hep/Printout.h>
 
 // C/C++ includes
-#include <algorithm>
-#include <sstream>
-#include <stdexcept>
 #include <cmath>
+#include <string>
 
 namespace dd4hep {
 namespace DDSegmentation {

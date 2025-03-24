@@ -16,7 +16,6 @@
 // C/C++ include files
 #include <string>
 #include <limits>
-#include <algorithm>
 #include <utility>
 #include <cstdint>
 

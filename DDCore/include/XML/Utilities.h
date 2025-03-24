@@ -21,8 +21,6 @@
 #include <DD4hep/Detector.h>
 
 // C/C++ include files
-#include <set>
-#include <map>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

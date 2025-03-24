@@ -24,7 +24,6 @@
 #include <DDSegmentation/SegmentationParameter.h>
 
 #include <map>
-#include <utility>
 #include <set>
 #include <string>
 #include <vector>
