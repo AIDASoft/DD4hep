@@ -21,8 +21,6 @@
 
 #include <DDSegmentation/Segmentation.h>
 
-#include <map>
-
 namespace dd4hep {
   namespace DDSegmentation {
 

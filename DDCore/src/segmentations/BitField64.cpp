@@ -11,8 +11,9 @@
 #include <DDSegmentation/BitField64.h>
 
 #include <cmath>
-#include <algorithm>
-#include <stdexcept>
+#include <ostream>
+#include <sstream>
+#include <string>
 
 namespace dd4hep{
 

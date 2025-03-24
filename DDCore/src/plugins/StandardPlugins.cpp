@@ -42,7 +42,6 @@
 // C/C++ include files
 #include <cerrno>
 #include <cstdlib>
-#include <fstream>
 #include <sstream>
 
 using namespace dd4hep;

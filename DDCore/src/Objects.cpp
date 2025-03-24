@@ -29,7 +29,6 @@
 // C/C++ include files
 #include <cmath>
 #include <sstream>
-#include <iomanip>
 
 using namespace dd4hep;
 

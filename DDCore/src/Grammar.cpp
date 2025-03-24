@@ -23,10 +23,9 @@
 #include <TROOT.h>
 
 // C/C++ include files
-#include <algorithm>
-#include <stdexcept>
 #include <mutex>
 #include <map>
+#include <string>
 
 #if defined(DD4HEP_PARSER_HEADER)
 

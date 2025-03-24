@@ -17,9 +17,8 @@
 #include <DD4hep/Filter.h>
 
 // C/C++ include files
-#include <functional>
 #include <regex>
-#include <iostream>
+#include <string>
 
 namespace dd4hep {
   

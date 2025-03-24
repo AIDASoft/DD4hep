@@ -19,7 +19,6 @@
 // ROOT include files
 #ifndef __CINT__
 #include <string>
-#include <vector>
 #include <typeinfo>
 
 #if __cplusplus >= 201703

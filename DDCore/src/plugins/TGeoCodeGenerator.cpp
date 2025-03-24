@@ -20,9 +20,7 @@
 #include <DD4hep/Path.h>
 
 // C/C++ include files
-#include <stdexcept>
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 
 // ROOT includes

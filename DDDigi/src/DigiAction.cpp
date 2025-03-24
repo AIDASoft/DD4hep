@@ -18,6 +18,7 @@
 
 // C/C++ include files
 #include <algorithm>
+#include <list>
 
 using namespace dd4hep::digi;
 

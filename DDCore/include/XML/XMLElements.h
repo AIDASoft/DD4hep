@@ -17,7 +17,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
-#include <stdexcept>
+#include <exception>
 
 // Framework include files
 #include <XML/config.h>

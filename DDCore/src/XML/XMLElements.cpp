@@ -32,7 +32,6 @@
 #include <iostream>
 #include <stdexcept>
 #include <cstdio>
-#include <map>
 
 using namespace dd4hep::xml;
 static const size_t INVALID_NODE = ~0U;

@@ -24,9 +24,6 @@
 // Framework include files
 #include <DD4hep/Primitives.h>
 
-// C/C++ include files
-#include <typeinfo>
-
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 

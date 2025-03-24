@@ -22,7 +22,6 @@
 #undef NDEBUG
 #include <cmath>
 #include <cassert>
-#include <algorithm>
 
 namespace dd4hep {
   namespace DDSegmentation {

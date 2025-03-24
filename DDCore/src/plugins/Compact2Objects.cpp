@@ -48,7 +48,6 @@
 // C/C++ include files
 #include <filesystem>
 #include <iostream>
-#include <iomanip>
 #include <climits>
 #include <set>
 
