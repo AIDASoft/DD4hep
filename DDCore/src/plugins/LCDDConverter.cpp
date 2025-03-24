@@ -55,7 +55,6 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <iomanip>
 
 using namespace dd4hep;
 using namespace dd4hep::detail;
