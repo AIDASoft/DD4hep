@@ -29,9 +29,13 @@
 #include <XML/XMLTags.h>
 
 // C/C++ include files
-#include <iostream>
-#include <stdexcept>
 #include <cstdio>
+#include <iostream>
+#include <map>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 using namespace dd4hep::xml;
 static const size_t INVALID_NODE = ~0U;
