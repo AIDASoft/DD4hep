@@ -21,7 +21,7 @@ target_link_libraries(DDDigi PUBLIC
 target_include_directories(DDDigi
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 #
 if(DD4HEP_USE_TBB)
@@ -82,7 +82,7 @@ dd4hep_add_plugin(DDDigi_IO
     DEFINITIONS    ${DDDigiIO_DEFINITIONS}
   )
   set_target_properties(DDDigi_IO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-  install(TARGETS DDDigi_IO EXPORT DD4hep ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+  install(TARGETS DDDigi_IO EXPORT DD4hep DESTINATION ${CMAKE_INSTALL_LIBDIR})
 #
 #---Package installation procedure(s) ----------------------------------------------
 set_target_properties(DDDigi DDDigiPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
@@ -91,7 +91,6 @@ file(GLOB DDDigi_python python/*.py python/*.C)
 install(FILES ${DDDigi_python} DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
 #
 install(TARGETS DDDigi DDDigiPlugins EXPORT DD4hep
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
-install(DIRECTORY include/DDDigi DESTINATION include)
+install(DIRECTORY include/DDDigi DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
