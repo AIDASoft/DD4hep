@@ -73,7 +73,7 @@ parser.add_option("-P", "--noPilot",
                   help="don't run the pilot job (e.g. if you're sure the geometry is good)")
 parser.add_option('-t', '--timeOut',
                   dest='timeOutValue', default='600',
-                  help='Time-out for a single scan',
+                  help='Time-out for a single scan [in seconds]',
                   metavar='<int>')
 
 (opts, args) = parser.parse_args()
