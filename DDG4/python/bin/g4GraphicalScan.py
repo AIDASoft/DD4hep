@@ -280,7 +280,7 @@ if not noPilot:
     for cc in cmd:
         print(cc, end=' ')
     print('\n')
-    pilotresult = subprocess.run(cmd, capture_output=True, text=True, timeout=int(opt.timeOutValue))
+    pilotresult = subprocess.run(cmd, capture_output=True, text=True, timeout=int(opts.timeOutValue))
     print('done, checking pilot result')
     has_Material_scan_between = 0
     has_Finished_run = 0
@@ -301,7 +301,7 @@ if not noPilot:
 cmd = ['ddsim', '--compactFile', infileName, '--runType', 'run', '--enableG4Gun',
        '--action.step', 'Geant4MaterialScanner/MaterialScan', '-M', steerName]
 print('now running main ddsim job..this may take some time')
-result = subprocess.run(cmd, capture_output=True, text=True, timeout=int(opt.timeOutValue))
+result = subprocess.run(cmd, capture_output=True, text=True, timeout=int(opts.timeOutValue))
 #
 # parse the results
 #
