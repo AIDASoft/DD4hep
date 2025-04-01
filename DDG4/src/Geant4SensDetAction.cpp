@@ -263,10 +263,7 @@ long long int Geant4Sensitive::volumeID(const G4VTouchable* touchable) {
 long long int Geant4Sensitive::cellID(const G4Step* step) {
   Geant4StepHandler h(step);
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
-  bool OpticsInvokeSD = G4OpticalParameters::Instance()?
-                        G4OpticalParameters::Instance()->GetBoundaryInvokeSD() : false;
-  bool IsOpticalPhoton = step->GetTrack()->GetDefinition() == G4OpticalPhoton::Definition();
-  bool UsePostStepOnly = IsOpticalPhoton && OpticsInvokeSD;
+  bool UsePostStepOnly = G4OpticalParameters::Instance() && G4OpticalParameters::Instance()->GetBoundaryInvokeSD() && (step->GetTrack()->GetDefinition() == G4OpticalPhoton::Definition());
   VolumeID volID = volMgr.volumeID(UsePostStepOnly? h.postTouchable() : h.preTouchable());
   if ( m_segmentation.isValid() )  {
     std::exception_ptr eptr;
