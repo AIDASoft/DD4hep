@@ -31,6 +31,9 @@
 // C/C++ include files
 #include <stdexcept>
 
+#include "G4OpticalParameters.hh"
+#include "G4OpticalPhoton.hh"
+
 #ifdef DD4HEP_USE_GEANT4_UNITS
 #define MM_2_CM 1.0
 #else
@@ -260,11 +263,16 @@ long long int Geant4Sensitive::volumeID(const G4VTouchable* touchable) {
 long long int Geant4Sensitive::cellID(const G4Step* step) {
   Geant4StepHandler h(step);
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
-  VolumeID volID = volMgr.volumeID(h.preTouchable());
+  bool OpticsInvokeSD = G4OpticalParameters::Instance()?
+                        G4OpticalParameters::Instance()->GetBoundaryInvokeSD() : false;
+  bool IsOpticalPhoton = step->GetTrack()->GetDefinition() == G4OpticalPhoton::Definition();
+  bool UsePostStepOnly = IsOpticalPhoton && OpticsInvokeSD;
+  VolumeID volID = volMgr.volumeID(UsePostStepOnly? h.postTouchable() : h.preTouchable());
   if ( m_segmentation.isValid() )  {
     std::exception_ptr eptr;
-    G4ThreeVector global = 0.5 * (h.prePosG4()+h.postPosG4());
-    G4ThreeVector local  = h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);
+    G4ThreeVector global = UsePostStepOnly? h.postPosG4() : 0.5 * (h.prePosG4()+h.postPosG4());
+    G4ThreeVector local  = UsePostStepOnly? h.postTouchable()->GetHistory()->GetTopTransform().TransformPoint(global) :
+                                            h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);
     Position loc(local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
     Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
     try  {
