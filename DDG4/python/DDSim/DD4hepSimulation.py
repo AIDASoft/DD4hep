@@ -391,11 +391,11 @@ class DD4hepSimulation(object):
         gen.Input = "Geant4EventReaderHepEvtLong|" + inputFile
       elif inputFile.endswith(tuple([".hepmc"] + HEPMC3_SUPPORTED_EXTENSIONS)):
         if self.hepmc3.useHepMC3:
-          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
+          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index, shared=True)
           gen.Parameters = self.hepmc3.getParameters()
           gen.Input = "HEPMC3FileReader|" + inputFile
         else:
-          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
+          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index, shared=True)
           gen.Input = "Geant4EventReaderHepMC|" + inputFile
       elif inputFile.endswith(".pairs"):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index)
