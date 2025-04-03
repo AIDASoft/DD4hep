@@ -337,6 +337,8 @@ class DD4hepSimulation(object):
   def __setupGeneratorActions(self, kernel, geant4):
     import DDG4
 
+    shared = (kernel.RunManagerType == "G4MTRunManager")
+
     actionList = []
 
     if self.enableGun:
@@ -350,7 +352,7 @@ class DD4hepSimulation(object):
 
     if self.enableG4Gun:
       # GPS Create something
-      g4gun = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/Gun")
+      g4gun = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/Gun", shared=shared)
       g4gun.Uses = 'G4ParticleGun'
       g4gun.Mask = 2
       logger.info("++++ Adding Geant4 Particle Gun ++++")
@@ -359,7 +361,7 @@ class DD4hepSimulation(object):
 
     if self.enableG4GPS:
       # GPS Create something
-      g4gps = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/GPS")
+      g4gps = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/GPS", shared=shared)
       g4gps.Uses = 'G4GeneralParticleSource'
       g4gps.Mask = 3
       logger.info("++++ Adding Geant4 General Particle Source ++++")
@@ -391,11 +393,11 @@ class DD4hepSimulation(object):
         gen.Input = "Geant4EventReaderHepEvtLong|" + inputFile
       elif inputFile.endswith(tuple([".hepmc"] + HEPMC3_SUPPORTED_EXTENSIONS)):
         if self.hepmc3.useHepMC3:
-          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index, shared=True)
+          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index, shared=shared)
           gen.Parameters = self.hepmc3.getParameters()
           gen.Input = "HEPMC3FileReader|" + inputFile
         else:
-          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index, shared=True)
+          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index, shared=shared)
           gen.Input = "Geant4EventReaderHepMC|" + inputFile
       elif inputFile.endswith(".pairs"):
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index)
@@ -842,7 +844,8 @@ class DD4hepSimulation(object):
     ga = geant4.kernel().generatorAction()
 
     # Register Generation initialization action
-    gen = GeneratorAction(geant4.kernel(), "Geant4GeneratorActionInit/GenerationInit")
+    shared = (geant4.kernel().RunManagerType == "G4MTRunManager")
+    gen = GeneratorAction(geant4.kernel(), "Geant4GeneratorActionInit/GenerationInit", shared = shared)
     generationInit = gen
     if output_level is not None:
       gen.OutputLevel = output_level
