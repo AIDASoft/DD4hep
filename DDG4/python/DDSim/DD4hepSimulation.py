@@ -379,17 +379,17 @@ class DD4hepSimulation(object):
 
     for index, inputFile in enumerate(self.inputFiles, start=start):
       if inputFile.endswith(".slcio"):
-        gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/LCIO%d" % index)
+        gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/LCIO%d" % index, shared=shared)
         gen.Parameters = self.lcio.getParameters()
         gen.Input = "LCIOFileReader|" + inputFile
       elif inputFile.endswith(".stdhep"):
-        gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/STDHEP%d" % index)
+        gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/STDHEP%d" % index, shared=shared)
         gen.Input = "LCIOStdHepReader|" + inputFile
       elif inputFile.endswith(".HEPEvt"):
-        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/HEPEvt%d" % index)
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/HEPEvt%d" % index, shared=shared)
         gen.Input = "Geant4EventReaderHepEvtShort|" + inputFile
       elif inputFile.endswith(".hepevt"):
-        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepevt%d" % index)
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepevt%d" % index, shared=shared)
         gen.Input = "Geant4EventReaderHepEvtLong|" + inputFile
       elif inputFile.endswith(tuple([".hepmc"] + HEPMC3_SUPPORTED_EXTENSIONS)):
         if self.hepmc3.useHepMC3:
@@ -400,12 +400,12 @@ class DD4hepSimulation(object):
           gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index, shared=shared)
           gen.Input = "Geant4EventReaderHepMC|" + inputFile
       elif inputFile.endswith(".pairs"):
-        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index)
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index, shared=shared)
         gen.Input = "Geant4EventReaderGuineaPig|" + inputFile
         gen.Parameters = self.guineapig.getParameters()
       elif inputFile.endswith(tuple(EDM4HEP_INPUT_EXTENSIONS)):
         # EDM4HEP must come after HEPMC3 because of .root also part of hepmc3 extensions
-        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/EDM4hep%d" % index)
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/EDM4hep%d" % index, shared=shared)
         gen.Input = "EDM4hepFileReader|" + inputFile
       else:
         # this should never happen because we already check at the top, but in case of some LogicError...
