@@ -63,13 +63,7 @@ CellID CartesianStripY::cellID(const Vector3D& localPosition, const Vector3D& /*
 }
 
 std::vector<double> CartesianStripY::cellDimensions(const CellID&) const {
-#if __cplusplus >= 201103L
     return {_stripSizeY};
-#else
-    std::vector<double> cellDims(1, 0.0);
-    cellDims[0] = _stripSizeY;
-    return cellDims;
-#endif
 }
 
 }  // namespace DDSegmentation

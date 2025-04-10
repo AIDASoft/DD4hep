@@ -19,8 +19,7 @@
 #include <DD4hep/Printout.h>
 
 // C/C++ includes
-#include <sstream>
-#include <iomanip>
+#include <string>
 
 using namespace dd4hep;
 

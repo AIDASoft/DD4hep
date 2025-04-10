@@ -59,6 +59,7 @@ void Geant4SharedGeneratorAction::configureFiber(Geant4Context* thread_context) 
 void Geant4SharedGeneratorAction::use(Geant4GeneratorAction* action)   {
   if (action) {
     action->addRef();
+    m_properties.adopt(action->properties());
     m_action = action;
     return;
   }

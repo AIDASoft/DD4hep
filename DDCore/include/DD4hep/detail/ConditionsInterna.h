@@ -28,7 +28,7 @@
 #include <DD4hep/NamedObject.h>
 
 // C/C++ include files
-#include <map>
+#include <string>
 
 
 /// Namespace for the AIDA detector description toolkit

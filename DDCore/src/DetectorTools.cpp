@@ -20,7 +20,8 @@
 
 // C/C++ include files
 #include <stdexcept>
-#include <memory>
+#include <sstream>
+#include <string>
 
 // ROOT include files
 #include <TGeoMatrix.h>

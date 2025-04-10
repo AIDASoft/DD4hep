@@ -32,7 +32,6 @@
 #include <memory>
 #include <vector>
 #include <regex>
-#include <unordered_map>
 
 namespace dd4hep {
   struct SpecPar;

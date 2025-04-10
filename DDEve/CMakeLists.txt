@@ -18,6 +18,11 @@ target_include_directories(DDEve_Interface
   $<INSTALL_INTERFACE:include>
 )
 
+if(NOT TARGET ROOT::Eve)
+  MESSAGE(STATUS "ROOT::Eve not found: not building DDEve")
+  return()
+endif()
+
 target_link_libraries(DDEve_Interface INTERFACE ROOT::Core ROOT::Rint ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL ROOT::EG)
 if(ROOT_VERSION VERSION_GREATER_EQUAL 6.27.00)
   target_link_libraries(DDEve_Interface INTERFACE ROOT::ROOTGeomViewer)

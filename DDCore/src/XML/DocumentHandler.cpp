@@ -19,7 +19,6 @@
 // C/C++ include files
 #include <memory>
 #include <iostream>
-#include <stdexcept>
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifndef _WIN32

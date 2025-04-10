@@ -27,7 +27,7 @@
 #include <DD4hep/detail/ConditionsInterna.h>
 
 // C/C++ include files
-#include <map>
+#include <string>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

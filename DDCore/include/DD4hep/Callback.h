@@ -14,7 +14,6 @@
 #define DD4HEP_CALLBACK_H
 
 // C/C++ include files
-#include <algorithm>
 #include <typeinfo>
 #include <vector>
 

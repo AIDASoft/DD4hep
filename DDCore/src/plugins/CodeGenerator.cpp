@@ -23,10 +23,12 @@
 #include <DD4hep/detail/DetectorInterna.h>
 
 // C/C++ include files
-#include <stdexcept>
 #include <iostream>
-#include <iomanip>
 #include <fstream>
+#include <map>
+#include <memory>
+#include <sstream>
+#include <string>
 
 // ROOT includes
 #include <TClass.h>

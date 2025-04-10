@@ -18,7 +18,6 @@
 
 // C/C++ include files
 #include <typeinfo>
-#include <vector>
 #include <string>
 
 /// Namespace for the AIDA detector description toolkit

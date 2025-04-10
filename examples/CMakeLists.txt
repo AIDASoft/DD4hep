@@ -23,7 +23,7 @@
 #==========================================================================
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-project( DD4hep_Examples )
+project( DD4hep_Examples LANGUAGES CXX )
 
 include(CTest)
 option(BUILD_TESTING "Enable and build tests" ON)

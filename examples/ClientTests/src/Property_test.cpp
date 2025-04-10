@@ -18,6 +18,7 @@
 /// C/C++ include files
 #include <iostream>
 #include <deque>
+#include <list>
 
 using namespace dd4hep;
 
