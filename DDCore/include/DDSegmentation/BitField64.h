@@ -12,12 +12,9 @@
 #ifndef DDSEGMENTATION_BITFIELD64_H
 #define DDSEGMENTATION_BITFIELD64_H 1
 
-#include <iostream>
+#include <ostream>
 
 #include <string>
-#include <vector>
-#include <map>
-#include <sstream>
 
 #include <DDSegmentation/BitFieldCoder.h>
 

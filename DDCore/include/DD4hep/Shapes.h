@@ -21,6 +21,7 @@
 
 // C/C++ include files
 #include <vector>
+#include <string>
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push

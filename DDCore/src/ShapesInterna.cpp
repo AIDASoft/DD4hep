@@ -17,7 +17,6 @@
 
 // C/C++ include files
 #include <climits>
-#include <iomanip>
 #include <cstdio>
 
 using namespace dd4hep;

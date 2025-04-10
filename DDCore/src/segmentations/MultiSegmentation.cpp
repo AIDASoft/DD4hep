@@ -17,8 +17,7 @@
 #include <DD4hep/Printout.h>
 
 /// C/C++ include files
-#include <iomanip>
-#include <stdexcept>
+#include <string>
 
 namespace dd4hep {
 

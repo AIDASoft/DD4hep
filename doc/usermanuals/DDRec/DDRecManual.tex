@@ -196,7 +196,7 @@ density and radiation- and interaction lengths. These can be real materials or a
 a given direction and length (thickness assigned to the surface).
 
 \noindent
-{\em \bf ICylinder}: Simple interface for cylindrical surfaces adding the cyliner radius to a surface
+{\em \bf ICylinder}: Simple interface for cylindrical surfaces adding the cylinder radius to a surface
 through multiple inheritance.
 
 \noindent
@@ -204,7 +204,7 @@ through multiple inheritance.
 
 \noindent
 {\em \bf Vector3D}: Generic 3d vector class with cartesian coordinates x,y,z that allows initialization
-from other 3d vector implementations or using cylindircal or spherical coordinates. Provides acces to
+from other 3d vector implementations or using cylindrical or spherical coordinates. Provides access to
 quantities often needed, such as magnitude, transversal component, representation in non-cartesian
 coordinates.
 
@@ -308,9 +308,9 @@ The thickness of the surface corresponds to that of the box and is given by its 
 ( Vector3D n(0,0,1) runs along z). Thus the surface is completely contained in 
 the box and no averaging of materials will be done, unless additional volumes
 are placed inside the box at a later stage. 
-The origin of the coordinate system of the surface coinsides with that of the box
+The origin of the coordinate system of the surface coincides with that of the box
 ({\em Vector3D o(0,0,0); })
-and the two measurememnt directions u,v run along the x and y axis of the box
+and the two measurement directions u,v run along the x and y axis of the box
 respectively.
 
 \noindent
@@ -364,7 +364,7 @@ defined for a given detector model.
 The surfaces are then printed to {\em std::cout} and filled 
 into a map, using the surfaces ID as a key.
 For sensitive surfaces, attached to sensitive volumes, the ID
-will be that of the sensitve volume and thus such a map provides
+will be that of the sensitive volume and thus such a map provides
 a very easy lookup from the hitID to its corresponding measurement
 surface.
 
@@ -399,7 +399,7 @@ surface.
 \end{code}
 
 \noindent
-And similarily this code uses the {\em DetectorSurfaces} class to just access the surfaces 
+And similarly this code uses the {\em DetectorSurfaces} class to just access the surfaces 
 for a particular detector element:
 
 \begin{code}
@@ -518,7 +518,7 @@ Creation of an averaged material:
   const DD4hep::DDRec::MaterialData& avMat = matMgr.createAveragedMaterial( materials ) ;
 
   std::cout << " averaged Material : " << " Z: " << avMat.Z() << " A: " << avMat.A() 
-            << " densitiy: "           << avMat.density()
+            << " density: "            << avMat.density()
             << " radiationLength: "    << avMat.radiationLength() 
             << " interactionLength: "  << avMat.interactionLength()  
             << std::endl ;

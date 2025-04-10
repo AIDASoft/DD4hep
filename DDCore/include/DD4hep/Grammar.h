@@ -27,7 +27,6 @@
 
 // C/C++ include files
 #include <string>
-#include <iostream>
 #include <typeinfo>
 
 // Forward declarations

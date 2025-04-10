@@ -27,8 +27,6 @@
 #ifndef EVALUATOR_DD4HEPUNITS_H
 #define EVALUATOR_DD4HEPUNITS_H
 
-#include "RVersion.h"
-
 /// Main dd4hep namespace. We must import here the ROOT TGeo units
 namespace dd4hep {
 

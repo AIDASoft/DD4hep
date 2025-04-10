@@ -741,13 +741,24 @@ void Geant4ParticleHandler::checkConsistency()  const   {
 void Geant4ParticleHandler::setVertexEndpointBit() {
   for( auto& part : m_particleMap )   {
     auto* p = part.second;
-    if( !p->parents.empty() )   {
+    if( !p->parents.empty() ) {
+      PropertyMask mask(p->status);
+      //if the particle did not go to geant4 none of these flags is set
+      // we shouldn't set the vertex bit in this case.
+      if(not mask.anySet(G4PARTICLE_SIM_CREATED
+                         |G4PARTICLE_SIM_BACKSCATTER
+                         |G4PARTICLE_SIM_DECAY_TRACKER
+                         |G4PARTICLE_SIM_DECAY_CALO
+                         |G4PARTICLE_SIM_LEFT_DETECTOR
+                         |G4PARTICLE_SIM_STOPPED)) {
+        continue;
+      }
       Geant4Particle *parent(m_particleMap[ *p->parents.begin() ]);
       const double X( parent->vex - p->vsx );
       const double Y( parent->vey - p->vsy );
       const double Z( parent->vez - p->vsz );
       if( sqrt(X*X + Y*Y + Z*Z) > m_minDistToParentVertex ){
-        PropertyMask(p->status).set(G4PARTICLE_SIM_PARENT_RADIATED);
+        mask.set(G4PARTICLE_SIM_PARENT_RADIATED);
       }
     }
   }

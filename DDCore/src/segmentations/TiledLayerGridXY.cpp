@@ -19,10 +19,8 @@
 #include <DD4hep/Printout.h>
 
 // C/C++ includes
-#include <algorithm>
-#include <sstream>
-#include <stdexcept>
 #include <cmath>
+#include <string>
 
 namespace dd4hep {
 namespace DDSegmentation {
@@ -122,14 +120,7 @@ Vector3D TiledLayerGridXY::position(const CellID& cID) const {
 }
 
 std::vector<double> TiledLayerGridXY::cellDimensions(const CellID&) const {
-#if __cplusplus >= 201103L
   return {_gridSizeX, _gridSizeY};
-#else
-  std::vector<double> cellDims(2,0.0);
-  cellDims[0] = _gridSizeX;
-  cellDims[1] = _gridSizeY;
-  return cellDims;
-#endif
 }
 
 

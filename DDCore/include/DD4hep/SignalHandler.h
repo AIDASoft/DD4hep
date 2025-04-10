@@ -15,7 +15,6 @@
 
 /// System include files
 #include <csignal>
-#include <memory>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

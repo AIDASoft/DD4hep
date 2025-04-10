@@ -20,7 +20,6 @@
 
 // C/C++ include files
 #include <set>
-#include <map>
 #include <vector>
 
 class TGeoVolume;

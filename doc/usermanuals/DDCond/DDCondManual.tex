@@ -43,7 +43,7 @@ at a much longer scale than the event data itself. The conditions part of the
 conditions data. The Manual describes a solution, which pools groups of these
 time dependent data according to its validity. This approach firstly
 allows to quickly access all relevant data for a given particle collision.
-efficient caching mechansims and allows to quickly determine which data items
+efficient caching mechanisms and allows to quickly determine which data items
 need to be accessed from a persistent medium.
 The design is strongly driven by easy of use;
 developers of detector descriptions and applications using
@@ -95,7 +95,7 @@ In a high energy physics experiment the data originating from particle
 collisions (so called $Event$-$data$) in most cases require supplementary, 
 mostly  environmental, calibration- or alignment data to extract the physics
 content from the recorded event data. These supplementary data are 
-time-dependent and  typically called $conditons$. The ability of an 
+time-dependent and typically called $conditions$. The ability of an 
 experiment to produce correct and timely results depends on the complete 
 and efficient availability of  needed conditions for each stage of data 
 handling. This manual should introduce to the \DDC toolkit, which provides 
@@ -334,7 +334,7 @@ and a given item key. The interface allows
 \end{itemize}
 The provision of these basic interaction mechanisms allows us to build
 very generic tools firstly for conditions, but also later for the
-management and th computation of alignment data as described in
+management and the computation of alignment data as described in
 the \DDA manual~\cite{bib:ddalign-manual}.
 
 \noindent
@@ -397,7 +397,7 @@ this user interface is the $ConditionsSlice$ implemented in the
 \item \bold{ConditionsProcessor} A wrapper to support condition functors implementing 
         the default callback:
         $$
-        int\ operator()\ (Condition\ consition);
+        int\ operator()\ (Condition\ condition);
         $$
         The return value may be used to e.g. collect counters.
 \end{itemize}
@@ -458,7 +458,7 @@ The necessity to properly organize the conditions data becomes
 immediately evident in Figure~\ref{fig:ddcond-data-organization}:
 Users can organize data according to certain types, These types are
 independently managed and subdivided into pools. Each of these pools
-manages a set of conditions items sharing the same interval ov validity.
+manages a set of conditions items sharing the same interval of validity.
 
 \noindent
 The internal organization of the conditions data in \DDC is entirely 
@@ -549,7 +549,7 @@ processing frameworks. As shown in
 figure~\ref{fig:ddcond-multi-threaded-processing}, 
 the following use cases can easily be met:
 \begin{itemize}
-\item Mulitple threads may share the same slice while processing event data
+\item Multiple threads may share the same slice while processing event data
       (thread 1-3) as long as the time stamp of the event data processed 
       by each thread is contained in the interval of validity of the
       slice.

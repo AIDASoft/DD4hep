@@ -391,7 +391,7 @@ Section~\ref{sec:ddalign-user-manual-ddalign-interface}.
     in Section~\ref{subsect:ddalign-intro-iterative-alignments}.
     For each interval of validity 
     ($[T_0,T_1]$, $[T_2,T_3]$, $[T_4,T_5]$, ...)
-    a seperate set of alignment constants is applied to the ideal geometry.
+    a separate set of alignment constants is applied to the ideal geometry.
     The two steps to reset the misaligned geometry back to the ideal
     geometry and
     to re-apply a new set of alignment constants may be executed as 
@@ -511,7 +511,7 @@ code snippet:
   Detector& detector = ...;
   GlobalAlignmentCache* cache = GlobalAlignmentCache::install(detector);
   
-  /// Now create the tranaction context. There may only be one context present
+  /// Now create the transaction context. There may only be one context present
   GlobalAlignmentStack::create();
   GlobalAlignmentStack& stack = GlobalAlignmentStack::get();
 
@@ -624,13 +624,13 @@ The structure of the alignment file explained quickly:
     The primary tag name is mandatory and actually is used to invoke the correct interpreter.}
 \docline{2,41}{Trigger the alignment transaction by specifying the transaction tags in 
         the main XML file.}
-\docline{4}{Defintion of the set of {\tt subdetectors} to be processed. A valid alias for this
-        directove is {\tt detelements}.}
+\docline{4}{Definition of the set of {\tt subdetectors} to be processed. A valid alias for this
+        directive is {\tt detelements}.}
 \docline{5}{The first subdetector: {\tt TPC}. The subdetector tag is {\tt detelement}
         Each {\tt detelement} may recursively contain other {\tt detelement} tags.
         as they were defined in the {\tt DetElement} hierarchy.
         Internal {\tt detelement} elements are processed in the context of the outer
-        element i.e. pathes may be specified relative to the parent or as absolute pathes
+        element i.e. paths may be specified relative to the parent or as absolute paths
         with respect to the world (starting with a '/').}
 \docline{7}{Global movement of the TPC}
 \docline{12-20}{Realignment entry for the TPC endcap A named {\tt TPC\_SideA}}
@@ -677,7 +677,7 @@ The result of this procedure is shown in Figure~\ref{fig:dd4hep-aligned-hierarch
     \includegraphics[width=160mm] {DDAlign-misaligned-TPC}
     \caption{The ALEPH TPC after the import of the alignment file.
     Note, that the geometry in $memory$ changed. The original
-    geometry desciption is no longer present.
+    geometry description is no longer present.
     }
     \label{fig:dd4hep-aligned-hierarchies}
   \end{center}
@@ -787,7 +787,7 @@ The access to the alignment parameters is possible from each {\tt DetElement}
 instance as described in Section~\ref{sec:ddalign-user-manual-misalignment-access}.
 The interface assumes ''planar'' alignment parameters i.e. the shape of 
 a given volume does not change~\footnote{This is a restriction to the 
-possibilities provided by the ROOT implemetation~\cite{bib:ROOT-tgeo}
+possibilities provided by the ROOT implementation~\cite{bib:ROOT-tgeo}
 based on experience~\cite{bib:chris-parkes-priv-comm}.
 If at a later time the need arises the provided alignment interface may 
 be extended to support shape changes.}.
@@ -818,7 +818,7 @@ The $DetAlign$ class as shown in Figure~\ref{fig:dd4hep-detector-model}
 gives the user access to the alignment structure of type $Alignment$ as 
 illustrated in the following example:
 \begin{code}
-    ConditionsSlice slice = ...  // Prepared slice containing all condiitons
+    ConditionsSlice slice = ...  // Prepared slice containing all conditions
     DetElement wafer_det  = ...  // Valid handle to a detector element
     DetAlign   wafer = wafer_det;
     Alignment  wafer_alignment = wafer.get();

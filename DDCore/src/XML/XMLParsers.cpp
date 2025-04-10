@@ -25,7 +25,6 @@
 
 
 // C/C++ include files
-#include <stdexcept>
 
 using std::string;
 using namespace dd4hep;

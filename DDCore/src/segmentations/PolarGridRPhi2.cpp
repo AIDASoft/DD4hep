@@ -103,14 +103,7 @@ std::vector<double> PolarGridRPhi2::cellDimensions(const CellID& cID) const {
   const double rPhiSize = _gridPhiValues[rBin]*rCenter;
   const double rSize = _gridRValues[rBin+1]-_gridRValues[rBin];
 
-#if __cplusplus >= 201103L
   return {rSize, rPhiSize};
-#else
-  std::vector<double> cellDims(2,0.0);
-  cellDims[0] = rSize;
-  cellDims[1] = rPhiSize;
-  return cellDims;
-#endif
 }
 
 

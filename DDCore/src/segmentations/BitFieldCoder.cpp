@@ -12,6 +12,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <sstream>
 #include <stdexcept>
 
 namespace dd4hep{

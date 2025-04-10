@@ -20,8 +20,9 @@
 #include <DD4hep/BitField64.h>
 
 // C/C++ include files
-#include <map>
-#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 // ROOT include file (includes TGeoVolume + TGeoShape)
 #include <TGeoNode.h>
