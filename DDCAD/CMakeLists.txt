@@ -93,7 +93,7 @@ endif()
 target_include_directories(DDCAD
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_link_libraries(DDCAD PUBLIC DD4hep::DDCore assimp::assimp ROOT::RCsg)
 
@@ -104,7 +104,6 @@ dd4hep_add_plugin(DDCADPlugins
 
 set_target_properties(DDCAD DDCADPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
-install(DIRECTORY include/DDCAD DESTINATION include)
+install(DIRECTORY include/DDCAD DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(TARGETS DDCAD DDCADPlugins EXPORT DD4hep
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
+   DESTINATION ${CMAKE_INSTALL_LIBDIR})

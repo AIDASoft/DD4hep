@@ -30,15 +30,14 @@ ENDIF()
 target_include_directories(DDParsers
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
 target_link_libraries(DDParsers PUBLIC ROOT::Core ROOT::GenVector Boost::boost ${XML_LIBRARIES})
 
 set_target_properties(DDParsers PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-install(DIRECTORY include/Parsers include/Evaluator DESTINATION include)
+install(DIRECTORY include/Parsers include/Evaluator DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(TARGETS DDParsers ${OPTIONAL_TARGETS} EXPORT DD4hep
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
+   DESTINATION ${CMAKE_INSTALL_LIBDIR})
 # Unset job pool
 SET(CMAKE_JOB_POOL_COMPILE)
