@@ -130,7 +130,7 @@ jobs:
     - uses: aidasoft/run-lcg-view@v5
       with:
         container: el9
-        ccache-key: ccache-el9-key4hep
+        ccache-key: ccache-key4hep-el9
         view-path: ${{ matrix.view-path }}
         run: |
           mkdir build
@@ -199,7 +199,7 @@ jobs:
     - uses: aidasoft/run-lcg-view@v5
       with:
         release-platform: ${{ matrix.LCG }}
-        ccache-key: ccache-${{ matrix.LCG }}
+        ccache-key: ccache-non-shared-${{ matrix.LCG }}
         run: |
           mkdir build
           cd build
@@ -236,7 +236,7 @@ jobs:
     - uses: aidasoft/run-lcg-view@v5
       with:
         release-platform: ${{ matrix.LCG }}
-        ccache-key: ccache-${{ matrix.LCG }}
+        ccache-key: ccache-g4units-${{ matrix.LCG }}
         run: |
           mkdir build
           cd build
