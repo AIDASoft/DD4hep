@@ -20,9 +20,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
-    - uses: aidasoft/run-lcg-view@v3
+    - uses: aidasoft/run-lcg-view@v5
       with:
         release-platform: ${{ matrix.LCG }}
+        ccache-key: ccache-${{ matrix.LCG }}
         run: |
           if [[ ${{ matrix.LCG }} =~ clang16 ]]; then
             source /cvmfs/sft.cern.ch/lcg/contrib/clang/16/x86_64-el9/setup-wrapper.sh
@@ -46,6 +47,7 @@ jobs:
               -DDD4HEP_USE_XERCESC=ON \
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always" \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_CXX_STANDARD=20 ..
             else
               echo "::group::CMakeConfig C++17"
@@ -62,6 +64,7 @@ jobs:
                 -DDD4HEP_USE_XERCESC=ON \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always" \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                 -DCMAKE_CXX_STANDARD=17 ..
           fi
           if [[ ${{ matrix.LCG }} =~ dev3 ]]; then
@@ -86,11 +89,13 @@ jobs:
           cmake -GNinja \
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_STANDARD=20 ..
           else
             cmake -GNinja \
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_STANDARD=17 ..
           fi
           echo "::group::CompileExamples"
@@ -122,9 +127,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
-    - uses: aidasoft/run-lcg-view@v3
+    - uses: aidasoft/run-lcg-view@v5
       with:
         container: el9
+        ccache-key: ccache-el9-key4hep
         view-path: ${{ matrix.view-path }}
         run: |
           mkdir build
@@ -145,6 +151,7 @@ jobs:
             -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::Compile"
           ninja install
@@ -159,6 +166,7 @@ jobs:
             -D CMAKE_INSTALL_LIBDIR=lib \
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::CompileExamples"
           ninja install
@@ -188,9 +196,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
-    - uses: aidasoft/run-lcg-view@v3
+    - uses: aidasoft/run-lcg-view@v5
       with:
         release-platform: ${{ matrix.LCG }}
+        ccache-key: ccache-${{ matrix.LCG }}
         run: |
           mkdir build
           cd build
@@ -210,6 +219,7 @@ jobs:
             -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_STANDARD=17 ..
           echo "::group::Compile"
           ninja
@@ -223,9 +233,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
-    - uses: aidasoft/run-lcg-view@v3
+    - uses: aidasoft/run-lcg-view@v5
       with:
         release-platform: ${{ matrix.LCG }}
+        ccache-key: ccache-${{ matrix.LCG }}
         run: |
           mkdir build
           cd build
@@ -245,6 +256,7 @@ jobs:
             -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::Compile"
           ninja install
@@ -258,6 +270,7 @@ jobs:
           cmake -GNinja \
             -DBoost_NO_BOOST_CMAKE=ON \
             -DDD4HEP_USE_XERCESC=ON \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::CompileExamples"
           ninja install
