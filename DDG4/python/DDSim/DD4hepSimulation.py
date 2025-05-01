@@ -337,7 +337,9 @@ class DD4hepSimulation(object):
   def __setupGeneratorActions(self, kernel, geant4):
     import DDG4
 
-    shared = (kernel.RunManagerType == "G4MTRunManager")
+    # Determine 'shared' based on the overall setting, not the worker kernel property
+    shared = (self.numberOfThreads > 1)
+    logger.debug(f"Determined shared={shared} based on self.numberOfThreads={self.numberOfThreads}")
 
     actionList = []
 
@@ -844,7 +846,8 @@ class DD4hepSimulation(object):
     ga = geant4.kernel().generatorAction()
 
     # Register Generation initialization action
-    shared = (geant4.kernel().RunManagerType == "G4MTRunManager")
+    shared = (self.numberOfThreads > 1)
+    logger.debug(f"Determined shared={shared} based on self.numberOfThreads={self.numberOfThreads}")
     gen = GeneratorAction(geant4.kernel(), "Geant4GeneratorActionInit/GenerationInit", shared = shared)
     generationInit = gen
     if output_level is not None:
