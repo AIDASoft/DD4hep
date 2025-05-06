@@ -148,7 +148,6 @@ namespace dd4hep::sim {
       } catch(std::invalid_argument&) {
         // we ignore if we do not have runs information
       }
-      context()->run().addExtension<RunParameters>(parameters);
     } catch(std::exception &e) {
       printout(ERROR,"EDM4hepFileReader::registerRunParameters","Failed to register run parameters: %s", e.what());
     }
