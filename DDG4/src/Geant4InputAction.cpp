@@ -126,6 +126,7 @@ Geant4InputAction::Geant4InputAction(Geant4Context* ctxt, const std::string& nam
   declareProperty("HaveAbort",      m_abort = true);
   declareProperty("Parameters",     m_parameters = {});
   declareProperty("AlternativeDecayStatuses", m_alternativeDecayStatuses = {});
+  declareProperty("AlternativeStableStatuses", m_alternativeStableStatuses = {});
   m_needsControl = true;
 
   runAction().callAtBegin(this, &Geant4InputAction::beginRun);
@@ -293,6 +294,7 @@ void Geant4InputAction::setGeneratorStatus(int genStatus, PropertyMask& status) 
   else if ( genStatus == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
   else if ( genStatus == 4 ) status.set(G4PARTICLE_GEN_BEAM);
   else if ( m_alternativeDecayStatuses.count(genStatus) ) status.set(G4PARTICLE_GEN_DECAYED);
+  else if ( m_alternativeStableStatuses.count(genStatus) ) status.set(G4PARTICLE_GEN_STABLE);
   else
     status.set(G4PARTICLE_GEN_OTHER);
 
