@@ -1,3 +1,168 @@
+# v01-32
+
+* 2025-05-07 Andre Sailer ([PR#1447](https://github.com/aidasoft/dd4hep/pull/1447))
+  - ddsim: add physics.alternativeStableStatus option to allow defining alternative stable status of MCParticles meant to be treated by Geant4, fixes #1446
+
+* 2025-05-06 Wouter Deconinck ([PR#1445](https://github.com/aidasoft/dd4hep/pull/1445))
+  - DDG4: Allow event readers to work with pre-existing (Event,Run)Parameters, written by other plugins.
+
+* 2025-04-15 Thomas Madlener ([PR#1444](https://github.com/aidasoft/dd4hep/pull/1444))
+  - CI: Switch to `run-lcg-view` action `v5` and inject `ccache` as compiler launcher via cmake to speed up CI builds.
+
+* 2025-04-08 Wouter Deconinck ([PR#1440](https://github.com/aidasoft/dd4hep/pull/1440))
+  - adopt properties of underlying Geant4GeneratorAction in Geant4SharedGeneratorAction
+
+* 2025-04-07 Andre Sailer ([PR#1442](https://github.com/aidasoft/dd4hep/pull/1442))
+  - WebDisplay: fix building against current ROOT master, need further FIXME
+
+* 2025-04-04 Andre Sailer ([PR#1441](https://github.com/aidasoft/dd4hep/pull/1441))
+  - CMake: drop use of ROOT:ROOTHistDraw
+
+* 2025-04-02 Alvaro Tolosa Delgado ([PR#1439](https://github.com/aidasoft/dd4hep/pull/1439))
+  - Modification of `Geant4Sensitive::cellID` base class function to handle properly the cases when the step corresponds to an optical photon and the option InvokeSD is enable, so only post-step information is used to calculate the volume/cell ID.
+
+* 2025-03-28 Alvaro Tolosa Delgado ([PR#1438](https://github.com/aidasoft/dd4hep/pull/1438))
+  - g4GraphicalScan: add option `-t` `--timeout` to make timeout configurable, fixes #1435
+
+* 2025-03-27 Andre Sailer ([PR#1437](https://github.com/aidasoft/dd4hep/pull/1437))
+  - Geant4TVUserParticleHandler: fix wrong contains check through unit conversion. Fixes #1434
+
+* 2025-03-26 Andre Sailer ([PR#1433](https://github.com/aidasoft/dd4hep/pull/1433))
+  - Geant4ParticleHandler: prevent the vertexIsNotEndpointOfParent bit set for particles that were not simulated by Geant4 for some reason.
+
+* 2025-03-25 jmcarcell ([PR#1432](https://github.com/aidasoft/dd4hep/pull/1432))
+  - Remove headers that are not being used in the current file and add headers that are being used.
+
+* 2025-03-21 Andre Sailer ([PR#1429](https://github.com/aidasoft/dd4hep/pull/1429))
+  - Cmake: UtilityApps: move G__eve dictionary to when we have ROOT::Eve, otherwise there is an installation error. Fixes #1424
+
+* 2025-03-20 Andre Sailer ([PR#1428](https://github.com/aidasoft/dd4hep/pull/1428))
+  - CMake: do not build DDEve if ROOT::Eve does not exist. Fixes #1424
+
+* 2025-03-20 jmcarcell ([PR#1427](https://github.com/aidasoft/dd4hep/pull/1427))
+  - Remove C++ preprocessor checks for a standard before C++14
+
+* 2025-03-19 leggett ([PR#1426](https://github.com/aidasoft/dd4hep/pull/1426))
+  - CMake: Suppress building of UtilityApps components that require ROOT::Eve if it's not available (e.g. if ROOT was built without X11 support)
+
+* 2025-03-19 jmcarcell ([PR#1425](https://github.com/aidasoft/dd4hep/pull/1425))
+  - Fix typos and other minor changes
+  - Fix a few usage messages that were outdated or wrong
+
+* 2025-03-18 jmcarcell ([PR#1422](https://github.com/aidasoft/dd4hep/pull/1422))
+  - Remove checks for the C compiler when configuring
+  - Remove `ENABLE_LANGUAGE` which is redundant when called after `PROJECT`
+
+* 2025-03-17 leggett ([PR#1421](https://github.com/aidasoft/dd4hep/pull/1421))
+  fix typo in CMakeLists.txt so that DD4HEP_DISABLE_PACKAGES list is properly parsed
+
+* 2025-03-17 Markus Frank ([PR#1420](https://github.com/aidasoft/dd4hep/pull/1420))
+  - Fix for issue https://github.com/AIDASoft/DD4hep/issues/1418.
+    Individual DD4HEP sub-packages can be disable from the cmake command line:
+    ```
+    $> cmake <other options> -DDD4HEP_DISABLE_PACKAGES="DDRec DDEve DDDigi"  ../DD4hep
+    ```
+    This will disable the sub-packages DDRec,DDEve,DDDigi:
+    ```
+    $> cmake -DDD4HEP_DISABLE_PACKAGES="DDRec DDEve DDDigi"  ../DD4hep
+         -- Could NOT find LATEX (missing: LATEX_COMPILER) 
+         -- No LaTeX/Biber found, cannot compile user manual.
+         -- Disable package: DDEve
+         -- Disable package: DDDigi
+         -- Disable package: DDRec
+         -- Will be building these packages: DDDetectors;DDCond;DDAlign;DDCAD;DDG4;UtilityApps
+         -- Including DD4hepBuild.cmake
+    ```
+     Clearly no prevision can be done concerning package dependencies. This is up to the user.
+     For example `DDG4` cannot be disabled if `DDDigi` should be kept.
+
+* 2025-03-13 Wouter Deconinck ([PR#1417](https://github.com/aidasoft/dd4hep/pull/1417))
+  - Support multithreading in Geant4EDM4hepOutput plugin
+
+* 2025-03-13 jmcarcell ([PR#1414](https://github.com/aidasoft/dd4hep/pull/1414))
+  - Fix the result of `innerMaterial()` and `outerMaterial()` depending on if the other is called first
+  - Add a test that fails without this fix and passes with the fix
+
+* 2025-03-12 Markus Frank ([PR#1416](https://github.com/aidasoft/dd4hep/pull/1416))
+  - Improve the response of geoDisplay when invoked for help.
+  - This PR fixes issue: https://github.com/AIDASoft/DD4hep/issues/1409
+  - Now geoDisplay -h / -help / --help gives the following output:
+  ```
+  $ geoDisplay -h
+  PersistencyIO    INFO  +++ Set Streamer to dd4hep::OpaqueDataBlock
+  DD4hep           INFO  ++ Using globally Geant4 unit system (mm,ns,MeV)
+  Info in <TGeoManager>: Changing system of units to Geant4 units (mm, ns, MeV).
+  Info in <TGeoManager::TGeoManager>: Geometry default, Detector Geometry created
+  Info in <TGeoNavigator::BuildCache>: --- Maximum geometry depth set to 100
+  geoPluginRun: No geometry input supplied. No geometry will be loaded.
+     ------------------------------------------------------------------
+    | Welcome to ROOT 6.35.01                        https://root.cern |
+    | (c) 1995-2024, The ROOT Team; conception: R. Brun, F. Rademakers |
+    | Built for linuxx8664gcc on Jan 20 2025, 14:50:44                 |
+    | From heads/master@v6-31-01-4781-gce5f87d2f4                      |
+    | With g++-12 (Ubuntu 12.3.0-17ubuntu1) 12.3.0                     |
+    | Try '.help'/'.?', '.demo', '.license', '.credits', '.quit'/'.q'  |
+     ------------------------------------------------------------------
+  
+  Usage: -plugin DD4hep_GeometryDisplay  -arg [-arg]                                
+  
+       Invoke the ROOT geometry display using the factory mechanism.                
+  
+       -detector <string> Top level DetElement path. Default: '/world'                
+       -option   <string> ROOT Draw option.    Default: 'ogl'                         
+       -level    <number> Visualization level  [TGeoManager::SetVisLevel]  Default: 4 
+       -visopt   <number> Visualization option [TGeoManager::SetVisOption] Default: 1
+       -load              Only load the geometry. Do not invoke the display          
+       -help              Print this help output  
+       Arguments given: -help
+  
+  ```
+  - Unfortunately we were not really following the linux rules concerning options:
+    - one letter options:     `-<letter> <value>` or
+    - multi letter options:  `--<options>=<value>`
+   - maybe we should at some time make an effort to homogenize the behavior.
+
+* 2025-03-10 Markus Frank ([PR#1415](https://github.com/aidasoft/dd4hep/pull/1415))
+  - Several transparent changes, which should improve the deficiencies of the coverity scans.
+
+* 2025-03-07 Andre Sailer ([PR#1412](https://github.com/aidasoft/dd4hep/pull/1412))
+  - HTML User Docs: remove margin from sectionToc, online this squashes the Toc lines more than offline for some reason
+
+* 2025-03-07 Andre Sailer ([PR#1411](https://github.com/aidasoft/dd4hep/pull/1411))
+  - HTML User Docs: move Table of Content toc to absolute position at 150% of page width. Let's table of content scroll along with the page.
+
+* 2025-03-07 Andre Sailer ([PR#1410](https://github.com/aidasoft/dd4hep/pull/1410))
+  - Documentation: fix relative location of CSS files in html user manuals
+
+* 2025-03-05 Dmitry Kalinkin ([PR#1408](https://github.com/aidasoft/dd4hep/pull/1408))
+  - `ROOT_LIBRARY_PATH` will now be updated by thisdd4hep.sh. This is needed to instruct Cling to prefer a particular dd4hep path. see https://github.com/root-project/root/blob/a588ea2cbc286afcc5e2b06dfdcae139b470da96/README/ReleaseNotes/v624/index.md?plain=1#L76
+
+* 2025-02-18 Markus Frank ([PR#1405](https://github.com/aidasoft/dd4hep/pull/1405))
+  Enable random seed printout to debug flaky BoxOfStraws example
+
+* 2025-02-17 Markus Frank ([PR#1404](https://github.com/aidasoft/dd4hep/pull/1404))
+  - Remove compiler warnings for MacOS
+
+* 2025-02-17 Markus Frank ([PR#1403](https://github.com/aidasoft/dd4hep/pull/1403))
+  - All tests in the examples directory using geant4 simulation and dependencies of these tests have the following convention:
+    `<test-directory>_sim_<other unique name>`, where `test_directory` is `CLICSiD, ClientTests, DDDigi, DDG4, MySensDet, etc`.
+  - This allows to consistently exclude all tests which require simulation as an input by running:
+    `$> ctest -E _sim_`
+
+* 2025-02-12 Daniel Jeans ([PR#1401](https://github.com/aidasoft/dd4hep/pull/1401))
+  - Fixes incorrect assumption in g4GraphicalScan.py when parsing output of Geant4MaterialScanner.
+
+* 2025-02-10 Daniel Jeans ([PR#1398](https://github.com/aidasoft/dd4hep/pull/1398))
+  - this PR improves robustness of g4GraphicalScan tool
+  -- run short pilot job with timeout, to catch mal-defined models which cause ddsim to hang
+  -- remove assumption about the edge of world volume
+  -- deal with case when requested point is outside world volume
+
+* 2025-02-07 Daniel Jeans ([PR#1397](https://github.com/aidasoft/dd4hep/pull/1397))
+  - add python utility g4GraphicalScan.py to produce 2-d scan of a detector model
+     - similar to graphicalScan, but directly reads the g4 geometry (rather than the DDRec geometry used by graphicalScan)
+     - this can therefore cope with CAD-based elements ( see https://github.com/AIDASoft/DD4hep/issues/1322 )
+
 # v01-31
 
 * 2025-01-27 Andrii Verbytskyi ([PR#1378](https://github.com/aidasoft/DD4hep/pull/1378))
