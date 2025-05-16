@@ -379,7 +379,16 @@ int VisAttr::color() const {
 /// Set object color
 void VisAttr::setColor(float alpha, float red, float green, float blue) {
   Object& o  = object<Object>();
+  const auto num_before = gROOT->GetListOfColors()->GetLast();
+  // Set tolerance high enough to always lookup from existing pallete. This
+  // helps to preserve colors when saving TGeo to .root files.
+  TColor::SetColorThreshold(1.0f/31.0f);
   Int_t col  = TColor::GetColor(red, green, blue);
+  const auto num_after = gROOT->GetListOfColors()->GetLast();
+  if (num_before != num_after) {
+    printout(WARNING,"VisAttr","+++ %s Allocated a Color: r:%02X g:%02X b:%02X, this will not save to a ROOT file",
+	     this->name(), int(red*255.), int(green*255.), int(blue*255));
+  }
   o.alpha    = alpha;
   o.color    = gROOT->GetColor(col);
   if ( !o.color )    {
