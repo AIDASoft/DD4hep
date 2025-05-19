@@ -184,8 +184,12 @@ namespace dd4hep {
 
   /// Initializing constructor binding data to buffer with move
   template <typename OBJECT> OpaqueDataBlock::OpaqueDataBlock(OBJECT&& obj)    {
+#if __cplusplus >= 202302L
+    bind(std::move(obj));
+#else
     this->bind(&BasicGrammar::instance<OBJECT>());
     new(this->pointer) OBJECT(std::move(obj));
+#endif
   }
 
   /// Construct conditions object and bind the data
