@@ -386,7 +386,7 @@ void VisAttr::setColor(float alpha, float red, float green, float blue) {
   Int_t col  = TColor::GetColor(red, green, blue);
   const auto num_after = gROOT->GetListOfColors()->GetLast();
   if (num_before != num_after) {
-    printout(WARNING,"VisAttr","+++ %s Allocated a Color: r:%02X g:%02X b:%02X, this will not save to a ROOT file",
+    printout(INFO,"VisAttr","+++ %s Allocated a Color: r:%02X g:%02X b:%02X, this will not save to a ROOT file",
 	     this->name(), int(red*255.), int(green*255.), int(blue*255));
   }
   o.alpha    = alpha;
