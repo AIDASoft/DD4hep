@@ -207,7 +207,7 @@ namespace dd4hep {
   /// Bind data value
   template <typename T> inline T& OpaqueDataBlock::bind(T&& obj)   {
     this->bind(&BasicGrammar::instance<T>());
-    new(this->pointer) T(std::move(obj));
+    return *(new(this->pointer) T(std::move(obj)));
   }
 
   /// Bind data value
