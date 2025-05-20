@@ -1218,7 +1218,9 @@ void DetectorChecksum::checksumDetElement(int lvl, DetElement det, hashes_t& has
       if ( !(child_places.empty() && hashed_places.empty()) )
         str << " " << std::setfill(' ') << std::setw(10) << std::left << "+daughters"
             << " " << std::setfill('0') << std::setw(16) << std::hex << code;
-      code = detail::hash64(&hashes[hash_idx_children], (hashes.size()-hash_idx_children)*sizeof(hash_t));
+      if(hash_idx_children < hashes.size()) {
+        code = detail::hash64(&hashes[hash_idx_children], (hashes.size()-hash_idx_children)*sizeof(hash_t));
+      }
       if ( !det.children().empty() )
         str << " " << std::setfill(' ') << std::setw(9) << std::left << "+children"
             << " " << std::setfill('0') << std::setw(16) << std::hex << code;
