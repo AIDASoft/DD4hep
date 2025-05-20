@@ -1050,30 +1050,68 @@ namespace dd4hep {
           //all lengths are half length
           double dx1 = trapezoid->GetDx1();
           double dx2 = trapezoid->GetDx2();
-          //double dy = trapezoid->GetDy();
+          double dy = trapezoid->GetDy();
           double dz = trapezoid->GetDz();
 
-          //the normal vector is parallel to e_y for all geometry cases in CLIC
-          //if that is at some point not the case anymore, then local plane vectors ubl, vbl
-          //must be initialized like it is done for the boxes (line 674 following)
-          Vector3D ubl(  1., 0., 0. ) ; 
-          Vector3D vbl(  0., 0., 1. ) ; 
+
           
-          //the local span vectors are transformed into the main coordinate system (in LocalToMasterVect())
-          Vector3D ub ;
-          Vector3D vb ;
-          _wtM->LocalToMasterVect( ubl , ub.array() ) ;
-          _wtM->LocalToMasterVect( vbl , vb.array() ) ;
+          // Code added by armin
+          bool isYZ = std::fabs(  ln.x() - 1.0 ) < epsilon  ; // normal parallel to x
+          bool isXZ = std::fabs(  ln.y() - 1.0 ) < epsilon  ; // normal parallel to y
+          bool isXY = std::fabs(  ln.z() - 1.0 ) < epsilon  ; // normal parallel to z
+	  
+          if( isYZ || isXZ || isXY ) {  // plane is parallel to one of the trapezoid' sides -> need 4 vertices from box dimensions
+	    
+            // if isYZ :
+            unsigned uidx = 1 ;
+            unsigned vidx = 2 ;
+	    
+            Vector3D ubl(  0., 1., 0. ) ; 
+            Vector3D vbl(  0., 0., 1. ) ;
+	    
+            if( isXZ ) {
+	      
+              ubl.fill( 1., 0., 0. ) ;
+              vbl.fill( 0., 0., 1. ) ;
+              uidx = 0 ;
+              vidx = 2 ;
 
-          //the trapezoid is drawn as a set of four lines connecting its four corners
-          lines.reserve(4) ;
-          //_o is vector to the origin
-          lines.emplace_back( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb);
-          lines.emplace_back( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb);
-          lines.emplace_back( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb);
-          lines.emplace_back( _o - dx1 * ub  - dz * vb ,  _o + dx1 * ub  - dz * vb);
+              
+            } else if( isXY ) {
+	      
+              ubl.fill( 1., 0., 0. ) ;
+              vbl.fill( 0., 1., 0. ) ;
+              uidx = 0 ;
+              vidx = 1 ;
+            }
 
-          return lines;
+            Vector3D ub ;
+            Vector3D vb ;
+            _wtM->LocalToMasterVect( ubl , ub.array() ) ;
+            _wtM->LocalToMasterVect( vbl , vb.array() ) ;
+	    
+            //the trapezoid is drawn as a set of four lines connecting its four corners
+            lines.reserve(4) ;
+            //_o is vector to the origin
+
+            if( isYZ ) {
+              lines.emplace_back( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb);
+              lines.emplace_back( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb);
+              lines.emplace_back( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb);
+              lines.emplace_back( _o - dx1 * ub  - dz * vb ,  _o + dx1 * ub  - dz * vb);	      
+            } else if( isXZ ) { // not yet correct
+              lines.emplace_back( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb);
+              lines.emplace_back( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb);
+              lines.emplace_back( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb);
+              lines.emplace_back( _o - dx1 * ub  - dz * vb ,  _o + dx1 * ub  - dz * vb);	      
+            } else if( isXY ) {
+              lines.emplace_back( _o + dx1 * ub  - dy * vb ,  _o + dx2 * ub  + dy * vb);
+              lines.emplace_back( _o + dx2 * ub  + dy * vb ,  _o - dx2 * ub  + dy * vb);
+              lines.emplace_back( _o - dx2 * ub  + dy * vb ,  _o - dx1 * ub  - dy * vb);
+              lines.emplace_back( _o - dx1 * ub  - dy * vb ,  _o + dx1 * ub  - dy * vb);	      
+            }
+            return lines ;
+          }	
         }
         //added code by Thorben Quast for simplified set of lines for trapezoids with unequal lengths in x AND y
         else if(shape->IsA() == TGeoTrd2::Class()){
