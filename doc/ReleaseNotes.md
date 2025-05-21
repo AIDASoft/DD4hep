@@ -1,3 +1,16 @@
+# v01-32-01
+
+* 2025-05-20 Andre Sailer ([PR#1453](https://github.com/aidasoft/dd4hep/pull/1453))
+  - Checksum: fix assertions on vector length during checksum calculations in debug mode, fixes #1451
+  - OpaqueData: fix return value for non-void function `template <typename T> inline T& OpaqueDataBlock::bind(T&& obj)`
+
+* 2025-05-19 Andre Sailer ([PR#1450](https://github.com/aidasoft/dd4hep/pull/1450))
+  - Objects: change printout for color creation from WARNING to INFO (fixup for #1449)
+  - OpaqueData: fix compilation error with c++23 and gcc15.
+
+* 2025-05-16 Dmitry Kalinkin ([PR#1449](https://github.com/aidasoft/dd4hep/pull/1449))
+  - Fix a regression with certain colors not saved to .root files when using ROOT 6.32.0+.
+
 # v01-32
 
 * 2025-05-07 Andre Sailer ([PR#1447](https://github.com/aidasoft/dd4hep/pull/1447))
