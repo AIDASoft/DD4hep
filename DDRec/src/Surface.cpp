@@ -1062,28 +1062,18 @@ namespace dd4hep {
 	  
           if( isYZ || isXZ || isXY ) {  // plane is parallel to one of the trapezoid' sides -> need 4 vertices from box dimensions
 	    
-            // if isYZ :
-            unsigned uidx = 1 ;
-            unsigned vidx = 2 ;
-	    
-            Vector3D ubl(  0., 1., 0. ) ; 
-            Vector3D vbl(  0., 0., 1. ) ;
-	    
-            if( isXZ ) {
-	      
-              ubl.fill( 1., 0., 0. ) ;
-              vbl.fill( 0., 0., 1. ) ;
-              uidx = 0 ;
-              vidx = 2 ;
+            Vector3D ubl, vbl;
 
-              
+            if(isYZ) {
+              ubl.fill( 0., 1., 0. ) ;
+              vbl.fill( 0., 0., 1. ) ;
+            } else if( isXZ ) {
+              ubl.fill( 1., 0., 0. ) ;
+              vbl.fill( 0., 0., 1. ) ;        
             } else if( isXY ) {
-	      
               ubl.fill( 1., 0., 0. ) ;
               vbl.fill( 0., 1., 0. ) ;
-              uidx = 0 ;
-              vidx = 1 ;
-            }
+            } 
 
             Vector3D ub ;
             Vector3D vb ;
@@ -1095,11 +1085,11 @@ namespace dd4hep {
             //_o is vector to the origin
 
             if( isYZ ) {
-              lines.emplace_back( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb);
-              lines.emplace_back( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb);
-              lines.emplace_back( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb);
-              lines.emplace_back( _o - dx1 * ub  - dz * vb ,  _o + dx1 * ub  - dz * vb);	      
-            } else if( isXZ ) { // not yet correct
+              lines.emplace_back( _o + dy * ub  - dz * vb ,  _o + dy * ub  + dz * vb);
+              lines.emplace_back( _o + dy * ub  + dz * vb ,  _o - dy * ub  + dz * vb);
+              lines.emplace_back( _o - dy * ub  + dz * vb ,  _o - dy * ub  - dz * vb);
+              lines.emplace_back( _o - dy * ub  - dz * vb ,  _o + dy * ub  - dz * vb);	      
+            } else if( isXZ ) {
               lines.emplace_back( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb);
               lines.emplace_back( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb);
               lines.emplace_back( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb);
@@ -1112,6 +1102,10 @@ namespace dd4hep {
             }
             return lines ;
           }	
+          else{
+            std::stringstream sst ; sst << " ***** ERROR: Trapezoid surface cannot be defined, normal not parallel to x, y, or z axis";
+            throw std::runtime_error( sst.str() ) ;
+          }          
         }
         //added code by Thorben Quast for simplified set of lines for trapezoids with unequal lengths in x AND y
         else if(shape->IsA() == TGeoTrd2::Class()){
