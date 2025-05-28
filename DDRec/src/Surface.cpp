@@ -1055,7 +1055,6 @@ namespace dd4hep {
 
 
           
-          // Code added by armin
           bool isYZ = std::fabs(  ln.x() - 1.0 ) < epsilon  ; // normal parallel to x
           bool isXZ = std::fabs(  ln.y() - 1.0 ) < epsilon  ; // normal parallel to y
           bool isXY = std::fabs(  ln.z() - 1.0 ) < epsilon  ; // normal parallel to z
