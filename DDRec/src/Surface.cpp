@@ -1053,8 +1053,6 @@ namespace dd4hep {
           double dy = trapezoid->GetDy();
           double dz = trapezoid->GetDz();
 
-
-          
           bool isYZ = std::fabs(  ln.x() - 1.0 ) < epsilon  ; // normal parallel to x
           bool isXZ = std::fabs(  ln.y() - 1.0 ) < epsilon  ; // normal parallel to y
           bool isXY = std::fabs(  ln.z() - 1.0 ) < epsilon  ; // normal parallel to z
@@ -1082,7 +1080,6 @@ namespace dd4hep {
           Vector3D vb ;
           _wtM->LocalToMasterVect( ubl , ub.array() ) ;
           _wtM->LocalToMasterVect( vbl , vb.array() ) ;
-          
           //the trapezoid is drawn as a set of four lines connecting its four corners
           lines.reserve(4) ;
           //_o is vector to the origin
