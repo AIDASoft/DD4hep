@@ -9,15 +9,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_101/x86_64-centos7-gcc11-opt",    # g4 10.7
-              "LCG_102/x86_64-centos9-gcc11-opt",    # g4 11
-              "LCG_104/x86_64-el9-gcc13-opt",         # g4 11
-              "LCG_105/x86_64-ubuntu2204-gcc11-opt",  # g4 11
-              "LCG_106/x86_64-el9-gcc13-opt",  # g4 11
+        LCG: ["LCG_106/x86_64-el9-gcc13-opt",
+              "LCG_107a/x86_64-el9-gcc13-opt",
+              "dev4/x86_64-el9-gcc13-opt",
+              "dev4/x86_64-ubuntu2404-gcc13-opt",
               "dev3/x86_64-el9-gcc13-opt",
-              "dev3/x86_64-el9-clang16-opt",          # g4 11
-              "dev3/x86_64-el9-gcc15-dbg",
-              "dev4/x86_64-el9-gcc13-opt"]
+              "dev3/x86_64-el9-clang19-opt",
+              "dev3/x86_64-el9-gcc15-dbg"]
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
@@ -33,7 +31,7 @@ jobs:
           cd build
           unset CPATH
           echo "::group::CMakeConfig"
-          if [[ ${{ matrix.LCG }} =~ gcc13|clang16 ]]; then
+          if [[ ${{ matrix.LCG }} =~ gcc13|clang19 ]]; then
             echo "::group::CMakeConfig C++20"
             cmake -GNinja \
               -DDD4HEP_USE_GEANT4=ON \
@@ -210,7 +208,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_105/x86_64-centos7-gcc11-opt"]
+        LCG: ["LCG_107a/x86_64-el9-gcc13-opt"]
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
@@ -238,7 +236,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_CXX_STANDARD=17 ..
+            -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::Compile"
           ninja
 
