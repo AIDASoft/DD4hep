@@ -156,6 +156,8 @@ class OutputConfig(ConfigHelper):
     eventPars = dds.meta.parseEventParameters()
     e4Out.RunHeader = dds.meta.addParametersToRunHeader(dds)
     e4Out.EventParametersString, e4Out.EventParametersInt, e4Out.EventParametersFloat = eventPars
+    runPars = dds.meta.parseRunParameters()
+    e4Out.RunParametersString, e4Out.RunParametersInt, e4Out.RunParametersFloat = runPars
     e4Out.RunNumberOffset = dds.meta.runNumberOffset if dds.meta.runNumberOffset > 0 else 0
     e4Out.EventNumberOffset = dds.meta.eventNumberOffset if dds.meta.eventNumberOffset > 0 else 0
     return
