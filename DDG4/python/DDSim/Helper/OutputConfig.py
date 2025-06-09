@@ -144,6 +144,8 @@ class OutputConfig(ConfigHelper):
     lcOut.RunHeader = dds.meta.addParametersToRunHeader(dds)
     eventPars = dds.meta.parseEventParameters()
     lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = eventPars
+    runPars = dds.meta.parseRunParameters()
+    lcOut.RunParametersString, lcOut.RunParametersInt, lcOut.RunParametersFloat = runPars
     lcOut.RunNumberOffset = dds.meta.runNumberOffset if dds.meta.runNumberOffset > 0 else 0
     lcOut.EventNumberOffset = dds.meta.eventNumberOffset if dds.meta.eventNumberOffset > 0 else 0
     return
