@@ -160,7 +160,8 @@ class DD4hepSimulation(object):
                         "\nshell: enable interactive session")
 
     parser.add_argument("--inputFiles", "-I", nargs='+', action="store", default=self.inputFiles,
-                        help="InputFiles for simulation %s files are supported" % ", ".join(POSSIBLEINPUTFILES))
+                        help="InputFiles for simulation %s files are supported"
+                        "\nEDM4hep files are also supported under the .root extension" % ", ".join(POSSIBLEINPUTFILES))
 
     parser.add_argument("--outputFile", "-O", action="store", default=self.outputFile,
                         help="Outputfile from the simulation: .slcio, edm4hep.root and .root"
