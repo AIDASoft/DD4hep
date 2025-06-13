@@ -40,25 +40,25 @@ class Meta(ConfigHelper):
     for string, int and float parameters
     """
     stringParameters, intParameters, floatParameters, allParameters = {}, {}, {}, []
-    metaParameters = self.eventParameters if parameterType == "event" else self.runParameters
-    for p in metaParameters:
+    
+    for p in getattr(self, parameterType+"Parameters", []):
       parameterAndValue = p.split("=", 1)
       if len(parameterAndValue) != 2:
-        raise SyntaxError("ERROR: Couldn't decode event parameter '%s'" % (p))
+        raise SyntaxError("ERROR: Couldn't decode %s parameter '%s'" % (parameterType, p))
       parameterAndType = parameterAndValue[0].split("/", 1)
       if len(parameterAndType) != 2:
-        raise SyntaxError("ERROR: Couldn't decode event parameter '%s'" % (p))
+        raise SyntaxError("ERROR: Couldn't decode %s parameter '%s'" % (parameterType, p))
       pname = parameterAndType[0]
       ptype = parameterAndType[1]
       pvalue = parameterAndValue[1]
       if ptype.lower() not in ["c", "f", "i"]:
-        raise ValueError("ERROR: Event parameter '%s' with invalid type '%s'" % (pname, ptype))
+        raise ValueError("ERROR: %s parameter '%s' with invalid type '%s'" % (parameterType, pname, ptype))
       if pname in allParameters:
-        raise RuntimeError("ERROR: Event parameter '%s' specified twice" % (pname))
+        raise RuntimeError("ERROR: %s parameter '%s' specified twice" % (parameterType, pname))
       if not pvalue:
-        raise RuntimeError("ERROR: Event parameter '%s' has empty value" % (pname))
+        raise RuntimeError("ERROR: %s parameter '%s' has empty value" % (parameterType, pname))
       allParameters.append(pname)
-      logger.info("Event parameter '%s', type '%s', value='%s'" % (pname, ptype, pvalue))
+      logger.info("%s parameter '%s', type '%s', value='%s'" % (parameterType, pname, ptype, pvalue))
       if ptype.lower() == "c":
         stringParameters[pname] = pvalue
       elif ptype.lower() == "f":
