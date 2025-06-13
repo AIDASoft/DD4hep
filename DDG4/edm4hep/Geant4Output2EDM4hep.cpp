@@ -81,6 +81,9 @@ namespace dd4hep {
       stringmap_t                   m_eventParametersInt;
       stringmap_t                   m_eventParametersFloat;
       stringmap_t                   m_eventParametersString;
+      stringmap_t                   m_runParametersInt;
+      stringmap_t                   m_runParametersFloat;
+      stringmap_t                   m_runParametersString;
       stringmap_t                   m_cellIDEncodingStrings{};
       std::string                   m_section_name      { "events" };
       int                           m_runNo             { 0 };
@@ -245,6 +248,9 @@ Geant4Output2EDM4hep::Geant4Output2EDM4hep(Geant4Context* ctxt, const std::strin
   declareProperty("EventParametersInt",    m_eventParametersInt);
   declareProperty("EventParametersFloat",  m_eventParametersFloat);
   declareProperty("EventParametersString", m_eventParametersString);
+  declareProperty("RunParametersInt",      m_runParametersInt);
+  declareProperty("RunParametersFloat",    m_runParametersFloat);
+  declareProperty("RunParametersString",   m_runParametersString);
   declareProperty("RunNumberOffset",       m_runNumberOffset);
   declareProperty("EventNumberOffset",     m_eventNumberOffset);
   declareProperty("SectionName",           m_section_name);
