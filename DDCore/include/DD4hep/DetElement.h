@@ -464,4 +464,8 @@ namespace dd4hep {
 
 #include <DD4hep/AlignmentData.h>
 
+// Needed so that end users can call destroyHandle on a DetElement without risking undefined behavior
+// and memory leaks. See comment in destroyHandle in file Handle.h for more details
+#include <DD4hep/detail/DetectorInterna.h>
+
 #endif // DD4HEP_DETELEMENT_H
