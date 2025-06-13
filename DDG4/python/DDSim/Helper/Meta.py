@@ -19,6 +19,11 @@ class Meta(ConfigHelper):
                                            "E.g parameterName/F=0.42 to set a float parameter",
                                    'nargs': '+'}
     self.eventParameters = []
+    self._runParameters_EXTRA = {'help': "Run parameters to write in the run header. "
+                                         "Use C/F/I ids to specify parameter type. "
+                                         "E.g parameterName/F=0.42 to set a float parameter",
+                                 'nargs': '+'}
+    self.runParameters = []
     self._runNumberOffset_EXTRA = {'help': "The run number offset to write in slcio output file. "
                                            "E.g setting it to 42 will start counting runs from 42 instead of 0",
                                    'type': int}
@@ -29,30 +34,31 @@ class Meta(ConfigHelper):
     self.eventNumberOffset = 0
     # no closeProperties, allow adding arbitrary information to runHeader
 
-  def parseEventParameters(self):
+  def parseMetaParameters(self, parameterType="event"):
     """
     Parse the event parameters and return 3 event parameter dictionaries, respectively
     for string, int and float parameters
     """
     stringParameters, intParameters, floatParameters, allParameters = {}, {}, {}, []
-    for p in self.eventParameters:
+    
+    for p in getattr(self, parameterType+"Parameters", []):
       parameterAndValue = p.split("=", 1)
       if len(parameterAndValue) != 2:
-        raise SyntaxError("ERROR: Couldn't decode event parameter '%s'" % (p))
+        raise SyntaxError("ERROR: Couldn't decode %s parameter '%s'" % (parameterType, p))
       parameterAndType = parameterAndValue[0].split("/", 1)
       if len(parameterAndType) != 2:
-        raise SyntaxError("ERROR: Couldn't decode event parameter '%s'" % (p))
+        raise SyntaxError("ERROR: Couldn't decode %s parameter '%s'" % (parameterType, p))
       pname = parameterAndType[0]
       ptype = parameterAndType[1]
       pvalue = parameterAndValue[1]
       if ptype.lower() not in ["c", "f", "i"]:
-        raise ValueError("ERROR: Event parameter '%s' with invalid type '%s'" % (pname, ptype))
+        raise ValueError("ERROR: %s parameter '%s' with invalid type '%s'" % (parameterType, pname, ptype))
       if pname in allParameters:
-        raise RuntimeError("ERROR: Event parameter '%s' specified twice" % (pname))
+        raise RuntimeError("ERROR: %s parameter '%s' specified twice" % (parameterType, pname))
       if not pvalue:
-        raise RuntimeError("ERROR: Event parameter '%s' has empty value" % (pname))
+        raise RuntimeError("ERROR: %s parameter '%s' has empty value" % (parameterType, pname))
       allParameters.append(pname)
-      logger.info("Event parameter '%s', type '%s', value='%s'" % (pname, ptype, pvalue))
+      logger.info("%s parameter '%s', type '%s', value='%s'" % (parameterType, pname, ptype, pvalue))
       if ptype.lower() == "c":
         stringParameters[pname] = pvalue
       elif ptype.lower() == "f":
