@@ -39,13 +39,25 @@ jobs:
           source ../.github/scripts/common_cmake_opts.sh
           if [[ ${{ matrix.LCG }} =~ gcc13|clang19 ]]; then
             echo "::group::CMakeConfig C++20"
-            cmake $COMMON_CMAKE_OPTS -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=20 ..
+            cmake \
+              $COMMON_CMAKE_OPTS \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_CXX_STANDARD=20 \
+              ..
           elif [[ ${{ matrix.LCG }} =~ gcc15 ]]; then
             echo "::group::CMakeConfig C++23"
-            cmake $COMMON_CMAKE_OPTS -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_STANDARD=23 ..
+            cmake \
+              $COMMON_CMAKE_OPTS \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_CXX_STANDARD=23 \
+              ..
           else
             echo "::group::CMakeConfig C++17"
-            cmake $COMMON_CMAKE_OPTS -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 ..
+            cmake \
+              $COMMON_CMAKE_OPTS \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_CXX_STANDARD=17 \
+              ..
           fi
           if [[ ${{ matrix.LCG }} =~ dev3 ]]; then
             echo "::group::CMakeConfig 2"
@@ -68,9 +80,15 @@ jobs:
           cd build
           source ../../.github/scripts/common_cmake_opts.sh
           if [[ ${{ matrix.LCG }} =~ gcc13|clang16 ]]; then
-            cmake $COMMON_EXAMPLES_CMAKE_OPTS -DCMAKE_CXX_STANDARD=20 ..
+            cmake \
+              $COMMON_EXAMPLES_CMAKE_OPTS \
+              -DCMAKE_CXX_STANDARD=20 \
+              ..
           else
-            cmake $COMMON_EXAMPLES_CMAKE_OPTS -DCMAKE_CXX_STANDARD=17 ..
+            cmake \
+              $COMMON_EXAMPLES_CMAKE_OPTS \
+              -DCMAKE_CXX_STANDARD=17 \
+              ..
           fi
           echo "::group::CompileExamples"
           ninja install
@@ -113,12 +131,14 @@ jobs:
           unset CPATH
           echo "::group::CMakeConfig"
           source ../.github/scripts/common_cmake_opts.sh
-          cmake $COMMON_CMAKE_OPTS \
+          cmake \
+            $COMMON_CMAKE_OPTS \
             -D CMAKE_INSTALL_LIBDIR=lib \
             -DDD4HEP_USE_EDM4HEP=ON \
             -DDD4HEP_USE_TBB=OFF \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_STANDARD=20 ..
+            -DCMAKE_CXX_STANDARD=20 \
+            ..
           echo "::group::Compile"
           ninja install
           ccache -s
@@ -130,7 +150,11 @@ jobs:
           mkdir build
           cd build
           source ../../.github/scripts/common_cmake_opts.sh
-          cmake $COMMON_EXAMPLES_CMAKE_OPTS -D CMAKE_INSTALL_LIBDIR=lib -DCMAKE_CXX_STANDARD=20 ..
+          cmake \
+            $COMMON_EXAMPLES_CMAKE_OPTS \
+            -D CMAKE_INSTALL_LIBDIR=lib \
+            -DCMAKE_CXX_STANDARD=20 \
+            ..
           echo "::group::CompileExamples"
           ninja install
           ccache -s
@@ -170,10 +194,12 @@ jobs:
           unset CPATH
           echo "::group::CMakeConfig"
           source ../.github/scripts/common_cmake_opts.sh
-          cmake $COMMON_CMAKE_OPTS \
+          cmake \
+            $COMMON_CMAKE_OPTS \
             -DBUILD_SHARED_LIBS=OFF \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_STANDARD=20 ..
+            -DCMAKE_CXX_STANDARD=20 \
+            ..
           echo "::group::Compile"
           ninja
           ccache -s
@@ -197,10 +223,12 @@ jobs:
           unset CPATH
           echo "::group::CMakeConfig"
           source ../.github/scripts/common_cmake_opts.sh
-          cmake $COMMON_CMAKE_OPTS \
+          cmake \
+            $COMMON_CMAKE_OPTS \
             -DDD4HEP_USE_GEANT4_UNITS=ON \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_STANDARD=20 ..
+            -DCMAKE_CXX_STANDARD=20 \
+            ..
           echo "::group::Compile"
           ninja install
           ccache -s
@@ -212,7 +240,10 @@ jobs:
           mkdir build
           cd build
           source ../../.github/scripts/common_cmake_opts.sh
-          cmake $COMMON_EXAMPLES_CMAKE_OPTS -DCMAKE_CXX_STANDARD=20 ..
+          cmake \
+            $COMMON_EXAMPLES_CMAKE_OPTS \
+            -DCMAKE_CXX_STANDARD=20 \
+            ..
           echo "::group::CompileExamples"
           ninja install
           ccache -s
