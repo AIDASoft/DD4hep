@@ -36,19 +36,7 @@ jobs:
           unset CPATH
           echo "::group::CMakeConfig"
           # Common CMake options
-          COMMON_CMAKE_OPTS="-GNinja \
-            -DDD4HEP_USE_GEANT4=ON \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_LCIO=ON \
-            -DDD4HEP_USE_EDM4HEP=OFF \
-            -DDD4HEP_USE_TBB=ON \
-            -DDD4HEP_USE_HEPMC3=ON \
-            -DDD4HEP_BUILD_DEBUG=OFF \
-            -DBUILD_TESTING=ON \
-            -DDD4HEP_DEBUG_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_FLAGS=\"-fdiagnostics-color=always\" \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
+          source ../.github/scripts/common_cmake_opts.sh
           if [[ ${{ matrix.LCG }} =~ gcc13|clang19 ]]; then
             echo "::group::CMakeConfig C++20"
             cmake $COMMON_CMAKE_OPTS -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=20 ..
@@ -129,21 +117,12 @@ jobs:
           cd build
           unset CPATH
           echo "::group::CMakeConfig"
-          cmake -GNinja \
+          source ../.github/scripts/common_cmake_opts.sh
+          cmake $COMMON_CMAKE_OPTS \
             -D CMAKE_INSTALL_LIBDIR=lib \
-            -DDD4HEP_USE_GEANT4=ON \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_LCIO=ON \
             -DDD4HEP_USE_EDM4HEP=ON \
             -DDD4HEP_USE_TBB=OFF \
-            -DDD4HEP_USE_HEPMC3=ON \
-            -DDD4HEP_BUILD_DEBUG=OFF \
-            -DBUILD_TESTING=ON \
-            -DDD4HEP_DEBUG_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::Compile"
           ninja install
@@ -197,21 +176,10 @@ jobs:
           cd build
           unset CPATH
           echo "::group::CMakeConfig"
-          cmake -GNinja \
-            -DDD4HEP_USE_GEANT4=ON \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_LCIO=ON \
-            -DDD4HEP_USE_EDM4HEP=OFF \
-            -DDD4HEP_USE_TBB=ON \
-            -DDD4HEP_USE_HEPMC3=ON \
-            -DDD4HEP_BUILD_DEBUG=OFF \
-            -DBUILD_TESTING=ON \
-            -DDD4HEP_DEBUG_CMAKE=ON \
+          source ../.github/scripts/common_cmake_opts.sh
+          cmake $COMMON_CMAKE_OPTS \
             -DBUILD_SHARED_LIBS=OFF \
-            -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::Compile"
           ninja
@@ -234,21 +202,10 @@ jobs:
           cd build
           unset CPATH
           echo "::group::CMakeConfig"
-          cmake -GNinja \
+          source ../.github/scripts/common_cmake_opts.sh
+          cmake $COMMON_CMAKE_OPTS \
             -DDD4HEP_USE_GEANT4_UNITS=ON \
-            -DDD4HEP_USE_GEANT4=ON \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_LCIO=ON \
-            -DDD4HEP_USE_EDM4HEP=OFF \
-            -DDD4HEP_USE_TBB=ON \
-            -DDD4HEP_USE_HEPMC3=ON \
-            -DDD4HEP_BUILD_DEBUG=OFF \
-            -DBUILD_TESTING=ON \
-            -DDD4HEP_DEBUG_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::Compile"
           ninja install
