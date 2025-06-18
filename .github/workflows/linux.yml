@@ -60,7 +60,7 @@ jobs:
           ninja install
           . ../bin/thisdd4hep.sh
           echo "::group::Test"
-          ctest --output-on-failure -j4 --output-junit TestResults_1.xml
+          ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_1.xml
           echo "::group::CMakeExamples"
           cd ../examples/
           mkdir build
@@ -74,7 +74,7 @@ jobs:
           echo "::group::CompileExamples"
           ninja install
           echo "::group::TestExamples"
-          ctest --output-on-failure -j2 --output-junit TestResults_2.xml
+          ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_2.xml
     - name: Prepare Artifact Name
       if: success() || failure()
       run: |
@@ -121,7 +121,7 @@ jobs:
           ninja install
           . ../bin/thisdd4hep.sh
           echo "::group::Test"
-          ctest --output-on-failure -j4 --output-junit TestResults_1.xml
+          ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_1.xml
           echo "::group::CMakeExamples"
           cd ../examples/
           mkdir build
@@ -131,7 +131,7 @@ jobs:
           echo "::group::CompileExamples"
           ninja install
           echo "::group::TestExamples"
-          ctest --output-on-failure -j2 --output-junit TestResults_2.xml
+          ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_2.xml
     - name: Prepare Artifact Name
       if: success() || failure()
       run: |
@@ -200,7 +200,7 @@ jobs:
           ninja install
           . ../bin/thisdd4hep.sh
           echo "::group::Test"
-          ctest --output-on-failure -j4 --output-junit TestResults_1.xml
+          ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_1.xml
           echo "::group::CMakeExamples"
           cd ../examples/
           mkdir build
@@ -210,7 +210,7 @@ jobs:
           echo "::group::CompileExamples"
           ninja install
           echo "::group::TestExamples"
-          ctest --output-on-failure -j2 --output-junit TestResults_2.xml
+          ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_2.xml
     - name: Prepare Artifact Name
       if: success() || failure()
       run: |
