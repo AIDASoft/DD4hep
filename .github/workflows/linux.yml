@@ -65,18 +65,11 @@ jobs:
           cd ../examples/
           mkdir build
           cd build
+          source ../../.github/scripts/common_cmake_opts.sh
           if [[ ${{ matrix.LCG }} =~ gcc13|clang16 ]]; then
-          cmake -GNinja \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_CXX_STANDARD=20 ..
+            cmake $COMMON_EXAMPLES_CMAKE_OPTS -DCMAKE_CXX_STANDARD=20 ..
           else
-            cmake -GNinja \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_CXX_STANDARD=17 ..
+            cmake $COMMON_EXAMPLES_CMAKE_OPTS -DCMAKE_CXX_STANDARD=17 ..
           fi
           echo "::group::CompileExamples"
           ninja install
@@ -133,12 +126,8 @@ jobs:
           cd ../examples/
           mkdir build
           cd build
-          cmake -GNinja \
-            -D CMAKE_INSTALL_LIBDIR=lib \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_CXX_STANDARD=20 ..
+          source ../../.github/scripts/common_cmake_opts.sh
+          cmake $COMMON_EXAMPLES_CMAKE_OPTS -D CMAKE_INSTALL_LIBDIR=lib -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::CompileExamples"
           ninja install
           echo "::group::TestExamples"
@@ -216,11 +205,8 @@ jobs:
           cd ../examples/
           mkdir build
           cd build
-          cmake -GNinja \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_CXX_STANDARD=20 ..
+          source ../../.github/scripts/common_cmake_opts.sh
+          cmake $COMMON_EXAMPLES_CMAKE_OPTS -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::CompileExamples"
           ninja install
           echo "::group::TestExamples"
