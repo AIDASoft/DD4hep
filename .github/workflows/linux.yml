@@ -58,6 +58,7 @@ jobs:
           fi
           echo "::group::Compile"
           ninja install
+          ccache -s
           . ../bin/thisdd4hep.sh
           echo "::group::Test"
           ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_1.xml
@@ -73,6 +74,7 @@ jobs:
           fi
           echo "::group::CompileExamples"
           ninja install
+          ccache -s
           echo "::group::TestExamples"
           ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_2.xml
     - name: Prepare Artifact Name
@@ -119,6 +121,7 @@ jobs:
             -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::Compile"
           ninja install
+          ccache -s
           . ../bin/thisdd4hep.sh
           echo "::group::Test"
           ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_1.xml
@@ -130,6 +133,7 @@ jobs:
           cmake $COMMON_EXAMPLES_CMAKE_OPTS -D CMAKE_INSTALL_LIBDIR=lib -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::CompileExamples"
           ninja install
+          ccache -s
           echo "::group::TestExamples"
           ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_2.xml
     - name: Prepare Artifact Name
@@ -172,6 +176,7 @@ jobs:
             -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::Compile"
           ninja
+          ccache -s
 
   g4units:
     runs-on: ubuntu-latest
@@ -198,6 +203,7 @@ jobs:
             -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::Compile"
           ninja install
+          ccache -s
           . ../bin/thisdd4hep.sh
           echo "::group::Test"
           ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_1.xml
@@ -209,6 +215,7 @@ jobs:
           cmake $COMMON_EXAMPLES_CMAKE_OPTS -DCMAKE_CXX_STANDARD=20 ..
           echo "::group::CompileExamples"
           ninja install
+          ccache -s
           echo "::group::TestExamples"
           ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_2.xml
     - name: Prepare Artifact Name
