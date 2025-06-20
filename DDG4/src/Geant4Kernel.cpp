@@ -119,7 +119,7 @@ Geant4Kernel::Geant4Kernel(Geant4Kernel* krnl, unsigned long ident)
   m_world          = m_master->m_world;
   m_ident          = m_master->m_workers.size();
   m_numEvent       = m_master->m_numEvent;
-  m_runManagerType = m_master->m_runManagerType;
+  declareProperty("RunManagerType", m_runManagerType = m_master->m_runManagerType);
   m_sensitiveDetectorTypes      = m_master->m_sensitiveDetectorTypes;
   m_dfltSensitiveDetectorType   = m_master->m_dfltSensitiveDetectorType;
   declareProperty("UI",m_uiName = m_master->m_uiName);
