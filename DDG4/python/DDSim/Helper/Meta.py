@@ -36,7 +36,7 @@ class Meta(ConfigHelper):
 
   def parseMetaParameters(self, parameterType="event"):
     """
-    Parse the event parameters and return 3 event parameter dictionaries, respectively
+    Parse the metadata parameters and return 3 parameter dictionaries, respectively
     for string, int and float parameters
     """
     stringParameters, intParameters, floatParameters, allParameters = {}, {}, {}, []
