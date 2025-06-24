@@ -44,7 +44,7 @@ class Meta(ConfigHelper):
     for p in getattr(self, f"{parameterType}Parameters", []):
       parameterAndValue = p.split("=", 1)
       if len(parameterAndValue) != 2:
-        raise SyntaxError("ERROR: Couldn't decode %s parameter '%s'" % (parameterType, p))
+        raise SyntaxError(f"ERROR: Couldn't decode {parameterType} parameter '{p}'")
       parameterAndType = parameterAndValue[0].split("/", 1)
       if len(parameterAndType) != 2:
         raise SyntaxError("ERROR: Couldn't decode %s parameter '%s'" % (parameterType, p))
