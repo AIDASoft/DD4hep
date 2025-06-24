@@ -41,7 +41,7 @@ class Meta(ConfigHelper):
     """
     stringParameters, intParameters, floatParameters, allParameters = {}, {}, {}, []
     
-    for p in getattr(self, parameterType+"Parameters", []):
+    for p in getattr(self, f"{parameterType}Parameters", []):
       parameterAndValue = p.split("=", 1)
       if len(parameterAndValue) != 2:
         raise SyntaxError("ERROR: Couldn't decode %s parameter '%s'" % (parameterType, p))
