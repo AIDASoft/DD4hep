@@ -157,8 +157,8 @@ int SignalHandler::implementation::unsubscribe(int signum, void* user_context)  
     auto & handlers = ihandler->second.user_handlers;
     for( auto it = handlers.begin(); it != handlers.end(); ++it )   {
       if ( it->user_context == user_context )   {
-	handlers.erase(it);
-	return 1;
+        handlers.erase(it);
+        return 1;
       }
     }
   }
@@ -172,7 +172,7 @@ void SignalHandler::implementation::back_trace(int /* signum */) {
     char text[512];
     int bt_size = ::backtrace(bt, sizeof(bt) / sizeof(void *));
     size_t len = ::snprintf(text, sizeof(text), "\n[INFO] (ExitSignalHandler) %s\n",
-			    "---------------------- Backtrace ----------------------\n");
+                            "---------------------- Backtrace ----------------------\n");
     text[sizeof(text)-2] = '\n';
     text[sizeof(text)-1] = 0;
     ::write(STDERR_FILENO, text, len);
@@ -217,64 +217,64 @@ void SignalHandler::implementation::handler(int signum, siginfo_t *info, void *p
     func_cast<void (*)(int,siginfo_t*, void*)> dsc(dsc0.ptr);
 
     if ( s_exit_handler_print ) {{
-	char text[512];
-	size_t len = ::snprintf(text,sizeof(text),
-				"[FATAL] (SignalHandler) Handle signal: %d [%s] Old action:%p Mem:%p Code:%08X\n",
-				signum,iter_handler->second.name.c_str(),dsc.ptr,info->si_addr,info->si_code);
-	text[sizeof(text)-2] = '\n';
-	text[sizeof(text)-1] = 0;
-	::write(STDERR_FILENO,text,len);
-	// Debugging hack, if enabled (default: NO)
-	if ( s_exit_handler_sleep_on_fatal )  {
-	  bool _s_sleep = true;
-	  len = ::snprintf(text,sizeof(text),
-			   "[FATAL] (SignalHandler) Sleeping for debugging.... %s\n",
-			   _s_sleep ? "YES" : "NO");
-	  text[sizeof(text)-2] = '\n';
-	  text[sizeof(text)-1] = 0;
-	  ::write(STDERR_FILENO,text,len);
-	  while ( _s_sleep ) ::usleep(100000);
-	}
+        char text[512];
+        size_t len = ::snprintf(text,sizeof(text),
+                                "[FATAL] (SignalHandler) Handle signal: %d [%s] Old action:%p Mem:%p Code:%08X\n",
+                                signum,iter_handler->second.name.c_str(),dsc.ptr,info->si_addr,info->si_code);
+        text[sizeof(text)-2] = '\n';
+        text[sizeof(text)-1] = 0;
+        ::write(STDERR_FILENO,text,len);
+        // Debugging hack, if enabled (default: NO)
+        if ( s_exit_handler_sleep_on_fatal )  {
+          bool _s_sleep = true;
+          len = ::snprintf(text,sizeof(text),
+                           "[FATAL] (SignalHandler) Sleeping for debugging.... %s\n",
+                           _s_sleep ? "YES" : "NO");
+          text[sizeof(text)-2] = '\n';
+          text[sizeof(text)-1] = 0;
+          ::write(STDERR_FILENO,text,len);
+          while ( _s_sleep ) ::usleep(100000);
+        }
       }
       if ( !iter_handler->second.user_handlers.empty() )    {
-	auto& handlers = iter_handler->second.user_handlers;
-	for( auto ih = handlers.rbegin(); ih != handlers.rend(); ++ih )   {
-	  if ( ih->user_handler )  {
-	    bool ret = (*(ih->user_handler))(ih->user_context, signum);
-	    if ( ret )   {
-	      return;
-	    }
-	    // Otherwise continue signal processing and eventually call default handlers
-	  }
-	  // No handler fired: call previously registered signal handler
-	  auto& entry = iter_handler->second.old_action;
-	  if ( entry.sa_handler )
-	    (*entry.sa_handler)(signum);
-	  else if ( entry.sa_sigaction )
-	    (*entry.sa_sigaction)(signum, info, ptr);
-	}
+        auto& handlers = iter_handler->second.user_handlers;
+        for( auto ih = handlers.rbegin(); ih != handlers.rend(); ++ih )   {
+          if ( ih->user_handler )  {
+            bool ret = (*(ih->user_handler))(ih->user_context, signum);
+            if ( ret )   {
+              return;
+            }
+            // Otherwise continue signal processing and eventually call default handlers
+          }
+          // No handler fired: call previously registered signal handler
+          auto& entry = iter_handler->second.old_action;
+          if ( entry.sa_handler )
+            (*entry.sa_handler)(signum);
+          else if ( entry.sa_sigaction )
+            (*entry.sa_sigaction)(signum, info, ptr);
+        }
       }
       if ( signum == SIGSEGV || signum == SIGBUS || signum == SIGILL || signum == SIGABRT )  {
-	instance().back_trace(signum);
+        instance().back_trace(signum);
       }
       else if ( info->si_signo == SIGSEGV || info->si_signo == SIGBUS || info->si_signo == SIGILL || info->si_signo == SIGABRT )  {
-	instance().back_trace(info->si_signo);
+        instance().back_trace(info->si_signo);
       }
     }
     if ( signum == SIGINT || signum == SIGHUP || signum == SIGFPE || signum == SIGPIPE ) {
       if ( dsc.fun && (dsc0.fun != SIG_IGN) )
-	dsc.fun(signum, info, ptr);
+        dsc.fun(signum, info, ptr);
       else if ( signum == SIGHUP )
-	::_exit(signum);
+        ::_exit(128+signum);
     }
     else if ( signum == SIGSEGV && hdlr && hdlr != SIG_IGN && hdlr != SIG_DFL ) {
-      ::_exit(0);
+      ::_exit(128+signum);
     }
     else if ( hdlr && hdlr != SIG_IGN && dsc.fun )  {
       dsc.fun(signum, info, ptr);
     }
     else if ( hdlr == SIG_DFL ) {
-      ::_exit(0);
+      ::_exit(128+signum);
     }
   }
   s_exit_handler_active = false;
@@ -297,8 +297,8 @@ void SignalHandler::applyHandlers()  {
   for( const auto& e : imp.m_map )  {
     ::sigaction (e.first, &e.second.handler_action, &old_action);
     printout(DEBUG, "SignalHandler",
-	     "++ Re-apply signal handler for %-10s [%3ld entries]",
-	     e.second.name.c_str(), e.second.user_handlers.size());
+             "++ Re-apply signal handler for %-10s [%3ld entries]",
+             e.second.name.c_str(), e.second.user_handlers.size());
   }
 }
 
