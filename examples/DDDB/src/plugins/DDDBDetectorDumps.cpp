@@ -365,12 +365,12 @@ namespace {
         }
         catch(const exception& e)  {
           ::sprintf(fmt,"%03d %%-%ds WARNING from: %%s %%-20s %%s",level+1,2*level+3);
-          printout(INFO, m_name, fmt, "", de.path().c_str(), "[NO CATALOG availible]",e.what());
+          printout(INFO, m_name, fmt, "", de.path().c_str(), "[NO CATALOG available]",e.what());
           ++m_counters.numNoCatalogs;
         }
         catch(...)  {
           ::sprintf(fmt,"%03d %%-%ds WARNING from: %%s %%-20s",level+1,2*level+3);
-          printout(INFO, m_name, fmt, "", de.path().c_str(), "[NO CATALOG availible]");
+          printout(INFO, m_name, fmt, "", de.path().c_str(), "[NO CATALOG available]");
           ++m_counters.numNoCatalogs;
         }
         for (const auto& i : c)

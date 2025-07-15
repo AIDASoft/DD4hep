@@ -551,7 +551,7 @@ void DetectorImp::mapDetectorTypes()  {
   }
 }
 
-/// Access the availible detector types
+/// Access the available detector types
 std::vector<std::string> DetectorImp::detectorTypes() const  {
   if ( m_manager->IsClosed() ) {
     std::vector<std::string> v;

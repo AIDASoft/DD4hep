@@ -5002,7 +5002,7 @@ Notes:
   
 * 2014/06/30 Markus Frank
 - DDG4: Support user (context-) extensions for Geant4.
-  User contexts are availible for events and runs. The contexts
+  User contexts are available for events and runs. The contexts
   are accessible from the Geant4Context meber of each Geant4Action,
   the base class for all processing entities.
    - Adding a context:

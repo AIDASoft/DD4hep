@@ -150,7 +150,7 @@ namespace dd4hep {
 #endif
       /// Push all pending updates to the conditions store. 
       /** Note:
-       *  This does not yet make the new conditions availible to the clients
+       *  This does not yet make the new conditions available to the clients
        */
       virtual void pushUpdates() = 0;
 

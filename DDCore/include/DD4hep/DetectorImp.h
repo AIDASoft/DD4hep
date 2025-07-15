@@ -327,7 +327,7 @@ namespace dd4hep {
                                               const std::string& type4="",
                                               const std::string& type5="" )  override;
 
-    /// Access the availible detector types
+    /// Access the available detector types
     virtual std::vector<std::string> detectorTypes() const  override;
 
     /** return a vector with all detectors that have all the type properties in

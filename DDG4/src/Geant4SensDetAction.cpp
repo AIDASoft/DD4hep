@@ -483,7 +483,7 @@ void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
 void Geant4SensDetActionSequence::end(G4HCofThisEvent* hce) {
   m_end(hce);
   m_actors(&Geant4Sensitive::end, hce);
-  // G4HCofThisEvent must be availible until end-event. m_hce = 0;
+  // G4HCofThisEvent must be available until end-event. m_hce = 0;
 }
 
 /// G4VSensitiveDetector interface: Method invoked if the event was aborted.

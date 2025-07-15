@@ -87,18 +87,18 @@ namespace gaudi   {
     virtual bool removeContent(Content& content) = 0;
 
     /** Slice management interface routines              */
-    /// Project a new conditions slice. If a free cached slice is availible, it shall be re-used
+    /// Project a new conditions slice. If a free cached slice is available, it shall be re-used
     virtual Slice project(Content &content,
                           Context *ctx,
                           const IOVType *typ,
                           EventStamp stamp) = 0;
 
-    /// Project a new conditions slice. If a free cached slice is availible, it shall be re-used
+    /// Project a new conditions slice. If a free cached slice is available, it shall be re-used
     virtual Slice project(Content &content,
                           Context *ctx,
                           const std::string &typ,
                           EventStamp stamp) = 0;
-    /// Project a new conditions slice. If a free cached slice is availible, it shall be re-used
+    /// Project a new conditions slice. If a free cached slice is available, it shall be re-used
     virtual Slice project(const std::string &content,
                           Context *ctx,
                           const std::string &typ,

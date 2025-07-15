@@ -1063,7 +1063,7 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleHeader() const {
     geo.header = make_entry(log);
     return geo.header;
   }
-  printout(WARNING,"DetectorChecksum","+++ No Detector header information availible from the geometry description.");
+  printout(WARNING,"DetectorChecksum","+++ No Detector header information available from the geometry description.");
   return empty_entry;
 }
 

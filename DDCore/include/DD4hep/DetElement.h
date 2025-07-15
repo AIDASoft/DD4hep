@@ -160,7 +160,7 @@ namespace dd4hep {
 
   /// Handle class describing a detector element
   /**
-   * Detector elements (class DetElement are entities which represent
+   * Detector elements (class DetElement) are entities which represent
    * subdetectors or sizable parts of a subdetector.
    * A DetElement instance has the means to provide to clients information about
    *
