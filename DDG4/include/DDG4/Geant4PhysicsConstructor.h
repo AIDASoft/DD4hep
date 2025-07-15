@@ -40,7 +40,7 @@ namespace dd4hep {
      * Geant4 does not like the G4VPhysicsConstructor constructor
      * to be called before a physics list is attached to the
      * G4RunManager. We overcome this problem through the delayed
-     * instantiation of a helper object made availible to the client.
+     * instantiation of a helper object made available to the client.
      *
      *  \author  M.Frank
      *  \version 1.0

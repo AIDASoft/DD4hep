@@ -1524,7 +1524,7 @@ namespace dd4hep {
         if ( x_det.hasAttr(_LBU(classID)) )  {
           det->classID = element.attr<int>(_LBU(classID));
         }
-        // Now extract all availible information from the xml
+        // Now extract all available information from the xml
         if ( (elt=x_det.child(_U(author),false)) )
           Conv<DDDBAuthor>(description,context,&det->author)(elt);
         if ( (elt=x_det.child(_U(version),false)) )

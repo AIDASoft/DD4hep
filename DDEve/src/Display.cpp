@@ -528,7 +528,7 @@ void Display::LoadGeoChildren(TEveElement* start, int levels, bool redraw)  {
   using namespace dd4hep::detail;
   DetElement world = m_detDesc->world();
   if ( world.children().size() == 0 )   {
-    MessageBox(INFO,"It looks like there is no\nGeometry loaded.\nNo event display availible.\n");
+    MessageBox(INFO,"It looks like there is no\nGeometry loaded.\nNo event display available.\n");
   }
   else if ( levels > 0 )   {
     if ( 0 == start )     {
