@@ -44,7 +44,7 @@ namespace dd4hep {
      *
      *  On return it contains the individual condition load information.
      *
-     *  Referenced by: ConditonsUserPool, ConditionsManager
+     *  Referenced by: ConditionsUserPool, ConditionsManager
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -116,9 +116,9 @@ namespace dd4hep {
       unsigned long             flags = 0;
       
     protected:
-      /// If flag conditonsManager["OutputUnloadedConditions"]=true: will contain conditions not loaded
+      /// If flag conditionsManager["OutputUnloadedConditions"]=true: will contain conditions not loaded
       ConditionsContent::Conditions   m_missingConditions;
-      /// If flag conditonsManager["OutputUnloadedConditions"]=true: will contain conditions not computed
+      /// If flag conditionsManager["OutputUnloadedConditions"]=true: will contain conditions not computed
       ConditionsContent::Dependencies m_missingDerivations;
       
       /// Default assignment operator

@@ -23,7 +23,7 @@
 #include "TGeoMatrix.h"
 #include "TGeoShape.h"
 #include "TRotation.h"
-//TGeoTrd1 is apparently not included by defautl
+//TGeoTrd1 is apparently not included by default
 #include "TGeoTrd1.h"
 
 namespace dd4hep {

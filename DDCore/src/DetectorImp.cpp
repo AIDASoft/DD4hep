@@ -745,7 +745,7 @@ void DetectorImp::endDocument(bool close_geometry)    {
     }
     m_world.setPlacement(pv);
   }
-  // Patching shape names of anaonymous shapes
+  // Patching shape names of anonymous shapes
   ShapePatcher patcher(m_volManager, m_world);
   patcher.patchShapes();
   mapDetectorTypes();
