@@ -68,7 +68,7 @@ namespace dd4hep {
       virtual Detector& detectorDescription() const = 0;
       /// Required IOV value for update cycle
       virtual const IOV& requiredValidity()  const = 0;
-      /// Accessor for the current conditons mapping
+      /// Accessor for the current conditions mapping
       virtual ConditionsMap& conditionsMap() const = 0;
       /// Interface to access conditions by conditions key
       virtual Condition get(const ConditionKey& key) = 0;
@@ -167,7 +167,7 @@ namespace dd4hep {
         return resolver->requiredValidity();
       }
 
-      /// Accessor for the current conditons mapping
+      /// Accessor for the current conditions mapping
       ConditionsMap& conditionsMap() const    {
         return resolver->conditionsMap();
       }

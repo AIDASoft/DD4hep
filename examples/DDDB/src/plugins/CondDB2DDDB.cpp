@@ -1799,7 +1799,7 @@ namespace dd4hep {
       p  = path.normalize().native();      
       /// Hacky: If no reference object is given, the object name 
       /// is the same as the last item of the path (???)
-      /// ==> Local fix for online consitions, which are referenced using:
+      /// ==> Local fix for online conditions, which are referenced using:
       /// conddb:/Conditions/Online/L0MUON/Q1/FOI instead of:
       /// conddb:/Conditions/Online/L0MUON/Q1/FOI#FOI ...
       if ( hash == string::npos )   {

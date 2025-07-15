@@ -20,7 +20,7 @@
 // C/C++ include files
 #include <string>
 
-// Forward declartions
+// Forward declarations
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {

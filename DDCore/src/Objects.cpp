@@ -37,7 +37,7 @@ Author::Author(Detector& /* description */) {
   m_element = new NamedObject("", "author");
 }
 
-/// Access the auhor's name
+/// Access the author's name
 std::string Author::authorName() const {
   return m_element->GetName();
 }
@@ -47,7 +47,7 @@ void Author::setAuthorName(const std::string& nam) {
   m_element->SetName(nam.c_str());
 }
 
-/// Access the auhor's email address
+/// Access the author's email address
 std::string Author::authorEmail() const {
   return m_element->GetTitle();
 }

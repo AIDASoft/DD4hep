@@ -170,7 +170,7 @@ namespace dd4hep {
    *       if the \em DetElement represents a part of a subdetector.
    *    -  information about the \em Readout structure if the object is
    *       instrumented and read-out. Otherwise this link is empty.
-   *    -  information about the environmental conditions etc. \em conditons.
+   *    -  information about the environmental conditions etc. \em conditions.
    *       The access to conditions is exposed via the DetConditions interface.
    *       See dd4hep/DetConditions.h for further details.
    *    -  alignment information.

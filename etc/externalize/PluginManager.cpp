@@ -26,7 +26,7 @@
 
 #define private public
 // This define will give us a version of the gaudi plugin manager,
-// which will NOT clash with Gaudi! It of course has a correspondance in the
+// which will NOT clash with Gaudi! It of course has a correspondence in the
 // compiler options of the GaudiPluginService package.
 #include "Gaudi/PluginService.h"
 #undef private

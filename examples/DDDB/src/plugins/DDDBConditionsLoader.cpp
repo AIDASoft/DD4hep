@@ -30,7 +30,7 @@
 #include "DDCond/ConditionsManagerObject.h"
 #include "DD4hep/detail/ConditionsInterna.h"
 
-// Forward declartions
+// Forward declarations
 using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::cond;

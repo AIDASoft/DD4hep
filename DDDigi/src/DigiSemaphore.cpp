@@ -23,7 +23,7 @@ std::unique_lock<std::mutex> DigiSemaphore::wait_null()  {
   return protect;
 }
 
-/// Aquire semaphore count
+/// Acquire semaphore count
 void DigiSemaphore::aquire()   {
   std::lock_guard guard(this->lock);
   ++this->reference_count;

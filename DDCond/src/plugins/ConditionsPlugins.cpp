@@ -385,7 +385,7 @@ static long ddcond_clean_conditions(Detector& description, int argc, char** argv
 DECLARE_APPLY(DD4hep_ConditionsClean,ddcond_clean_conditions)
 
 // ======================================================================================
-/// Basic entry point to instantiate the basic dd4hep conditions/alignmants printer
+/// Basic entry point to instantiate the basic dd4hep conditions/alignments printer
 /**
  *  Factory: DD4hep_ConditionsPrinter, dd4hepAlignmentsPrinter 
  *

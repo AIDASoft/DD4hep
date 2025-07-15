@@ -412,7 +412,7 @@ VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const  {
   return NonExisting;
 }
 
-/// Accessfully decoded volume fields  by placement path
+/// Access fully decoded volume fields  by placement path
 void Geant4VolumeManager::volumeDescriptor(const std::vector<const G4VPhysicalVolume*>& path,
                                            VolIDDescriptor& vol_desc) const
 {

@@ -38,7 +38,7 @@ namespace dd4hep {
      *
      *  On return it contains the individual condition load information.
      *
-     *  Referenced by: ConditonsUserPool, ConditionsManager
+     *  Referenced by: ConditionsUserPool, ConditionsManager
      *
      *  \author  M.Frank
      *  \version 1.0
