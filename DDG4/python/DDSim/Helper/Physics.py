@@ -102,9 +102,13 @@ class Physics(ConfigHelper):
 
   @property
   def pdgfile(self):
-    """ location of particle.tbl file containing extra particles and their lifetime information
+    """Location of particle.tbl file containing extra particles and their lifetime information
 
     For example in $DD4HEP/examples/DDG4/examples/particle.tbl
+
+    This is a vital setting if you want to simulate secondary vertices or pre-assigned decays or both. Geant4 has to
+    know about all particles with non-negligible lifetime. Use this setting together with alternativeStableStatuses and
+    alternativeDecayStatuses, to configure the simulation to suit your MCGenerator file.
     """
     return self._pdgfile
 
