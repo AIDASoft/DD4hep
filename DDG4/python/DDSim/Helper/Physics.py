@@ -14,6 +14,15 @@ class Physics(ConfigHelper):
 
   def __init__(self):
     super(Physics, self).__init__()
+    self._ETolerance = None
+    self._ESeverity = None
+    self._ESeverity_EXTRA = {'choices': ["0", "1", "2", "3", "4",
+                                         "FatalException",
+                                         "FatalErrorInArgument",
+                                         "RunMustBeAborted",
+                                         "EventMustBeAborted",
+                                         "JustWarning",
+                                         "IgnoreTheIssue"]}
     self._rangecut = 0.7 * mm
     self._list = "FTFP_BERT"
     self._decays = False
@@ -142,6 +151,41 @@ class Physics(ConfigHelper):
   def list(self, val):  # noqa: A003
     self._list = val
 
+  @property
+  def ETolerance(self):
+    """Configure the tolerance for the mass check of dynamic Particles, a.k.a, SetKETolerance
+    """
+    return self._ETolerance
+
+  @ETolerance.setter
+  def ETolerance(self, val):
+    self._ETolerance = val
+
+  @property
+  def ESeverity(self):
+    """Configure the severity for the mass check of dynamic Particles, a.k.a, SetKETolerance
+    """
+    return self._ESeverity
+
+  @ESeverity.setter
+  def ESeverity(self, val):
+    if val is None:
+      return
+    val = {"0": 0,   # FatalException
+           "1": 1,   # FatalErrorInArgument
+           "2": 2,   # RunMustBeAborted
+           "3": 3,   # EventMustBeAborted
+           "4": 4,   # JustWarning
+           "5": 5,   # IgnoreTheIssue
+           "FatalException": 0,
+           "FatalErrorInArgument": 1,
+           "RunMustBeAborted": 2,
+           "EventMustBeAborted": 3,
+           "JustWarning": 4,
+           "IgnoreTheIssue": 5,
+           }[str(val)]
+    self._ESeverity = val
+
   def setupPhysics(self, kernel, name=None):
     seq = kernel.physicsList()
     seq.extends = name if name is not None else self.list
@@ -166,6 +210,17 @@ class Physics(ConfigHelper):
       rg.enableUI()
       seq.adopt(rg)
       rg.RangeCut = self.rangecut
+
+    # Add setting of KETolerance
+    if self._ETolerance is not None or self._ESeverity is not None:
+      seq = kernel.physicsList()
+      rg = PhysicsList(kernel, 'Geant4SetKETolerance/KETolerance')
+      rg.enableUI()
+      seq.adopt(rg)
+      if self._ETolerance is not None:
+        rg.Tolerance = self._ETolerance
+      if self._ESeverity is not None:
+        rg.Severity = self._ESeverity
 
     for func in self._userFunctions:
       try:
