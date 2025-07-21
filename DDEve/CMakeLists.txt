@@ -61,7 +61,7 @@ if(DD4HEP_USE_GEANT4)
     LINKDEF ../DDCore/include/ROOT/LinkDef.h
     USES    DD4hep::DDG4 
     )
-  add_library(DDG4IO DDEve/IO.cpp G__DDG4IO.cxx)
+  add_library(DDG4IO G__DDG4IO.cxx)
   target_link_libraries(DDG4IO DD4hep::DDG4 DD4hep::DDEve_Interface)
   set_target_properties(DDG4IO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   install(TARGETS DDG4IO EXPORT DD4hep
