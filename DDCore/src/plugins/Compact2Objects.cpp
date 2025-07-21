@@ -404,9 +404,15 @@ template <> void Converter<Header>::operator()(xml_h e) const {
     description.setHeader(h);
     return;
   }
-  printout(ERROR, "Compact","++ Only one Header structure allowed per Detector descriptor.");
-  printout(ERROR, "Compact","++ On the fly replacement inhibited.");
-  except("Compact","++ Inconsistent Detector Header definition in compact xml sources.");
+  printout(WARNING, "Compact","++ Overwriting/updating Header structure is very dangerous. Try to avoid this.");
+  printout(WARNING, "Compact","++     Header definition in: %s", xml::DocumentHandler::system_path(e).c_str());
+  if( e.hasAttr(_U(comment)) ) h.setComment(e.attr<std::string>(_U(comment)).c_str());
+  if( e.hasAttr(_U(version)) ) h.setVersion(e.attr<std::string>(_U(version)).c_str());
+  if( e.hasAttr(_U(author)) ) h.setAuthor(e.attr<std::string>(_U(author)).c_str());
+  if( e.hasAttr(_U(status)) ) h.setStatus(e.attr<std::string>(_U(status)).c_str());
+  if( e.hasAttr(_U(title)) ) h.setTitle(e.attr<std::string>(_U(title)).c_str());
+  if( e.hasAttr(_U(name)) ) h.setName(e.attr<std::string>(_U(name)).c_str());
+  if( e.hasAttr(_U(url)) ) h.setUrl(e.attr<std::string>(_U(url)).c_str());
 }
 
 /** Convert compact material/element description objects

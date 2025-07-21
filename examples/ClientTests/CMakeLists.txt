@@ -492,7 +492,8 @@ dd4hep_add_test_reg( ClientTests_check_for_multiple_headers
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoDisplay -compact ${ClientTestsEx_INSTALL}/compact/Test_2ndHeader.xml 
   -load -print INFO
-  REGEX_PASS "\\+\\+ Exception while executing plugin DD4hep_CompactLoader:\n\t\tCompact: \\+\\+ Inconsistent Detector Header definition in compact xml sources."
+  REGEX_PASS "WARN  \\+\\+ Overwriting/updating Header structure is very dangerous. Try to avoid this."
+  REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
 #      EXEC_ARGS  test_with_root.sh ${script}
