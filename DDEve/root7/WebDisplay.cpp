@@ -16,7 +16,10 @@
 #include <DD4hep/DetectorTools.h>
 
 // ROOT includes
+#if ROOT_VERSION_CODE < ROOT_VERSION(6,36,00)
 #include "ROOT/RDirectory.hxx"
+#endif
+
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,27,00)
 #include "ROOT/RGeomViewer.hxx"
 #  if ROOT_VERSION_CODE >= ROOT_VERSION(6,29,00)
