@@ -29,7 +29,6 @@
 // C/C++ include files
 #include <cmath>
 #include <sstream>
-#include <iomanip>
 
 using namespace dd4hep;
 
@@ -38,7 +37,7 @@ Author::Author(Detector& /* description */) {
   m_element = new NamedObject("", "author");
 }
 
-/// Access the auhor's name
+/// Access the author's name
 std::string Author::authorName() const {
   return m_element->GetName();
 }
@@ -48,7 +47,7 @@ void Author::setAuthorName(const std::string& nam) {
   m_element->SetName(nam.c_str());
 }
 
-/// Access the auhor's email address
+/// Access the author's email address
 std::string Author::authorEmail() const {
   return m_element->GetTitle();
 }
@@ -380,7 +379,16 @@ int VisAttr::color() const {
 /// Set object color
 void VisAttr::setColor(float alpha, float red, float green, float blue) {
   Object& o  = object<Object>();
+  const auto num_before = gROOT->GetListOfColors()->GetLast();
+  // Set tolerance high enough to always lookup from existing palette. This
+  // helps to preserve colors when saving TGeo to .root files.
+  TColor::SetColorThreshold(1.0f/31.0f);
   Int_t col  = TColor::GetColor(red, green, blue);
+  const auto num_after = gROOT->GetListOfColors()->GetLast();
+  if (num_before != num_after) {
+    printout(INFO,"VisAttr","+++ %s Allocated a Color: r:%02X g:%02X b:%02X, this will not save to a ROOT file",
+	     this->name(), int(red*255.), int(green*255.), int(blue*255));
+  }
   o.alpha    = alpha;
   o.color    = gROOT->GetColor(col);
   if ( !o.color )    {

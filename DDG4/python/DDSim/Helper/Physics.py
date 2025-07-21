@@ -27,6 +27,7 @@ class Physics(ConfigHelper):
                         5101, 5103, 5201, 5203, 5301, 5303, 5401, 5403, 5503}  # b? diquarks
     self._zeroTimePDGs = {11, 13, 15, 17}
     self._alternativeDecayStatuses = set()
+    self._alternativeStableStatuses = set()
     self._userFunctions = []
     self._closeProperties()
     Physics.__doc__ += "\n\n" + self.setupUserPhysics.__doc__
@@ -66,6 +67,16 @@ class Physics(ConfigHelper):
     self._alternativeDecayStatuses = self.makeSet(val)
 
   @property
+  def alternativeStableStatuses(self):
+    """Set of Generator Statuses that are used to mark stable particles that should be forwarded to Geant4.
+    """
+    return self._alternativeStableStatuses
+
+  @alternativeStableStatuses.setter
+  def alternativeStableStatuses(self, val):
+    self._alternativeStableStatuses = self.makeSet(val)
+
+  @property
   def rangecut(self):
     """ The global geant4 rangecut for secondary production
 
@@ -91,9 +102,13 @@ class Physics(ConfigHelper):
 
   @property
   def pdgfile(self):
-    """ location of particle.tbl file containing extra particles and their lifetime information
+    """Location of particle.tbl file containing extra particles and their lifetime information
 
     For example in $DD4HEP/examples/DDG4/examples/particle.tbl
+
+    This is a vital setting if you want to simulate secondary vertices or pre-assigned decays or both. Geant4 has to
+    know about all particles with non-negligible lifetime. Use this setting together with alternativeStableStatuses and
+    alternativeDecayStatuses, to configure the simulation to suit your MCGenerator file.
     """
     return self._pdgfile
 

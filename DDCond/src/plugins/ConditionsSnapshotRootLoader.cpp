@@ -72,7 +72,7 @@ namespace dd4hep {
 // C/C++ include files
 #include <string>
 
-// Forward declartions
+// Forward declarations
 using namespace dd4hep::cond;
 
 namespace {

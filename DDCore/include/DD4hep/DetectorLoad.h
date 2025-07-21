@@ -17,7 +17,6 @@
 #include <DD4hep/Detector.h>
 
 // C/C++ include files
-#include <stdexcept>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -55,10 +54,10 @@ namespace dd4hep {
 
   public:
 #ifdef G__ROOT
-    /// No defautl constructor
+    /// No default constructor
     DetectorLoad() = default;
 #else
-    /// No defautl constructor
+    /// No default constructor
     DetectorLoad() = delete;
 #endif
     /// No move constructor

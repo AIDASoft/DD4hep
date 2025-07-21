@@ -101,10 +101,11 @@ Geant4TVUserParticleHandler::Geant4TVUserParticleHandler(Geant4Context* ctxt, co
 /// Post-track action callback
 void Geant4TVUserParticleHandler::end(const G4Track* /* track */, Particle& p)  {
 
-  std::array<double, 3> start_point = {p.vsx, p.vsy, p.vsz};
+  // numbers come from Geant4 and are in mm, we need to convert to ROOT unit system
+  constexpr double unitFactor = dd4hep::mm;
+  std::array<double, 3> start_point = {p.vsx*unitFactor, p.vsy*unitFactor, p.vsz*unitFactor};
   bool starts_in_trk_vol = m_trackingVolume.ptr()->Contains(start_point.data());
-
-  std::array<double, 3> end_point = {p.vex, p.vey, p.vez};
+  std::array<double, 3> end_point = {p.vex*unitFactor, p.vey*unitFactor, p.vez*unitFactor};
   bool ends_in_trk_vol = m_trackingVolume.ptr()->Contains(end_point.data());
 
   setReason(p, starts_in_trk_vol, ends_in_trk_vol);

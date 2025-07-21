@@ -38,7 +38,6 @@
 #include <DD4hep/detail/ObjectsInterna.h>
 
 // C/C++ include files
-#include <iostream>
 #include <boost/property_tree/json_parser.hpp>
 
 namespace {

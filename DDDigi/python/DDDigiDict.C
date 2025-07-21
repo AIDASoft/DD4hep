@@ -39,6 +39,8 @@
 #include <DDDigi/DigiEventAction.h>
 #include <DDDigi/DigiContainerProcessor.h>
 
+#include <list>
+
 struct DDDigiDict  {};
 
 /// Namespace for the AIDA detector description toolkit

@@ -126,14 +126,7 @@ Vector3D WaferGridXY::position(const CellID& cID) const {
 }
 
 std::vector<double> WaferGridXY::cellDimensions(const CellID&) const {
-#if __cplusplus >= 201103L
   return {_gridSizeX, _gridSizeY};
-#else
-  std::vector<double> cellDims(2,0.0);
-  cellDims[0] = _gridSizeX;
-  cellDims[1] = _gridSizeY;
-  return cellDims;
-#endif
 }
 
 } /* namespace DDSegmentation */

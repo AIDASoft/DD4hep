@@ -28,7 +28,7 @@
 #include <DD4hep/NamedObject.h>
 
 // C/C++ include files
-#include <map>
+#include <string>
 
 
 /// Namespace for the AIDA detector description toolkit
@@ -118,11 +118,11 @@ namespace dd4hep {
       /// Check if object is already bound....
       bool is_bound()  const                           {  return data.is_bound();         }
       bool is_traced()  const                          {  return true;                    }
-      /// Flag operations: Set a conditons flag
+      /// Flag operations: Set a conditions flag
       void setFlag(Condition::mask_type option)        {  flags |= option;                }
-      /// Flag operations: UN-Set a conditons flag
+      /// Flag operations: UN-Set a conditions flag
       void unFlag(Condition::mask_type option)         {  flags &= ~option;               }
-      /// Flag operations: Test for a given a conditons flag
+      /// Flag operations: Test for a given a conditions flag
       bool testFlag(Condition::mask_type option) const {  return option == (flags&option);}
     };
 

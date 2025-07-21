@@ -143,7 +143,7 @@ namespace dd4hep {
       /// Callback if the sequence should be accepted or filtered off
       virtual G4bool Accept(const G4Step* step) const  override  final
       {  return m_sequence->accept(step);                               }
-      /// Method invoked at the begining of each event.
+      /// Method invoked at the beginning of each event.
       virtual void Initialize(G4HCofThisEvent* hce)  override  final
       {  m_sequence->begin(hce);                                        }
       /// Method invoked at the end of each event.

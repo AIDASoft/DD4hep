@@ -28,7 +28,7 @@ namespace dd4hep {
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace align {
     
-    /// Generic alignment processor facade for the Conditons::Processor object
+    /// Generic alignment processor facade for the Conditions::Processor object
     /**
      *  This wrapper converts any object, which has the signature
      *  int operator()(Alignment cond) const
@@ -66,7 +66,7 @@ namespace dd4hep {
     AlignmentsProcessor<typename std::remove_reference<T>::type> alignmentsProcessor(T&& obj)
     {  return AlignmentsProcessor<typename std::remove_reference<T>::type>(obj);    }
 
-    /// Generic alignment processor facade for the Conditons::Processor object
+    /// Generic alignment processor facade for the Conditions::Processor object
     /**
      *  This wrapper converts any object, which has the signature
      *  int operator()(Alignment cond) const

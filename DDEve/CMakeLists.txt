@@ -18,6 +18,11 @@ target_include_directories(DDEve_Interface
   $<INSTALL_INTERFACE:include>
 )
 
+if(NOT TARGET ROOT::Eve)
+  MESSAGE(STATUS "ROOT::Eve not found: not building DDEve")
+  return()
+endif()
+
 target_link_libraries(DDEve_Interface INTERFACE ROOT::Core ROOT::Rint ROOT::Eve ROOT::Gui ROOT::Graf3d ROOT::RGL ROOT::EG)
 if(ROOT_VERSION VERSION_GREATER_EQUAL 6.27.00)
   target_link_libraries(DDEve_Interface INTERFACE ROOT::ROOTGeomViewer)
@@ -56,7 +61,7 @@ if(DD4HEP_USE_GEANT4)
     LINKDEF ../DDCore/include/ROOT/LinkDef.h
     USES    DD4hep::DDG4 
     )
-  add_library(DDG4IO DDEve/IO.cpp G__DDG4IO.cxx)
+  add_library(DDG4IO G__DDG4IO.cxx)
   target_link_libraries(DDG4IO DD4hep::DDG4 DD4hep::DDEve_Interface)
   set_target_properties(DDG4IO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   install(TARGETS DDG4IO EXPORT DD4hep

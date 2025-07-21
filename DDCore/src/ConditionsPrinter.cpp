@@ -271,7 +271,7 @@ int ConditionsPrinter::operator()(DetElement de, int level)   const {
       (*this)(cond);
     return int(conditions.size());
   }
-  except(name,"Failed to dump conditions for DetElement:%s [No slice availible]",
+  except(name,"Failed to dump conditions for DetElement:%s [No slice available]",
          de.path().c_str());
   return 0;
 }

@@ -123,7 +123,7 @@ Geant4StackingActionSequence* Geant4ActionContainer::stackingAction(bool create)
   return m_stackingAction;
 }
 
-/// Access detector construcion action sequence (geometry+sensitives+field)
+/// Access detector construction action sequence (geometry+sensitives+field)
 Geant4DetectorConstructionSequence* Geant4ActionContainer::detectorConstruction(bool create)  {
   if (!m_constructionAction && create)
     registerSequence(m_constructionAction, "DetectorConstructionAction");

@@ -17,7 +17,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
-#include <stdexcept>
+#include <exception>
 
 // Framework include files
 #include <XML/config.h>
@@ -469,7 +469,7 @@ namespace dd4hep {
       Attribute setAttr(const XmlChar* t, const Attribute v) const;
       /// Generic attribute setter with integer value
       Attribute setAttr(const XmlChar* t, int val) const;
-      /// Generic attribute setter with boolen value
+      /// Generic attribute setter with boolean value
       Attribute setAttr(const XmlChar* t, bool val) const;
       /// Generic attribute setter with floating point value
       Attribute setAttr(const XmlChar* t, float val) const;

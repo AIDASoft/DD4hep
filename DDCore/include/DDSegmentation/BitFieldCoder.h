@@ -15,7 +15,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <sstream>
 #include <cstdint>
 
 namespace dd4hep {

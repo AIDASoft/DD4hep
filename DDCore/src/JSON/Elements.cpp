@@ -16,10 +16,10 @@
 #include <JSON/Elements.h>
 
 // C/C++ include files
-#include <iostream>
-#include <stdexcept>
 #include <cstdio>
-#include <map>
+#include <stdexcept>
+#include <string>
+#include <stdexcept>
 
 using namespace dd4hep::json;
 static const size_t INVALID_NODE = ~0U;

@@ -17,7 +17,7 @@
 #include <DD4hep/detail/ConditionsInterna.h>
 
 // C/C++ include files
-#include <sstream>
+#include <string>
 
 using namespace dd4hep;
 

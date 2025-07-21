@@ -70,7 +70,7 @@ Property& Property::str(const std::string& input)    {
   throw std::runtime_error("Attempt to access property grammar from invalid object.");
 }
 
-/// Assignment operator / set new balue
+/// Assignment operator / set new value
 Property& Property::operator=(const char* val) {
   if ( val ) {
     this->set < std::string > (val);

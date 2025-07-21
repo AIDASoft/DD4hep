@@ -18,10 +18,7 @@
 
 // C/C++ include files
 #include <algorithm>
-#include <stdexcept>
 #include <typeinfo>
-#include <iostream>
-#include <sstream>
 #include <string>
 #include <map>
 
@@ -77,11 +74,11 @@ namespace dd4hep {
     const Property& str(const std::string& input)  const;
     /// Assignment operator
     Property& operator=(const Property& p) = default;
-    /// Assignment operator / set new balue
+    /// Assignment operator / set new value
     Property& operator=(const char* val);
-    /// Assignment operator / set new balue
+    /// Assignment operator / set new value
     //Property& operator=(const std::string& val);
-    /// Assignment operator / set new balue
+    /// Assignment operator / set new value
     template <typename TYPE> Property& operator=(const TYPE& val);
     /// Retrieve value
     template <typename TYPE> TYPE value() const;
@@ -107,7 +104,7 @@ namespace dd4hep {
       BasicGrammar::invalidConversion(typeid(TYPE), grm.type());
   }
 
-  /// Assignment operator / set new balue
+  /// Assignment operator / set new value
   template <typename TYPE> Property& Property::operator=(const TYPE& val) {
     this->set(val);
     return *this;

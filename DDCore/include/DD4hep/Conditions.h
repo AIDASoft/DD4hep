@@ -187,11 +187,11 @@ namespace dd4hep {
 #endif
     /// Flag operations: Get condition flags
     mask_type flags()  const;
-    /// Flag operations: Set a conditons flag
+    /// Flag operations: Set a conditions flag
     void setFlag(mask_type option);
-    /// Flag operations: UN-Set a conditons flag
+    /// Flag operations: UN-Set a conditions flag
     void unFlag(mask_type option);
-    /// Flag operations: Test for a given a conditons flag
+    /// Flag operations: Test for a given a conditions flag
     bool testFlag(mask_type option) const;
 
     /** Conditions meta-data and handling of the data binding  */
@@ -459,7 +459,7 @@ namespace dd4hep {
    *  };
    *  
    *  long counter = 0;
-   *  for_each(std::begin(conditons), std::end(conditions), MyCounter(counter));
+   *  for_each(std::begin(conditions), std::end(conditions), MyCounter(counter));
    *
    *  \author  M.Frank
    *  \version 1.0

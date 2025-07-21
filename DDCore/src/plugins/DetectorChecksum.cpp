@@ -1063,7 +1063,7 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleHeader() const {
     geo.header = make_entry(log);
     return geo.header;
   }
-  printout(WARNING,"DetectorChecksum","+++ No Detector header information availible from the geometry description.");
+  printout(WARNING,"DetectorChecksum","+++ No Detector header information available from the geometry description.");
   return empty_entry;
 }
 
@@ -1214,14 +1214,16 @@ void DetectorChecksum::checksumDetElement(int lvl, DetElement det, hashes_t& has
       code = detail::hash64(&hashes[hash_idx_pv], sizeof(hash_t));
       str << " " << std::setfill(' ') << std::setw(9) << std::left << "+place"
           << " " << std::setfill('0') << std::setw(16) << std::hex << code;
-      code = detail::hash64(&hashes[hash_idx_daughters], (hash_idx_children-hash_idx_daughters)*sizeof(hash_t));
-      if ( !(child_places.empty() && hashed_places.empty()) )
+      if ( !(child_places.empty() && hashed_places.empty()) ) {
+        code = detail::hash64(&hashes[hash_idx_daughters], (hash_idx_children-hash_idx_daughters)*sizeof(hash_t));
         str << " " << std::setfill(' ') << std::setw(10) << std::left << "+daughters"
             << " " << std::setfill('0') << std::setw(16) << std::hex << code;
-      code = detail::hash64(&hashes[hash_idx_children], (hashes.size()-hash_idx_children)*sizeof(hash_t));
-      if ( !det.children().empty() )
+      }
+      if ( !det.children().empty() ) {
+        code = detail::hash64(&hashes[hash_idx_children], (hashes.size()-hash_idx_children)*sizeof(hash_t));
         str << " " << std::setfill(' ') << std::setw(9) << std::left << "+children"
             << " " << std::setfill('0') << std::setw(16) << std::hex << code;
+      }
       std::cout << str.str() << std::endl;
       if ( hash_idx_pv-hash_idx_ro > 0 )  {
         str.str("");

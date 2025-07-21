@@ -18,7 +18,6 @@
 
 // C/C++ include files
 #include <typeinfo>
-#include <vector>
 #include <string>
 
 /// Namespace for the AIDA detector description toolkit
@@ -185,8 +184,12 @@ namespace dd4hep {
 
   /// Initializing constructor binding data to buffer with move
   template <typename OBJECT> OpaqueDataBlock::OpaqueDataBlock(OBJECT&& obj)    {
+#if __cplusplus >= 202302L
+    bind(std::move(obj));
+#else
     this->bind(&BasicGrammar::instance<OBJECT>());
     new(this->pointer) OBJECT(std::move(obj));
+#endif
   }
 
   /// Construct conditions object and bind the data
@@ -204,7 +207,7 @@ namespace dd4hep {
   /// Bind data value
   template <typename T> inline T& OpaqueDataBlock::bind(T&& obj)   {
     this->bind(&BasicGrammar::instance<T>());
-    new(this->pointer) T(std::move(obj));
+    return *(new(this->pointer) T(std::move(obj)));
   }
 
   /// Bind data value

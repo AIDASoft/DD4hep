@@ -31,6 +31,9 @@
 // C/C++ include files
 #include <stdexcept>
 
+#include "G4OpticalParameters.hh"
+#include "G4OpticalPhoton.hh"
+
 #ifdef DD4HEP_USE_GEANT4_UNITS
 #define MM_2_CM 1.0
 #else
@@ -182,7 +185,7 @@ Geant4SensDetActionSequence& Geant4Sensitive::sequence() const {
   return *m_sequence;
 }
 
-/// Access the detector desciption object
+/// Access the detector description object
 dd4hep::Detector& Geant4Sensitive::detectorDescription() const {
   return m_detDesc;
 }
@@ -206,7 +209,7 @@ Geant4HitCollection* Geant4Sensitive::collectionByID(std::size_t id) {
 void Geant4Sensitive::defineCollections() {
 }
 
-/// Method invoked at the begining of each event.
+/// Method invoked at the beginning of each event.
 void Geant4Sensitive::begin(G4HCofThisEvent* /* HCE */) {
 }
 
@@ -260,11 +263,13 @@ long long int Geant4Sensitive::volumeID(const G4VTouchable* touchable) {
 long long int Geant4Sensitive::cellID(const G4Step* step) {
   Geant4StepHandler h(step);
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
-  VolumeID volID = volMgr.volumeID(h.preTouchable());
+  bool UsePostStepOnly = G4OpticalParameters::Instance() && G4OpticalParameters::Instance()->GetBoundaryInvokeSD() && (step->GetTrack()->GetDefinition() == G4OpticalPhoton::Definition());
+  VolumeID volID = volMgr.volumeID(UsePostStepOnly? h.postTouchable() : h.preTouchable());
   if ( m_segmentation.isValid() )  {
     std::exception_ptr eptr;
-    G4ThreeVector global = 0.5 * (h.prePosG4()+h.postPosG4());
-    G4ThreeVector local  = h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);
+    G4ThreeVector global = UsePostStepOnly? h.postPosG4() : 0.5 * (h.prePosG4()+h.postPosG4());
+    G4ThreeVector local  = UsePostStepOnly? h.postTouchable()->GetHistory()->GetTopTransform().TransformPoint(global) :
+                                            h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);
     Position loc(local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
     Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
     try  {
@@ -458,7 +463,7 @@ bool Geant4SensDetActionSequence::processFastSim(const Geant4FastSimSpot* spot, 
   return result;
 }
 
-/** G4VSensitiveDetector interface: Method invoked at the begining of each event.
+/** G4VSensitiveDetector interface: Method invoked at the beginning of each event.
  *  The hits collection(s) created by this sensitive detector must
  *  be set to the G4HCofThisEvent object at one of these two methods.
  */
@@ -478,7 +483,7 @@ void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
 void Geant4SensDetActionSequence::end(G4HCofThisEvent* hce) {
   m_end(hce);
   m_actors(&Geant4Sensitive::end, hce);
-  // G4HCofThisEvent must be availible until end-event. m_hce = 0;
+  // G4HCofThisEvent must be available until end-event. m_hce = 0;
 }
 
 /// G4VSensitiveDetector interface: Method invoked if the event was aborted.

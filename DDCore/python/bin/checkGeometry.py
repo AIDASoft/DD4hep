@@ -38,17 +38,17 @@ parser.add_option("-n", "--ntracks",
 
 parser.add_option("-x", "--vx",
                   dest="vx", default=0.0,
-                  help="X-position of track origine vertex [requires '--full']",
+                  help="X-position of track origin vertex [requires '--full']",
                   metavar="<double>")
 
 parser.add_option("-y", "--vy",
                   dest="vy", default=0.0,
-                  help="Y-position of track origine vertex [requires '--full']",
+                  help="Y-position of track origin vertex [requires '--full']",
                   metavar="<double>")
 
 parser.add_option("-z", "--vz",
                   dest="vz", default=0.0,
-                  help="Z-position of track origine vertex [requires '--full']",
+                  help="Z-position of track origin vertex [requires '--full']",
                   metavar="<double>")
 
 parser.add_option("-o", "--option", dest="option", default='ob',

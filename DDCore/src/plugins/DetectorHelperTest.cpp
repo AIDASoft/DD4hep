@@ -18,8 +18,6 @@
 #include <DD4hep/DetectorHelper.h>
 
 // C/C++ include files
-#include <stdexcept>
-#include <algorithm>
 
 using namespace dd4hep;
 

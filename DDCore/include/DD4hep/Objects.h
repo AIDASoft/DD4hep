@@ -56,7 +56,6 @@ class TGeoIdentity;
 // C/C++ include files
 #include <set>
 #include <cmath>
-#include <limits>
 #include <vector>
 
 #define _USE_MATH_DEFINES
@@ -137,11 +136,11 @@ namespace dd4hep {
     Author(Detector& doc);
     /// Assignment operator
     Author& operator=(const Author& e) = default;
-    /// Access the auhor's name
+    /// Access the author's name
     std::string authorName() const;
     /// Set the author's name
     void setAuthorName(const std::string& nam);
-    /// Access the auhor's email address
+    /// Access the author's email address
     std::string authorEmail() const;
     /// Set the author's email address
     void setAuthorEmail(const std::string& addr);

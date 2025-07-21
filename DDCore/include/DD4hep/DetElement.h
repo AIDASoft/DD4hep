@@ -25,7 +25,6 @@
 
 // C/C++ include files
 #include <map>
-#include <typeinfo>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -161,7 +160,7 @@ namespace dd4hep {
 
   /// Handle class describing a detector element
   /**
-   * Detector elements (class DetElement are entities which represent
+   * Detector elements (class DetElement) are entities which represent
    * subdetectors or sizable parts of a subdetector.
    * A DetElement instance has the means to provide to clients information about
    *
@@ -171,7 +170,7 @@ namespace dd4hep {
    *       if the \em DetElement represents a part of a subdetector.
    *    -  information about the \em Readout structure if the object is
    *       instrumented and read-out. Otherwise this link is empty.
-   *    -  information about the environmental conditions etc. \em conditons.
+   *    -  information about the environmental conditions etc. \em conditions.
    *       The access to conditions is exposed via the DetConditions interface.
    *       See dd4hep/DetConditions.h for further details.
    *    -  alignment information.
@@ -464,5 +463,9 @@ namespace dd4hep {
 } /* End namespace dd4hep        */
 
 #include <DD4hep/AlignmentData.h>
+
+// Needed so that end users can call destroyHandle on a DetElement without risking undefined behavior
+// and memory leaks. See comment in destroyHandle in file Handle.h for more details
+#include <DD4hep/detail/DetectorInterna.h>
 
 #endif // DD4HEP_DETELEMENT_H

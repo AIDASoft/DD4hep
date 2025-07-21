@@ -551,7 +551,7 @@ void DetectorImp::mapDetectorTypes()  {
   }
 }
 
-/// Access the availible detector types
+/// Access the available detector types
 std::vector<std::string> DetectorImp::detectorTypes() const  {
   if ( m_manager->IsClosed() ) {
     std::vector<std::string> v;
@@ -745,7 +745,7 @@ void DetectorImp::endDocument(bool close_geometry)    {
     }
     m_world.setPlacement(pv);
   }
-  // Patching shape names of anaonymous shapes
+  // Patching shape names of anonymous shapes
   ShapePatcher patcher(m_volManager, m_world);
   patcher.patchShapes();
   mapDetectorTypes();

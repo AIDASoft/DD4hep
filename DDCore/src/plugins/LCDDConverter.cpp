@@ -55,7 +55,6 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <iomanip>
 
 using namespace dd4hep;
 using namespace dd4hep::detail;
@@ -1099,7 +1098,7 @@ void LCDDConverter::handleHeader() const {
     obj.setText(hdr.comment());
     return;
   }
-  printout(WARNING,"LCDDConverter","+++ No Detector header information availible from the geometry description.");
+  printout(WARNING,"LCDDConverter","+++ No Detector header information available from the geometry description.");
 }
 
 template <typename O, typename C, typename F> void handle(const O* o, const C& c, F pmf) {

@@ -20,8 +20,6 @@
 #include <DD4hep/detail/SegmentationsInterna.h>
 
 // C/C++ include files
-#include <iostream>
-#include <stdexcept>
 
 using namespace dd4hep;
 
