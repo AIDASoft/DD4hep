@@ -122,6 +122,7 @@ namespace {
     bool includes     = false;
     bool matrix       = false;
     bool surface      = false;
+    bool detelements  = false;
     bool include_guard= true;
   } s_debug;
 }
@@ -310,7 +311,7 @@ template <> void Converter<Debug>::operator()(xml_h e) const {
     else if ( nam.substr(0,6) == "matrix" ) s_debug.matrix       = (0 != val);
     else if ( nam.substr(0,6) == "surfac" ) s_debug.surface      = (0 != val);
     else if ( nam.substr(0,6) == "incgua" ) s_debug.include_guard= (0 != val);
-
+    else if ( nam.substr(0,6) == "detele" ) s_debug.detelements  = (0 != val);
   }
 }
   
@@ -379,7 +380,7 @@ template <> void Converter<Constant>::operator()(xml_h e) const {
   }
   xml::DocumentHolder doc(xml::DocumentHandler().load(e, e.attr_value(_U(ref))));
   if ( s_debug.includes )   {
-    printout(ALWAYS, "Compact","++ Processing xml document %s.",doc.uri().c_str());
+    printout(ALWAYS, "Compact","++ Processing xml document %s.",doc.uri().c_str()); 
   }
   xml_h root = doc.root();
   xml_coll_t(root, _U(define)).for_each(_U(constant), Converter<Constant>(description));
@@ -392,13 +393,20 @@ template <> void Converter<Constant>::operator()(xml_h e) const {
  */
 template <> void Converter<Header>::operator()(xml_h e) const {
   xml_comp_t c(e);
-  Header h(e.attr<std::string>(_U(name)), e.attr<std::string>(_U(title), "Undefined"));
-  h.setUrl(e.attr<std::string>(_U(url), "Undefined"));
-  h.setAuthor(e.attr<std::string>(_U(author), "Undefined"));
-  h.setStatus(e.attr<std::string>(_U(status), "development"));
-  h.setVersion(e.attr<std::string>(_U(version), "Undefined"));
-  h.setComment(e.hasChild(_U(comment)) ? e.child(_U(comment)).text() : "No Comment");
-  description.setHeader(h);
+  Header h = description.header();
+  if( !h.isValid() )  {
+    h = Header(e.attr<std::string>(_U(name)), e.attr<std::string>(_U(title), "Undefined"));
+    h.setUrl(e.attr<std::string>(_U(url), "Undefined"));
+    h.setAuthor(e.attr<std::string>(_U(author), "Undefined"));
+    h.setStatus(e.attr<std::string>(_U(status), "development"));
+    h.setVersion(e.attr<std::string>(_U(version), "Undefined"));
+    h.setComment(e.hasChild(_U(comment)) ? e.child(_U(comment)).text() : "No Comment");
+    description.setHeader(h);
+    return;
+  }
+  printout(ERROR, "Compact","++ Only one Header structure allowed per Detector descriptor.");
+  printout(ERROR, "Compact","++ On the fly replacement inhibited.");
+  except("Compact","++ Inconsistent Detector Header definition in compact xml sources.");
 }
 
 /** Convert compact material/element description objects
@@ -1402,6 +1410,11 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
       }
       description.declareParent(name, parent);
     }
+    if( s_debug.detelements )  {
+      printout(ALWAYS, "Compact","++ Building DetElement %s of type: %s. Parent: %s",
+	       name.c_str(), type.c_str(), par_name.c_str());
+    }
+    
     xml_attr_t attr_ro  = element.attr_nothrow(_U(readout));
     SensitiveDetector sd;
     Segmentation seg;
