@@ -108,9 +108,15 @@ endif()
 dd4hep_add_plugin(DDCorePlugins SOURCES src/plugins/*.cpp USES DDCore)
 
 # Graphics DDCore plugins---------------------------------------------------------
-dd4hep_add_plugin(DDCoreGraphics
-  SOURCES src/graphics/*.cpp
-  USES DDCore ROOT::Core ROOT::Rint ROOT::Gui ROOT::Hist ROOT::HistPainter ROOT::ROOTHistDraw)
+if(TARGET ROOT::ROOTHistDraw)
+  dd4hep_add_plugin(DDCoreGraphics
+    SOURCES src/graphics/*.cpp
+    USES DDCore ROOT::Core ROOT::Rint ROOT::Gui ROOT::Hist ROOT::HistPainter ROOT::ROOTHistDraw)
+else()
+  dd4hep_add_plugin(DDCoreGraphics
+    SOURCES src/graphics/*.cpp
+    USES DDCore ROOT::Core ROOT::Rint ROOT::Gui ROOT::Hist ROOT::HistPainter)
+endif()
 
 # This plugins depends on the ROOT GDML readers. Hence, extra library
 IF(TARGET ROOT::Gdml)
