@@ -44,6 +44,10 @@ add_executable( multipleGeo   main/MultipleGeometries.cpp )
 target_link_libraries(multipleGeo DD4hep::DDCore DD4hep::DDCond DD4hep::DDAlign)
 install(TARGETS multipleGeo RUNTIME DESTINATION bin)
 #-----------------------------------------------------------------------------------
+add_executable( testLoad      main/Test_loadDetector.cpp )
+target_link_libraries(testLoad DD4hep::DDCore )
+install(TARGETS testLoad RUNTIME DESTINATION bin)
+#-----------------------------------------------------------------------------------
 #
 #
 set(ClientTestsEx_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
@@ -479,6 +483,16 @@ dd4hep_add_test_reg( ClientTests_interrupt_geometry_construction
   EXEC_ARGS  geoDisplay -compact ${ClientTestsEx_INSTALL}/compact/InterruptTrigger.xml 
   -load -print INFO
   REGEX_PASS "\\+\\+\\+ Caught signal: 2 context: 0xfeedbabe. exit process."
+  REGEX_FAIL "Exception;EXCEPTION;ERROR"
+)
+#
+# Test if multiple Detector::Header structure are be parsed, which is not allowed,
+# since it results in data inconsistencies and memory leaks.
+dd4hep_add_test_reg( ClientTests_check_for_multiple_headers
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoDisplay -compact ${ClientTestsEx_INSTALL}/compact/Test_2ndHeader.xml 
+  -load -print INFO
+  REGEX_PASS "WARN  \\+\\+ Overwriting/updating Header structure is very dangerous. Try to avoid this."
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
