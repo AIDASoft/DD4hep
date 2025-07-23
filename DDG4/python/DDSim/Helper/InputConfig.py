@@ -1,6 +1,5 @@
 """Class for input plugin configuration"""
 
-from __future__ import absolute_import, unicode_literals
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
 
