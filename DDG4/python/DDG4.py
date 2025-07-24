@@ -862,7 +862,7 @@ class Geant4:
     \author  M.Frank
     """
     from ROOT import PyDDG4
-    PyDDG4.run(self.master().get())
+    PyDDG4.runAll(self.master().get())
     return self
 
 
