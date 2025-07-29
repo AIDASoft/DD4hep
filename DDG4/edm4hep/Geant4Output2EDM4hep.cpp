@@ -573,7 +573,7 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
     // Create the hit container even if there are no entries!
     auto& hits = m_trackerHits[colName];
     for(unsigned i=0 ; i < nhits ; ++i){
-      auto sth = hits->create();
+      auto sth = hits.create();
       const Geant4Tracker::Hit* hit = coll->hit(i);
       const Geant4Tracker::Hit::Contribution& t = hit->truth;
       int   trackID   = pm->particleID(t.trackID);
@@ -608,7 +608,7 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
     // Create the hit container even if there are no entries!
     auto& hits = m_calorimeterHits[colName];
     for(unsigned i=0 ; i < nhits ; ++i){
-      auto sch = hits.first->create();
+      auto sch = hits.first.create();
       const Geant4Calorimeter::Hit* hit = coll->hit(i);
       const auto& pos = hit->position;
       sch.setCellID( hit->cellID );
@@ -619,7 +619,7 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
       // now add the individual step contributions
       for(auto ci=hit->truth.begin(); ci != hit->truth.end(); ++ci){
 
-        auto sCaloHitCont = hits.second->create();
+        auto sCaloHitCont = hits.second.create();
         sch.addToContributions( sCaloHitCont );
 
         const Geant4HitData::Contribution& c = *ci;
