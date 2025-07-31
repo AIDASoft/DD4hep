@@ -110,7 +110,7 @@ namespace dd4hep {
    *      <pressure name="external_pressure" value="980*hPa"/>
    *      <include ref="..."/>
    *
-   *    The object tag name is passed as the conditons type to the system.
+   *    The object tag name is passed as the conditions type to the system.
    *    The data payload may either be specified as an attribute to the
    *    element or as text (data payload as the inner XML of the element).
    *

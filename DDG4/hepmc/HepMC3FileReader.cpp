@@ -146,9 +146,13 @@ HEPMC3FileReader::HEPMC3FileReader(const std::string& nam)
 
 void HEPMC3FileReader::registerRunParameters() {
   try {
-    auto *parameters = new RunParameters();
+    // get RunParameters or create new if not existent yet
+    auto *parameters = context()->run().extension<RunParameters>(false);
+    if (!parameters) {
+      parameters = new RunParameters();
+      context()->run().addExtension<RunParameters>(parameters);
+    }
     parameters->ingestParameters(*(m_reader->run_info()));
-    context()->run().addExtension<RunParameters>(parameters);
   } catch(std::exception &e) {
     printout(ERROR,"HEPMC3FileReader::registerRunParameters","Failed to register run parameters: %s", e.what());
   }
@@ -183,11 +187,15 @@ HEPMC3FileReader::readGenEvent(int /*event_number*/, HepMC3::GenEvent& genEvent)
     printout(INFO,"HEPMC3FileReader","Read event from file");
     // Create input event parameters context
     try {
+      // get EventParameters or create new if not existent yet
       Geant4Context* ctx = context();
-      EventParameters *parameters = new EventParameters();
+      auto* parameters = ctx->event().extension<EventParameters>(false);
+      if (!parameters) {
+        parameters = new EventParameters();
+        ctx->event().addExtension<EventParameters>(parameters);
+      }
       parameters->setEventNumber(genEvent.event_number());
       parameters->ingestParameters(genEvent);
-      ctx->event().addExtension<EventParameters>(parameters);
     }
     catch(std::exception &)
     {

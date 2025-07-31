@@ -16,7 +16,7 @@
 //==========================================================================
 // Note:
 //
-// This is an example file, which shows how to instantiate extera parsers,
+// This is an example file, which shows how to instantiate external parsers,
 // which are not part of dd4hep, but may be interesting for a
 // client application.
 //

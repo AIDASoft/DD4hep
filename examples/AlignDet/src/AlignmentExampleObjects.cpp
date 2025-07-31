@@ -21,7 +21,7 @@ using namespace std;
 using namespace dd4hep;
 using namespace dd4hep::AlignmentExamples;
 
-/// Install the consitions and the alignment manager
+/// Install the conditions and the alignment manager
 ConditionsManager dd4hep::AlignmentExamples::installManager(Detector& description)  {
   // Now we instantiate the conditions manager
   description.apply("DD4hep_ConditionsManagerInstaller",0,(char**)0);

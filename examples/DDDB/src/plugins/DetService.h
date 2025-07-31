@@ -82,7 +82,7 @@ namespace gaudi  {
     Slice _find(Content &content, const IOVType *typ, EventStamp stamp);
     /// Project a newly created conditions slice.
     Slice _create(Content &content, Context *ctx, const IOVType *typ, EventStamp stamp);
-    /// Project a new conditions slice. If a free cached slice is availible, it shall be re-used
+    /// Project a new conditions slice. If a free cached slice is available, it shall be re-used
     Slice _project(Content &content, Context *ctx, const IOVType *typ, EventStamp stamp);
     /// Remove content from cache
     bool _remove(CachedContents &cache, Content &content);
@@ -139,17 +139,17 @@ namespace gaudi  {
     /// Remove content object from cache.
     virtual bool removeContent(Content &content) override;
 
-    /// Project a new conditions slice. If a free cached slice is availible, it shall be re-used
+    /// Project a new conditions slice. If a free cached slice is available, it shall be re-used
     virtual Slice project(Content &content,
                           Context *ctx,
                           const IOVType *typ,
                           EventStamp stamp) override;
-    /// Project a new conditions slice. If a free cached slice is availible, it shall be re-used
+    /// Project a new conditions slice. If a free cached slice is available, it shall be re-used
     virtual Slice project(Content &content,
                           Context *ctx,
                           const std::string &typ,
                           EventStamp stamp) override;
-    /// Project a new conditions slice. If a free cached slice is availible, it shall be re-used
+    /// Project a new conditions slice. If a free cached slice is available, it shall be re-used
     virtual Slice project(const std::string &content,
                           Context *ctx,
                           const std::string &typ,

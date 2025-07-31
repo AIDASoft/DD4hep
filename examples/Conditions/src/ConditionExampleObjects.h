@@ -344,7 +344,7 @@ namespace dd4hep {
     /// Helper to run DetElement scans
     typedef DetectorScanner Scanner;
     
-    /// Install the consitions and the conditions manager
+    /// Install the conditions and the conditions manager
     ConditionsManager installManager(Detector& description);
   }       /* End namespace condExamples             */
 }         /* End namespace dd4hep                         */

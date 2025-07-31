@@ -287,7 +287,7 @@ void DigiContainerCombine::have_workers(size_t count)  const   {
   }
 }
 
-/// Decide if a continer is to merged based on the properties
+/// Decide if a container is to merged based on the properties
 bool DigiContainerCombine::use_key(Key key)  const   {
   const auto& m = m_input_masks;
   bool use = m.empty() || m_keys.empty();

@@ -65,7 +65,7 @@ namespace  Tests {
     }
     /// Define collections created by this sensitivie action object
     virtual void defineCollections()   override   {}
-    /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
+    /// G4VSensitiveDetector interface: Method invoked at the beginning of each event.
     virtual void begin(G4HCofThisEvent* hce)   override   {
       Base::begin(hce);
     }

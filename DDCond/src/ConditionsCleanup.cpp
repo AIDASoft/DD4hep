@@ -22,7 +22,7 @@ bool ConditionsCleanup::operator()(const ConditionsIOVPool & /* iov_pool */) con
   return false;
 }
 
-/// Request cleanup operation of regular conditiions pool
+/// Request cleanup operation of regular conditions pool
 bool ConditionsCleanup::operator()(const ConditionsPool & /* iov_pool */) const
 {
   return true;
@@ -34,7 +34,7 @@ bool ConditionsFullCleanup::operator()(const ConditionsIOVPool & /* iov_pool */)
   return true;
 }
 
-/// Request cleanup operation of regular conditiions pool
+/// Request cleanup operation of regular conditions pool
 bool ConditionsFullCleanup::operator()(const ConditionsPool & /* iov_pool */) const
 {
   return true;

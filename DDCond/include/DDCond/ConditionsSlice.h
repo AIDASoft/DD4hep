@@ -40,11 +40,11 @@ namespace dd4hep {
      *  Object contains set of required conditions keys to be loaded to the user pool.
      *  It alkso contains the load information for the required conditions (conditions addresses).
      *  The address objects depend on the actual loader mechanism and must be specified the user.
-     *  The information is then chained through the calls and made availible to the loader object.
+     *  The information is then chained through the calls and made available to the loader object.
      *
      *  On return it contains the individual condition load information.
      *
-     *  Referenced by: ConditonsUserPool, ConditionsManager
+     *  Referenced by: ConditionsUserPool, ConditionsManager
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -116,9 +116,9 @@ namespace dd4hep {
       unsigned long             flags = 0;
       
     protected:
-      /// If flag conditonsManager["OutputUnloadedConditions"]=true: will contain conditions not loaded
+      /// If flag conditionsManager["OutputUnloadedConditions"]=true: will contain conditions not loaded
       ConditionsContent::Conditions   m_missingConditions;
-      /// If flag conditonsManager["OutputUnloadedConditions"]=true: will contain conditions not computed
+      /// If flag conditionsManager["OutputUnloadedConditions"]=true: will contain conditions not computed
       ConditionsContent::Dependencies m_missingDerivations;
       
       /// Default assignment operator

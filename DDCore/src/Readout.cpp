@@ -76,7 +76,7 @@ std::vector<std::string> Readout::collectionNames()  const   {
   throw std::runtime_error("dd4hep: Readout");
 }
 
-/// Access hit collectionsy
+/// Access hit collections
 std::vector<const HitCollection*> Readout::collections()  const   {
   std::vector<const HitCollection*> colls;
   if ( isValid() ) {

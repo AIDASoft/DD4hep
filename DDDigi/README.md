@@ -103,7 +103,7 @@ DigiContainerSequenceAction
 ---------------------------
 
 - Specialization of the `DigiEventAction`.                                                           <br/>
-  Process continers from the data store according to the `input_segment` and the `input_mask`.
+  Process containers from the data store according to the `input_segment` and the `input_mask`.
   Output of workers is delivered to the `output_segment` with mask `output_mask`.                    <br/>
 
   Properties: Properties of the `DigiEventAction` apply!                                             <br/>
