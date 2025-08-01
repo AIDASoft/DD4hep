@@ -67,6 +67,8 @@ namespace dd4hep {
     class Geant4Output2EDM4hep : public Geant4OutputAction  {
     protected:
       using writer_t = podio::ROOTWriter;
+      using floatmap_t = std::map< std::string, float >;
+      using intmap_t = std::map< std::string, int >;
       using stringmap_t = std::map< std::string, std::string >;
       using trackermap_t = std::map< std::string, edm4hep::SimTrackerHitCollection >;
       using calorimeterpair_t = std::pair< edm4hep::SimCalorimeterHitCollection, edm4hep::CaloHitContributionCollection >;
@@ -78,8 +80,8 @@ namespace dd4hep {
       trackermap_t                  m_trackerHits;
       calorimetermap_t              m_calorimeterHits;
       stringmap_t                   m_runHeader;
-      stringmap_t                   m_eventParametersInt;
-      stringmap_t                   m_eventParametersFloat;
+      intmap_t                      m_eventParametersInt;
+      floatmap_t                    m_eventParametersFloat;
       stringmap_t                   m_eventParametersString;
       stringmap_t                   m_cellIDEncodingStrings{};
       std::string                   m_section_name      { "events" };
@@ -117,9 +119,13 @@ namespace dd4hep {
     protected:
       /// Fill event parameters in EDM4hep event
       template <typename T>
-      void saveEventParameters(const std::map<std::string, std::string >& parameters)   {
-        for(const auto& p : parameters)   {
-          info("Saving event parameter: %-32s = %s", p.first.c_str(), p.second.c_str());
+      void saveEventParameters(const std::map<std::string, T >& parameters)   {
+        for(const auto& p : parameters) {
+          std::stringstream output;
+          output << "Saving event parameter: "
+                 << std::setw(32) << p.first
+                 << std::setw(20) << p.second;
+          info(output.str().c_str());
           m_frame.putParameter(p.first, p.second);
         }
       }
