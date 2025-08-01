@@ -83,8 +83,8 @@ namespace dd4hep {
       intmap_t                      m_eventParametersInt;
       floatmap_t                    m_eventParametersFloat;
       stringmap_t                   m_eventParametersString;
-      stringmap_t                   m_runParametersInt;
-      stringmap_t                   m_runParametersFloat;
+      intmap_t                      m_runParametersInt;
+      floatmap_t                    m_runParametersFloat;
       stringmap_t                   m_runParametersString;
       stringmap_t                   m_cellIDEncodingStrings{};
       std::string                   m_section_name      { "events" };
