@@ -67,6 +67,8 @@ namespace dd4hep {
     class Geant4Output2EDM4hep : public Geant4OutputAction  {
     protected:
       using writer_t = podio::ROOTWriter;
+      using floatmap_t = std::map< std::string, float >;
+      using intmap_t = std::map< std::string, int >;
       using stringmap_t = std::map< std::string, std::string >;
       using trackermap_t = std::map< std::string, edm4hep::SimTrackerHitCollection >;
       using calorimeterpair_t = std::pair< edm4hep::SimCalorimeterHitCollection, edm4hep::CaloHitContributionCollection >;
@@ -81,8 +83,8 @@ namespace dd4hep {
       stringmap_t                   m_eventParametersInt;
       stringmap_t                   m_eventParametersFloat;
       stringmap_t                   m_eventParametersString;
-      stringmap_t                   m_runParametersInt;
-      stringmap_t                   m_runParametersFloat;
+      intmap_t                      m_runParametersInt;
+      floatmap_t                    m_runParametersFloat;
       stringmap_t                   m_runParametersString;
       stringmap_t                   m_cellIDEncodingStrings{};
       std::string                   m_section_name      { "events" };
