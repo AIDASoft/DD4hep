@@ -41,7 +41,7 @@ namespace dd4hep {
       ConditionsCleanup& operator=(const ConditionsCleanup& c) = default;
       /// Request cleanup operation of IOV POOL
       virtual bool operator()(const ConditionsIOVPool& iov_pool)  const;
-      /// Request cleanup operation of regular conditiions pool
+      /// Request cleanup operation of regular conditions pool
       virtual bool operator()(const ConditionsPool& pool)  const;
     };
 
@@ -64,7 +64,7 @@ namespace dd4hep {
       ConditionsFullCleanup& operator=(const ConditionsFullCleanup& c) = default;
       /// Request cleanup operation of IOV POOL
       virtual bool operator()(const ConditionsIOVPool& iov_pool)  const  override;
-      /// Request cleanup operation of regular conditiions pool
+      /// Request cleanup operation of regular conditions pool
       virtual bool operator()(const ConditionsPool& pool)  const  override;
     };
   } /* End namespace cond                   */

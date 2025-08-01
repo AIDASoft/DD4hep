@@ -48,7 +48,6 @@
 #
 # Length [L]
 #
-from __future__ import absolute_import, unicode_literals, division
 
 millimeter = 1.
 millimeter2 = millimeter * millimeter

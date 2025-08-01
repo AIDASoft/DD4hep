@@ -60,6 +60,6 @@ namespace dd4hep {
     };
   }    // End namespace digi
 }      // End namespace dd4hep
-//        Factory definitiony
+//        Factory definition
 #include <DDDigi/DigiFactories.h>
 DECLARE_DIGIACTION_NS(dd4hep::digi,DigiSegmentDepositExtractor)

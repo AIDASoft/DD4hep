@@ -185,7 +185,7 @@ Geant4SensDetActionSequence& Geant4Sensitive::sequence() const {
   return *m_sequence;
 }
 
-/// Access the detector desciption object
+/// Access the detector description object
 dd4hep::Detector& Geant4Sensitive::detectorDescription() const {
   return m_detDesc;
 }
@@ -209,7 +209,7 @@ Geant4HitCollection* Geant4Sensitive::collectionByID(std::size_t id) {
 void Geant4Sensitive::defineCollections() {
 }
 
-/// Method invoked at the begining of each event.
+/// Method invoked at the beginning of each event.
 void Geant4Sensitive::begin(G4HCofThisEvent* /* HCE */) {
 }
 
@@ -463,7 +463,7 @@ bool Geant4SensDetActionSequence::processFastSim(const Geant4FastSimSpot* spot, 
   return result;
 }
 
-/** G4VSensitiveDetector interface: Method invoked at the begining of each event.
+/** G4VSensitiveDetector interface: Method invoked at the beginning of each event.
  *  The hits collection(s) created by this sensitive detector must
  *  be set to the G4HCofThisEvent object at one of these two methods.
  */
@@ -483,7 +483,7 @@ void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
 void Geant4SensDetActionSequence::end(G4HCofThisEvent* hce) {
   m_end(hce);
   m_actors(&Geant4Sensitive::end, hce);
-  // G4HCofThisEvent must be availible until end-event. m_hce = 0;
+  // G4HCofThisEvent must be available until end-event. m_hce = 0;
 }
 
 /// G4VSensitiveDetector interface: Method invoked if the event was aborted.

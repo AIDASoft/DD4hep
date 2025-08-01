@@ -6,7 +6,6 @@ Based on M. Frank and F. Gaede runSim.py
 
 Modified with settings for RICH simulation
 """
-from __future__ import absolute_import, unicode_literals
 import logging
 import sys
 import os

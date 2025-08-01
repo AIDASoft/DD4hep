@@ -438,7 +438,7 @@ namespace dd4hep {
       m_userData.sensitive = this;
     }
 
-    /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
+    /// G4VSensitiveDetector interface: Method invoked at the beginning of each event.
     template <> void Geant4SensitiveAction<TrackerWeighted>::begin(G4HCofThisEvent* /* hce */)   {
       m_userData.startEvent();
     }

@@ -65,7 +65,7 @@ namespace dd4hep {
      *  Object contains set of required conditions keys to be loaded to the user pool.
      *  It also contains the load information for the required conditions (conditions addresses).
      *  The address objects depend on the actual loader mechanism and must be specified the user.
-     *  The information is then chained through the calls and made availible to the loader object.
+     *  The information is then chained through the calls and made available to the loader object.
      *
      *  \author  M.Frank
      *  \version 1.0

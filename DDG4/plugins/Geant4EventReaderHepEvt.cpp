@@ -94,7 +94,7 @@ using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
 #define HEPEvtShort 1
 #define HEPEvtLong  2
 
-// Local declarations in anaonymous namespace
+// Local declarations in anonymous namespace
 namespace {
   class Geant4EventReaderHepEvtShort : public Geant4EventReaderHepEvt  {
   public:

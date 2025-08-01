@@ -65,7 +65,7 @@ namespace dd4hep {
       /** @return unique_lock  [out] The semaphore is locks as long as the returned lock is held
        */
       std::unique_lock<std::mutex> wait_null();
-      /// Aquire semaphore count
+      /// Acquire semaphore count
       void aquire();
       /// Release semaphore count
       void release();

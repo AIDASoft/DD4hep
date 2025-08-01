@@ -69,7 +69,7 @@ namespace gaudi   {
     /// Access single parameter
     const Parameter& _param(const std::string& nam)   const;
   public:
-    /// Defautl constructor
+    /// Default constructor
     ParameterMap() = default;
     /// Copy constructor
     ParameterMap(const ParameterMap& copy) = default;

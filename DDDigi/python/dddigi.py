@@ -8,7 +8,6 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 # ==========================================================================
-from __future__ import absolute_import, unicode_literals
 import cppyy
 from dd4hep_base import *  # noqa: F401, F403
 

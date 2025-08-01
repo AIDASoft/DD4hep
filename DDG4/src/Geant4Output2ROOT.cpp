@@ -128,7 +128,7 @@ int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, v
         m_branches.emplace(nam, b);
       }
       else {
-        throw std::runtime_error("No ROOT TClass object availible for object type:" + typeName(typ));
+        throw std::runtime_error("No ROOT TClass object available for object type:" + typeName(typ));
       }
     }
     else {

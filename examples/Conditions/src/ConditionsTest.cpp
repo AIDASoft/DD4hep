@@ -211,7 +211,7 @@ void TestEnv::add_xml_data_source(const string& file, const string& iov_str)   {
   this->loader->addSource(source, iov);
 }
 
-/// Dump the conditions of one detectpr element
+/// Dump the conditions of one detector element
 void TestEnv::dump_detector_element(DetElement elt, ConditionsMap& map)
 {
   vector<Condition> conditions;
@@ -220,7 +220,7 @@ void TestEnv::dump_detector_element(DetElement elt, ConditionsMap& map)
     printout(INFO,"conditions_tree","DetElement:%s  NO CONDITIONS present",elt.path().c_str());
   }
   else  {
-    printout(INFO,"conditions","DetElement:%s # of conditons:%ld",elt.path().c_str(),conditions.size());
+    printout(INFO,"conditions","DetElement:%s # of conditions:%ld",elt.path().c_str(),conditions.size());
     for(const auto& c : conditions )
       print_condition<void>(c);
   }

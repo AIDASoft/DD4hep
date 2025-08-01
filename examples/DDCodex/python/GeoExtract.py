@@ -4,7 +4,6 @@
 # Syntax is:
 #   gaudirun.py Brunel-Default.py <someDataFiles>.py
 ###############################################################################
-from __future__ import absolute_import, unicode_literals
 import os
 from GaudiConf import IOHelper
 from Gaudi.Configuration import *  # noqa: F403

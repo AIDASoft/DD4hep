@@ -81,7 +81,7 @@ namespace dd4hep {
       virtual ~SequenceHdl() {
         _release();
       }
-      /// Aquire object reference
+      /// Acquire object reference
       void _aquire(T* s) {
         InstanceCount::increment(this);
         m_sequence = s;

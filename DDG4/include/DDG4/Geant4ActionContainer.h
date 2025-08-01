@@ -146,9 +146,9 @@ namespace dd4hep {
         return *stackingAction(true);
       }
 
-      /// Access detector construcion action sequence (geometry+sensitives+field)
+      /// Access detector construction action sequence (geometry+sensitives+field)
       Geant4DetectorConstructionSequence* detectorConstruction(bool create);
-      /// Access detector construcion action sequence (geometry+sensitives+field)
+      /// Access detector construction action sequence (geometry+sensitives+field)
       Geant4DetectorConstructionSequence& detectorConstruction() {
         return *detectorConstruction(true);
       }

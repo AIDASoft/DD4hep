@@ -136,7 +136,7 @@ namespace dd4hep {
       virtual Ref_t manager() const  override                 { return m_manager;           }
       /// Access to pool IOV
       virtual const IOV& requiredValidity()  const  override  { return m_pool.validity();   }
-      /// Accessor for the current conditons mapping
+      /// Accessor for the current conditions mapping
       virtual ConditionsMap& conditionsMap() const override   { return m_pool;              }
       /// ConditionResolver implementation: Interface to access conditions.
       virtual Condition get(const ConditionKey& key) override

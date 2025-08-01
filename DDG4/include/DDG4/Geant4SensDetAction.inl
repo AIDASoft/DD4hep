@@ -69,7 +69,7 @@ namespace dd4hep {
       return m_readout;
     }
 
-    /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
+    /// G4VSensitiveDetector interface: Method invoked at the beginning of each event.
     template <typename T> void Geant4SensitiveAction<T>::begin(G4HCofThisEvent* hce)  {
       Geant4Sensitive::begin(hce);
     }

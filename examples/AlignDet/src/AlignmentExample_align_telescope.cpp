@@ -53,7 +53,7 @@ static void print_world_trafo(AlignmentsCalib& calib, const std::string& path)  
   Condition c = calib.slice.get(d,align::Keys::deltaKey);
   printout(WARNING,"Example",
            "++ Detector element:%s No alignment conditions present. Delta:%s",
-           path.c_str(), c.isValid() ? "Present" : "Not availible");
+           path.c_str(), c.isValid() ? "Present" : "Not available");
 }
 
 /// Plugin function: Alignment program example

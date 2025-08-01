@@ -97,17 +97,17 @@ ConditionAny::mask_type ConditionAny::flags()  const    {
   return access()->flags;
 }
 
-/// Flag operations: Set a conditons flag
+/// Flag operations: Set a conditions flag
 void ConditionAny::setFlag(mask_type option)   {
   access()->setFlag(option);
 }
 
-/// Flag operations: UN-Set a conditons flag
+/// Flag operations: UN-Set a conditions flag
 void ConditionAny::unFlag(mask_type option)   {
   access()->unFlag(option);
 }
 
-/// Flag operations: Test for a given a conditons flag
+/// Flag operations: Test for a given a conditions flag
 bool ConditionAny::testFlag(mask_type option) const {
   return access()->testFlag(option);
 }

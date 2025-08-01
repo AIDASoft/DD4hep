@@ -1,5 +1,9 @@
 name: Test Summary PR comment
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   workflow_run:
     # do NOT use quotes: https://stackoverflow.com/a/72551795/17876693

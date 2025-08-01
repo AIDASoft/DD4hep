@@ -312,7 +312,7 @@ namespace  {
       }
       catch(...)  {
         ::sprintf(fmt,"%03d %%-%ds %%s%%-20s -> %%s",level+1,2*level+3);
-        printout(m_level,m_name, fmt, "", de.path().c_str(), "NO CATALOG availible!", "");
+        printout(m_level,m_name, fmt, "", de.path().c_str(), "NO CATALOG available!", "");
         ++m_context.numNoCatalogs;
       }
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)

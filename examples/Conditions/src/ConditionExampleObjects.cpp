@@ -22,7 +22,7 @@ using namespace dd4hep::ConditionExamples;
 using cond::DependencyBuilder;
 using cond::ConditionsLoadInfo;
 
-/// Install the consitions and the alignment manager
+/// Install the conditions and the alignment manager
 ConditionsManager dd4hep::ConditionExamples::installManager(Detector& description)  {
   // Now we instantiate the conditions manager
   description.apply("DD4hep_ConditionsManagerInstaller",0,(char**)0);

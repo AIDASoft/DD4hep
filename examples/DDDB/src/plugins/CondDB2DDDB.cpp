@@ -1524,7 +1524,7 @@ namespace dd4hep {
         if ( x_det.hasAttr(_LBU(classID)) )  {
           det->classID = element.attr<int>(_LBU(classID));
         }
-        // Now extract all availible information from the xml
+        // Now extract all available information from the xml
         if ( (elt=x_det.child(_U(author),false)) )
           Conv<DDDBAuthor>(description,context,&det->author)(elt);
         if ( (elt=x_det.child(_U(version),false)) )
@@ -1799,7 +1799,7 @@ namespace dd4hep {
       p  = path.normalize().native();      
       /// Hacky: If no reference object is given, the object name 
       /// is the same as the last item of the path (???)
-      /// ==> Local fix for online consitions, which are referenced using:
+      /// ==> Local fix for online conditions, which are referenced using:
       /// conddb:/Conditions/Online/L0MUON/Q1/FOI instead of:
       /// conddb:/Conditions/Online/L0MUON/Q1/FOI#FOI ...
       if ( hash == string::npos )   {

@@ -78,7 +78,7 @@ template <> void Converter<plugin>::operator()(xml_h e)  const  {
   for(std::vector<std::string>::const_iterator i=args.begin(); i!=args.end();++i)
     cargs.emplace_back((*i).c_str());
   printout(INFO,"ConverterPlugin","+++ Now executing plugin:%s [%d args]",nam.c_str(),int(cargs.size()));
-  description.apply(nam.c_str(),int(cargs.size()),(char**)&cargs[0]);
+  description.apply(nam.c_str(),int(cargs.size()), cargs.empty() ? nullptr : (char**)&cargs[0]);
 }
 
 /** Convert include_file objects

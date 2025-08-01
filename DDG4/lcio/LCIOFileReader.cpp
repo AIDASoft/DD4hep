@@ -152,12 +152,16 @@ dd4hep::sim::LCIOFileReader::readParticleCollection(int /*event_number*/, EVENT:
       
       // Create input event parameters context
       try {
+        // get EventParameters or create new if not existent yet
         Geant4Context* ctx = context();
-        EventParameters *parameters = new EventParameters();
+        auto* parameters = ctx->event().extension<EventParameters>(false);
+        if (!parameters) {
+          parameters = new EventParameters();
+          ctx->event().addExtension<EventParameters>(parameters);
+        }
         parameters->setRunNumber(evt->getRunNumber());
         parameters->setEventNumber(evt->getEventNumber());
         parameters->ingestParameters(evt->parameters());
-        ctx->event().addExtension<EventParameters>(parameters);
       }
       catch(std::exception &) 
       {

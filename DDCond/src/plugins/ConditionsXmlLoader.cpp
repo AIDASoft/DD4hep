@@ -11,8 +11,8 @@
 //  \version 1.0
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_XMLCONDITONSLOADER_H
-#define DD4HEP_CONDITIONS_XMLCONDITONSLOADER_H
+#ifndef DD4HEP_CONDITIONS_XMLCONDITIONSLOADER_H
+#define DD4HEP_CONDITIONS_XMLCONDITIONSLOADER_H
 
 // Framework include files
 #include <DDCond/ConditionsDataLoader.h>
@@ -63,7 +63,7 @@ namespace dd4hep {
     };
   }    /* End namespace cond                */
 }      /* End namespace dd4hep                    */
-#endif /* DD4HEP_CONDITIONS_XMLCONDITONSLOADER_H  */
+#endif /* DD4HEP_CONDITIONS_XMLCONDITIONSLOADER_H  */
 
 // #include <ConditionsXmlLoader.h>
 #include <DD4hep/Printout.h>
@@ -78,7 +78,7 @@ namespace dd4hep {
 // C/C++ include files
 #include <string>
 
-// Forward declartions
+// Forward declarations
 using namespace dd4hep::cond;
 
 namespace {

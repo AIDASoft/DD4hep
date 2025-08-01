@@ -71,7 +71,7 @@ namespace dd4hep {
       /// Select all ACTIVE conditions pools, which do match the IOV requirement (faster)
       size_t select(const IOV& req_validity, std::vector<Element>& valid);
 
-      /// Remove all key based pools with an age beyon the minimum age. 
+      /// Remove all key based pools with an age beyond the minimum age. 
       /** @return Number of conditions cleaned up and removed.                       */
       int clean(int max_age);
 

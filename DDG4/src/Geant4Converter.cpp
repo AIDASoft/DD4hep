@@ -575,7 +575,7 @@ void* Geant4Converter::handleMaterial(const std::string& name, Material medium) 
         str << "  Mean Energy Per Ion Pair: " << std::setprecision(4) << ionisation->GetMeanEnergyPerIonPair()/CLHEP::eV << " [eV]";
     }
     else  {
-      str << "          No ionisation parameters availible.";
+      str << "          No ionisation parameters available.";
     }
     printout(lvl, name, "++ Created G4 material %s", str.str().c_str());
 

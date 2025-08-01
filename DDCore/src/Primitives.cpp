@@ -533,7 +533,7 @@ dd4hep::Cast::Cast(const std::type_info& t) : type(t)   {
 }
 #endif
 
-/// Defautl destructor
+/// Default destructor
 dd4hep::Cast::~Cast() {
 }
 

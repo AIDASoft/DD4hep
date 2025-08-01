@@ -1,0 +1,47 @@
+<lccdd>
+
+  <info name="NS" title="NS" author="Test" url="https://cern.ch" status="development" version="1.0">
+    <comment>
+      Memory leak demonstrator
+    </comment>
+  </info>
+
+  <debug>
+    <type name="includes"    value="1"/>
+    <type name="detelements" value="1"/>
+  </debug>
+
+  
+  <includes>
+    <file  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <file  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+    <file  ref="not_allowed_second_header.xml"/>
+  </includes>
+  
+  <define>
+    <!--  Define the world box  -->
+    <constant name="world_side"     value="50000*mm"/>
+    <constant name="world_x"        value="world_side"/>
+    <constant name="world_y"        value="world_side"/>
+    <constant name="world_z"        value="world_side"/>
+  </define>
+
+  <display>
+    <vis name="MyVis" alpha="1" r="0.5" g="0.5" b="0.5" showDaughters="true" visible="true"/>
+  </display>
+
+  <detectors>
+    <detector name="OnlyDet" type="DD4hep_VolumeAssembly" parent="/world" vis="MyVis">
+      <envelope material="Air">
+        <position x="0.0*mm" y="0.0*mm" z="12110.0*mm"/>
+        <shape type="Assembly" name="shape-test"/>
+      </envelope>
+      <position x="0.0*mm" y="0.0*mm" z="12110.0*mm"/>
+
+      <volume name="MyVolume" material = "Air" vis="OnlyDet:Support">
+        <shape type="Box" name = "MyBox" dx = "1*m" dy = "1*m" dz = "1*m"/>
+      </volume>
+    </detector>
+  </detectors>
+
+</lccdd>

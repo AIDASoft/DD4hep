@@ -766,7 +766,7 @@ namespace dd4hep {
   
   /// Class describing a truncated tube shape (CMS'ism)
   /**
-   *   No real correspondance to TGeo. In principle it's a boolean Solid based on a tube.
+   *   No real correspondence to TGeo. In principle it's a boolean Solid based on a tube.
    *   \see http://cmssdt.cern.ch/lxr/source/DetectorDescription/Core/src/TruncTubs.h
    *
    *   The Solid::dimension() and Solid::setDimension() calls for the TruncatedTube
@@ -1047,7 +1047,7 @@ namespace dd4hep {
 
   /// Class describing a pseudo trap shape (CMS'ism)
   /**
-   *   No real correspondance to TGeo. In principle it's a boolean Solid based on a tube.
+   *   No real correspondence to TGeo. In principle it's a boolean Solid based on a tube.
    *   \see http://cmssdt.cern.ch/lxr/source/DetectorDescription/Core/src/PseudoTrap.h
    *
    *   The Solid::dimension() and Solid::setDimension() calls for the PseudoTrap

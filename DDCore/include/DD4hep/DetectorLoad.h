@@ -54,10 +54,10 @@ namespace dd4hep {
 
   public:
 #ifdef G__ROOT
-    /// No defautl constructor
+    /// No default constructor
     DetectorLoad() = default;
 #else
-    /// No defautl constructor
+    /// No default constructor
     DetectorLoad() = delete;
 #endif
     /// No move constructor

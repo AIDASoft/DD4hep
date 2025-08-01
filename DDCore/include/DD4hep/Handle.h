@@ -181,6 +181,15 @@ namespace dd4hep {
   namespace detail  {
     /// Helper to delete objects from heap and reset the handle  \ingroup DD4HEP_CORE
     template <typename T> inline void destroyHandle(T& handle) {
+      // make sure we get a compiler error if this is used in a context where T::Object
+      // is not complete, as this is undefined behavior.
+      // If you see this, you are probably missing an include in the file where you
+      // call destroyHandle. You need the internal object behind the handle to be
+      // fully defined. E.g. you need to include DD4hep/detail/DetectorInterna.h
+      // (despite the name) to be able to destroy a DetElement.
+      // Not doing this leads to undefined behavior and practically with gcc lack
+      // of destruction of the internal object and thus memory leak
+      static_assert( sizeof(typename T::Object) > 0, "destroyHandle called on incomplete type. Missing include ?");
       deletePtr(handle.m_element);
     }
     /// Functor to destroy handles and delete the cached object  \ingroup DD4HEP_CORE

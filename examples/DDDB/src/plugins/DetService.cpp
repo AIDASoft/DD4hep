@@ -117,7 +117,7 @@ void DetService::addContent(Content& content,
         except("DetService","Attempt to insert item with duplicate key: %016lX", key);
       }
     }
-    except("DetService","This content object is not availible for manipulation. Key:%016X", key);
+    except("DetService","This content object is not available for manipulation. Key:%016X", key);
   }
   except("DetService","This content object is INVALID and cannot be manipulated. Key:%016X", key);
 }
@@ -137,7 +137,7 @@ void DetService::addContent(Content& content,
                det.path().c_str(), item.c_str());
       }
     }
-    except("DetService","This content object is not availible for manipulation. %s -> %s",
+    except("DetService","This content object is not available for manipulation. %s -> %s",
            det.path().c_str(), item.c_str());
   }
   except("DetService","This content object is INVALID and cannot be manipulated. %s -> %s",
@@ -154,7 +154,7 @@ void DetService::addContent(Content& content, Dependency* dep)
       }
       except("DetService","Attempt to insert dependency with duplicate key.");
     }
-    except("DetService","This content object is not availible for manipulation.");
+    except("DetService","This content object is not available for manipulation.");
   }
   except("DetService","This content object is INVALID and cannot be manipulated.");
 }
@@ -170,7 +170,7 @@ void DetService::closeContent(Content& content)   {
         return;
       }
     }
-    except("DetService","This content object is not availible for manipulation.");
+    except("DetService","This content object is not available for manipulation.");
   }
   except("DetService","This content object is INVALID and cannot be manipulated.");
 }
@@ -248,7 +248,7 @@ DetService::Slice DetService::_create(Content& content,
   return m_cache.back()->slice;
 }
 
-/// Project a new conditions slice. If a free cached slice is availible, it shall be re-used
+/// Project a new conditions slice. If a free cached slice is available, it shall be re-used
 DetService::Slice DetService::_project(Content& content,
                                        Context *ctx,
                                        const IOVType* typ,
@@ -264,7 +264,7 @@ DetService::Slice DetService::_project(Content& content,
   return ptr;
 }
 
-/// Project a new conditions slice. If a free cached slice is availible, it shall be re-used
+/// Project a new conditions slice. If a free cached slice is available, it shall be re-used
 DetService::Slice DetService::project(Content& content,
                                       Context *ctx,
                                       const IOVType* typ,
@@ -281,7 +281,7 @@ DetService::Slice DetService::project(Content& content,
   return Slice();
 }
 
-/// Project a new conditions slice. If a free cached slice is availible, it shall be re-used
+/// Project a new conditions slice. If a free cached slice is available, it shall be re-used
 DetService::Slice DetService::project(Content& content,
                                       Context *ctx,
                                       const string& typ,
@@ -297,7 +297,7 @@ DetService::Slice DetService::project(Content& content,
   return Slice();
 }
 
-/// Project a new conditions slice. If a free cached slice is availible, it shall be re-used
+/// Project a new conditions slice. If a free cached slice is available, it shall be re-used
 DetService::Slice DetService::project(const string& content,
                                       Context *ctx,
                                       const string& typ,

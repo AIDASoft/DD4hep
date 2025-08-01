@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Common CMake options for DD4hep CI builds
+export COMMON_CMAKE_OPTS="-GNinja \
+  -DDD4HEP_USE_GEANT4=ON \
+  -DBoost_NO_BOOST_CMAKE=ON \
+  -DDD4HEP_USE_LCIO=ON \
+  -DDD4HEP_USE_EDM4HEP=OFF \
+  -DDD4HEP_USE_TBB=ON \
+  -DDD4HEP_USE_HEPMC3=ON \
+  -DDD4HEP_BUILD_DEBUG=OFF \
+  -DBUILD_TESTING=ON \
+  -DDD4HEP_DEBUG_CMAKE=ON \
+  -DDD4HEP_USE_XERCESC=ON \
+  -DCMAKE_CXX_FLAGS=\"-fdiagnostics-color=always\" \
+  -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
+
+# Common CMake options for building examples
+export COMMON_EXAMPLES_CMAKE_OPTS="-GNinja \
+  -DBoost_NO_BOOST_CMAKE=ON \
+  -DDD4HEP_USE_XERCESC=ON \
+  -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"

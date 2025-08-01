@@ -633,6 +633,9 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
           edm4hep::Vector3f p(c.x/CLHEP::mm, c.y/CLHEP::mm, c.z/CLHEP::mm);
           sCaloHitCont.setPDG( c.pdgID );
           sCaloHitCont.setStepPosition( p );
+#if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 3)
+          sCaloHitCont.setStepLength(c.length / CLHEP::mm);
+#endif
         }
       }
     }

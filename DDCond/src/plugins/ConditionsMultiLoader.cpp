@@ -12,8 +12,8 @@
 //  \version 1.0
 //
 //==========================================================================
-#ifndef DD4HEP_CONDITIONS_MULTICONDITONSLOADER_H
-#define DD4HEP_CONDITIONS_MULTICONDITONSLOADER_H
+#ifndef DD4HEP_CONDITIONS_MULTICONDITIONSLOADER_H
+#define DD4HEP_CONDITIONS_MULTICONDITIONSLOADER_H
 
 // Framework include files
 #include <DDCond/ConditionsDataLoader.h>
@@ -69,7 +69,7 @@ namespace dd4hep {
     };
   }     /* End namespace detail                     */
 }       /* End namespace dd4hep                       */
-#endif  /* DD4HEP_CONDITIONS_MULTICONDITONSLOADER_H   */
+#endif  /* DD4HEP_CONDITIONS_MULTICONDITIONSLOADER_H   */
 
 //  AIDA Detector description implementation 
 //--------------------------------------------------------------------------
@@ -92,7 +92,7 @@ namespace dd4hep {
 #include <DD4hep/PluginCreators.h>
 #include <DDCond/ConditionsManager.h>
 
-// Forward declartions
+// Forward declarations
 using namespace dd4hep::cond;
 
 namespace {

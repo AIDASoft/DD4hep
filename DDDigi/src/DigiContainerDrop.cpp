@@ -124,7 +124,7 @@ void DigiContainerDrop::initialize()    {
   }
 }
 
-/// Decide if a continer is to dropd based on the properties
+/// Decide if a container is to dropd based on the properties
 bool DigiContainerDrop::use_key(Key key)  const   {
   const auto& m = m_input_masks;
   bool use = m.empty() || m_keys.empty();

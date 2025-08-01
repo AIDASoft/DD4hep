@@ -6,7 +6,6 @@ dd4hep simulation example setup using the python configuration
 @version 1.0
 
 """
-from __future__ import absolute_import, unicode_literals
 import os
 import logging
 

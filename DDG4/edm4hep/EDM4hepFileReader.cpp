@@ -134,7 +134,12 @@ namespace dd4hep::sim {
 
   void EDM4hepFileReader::registerRunParameters() {
     try {
-      auto *parameters = new RunParameters();
+      // get RunParameters or create new if not existent yet
+      auto* parameters = context()->run().extension<RunParameters>(false);
+      if (!parameters) {
+        parameters = new RunParameters();
+        context()->run().addExtension<RunParameters>(parameters);
+      }
       try {
         podio::Frame runFrame = m_reader.readFrame("runs", 0);
         parameters->ingestParameters(runFrame.getParameters());
@@ -143,7 +148,6 @@ namespace dd4hep::sim {
       } catch(std::invalid_argument&) {
         // we ignore if we do not have runs information
       }
-      context()->run().addExtension<RunParameters>(parameters);
     } catch(std::exception &e) {
       printout(ERROR,"EDM4hepFileReader::registerRunParameters","Failed to register run parameters: %s", e.what());
     }

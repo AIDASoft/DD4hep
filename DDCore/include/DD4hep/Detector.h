@@ -203,7 +203,7 @@ namespace dd4hep {
                                               const std::string& type4="",
                                               const std::string& type5="" ) = 0;
 
-    /// Access the availible detector types
+    /// Access the available detector types
     virtual std::vector<std::string> detectorTypes() const = 0;
 
 

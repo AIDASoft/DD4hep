@@ -109,15 +109,15 @@ namespace dd4hep {
       virtual size_t select(Condition::key_type key, RangeConditions& result)  final
       {  return loop(result, Operators::keyedSelect(key,result));      }
 
-      /// Select the conditons, used also by the DetElement of the condition
+      /// Select the conditions, used also by the DetElement of the condition
       virtual size_t select_all(const ConditionsSelect& result)  final
       {  return loop(result, Operators::operatorWrapper(result));      }
 
-      /// Select the conditons, used also by the DetElement of the condition
+      /// Select the conditions, used also by the DetElement of the condition
       virtual size_t select_all(RangeConditions& result)  final
       {  return loop(result, Operators::sequenceSelect(result));       }
 
-      /// Select the conditons, used also by the DetElement of the condition
+      /// Select the conditions, used also by the DetElement of the condition
       virtual size_t select_all(ConditionsPool& result)  final
       {  return loop(result, Operators::poolSelect(result));           }
     };

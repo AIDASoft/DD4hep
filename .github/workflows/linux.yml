@@ -1,5 +1,9 @@
 name: linux
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on: [push, pull_request]
 
 jobs:
@@ -9,20 +13,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_101/x86_64-centos7-gcc11-opt",    # g4 10.7
-              "LCG_102/x86_64-centos9-gcc11-opt",    # g4 11
-              "LCG_104/x86_64-el9-gcc13-opt",         # g4 11
-              "LCG_105/x86_64-ubuntu2204-gcc11-opt",  # g4 11
-              "LCG_106/x86_64-el9-gcc13-opt",  # g4 11
+        LCG: ["LCG_106/x86_64-el9-gcc13-opt",
+              "LCG_107a/x86_64-el9-gcc13-opt",
+              "dev4/x86_64-el9-gcc13-opt",
+              "dev4/x86_64-ubuntu2404-gcc13-opt",
               "dev3/x86_64-el9-gcc13-opt",
-              "dev3/x86_64-el9-clang16-opt",          # g4 11
-              "dev4/x86_64-el9-gcc13-opt"]
+              "dev3/x86_64-el9-clang19-opt",
+              "dev3/x86_64-el9-gcc15-dbg"]
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
-    - uses: aidasoft/run-lcg-view@v3
+    - uses: aidasoft/run-lcg-view@v5
       with:
         release-platform: ${{ matrix.LCG }}
+        ccache-key: ccache-${{ matrix.LCG }}
         run: |
           if [[ ${{ matrix.LCG }} =~ clang16 ]]; then
             source /cvmfs/sft.cern.ch/lcg/contrib/clang/16/x86_64-el9/setup-wrapper.sh
@@ -31,38 +35,29 @@ jobs:
           cd build
           unset CPATH
           echo "::group::CMakeConfig"
-          if [[ ${{ matrix.LCG }} =~ gcc13|clang16 ]]; then
+          # Common CMake options
+          source ../.github/scripts/common_cmake_opts.sh
+          if [[ ${{ matrix.LCG }} =~ gcc13|clang19 ]]; then
             echo "::group::CMakeConfig C++20"
-            cmake -GNinja \
-              -DDD4HEP_USE_GEANT4=ON \
-              -DBoost_NO_BOOST_CMAKE=ON \
-              -DDD4HEP_USE_LCIO=ON \
-              -DDD4HEP_USE_EDM4HEP=OFF \
-              -DDD4HEP_USE_TBB=ON \
-              -DDD4HEP_USE_HEPMC3=ON \
-              -DDD4HEP_BUILD_DEBUG=OFF \
-              -DBUILD_TESTING=ON \
-              -DDD4HEP_DEBUG_CMAKE=ON \
-              -DDD4HEP_USE_XERCESC=ON \
+            cmake \
+              $COMMON_CMAKE_OPTS \
               -DCMAKE_BUILD_TYPE=Release \
-              -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always" \
-              -DCMAKE_CXX_STANDARD=20 ..
-            else
-              echo "::group::CMakeConfig C++17"
-              cmake -GNinja \
-                -DDD4HEP_USE_GEANT4=ON \
-                -DBoost_NO_BOOST_CMAKE=ON \
-                -DDD4HEP_USE_LCIO=ON \
-                -DDD4HEP_USE_EDM4HEP=OFF \
-                -DDD4HEP_USE_TBB=ON \
-                -DDD4HEP_USE_HEPMC3=ON \
-                -DDD4HEP_BUILD_DEBUG=OFF \
-                -DBUILD_TESTING=ON \
-                -DDD4HEP_DEBUG_CMAKE=ON \
-                -DDD4HEP_USE_XERCESC=ON \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always" \
-                -DCMAKE_CXX_STANDARD=17 ..
+              -DCMAKE_CXX_STANDARD=20 \
+              ..
+          elif [[ ${{ matrix.LCG }} =~ gcc15 ]]; then
+            echo "::group::CMakeConfig C++23"
+            cmake \
+              $COMMON_CMAKE_OPTS \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_CXX_STANDARD=23 \
+              ..
+          else
+            echo "::group::CMakeConfig C++17"
+            cmake \
+              $COMMON_CMAKE_OPTS \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_CXX_STANDARD=17 \
+              ..
           fi
           if [[ ${{ matrix.LCG }} =~ dev3 ]]; then
             echo "::group::CMakeConfig 2"
@@ -75,28 +70,31 @@ jobs:
           fi
           echo "::group::Compile"
           ninja install
+          ccache -s
           . ../bin/thisdd4hep.sh
           echo "::group::Test"
-          ctest --output-on-failure -j4 --output-junit TestResults_1.xml
+          ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_1.xml
           echo "::group::CMakeExamples"
           cd ../examples/
           mkdir build
           cd build
+          source ../../.github/scripts/common_cmake_opts.sh
           if [[ ${{ matrix.LCG }} =~ gcc13|clang16 ]]; then
-          cmake -GNinja \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_STANDARD=20 ..
+            cmake \
+              $COMMON_EXAMPLES_CMAKE_OPTS \
+              -DCMAKE_CXX_STANDARD=20 \
+              ..
           else
-            cmake -GNinja \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_STANDARD=17 ..
+            cmake \
+              $COMMON_EXAMPLES_CMAKE_OPTS \
+              -DCMAKE_CXX_STANDARD=17 \
+              ..
           fi
           echo "::group::CompileExamples"
           ninja install
+          ccache -s
           echo "::group::TestExamples"
-          ctest --output-on-failure -j2 --output-junit TestResults_2.xml
+          ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_2.xml
     - name: Prepare Artifact Name
       if: success() || failure()
       run: |
@@ -122,48 +120,46 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
-    - uses: aidasoft/run-lcg-view@v3
+    - uses: aidasoft/run-lcg-view@v5
       with:
         container: el9
+        ccache-key: ccache-key4hep-el9
         view-path: ${{ matrix.view-path }}
         run: |
           mkdir build
           cd build
           unset CPATH
           echo "::group::CMakeConfig"
-          cmake -GNinja \
+          source ../.github/scripts/common_cmake_opts.sh
+          cmake \
+            $COMMON_CMAKE_OPTS \
             -D CMAKE_INSTALL_LIBDIR=lib \
-            -DDD4HEP_USE_GEANT4=ON \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_LCIO=ON \
             -DDD4HEP_USE_EDM4HEP=ON \
             -DDD4HEP_USE_TBB=OFF \
-            -DDD4HEP_USE_HEPMC3=ON \
-            -DDD4HEP_BUILD_DEBUG=OFF \
-            -DBUILD_TESTING=ON \
-            -DDD4HEP_DEBUG_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
-            -DCMAKE_CXX_STANDARD=20 ..
+            -DCMAKE_CXX_STANDARD=20 \
+            ..
           echo "::group::Compile"
           ninja install
+          ccache -s
           . ../bin/thisdd4hep.sh
           echo "::group::Test"
-          ctest --output-on-failure -j4 --output-junit TestResults_1.xml
+          ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_1.xml
           echo "::group::CMakeExamples"
           cd ../examples/
           mkdir build
           cd build
-          cmake -GNinja \
+          source ../../.github/scripts/common_cmake_opts.sh
+          cmake \
+            $COMMON_EXAMPLES_CMAKE_OPTS \
             -D CMAKE_INSTALL_LIBDIR=lib \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_STANDARD=20 ..
+            -DCMAKE_CXX_STANDARD=20 \
+            ..
           echo "::group::CompileExamples"
           ninja install
+          ccache -s
           echo "::group::TestExamples"
-          ctest --output-on-failure -j2 --output-junit TestResults_2.xml
+          ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_2.xml
     - name: Prepare Artifact Name
       if: success() || failure()
       run: |
@@ -184,35 +180,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_105/x86_64-centos7-gcc11-opt"]
+        LCG: ["LCG_107a/x86_64-el9-gcc13-opt"]
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
-    - uses: aidasoft/run-lcg-view@v3
+    - uses: aidasoft/run-lcg-view@v5
       with:
         release-platform: ${{ matrix.LCG }}
+        ccache-key: ccache-non-shared-${{ matrix.LCG }}
         run: |
           mkdir build
           cd build
           unset CPATH
           echo "::group::CMakeConfig"
-          cmake -GNinja \
-            -DDD4HEP_USE_GEANT4=ON \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_LCIO=ON \
-            -DDD4HEP_USE_EDM4HEP=OFF \
-            -DDD4HEP_USE_TBB=ON \
-            -DDD4HEP_USE_HEPMC3=ON \
-            -DDD4HEP_BUILD_DEBUG=OFF \
-            -DBUILD_TESTING=ON \
-            -DDD4HEP_DEBUG_CMAKE=ON \
+          source ../.github/scripts/common_cmake_opts.sh
+          cmake \
+            $COMMON_CMAKE_OPTS \
             -DBUILD_SHARED_LIBS=OFF \
-            -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
-            -DCMAKE_CXX_STANDARD=17 ..
+            -DCMAKE_CXX_STANDARD=20 \
+            ..
           echo "::group::Compile"
           ninja
+          ccache -s
 
   g4units:
     runs-on: ubuntu-latest
@@ -223,46 +213,42 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
-    - uses: aidasoft/run-lcg-view@v3
+    - uses: aidasoft/run-lcg-view@v5
       with:
         release-platform: ${{ matrix.LCG }}
+        ccache-key: ccache-g4units-${{ matrix.LCG }}
         run: |
           mkdir build
           cd build
           unset CPATH
           echo "::group::CMakeConfig"
-          cmake -GNinja \
+          source ../.github/scripts/common_cmake_opts.sh
+          cmake \
+            $COMMON_CMAKE_OPTS \
             -DDD4HEP_USE_GEANT4_UNITS=ON \
-            -DDD4HEP_USE_GEANT4=ON \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_LCIO=ON \
-            -DDD4HEP_USE_EDM4HEP=OFF \
-            -DDD4HEP_USE_TBB=ON \
-            -DDD4HEP_USE_HEPMC3=ON \
-            -DDD4HEP_BUILD_DEBUG=OFF \
-            -DBUILD_TESTING=ON \
-            -DDD4HEP_DEBUG_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always"  \
-            -DCMAKE_CXX_STANDARD=20 ..
+            -DCMAKE_CXX_STANDARD=20 \
+            ..
           echo "::group::Compile"
           ninja install
+          ccache -s
           . ../bin/thisdd4hep.sh
           echo "::group::Test"
-          ctest --output-on-failure -j4 --output-junit TestResults_1.xml
+          ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_1.xml
           echo "::group::CMakeExamples"
           cd ../examples/
           mkdir build
           cd build
-          cmake -GNinja \
-            -DBoost_NO_BOOST_CMAKE=ON \
-            -DDD4HEP_USE_XERCESC=ON \
-            -DCMAKE_CXX_STANDARD=20 ..
+          source ../../.github/scripts/common_cmake_opts.sh
+          cmake \
+            $COMMON_EXAMPLES_CMAKE_OPTS \
+            -DCMAKE_CXX_STANDARD=20 \
+            ..
           echo "::group::CompileExamples"
           ninja install
+          ccache -s
           echo "::group::TestExamples"
-          ctest --output-on-failure -j2 --output-junit TestResults_2.xml
+          ctest --output-on-failure -j"$(nproc)" --output-junit TestResults_2.xml
     - name: Prepare Artifact Name
       if: success() || failure()
       run: |

@@ -3,7 +3,6 @@
 Some imports to make sure that the DD4hep environment is complete.
 Since it can be disabled in CMake, the import of DDG4 is tested in another file.
 """
-from __future__ import absolute_import, unicode_literals, print_function
 import traceback
 import warnings
 import pytest

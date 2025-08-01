@@ -47,7 +47,7 @@ namespace dd4hep {
    *
    *  Though this sounds like a trivial change, the consequences concern the entire conditions
    *  and alignment handling. This interface decouples entirely the core part of dd4hep
-   *  from the conditons cache handling and the alignment handling.
+   *  from the conditions cache handling and the alignment handling.
    *
    *  Based on this interface most utilities used to handle conditions, detectors scans
    *  to visit DetElement related condition sets, alignment and conditions printers etc.

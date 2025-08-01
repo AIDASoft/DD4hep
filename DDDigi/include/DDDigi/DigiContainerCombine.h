@@ -96,7 +96,7 @@ namespace dd4hep {
 				     DataSegment& inputs,
 				     DataSegment& outputs)  const;
 
-      /// Decide if a continer is to merged based on the properties
+      /// Decide if a container is to merged based on the properties
       virtual bool use_key(Key key)  const;
 
     public:

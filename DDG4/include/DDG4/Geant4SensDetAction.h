@@ -204,7 +204,7 @@ namespace dd4hep {
         return detector().readoutGeometry();
       }
 
-      /// Access the detector desciption object
+      /// Access the detector description object
       Detector& detectorDescription()   const;
 
       /// Mark the track to be kept for MC truth propagation during hit processing
@@ -253,7 +253,7 @@ namespace dd4hep {
       /// Define collections created by this sensitivie action object
       virtual void defineCollections();
 
-      /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
+      /// G4VSensitiveDetector interface: Method invoked at the beginning of each event.
       /** The hits collection(s) created by this sensitive detector must
        *  be set to the G4HCofThisEvent object at one of these two methods.
        */
@@ -424,7 +424,7 @@ namespace dd4hep {
       /// GFLASH/FastSim interface: Callback before hit processing starts. Invoke all filters.
       bool accept(const Geant4FastSimSpot* step) const;
 
-      /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
+      /// G4VSensitiveDetector interface: Method invoked at the beginning of each event.
       /** The hits collection(s) created by this sensitive detector must
        *  be set to the G4HCofThisEvent object at one of these two methods.
        */
@@ -570,7 +570,7 @@ namespace dd4hep {
       /// Finalization overload for specialization
       virtual void finalize()  final;
 
-      /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
+      /// G4VSensitiveDetector interface: Method invoked at the beginning of each event.
       virtual void begin(G4HCofThisEvent* hce)  final;
       /// G4VSensitiveDetector interface: Method invoked at the end of each event.
       virtual void end(G4HCofThisEvent* hce)  final;

@@ -155,7 +155,7 @@ namespace dd4hep {
       /** If the extraction context is empty, it shall be filled.
        *  On every subsequent call the existing context is used and 
        *  the Delta-conditions are extracted directly using a linear scan 
-       *  of the conditions map. Depending on the size of the conditons map
+       *  of the conditions map. Depending on the size of the conditions map
        *  this can lead to significant speed improvements.
        */
       size_t extract_deltas(cond::ConditionUpdateContext& context,

@@ -182,6 +182,9 @@ namespace dd4hep  {
       /// Property: set of alternative decay statuses that MC generators might use for unstable particles
       std::set<int> m_alternativeDecayStatuses = {};
 
+      /// Property: set of alternative stable statuses that MC generators might use for stable particles
+      std::set<int> m_alternativeStableStatuses = {};
+
       /// Perform some actions before the run starts, like opening the event inputs
       void beginRun(const G4Run*);
 

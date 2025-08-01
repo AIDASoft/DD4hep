@@ -881,7 +881,7 @@ Attribute Handle_t::setAttr(const XmlChar* nam, int val) const {
   return setAttr(nam, Strng_t(txt));
 }
 
-/// Generic attribute setter with boolen value
+/// Generic attribute setter with boolean value
 Attribute Handle_t::setAttr(const XmlChar* name, bool val) const {
   char txt[32];
   ::snprintf(txt, sizeof(txt), "%s", val ? "true" : "false");

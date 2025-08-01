@@ -9,7 +9,6 @@
 #
 # ==========================================================================
 #
-from __future__ import absolute_import, unicode_literals
 import traceback
 import sys
 from ROOT import gSystem

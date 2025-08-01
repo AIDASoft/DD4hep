@@ -88,7 +88,7 @@ namespace dd4hep {
     /// Helper to run DetElement scans
     typedef DetectorScanner Scanner;
 
-    /// Install the consitions and the alignment manager
+    /// Install the conditions and the alignment manager
     ConditionsManager installManager(Detector& description);
   }       /* End namespace AlignmentExamples           */
 }         /* End namespace dd4hep                      */
