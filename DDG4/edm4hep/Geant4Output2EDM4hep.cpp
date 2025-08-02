@@ -350,6 +350,15 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   for (const auto& [key, value] : m_runHeader)
     runHeader.putParameter(key, value);
 
+  for (const auto& [key, value] : m_runParametersInt)
+    runHeader.putParameter(key, value);
+
+  for (const auto& [key, value] : m_runParametersFloat)
+    runHeader.putParameter(key, value);
+
+  for (const auto& [key, value] : m_runParametersString)
+    runHeader.putParameter(key, value);
+
   m_runNo = m_runNumberOffset > 0 ? m_runNumberOffset + run->GetRunID() : run->GetRunID();
   runHeader.putParameter("runNumber", m_runNo);
   runHeader.putParameter("GEANT4Version", G4Version);
