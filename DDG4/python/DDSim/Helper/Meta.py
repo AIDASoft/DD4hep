@@ -47,18 +47,18 @@ class Meta(ConfigHelper):
         raise SyntaxError(f"ERROR: Couldn't decode {parameterType} parameter '{p}'")
       parameterAndType = parameterAndValue[0].split("/", 1)
       if len(parameterAndType) != 2:
-        raise SyntaxError("ERROR: Couldn't decode %s parameter '%s'" % (parameterType, p))
+        raise SyntaxError(f"ERROR: Couldn't decode {parameterType} parameter '{p}'")
       pname = parameterAndType[0]
       ptype = parameterAndType[1]
       pvalue = parameterAndValue[1]
       if ptype.lower() not in ["c", "f", "i"]:
-        raise ValueError("ERROR: %s parameter '%s' with invalid type '%s'" % (parameterType, pname, ptype))
+        raise ValueError(f"ERROR: {parameterType} parameter '{pname}' with invalid type '{ptype}'")
       if pname in allParameters:
-        raise RuntimeError("ERROR: %s parameter '%s' specified twice" % (parameterType, pname))
+        raise RuntimeError(f"ERROR: {parameterType} parameter '{pname}' specified twice")
       if not pvalue:
-        raise RuntimeError("ERROR: %s parameter '%s' has empty value" % (parameterType, pname))
+        raise RuntimeError(f"ERROR: {parameterType} parameter '{pname}' has empty value")
       allParameters.append(pname)
-      logger.info("%s parameter '%s', type '%s', value='%s'" % (parameterType, pname, ptype, pvalue))
+      logger.info(f"{parameterType} parameter '{pname}', type='{ptype}', value='{pvalue}'")
       if ptype.lower() == "c":
         stringParameters[pname] = pvalue
       elif ptype.lower() == "f":
