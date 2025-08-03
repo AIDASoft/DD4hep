@@ -142,7 +142,7 @@ class OutputConfig(ConfigHelper):
     logger.info("++++ Setting up LCIO Output ++++")
     lcOut = geant4.setupLCIOOutput('LcioOutput', dds.outputFile)
     lcOut.RunHeader = dds.meta.addParametersToRunHeader(dds)
-    eventPars = dds.meta.parseEventParameters()
+    eventPars = dds.meta.parseMetaParameters()
     lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = eventPars
     runPars = dds.meta.parseMetaParameters(parameterType="run")
     lcOut.RunParametersString, lcOut.RunParametersInt, lcOut.RunParametersFloat = runPars
