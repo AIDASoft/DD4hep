@@ -21,6 +21,9 @@
 // Geant4 include files
 #include <G4VTouchable.hh>
 
+#include <utility>
+#include <vector>
+
 // Geant4 forward declarations
 class G4VPhysicalVolume;
 
