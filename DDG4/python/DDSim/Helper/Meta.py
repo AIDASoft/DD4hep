@@ -40,7 +40,7 @@ class Meta(ConfigHelper):
     for string, int and float parameters
     """
     stringParameters, intParameters, floatParameters, allParameters = {}, {}, {}, []
-    
+
     for p in getattr(self, f"{parameterType}Parameters", []):
       parameterAndValue = p.split("=", 1)
       if len(parameterAndValue) != 2:
