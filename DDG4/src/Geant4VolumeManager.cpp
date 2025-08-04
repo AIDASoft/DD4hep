@@ -28,7 +28,11 @@
 #include <G4VPhysicalVolume.hh>
 
 // C/C++ include files
-#include <sstream>
+#include <set>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 //#define VOLMGR_HAVE_DEBUG_INFO  1
 
@@ -94,20 +98,6 @@ namespace  {
 #endif
     }
     
-    typedef std::pair<VolumeID, VolumeID> Encoding;
-    /// Compute the encoding for a set of VolIDs within a readout descriptor
-    static Encoding encoding(const IDDescriptor iddesc, const PlacedVolume::VolIDs& ids)  {
-      VolumeID volume_id = 0, mask = 0;
-      for( const auto& id : ids )  {
-        const BitFieldElement* f = iddesc.field(id.first);
-        VolumeID msk = f->mask();
-        int      off = f->offset();
-        VolumeID val = id.second;    // Necessary to extend volume IDs > 32 bit
-        volume_id |= ((f->value(val << off) << off)&msk);
-        mask      |= msk;
-      }
-      return std::make_pair(volume_id, mask);
-    }
 
     /// Populate the Volume manager
     void populate(DetElement e)  {
