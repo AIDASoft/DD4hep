@@ -49,6 +49,9 @@ foreach(TEST_NAME
 endforeach()
 
 find_program(HAVE_PYTEST pytest)
+if(NOT HAVE_PYTEST)
+  message(WARNING "pytest not found! Skipping pytest tests.")
+endif()
 
 if(HAVE_PYTEST)
   ADD_TEST( t_test_python_import "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
