@@ -314,7 +314,7 @@ void DetectorImp::declareParent(const std::string& detector_name, const DetEleme
 /// Access mother volume by detector element
 Volume DetectorImp::pickMotherVolume(const DetElement& de) const {
   if ( !de.isValid() )   {
-    except("DD4hep","Detector: Attempt access mother volume of invalid detector [Invalid-handle]");
+    except("DD4hep","Detector: Attempt to access mother volume of invalid detector [Invalid-handle]");
     return nullptr;
   }
   std::string de_name = de.name();
