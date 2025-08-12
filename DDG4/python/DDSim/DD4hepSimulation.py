@@ -181,7 +181,7 @@ class DD4hepSimulation(object):
                         help="Skip first N events when reading a file")
 
     parser.add_argument("--physicsList", action="store", dest="physicsList", default=self.physicsList,
-                        help="Physics list to use in simulation")
+                        help="Physics list to use in simulation. Deprecated, use physics.list")
 
     parser.add_argument("--crossingAngleBoost", action="store", dest="crossingAngleBoost",
                         default=self.crossingAngleBoost,
