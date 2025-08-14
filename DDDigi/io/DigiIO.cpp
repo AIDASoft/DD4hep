@@ -208,7 +208,11 @@ namespace dd4hep {
       mcp.setCharge( p.getCharge() );
       mcp.setGeneratorStatus( p.getGeneratorStatus() );
       mcp.setSimulatorStatus( p.getSimulatorStatus() );
+#if EDM4HEP_BUILD_VERSION <= EDM4HEP_VERSION(0, 99, 2)
       mcp.setSpin(p.getSpin());
+#else
+      mcp.setHelicity(p.getHelicity());
+#endif
     }
 
     template <> template <>
@@ -598,7 +602,11 @@ namespace dd4hep {
       if( mcp.isCreatedInSimulation() )
         mcp.setGeneratorStatus( 0 );
 
+#if EDM4HEP_BUILD_VERSION <= EDM4HEP_VERSION(0, 99, 2)
       mcp.setSpin(p.spin);
+#else
+      mcp.setHelicity(p.spin[2]);
+#endif
     }
 
     template <> template <> 
