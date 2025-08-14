@@ -250,15 +250,15 @@ namespace dd4hep::sim {
       const auto vsx   = mcp.getVertex();
       const auto vex   = mcp.getEndpoint();
       const int  pdg   = mcp.getPDG();
-#if EDM4HEP_BUILD_VERSION <= EDM4HEP_VERSION(0, 99, 2)
+#ifdef EDM4HEP_MCPARTICLE_HAS_HELICITY
+      p->spin[0] = 0;
+      p->spin[1] = 0;
+      p->spin[2] = mcp.getHelicity();
+#else
       const auto spin  = mcp.getSpin();
       p->spin[0]      = spin[0];
       p->spin[1]      = spin[1];
       p->spin[2]      = spin[2];
-#else
-      p->spin[0] = 0;
-      p->spin[1] = 0;
-      p->spin[2] = mcp.getHelicity();
 #endif
       p->pdgID        = pdg;
       p->charge       = int(mcp.getCharge()*3.0);
