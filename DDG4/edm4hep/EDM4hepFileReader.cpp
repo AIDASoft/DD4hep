@@ -29,7 +29,6 @@
 #include <DDG4/Geant4InputAction.h>
 #include <DDG4/RunParameters.h>
 
-#include <edm4hep/EDM4hepVersion.h>
 #include <edm4hep/EventHeaderCollection.h>
 #include <edm4hep/MCParticleCollection.h>
 
