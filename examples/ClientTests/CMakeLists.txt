@@ -24,7 +24,6 @@ if(TARGET XercesC::XercesC)
   SET(OPT_XERCESC XercesC::XercesC)
 endif()
 
-include_directories(./include)
 #--------------------------------------------------------------------------
 if(TARGET Boost::boost)
   SET(CT_BOOST_SOURCES src_boost/*.cpp)
