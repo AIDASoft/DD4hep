@@ -153,11 +153,10 @@ int main_wrapper(int argc, char** argv)   {
 
   //-----
 
+  bool found_tessellated = false;
   TFile* f = new TFile(outFileName.c_str(),"recreate");
-
   Vector3D p0, p1; // the two points between which material is calculated
-
-  MaterialManager matMgr(description.world().volume() ) ;
+  MaterialManager matMgr( description.world().volume() ) ;
 
   for (unsigned int isl=0; isl<nslice; isl++) { // loop over slices
 
@@ -269,7 +268,6 @@ int main_wrapper(int argc, char** argv)   {
           double sum_lambda(0);
           double sum_x0(0);
           double sum_length(0);
-
           std::map < std::string , float > materialmap;
 
           for (unsigned int jx=0; jx<2*mm_count; jx++) {
@@ -282,8 +280,10 @@ int main_wrapper(int argc, char** argv)   {
               p0.array()[index[1]] = xmin;  p0.array()[index[2]] = ycom;
               p1.array()[index[1]] = xmax;  p1.array()[index[2]] = ycom;
             }
+            const MaterialManager::ScanData scan = matMgr.entriesBetween(p0, p1);
+            const auto& materials = scan.materials;
+            const auto& places    = scan.places;
 
-            const MaterialVec& materials = matMgr.materialsBetween(p0, p1);
             for( unsigned i=0,n=materials.size();i<n;++i){
               TGeoMaterial* mat =  materials[i].first->GetMaterial();
               double length = materials[i].second;
@@ -301,7 +301,15 @@ int main_wrapper(int argc, char** argv)   {
               }
 
             }
-
+            if( !found_tessellated )  {
+              for( const auto& p : places )  {
+                Volume volume(p.first.volume());
+                Solid  shape(volume.solid());
+                if ( shape->IsA() == TGeoTessellated::Class() )  {
+                  found_tessellated = true;
+                }
+              }
+            }
           }
 	
           scanmap["x0"]->SetBinContent(ix, iy, sum_x0/sum_length); // normalise to cm (ie x0/cm density: indep of bin size)
@@ -318,9 +326,7 @@ int main_wrapper(int argc, char** argv)   {
             }
             scanmap[jj->first]->SetBinContent(ix, iy, jj->second / sum_length );
           }
-
         } // if (scanMaterial)
-
       }
     }
 
@@ -329,6 +335,15 @@ int main_wrapper(int argc, char** argv)   {
       jj->second->GetXaxis()->SetTitle(labx);
       jj->second->GetYaxis()->SetTitle(laby);
     }
+  }
+
+  if ( scanMaterial && found_tessellated )  {
+    const char* line = " +------------------------------------------------------------"
+      "--------------------------------------------------------------------------------------\n";
+    ::printf("%s",line);
+    ::printf(" |  WARNING: Tessellated shape were encountered during the volume traversal.\n");
+    ::printf(" |  WARNING: The results of the material scan(s) are unreliable!\n");
+    ::printf("%s",line);
   }
   f->Write();
   f->Close();

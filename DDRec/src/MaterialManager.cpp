@@ -32,12 +32,19 @@ namespace dd4hep {
       
     }
     
-    const PlacementVec& MaterialManager::placementsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon) {
-      materialsBetween(p0,p1,epsilon);
+    const PlacementVec& MaterialManager::placementsBetween(const Vector3D& p0, const Vector3D& p1 , double eps) {
+      materialsBetween(p0,p1,eps);
       return _placeV;
     }
 
-    const MaterialVec& MaterialManager::materialsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon) {
+    const MaterialManager::ScanData MaterialManager::entriesBetween(const Vector3D& p0,
+                                                                    const Vector3D& p1,
+                                                                    double eps)  {
+      const auto& materials = this->materialsBetween(p0, p1, eps);
+      return { materials, this->_placeV };
+    }
+
+    const MaterialVec& MaterialManager::materialsBetween(const Vector3D& p0, const Vector3D& p1 , double eps) {
       if( ( p0 != _p0 ) || ( p1 != _p1 ) ) {	
         // A backup is needed to restore the state of the navigator after the track is done
         // see https://github.com/AIDASoft/DD4hep/issues/1413
@@ -128,7 +135,7 @@ namespace dd4hep {
             track->AddPoint( endpoint[0], endpoint[1], endpoint[2], 0. );
 	    
 	    
-            if( length > epsilon )   {
+            if( length > eps )   {
               _mV.emplace_back(node1->GetMedium(), length ); 
               _placeV.emplace_back(node1,length);
             }
@@ -137,7 +144,7 @@ namespace dd4hep {
 	  
           track->AddPoint( position[0], position[1], position[2], 0.);
 	  
-          if( length > epsilon )   {
+          if( length > eps )   {
             _mV.emplace_back(node1->GetMedium(), length); 
             _placeV.emplace_back(node1,length);
           }
