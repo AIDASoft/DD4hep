@@ -14,7 +14,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Brew install
       run: |
-        brew install root boost cmake ninja
+        brew install root boost ninja
         pip install pytest
     - name: Compile
       run: |
