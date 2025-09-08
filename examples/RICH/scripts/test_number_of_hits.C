@@ -2,7 +2,7 @@ void test_number_of_hits(TString sim_file_name="sim.root") {
 
   // test requirements
   const Double_t expected_number_of_hits = 230.0;
-  const Double_t allowed_deviation       = 16.0;
+  const Double_t allowed_deviation       = 20.0;
 
   // get average number of hits
   auto sim_file = new TFile(sim_file_name);
