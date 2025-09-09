@@ -29,11 +29,6 @@ namespace dd4hep {
       initialize() ;
     }
     
-    SurfaceHelper::~SurfaceHelper(){
-      // nothing to do
-    }
-    
-    
     void SurfaceHelper::initialize() {
       
       // have to populate the volume manager once in order to have 
@@ -50,11 +45,9 @@ namespace dd4hep {
       
       while( ! daugs.empty() ) {
 	
-        for( std::list< DetElement >::iterator li=daugs.begin() ; li != daugs.end() ; ++li ){
-          DetElement dau = *li ;
-          DetElement::Children chMap = dau.children() ;
-          for ( DetElement::Children::const_iterator it=chMap.begin() ; it != chMap.end() ; ++it ){
-            DetElement de = (*it).second ;
+        for( const auto& dag : daugs ){
+          const DetElement::Children& chMap = dag.children() ;
+          for ( const auto& [_, de] : chMap ){
             gdaugs.push_back( de ) ;
           }  
         }
@@ -65,12 +58,8 @@ namespace dd4hep {
       
       //      std::cout << " **** SurfaceHelper::initialize() : # DetElements found  " << dets.size() << std::endl ;
       
-      for( std::list< DetElement >::iterator li=dets.begin() ; li != dets.end() ; ++li ) {
+      for( const auto& det : dets) {
 	
-        DetElement det = (*li) ;
-	
-
-
         // create surfaces
         DetectorSurfaces ds( det ) ;
 	

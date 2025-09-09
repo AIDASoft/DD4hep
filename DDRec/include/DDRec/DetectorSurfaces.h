@@ -25,23 +25,19 @@ namespace dd4hep {
      * @date Apr, 10 2014
      * @version $Id$
      */
-    class DetectorSurfaces: virtual public DetElement {
+    class DetectorSurfaces {
 
     public:
-      typedef DetElement DetElement;
-
       DetectorSurfaces(const DetElement& e);
-
-      virtual ~DetectorSurfaces();
 
       /// get the list of surfaces added to this DetElement
       const SurfaceList& surfaceList() { return *_sL ; }
 
     protected :
-      SurfaceList* _sL ;
+      SurfaceList* _sL { nullptr };
 
       /// initializes surfaces from VolSurfaces assigned to this DetElement in detector construction
-      void initialize() ;
+      void initialize(const DetElement& det) ;
 
     };
 

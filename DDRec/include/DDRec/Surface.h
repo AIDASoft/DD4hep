@@ -290,7 +290,7 @@ namespace dd4hep {
     /** Helper function for accessing the list assigned to a DetElement - attaches
      * empty list if needed.
      */
-    VolSurfaceList* volSurfaceList( DetElement& det) ;
+    VolSurfaceList* volSurfaceList( const DetElement& det) ;
 
     /** std::list of VolSurfaces that takes ownership.
      * @author F.Gaede, DESY
@@ -299,10 +299,10 @@ namespace dd4hep {
      */
     struct VolSurfaceList : std::list< VolSurface > {
     
-      VolSurfaceList() {}
+      VolSurfaceList() = default;
 
       // required c'tor for extension mechanism
-      VolSurfaceList(DetElement& det){
+      VolSurfaceList(const DetElement& det){
 
         VolSurfaceList* sL = volSurfaceList( det ) ; 
 
@@ -311,13 +311,11 @@ namespace dd4hep {
 
 
       // required c'tor for extension mechanism
-      VolSurfaceList(const VolSurfaceList& vsl, DetElement& /*det*/ ){
+      VolSurfaceList(const VolSurfaceList& vsl, const DetElement& /*det*/ ){
 	
         this->insert( this->end() , vsl.begin() , vsl.end() ) ;
       }
     
-      virtual ~VolSurfaceList() ;
-
     } ;
   
 
@@ -518,7 +516,7 @@ namespace dd4hep {
 
     public:
     
-      virtual ~Surface() {} 
+      virtual ~Surface() = default;
 
       /** Standard c'tor initializes the surface from the parameters of the VolSurface and the 
        *  transform (placement) of the corresponding volume, if found in DetElement 

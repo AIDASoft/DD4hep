@@ -35,12 +35,8 @@ namespace dd4hep {
       initialize(theDetector) ;
     }
     
-    SurfaceManager::~SurfaceManager(){
-      // nothing to do
-    }
     
-    
-    const SurfaceMap* SurfaceManager::map( const std::string name ) const {
+    const SurfaceMap* SurfaceManager::map( const std::string& name ) const {
 
       SurfaceMapsMap::const_iterator it = _map.find( name ) ;
 
@@ -49,36 +45,32 @@ namespace dd4hep {
         return & it->second ;
       }
 
-      return 0 ;
+      return nullptr ;
     }
 
     void SurfaceManager::initialize(const Detector& description) {
       
-      const std::vector<std::string>& types = description.detectorTypes() ;
+      for(const auto& type : description.detectorTypes()) {
 
-      for(unsigned i=0,N=types.size();i<N;++i){
+        const std::vector<DetElement>& dets = description.detectors( type ) ;
 
-        const std::vector<DetElement>& dets = description.detectors( types[i] ) ;  
+        for(const auto& det : dets) {
 
-        for(unsigned j=0,M=dets.size();j<M;++j){
+          const std::string& name = det.name() ;
 
-          std::string name = dets[j].name() ;
-
-          SurfaceHelper surfH( dets[j] ) ;
+          SurfaceHelper surfH( det ) ;
 	  
           const SurfaceList& detSL = surfH.surfaceList() ;
   
           // add an empty map for this detector in case there are no surfaces attached 
           _map.emplace(name , SurfaceMap());
 
-          for( SurfaceList::const_iterator it = detSL.begin() ; it != detSL.end() ; ++it ){
-            ISurface* surf =  *it ;
-	    
+          for( auto* surf : detSL ) {
             // enter surface into map for this detector
             _map[ name ].emplace(surf->id(), surf );
 
             // enter surface into map for detector type
-            _map[ types[i] ].emplace(surf->id(), surf );
+            _map[ type ].emplace(surf->id(), surf );
 
             // enter surface into world map 
             _map[ "world" ].emplace(surf->id(), surf );
