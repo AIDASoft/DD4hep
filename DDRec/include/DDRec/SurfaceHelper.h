@@ -32,7 +32,11 @@ namespace dd4hep {
 
       SurfaceHelper(const DetElement& e);
       
-      ~SurfaceHelper();
+      ~SurfaceHelper() = default;
+      SurfaceHelper(const SurfaceHelper&) = delete;
+      SurfaceHelper& operator=(const SurfaceHelper&) = delete;
+      SurfaceHelper(SurfaceHelper&&) = default;
+      SurfaceHelper& operator=(SurfaceHelper&&) = delete;
       
       /** Get the list of all surfaces added to this DetElement and all its daughters -
        *  instantiate SurfaceHelper with description.world() to get all surfaces.

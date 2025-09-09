@@ -507,15 +507,6 @@ namespace dd4hep {
     
     //================================================================================================================
     
-
-    VolSurfaceList::~VolSurfaceList(){
-      // // delete all surfaces attached to this volume
-      // for( VolSurfaceList::iterator i=begin(), n=end() ; i !=n ; ++i ) {
-      //   i->clear() ;
-      // }
-    }
-    //=======================================================
-
     SurfaceList::~SurfaceList(){
       if( _isOwner ) {
         // delete all surfaces attached to this volume
@@ -525,7 +516,7 @@ namespace dd4hep {
 
     //================================================================================================================
 
-    VolSurfaceList* volSurfaceList( DetElement& det ) {
+    VolSurfaceList* volSurfaceList( const DetElement& det ) {
       VolSurfaceList* list = det.extension< VolSurfaceList >(false);
       if ( !list )  {
         list = det.addExtension<VolSurfaceList >(new VolSurfaceList);
