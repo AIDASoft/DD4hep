@@ -617,7 +617,7 @@ namespace dd4hep {
       
       const IMaterial& mat = _volSurf.innerMaterial() ;
       
-      if( ! ( mat.Z() > 0 ) ) {
+      if( mat.Z() <= 0 ) {
 	
         MaterialManager matMgr( _det.placement().volume() )  ;
         
@@ -636,7 +636,7 @@ namespace dd4hep {
       
       const IMaterial& mat = _volSurf.outerMaterial() ;
       
-      if( ! ( mat.Z() > 0 ) ) {
+      if( mat.Z() <= 0 ) {
 	
         MaterialManager matMgr( _det.placement().volume() ) ;
         
