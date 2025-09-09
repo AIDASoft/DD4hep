@@ -69,7 +69,7 @@ namespace dd4hep {
 
     public:
     
-      virtual ~VolSurfaceBase() = default;
+      virtual ~VolSurfaceBase() override = default;
 
       ///default c'tor
 
@@ -103,62 +103,62 @@ namespace dd4hep {
       Volume volume() const { return _vol ; }
 
       /// The id of this surface 
-      virtual long64 id() const  ;
+      virtual long64 id() const override ;
 
       /** properties of the surface encoded in Type.
        * @see SurfaceType
        */
-      virtual const SurfaceType& type() const ;
+      virtual const SurfaceType& type() const override ;
     
       //==== geometry ====
       
       /** First direction of measurement U */
-      virtual Vector3D u( const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D u( const Vector3D& point = Vector3D() ) const override ;
     
       /** Second direction of measurement V */
-      virtual Vector3D v(const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D v(const Vector3D& point = Vector3D() ) const override ;
     
       /// Access to the normal direction at the given point
-      virtual Vector3D normal(const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D normal(const Vector3D& point = Vector3D() ) const override ;
     
       /** Get Origin of local coordinate system on surface */
-      virtual const Vector3D& origin() const ;
+      virtual const Vector3D& origin() const override ;
       
       /** Convert the global position to the local position (u,v) on the surface */
-      virtual Vector2D globalToLocal( const Vector3D& point) const ;
+      virtual Vector2D globalToLocal( const Vector3D& point) const override ;
       
       /** Convert the local position (u,v) on the surface to the global position */
-      virtual Vector3D localToGlobal( const Vector2D& point) const ;
+      virtual Vector3D localToGlobal( const Vector2D& point) const override ;
       
       /// Access to the material in opposite direction of the normal
-      virtual const IMaterial& innerMaterial() const ;
+      virtual const IMaterial& innerMaterial() const override ;
 
       /// Access to the material in direction of the normal
-      virtual const IMaterial& outerMaterial() const ;
+      virtual const IMaterial& outerMaterial() const override ;
     
       /** Thickness of inner material */
-      virtual double innerThickness() const ;
+      virtual double innerThickness() const override ;
 
       /** Thickness of outer material */
-      virtual double outerThickness() const ;
+      virtual double outerThickness() const override ;
 
 
       /** The length of the surface along direction u at the origin. For 'regular' boundaries, like rectangles, 
        *  this can be used to speed up the computation of inSideBounds.
        */
-      virtual double length_along_u() const ;
+      virtual double length_along_u() const override ;
 
       /** The length of the surface along direction v at the origin. For 'regular' boundaries, like rectangles, 
        *  this can be used to speed up the computation of inSideBounds.
        */
-      virtual double length_along_v() const ;
+      virtual double length_along_v() const override ;
 
 
       /** Distance to surface */
-      virtual double distance(const Vector3D& point ) const ;
+      virtual double distance(const Vector3D& point ) const override ;
       
       /// Checks if the given point lies within the surface
-      virtual bool insideBounds(const Vector3D& point, double epsilon=1e-4 ) const ;
+      virtual bool insideBounds(const Vector3D& point, double epsilon=1e-4 ) const override ;
 
 
       virtual std::vector< std::pair<Vector3D, Vector3D> > getLines(unsigned nMax=100) ;
@@ -186,14 +186,14 @@ namespace dd4hep {
 
     public:
     
-      virtual ~VolSurface(){
+      virtual ~VolSurface() override {
         if( _surf ) {
           -- _surf->_refCount ;
           if(  _surf->_refCount == 0 ) delete _surf ;
         }
       } 
       ///default c'tor
-      VolSurface() : _surf(0) { }
+      VolSurface() : _surf(nullptr) { }
 
       /// Constructor to be used with an existing object
       VolSurface(VolSurfaceBase* p) : _surf( p ) { ++ _surf->_refCount ; }
@@ -217,61 +217,61 @@ namespace dd4hep {
       VolSurfaceBase* ptr() const { return _surf ; }	
       
       /// The id of this surface - always 0 for VolSurfaces
-      virtual long64 id() const  ;
+      virtual long64 id() const override ;
 
       /** properties of the surface encoded in Type.
        * @see SurfaceType
        */
-      virtual const SurfaceType& type() const ;
+      virtual const SurfaceType& type() const override ;
     
       //==== geometry ====
       
       /** First direction of measurement U */
-      virtual Vector3D u( const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D u( const Vector3D& point = Vector3D() ) const override ;
     
       /** Second direction of measurement V */
-      virtual Vector3D v(const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D v(const Vector3D& point = Vector3D() ) const override ;
     
       /// Access to the normal direction at the given point
-      virtual Vector3D normal(const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D normal(const Vector3D& point = Vector3D() ) const override ;
     
       /** Get Origin of local coordinate system on surface */
-      virtual const Vector3D& origin() const ;
+      virtual const Vector3D& origin() const override ;
       
       /** Convert the global position to the local position (u,v) on the surface */
-      virtual Vector2D globalToLocal( const Vector3D& point) const ;
+      virtual Vector2D globalToLocal( const Vector3D& point) const override ;
       
       /** Convert the local position (u,v) on the surface to the global position */
-      virtual Vector3D localToGlobal( const Vector2D& point) const ;
+      virtual Vector3D localToGlobal( const Vector2D& point) const override ;
       
       /// Access to the material in opposite direction of the normal
-      virtual const IMaterial& innerMaterial() const ;
+      virtual const IMaterial& innerMaterial() const override ;
 
       /// Access to the material in direction of the normal
-      virtual const IMaterial& outerMaterial() const ;
+      virtual const IMaterial& outerMaterial() const override ;
     
       /** Thickness of inner material */
-      virtual double innerThickness() const ;
+      virtual double innerThickness() const override ;
 
       /** Thickness of outer material */
-      virtual double outerThickness() const ;
+      virtual double outerThickness() const override ;
 
 
       /** The length of the surface along direction u at the origin. For 'regular' boundaries, like rectangles, 
        *  this can be used to speed up the computation of inSideBounds.
        */
-      virtual double length_along_u() const ;
+      virtual double length_along_u() const override ;
 
       /** The length of the surface along direction v at the origin. For 'regular' boundaries, like rectangles, 
        *  this can be used to speed up the computation of inSideBounds.
        */
-      virtual double length_along_v() const ;
+      virtual double length_along_v() const override ;
 
       /** Distance to surface */
-      virtual double distance(const Vector3D& point ) const ;
+      virtual double distance(const Vector3D& point ) const override ;
       
       /// Checks if the given point lies within the surface
-      virtual bool insideBounds(const Vector3D& point, double epsilon=1e-4 ) const ;
+      virtual bool insideBounds(const Vector3D& point, double epsilon=1e-4 ) const override ;
 
       virtual std::vector< std::pair<Vector3D, Vector3D> > getLines(unsigned nMax=100) ;
  
@@ -279,7 +279,7 @@ namespace dd4hep {
       void setInnerMaterial( const IMaterial& mat ){ _surf->setInnerMaterial( mat ) ; }
 
       /// set the outer Materal
-      void setOuterMaterial( const IMaterial& mat ){  _surf->setOuterMaterial( mat ) ; }
+      void setOuterMaterial( const IMaterial& mat ){ _surf->setOuterMaterial( mat ) ; }
 
     };
 
@@ -347,7 +347,7 @@ namespace dd4hep {
       }      
       
       /** Distance to surface */
-      virtual double distance(const Vector3D& point ) const  ;
+      virtual double distance(const Vector3D& point ) const override ;
     } ;
 
     //======================================================================================================
@@ -373,21 +373,21 @@ namespace dd4hep {
       /** First direction of measurement U - rotated to point projected onto the cylinder.
        *  No check is done whether the point actually is on the cylinder surface
        */
-      virtual Vector3D u( const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D u( const Vector3D& point = Vector3D() ) const override ;
       
       /** The normal direction at the given point, projected  onto the cylinder.
        *  No check is done whether the point actually is on the cylinder surface
        */
-      virtual Vector3D normal(const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D normal(const Vector3D& point = Vector3D() ) const override ;
 
       /** Distance to surface */
-      virtual double distance(const Vector3D& point ) const  ;
+      virtual double distance(const Vector3D& point ) const override ;
       
       /** Convert the global position to the local position (u,v) on the surface - v runs along the axis of the cylinder, u is r*phi */
-      virtual Vector2D globalToLocal( const Vector3D& point) const ;
+      virtual Vector2D globalToLocal( const Vector3D& point) const override ;
       
       /** Convert the local position (u,v) on the surface to the global position  - v runs along the axis of the cylinder, u is r*phi*/
-      virtual Vector3D localToGlobal( const Vector2D& point) const ;
+      virtual Vector3D localToGlobal( const Vector2D& point) const override ;
     } ;
 
     //======================================================================================================
@@ -421,28 +421,28 @@ namespace dd4hep {
       /** First direction of measurement U - rotated to point projected onto the cone.
        *  No check is done whether the point actually is on the cone surface
        */
-      virtual Vector3D u( const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D u( const Vector3D& point = Vector3D() ) const override ;
 
       /** Second direction of measurement V - rotated to point projected onto the cone.
        *  No check is done whether the point actually is on the cone surface
        */
-      virtual Vector3D v( const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D v( const Vector3D& point = Vector3D() ) const override ;
       
       /** The normal direction at the given point, projected  onto the cone.
        *  No check is done whether the point actually is on the cone surface
        */
-      virtual Vector3D normal(const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D normal(const Vector3D& point = Vector3D() ) const override ;
 
       /** Distance to surface */
-      virtual double distance(const Vector3D& point ) const  ;
+      virtual double distance(const Vector3D& point ) const  override ;
       
       /** Convert the global position to the local position (u,v) on the surface - v runs along the axis of the cone, u is r*phi */
-      virtual Vector2D globalToLocal( const Vector3D& point) const ;
+      virtual Vector2D globalToLocal( const Vector3D& point) const override ;
       
       /** Convert the local position (u,v) on the surface to the global position  - v runs along the axis of the cone, u is r*phi*/
-      virtual Vector3D localToGlobal( const Vector2D& point) const ;
+      virtual Vector3D localToGlobal( const Vector2D& point) const override ;
 
-      virtual std::vector< std::pair<Vector3D, Vector3D> > getLines(unsigned nMax=100) ;
+      virtual std::vector< std::pair<Vector3D, Vector3D> > getLines(unsigned nMax=100) override ;
     } ;
 
 
@@ -516,7 +516,7 @@ namespace dd4hep {
 
     public:
     
-      virtual ~Surface() = default;
+      virtual ~Surface() override = default;
 
       /** Standard c'tor initializes the surface from the parameters of the VolSurface and the 
        *  transform (placement) of the corresponding volume, if found in DetElement 
@@ -524,12 +524,12 @@ namespace dd4hep {
       Surface( DetElement det, VolSurface volSurf ) ;      
     
       /// The id of this surface - corresponds to DetElement id.
-      virtual long64 id() const ;
+      virtual long64 id() const override ;
 
       /** properties of the surface encoded in Type.
        * @see SurfaceType
        */
-      virtual const SurfaceType& type() const ;
+      virtual const SurfaceType& type() const override ;
     
       /// The volume that has the surface attached.
       Volume volume() const { return _volSurf.volume()  ; }
@@ -544,40 +544,40 @@ namespace dd4hep {
       //==== geometry ====
       
       /** First direction of measurement U */
-      virtual Vector3D u( const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D u( const Vector3D& point = Vector3D() ) const override ;
     
       /** Second direction of measurement V */
-      virtual Vector3D v(const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D v(const Vector3D& point = Vector3D() ) const override ;
     
       /// Access to the normal direction at the given point
-      virtual  Vector3D normal(const Vector3D& point = Vector3D() ) const ;
+      virtual  Vector3D normal(const Vector3D& point = Vector3D() ) const override ;
     
       /** Get Origin of local coordinate system on surface */
-      virtual const Vector3D& origin() const ;
+      virtual const Vector3D& origin() const override ;
 
       /** Convert the global position to the local position (u,v) on the surface */
-      virtual Vector2D globalToLocal( const Vector3D& point) const ;
+      virtual Vector2D globalToLocal( const Vector3D& point) const override ;
       
       /** Convert the local position (u,v) on the surface to the global position*/
-      virtual Vector3D localToGlobal( const Vector2D& point) const ;
+      virtual Vector3D localToGlobal( const Vector2D& point) const override ;
 
       /** Thickness of inner material */
-      virtual double innerThickness() const ;
+      virtual double innerThickness() const override ;
 
       /** Thickness of outer material */
-      virtual double outerThickness() const ;
+      virtual double outerThickness() const override ;
 
       /// Access to the material in opposite direction of the normal
-      virtual const IMaterial& innerMaterial() const ;
+      virtual const IMaterial& innerMaterial() const override ;
      
       /// Access to the material in direction of the normal
-      virtual const IMaterial& outerMaterial() const ;
+      virtual const IMaterial& outerMaterial() const override ;
           
       /** Distance to surface */
-      virtual double distance(const Vector3D& point ) const  ;
+      virtual double distance(const Vector3D& point ) const override ;
       
       /// Checks if the given point lies within the surface
-      virtual bool insideBounds(const Vector3D& point, double epsilon=1.e-4) const ;
+      virtual bool insideBounds(const Vector3D& point, double epsilon=1.e-4) const override ;
 
       /** Get Origin of local coordinate system of the associated volume */
       virtual Vector3D volumeOrigin() const  ; 
@@ -585,12 +585,12 @@ namespace dd4hep {
       /** The length of the surface along direction u at the origin. For 'regular' boundaries, like rectangles, 
        *  this can be used to speed up the computation of inSideBounds.
        */
-      virtual double length_along_u() const ;
+      virtual double length_along_u() const override ;
 
       /** The length of the surface along direction v at the origin. For 'regular' boundaries, like rectangles, 
        *  this can be used to speed up the computation of inSideBounds.
        */
-      virtual double length_along_v() const ;
+      virtual double length_along_v() const override ;
 
       /** Get lines constraining the surface for drawing ( might not be exact boundaries) -
        *  at most nMax lines are returned.
@@ -619,29 +619,29 @@ namespace dd4hep {
       /** First direction of measurement U - rotated to point projected onto the cylinder.
        *  No check is done whether the point actually is on the cylinder surface
        */
-      virtual Vector3D u( const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D u( const Vector3D& point = Vector3D() ) const override ;
     
       /** Second direction of measurement V - rotated to point projected onto the cylinder.
        *  No check is done whether the point actually is on the cylinder surface
        */
-      virtual Vector3D v(const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D v(const Vector3D& point = Vector3D() ) const override ;
     
       /** The normal direction at the given point - rotated to point projected onto the cylinder.
        *  No check is done whether the point actually is on the cylinder surface
        */
-      virtual Vector3D normal(const Vector3D& point = Vector3D() ) const ;
+      virtual Vector3D normal(const Vector3D& point = Vector3D() ) const override ;
  
       /** Convert the global position to the local position (u,v) on the surface - u runs along the axis of the cylinder, v is r*phi */
-      virtual Vector2D globalToLocal( const Vector3D& point) const ;
+      virtual Vector2D globalToLocal( const Vector3D& point) const override ;
       
       /** Convert the local position (u,v) on the surface to the global position  - u runs along the axis of the cylinder, v is r*phi*/
-      virtual Vector3D localToGlobal( const Vector2D& point) const ;
+      virtual Vector3D localToGlobal( const Vector2D& point) const override ;
 
       /// the radius of the cylinder (rho of the origin vector)
-      virtual double radius() const ;
+      virtual double radius() const override ;
 
       /// the center of the cylinder 
-      virtual Vector3D center() const ;
+      virtual Vector3D center() const override ;
 
     } ;
     //======================================================================================================
@@ -655,19 +655,19 @@ namespace dd4hep {
       ConeSurface( DetElement det, VolSurface volSurf ) : CylinderSurface( det, volSurf ) { }      
       
       /// the start radius of the cone
-      virtual double radius0() const ;
+      virtual double radius0() const override ;
       
       /// the end radius of the cone
-      virtual double radius1() const ;
+      virtual double radius1() const override ;
 
       /// the start z of the cone
-      virtual double z0() const ;
+      virtual double z0() const override ;
       
       /// the end z of the cone
-      virtual double z1() const ;
+      virtual double z1() const override ;
       
       /// the center of the cone 
-      virtual Vector3D center() const ;
+      virtual Vector3D center() const override ;
      
     };
     //======================================================================================================
