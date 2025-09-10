@@ -25,6 +25,7 @@
 #include <edm4hep/SimTrackerHitCollection.h>
 #include <edm4hep/CaloHitContributionCollection.h>
 #include <edm4hep/SimCalorimeterHitCollection.h>
+#include <edm4hep/GeneratorEventParametersCollection.h>
 #include <edm4hep/EDM4hepVersion.h>
 #include <edm4hep/Constants.h>
 #if EDM4HEP_BUILD_VERSION < EDM4HEP_VERSION(0, 99, 0)
@@ -546,6 +547,15 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
   }
 
   m_frame.put(std::move(header_collection), "EventHeader");
+
+  // Attach the generator event parameters again if they are available
+  auto* genEvtParams = context()->event().extension<edm4hep::GeneratorEventParameters>(false);
+  if (genEvtParams) {
+    edm4hep::GeneratorEventParametersCollection genEvtParamsColl{};
+    genEvtParamsColl.push_back(*genEvtParams);
+    m_frame.put(std::move(genEvtParamsColl), edm4hep::labels::GeneratorEventParameters);
+  }
+
   saveEventParameters<int>(m_eventParametersInt);
   saveEventParameters<float>(m_eventParametersFloat);
   saveEventParameters<std::string>(m_eventParametersString);
