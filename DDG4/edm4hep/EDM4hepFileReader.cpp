@@ -230,7 +230,7 @@ namespace dd4hep::sim {
           const auto genParams = genEvtParameters[0];
           try {
             auto *ctx = context();
-            ctx->event().addExtension<edm4hep::GeneratorEventParameters>(new edm4hep::GeneratorEventParameters(genParams.clone()));
+            ctx->event().addExtension(new edm4hep::MutableGeneratorEventParameters(genParams.clone()));
           } catch (std::exception &) {}
         } else {
           printout(WARNING, "EDM4hepFileReader", "Multiple GeneratorEventParameters found in input file. Ignoring all but one!");
