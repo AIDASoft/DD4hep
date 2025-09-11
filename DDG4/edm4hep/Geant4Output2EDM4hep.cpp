@@ -25,7 +25,6 @@
 #include <edm4hep/SimTrackerHitCollection.h>
 #include <edm4hep/CaloHitContributionCollection.h>
 #include <edm4hep/SimCalorimeterHitCollection.h>
-#include <edm4hep/GeneratorEventParametersCollection.h>
 #include <edm4hep/EDM4hepVersion.h>
 #include <edm4hep/Constants.h>
 #if EDM4HEP_BUILD_VERSION < EDM4HEP_VERSION(0, 99, 0)
@@ -33,6 +32,10 @@
 #else
   using edm4hep::labels::CellIDEncoding;
 #endif
+#if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 3)
+#include <edm4hep/GeneratorEventParametersCollection.h>
+#endif
+
 /// podio include files
 #include <podio/CollectionBase.h>
 #include <podio/podioVersion.h>
@@ -548,6 +551,7 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
 
   m_frame.put(std::move(header_collection), "EventHeader");
 
+#if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 3)
   // Attach the generator event parameters again if they are available
   auto* genEvtParams = context()->event().extension<edm4hep::GeneratorEventParameters>(false);
   if (genEvtParams) {
@@ -555,6 +559,7 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
     genEvtParamsColl.push_back(*genEvtParams);
     m_frame.put(std::move(genEvtParamsColl), edm4hep::labels::GeneratorEventParameters);
   }
+#endif
 
   saveEventParameters<int>(m_eventParametersInt);
   saveEventParameters<float>(m_eventParametersFloat);
