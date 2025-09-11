@@ -553,7 +553,7 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
 
 #if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 3)
   // Attach the generator event parameters again if they are available
-  auto* genEvtParams = context()->event().extension<edm4hep::GeneratorEventParameters>(false);
+  auto* genEvtParams = context()->event().extension<edm4hep::MutableGeneratorEventParameters>(false);
   if (genEvtParams) {
     edm4hep::GeneratorEventParametersCollection genEvtParamsColl{};
     genEvtParamsColl.push_back(*genEvtParams);
