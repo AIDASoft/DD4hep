@@ -29,8 +29,13 @@
 #include <DDG4/Geant4InputAction.h>
 #include <DDG4/RunParameters.h>
 
+#include <edm4hep/Constants.h>
 #include <edm4hep/EventHeaderCollection.h>
 #include <edm4hep/MCParticleCollection.h>
+#include <edm4hep/EDM4hepVersion.h>
+#if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 3)
+#include <edm4hep/GeneratorEventParametersCollection.h>
+#endif
 
 #include <podio/Frame.h>
 #include <podio/Reader.h>
@@ -217,6 +222,23 @@ namespace dd4hep::sim {
           ctx->event().addExtension<EventParameters>(parameters);
         } catch(std::exception &) {}
       }
+#if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 3)
+      // Attach the GeneratorEventParameters if they are available
+      const auto &genEvtParameters = frame.get<edm4hep::GeneratorEventParametersCollection>(edm4hep::labels::GeneratorEventParameters);
+      if (genEvtParameters.isValid()) {
+        if (genEvtParameters.size() == 1) {
+          const auto genParams = genEvtParameters[0];
+          try {
+            auto *ctx = context();
+            ctx->event().addExtension(new edm4hep::MutableGeneratorEventParameters(genParams.clone()));
+          } catch (std::exception &) {}
+        } else {
+          printout(WARNING, "EDM4hepFileReader", "Multiple GeneratorEventParameters found in input file. Ignoring all but one!");
+        }
+      } else {
+        printout(DEBUG, "EDM4hepFileReader", "No GeneratorEventParameters found in input file");
+      }
+#endif
       printout(INFO,"EDM4hepFileReader","read collection %s from event %d in run %d ",
                m_collectionName.c_str(), eventNumber, runNumber);
 
