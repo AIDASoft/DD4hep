@@ -376,7 +376,7 @@ void Geant4ParticleHandle::header4(int level, const std::string& src, const char
            tag,"ID", "G4-ID", "Part-Name","PDG", "Parent","G4-ID", "#Par","#Dau",
            "Prim","Sec",">E","Energy",
            "EMPTY","STAB","DEC","DOC", 
-           "Process", "Processing Flags");
+           "Process", "Processing Flags (ESDdBo-sbvtcls-f)");
 }
 
 void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* tag) const  {
@@ -403,7 +403,7 @@ void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* 
     str << i << " ";
   printout((dd4hep::PrintLevel)level,src,
            "+++ %s ID:%7d/%-7d %12s/%-10d %6d/%-6d %4d %4d %-4s %-3s %-3s %+.3e  "
-           "%-5s %-4s %-3s %-3s  %-20s %c%c%c%c -- %c%c%c%c%c%c%c%c%c  %s",
+           "%-5s %-4s %-3s %-3s  %-20s %c%c%c%c -- %c%c%c%c%c%c%c%c%c%c  %s",
            tag,
            p->id,p->originalG4ID,
            p.particleName().c_str(),
@@ -421,7 +421,7 @@ void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* 
            yes_no(mask.isSet(G4PARTICLE_KEEP_PROCESS)),
            mask.isSet(G4PARTICLE_KEEP_PARENT) ? "YES" : "",
            proc.c_str(),
-           // 13 flags in total
+           // 14 flags in total
            status.isSet(G4PARTICLE_GEN_EMPTY) ? 'E' : '.',               // 1
            status.isSet(G4PARTICLE_GEN_STABLE) ? 'S' : '.',
            status.isSet(G4PARTICLE_GEN_DECAYED) ? 'D' : '.',
@@ -435,6 +435,7 @@ void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* 
            status.isSet(G4PARTICLE_SIM_DECAY_CALO) ? 'c' : '.',
            status.isSet(G4PARTICLE_SIM_LEFT_DETECTOR) ? 'l' : '.',
            status.isSet(G4PARTICLE_SIM_STOPPED) ? 's' : '.',
+           status.isSet(G4PARTICLE_SIM_FAST_SIMULATION) ? 'f' : '.',
            str.str().c_str()
            );
 #if 0

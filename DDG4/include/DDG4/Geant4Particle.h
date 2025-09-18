@@ -90,6 +90,7 @@ namespace dd4hep {
       G4PARTICLE_SIM_LEFT_DETECTOR   = 1<<15, // True if the particle has left the world volume undecayed.
       G4PARTICLE_SIM_PARENT_RADIATED = 1<<16, // True if the particle's vertex is not the endpoint of the  parent particle.
       G4PARTICLE_SIM_OVERLAY         = 1<<17, // True if the particle has been overlayed by the simulation (or digitization)  program.
+      G4PARTICLE_SIM_FAST_SIMULATION = 1<<18, // True if the particle has been handled by a fast simulation model.
 
       G4PARTICLE_LAST_NOTHING = 1<<31
     };
