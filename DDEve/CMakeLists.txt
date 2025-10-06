@@ -79,7 +79,7 @@ set_target_properties(DDEvePlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSIO
 
 install(DIRECTORY DDEve DESTINATION examples )
 install(DIRECTORY include/DDEve DESTINATION include)
-install(TARGETS ddeve DDEvePlugins DDEve_Interface EXPORT DD4hep
+install(TARGETS ddeve DDEve_Interface EXPORT DD4hep
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
