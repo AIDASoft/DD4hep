@@ -49,7 +49,6 @@ if (DD4HEP_USE_GEANT4)
     SOURCES   src/*.cpp
     USES      DD4hep::DDCore DD4hep::DDG4 Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO
     )
-  install(TARGETS DDG4_MySensDet DESTINATION lib)
   
   # Geant4 material scan. From position=0,0,0 to end-of-world 
   dd4hep_add_test_reg( DDG4_MySensDet_sim_g4material_scan_SiliconBlock_LONGTEST
