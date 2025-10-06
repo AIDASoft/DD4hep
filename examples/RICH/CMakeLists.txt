@@ -35,7 +35,6 @@ dd4hep_configure_output()
 set(RICH_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/RICH)
 dd4hep_add_plugin(RICHExample SOURCES src/*.cpp
   USES DD4hep::DDCore DD4hep::DDRec DD4hep::DDCond ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore)
-install(TARGETS RICHExample LIBRARY DESTINATION lib)
 install(DIRECTORY compact scripts DESTINATION ${RICH_INSTALL} )
 dd4hep_configure_scripts( RICH DEFAULT_SETUP WITH_TESTS)
 
