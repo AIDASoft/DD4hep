@@ -37,6 +37,6 @@ dd4hep_add_plugin(DDCondPlugins
 set_target_properties(DDCond DDCondPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 install(DIRECTORY include/DDCond DESTINATION include)
-install(TARGETS DDCond DDCondPlugins EXPORT DD4hep
+install(TARGETS DDCond EXPORT DD4hep
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)
