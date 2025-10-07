@@ -70,7 +70,6 @@ void dd4hep::xml::parse(xml_h e, Translation3D& tr)   {
 
 /// Convert alignment delta objects to Delta
 void dd4hep::xml::parse(xml_h e, Delta& delta)  {
-  Position pos;
   RotationZYX rot;
   Translation3D piv;
   xml_h  child_rot, child_pos, child_piv;
