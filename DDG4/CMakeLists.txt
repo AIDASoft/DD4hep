@@ -84,7 +84,7 @@ if(TARGET Python::Python AND TARGET ROOT::ROOTTPython)
   # install these libraries
   set_target_properties(DDPython DDG4Python PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   INSTALL(TARGETS DDPython pyddg4 DDG4Python EXPORT DD4hep
-    LIBRARY DESTINATION lib
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION bin)
 else()
   dd4hep_print("|+++++> Python or PyRoot/ROOTTPython not found, not creating DDG4 Python Dictionaries")
@@ -201,7 +201,7 @@ set_target_properties(DDG4 DDG4Plugins PROPERTIES VERSION ${DD4hep_VERSION} SOVE
 
 install(TARGETS DDG4 g4FromXML
   EXPORT DD4hep
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION bin)
 install(DIRECTORY include/DDG4 DESTINATION include)

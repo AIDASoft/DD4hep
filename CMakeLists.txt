@@ -23,6 +23,12 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
  MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
+# On Alma 9 and related, when using DDG4 CMAKE_INSTALL_LIBDIR is set to lib64
+# Here, we force it to be lib if unset
+if(NOT CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR lib CACHE STRING "Installation directory for libraries" FORCE)
+endif()
+
 ###############################################
 # Setup the environment for the documentation #
 ###############################################

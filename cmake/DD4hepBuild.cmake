@@ -630,7 +630,7 @@ function(dd4hep_add_dictionary dictionary )
     )
 
   #  Install the binary to the destination directory
-  install(FILES ${output_dir}/${dictionary}_rdict.pcm DESTINATION lib)
+  install(FILES ${output_dir}/${dictionary}_rdict.pcm DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 endfunction()
 
