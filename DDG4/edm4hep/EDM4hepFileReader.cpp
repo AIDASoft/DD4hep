@@ -226,13 +226,14 @@ namespace dd4hep::sim {
       // Attach the GeneratorEventParameters if they are available
       const auto &genEvtParameters = frame.get<edm4hep::GeneratorEventParametersCollection>(edm4hep::labels::GeneratorEventParameters);
       if (genEvtParameters.isValid()) {
-        if (genEvtParameters.size() == 1) {
+        if (genEvtParameters.size() >= 1) {
           const auto genParams = genEvtParameters[0];
           try {
             auto *ctx = context();
             ctx->event().addExtension(new edm4hep::MutableGeneratorEventParameters(genParams.clone()));
           } catch (std::exception &) {}
-        } else {
+        }
+        if (genEvtParameters.size() > 1) {
           printout(WARNING, "EDM4hepFileReader", "Multiple GeneratorEventParameters found in input file. Ignoring all but one!");
         }
       } else {
