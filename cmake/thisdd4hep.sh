@@ -105,7 +105,7 @@ fi;
 #----PATH---------------------------------------------------------------------
 dd4hep_add_path PATH       ${THIS}/bin;
 #----LIBRARY_PATH-------------------------------------------------------------
-dd4hep_add_library_path    ${THIS}/lib;
+dd4hep_add_library_path    ${THIS}/@CMAKE_INSTALL_LIBDIR@;
 #----PYTHONPATH---------------------------------------------------------------
 dd4hep_add_path PYTHONPATH ${THIS}/@DD4HEP_PYTHON_INSTALL_DIR@;
 #----ROOT_INCLUDE_PATH--------------------------------------------------------
