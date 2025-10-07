@@ -38,7 +38,7 @@ target_link_libraries(DDParsers PUBLIC ROOT::Core ROOT::GenVector Boost::boost $
 set_target_properties(DDParsers PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 install(DIRECTORY include/Parsers include/Evaluator DESTINATION include)
 install(TARGETS DDParsers ${OPTIONAL_TARGETS} EXPORT DD4hep
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 # Unset job pool
 SET(CMAKE_JOB_POOL_COMPILE)
