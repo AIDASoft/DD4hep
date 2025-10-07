@@ -234,7 +234,7 @@ namespace dd4hep::sim {
           } catch (std::exception &) {}
         }
         if (genEvtParameters.size() > 1) {
-          printout(WARNING, "EDM4hepFileReader", "Multiple GeneratorEventParameters found in input file. Ignoring all but one!");
+          printout(WARNING, "EDM4hepFileReader", "Multiple GeneratorEventParameters found in input file. Ignoring all but the first one!");
         }
       } else {
         printout(DEBUG, "EDM4hepFileReader", "No GeneratorEventParameters found in input file");
