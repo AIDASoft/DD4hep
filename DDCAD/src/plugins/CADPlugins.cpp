@@ -77,7 +77,7 @@ static void* read_CAD_Volume(dd4hep::Detector& dsc, int argc, char** argv)   {
     except("CAD_Volume","+++ CAD file: %s does not contain any "
            "understandable tessellated volumes.", fname.c_str());
   }
-  auto* result = new std::vector<std::unique_ptr<TGeoVolume> >(move(volumes));
+  auto* result = new std::vector<std::unique_ptr<TGeoVolume> >(std::move(volumes));
   return result;
 }
 DECLARE_DD4HEP_CONSTRUCTOR(DD4hep_read_CAD_volumes,read_CAD_Volume)
