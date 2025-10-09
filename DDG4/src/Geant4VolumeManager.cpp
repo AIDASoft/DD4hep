@@ -388,8 +388,8 @@ VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const  {
       return InvalidPath;
     }
     else if( !path[0]->GetLogicalVolume()->GetSensitiveDetector() )  {
-      printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' [insensitive] %s",
-	       Geant4TouchableHandler::placementPath(path).c_str(), debug_status(this).c_str());
+      printout(DEBUG, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' [insensitive] %s",
+               Geant4TouchableHandler::placementPath(path).c_str(), debug_status(this).c_str());
       return Insensitive;
     }
     printout(INFO, "Geant4VolumeManager",
