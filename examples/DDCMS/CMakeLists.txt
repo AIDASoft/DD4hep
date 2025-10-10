@@ -61,7 +61,6 @@ target_include_directories(DDCMS PUBLIC include)
 #message (STATUS "CLHEP: ${CLHEP}")
 #
 #
-install(TARGETS DDCMS LIBRARY DESTINATION lib)
 install(DIRECTORY include/DDCMS DESTINATION include)
 #
 #---Package installation procedure(s) -----------------------------------------

@@ -24,7 +24,6 @@ dd4hep_add_plugin(DDCodexPlugins
   SOURCES src/*.cpp
   USES    DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector
   )
-install(TARGETS DDCodexPlugins DESTINATION lib)
 #
 #
 install(DIRECTORY compact python eve DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDCodex )

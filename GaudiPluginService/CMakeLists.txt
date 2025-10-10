@@ -41,6 +41,4 @@ set_target_properties(listcomponents
   OUTPUT_NAME listcomponents_dd4hep
   )
 INSTALL(TARGETS listcomponents DD4hepGaudiPluginMgr EXPORT DD4hep
-  RUNTIME DESTINATION bin
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib)
+  RUNTIME DESTINATION bin)

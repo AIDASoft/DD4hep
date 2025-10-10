@@ -28,7 +28,6 @@ endif()
 dd4hep_add_plugin(PersistencyExample SOURCES src/*.cpp
   USES DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector ${OPT_XERCESC}
   )
-install(TARGETS PersistencyExample LIBRARY DESTINATION lib)
 dd4hep_configure_scripts (Persistency DEFAULT_SETUP WITH_TESTS )
 #--------------------------------------------------------------------------
 #

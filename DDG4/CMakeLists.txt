@@ -84,7 +84,7 @@ if(TARGET Python::Python AND TARGET ROOT::ROOTTPython)
   # install these libraries
   set_target_properties(DDPython DDG4Python PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   INSTALL(TARGETS DDPython pyddg4 DDG4Python EXPORT DD4hep
-    LIBRARY DESTINATION lib
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION bin)
 else()
   dd4hep_print("|+++++> Python or PyRoot/ROOTTPython not found, not creating DDG4 Python Dictionaries")
@@ -97,7 +97,6 @@ IF(TARGET LCIO::lcio)
     SOURCES lcio/*.cpp
     USES    DD4hep::DDG4 LCIO::lcio
     )
-  install(TARGETS DDG4LCIO EXPORT DD4hep LIBRARY DESTINATION lib)
   set_target_properties(DDG4LCIO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 ENDIF()
@@ -107,14 +106,12 @@ IF(TARGET EDM4HEP::edm4hep)
     SOURCES edm4hep/Geant4Output2EDM4hep.cpp
     USES    DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict podio::podio podio::podioDict podio::podioRootIO
     )
-  install(TARGETS DDG4EDM4HEP EXPORT DD4hep LIBRARY DESTINATION lib)
   set_target_properties(DDG4EDM4HEP PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   if(TARGET podio::podioIO)
       dd4hep_add_plugin(DDG4EDM4HEPReader
         SOURCES edm4hep/EDM4hepFileReader.cpp
         USES    DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict podio::podio podio::podioDict podio::podioIO
       )
-      install(TARGETS DDG4EDM4HEPReader EXPORT DD4hep LIBRARY DESTINATION lib)
       set_target_properties(DDG4EDM4HEPReader PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
       MESSAGE(STATUS "EDM4hepFileReader enabled")
   else()
@@ -202,9 +199,9 @@ install(DIRECTORY examples DESTINATION examples/DDG4)
 
 set_target_properties(DDG4 DDG4Plugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
-install(TARGETS DDG4 DDG4Plugins g4FromXML
+install(TARGETS DDG4 g4FromXML
   EXPORT DD4hep
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION bin)
 install(DIRECTORY include/DDG4 DESTINATION include)

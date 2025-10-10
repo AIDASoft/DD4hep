@@ -36,7 +36,6 @@ dd4hep_add_plugin(ClientTests
        ROOT::Core ROOT::Geom ROOT::GenVector
        ${OPT_XERCESC} ${CT_BOOST_LIB}
   )
-install(TARGETS ClientTests LIBRARY DESTINATION lib)
 #
 #-----------------------------------------------------------------------------------
 add_executable( multipleGeo   main/MultipleGeometries.cpp )

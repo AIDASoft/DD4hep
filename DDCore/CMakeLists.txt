@@ -120,7 +120,6 @@ IF(TARGET ROOT::Gdml)
     USES DD4hep::DDCore ROOT::Core ROOT::Gdml
     )
   set_target_properties(DDGDMLPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-  LIST(APPEND OPTIONAL_TARGETS DDGDMLPlugins)
 ELSE()
   dd4hep_print("ROOT does not include GDML, not building DDCore GDML Plugins")
 ENDIF()
@@ -132,7 +131,6 @@ IF(TARGET ROOT::ROOTTPython)
     USES DDCore ROOT::Core ROOT::ROOTTPython
     )
   set_target_properties(DDPythonPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-  LIST(APPEND OPTIONAL_TARGETS DDPythonPlugins)
 ELSE()
   dd4hep_print("ROOT does not include Python support, not building DDCore DDPython Plugins")
 ENDIF()
@@ -156,7 +154,7 @@ install(DIRECTORY
   )
 
 set_target_properties(DDCore DDCorePlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-install(TARGETS DDCore DDCorePlugins ${OPTIONAL_TARGETS} EXPORT DD4hep
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
+install(TARGETS DDCore EXPORT DD4hep
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
