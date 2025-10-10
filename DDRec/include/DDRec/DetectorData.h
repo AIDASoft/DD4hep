@@ -21,6 +21,8 @@
 
 #include "DD4hep/DetElement.h"
 
+
+
 namespace dd4hep {
   namespace rec {
     
@@ -427,7 +429,9 @@ namespace dd4hep {
 	  outer_thickness(0),
 	  sensitive_thickness(0),
 	  cellSize0(0),
-	  cellSize1(0) {
+	  cellSize1(0),
+          cellSize0Vec({}),
+          cellSize1Vec({}) {
 	}
 	
 	/// distance from Origin (or the z-axis) to the inner-most face of the layer
@@ -464,6 +468,10 @@ namespace dd4hep {
 	double cellSize0 ;
 	/// second cell size, perpendicular to the first direction cellSize0 and the depth of the layers. 
 	double cellSize1 ;
+        /// for individual cells in the layer: size along the first axis where first is either along the beam (BarrelLayout) or up (EndcapLayout) or the direction closest to that. 
+        std::vector<double> cellSize0Vec ;
+        /// second cell size, perpendicular to the first direction cellSize0 and the depth of the layers. 
+        std::vector<double> cellSize1Vec ;
       } ;   
 
       std::vector<Layer> layers ;	
