@@ -38,6 +38,7 @@ int main(int argc,char** argv)  {
     if ( !level.empty()    ) av.emplace_back("-level"),    av.emplace_back(level.c_str());
     if ( !visopt.empty()   ) av.emplace_back("-visopt"),   av.emplace_back(visopt.c_str());
     if ( !detector.empty() ) av.emplace_back("-detector"), av.emplace_back(detector.c_str());
+    if ( !maxnodes.empty() ) av.emplace_back("-maxnodes"), av.emplace_back(maxnodes.c_str());
   }
   return dd4hep::execute::main_plugins("DD4hep_GeometryWebDisplay", av.size(), (char**)&av[0]);
 }
