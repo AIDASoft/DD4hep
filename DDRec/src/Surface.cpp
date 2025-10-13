@@ -740,8 +740,9 @@ namespace dd4hep {
 
       //---- if the volSurface is not in the DetElement's volume, we need to mutliply the path to the volume to the
       // DetElements world transform
-      for( const auto pvol : pVList ){
+      for( auto it = std::next(pVList.begin()) ; it != pVList.end() ; ++it ) {
 
+      	PlacedVolume pvol = *it ;
       	TGeoMatrix* m = pvol->GetMatrix();
       	// std::cout << "  +++ matrix for placed volume : " << std::endl ;
       	// m->Print() ;
