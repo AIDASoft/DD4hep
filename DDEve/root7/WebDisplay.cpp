@@ -52,6 +52,7 @@ using namespace dd4hep::detail;
 static long webdisplay(Detector& description, int argc, char** argv) {
   TGeoManager& mgr = description.manager();
   int vislevel = 6, visopt = 1;
+  int maxnodes = -1;
   string detector = "/world";
   const char* opt = "";
   for(int i = 0; i < argc && argv[i]; ++i)  {
@@ -63,6 +64,8 @@ static long webdisplay(Detector& description, int argc, char** argv) {
       visopt = ::atol(argv[++i]);
     else if ( 0 == ::strncmp("-detector",argv[i],4) )
       detector = argv[++i];
+    else if ( 0 == ::strncmp("-maxnodes",argv[i],4) )
+      maxnodes = ::atol(argv[++i]);
     else  {
       cout <<
         "Usage: -plugin <name> -arg [-arg]                                                   \n"
@@ -101,6 +104,8 @@ static long webdisplay(Detector& description, int argc, char** argv) {
     viewer->SetLimits();
     viewer->SetDrawOptions(opt);
     viewer->Show();
+    if ( maxnodes > 0 )
+      viewer->SetLimits(maxnodes);
     return 1;
   }
   return 0;
