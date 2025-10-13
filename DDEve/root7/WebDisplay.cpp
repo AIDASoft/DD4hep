@@ -92,6 +92,13 @@ static long webdisplay(Detector& description, int argc, char** argv) {
     viewer->SetLimits();
     viewer->SetDrawOptions(opt);
     viewer->Show();
+    // 5000 is the default
+    if (mgr.GetNNodes() > (maxnodes > 0 ? maxnodes : 5000)) {
+      printout(WARNING, "DD4hep_GeometryWebDisplay",
+               "The geometry has a large number of nodes (%d) and not all of them will be displayed. "
+               "Consider increasing its number with the -maxnodes option to increase the number of displayed nodes.",
+               mgr.GetNNodes());
+    }
     if ( maxnodes > 0 )
       viewer->SetLimits(maxnodes);
     return 1;
