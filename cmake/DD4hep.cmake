@@ -55,7 +55,13 @@ function ( dd4hep_instantiate_package PackageName )
   INCLUDE( DD4hepMacros )
 
   #---- configure run environment ---------------
+  set(DD4HEP_INSTALL_LIBDIR lib)
+  if(CMAKE_INSTALL_LIBDIR)
+    set(DD4HEP_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
+  endif()
+
   configure_file( ${DD4hep_DIR}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
+  unset(DD4HEP_INSTALL_LIBDIR)
 
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/this${PackageName}.sh
     DESTINATION bin

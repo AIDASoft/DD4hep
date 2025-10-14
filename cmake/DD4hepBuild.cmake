@@ -412,7 +412,12 @@ macro ( dd4hep_configure_scripts _pkg )
     configure_file( ${DD4hep_DIR}/cmake/run_test_package.sh ${EXECUTABLE_OUTPUT_PATH}/run_test_${_pkg}.sh @ONLY)
     INSTALL(PROGRAMS ${EXECUTABLE_OUTPUT_PATH}/run_test_${_pkg}.sh DESTINATION bin )
     #---- configure run environment ---------------
+    set(DD4HEP_INSTALL_LIBDIR lib)
+    if(CMAKE_INSTALL_LIBDIR)
+      set(DD4HEP_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
+    endif()
     configure_file( ${DD4hep_DIR}/cmake/thisdd4hep_package.sh.in  ${EXECUTABLE_OUTPUT_PATH}/this${_pkg}.sh @ONLY)
+    unset(DD4HEP_INSTALL_LIBDIR)
     install(PROGRAMS ${EXECUTABLE_OUTPUT_PATH}/this${_pkg}.sh DESTINATION bin )
     #--- install target-------------------------------------
     if ( IS_DIRECTORY scripts )
