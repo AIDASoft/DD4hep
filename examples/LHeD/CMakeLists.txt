@@ -39,7 +39,6 @@ if (DD4HEP_USE_GEANT4)
   target_link_libraries(LHeDACLick DD4hep::DDCore DD4hep::DDG4 Geant4::Interface)
   INSTALL(TARGETS LHeDXML LHeDACLick
     RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
     )
 endif()
 
