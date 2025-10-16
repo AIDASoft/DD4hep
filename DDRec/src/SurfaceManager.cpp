@@ -20,7 +20,6 @@
 
 namespace dd4hep {
   
-  using namespace detail ;
 
   namespace rec {
     
