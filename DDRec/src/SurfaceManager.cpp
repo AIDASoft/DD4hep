@@ -19,10 +19,7 @@
 #include <sstream>
 
 namespace dd4hep {
-  
-
   namespace rec {
-    
 
     SurfaceManager::SurfaceManager(const Detector& theDetector){
 
