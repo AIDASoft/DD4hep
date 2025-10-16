@@ -64,7 +64,7 @@ namespace dd4hep {
       ///create a string with all available maps and their size (number of surfaces)
       std::string toString() const ;
       
-    protected :
+    private :
 
 
       /// initialize all known surface maps
