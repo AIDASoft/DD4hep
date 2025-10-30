@@ -84,7 +84,7 @@ MACRO( DD4HEP_GENERATE_PACKAGE_CONFIGURATION_FILES )
                 CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/cmake/${arg}.in"
                                 "${PROJECT_BINARY_DIR}/${arg}" @ONLY
                 )
-                INSTALL( FILES "${PROJECT_BINARY_DIR}/${arg}" DESTINATION ./cmake )
+                INSTALL( FILES "${PROJECT_BINARY_DIR}/${arg}" DESTINATION cmake )
             ENDIF()
         ENDIF()
     ENDFOREACH()
@@ -93,7 +93,7 @@ MACRO( DD4HEP_GENERATE_PACKAGE_CONFIGURATION_FILES )
     WRITE_BASIC_PACKAGE_VERSION_FILE( ${CMAKE_PROJECT_NAME}ConfigVersion.cmake
                                       VERSION ${DD4hep_VERSION}
                                       COMPATIBILITY AnyNewerVersion )
-    INSTALL( FILES "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake" DESTINATION ./cmake )
+    INSTALL( FILES "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake" DESTINATION cmake )
 
 ENDMACRO( DD4HEP_GENERATE_PACKAGE_CONFIGURATION_FILES )
 
