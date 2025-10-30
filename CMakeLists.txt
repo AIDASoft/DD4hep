@@ -148,7 +148,9 @@ if(TARGET ROOT::ROOTEve)
 endif()
 
 # Set when the minimum required CMake version is at least 3.30
-cmake_policy(SET CMP0167 NEW)
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
 find_package(Boost 1.49 REQUIRED)
 DD4HEP_SETUP_BOOST_TARGETS()
 
