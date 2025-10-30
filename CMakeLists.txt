@@ -320,7 +320,7 @@ display_std_variables()
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/cmake/DD4hepConfig.cmake.in
   ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake @ONLY
   )
-INSTALL(FILES ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/cmake)
+INSTALL(FILES ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION cmake)
 
 dd4hep_generate_package_configuration_files( ${CMAKE_PROJECT_NAME}Config.cmake )
 
