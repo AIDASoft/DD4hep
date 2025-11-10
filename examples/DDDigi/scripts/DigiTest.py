@@ -17,7 +17,7 @@ from dddigi import DEBUG, INFO, WARNING, ERROR  # noqa: F401
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-attenuation = {'Minitel1Hits': 50 * units.ns,
+ATTENUATION = {'Minitel1Hits': 50 * units.ns,
                'Minitel2Hits': 50 * units.ns,
                'Minitel3Hits': 50 * units.ns,
 }
@@ -27,7 +27,6 @@ attenuation = {'Minitel1Hits': 50 * units.ns,
 class Test(dddigi.Digitize):
 
   def __init__(self, geometry=None, process_data=True):
-    global attenuation
     dddigi.Digitize.__init__(self, dddigi.Kernel())
     dddigi.setPrintFormat(str('%-32s %5s %s'))
     dddigi.setPrintLevel(INFO)
@@ -35,7 +34,7 @@ class Test(dddigi.Digitize):
     self.geometry = geometry
     self.input = None
     self.main_sequencer()
-    self.attenuation = attenuation
+    self.attenuation = ATTENUATION
     self.used_inputs = []
     self.inputs = ['MiniTel.run00000000.root',
                    'MiniTel.run00000001.root',
