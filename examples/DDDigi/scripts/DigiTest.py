@@ -28,7 +28,6 @@ attenuation = {'Minitel1Hits': 50 * units.ns,
 class Test(dddigi.Digitize):
 
   def __init__(self, geometry=None, process_data=True):
-    global attenuation
     dddigi.Digitize.__init__(self, dddigi.Kernel())
     dddigi.setPrintFormat(str('%-32s %5s %s'))
     dddigi.setPrintLevel(INFO)

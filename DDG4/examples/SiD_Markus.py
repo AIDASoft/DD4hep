@@ -18,6 +18,8 @@ from DDG4 import OutputLevel as Output
 from g4units import keV, GeV, mm, ns, MeV
 #
 global geant4
+geant4 = None
+
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 #
@@ -142,7 +144,6 @@ def setupMaster():
 
 
 def setupSensitives():
-  global geant4
   # First the tracking detectors
   seq, act = geant4.setupTracker('SiVertexBarrel')
   act.OutputLevel = Output.ERROR
@@ -170,9 +171,6 @@ def run():
   description = kernel.detectorDescription()
   install_dir = os.environ['DD4hepINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/DDDetectors/compact/SiD_Markus.xml"))
-
-  geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
-  geant4.printDetectors()
   DDG4.importConstants(description)
   DDG4.Core.setPrintLevel(Output.DEBUG)
   DDG4.Core.setPrintFormat(str("%-32s %6s %s"))
