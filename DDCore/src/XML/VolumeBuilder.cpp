@@ -229,8 +229,8 @@ std::size_t VolumeBuilder::buildVolumes(xml_h handle)    {
     }
     /// If we have an assembly, the shape is implicitly created in the
     /// TGeoAssemblyVolume. We MUST NOT explicitly create it.
-    bool is_assembly = true;
-    is_assembly |= x.child(_U(assembly),false) != 0;
+    bool is_assembly = false;
+    is_assembly |= x.child(_U(assembly),false)  != 0;
     is_assembly |= c.attr_nothrow(_U(assembly)) != 0;
     if( is_assembly )   {
       Assembly  vol(nam);
