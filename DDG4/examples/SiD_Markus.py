@@ -171,9 +171,6 @@ def run():
   description = kernel.detectorDescription()
   install_dir = os.environ['DD4hepINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/DDDetectors/compact/SiD_Markus.xml"))
-
-  geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')
-  geant4.printDetectors()
   DDG4.importConstants(description)
   DDG4.Core.setPrintLevel(Output.DEBUG)
   DDG4.Core.setPrintFormat(str("%-32s %6s %s"))
