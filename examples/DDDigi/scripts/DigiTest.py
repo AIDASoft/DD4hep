@@ -17,6 +17,7 @@ from dddigi import DEBUG, INFO, WARNING, ERROR  # noqa: F401
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+global attenuation
 attenuation = {'Minitel1Hits': 50 * units.ns,
                'Minitel2Hits': 50 * units.ns,
                'Minitel3Hits': 50 * units.ns,
