@@ -191,10 +191,14 @@ namespace dd4hep::sim {
     podio::Frame frame = m_reader.readFrame("events", event_number);
     const auto& primaries = frame.get<edm4hep::MCParticleCollection>(m_collectionName);
     int eventNumber = event_number, runNumber = 0;
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 6, 0)
+    if (primaries.hasID()) {
+#else
     if (primaries.isValid()) {
+#endif
       //Read the event header collection and add it to the context as an extension
       const auto& eventHeaderCollection = frame.get<edm4hep::EventHeaderCollection>(m_eventHeaderCollectionName);
-      if(eventHeaderCollection.isValid() && eventHeaderCollection.size() == 1){
+      if(eventHeaderCollection.size() == 1){
         const auto& eh = eventHeaderCollection.at(0);
         eventNumber = eh.getEventNumber();
         runNumber = eh.getRunNumber();
@@ -224,8 +228,13 @@ namespace dd4hep::sim {
       }
 #if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 3)
       // Attach the GeneratorEventParameters if they are available
-      const auto &genEvtParameters = frame.get<edm4hep::GeneratorEventParametersCollection>(edm4hep::labels::GeneratorEventParameters);
+      const auto& genEvtParameters =
+          frame.get<edm4hep::GeneratorEventParametersCollection>(edm4hep::labels::GeneratorEventParameters);
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 6, 0)
+      if (genEvtParameters.hasID()) {
+#else
       if (genEvtParameters.isValid()) {
+#endif
         if (genEvtParameters.size() >= 1) {
           const auto genParams = genEvtParameters[0];
           try {
