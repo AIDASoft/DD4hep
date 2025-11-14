@@ -38,7 +38,7 @@ class UI(ConfigHelper):
 
   @commandsConfigure.setter
   def commandsConfigure(self, val):
-    self._commandsConfigure = self.makeList(val)
+    self._commandsConfigure = self.makeList(val, sep=";")
 
   @property
   def commandsInitialize(self):
@@ -47,7 +47,7 @@ class UI(ConfigHelper):
 
   @commandsInitialize.setter
   def commandsInitialize(self, val):
-    self._commandsInitialize = self.makeList(val)
+    self._commandsInitialize = self.makeList(val, sep=";")
 
   @property
   def commandsPostRun(self):
@@ -56,7 +56,7 @@ class UI(ConfigHelper):
 
   @commandsPostRun.setter
   def commandsPostRun(self, val):
-    self._commandsPostRun = self.makeList(val)
+    self._commandsPostRun = self.makeList(val, sep=";")
 
   @property
   def commandsPreRun(self):
@@ -65,7 +65,7 @@ class UI(ConfigHelper):
 
   @commandsPreRun.setter
   def commandsPreRun(self, val):
-    self._commandsPreRun = self.makeList(val)
+    self._commandsPreRun = self.makeList(val, sep=";")
 
   @property
   def commandsTerminate(self):
@@ -74,4 +74,4 @@ class UI(ConfigHelper):
 
   @commandsTerminate.setter
   def commandsTerminate(self, val):
-    self._commandsTerminate = self.makeList(val)
+    self._commandsTerminate = self.makeList(val, sep=";")
