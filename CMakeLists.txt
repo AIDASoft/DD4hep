@@ -147,7 +147,10 @@ if(TARGET ROOT::ROOTEve)
   find_package (ROOT REQUIRED COMPONENTS ROOTEve CONFIG)
 endif()
 
-# Configure BOOST
+# Set when the minimum required CMake version is at least 3.30
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
 find_package(Boost 1.49 REQUIRED)
 DD4HEP_SETUP_BOOST_TARGETS()
 
@@ -317,7 +320,7 @@ display_std_variables()
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/cmake/DD4hepConfig.cmake.in
   ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake @ONLY
   )
-INSTALL(FILES ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ./cmake )
+INSTALL(FILES ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION cmake)
 
 dd4hep_generate_package_configuration_files( ${CMAKE_PROJECT_NAME}Config.cmake )
 
