@@ -7,7 +7,6 @@ Based on M. Frank and F. Gaede runSim.py
    @version 0.1
 
 """
-from __future__ import absolute_import, unicode_literals
 import logging
 import sys
 
