@@ -18,7 +18,6 @@
 
 #include <cmath>
 #include <memory>
-#include <exception>
 
 #include "TGeoMatrix.h"
 #include "TGeoShape.h"
@@ -70,8 +69,8 @@ namespace dd4hep {
       return g ;
     }
 
-    const IMaterial&  VolSurfaceBase::innerMaterial() const{  return  _innerMat ;  }
-    const IMaterial&  VolSurfaceBase::outerMaterial() const { return  _outerMat  ; }
+    const IMaterial&  VolSurfaceBase::innerMaterial() const { return  _innerMat ; }
+    const IMaterial&  VolSurfaceBase::outerMaterial() const { return  _outerMat ; }
     double VolSurfaceBase::innerThickness() const { return _th_i ; }
     double VolSurfaceBase::outerThickness() const { return _th_o ; }
     
@@ -507,15 +506,6 @@ namespace dd4hep {
     
     //================================================================================================================
     
-
-    VolSurfaceList::~VolSurfaceList(){
-      // // delete all surfaces attached to this volume
-      // for( VolSurfaceList::iterator i=begin(), n=end() ; i !=n ; ++i ) {
-      //   i->clear() ;
-      // }
-    }
-    //=======================================================
-
     SurfaceList::~SurfaceList(){
       if( _isOwner ) {
         // delete all surfaces attached to this volume
@@ -525,7 +515,7 @@ namespace dd4hep {
 
     //================================================================================================================
 
-    VolSurfaceList* volSurfaceList( DetElement& det ) {
+    VolSurfaceList* volSurfaceList( const DetElement& det ) {
       VolSurfaceList* list = det.extension< VolSurfaceList >(false);
       if ( !list )  {
         list = det.addExtension<VolSurfaceList >(new VolSurfaceList);
@@ -627,7 +617,7 @@ namespace dd4hep {
       
       const IMaterial& mat = _volSurf.innerMaterial() ;
       
-      if( ! ( mat.Z() > 0 ) ) {
+      if( mat.Z() <= 0 ) {
 	
         MaterialManager matMgr( _det.placement().volume() )  ;
         
@@ -646,7 +636,7 @@ namespace dd4hep {
       
       const IMaterial& mat = _volSurf.outerMaterial() ;
       
-      if( ! ( mat.Z() > 0 ) ) {
+      if( mat.Z() <= 0 ) {
 	
         MaterialManager matMgr( _det.placement().volume() ) ;
         
@@ -750,7 +740,7 @@ namespace dd4hep {
 
       //---- if the volSurface is not in the DetElement's volume, we need to mutliply the path to the volume to the
       // DetElements world transform
-      for( std::list<PlacedVolume>::iterator it = ++( pVList.begin() ) , n = pVList.end() ; it != n ; ++it ){
+      for( auto it = std::next(pVList.begin()) ; it != pVList.end() ; ++it ) {
 
       	PlacedVolume pvol = *it ;
       	TGeoMatrix* m = pvol->GetMatrix();
