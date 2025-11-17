@@ -836,7 +836,7 @@ class DD4hepSimulation(object):
         else:
             # Parent process: becomes GDB
 
-            # Replace parent process with GDB, shells don't like '*' in args
+            # Shells don't like '*' in args
             args = [arg.replace("*", "\\*") for arg in sys.argv if arg != "--gdb"]
             os.execvp(
                 "gdb",
