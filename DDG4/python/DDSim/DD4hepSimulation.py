@@ -823,30 +823,30 @@ class DD4hepSimulation(object):
     return generationInit
 
   def __attachGDB(self):
-        """Hook gdb to the current session. This is done by forking
-        the current process and replacing the parent with gdb, while
-        the child continues to run the program.
-        """
+    """Hook gdb to the current session. This is done by forking
+    the current process and replacing the parent with gdb, while
+    the child continues to run the program.
+    """
 
-        child_pid = os.fork()
+    child_pid = os.fork()
 
-        if child_pid == 0:
-            # Child process: runs the actual program
-            return
-        else:
-            # Parent process: becomes GDB
+    if child_pid == 0:
+        # Child process: runs the actual program
+        return
+    else:
+        # Parent process: becomes GDB
 
-            # Shells don't like '*' in args
-            args = [arg.replace("*", "\\*") for arg in sys.argv if arg != "--gdb"]
-            os.execvp(
+        # Shells don't like '*' in args
+        args = [arg.replace("*", "\\*") for arg in sys.argv if arg != "--gdb"]
+        os.execvp(
+            "gdb",
+            [
                 "gdb",
-                [
-                    "gdb",
-                    "-q",
-                    "-p",
-                    str(child_pid),
-                    "-ex",
-                    f"set args {' '.join(args)}",
+                "-q",
+                "-p",
+                str(child_pid),
+                "-ex",
+                f"set args {' '.join(args)}",
                 ],
             )
 
