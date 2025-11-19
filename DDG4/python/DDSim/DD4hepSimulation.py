@@ -106,6 +106,7 @@ class DD4hepSimulation(object):
     self.filter = Filter()
     self.physics = Physics()
     self.ui = UI()
+    self._gdb = False
 
     self._argv = None
 
@@ -223,6 +224,9 @@ class DD4hepSimulation(object):
     parser.add_argument("--dumpSteeringFile", action="store_true", dest="dumpSteeringFile",
                         default=self._dumpSteeringFile, help="print an example steering file to stdout")
 
+    parser.add_argument("--gdb", action="store_true", dest="_gdb",
+                        default=False, help="run the simulation under gdb")
+
     # output, or do something smarter with fullHelp only for example
     ConfigHelper.addAllHelper(self, parser)
     # now parse everything. The default values are now taken from the
@@ -244,6 +248,7 @@ class DD4hepSimulation(object):
     self.__checkFileFormat(self.outputFile, ('.root', '.slcio'))
     self.runType = parsed.runType
     self.printLevel = self.__checkOutputLevel(parsed.printLevel)
+    self._gdb = parsed._gdb
 
     self.numberOfEvents = parsed.numberOfEvents
     self.skipNEvents = parsed.skipNEvents
@@ -279,6 +284,9 @@ class DD4hepSimulation(object):
     if self._dumpSteeringFile:
       self.__printSteeringFile(parser)
       exit(0)
+
+    if self._gdb:
+      self.__attachGDB()
 
   def getDetectorLists(self, detectorDescription):
     ''' get lists of trackers and calorimeters that are defined in detectorDescription (the compact xml file)'''
@@ -813,6 +821,34 @@ class DD4hepSimulation(object):
       ga.adopt(gen)
     # Puuuhh! All done.
     return generationInit
+
+  def __attachGDB(self):
+    """Hook gdb to the current session. This is done by forking
+    the current process and replacing the parent with gdb, while
+    the child continues to run the program.
+    """
+
+    child_pid = os.fork()
+
+    if child_pid == 0:
+        # Child process: runs the actual program
+        return
+    else:
+        # Parent process: becomes GDB
+
+        # Shells don't like '*' in args
+        args = [arg.replace("*", "\\*") for arg in sys.argv if arg != "--gdb"]
+        os.execvp(
+            "gdb",
+            [
+                "gdb",
+                "-q",
+                "-p",
+                str(child_pid),
+                "-ex",
+                f"set args {' '.join(args)}",
+                ],
+            )
 
 
 ################################################################################
