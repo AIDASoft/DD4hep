@@ -112,7 +112,9 @@ namespace dd4hep {
     /// Initialize geometry
     virtual void init() = 0;
     /// Finalize the geometry
-    virtual void endDocument(bool close_geometry=true) = 0;
+    virtual void endDocument(bool close_geometry = true) = 0;
+    /// Finalize the geometry
+    virtual void endDocument(const char* option) = 0;
 
     /// Access the state of the geometry
     virtual State state()  const = 0;

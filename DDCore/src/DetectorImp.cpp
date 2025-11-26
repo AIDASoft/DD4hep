@@ -697,9 +697,17 @@ namespace {
 
 /// Finalize/close the geometry
 void DetectorImp::endDocument(bool close_geometry)    {
+  const char* option = (close_geometry) ? "close" : nullptr;
+  this->endDocument(option);
+}
+
+/// Finalize the geometry
+void DetectorImp::endDocument(const char* option)  {
   TGeoManager* mgr = m_manager;
+  TString      clopt, opt(option == nullptr ? "" : option);
   std::lock_guard<std::recursive_mutex> lock(s_detector_apply_lock);
-  if ( close_geometry && !mgr->IsClosed() )  {
+  opt.ToLower();
+  if ( opt.Contains("close") && !mgr->IsClosed() )  {
 #if 0
     Region trackingRegion("TrackingRegion");
     trackingRegion.setThreshold(1);
@@ -716,7 +724,12 @@ void DetectorImp::endDocument(bool close_geometry)    {
     // Propagating reflections: This is useless now and unused!!!!
     // Since we allow now for anonymous shapes,
     // we will rename them to use the name of the volume they are assigned to
-    mgr->CloseGeometry();
+    if( opt.Contains("i")  ) clopt += "i";
+    if( opt.Contains("nv") ) clopt += "nv";
+    (clopt.Length()>0) ? mgr->CloseGeometry(clopt) : mgr->CloseGeometry();
+    if( clopt.Contains("nv") )  {
+      printout(INFO,"Detector","++ Geometry voxelization is disabled.");
+    }
     PlacedVolume pv = mgr->GetTopNode();
     auto* extension = pv->GetUserExtension();
     if ( nullptr == extension )   {
