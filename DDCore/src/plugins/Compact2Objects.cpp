@@ -1681,6 +1681,7 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
 /// Main compact conversion entry point
 template <> void Converter<Compact>::operator()(xml_h element) const {
   static int num_calls = 0;
+  std::string close_option;
   char text[32];
 
   ++num_calls;
@@ -1704,6 +1705,9 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
       close_document = steer.attr<bool>(_U(close));
     if ( steer.hasAttr(_U(reflect)) )
       build_reflections = steer.attr<bool>(_U(reflect));
+    if ( steer.hasAttr(_U(option))  )
+      close_option = steer.attr<std::string>(_U(option));
+
     for (xml_coll_t clr(steer, _U(clear)); clr; ++clr) {
       std::string nam = clr.hasAttr(_U(name)) ? clr.attr<std::string>(_U(name)) : std::string();
       if ( nam.substr(0,6) == "elemen" )   {
@@ -1788,7 +1792,8 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   if ( --num_calls == 0 && close_document )  {
     ::snprintf(text, sizeof(text), "%u", xml_h(element).checksum(0));
     description.addConstant(Constant("compact_checksum", text));
-    description.endDocument(close_geometry);
+    if( close_geometry ) close_option += "close";
+    description.endDocument(close_option.c_str());
   }
   if ( build_reflections )   {
     ReflectionBuilder rb(description);
