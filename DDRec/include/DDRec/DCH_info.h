@@ -435,8 +435,7 @@ inline TVector3 DCH_info_struct::Calculate_wire_z0_point(int ilayer, int icell) 
 }
 
 // calculate phi rotation of whole cell, ie, rotation at z=0
-inline double
-::Calculate_wire_phi_z0(int ilayer, int icell) const {
+inline double DCH_info_struct::Calculate_wire_phi_z0(int ilayer, int icell) const {
   auto&  l       = this->database.at(ilayer);
   int    ncells  = l.nwires / 2;
   double phistep = TMath::TwoPi() / ncells;
