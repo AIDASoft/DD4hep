@@ -35,7 +35,11 @@ struct PyDDG4  {
 
   static int execute();
   static int process(const char* fname);
+  static int runAll(Kernel& kernel);
+  static int initialize(Kernel& kernel);
+  static int configure(Kernel& kernel);
   static int run(Kernel& kernel);
+  static int terminate(Kernel& kernel);
   static int run(const char* fname);
 };
 #endif // DDG4_PYTHON_PYDDG4_H
