@@ -190,7 +190,7 @@ namespace dd4hep::sim {
     m_currEvent = event_number;
     podio::Frame frame = m_reader.readFrame("events", event_number);
     const auto& primaries = frame.get<edm4hep::MCParticleCollection>(m_collectionName);
-    const auto availableCollections = frame.getAvailableCollections();
+    const auto& availableCollections = frame.getAvailableCollections();
     int eventNumber = event_number, runNumber = 0;
 #if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 6, 0)
     if (primaries.hasID()) {
