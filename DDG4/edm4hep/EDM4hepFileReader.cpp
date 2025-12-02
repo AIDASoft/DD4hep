@@ -198,8 +198,7 @@ namespace dd4hep::sim {
     if (primaries.isValid()) {
 #endif
       //Read the event header collection and add it to the context as an extension
-      if (std::find(availableCollections.begin(), availableCollections.end(), m_eventHeaderCollectionName) !=
-          frame.getAvailableCollections().end()) {
+      if (std::find(availableCollections.begin(), availableCollections.end(), m_eventHeaderCollectionName) != availableCollections.end()) {
         const auto& eventHeaderCollection = frame.get<edm4hep::EventHeaderCollection>(m_eventHeaderCollectionName);
         if(eventHeaderCollection.size() == 1){
           const auto& eh = eventHeaderCollection.at(0);
@@ -226,8 +225,7 @@ namespace dd4hep::sim {
         ctx->event().addExtension<EventParameters>(parameters);
       } catch(std::exception &) {}
 #if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 3)
-      if (std::find(availableCollections.begin(), availableCollections.end(), edm4hep::labels::GeneratorEventParameters) !=
-          frame.getAvailableCollections().end()) {
+      if (std::find(availableCollections.begin(), availableCollections.end(), edm4hep::labels::GeneratorEventParameters) != availableCollections.end()) {
         const auto& genEvtParameters =
             frame.get<edm4hep::GeneratorEventParametersCollection>(edm4hep::labels::GeneratorEventParameters);
 #if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 6, 0)
