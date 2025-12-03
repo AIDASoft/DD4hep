@@ -41,17 +41,13 @@ namespace dd4hep {
       SurfaceManager(const Detector& theDetector);
 
       /// No default constructor
-#if defined(G__ROOT)
-      SurfaceManager() = default ;
-#else
       SurfaceManager() = delete ;
-#endif
       
       ~SurfaceManager() = default;
       SurfaceManager(const SurfaceManager&) = delete;
       SurfaceManager& operator=(const SurfaceManager&) = delete;
-      SurfaceManager(SurfaceManager&&) = default;
-      SurfaceManager& operator=(SurfaceManager&&) = default;
+      SurfaceManager(SurfaceManager&&) = delete;
+      SurfaceManager& operator=(SurfaceManager&&) = delete;
 
 
       /** Get the maps of all surfaces associated to the given detector or
@@ -68,9 +64,11 @@ namespace dd4hep {
 
 
       /// initialize all known surface maps
-      void initialize(const Detector& theDetector) ;
+      void initialize(const Detector& theDetector) const;
 
-      SurfaceMapsMap _map ;
+      mutable SurfaceMapsMap  _map{} ;
+      const Detector& _theDetector ;
+      mutable std::once_flag  _initializedFlag{} ;
     };
 
   } /* namespace rec */
