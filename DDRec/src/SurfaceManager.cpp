@@ -15,24 +15,26 @@
 #include "DDRec/SurfaceHelper.h"
 #include "DD4hep/VolumeManager.h"
 #include "DD4hep/Detector.h"
+#include "DD4hep/Printout.h"
 
 #include <sstream>
 
 namespace dd4hep {
   namespace rec {
 
-    SurfaceManager::SurfaceManager(const Detector& theDetector){
+    SurfaceManager::SurfaceManager(const Detector& theDetector) : _theDetector(theDetector) {
 
       // have to make sure the volume manager is populated once in order to have
       // the volumeIDs attached to the DetElements
 
       VolumeManager::getVolumeManager(theDetector);
 
-      initialize(theDetector) ;
     }
     
     
     const SurfaceMap* SurfaceManager::map( const std::string& name ) const {
+
+      std::call_once( _initializedFlag, &SurfaceManager::initialize, this, _theDetector ) ;
 
       SurfaceMapsMap::const_iterator it = _map.find( name ) ;
 
@@ -44,7 +46,7 @@ namespace dd4hep {
       return nullptr ;
     }
 
-    void SurfaceManager::initialize(const Detector& description) {
+    void SurfaceManager::initialize(const Detector& description) const {
       
       for(const auto& type : description.detectorTypes()) {
 
@@ -74,6 +76,8 @@ namespace dd4hep {
           }
         }
       }
+
+      printout(INFO,"SurfaceManager","%s" , description.extension<SurfaceManager>()->toString().c_str() );
 
     }
 
