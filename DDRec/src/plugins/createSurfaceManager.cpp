@@ -40,10 +40,10 @@ namespace dd4hep{
     static long createSurfaceManager(Detector& description, int /*argc*/, char** /*argv*/) {
 
       printout(INFO,"InstallSurfaceManager","**** running plugin InstallSurfaceManager ! " );
+      printout(INFO,"InstallSurfaceManager","**** the map of surfaces will be created on first access ! " );
 
       description.addExtension<SurfaceManager>(  new SurfaceManager(description) ) ;
 
-      printout(INFO,"InstallSurfaceManager","%s" , description.extension<SurfaceManager>()->toString().c_str() );
 
       return 1;
     }
