@@ -229,10 +229,18 @@ std::size_t VolumeBuilder::buildVolumes(xml_h handle)    {
     }
     /// If we have an assembly, the shape is implicitly created in the
     /// TGeoAssemblyVolume. We MUST NOT explicitly create it.
-    bool is_assembly = false;
-    is_assembly |= x.child(_U(assembly),false)  != 0;
-    is_assembly |= c.attr_nothrow(_U(assembly)) != 0;
-    if( is_assembly )   {
+    bool is_volume_with_shape = x.child(_U(shape),false) != 0 || c.attr_nothrow(_U(shape)) != 0;
+    if( !is_volume_with_shape )  {
+      is_volume_with_shape = x.child(_U(solid),false) != 0 || c.attr_nothrow(_U(solid)) != 0;
+    }
+    bool is_assembly = (x.child(_U(assembly),false) != 0 || c.attr_nothrow(_U(assembly)) != 0);
+    if ( is_assembly && is_volume_with_shape )  {
+      printout(ERROR, "VolumeBuilder",
+               "+++ Shape defined, but ignored for ASSEMBLY volume: %s %s",
+               nam.c_str(), "[Inconsistent description]" );
+    }
+    /// Continue with assembly
+    if ( is_assembly || !is_volume_with_shape )  {
       Assembly  vol(nam);
       Solid     sol = vol.solid();
       xml_elt_t solid_handle(0);
@@ -253,15 +261,15 @@ std::size_t VolumeBuilder::buildVolumes(xml_h handle)    {
     /// Check if the volume is implemented by a factory
     if( (attr=c.attr_nothrow(_U(type))) )   {
       std::string typ = c.attr<std::string>(attr);
-      Volume vol = xml::createVolume(description, typ, c);
-      vol.setAttributes(description,x.regionStr(),x.limitsStr(),x.visStr());
-      volumes.emplace(nam,std::make_pair(c,vol));
+      Volume      vol = xml::createVolume(description, typ, c);
+      vol.setAttributes(description, x.regionStr(), x.limitsStr(), x.visStr());
+      volumes.emplace(nam,std ::make_pair(c,vol));
       /// Check if the volume is sensitive
       if( is_sensitive )   {
         vol.setSensitiveDetector(sensitive);
       }
       solid = vol.solid();
-      printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
+      printout(debug ? ALWAYS : DEBUG, "VolumeBuilder",
                "+++ Building volume   from XML: %-20s shape:%-24s vis:%s sensitive:%s",
                nam.c_str(), solid->IsA()->GetName(), x.visStr().c_str(),
                yes_no(is_sensitive));
@@ -274,8 +282,17 @@ std::size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       std::string ref = c.attr<std::string>(attr);
       if( !(solid=getShape(ref)).isValid() ) continue;
     }
-    /// Else use anonymous shape embedded in volume
+    /// Check if the volume has a solid attribute --> solid reference
+    else if( (attr=c.attr_nothrow(_U(solid))) )   {
+      std::string ref = c.attr<std::string>(attr);
+      if( !(solid=getShape(ref)).isValid() ) continue;
+    }
+    /// Else use anonymous shape element embedded in volume
     else if( (x_comp=x.child(_U(shape),false)) )  {
+      if( !(solid=makeShape(x_comp)).isValid() ) continue;
+    }
+    /// Else use anonymous solid element embedded in volume
+    else if( (x_comp=x.child(_U(solid),false)) )  {
       if( !(solid=makeShape(x_comp)).isValid() ) continue;
     }
 
@@ -290,7 +307,7 @@ std::size_t VolumeBuilder::buildVolumes(xml_h handle)    {
       if( is_sensitive )   {
         vol.setSensitiveDetector(sensitive);
       }
-      printout(debug ? ALWAYS : DEBUG,"VolumeBuilder",
+      printout(debug ? ALWAYS : DEBUG, "VolumeBuilder",
                "+++ Building volume   from XML: %-20s shape:%-24s vis:%s sensitive:%s",
                nam.c_str(), solid->IsA()->GetName(), x.visStr().c_str(),
                yes_no(is_sensitive));
