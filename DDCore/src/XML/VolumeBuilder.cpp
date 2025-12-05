@@ -233,14 +233,15 @@ std::size_t VolumeBuilder::buildVolumes(xml_h handle)    {
     if( !is_volume_with_shape )  {
       is_volume_with_shape = x.child(_U(solid),false) != 0 || c.attr_nothrow(_U(solid)) != 0;
     }
+    bool is_volume_with_type = c.attr_nothrow(_U(type)) != 0;
     bool is_assembly = (x.child(_U(assembly),false) != 0 || c.attr_nothrow(_U(assembly)) != 0);
-    if ( is_assembly && is_volume_with_shape )  {
+    if ( is_assembly && ( is_volume_with_shape || is_volume_with_type) ) {
       printout(ERROR, "VolumeBuilder",
                "+++ Shape defined, but ignored for ASSEMBLY volume: %s %s",
                nam.c_str(), "[Inconsistent description]" );
     }
     /// Continue with assembly
-    if ( is_assembly || !is_volume_with_shape )  {
+    if ( is_assembly || (!is_volume_with_shape && !is_volume_with_type) )  {
       Assembly  vol(nam);
       Solid     sol = vol.solid();
       xml_elt_t solid_handle(0);
