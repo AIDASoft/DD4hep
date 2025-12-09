@@ -1,3 +1,64 @@
+# v01-34
+
+* 2025-12-09 Thomas Madlener ([PR#1536](https://github.com/aidasoft/DD4hep/pull/1536))
+  - Remove an unnecessary check in reading EDM4hep files
+
+* 2025-12-09 Juan Miguel Carceller ([PR#1532](https://github.com/aidasoft/DD4hep/pull/1532))
+  - Delay creating surfaces with the SurfaceManager plugin until they are actually needed by getting the map of surfaces with `SurfaceManager::map()`
+
+* 2025-12-05 Ben Couturier ([PR#1534](https://github.com/aidasoft/DD4hep/pull/1534))
+  - Fix to handle case where volume is created by its own constructor
+
+* 2025-12-04 Markus Frank ([PR#1533](https://github.com/aidasoft/DD4hep/pull/1533))
+  - Fix assembly handling in VolumeBuilder according to LHCb XML syntax: Logic is as follows:
+   if `<volume/>` has a child (or attribute) of type `<shape/>` or `<solid/>` it is a true volume with a shape.
+   if `<volume/>` has a child (or attribute) of type `<assembly/>` it is assumed to be an assembly.
+  If both conditions match, the description is assumed to be inconsistent, the assembly branch wins and
+  an error message is issued. See also PR https://github.com/AIDASoft/DD4hep/pull/1525
+
+* 2025-12-04 Juan Miguel Carceller ([PR#1531](https://github.com/aidasoft/DD4hep/pull/1531))
+  - DDEcalEndcapAlgo: Remove unused variable to prevent a compiler warning
+
+* 2025-12-04 Juan Miguel Carceller ([PR#1530](https://github.com/aidasoft/DD4hep/pull/1530))
+  - EDM4hep reader: Prepare for podio frame.get to throw an exception if a collection is not found
+
+* 2025-11-26 Markus Frank ([PR#1528](https://github.com/aidasoft/DD4hep/pull/1528))
+  Badly designed, not well balanced geometries require lots of resources during the voxelization step when
+  closing the geometry. This can now be steered using an option tag in the steering element of the compact xml.
+  
+  Example:
+  ```
+    <geometry close="true" option="nv"/>
+  or
+    <geometry option="closenv"/>
+  
+  or (close=true is the default)
+    <geometry option="nv"/>
+  ```
+  The options `nv` and `i` are directly routed to the call to `TGeoManager::CloseGeometry(option)`.
+
+* 2025-11-19 Juan Miguel Carceller ([PR#1526](https://github.com/aidasoft/DD4hep/pull/1526))
+  - ddsim: Add a `--gdb` argument to run ddsim inside gdb (debugger)
+
+* 2025-11-14 Juan Miguel Carceller ([PR#1522](https://github.com/aidasoft/DD4hep/pull/1522))
+  - Remove from .gitignore folders in the repository, in DDCore and DDG4
+
+* 2025-11-14 Juan Miguel Carceller ([PR#1521](https://github.com/aidasoft/DD4hep/pull/1521))
+  - Remove `from __future__ import` since we are using Python 3
+
+* 2025-11-14 Stefano Fanchellucci ([PR#1519](https://github.com/aidasoft/DD4hep/pull/1519))
+  - ddsim: UI commands passed as CLI arguments are now split by `;`, so that Geant4 commands requiring multiple arguments can be used in the CLI.
+
+* 2025-11-14 Juan Miguel Carceller ([PR#1518](https://github.com/aidasoft/DD4hep/pull/1518))
+  - Fix configure warnings about [CMP0167](https://cmake.org/cmake/help/latest/policy/CMP0167.html) and [CMP0177](https://cmake.org/cmake/help/latest/policy/CMP0177.html). CMP0167 makes `find_package(Boost)` to use the Config.cmake file provided by Boost instead of the `FindBoost.cmake` provided by CMake. CMP0177 complains about using relative paths in install. With this change, the cmake files do not go anymore to the `cmake` folder in the source directory but are installed directly from the build tree to the install tree.
+
+* 2025-11-14 Juan Miguel Carceller ([PR#1498](https://github.com/aidasoft/DD4hep/pull/1498))
+  - Modernize code related to Surfaces and the SurfaceManager. Simplify for loops, define default destructors with `=default`, pass arguments by const reference when possible
+  - Make `DetectorSurfaces` not inherit from `DetElement` since it is not used nor needed
+
+* 2025-11-13 Markus Frank ([PR#1525](https://github.com/aidasoft/DD4hep/pull/1525))
+  - In #1478 VolumeBuilder.cpp a boolean variable was wrongly initialized.  This deficiency is corrected with this merge request. Fixes #1524
+
 # v01-33
 
 * 2025-10-28 Juan Miguel Carceller ([PR#1517](https://github.com/aidasoft/DD4hep/pull/1517))
