@@ -228,24 +228,18 @@ namespace dd4hep::sim {
       if (std::find(availableCollections.begin(), availableCollections.end(), edm4hep::labels::GeneratorEventParameters) != availableCollections.end()) {
         const auto& genEvtParameters =
             frame.get<edm4hep::GeneratorEventParametersCollection>(edm4hep::labels::GeneratorEventParameters);
-#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 6, 0)
-        if (genEvtParameters.hasID()) {
-#else
-        if (genEvtParameters.isValid()) {
-#endif
-          if (genEvtParameters.size() >= 1) {
-            const auto genParams = genEvtParameters[0];
-            try {
-              auto *ctx = context();
-              ctx->event().addExtension(new edm4hep::MutableGeneratorEventParameters(genParams.clone()));
-            } catch (std::exception &) {}
-          }
-          if (genEvtParameters.size() > 1) {
-            printout(WARNING, "EDM4hepFileReader", "Multiple GeneratorEventParameters found in input file. Ignoring all but the first one!");
-          }
-        } else {
-          printout(DEBUG, "EDM4hepFileReader", "No GeneratorEventParameters found in input file");
+        if (genEvtParameters.size() >= 1) {
+          const auto genParams = genEvtParameters[0];
+          try {
+            auto *ctx = context();
+            ctx->event().addExtension(new edm4hep::MutableGeneratorEventParameters(genParams.clone()));
+          } catch (std::exception &) {}
         }
+        if (genEvtParameters.size() > 1) {
+          printout(WARNING, "EDM4hepFileReader", "Multiple GeneratorEventParameters found in input file. Ignoring all but the first one!");
+        }
+      } else {
+        printout(DEBUG, "EDM4hepFileReader", "No GeneratorEventParameters found in input file");
       }
 #endif
       printout(INFO,"EDM4hepFileReader","read collection %s from event %d in run %d ",
