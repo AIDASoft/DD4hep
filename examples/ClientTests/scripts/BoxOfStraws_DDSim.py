@@ -1,8 +1,12 @@
 from DDSim.DD4hepSimulation import DD4hepSimulation
 SIM = DD4hepSimulation()
 
-# make ddsim find the sensitive detector for box of straws
-SIM.action.calorimeterSDTypes = ['sensitive']
+# make ddsim find the sensitive detector for box of straws (type: tracker)
+SIM.action.trackerSDTypes = ['sensitive']
+SIM.action.tracker=('Geant4ScintillatorCalorimeterAction', {'UseVolumeManager': False})
+
+SIM.outputFile = "sim.root"
+SIM.outputConfig.forceDD4HEP = True
 
 # Trigger printout of event seed
 SIM.random.enableEventSeed = True

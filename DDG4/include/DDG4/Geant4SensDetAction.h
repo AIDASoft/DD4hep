@@ -67,8 +67,6 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4ActionSD();
     public:
-      /// Access the sensitive detector sequence
-      virtual Geant4SensDetActionSequence& sequence()  const = 0;
       /// Initialize the usage of a hit collection. Returns the collection identifier
       virtual std::size_t defineCollection(const std::string& name) = 0;
       /// Access to the readout geometry of the sensitive detector
@@ -137,6 +135,8 @@ namespace dd4hep {
     protected:
       /// Property: Hit creation mode. Maybe one of the enum HitCreationFlags
       int  m_hitCreationMode                  {       0 };
+      /// Property: Use the volume manager to access CellID and VolumeID
+      bool m_useVolumeManager                 {    true };
 
 #if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
       /// Reference to the detector description object
@@ -176,7 +176,9 @@ namespace dd4hep {
       void setDetector(Geant4ActionSD* sens_det);
 
       /// Access volume manager usage flag. This is a subdetector specific flag
-      bool useVolumeManager()  const;
+      bool useVolumeManager()  const  {
+        return m_useVolumeManager;
+      }
 
       /// Property access to the hit creation mode
       int hitCreationMode() const  {
@@ -330,9 +332,6 @@ namespace dd4hep {
       typedef std::vector<HitCollection> HitCollections;
 
     protected:
-      /// Property: Use the volume manager to access CellID and VolumeID
-      bool m_useVolumeManager {    true };
-
       /// Geant4 hit collection context
       G4HCofThisEvent*        m_hce  { nullptr };
       /// Callback sequence for event initialization action
@@ -373,14 +372,6 @@ namespace dd4hep {
       /// Default destructor
       virtual ~Geant4SensDetActionSequence();
 
-      /// Property: Access volume manager usage flag. This is a subdetector specific flag
-      bool useVolumeManager()  const  {
-        return m_useVolumeManager;
-      }
-      /// Property: set volume manager usage flag. This is a subdetector specific flag
-      void setUseVolumeManager(bool new_value)  {
-        m_useVolumeManager = new_value;
-      }
       /// Access to the sensitive type of the detector
       virtual const std::string& sensitiveType() const   {
         return m_sensitiveType;
