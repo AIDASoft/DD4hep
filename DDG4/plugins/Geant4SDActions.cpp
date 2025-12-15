@@ -42,8 +42,8 @@ namespace dd4hep {
         if( !hit ) {
           DDSegmentation::Vector3D pos;
           Position global;
-          if( !sd.useVolumeManager() )  {
-            cell   = sd.id();
+          /// No volume manager
+          if( !sd.useVolumeManager() || !segmentation.isValid() )  {
             pos    = h.avgPosition();
             global = h.localToGlobal(pos);
           }
@@ -225,7 +225,7 @@ namespace dd4hep {
       }
       hit->cellID = cellID(step);
       if ( 0 == hit->cellID )  {
-        hit->cellID      = volumeID( step ) ;
+        hit->cellID = volumeID( step ) ;
         except("+++ Invalid CELL ID for hit!");
       }
       collection(m_collectionID)->add(hit);

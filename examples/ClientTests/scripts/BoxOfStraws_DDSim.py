@@ -3,7 +3,7 @@ SIM = DD4hepSimulation()
 
 # make ddsim find the sensitive detector for box of straws (type: tracker)
 SIM.action.trackerSDTypes = ['sensitive']
-SIM.action.tracker=('Geant4ScintillatorCalorimeterAction', {'UseVolumeManager': False})
+SIM.action.tracker=('Geant4ScintillatorCalorimeterAction', { 'UseVolumeManager': False } )
 
 SIM.outputFile = "sim.root"
 SIM.outputConfig.forceDD4HEP = True
