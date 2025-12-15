@@ -48,7 +48,7 @@ namespace dd4hep {
       Geant4HitHandler() = delete;
       /// Initializing constructor
       Geant4HitHandler(const G4Track* t, const G4VTouchable* h)
-	: track(t), touchable_ptr(h)
+        : track(t), touchable_ptr(h)
       {
       }
       /// No copy constructor
