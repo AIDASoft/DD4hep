@@ -32,8 +32,11 @@ def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepExamplesINSTALL']
   kernel.loadGeometry(str("file:" + install_dir + "/examples/AlignDet/compact/AlephTPC.xml"))
-
-  if args.alignments:
+  if args.align:
+    kernel.runPlugin('DD4hep_GlobalAlignmentInstall', [])
+    kernel.loadXML(str("file:" + install_dir + "/examples/AlignDet/compact/AlephTPC_alignment.xml"))
+  elif args.alignments:
+    kernel.runPlugin('DD4hep_GlobalAlignmentInstall', [])
     kernel.loadXML(str("file:") + str(args.alignments))
 
   DDG4.importConstants(kernel.detectorDescription(), debug=False)

@@ -354,16 +354,26 @@ G4RunManager& Geant4Kernel::runManager() {
 }
 
 /// Construct detector geometry using description plugin
-void Geant4Kernel::loadGeometry(const std::string& compact_file) {
+void Geant4Kernel::loadGeometry(const std::string& compact_file)  {
   char* arg = (char*) compact_file.c_str();
   m_detDesc->apply("DD4hep_XMLLoader", 1, &arg);
   //return *this;
 }
 
 // Utility function to load XML files
-void Geant4Kernel::loadXML(const char* fname) {
+void Geant4Kernel::loadXML(const char* fname)  {
   const char* args[] = { fname, 0 };
   m_detDesc->apply("DD4hep_XMLLoader", 1, (char**) args);
+}
+
+/// Run dd4hep plugin
+long Geant4Kernel::runPlugin( const std::string& plugin, const std::vector<std::string>& args )  {
+  std::vector<const char*> arguments;
+  arguments.reserve( args.size()+1 );
+  for( const auto& a : args )
+    arguments.push_back( a.c_str() );
+  arguments.push_back( nullptr );
+  return m_detDesc->apply( plugin.c_str(), args.size(), (char**) &arguments.at(0) );
 }
 
 /// Register configure callback

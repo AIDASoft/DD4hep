@@ -126,12 +126,54 @@ void Geant4UIManager::applyCommand(const std::string& command)   {
   except("No UI reference present. Too early to interact with Geant4!");
 }
 
+/// Apply DD4hep plugin call from Geant4 prompt
+long Geant4UIManager::runPlugin(const char* value)  {
+  Geant4Kernel& kernel = this->context()->kernel();
+  std::string   plugin_name_args = value;
+  std::string   val;
+  std::size_t   idx;
+
+  idx = plugin_name_args.find('(');
+  if( idx != std::string::npos )  {
+    std::size_t idq    = plugin_name_args.find( idx+1, ')' );
+    std::string plugin = plugin_name_args.substr( 0, idx );
+    std::string args   = plugin_name_args.substr( idx, idq-idx );
+    std::vector<std::string> argv;
+    int start = 0;
+    for( const char* c = value; *c; ++c )  {
+      if( *c == '"' && start == 0 )  {
+        start = 1;
+        val = "";
+        continue;
+      }
+      if( *c == '"' && start == 1 )  {
+        error("New plugin argument: '%s'", val.c_str());
+        argv.push_back(val);
+        start = 0;
+        val = "";
+        continue;
+      }
+      if( start == 1 )  {
+        val += *c;
+      }
+    }
+    error("Calling dd4hep plugin %s with arguments: %s",
+          plugin.c_str(), args.c_str());
+    return kernel.runPlugin( plugin.c_str(), argv );
+  }
+  error("Invalid arguments to call a dd4hep plugin: '%s'",
+        plugin_name_args.c_str());
+  return -1;
+}
+
 /// Install command control messenger to write GDML file from command prompt.
 void Geant4UIManager::installCommandMessenger()   {
   m_control->addCall("exit", "Force exiting this process",
-                     Callback(this).make(&Geant4UIManager::forceExit),0);
+                     Callback( this ).make( &Geant4UIManager::forceExit ), 0);
   m_control->addCall("terminate", "Regular exit this process",
-                     Callback(this).make(&Geant4UIManager::regularExit),0);
+                     Callback( this ).make( &Geant4UIManager::regularExit ), 0);
+  m_control->addCall("run_plugin", "Execute DD4hep plugin",
+                     Callback( this ).make( &Geant4UIManager::runPlugin ), 1);
 }
 
 /// Force exiting this process without calling atexit handlers

@@ -331,6 +331,8 @@ namespace dd4hep {
       virtual void loadGeometry(const std::string& compact_file);
       /// Load XML file 
       virtual void loadXML(const char* fname);
+      /// Run dd4hep plugin with arguments
+      virtual long runPlugin(const std::string& plgin, const std::vector<std::string>& args);
 
       /** Geant4 Multi threading support */
       /// Create identified worker instance
