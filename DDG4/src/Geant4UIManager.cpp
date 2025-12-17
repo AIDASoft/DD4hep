@@ -176,7 +176,6 @@ void Geant4UIManager::installCommandMessenger()   {
                      Callback( this ).make( &Geant4UIManager::regularExit ), 0);
   m_control->addCall("run_plugin", "Execute DD4hep plugin of the form "
                      "<plugin-name>(\"arg1\", \"arg2\", \"arg3\",....)",
-  m_control->addCall("run_plugin", "Execute DD4hep plugin",
                      Callback( this ).make( &Geant4UIManager::runPlugin ), 1);
 }
 
