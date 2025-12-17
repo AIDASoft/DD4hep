@@ -157,12 +157,14 @@ long Geant4UIManager::runPlugin(const char* value)  {
         val += *c;
       }
     }
-    error("Calling dd4hep plugin %s with arguments: %s",
+    always("Calling dd4hep plugin %s with arguments: %s",
           plugin.c_str(), args.c_str());
     return kernel.runPlugin( plugin.c_str(), argv );
   }
   error("Invalid arguments to call a dd4hep plugin: '%s'",
         plugin_name_args.c_str());
+  error("Did you use the correct calling style:  "
+        "> /ddg4/UI/run_plugin <plugin-name>(\"arg1\", \"arg2\", \"arg3\",....)");
   return -1;
 }
 
@@ -172,7 +174,8 @@ void Geant4UIManager::installCommandMessenger()   {
                      Callback( this ).make( &Geant4UIManager::forceExit ), 0);
   m_control->addCall("terminate", "Regular exit this process",
                      Callback( this ).make( &Geant4UIManager::regularExit ), 0);
-  m_control->addCall("run_plugin", "Execute DD4hep plugin",
+  m_control->addCall("run_plugin", "Execute DD4hep plugin of the form "
+                     "<plugin-name>(\"arg1\", \"arg2\", \"arg3\",....)",
                      Callback( this ).make( &Geant4UIManager::runPlugin ), 1);
 }
 
