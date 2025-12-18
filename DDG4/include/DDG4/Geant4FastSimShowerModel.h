@@ -94,6 +94,8 @@ namespace dd4hep  {
       void addShowerModel(G4Region* region);
       /// Kill primary particle when creating the shower
       void killParticle(G4FastStep& step, double deposit, double step_length = 0e0);
+      /// Mark the primary particle of this shower as handled by fast sim
+      void markHandledByFastSim(const G4FastTrack& track);
 
     public:
       /// Standard constructor

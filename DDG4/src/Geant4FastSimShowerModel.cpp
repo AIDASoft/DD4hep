@@ -12,6 +12,8 @@
 //==========================================================================
 
 // Framework include files
+#include "DDG4/Geant4TrackHandler.h"
+#include "DDG4/Geant4Primary.h"
 #include <DDG4/Geant4FastSimShowerModel.h>
 #include <DDG4/Geant4Mapping.h>
 #include <DDG4/Geant4Kernel.h>
@@ -198,6 +200,19 @@ void Geant4FastSimShowerModel::killParticle(G4FastStep& step, double deposit, do
   step.KillPrimaryTrack();
   step.ProposePrimaryTrackPathLength(step_length);
   step.ProposeTotalEnergyDeposited(deposit);
+}
+
+void Geant4FastSimShowerModel::markHandledByFastSim(const G4FastTrack& track) {
+  this->info("Marking as handled by fastsim");
+  Geant4TrackHandler trackHandler(track.GetPrimaryTrack());
+  auto primaryMap = context()->event().extension<Geant4PrimaryMap>(false);
+  auto primary = primaryMap->get(trackHandler.primary());
+  if (primary) {
+    dd4hep::detail::ReferenceBitMask<int> mask(primary->status);
+    mask.set(G4PARTICLE_SIM_FAST_SIMULATION);
+  } else {
+    this->warning("Cannot mark a primary as being handled by fast simulation");
+  }
 }
 
 /// User callback to determine if the model is applicable for the particle type
