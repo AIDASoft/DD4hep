@@ -81,13 +81,30 @@ function(dd4hep_generate_rootmap library)
   else()
     set(ENV_VAR LD_LIBRARY_PATH)
   endif()
-  set(${ENV_VAR}_VALUE $<TARGET_FILE_DIR:${library}>:$<TARGET_FILE_DIR:DD4hep::DD4hepGaudiPluginMgr>:$ENV{${ENV_VAR}})
 
+  set(DD4HEP_LIBRARY_PATH "$ENV{${ENV_VAR}}"
+    CACHE STRING
+    "Set ${ENV_VAR} when adding plugins"
+  )
+  set(DD4HEP_ROOT_LIBRARY_PATH "$ENV{ROOT_LIBRARY_PATH}"
+    CACHE STRING
+    "Set ROOT_LIBRARY_PATH when adding plugins"
+  )
+
+  string(JOIN ":" _ld_path
+    "$<TARGET_FILE_DIR:${library}>"
+    "$<TARGET_FILE_DIR:DD4hep::DD4hepGaudiPluginMgr>"
+    "${DD4HEP_LIBRARY_PATH}"
+  )
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.components)
 
   add_custom_command(OUTPUT ${rootmapfile}
                      DEPENDS ${library}
-                     COMMAND ${ENV_VAR}=${${ENV_VAR}_VALUE} $<TARGET_FILE:DD4hep::listcomponents> -o ${rootmapfile} $<TARGET_FILE_NAME:${library}>
+                     VERBATIM COMMAND
+                     "${CMAKE_COMMAND}" -E env
+                     "${ENV_VAR}=${_ld_path}"
+                     "ROOT_LIBRARY_PATH=${DD4HEP_ROOT_LIBRARY_PATH}"
+                     $<TARGET_FILE:DD4hep::listcomponents> -o ${rootmapfile} $<TARGET_FILE_NAME:${library}>
                      WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH}
                      )
 
