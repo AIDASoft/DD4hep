@@ -86,7 +86,14 @@ function(dd4hep_generate_rootmap library)
     CACHE STRING
     "Set ${ENV_VAR} when adding plugins"
   )
-  set(DD4HEP_ROOT_LIBRARY_PATH "$ENV{ROOT_LIBRARY_PATH}"
+  if("$ENV{ROOT_LIBRARY_PATH}")
+    # Override path to required ROOT libraries from the environment
+    set(_default_root_lib_path "$ENV{ROOT_LIBRARY_PATH}")
+  else()
+    # Use directory specified by `find_package(ROOT)`
+    set(_default_root_lib_path "${ROOT_LIBRARY_DIR}")
+  endif()
+  set(DD4HEP_ROOT_LIBRARY_PATH "${_default_root_lib_path}"
     CACHE STRING
     "Set ROOT_LIBRARY_PATH when adding plugins"
   )
