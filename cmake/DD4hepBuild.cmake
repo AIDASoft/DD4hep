@@ -750,6 +750,7 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
     dd4hep_print("         Using fallback: ${_python_site_subdir}")
   endif()
   SET(DD4HEP_PYTHON_INSTALL_DIR lib/${_python_site_subdir})
+  unset(_python_site_subdir)
 
   #ROOT CXX Flags are a string with quotes, not a list, so we need to convert to a list...
   string(REPLACE " " ";" DD4HEP_ROOT_CXX_FLAGS ${ROOT_CXX_FLAGS})
