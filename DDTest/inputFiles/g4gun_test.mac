@@ -1,0 +1,10 @@
+# Geant4 macro file for testing G4Gun
+# This tests if macroFile works with --enableG4Gun
+
+/gun/particle mu-
+/gun/energy 10 GeV
+/gun/position 0 0 0 mm
+/gun/direction 0 0 1
+
+# Run events
+/run/beamOn 3
