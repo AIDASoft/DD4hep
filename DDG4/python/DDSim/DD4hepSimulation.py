@@ -361,20 +361,22 @@ class DD4hepSimulation(object):
       logger.info("++++ Adding DD4hep Particle Gun ++++")
 
     if self.enableG4Gun:
-      # GPS Create something
-      g4gun = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/Gun", shared=shared)
+      # G4Gun: Always use shared=False to allow macro configuration
+      # In MT mode, Geant4 will handle making the gun available to workers
+      g4gun = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/Gun", shared=False)
       g4gun.Uses = 'G4ParticleGun'
       g4gun.Mask = 2
-      logger.info("++++ Adding Geant4 Particle Gun ++++")
+      logger.info("++++ Adding Geant4 Particle Gun (non-shared for macro support) ++++")
       actionList.append(g4gun)
       self._g4gun.append(g4gun)
 
     if self.enableG4GPS:
-      # GPS Create something
-      g4gps = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/GPS", shared=shared)
+      # GPS: Always use shared=False to allow macro configuration
+      # In MT mode, Geant4 will handle making GPS available to workers
+      g4gps = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/GPS", shared=False)
       g4gps.Uses = 'G4GeneralParticleSource'
       g4gps.Mask = 3
-      logger.info("++++ Adding Geant4 General Particle Source ++++")
+      logger.info("++++ Adding Geant4 General Particle Source (non-shared for macro support) ++++")
       actionList.append(g4gps)
       self._g4gps.append(g4gps)
 
@@ -488,6 +490,11 @@ class DD4hepSimulation(object):
     kernel = geant4.kernel()
     logger.debug("Setting up actions")
     self.__setupActions(kernel)
+    logger.debug("Setting up EventSeeder for worker")
+    # Setup EventSeeder for this worker
+    # Uses the shared Geant4Random instance from master
+    import DDG4
+    self.random.setupEventSeeder(DDG4, kernel)
     logger.debug("Setting up generator actions")
     self.__setupGeneratorActions(kernel, geant4)
     logger.debug("Setting up output")
@@ -600,14 +607,19 @@ class DD4hepSimulation(object):
     PyDDG4.configure(master)
     PyDDG4.initialize(master)
 
-    # GPS
-    # FIXME this applies to only 1 thread, and Geant4GeneratorWrapper doesn't work as shared=True
-    if self._g4gun is not []:
-      for g4gun in self._g4gun:
-        g4gun.generator()
-    if self._g4gps is not []:
-      for g4gps in self._g4gps:
-        g4gps.generator()
+    # Initialize G4Gun and GPS generators for macro execution
+    # In single-threaded mode, we can access .generator() on the action objects
+    # In multi-threaded mode with shared=False, the actual generators are created
+    # per-worker and initialized automatically by Geant4, so we skip this step
+    if self.numberOfThreads == 1:
+      if self._g4gun is not []:
+        for g4gun in self._g4gun:
+          g4gun.generator()  # Initialize G4ParticleGun and register UI commands
+          logger.debug("Initialized G4Gun generator")
+      if self._g4gps is not []:
+        for g4gps in self._g4gps:
+          g4gps.generator()  # Initialize GPS and register UI commands
+          logger.debug("Initialized GPS generator")
 
     startUpTime, _sysTime, _cuTime, _csTime, _elapsedTime = os.times()
 
