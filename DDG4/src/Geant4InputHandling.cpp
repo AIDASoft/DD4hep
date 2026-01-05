@@ -446,7 +446,16 @@ getRelevant(std::set<int>& visited,
       G4PrimaryParticle* p4 = (ip4 == prim.end()) ? 0 : (*ip4).second;
       if ( !p4 )  {
         p4 = createG4Primary(p);
-        p4->SetProperTime(proper_time);
+        // if properTimeis Zero, we do not set the propertime, so that Geant4 decays the particle because the MC
+        // Generator did not decay the particle so we rely on pre-assigned decays and the particle.tbl file to give the
+        // decay length. The Geant4 default value of properTime is -1, so setting it to 0 changes behaviour
+        //
+        // How does this break existing behaviour? Why was this different in dd4hep 1.10? Does this depend on the Geant4
+        // version and its interpretation of the default properTime (0.0 vs -1)?
+        if(not isProperTimeZero) {
+          p4->SetProperTime(proper_time);
+        } else {
+        }
         prim[p->id] = p4;
         Primaries daughters;
         for(Geant4Particle::Particles::const_iterator i=dau.begin(); i!=dau.end(); ++i)  {
