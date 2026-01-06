@@ -509,6 +509,11 @@ class DD4hepSimulation(object):
     """setup the geometry and dd4hep and geant4 and do what was asked to be done"""
     import ROOT
     ROOT.PyConfig.IgnoreCommandLineOptions = True
+    
+    # Enable ROOT's thread safety for MT mode
+    if self.numberOfThreads > 1:
+      ROOT.EnableThreadSafety()
+      logger.info("Enabled ROOT thread safety for MT mode")
 
     import DDG4
     import dd4hep
