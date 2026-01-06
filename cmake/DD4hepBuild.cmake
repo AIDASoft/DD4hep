@@ -738,7 +738,19 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
   ENDIF()
   dd4hep_print("|++> Using python executable:  ${Python_EXECUTABLE}")
 
-  SET(DD4HEP_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
+  # For Python 3.13+ with free-threading (PEP 703), the site-packages directory
+  # includes a 't' suffix (e.g., python3.14t/site-packages). We use Python's
+  # own SITEARCH to get the correct path including any ABI suffixes.
+  string(REGEX MATCH "python[0-9]+\\.[0-9]+[a-z]*/site-packages" _python_site_subdir "${Python_SITEARCH}")
+  if(NOT _python_site_subdir)
+    # Fallback to manual construction if regex fails
+    set(_python_site_subdir "python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages")
+    MESSAGE(WARNING "Could not extract site-packages path from Python_SITEARCH")
+    MESSAGE(WARNING "Python_SITEARCH=${Python_SITEARCH}")
+    MESSAGE(WARNING "Using fallback: ${_python_site_subdir}")
+  endif()
+  SET(DD4HEP_PYTHON_INSTALL_DIR lib/${_python_site_subdir})
+  unset(_python_site_subdir)
 
   #ROOT CXX Flags are a string with quotes, not a list, so we need to convert to a list...
   string(REPLACE " " ";" DD4HEP_ROOT_CXX_FLAGS ${ROOT_CXX_FLAGS})
