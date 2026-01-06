@@ -15,6 +15,7 @@
 
 // Framework include files
 #include <DDG4/Geant4OutputAction.h>
+#include <mutex>
 
 class TFile;
 class TTree;
@@ -58,6 +59,8 @@ namespace dd4hep {
       bool m_handleMCTruth;
       /// Property: Flag if Monte-Carlo truth should be followed and checked
       bool m_filesByRun;
+      /// Static mutex to protect ROOT I/O operations in multi-threaded mode
+      static std::mutex s_rootMutex;
       
     public:
       /// Standard constructor
