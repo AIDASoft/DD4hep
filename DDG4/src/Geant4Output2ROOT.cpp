@@ -32,6 +32,9 @@
 
 using namespace dd4hep::sim;
 
+/// Define the static mutex for ROOT I/O protection
+std::mutex Geant4Output2ROOT::s_rootMutex;
+
 /// Standard constructor
 Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* ctxt, const std::string& nam)
   : Geant4OutputAction(ctxt, nam) {
@@ -51,6 +54,7 @@ Geant4Output2ROOT::~Geant4Output2ROOT() {
 
 /// Close current output file
 void Geant4Output2ROOT::closeOutput()   {
+  std::lock_guard<std::mutex> lock(s_rootMutex);
   if (!m_file) return;
   TDirectory::TContext ctxt(m_file.get());
   info("+++ Closing ROOT output file %s", m_file->GetName());
@@ -76,11 +80,17 @@ TTree* Geant4Output2ROOT::section(const std::string& nam) {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2ROOT::beginRun(const G4Run* run) {
+  std::unique_lock<std::mutex> lock(s_rootMutex);
   std::string fname = m_output;
   if ( m_filesByRun )    {
     size_t idx = m_output.rfind(".");
-    if ( m_file )
+    if ( m_file ) {
+      // closeOutput() takes the same mutex; temporarily release it to avoid
+      // recursive locking while retaining serialized ROOT I/O.
+      lock.unlock();
       closeOutput();
+      lock.lock();
+    }
     fname  = m_output.substr(0, idx);
     fname += _toString(run->GetRunID(), ".run%08d");
     if ( idx != std::string::npos )
@@ -109,6 +119,7 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
 
 /// Fill single EVENT branch entry (Geant4 collection data)
 int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, void* ptr) {
+  std::lock_guard<std::mutex> lock(s_rootMutex);
   if (!m_file) return 0;
   TBranch* b = nullptr;
   auto i = m_branches.find(nam);
@@ -143,6 +154,7 @@ int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, v
 
 /// Commit data at end of filling procedure
 void Geant4Output2ROOT::commit(OutputContext<G4Event>& ctxt) {
+  std::lock_guard<std::mutex> lock(s_rootMutex);
   if (m_file) {
     auto* a = m_tree->GetListOfBranches();
     const Long64_t evt = m_tree->GetEntries() + 1;
