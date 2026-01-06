@@ -82,7 +82,7 @@ function(dd4hep_generate_rootmap library)
     set(ENV_VAR LD_LIBRARY_PATH)
   endif()
 
-  set(DD4HEP_LIBRARY_PATH "$ENV{${ENV_VAR}}")
+  set(_ld_path "$ENV{${ENV_VAR}}")
 
   # Pull ROOT library path from environment
   set(DD4HEP_ROOT_LIBRARY_PATH "$ENV{ROOT_LIBRARY_PATH}")
@@ -90,7 +90,7 @@ function(dd4hep_generate_rootmap library)
   string(JOIN ":" _ld_path
     "$<TARGET_FILE_DIR:${library}>"
     "$<TARGET_FILE_DIR:DD4hep::DD4hepGaudiPluginMgr>"
-    "${DD4HEP_LIBRARY_PATH}"
+    "${_ld_path}"
   )
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.components)
 
