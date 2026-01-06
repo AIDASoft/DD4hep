@@ -17,6 +17,7 @@
 #include <DDG4/Geant4OutputAction.h>
 
 #include <memory>
+#include <mutex>
 
 class TFile;
 class TTree;
@@ -58,6 +59,8 @@ namespace dd4hep {
       bool m_handleMCTruth = true;
       /// Property: Flag to create a new output file for each run
       bool m_filesByRun = false;
+      /// Static mutex to protect ROOT I/O operations in multi-threaded mode
+      static std::mutex s_rootMutex;
 
     public:
       /// Standard constructor
