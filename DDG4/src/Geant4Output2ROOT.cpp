@@ -34,6 +34,9 @@
 
 using namespace dd4hep::sim;
 
+/// Define the static mutex for ROOT I/O protection
+std::mutex Geant4Output2ROOT::s_rootMutex;
+
 /// Standard constructor
 Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* ctxt, const std::string& nam)
   : Geant4OutputAction(ctxt, nam), m_file(nullptr), m_tree(nullptr) {
@@ -53,6 +56,9 @@ Geant4Output2ROOT::~Geant4Output2ROOT() {
 
 /// Close current output file
 void Geant4Output2ROOT::closeOutput()   {
+  // Lock mutex to protect ROOT I/O operations
+  std::lock_guard<std::mutex> lock(s_rootMutex);
+  
   if (m_file) {
     TDirectory::TContext ctxt(m_file);
     Sections::iterator i = m_sections.find(m_section);
@@ -81,11 +87,30 @@ TTree* Geant4Output2ROOT::section(const std::string& nam) {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2ROOT::beginRun(const G4Run* run) {
+  // Lock mutex to protect ROOT I/O operations
+  std::lock_guard<std::mutex> lock(s_rootMutex);
+  
   std::string fname = m_output;
   if ( m_filesByRun )    {
     size_t idx = m_output.rfind(".");
     if ( m_file )  {
-      closeOutput();
+      // Note: closeOutput() also locks, but we already have the lock here
+      // So we need to call the internal close logic without the lock
+      // Actually, closeOutput will deadlock if called here with the mutex held
+      // We should refactor closeOutput to have a locked and unlocked version
+      // For now, inline the close logic here:
+      if (m_file) {
+        TDirectory::TContext ctxt(m_file);
+        Sections::iterator i = m_sections.find(m_section);
+        info("+++ Closing ROOT output file %s", m_file->GetName());
+        if ( i != m_sections.end() )
+          m_sections.erase(i);
+        m_branches.clear();
+        m_tree->Write();
+        m_file->Close();
+        m_tree = nullptr;
+        detail::deletePtr (m_file);
+      }
     }
     fname  = m_output.substr(0, idx);
     fname += _toString(run->GetRunID(), ".run%08d");
@@ -116,6 +141,9 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
 
 /// Fill single EVENT branch entry (Geant4 collection data)
 int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, void* ptr) {
+  // Lock mutex to protect ROOT I/O operations
+  std::lock_guard<std::mutex> lock(s_rootMutex);
+  
   if (m_file) {
     TBranch* b = 0;
     Branches::const_iterator i = m_branches.find(nam);
@@ -154,6 +182,9 @@ int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, v
 
 /// Commit data at end of filling procedure
 void Geant4Output2ROOT::commit(OutputContext<G4Event>& ctxt) {
+  // Lock mutex to protect ROOT I/O operations in multi-threaded mode
+  std::lock_guard<std::mutex> lock(s_rootMutex);
+  
   if (m_file) {
     TObjArray* a = m_tree->GetListOfBranches();
     Long64_t evt = m_tree->GetEntries() + 1;

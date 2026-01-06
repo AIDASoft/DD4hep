@@ -839,6 +839,7 @@ class Geant4:
     """
     # Only use shared=True in MT mode to avoid double-save in ST mode
     shared = self.master().NumberOfThreads > 1
+    
     evt_root = EventAction(self.kernel(), 'Geant4Output2ROOT/' + name, shared)
     evt_root.HandleMCTruth = mc_truth
     evt_root.Control = True
