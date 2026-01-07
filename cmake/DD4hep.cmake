@@ -89,9 +89,6 @@ function(dd4hep_generate_rootmap library)
   if("$ENV{ROOT_LIBRARY_PATH}")
     # Override path to required ROOT libraries from the environment
     set(_default_root_lib_path "$ENV{ROOT_LIBRARY_PATH}")
-  else()
-    # Use directory specified by `find_package(ROOT)`
-    set(_default_root_lib_path "${ROOT_LIBRARY_DIR}")
   endif()
   set(DD4HEP_ROOT_LIBRARY_PATH "${_default_root_lib_path}"
     CACHE STRING
