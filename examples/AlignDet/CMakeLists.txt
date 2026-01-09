@@ -151,9 +151,9 @@ dd4hep_add_test_reg( AlignDet_AlephTPC_load
   EXEC_ARGS  geoPluginRun
              -input file:${AlignDet_INSTALL}/compact/AlephTPC.xml
              -destroy -no-interpreter -plugin DD4hep_GlobalAlignmentInstall
-  REGEX_PASS "190 nodes/ 25 volume UID's in Detector Geometry"
+  REGEX_PASS "227 nodes/ 29 volume UID's in Detector Geometry"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
-  )
+)
 #
 #---Testing: Load and misalign ALEPH TPC geometry -------------------------
 dd4hep_add_test_reg( AlignDet_AlephTPC_global_align
@@ -165,7 +165,7 @@ dd4hep_add_test_reg( AlignDet_AlephTPC_global_align
              -plugin DD4hep_XMLLoader file:${AlignDet_INSTALL}/compact/AlephTPC_alignment.xml BUILD_DEFAULT
   REGEX_PASS "Successfully parsed XML: AlephTPC_alignment.xml"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
-  )
+)
 #
 #---Testing: Load and misalign ALEPH TPC geometry -------------------------
 dd4hep_add_test_reg( AlignDet_AlephTPC_global_reset
@@ -178,4 +178,4 @@ dd4hep_add_test_reg( AlignDet_AlephTPC_global_reset
              -plugin DD4hep_XMLLoader file:${AlignDet_INSTALL}/compact/AlephTPC_reset.xml
   REGEX_PASS "Successfully parsed XML: AlephTPC_reset.xml"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
-  )
+)

@@ -71,7 +71,7 @@ namespace dd4hep {
       static const VolumeID NonExisting = 0ULL;
 
       /// Initializing constructor. The tree will automatically be built if possible
-      Geant4VolumeManager(const Detector& description, Geant4GeometryInfo* info);
+      Geant4VolumeManager(const Detector& description, Geant4GeometryInfo* info, bool debug);
 
       /// Helper: Generate placement path from touchable object
       std::vector<const G4VPhysicalVolume*>
