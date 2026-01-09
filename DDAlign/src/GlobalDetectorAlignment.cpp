@@ -96,6 +96,7 @@ namespace {
       std::string          path = "/";
 
       // dbg = false;
+      dbg = true;
       path += pv->GetName();
       for( int i = 0; i < node->GetLevel(); ++i )  {
         /// Attach user extension to placed volume
@@ -107,10 +108,12 @@ namespace {
         if( dbg )  {
           path += "/";
           path += pv->GetName();
-          printout(dd4hep::ALWAYS, "GlobalAlignment",
-                   "+++ Mother relationship broken after alignment: %s  place: %p volume: %p mother volume: old: %p new: %p",
-                   "+++ Fix mother relationship after alignment: %s  place: %p volume: %p mother volume: old: %p new: %p",
-                   path.c_str(), (void*)pv.ptr(), (void*)pv->GetVolume(), (void*)oldm, (void*)v.ptr() );
+          if( oldm != v.ptr() )  {
+            printout(dd4hep::ALWAYS, "GlobalAlignment",
+                     // "+++ Mother relationship broken after alignment: %s  place: %p volume: %p mother volume: old: %p new: %p",
+                     "+++ Fix mother relationship after alignment: %s  place: %p volume: %p mother volume: old: %p new: %p",
+                     path.c_str(), (void*)pv.ptr(), (void*)pv->GetVolume(), (void*)oldm, (void*)v.ptr() );
+          }
         }
         pv->SetMotherVolume( v.ptr() );
         /// Fix node volumes: attach extensions etc.
@@ -122,11 +125,14 @@ namespace {
             dau->SetMotherVolume( v );
             if( dbg )  {
               oldm = dau->GetMotherVolume();
-              printout(dd4hep::ALWAYS, "GlobalAlignment",
-                       //"+++ Mother relationship broken after alignment: %s/%s  place: %p volume: %p mother volume: old: %p --> new: %p",
-                       "+++ Fix other relationship after alignment: %s/%s  place: %p volume: %p mother volume: old: %p --> new: %p",
-                       path.c_str(), dau->GetName(), (void*)dau, (void*)dau->GetVolume(),
-                       (void*)oldm, (void*)v.ptr());
+              if( oldm != v.ptr() )  {
+                printout(dd4hep::ALWAYS, "GlobalAlignment",
+                         // "+++ Mother relationship broken after alignment: %s/%s  place: %p volume: %p mother volume: old: %p --> new: %p",
+                         "+++ Fix mother relationship after alignment: %s/%s  place: %p volume: %p "
+                         "mother volume: old: %p --> new: %p",
+                         path.c_str(), dau->GetName(), (void*)dau, (void*)dau->GetVolume(),
+                         (void*)oldm, (void*)v.ptr());
+              }
             }
           }
         }
