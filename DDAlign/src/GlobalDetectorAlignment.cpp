@@ -91,40 +91,43 @@ namespace {
         node->GetNode()->GetMatrix()->Print();
       }
       TGeoVolume* oldm;
-      dd4hep::PlacedVolume p = node->GetNode(0);
-      dd4hep::Volume       v = p->GetVolume();
+      dd4hep::PlacedVolume pv = node->GetNode(0);
+      dd4hep::Volume       v  = pv->GetVolume();
       std::string          path = "/";
 
       // dbg = false;
-      path += p->GetName();
+      path += pv->GetName();
       for( int i = 0; i < node->GetLevel(); ++i )  {
         /// Attach user extension to placed volume
-        p = node->GetNode( i+1 );
-        if ( nullptr == p->GetUserExtension() )  {
-          p->SetUserExtension( places[i]->GetUserExtension() );
+        pv = node->GetNode( i+1 );
+        if ( nullptr == pv->GetUserExtension() )  {
+          pv->SetUserExtension( places[i]->GetUserExtension() );
         }
-        oldm = p->GetMotherVolume();
-        p->SetMotherVolume( v.ptr() );
+        oldm = pv->GetMotherVolume();
         if( dbg )  {
           path += "/";
-          path += p->GetName();
+          path += pv->GetName();
           printout(dd4hep::ALWAYS, "GlobalAlignment",
-                   "+++ Fix mother relationship: %s  place: %p volume: %p mother volume: old: %p new: %p",
-                   path.c_str(), (void*)p.ptr(), (void*)p->GetVolume(), (void*)oldm, (void*)p->GetMotherVolume() );
+                   "+++ Mother relationship broken after alignment: %s  place: %p volume: %p mother volume: old: %p new: %p",
+                   "+++ Fix mother relationship after alignment: %s  place: %p volume: %p mother volume: old: %p new: %p",
+                   path.c_str(), (void*)pv.ptr(), (void*)pv->GetVolume(), (void*)oldm, (void*)v.ptr() );
         }
+        pv->SetMotherVolume( v.ptr() );
         /// Fix node volumes: attach extensions etc.
-        v = p->GetVolume();
+        v = pv->GetVolume();
         /// Fix daughter mother relationship for the nodes in the branches
         for( int idau = 0; idau < v->GetNdaughters(); ++idau )  {
           TGeoNode* dau = v->GetNode( idau );
           if( v.ptr() != dau->GetMotherVolume() )  {
-            if( dbg )  {
-              printout(dd4hep::ALWAYS, "GlobalAlignment",
-                       "+++ Fix mother relationship: %s/%s  place: %p volume: %p mother volume: old: %p --> new: %p",
-                       path.c_str(), dau->GetName(), (void*)dau, (void*)dau->GetVolume(),
-                       (void*)dau->GetMotherVolume(), (void*)v.ptr());
-            }
             dau->SetMotherVolume( v );
+            if( dbg )  {
+              oldm = dau->GetMotherVolume();
+              printout(dd4hep::ALWAYS, "GlobalAlignment",
+                       //"+++ Mother relationship broken after alignment: %s/%s  place: %p volume: %p mother volume: old: %p --> new: %p",
+                       "+++ Fix other relationship after alignment: %s/%s  place: %p volume: %p mother volume: old: %p --> new: %p",
+                       path.c_str(), dau->GetName(), (void*)dau, (void*)dau->GetVolume(),
+                       (void*)oldm, (void*)v.ptr());
+            }
           }
         }
         /// Attach user extension to volume
