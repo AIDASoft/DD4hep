@@ -47,7 +47,7 @@ def run():
     ui = geant4.setupCshUI(macro=args.macro)
   else:
     ui = geant4.setupCshUI()
-  if args.batch:
+  if args.events:
     ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
 
   # Configure field
@@ -94,7 +94,6 @@ def run():
   phys = geant4.setupPhysics('QGSP_BERT')
   phys.dump()
   geant4.execute()
-
 
 if __name__ == "__main__":
   run()

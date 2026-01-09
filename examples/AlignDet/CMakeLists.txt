@@ -18,6 +18,7 @@ IF(NOT TARGET DD4hep::DDCore)
 ENDIF()
 
 dd4hep_set_compiler_flags()
+dd4hep_use_python_executable()
 #==========================================================================
 
 set(AlignDet_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/AlignDet)
@@ -26,6 +27,7 @@ dd4hep_add_plugin(AlignDetExample SOURCES src/*.cpp
        ROOT::Core ROOT::Geom ROOT::GenVector ROOT::MathCore
   )
 dd4hep_install_dir(compact DESTINATION ${AlignDet_INSTALL})
+dd4hep_install_dir(scripts DESTINATION ${AlignDet_INSTALL})
 dd4hep_configure_scripts(AlignDet DEFAULT_SETUP WITH_TESTS)
 
 #
@@ -179,3 +181,16 @@ dd4hep_add_test_reg( AlignDet_AlephTPC_global_reset
   REGEX_PASS "Successfully parsed XML: AlephTPC_reset.xml"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
 )
+#
+#      EXEC_ARGS  test_with_root.sh ${script}
+#
+if (DD4HEP_USE_GEANT4)
+  #
+  #  Test Setting temperature and pressure to material
+  dd4hep_add_test_reg( AlignDet_sim_AlephTPC_global_alignment
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${AlignDet_INSTALL}/scripts/AlephTPC.py -align -events 10
+    REGEX_PASS "\\+\\+\\+ Event 9 Begin event action. Access event related information."
+    REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL" )
+  #
+endif()

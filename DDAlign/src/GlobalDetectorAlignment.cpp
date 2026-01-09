@@ -96,7 +96,7 @@ namespace {
       std::string          path = "/";
 
       // dbg = false;
-      dbg = true;
+      // dbg = true;
       path += pv->GetName();
       for( int i = 0; i < node->GetLevel(); ++i )  {
         /// Attach user extension to placed volume
@@ -141,18 +141,6 @@ namespace {
           v->SetUserExtension( places[i].volume()->GetUserExtension() );
         }
       }
-      /*
-        printout(INFO, "Alignment", "Apply new relative matrix  mother to daughter:");
-        transform->Print();
-        transform->MultiplyLeft(mm); // orig * delta
-        printout(INFO, "Alignment", "With deltas %s ....", n->GetName());
-        transform->Print();
-        n->Align(transform, 0, check, overlap);
-        
-        Position local, global = a.toGlobal(local);
-        cout << "Local:" << local << " Global: " << global
-        << " and back:" << a.globalToLocal(global) << endl;
-      */
       return GlobalAlignment(node);
     }
     dd4hep::except("GlobalDetectorAlignment", "Cannot align non existing physical node. [Invalid Handle]");
