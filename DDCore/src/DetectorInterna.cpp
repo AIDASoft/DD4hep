@@ -201,7 +201,7 @@ void DetElementObject::revalidate(bool recurse_down)  {
   detail::tools::placementPath(par, this, par_path);
   PlacedVolume node = detail::tools::findNode(wrld.placement(),place);
   if ( !node.isValid() )  {
-    except("DetElement","The placement %s is not part of the hierarchy.",place.c_str());
+    except("DetElement","The placement %s is not part of the hierarchy.",place.c_str());DDAlign/src/GlobalDetectorAlignment.cpp
   }
   printout( (idealPlace.ptr() != node.ptr()) ? INFO : DEBUG,
             "DetElement","+++ Revalidate DetElement chache of %s -> %s Placement:%p --> %p %s",
