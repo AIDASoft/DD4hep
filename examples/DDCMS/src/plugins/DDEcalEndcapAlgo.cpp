@@ -629,8 +629,6 @@ namespace {
       eeSCELog.placeVolume(eeSCALog, iSCType * 100 + 1, Position(dxy, dxy, dz));
       eeSCALog.placeVolume(eeSCILog, iSCType * 100 + 1, Position(xyIOff, xyIOff, zIOff));
 
-      DDTranslation croffset(0., 0., 0.);
-
       // Position crystals within parent supercrystal interior volume
       static const unsigned int ncol(5);
 

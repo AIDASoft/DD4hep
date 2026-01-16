@@ -190,6 +190,7 @@ namespace dd4hep::sim {
     m_currEvent = event_number;
     podio::Frame frame = m_reader.readFrame("events", event_number);
     const auto& primaries = frame.get<edm4hep::MCParticleCollection>(m_collectionName);
+    const auto& availableCollections = frame.getAvailableCollections();
     int eventNumber = event_number, runNumber = 0;
 #if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 6, 0)
     if (primaries.hasID()) {
@@ -197,44 +198,36 @@ namespace dd4hep::sim {
     if (primaries.isValid()) {
 #endif
       //Read the event header collection and add it to the context as an extension
-      const auto& eventHeaderCollection = frame.get<edm4hep::EventHeaderCollection>(m_eventHeaderCollectionName);
-      if(eventHeaderCollection.size() == 1){
-        const auto& eh = eventHeaderCollection.at(0);
-        eventNumber = eh.getEventNumber();
-        runNumber = eh.getRunNumber();
-        try {
-          Geant4Context* ctx = context();
-          ctx->event().addExtension<edm4hep::MutableEventHeader>(new edm4hep::MutableEventHeader(eh.clone()));
-        } catch(std::exception& ) {}
-        // Create input event parameters context
-        try {
-          Geant4Context* ctx = context();
-          EventParameters *parameters = new EventParameters();
-          parameters->setRunNumber(runNumber);
-          parameters->setEventNumber(eventNumber);
-          parameters->ingestParameters(frame.getParameters());
-          ctx->event().addExtension<EventParameters>(parameters);
-        } catch(std::exception &) {}
-      } else {
-        printout(WARNING,"EDM4hepFileReader","No EventHeader collection found or too many event headers!");
-        try {
-          Geant4Context* ctx = context();
-          EventParameters *parameters = new EventParameters();
-          parameters->setRunNumber(0);
-          parameters->setEventNumber(event_number);
-          parameters->ingestParameters(frame.getParameters());
-          ctx->event().addExtension<EventParameters>(parameters);
-        } catch(std::exception &) {}
+      if (std::find(availableCollections.begin(), availableCollections.end(), m_eventHeaderCollectionName) != availableCollections.end()) {
+        const auto& eventHeaderCollection = frame.get<edm4hep::EventHeaderCollection>(m_eventHeaderCollectionName);
+        if(eventHeaderCollection.size() == 1){
+          const auto& eh = eventHeaderCollection.at(0);
+          eventNumber = eh.getEventNumber();
+          runNumber = eh.getRunNumber();
+          try {
+            Geant4Context* ctx = context();
+            ctx->event().addExtension<edm4hep::MutableEventHeader>(new edm4hep::MutableEventHeader(eh.clone()));
+          } catch(std::exception& ) {}
+        } else {
+          printout(WARNING,"EDM4hepFileReader","Too many EventHeader objects found");
+        }
       }
+      else {
+        printout(WARNING,"EDM4hepFileReader","No EventHeader collection found!");
+      }
+      // Create input event parameters context
+      try {
+        Geant4Context* ctx = context();
+        EventParameters *parameters = new EventParameters();
+        parameters->setRunNumber(runNumber);
+        parameters->setEventNumber(event_number);
+        parameters->ingestParameters(frame.getParameters());
+        ctx->event().addExtension<EventParameters>(parameters);
+      } catch(std::exception &) {}
 #if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 3)
-      // Attach the GeneratorEventParameters if they are available
-      const auto& genEvtParameters =
-          frame.get<edm4hep::GeneratorEventParametersCollection>(edm4hep::labels::GeneratorEventParameters);
-#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 6, 0)
-      if (genEvtParameters.hasID()) {
-#else
-      if (genEvtParameters.isValid()) {
-#endif
+      if (std::find(availableCollections.begin(), availableCollections.end(), edm4hep::labels::GeneratorEventParameters) != availableCollections.end()) {
+        const auto& genEvtParameters =
+            frame.get<edm4hep::GeneratorEventParametersCollection>(edm4hep::labels::GeneratorEventParameters);
         if (genEvtParameters.size() >= 1) {
           const auto genParams = genEvtParameters[0];
           try {

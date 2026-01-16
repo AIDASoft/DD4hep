@@ -39,13 +39,18 @@ namespace dd4hep {
       {
         typedef Geant4Calorimeter::Hit Hit;
         Hit* hit = coll.findByKey<Hit>(cell);
-        if ( !hit ) {
-          DDSegmentation::Vector3D pos = segmentation.position(cell);
+        if( !hit ) {
+          DDSegmentation::Vector3D pos;
           Position global;
-
-          // Convert the position relative to the local readout volume
-          // to a global position.
-          if (!segmentation.cellsSpanVolumes()) {
+          /// No volume manager
+          if( !sd.useVolumeManager() || !segmentation.isValid() )  {
+            pos    = h.avgPosition();
+            global = h.localToGlobal(pos);
+          }
+          else if( !segmentation.cellsSpanVolumes() ) {
+            // Convert the position relative to the local readout volume
+            // to a global position.
+            pos = segmentation.position(cell);
             global = h.localToGlobal(pos);
           }
           else {
@@ -60,6 +65,7 @@ namespace dd4hep {
             VolumeManager vman = VolumeManager::getVolumeManager(sd.detectorDescription());
             VolumeManagerContext* vc = vman.lookupContext(volID);
             // explicit unit conversion; h.localToGlobal does it internally already
+            pos = segmentation.position(cell);
             global = vc->localToWorld(Position(pos)) / dd4hep::mm;
           }
           hit = new Hit(global);
@@ -219,7 +225,7 @@ namespace dd4hep {
       }
       hit->cellID = cellID(step);
       if ( 0 == hit->cellID )  {
-        hit->cellID      = volumeID( step ) ;
+        hit->cellID = volumeID( step ) ;
         except("+++ Invalid CELL ID for hit!");
       }
       collection(m_collectionID)->add(hit);

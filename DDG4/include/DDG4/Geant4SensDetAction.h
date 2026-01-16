@@ -134,7 +134,10 @@ namespace dd4hep {
 
     protected:
       /// Property: Hit creation mode. Maybe one of the enum HitCreationFlags
-      int  m_hitCreationMode = 0;
+      int  m_hitCreationMode                  {       0 };
+      /// Property: Use the volume manager to access CellID and VolumeID
+      bool m_useVolumeManager                 {    true };
+
 #if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
       /// Reference to the detector description object
       Detector*            m_detDesc          { nullptr };
@@ -163,11 +166,19 @@ namespace dd4hep {
       /// Standard destructor
       virtual ~Geant4Sensitive();
 
+      /// Get the detector identifier (DetElement::id())
+      int id()  const;
+  
       /// Access to the sensitive detector object
       Geant4ActionSD& detector() const;
 
       /// Access to the sensitive detector object
       void setDetector(Geant4ActionSD* sens_det);
+
+      /// Access volume manager usage flag. This is a subdetector specific flag
+      bool useVolumeManager()  const  {
+        return m_useVolumeManager;
+      }
 
       /// Property access to the hit creation mode
       int hitCreationMode() const  {
@@ -322,28 +333,28 @@ namespace dd4hep {
 
     protected:
       /// Geant4 hit collection context
-      G4HCofThisEvent* m_hce = 0;
+      G4HCofThisEvent*        m_hce  { nullptr };
       /// Callback sequence for event initialization action
-      CallbackSequence m_begin;
+      CallbackSequence        m_begin;
       /// Callback sequence for event finalization action
-      CallbackSequence m_end;
+      CallbackSequence        m_end;
       /// Callback sequence for step processing
-      CallbackSequence m_process;
+      CallbackSequence        m_process;
       /// Callback sequence to invoke the event deletion
-      CallbackSequence m_clear;
+      CallbackSequence        m_clear;
       /// The list of sensitive detector objects
       Actors<Geant4Sensitive> m_actors;
       /// The list of sensitive detector filter objects
       Actors<Geant4Filter>    m_filters;
 
       /// Hit collection creators
-      HitCollections m_collections;
+      HitCollections          m_collections;
       /// Reference to the sensitive detector element
-      SensitiveDetector m_sensitive;
+      SensitiveDetector       m_sensitive;
       /// Reference to G4 sensitive detector
-      Geant4ActionSD* m_detector;
+      Geant4ActionSD*         m_detector;
       /// The true sensitive type of the detector
-      std::string m_sensitiveType;
+      std::string             m_sensitiveType;
       /// Create a new typed hit collection
       template <typename TYPE> static 
       Geant4HitCollection* _create(const std::string& det, const std::string& coll, Geant4Sensitive* sd) {
@@ -516,14 +527,14 @@ namespace dd4hep {
       typedef T UserData;
     protected:
       /// Property: collection name. If not set default is readout name!
-      std::string m_collectionName    { };
+      std::string m_collectionName  {   };
       /// Property: segmentation name for parallel readouts. If not set readout segmentation is used!
-      std::string m_readoutName       { };
+      std::string m_readoutName     {   };
 
       /// Collection identifier
       std::size_t m_collectionID    { 0 };
       /// User data block
-      UserData    m_userData          { };
+      UserData    m_userData        {   };
 
     protected:
       /// Define standard assignments and constructors

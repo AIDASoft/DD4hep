@@ -68,13 +68,13 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   for( int ix=0; ix < num_x; ++ix )  {
     double x = -box.x() + (double(ix)+0.5) * (delta + 2e0*tol);
     PlacedVolume pv = layer_vol.placeVolume(straw_vol, Transform3D(rot,Position(x, 0e0, 0e0)));
-    pv.addPhysVolID("straw", ix);
+    pv.addPhysVolID("straw", ix+1);
   }
   for( int iz=0; iz < num_z; ++iz )  {
     // leave 'tol' space between the layers
     double z = -box.z() + (double(iz)+0.5) * (2.0*tol + delta);
     PlacedVolume pv = box_vol.placeVolume(layer_vol, Position(0e0, 0e0, z));
-    pv.addPhysVolID("layer", iz);
+    pv.addPhysVolID("layer", iz+1);
   }
   printout(INFO, "BoxOfStraws", "%s: Created %d layers of %d straws each.", nam.c_str(), num_z, num_x);
   
