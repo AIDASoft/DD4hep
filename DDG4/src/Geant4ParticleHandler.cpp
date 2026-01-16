@@ -163,6 +163,12 @@ void Geant4ParticleHandler::mark(const G4Track* track)   {
   else // Assume by default "tracker"
     mask.set(G4PARTICLE_CREATED_TRACKER_HIT);
 
+  // If we pass through here via a fast sim model, then we have no sensitive
+  // action attached
+  // TODO: Is this always true?
+  if (!sd) {
+    PropertyMask(m_currTrack.status).set(G4PARTICLE_SIM_FAST_SIMULATION);
+  }
   //Geant4ParticleHandle(&m_currTrack).dump4(outputLevel(),vol->GetName(),"hit created by particle");
 }
 
