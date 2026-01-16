@@ -134,9 +134,9 @@ namespace dd4hep {
 
     protected:
       /// Property: Hit creation mode. Maybe one of the enum HitCreationFlags
-      int  m_hitCreationMode                  {       0 };
+      int  m_hitCreationMode                  { MEDIUM_MODE };
       /// Property: Use the volume manager to access CellID and VolumeID
-      bool m_useVolumeManager                 {    true };
+      bool m_useVolumeManager                 { true };
 
 #if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
       /// Reference to the detector description object
