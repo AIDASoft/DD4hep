@@ -72,6 +72,11 @@ if(DD4HEP_USE_TBB)
   find_dependency(TBB REQUIRED CONFIG)
 endif()
 
+if(DD4HEP_USE_EDM4HEP)
+  MESSAGE(STATUS "@CMAKE_PROJECT_NAME@ uses EDM4hep")
+  find_dependency(EDM4HEP REQUIRED CONFIG)
+endif()
+
 if(NOT CMAKE_PROJECT_NAME STREQUAL @CMAKE_PROJECT_NAME@)
   include("${@CMAKE_PROJECT_NAME@_ROOT}/cmake/@CMAKE_PROJECT_NAME@Config-targets.cmake")
 endif()
