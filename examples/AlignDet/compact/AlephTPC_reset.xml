@@ -17,8 +17,8 @@
 	detector elements attached to the Detector structure.
 
     -->
-    <detelement path="TPC" reset="false">
-      <detelement path="/world/TPC/TPC_SideA" reset="true" reset_children="false">
+    <detelement path="CentralRegion/TPC" reset="false">
+      <detelement path="/world/CentralRegion/TPC/TPC_SideA" reset="true" reset_children="false">
 <!--
 	<position x="0"   y="0"  z="0"/>
 	<rotation x="-0.25" y="0"  z="0"/>
@@ -32,7 +32,7 @@
       </detelement>
       <detelement path="TPC_SideA/TPC_SideA_sector10" reset="true"/>
 -->
-      <detelement path="/world/TPC/TPC_SideB" reset="true" reset_children="false"/>
+      <detelement path="/world/CentralRegion/TPC/TPC_SideB" reset="true" reset_children="false"/>
     </detelement>
   </subdetectors>
   <close_transaction/>

@@ -194,7 +194,3 @@ const Geant4GeometryMaps::ElementMap& Geant4DetectorConstructionSequence::elemen
   if ( p ) return p->g4Elements;
   throw std::runtime_error("+++ Geant4DetectorConstructionSequence::elements: Access not possible. Geometry is not yet converted!");
 }
-
-
-
-

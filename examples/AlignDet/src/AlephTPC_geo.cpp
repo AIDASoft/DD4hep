@@ -89,8 +89,9 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   Volume   gasVol(name+"_chamber",gasTub,gasMat);
   gasVol.setVisAttributes(description.visAttributes(x_gas.visStr()));
   gasVol.setSensitiveDetector(sens_det);
-  envVol.placeVolume(gasVol);
-  
+  pv = envVol.placeVolume(gasVol);
+  pv.addPhysVolID("layer", 10);
+
   // TPC HV plane
   Tube    hvTub(gas.inner,gas.outer,x_cathode.thickness()/2);
   Volume  hvVol(name+"_cathode",hvTub,description.material(x_cathode.materialStr()));
@@ -134,7 +135,7 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   DetElement detB(sdet,name+"_SideB",2);
   detB.setPlacement(pv);
 
-  //envVol.setVisAttributes(description.invisible());
+  envVol.setVisAttributes(description.visAttributes(x_det.visStr()));
 
   int sector_count = 0;
   for(xml_coll_t c(x_sectors,_Unicode(sector)); c; ++c)  {
@@ -145,22 +146,22 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
     //const int  padrows = x_sector.attr<int>(_Unicode(padrows));
     //const int  trgrows = x_sector.attr<int>(_Unicode(trgrows));
     //const int  nwires  = x_sector.attr<int>(_Unicode(numwires));
-    const int  num_sectors = sector_type == 'K' ? 6 : 12;
-    const double shift     = sector_type == 'K' ? 0 : M_PI/num_sectors;
-    const double dphi      = 2*M_PI/double(num_sectors);
-    string sector_vis      = x_sector.visStr();
+    const int    num_sectors = sector_type == 'K' ? 6 : 12;
+    const double shift       = sector_type == 'K' ? 0 : M_PI/num_sectors;
+    const double dphi        = 2*M_PI/double(num_sectors);
+    string sector_vis        = x_sector.visStr();
     Solid tm;
     double z_start = 0.0;
     Assembly sector(name+"_sector_"+sector_type);
     int i_layer = 0;
-    for(xml_coll_t l(x_sectors.child(_Unicode(layers)),_Unicode(layer)); l; ++l, ++i_layer)  {
+    for( xml_coll_t l(x_sectors.child(_Unicode(layers)),_Unicode(layer)); l; ++l, ++i_layer)  {
       xml_comp_t x_layer = l;
       double layer_thickness = x_layer.thickness();
       string layer_vis = x_layer.visStr();
       string layer_mat = x_layer.materialStr();
-      double gap_half = 1;
-      double rmin = rmin0;
-      double rmax = rmax0;
+      double gap_half  = 1;
+      double rmin      = rmin0;
+      double rmax      = rmax0;
 
       if ( layer_vis.empty() ) layer_vis = sector_vis;
 
@@ -293,10 +294,13 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
         else
           tm = UnionSolid(UnionSolid(sectorSolid,upper_boolean),lower_boolean);
       }
-
-      Volume secVol(name+"_sector_"+sector_type+_toString(i_layer,"_layer%d"),tm,description.material(layer_mat));
-      secVol.setVisAttributes(description.visAttributes(layer_vis));
-      if ( x_layer.isSensitive() ) secVol.setSensitiveDetector(sens_det);
+      Material lmat = description.material(layer_mat);
+      Volume secVol( name+"_sector_"+sector_type+_toString(i_layer, "_layer%d"), tm, lmat );
+      secVol.setVisAttributes( description.visAttributes(layer_vis) );
+      if ( x_layer.isSensitive() )  {
+        secVol.setSensitiveDetector(sens_det);
+        pv.addPhysVolID("layer", i_layer+1);
+      }
 
       sector.placeVolume(secVol,Position(0,0,z_start+layer_thickness/2));
       z_start += layer_thickness;
@@ -305,19 +309,19 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
       int j = i + (sector_type=='W' ? 1 : 0);
       double phi = dphi*j+shift + (sector_type=='K' ? 0 : M_PI/12.0);
       if ( sector_type == 'K' || (i%2)==0 ) {
-        Transform3D trA(RotationZYX(phi,0,0),Position(0,0,0.00001));
-        Transform3D trB(RotationZYX(phi,0,0),Position(0,0,0.00001));
+        Transform3D trA( RotationZYX(phi,0,0), Position(0,0,0.00001) );
+        Transform3D trB( RotationZYX(phi,0,0), Position(0,0,0.00001) );
 
-        pv = endCapAVol.placeVolume(sector,trA);
-        pv.addPhysVolID("type", sector_type=='K' ? 1 : sector_type=='M' ? 2 : 3);
-        pv.addPhysVolID("sector",j);
-        DetElement sectorA(detA,detA.name()+_toString(sector_count,"_sector%02d"),1);
+        pv = endCapAVol.placeVolume( sector, trA );
+        pv.addPhysVolID( "type", sector_type=='K' ? 1 : sector_type=='M' ? 2 : 3 );
+        pv.addPhysVolID( "sector", j );
+        DetElement sectorA( detA, detA.name()+_toString(sector_count,"_sector%02d"),1 );
         sectorA.setPlacement(pv);
 
-        pv = endCapBVol.placeVolume(sector,trB);
-        pv.addPhysVolID("type", sector_type=='K' ? 1 : sector_type=='M' ? 2 : 3);
-        pv.addPhysVolID("sector",j);
-        DetElement sectorB(detB,detB.name()+_toString(sector_count,"_sector%02d"),1);
+        pv = endCapBVol.placeVolume( sector, trB );
+        pv.addPhysVolID( "type", sector_type=='K' ? 1 : sector_type=='M' ? 2 : 3 );
+        pv.addPhysVolID( "sector",j );
+        DetElement sectorB(detB, detB.name()+_toString(sector_count,"_sector%02d"), 1 );
         sectorB.setPlacement(pv);
         cout << "Placed " << sector_type << " sector at phi=" << phi << endl;
         ++sector_count;

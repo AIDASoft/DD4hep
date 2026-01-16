@@ -29,7 +29,7 @@
   </includes>
   
   <define>
-    <constant name="world_side" value="30000"/>
+    <constant name="world_side" value="30000*mm"/>
     <constant name="world_x" value="world_side"/>
     <constant name="world_y" value="world_side"/>
     <constant name="world_z" value="world_side"/>
@@ -76,9 +76,10 @@
   
   <display>
     <!--    Aleph TPC visualization parameters    -->
+    <vis name="TPCRegionVis"     alpha="0.9" r="0"   g="0"    b="1"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
     <vis name="TPCVis"           alpha="1.0" r="1"   g="1"    b="0.6"  drawingStyle="solid"     showDaughters="true"  visible="false" top="true"/>
-    <vis name="TPCInnerWallVis"       alpha="1.0" r="0"   g="0"  b="0.5"  drawingStyle="solid"     showDaughters="true"  visible="true"/>
-    <vis name="TPCOuterWallVis"       alpha="1.0" r="0"   g="0.5"  b="0"  drawingStyle="solid"     lineStyle="broken" showDaughters="true"  visible="true"/>
+    <vis name="TPCInnerWallVis"  alpha="1.0" r="0"   g="0"    b="0.5"  drawingStyle="solid"     showDaughters="true"  visible="true"/>
+    <vis name="TPCOuterWallVis"  alpha="1.0" r="0"   g="0.5"  b="0"    drawingStyle="solid"     showDaughters="true"  visible="true" lineStyle="broken"/>
     <vis name="TPCEndcapVis"     alpha="1.0" r="1"   g="1"    b="0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
     <vis name="TPCSectorKVis"    alpha="1.0" r="1"   g="0"    b="0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
     <vis name="TPCSectorMVis"    alpha="1.0" r="0"   g="1"    b="0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
@@ -92,18 +93,27 @@
   
   <detectors>
     <comment>ALEPH TPC example</comment>
-    <detector id="7" name="TPC" type="AlephTPC" limits="TPCLimits" readout="TPCHits" vis="TPCVis">
+    <detector name="CentralRegion" type="DD4hep_BoxSegment" vis="TPCRegionVis">
+      <comment>Central box</comment>
+      <material name="Air"/>
+      <box      x="world_side-1000*mm" y="world_side-1000*mm" z="world_side-1000*mm"/>
+      <position x="0*mm" y="0*mm" z="0*mm"/>
+      <rotation x="0*mm" y="0*mm" z="0*mm"/>
+    </detector>
+
+    <detector id="7" name="TPC" type="AlephTPC" parent="CentralRegion" limits="TPCLimits" readout="TPCHits" vis="TPCVis">
       <envelope   inner_r="TPC_inner_radius" outer_r="TPC_outer_radius" zhalf="TPC_length/2" vis="invisible"/>
       <inner_wall inner_r="TPC_inner_radius" thickness="5*mm" material="Mylar" vis="TPCInnerWallVis"/>
       <outer_wall outer_r="TPC_outer_radius" thickness="5*mm" material="Mylar" vis="TPCOuterWallVis"/>
-      <gas zhalf="2.2*m" material="ArCH4_90" vis="invisible"/>
+      <gas   zhalf="2.2*m" material="ArCH4_90" vis="invisible"/>
       <pads  height="30*mm" width="6.2*mm" pitch="0.5*mm"/>
       <trigger_pads  height="6.8*mm" width="15*degree" pitch="0.5*mm"/>
       <sectors>
 	<layers>
-	  <layer material="Copper" thickness="0.1*cm" vis="TPCCopperVis" sensitive="true"/>
-	  <layer material="Kapton" thickness="0.03*cm"  vis="TPCGreenVis"/>
-	  <layer material="Copper" thickness="0.1*cm" vis="TPCAluminumVis"/>
+	  <layer material="ArCH4_90" thickness="2*cm"     vis="invisible"    sensitive="true"/>
+	  <layer material="Copper"   thickness="0.1*cm"   vis="TPCCopperVis" sensitive="false"/>
+	  <layer material="Kapton"   thickness="0.03*cm"  vis="TPCGreenVis"/>
+	  <layer material="Copper"   thickness="0.1*cm"   vis="TPCAluminumVis"/>
 	  <layer material="Aluminum" thickness="3*cm"/>
 	</layers>
 	<sector type="K" rmin="38*cm"  rmax="91*cm"  padrows="9"  trgrows="8"  numwires="148" vis="TPCSectorKVis"/>
@@ -114,10 +124,11 @@
     </detector>
   </detectors>
 
+
   <readouts>
     <readout name="TPCHits">
       <!-- |+++ Detector identifier ++++| |+++loc.coord++++|  -->
-      <id>system:8,side:1,type:2,sector:5,padrow:4,padnum:12</id>
+      <id>system:8,side:1,type:2,sector:5,layer:6,padrow:4,padnum:12</id>
     </readout>
   </readouts>
 </lccdd>

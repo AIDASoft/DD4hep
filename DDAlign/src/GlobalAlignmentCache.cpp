@@ -209,30 +209,33 @@ void GlobalAlignmentCache::apply(GlobalAlignmentStack& stack)    {
   mgr.GetCurrentNavigator()->ResetAll();
   mgr.GetCurrentNavigator()->BuildCache();
   mgr.RefreshPhysicalNodes();
-
+#if 0
   // Provide update callback for every detector element with a changed placement
-  for(DetElementUpdates::iterator i=detelt_updates.begin(); i!=detelt_updates.end(); ++i)  {
-    DetElement elt((*i).second);
-    printout(DEBUG,"GlobalAlignmentCache","+++ Trigger placement update for %s [2]",elt.path().c_str());
-    elt->update(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_ELEMENT,elt.ptr());
+  for( const auto& i : detelt_updates )  {
+    DetElement elt(i.second);
+    printout(ALWAYS, "GlobalAlignmentCache","+++ Trigger placement update for %s [2]", elt.path().c_str());
+    elt->update(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_ELEMENT, elt.ptr());
   }
   // Provide update callback for the highest detector element
   std::string last_path = "?????";
-  for(DetElementUpdates::iterator i=detelt_updates.begin(); i!=detelt_updates.end(); ++i)  {
-    const std::string& path = (*i).first;
+  for( const auto& i : detelt_updates )  {
+    const std::string& path = i.first;
     if ( path.find(last_path) == std::string::npos )  {
-      DetElement elt((*i).second);
-      printout(DEBUG,"GlobalAlignmentCache","+++ Trigger placement update for %s [1]",elt.path().c_str());
-      elt->update(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_HIGHEST,elt.ptr());
-      last_path = (*i).first;
+      DetElement elt(i.second);
+      printout(DEBUG, "GlobalAlignmentCache","+++ Trigger placement update for %s [1]", elt.path().c_str());
+      elt->update(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_HIGHEST, elt.ptr());
+      last_path = i.first;
     }
   }
   // Provide update callback at the detector level
-  for(sd_entries_t::iterator i=all.begin(); i!=all.end(); ++i)  {
-    DetElement elt((*i).first);
-    printout(DEBUG,"GlobalAlignmentCache","+++ Trigger placement update for %s [0]",elt.path().c_str());
-    elt->update(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_DETECTOR,elt.ptr());
+  for( const auto& i : all )  {
+    DetElement elt(i.first);
+    printout(DEBUG, "GlobalAlignmentCache","+++ Trigger placement update for %s [0]", elt.path().c_str());
+    elt->update(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_DETECTOR, elt.ptr());
   }
+#else
+  this->m_detDesc.world()->revalidate();
+#endif
 }
 
 /// Apply a vector of SD entries of ordered alignments to the geometry structure

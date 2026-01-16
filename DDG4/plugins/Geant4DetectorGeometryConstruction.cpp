@@ -33,30 +33,34 @@ namespace dd4hep {
      */
     class Geant4DetectorGeometryConstruction : public Geant4DetectorConstruction   {
       /// Property: Dump geometry hierarchy if not NULL. Flags can steer actions. 
-      unsigned long m_dumpHierarchy = 0;
+      unsigned long m_dumpHierarchy {     0 };
       /// Property: Flag to debug materials during conversion mechanism
-      bool m_debugMaterials         = false;
+      bool m_debugMaterials         { false };
       /// Property: Flag to debug elements during conversion mechanism
-      bool m_debugElements          = false;
+      bool m_debugElements          { false };
       /// Property: Flag to debug shapes during conversion mechanism
-      bool m_debugShapes            = false;
+      bool m_debugShapes            { false };
       /// Property: Flag to debug volumes during conversion mechanism
-      bool m_debugVolumes           = false;
+      bool m_debugVolumes           { false };
       /// Property: Flag to debug placements during conversion mechanism
-      bool m_debugPlacements        = false;
+      bool m_debugPlacements        { false };
       /// Property: Flag to debug reflections during conversion mechanism
-      bool m_debugReflections       = false;
+      bool m_debugReflections       { false };
       /// Property: Flag to debug regions during conversion mechanism
-      bool m_debugRegions           = false;
+      bool m_debugRegions           { false };
       /// Property: Flag to debug limit sets during conversion mechanism
-      bool m_debugLimits            = false;
+      bool m_debugLimits            { false };
       /// Property: Flag to debug regions during conversion mechanism
-      bool m_debugSurfaces          = false;
+      bool m_debugSurfaces          { false };
+      /// Property: Flag to debug G4 volume manager population
+      bool m_debugVolManager        { false };
+      /// Property: Flag to instantiate Geant4 volume manager
+      bool m_haveVolManager         {  true };
 
       /// Property: Flag to dump all placements after the conversion procedure
-      bool m_printPlacements        = false;
+      bool m_printPlacements        { false };
       /// Property: Flag to dump all sensitives after the conversion procedure
-      bool m_printSensitives        = false;
+      bool m_printSensitives        { false };
 
       /// Property: Printout level of info object
       int  m_geoInfoPrintLevel;
@@ -142,6 +146,8 @@ Geant4DetectorGeometryConstruction::Geant4DetectorGeometryConstruction(Geant4Con
   declareProperty("DebugRegions",      m_debugRegions);
   declareProperty("DebugLimits",       m_debugLimits);
   declareProperty("DebugSurfaces",     m_debugSurfaces);
+  declareProperty("DebugVolManager",   m_debugVolManager);
+  declareProperty("HaveVolManager",    m_haveVolManager);
 
   declareProperty("PrintPlacements",   m_printPlacements);
   declareProperty("PrintSensitives",   m_printSensitives);
@@ -181,7 +187,11 @@ void Geant4DetectorGeometryConstruction::constructGeo(Geant4DetectorConstruction
   // Save away the reference to the world volume
   context()->kernel().setWorld(w);
   // Create Geant4 volume manager only if not yet available
-  g4map.volumeManager();
+  g4map.debugVolManager = m_debugVolManager;
+  g4map.haveVolManager  = m_haveVolManager;
+  if( m_haveVolManager )  {
+    g4map.volumeManager();
+  }
   if ( m_dumpHierarchy != 0 )   {
     Geant4HierarchyDump dmp(ctxt->description, m_dumpHierarchy);
     dmp.dump("",w);

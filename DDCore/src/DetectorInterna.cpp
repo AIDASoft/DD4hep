@@ -36,7 +36,8 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(WorldObject,DetElementObject);
 /// Default constructor
 SensitiveDetectorObject::SensitiveDetectorObject()
   : NamedObject(), ObjectExtensions(typeid(SensitiveDetectorObject)), magic(magic_word()),
-    verbose(0), combineHits(0), ecut(0.0), readout(), region(), limits(), hitsCollection() {
+    verbose(0), combineHits(0), ecut(0.0), readout(), region(), limits(), hitsCollection()
+{
   printout(VERBOSE,"SensitiveDetectorObject","+++ Created new anonymous SensitiveDetectorObject()");
   InstanceCount::increment(this);
 }
@@ -44,7 +45,8 @@ SensitiveDetectorObject::SensitiveDetectorObject()
 /// Initializing constructor
 SensitiveDetectorObject::SensitiveDetectorObject(const std::string& nam)
   : NamedObject(), ObjectExtensions(typeid(SensitiveDetectorObject)), magic(magic_word()),
-    verbose(0), combineHits(0), ecut(0.0), readout(), region(), limits(), hitsCollection() {
+    verbose(0), combineHits(0), ecut(0.0), readout(), region(), limits(), hitsCollection()
+{
   SetName(nam.c_str());
   printout(VERBOSE,"SensitiveDetectorObject","+++ Created new SensitiveDetectorObject('%s')",nam.c_str());
   InstanceCount::increment(this);
@@ -116,20 +118,19 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   obj->ObjectExtensions::copyFrom(extensions, obj);
 
   obj->children.clear();
-  for (const auto& i : children )  {
+  for( const auto& i : children )  {
     const DetElementObject& d = i.second._data();
     int child_id = flg&DetElement::PROPAGATE_PARENT_ID ? obj->id : d.id;
     DetElement c = d.clone(child_id, DetElement::COPY_PLACEMENT);
-    c->SetName(d.GetName());
-    c->SetTitle(d.GetTitle());
+    c->SetName( d.GetName() );
+    c->SetTitle( d.GetTitle() );
     bool r = obj->children.emplace(c.name(), c).second;
     if ( r ) {
       c._data().parent = obj;
+      continue;
     }
-    else {
-      except("DetElement","+++ DetElement::copy: Element %s is already "
-             "present [Double-Insert]", c.name());
-    }
+    except("DetElement",
+	   "+++ DetElement::copy: Element %s is already present [Double-Insert]", c.name());
   }
   return obj;
 }
@@ -147,7 +148,7 @@ std::pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_na
       de_ref.setPlacement((*k).second);
       const auto& childrens_det = de_det.children();
       const auto& childrens_ref = de_ref.children();
-      for(auto i=childrens_det.begin(), j=childrens_ref.begin(); i!=childrens_det.end(); ++i, ++j)
+      for( auto i=childrens_det.begin(), j=childrens_ref.begin(); i!=childrens_det.end(); ++i, ++j )
         match((*i).second, (*j).second);
     }
     void map(TGeoNode* n1, TGeoNode* n2)   {
@@ -156,7 +157,7 @@ std::pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_na
         TGeoVolume* v2 = n2->GetVolume();
         nodes.insert(std::make_pair(n1,n2));
         printout(DEBUG,"DetElement","reflect: Map  %p  --- %p ",n1,n2);
-        for(Int_t i=0; i<v1->GetNdaughters(); ++i)
+        for( Int_t i=0; i<v1->GetNdaughters(); ++i )
           map(v1->GetNode(i), v2->GetNode(i));
       }
     }
@@ -169,9 +170,9 @@ std::pair<DetElement,Volume> DetElementObject::reflect(const std::string& new_na
   const auto& childrens_det = det.children();
   const auto& childrens_ref = det_ref.children();
 
-  for(Int_t i=0; i<vol_det->GetNdaughters(); ++i)
+  for( Int_t i=0; i<vol_det->GetNdaughters(); ++i )
     mapper.map(vol_det->GetNode(i), vol_ref->GetNode(i));
-  for(auto i=childrens_det.begin(), j=childrens_ref.begin(); i!=childrens_det.end(); ++i, ++j)
+  for( auto i=childrens_det.begin(), j=childrens_ref.begin(); i != childrens_det.end(); ++i, ++j )
     mapper.match((*i).second, (*j).second);
   return std::make_pair(det_ref,vol_ref);
 }
@@ -189,8 +190,8 @@ World DetElementObject::i_access_world()   {
   return privateWorld;
 }
 
-/// Revalidate the caches
-void DetElementObject::revalidate()  {
+/// Revalidate the daughter caches
+void DetElementObject::revalidate(bool recurse_down)  {
   PlacementPath par_path;
   DetElement    det(this);
   DetElement    par(det.parent());
@@ -202,10 +203,10 @@ void DetElementObject::revalidate()  {
   if ( !node.isValid() )  {
     except("DetElement","The placement %s is not part of the hierarchy.",place.c_str());
   }
-  printout((idealPlace.ptr() != node.ptr()) ? INFO : DEBUG,
-           "DetElement","+++ Invalidate chache of %s -> %s Placement:%p --> %p %s",
-           det.path().c_str(), detail::tools::placementPath(par_path).c_str(),
-           placement.ptr(), node.ptr(), (placement.ptr() == node.ptr()) ? "" : "[UPDATE]");
+  printout( (idealPlace.ptr() != node.ptr()) ? INFO : DEBUG,
+            "DetElement","+++ Revalidate DetElement chache of %s -> %s Placement:%p --> %p %s",
+            det.path().c_str(), detail::tools::placementPath(par_path).c_str(),
+            placement.ptr(), node.ptr(), (placement.ptr() == node.ptr()) ? "" : "[UPDATE]");
   if ( idealPlace.ptr() != node.ptr() && 0 == node->GetUserExtension() )  {
     auto ext = idealPlace->GetUserExtension();
     node->SetUserExtension(ext);
@@ -218,15 +219,29 @@ void DetElementObject::revalidate()  {
   }
   // Now we can assign the new placement to the object
   placement = node;
+  
   /// Now iterate down the children....
-  for(const auto& i : children )
-    i.second->revalidate();
+  if( recurse_down )  {
+    for(const auto& i : children )  {
+      i.second->revalidate(recurse_down);
+    }
+  }
+}
+
+/// Revalidate the parent caches
+void DetElementObject::revalidate_parents()  {
+  DetElement    det(this);
+  DetElement    wrld = this->world();
+  while( det.isValid() && det != wrld )  {
+    det->revalidate(false);
+    det = det.parent();
+  }
 }
 
 /// Remove callback from object
 void DetElementObject::removeAtUpdate(unsigned int typ, void* pointer)   {
-  for (auto i=updateCalls.begin(); i != updateCalls.end(); ++i)  {
-    if ( (typ&((*i).second)) == typ && (*i).first.par == pointer )  {
+  for( auto i=updateCalls.begin(); i != updateCalls.end(); ++i )  {
+    if ( (typ&(i->second)) == typ && i->first.par == pointer )  {
       updateCalls.erase(i);
       return;
     }
@@ -242,7 +257,8 @@ void DetElementObject::update(unsigned int tags, void* param)   {
     printout(INFO,"DetElement",
              "++ Need to update local and child caches of %s",
              det.path().c_str());
-    revalidate();
+    revalidate(true);
+    revalidate_parents();
   }
   for ( const auto& i : updateCalls )  {
     if ( (tags&i.second) )
