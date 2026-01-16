@@ -142,10 +142,15 @@ namespace dd4hep {
       // Note: 1) We store in the hit the hit-direction, which is not the same as the track direction.
       //       2) The energy deposit is the difference between incoming and outcoming energy.
       Geant4StepHandler h(step);
-      auto contrib = Hit::extractContribution(step);
-      Direction hit_momentum = 0.5 * (h.preMom() + h.postMom());
-      double    hit_deposit  = h.deposit();
-      Hit* hit = new Hit(contrib, hit_momentum, hit_deposit);
+      Hit* hit = nullptr;
+      if ( m_hitCreationMode==SIMPLE_MODE ) {
+    	  hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h. trkTime(), h.stepLength(), h.prePos(), h.preMom() );
+      } else if ( m_hitCreationMode==MEDIUM_MODE ) {
+    	  auto contrib = Hit::extractContribution(step);
+    	  Direction hit_momentum = 0.5 * (h.preMom() + h.postMom());
+    	  double    hit_deposit  = h.deposit();
+    	  hit = new Hit(contrib, hit_momentum, hit_deposit);
+      }
 
       hit->cellID = cellID(step);
       if ( 0 == hit->cellID )  {

@@ -106,7 +106,7 @@ Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const std::string& nam, De
     except("DDG4: Detector element for %s is invalid.", nam.c_str());
   }
   declareProperty("UseVolumeManager", m_useVolumeManager = true);
-  declareProperty("HitCreationMode",  m_hitCreationMode = SIMPLE_MODE);
+  declareProperty("HitCreationMode",  m_hitCreationMode = MEDIUM_MODE);
   m_sequence     = context()->kernel().sensitiveAction(m_detector.name());
   m_sensitive    = m_detDesc.sensitiveDetector(det.name());
   m_readout      = m_sensitive.readout();
