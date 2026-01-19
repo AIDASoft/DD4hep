@@ -92,29 +92,31 @@ namespace dd4hep {
 
       /** Property variables used to configure the object */
       /// Property: Steer printout at tracking action begin
-      bool m_printStartTracking;
+      bool m_printStartTracking  { false };
       /// Property: Steer printout at tracking action end
-      bool m_printEndTracking;
+      bool m_printEndTracking    { false };
       /// Property: Flag to keep all particles generated
-      bool m_keepAll;
+      bool m_keepAll             { false };
+      /// Property: Use extended user track handling in Geant4ParticleHandler::mark(const G4Track* track)
+      bool m_userTrackMarks      { false };
       /// Property: Flag if the handler is executed in standalone mode and hence must manage particles
-      bool m_ownsParticles;
+      bool m_ownsParticles       { false };
       /// Property: Energy cut below which particles are not collected, but assigned to the parent
-      double m_kinEnergyCut;
+      double m_kinEnergyCut      { 0e0   };
       /// Property: Minimal distance after which the vertexIsNotEndpointOfParent flag is set
-      double m_minDistToParentVertex;
+      double m_minDistToParentVertex  {  };
       /// Property: All the processes of which the decay products will be explicitly stored
-      Processes                  m_processNames;
+      Processes m_processNames        {  };
 
       /** Object variables, which are constant after initialization */
       /// User action pointer
-      Geant4UserParticleHandler* m_userHandler;
+      std::vector<Geant4UserParticleHandler*> m_userHandlers  {  };
 
       /** EVENT DEPENDENT: variables containing data depending on the current event. */
       /// Global particle identifier. Obtained at the begin of the event.
       int               m_globalParticleID;
       /// Primary map
-      Geant4PrimaryMap* m_primaryMap;
+      Geant4PrimaryMap* m_primaryMap            { nullptr };
       /// Local buffer about the 'current' G4Track
       Particle          m_currTrack;
       /// Map with stored MC Particles

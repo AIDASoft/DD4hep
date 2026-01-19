@@ -46,6 +46,7 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   xml_comp_t  x_outer     = x_det.child(_Unicode(outer_wall));
   xml_comp_t  x_gas       = x_det.child(_Unicode(gas));
   xml_comp_t  x_cathode   = x_det.child(_Unicode(cathode));
+  xml_comp_t  x_sens      = x_det.child(_Unicode(sensitive), false);
   
   PlacedVolume pv;
 
@@ -56,7 +57,9 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
   cylinder_t gas        = { inner_wall.outer+5*dd4hep::cm, outer_wall.inner-5*dd4hep::cm, x_gas.zhalf()-5*dd4hep::cm };
 
   // TPC sensitive detector
-  sens_det.setType("tracker");
+  string sens_typ = x_sens.ptr() ? x_sens.typeStr("tracker") : string("tracker");
+  sens_det.setType(sens_typ);
+  cout << "Detector: " << name << " id: " << x_det.id() << " Sensitive type: " << sens_typ << endl;
 
   // the TPC mother volume
   //Tube    envTub(env.inner,env.outer,env.zhalf);

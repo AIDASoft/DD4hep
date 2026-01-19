@@ -95,8 +95,6 @@ namespace {
       dd4hep::Volume       v  = pv->GetVolume();
       std::string          path = "/";
 
-
-      
       dbg = false;
       // dbg = true;
       path += pv->GetName();

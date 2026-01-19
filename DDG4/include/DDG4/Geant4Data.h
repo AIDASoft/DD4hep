@@ -174,14 +174,14 @@ namespace dd4hep {
         MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, double len, double* pos, double* mom)
           : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp), length(len),
             x(float(pos[0])), y(float(pos[1])), z(float(pos[2])),
-	    px(float(mom[0])), py(float(mom[1])), pz(float(mom[2]))
+            px(float(mom[0])), py(float(mom[1])), pz(float(mom[2]))
         {
         }
         /// Initializing constructor
         MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, double len, const Position& pos, const Direction& mom)
           : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp), length(len),
             x(float(pos.x())), y(float(pos.y())), z(float(pos.z())),
-	    px(float(mom.x())), py(float(mom.y())), pz(float(mom.z()))
+            px(float(mom.x())), py(float(mom.y())), pz(float(mom.z()))
         {
         }
         /// Assignment operator (move)
@@ -195,38 +195,38 @@ namespace dd4hep {
           time  = deposit = length = 0.0;
           pdgID = trackID = -1;
         }
-	/// Access position
-	Position position() const   {
-	  return Position(x, y, z);
-	}
-	/// Set position of the contribution
-	void setPosition(const Position& pos)   {
-	  x = pos.x();
-	  y = pos.y();
-	  z = pos.z();
-	}
-	/// Set position of the contribution
-	void setPosition(double pos_x, double pos_y, double pos_z)   {
-	  x = float(pos_x);
-	  y = float(pos_y);
-	  z = float(pos_z);
-	}
-	/// Access momentum
-	Direction momentum() const   {
-	  return Direction(px, py, pz);
-	}
-	/// Set memonetum of the contribution
-	void setMomentum(const Direction& dir)   {
-	  px = dir.x();
-	  py = dir.y();
-	  pz = dir.z();
-	}
-	/// Set memonetum of the contribution
-	void setMomentum(double mom_x, double mom_y, double mom_z)   {
-	  px = float(mom_x);
-	  py = float(mom_y);
-	  pz = float(mom_z);
-	}
+        /// Access position
+        Position position() const   {
+          return Position(x, y, z);
+        }
+        /// Set position of the contribution
+        void setPosition(const Position& pos)   {
+          x = pos.x();
+          y = pos.y();
+          z = pos.z();
+        }
+        /// Set position of the contribution
+        void setPosition(double pos_x, double pos_y, double pos_z)   {
+          x = float(pos_x);
+          y = float(pos_y);
+          z = float(pos_z);
+        }
+        /// Access momentum
+        Direction momentum() const   {
+          return Direction(px, py, pz);
+        }
+        /// Set memonetum of the contribution
+        void setMomentum(const Direction& dir)   {
+          px = dir.x();
+          py = dir.y();
+          pz = dir.z();
+        }
+        /// Set memonetum of the contribution
+        void setMomentum(double mom_x, double mom_y, double mom_z)   {
+          px = float(mom_x);
+          py = float(mom_y);
+          pz = float(mom_z);
+        }
       };
       typedef MonteCarloContrib Contribution;
       typedef std::vector<MonteCarloContrib> Contributions;
@@ -283,22 +283,22 @@ namespace dd4hep {
         Hit(const Hit& c) = delete;
         /// Initializing constructor
         Hit(int track_id, int pdg_id, double deposit, double time_stamp, double len=0.0, const Position& p={0.0, 0.0, 0.0}, const Direction& d={0.0, 0.0, 0.0});
-	/// Optimized constructor for sensitive detectors
-	Hit(const Geant4HitData::Contribution& contrib, const Direction& mom, double deposit);
+        /// Optimized constructor for sensitive detectors
+        Hit(const Geant4HitData::Contribution& contrib, const Direction& mom, double deposit);
         /// Default destructor
         virtual ~Hit();
         /// Move assignment operator
         Hit& operator=(Hit&& c) = delete;
         /// Copy assignment operator
         Hit& operator=(const Hit& c) = delete;
-	/// Explicit assignment operation
-	void copyFrom(const Hit& c);
+        /// Explicit assignment operation
+        void copyFrom(const Hit& c);
         /// Clear hit content
         Hit& clear();
         /// Store Geant4 point and step information into tracker hit structure.
         Hit& storePoint(const G4Step* step, const G4StepPoint* point);
-	/// Store Geant4 spot information into tracker hit structure.
-	Hit& storePoint(const Geant4FastSimSpot* spot);
+        /// Store Geant4 spot information into tracker hit structure.
+        Hit& storePoint(const Geant4FastSimSpot* spot);
       };
     };
 
