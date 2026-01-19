@@ -360,8 +360,8 @@ _props('SensDetActionSequenceHandle')
 _props('UserInitializationSequenceHandle')
 
 _props('Geant4PhysicsListActionSequence')
-_import_class('Sim','Geant4HitData')
-_import_class('Sim','Geant4ParticleProperties')
+_import_class('Sim', 'Geant4HitData')
+_import_class('Sim', 'Geant4ParticleProperties')
 
 # ---------------------------------------------------------------------------
 #
