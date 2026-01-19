@@ -92,8 +92,8 @@ def run():
     # Set specialized mask for Geant4 particles with hits in the TPC
     user = DDG4.Action(kernel, "Geant4ParticleMaskAction/ParticleMaskAction")
     user.OutputLevel = Output.ALWAYS
-    user.DetectorNameMasks = { 'TPC': 1<<30 }
-    user.DetectorTypeMasks = { 'tpc': 1<<30 }
+    user.DetectorNameMasks = {'TPC': 1 << 30}
+    user.DetectorTypeMasks = {'tpc': 1 << 30}
     user.enableUI()
     part.adopt(user)
 
