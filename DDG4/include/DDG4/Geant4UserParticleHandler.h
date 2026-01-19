@@ -45,6 +45,7 @@ namespace dd4hep {
     // Forward declarations
     class Geant4Particle;
     class Geant4ParticleHandler;
+    class Geant4SensDetActionSequence;
 
     /// Geant4ParticleHandler user extension action called by the particle handler.
     /**
@@ -130,6 +131,14 @@ namespace dd4hep {
        *  The default implementation is empty.
        */
       virtual void combine(Particle& to_be_deleted, Particle& remaining_parent);
+
+      /// User overload to handle particle settings when processing the track in the Geant4ParticleHandler.
+      /** Called when a particle should be modified during the tracking
+       *  to e.g. change the particle reason mask.
+       *  Default implementation is empty.
+       */
+      virtual void mark_track(const G4Track* track, Particle* m_currTrack, Geant4SensDetActionSequence* sens_det);
+      
     };
   }    // End namespace sim
 }      // End namespace dd4hep
