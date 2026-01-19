@@ -47,7 +47,7 @@ def run():
     ui = geant4.setupCshUI(macro=args.macro)
   else:
     ui = geant4.setupCshUI()
-  if args.batch:
+  if args.events:
     ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
 
   # Configure field
@@ -66,6 +66,8 @@ def run():
   act.DebugElements = False
   act.DebugVolumes = True
   act.DebugShapes = True
+  # act.DebugPlacements = True
+  act.DebugVolManager = True
   seq, act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
 
   # Setup particle gun
