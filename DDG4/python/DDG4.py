@@ -363,6 +363,7 @@ _props('Geant4PhysicsListActionSequence')
 _import_class('Sim', 'Geant4HitData')
 _import_class('Sim', 'Geant4ParticleProperties')
 
+
 # ---------------------------------------------------------------------------
 #
 # Basic helper to configure the DDG4 instance from python
