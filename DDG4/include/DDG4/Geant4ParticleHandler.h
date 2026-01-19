@@ -97,10 +97,8 @@ namespace dd4hep {
       bool m_printEndTracking    { false };
       /// Property: Flag to keep all particles generated
       bool m_keepAll             { false };
-      /// Property: Use extended user track handling in Geant4ParticleHandler::mark(const G4Track* track)
-      bool m_userTrackMarks      { false };
       /// Property: Flag if the handler is executed in standalone mode and hence must manage particles
-      bool m_ownsParticles       { false };
+      // Looks to be unused: bool m_ownsParticles       { false };
       /// Property: Energy cut below which particles are not collected, but assigned to the parent
       double m_kinEnergyCut      { 0e0   };
       /// Property: Minimal distance after which the vertexIsNotEndpointOfParent flag is set

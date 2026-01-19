@@ -57,7 +57,6 @@ Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* ctxt, const std::str
   declareProperty("PrintEndTracking",      m_printEndTracking = false);
   declareProperty("PrintStartTracking",    m_printStartTracking = false);
   declareProperty("KeepAllParticles",      m_keepAll = false);
-  declareProperty("UserTrackMarks",        m_userTrackMarks = false);
   declareProperty("SaveProcesses",         m_processNames);
   declareProperty("MinimalKineticEnergy",  m_kinEnergyCut = 100e0*CLHEP::MeV);
   declareProperty("MinDistToParentVertex", m_minDistToParentVertex = 2.2e-14*CLHEP::mm);//default tolerance for g4ThreeVector isNear
