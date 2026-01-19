@@ -458,6 +458,7 @@ void Geant4Output2EDM4hep::saveParticles(Geant4ParticleMap* particles)    {
       mcp.setHasLeftDetector(             mask.isSet(G4PARTICLE_SIM_LEFT_DETECTOR) );
       mcp.setStopped(                     mask.isSet(G4PARTICLE_SIM_STOPPED) );
       mcp.setOverlay(                     false );
+      mcp.setHandledByFastSim(            mask.isSet(G4PARTICLE_SIM_FAST_SIMULATION) );
 
       //fg: if simstatus !=0 we have to set the generator status to 0:
       if( mcp.isCreatedInSimulation() )
