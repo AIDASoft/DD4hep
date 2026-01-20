@@ -33,7 +33,7 @@
 #pragma clang diagnostic ignored "-Woverlength-strings"
 #endif
 
-// FRamework include files
+// Framework include files
 #include <DD4hep/Memory.h>
 #include <DDG4/Geant4Data.h>
 #include <DDG4/Geant4Particle.h>
