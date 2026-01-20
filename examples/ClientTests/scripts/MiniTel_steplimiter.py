@@ -23,7 +23,6 @@ import DDG4
 
 
 def run():
-  from DDG4 import OutputLevel
   from MiniTelSetup import Setup
   args = DDG4.CommandLine()
   m = Setup()
