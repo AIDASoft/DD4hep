@@ -594,6 +594,15 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "EXCEPTION; Exception;ERROR"
   )
   #
+  # Test specialized configurable G4PhysicsConstructor: 
+  dd4hep_add_test_reg( ClientTests_sim_geant4_minitel_step_limiter
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTel_steplimiter.py
+    	       -batch -debug -events 1
+    REGEX_PASS "Registered Geant4 physics constructor G4StepLimiterPhysics to modular physics list id:0"
+    REGEX_FAIL "EXCEPTION; Exception;ERROR"
+  )
+  #
   # Test importing a geometry from ROOT and placing DetElements
   dd4hep_add_test_reg( ClientTests_import_geo_place_det_elements
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"

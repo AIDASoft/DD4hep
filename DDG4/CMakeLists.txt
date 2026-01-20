@@ -45,10 +45,20 @@ dd4hep_add_dictionary( G__DDG4
   SOURCES python/DDG4Dict.C
   USES    DD4hep::DDCore DD4hep::DDParsers DD4hep::DDG4 Geant4::Interface
   )
+#-----------------------------------------------------------------------------------
+# Note:
+# This is only an example how to add customizable G4 physics constructors.
+# You only need a compiled dictionary. Other specializations unless required
+# by multiple people should be kept in user space.
+#
+dd4hep_add_dictionary( G__DDG4Physics
+  SOURCES python/DDG4PhysicsDict.C
+  USES    DD4hep::DDCore DD4hep::DDParsers DD4hep::DDG4 Geant4::Interface
+  )
 #---------------------------  Plugin library for the simulation framework  ---------
 dd4hep_add_plugin(DDG4Plugins
   SOURCES   plugins/*.cpp
-  GENERATED G__DDG4.cxx
+  GENERATED G__DDG4.cxx G__DDG4Physics.cxx
   USES      DD4hep::DDG4 DD4hep::DDParsers ${XML_LIBRARIES} ROOT::Core ${CLHEP} 
   )
 #---------------------------  Plugin library for the simulation framework  ---------

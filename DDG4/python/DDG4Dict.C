@@ -336,7 +336,8 @@ typedef dd4hep::sim::Geant4ActionCreation Geant4ActionCreation;
 
 #endif
 
-// CLHEP stuff
+
+// Create dictionary for CLHEP stuff
 #include <CLHEP/Random/Random.h>
 #if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
 
