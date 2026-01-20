@@ -300,7 +300,7 @@ _import_class('CLHEP', 'HepRandom')
 _import_class('CLHEP', 'HepRandomEngine')
 
 from ROOT import G4VPhysicsConstructor as G4VPhysicsConstructor  # noqa: F401, E402
-from ROOT import G4StepLimiterPhysics  as StepLimiterPhysics  # noqa: F401, E402
+from ROOT import G4StepLimiterPhysics as StepLimiterPhysics  # noqa: F401, E402
 
 
 def _get(self, name):
