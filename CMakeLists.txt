@@ -53,15 +53,15 @@ ENDIF()
 
 ENABLE_LANGUAGE(CXX)
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ standard used for compiling")
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ standard used for compiling")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 SET(DD4hep_DIR ${CMAKE_SOURCE_DIR} CACHE STRING "DD4hep directory")
 SET(DD4hep_ROOT ${CMAKE_INSTALL_PREFIX})
 
-IF(${CMAKE_CXX_STANDARD} LESS 14)
-  MESSAGE(FATAL_ERROR "DD4hep requires at least CXX Standard 14 to compile")
+IF(${CMAKE_CXX_STANDARD} LESS 17)
+  MESSAGE(FATAL_ERROR "DD4hep requires at least CXX Standard 17 to compile")
 ENDIF()
 
 ###############################
