@@ -260,10 +260,10 @@ namespace dd4hep {
         m_sequence->prepare(stackManager);
       }
       virtual G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* track)  override final {
-	auto ret = m_sequence->classifyNewTrack(stackManager, track);
-	if ( ret.type != NoTrackClassification )
-	  return ret.value;
-	return this->G4UserStackingAction::ClassifyNewTrack(track);
+        auto ret = m_sequence->classifyNewTrack(stackManager, track);
+        if ( ret.type != NoTrackClassification )
+          return ret.value;
+        return this->G4UserStackingAction::ClassifyNewTrack(track);
       }
     };
 

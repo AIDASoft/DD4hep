@@ -83,6 +83,8 @@ namespace dd4hep {
       virtual std::string fullPath() const = 0;
       /// Access to the sensitive type of the detector
       virtual const std::string& sensitiveType() const = 0;
+      /// Access the DDG4 action sequence
+      virtual Geant4SensDetActionSequence* sequence() const = 0;
     };
 
     /// Base class to construct filters for Geant4 sensitive detectors

@@ -47,7 +47,7 @@ def run():
     ui = geant4.setupCshUI(macro=args.macro)
   else:
     ui = geant4.setupCshUI()
-  if args.batch:
+  if args.events:
     ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
 
   # Configure field
@@ -66,6 +66,8 @@ def run():
   act.DebugElements = False
   act.DebugVolumes = True
   act.DebugShapes = True
+  # act.DebugPlacements = True
+  act.DebugVolManager = True
   seq, act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
 
   # Setup particle gun
@@ -86,7 +88,30 @@ def run():
   user.enableUI()
   part.adopt(user)
 
-  geant4.setupTracker('TPC')
+  if args.mask:
+    # Set specialized mask for Geant4 particles with hits in the TPC
+    user = DDG4.Action(kernel, "Geant4ParticleMaskAction/ParticleMaskAction")
+    user.OutputLevel = Output.ALWAYS
+    user.DetectorNameMasks = {'TPC': 1 << 30}
+    user.DetectorTypeMasks = {'tpc': 1 << 30}
+    user.enableUI()
+    part.adopt(user)
+
+    # by default Geant4SensDetActionSequence::sensitiveType() returns sd.type()
+    # whatever it is
+    tpc_sd = geant4.description.sensitiveDetector('TPC')
+    DDG4.info('Python-Setup', f'OLD TPC type: {tpc_sd.type()}')
+    tpc_sd.setType('blabla-detector')
+    DDG4.info('Python-Setup', f'NEW TPC type: {tpc_sd.type()}')
+
+  seq, act = geant4.setupTracker('TPC')
+
+  if args.mask:
+    # Alternative:  set explicitly Geant4SensDetActionSequence::sensitiveType
+    # disadvantage: Sequencer must be instantiated
+    DDG4.info('Python-Setup', f'OLD TPC sequence sensitive type: {seq.sensitiveType()}')
+    seq.SensitiveType = 'tpc'
+    DDG4.info('Python-Setup', f'NEW TPC sequence sensitive type: {seq.sensitiveType()}')
 
   # Now build the physics list:
   phys = geant4.setupPhysics('QGSP_BERT')

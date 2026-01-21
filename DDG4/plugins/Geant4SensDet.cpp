@@ -83,8 +83,8 @@ namespace dd4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4SensDet : virtual public G4VSensitiveDetector,
-			  virtual public G4VGFlashSensitiveDetector,
-			  virtual public G4VFastSimSensitiveDetector,
+                          virtual public G4VGFlashSensitiveDetector,
+                          virtual public G4VFastSimSensitiveDetector,
                           virtual public G4VSDFilter,
                           virtual public Geant4ActionSD,
                           virtual public RefCountedSequence<Geant4SensDetActionSequence>
@@ -96,11 +96,11 @@ namespace dd4hep {
       /// Constructor. The detector element is identified by the name
       Geant4SensDet(const std::string& nam, Detector& description)
         : G4VSensitiveDetector(nam),
-	  G4VGFlashSensitiveDetector(),
-	  G4VFastSimSensitiveDetector(),
-	  G4VSDFilter(nam),
+          G4VGFlashSensitiveDetector(),
+          G4VFastSimSensitiveDetector(),
+          G4VSDFilter(nam),
           Geant4Action(0,nam),
-	  Geant4ActionSD(nam),
+          Geant4ActionSD(nam),
           RefCountedSequence<Geant4SensDetActionSequence>()
       {
         Geant4Kernel& master = Geant4Kernel::instance(description);
@@ -140,6 +140,9 @@ namespace dd4hep {
       /// Access to the sensitive type of the detector
       virtual const std::string& sensitiveType() const  override  final
       {  return m_sequence->sensitiveType();                            }
+      /// Access the DDG4 action sequence
+      virtual Geant4SensDetActionSequence* sequence() const  override final
+      {  return m_sequence;                                             }
       /// Callback if the sequence should be accepted or filtered off
       virtual G4bool Accept(const G4Step* step) const  override  final
       {  return m_sequence->accept(step);                               }
@@ -151,24 +154,24 @@ namespace dd4hep {
       {  m_sequence->end(hce);                                          }
       /// Method for generating hit(s) using the information of G4Step object.
       virtual G4bool ProcessHits(G4Step* step,
-				 G4TouchableHistory* hist)   override  final
+                                 G4TouchableHistory* hist)   override  final
       {  return m_sequence->process(step,hist);                         }
       /// GFLASH interface
       virtual G4bool ProcessHits(G4GFlashSpot* sp,
-				 G4TouchableHistory* hist)   override final
+                                 G4TouchableHistory* hist)   override final
       {
-	const GFlashEnergySpot* esp = sp->GetEnergySpot();
-	G4FastHit         hit(esp->GetPosition(), esp->GetEnergy());
-	Geant4FastSimSpot spot(&hit, sp->GetOriginatorTrack(), (sp->GetTouchableHandle())());
-	return m_sequence->processFastSim(&spot, hist);
+        const GFlashEnergySpot* esp = sp->GetEnergySpot();
+        G4FastHit         hit(esp->GetPosition(), esp->GetEnergy());
+        Geant4FastSimSpot spot(&hit, sp->GetOriginatorTrack(), (sp->GetTouchableHandle())());
+        return m_sequence->processFastSim(&spot, hist);
       }
       /// Geant4 Fast simulation interface
       virtual G4bool ProcessHits(const G4FastHit* hit,
-				 const G4FastTrack* track,
-				 G4TouchableHistory* hist)   override final
+                                 const G4FastTrack* track,
+                                 G4TouchableHistory* hist)   override final
       {
-	Geant4FastSimSpot spot(hit, track, hist);
-	return m_sequence->processFastSim(&spot, hist);
+        Geant4FastSimSpot spot(hit, track, hist);
+        return m_sequence->processFastSim(&spot, hist);
       }
       /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
       virtual void clear()  override

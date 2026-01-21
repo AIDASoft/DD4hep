@@ -490,7 +490,7 @@ dd4hep_add_test_reg( ClientTests_check_for_multiple_headers
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoDisplay -compact ${ClientTestsEx_INSTALL}/compact/Test_2ndHeader.xml 
   -load -print INFO
-  REGEX_PASS "WARN  \\+\\+ Overwriting/updating Header structure is very dangerous. Try to avoid this."
+  REGEX_PASS "INFO  \\+\\+ Overwriting/updating Header structure is dangerous. Try to avoid this."
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
@@ -591,6 +591,15 @@ if (DD4HEP_USE_GEANT4)
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTel.py
     	       -batch -debug -events 1 -geometry /examples/ClientTests/compact/WorldSettings.xml
     REGEX_PASS "Volume world_volume Region: DefaultRegionForTheWorld. Apply user limits from world_region"
+    REGEX_FAIL "EXCEPTION; Exception;ERROR"
+  )
+  #
+  # Test specialized configurable G4PhysicsConstructor: 
+  dd4hep_add_test_reg( ClientTests_sim_geant4_minitel_step_limiter
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTel_steplimiter.py
+    	       -batch -debug -events 1
+    REGEX_PASS "Registered Geant4 physics constructor G4StepLimiterPhysics to modular physics list id:0"
     REGEX_FAIL "EXCEPTION; Exception;ERROR"
   )
   #

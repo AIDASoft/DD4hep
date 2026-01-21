@@ -136,8 +136,8 @@ namespace {
         G4ParticleDefinition* p = iter->value();
         G4double charge = p->GetPDGCharge();
         if (charge != 0) {
-	  G4ProcessManager* m = p->GetProcessManager();
-	  m->AddDiscreteProcess(channeling);
+          G4ProcessManager* m = p->GetProcessManager();
+          m->AddDiscreteProcess(channeling);
         }
       }
     }

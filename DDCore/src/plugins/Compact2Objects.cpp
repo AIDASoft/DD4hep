@@ -403,8 +403,8 @@ template <> void Converter<Header>::operator()(xml_h e) const {
     description.setHeader(h);
     return;
   }
-  printout(WARNING, "Compact","++ Overwriting/updating Header structure is very dangerous. Try to avoid this.");
-  printout(WARNING, "Compact","++     Header definition in: %s", xml::DocumentHandler::system_path(e).c_str());
+  printout(INFO, "Compact", "++ Overwriting/updating Header structure is dangerous. Try to avoid this.");
+  printout(INFO, "Compact", "++     Header definition in: %s", xml::DocumentHandler::system_path(e).c_str());
   if( e.hasAttr(_U(comment)) ) h.setComment(e.attr<std::string>(_U(comment)).c_str());
   if( e.hasAttr(_U(version)) ) h.setVersion(e.attr<std::string>(_U(version)).c_str());
   if( e.hasAttr(_U(author)) ) h.setAuthor(e.attr<std::string>(_U(author)).c_str());

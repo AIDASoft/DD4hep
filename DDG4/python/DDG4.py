@@ -299,6 +299,9 @@ _import_class('Sim', 'Geant4Random')
 _import_class('CLHEP', 'HepRandom')
 _import_class('CLHEP', 'HepRandomEngine')
 
+from ROOT import G4VPhysicsConstructor as G4VPhysicsConstructor  # noqa: F401, E402
+from ROOT import G4StepLimiterPhysics as StepLimiterPhysics  # noqa: F401, E402
+
 
 def _get(self, name):
   a = Interface.toAction(self)
@@ -360,6 +363,8 @@ _props('SensDetActionSequenceHandle')
 _props('UserInitializationSequenceHandle')
 
 _props('Geant4PhysicsListActionSequence')
+_import_class('Sim', 'Geant4HitData')
+_import_class('Sim', 'Geant4ParticleProperties')
 
 
 # ---------------------------------------------------------------------------
@@ -742,6 +747,7 @@ class Geant4:
     self._private_setupField(field, stepper, equation, prt)
     return field
 
+  # Create the master physics list
   def setupPhysics(self, name):
     phys = self.master().physicsList()
     phys.extends = name
@@ -750,6 +756,7 @@ class Geant4:
     phys.dump()
     return phys
 
+  # Add a sub-physics list to the master physics list
   def addPhysics(self, name):
     phys = self.master().physicsList()
     opt = PhysicsList(self.master(), name)

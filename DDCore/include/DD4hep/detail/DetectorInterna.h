@@ -169,7 +169,9 @@ namespace dd4hep {
     /// Trigger update callbacks
     void update(unsigned int tags, void* param);
     /// Revalidate the caches
-    void revalidate();
+    void revalidate(bool recurse_down=true);
+    /// Revalidate the parent caches
+    void revalidate_parents();
     /// Reflect all volumes in a DetElement sub-tree and re-attach the placements
     std::pair<DetElement,Volume> reflect(const std::string& new_name, int new_id, SensitiveDetector sd);
   };
