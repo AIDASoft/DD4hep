@@ -13,10 +13,107 @@ import importlib
 import types
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 
+# ---------------------------------------------------------------------------
+def dd4hep_directories(g4=True):
+  """
+  Return tuple of relevant dd4hep directories: (dd4hep, rootsys, geant4)
+  """
+  dd4hep  = os.getenv("DD4hepINSTALL", "/usr")
+  rootsys = os.getenv("ROOTSYS", "/usr")
+  g4_dir = None
+  if g4:
+    g4_dir = os.getenv('G4INSTALL', "/usr")
+  return (rootsys, g4_dir, dd4hep, )
+
+
+# ---------------------------------------------------------------------------
+def root_compile_option(option):
+  from ROOT import gSystem
+  known = gSystem.GetIncludePath()
+  idx = known.find(option+' ')
+  if idx > 0 and idx + len(option) >= len(known):
+    return known
+  gSystem.AddIncludePath(' '+option)
+
+
+# ---------------------------------------------------------------------------
+def root_add_include_path(path):
+  from ROOT import gSystem
+  known = gSystem.GetIncludePath()
+  path = '"'+path+'"'
+  idx = known.find(path)
+  if idx > 0 and idx + len(path) == len(known):
+    return known
+  gSystem.AddIncludePath(' -I'+path)
+
+
+# ---------------------------------------------------------------------------
+def setup_root_include_path(g4=True, opt=None):
+  """
+  Setup the ROOT compile options and include directories
+  """
+  import os
+  from ROOT import gSystem
+  rootsys, geant4, dd4hep = dd4hep_directories(g4)
+  known = gSystem.GetIncludePath()
+
+  root_add_include_path(rootsys + '/include')
+  root_add_include_path(dd4hep + '/include')
+  if geant4:
+    root_add_include_path(geant4 + '/include/Geant4')
+    root_add_compile_option(' -Wno-shadow -g -O0')
+  if opt and known.find(opt) < 0:
+    gSystem.AddIncludePath(' '+opt)
+  return gSystem.GetIncludePath()
+
+
+# ---------------------------------------------------------------------------
+def root_compile_opts():
+  """
+  Return the ROOT compile options and include directories
+  """
+  from ROOT import gSystem
+  return gSystem.GetIncludePath()
+
+
+# ---------------------------------------------------------------------------
+def setup_root_library_path(g4=True, opt=None):
+  """
+  Setup the ROOT link libraries and link options for A-Click processing of dd4hep in ROOT
+  """
+  import os
+  from ROOT import gInterpreter, gSystem
+  rootsys, geant4, dd4hep = dd4hep_directories(g4)
+  known = gSystem.GetLinkedLibs()
+
+  lib = ' -L' + dd4hep + '/lib64 ' + ' -L' + dd4hep + '/lib -lDDCore -lDDG4 -lDDSegmentation '
+  if known.find(lib) >= 0:
+    lib = ''
+  if geant4:
+    g4_lib = ' -L' + geant4 + '/lib64  -L' + geant4 + '/lib -lG4event -lG4tracking -lG4particles '
+    if known.find(g4_lib) < 0:
+      lib = lib + g4_lib
+  if opt and known.find(opt) < 0:
+    lib = lib + ' ' + opt
+
+  if len(lib):
+    gSystem.AddLinkedLibs(lib)
+  return gSystem.GetLinkedLibs()
+
+
+# ---------------------------------------------------------------------------
+def root_linked_libs():
+  """
+  Access the ROOT link libraries and link options for A-Click processing of dd4hep in ROOT
+  """
+  from ROOT import gSystem
+  return gSystem.GetLinkedLibs()
+
+
+# ---------------------------------------------------------------------------
 def compileAClick(dictionary, g4=True):
   """
   We compile the DDG4 plugin on the fly if it does not exist using the AClick mechanism.
@@ -24,18 +121,9 @@ def compileAClick(dictionary, g4=True):
   """
   from ROOT import gInterpreter, gSystem
   import os.path
-  dd4hep = os.getenv("DD4hepINSTALL", "/usr")
-  rootsys = os.getenv("ROOTSYS", "/usr")
 
-  inc = ' -I' + rootsys + '/include -I' + dd4hep + '/include '
-  lib = ' -L' + dd4hep + '/lib64 ' + ' -L' + dd4hep + '/lib -lDDCore -lDDG4 -lDDSegmentation '
-  if g4:
-    geant4 = os.getenv('G4INSTALL', "/usr")
-    inc = inc + ' -I' + geant4 + '/include/Geant4 -Wno-shadow -g -O0 '
-    lib = lib + ' -L' + geant4 + '/lib64  -L' + geant4 + '/lib -lG4event -lG4tracking -lG4particles '
-
-  gSystem.AddIncludePath(inc)
-  gSystem.AddLinkedLibs(lib)
+  setup_root_include_path(g4)
+  setup_root_library_path(g4)
   logger.info('Loading AClick %s', dictionary)
   package_spec = importlib.util.find_spec('DDG4')
   dic = os.path.dirname(package_spec.origin) + os.sep + dictionary
@@ -44,6 +132,7 @@ def compileAClick(dictionary, g4=True):
   return module
 
 
+# ---------------------------------------------------------------------------
 def loaddd4hep():
   """
   Import DD4hep module from ROOT using ROOT reflection
@@ -74,6 +163,7 @@ def loaddd4hep():
 name_space = __import__(__name__)
 
 
+# ---------------------------------------------------------------------------
 def import_namespace_item(ns, nam):
   scope = getattr(name_space, ns)
   attr = getattr(scope, nam)
@@ -81,6 +171,7 @@ def import_namespace_item(ns, nam):
   return attr
 
 
+# ---------------------------------------------------------------------------
 def import_root(nam):
   setattr(name_space, nam, getattr(ROOT, nam))
 
@@ -99,6 +190,7 @@ except Exception as X:
   sys.exit(1)
 
 
+# ---------------------------------------------------------------------------
 class _Levels:
   def __init__(self):
     self.VERBOSE = 1
