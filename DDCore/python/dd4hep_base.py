@@ -48,7 +48,7 @@ def root_add_include_path(path):
   idx = known.find(path)
   if idx > 0 and idx + len(path) == len(known):
     return known
-  gSystem.AddIncludePath(' -I'+path)
+  gSystem.AddIncludePath(' -I' + path)
 
 
 # ---------------------------------------------------------------------------
