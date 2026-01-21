@@ -21,7 +21,8 @@ def dd4hep_directories(g4=True):
   """
   Return tuple of relevant dd4hep directories: (dd4hep, rootsys, geant4)
   """
-  dd4hep  = os.getenv("DD4hepINSTALL", "/usr")
+  import os
+  dd4hep = os.getenv("DD4hepINSTALL", "/usr")
   rootsys = os.getenv("ROOTSYS", "/usr")
   g4_dir = None
   if g4:
@@ -30,20 +31,20 @@ def dd4hep_directories(g4=True):
 
 
 # ---------------------------------------------------------------------------
-def root_compile_option(option):
+def root_add_compile_option(option):
   from ROOT import gSystem
   known = gSystem.GetIncludePath()
-  idx = known.find(option+' ')
+  idx = known.find(option + ' ')
   if idx > 0 and idx + len(option) >= len(known):
     return known
-  gSystem.AddIncludePath(' '+option)
+  gSystem.AddIncludePath(' ' + option)
 
 
 # ---------------------------------------------------------------------------
 def root_add_include_path(path):
   from ROOT import gSystem
   known = gSystem.GetIncludePath()
-  path = '"'+path+'"'
+  path = '"' + path + '"'
   idx = known.find(path)
   if idx > 0 and idx + len(path) == len(known):
     return known
@@ -55,7 +56,6 @@ def setup_root_include_path(g4=True, opt=None):
   """
   Setup the ROOT compile options and include directories
   """
-  import os
   from ROOT import gSystem
   rootsys, geant4, dd4hep = dd4hep_directories(g4)
   known = gSystem.GetIncludePath()
@@ -66,7 +66,7 @@ def setup_root_include_path(g4=True, opt=None):
     root_add_include_path(geant4 + '/include/Geant4')
     root_add_compile_option(' -Wno-shadow -g -O0')
   if opt and known.find(opt) < 0:
-    gSystem.AddIncludePath(' '+opt)
+    gSystem.AddIncludePath(' ' + opt)
   return gSystem.GetIncludePath()
 
 
@@ -84,8 +84,7 @@ def setup_root_library_path(g4=True, opt=None):
   """
   Setup the ROOT link libraries and link options for A-Click processing of dd4hep in ROOT
   """
-  import os
-  from ROOT import gInterpreter, gSystem
+  from ROOT import gSystem
   rootsys, geant4, dd4hep = dd4hep_directories(g4)
   known = gSystem.GetLinkedLibs()
 
@@ -119,7 +118,7 @@ def compileAClick(dictionary, g4=True):
   We compile the DDG4 plugin on the fly if it does not exist using the AClick mechanism.
 
   """
-  from ROOT import gInterpreter, gSystem
+  from ROOT import gInterpreter
   import os.path
 
   setup_root_include_path(g4)

@@ -917,13 +917,13 @@ def import_geant4_class(class_name, header=None):
   if not header:
     header = class_name + '.hh'
   ret = gInterpreter.ProcessLine(f'#include <{header}>')
-  if 0 == ret:
+  if ROOT and 0 == ret:
     try:
       g4_class = getattr(ROOT, class_name)
       if g4_class:
         logger.warning(f'+++ Successfully imported Geant4 class {class_name} from header {class_name}.hh')
         return g4_class
-    except Exception as X:
+    except Exception:
       pass
   logger.error(f'+++ FAILED to import class Geant4 class {class_name}')
   return None
