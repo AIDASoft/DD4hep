@@ -919,7 +919,7 @@ def import_geant4_class(class_name, header=None):
       header = class_name + '.hh'
     ret = gInterpreter.ProcessLine(f'#include <{header}>')
     if 0 == ret:
-      g4_class = getattr(ROOT, class_name)  # noaq: F405
+      g4_class = getattr(ROOT, class_name)  # noqa: F405
       if g4_class:
         logger.warning(f'+++ Successfully imported Geant4 class {class_name} from header {class_name}.hh')
         return g4_class
