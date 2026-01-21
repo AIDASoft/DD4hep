@@ -16,6 +16,7 @@ from dd4hep_base import *  # noqa: F403
 logger = logging.getLogger(__name__)
 
 
+# ---------------------------------------------------------------------------
 def loadDDG4():
   import ROOT
   from ROOT import gSystem
@@ -46,11 +47,13 @@ def loadDDG4():
 current = __import__(__name__)
 
 
+# ---------------------------------------------------------------------------
 def _import_class(ns, nam):
   scope = getattr(current, ns)
   setattr(current, nam, getattr(scope, nam))
 
 
+# ---------------------------------------------------------------------------
 try:
   dd4hep = loadDDG4()
 except Exception as X:
@@ -60,6 +63,7 @@ except Exception as X:
   logger.error('+--%-100s--+', 100 * '-')
   exit(1)
 
+# ---------------------------------------------------------------------------
 from ROOT import CLHEP as CLHEP  # noqa
 Core = dd4hep
 Sim = dd4hep.sim
@@ -69,6 +73,7 @@ Interface = Sim.Geant4ActionCreation
 Detector = Core.Detector
 
 
+# ---------------------------------------------------------------------------
 def _constant(self, name):
   return self.constantAsString(name)
 
@@ -76,6 +81,7 @@ def _constant(self, name):
 Detector.globalVal = _constant
 
 
+# ---------------------------------------------------------------------------
 def importConstants(description, namespace=None, debug=False):
   """
   Import the Detector constants into the DDG4 namespace
@@ -123,14 +129,17 @@ def importConstants(description, namespace=None, debug=False):
     logger.info('+++ Imported %d global values to namespace:%s', num, ns.__name__,)
 
 
+# ---------------------------------------------------------------------------
 def _registerGlobalAction(self, action):
   self.get().registerGlobalAction(Interface.toAction(action))
 
 
+# ---------------------------------------------------------------------------
 def _registerGlobalFilter(self, filter):  # noqa: A002
   self.get().registerGlobalFilter(Interface.toAction(filter))
 
 
+# ---------------------------------------------------------------------------
 def _evalProperty(data):
   """
     Function necessary to extract real strings from the property value.
@@ -151,6 +160,7 @@ def _evalProperty(data):
   return data
 
 
+# ---------------------------------------------------------------------------
 def _getKernelProperty(self, name):
   ret = Interface.getPropertyKernel(self.get(), name)
   if ret.status > 0:
@@ -163,6 +173,7 @@ def _getKernelProperty(self, name):
   raise KeyError(msg)
 
 
+# ---------------------------------------------------------------------------
 def _setKernelProperty(self, name, value):
   if Interface.setPropertyKernel(self.get(), str(name), str(value)):
     return
@@ -170,14 +181,17 @@ def _setKernelProperty(self, name, value):
   raise KeyError(msg)
 
 
+# ---------------------------------------------------------------------------
 def _kernel_phase(self, name):
   return self.addSimplePhase(str(name), False)
 
 
+# ---------------------------------------------------------------------------
 def _kernel_worker(self):
   return Kernel(self.get().createWorker())
 
 
+# ---------------------------------------------------------------------------
 def _kernel_terminate(self):
   return self.get().terminate()
 
@@ -193,62 +207,77 @@ Kernel.terminate = _kernel_terminate
 ActionHandle = Sim.ActionHandle
 
 
+# ---------------------------------------------------------------------------
 def SensitiveAction(kernel, nam, det, shared=False):
   return Interface.createSensitive(kernel, str(nam), str(det), shared)
 
 
+# ---------------------------------------------------------------------------
 def Action(kernel, nam, shared=False):
   return Interface.createAction(kernel, str(nam), shared)
 
 
+# ---------------------------------------------------------------------------
 def Filter(kernel, nam, shared=False):
   return Interface.createFilter(kernel, str(nam), shared)
 
 
+# ---------------------------------------------------------------------------
 def PhaseAction(kernel, nam, shared=False):
   return Interface.createPhaseAction(kernel, str(nam), shared)
 
 
+# ---------------------------------------------------------------------------
 def RunAction(kernel, nam, shared=False):
   return Interface.createRunAction(kernel, str(nam), shared)
 
 
+# ---------------------------------------------------------------------------
 def EventAction(kernel, nam, shared=False):
   return Interface.createEventAction(kernel, str(nam), shared)
 
 
+# ---------------------------------------------------------------------------
 def GeneratorAction(kernel, nam, shared=False):
   return Interface.createGeneratorAction(kernel, str(nam), shared)
 
 
+# ---------------------------------------------------------------------------
 def TrackingAction(kernel, nam, shared=False):
   return Interface.createTrackingAction(kernel, str(nam), shared)
 
 
+# ---------------------------------------------------------------------------
 def SteppingAction(kernel, nam, shared=False):
   return Interface.createSteppingAction(kernel, str(nam), shared)
 
 
+# ---------------------------------------------------------------------------
 def StackingAction(kernel, nam, shared=False):
   return Interface.createStackingAction(kernel, str(nam), shared)
 
 
+# ---------------------------------------------------------------------------
 def DetectorConstruction(kernel, nam):
   return Interface.createDetectorConstruction(kernel, str(nam))
 
 
+# ---------------------------------------------------------------------------
 def PhysicsList(kernel, nam):
   return Interface.createPhysicsList(kernel, str(nam))
 
 
+# ---------------------------------------------------------------------------
 def UserInitialization(kernel, nam):
   return Interface.createUserInitialization(kernel, str(nam))
 
 
+# ---------------------------------------------------------------------------
 def SensitiveSequence(kernel, nam):
   return Interface.createSensDetSequence(kernel, str(nam))
 
 
+# ---------------------------------------------------------------------------
 def _setup(obj):
   def _adopt(self, action):
     self.__adopt(action.get())
@@ -259,6 +288,7 @@ def _setup(obj):
   o.add = _adopt
 
 
+# ---------------------------------------------------------------------------
 def _setup_callback(obj):
   def _adopt(self, action):
     self.__adopt(action.get(), action.callback())
@@ -303,6 +333,7 @@ from ROOT import G4VPhysicsConstructor as G4VPhysicsConstructor  # noqa: F401, E
 from ROOT import G4StepLimiterPhysics as StepLimiterPhysics  # noqa: F401, E402
 
 
+# ---------------------------------------------------------------------------
 def _get(self, name):
   a = Interface.toAction(self)
   ret = Interface.getProperty(a, name)
@@ -316,6 +347,7 @@ def _get(self, name):
   raise KeyError(msg)
 
 
+# ---------------------------------------------------------------------------
 def _set(self, name, value):
   """This function is called when properties are passed to the c++ objects."""
   from dd4hep_base import unicode_2_string
@@ -328,6 +360,7 @@ def _set(self, name, value):
   raise KeyError(msg)
 
 
+# ---------------------------------------------------------------------------
 def _props(obj):
   _import_class('Sim', obj)
   cl = getattr(current, obj)
@@ -873,4 +906,48 @@ class Geant4:
     return self
 
 
+# ---------------------------------------------------------------------------
+# Instantiate convenience python interface to DDG4 C++ classes
 Simple = Geant4
+
+
+# ---------------------------------------------------------------------------
+def import_geant4_class(class_name, header=None):
+  try:
+    from ROOT import gInterpreter
+    if not header:
+      header = class_name + '.hh'
+    ret = gInterpreter.ProcessLine(f'#include <{header}>')
+    if 0 == ret:
+      g4_class = getattr(ROOT, class_name)  # noqa: F405
+      if g4_class:
+        logger.warning(f'+++ Successfully imported Geant4 class {class_name} from header {class_name}.hh')
+        return g4_class
+  except Exception:
+    pass
+  logger.error(f'+++ FAILED to import class Geant4 class {class_name}')
+  return None
+
+
+# ---------------------------------------------------------------------------
+class Geant4_class_loader:
+  all_classes = {}
+
+  def __init__(self):
+    self.gbl = globals()
+
+  def get_class(self, name, header=None):
+    clazz = Geant4_class_loader.all_classes.get(name)
+    if not clazz:
+      clazz = import_geant4_class(class_name=name, header=header)
+      if clazz:
+        Geant4_class_loader.all_classes[name] = clazz
+    return clazz
+
+  def __getattr__(self, name):
+    return self.get_class(name)
+
+
+# ---------------------------------------------------------------------------
+# Instantiate python interface to Geant4 C++ classes
+geant4 = Geant4_class_loader()
