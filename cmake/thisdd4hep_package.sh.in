@@ -30,7 +30,7 @@ dd4hep_add_path    PYTHONPATH ${THIS}/@DD4HEP_PYTHON_INSTALL_DIR@;
 #----ROOT_INCLUDE_PATH--------------------------------------------------------
 dd4hep_add_path    ROOT_INCLUDE_PATH ${THIS}/include;
 #----LIBRARY_PATH-------------------------------------------------------------
-dd4hep_add_library_path ${THIS}/lib;
+dd4hep_add_library_path ${THIS}/@DD4HEP_INSTALL_LIBDIR@;
 # -- need to extend dynamic search path for all external libraries:
 if [ @External_LIBRARY_DIRS@ ]; then
     for lp in @External_LIBRARY_DIRS@; do

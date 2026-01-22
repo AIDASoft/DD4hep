@@ -156,14 +156,20 @@ void detail::tools::elementPath(DetElement parent, DetElement child, ElementPath
 
 /// Collect detector elements placements to the top detector element (world) [fast, but may have holes!]
 void detail::tools::elementPath(DetElement parent, DetElement element, PlacementPath& det_nodes) {
-  for(DetElement par = element; par.isValid(); par = par.parent())  {
-    PlacedVolume pv = par.placement();
-    if ( pv.isValid() )  {
-      det_nodes.emplace_back(pv);
+  if( element.isValid() )  {
+    if( !parent.isValid() ) {
+      parent = element.world();
     }
-    if ( par.ptr() == parent.ptr() ) return;
+    for( DetElement par = element; par.isValid(); par = par.parent() )  {
+      PlacedVolume pv = par.placement();
+      if ( pv.isValid() )  {
+        det_nodes.emplace_back(pv);
+      }
+      if ( par.ptr() == parent.ptr() ) return;
+    }
+    throw std::runtime_error(("The detector element "+std::string(parent.name())+" is no parent of ")+element.name());
   }
-  throw std::runtime_error(std::string("The detector element ")+parent.name()+std::string(" is no parent of ")+element.name());
+  throw std::runtime_error("Cannot access element path [Invalid DetElement]");
 }
 
 /// Collect detector elements placements to the top detector element (world) [fast, but may have holes!]

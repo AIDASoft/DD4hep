@@ -10,7 +10,6 @@
 #
 # ==========================================================================
 
-from __future__ import absolute_import, unicode_literals
 import sys
 import errno
 import argparse
@@ -71,8 +70,6 @@ logger.info('+++%s\n', 120 * '=')
 description = dd4hep.Detector.getInstance()
 for xmlfile in args.compact:
   description.fromXML(xmlfile)
-
-logger.info(str(description.constants()))
 
 description.manager().CheckOverlaps(args.tolerance, args.option)
 #

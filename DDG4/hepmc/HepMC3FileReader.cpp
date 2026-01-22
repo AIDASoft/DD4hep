@@ -129,17 +129,24 @@ HEPMC3FileReader::HEPMC3FileReader(const std::string& nam)
   printout(INFO,"HEPMC3FileReader","Created file reader. Try to open input %s", nam.c_str());
   m_reader = HepMC3::deduce_reader(nam);
 #if HEPMC3_VERSION_CODE >= 3002006
-  // to get the runInfo in the Ascii reader we have to force HepMC to read the first event
+  // to get the runInfo we have to force HepMC to read the first event
   HepMC3::GenEvent dummy;
   m_reader->read_event(dummy);
-  // then we get the run info (shared pointer)
-  auto runInfo = m_reader->run_info();
-  // and deallocate the reader
-  m_reader.reset();
-  // so we can open the file again from the start
-  m_reader = HepMC3::deduce_reader(nam);
-  // and set the run info object now
-  m_reader->set_run_info(std::move(runInfo));
+
+  // ascii reader needs to be reset while others can skip back
+  if (std::dynamic_pointer_cast<HepMC3::ReaderAscii>(m_reader) != nullptr) {
+    // then we get the run info (shared pointer)
+    auto runInfo = m_reader->run_info();
+    // and deallocate the reader
+    m_reader.reset();
+    // so we can open the file again from the start
+    m_reader = HepMC3::deduce_reader(nam);
+    // and set the run info object now
+    m_reader->set_run_info(std::move(runInfo));
+  } else {
+    m_reader->skip(-1); // reset to first event
+  }
+  
 #endif
   m_directAccess = false;
 }

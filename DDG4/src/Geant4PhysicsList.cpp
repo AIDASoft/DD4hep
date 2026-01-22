@@ -216,6 +216,7 @@ void Geant4PhysicsList::adoptPhysicsConstructor(Geant4Action* action)  {
   if ( 0 != action )   {
     if ( G4VPhysicsConstructor* p = dynamic_cast<G4VPhysicsConstructor*>(action) )  {
       PhysicsConstructor ctor(action->name());
+      ctor.physics_list = nullptr;
       ctor.pointer = p;
       action->addRef();
       m_physics.emplace_back(ctor);
@@ -231,14 +232,41 @@ void Geant4PhysicsList::constructPhysics(G4VModularPhysicsList* physics_pointer)
   debug("constructPhysics %p", physics_pointer);
   for ( auto& ctor : m_physics )   {
     if ( 0 == ctor.pointer )   {
-      if ( G4VPhysicsConstructor* p = PluginService::Create<G4VPhysicsConstructor*>(ctor) )
+      if ( G4VPhysicsConstructor* p = PluginService::Create<G4VPhysicsConstructor*>(ctor) )  {
         ctor.pointer = p;
-      else
+      }
+      else  {
         except("Failed to create the physics for G4VPhysicsConstructor '%s'", ctor.c_str());
+      }
     }
-    physics_pointer->RegisterPhysics(ctor.pointer);
-    info("Registered Geant4 physics constructor %s to physics list", ctor.c_str());
+    if( !ctor.physics_list )  {
+      ctor.physics_list = physics_pointer;
+      physics_pointer->RegisterPhysics(ctor.pointer);
+      info("+++ Registered Geant4 physics constructor %s to modular physics list id:%d",
+           ctor.c_str(), physics_pointer->GetInstanceID());
+    }
   }
+}
+
+/// Callback to add a physics type to the physics list
+G4VPhysicsConstructor* Geant4PhysicsList::addPhysicsConstructorType(const std::string& physics_type)  {
+  debug("addPhysics %s", physics_type.c_str());
+  for ( auto& ctor : m_physics )   {
+    if( physics_type == ctor )  {
+      warning("+++ Physics type %s is already present. [using existing, creation denied]",
+              physics_type.c_str());
+      return ctor.pointer;
+    }
+  }
+  PhysicsConstructor ctor(physics_type);
+  ctor.physics_list = nullptr;
+  ctor.pointer = PluginService::Create<G4VPhysicsConstructor*>(physics_type);
+  if( ctor.pointer == nullptr )  {
+    return nullptr;
+  }
+  m_physics.push_back(ctor);
+  info("+++ Added Geant4 physics constructor %s to physics list", ctor.c_str());
+  return ctor.pointer;
 }
 
 /// constructParticle callback
@@ -322,6 +350,7 @@ Geant4PhysicsListActionSequence::Geant4PhysicsListActionSequence(Geant4Context* 
   declareProperty("decays",   m_decays);
   declareProperty("rangecut", m_rangecut);
   declareProperty("verbosity", m_verbosity);
+  declareProperty("modular_physics_verbosity", m_physics_verbosity);
   m_needsControl = true;
   InstanceCount::increment(this);
 }
@@ -443,6 +472,9 @@ void Geant4PhysicsListActionSequence::constructDecays(G4VUserPhysicsList* physic
 
 /// Enable physics list: actions necessary to be propagated to Geant4.
 void Geant4PhysicsListActionSequence::enable(G4VUserPhysicsList* physics_pointer)   {
+  if( m_physics_verbosity >= 0 )  {
+    physics_pointer->SetVerboseLevel(m_physics_verbosity);
+  }
   m_actors(&Geant4PhysicsList::enable, physics_pointer);
 }
 

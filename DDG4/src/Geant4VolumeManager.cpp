@@ -28,7 +28,11 @@
 #include <G4VPhysicalVolume.hh>
 
 // C/C++ include files
-#include <sstream>
+#include <set>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 //#define VOLMGR_HAVE_DEBUG_INFO  1
 
@@ -73,14 +77,16 @@ namespace  {
     Registries          m_entries;
     /// Reference to Geant4 translation information
     Geant4GeometryInfo& m_geo;
-
+    /// Debug flag for population
+    bool                m_debug { false };
+    
     /// Default constructor
-    Populator(const Detector& description, Geant4GeometryInfo& g)
-      : m_detDesc(description), m_geo(g)
+    Populator(const Detector& description, Geant4GeometryInfo& g, bool dbg)
+      : m_detDesc(description), m_geo(g), m_debug(dbg)
     {
 #ifdef VOLMGR_HAVE_DEBUG_INFO
       if ( nullptr == g.g4DebugInfo )  {
-	g.g4DebugInfo = new Geant4GeometryInfo::DebugInfo();
+        g.g4DebugInfo = new Geant4GeometryInfo::DebugInfo();
       }
 #endif
     }
@@ -88,33 +94,19 @@ namespace  {
     ~Populator()  {
 #ifdef VOLMGR_HAVE_DEBUG_INFO
       if ( g.g4DebugInfo )  {
-	delete g.g4DebugInfo;
-	g.g4DebugInfo = nullptr;
+        delete g.g4DebugInfo;
+        g.g4DebugInfo = nullptr;
       }
 #endif
     }
     
-    typedef std::pair<VolumeID, VolumeID> Encoding;
-    /// Compute the encoding for a set of VolIDs within a readout descriptor
-    static Encoding encoding(const IDDescriptor iddesc, const PlacedVolume::VolIDs& ids)  {
-      VolumeID volume_id = 0, mask = 0;
-      for( const auto& id : ids )  {
-        const BitFieldElement* f = iddesc.field(id.first);
-        VolumeID msk = f->mask();
-        int      off = f->offset();
-        VolumeID val = id.second;    // Necessary to extend volume IDs > 32 bit
-        volume_id |= ((f->value(val << off) << off)&msk);
-        mask      |= msk;
-      }
-      return std::make_pair(volume_id, mask);
-    }
 
     /// Populate the Volume manager
     void populate(DetElement e)  {
-      const DetElement::Children& c = e.children();
+      const DetElement::Children& children = e.children();
       m_entries.clear();
-      for( const auto& i : c )  {
-        DetElement de = i.second;
+      for( const auto& i : children )  {
+        DetElement   de = i.second;
         PlacedVolume pv = de.placement();
         if( pv.isValid() )  {
           Chain chain;
@@ -142,7 +134,7 @@ namespace  {
     /// Scan a single physical volume and look for sensitive elements below
     void scanPhysicalVolume(const TGeoNode* node, PlacedVolume::VolIDs ids, SensitiveDetector& sd, Chain& chain) {
       PlacedVolume pv = node;
-      Volume vol = pv.volume();
+      Volume       vol = pv.volume();
       PlacedVolume::VolIDs pv_ids = pv.volIDs();
 
       chain.emplace_back(node);
@@ -174,10 +166,11 @@ namespace  {
       Readout         rdout   = sd.readout();
       IDDescriptor    iddesc  = rdout.idSpec();
       VolumeID        code    = iddesc.encode(ids);
-      PrintLevel print_level  = m_geo.printLevel;
+      PrintLevel print_level  = m_debug ? ALWAYS : m_geo.printLevel;
       PrintLevel print_action = print_level;
       PrintLevel print_chain  = print_level;
       PrintLevel print_res    = print_level;
+      bool       print_nodes  = false;
       Geant4TouchableHandler::Geant4PlacementPath path;
       Registries::const_iterator i = m_entries.find(code);
 
@@ -227,26 +220,26 @@ namespace  {
           printout(print_res, "Geant4VolumeManager", "+++     Map %016X to Geant4 Path:%s",
                    (void*)code, Geant4TouchableHandler::placementPath(path).c_str());
           auto hash = detail::hash64(&path[0], path.size()*sizeof(path[0]));
-	  bool missing_hash_path = m_geo.g4Paths.find(hash) == m_geo.g4Paths.end();
+          bool missing_hash_path = m_geo.g4Paths.find(hash) == m_geo.g4Paths.end();
 #ifdef VOLMGR_HAVE_DEBUG_INFO
-	  {
-	    bool missing_real_path = m_geo.g4DebugInfo->g4Paths.find(path) == m_geo.g4DebugInfo->g4Paths.end();
-	    if ( missing_real_path != missing_hash_path )   {
-	      if ( !path.empty() )
-		printout(ERROR,"Geant4VolumeManager"," New   G4 path: %s", Geant4TouchableHandler::placementPath(path).c_str());
-	      if ( !nodes.empty() )
-		printout(ERROR,"Geant4VolumeManager","     TGeo path: %s", detail::tools::placementPath(nodes,false).c_str());
-	      printout(ERROR,"Geant4VolumeManager",  " Offend.VolIDs: %s", detail::tools::toString(rdout.idSpec(),ids,code).c_str());
-	    }
-	    if ( missing_real_path ) {
-	      Geant4GeometryInfo::PlacementFlags opt;
-	      opt.flags.parametrised = path.front()->IsParameterised() ? 1 : 0;
-	      opt.flags.replicated   = path.front()->IsReplicated()    ? 1 : 0;
-	      m_geo.g4DebugInfo->g4Paths[path] = { code, opt.value };
-	    }
-	  }
+          {
+            bool missing_real_path = m_geo.g4DebugInfo->g4Paths.find(path) == m_geo.g4DebugInfo->g4Paths.end();
+            if ( missing_real_path != missing_hash_path )   {
+              if ( !path.empty() )
+                printout(ERROR,"Geant4VolumeManager"," New   G4 path: %s", Geant4TouchableHandler::placementPath(path).c_str());
+              if ( !nodes.empty() )
+                printout(ERROR,"Geant4VolumeManager","     TGeo path: %s", detail::tools::placementPath(nodes,false).c_str());
+              printout(ERROR,"Geant4VolumeManager",  " Offend.VolIDs: %s", detail::tools::toString(rdout.idSpec(),ids,code).c_str());
+            }
+            if ( missing_real_path ) {
+              Geant4GeometryInfo::PlacementFlags opt;
+              opt.flags.parametrised = path.front()->IsParameterised() ? 1 : 0;
+              opt.flags.replicated   = path.front()->IsReplicated()    ? 1 : 0;
+              m_geo.g4DebugInfo->g4Paths[path] = { code, opt.value };
+            }
+          }
 #endif
-	  if ( missing_hash_path ) {
+          if ( missing_hash_path ) {
             Geant4GeometryInfo::PlacementFlags opt;
             opt.flags.parametrised = path.front()->IsParameterised() ? 1 : 0;
             opt.flags.replicated   = path.front()->IsReplicated()    ? 1 : 0;
@@ -264,6 +257,7 @@ namespace  {
         }
         printout(INFO, "Geant4VolumeManager", "Control block has still %d entries:%s",
                  int(control.size()), detail::tools::placementPath(control,true).c_str());
+        print_nodes = true;
         goto Err;
       }
       else  {
@@ -277,23 +271,34 @@ namespace  {
 
     Err:
       if ( i != m_entries.end() )
-        printout(ERROR,"Geant4VolumeManager"," Known G4 path: %s", Geant4TouchableHandler::placementPath(path).c_str());
+        printout( ERROR,"Geant4VolumeManager"," Known G4 path: %s", Geant4TouchableHandler::placementPath(path).c_str() );
       if ( !path.empty() )
-        printout(ERROR,"Geant4VolumeManager"," New   G4 path: %s", Geant4TouchableHandler::placementPath(path).c_str());
-      if ( !nodes.empty() )
-        printout(ERROR,"Geant4VolumeManager","     TGeo path: %s", detail::tools::placementPath(nodes,false).c_str());
-      printout(ERROR,"Geant4VolumeManager",  " Offend.VolIDs: %s", detail::tools::toString(rdout.idSpec(),ids,code).c_str());
+        printout( ERROR,"Geant4VolumeManager"," New   G4 path: %s", Geant4TouchableHandler::placementPath(path).c_str() );
+      if ( !nodes.empty() )  {
+        printout( ERROR,"Geant4VolumeManager","     TGeo path: %s", detail::tools::placementPath(nodes,false).c_str() );
+        if( print_nodes )  {
+          std::string node_path;
+          for( std::size_t in=0; in<nodes.size(); ++in )  {
+            PlacedVolume pv(nodes[in]);
+            node_path += "/";
+            node_path += pv.name();
+            printout( ALWAYS,"Geant4VolumeManager", "     TGeo Node[%ld]:  %s [%p]  Volids: '%s'",
+                      in, node_path.c_str(), (void*)nodes[in], pv.volIDs().str().c_str() );
+          }
+        }
+      }
+      printout( ERROR,"Geant4VolumeManager",  " Offend.VolIDs: %s", detail::tools::toString(rdout.idSpec(),ids,code).c_str() );
       throw std::runtime_error("Failed to populate Geant4 volume manager!");
     }
   };
 }
 
 /// Initializing constructor. The tree will automatically be built if possible
-Geant4VolumeManager::Geant4VolumeManager(const Detector& description, Geant4GeometryInfo* info)
+Geant4VolumeManager::Geant4VolumeManager(const Detector& description, Geant4GeometryInfo* info, bool debug)
   : Handle<Geant4GeometryInfo>(info)  {
   if( info && info->valid )  {
     if( !info->has_volmgr )  {
-      Populator p(description, *info);
+      Populator p(description, *info, debug);
       p.populate(description.world());
       info->has_volmgr = true;
     }
@@ -326,7 +331,7 @@ namespace  {
     auto* p = mgr->ptr();
     if ( p )  {
       ::snprintf(text, sizeof(text), "==> #path entries: %ld valid: %s has_volmgr: %s",
-		 p->g4Paths.size(), yes_no(p->valid), yes_no(p->has_volmgr));
+                 p->g4Paths.size(), yes_no(p->valid), yes_no(p->has_volmgr));
       return { text };
     }
     return { "Invalid handle to Geant4GeometryInfo" };
@@ -347,7 +352,7 @@ VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const  {
   }
   else if( path.empty() )  {
     printout(INFO, "Geant4VolumeManager", "+++   EMPTY volume Geant4 Path: %s",
-	     Geant4TouchableHandler::placementPath(path).c_str());
+             Geant4TouchableHandler::placementPath(path).c_str());
     return NonExisting;
   }
   else  {
@@ -394,17 +399,17 @@ VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const  {
     }
     if( !path[0] )  {
       printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' [invalid path] %s",
-	       Geant4TouchableHandler::placementPath(path).c_str(), debug_status(this).c_str());
+               Geant4TouchableHandler::placementPath(path).c_str(), debug_status(this).c_str());
       return InvalidPath;
     }
     else if( !path[0]->GetLogicalVolume()->GetSensitiveDetector() )  {
-      printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' [insensitive] %s",
-	       Geant4TouchableHandler::placementPath(path).c_str(), debug_status(this).c_str());
+      printout(DEBUG, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' [insensitive] %s",
+               Geant4TouchableHandler::placementPath(path).c_str(), debug_status(this).c_str());
       return Insensitive;
     }
     printout(INFO, "Geant4VolumeManager",
-	     "+++   Bad Geant4 volume path: \'%s\' [missing entry] %s",
-	     Geant4TouchableHandler::placementPath(path).c_str(), debug_status(this).c_str());
+             "+++   Bad Geant4 volume path: \'%s\' [missing entry] %s",
+             Geant4TouchableHandler::placementPath(path).c_str(), debug_status(this).c_str());
     return NonExisting;
   }
   printout(INFO, "Geant4VolumeManager", "+++   Bad Geant4 volume path: \'%s\' %s",

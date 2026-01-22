@@ -40,8 +40,12 @@ if (DD4HEP_USE_GEANT4)
     GENERATED G__DDG4UserDict.cxx
     USES      DD4hep::DDCore DD4hep::DDG4 Geant4::Interface ROOT::Core ROOT::Geom ROOT::GenVector ROOT::RIO
     )
-  install(TARGETS DDG4UserLib LIBRARY DESTINATION lib)
-  install(FILES ${LIBRARY_OUTPUT_PATH}/G__DDG4UserDict.rootmap DESTINATION lib)
+  set(DD4HEP_INSTALL_LIBRARY lib)
+  if(CMAKE_INSTALL_LIBDIR)
+    set(DD4HEP_INSTALL_LIBRARY ${CMAKE_INSTALL_LIBDIR})
+  endif()
+  install(FILES ${LIBRARY_OUTPUT_PATH}/G__DDG4UserDict.rootmap DESTINATION ${DD4HEP_INSTALL_LIBRARY} COMPONENT dev)
+  unset(DD4HEP_INSTALL_LIBRARY)
   #
   #
   dd4hep_install_dir(data    DESTINATION ${CMAKE_INSTALL_PREFIX}/examples/DDG4 )

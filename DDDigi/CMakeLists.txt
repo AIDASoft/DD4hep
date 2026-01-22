@@ -82,7 +82,6 @@ dd4hep_add_plugin(DDDigi_IO
     DEFINITIONS    ${DDDigiIO_DEFINITIONS}
   )
   set_target_properties(DDDigi_IO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-  install(TARGETS DDDigi_IO EXPORT DD4hep ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
 #
 #---Package installation procedure(s) ----------------------------------------------
 set_target_properties(DDDigi DDDigiPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
@@ -90,8 +89,8 @@ set_target_properties(DDDigi DDDigiPlugins PROPERTIES VERSION ${DD4hep_VERSION} 
 file(GLOB DDDigi_python python/*.py python/*.C)
 install(FILES ${DDDigi_python} DESTINATION ${DD4HEP_PYTHON_INSTALL_DIR})
 #
-install(TARGETS DDDigi DDDigiPlugins EXPORT DD4hep
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
+install(TARGETS DDDigi EXPORT DD4hep
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 install(DIRECTORY include/DDDigi DESTINATION include)

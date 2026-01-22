@@ -7,8 +7,8 @@ SET_PROPERTY(DIRECTORY . PROPERTY PACKAGE_NAME DD4hep)
 #################
 
 SET( DD4hep_VERSION_MAJOR 1 )
-SET( DD4hep_VERSION_MINOR 32 )
-SET( DD4hep_VERSION_PATCH 1 )
+SET( DD4hep_VERSION_MINOR 34 )
+SET( DD4hep_VERSION_PATCH 0 )
 
 #######################
 # Basic project setup #
@@ -22,6 +22,12 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
        FORCE )
  MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+
+# When enabling DDG4 on Alma 9 and related, CMAKE_INSTALL_LIBDIR is set to lib64
+# Here, we force it to be lib if unset
+if(NOT CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR lib CACHE STRING "Installation directory for libraries" FORCE)
+endif()
 
 ###############################################
 # Setup the environment for the documentation #
@@ -47,15 +53,15 @@ ENDIF()
 
 ENABLE_LANGUAGE(CXX)
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ standard used for compiling")
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ standard used for compiling")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 SET(DD4hep_DIR ${CMAKE_SOURCE_DIR} CACHE STRING "DD4hep directory")
 SET(DD4hep_ROOT ${CMAKE_INSTALL_PREFIX})
 
-IF(${CMAKE_CXX_STANDARD} LESS 14)
-  MESSAGE(FATAL_ERROR "DD4hep requires at least CXX Standard 14 to compile")
+IF(${CMAKE_CXX_STANDARD} LESS 17)
+  MESSAGE(FATAL_ERROR "DD4hep requires at least CXX Standard 17 to compile")
 ENDIF()
 
 ###############################
@@ -141,7 +147,10 @@ if(TARGET ROOT::ROOTEve)
   find_package (ROOT REQUIRED COMPONENTS ROOTEve CONFIG)
 endif()
 
-# Configure BOOST
+# Set when the minimum required CMake version is at least 3.30
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
 find_package(Boost 1.49 REQUIRED)
 DD4HEP_SETUP_BOOST_TARGETS()
 
@@ -168,13 +177,19 @@ if(DD4HEP_USE_LCIO)
 endif()
 
 if(DD4HEP_USE_EDM4HEP)
-  find_package(EDM4HEP 0.10.5 REQUIRED)
+  # EDM4hep is "SameMajorVersion" compatible so we try to find a recent version
+  # first and fall back to a compatible on in case we don't find it
+  find_package(EDM4HEP 1.0)
+  if (NOT EDM4HEP_FOUND)
+    message(STATUS "EDM4HEP 1.0 not found, falling back to at least version 0.10.5")
+    find_package(EDM4HEP 0.10.5 REQUIRED)
+  endif()
   # we need podio with Frame support (>=0.16.3)
   # podio is "SameMajorVersion" compatible
-  find_package(podio 0.16.7)  # this will not find 1.0 and newer
+  find_package(podio 1.0)
   if(NOT podio_FOUND)
-    # we try to find a newer version now
-    find_package(podio 1.0 REQUIRED)
+    message(STATUS "podio 1.0 not found, falling back to at least version 0.16.7")
+    find_package(podio 0.16.7 REQUIRED)  # this will not find 1.0 and newer
   endif()
 #  DD4HEP_SETUP_EDM4HEP_TARGETS()
 endif()
@@ -311,7 +326,7 @@ display_std_variables()
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/cmake/DD4hepConfig.cmake.in
   ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake @ONLY
   )
-INSTALL(FILES ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ./cmake )
+INSTALL(FILES ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION cmake)
 
 dd4hep_generate_package_configuration_files( ${CMAKE_PROJECT_NAME}Config.cmake )
 

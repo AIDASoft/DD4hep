@@ -41,37 +41,34 @@ namespace dd4hep {
       SurfaceManager(const Detector& theDetector);
 
       /// No default constructor
-#if defined(G__ROOT)
-      SurfaceManager() = default ;
-#else
       SurfaceManager() = delete ;
-#endif
-      /// No copy constructor
-      SurfaceManager(const SurfaceManager& copy) = delete;
       
-      /// Default destructor
-      ~SurfaceManager();
+      ~SurfaceManager() = default;
+      SurfaceManager(const SurfaceManager&) = delete;
+      SurfaceManager& operator=(const SurfaceManager&) = delete;
+      SurfaceManager(SurfaceManager&&) = delete;
+      SurfaceManager& operator=(SurfaceManager&&) = delete;
 
-      /// No assignment operator
-      SurfaceManager& operator=(const SurfaceManager& copy) = delete;
-      
+
       /** Get the maps of all surfaces associated to the given detector or
        *  type of detectors, e.g. map("tracker") returns a map with all surfaces
        *  assigned to tracking detectors. Returns 0 if no map exists.
        */
-      const SurfaceMap* map( const std::string name ) const ;
+      const SurfaceMap* map( const std::string& name ) const ;
 
       
       ///create a string with all available maps and their size (number of surfaces)
       std::string toString() const ;
       
-    protected :
+    private :
 
 
       /// initialize all known surface maps
-      void initialize(const Detector& theDetector) ;
+      void initialize(const Detector& theDetector) const;
 
-      SurfaceMapsMap _map ;
+      mutable SurfaceMapsMap  _map{} ;
+      const Detector& _theDetector ;
+      mutable std::once_flag  _initializedFlag{} ;
     };
 
   } /* namespace rec */

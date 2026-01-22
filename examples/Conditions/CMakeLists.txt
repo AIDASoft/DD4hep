@@ -30,7 +30,6 @@ dd4hep_add_plugin(ConditionsExample SOURCES src/*.cpp
         ROOT::Core ROOT::Geom ROOT::GenVector
         ${OPT_XERCESC}
   )
-install(TARGETS ConditionsExample LIBRARY DESTINATION lib)
 dd4hep_install_dir( xml  DESTINATION examples/Conditions )
 dd4hep_install_dir( data DESTINATION examples/Conditions )
 dd4hep_configure_scripts ( Conditions DEFAULT_SETUP WITH_TESTS )

@@ -34,11 +34,18 @@ namespace dd4hep {
      */
     class Geant4Mapping: public detail::GeoHandlerTypes {
     protected:
-      const Detector& m_detDesc;
+      const Detector&     m_detDesc;
       Geant4GeometryInfo* m_dataPtr;
-
+      
       /// When resolving pointers, we must check for the validity of the data block
       void checkValidity() const;
+
+    public:
+      /// Debug flag when populating the Geant4 volume manager (Option set by Geant4DetectorGeometryConstruction)
+      bool                debugVolManager { false };
+      /// Disable building Geant4 voilume manager. Throw exception when accessed.
+      bool                haveVolManager  {  true };
+      
     public:
       /// Initializing Constructor
       Geant4Mapping(const Detector& description);

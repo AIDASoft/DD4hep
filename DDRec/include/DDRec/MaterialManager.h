@@ -41,6 +41,9 @@ namespace dd4hep {
     class MaterialManager {
 
     public:
+      static constexpr const double epsilon = 1e-4;
+      
+    public:
 
       /// Instantiate the MaterialManager for this (world) volume
       MaterialManager(Volume world);
@@ -52,17 +55,29 @@ namespace dd4hep {
 #endif
 
       ~MaterialManager();
+
+      class ScanData  {
+      public:
+        const MaterialVec&  materials;
+        const PlacementVec& places;
+      };
       
       /** Get a vector with all the materials between the two points p0 and p1 with the corresponding thicknesses -
        *  element type is  std::pair< Material, double >. Materials with a thickness smaller than epsilon (default 1e-4=1mu)
        *  are ignored. Avoid calling this method in inner loops as the computation is not cheap. Ideally the result should be cached,
        *  for example as an averaged material @see createAveragedMaterial().
        */
-      const MaterialVec& materialsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon=1e-4 );
+      const MaterialVec& materialsBetween(const Vector3D& p0,
+                                          const Vector3D& p1,
+                                          double eps = MaterialManager::epsilon);
+      /// As above, but optionally allow access to traversed placements
+      const ScanData     entriesBetween(const Vector3D& p0,
+                                        const Vector3D& p1,
+                                        double eps = MaterialManager::epsilon);
 
       /** Get a vector with all the placements between the two points p0 and p1
        */
-      const PlacementVec& placementsBetween(const Vector3D& p0, const Vector3D& p1 , double epsilon=1e-4 );
+      const PlacementVec& placementsBetween(const Vector3D& p0, const Vector3D& p1 , double eps = MaterialManager::epsilon );
       
       /** Get the material at the given position.
        */

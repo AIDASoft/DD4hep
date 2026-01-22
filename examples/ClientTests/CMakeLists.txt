@@ -24,7 +24,6 @@ if(TARGET XercesC::XercesC)
   SET(OPT_XERCESC XercesC::XercesC)
 endif()
 
-include_directories(./include)
 #--------------------------------------------------------------------------
 if(TARGET Boost::boost)
   SET(CT_BOOST_SOURCES src_boost/*.cpp)
@@ -37,7 +36,6 @@ dd4hep_add_plugin(ClientTests
        ROOT::Core ROOT::Geom ROOT::GenVector
        ${OPT_XERCESC} ${CT_BOOST_LIB}
   )
-install(TARGETS ClientTests LIBRARY DESTINATION lib)
 #
 #-----------------------------------------------------------------------------------
 add_executable( multipleGeo   main/MultipleGeometries.cpp )
@@ -492,7 +490,7 @@ dd4hep_add_test_reg( ClientTests_check_for_multiple_headers
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
   EXEC_ARGS  geoDisplay -compact ${ClientTestsEx_INSTALL}/compact/Test_2ndHeader.xml 
   -load -print INFO
-  REGEX_PASS "WARN  \\+\\+ Overwriting/updating Header structure is very dangerous. Try to avoid this."
+  REGEX_PASS "INFO  \\+\\+ Overwriting/updating Header structure is dangerous. Try to avoid this."
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
@@ -596,6 +594,15 @@ if (DD4HEP_USE_GEANT4)
     REGEX_FAIL "EXCEPTION; Exception;ERROR"
   )
   #
+  # Test specialized configurable G4PhysicsConstructor: 
+  dd4hep_add_test_reg( ClientTests_sim_geant4_minitel_step_limiter
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/MiniTel_steplimiter.py
+    	       -batch -debug -events 1
+    REGEX_PASS "Registered Geant4 physics constructor G4StepLimiterPhysics to modular physics list id:0"
+    REGEX_FAIL "EXCEPTION; Exception;ERROR"
+  )
+  #
   # Test importing a geometry from ROOT and placing DetElements
   dd4hep_add_test_reg( ClientTests_import_geo_place_det_elements
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
@@ -667,7 +674,7 @@ if (DD4HEP_USE_GEANT4)
                  --steeringFile ${ClientTestsEx_INSTALL}/scripts/BoxOfStraws_DDSim.py
                  --compactFile ${ClientTestsEx_INSTALL}/compact/BoxOfStraws.xml
                  --enableGun
-                 --numberOfEvents 1
+                 --numberOfEvents 5
                  --outputFile regex.slcio
       REGEX_PASS "BoxOfStrawsDet Handled 1 nodes with 1 sensitive volume type"
       REGEX_FAIL "Error;ERROR; Exception"

@@ -32,13 +32,13 @@
 
     -->
 
-    <detelement path="TPC" reset="true" reset_children="true">
+    <detelement path="CentralRegion/TPC" reset="true" reset_children="true">
       <comment ref="Move the entire TPC in the world volume."/>
       <position x="0"   y="0"   z="0*mm"/>
       <rotation x="0"   y="0"   z="0"/>     
 
       <comment ref="Twist a bit the entire endcap A"/>
-      <detelement path="/world/TPC/TPC_SideA" check_overlaps="false">
+      <detelement path="/world/CentralRegion/TPC/TPC_SideA" check_overlaps="false">
 	<position x="0"     y="0"     z="-5*mm"/>
 	<rotation x="-0.2"  y="-0.2"  z="0"/>
 

@@ -68,3 +68,9 @@ void Geant4UserParticleHandler::combine(Particle& /* to_be_deleted */, Particle&
 bool Geant4UserParticleHandler::keepParticle(Particle& particle)   {
   return Geant4ParticleHandler::defaultKeepParticle(particle);
 }
+
+/// User overload to handle particle settings when processing the track in the Geant4ParticleHandler.
+void Geant4UserParticleHandler::mark_track(const G4Track*               /* track      */,
+                                           Particle*                    /* curr_track */,
+                                           Geant4SensDetActionSequence* /* sens_det   */)  {
+}

@@ -412,7 +412,12 @@ macro ( dd4hep_configure_scripts _pkg )
     configure_file( ${DD4hep_DIR}/cmake/run_test_package.sh ${EXECUTABLE_OUTPUT_PATH}/run_test_${_pkg}.sh @ONLY)
     INSTALL(PROGRAMS ${EXECUTABLE_OUTPUT_PATH}/run_test_${_pkg}.sh DESTINATION bin )
     #---- configure run environment ---------------
+    set(DD4HEP_INSTALL_LIBDIR lib)
+    if(CMAKE_INSTALL_LIBDIR)
+      set(DD4HEP_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
+    endif()
     configure_file( ${DD4hep_DIR}/cmake/thisdd4hep_package.sh.in  ${EXECUTABLE_OUTPUT_PATH}/this${_pkg}.sh @ONLY)
+    unset(DD4HEP_INSTALL_LIBDIR)
     install(PROGRAMS ${EXECUTABLE_OUTPUT_PATH}/this${_pkg}.sh DESTINATION bin )
     #--- install target-------------------------------------
     if ( IS_DIRECTORY scripts )
@@ -630,7 +635,12 @@ function(dd4hep_add_dictionary dictionary )
     )
 
   #  Install the binary to the destination directory
-  install(FILES ${output_dir}/${dictionary}_rdict.pcm DESTINATION lib)
+  set(DD4HEP_INSTALL_LIBDIR lib)
+  if(CMAKE_INSTALL_LIBDIR)
+    set(DD4HEP_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
+  endif()
+  install(FILES ${output_dir}/${dictionary}_rdict.pcm DESTINATION ${DD4HEP_INSTALL_LIBDIR})
+  unset(DD4HEP_INSTALL_LIBDIR)
 
 endfunction()
 
@@ -728,7 +738,19 @@ macro(DD4HEP_SETUP_ROOT_TARGETS)
   ENDIF()
   dd4hep_print("|++> Using python executable:  ${Python_EXECUTABLE}")
 
-  SET(DD4HEP_PYTHON_INSTALL_DIR lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
+  # For Python 3.13+ with free-threading (PEP 703), the site-packages directory
+  # includes a 't' suffix (e.g., python3.14t/site-packages). We use Python's
+  # own SITEARCH to get the correct path including any ABI suffixes.
+  string(REGEX MATCH "python[0-9]+\\.[0-9]+[a-z]*/site-packages" _python_site_subdir "${Python_SITEARCH}")
+  if(NOT _python_site_subdir)
+    # Fallback to manual construction if regex fails
+    set(_python_site_subdir "python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages")
+    MESSAGE(WARNING "Could not extract site-packages path from Python_SITEARCH")
+    MESSAGE(WARNING "Python_SITEARCH=${Python_SITEARCH}")
+    MESSAGE(WARNING "Using fallback: ${_python_site_subdir}")
+  endif()
+  SET(DD4HEP_PYTHON_INSTALL_DIR lib/${_python_site_subdir})
+  unset(_python_site_subdir)
 
   #ROOT CXX Flags are a string with quotes, not a list, so we need to convert to a list...
   string(REPLACE " " ";" DD4HEP_ROOT_CXX_FLAGS ${ROOT_CXX_FLAGS})

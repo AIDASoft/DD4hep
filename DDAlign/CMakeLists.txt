@@ -28,6 +28,7 @@ dd4hep_add_plugin(DDAlignPlugins SOURCES src/plugins/*.cpp USES DDAlign)
 set_target_properties(DDAlign DDAlignPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 install(DIRECTORY include/DDAlign DESTINATION include)
-install(TARGETS DDAlign DDAlignPlugins EXPORT DD4hep
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
+install(TARGETS DDAlign EXPORT DD4hep
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+

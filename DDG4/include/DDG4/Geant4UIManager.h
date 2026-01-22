@@ -77,9 +77,9 @@ namespace dd4hep {
       /// Property: Flag to instantiate UI (default=true)
       bool        m_haveUI;
       /// Reference to Geant4 visualtion manager
-      G4VisManager* m_vis;
+      G4VisManager*       m_vis        { nullptr };
       /// Reference to Geant4 UI manager
-      G4UIExecutive*  m_ui;
+      G4UIExecutive*      m_ui         { nullptr };
 
     public:
       /// Initializing constructor
@@ -110,6 +110,8 @@ namespace dd4hep {
       void regularExit();
       /// Apply single command
       void applyCommand(const std::string& command);
+      /// Apply DD4hep plugin call from Geant4 prompt
+      long runPlugin(const char* plugin);
       /// Run UI
       virtual void operator()(void* param);
     };

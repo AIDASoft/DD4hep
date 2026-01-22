@@ -75,61 +75,72 @@ namespace {
       TGeoMatrix* mm = node->GetNode()->GetMatrix();
       bool dbg = GlobalDetectorAlignment::debug();
       if ( dbg )  {
-        printout(INFO, "Alignment", "DELTA matrix of %s", node->GetName());
+        printout( INFO, "Alignment", "DELTA matrix of %s", node->GetName() );
         transform->Print();
-        printout(INFO, "Alignment", "OLD matrix of %s", node->GetName());
+        printout( INFO, "Alignment", "OLD matrix of %s", node->GetName() );
         mm->Print();
       }
       std::vector<dd4hep::PlacedVolume> places;
       for( int i = 0; i < node->GetLevel(); ++i )
-        places.emplace_back(node->GetNode(i+1));
+        places.emplace_back( node->GetNode(i+1) );
 
       transform->MultiplyLeft(mm); // orig * delta
-      node->Align(transform, 0, check, overlap);
+      node->Align( transform, 0, check, overlap );
       if ( dbg )  {
-        printout(INFO, "Alignment", "NEW matrix of %s", node->GetName());
+        printout( INFO, "Alignment", "NEW matrix of %s", node->GetName() );
         node->GetNode()->GetMatrix()->Print();
       }
+      TGeoVolume* oldm;
+      dd4hep::PlacedVolume pv = node->GetNode(0);
+      dd4hep::Volume       v  = pv->GetVolume();
+      std::string          path = "/";
 
+      dbg = false;
+      // dbg = true;
+      path += pv->GetName();
       for( int i = 0; i < node->GetLevel(); ++i )  {
-        //const char *tag = "    ";
-        dd4hep::PlacedVolume p = node->GetNode(i+1);
-        if ( nullptr == p->GetUserExtension() )  {
-          //tag = "SET ";
-          p->SetUserExtension(places[i]->GetUserExtension());
+        /// Attach user extension to placed volume
+        pv = node->GetNode( i+1 );
+        if ( nullptr == pv->GetUserExtension() )  {
+          pv->SetUserExtension( places[i]->GetUserExtension() );
         }
-#if 0
-        printout(INFO, "Alignment", "_align(places):  %s Path[%d]: %-24s %p <-> %p %s",
-                 tag, i, p.name(), p.ptr(), places[i].ptr(), places[i].name());
-        tag = "    ";
-#endif
-        dd4hep::Volume v = p->GetVolume();
+        oldm = pv->GetMotherVolume();
+        if( dbg )  {
+          path += "/";
+          path += pv->GetName();
+          if( oldm != v.ptr() )  {
+            printout(dd4hep::ALWAYS, "GlobalAlignment",
+                     // "+++ Mother relationship broken after alignment: %s  place: %p volume: %p mother volume: old: %p new: %p",
+                     "+++ Fix mother relationship after alignment: %s  place: %p volume: %p mother volume: old: %p new: %p",
+                     path.c_str(), (void*)pv.ptr(), (void*)pv->GetVolume(), (void*)oldm, (void*)v.ptr() );
+          }
+        }
+        pv->SetMotherVolume( v.ptr() );
+        /// Fix node volumes: attach extensions etc.
+        v = pv->GetVolume();
+        /// Fix daughter mother relationship for the nodes in the branches
+        for( int idau = 0; idau < v->GetNdaughters(); ++idau )  {
+          TGeoNode* dau = v->GetNode( idau );
+          if( v.ptr() != dau->GetMotherVolume() )  {
+            dau->SetMotherVolume( v );
+            if( dbg )  {
+              oldm = dau->GetMotherVolume();
+              if( oldm != v.ptr() )  {
+                printout(dd4hep::ALWAYS, "GlobalAlignment",
+                         // "+++ Mother relationship broken after alignment: %s/%s  place: %p volume: %p mother volume: old: %p --> new: %p",
+                         "+++ Fix mother relationship after alignment: %s/%s  place: %p volume: %p "
+                         "mother volume: old: %p --> new: %p",
+                         path.c_str(), dau->GetName(), (void*)dau, (void*)dau->GetVolume(),
+                         (void*)oldm, (void*)v.ptr());
+              }
+            }
+          }
+        }
+        /// Attach user extension to volume
         if ( nullptr == v->GetUserExtension() )  {
-          //tag = "SET ";
-          v->SetUserExtension(places[i].volume()->GetUserExtension());
+          v->SetUserExtension( places[i].volume()->GetUserExtension() );
         }
-#if 0
-        printout(INFO, "Alignment", "_align(volumes): %s Path[%d]: %-24s %p <-> %p %s",
-                 tag, i, v.name(), v.ptr(), places[i].volume().ptr(), places[i].volume().name());
-        p.access();
-        v.access();
-        places[i].access();
-        places[i].volume().access();
-#endif
       }
-
-      /*
-        printout(INFO, "Alignment", "Apply new relative matrix  mother to daughter:");
-        transform->Print();
-        transform->MultiplyLeft(mm); // orig * delta
-        printout(INFO, "Alignment", "With deltas %s ....", n->GetName());
-        transform->Print();
-        n->Align(transform, 0, check, overlap);
-        
-        Position local, global = a.toGlobal(local);
-        cout << "Local:" << local << " Global: " << global
-        << " and back:" << a.globalToLocal(global) << endl;
-      */
       return GlobalAlignment(node);
     }
     dd4hep::except("GlobalDetectorAlignment", "Cannot align non existing physical node. [Invalid Handle]");

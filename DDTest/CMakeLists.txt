@@ -48,16 +48,23 @@ foreach(TEST_NAME
   set_tests_properties(t_${TEST_NAME} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED")
 endforeach()
 
-ADD_TEST( t_test_python_import "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
-  pytest ${PROJECT_SOURCE_DIR}/DDTest/python/test_import.py)
-SET_TESTS_PROPERTIES( t_test_python_import PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+find_program(HAVE_PYTEST pytest)
+if(NOT HAVE_PYTEST)
+  message(WARNING "pytest not found! Skipping pytest tests.")
+endif()
+
+if(HAVE_PYTEST)
+  ADD_TEST( t_test_python_import "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+    pytest ${PROJECT_SOURCE_DIR}/DDTest/python/test_import.py)
+  SET_TESTS_PROPERTIES( t_test_python_import PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+endif()
 
 if (DD4HEP_USE_GEANT4)
-
-  ADD_TEST( t_test_python_import_ddg4 "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
-    pytest ${PROJECT_SOURCE_DIR}/DDTest/python/test_import_ddg4.py)
-  SET_TESTS_PROPERTIES( t_test_python_import_ddg4 PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
-
+  if(HAVE_PYTEST)
+    ADD_TEST( t_test_python_import_ddg4 "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      pytest ${PROJECT_SOURCE_DIR}/DDTest/python/test_import_ddg4.py)
+    SET_TESTS_PROPERTIES( t_test_python_import_ddg4 PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+  endif()
   if(DD4HEP_USE_HEPMC3)
     set(TEST_HEPMC3_EXTENSIONS)
 

@@ -103,9 +103,10 @@ Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const std::string& nam, De
 {
   InstanceCount::increment(this);
   if (!det.isValid()) {
-    except("DDG4: Detector elemnt for %s is invalid.", nam.c_str());
+    except("DDG4: Detector element for %s is invalid.", nam.c_str());
   }
-  declareProperty("HitCreationMode", m_hitCreationMode = SIMPLE_MODE);
+  declareProperty("UseVolumeManager", m_useVolumeManager = true);
+  declareProperty("HitCreationMode",  m_hitCreationMode = SIMPLE_MODE);
   m_sequence     = context()->kernel().sensitiveAction(m_detector.name());
   m_sensitive    = m_detDesc.sensitiveDetector(det.name());
   m_readout      = m_sensitive.readout();
@@ -117,6 +118,11 @@ Geant4Sensitive::~Geant4Sensitive() {
   m_filters(&Geant4Filter::release);
   m_filters.clear();
   InstanceCount::decrement(this);
+}
+
+/// Get the detector identifier (DetElement::id())
+int Geant4Sensitive::id()  const  {
+  return this->m_detector.id();
 }
 
 /// Add an actor responding to all callbacks. Sequence takes ownership.
@@ -246,47 +252,59 @@ void Geant4Sensitive::mark(const G4Step* step) const  {
 
 /// Returns the volumeID of the sensitive volume corresponding to the step
 long long int Geant4Sensitive::volumeID(const G4Step* step) {
-  Geant4StepHandler stepH(step);
-  Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
-  VolumeID id = volMgr.volumeID(stepH.preTouchable());
-  return id;
+  VolumeID volID = m_detector.id();
+  if( this->useVolumeManager() )  {
+    Geant4StepHandler   stepH(step);
+    Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
+    volID = volMgr.volumeID(stepH.preTouchable());
+  }
+  return volID;
 }
 
 /// Returns the volumeID of the sensitive volume corresponding to the touchable history
 long long int Geant4Sensitive::volumeID(const G4VTouchable* touchable) {
-  Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
-  VolumeID id = volMgr.volumeID(touchable);
-  return id;
+  VolumeID volID = m_detector.id();
+  if( this->useVolumeManager() )  {
+    Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
+    volID= volMgr.volumeID(touchable);
+  }
+  return volID;
 }
 
 /// Returns the cellID(volumeID+local coordinate encoding) of the sensitive volume corresponding to the step
-long long int Geant4Sensitive::cellID(const G4Step* step) {
-  Geant4StepHandler h(step);
-  Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
-  bool UsePostStepOnly = G4OpticalParameters::Instance() && G4OpticalParameters::Instance()->GetBoundaryInvokeSD() && (step->GetTrack()->GetDefinition() == G4OpticalPhoton::Definition());
-  VolumeID volID = volMgr.volumeID(UsePostStepOnly? h.postTouchable() : h.preTouchable());
-  if ( m_segmentation.isValid() )  {
-    std::exception_ptr eptr;
-    G4ThreeVector global = UsePostStepOnly? h.postPosG4() : 0.5 * (h.prePosG4()+h.postPosG4());
-    G4ThreeVector local  = UsePostStepOnly? h.postTouchable()->GetHistory()->GetTopTransform().TransformPoint(global) :
-                                            h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);
-    Position loc(local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
-    Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
-    try  {
-      VolumeID cID = m_segmentation.cellID(loc, glob, volID);
-      return cID;
-    }
-    catch(const std::exception& e)   {
-      eptr = std::current_exception();
-      error("cellID: failed to access segmentation for VolumeID: %016lX [%ld]  [%s]", volID, volID, e.what());
-      error("....... G4-local:   (%f, %f, %f) G4-global:   (%f, %f, %f)",
-	    local.x(), local.y(), local.z(), global.x(), global.y(), global.z());
-      error("....... TGeo-local: (%f, %f, %f) TGeo-global: (%f, %f, %f)",
-	    loc.x(), loc.y(), loc.z(), glob.x(), glob.y(), glob.z());
-      error("....... Pre-step:  %s  SD: %s", h.volName(h.pre), h.sdName(h.pre).c_str());
-      if ( h.post )
-        error("....... Post-step: %s  SD: %s", h.volName(h.post), h.sdName(h.post).c_str());
-      std::rethrow_exception(std::move(eptr));
+long long int Geant4Sensitive::cellID(const G4Step* step)  {
+  VolumeID volID = m_detector.id();
+  if( this->useVolumeManager() )  {
+    Geant4StepHandler h(step);
+    Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
+    bool UsePostStepOnly = G4OpticalParameters::Instance() &&
+      G4OpticalParameters::Instance()->GetBoundaryInvokeSD() &&
+      (step->GetTrack()->GetDefinition() == G4OpticalPhoton::Definition());
+
+    volID = volMgr.volumeID(UsePostStepOnly? h.postTouchable() : h.preTouchable());
+    if ( m_segmentation.isValid() )  {
+      std::exception_ptr eptr;
+      G4ThreeVector global = UsePostStepOnly? h.postPosG4() : 0.5 * (h.prePosG4()+h.postPosG4());
+      G4ThreeVector local  = UsePostStepOnly? h.postTouchable()->GetHistory()->GetTopTransform().TransformPoint(global) :
+        h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);
+      Position loc(local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
+      Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
+      try  {
+        VolumeID cID = m_segmentation.cellID(loc, glob, volID);
+        return cID;
+      }
+      catch(const std::exception& e)   {
+        eptr = std::current_exception();
+        error("cellID: failed to access segmentation for VolumeID: %016lX [%ld]  [%s]", volID, volID, e.what());
+        error("....... G4-local:   (%f, %f, %f) G4-global:   (%f, %f, %f)",
+              local.x(), local.y(), local.z(), global.x(), global.y(), global.z());
+        error("....... TGeo-local: (%f, %f, %f) TGeo-global: (%f, %f, %f)",
+              loc.x(), loc.y(), loc.z(), glob.x(), glob.y(), glob.z());
+        error("....... Pre-step:  %s  SD: %s", h.volName(h.pre), h.sdName(h.pre).c_str());
+        if ( h.post )
+          error("....... Post-step: %s  SD: %s", h.volName(h.post), h.sdName(h.post).c_str());
+        std::rethrow_exception(std::move(eptr));
+      }
     }
   }
   return volID;
@@ -294,29 +312,33 @@ long long int Geant4Sensitive::cellID(const G4Step* step) {
 
 /// Returns the cellID(volumeID+local coordinate encoding) of the sensitive volume corresponding to the touchable history
 long long int Geant4Sensitive::cellID(const G4VTouchable* touchable, const G4ThreeVector& global) {
-  Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
-  VolumeID volID = volMgr.volumeID(touchable);
-  if ( m_segmentation.isValid() )  {
-    std::exception_ptr eptr;
-    G4ThreeVector local  = touchable->GetHistory()->GetTopTransform().TransformPoint(global);
-    Position loc (local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
-    Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
-    try  {
-      VolumeID cID = m_segmentation.cellID(loc, glob, volID);
-      return cID;
-    }
-    catch(const std::exception& e)   {
-      auto* pvol = touchable->GetVolume();
-      auto* vol = pvol->GetLogicalVolume();
-      auto* sd = vol->GetSensitiveDetector();
-      eptr = std::current_exception();
-      error("cellID: failed to access segmentation for VolumeID: %016lX [%ld]  [%s]", volID, volID, e.what());
-      error("....... G4-local:   (%f, %f, %f) G4-global:   (%f, %f, %f)",
-	    local.x(), local.y(), local.z(), global.x(), global.y(), global.z());
-      error("....... TGeo-local: (%f, %f, %f) TGeo-global: (%f, %f, %f)",
-	    loc.x(), loc.y(), loc.z(), glob.x(), glob.y(), glob.z());
-      error("....... Touchable:  %s  SD: %s", vol->GetName().c_str(), sd ? sd->GetName().c_str() : "???");
-      std::rethrow_exception(std::move(eptr));
+  VolumeID volID = m_detector.id();
+  if( this->useVolumeManager() )  {
+    Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
+
+    volID = volMgr.volumeID(touchable);
+    if ( m_segmentation.isValid() )  {
+      std::exception_ptr eptr;
+      G4ThreeVector local  = touchable->GetHistory()->GetTopTransform().TransformPoint(global);
+      Position loc (local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
+      Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
+      try  {
+        VolumeID cID = m_segmentation.cellID(loc, glob, volID);
+        return cID;
+      }
+      catch(const std::exception& e)   {
+        auto* pvol = touchable->GetVolume();
+        auto* vol = pvol->GetLogicalVolume();
+        auto* sd = vol->GetSensitiveDetector();
+        eptr = std::current_exception();
+        error("cellID: failed to access segmentation for VolumeID: %016lX [%ld]  [%s]", volID, volID, e.what());
+        error("....... G4-local:   (%f, %f, %f) G4-global:   (%f, %f, %f)",
+              local.x(), local.y(), local.z(), global.x(), global.y(), global.z());
+        error("....... TGeo-local: (%f, %f, %f) TGeo-global: (%f, %f, %f)",
+              loc.x(), loc.y(), loc.z(), glob.x(), glob.y(), glob.z());
+        error("....... Touchable:  %s  SD: %s", vol->GetName().c_str(), sd ? sd->GetName().c_str() : "???");
+        std::rethrow_exception(std::move(eptr));
+      }
     }
   }
   return volID;
@@ -331,6 +353,7 @@ Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* ctxt, co
   /// Update the sensitive detector type, so that the proper instance is created
   m_sensitive = context()->detectorDescription().sensitiveDetector(nam);
   m_sensitiveType = m_sensitive.type();
+  declareProperty("SensitiveType", m_sensitiveType);
   InstanceCount::increment(this);
 }
 

@@ -29,8 +29,13 @@
 #include <DDG4/Geant4InputAction.h>
 #include <DDG4/RunParameters.h>
 
+#include <edm4hep/Constants.h>
 #include <edm4hep/EventHeaderCollection.h>
 #include <edm4hep/MCParticleCollection.h>
+#include <edm4hep/EDM4hepVersion.h>
+#if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 3)
+#include <edm4hep/GeneratorEventParametersCollection.h>
+#endif
 
 #include <podio/Frame.h>
 #include <podio/Reader.h>
@@ -185,38 +190,58 @@ namespace dd4hep::sim {
     m_currEvent = event_number;
     podio::Frame frame = m_reader.readFrame("events", event_number);
     const auto& primaries = frame.get<edm4hep::MCParticleCollection>(m_collectionName);
+    const auto& availableCollections = frame.getAvailableCollections();
     int eventNumber = event_number, runNumber = 0;
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 6, 0)
+    if (primaries.hasID()) {
+#else
     if (primaries.isValid()) {
+#endif
       //Read the event header collection and add it to the context as an extension
-      const auto& eventHeaderCollection = frame.get<edm4hep::EventHeaderCollection>(m_eventHeaderCollectionName);
-      if(eventHeaderCollection.isValid() && eventHeaderCollection.size() == 1){
-        const auto& eh = eventHeaderCollection.at(0);
-        eventNumber = eh.getEventNumber();
-        runNumber = eh.getRunNumber();
-        try {
-          Geant4Context* ctx = context();
-          ctx->event().addExtension<edm4hep::MutableEventHeader>(new edm4hep::MutableEventHeader(eh.clone()));
-        } catch(std::exception& ) {}
-        // Create input event parameters context
-        try {
-          Geant4Context* ctx = context();
-          EventParameters *parameters = new EventParameters();
-          parameters->setRunNumber(runNumber);
-          parameters->setEventNumber(eventNumber);
-          parameters->ingestParameters(frame.getParameters());
-          ctx->event().addExtension<EventParameters>(parameters);
-        } catch(std::exception &) {}
-      } else {
-        printout(WARNING,"EDM4hepFileReader","No EventHeader collection found or too many event headers!");
-        try {
-          Geant4Context* ctx = context();
-          EventParameters *parameters = new EventParameters();
-          parameters->setRunNumber(0);
-          parameters->setEventNumber(event_number);
-          parameters->ingestParameters(frame.getParameters());
-          ctx->event().addExtension<EventParameters>(parameters);
-        } catch(std::exception &) {}
+      if (std::find(availableCollections.begin(), availableCollections.end(), m_eventHeaderCollectionName) != availableCollections.end()) {
+        const auto& eventHeaderCollection = frame.get<edm4hep::EventHeaderCollection>(m_eventHeaderCollectionName);
+        if(eventHeaderCollection.size() == 1){
+          const auto& eh = eventHeaderCollection.at(0);
+          eventNumber = eh.getEventNumber();
+          runNumber = eh.getRunNumber();
+          try {
+            Geant4Context* ctx = context();
+            ctx->event().addExtension<edm4hep::MutableEventHeader>(new edm4hep::MutableEventHeader(eh.clone()));
+          } catch(std::exception& ) {}
+        } else {
+          printout(WARNING,"EDM4hepFileReader","Too many EventHeader objects found");
+        }
       }
+      else {
+        printout(WARNING,"EDM4hepFileReader","No EventHeader collection found!");
+      }
+      // Create input event parameters context
+      try {
+        Geant4Context* ctx = context();
+        EventParameters *parameters = new EventParameters();
+        parameters->setRunNumber(runNumber);
+        parameters->setEventNumber(event_number);
+        parameters->ingestParameters(frame.getParameters());
+        ctx->event().addExtension<EventParameters>(parameters);
+      } catch(std::exception &) {}
+#if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 3)
+      if (std::find(availableCollections.begin(), availableCollections.end(), edm4hep::labels::GeneratorEventParameters) != availableCollections.end()) {
+        const auto& genEvtParameters =
+            frame.get<edm4hep::GeneratorEventParametersCollection>(edm4hep::labels::GeneratorEventParameters);
+        if (genEvtParameters.size() >= 1) {
+          const auto genParams = genEvtParameters[0];
+          try {
+            auto *ctx = context();
+            ctx->event().addExtension(new edm4hep::MutableGeneratorEventParameters(genParams.clone()));
+          } catch (std::exception &) {}
+        }
+        if (genEvtParameters.size() > 1) {
+          printout(WARNING, "EDM4hepFileReader", "Multiple GeneratorEventParameters found in input file. Ignoring all but the first one!");
+        }
+      } else {
+        printout(DEBUG, "EDM4hepFileReader", "No GeneratorEventParameters found in input file");
+      }
+#endif
       printout(INFO,"EDM4hepFileReader","read collection %s from event %d in run %d ",
                m_collectionName.c_str(), eventNumber, runNumber);
 
@@ -248,8 +273,17 @@ namespace dd4hep::sim {
       const auto mom   = mcp.getMomentum();
       const auto vsx   = mcp.getVertex();
       const auto vex   = mcp.getEndpoint();
-      const auto spin  = mcp.getSpin();
       const int  pdg   = mcp.getPDG();
+#ifdef EDM4HEP_MCPARTICLE_HAS_HELICITY
+      p->spin[0] = 0;
+      p->spin[1] = 0;
+      p->spin[2] = mcp.getHelicity();
+#else
+      const auto spin  = mcp.getSpin();
+      p->spin[0]      = spin[0];
+      p->spin[1]      = spin[1];
+      p->spin[2]      = spin[2];
+#endif
       p->pdgID        = pdg;
       p->charge       = int(mcp.getCharge()*3.0);
       p->psx          = mom[0]*CLHEP::GeV;
@@ -264,9 +298,6 @@ namespace dd4hep::sim {
       p->vey          = vex[1]*CLHEP::mm;
       p->vez          = vex[2]*CLHEP::mm;
       p->process      = 0;
-      p->spin[0]      = spin[0];
-      p->spin[1]      = spin[1];
-      p->spin[2]      = spin[2];
       p->colorFlow[0] = 0;
       p->colorFlow[1] = 0;
       p->mass         = mcp.getMass()*CLHEP::GeV;

@@ -17,10 +17,6 @@
 
 // ROOT includes
 
-#if ROOT_VERSION_CODE <= ROOT_VERSION(3,35,00)
-// This was removed  in 3.35.00
-#include "ROOT/RDirectory.hxx"
-#endif
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,27,00)
 #include "ROOT/RGeomViewer.hxx"
 #  if ROOT_VERSION_CODE >= ROOT_VERSION(6,29,00)
@@ -36,8 +32,6 @@ using GEOM_VIEWER = ROOT::Experimental::REveGeomViewer;
 // C/C++ include files
 #include <cerrno>
 #include <cstdlib>
-#include <fstream>
-#include <sstream>
 
 using namespace std;
 using namespace dd4hep;
@@ -52,6 +46,7 @@ using namespace dd4hep::detail;
 static long webdisplay(Detector& description, int argc, char** argv) {
   TGeoManager& mgr = description.manager();
   int vislevel = 6, visopt = 1;
+  int maxnodes = -1;
   string detector = "/world";
   const char* opt = "";
   for(int i = 0; i < argc && argv[i]; ++i)  {
@@ -63,6 +58,8 @@ static long webdisplay(Detector& description, int argc, char** argv) {
       visopt = ::atol(argv[++i]);
     else if ( 0 == ::strncmp("-detector",argv[i],4) )
       detector = argv[++i];
+    else if ( 0 == ::strncmp("-maxnodes",argv[i],4) )
+      maxnodes = ::atol(argv[++i]);
     else  {
       cout <<
         "Usage: -plugin <name> -arg [-arg]                                                   \n"
@@ -89,18 +86,21 @@ static long webdisplay(Detector& description, int argc, char** argv) {
   }
 
   if (vol) {
-#if ROOT_VERSION_CODE <= ROOT_VERSION(3,35,00)
-    auto viewer = std::make_shared<GEOM_VIEWER>(&mgr);
-    // add to global heap to avoid immediate destroy of RGeomViewer
-    ROOT::Experimental::RDirectory::Heap().Add( "geom_viewer", viewer );
-#else
     // FIXME: avoid leaking memory here, but we don't have a way of storing this in a cleanup way???
     auto viewer = new GEOM_VIEWER(&mgr);
-#endif
     viewer->SelectVolume(vol->GetName());
     viewer->SetLimits();
     viewer->SetDrawOptions(opt);
     viewer->Show();
+    // 5000 is the default
+    if (mgr.GetNNodes() > (maxnodes > 0 ? maxnodes : 5000)) {
+      printout(WARNING, "DD4hep_GeometryWebDisplay",
+               "The geometry has a large number of nodes (%d) and not all of them will be displayed. "
+               "Consider increasing its number with the -maxnodes option to increase the number of displayed nodes.",
+               mgr.GetNNodes());
+    }
+    if ( maxnodes > 0 )
+      viewer->SetLimits(maxnodes);
     return 1;
   }
   return 0;

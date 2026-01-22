@@ -26,7 +26,6 @@ endif()
 dd4hep_add_plugin(SimpleDetector SOURCES src/*.cpp
   USES DD4hep::DDCore DD4hep::DDRec ROOT::Core ROOT::Geom ROOT::GenVector ${OPT_XERCESC}
   )
-install(TARGETS SimpleDetector LIBRARY DESTINATION lib)
 install(DIRECTORY compact DESTINATION examples/ClientTests)
 #-----------------------------------------------------------------------------------
 dd4hep_configure_scripts(SimpleDetector DEFAULT_SETUP WITH_TESTS)

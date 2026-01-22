@@ -142,7 +142,7 @@ class OutputConfig(ConfigHelper):
     logger.info("++++ Setting up LCIO Output ++++")
     lcOut = geant4.setupLCIOOutput('LcioOutput', dds.outputFile)
     lcOut.RunHeader = dds.meta.addParametersToRunHeader(dds)
-    eventPars = dds.meta.parseEventParameters()
+    eventPars = dds.meta.parseMetaParameters()
     lcOut.EventParametersString, lcOut.EventParametersInt, lcOut.EventParametersFloat = eventPars
     lcOut.RunNumberOffset = dds.meta.runNumberOffset if dds.meta.runNumberOffset > 0 else 0
     lcOut.EventNumberOffset = dds.meta.eventNumberOffset if dds.meta.eventNumberOffset > 0 else 0
@@ -151,9 +151,11 @@ class OutputConfig(ConfigHelper):
   def _configureEDM4HEP(self, dds, geant4):
     logger.info("++++ Setting up EDM4hep ROOT Output ++++")
     e4Out = geant4.setupEDM4hepOutput('EDM4hepOutput', dds.outputFile)
-    eventPars = dds.meta.parseEventParameters()
+    eventPars = dds.meta.parseMetaParameters()
     e4Out.RunHeader = dds.meta.addParametersToRunHeader(dds)
     e4Out.EventParametersString, e4Out.EventParametersInt, e4Out.EventParametersFloat = eventPars
+    runPars = dds.meta.parseMetaParameters(parameterType="run")
+    e4Out.RunParametersString, e4Out.RunParametersInt, e4Out.RunParametersFloat = runPars
     e4Out.RunNumberOffset = dds.meta.runNumberOffset if dds.meta.runNumberOffset > 0 else 0
     e4Out.EventNumberOffset = dds.meta.eventNumberOffset if dds.meta.eventNumberOffset > 0 else 0
     return

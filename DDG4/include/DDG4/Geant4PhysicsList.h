@@ -92,7 +92,9 @@ namespace dd4hep {
       class PhysicsConstructor: public std::string {
       public:
         /// Pointer to physics constructor object
-        G4VPhysicsConstructor* pointer = 0;
+        G4VPhysicsConstructor* pointer      { nullptr };
+        /// Pointer to the physics list the constructor belongs
+        G4VModularPhysicsList* physics_list { nullptr };
       public:
         /// Default constructor
         PhysicsConstructor() = default;
@@ -200,6 +202,8 @@ namespace dd4hep {
        *     is configured for the use in the run-manager.
        */
       void adoptPhysicsConstructor(Geant4Action* action);
+      /// Callback to add a physics type to the physics list
+      G4VPhysicsConstructor* addPhysicsConstructorType(const std::string& physics_name);
 
       /// constructPhysics callback
       virtual void constructPhysics(G4VModularPhysicsList* physics);
@@ -225,27 +229,29 @@ namespace dd4hep {
 
     protected:
       /// Callback sequence for G4 physics constructors
-      CallbackSequence m_physics;
+      CallbackSequence m_physics          { };
       /// Callback sequence for G4 process constructors
-      CallbackSequence m_process;
+      CallbackSequence m_process          { };
       /// Callback sequence for G4 particle constructors
-      CallbackSequence m_particle;
+      CallbackSequence m_particle         { };
       /// The list of action objects to be called
-      Actors<Geant4PhysicsList> m_actors;
+      Actors<Geant4PhysicsList> m_actors  { };
 
       /// Callback to construct particle decays
       virtual void constructDecays(G4VUserPhysicsList* physics);
     public:
-      /// Flag if particle transportation is to be added
-      bool m_transportation  { false };
-      /// Flag if particle decays are to be added
-      bool m_decays          { false };
+      /// Property: Flag if particle transportation is to be added
+      bool m_transportation         { false };
+      /// Property: Flag if particle decays are to be added
+      bool m_decays                 { false };
+      /// Property: verbosity level for the physics list
+      int m_verbosity               {     1 };
+      /// Property: Verbosity level for G4VUserPhysicsList instance (See G4VUserPhysicsList.hh for details)
+      int m_physics_verbosity       {    -1 };
+      /// Property: global range cut for secondary productions
+      double m_rangecut;
       /// Property: Store name of basic predefined Geant4 physics list
       std::string m_extends;
-      /// global range cut for secondary productions
-      double m_rangecut;
-      /// verbosity level for the physics list
-      int m_verbosity = 1;
 
     public:
       /// Standard constructor
