@@ -150,19 +150,21 @@ void Geant4ParticleHandler::mark(const G4Track* track)   {
   /// Check if the track origines from the calorimeter.
   // If yes, flag it, because it is a candidate for removal.
   G4LogicalVolume*      vol = track->GetVolume()->GetLogicalVolume();
+  // Volume is never null since track is always within the world volume
   G4VSensitiveDetector*  g4 = vol->GetSensitiveDetector();
   Geant4ActionSD*        sd = dynamic_cast<Geant4ActionSD*>(g4);
-  std::string typ = sd ? sd->sensitiveType() : std::string();
-  if ( typ == "calorimeter" )
-    mask.set(G4PARTICLE_CREATED_CALORIMETER_HIT);
-  else if ( typ == "tracker" )
-    mask.set(G4PARTICLE_CREATED_TRACKER_HIT);
-  else // Assume by default "tracker"
-    mask.set(G4PARTICLE_CREATED_TRACKER_HIT);
-
-  if ( !this->m_userHandlers.empty() )  {
+  if( sd )  {
+    std::string typ = sd->sensitiveType();
+    if ( typ == "calorimeter" )
+      mask.set( G4PARTICLE_CREATED_CALORIMETER_HIT );
+    else if ( typ == "tracker" )
+      mask.set( G4PARTICLE_CREATED_TRACKER_HIT );
+    else // Assume by default "tracker"
+      mask.set( G4PARTICLE_CREATED_TRACKER_HIT );
+  }
+  if( !this->m_userHandlers.empty() )  {
     for( auto* h : this->m_userHandlers )
-      h->mark_track(track, &m_currTrack, sd->sequence());
+      h->mark_track( track, &m_currTrack );
   }
 }
 

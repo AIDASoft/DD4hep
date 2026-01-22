@@ -327,7 +327,7 @@ namespace dd4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4SensDetActionSequence: public Geant4Action {
+    class Geant4SensDetActionSequence : public Geant4Action {
     public:
       typedef Geant4HitCollection* (*create_t)(const std::string&, const std::string&, Geant4Sensitive*);
       typedef std::pair<std::string, std::pair<Geant4Sensitive*,create_t> > HitCollection;

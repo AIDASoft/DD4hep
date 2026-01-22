@@ -70,7 +70,6 @@ bool Geant4UserParticleHandler::keepParticle(Particle& particle)   {
 }
 
 /// User overload to handle particle settings when processing the track in the Geant4ParticleHandler.
-void Geant4UserParticleHandler::mark_track(const G4Track*               /* track      */,
-                                           Particle*                    /* curr_track */,
-                                           Geant4SensDetActionSequence* /* sens_det   */)  {
+void Geant4UserParticleHandler::mark_track(const G4Track* /* track         */,
+                                           Particle*      /* current_track */)  {
 }
