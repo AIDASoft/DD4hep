@@ -137,7 +137,7 @@ namespace dd4hep {
        *  to e.g. change the particle reason mask.
        *  Default implementation is empty.
        */
-      virtual void mark_track(const G4Track* track, Particle* m_currTrack, Geant4SensDetActionSequence* sens_det);
+      virtual void mark_track(const G4Track* track, Particle* current_track);
       
     };
   }    // End namespace sim

@@ -18,6 +18,10 @@
 #include <DDG4/Geant4SensDetAction.h>
 #include <DDG4/Geant4UserParticleHandler.h>
 
+// Geant4 header files
+#include <G4Track.hh>
+#include <G4VSensitiveDetector.hh>
+
 // C/C++ include files
 #include <cstdint>
 
@@ -61,30 +65,38 @@ namespace dd4hep {
       }
 
       /// User overload to handle particle settings when processing the track in the Geant4ParticleHandler.
-      void mark_track(const G4Track*            /* track */,
-                      Particle*                    curr_track,
-                      Geant4SensDetActionSequence* sens_det )  {
-        using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
-        PropertyMask mask(curr_track->reason);
-        if( !m_nameMasks.empty() )  {
-          auto it = m_nameMasks.begin();
-          auto nam = sens_det->name();
-          for( ; it != m_nameMasks.end(); ++it )  {
-            if( it->first == nam || it->first == "*" )  {
-              print("+++ Detector: name: %s Masking track %d with mask: %08X",
-                    nam.c_str(), curr_track->id, it->second);
-              mask.set(it->second);
+      void mark_track(const G4Track* track, Particle* curr_track )  override final {
+        G4LogicalVolume*      vol = track->GetVolume()->GetLogicalVolume();
+        G4VSensitiveDetector*  g4 = vol->GetSensitiveDetector();
+        Geant4ActionSD*        sd = dynamic_cast<Geant4ActionSD*>(g4);
+
+        if( !sd )  {
+          return;
+        }
+        Geant4SensDetActionSequence* sens_det = sd->sequence();
+        if( sens_det )  {
+          using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
+          PropertyMask mask(curr_track->reason);
+          if( !m_nameMasks.empty() )  {
+            auto it = m_nameMasks.begin();
+            auto nam = sens_det->name();
+            for( ; it != m_nameMasks.end(); ++it )  {
+              if( it->first == nam || it->first == "*" )  {
+                print("+++ Detector: name: %s Masking track %d with mask: %08X",
+                      nam.c_str(), curr_track->id, it->second);
+                mask.set(it->second);
+              }
             }
           }
-        }
-        if( !m_typeMasks.empty() )  {
-          auto it = m_typeMasks.begin();          
-          auto nam = sens_det->sensitiveType();
-          for( ; it != m_typeMasks.end(); ++it )  {
-            if( it->first == nam || it->first == "*" )  {
-              print("+++ Detector: type: %s Masking track %d with mask: %08X",
-                    nam.c_str(), curr_track->id, it->second);
-              mask.set(it->second);
+          if( !m_typeMasks.empty() )  {
+            auto it = m_typeMasks.begin();          
+            auto nam = sens_det->sensitiveType();
+            for( ; it != m_typeMasks.end(); ++it )  {
+              if( it->first == nam || it->first == "*" )  {
+                print("+++ Detector: type: %s Masking track %d with mask: %08X",
+                      nam.c_str(), curr_track->id, it->second);
+                mask.set(it->second);
+              }
             }
           }
         }
