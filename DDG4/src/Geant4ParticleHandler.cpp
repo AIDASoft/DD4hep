@@ -161,8 +161,11 @@ void Geant4ParticleHandler::mark(const G4Track* track)   {
     mask.set(G4PARTICLE_CREATED_TRACKER_HIT);
 
   if ( !this->m_userHandlers.empty() )  {
-    for( auto* h : this->m_userHandlers )
-      h->mark_track(track, &m_currTrack, sd->sequence());
+    for( auto* h : this->m_userHandlers ) {
+      if ( sd ) {
+        h->mark_track(track, &m_currTrack, sd->sequence());
+      }
+    }
   }
 }
 
