@@ -202,23 +202,27 @@ namespace dd4hep {
         double deposit  = pre.truth.deposit;
         if ( current != -1 )  {
           Position pos;
-          Momentum mom  = 0.5 * (pre.momentum + post.momentum);
+          Momentum mom;
           double   time = deposit != 0 ? mean_time / deposit : mean_time;
           char     dist_in[64], dist_out[64];
 
           switch(hit_position_type)  {
           case POSITION_WEIGHTED:
             pos = deposit != 0 ? mean_pos / deposit : mean_pos;
+            mom = 0.5 * (pre.momentum + post.momentum);
             break;
           case POSITION_PREPOINT:
             pos = pre.position;
+            mom = pre.momentum;
             break;
           case POSITION_POSTPOINT:
             pos = post.position;
+            mom = post.momentum;
             break;
           case POSITION_MIDDLE:
           default:
             pos = (post.position + pre.position) / 2.0;
+            mom = 0.5 * (pre.momentum + post.momentum);
             break;
           }
 
