@@ -1,3 +1,182 @@
+# v01-35
+
+* 2026-01-27 Andre Sailer ([PR#1562](https://github.com/aidasoft/dd4hep/pull/1562))
+  - Geant4TrackerWeighted: use pre momentum for pre step and post momentum for post step configuration
+
+* 2026-01-27 Andre Sailer ([PR#1548](https://github.com/aidasoft/dd4hep/pull/1548))
+  - Geant4InputHandling: Add Phys.DecayByGeant option to DDSim to let one configure for which particles the decay time should be randomly chosen by Geant4 according to the configured life-time instead of using the pre-assigned decay time. Fixes #1543.
+
+* 2026-01-22 Markus Frank ([PR#1560](https://github.com/aidasoft/dd4hep/pull/1560))
+  Update to the original PR https://github.com/AIDASoft/DD4hep/pull/1555
+  
+  Do not pass a reference to the sensitive action sequence when marking a track. A track may be marked outside the callbacks of a sensitive actions and hence, the sensitive action sequence may not be valid if the volume the track is in
+  is not not sensitive.
+  
+  This should now also allow to mark a `G4Track/dd4hep::sim::Particle` from 
+  - Tracking actions,
+  - Stepping actions,
+  - Sensitive actions.
+  
+  See here: https://github.com/AIDASoft/DD4hep/pull/1559 for a further discussion of the subject.
+
+* 2026-01-21 Markus Frank ([PR#1558](https://github.com/aidasoft/dd4hep/pull/1558))
+  Sometimes it is very useful to directly manipulate Geant4 class instances from python within DDG4. 
+  Such a feature helps e.g. when enhancing physics lists etc.
+  
+  This PR allows to take advantage of this feature:
+  ```
+  $ > python
+  Python 3.12.3 (main, Jan  8 2026, 11:30:50) [GCC 13.3.0] on linux
+  Type "help", "copyright", "credits" or "license" for more information.
+  >>> import DDG4
+  >>> physics_constructor = DDG4.geant4.G4StoppingPhysics()
+  +++ Successfully imported Geant4 class G4StoppingPhysics from header G4StoppingPhysics.hh
+  >>> dir(physics_constructor)
+  ['ConstructParticle', 'ConstructProcess', 'GetInstanceID', 'GetPhysicsName', 'GetPhysicsType', 'GetSubInstanceManager', 'GetVerboseLevel', 'SetMuonMinusCapture', 'SetPhysicsName', 'SetPhysicsType', 'SetVerboseLevel', 'TerminateWorker', '__add__', '__assign__', '__bool__', '__class__', '__delattr__', '__destruct__', '__dict__', '__dir__', '__dispatch__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__invert__', '__le__', '__lt__', '__module__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__python_owns__', '__radd__', '__reduce__', '__reduce_ex__', '__repr__', '__reshape__', '__rmul__', '__rsub__', '__rtruediv__', '__setattr__', '__sizeof__', '__smartptr__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__weakref__']
+  >>> 
+  ```
+
+* 2026-01-21 Andre Sailer ([PR#1557](https://github.com/aidasoft/dd4hep/pull/1557))
+  - CMake: change minimal required c++ standard to 17. Implicitly this was already required by some of the c++ code.
+
+* 2026-01-20 Markus Frank ([PR#1556](https://github.com/aidasoft/dd4hep/pull/1556))
+  Implement the deployment of specialized physics constructors in DDG4.
+  This feature was so far not supported by DDG4. The additional requirement is that specialized physics constructors (aka physics constructors, which can be configured by calling setters) have a ROOT dictionary, which exposes the functionality to python.
+  
+  The basic calls to use such physics constructors are these:
+  ```
+    import DDG4
+    ...
+    kernel = DDG4.Kernel()
+    ....
+    phys = kernel.physicsList()
+    phys.enableUI()
+    # Add customizable Geant4PhysicsList to Geant4PhysicsListActionSequence
+    # with G4VModularPhysicsList FTP_BERT
+    phys_list = DDG4.PhysicsList(kernel, 'MyPhysics')
+    phys_list.enableUI()
+    phys.adopt(phys_list)
+    #
+    # Add G4StepLimiterPhysics constructor to the Geant4PhysicsList.
+    # Will be registered to the G4VModularPhysicsList later
+    limiter_physics = phys_list.addPhysicsConstructorType('G4StepLimiterPhysics')
+    limiter_physics.SetApplyToAll(True)
+  ```
+  
+  - An example using G4StepLimiterPhysics can be found here: examples/ClientTests/scripts/MiniTel_steplimiter.py.
+  - See DDG4/CmakeLists.txt how to create a dictionary for specialized physics constructors.
+  - PR fixes issue: https://github.com/AIDASoft/DD4hep/issues/1515
+  
+  Special feature:
+  It is not mandatory to load compiled dictionaries of Geant4 classes as said above for the `G4StepLimiterPhysics` constructor. If on-the-fly linking after importing `DDG4` is possible, any class from `Geant4` can be imported and directly used in the python setup scripts of `dd4hep`:
+  ```
+  $ > python
+  Python 3.12.3 (main, Jan  8 2026, 11:30:50) [GCC 13.3.0] on linux
+  Type "help", "copyright", "credits" or "license" for more information.
+  >>> import DDG4
+  >>> from ROOT import gInterpreter
+  >>> gInterpreter.ProcessLine('#include <G4StoppingPhysics.hh>')
+  0
+  >>> from ROOT import G4StoppingPhysics
+  >>> phys=G4StoppingPhysics()
+  >>> dir(phys)
+  ['ConstructParticle', 'ConstructProcess', 'GetInstanceID', 'GetPhysicsName', 'GetPhysicsType', 'GetSubInstanceManager', 'GetVerboseLevel', 'SetMuonMinusCapture', 'SetPhysicsName', 'SetPhysicsType', 'SetVerboseLevel', 'TerminateWorker', '__add__', '__assign__', '__bool__', '__class__', '__delattr__', '__destruct__', '__dict__', '__dir__', '__dispatch__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__invert__', '__le__', '__lt__', '__module__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__python_owns__', '__radd__', '__reduce__', '__reduce_ex__', '__repr__', '__reshape__', '__rmul__', '__rsub__', '__rtruediv__', '__setattr__', '__sizeof__', '__smartptr__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__weakref__']
+  >>> phys.SetVerboseLevel(1)
+  >>> phys.GetVerboseLevel()
+  1
+  >>> phys.SetVerboseLevel(2)
+  >>> phys.GetVerboseLevel()
+  2
+  >>> 
+  ```
+  or
+  ```
+  >>> gInterpreter.ProcessLine('#include <G4SteppingManager.hh>')
+  0
+  >>> from ROOT import  G4SteppingManager
+  >>> mgr= G4SteppingManager()
+  >>> dir(mgr)
+  ['GetCorrectedStep', 'GetFirstStep', 'GetGeometricalStep', 'GetMAXofAlongStepLoops', 'GetMAXofAtRestLoops', 'GetMAXofPostStepLoops', 'GetMass', 'GetPhysicalStep', 'GetPreStepPointIsGeom', 'GetProcessNumber', 'GetSecondary', 'GetStep', 'GetStepControlFlag', 'GetTempInitVelocity', 'GetTempVelocity', 'GetTouchableHandle', 'GetTrack', 'GetUserAction', 'GetcurrentMinimumStep', 'GetfAlongStepDoItProcTriggered', 'GetfAlongStepDoItVector', 'GetfAlongStepGetPhysIntVector', 'GetfAtRestDoItProcTriggered', 'GetfAtRestDoItVector', 'GetfAtRestGetPhysIntVector', 'GetfCondition', 'GetfCurrentProcess', 'GetfCurrentVolume', 'GetfGPILSelection', 'GetfN2ndariesAlongStepDoIt', 'GetfN2ndariesAtRestDoIt', 'GetfN2ndariesPostStepDoIt', 'GetfNavigator', 'GetfParticleChange', 'GetfPostStepDoItProcTriggered', 'GetfPostStepDoItVector', 'GetfPostStepGetPhysIntVector', 'GetfPostStepPoint', 'GetfPreStepPoint', 'GetfPreviousStepSize', 'GetfSecondary', 'GetfSelectedAlongStepDoItVector', 'GetfSelectedAtRestDoItVector', 'GetfSelectedPostStepDoItVector', 'GetfSensitive', 'GetfStep', 'GetfStepStatus', 'GetfTrack', 'GetnumberOfInteractionLengthLeft', 'GetphysIntLength', 'GetsumEnergyChange', 'GetverboseLevel', 'SetInitialStep', 'SetNavigator', 'SetUserAction', 'SetVerbose', 'SetVerboseLevel', 'Stepping', '__add__', '__assign__', '__bool__', '__class__', '__delattr__', '__destruct__', '__dict__', '__dir__', '__dispatch__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__invert__', '__le__', '__lt__', '__module__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__python_owns__', '__radd__', '__reduce__', '__reduce_ex__', '__repr__', '__reshape__', '__rmul__', '__rsub__', '__rtruediv__', '__setattr__', '__sizeof__', '__smartptr__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__weakref__']
+  ```
+
+* 2026-01-19 Markus Frank ([PR#1555](https://github.com/aidasoft/dd4hep/pull/1555))
+  The Geant4ParticleHandler to propagate Monte-Carlo information to the DDG4 output record has the deficiency that
+  it is difficult for users to enhance the functionality. Effectively there is only one single user action possible and typically
+  set to the `Geant4TCUserParticleHandler`.
+  In this PR we allow to extend the functionality to a sequence of user actions. This functioanlity should enable the handling
+  of a usage which was pointed out in PR https://github.com/AIDASoft/DD4hep/pull/1503.
+  
+  In the AlephTPC example we show an example how to enhance the `Geant4UserParticleHandler` functionality.
+  Execute:
+  ```
+  $> python ../../DD4hep/examples/AlignDet/scripts/AlephTPC.py -mask
+  ```
+  to execute an example. See the python script `DD4hep/examples/AlignDet/scripts/AlephTPC.py` for the setup of such enhancements.
+
+* 2026-01-19 Markus Frank ([PR#1551](https://github.com/aidasoft/dd4hep/pull/1551))
+  1) The simulation of misaligned geometries requires the geometry translation to Geant4 after global misalignments were 
+  applied using DDAlign. To use DD4hep e.g. in the processing of simulated energy deposits in the sensitive detectors of DDG4,
+  it is necessary to propagate the re-aligned placed volumes (aka TGeoNodes) stored as placements of the DetElement structures.
+  These updates were not performed completely: All detector elements in the volume path to be re-aligned must be updated.
+  This fix is intended to fully update the DetElement pathes. The existing approach only updated DetElements of 
+  higher granularity.
+  The problem did only manifest itself if the subdetector DetElement was attached to a DetElement leaf not directly connected 
+  to /world. Hence for all so far known detector constructs the problem did not manifest itself.
+  
+  2) The AlephTPC alignment detector was modified so that the TPC is part of a `CentralRegion` element to model the 
+  above described behavior and a corresponding example named `AlignDet_sim_AlephTPC_global_alignment` was
+  created to illustrate the required behavior.
+  
+  3) Lower printout level when overwriting header structures while parsing compact files to INFO. Complaints came because FCC software often overwrites headers and the many warning messages were inconvenient.
+
+* 2026-01-16 Thomas Madlener ([PR#1552](https://github.com/aidasoft/dd4hep/pull/1552))
+  - Ensure DD4hep still configures with EDM4hep 1.0
+  - Make sure to communicate the EDM4hep dependency also to DD4hep dependencies if `DD4HEP_USE_EDM4HEP` is true
+
+* 2026-01-08 Seth R Johnson ([PR#1550](https://github.com/aidasoft/dd4hep/pull/1550))
+  - CMake: `dd4hep_add_plugin`: Preserve `(LD|DYLD|ROOT)_LIBRARY_PATH` with `DD4HEP`-prefixed CMake variables to prevent environment changes from breaking builds when reconfiguring.
+
+* 2026-01-07 Seth R Johnson ([PR#1545](https://github.com/aidasoft/dd4hep/pull/1545))
+  - CMake: `add_dd4hep_plugin`: Preserve the `ROOT_LIBRARY_PATH` environment variable from the configuration stage to the build stage. This helps in cases where the configuration environment is not preserved.
+
+* 2026-01-05 Wouter Deconinck ([PR#1547](https://github.com/aidasoft/dd4hep/pull/1547))
+  - cmake: install python files into free-threaded python3.??t/site-packages prefix
+
+* 2025-12-17 Markus Frank ([PR#1542](https://github.com/aidasoft/dd4hep/pull/1542))
+  Sometimes it is necessary to execute a plugin when setting up DDG4. These changes allow to call such plugins from the python steering file:
+  ```
+  def run():
+    args = DDG4.CommandLine()
+    kernel = DDG4.Kernel()
+    install_dir = os.environ['DD4hepExamplesINSTALL']
+    kernel.loadGeometry(str("file:" + install_dir + "/examples/AlignDet/compact/AlephTPC.xml"))
+    if args.align:
+      kernel.runPlugin('DD4hep_GlobalAlignmentInstall', [])
+      kernel.loadXML(str("file:" + install_dir + "/examples/AlignDet/compact/AlephTPC_alignment.xml"))
+  ```
+  or from the command prompt:
+  ```
+  Idle> ls /ddg4/UI
+  ....
+     run_plugin * Execute DD4hep plugin of the form <plugin-name>("arg1", "arg2", "arg3",....)
+  ```
+  to call:
+  ```
+  Idle> /ddg4/UI/run_plugin DD4hep_GlobalAlignmentInstall()
+  UI                     Calling dd4hep plugin DD4hep_GlobalAlignmentInstall with arguments: ()
+  ```
+
+* 2025-12-15 Markus Frank ([PR#1541](https://github.com/aidasoft/dd4hep/pull/1541))
+  Implement the necessary changes to use regular expressions to assign the sensitivity of volumes of a subdetector within ddsim.
+  
+  Please take note, that the typical sensitive detector constructs provided by dd4hep are only limited suited for this approach, because they require the presence of the volume manager to determine the hit's cellID. This by construction cannot be provided by this approach, because the instantiation of the volume manager and it's Geant4 counter-part require too much
+  resources. The basic approach simply uses the subdetector ID as a cellID and stores the global coordinates from the Geant4Step. This behaviour may be implemented and overridden by specific user defined implementations.
+  
+  This implementation only allows to cast out the usage of the volume manager to not cause problems while processing Geant4 energy deposits.
+
+* 2025-12-15 simonge ([PR#1540](https://github.com/aidasoft/dd4hep/pull/1540))
+  - HepMC3Reader: Following #1495 the run metadata from the HepMC3 input files was not being read from root tree files. This fixes the loading of the metadata while not requiring the root file be reset and reopened.
+
 # v01-34
 
 * 2025-12-09 Thomas Madlener ([PR#1536](https://github.com/aidasoft/DD4hep/pull/1536))
