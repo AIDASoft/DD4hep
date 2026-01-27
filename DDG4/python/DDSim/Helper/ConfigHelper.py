@@ -99,10 +99,10 @@ class ConfigHelper(object):
   @staticmethod
   def makeString(container):
     """Return a string that can be parsed by dd4hep into a vector."""
-    if not container:
-      return ""
     if isinstance(container, set):
       return '{%s}' % ','.join([str(s) for s in container])
+    if not container:
+      return ""
 
   @staticmethod
   def makeTuple(val):
