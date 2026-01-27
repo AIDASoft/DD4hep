@@ -42,6 +42,9 @@ namespace dd4hep {
       std::set<int> m_rejectPDGs = {1, 2, 3, 4, 5, 6, 21, 23, 24, 25};
       /// particles with these PDG IDs are not passed to geant for simulation if their properTime is zero
       std::set<int> m_zeroTimePDGs = {11, 13, 15, 17};
+      /// for these particles the decay time is chosen by Geant4 according to the lifetime configured instead of what is
+      /// assigned in the MC generator
+      std::set<int> m_decayByGeant = {};
 
       std::string toString() const {
         std::stringstream str;
@@ -49,6 +52,8 @@ namespace dd4hep {
         for (int i: m_rejectPDGs) { str << i << ", "; }
         str << "\nzeroTimePDGs: ";
         for (int i: m_zeroTimePDGs) { str << i << ", "; }
+        str << "\nDecayByGeant: ";
+        for (int i: m_decayByGeant) { str << i << ", "; }
         return str.str();
       }
     };
