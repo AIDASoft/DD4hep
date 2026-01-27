@@ -815,6 +815,7 @@ class DD4hepSimulation(object):
       gen = GeneratorAction(geant4.kernel(), "Geant4PrimaryHandler/PrimaryHandler")
       gen.RejectPDGs = ConfigHelper.makeString(self.physics.rejectPDGs)
       gen.ZeroTimePDGs = ConfigHelper.makeString(self.physics.zeroTimePDGs)
+      gen.DecayByGeant = ConfigHelper.makeString(self.physics.decayByGeant)
       gen.enableUI()
       if output_level is not None:
         gen.OutputLevel = output_level

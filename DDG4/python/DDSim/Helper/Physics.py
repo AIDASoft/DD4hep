@@ -44,6 +44,7 @@ class Physics(ConfigHelper):
                         4101, 4103, 4201, 4203, 4301, 4303, 4403,  # c? diquarks
                         5101, 5103, 5201, 5203, 5301, 5303, 5401, 5403, 5503}  # b? diquarks
     self._zeroTimePDGs = {11, 13, 15, 17}
+    self._decayByGeant = set()
     self._alternativeDecayStatuses = set()
     self._alternativeStableStatuses = set()
     self._userFunctions = []
@@ -73,6 +74,19 @@ class Physics(ConfigHelper):
   @zeroTimePDGs.setter
   def zeroTimePDGs(self, val):
     self._zeroTimePDGs = self.makeSet(val)
+
+  @property
+  def decayByGeant(self):
+    """Set of PDG IDs for particles that should be decayed according to the lifetime.
+
+    Lifetimes are either configured in Geant4 or particle.tbl instead of their pre-assigned decay time.
+
+    """
+    return self._decayByGeant
+
+  @decayByGeant.setter
+  def decayByGeant(self, val):
+    self._decayByGeant = self.makeSet(val)
 
   @property
   def alternativeDecayStatuses(self):
