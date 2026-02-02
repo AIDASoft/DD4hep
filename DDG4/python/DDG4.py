@@ -638,7 +638,7 @@ class Geant4:
           sdtyp = self.sensitive_types[typ]
         logger.info('+++  %-32s type:%-12s  --> Sensitive type: %s', o.name(), typ, sdtyp)
 
-  def setupDetectors(self):
+  def setupDetectors(self, debug_volid=False):
     """
     Scan the list of detectors and assign the proper sensitive actions
 
@@ -655,14 +655,14 @@ class Geant4:
         sdtyp = 'Unknown'
         if typ in self.sensitive_types:
           sdtyp = self.sensitive_types[typ]
-          seq, act = self.setupDetector(o.name(), sdtyp, collections=None)
+          seq, act = self.setupDetector(o.name(), sdtyp, collections=None, debug_volid=debug_volid)
           logger.info('+++  %-32s type:%-12s  --> Sensitive type: %s', o.name(), typ, sdtyp)
           actions.append(act)
           continue
         logger.info('+++  %-32s --> UNKNOWN Sensitive type: %s', o.name(), typ)
     return (seq, actions)
 
-  def setupDetector(self, name, action, collections=None):
+  def setupDetector(self, name, action, collections=None, debug_volid=False):
     """
     Setup single subdetector and assign the proper sensitive action
 
@@ -686,6 +686,8 @@ class Geant4:
       collections = ro.collectionNames()
       if len(collections) == 0:
         act = SensitiveAction(self.kernel(), sensitive_type + '/' + name + 'Handler', name)
+        if debug_volid:
+          act.DebugVolumeID = debug_volid
         for parameter, value in parameterDict.items():
           setattr(act, parameter, value)
         acts.append(act)
@@ -719,7 +721,7 @@ class Geant4:
       return (seq, acts)
     return (seq, acts[0])
 
-  def setupCalorimeter(self, name, type=None, collections=None):  # noqa: A002
+  def setupCalorimeter(self, name, type=None, collections=None, debug_volid=False):  # noqa: A002
     """
     Setup subdetector of type 'calorimeter' and assign the proper sensitive action
 
@@ -730,9 +732,9 @@ class Geant4:
     # sd.setType('calorimeter')
     if typ is None:
       typ = self.sensitive_types['calorimeter']
-    return self.setupDetector(name, typ, collections)
+    return self.setupDetector(name, typ, collections=collections, debug_volid=debug_volid)
 
-  def setupTracker(self, name, type=None, collections=None):  # noqa: A002
+  def setupTracker(self, name, type=None, collections=None, debug_volid=False):  # noqa: A002
     """
     Setup subdetector of type 'tracker' and assign the proper sensitive action
 
@@ -743,7 +745,7 @@ class Geant4:
     # sd.setType('tracker')
     if typ is None:
       typ = self.sensitive_types['tracker']
-    return self.setupDetector(name, typ, collections)
+    return self.setupDetector(name, typ, collections=collections, debug_volid=debug_volid)
 
   def _private_setupField(self, field, stepper, equation, prt):
     import g4units

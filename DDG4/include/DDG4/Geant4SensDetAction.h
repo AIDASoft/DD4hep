@@ -139,6 +139,8 @@ namespace dd4hep {
       int  m_hitCreationMode                  {       0 };
       /// Property: Use the volume manager to access CellID and VolumeID
       bool m_useVolumeManager                 {    true };
+      /// Property: Debug/Print Cell IDs in functions cellID(), volumeID()
+      bool m_debugVolumeID                    {   false };
 
 #if defined(G__ROOT) || defined(__CLING__) || defined(__ROOTCLING__)
       /// Reference to the detector description object
