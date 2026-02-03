@@ -56,6 +56,8 @@ namespace dd4hep {
       MaterialData _outerMat {};    
       Volume _vol {};
       long64 _id {0};
+      double _phiTot {};
+      double _phi0 {};
       unsigned _refCount {0};
 
       /// setter for daughter classes
@@ -78,7 +80,8 @@ namespace dd4hep {
       VolSurfaceBase( SurfaceType typ, 
                       double thickness_inner ,double thickness_outer, 
                       Vector3D u_val ,Vector3D v_val ,
-                      Vector3D n ,Vector3D o, Volume vol,int identifier ) : 
+                      Vector3D n ,Vector3D o, Volume vol,int identifier,
+                      double phiTot, double phi0 ) : 
         _type(typ ) ,
         _u( u_val ) ,
         _v( v_val ) ,
@@ -87,7 +90,9 @@ namespace dd4hep {
         _th_i( thickness_inner ),
         _th_o( thickness_outer ),  
         _vol(vol) ,
-        _id( identifier ) {
+        _id( identifier ),
+        _phiTot( phiTot ),
+        _phi0( phi0 ) {
       }
       
       
@@ -95,7 +100,8 @@ namespace dd4hep {
       VolSurfaceBase(const VolSurfaceBase& c) 
         : _type(c._type), _u(c._u), _v(c._v), _n(c._n), _o(c._o),
           _th_i(c._th_i), _th_o(c._th_o), _innerMat(c._innerMat),
-          _outerMat(c._innerMat), _vol(c._vol), _id(c._id)
+          _outerMat(c._innerMat), _vol(c._vol), _id(c._id),
+          _phiTot(c._phiTot), _phi0(c._phi0)
       {
       }
 
@@ -160,6 +166,11 @@ namespace dd4hep {
       /// Checks if the given point lies within the surface
       virtual bool insideBounds(const Vector3D& point, double epsilon=1e-4 ) const override ;
 
+      /** Width in radian of surface */
+      virtual double phiTot() const;
+
+      /** Offset in radian of surface position */
+      virtual double phi0() const;
 
       virtual std::vector< std::pair<Vector3D, Vector3D> > getLines(unsigned nMax=100) ;
  
@@ -256,6 +267,11 @@ namespace dd4hep {
       /** Thickness of outer material */
       virtual double outerThickness() const override ;
 
+      /** Width in radian of surface */
+      virtual double phiTot() const;
+
+      /** Offset in radian of surface position */
+      virtual double phi0() const;
 
       /** The length of the surface along direction u at the origin. For 'regular' boundaries, like rectangles, 
        *  this can be used to speed up the computation of inSideBounds.
@@ -335,9 +351,9 @@ namespace dd4hep {
 
       /// standard c'tor with all necessary arguments - origin is (0,0,0) if not given.
       VolPlaneImpl( SurfaceType typ, double thickness_inner ,double thickness_outer, 
-                    Vector3D u_val ,Vector3D v_val ,Vector3D n_val , Vector3D o_val, Volume vol, int id_val  ) :
+                    Vector3D u_val ,Vector3D v_val ,Vector3D n_val , Vector3D o_val, Volume vol, int id_val ) :
 	
-        VolSurfaceBase( typ, thickness_inner, thickness_outer, u_val,v_val, n_val, o_val, vol, id_val ) {
+        VolSurfaceBase( typ, thickness_inner, thickness_outer, u_val,v_val, n_val, o_val, vol, id_val, 2.*M_PI, 0. ) {
 	
         _type.setProperty( SurfaceType::Plane    , true ) ;
         _type.setProperty( SurfaceType::Cylinder , false ) ;
@@ -368,7 +384,7 @@ namespace dd4hep {
        *  its rho defining the radius of the cylinder. The measurement direction v is set to be (0,0,1), the normal is
        *  chosen to be parallel to the origin vector and u = n X v. 
        */
-      VolCylinderImpl( Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer,  Vector3D origin ) ;
+      VolCylinderImpl( Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer,  Vector3D origin, double phiTot=2.*M_PI, double phi0=0. ) ;
 
       /** First direction of measurement U - rotated to point projected onto the cylinder.
        *  No check is done whether the point actually is on the cylinder surface
@@ -474,8 +490,8 @@ namespace dd4hep {
 
     class VolCylinder : public VolSurface{
     public:
-      VolCylinder( Volume vol, SurfaceType typ_val, double thickness_inner ,double thickness_outer,  Vector3D origin_val ) :
-        VolSurface( new VolCylinderImpl( vol,  typ_val,  thickness_inner , thickness_outer, origin_val ) ) {}
+      VolCylinder( Volume vol, SurfaceType typ_val, double thickness_inner ,double thickness_outer,  Vector3D origin_val, double phiTot=2.*M_PI, double phi0=0. ) :
+        VolSurface( new VolCylinderImpl( vol,  typ_val,  thickness_inner , thickness_outer, origin_val, phiTot, phi0 ) ) {}
     } ;
 
     class VolCone : public VolSurface{
@@ -508,6 +524,9 @@ namespace dd4hep {
       Vector3D _v {};
       Vector3D _n {};
       Vector3D _o {};
+
+      double _phiTot {2.*M_PI};
+      double _phi0 {0.};
 
       /// default c'tor etc. removed
       Surface() = delete;
@@ -567,6 +586,12 @@ namespace dd4hep {
       /** Thickness of outer material */
       virtual double outerThickness() const override ;
 
+      /** Width in radian of surface */
+      virtual double phiTot() const;
+
+      /** Offset in radian of surface position */
+      virtual double phi0() const;
+      
       /// Access to the material in opposite direction of the normal
       virtual const IMaterial& innerMaterial() const override ;
      
