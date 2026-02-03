@@ -167,8 +167,6 @@ def _getKernelProperty(self, name):
     return _evalProperty(ret.data)
   elif hasattr(self.get(), name):
     return _evalProperty(getattr(self.get(), name))
-  elif hasattr(self, name):
-    return _evalProperty(getattr(self, name))
   msg = 'Geant4Kernel::GetProperty [Unhandled]: Cannot access Kernel.' + name
   raise KeyError(msg)
 
@@ -904,7 +902,7 @@ class Geant4:
     \author  M.Frank
     """
     from ROOT import PyDDG4
-    PyDDG4.run(self.master().get())
+    PyDDG4.runAll(self.master().get())
     return self
 
 
