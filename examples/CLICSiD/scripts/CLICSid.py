@@ -22,6 +22,7 @@ class CLICSid:
     self.kernel = DDG4.Kernel()
     self.description = self.kernel.detectorDescription()
     self.geant4 = DDG4.Geant4(self.kernel, tracker=tracker)
+    DDG4.setPrintFormat('%-24s %7s %s')
     self.kernel.UI = ""
     if no_physics:
       self.noPhysics()
@@ -78,23 +79,23 @@ class CLICSid:
     self.geant4.setupPhysics('')
     return self
 
-  def setupDetectors(self):
+  def setupDetectors(self, debug_volid=False):
     logger.info("#  First the tracking detectors")
-    seq, act = self.geant4.setupTracker('SiVertexBarrel')
-    seq, act = self.geant4.setupTracker('SiVertexEndcap')
-    seq, act = self.geant4.setupTracker('SiTrackerBarrel')
-    seq, act = self.geant4.setupTracker('SiTrackerEndcap')
-    seq, act = self.geant4.setupTracker('SiTrackerForward')
+    seq, act = self.geant4.setupTracker('SiVertexBarrel', debug_volid=debug_volid)
+    seq, act = self.geant4.setupTracker('SiVertexEndcap', debug_volid=debug_volid)
+    seq, act = self.geant4.setupTracker('SiTrackerBarrel', debug_volid=debug_volid)
+    seq, act = self.geant4.setupTracker('SiTrackerEndcap', debug_volid=debug_volid)
+    seq, act = self.geant4.setupTracker('SiTrackerForward', debug_volid=debug_volid)
     logger.info("#  Now setup the calorimeters")
-    seq, act = self.geant4.setupCalorimeter('EcalBarrel')
-    seq, act = self.geant4.setupCalorimeter('EcalEndcap')
-    seq, act = self.geant4.setupCalorimeter('HcalBarrel')
-    seq, act = self.geant4.setupCalorimeter('HcalEndcap')
-    seq, act = self.geant4.setupCalorimeter('HcalPlug')
-    seq, act = self.geant4.setupCalorimeter('MuonBarrel')
-    seq, act = self.geant4.setupCalorimeter('MuonEndcap')
-    seq, act = self.geant4.setupCalorimeter('LumiCal')
-    seq, act = self.geant4.setupCalorimeter('BeamCal')
+    seq, act = self.geant4.setupCalorimeter('EcalBarrel', debug_volid=debug_volid)
+    seq, act = self.geant4.setupCalorimeter('EcalEndcap', debug_volid=debug_volid)
+    seq, act = self.geant4.setupCalorimeter('HcalBarrel', debug_volid=debug_volid)
+    seq, act = self.geant4.setupCalorimeter('HcalEndcap', debug_volid=debug_volid)
+    seq, act = self.geant4.setupCalorimeter('HcalPlug', debug_volid=debug_volid)
+    seq, act = self.geant4.setupCalorimeter('MuonBarrel', debug_volid=debug_volid)
+    seq, act = self.geant4.setupCalorimeter('MuonEndcap', debug_volid=debug_volid)
+    seq, act = self.geant4.setupCalorimeter('LumiCal', debug_volid=debug_volid)
+    seq, act = self.geant4.setupCalorimeter('BeamCal', debug_volid=debug_volid)
     return self
 
   # Test the configuration

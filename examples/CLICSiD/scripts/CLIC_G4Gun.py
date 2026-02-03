@@ -29,14 +29,20 @@ def run():
   import CLICSid
   import DDG4
   from DDG4 import OutputLevel as Output
+  from DDG4 import CommandLine as CommandLine
 
+  args = CommandLine()
   sid = CLICSid.CLICSid()
   geant4 = sid.geant4
   kernel = sid.kernel
   sid.loadGeometry()
   geant4.printDetectors()
   kernel.UI = "UI"
-  geant4.setupCshUI()
+  if args.macro:
+    ui = geant4.setupCshUI(macro=args.macro)
+  else:
+    ui = geant4.setupCshUI()
+
   sid.setupField(quiet=False)
   DDG4.importConstants(kernel.detectorDescription(), debug=False)
 
@@ -69,10 +75,14 @@ def run():
   user.enableUI()
   part.adopt(user)
   #
-  sid.setupDetectors()
+  sid.setupDetectors(debug_volid=args.debug_volid)
   sid.setupPhysics('QGSP_BERT')
   sid.test_config()
   gun.generator()  # Instantiate gun to be able to set properties from G4 prompt
+
+  if args.events:
+    ui.Commands = ['/run/beamOn ' + str(args.events), '/ddg4/UI/terminate']
+
   kernel.run()
   kernel.terminate()
 
