@@ -70,12 +70,13 @@ namespace dd4hep {
       constexpr static const VolumeID Insensitive = VolumeID(-2LL);
       constexpr static const VolumeID NonExisting = 0ULL;
       enum debug_flags  {
-        PRINT_LEVEL  = 1<<0,
-        PRINT_ACTION = 1<<1,
-        PRINT_CHAIN  = 1<<2,
-        PRINT_RESULT = 1<<3,
-        PRINT_NODES  = 1<<4,
-        PRINT_VOLIDS = 1<<5,        
+        PRINT_LEVEL   = 1<<0,
+        PRINT_ACTION  = 1<<1,
+        PRINT_CHAIN   = 1<<2,
+        PRINT_RESULT  = 1<<3,
+        PRINT_NODES   = 1<<4,
+        PRINT_VOLIDS  = 1<<5,
+        PRINT_ENTRIES = 1<<6,
       };
       
     public:

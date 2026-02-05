@@ -206,6 +206,7 @@ namespace dd4hep {
 typedef dd4hep::sim::Geant4ActionCreation Geant4ActionCreation;
 
 #include <DD4hep/detail/DetectorInterna.h>
+#include <DDG4/Geant4VolumeManager.h>
 #include <DDG4/Geant4UIManager.h>
 
 // CINT configuration
@@ -323,8 +324,9 @@ typedef dd4hep::sim::Geant4ActionCreation Geant4ActionCreation;
 #pragma link C++ class dd4hep::Callback::mfunc_t;
 
 // Other (specialized) components
-#pragma link C++ class dd4hep::sim::Geant4DataDump;
 #pragma link C++ class dd4hep::sim::Geant4Random;
+#pragma link C++ class dd4hep::sim::Geant4DataDump;
+#pragma link C++ class dd4hep::sim::Geant4VolumeManager;
 #pragma link C++ class dd4hep::sim::Geant4ParticleHandler;
 #pragma link C++ class dd4hep::sim::Geant4UIManager;
 #pragma link C++ class dd4hep::sim::Geant4UserParticleHandler;
