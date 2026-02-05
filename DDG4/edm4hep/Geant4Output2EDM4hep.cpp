@@ -49,7 +49,12 @@ namespace podio {
   using ROOTWriter = podio::ROOTFrameWriter;
 }
 #endif
+#if __has_include( <podio/RNTupleWriter.h> )
+#include <podio/RNTupleWriter.h>
+#endif
 
+#include <variant>
+#include <memory>
 #include <atomic>
 
 /// Namespace for the AIDA detector description toolkit
@@ -70,7 +75,11 @@ namespace dd4hep {
      */
     class Geant4Output2EDM4hep : public Geant4OutputAction  {
     protected:
-      using writer_t = podio::ROOTWriter;
+#     if __has_include(<podio/RNTupleWriter.h>)
+      using writer_t = std::variant<podio::ROOTWriter, podio::RNTupleWriter>;
+#     else
+      using writer_t = std::variant<podio::ROOTWriter>;
+#     endif
       using floatmap_t = std::map< std::string, float >;
       using intmap_t = std::map< std::string, int >;
       using stringmap_t = std::map< std::string, std::string >;
@@ -97,6 +106,7 @@ namespace dd4hep {
       int                           m_eventNo           { 0 };
       int                           m_eventNumberOffset { 0 };
       bool                          m_filesByRun        { false };
+      bool                          m_rntuple           { false };
 
       /// Data conversion interface for MC particles to EDM4hep format
       void saveParticles(Geant4ParticleMap* particles);
@@ -265,6 +275,7 @@ Geant4Output2EDM4hep::Geant4Output2EDM4hep(Geant4Context* ctxt, const std::strin
   declareProperty("EventNumberOffset",     m_eventNumberOffset);
   declareProperty("SectionName",           m_section_name);
   declareProperty("FilesByRun",            m_filesByRun);
+  declareProperty("RNTuple",               m_rntuple);
   info("Writer is now instantiated ..." );
   InstanceCount::increment(this);
 }
@@ -288,7 +299,18 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
   }
   // Create the file only when it has not yet beeen created in another thread
   if ( !fname.empty() && !m_file )   {
-    m_file = std::make_unique<podio::ROOTWriter>(fname);
+#   if __has_include( <podio/RNTupleWriter.h> )
+    if (m_rntuple) {
+      m_file = std::make_unique<writer_t>(podio::RNTupleWriter(fname));
+    } else {
+      m_file = std::make_unique<writer_t>(podio::ROOTWriter(fname));
+    }
+#   else
+    if (m_rntuple) {
+      warning("+++ RNTuple not available, falling back to TTree");
+    }
+    m_file = std::make_unique<writer_t>(podio::ROOTWriter(fname));
+#   endif
     if ( !m_file )   {
       fatal("+++ Failed to open output file: %s", fname.c_str());
     }
@@ -307,7 +329,7 @@ void Geant4Output2EDM4hep::endRun(const G4Run* run)  {
   // and testing it requires locking.
   G4AutoLock protection_lock(&action_mutex);
   if ( m_file && m_fileUseCount == 1 )   {
-    m_file->finish();
+    std::visit([](auto&& file) { file.finish(); }, *m_file);
     m_file.reset();
   }
   m_fileUseCount--;
@@ -319,7 +341,7 @@ void Geant4Output2EDM4hep::saveFileMetaData() {
     metaFrame.putParameter(podio::collMetadataParamName(name, CellIDEncoding), encodingStr);
   }
   G4AutoLock protection_lock(&action_mutex);
-  m_file->writeFrame(metaFrame, "metadata");
+  std::visit([&metaFrame](auto&& file) { file.writeFrame(metaFrame, "metadata"); }, *m_file);
 }
 
 /// Commit data at end of filling procedure
@@ -334,7 +356,7 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
       m_frame.put( std::move(calorimeterHits.first), colName);
       m_frame.put( std::move(calorimeterHits.second), colName + "Contributions");
     }
-    m_file->writeFrame(m_frame, m_section_name);
+    std::visit([this](auto&& file) { file.writeFrame(m_frame, m_section_name); }, *m_file);
     m_particles = { };
     m_trackerHits.clear();
     m_calorimeterHits.clear();
@@ -375,7 +397,7 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
       if ( parameters ) {
         parameters->extractParameters(runHeader);
       }
-      m_file->writeFrame(runHeader, "runs");
+      std::visit([&runHeader](auto&& file) { file.writeFrame(runHeader, "runs"); }, *m_file);
     }
   }
   {
@@ -386,7 +408,7 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
       if ( parameters ) {
         parameters->extractParameters(metaFrame);
       }
-      m_file->writeFrame(metaFrame, "meta");
+      std::visit([&metaFrame](auto&& file) { file.writeFrame(metaFrame, "meta"); }, *m_file);
     }
   }
 }
