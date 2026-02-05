@@ -1,0 +1,26 @@
+<global_alignment>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+
+  <debug value="true"/>
+  <open_transaction/>
+  <subdetectors>
+    <detelement path="CentralRegion/TPC" reset="true" reset_children="true">
+      <comment ref="Move the entire TPC in the world volume."/>
+      <position x="1*mm"   y="1*mm"   z="3*mm"/>
+      <rotation x="0"   y="0"   z="0"/>     
+    </detelement>  <!-- end: TPC -->
+
+  </subdetectors>
+
+  <close_transaction/>
+</global_alignment>

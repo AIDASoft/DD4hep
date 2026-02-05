@@ -26,22 +26,20 @@ logger = logging.getLogger(__name__)
 
 
 def run():
-  import CLICSid
   import DDG4
+  import CLICSid
   from DDG4 import OutputLevel as Output
-  from DDG4 import CommandLine as CommandLine
 
-  args = CommandLine()
+  args = DDG4.CommandLine()
   sid = CLICSid.CLICSid()
-  geant4 = sid.geant4
-  kernel = sid.kernel
   sid.loadGeometry()
-  geant4.printDetectors()
+  sid.geant4.printDetectors()
+  kernel = sid.kernel
   kernel.UI = "UI"
   if args.macro:
-    ui = geant4.setupCshUI(macro=args.macro)
+    ui = sid.geant4.setupCshUI(macro=args.macro)
   else:
-    ui = geant4.setupCshUI()
+    ui = sid.geant4.setupCshUI()
 
   sid.setupField(quiet=False)
   DDG4.importConstants(kernel.detectorDescription(), debug=False)

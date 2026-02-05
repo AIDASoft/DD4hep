@@ -40,6 +40,41 @@
 #define MM_2_CM 0.1
 #endif
 
+namespace dd4hep  {
+  namespace sim  {
+    /// Print volume ID
+    void _print_volumeid(const std::string& tag, const IDDescriptor& id, DDSegmentation::VolumeID volID)  {
+      if( id.isValid() )  {
+        std::string value = id.str(volID);
+        printout(ALWAYS, tag, "Volume ID: %016llX -> %s", volID, value.c_str());
+        return;
+      }
+      printout(ALWAYS, tag, "Volume ID: %016llX [no ID descriptor]", volID);
+    }
+
+    /// Print volume ID
+    void _print_volumeid(const Geant4Sensitive* action, DDSegmentation::VolumeID volID)  {
+      SensitiveDetector sensitive = action->sensitiveDetector();
+      if( sensitive.isValid() )  {
+        Readout readout = sensitive.readout();
+        if( readout.isValid() )  {
+          IDDescriptor id = readout.idSpec();
+          if( id.isValid() )  {
+            std::string value = id.str(volID);
+            action->always("Volume ID: %016llX -> %s", volID, value.c_str());
+            return;
+          }
+          action->always("Volume ID: %016llX -> Readout: %s [no ID descriptor]", volID, readout.name());
+          return;
+        }
+        action->always("Volume ID: %016llX -> Sensitive: %s [no readout]", volID, sensitive.name());
+        return;
+      }
+      action->always("Volume ID: %016llX [internal error: no sensitive detectector]", volID);
+    }
+  }
+}
+
 using namespace dd4hep::sim;
 
 namespace {
@@ -63,27 +98,6 @@ namespace {
     return action_sd;
   }
 #endif
-
-  void _print_volumeid(const Geant4Sensitive* action, dd4hep::DDSegmentation::VolumeID volID)  {
-    dd4hep::SensitiveDetector sensitive = action->sensitiveDetector();
-    if( sensitive.isValid() )  {
-      dd4hep::Readout readout = sensitive.readout();
-      if( readout.isValid() )  {
-        dd4hep::IDDescriptor id = readout.idSpec();
-        if( id.isValid() )  {
-          std::string value = id.str(volID);
-          action->always("Volume ID: %016llX -> %s", volID, value.c_str());
-          return;
-        }
-        action->always("Volume ID: %016llX -> Readout: %s [no ID descriptor]", volID, readout.name());
-        return;
-      }
-      action->always("Volume ID: %016llX -> Sensitive: %s [no readout]", volID, sensitive.name());
-      return;
-    }
-    action->always("Volume ID: %016llX [internal error: no sensitive detectector]", volID);
-  }
-
 }
 
 /// Standard action constructor

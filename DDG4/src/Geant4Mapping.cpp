@@ -71,7 +71,7 @@ Geant4VolumeManager Geant4Mapping::volumeManager() const {
   if ( m_dataPtr )  {
     if ( haveVolManager )  {
       if ( !m_dataPtr->has_volmgr )  {
-        return Geant4VolumeManager(m_detDesc, m_dataPtr, debugVolManager);
+        return Geant4VolumeManager(m_detDesc, m_dataPtr, this->debugVolManager);
       }
       return Geant4VolumeManager(Handle < Geant4GeometryInfo > (m_dataPtr));
     }

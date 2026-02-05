@@ -42,7 +42,7 @@ namespace dd4hep {
 
     public:
       /// Debug flag when populating the Geant4 volume manager (Option set by Geant4DetectorGeometryConstruction)
-      bool                debugVolManager { false };
+      long                debugVolManager {     0 };
       /// Disable building Geant4 voilume manager. Throw exception when accessed.
       bool                haveVolManager  {  true };
       

@@ -35,6 +35,9 @@ def run():
   if args.align:
     kernel.runPlugin('DD4hep_GlobalAlignmentInstall', [])
     kernel.loadXML(str("file:" + install_dir + "/examples/AlignDet/compact/AlephTPC_alignment.xml"))
+  elif args.basic_align:
+    kernel.runPlugin('DD4hep_GlobalAlignmentInstall', [])
+    kernel.loadXML(str("file:" + install_dir + "/examples/AlignDet/compact/AlephTPC_basic_alignment.xml"))
   elif args.alignments:
     kernel.runPlugin('DD4hep_GlobalAlignmentInstall', [])
     kernel.loadXML(str("file:") + str(args.alignments))
@@ -67,7 +70,7 @@ def run():
   act.DebugVolumes = True
   act.DebugShapes = True
   # act.DebugPlacements = True
-  act.DebugVolManager = True
+  act.DebugVolManager = 1+2+4+8+16+32
   seq, act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
 
   # Setup particle gun

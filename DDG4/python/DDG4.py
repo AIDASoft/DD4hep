@@ -621,24 +621,41 @@ class Geant4:
     self.kernel().terminate()
     return self
 
-  def printDetectors(self):
+  def printDetectors(self, **kwargs):
     """
     Scan the list of detectors and print detector name and sensitive type
 
     \author  M.Frank
     """
-    logger.info('+++  List of sensitive detectors:')
-    for i in self.description.detectors():
-      o = DetElement(i.second.ptr())  # noqa: F405
-      sd = self.description.sensitiveDetector(str(o.name()))
-      if sd.isValid():
-        typ = sd.type()
-        sdtyp = 'Unknown'
-        if typ in self.sensitive_types:
-          sdtyp = self.sensitive_types[typ]
-        logger.info('+++  %-32s type:%-12s  --> Sensitive type: %s', o.name(), typ, sdtyp)
+    print_path = kwargs.get('print_path')
+    sensitive = kwargs.get('sensitive') or True
+    non_sensitive = kwargs.get('non_sensitive')
+    if sensitive:
+      logger.info('+++  List of sensitive detectors:')
+      for i in self.description.detectors():
+        o = DetElement(i.second.ptr())  # noqa: F405
+        sd = self.description.sensitiveDetector(str(o.name()))
+        if sd.isValid():
+          path = ''
+          typ = sd.type()
+          sdtyp = 'Unknown'
+          if typ in self.sensitive_types:
+            sdtyp = self.sensitive_types[typ]
+          if print_path:
+            path = o.path()
+          logger.info('+++  %-32s type:%-12s  --> Sensitive type: %-30s  %s', o.name(), typ, sdtyp, path)
+    if non_sensitive:
+      logger.info('+++  List of not sensitive detector elements:')
+      for i in self.description.detectors():
+        o = DetElement(i.second.ptr())  # noqa: F405
+        sd = self.description.sensitiveDetector(str(o.name()))
+        if not sd.isValid():
+          path = ''
+          if print_path:
+            path = o.path()
+          logger.info('+++  %-32s type:non-sensitive detector %42s %s', o.name(), '', path)
 
-  def setupDetectors(self, debug_volid=False):
+  def setupDetectors(self, **kwargs):
     """
     Scan the list of detectors and assign the proper sensitive actions
 
@@ -646,6 +663,7 @@ class Geant4:
     """
     seq = None
     actions = []
+    debug_volid = kwargs.get('debug_volid')
     logger.info('+++  Setting up sensitive detectors:')
     for i in self.description.detectors():
       o = DetElement(i.second.ptr())  # noqa: F405

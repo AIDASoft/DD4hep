@@ -34,6 +34,10 @@ namespace dd4hep {
     class Geant4DetectorGeometryConstruction : public Geant4DetectorConstruction   {
       /// Property: Dump geometry hierarchy if not NULL. Flags can steer actions. 
       unsigned long m_dumpHierarchy {     0 };
+      /// Property: Flag to debug G4 volume manager population
+      long m_debugVolManager            { 0 };
+      /// Property: Flag to instantiate Geant4 volume manager
+      bool m_haveVolManager         {  true };
       /// Property: Flag to debug materials during conversion mechanism
       bool m_debugMaterials         { false };
       /// Property: Flag to debug elements during conversion mechanism
@@ -52,10 +56,6 @@ namespace dd4hep {
       bool m_debugLimits            { false };
       /// Property: Flag to debug regions during conversion mechanism
       bool m_debugSurfaces          { false };
-      /// Property: Flag to debug G4 volume manager population
-      bool m_debugVolManager        { false };
-      /// Property: Flag to instantiate Geant4 volume manager
-      bool m_haveVolManager         {  true };
 
       /// Property: Flag to dump all placements after the conversion procedure
       bool m_printPlacements        { false };
