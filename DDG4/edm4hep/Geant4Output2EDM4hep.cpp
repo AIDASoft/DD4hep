@@ -301,15 +301,15 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
   if ( !fname.empty() && !m_file )   {
 #   if __has_include( <podio/RNTupleWriter.h> )
     if (m_rntuple) {
-      m_file = std::make_unique<writer_t>(podio::RNTupleWriter(fname));
+      m_file = std::make_unique<writer_t>(std::in_place_type<podio::RNTupleWriter>, fname);
     } else {
-      m_file = std::make_unique<writer_t>(podio::ROOTWriter(fname));
+      m_file = std::make_unique<writer_t>(std::in_place_type<podio::ROOTWriter>, fname);
     }
 #   else
     if (m_rntuple) {
       warning("+++ RNTuple not available, falling back to TTree");
     }
-    m_file = std::make_unique<writer_t>(podio::ROOTWriter(fname));
+    m_file = std::make_unique<writer_t>(std::in_place_type<podio::ROOTWriter>, fname);
 #   endif
     if ( !m_file )   {
       fatal("+++ Failed to open output file: %s", fname.c_str());
