@@ -41,6 +41,9 @@
 #include <podio/podioVersion.h>
 #include <podio/Frame.h>
 #include <podio/FrameCategories.h>
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
+#include <podio/Writer.h>
+#else
 #if PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
 #include <podio/ROOTWriter.h>
 #else
@@ -48,6 +51,7 @@
 namespace podio {
   using ROOTWriter = podio::ROOTFrameWriter;
 }
+#endif
 #endif
 
 #include <atomic>
@@ -70,7 +74,11 @@ namespace dd4hep {
      */
     class Geant4Output2EDM4hep : public Geant4OutputAction  {
     protected:
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
+      using writer_t = podio::Writer;
+#else
       using writer_t = podio::ROOTWriter;
+#endif
       using floatmap_t = std::map< std::string, float >;
       using intmap_t = std::map< std::string, int >;
       using stringmap_t = std::map< std::string, std::string >;
@@ -97,6 +105,7 @@ namespace dd4hep {
       int                           m_eventNo           { 0 };
       int                           m_eventNumberOffset { 0 };
       bool                          m_filesByRun        { false };
+      bool                          m_rntuple           { false };
 
       /// Data conversion interface for MC particles to EDM4hep format
       void saveParticles(Geant4ParticleMap* particles);
@@ -265,6 +274,8 @@ Geant4Output2EDM4hep::Geant4Output2EDM4hep(Geant4Context* ctxt, const std::strin
   declareProperty("EventNumberOffset",     m_eventNumberOffset);
   declareProperty("SectionName",           m_section_name);
   declareProperty("FilesByRun",            m_filesByRun);
+  declareProperty("RNTuple",               m_rntuple);
+
   info("Writer is now instantiated ..." );
   InstanceCount::increment(this);
 }
@@ -288,7 +299,11 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
   }
   // Create the file only when it has not yet beeen created in another thread
   if ( !fname.empty() && !m_file )   {
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
+    m_file = std::make_unique<podio::Writer>(podio::makeWriter(fname, m_rntuple ? "rntuple" : "default"));
+#else
     m_file = std::make_unique<podio::ROOTWriter>(fname);
+#endif
     if ( !m_file )   {
       fatal("+++ Failed to open output file: %s", fname.c_str());
     }

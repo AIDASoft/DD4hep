@@ -17,6 +17,9 @@
 
 // podio/edm4hep include files
 #include <podio/podioVersion.h>
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
+#include <podio/Reader.h>
+#else
 #if PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
 #include <podio/ROOTReader.h>
 #else
@@ -24,6 +27,7 @@
 namespace podio {
   using ROOTReader = podio::ROOTFrameReader;
 }
+#endif
 #endif
 #include <podio/Frame.h>
 
@@ -54,8 +58,12 @@ namespace dd4hep {
       edm4hep_read_frame_t(podio::Frame&& frm) : frame(std::move(frm)) { }
       const podio::CollectionBase* get(const std::string& nam) const { return frame.get(nam); }
     };
-    
+
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
+    using reader_t = podio::Reader;
+#else
     using reader_t = podio::ROOTReader;
+#endif
     using frame_t  = edm4hep_read_frame_t;
 
     /// EDM4HEP Digi input reader: Collection descriptor definition
@@ -127,12 +135,18 @@ namespace dd4hep {
       }
       /// Access the next data frame in the input sequence
       std::shared_ptr<frame_t> next()   {
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
+	auto data = stream->readNextFrame(section);
+	++entry;
+	return std::make_shared<frame_t>(std::move(data));
+#else
 	auto data = stream->readNextEntry(section);
 	if ( data )   {
 	  ++entry;
 	  return std::make_shared<frame_t>(std::move(data));
 	}
 	return {};
+#endif
       }
     };
 
@@ -171,10 +185,14 @@ namespace dd4hep {
       if ( inputs.empty() ) m_curr_input = 0;
       while ( (m_curr_input+1) < len )   {
 	const auto& fname = inputs[++m_curr_input];
-	auto stream = std::make_unique<reader_t>();
 	try  {
 	  auto sec = parent->input_section();
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
+	  auto stream = std::make_unique<reader_t>(podio::makeReader(fname));
+#else
+	  auto stream = std::make_unique<reader_t>();
 	  stream->openFile(fname);
+#endif
 	  auto source = std::make_unique<source_t>(sec, std::move(stream));
 	  parent->info("+++ Opened EDM4HEP input file %s.", fname.c_str());
 	  parent->onOpenFile(*source);

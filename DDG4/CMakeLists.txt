@@ -112,9 +112,14 @@ IF(TARGET LCIO::lcio)
 ENDIF()
 
 IF(TARGET EDM4HEP::edm4hep)
+  if(podio_VERSION VERSION_GREATER_EQUAL "1.0.0")
+    set(DDG4_PODIO_IO_TARGET podio::podioIO)
+  else()
+    set(DDG4_PODIO_IO_TARGET podio::podioRootIO)
+  endif()
   dd4hep_add_plugin(DDG4EDM4HEP
     SOURCES edm4hep/Geant4Output2EDM4hep.cpp
-    USES    DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict podio::podio podio::podioDict podio::podioRootIO
+    USES    DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict podio::podio podio::podioDict ${DDG4_PODIO_IO_TARGET}
     )
   set_target_properties(DDG4EDM4HEP PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   if(TARGET podio::podioIO)
