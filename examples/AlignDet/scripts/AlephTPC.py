@@ -1,4 +1,3 @@
-
 # ==========================================================================
 #  AIDA Detector description implementation
 # --------------------------------------------------------------------------
@@ -70,7 +69,7 @@ def run():
   act.DebugVolumes = True
   act.DebugShapes = True
   # act.DebugPlacements = True
-  act.DebugVolManager = 1+2+4+8+16+32
+  act.DebugVolManager = 1 + 2 + 4 + 8 + 16 + 32
   seq, act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
 
   # Setup particle gun
