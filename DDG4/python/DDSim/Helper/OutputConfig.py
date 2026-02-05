@@ -26,6 +26,7 @@ class OutputConfig(ConfigHelper):
     self._forceLCIO = False
     self._forceEDM4HEP = False
     self._forceDD4HEP = False
+    self._useRNTuple = False
     # no closeProperties, allow custom ones for userPlugin configuration
 
   def _checkConsistency(self):
@@ -70,6 +71,15 @@ class OutputConfig(ConfigHelper):
     self._forceDD4HEP = self.makeBool(val)
     if self._forceDD4HEP:
       self._checkConsistency()
+
+  @property
+  def useRNTuple(self):
+    """Use RNTuple backend for EDM4HEP output (requires podio with RNTuple support)."""
+    return self._useRNTuple
+
+  @useRNTuple.setter
+  def useRNTuple(self, val):
+    self._useRNTuple = self.makeBool(val)
 
   @property
   def userOutputPlugin(self):
@@ -149,8 +159,9 @@ class OutputConfig(ConfigHelper):
     return
 
   def _configureEDM4HEP(self, dds, geant4):
-    logger.info("++++ Setting up EDM4hep ROOT Output ++++")
+    logger.info("++++ Setting up EDM4hep %s Output ++++", "RNTuple" if self.useRNTuple else "ROOT")
     e4Out = geant4.setupEDM4hepOutput('EDM4hepOutput', dds.outputFile)
+    e4Out.RNTuple = self.useRNTuple
     eventPars = dds.meta.parseMetaParameters()
     e4Out.RunHeader = dds.meta.addParametersToRunHeader(dds)
     e4Out.EventParametersString, e4Out.EventParametersInt, e4Out.EventParametersFloat = eventPars
