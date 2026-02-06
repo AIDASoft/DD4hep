@@ -19,9 +19,11 @@
 #include "DigiEdm4hepOutput.h"
 #include "DigiIO.h"
 
-/// edm4hep include files
+/// podio include files
 #include <podio/podioVersion.h>
-#if PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
+#include <podio/Writer.h>
+#elif PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
 #include <podio/ROOTWriter.h>
 #else
 #include <podio/ROOTFrameWriter.h>
@@ -43,6 +45,12 @@ namespace dd4hep {
   /// Namespace for the Digitization part of the AIDA detector description toolkit
   namespace digi {
 
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
+    using writer_t = podio::Writer;
+#else
+    using writer_t = podio::ROOTWriter;
+#endif
+
     /// Helper class to create output in edm4hep format
     /** Helper class to create output in edm4hep format
      *
@@ -56,7 +64,7 @@ namespace dd4hep {
       using headercollection_t   = std::pair<std::string,std::unique_ptr<edm4hep::EventHeaderCollection> >;
       DigiEdm4hepOutput*                      m_parent    { nullptr };
       /// Reference to podio writer
-      std::unique_ptr<podio::ROOTWriter>      m_writer    { };
+      std::unique_ptr<writer_t>               m_writer    { };
       /// edm4hep event header collection
       headercollection_t                      m_header    { };
       /// MC particle collection
@@ -196,7 +204,11 @@ namespace dd4hep {
       clear();
       m_writer.reset();
       std::string fname = m_parent->next_stream_name();
-      m_writer = std::make_unique<podio::ROOTWriter>(fname);
+#if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
+      m_writer = std::make_unique<writer_t>(podio::makeWriter(fname));
+#else
+      m_writer = std::make_unique<writer_t>(fname);
+#endif
       m_parent->info("+++ Opened EDM4HEP output file %s", fname.c_str());
     }
 
