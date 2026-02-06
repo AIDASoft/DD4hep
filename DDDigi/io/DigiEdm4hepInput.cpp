@@ -19,8 +19,7 @@
 #include <podio/podioVersion.h>
 #if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
 #include <podio/Reader.h>
-#else
-#if PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
+#elif PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
 #include <podio/ROOTReader.h>
 #else
 #include <podio/ROOTFrameReader.h>
