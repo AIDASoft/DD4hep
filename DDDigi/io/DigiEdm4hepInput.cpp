@@ -27,7 +27,6 @@ namespace podio {
   using ROOTReader = podio::ROOTFrameReader;
 }
 #endif
-#endif
 #include <podio/Frame.h>
 
 #include <edm4hep/SimTrackerHit.h>

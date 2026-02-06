@@ -23,15 +23,13 @@
 #include <podio/podioVersion.h>
 #if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
 #include <podio/Writer.h>
-#else
-#if PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
+#elif PODIO_BUILD_VERSION >= PODIO_VERSION(0, 99, 0)
 #include <podio/ROOTWriter.h>
 #else
 #include <podio/ROOTFrameWriter.h>
 namespace podio {
   using ROOTWriter = podio::ROOTFrameWriter;
 }
-#endif
 #endif
 #include <podio/Frame.h>
 #include <edm4hep/SimTrackerHit.h>
