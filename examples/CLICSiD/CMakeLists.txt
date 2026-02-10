@@ -161,7 +161,7 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( CLICSiD_sim_DDG4_print_volids_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${CLICSiDEx_INSTALL}/scripts/CLIC_G4Gun.py -batch -events 3 -debug_volid True
-    REGEX_PASS "MuonBarrelHandler (.*) Volume ID:(.*) .. system:000b barrel:00.. module:00.. layer:00.. slice:00.. x:0000 y:0000"
+    REGEX_PASS "MuonBarrelHandler (.*) ID:(.*) .. system:000b barrel:00.. module:00.. layer:00.. slice:00.. x:0000 y:0000"
     REGEX_FAIL "Exception;EXCEPTION;ERROR" )
   #
   # Write GDML from Geant4 using UI

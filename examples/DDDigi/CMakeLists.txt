@@ -223,7 +223,6 @@ if (DD4HEP_USE_GEANT4)
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDigi.sh"
       EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_INSTALL_PREFIX}/examples/ClientTests/scripts/MiniTelGenerate.py
       -batch -events 30 -runs 3 -output MiniTel_DDG4_edm4hep_data.root
-      DEPENDS    DDDigi_sim_generate_ddg4_data
       REGEX_PASS "\\+\\+\\+ Finished run 2 after 30 events \\(90 events in total\\)."
       REGEX_FAIL "Error;ERROR;FATAL; Exception"
     )
