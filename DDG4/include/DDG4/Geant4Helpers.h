@@ -43,29 +43,29 @@ namespace dd4hep {
     /// Generate parameterised placements in 1 dimension according to transformation delta
     G4Transform3D
     generate_placements(const G4Transform3D& start,
-			const G4Transform3D& delta,
-			std::size_t count,
-			const std::function<void(const G4Transform3D& delta)>& callback);
+                        const G4Transform3D& delta,
+                        std::size_t count,
+                        const std::function<void(const G4Transform3D& delta)>& callback);
 
     /// Generate parameterised placements in 2 dimensions according to transformation delta
     G4Transform3D
     generate_placements(const G4Transform3D& start,
-			const G4Transform3D& delta1,
-			std::size_t count1,
-			const G4Transform3D& delta2,
-			std::size_t count2,
-			const std::function<void(const G4Transform3D& delta)>& callback);
+                        const G4Transform3D& delta1,
+                        std::size_t count1,
+                        const G4Transform3D& delta2,
+                        std::size_t count2,
+                        const std::function<void(const G4Transform3D& delta)>& callback);
 
     /// Generate parameterised placements in 3 dimensions according to transformation delta
     G4Transform3D
     generate_placements(const G4Transform3D& start,
-			const G4Transform3D& delta1,
-			std::size_t count1,
-			const G4Transform3D& delta2,
-			std::size_t count2,
-			const G4Transform3D& delta3,
-			std::size_t count3,
-			const std::function<void(const G4Transform3D& delta)>& callback);
+                        const G4Transform3D& delta1,
+                        std::size_t count1,
+                        const G4Transform3D& delta2,
+                        std::size_t count2,
+                        const G4Transform3D& delta3,
+                        std::size_t count3,
+                        const std::function<void(const G4Transform3D& delta)>& callback);
     
     /// These conversions automatically apply the conversion from CM to MM!
 

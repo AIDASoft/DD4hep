@@ -87,9 +87,9 @@ namespace dd4hep {
       typedef Geant4Handle<Geant4DetectorConstructionSequence> DetectorConstructionSeq;
       inline bool is_aclick()   {
 #if defined(G__DICTIONARY) || defined(__CLING__) || defined(__CINT__) || defined(__MAKECINT__)
-	return true;
+        return true;
 #else
-	return false;
+        return false;
 #endif
       }
     }

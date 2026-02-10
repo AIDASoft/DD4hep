@@ -158,18 +158,18 @@ void InstanceCount::dump(int typ) {
       long tot_instances=0, max_instances=0, now_instances=0;
       for ( const auto& i : *s_strCounts ) {
         std::cout << "|" << std::setw(10) << i.second->total()
-		  << "|" << std::setw(9)  << i.second->maximum()
-		  << "|" << std::setw(9)  << i.second->value()
-		  << "|" << i.first->substr(0,80) << std::endl;
+                  << "|" << std::setw(9)  << i.second->maximum()
+                  << "|" << std::setw(9)  << i.second->value()
+                  << "|" << i.first->substr(0,80) << std::endl;
         tot_instances += i.second->total();
         max_instances += i.second->maximum();
         now_instances += i.second->value();
       }
       std::cout << "+----------+---------+---------+-------------------------------------------+" << std::endl;
       std::cout << "|" << std::setw(10) << tot_instances
-		<< "|" << std::setw(9)  << max_instances
-		<< "|" << std::setw(9)  << now_instances
-		<< "|" << "Grand total (Sum of all counters)" << std::endl;
+                << "|" << std::setw(9)  << max_instances
+                << "|" << std::setw(9)  << now_instances
+                << "|" << "Grand total (Sum of all counters)" << std::endl;
       need_footer = true;
     }
   }
@@ -182,21 +182,21 @@ void InstanceCount::dump(int typ) {
       std::cout << "+----------+---------+---------+-------------------------------------------+" << std::endl;
       long tot_instances=0, max_instances=0, now_instances=0;
       for ( const auto& i : *s_typCounts ) {
-	std::string nam = typeName(*(i.first));
+        std::string nam = typeName(*(i.first));
         if ( nam.length() > 80 ) nam = nam.substr(0,80)+" ...";
         std::cout << "|" << std::setw(10) << i.second->total()
-		  << "|" << std::setw(9)  << i.second->maximum()
-		  << "|" << std::setw(9)  << i.second->value()
-		  << "|" << nam << std::endl;
+                  << "|" << std::setw(9)  << i.second->maximum()
+                  << "|" << std::setw(9)  << i.second->value()
+                  << "|" << nam << std::endl;
         tot_instances += i.second->total();
         max_instances += i.second->maximum();
         now_instances += i.second->value();
       }
       std::cout << "+----------+---------+---------+-------------------------------------------+" << std::endl;
       std::cout << "|" << std::setw(10) << tot_instances
-		<< "|" << std::setw(9)  << max_instances
-		<< "|" << std::setw(9)  << now_instances
-		<< "|" << "Grand total (Sum of all counters)" << std::endl;
+                << "|" << std::setw(9)  << max_instances
+                << "|" << std::setw(9)  << now_instances
+                << "|" << "Grand total (Sum of all counters)" << std::endl;
       need_footer = true;
     }
   }

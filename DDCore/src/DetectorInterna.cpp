@@ -130,7 +130,7 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
       continue;
     }
     except("DetElement",
-	   "+++ DetElement::copy: Element %s is already present [Double-Insert]", c.name());
+           "+++ DetElement::copy: Element %s is already present [Double-Insert]", c.name());
   }
   return obj;
 }

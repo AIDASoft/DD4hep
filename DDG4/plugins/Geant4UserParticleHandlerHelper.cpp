@@ -40,11 +40,11 @@ void setReason(Geant4Particle& p, bool starts_in_trk_vol, bool ends_in_trk_vol) 
   if( not reason.isSet(G4PARTICLE_PRIMARY) ) {
     if( !starts_in_trk_vol ) {
       if( !ends_in_trk_vol ){
-	p.reason = 0;
+        p.reason = 0;
       }
       //fg: dont keep backscatter that did not create a tracker hit
       else if( ! reason.isSet(G4PARTICLE_CREATED_TRACKER_HIT) ) {
-	p.reason = 0;
+        p.reason = 0;
       }
     }
   }

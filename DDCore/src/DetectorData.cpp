@@ -138,7 +138,7 @@ namespace {
       std::string typ = gr.type_name();
 
       printout(DEBUG,"OpaqueData","Saving object %p type: %s [%s] [%s]",
-	       obj, typ_info.name(), typ.c_str(), block->grammar->name.c_str());
+               obj, typ_info.name(), typ.c_str(), block->grammar->name.c_str());
       R__c = b.WriteVersion(cl,kTRUE);
       b << gr.hash();
 

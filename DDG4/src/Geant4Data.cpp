@@ -107,7 +107,7 @@ Geant4Tracker::Hit::Hit()  {
 
 /// Standard initializing constructor
 Geant4Tracker::Hit::Hit(int track_id, int pdg_id, double deposit, double time_stamp,
-			double len, const Position& pos, const Direction& mom)
+                        double len, const Position& pos, const Direction& mom)
   : Geant4HitData(), position(pos), momentum(mom), length(len), energyDeposit(deposit),
     truth(track_id, pdg_id, deposit, time_stamp, len, pos, mom)
 {

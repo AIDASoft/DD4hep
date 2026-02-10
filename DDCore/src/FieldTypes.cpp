@@ -115,7 +115,7 @@ void MultipoleField::fieldComponents(const double* pos, double* field) {
     else  {
       flag |= FIELD_POSITION_ONLY;
       if ( (std::abs(dx) + std::abs(dy) + std::abs(dz)) < eps )
-	flag |= FIELD_IDENTITY;
+        flag |= FIELD_IDENTITY;
     }
     this->inverse  = this->transform.Inverse();
     this->transform.GetRotation(this->rotation);

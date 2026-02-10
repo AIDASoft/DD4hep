@@ -401,7 +401,7 @@ namespace dd4hep {
     ConditionUpdateContext::get(const ConditionKey& key_value)   {
       Condition cond = condition(key_value);
       if ( cond.isValid() )  {
-        return cond.get<T>();	    /// return already bound data to wanted type
+        return cond.get<T>();            /// return already bound data to wanted type
       }
       accessFailure(key_value);
       throw std::runtime_error("ConditionUpdateCall");
@@ -412,7 +412,7 @@ namespace dd4hep {
     ConditionUpdateContext::get(const ConditionKey& key_value)  const  {
       Condition cond = condition(key_value);
       if ( cond.isValid() )  {
-        return cond.get<T>();	    /// return already bound data to wanted type
+        return cond.get<T>();            /// return already bound data to wanted type
       }
       accessFailure(key_value);
       throw std::runtime_error("ConditionUpdateCall");

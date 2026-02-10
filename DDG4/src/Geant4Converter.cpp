@@ -746,8 +746,8 @@ void* Geant4Converter::handleVolume(const std::string& name, const TGeoVolume* v
   Geant4GeometryMaps::VolumeMap::const_iterator volIt = info.g4Volumes.find(volume);
   if ( _v.testFlagBit(Volume::VETO_SIMU) )  {
     printout(lvl, "Geant4Converter",
-	     "++ Volume %s not converted [Veto'ed for simulation]",
-	     volume->GetName());
+             "++ Volume %s not converted [Veto'ed for simulation]",
+             volume->GetName());
     return nullptr;
   }
   else if (volIt == info.g4Volumes.end() ) {
@@ -803,8 +803,8 @@ void* Geant4Converter::handleVolume(const std::string& name, const TGeoVolume* v
     unsigned char smart_less_value = _v.smartlessValue();
     if( smart_less_value != Volume::NO_SMARTLESS_OPTIMIZATION )  {
       printout(ALWAYS, "Geant4Converter",
-	       "++ Volume %s Set Smartless value to %d",
-	       vnam, int(smart_less_value));
+               "++ Volume %s Set Smartless value to %d",
+               vnam, int(smart_less_value));
       g4vol->SetSmartless( smart_less_value );
     }
     /// Assign limits if necessary
@@ -813,8 +813,8 @@ void* Geant4Converter::handleVolume(const std::string& name, const TGeoVolume* v
     }
     if( g4region )   {
       printout(plevel, "Geant4Converter",
-	       "++ Volume     + Apply REGION settings: %-24s to volume %s.",
-	       reg.name(), vnam);
+               "++ Volume     + Apply REGION settings: %-24s to volume %s.",
+               reg.name(), vnam);
       // Handle the region settings for the world volume seperately.
       // Geant4 does NOT WANT any regions assigned to the workd volume.
       // The world's region is created in the G4RunManagerKernel!
@@ -1344,7 +1344,7 @@ void* Geant4Converter::handleMaterialProperties(TObject* mtx) const    {
 
   if ( nullptr != cptr )   {  // Check if the property should not be passed to Geant4
     printout(INFO,"Geant4MaterialProperties","++ Ignore property %s [%s].",
-             matrix->GetName(), matrix->GetTitle());	     
+             matrix->GetName(), matrix->GetTitle());             
     return nullptr;
   }
   cptr = ::strstr(matrix->GetTitle(), GEANT4_TAG_IGNORE);

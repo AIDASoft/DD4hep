@@ -225,5 +225,5 @@ bool Geant4FastSimShowerModel::check_trigger(const G4FastTrack& track)    {
 /// User callback to model the particle/energy shower
 void Geant4FastSimShowerModel::modelShower(const G4FastTrack& /* track */, G4FastStep& /* step */)    {
   except("Method %s::modelShower(const G4FastTrack& track, G4FastStep& step) "
-	 "is not implemented. User implementation mandatory.", this->name().c_str());
+         "is not implemented. User implementation mandatory.", this->name().c_str());
 }

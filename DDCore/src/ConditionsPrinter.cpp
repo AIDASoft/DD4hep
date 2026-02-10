@@ -96,7 +96,7 @@ void ConditionsPrinter::ParamPrinter::operator()(const AbstractMap::Params::valu
              prefix.c_str(),
              obj.first.c_str(), d.classID,
              obj.second.dataType().c_str(), 
-             obj.second.str().c_str());	
+             obj.second.str().c_str());        
   }
   else {
     std::string value = obj.second.str();
@@ -109,7 +109,7 @@ void ConditionsPrinter::ParamPrinter::operator()(const AbstractMap::Params::valu
              prefix.c_str(),
              obj.first.c_str(),
              obj.second.dataType().c_str(), 
-             value.c_str());	
+             value.c_str());        
   }
 }
 
@@ -253,7 +253,7 @@ int ConditionsPrinter::operator()(Condition cond)   const   {
       printout(printLevel,name,"++ %s \t[%s]: %s",
                prefix.c_str(),
                cond.data().dataType().c_str(), 
-               value.c_str());	
+               value.c_str());        
     }
     return 1;
   }

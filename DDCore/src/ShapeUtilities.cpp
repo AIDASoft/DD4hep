@@ -238,14 +238,14 @@ namespace dd4hep {
       else if (isA<PseudoTrap>(sh) )
         return PSEUDOTRAP_TAG;
       else if ( isInstance<SubtractionSolid>(sh) )
-	return SUBTRACTION_TAG;
+        return SUBTRACTION_TAG;
       else if ( isInstance<UnionSolid>(sh) )
-	return UNION_TAG;
+        return UNION_TAG;
       else if ( isInstance<IntersectionSolid>(sh) )
-	return INTERSECTION_TAG;
+        return INTERSECTION_TAG;
       else
         except("Solid","Failed to type of shape: %s [%s]",
-	       sh->GetName(), cl->GetName() );
+               sh->GetName(), cl->GetName() );
       return "";
     }
     except("Solid","Failed to access dimensions [Invalid handle].");
@@ -309,8 +309,8 @@ namespace dd4hep {
   }
   template <> std::vector<double> dimensions<TGeoCtub>(const TGeoShape* shape)    {
     const TGeoCtub* sh = get_ptr<TGeoCtub>(shape);
-    const Double_t*	lo = sh->GetNlow();
-    const Double_t*	hi = sh->GetNhigh();
+    const Double_t*        lo = sh->GetNlow();
+    const Double_t*        hi = sh->GetNhigh();
     return { sh->GetRmin(), sh->GetRmax(), sh->GetDz(),
         sh->GetPhi1()*units::deg, sh->GetPhi2()*units::deg,
         lo[0], lo[1], lo[2], hi[0], hi[1], hi[2] };
@@ -426,7 +426,7 @@ namespace dd4hep {
       pars.emplace_back(double(f.GetNvert()));
       for(int j=0, n=f.GetNvert(); j<n; ++j)   {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
-	int idx = f[j];
+        int idx = f[j];
         pars.emplace_back(double(idx));
 #else
         pars.emplace_back(double(f.GetVertexIndex(j)));
@@ -1178,8 +1178,8 @@ namespace dd4hep {
     }
     else if ( cl == TGeoCtub::Class() ) {
       const TGeoCtub* sh = (const TGeoCtub*) shape;
-      const Double_t*	hi = sh->GetNhigh();
-      const Double_t*	lo = sh->GetNlow();
+      const Double_t*        hi = sh->GetNhigh();
+      const Double_t*        lo = sh->GetNlow();
       log << " rmin:" << sh->GetRmin() << " rmax:" << sh->GetRmax() << " dz:" << sh->GetDz()
           << " Phi1:" << sh->GetPhi1() << " Phi2:" << sh->GetPhi2()
           << " lx:" << lo[0] << " ly:" << lo[1] << " lz:" << lo[2]

@@ -106,14 +106,14 @@ namespace dd4hep {
     /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
     template <> bool
     Geant4SensitiveAction<Geant4VoidSensitive>::process(const G4Step*       /* step */,
-							G4TouchableHistory* /* hist */) {
+                                                        G4TouchableHistory* /* hist */) {
       return true;
     }
     
     /// GFLASH/FastSim interface: Method for generating hit(s) using the information of G4Step object.
     template <> bool
     Geant4SensitiveAction<Geant4VoidSensitive>::processFastSim(const Geant4FastSimSpot* /* spot */,
-							       G4TouchableHistory*      /* hist */) {
+                                                               G4TouchableHistory*      /* hist */) {
       return true;
     }
     typedef Geant4SensitiveAction<Geant4VoidSensitive> Geant4VoidSensitiveAction;
@@ -164,7 +164,7 @@ namespace dd4hep {
     /// GFlash/FastSim interface: Method for generating hit(s) using the information of Geant4FastSimSpot object.
     template <> bool
     Geant4SensitiveAction<Geant4Tracker>::processFastSim(const Geant4FastSimSpot* spot,
-							 G4TouchableHistory* /* hist */)
+                                                         G4TouchableHistory* /* hist */)
     {
       typedef Geant4Tracker::Hit Hit;
       Geant4FastSimHandler h(spot);
@@ -240,7 +240,7 @@ namespace dd4hep {
     /// GFlash/FastSim interface: Method for generating hit(s) using the information of G4Step object.
     template <> bool
     Geant4SensitiveAction<Geant4OpticalTracker>::processFastSim(const Geant4FastSimSpot* spot,
-							        G4TouchableHistory* /* hist */)
+                                                                G4TouchableHistory* /* hist */)
     {
       typedef Geant4Tracker::Hit Hit;
       Geant4FastSimHandler h(spot);
@@ -314,7 +314,7 @@ namespace dd4hep {
     /// GFlash/FastSim interface: Method for generating hit(s) using the information of Geant4FastSimSpot object.
     template <> bool
     Geant4SensitiveAction<Geant4Calorimeter>::processFastSim(const Geant4FastSimSpot* spot,
-							     G4TouchableHistory* /* hist */)
+                                                             G4TouchableHistory* /* hist */)
     {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4FastSimHandler h(spot);
@@ -402,7 +402,7 @@ namespace dd4hep {
     /// GFlash/FastSim interface: Method for generating hit(s) using the information of Geant4FastSimSpot object.
     template <> bool
     Geant4SensitiveAction<Geant4OpticalCalorimeter>::processFastSim(const Geant4FastSimSpot* spot,
-								    G4TouchableHistory* /* hist */)
+                                                                    G4TouchableHistory* /* hist */)
     {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4FastSimHandler   h(spot);
@@ -492,7 +492,7 @@ namespace dd4hep {
     /// GFlash/FastSim interface: Method for generating hit(s) using the information of Geant4FastSimSpot object.
     template <> bool
     Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::processFastSim(const Geant4FastSimSpot* spot,
-									 G4TouchableHistory* /* hist */)
+                                                                         G4TouchableHistory* /* hist */)
     {
       typedef Geant4Calorimeter::Hit Hit;
       Geant4FastSimHandler h(spot);
@@ -644,7 +644,7 @@ namespace dd4hep {
       G4bool process(const G4Step* step, G4TouchableHistory* ) {
         Geant4StepHandler h(step);
         // std::cout << " process called - pre pos: " << h.prePos() << " post pos " << h.postPos() 
-        // 	  << " edep: " << h.deposit() << std::endl ;
+        //           << " edep: " << h.deposit() << std::endl ;
         void *prePV = h.volume(h.pre), *postPV = h.volume(h.post);
 
         Geant4HitCollection* coll = sensitive->collection(0);
@@ -748,7 +748,7 @@ namespace dd4hep {
     /// GFlash/FastSim interface: Method for generating hit(s) using the information of Geant4FastSimSpot object.
     template <> bool
     Geant4SensitiveAction<TrackerCombine>::processFastSim(const Geant4FastSimSpot* spot,
-							  G4TouchableHistory*      history)    {
+                                                          G4TouchableHistory*      history)    {
       return m_userData.process(spot, history);
     }
 

@@ -98,7 +98,7 @@ namespace dd4hep {
 #elif DD4HEP_PLUGINSVC_VERSION==2
         f = getCreator(id,typeid(R(Args...)));
         if ( std::any_cast<func>(f) )
-	  return std::any_cast<func>(f)(std::forward<Args>(args)...);
+          return std::any_cast<func>(f)(std::forward<Args>(args)...);
 #endif
       }
       catch(const std::bad_any_cast& e)   {

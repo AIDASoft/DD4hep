@@ -28,8 +28,8 @@ namespace  {
   struct MyTransform3D : public G4Transform3D {
 #if 0
     MyTransform3D(double XX, double XY, double XZ, double DX,
-		  double YX, double YY, double YZ, double DY,
-		  double ZX, double ZY, double ZZ, double DZ)
+                  double YX, double YY, double YZ, double DY,
+                  double ZX, double ZY, double ZZ, double DZ)
       : G4Transform3D(XX, XY, XZ, DX, YX, YY, YZ, DY, ZX, ZY, ZZ, DZ) {
     }
 #endif
@@ -155,9 +155,9 @@ void dd4hep::sim::g4Transform(const Transform3D& matrix, G4Transform3D& transfor
 /// Generate parameterised placements in 2 dimension according to transformation delta
 G4Transform3D
 dd4hep::sim::generate_placements(const G4Transform3D& start,
-				 const G4Transform3D& delta,
-				 std::size_t count,
-				 const std::function<void(const G4Transform3D& delta)>& callback)
+                                 const G4Transform3D& delta,
+                                 std::size_t count,
+                                 const std::function<void(const G4Transform3D& delta)>& callback)
 {
   G4Transform3D transform(start);
   for( std::size_t i = 0; i < count; ++i )    {
@@ -170,11 +170,11 @@ dd4hep::sim::generate_placements(const G4Transform3D& start,
 /// Generate parameterised placements in 2 dimensions according to transformation delta
 G4Transform3D
 dd4hep::sim::generate_placements(const G4Transform3D& start,
-				 const G4Transform3D& delta1,
-				 std::size_t count1,
-				 const G4Transform3D& delta2,
-				 std::size_t count2,
-				 const std::function<void(const G4Transform3D& delta)>& callback)
+                                 const G4Transform3D& delta1,
+                                 std::size_t count1,
+                                 const G4Transform3D& delta2,
+                                 std::size_t count2,
+                                 const std::function<void(const G4Transform3D& delta)>& callback)
 {
   G4Transform3D transform2 = start;
   for(std::size_t j = 0; j < count2; ++j)    {
@@ -188,13 +188,13 @@ dd4hep::sim::generate_placements(const G4Transform3D& start,
 /// Generate parameterised placements in 3 dimensions according to transformation delta
 G4Transform3D
 dd4hep::sim::generate_placements(const G4Transform3D& start,
-				 const G4Transform3D& delta1,
-				 std::size_t count1,
-				 const G4Transform3D& delta2,
-				 std::size_t count2,
-				 const G4Transform3D& delta3,
-				 std::size_t count3,
-				 const std::function<void(const G4Transform3D& delta)>& callback)
+                                 const G4Transform3D& delta1,
+                                 std::size_t count1,
+                                 const G4Transform3D& delta2,
+                                 std::size_t count2,
+                                 const G4Transform3D& delta3,
+                                 std::size_t count3,
+                                 const std::function<void(const G4Transform3D& delta)>& callback)
 {
   G4Transform3D transform3 = start;
   for(std::size_t k = 0; k < count3; ++k)    {

@@ -70,7 +70,7 @@ namespace dd4hep {
       }
       /// Return TrackClassification with enum G4ClassificationOfNewTrack or NoTrackClassification
       virtual TrackClassification 
-	classifyNewTrack(G4StackManager* /* stackManager */, const G4Track* track);
+        classifyNewTrack(G4StackManager* /* stackManager */, const G4Track* track);
     };
 
     /// Implementation of the Geant4 shared stacking action
@@ -107,7 +107,7 @@ namespace dd4hep {
       virtual void prepare(G4StackManager* stackManager)  override;
       /// Return TrackClassification with enum G4ClassificationOfNewTrack or NoTrackClassification
       virtual TrackClassification 
-	classifyNewTrack(G4StackManager* stackManager, const G4Track* track)  override;
+        classifyNewTrack(G4StackManager* stackManager, const G4Track* track)  override;
     };
 
     /// Concrete implementation of the Geant4 stacking action sequence
@@ -163,7 +163,7 @@ namespace dd4hep {
       virtual void prepare(G4StackManager* stackManager);
       /// Classify new track: The first call in the sequence returning non-null pointer wins!
       virtual TrackClassification 
-	classifyNewTrack(G4StackManager* stackManager, const G4Track* track);
+        classifyNewTrack(G4StackManager* stackManager, const G4Track* track);
     };
 
   }    // End namespace sim

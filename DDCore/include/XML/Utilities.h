@@ -76,9 +76,9 @@ namespace dd4hep {
                                  dd4hep::DetElement sdet ) ;
  
     /** Sets the type flag specified in the \<type_flags\> element for the given DetElement, example: <br>
-	@verbatim
-	<type_flags type=" DetType_TRACKER + DetType_PIXEL + DetType_VERTEX "/>
-	@endverbatim
+        @verbatim
+        <type_flags type=" DetType_TRACKER + DetType_PIXEL + DetType_VERTEX "/>
+        @endverbatim
      *  @author F.Gaede, DESY
      */
     void setDetectorTypeFlag( dd4hep::xml::Handle_t e, dd4hep::DetElement sdet ) ; 
@@ -106,10 +106,10 @@ namespace dd4hep {
      *   \date    03.03.23
      */
     std::size_t configVolume( dd4hep::Detector& detector,
-			      dd4hep::xml::Handle_t element,
-			      dd4hep::Volume volume,
-			      bool propagate,
-			      bool ignore_unknown_attr = false);
+                              dd4hep::xml::Handle_t element,
+                              dd4hep::Volume volume,
+                              bool propagate,
+                              bool ignore_unknown_attr = false);
 
     /// Configure sensitive detector from XML element
     /**
@@ -133,8 +133,8 @@ namespace dd4hep {
      *   \date    03.03.23
      */
     std::size_t configSensitiveDetector( dd4hep::Detector& detector,
-					 dd4hep::SensitiveDetector sensitive,
-					 dd4hep::xml::Handle_t element);
+                                         dd4hep::SensitiveDetector sensitive,
+                                         dd4hep::xml::Handle_t element);
 
   }       /* End namespace xml              */
 }         /* End namespace dd4hep           */

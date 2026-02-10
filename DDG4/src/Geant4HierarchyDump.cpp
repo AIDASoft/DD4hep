@@ -89,8 +89,8 @@ void Geant4HierarchyDump::dump(const std::string& indent, const G4VPhysicalVolum
   char text[32];
 
   printout(INFO, "Geant4Hierarchy", "%s -> Placement:%s LV:%s Material:%s Solid:%s # of Daughters:%d CopyNo:%d",
-	   _T(indent), _T(v->GetName()), _T(lv->GetName()), _T(mat->GetName()),
-	   _T(sol->GetName()), ndau, v->GetCopyNo());
+           _T(indent), _T(v->GetName()), _T(lv->GetName()), _T(mat->GetName()),
+           _T(sol->GetName()), ndau, v->GetCopyNo());
 
   if (sd && (m_flags & G4DUMP_SOLID)) {
     str.str("");
@@ -120,7 +120,7 @@ void Geant4HierarchyDump::dump(const std::string& indent, const G4VPhysicalVolum
       r.xx()*r.yy()*r.zz() + r.xy()*r.yz()*r.zx() + r.xz()*r.yx()*r.zy() -
       r.zx()*r.yy()*r.xz() - r.zy()*r.yz()*r.xx() - r.zz()*r.yx()*r.xy();
     printout(INFO, "Geant4Hierarchy", "%s    Matrix: %sREFLECTED Tr: %8.3g %8.3g %8.3g [mm]",
-	     _T(indent), det > 0e0 ? "NOT " : "", t.x(), t.y(), t.z());
+             _T(indent), det > 0e0 ? "NOT " : "", t.x(), t.y(), t.z());
   }
   for (G4int idau = 0; idau < ndau; ++idau) {
     ::snprintf(text, sizeof(text), "  %-3d", idau);

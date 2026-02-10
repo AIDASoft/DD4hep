@@ -41,24 +41,24 @@ namespace dd4hep {
 
       /// Helper structure to cache dimension variabled from setup parameters
       struct Dimension  {
-	G4Transform3D delta        {   };
-	G4ThreeVector translation  {   };
-	std::size_t   count        { 0 };
+        G4Transform3D delta        {   };
+        G4ThreeVector translation  {   };
+        std::size_t   count        { 0 };
 
       public:
-	/// Initializing constructor
-	Dimension(const G4Transform3D& d, std::size_t c)
-	  : delta(d), translation(d.getTranslation()), count(c) {}
-	/// Default constructor
-	Dimension() = default;
-	/// Move Constructor
-	Dimension(Dimension&&) = default;
-	/// Copy Constructor
-	Dimension(const Dimension&) = default;
-	/// Assignment operator
-	Dimension& operator=(Dimension&&) = default;
-	/// Assignment operator
-	Dimension& operator=(const Dimension&) = default;
+        /// Initializing constructor
+        Dimension(const G4Transform3D& d, std::size_t c)
+          : delta(d), translation(d.getTranslation()), count(c) {}
+        /// Default constructor
+        Dimension() = default;
+        /// Move Constructor
+        Dimension(Dimension&&) = default;
+        /// Copy Constructor
+        Dimension(const Dimension&) = default;
+        /// Assignment operator
+        Dimension& operator=(Dimension&&) = default;
+        /// Assignment operator
+        Dimension& operator=(const Dimension&) = default;
       };
 
       using Parameters   = PlacedVolume::Object::Parameterisation;

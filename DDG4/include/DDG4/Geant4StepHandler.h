@@ -53,8 +53,8 @@ namespace dd4hep {
       Geant4StepHandler() = delete;
       /// Initializing constructor
       Geant4StepHandler(const G4Step* s)
-	: Geant4HitHandler(s->GetTrack(), (s->GetPreStepPoint()->GetTouchableHandle())()),
-	step(s), pre(s->GetPreStepPoint()), post(s->GetPostStepPoint())
+        : Geant4HitHandler(s->GetTrack(), (s->GetPreStepPoint()->GetTouchableHandle())()),
+        step(s), pre(s->GetPreStepPoint()), post(s->GetPostStepPoint())
       {
         applyBirksLaw = false;
       }

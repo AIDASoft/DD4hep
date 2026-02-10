@@ -123,15 +123,15 @@ namespace dd4hep {
 
     /// Initializing constructor
     inline Geant4FastSimSpot::Geant4FastSimSpot(const G4FastHit* h,
-						const G4FastTrack* trk,
-						G4VTouchable* t)
+                                                const G4FastTrack* trk,
+                                                G4VTouchable* t)
       : hit(h), track(trk), primary(trk->GetPrimaryTrack()), touchable(t)
     {
     }
 
     /// Initializing constructor
     inline Geant4FastSimSpot::Geant4FastSimSpot(const G4FastHit* h,
-						const G4FastTrack* trk)
+                                                const G4FastTrack* trk)
       : hit(h), track(trk), primary(trk->GetPrimaryTrack())
     {
     }

@@ -132,5 +132,5 @@ void Geant4IsotropeGenerator::getParticleDirection(int num, ROOT::Math::XYZVecto
     break;
   }
   except("Unknown distribution densitiy: %s. Cannot generate primaries.",
-	 m_distribution.c_str());
+         m_distribution.c_str());
 }

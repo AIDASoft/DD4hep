@@ -186,7 +186,7 @@ namespace dd4hep{
         unsigned thisOffset ;
 
         switch( subfields.size() ){
-	
+        
         case 2: 
 
           name = subfields[0] ; 
@@ -194,9 +194,9 @@ namespace dd4hep{
           thisOffset = offset ;
 
           offset += abs( width ) ;
-	
+        
           break ;
-	
+        
         case 3: 
           name = subfields[0] ;
           thisOffset = atol( subfields[1].c_str()  ) ;
@@ -205,7 +205,7 @@ namespace dd4hep{
           offset = thisOffset + abs( width ) ;
 
           break ;
-	
+        
         default:
 
           std::stringstream s ;

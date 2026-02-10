@@ -279,10 +279,10 @@ void Geant4FieldTrackingSetupAction::operator()()   {
   execute(context()->detectorDescription());
   printout( INFO, "FieldSetup", "Geant4 magnetic field tracking configured.");
   printout( INFO, "FieldSetup", "G4MagIntegratorStepper:%s G4Mag_EqRhs:%s",
-	    stepper_typ.c_str(), eq_typ.c_str());
+            stepper_typ.c_str(), eq_typ.c_str());
   printout( INFO, "FieldSetup", "Epsilon:[min:%f mm max:%f mm]", eps_min, eps_max);
   printout( INFO, "FieldSetup", "Delta:[chord:%f 1-step:%f intersect:%f] LargestStep %f mm",
-	    delta_chord, delta_one_step, delta_intersection, largest_step);
+            delta_chord, delta_one_step, delta_intersection, largest_step);
 }
 
 
@@ -306,10 +306,10 @@ void Geant4FieldTrackingConstruction::constructField(Geant4DetectorConstructionC
   execute(context()->detectorDescription());
   printout( INFO, "FieldSetup", "Geant4 magnetic field tracking configured.");
   printout( INFO, "FieldSetup", "G4MagIntegratorStepper:%s G4Mag_EqRhs:%s",
-	    stepper_typ.c_str(), eq_typ.c_str());
+            stepper_typ.c_str(), eq_typ.c_str());
   printout( INFO, "FieldSetup", "Epsilon:[min:%f mm max:%f mm]", eps_min, eps_max);
   printout( INFO, "FieldSetup", "Delta:[chord:%f 1-step:%f intersect:%f] LargestStep %f mm",
-	    delta_chord, delta_one_step, delta_intersection, largest_step);
+            delta_chord, delta_one_step, delta_intersection, largest_step);
 }
 
 DECLARE_GEANT4_SETUP(Geant4FieldSetup,setup_fields)

@@ -41,7 +41,7 @@ namespace dd4hep {
       virtual CellID cellID(const Vector3D& localPosition, const Vector3D& globalPosition, const VolumeID& volumeID) const;
       // access the stagger mode: 0=no stagger; 1=stagger cycling through 3 offsets
       int stagger() const {
-	return _stagger;
+        return _stagger;
       }
       
       /// access the grid size 
@@ -71,7 +71,7 @@ namespace dd4hep {
 
       /// set the stagger mode: 0=no stagger; 1=stagger cycling through 3 offsets
       void setStagger(int stagger) {
-	_stagger= stagger;
+        _stagger= stagger;
       }
       /// set the grid size in X
       void setSideLength(double cellSize) {

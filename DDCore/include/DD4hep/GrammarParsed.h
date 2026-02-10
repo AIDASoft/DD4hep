@@ -347,7 +347,7 @@ namespace dd4hep {
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,7,dd4hep::detail::Primitive<xx>::int_pair_t,    eval_pair) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,8,dd4hep::detail::Primitive<xx>::string_pair_t, eval_pair) 
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_ROOTMATH(serial,xx,eval_func)	\
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_ROOTMATH(serial,xx,eval_func)        \
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,1,xx,eval_func)            \
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,2,std::vector<xx>, eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR_SERIAL(serial,3,std::list<xx>,   eval_container) \

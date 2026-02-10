@@ -46,14 +46,14 @@ namespace DDSegmentation {
       const BitFieldElement& bv = b._coder->fields()[i] ;
       
       os << "  " <<  bv.name()
-	 << " [" <<  bv.offset()  << ":"  ;
+         << " [" <<  bv.offset()  << ":"  ;
       
       if(  bv.isSigned()  )  os << "-" ;
 
       os << bv.width() << "]  : "  ;
       
       os << b._coder->get( b._value , i)
-	 << std::endl ;
+         << std::endl ;
       
     }
   

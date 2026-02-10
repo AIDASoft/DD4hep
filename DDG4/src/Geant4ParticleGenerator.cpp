@@ -174,7 +174,7 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
     vtx->out.insert(p->id);
     printout(INFO,name(),"Particle [%d] %-12s Mom:%.3f GeV vertex:(%6.3f %6.3f %6.3f)[mm] direction:(%6.3f %6.3f %6.3f)",
              p->id, m_particleName.c_str(), momentum/CLHEP::GeV,
-	     vtx->x/CLHEP::mm, vtx->y/CLHEP::mm, vtx->z/CLHEP::mm,
-	     direction.X(), direction.Y(), direction.Z());
+             vtx->x/CLHEP::mm, vtx->y/CLHEP::mm, vtx->z/CLHEP::mm,
+             direction.X(), direction.Y(), direction.Z());
   }
 }

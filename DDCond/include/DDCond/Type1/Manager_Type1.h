@@ -111,7 +111,7 @@ namespace dd4hep {
 
       /// Access to managed pool of typed conditions indexed by IOV-type and IOV key
       //const TypedConditionPool& conditionsPool() const  {  return m_rawPool; }
-	  
+          
       /// Initialize object and define factories
       void initialize();
 

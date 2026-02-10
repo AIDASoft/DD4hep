@@ -55,13 +55,13 @@ void ConditionAny::use_data(detail::ConditionObject* obj)   {
   if ( obj )   {
     if ( !obj->data.grammar )   {
       except("ConditionAny",
-	     "+++ Cannot assign unbound conditions data to handle. [Invalid operation]");
+             "+++ Cannot assign unbound conditions data to handle. [Invalid operation]");
     }
     if ( obj->data.grammar != any_grammar() )   {
       except("ConditionAny",
-	     "+++ Cannot assign data of type " +
-	     obj->data.grammar->type_name() +
-	     " to handle holding std::any. [Invalid operation]");
+             "+++ Cannot assign data of type " +
+             obj->data.grammar->type_name() +
+             " to handle holding std::any. [Invalid operation]");
     }
   }
   this->m_element = obj;

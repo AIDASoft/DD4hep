@@ -37,8 +37,8 @@ public:
   virtual ~G4VFastSimSensitiveDetector() = default;
   /// Geant4 Fast simulation interface
   virtual G4bool ProcessHits(const G4FastHit* hit,
-			     const G4FastTrack* track,
-			     G4TouchableHistory* hist) = 0;
+                             const G4FastTrack* track,
+                             G4TouchableHistory* hist) = 0;
 };
 #else
 #include <G4VFastSimSensitiveDetector.hh>

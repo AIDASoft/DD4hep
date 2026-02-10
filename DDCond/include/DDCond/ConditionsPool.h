@@ -148,9 +148,9 @@ namespace dd4hep {
         PRINT_NONE   = 0,
         PRINT_INSERT = 1<<0,
         PRINT_CLEAR  = 1<<1,
-	PRINT_LOAD   = 1<<2,
+        PRINT_LOAD   = 1<<2,
         PRINT_COMPUTE= 1<<3,
-	PRINT_LAST
+        PRINT_LAST
       };
       /// Processing flags (printout etc.)
       unsigned int flags = 0;

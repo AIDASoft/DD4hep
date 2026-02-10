@@ -387,16 +387,16 @@ void VisAttr::setColor(float alpha, float red, float green, float blue) {
   const auto num_after = gROOT->GetListOfColors()->GetLast();
   if (num_before != num_after) {
     printout(INFO,"VisAttr","+++ %s Allocated a Color: r:%02X g:%02X b:%02X, this will not save to a ROOT file",
-	     this->name(), int(red*255.), int(green*255.), int(blue*255));
+             this->name(), int(red*255.), int(green*255.), int(blue*255));
   }
   o.alpha    = alpha;
   o.color    = gROOT->GetColor(col);
   if ( !o.color )    {
     except("VisAttr","+++ %s Failed to allocate Color: r:%02X g:%02X b:%02X",
-	   this->name(), int(red*255.), int(green*255.), int(blue*255));
+           this->name(), int(red*255.), int(green*255.), int(blue*255));
   }
   o.colortr = new TColor(gROOT->GetListOfColors()->GetLast()+1,
-			 o.color->GetRed(), o.color->GetGreen(), o.color->GetBlue());
+                         o.color->GetRed(), o.color->GetGreen(), o.color->GetBlue());
   o.colortr->SetAlpha(alpha);
 }
 

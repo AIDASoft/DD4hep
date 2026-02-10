@@ -1417,7 +1417,7 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
     }
     if( s_debug.detelements )  {
       printout(ALWAYS, "Compact","++ Building DetElement %s of type: %s. Parent: %s",
-	       name.c_str(), type.c_str(), par_name.c_str());
+               name.c_str(), type.c_str(), par_name.c_str());
     }
     
     xml_attr_t attr_ro  = element.attr_nothrow(_U(readout));
@@ -1711,7 +1711,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
     for (xml_coll_t clr(steer, _U(clear)); clr; ++clr) {
       std::string nam = clr.hasAttr(_U(name)) ? clr.attr<std::string>(_U(name)) : std::string();
       if ( nam.substr(0,6) == "elemen" )   {
-        TGeoElementTable*	table = description.manager().GetElementTable();
+        TGeoElementTable*        table = description.manager().GetElementTable();
         table->TGeoElementTable::~TGeoElementTable();
         new(table) TGeoElementTable();
         // This will initialize the table without filling:

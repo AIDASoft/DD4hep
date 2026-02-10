@@ -87,7 +87,7 @@ namespace dd4hep {
       if ( fabs( cellPosition.X )>10000e0 || fabs( cellPosition.Y )>10000e0 ) {
         printout(WARNING,"MegatileLayerGridXY", "crazy cell position: x: %f y: %f ", cellPosition.X, cellPosition.Y);
         printout(WARNING,"MegatileLayerGridXY", "layer, wafer, cellx,y indices: %d %d %d %d",
-		 layerIndex, waferIndex, cellIndexX, cellIndexY);
+                 layerIndex, waferIndex, cellIndexX, cellIndexY);
         assert(0 && "crazy cell position?");
       }
 
@@ -160,14 +160,14 @@ namespace dd4hep {
         _currentSegInfo.megaTileOffsetX = _megaTileOffsetX;
         _currentSegInfo.megaTileOffsetY = _megaTileOffsetY;
 
-	if ( _unif_nCellsX>0 && _unif_nCellsY>0 ) {
-	  _currentSegInfo.nCellsX         = _unif_nCellsX;
-	  _currentSegInfo.nCellsY         = _unif_nCellsY;
-	} else {
-	  assert ( layerIndex<_nCellsX.size() && "MegatileLayerGridXY ERROR: too high layer index?" );
-	  _currentSegInfo.nCellsX         = _nCellsX[layerIndex];
-	  _currentSegInfo.nCellsY         = _nCellsY[layerIndex];
-	}
+        if ( _unif_nCellsX>0 && _unif_nCellsY>0 ) {
+          _currentSegInfo.nCellsX         = _unif_nCellsX;
+          _currentSegInfo.nCellsY         = _unif_nCellsY;
+        } else {
+          assert ( layerIndex<_nCellsX.size() && "MegatileLayerGridXY ERROR: too high layer index?" );
+          _currentSegInfo.nCellsX         = _nCellsX[layerIndex];
+          _currentSegInfo.nCellsY         = _nCellsY[layerIndex];
+        }
 
       } else { // special megatile
         _currentSegInfo = specialMegaTiles_layerWafer.find( tileid )->second;

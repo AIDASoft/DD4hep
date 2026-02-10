@@ -75,8 +75,8 @@ void Geant4EventReader::checkParameters(std::map< std::string, std::string > &pa
   }
   for (auto const& pairNV : parameters ) {
     printout(FATAL,"EventReader::checkParameters","Unknown parameter name: %s with value %s",
-	     pairNV.first.c_str(),
-	     pairNV.second.c_str());
+             pairNV.first.c_str(),
+             pairNV.second.c_str());
   }
   throw std::runtime_error("Unknown parameter for event reader");
 

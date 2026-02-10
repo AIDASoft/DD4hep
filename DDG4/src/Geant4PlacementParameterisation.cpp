@@ -49,19 +49,19 @@ dd4hep::sim::Geant4PlacementParameterisation::Geant4PlacementParameterisation(Pl
   }
   if ( m_have_rotation )    {
     auto callback = std::bind(&Geant4PlacementParameterisation::operator(),
-			      this, std::placeholders::_1);
+                              this, std::placeholders::_1);
     if ( dim.size() == 1 )
       generate_placements(m_start.delta,
-			  dim[0].delta, dim[0].count, callback);
+                          dim[0].delta, dim[0].count, callback);
     else if ( dim.size() == 2 )
       generate_placements(m_start.delta,
-			  dim[0].delta, dim[0].count,
-			  dim[1].delta, dim[1].count, callback);
+                          dim[0].delta, dim[0].count,
+                          dim[1].delta, dim[1].count, callback);
     else if ( dim.size() == 3 )
       generate_placements(m_start.delta,
-			  dim[0].delta, dim[0].count,
-			  dim[1].delta, dim[1].count,
-			  dim[2].delta, dim[2].count, callback);
+                          dim[0].delta, dim[0].count,
+                          dim[1].delta, dim[1].count,
+                          dim[2].delta, dim[2].count, callback);
   }
 }
 

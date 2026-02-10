@@ -32,7 +32,7 @@ namespace  {
    * 
    * See: dd4hep/DetectorHelper.h
    * Test: geoPluginRun -input file:../DD4hep.trunk/examples/CLICSiD/compact/compact.xml \
-   *                    -plugin CLICSiD_DetectorHelperTest			\
+   *                    -plugin CLICSiD_DetectorHelperTest                        \
    *         optional:  -<detector-name (default:SiVertexEndcap)>  [Note the '-'!!!]
    *
    *  @author  M.Frank

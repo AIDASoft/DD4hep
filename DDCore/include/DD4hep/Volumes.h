@@ -525,8 +525,8 @@ namespace dd4hep {
      *  @param inc_2    Transformation increment for each iteration in dimension 2
      */
     PlacedVolume paramVolume2D(Volume entity, 
-			       size_t count_1, const Transform3D& inc_1,
-			       size_t count_2, const Transform3D& inc_2);
+                               size_t count_1, const Transform3D& inc_1,
+                               size_t count_2, const Transform3D& inc_2);
 
     /// Constructor to be used when creating a new parameterised volume object
     /** Embedding parameterised daughter placements in a mother volume
@@ -538,11 +538,11 @@ namespace dd4hep {
      *  @param inc_2    Transformation increment for each iteration in dimension 2
      */
     PlacedVolume paramVolume2D(const Transform3D& start,
-			       Volume entity,
-			       size_t count_1,
-			       const Position& inc_1,
-			       size_t count_2,
-			       const Position& inc_2);
+                               Volume entity,
+                               size_t count_1,
+                               const Position& inc_1,
+                               size_t count_2,
+                               const Position& inc_2);
 
     /// Constructor to be used when creating a new parameterised volume object
     /** Embedding parameterised daughter placements in a mother volume
@@ -554,10 +554,10 @@ namespace dd4hep {
      *  @param inc_2    Transformation increment for each iteration in dimension 2
      */
     PlacedVolume paramVolume2D(Volume entity,
-			       size_t count_1,
-			       const Position& inc_1,
-			       size_t count_2,
-			       const Position& inc_2);
+                               size_t count_1,
+                               const Position& inc_1,
+                               size_t count_2,
+                               const Position& inc_2);
 
     /// 2D Parameterised volume implementation
     /** Embedding parameterised daughter placements in a mother volume
@@ -569,8 +569,8 @@ namespace dd4hep {
      *  @param inc_2    Transformation increment for each iteration in dimension 2
      */
     PlacedVolume paramVolume2D(const Transform3D& start, Volume entity, 
-			       size_t count_1, const Transform3D& inc_1,
-			       size_t count_2, const Transform3D& inc_2);
+                               size_t count_1, const Transform3D& inc_1,
+                               size_t count_2, const Transform3D& inc_2);
 
     /// 3D Parameterised volume implementation
     /** Embedding parameterised daughter placements in a mother volume
@@ -583,9 +583,9 @@ namespace dd4hep {
      *  @param inc_3    Transformation increment for each iteration in dimension 3
      */
     PlacedVolume paramVolume3D(Volume entity, 
-			       size_t count_1, const Transform3D& inc_1,
-			       size_t count_2, const Transform3D& inc_2,
-			       size_t count_3, const Transform3D& inc_3);
+                               size_t count_1, const Transform3D& inc_1,
+                               size_t count_2, const Transform3D& inc_2,
+                               size_t count_3, const Transform3D& inc_3);
 
     /// 3D Parameterised volume implementation
     /** Embedding parameterised daughter placements in a mother volume
@@ -599,9 +599,9 @@ namespace dd4hep {
      *  @param inc_3    Transformation increment for each iteration in dimension 3
      */
     PlacedVolume paramVolume3D(const Transform3D& start, Volume entity, 
-			       size_t count_1, const Transform3D& inc_1,
-			       size_t count_2, const Transform3D& inc_2,
-			       size_t count_3, const Transform3D& inc_3);
+                               size_t count_1, const Transform3D& inc_1,
+                               size_t count_2, const Transform3D& inc_2,
+                               size_t count_3, const Transform3D& inc_3);
 
     /// 3D Parameterised volume implementation
     /** Embedding parameterised daughter placements in a mother volume
@@ -614,9 +614,9 @@ namespace dd4hep {
      *  @param inc_3    Transformation increment for each iteration in dimension 3
      */
     PlacedVolume paramVolume3D(Volume entity, 
-			       size_t count_1, const Position& inc_1,
-			       size_t count_2, const Position& inc_2,
-			       size_t count_3, const Position& inc_3);
+                               size_t count_1, const Position& inc_1,
+                               size_t count_2, const Position& inc_2,
+                               size_t count_3, const Position& inc_3);
 
     /// 3D Parameterised volume implementation
     /** Embedding parameterised daughter placements in a mother volume
@@ -630,9 +630,9 @@ namespace dd4hep {
      *  @param inc_3    Transformation increment for each iteration in dimension 3
      */
     PlacedVolume paramVolume3D(const Transform3D& start, Volume entity, 
-			       size_t count_1, const Position& inc_1,
-			       size_t count_2, const Position& inc_2,
-			       size_t count_3, const Position& inc_3);
+                               size_t count_1, const Position& inc_1,
+                               size_t count_2, const Position& inc_2,
+                               size_t count_3, const Position& inc_3);
 
     /// Set user flags in bit-field
     void setFlagBit(unsigned int bit);

@@ -176,16 +176,16 @@ Geant4Kernel& Geant4Kernel::instance(Detector& description) {
 /// Access interrupt handler. Will be created on the first call
 Geant4Interrupts& Geant4Kernel::interruptHandler()  const  {
   if ( isMaster() )
-    return *this->m_interrupts;	
+    return *this->m_interrupts;        
   return this->m_master->interruptHandler();
 }
 
 /// Trigger smooth end-of-event-loop with finishing currently processing event
 void Geant4Kernel::triggerStop()  {
   printout(INFO, "Geant4Kernel",
-	   "+++ Stop signal seen. Will finish after current event(s) have been processed.");
+           "+++ Stop signal seen. Will finish after current event(s) have been processed.");
   printout(INFO, "Geant4Kernel",
-	   "+++ Depending on the complexity of the simulation, this may take some time ...");
+           "+++ Depending on the complexity of the simulation, this may take some time ...");
   this->m_master->m_processEvents = EVENTLOOP_HALT;
 }
 

@@ -232,8 +232,8 @@ DetElementCreator::~DetElementCreator() noexcept(false)  {
       Volume vol = place.volume();
       ::snprintf(volid,sizeof(volid),"Lv%d", p.second.first);
       printout(DEBUG,pref, "DetElementCreator: ++ Set volid (%-24s): %-6s = %3d  -> %s  (%p)",
-	       vol.isSensitive() ? vol.sensitiveDetector().name() : "Not Sensitive",
-	       volid, p.second.second, place.name(), place.ptr());
+               vol.isSensitive() ? vol.sensitiveDetector().name() : "Not Sensitive",
+               volid, p.second.second, place.name(), place.ptr());
       place.addPhysVolID(volid, p.second.second);
     }
     catch(const exception& e)   {

@@ -242,9 +242,9 @@ namespace {
   
   std::ostream& Actor::handleMatrix(std::ostream& log, TGeoMatrix* mat)   {
     if ( mat && matrices.find(mat) == matrices.end() )  {
-      const Double_t*	rot = mat->GetRotationMatrix();
-      const Double_t*	tra = mat->GetTranslation();
-      const Double_t*	sca = mat->GetScale();
+      const Double_t*        rot = mat->GetRotationMatrix();
+      const Double_t*        tra = mat->GetTranslation();
+      const Double_t*        sca = mat->GetScale();
       log << "TGeoHMatrix* matrix_" << pvoid_t(mat) << " = new TGeoHMatrix(\"" << mat->GetName() << "\");"
           << newline << "{" << newline;
       if ( mat->IsTranslation() )   {
@@ -328,8 +328,8 @@ namespace {
     }
     else if (cl == TGeoCtub::Class()) {
       const TGeoCtub* sh = (const TGeoCtub*) shape;
-      const Double_t*	hi = sh->GetNhigh();
-      const Double_t*	lo = sh->GetNlow();
+      const Double_t*        hi = sh->GetNhigh();
+      const Double_t*        lo = sh->GetNlow();
       log << cl->GetName() << "* shape_" << pvoid << " = "
           << "new " << cl->GetName() << "(\"" << sh->GetName() << '"'
           << ", " << sh->GetRmin()

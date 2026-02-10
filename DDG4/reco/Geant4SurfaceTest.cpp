@@ -144,7 +144,7 @@ void Geant4SurfaceTest::end(const G4Event* evt)  {
       }
       info("PASSED: Hit:%ld Track:%d Surface found for cell: %016llX",i,trackID,h->cellID);
 
-      Vector3D hit_point(pos.x()*dd4hep::mm,pos.y()*dd4hep::mm,pos.z()*dd4hep::mm);	  
+      Vector3D hit_point(pos.x()*dd4hep::mm,pos.y()*dd4hep::mm,pos.z()*dd4hep::mm);          
       bool isInside = surf->insideBounds(hit_point);
       string flag = "";
       if ( h->flag & Geant4Tracker::Hit::HIT_SECONDARY_TRACK ) flag += " TRK:SECONDARY";

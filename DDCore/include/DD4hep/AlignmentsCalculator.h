@@ -46,7 +46,7 @@ namespace dd4hep {
       public:
         size_t computed = 0;
         size_t missing  = 0;
-	size_t multiply = 0;
+        size_t multiply = 0;
         Result() = default;
         /// Copy constructor
         Result(const Result& result) = default;

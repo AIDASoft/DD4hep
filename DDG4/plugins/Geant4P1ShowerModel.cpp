@@ -17,13 +17,13 @@
 // <geant4-source-dir>/examples/extended/parameterisations/Par01
 //
 // From the README:
-// 	      o Par01EMShowerModel which provides a crude
-//		parameterisation for e+/e-/gamma. This model
-//		is bound to the EM calorimeter.
+//               o Par01EMShowerModel which provides a crude
+//                parameterisation for e+/e-/gamma. This model
+//                is bound to the EM calorimeter.
 //
-//	      o Par01PionShowerModel: an even more crude
-//		parameterisation for pi+/pi-. This model
-//		is bound to a ghost volume.
+//              o Par01PionShowerModel: an even more crude
+//                parameterisation for pi+/pi-. This model
+//                is bound to a ghost volume.
 //
 //==========================================================================
 
@@ -118,22 +118,22 @@ namespace dd4hep  {
       Geant4Random* rndm    = Geant4Random::instance();
       G4ThreeVector sShower = spot.particleLocalPosition();
       for (int i = 0; i < nSpots; i++)    {
-	// Longitudinal profile: -- shoot z according to Gamma distribution:
-	G4double bt  = rndm->gamma(a, 1e0);
-	G4double t   = bt/b;                       // t : reduced quantity = z/X0:
-	G4double z   = t*X0;
-	// transverse profile: we set 90% of energy in one Rm, the rest between 1 and 3.5 Rm:
-	G4double xr  = rndm->uniform(0e0,1e0);
-	G4double phi = rndm->uniform(0e0,twopi);
-	G4double r;
-	if (xr < 0.9) r = xr/0.9*Rm;
-	else r = ((xr - 0.9)/0.1*2.5 + 1.0)*Rm;
-	// build the position:
-	G4ThreeVector position = sShower + z*zShower + r*std::cos(phi)*xShower + r*std::sin(phi)*yShower;
-	/// Process spot and call sensitive detector
-	hit.SetPosition(position);
-	hit.SetEnergy(deposit);
-	this->locals.hitMaker.make(hit, track);
+        // Longitudinal profile: -- shoot z according to Gamma distribution:
+        G4double bt  = rndm->gamma(a, 1e0);
+        G4double t   = bt/b;                       // t : reduced quantity = z/X0:
+        G4double z   = t*X0;
+        // transverse profile: we set 90% of energy in one Rm, the rest between 1 and 3.5 Rm:
+        G4double xr  = rndm->uniform(0e0,1e0);
+        G4double phi = rndm->uniform(0e0,twopi);
+        G4double r;
+        if (xr < 0.9) r = xr/0.9*Rm;
+        else r = ((xr - 0.9)/0.1*2.5 + 1.0)*Rm;
+        // build the position:
+        G4ThreeVector position = sShower + z*zShower + r*std::cos(phi)*xShower + r*std::sin(phi)*yShower;
+        /// Process spot and call sensitive detector
+        hit.SetPosition(position);
+        hit.SetEnergy(deposit);
+        this->locals.hitMaker.make(hit, track);
       }
     }
 
@@ -191,13 +191,13 @@ namespace dd4hep  {
       G4double      deposit = Energy/double(nSpot);
       Geant4Random* rndm    = Geant4Random::instance();
       for (int i = 0; i < nSpot; i++)  {
-	double z   = rndm->gauss(0, 20*cm);
-	double r   = rndm->gauss(0, 10*cm);
-	double phi = rndm->uniform(0e0, twopi);
-	G4ThreeVector position = showerCenter + z*zShower + r*std::cos(phi)*xShower + r*std::sin(phi)*yShower;
-	/// Process spot and call sensitive detector
-	G4FastHit hit(position, deposit);
-	this->locals.hitMaker.make(hit, track);
+        double z   = rndm->gauss(0, 20*cm);
+        double r   = rndm->gauss(0, 10*cm);
+        double phi = rndm->uniform(0e0, twopi);
+        G4ThreeVector position = showerCenter + z*zShower + r*std::cos(phi)*xShower + r*std::sin(phi)*yShower;
+        /// Process spot and call sensitive detector
+        G4FastHit hit(position, deposit);
+        this->locals.hitMaker.make(hit, track);
       }
     }
 

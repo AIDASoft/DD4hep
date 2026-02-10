@@ -31,7 +31,7 @@ int PlacedVolumeProcessor::process(PlacedVolume pv, int level, bool recursive)  
         PlacedVolume placement(node->GetDaughter(idau));
         //if ( placement.data() ) {
           ret += process(placement,level+1,recursive);
-	  //}
+          //}
       }
     }
     return ret;

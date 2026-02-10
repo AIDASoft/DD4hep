@@ -109,7 +109,7 @@ Solid_type<T>::divide(const Volume& voldiv, const std::string& divname,
       return mv.ptr();
     }
     except("dd4hep","Volume: Failed to divide volume %s -> %s [Invalid result]",
-	   voldiv.name(), divname.c_str());
+           voldiv.name(), divname.c_str());
   }
   except("dd4hep","Volume: Attempt to divide an invalid logical volume to %s.", divname.c_str());
   return 0;
@@ -622,7 +622,7 @@ void Trap::make(const std::string& nam, double pZ, double pY, double pX, double 
   double fAlpha2 = fAlpha1;
 
   _assign(new TGeoTrap(nam.c_str(),
-		       fDz,  fTheta /* = 0 */,  fPhi /* = 0 */,
+                       fDz,  fTheta /* = 0 */,  fPhi /* = 0 */,
                        fDy1, fDx1, fDx2, fAlpha1/units::deg,
                        fDy2, fDx3, fDx4, fAlpha2/units::deg), "", TRAP_TAG, true);
 }
@@ -717,9 +717,9 @@ void PseudoTrap::make(const std::string& nam, double x1, double x2, double y1, d
     except(PSEUDOTRAP_TAG,"Check parameters of the PseudoTrap!");   
   }
   printout(DEBUG,"PseudoTrap","++ Trd2(%s): x1=%.3g x2=%.3g y1=%.3g y2=%.3g halfZ=%.3g",
-	   (nam+"Trd2").c_str(), x1, x2, y1, y2, halfZ);
+           (nam+"Trd2").c_str(), x1, x2, y1, y2, halfZ);
   printout(DEBUG,"PseudoTrap","++ Tubs(%s): r=%.3g h=%.3g startPhi=%.3g endPhi=%.3g",
-	   (nam+"Tubs").c_str(), std::abs(r),h,startPhi,startPhi + halfOpeningAngle*2.);
+           (nam+"Tubs").c_str(), std::abs(r),h,startPhi,startPhi + halfOpeningAngle*2.);
 
   Solid trap(new TGeoTrd2((nam+"Trd2").c_str(), x1, x2, y1, y2, halfZ));
   Solid tubs(new TGeoTubeSeg((nam+"Tubs").c_str(), 0.,std::abs(r),h,startPhi,startPhi + halfOpeningAngle*2.));

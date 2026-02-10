@@ -59,7 +59,7 @@ detail::GeoHandler::GeoHandler()  {
 /// Initializing constructor
 detail::GeoHandler::GeoHandler(std::map<int, std::vector<const TGeoNode*> >* ptr,
                 std::map<int, std::set<const TGeoNode*> >* ptr_set,
-		std::map<const TGeoNode*, std::vector<TGeoNode*> >* daus)
+                std::map<const TGeoNode*, std::vector<TGeoNode*> >* daus)
   : m_data(ptr), m_set_data(ptr_set), m_daughters(daus)
 {
 }

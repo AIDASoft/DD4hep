@@ -178,7 +178,7 @@ namespace dd4hep {
         *_value = default_Value;
       }
       /// Default destructor
-      virtual ~TypedSegmentationParameter() {	}
+      virtual ~TypedSegmentationParameter() {        }
 
       /// Access to the parameter value
       const TYPE& typedValue() const {
@@ -242,7 +242,7 @@ namespace dd4hep {
         *_value = defaultVal;
       }
       /// Default destructor
-      virtual ~TypedSegmentationParameter() {	}
+      virtual ~TypedSegmentationParameter() {        }
 
       /// Access to the parameter value
       const std::vector<TYPE>& typedValue() const {

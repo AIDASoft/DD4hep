@@ -1025,7 +1025,7 @@ static Ref_t create_shape(Detector& description, xml_h e, SensitiveDetector sens
     }
     const char* nam = solid->GetName();
     printout(INFO,"TestShape","Created successfull shape of type: %s %c%s%c",
-	     shape_type.c_str(), nam ? '[' : ' ', nam ? nam : "" ,nam ? ']' : ' ');
+             shape_type.c_str(), nam ? '[' : ' ', nam ? nam : "" ,nam ? ']' : ' ');
       
     bool instance_test = false;
     if ( shape_type == "CAD_Assembly" || shape_type == "CAD_MultiVolume" )   {
@@ -1232,9 +1232,9 @@ void* shape_mesh_verifier(Detector& description, int argc, char** argv)    {
     os << "ShapeCheck[" << ipv << "] ";
     os << toStringMesh(place, 2);
     printout(INFO,"Mesh_Verifier","+++ Checking mesh of %s %s [%s] vol:%s.",
-	     solid->IsA()->GetName(),
-	     solid->GetName(), solid->GetTitle(),
-	     vol->GetName());
+             solid->IsA()->GetName(),
+             solid->GetName(), solid->GetTitle(),
+             vol->GetName());
   }
   gSystem->ExpandPathName(ref);
   if ( ref_cr )   {

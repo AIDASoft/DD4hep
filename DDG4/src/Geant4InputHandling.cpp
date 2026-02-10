@@ -526,7 +526,7 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
               G4PrimaryParticle* p4 = (*j).second;
               PropertyMask reason(r->reason);
               char text[64];
-	      
+              
               reason.set(G4PARTICLE_PRIMARY);
               v4->SetPrimary(p4);
               ::snprintf(text,sizeof(text),"-> G4Primary[%3d]",num_part);

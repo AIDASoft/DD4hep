@@ -413,7 +413,7 @@ namespace {
           << "\t TGeoHMatrix* mat = new TGeoHMatrix(\"" << mat->GetName() << "\");" << newline
           << "\t matrices[" << pointer(mat) << "] = mat;" << newline;
       if ( mat->IsTranslation() )   {
-        const Double_t*	tra = mat->GetTranslation();
+        const Double_t*        tra = mat->GetTranslation();
         log << "\t Double_t trans[] = {";
         for(size_t i=0; tra && i<3; ++i)  {
           log << tra[i];
@@ -422,7 +422,7 @@ namespace {
         log << newline << "\t mat->SetTranslation(trans);" << newline;
       }
       if ( mat->IsRotation() )   {
-        const Double_t*	rot = mat->GetRotationMatrix();
+        const Double_t*        rot = mat->GetRotationMatrix();
         if ( rot && (rot[0] != 1e0 || rot[4] != 1e0 || rot[8] != 1e0) )  {
           log << "\t Double_t rot[] = {";
           for(size_t i=0; rot && i<9; ++i)  {
@@ -433,7 +433,7 @@ namespace {
         }
       }
       if ( mat->IsScale() )   {
-        const Double_t*	sca = mat->GetScale();
+        const Double_t*        sca = mat->GetScale();
         log << "\t Double_t scale[] = {";
         for(size_t i=0; sca && i<3; ++i)  {
           log << sca[i];
@@ -498,8 +498,8 @@ namespace {
     }
     else if (cl == TGeoCtub::Class()) {
       const TGeoCtub* sh = (const TGeoCtub*) shape;
-      const Double_t*	hi = sh->GetNhigh();
-      const Double_t*	lo = sh->GetNlow();
+      const Double_t*        hi = sh->GetNhigh();
+      const Double_t*        lo = sh->GetNlow();
       log << "\t Solid " << name << "(new " << cl->GetName() << "(\"" << sh->GetName() << '"'
           << sep << sh->GetRmin()
           << sep << sh->GetRmax()

@@ -42,17 +42,17 @@ namespace dd4hep {
       TRACKER         = 1 <<  0, 
       CALORIMETER     = 1 <<  1, 
       CHERENKOV       = 1 <<  2, 
-      ENDCAP	        = 1 <<  3, 
+      ENDCAP                = 1 <<  3, 
       BARREL          = 1 <<  4, 
-      FORWARD	        = 1 <<  5, 
-      VERTEX	        = 1 <<  6, 
-      STRIP	          = 1 <<  7, 
-      PIXEL	          = 1 <<  8, 
-      GASEOUS  	      = 1 <<  9, 
-      WIRE	          = 1 << 10, 
+      FORWARD                = 1 <<  5, 
+      VERTEX                = 1 <<  6, 
+      STRIP                  = 1 <<  7, 
+      PIXEL                  = 1 <<  8, 
+      GASEOUS                = 1 <<  9, 
+      WIRE                  = 1 << 10, 
       ELECTROMAGNETIC = 1 << 11, 
-      HADRONIC	      = 1 << 12, 
-      MUON	          = 1 << 13, 
+      HADRONIC              = 1 << 12, 
+      MUON                  = 1 << 13, 
       SUPPORT         = 1 << 14,
       BEAMPIPE        = 1 << 15, 
       COIL            = 1 << 16,
@@ -102,17 +102,17 @@ namespace dd4hep {
     if( t.is( DetType::TRACKER      ) ) os << "TRACKER, " ;
     if( t.is( DetType::CALORIMETER  ) ) os << "CALORIMETER, " ;
     if( t.is( DetType::CHERENKOV    ) ) os << "CHERENKOV, " ;
-    if( t.is( DetType::ENDCAP	    ) ) os << "ENDCAP, " ;
-    if( t.is( DetType::BARREL	    ) ) os << "BARREL, " ;
-    if( t.is( DetType::FORWARD	    ) ) os << "FORWARD, " ;
-    if( t.is( DetType::VERTEX	    ) ) os << "VERTEX, " ;
-    if( t.is( DetType::STRIP	    ) ) os << "STRIP, " ;
-    if( t.is( DetType::PIXEL	    ) ) os << "PIXEL, " ;
-    if( t.is( DetType::GASEOUS	    ) ) os << "GASEOUS, " ;
-    if( t.is( DetType::WIRE	    ) ) os << "WIRE, " ;
-    if( t.is( DetType::ELECTROMAGNETIC	    ) ) os << "ELECTROMAGNETIC, " ;
-    if( t.is( DetType::HADRONIC	    ) ) os << "HADRONIC, " ;
-    if( t.is( DetType::MUON	    ) ) os << "MUON, " ;
+    if( t.is( DetType::ENDCAP            ) ) os << "ENDCAP, " ;
+    if( t.is( DetType::BARREL            ) ) os << "BARREL, " ;
+    if( t.is( DetType::FORWARD            ) ) os << "FORWARD, " ;
+    if( t.is( DetType::VERTEX            ) ) os << "VERTEX, " ;
+    if( t.is( DetType::STRIP            ) ) os << "STRIP, " ;
+    if( t.is( DetType::PIXEL            ) ) os << "PIXEL, " ;
+    if( t.is( DetType::GASEOUS            ) ) os << "GASEOUS, " ;
+    if( t.is( DetType::WIRE            ) ) os << "WIRE, " ;
+    if( t.is( DetType::ELECTROMAGNETIC            ) ) os << "ELECTROMAGNETIC, " ;
+    if( t.is( DetType::HADRONIC            ) ) os << "HADRONIC, " ;
+    if( t.is( DetType::MUON            ) ) os << "MUON, " ;
     if( t.is( DetType::SUPPORT      ) ) os << "SUPPORT, " ;
     if( t.is( DetType::BEAMPIPE     ) ) os << "BEAMPIPE, " ;
     if( t.is( DetType::COIL         ) ) os << "COIL, " ;

@@ -198,14 +198,14 @@ std::vector<G4ParticleDefinition*> Geant4ParticleHandle::g4DefinitionsRegEx(cons
       G4ParticleDefinition* p = iter->value();
       ret = ::regexec(&reg, p->GetParticleName().c_str(), 0, NULL, 0);
       if (!ret)
-	results.emplace_back(p);
+        results.emplace_back(p);
       else if (ret == REG_NOMATCH)
-	continue;
+        continue;
       else {
-	char msgbuf[128];
-	::regerror(ret, &reg, msgbuf, sizeof(msgbuf));
-	::regfree(&reg);
-	throw std::runtime_error(format("Geant4ParticleHandle", "REGEX: Failed to match particle name %s err=%s", exp.c_str(), msgbuf));
+        char msgbuf[128];
+        ::regerror(ret, &reg, msgbuf, sizeof(msgbuf));
+        ::regfree(&reg);
+        throw std::runtime_error(format("Geant4ParticleHandle", "REGEX: Failed to match particle name %s err=%s", exp.c_str(), msgbuf));
       }
     }
     ::regfree(&reg);

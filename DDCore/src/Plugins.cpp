@@ -108,8 +108,8 @@ namespace   {
       handle_guard(void* hdl) : _handle(hdl) {
       }
       ~handle_guard()  {
-	if ( _handle ) ::dlclose(_handle);
-	_handle = nullptr;
+        if ( _handle ) ::dlclose(_handle);
+        _handle = nullptr;
       }
     };
     static handle_guard _guard(nullptr);

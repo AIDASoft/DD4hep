@@ -101,7 +101,7 @@ namespace {
       k *= m; 
       k ^= k >> r; 
       k *= m; 
-		
+                
       h ^= k;
       h *= m; 
     }
@@ -232,8 +232,8 @@ unsigned char dd4hep::detail::hash8(const char* key)   {
 
 /// Replace all occurrencies of a string
 std::string dd4hep::detail::str_replace(const std::string& str,
-					const std::string& pattern,
-					const std::string& replacement)   {
+                                        const std::string& pattern,
+                                        const std::string& replacement)   {
   std::string res = str;
   for(size_t id=res.find(pattern); id != std::string::npos; id = res.find(pattern) )
     res.replace(id, pattern.length(), replacement);
@@ -242,8 +242,8 @@ std::string dd4hep::detail::str_replace(const std::string& str,
 
 /// Replace all occurrencies of a string
 std::string dd4hep::detail::str_replace(const std::string& str,
-					char  pattern,
-					const std::string& replacement)   {
+                                        char  pattern,
+                                        const std::string& replacement)   {
   std::string res = str;
   for(size_t id=res.find(pattern); id != std::string::npos; id = res.find(pattern) )
     res.replace(id, 1, replacement);
@@ -252,8 +252,8 @@ std::string dd4hep::detail::str_replace(const std::string& str,
 
 /// Replace all occurrencies of a string
 std::string dd4hep::detail::str_replace(const std::string& str,
-					char  pattern,
-				        char  replacement)   {
+                                        char  pattern,
+                                        char  replacement)   {
   std::string res = str;
   for(size_t id=res.find(pattern); id != std::string::npos; id = res.find(pattern) )
     res.replace(id, 1, 1, replacement);

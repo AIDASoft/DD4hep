@@ -87,7 +87,7 @@ VisVolNameProcessor::VisVolNameProcessor(Detector& desc)
 VisVolNameProcessor::~VisVolNameProcessor()   {
   if ( show )  {
     printout(ALWAYS,name,"++       %8ld vis-attrs '%s' applied.",
-	     numApplied, visattr.isValid() ? visattr.name() : "");
+             numApplied, visattr.isValid() ? visattr.name() : "");
   }
 }
 
@@ -104,11 +104,11 @@ int VisVolNameProcessor::operator()(PlacedVolume pv, int /* level */)   {
     string vol_nam = vol.name();
     for ( const auto& match : matches )   {
       if ( std::regex_match(vol_nam, match.second) )  {
-	printout(ALWAYS,match.first,"++       Set visattr %s to %s",
-		 visattr.isValid() ? visattr.name() : "", vol_nam.c_str());
-	vol.setVisAttributes(visattr);
-	++numApplied;
-	return 1;
+        printout(ALWAYS,match.first,"++       Set visattr %s to %s",
+                 visattr.isValid() ? visattr.name() : "", vol_nam.c_str());
+        vol.setVisAttributes(visattr);
+        ++numApplied;
+        return 1;
       }
       //printout(ALWAYS,m.first,"++       FAILED %s",vol_nam.c_str());
     }
@@ -124,15 +124,15 @@ static void* create_object(Detector& description, int argc, char** argv)   {
   for ( int i=0; i<argc; ++i )   {
     if ( argv[i] )    {
       if ( ::strncmp(argv[i],"-name",4) == 0 )   {
-	proc->name = argv[++i];
+        proc->name = argv[++i];
         vol_names.push_back(proc->name);
-	if ( vis_name.empty() ) vis_name = proc->name;
+        if ( vis_name.empty() ) vis_name = proc->name;
         continue;
       }
       else if ( ::strncmp(argv[i],"-match",4) == 0 )   {
         vol_names.push_back(argv[++i]);
-	if ( vis_name.empty()   ) vis_name = vol_names.back();
-	if ( proc->name.empty() ) proc->name = vol_names.back();
+        if ( vis_name.empty()   ) vis_name = vol_names.back();
+        if ( proc->name.empty() ) proc->name = vol_names.back();
         continue;
       }
       else if ( ::strncmp(argv[i],"-vis",4) == 0 )   {

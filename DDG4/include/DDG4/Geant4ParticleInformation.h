@@ -71,20 +71,20 @@ namespace dd4hep {
       
       /// Attach information
       void set(ParticleExtension* data)   {
-	this->extension.reset(data);
+        this->extension.reset(data);
       }
       /// Attach information
       template <typename EXTENSION_TYPE> void set(std::unique_ptr<EXTENSION_TYPE>&& data)   {
-	this->extension = std::move(data);
+        this->extension = std::move(data);
       }
       template <typename EXTENSION_TYPE> EXTENSION_TYPE* get()   {
-	return dynamic_cast<EXTENSION_TYPE*>(this->extension.get());
+        return dynamic_cast<EXTENSION_TYPE*>(this->extension.get());
       }
       ParticleExtension* get()   {
-	return this->extension.get();
+        return this->extension.get();
       }
       ParticleExtension* release()   {
-	return this->extension.release();
+        return this->extension.release();
       }
     };
 

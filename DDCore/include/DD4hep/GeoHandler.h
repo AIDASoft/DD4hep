@@ -114,7 +114,7 @@ namespace dd4hep {
       GeoHandler();
       /// Initializing constructor
       GeoHandler(std::map<int, std::vector<const TGeoNode*> >* ptr,
-		 std::map<int, std::set<const TGeoNode*> >* ptr_set,
+                 std::map<int, std::set<const TGeoNode*> >* ptr_set,
                  std::map<const TGeoNode*, std::vector<TGeoNode*> >* daus = nullptr);
       /// Default destructor
       virtual ~GeoHandler();

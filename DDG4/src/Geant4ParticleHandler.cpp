@@ -333,7 +333,7 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   if(theLastStep) theLastPostStepPoint = theLastStep->GetPostStepPoint();
   if( theLastPostStepPoint &&
       ( theLastPostStepPoint->GetStepStatus() == fWorldBoundary //particle left world volume
-	//|| theLastPostStepPoint->GetStepStatus() == fGeomBoundary
+        //|| theLastPostStepPoint->GetStepStatus() == fGeomBoundary
       )
     ) {
     simStatus.set(G4PARTICLE_SIM_LEFT_DETECTOR);
