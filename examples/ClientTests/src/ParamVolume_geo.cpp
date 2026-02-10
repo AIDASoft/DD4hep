@@ -23,7 +23,7 @@ namespace  {
     xml_dim_t  x_pos   = elt.position();
     xml_dim_t  x_rot   = elt.rotation();
     return Transform3D(RotationZYX(x_rot.x(), x_rot.y(), x_rot.z()),
-		       Position(x_pos.x(), x_pos.y(), x_pos.z()));
+                       Position(x_pos.x(), x_pos.y(), x_pos.z()));
   }
 }
 
@@ -36,8 +36,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   // XML dimension object: DDCore/XML/XMLDimension.h
   xml_dim_t x_box(x_det.child(_U(box)));
   Volume    envelope_vol(x_det.nameStr()+"_envelope", 
-			 Box(x_box.x(), x_box.y(), x_box.z()),
-			 description.material(x_box.attr<std::string>(_U(material))));
+                         Box(x_box.x(), x_box.y(), x_box.z()),
+                         description.material(x_box.attr<std::string>(_U(material))));
 
   // Set envelope volume attributes
   envelope_vol.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
@@ -58,11 +58,11 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
     if ( ax[0] == 'R' ) axis = Volume::Rho_axis;
     if ( ax[0] == 'P' ) axis = Volume::Phi_axis;
     pv = envelope_vol.replicate(box_vol, axis,
-				x_repl.count(),
-				x_repl.distance(),
-				x_repl.start());
+                                x_repl.count(),
+                                x_repl.distance(),
+                                x_repl.start());
     printout(INFO,"ReplicateVolume","Axis: %s Count: %d offset:%f  width:%f",
-	     ax.c_str(), x_repl.count(), x_repl.start(), x_repl.distance());
+             ax.c_str(), x_repl.count(), x_repl.start(), x_repl.distance());
   }
   else if ( x_param.hasChild(_U(transformation)) )   {
     xml_dim_t  x_dim_x, x_dim_y, x_dim_z, x_trafo = x_param.transformation();
@@ -86,14 +86,14 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
     if ( x_trafo.hasChild(_U(dim_y)) && x_trafo.hasChild(_U(dim_z)) )    {
       pv = envelope_vol.paramVolume3D(start, box_vol, 
-				      x_dim_x.repeat(), trafo1,
-				      x_dim_y.repeat(), trafo2,
-				      x_dim_z.repeat(), trafo3);
+                                      x_dim_x.repeat(), trafo1,
+                                      x_dim_y.repeat(), trafo2,
+                                      x_dim_z.repeat(), trafo3);
     }
     else if ( x_trafo.hasChild(_U(dim_y)) )    {
       pv = envelope_vol.paramVolume2D(start, box_vol, 
-				      x_dim_x.repeat(), trafo1, 
-				      x_dim_y.repeat(), trafo2);
+                                      x_dim_x.repeat(), trafo1, 
+                                      x_dim_y.repeat(), trafo2);
     }
     else   {
       pv = envelope_vol.paramVolume1D(start, box_vol, x_dim_x.repeat(), trafo1);
@@ -113,7 +113,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   xml_dim_t x_rot = x_det.rotation();
   auto mother = description.pickMotherVolume(det);
   Transform3D tr(RotationZYX(x_rot.x(), x_rot.y(), x_rot.z()),
-		 Position(x_pos.x(), x_pos.y(), x_pos.z()));
+                 Position(x_pos.x(), x_pos.y(), x_pos.z()));
   PlacedVolume envelope_plv = mother.placeVolume(envelope_vol, tr);
   envelope_plv.addPhysVolID("system",x_det.id());
   det.setPlacement(envelope_plv);

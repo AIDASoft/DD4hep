@@ -32,7 +32,7 @@ static long algorithm(Detector& /* description */,
   AlgoArguments  args(ctxt, e);
   string         parentName    = args.parentName();
   string         central       = args.str("CentralName");        // Name of the central piece
-					      
+                                              
   double         shift         = args.dble("Shift");          // Shift in z
   vector<string> sideRod       = args.vecStr("SideRodName");        // Name of the Side Rod
   vector<double> sideRodX      = args.vecDble("SideRodX");       // x-positions
@@ -44,10 +44,10 @@ static long algorithm(Detector& /* description */,
   string         endRod2       = args.str("EndRod2Name");        // Name of the End Rod of type 2
   double         endRod2Y      = args.dble("EndRod2Y");          // y-position
   double         endRod2Z      = args.dble("EndRod2Z");          // z-position
-					      
+                                              
   string         cable         = args.str("CableName");          // Name of the Mother cable
   double         cableZ        = args.dble("CableZ");            // z-position
-					      
+                                              
   string         clamp         = args.str("ClampName");          // Name of the clamp
   vector<double> clampX        = args.vecDble("ClampX");         // x-positions
   vector<double> clampZ        = args.vecDble("ClampZ");         // z-positions
@@ -59,17 +59,17 @@ static long algorithm(Detector& /* description */,
   string         endCoolRot    = args.str("EndCoolRot");         // Rotation matrix name for end cool
   double         endCoolY      = args.dble("EndCoolY");          // y-position to avoid overlap with the module
   double         endCoolZ      = args.dble("EndCoolZ");          // z-position
-					      
+                                              
   string         optFibre      = args.str("OptFibreName");       // Name of the Optical Fibre
   vector<double> optFibreX     = args.vecDble("optFibreX");      // x-positions
   vector<double> optFibreZ     = args.vecDble("optFibreZ");      // z-positions
-					      
+                                              
   string         sideClamp1    = args.str("SideClamp1Name");     // Name of the side clamp of type 1
   vector<double> sideClampX    = args.vecDble("SideClampX");     // x-positions
   vector<double> sideClamp1DZ  = args.vecDble("SideClamp1DZ");   // Delta(z)-positions
   string         sideClamp2    = args.str("SideClamp2Name");     // Name of the side clamp of type 2
   vector<double> sideClamp2DZ  = args.vecDble("SideClamp2DZ");   // Delta(z)-positions
-					      
+                                              
   string         module        = args.str("ModuleName");         // Name of the detector modules
   vector<string> moduleRot     = args.vecStr("ModuleRot");      // Rotation matrix name for module
   vector<double> moduleY       = args.vecDble("ModuleY");        // y-positions
@@ -77,7 +77,7 @@ static long algorithm(Detector& /* description */,
   vector<string> connect       = args.vecStr("ICCName");;        // Name of the connectors
   vector<double> connectY      = args.vecDble("ICCY");       // y-positions
   vector<double> connectZ      = args.vecDble("ICCZ");       // z-positions
-					      
+                                              
   string         aohName       = args.str("AOHName");        // AOH name
   vector<double> aohCopies     = args.vecDble("AOHCopies");      // AOH copies to be positioned on each ICC
   vector<double> aohX          = args.vecDble("AOHx");           // AOH translation with respect small-ICC center (X)

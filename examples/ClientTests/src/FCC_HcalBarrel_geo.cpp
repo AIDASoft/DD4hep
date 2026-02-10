@@ -104,7 +104,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
       int slice_num = 0, tile_number = 0;  
 
       tile_seq.setVisAttributes(description.visAttributes("VisibleGreen"));
-      for(xml_coll_t k(x_det_layer,_U(slice)); k; ++k, ++slice_num)  {	
+      for(xml_coll_t k(x_det_layer,_U(slice)); k; ++k, ++slice_num)  {        
         xml_comp_t tile_xml       = k;
         string     tile_name      = layer_name + _toString(tile_number,"_slice%d");
         Material   tile_material  = description.material(tile_xml.materialStr());
@@ -112,7 +112,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
         float      tile_y1        = tile_thickness;
         float      tile_y2        = tile_thickness;
         float      tile_z         = x_det_layer.dr();
-	
+        
         Trapezoid tile_shape(x1,x2,tile_y1,tile_y2,tile_z);
         Volume tile_vol(tile_name,tile_shape,tile_material);
         pv = tile_seq.placeVolume(tile_vol,Position(0,total_thickness,0));
@@ -122,9 +122,9 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
           cout << "Set volume " << tile_name << " sensitive...." << endl;
           tile_vol.setSensitiveDetector(sens);
         }
-	
+        
         // Set region, limitset, and visibility settings
-        tile_vol.setAttributes(description,tile_xml.regionStr(),tile_xml.limitsStr(),tile_xml.visStr());	
+        tile_vol.setAttributes(description,tile_xml.regionStr(),tile_xml.limitsStr(),tile_xml.visStr());        
         tiles.push_back(tile_vol);
         tile_number++;
       }

@@ -129,17 +129,17 @@ namespace dd4hep {
       std::vector<std::string>           namespaces;
       bool geo_inited = false;
       struct _debug  {
-	// Debug flags
-	bool includes     = false;
-	bool constants    = false;
-	bool materials    = false;
-	bool rotations    = false;
-	bool shapes       = false;
-	bool volumes      = false;
-	bool placements   = false;
-	bool namespaces   = false;
-	bool visattr      = false;
-	bool algorithms   = false;
+        // Debug flags
+        bool includes     = false;
+        bool constants    = false;
+        bool materials    = false;
+        bool rotations    = false;
+        bool shapes       = false;
+        bool volumes      = false;
+        bool placements   = false;
+        bool namespaces   = false;
+        bool visattr      = false;
+        bool algorithms   = false;
       } debug;
     public:
       ParsingContext(Detector* det) : description(det) { namespaces.push_back(""); }

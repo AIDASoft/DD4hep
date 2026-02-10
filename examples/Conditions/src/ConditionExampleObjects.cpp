@@ -242,7 +242,7 @@ namespace {
 /// Default destructor
 ConditionUpdate6::~ConditionUpdate6()   {
   printout(ALWAYS,"Statistics","+++ Variable dependencies:  MIN: %ld MAX: %ld MEAN:%.3f COUNT:%d",
-	   min_deps, max_deps, double(num_deps)/double(std::max(call_count,1UL)), call_count);
+           min_deps, max_deps, double(num_deps)/double(std::max(call_count,1UL)), call_count);
       /// Statistics
   printout(ALWAYS,"Statistics","+++ DePath: Entries: %ld  Checks:%ld",num_depath_entries,num_depath_checks);
 }
@@ -363,28 +363,28 @@ int ConditionsDataAccess::accessConditions(DetElement de, const std::vector<Cond
     if ( cond.item_key() == key_path.item_key() )  {
       ++result;
       if ( cond.get<string>() != de.path() )
-	printout(ERROR,"CondAccess","++ string:%s <> %s",de.path().c_str(), cond.get<string>().c_str());
+        printout(ERROR,"CondAccess","++ string:%s <> %s",de.path().c_str(), cond.get<string>().c_str());
     }
     else if ( cond.item_key() == key_depath.item_key() )  {
       vector<Condition>& data = cond.get<vector<Condition> >();
       size_t cnt = 0;
       ++num_depath_entries;
       if ( de.parent().isValid() )  {
-	++num_depath_checks;
-	if ( data[0].get<string>() != de.parent().path() )  {
-	  printout(ERROR,"CondAccess","++ string:%s <> %s",
-		   de.parent().path().c_str(), data[0].get<string>().c_str());
-	}
-	++cnt;
+        ++num_depath_checks;
+        if ( data[0].get<string>() != de.parent().path() )  {
+          printout(ERROR,"CondAccess","++ string:%s <> %s",
+                   de.parent().path().c_str(), data[0].get<string>().c_str());
+        }
+        ++cnt;
       }
       for(const auto& child : de.children())   {
-	const Condition& c = data[cnt];
-	++num_depath_checks;
-	if ( c.get<string>() != child.second.path() )  {
-	  printout(ERROR,"CondAccess","++ string:%s <> %s",
-		   child.second.path().c_str(), c.get<string>().c_str());
-	}
-	++cnt;
+        const Condition& c = data[cnt];
+        ++num_depath_checks;
+        if ( c.get<string>() != child.second.path() )  {
+          printout(ERROR,"CondAccess","++ string:%s <> %s",
+                   child.second.path().c_str(), c.get<string>().c_str());
+        }
+        ++cnt;
       }
     }
     else if ( cond.item_key() == key_temperature.item_key() )  {

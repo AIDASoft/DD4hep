@@ -179,7 +179,7 @@ namespace dd4hep {
         throw runtime_error("NOT implemented virtual call ! CNV<"+
                             typeName(typeid(T))+">::get<"+typeName(typeid(Q))+">(string)");
       }
-      void operator()(T* obj) const   {	convert(obj);  }
+      void operator()(T* obj) const   {        convert(obj);  }
       void operator()(const pair<string,T*>& arg) const  {
         Increment<T> incr;
         try  {
@@ -889,7 +889,7 @@ namespace dd4hep {
               printout(WARNING,"CNV<DetElem>","++ %s Placement: %s",
                        object->path.c_str(), object->logvol.c_str());
               printout(WARNING,"CNV<DetElem>",
-		       "++     --> INVALID PLACEMENT... Vol.N-path: %s",
+                       "++     --> INVALID PLACEMENT... Vol.N-path: %s",
                        object->npath.c_str());
             }
             else   {
@@ -1007,7 +1007,7 @@ namespace dd4hep {
           }
         }
       }
-      return det.ptr();	
+      return det.ptr();        
     }
 
     template <> void* CNV<dddb>::convert(dddb *obj) const   {

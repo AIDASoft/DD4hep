@@ -121,10 +121,10 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
     double     z_dr     = z_layout.dr();                // Radial displacement parameter, of every other module.
 
 
-	// not necessary, calculated here
+        // not necessary, calculated here
     //int        nphi     = x_layout.nphi();             // Number of modules in phi.
     //double     phi_incr = (2*M_PI) / nphi;             // Phi increment for one module.
-	
+        
     // Z increment for module placement along Z axis.
     // Adjust for z0 at center of module rather than
     // the end of cylindrical envelope.

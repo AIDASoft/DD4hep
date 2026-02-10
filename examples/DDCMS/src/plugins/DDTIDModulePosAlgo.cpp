@@ -180,7 +180,7 @@ static long algorithm(Detector& /* description */,
     } else {   
       xpos = -(dxbotenv+(zCool-0.5*coolHeight)*tanEnv-0.5*coolWidth);      
     }
-		   
+                   
     zpos = zCool-zCenter;
     for ( int j2=0; j2<2; j2++) {
       copy++;
@@ -206,7 +206,7 @@ static long algorithm(Detector& /* description */,
     parentVol.placeVolume(ns.volume(name),1,Position(0.0,ypos,zpos));
     LogDebug("TIDGeom") << name <<" number "
                         << 1 << " positioned in " << parentName << " at "
-                        << Position(0.0,ypos,zpos) << " with no rotation";       	
+                        << Position(0.0,ypos,zpos) << " with no rotation";               
     // Side Spacers (Alumina)
     name = sidSpacersName;
     ypos = sidSpacersZ;

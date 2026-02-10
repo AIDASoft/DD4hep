@@ -72,24 +72,24 @@ namespace gaudi   {
       /// Unique classID
       enum { classID = 1008101  };
 
-      static const unsigned int 	minRoutingLine = 1;
-      static const unsigned int 	maxRoutingLine = 2048;
-      static const unsigned int 	numberOfStrips = 2048;
+      static const unsigned int         minRoutingLine = 1;
+      static const unsigned int         maxRoutingLine = 2048;
+      static const unsigned int         numberOfStrips = 2048;
 
-      std::string 	moduleName;
-      std::string 	typeName;
-      std::string 	fullType;
-      int 	        moduleId;//<Liverpool database module id
-      unsigned int 	sensorNumber;
-      double       	siliconThickness;
-      double 	      innerRadius;
-      double 	      outerRadius;
+      std::string         moduleName;
+      std::string         typeName;
+      std::string         fullType;
+      int                 moduleId;//<Liverpool database module id
+      unsigned int         sensorNumber;
+      double               siliconThickness;
+      double               innerRadius;
+      double               outerRadius;
       
       /// Un-inited - still
-      unsigned int 	numberOfZones;
-      std::map< unsigned int, unsigned int > 	mapRoutingLineToStrip;
-      std::map< unsigned int, unsigned int > 	mapStripToRoutingLine;
-      std::vector< std::pair< XYZPoint, XYZPoint > > 	stripLimits;
+      unsigned int         numberOfZones;
+      std::map< unsigned int, unsigned int >         mapRoutingLineToStrip;
+      std::map< unsigned int, unsigned int >         mapStripToRoutingLine;
+      std::vector< std::pair< XYZPoint, XYZPoint > >         stripLimits;
 
     public:
       /// Standard constructors and assignment
@@ -160,14 +160,14 @@ namespace gaudi   {
       Condition        readout;
 
       DeIOV            halfBoxGeom;      
-      Condition 	     stripNoiseCondition;
-      Condition 	     stripInfoCondition;
-      Condition 	     readoutCondition;
+      Condition              stripNoiseCondition;
+      Condition              stripInfoCondition;
+      Condition              readoutCondition;
       
       std::vector< double > stripNoise;
-      std::vector< int >   	stripInfos;
+      std::vector< int >           stripInfos;
 
-      double 	      z = 0.0;
+      double               z = 0.0;
       
     public:
       /// Standard constructors and assignment
@@ -269,56 +269,56 @@ namespace gaudi   {
     /// Return station number, station contains 2 modules (right and left) 
     unsigned int station () const
     {  return (staticData().sensorNumber&0x3E) >> 1;                }
-    ///	Returns the sensor number.
-    unsigned int 	sensorNumber () const
+    ///        Returns the sensor number.
+    unsigned int         sensorNumber () const
     {  return staticData().sensorNumber;                            }
     /// Returns the hardware module number. 
-    unsigned int 	moduleId () const
+    unsigned int         moduleId () const
     {  return staticData().moduleId;                                }
-    ///	Return the number of strips.
+    ///        Return the number of strips.
     unsigned int numberOfStrips () const
     {  return staticData().numberOfStrips;                          }
     /// Access the strip info object
     StripInfo stripInfo(size_t which)  const
     {  return iovData().stripInfos[which];                          }
-    ///	The number of zones in the detector.
-    unsigned int 	numberOfZones () const
+    ///        The number of zones in the detector.
+    unsigned int         numberOfZones () const
     {  return staticData().numberOfZones;                           }
     /// Return the z position of the sensor in the global frame. 
     double z () const
     {  return iovData().z;                                          }
     /// The minimum radius for the sensitive area of the sensor. 
-    double 	innerRadius () const
+    double         innerRadius () const
     {  return staticData().innerRadius;                             }
-    ///	The maximum radius for the sensitive area of the sensor. 
-    double 	outerRadius () const
+    ///        The maximum radius for the sensitive area of the sensor. 
+    double         outerRadius () const
     {  return staticData().outerRadius;                             }
     /// The thickness of the sensor in mm. 
-    double 	siliconThickness () const
+    double         siliconThickness () const
     {  return staticData().siliconThickness;                        }
     /// Return true for X<0 side of the detector (-ve x is Right) 
-    bool   	isRight () const
+    bool           isRight () const
     {  return 0 == (staticData().de_user&DeVeloFlags::LEFT);        }
     /// Return true for X>0 side of the detector (+ve x is Left) 
-    bool 	  isLeft () const
+    bool           isLeft () const
     {  return 0 != (staticData().de_user&DeVeloFlags::LEFT);        }
     /// Returns true if sensor is downstream. 
-    bool 	  isDownstream () const
+    bool           isDownstream () const
     {  return 0 != (staticData().de_user&DeVeloFlags::DOWNSTREAM);  }
     /// Returns true if pile up Sensor. 
-    bool 	  isPileUp () const
+    bool           isPileUp () const
     {  return 0 != (staticData().de_user&DeVeloFlags::PU_TYPE);     }
     /// Returns true if R Sensor. 
-    bool   	isR () const
+    bool           isR () const
     {  return 0 != (staticData().de_user&DeVeloFlags::R_TYPE);      }
     /// Returns true if Phi Sensor. 
-    bool 	  isPhi () const
+    bool           isPhi () const
     {  return 0 != (staticData().de_user&DeVeloFlags::PHI_TYPE);    }
     /// Returns true if sensor is top cabled. 
-    bool 	  isTop () const
+    bool           isTop () const
     {  return 0 != (staticData().de_user&DeVeloFlags::TOP);         }
     /// Returns true if sensor is bottom cabled. 
-    bool 	  isBottom () const
+    bool           isBottom () const
     {  return 0 == (staticData().de_user&DeVeloFlags::TOP);         }
     /** Check whether this sensor is read out at all (cached condition).
      *  This information is based on CondDB, i.e. it can change

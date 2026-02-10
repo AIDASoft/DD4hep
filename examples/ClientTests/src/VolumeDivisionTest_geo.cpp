@@ -33,30 +33,30 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
 
   mv = box.divide(vol.ptr(), "Div1", 1, 3, -100, 10);
   printout(ALWAYS, "VolumeMultiTester", "+++ VolumeMulti %p type: %s [%s] solid: %p",
-	   mv.ptr(), mv.name(), mv->IsA()->GetName(), mv.solid().ptr());
+           mv.ptr(), mv.name(), mv->IsA()->GetName(), mv.solid().ptr());
   // printout(ALWAYS, "VolumeMultiTester", "+++ VolumeMulti %s", mv.solid().name());
   // printout(ALWAYS, "VolumeMultiTester", "+++ VolumeMulti %s", mv.solid().type());
   mvol = (TGeoVolumeMulti*)mv.ptr();
   for( int i=0, n=mvol->GetNvolumes(); i<n; ++i )   {
     Volume vv = mvol->GetVolume(i);
     printout(ALWAYS, "VolumeMultiTester",
-	     "+++ Volume[%03d] %p name: %s [%s] solid: %s tag: '%s'",
-	     i, vv.ptr(), vv.name(), vv->IsA()->GetName(),
-	     vv.solid().type(), vv.solid()->GetTitle());
+             "+++ Volume[%03d] %p name: %s [%s] solid: %s tag: '%s'",
+             i, vv.ptr(), vv.name(), vv->IsA()->GetName(),
+             vv.solid().type(), vv.solid()->GetTitle());
   }
 
   mv = box.divide(vol.ptr(), "Div2", 1, 3,    0, 50);
   printout(ALWAYS, "VolumeMultiTester", "+++ VolumeMulti %p type: %s [%s] solid: %p",
-	   mv.ptr(), mv.name(), mv->IsA()->GetName(), mv.solid().ptr());
+           mv.ptr(), mv.name(), mv->IsA()->GetName(), mv.solid().ptr());
   // printout(ALWAYS, "VolumeMultiTester", "+++ VolumeMulti %s", mv.solid().name());
   // printout(ALWAYS, "VolumeMultiTester", "+++ VolumeMulti %s", mv.solid().type());
   mvol = (TGeoVolumeMulti*)mv.ptr();
   for( int i=0, n=mvol->GetNvolumes(); i<n; ++i )   {
     Volume vv = mvol->GetVolume(i);
     printout(ALWAYS, "VolumeMultiTester",
-	     "+++ Volume[%03d] %p name: %s [%s] solid: %s tag: '%s'",
-	     i, vv.ptr(), vv.name(), vv->IsA()->GetName(),
-	     vv.solid().type(), vv.solid()->GetTitle());
+             "+++ Volume[%03d] %p name: %s [%s] solid: %s tag: '%s'",
+             i, vv.ptr(), vv.name(), vv->IsA()->GetName(),
+             vv.solid().type(), vv.solid()->GetTitle());
   }
   PlacedVolume pv = description.pickMotherVolume(det).placeVolume(vol);
   pv.addPhysVolID("system",x_det.id());

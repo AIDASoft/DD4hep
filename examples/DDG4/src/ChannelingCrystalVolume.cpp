@@ -32,19 +32,19 @@ namespace dd4hep   {
    */
   template <> G4LogicalVolume* 
   Geant4LogicalVolumeFactory<ChannelingCrystalVolume>::create(dd4hep::Detector& /* description */,
-							      Volume      volume,
-							      G4VSolid*   solid,
-							      G4Material* material)
+                                                              Volume      volume,
+                                                              G4VSolid*   solid,
+                                                              G4Material* material)
   {
     G4ExtendedMaterial* mat = dynamic_cast<G4ExtendedMaterial*>(material);
     if ( !mat )   {
       except("ChannelingCrystalVolume", 
-	     "====> Material %s is no G4ExtendedMaterial!", material->GetName().c_str());
+             "====> Material %s is no G4ExtendedMaterial!", material->GetName().c_str());
     }
     auto* ptr = new G4LogicalCrystalVolume(solid, mat, volume.name());
     printout(ALWAYS,"ChannelingCrystalVolume",
-	     "====> Created specialize logical volume [G4LogicalCrystalVolume]: %s",
-	     volume.name());
+             "====> Created specialize logical volume [G4LogicalCrystalVolume]: %s",
+             volume.name());
     return ptr;
   }
 }      // End namespace dd4hep

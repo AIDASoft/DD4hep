@@ -29,7 +29,7 @@
 
 #define CHECK_OBJECT(obj)  if ( !obj )  {                             \
     printout(ERROR,"dddb_print",                                      \
-             "++ Attempt to print invalid (null) object of type %s.",	\
+             "++ Attempt to print invalid (null) object of type %s.",        \
              typeName(typeid(obj)).c_str());                          \
     return;                                                           \
   }
@@ -375,9 +375,9 @@ namespace dd4hep  {
     CHECK_OBJECT(obj);
     printout(INFO,"Detector", "++ %-12s: [%s] xunit:%s xaxis:%s yunit:%s yaxis:%s siz:%d",
              obj->path.c_str(), obj->type.c_str(), 
-	     obj->xunit.c_str(), obj->xaxis.c_str(),
-	     obj->yunit.c_str(), obj->yaxis.c_str(),
-	     int(obj->data.size()));
+             obj->xunit.c_str(), obj->xaxis.c_str(),
+             obj->yunit.c_str(), obj->yaxis.c_str(),
+             int(obj->data.size()));
   }
 
   template <> void dddb_print(const DDDBCatalog* obj)   {
@@ -404,10 +404,10 @@ namespace dd4hep  {
     ::strftime(c_until,sizeof(c_until),"%T %F",&until);
 #if 0
     printout(INFO,"Document", "++ %8ld [%8ld - %8ld] %s",
-	     long(double(obj->context.event_time)/1e9),
-	     long(double(obj->context.valid_since)/1e9),
-	     long(double(obj->context.valid_until)/1e9),
-	     obj->c_id());
+             long(double(obj->context.event_time)/1e9),
+             long(double(obj->context.valid_since)/1e9),
+             long(double(obj->context.valid_until)/1e9),
+             obj->c_id());
 #endif
     printout(INFO,"Document", "++ %s [%s - %s] %s",c_evt,c_since,c_until,obj->c_id());
   }

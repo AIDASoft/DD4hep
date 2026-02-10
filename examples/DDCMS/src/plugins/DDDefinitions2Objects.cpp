@@ -554,11 +554,11 @@ template <> void Converter<rotation>::operator()(xml_h element) const  {
     rot.GetComponents(x,y,z);
     det = (x.Cross(y)).Dot(z);
     str << "+++ rotation: " << nam
-	<< " " << ((det>=0) ? "RIGHT" : "LEFT") << "-handed "
-	<< scientific << setprecision(2) << setw(9) << x << y << z << rot;
+        << " " << ((det>=0) ? "RIGHT" : "LEFT") << "-handed "
+        << scientific << setprecision(2) << setw(9) << x << y << z << rot;
     printout(lvl, "DDCMS",
-	     "+++ Adding rotation: %-18s: (theta/phi)[rad] X: %6.3f %6.3f Y: %6.3f %6.3f Z: %6.3f %6.3f",
-	     _ns.prepend(nam).c_str(),thetaX,phiX,thetaY,phiY,thetaZ,phiZ);
+             "+++ Adding rotation: %-18s: (theta/phi)[rad] X: %6.3f %6.3f Y: %6.3f %6.3f Z: %6.3f %6.3f",
+             _ns.prepend(nam).c_str(),thetaX,phiX,thetaY,phiY,thetaZ,phiZ);
     printout(lvl, "DDCMS", str.str().c_str());
   }
 }

@@ -239,14 +239,14 @@ namespace {
 
     for (icorner = 1; icorner <= 4; icorner++) {
       for (ixyz = 0; ixyz < 3; ixyz++) {
-	m_centre[ixyz] = m_centre[ixyz] + 0.125 * m_corners[3 * icorner - 3 + ixyz];
-	m_fcentre[ixyz] = m_fcentre[ixyz] + 0.25 * m_corners[3 * icorner - 3 + ixyz];
+        m_centre[ixyz] = m_centre[ixyz] + 0.125 * m_corners[3 * icorner - 3 + ixyz];
+        m_fcentre[ixyz] = m_fcentre[ixyz] + 0.25 * m_corners[3 * icorner - 3 + ixyz];
       }
     }
     for (icorner = 5; icorner <= 8; icorner++) {
       for (ixyz = 0; ixyz < 3; ixyz++) {
-	m_centre[ixyz] = m_centre[ixyz] + 0.125 * m_corners[3 * icorner - 3 + ixyz];
-	m_rcentre[ixyz] = m_rcentre[ixyz] + 0.25 * m_corners[3 * icorner - 3 + ixyz];
+        m_centre[ixyz] = m_centre[ixyz] + 0.125 * m_corners[3 * icorner - 3 + ixyz];
+        m_rcentre[ixyz] = m_rcentre[ixyz] + 0.25 * m_corners[3 * icorner - 3 + ixyz];
       }
     }
   }
@@ -399,13 +399,13 @@ namespace {
       string_view v = input;
       auto trim_pos = v.find(':');
       if (trim_pos != v.npos)
-	v.remove_suffix(v.size() - (trim_pos + 1));
+        v.remove_suffix(v.size() - (trim_pos + 1));
       return v;
     }
   }  // namespace
 
   static long algorithm(dd4hep::Detector& /* description */, dd4hep::cms::ParsingContext& ctxt, xml_h e,
-			SensitiveDetector& /* sens */) {
+                        SensitiveDetector& /* sens */) {
     dd4hep::cms::Namespace ns(ctxt, e, true);
     dd4hep::cms::AlgoArguments args(ctxt, e);
 
@@ -503,17 +503,17 @@ namespace {
     }
 
     Solid eeCRSolid = Trap(ee.cryName,
-			   0.5 * ee.crysLength,
-			   atan((ee.crysRear - ee.crysFront) / (sqrt(2.) * ee.crysLength)),
-			   45._deg,
-			   0.5 * ee.crysFront,
-			   0.5 * ee.crysFront,
-			   0.5 * ee.crysFront,
-			   0._deg,
-			   0.5 * ee.crysRear,
-			   0.5 * ee.crysRear,
-			   0.5 * ee.crysRear,
-			   0._deg);
+                           0.5 * ee.crysLength,
+                           atan((ee.crysRear - ee.crysFront) / (sqrt(2.) * ee.crysLength)),
+                           45._deg,
+                           0.5 * ee.crysFront,
+                           0.5 * ee.crysFront,
+                           0.5 * ee.crysFront,
+                           0._deg,
+                           0.5 * ee.crysRear,
+                           0.5 * ee.crysRear,
+                           0.5 * ee.crysRear,
+                           0._deg);
     Volume eeCRLog = Volume(ee.cryName, eeCRSolid, ns.material(ee.crysMat));
 
     for (unsigned int isc(0); isc < ee.nSCTypes; ++isc) {
@@ -525,39 +525,39 @@ namespace {
       const double ffived(45._deg);
       const double zerod(0._deg);
       string eeSCEnvName(1 == iSCType ? ee.envName + std::to_string(iSCType)
-			 : (ee.envName + std::to_string(iSCType) + "Tmp"));
+                         : (ee.envName + std::to_string(iSCType) + "Tmp"));
       Solid eeSCEnv = ns.addSolidNS(
-				    eeSCEnvName,
-				    Trap(eeSCEnvName, 0.5 * ee.sCELength, eAng, ffived, eFront, eFront, eFront, zerod, eRear, eRear, eRear, zerod));
+                                    eeSCEnvName,
+                                    Trap(eeSCEnvName, 0.5 * ee.sCELength, eAng, ffived, eFront, eFront, eFront, zerod, eRear, eRear, eRear, zerod));
 
       const double aFront(0.5 * ee.sCAFront);
       const double aRear(0.5 * ee.sCARear);
       const double aAng(atan((ee.sCARear - ee.sCAFront) / (sqrt(2.) * ee.sCALength)));
       string eeSCAlvName(
-			 (1 == iSCType ? ee.alvName + std::to_string(iSCType) : (ee.alvName + std::to_string(iSCType) + "Tmp")));
+                         (1 == iSCType ? ee.alvName + std::to_string(iSCType) : (ee.alvName + std::to_string(iSCType) + "Tmp")));
       Solid eeSCAlv = ns.addSolidNS(
-				    eeSCAlvName,
-				    Trap(eeSCAlvName, 0.5 * ee.sCALength, aAng, ffived, aFront, aFront, aFront, zerod, aRear, aRear, aRear, zerod));
+                                    eeSCAlvName,
+                                    Trap(eeSCAlvName, 0.5 * ee.sCALength, aAng, ffived, aFront, aFront, aFront, zerod, aRear, aRear, aRear, zerod));
 
       const double dwall(ee.sCAWall);
       const double iFront(aFront - dwall);
       const double iRear(iFront);
       const double iLen(ee.iLength);
       string eeSCIntName(1 == iSCType ? ee.intName + std::to_string(iSCType)
-			 : (ee.intName + std::to_string(iSCType) + "Tmp"));
+                         : (ee.intName + std::to_string(iSCType) + "Tmp"));
       Solid eeSCInt = ns.addSolidNS(eeSCIntName,
-				    Trap(eeSCIntName,
-					 iLen / 2.,
-					 atan((ee.sCARear - ee.sCAFront) / (sqrt(2.) * ee.sCALength)),
-					 ffived,
-					 iFront,
-					 iFront,
-					 iFront,
-					 zerod,
-					 iRear,
-					 iRear,
-					 iRear,
-					 zerod));
+                                    Trap(eeSCIntName,
+                                         iLen / 2.,
+                                         atan((ee.sCARear - ee.sCAFront) / (sqrt(2.) * ee.sCALength)),
+                                         ffived,
+                                         iFront,
+                                         iFront,
+                                         iFront,
+                                         zerod,
+                                         iRear,
+                                         iRear,
+                                         iRear,
+                                         zerod));
 
       const double dz(-0.5 * (ee.sCELength - ee.sCALength));
       const double dxy(0.5 * dz * (ee.sCERear - ee.sCEFront) / ee.sCELength);
@@ -569,62 +569,62 @@ namespace {
       Volume eeSCILog;
 
       if (1 == iSCType) {  // standard SC in this block
-	eeSCELog = ns.addVolumeNS(Volume(myns + ee.envName + std::to_string(iSCType), eeSCEnv, ns.material(ee.mat)));
-	eeSCALog = Volume(ee.alvName + std::to_string(iSCType), eeSCAlv, ns.material(ee.wallMat));
-	eeSCILog = Volume(ee.intName + std::to_string(iSCType), eeSCInt, ns.material(ee.mat));
+        eeSCELog = ns.addVolumeNS(Volume(myns + ee.envName + std::to_string(iSCType), eeSCEnv, ns.material(ee.mat)));
+        eeSCALog = Volume(ee.alvName + std::to_string(iSCType), eeSCAlv, ns.material(ee.wallMat));
+        eeSCILog = Volume(ee.intName + std::to_string(iSCType), eeSCInt, ns.material(ee.mat));
       } else {  // partial SCs this block: create subtraction volumes as appropriate
-	const double half(ee.cutParms[0] - ee.pFHalf * ee.crysRear);
-	const double fifth(ee.cutParms[0] + ee.pFFifth * ee.crysRear);
-	const double fac(ee.pF45);
+        const double half(ee.cutParms[0] - ee.pFHalf * ee.crysRear);
+        const double fifth(ee.cutParms[0] + ee.pFFifth * ee.crysRear);
+        const double fac(ee.pF45);
 
-	const double zmm(0.0_mm);
+        const double zmm(0.0_mm);
 
-	DDTranslation cutTra(
-			     2 == iSCType ? DDTranslation(zmm, half, zmm)
-			     : (3 == iSCType ? DDTranslation(half, zmm, zmm)
-				: (4 == iSCType ? DDTranslation(zmm, -fifth, zmm)
-				   : (5 == iSCType ? DDTranslation(-half * fac, -half * fac, zmm)
-				      : DDTranslation(-fifth, zmm, zmm)))));
+        DDTranslation cutTra(
+                             2 == iSCType ? DDTranslation(zmm, half, zmm)
+                             : (3 == iSCType ? DDTranslation(half, zmm, zmm)
+                                : (4 == iSCType ? DDTranslation(zmm, -fifth, zmm)
+                                   : (5 == iSCType ? DDTranslation(-half * fac, -half * fac, zmm)
+                                      : DDTranslation(-fifth, zmm, zmm)))));
 
-	const CLHEP::HepRotationZ cutm(ffived);
+        const CLHEP::HepRotationZ cutm(ffived);
 
-	Rotation3D cutRot(5 != iSCType ? Rotation3D()
-			  : myrot(ns,
-				  "EECry5Rot",
-				  Rotation3D(cutm.xx(),
-					     cutm.xy(),
-					     cutm.xz(),
-					     cutm.yx(),
-					     cutm.yy(),
-					     cutm.yz(),
-					     cutm.zx(),
-					     cutm.zy(),
-					     cutm.zz())));
+        Rotation3D cutRot(5 != iSCType ? Rotation3D()
+                          : myrot(ns,
+                                  "EECry5Rot",
+                                  Rotation3D(cutm.xx(),
+                                             cutm.xy(),
+                                             cutm.xz(),
+                                             cutm.yx(),
+                                             cutm.yy(),
+                                             cutm.yz(),
+                                             cutm.zx(),
+                                             cutm.zy(),
+                                             cutm.zz())));
 
-	Solid eeCutEnv = SubtractionSolid(ee.envName + std::to_string(iSCType),
-					  ns.solid(ee.envName + std::to_string(iSCType) + "Tmp"),
-					  eeCutBox,
-					  Transform3D(cutRot, cutTra));
+        Solid eeCutEnv = SubtractionSolid(ee.envName + std::to_string(iSCType),
+                                          ns.solid(ee.envName + std::to_string(iSCType) + "Tmp"),
+                                          eeCutBox,
+                                          Transform3D(cutRot, cutTra));
 
-	const DDTranslation extra(dxy, dxy, dz);
+        const DDTranslation extra(dxy, dxy, dz);
 
-	Solid eeCutAlv = SubtractionSolid(ee.alvName + std::to_string(iSCType),
-					  ns.solid(ee.alvName + std::to_string(iSCType) + "Tmp"),
-					  eeCutBox,
-					  Transform3D(cutRot, cutTra - extra));
+        Solid eeCutAlv = SubtractionSolid(ee.alvName + std::to_string(iSCType),
+                                          ns.solid(ee.alvName + std::to_string(iSCType) + "Tmp"),
+                                          eeCutBox,
+                                          Transform3D(cutRot, cutTra - extra));
 
-	const double mySign(iSCType < 4 ? +1. : -1.);
+        const double mySign(iSCType < 4 ? +1. : -1.);
 
-	const DDTranslation extraI(xyIOff + mySign * 2.0_mm, xyIOff + mySign * 2.0_mm, zIOff);
+        const DDTranslation extraI(xyIOff + mySign * 2.0_mm, xyIOff + mySign * 2.0_mm, zIOff);
 
-	Solid eeCutInt = SubtractionSolid(ee.intName + std::to_string(iSCType),
-					  ns.solid(ee.intName + std::to_string(iSCType) + "Tmp"),
-					  eeCutBox,
-					  Transform3D(cutRot, cutTra - extraI));
+        Solid eeCutInt = SubtractionSolid(ee.intName + std::to_string(iSCType),
+                                          ns.solid(ee.intName + std::to_string(iSCType) + "Tmp"),
+                                          eeCutBox,
+                                          Transform3D(cutRot, cutTra - extraI));
 
-	eeSCELog = ns.addVolumeNS(Volume(myns + ee.envName + std::to_string(iSCType), eeCutEnv, ns.material(ee.mat)));
-	eeSCALog = Volume(ee.alvName + std::to_string(iSCType), eeCutAlv, ns.material(ee.wallMat));
-	eeSCILog = Volume(ee.intName + std::to_string(iSCType), eeCutInt, ns.material(ee.mat));
+        eeSCELog = ns.addVolumeNS(Volume(myns + ee.envName + std::to_string(iSCType), eeCutEnv, ns.material(ee.mat)));
+        eeSCALog = Volume(ee.alvName + std::to_string(iSCType), eeCutAlv, ns.material(ee.wallMat));
+        eeSCILog = Volume(ee.intName + std::to_string(iSCType), eeCutInt, ns.material(ee.mat));
       }
       eeSCELog.placeVolume(eeSCALog, iSCType * 100 + 1, Position(dxy, dxy, dz));
       eeSCALog.placeVolume(eeSCILog, iSCType * 100 + 1, Position(xyIOff, xyIOff, zIOff));
@@ -633,36 +633,36 @@ namespace {
       static const unsigned int ncol(5);
 
       if (iSCType > 0 && iSCType <= ee.nSCTypes) {
-	const unsigned int icoffset((iSCType - 1) * ncol - 1);
+        const unsigned int icoffset((iSCType - 1) * ncol - 1);
 
-	// Loop over columns of SC
-	for (unsigned int icol(1); icol <= ncol; ++icol) {
-	  // Get column limits for this SC type from xml input
-	  const int ncrcol((int)ee.vecEESCProf[icoffset + icol]);
+        // Loop over columns of SC
+        for (unsigned int icol(1); icol <= ncol; ++icol) {
+          // Get column limits for this SC type from xml input
+          const int ncrcol((int)ee.vecEESCProf[icoffset + icol]);
 
-	  const int imin(0 < ncrcol ? 1 : (0 > ncrcol ? ncol + ncrcol + 1 : 0));
-	  const int imax(0 < ncrcol ? ncrcol : (0 > ncrcol ? ncol : 0));
+          const int imin(0 < ncrcol ? 1 : (0 > ncrcol ? ncol + ncrcol + 1 : 0));
+          const int imax(0 < ncrcol ? ncrcol : (0 > ncrcol ? ncol : 0));
 
-	  if (imax > 0) {
-	    // Loop over crystals in this row
-	    for (int irow(imin); irow <= imax; ++irow) {
-	      // Create crystal as a DDEcalEndcapTrap object and calculate rotation and
-	      // translation required to position it in the SC.
-	      DDEcalEndcapTrap crystal(1, ee.crysFront, ee.crysRear, ee.crysLength);
+          if (imax > 0) {
+            // Loop over crystals in this row
+            for (int irow(imin); irow <= imax; ++irow) {
+              // Create crystal as a DDEcalEndcapTrap object and calculate rotation and
+              // translation required to position it in the SC.
+              DDEcalEndcapTrap crystal(1, ee.crysFront, ee.crysRear, ee.crysLength);
 
-	      crystal.moveto(ee.cryFCtr[icol - 1][irow - 1], ee.cryRCtr[icol - 1][irow - 1]);
+              crystal.moveto(ee.cryFCtr[icol - 1][irow - 1], ee.cryRCtr[icol - 1][irow - 1]);
 
-	      string rname("EECrRoC" + std::to_string(icol) + "R" + std::to_string(irow));
+              string rname("EECrRoC" + std::to_string(icol) + "R" + std::to_string(irow));
 
-	      eeSCALog.placeVolume(
-				   eeCRLog,
-				   100 * iSCType + 10 * (icol - 1) + (irow - 1),
-				   Transform3D(
-					       myrot(ns, rname, crystal.rotation()),
-					       Position(crystal.centrePos().x(), crystal.centrePos().y(), crystal.centrePos().z() - ee.cryZOff)));
-	    }
-	  }
-	}
+              eeSCALog.placeVolume(
+                                   eeCRLog,
+                                   100 * iSCType + 10 * (icol - 1) + (irow - 1),
+                                   Transform3D(
+                                               myrot(ns, rname, crystal.rotation()),
+                                               Position(crystal.centrePos().x(), crystal.centrePos().y(), crystal.centrePos().z() - ee.cryZOff)));
+            }
+          }
+        }
       }
     }
 
@@ -670,31 +670,31 @@ namespace {
     for (int icol = 1; icol <= int(ee.nColumns); icol++) {
       //**  Loop over SCs in column, using limits from xml input
       for (int irow = int(ee.vecEEShape[2 * icol - 2]); irow <= int(ee.vecEEShape[2 * icol - 1]); ++irow) {
-	if (ee.vecEESCLims[0] <= icol && ee.vecEESCLims[1] >= icol && ee.vecEESCLims[2] <= irow &&
-	    ee.vecEESCLims[3] >= irow) {
-	  // Find SC type (complete or partial) for this location
-	  unsigned int isctype = 1;
+        if (ee.vecEESCLims[0] <= icol && ee.vecEESCLims[1] >= icol && ee.vecEESCLims[2] <= irow &&
+            ee.vecEESCLims[3] >= irow) {
+          // Find SC type (complete or partial) for this location
+          unsigned int isctype = 1;
 
-	  for (unsigned int ii = 0; ii < (unsigned int)(ee.nSCCutaway); ++ii) {
-	    if ((ee.vecEESCCutaway[3 * ii] == icol) && (ee.vecEESCCutaway[3 * ii + 1] == irow)) {
-	      isctype = int(ee.vecEESCCutaway[3 * ii + 2]);
-	    }
-	  }
+          for (unsigned int ii = 0; ii < (unsigned int)(ee.nSCCutaway); ++ii) {
+            if ((ee.vecEESCCutaway[3 * ii] == icol) && (ee.vecEESCCutaway[3 * ii + 1] == irow)) {
+              isctype = int(ee.vecEESCCutaway[3 * ii + 2]);
+            }
+          }
 
-	  // Create SC as a DDEcalEndcapTrap object and calculate rotation and
-	  // translation required to position it in the endcap.
-	  DDEcalEndcapTrap scrys(1, ee.sCEFront, ee.sCERear, ee.sCELength);
-	  scrys.moveto(ee.scrFCtr[icol - 1][irow - 1], ee.scrRCtr[icol - 1][irow - 1]);
-	  scrys.translate(DDTranslation(0., 0., -ee.zOff));
+          // Create SC as a DDEcalEndcapTrap object and calculate rotation and
+          // translation required to position it in the endcap.
+          DDEcalEndcapTrap scrys(1, ee.sCEFront, ee.sCERear, ee.sCELength);
+          scrys.moveto(ee.scrFCtr[icol - 1][irow - 1], ee.scrRCtr[icol - 1][irow - 1]);
+          scrys.translate(DDTranslation(0., 0., -ee.zOff));
 
-	  string rname(ee.envName + std::to_string(isctype) + std::to_string(icol) + "R" + std::to_string(irow));
-	  // Position SC in endcap
-	  Volume quaLog = ns.volume(ee.quaName);
-	  Volume childEnvLog = ns.volume(myns + ee.envName + std::to_string(isctype));
-	  quaLog.placeVolume(childEnvLog,
-			     100 * isctype + 10 * (icol - 1) + (irow - 1),
-			     Transform3D(scrys.rotation(), scrys.centrePos()));
-	}
+          string rname(ee.envName + std::to_string(isctype) + std::to_string(icol) + "R" + std::to_string(irow));
+          // Position SC in endcap
+          Volume quaLog = ns.volume(ee.quaName);
+          Volume childEnvLog = ns.volume(myns + ee.envName + std::to_string(isctype));
+          quaLog.placeVolume(childEnvLog,
+                             100 * isctype + 10 * (icol - 1) + (irow - 1),
+                             Transform3D(scrys.rotation(), scrys.centrePos()));
+        }
       }
     }
 

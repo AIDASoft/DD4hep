@@ -45,7 +45,7 @@ void gaudi::detail::DeVeloSensorStaticObject::print(int indent, int flg)  const 
 void gaudi::detail::DeVeloSensorStaticObject::initialize()   {
   de_user         |= DeVeloFlags::READOUT;
   moduleName       = param<std::string>("Module");
-	typeName         = param<std::string>("Type");
+        typeName         = param<std::string>("Type");
   sensorNumber     = param<int>("SensorNumber");
   siliconThickness = param<double>("SiThick");
   innerRadius      = param<double>("InnerRadius");

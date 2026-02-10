@@ -70,7 +70,7 @@ static long algorithm(Detector& /* description */,
       if (phideg != 0) {
         rotation = make_rotation3D(theta, phix, theta, phiy, 0., 0.);
       }
-	
+        
       double xpos, ypos;
       if (i%2 == 0) {
         xpos = radiusIn*cos(phi);

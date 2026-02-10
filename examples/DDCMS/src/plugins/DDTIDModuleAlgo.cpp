@@ -324,7 +324,7 @@ static long algorithm(Detector& /* description */,
         h1      = 0.5 * kaptonThick;
         bbl1    =  fabs(dz*sin(detTilt));
         bbl2    =  bbl1*0.000001;
-        double thet = atan((bbl1-bbl2)/(2*dz));	
+        double thet = atan((bbl1-bbl2)/(2*dz));        
         Solid solidCut  = ns.addSolidNS(kaptonName[k]+"Cut",Trap(dz, thet, 0., h1, bbl1, bbl1, 0., h1, bbl2, bbl2, 0));
         
         // Subtraction Solid

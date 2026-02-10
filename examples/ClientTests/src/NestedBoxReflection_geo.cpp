@@ -63,9 +63,9 @@ namespace   {
     double thetaZ = xrot.attr<double>(Unicode("thetaZ"));
     double phiZ   = xrot.attr<double>(Unicode("phiZ"));
     printout(INFO, "NestedBoxReflection",
-	     "+++ Adding reflection rotation \"%s\": "
-	     "(theta/phi)[rad] X: %6.3f %6.3f Y: %6.3f %6.3f Z: %6.3f %6.3f",
-	     element.attr<string>(_U(name)).c_str(), thetaX, phiX, thetaY, phiY, thetaZ, phiZ);
+             "+++ Adding reflection rotation \"%s\": "
+             "(theta/phi)[rad] X: %6.3f %6.3f Y: %6.3f %6.3f Z: %6.3f %6.3f",
+             element.attr<string>(_U(name)).c_str(), thetaX, phiX, thetaY, phiY, thetaZ, phiZ);
     Rotation3D rot = makeRotReflect(thetaX, phiX, thetaY, phiY, thetaZ, phiZ);
     Position   pos = Position(xpos.x(),xpos.y(),xpos.z());
     //  return Transform3D(rot, pos);
@@ -166,15 +166,15 @@ namespace   {
       TGeoHMatrix* mat = detail::matrix::_transform(pos, rot);
       switch(reflection)  {
       case 'X':
-	mat->ReflectX(kTRUE, kTRUE);
-	break;
+        mat->ReflectX(kTRUE, kTRUE);
+        break;
       case 'Y':
-	mat->ReflectY(kTRUE, kTRUE);
-	break;
+        mat->ReflectY(kTRUE, kTRUE);
+        break;
       case 'Z':
       default:
-	mat->ReflectZ(kTRUE, kTRUE);
-	break;
+        mat->ReflectZ(kTRUE, kTRUE);
+        break;
       }
       PlacedVolume pv = mother.placeVolume(vol, mat);
       pv.addPhysVolID(_toString(level,"lvl%d"), copyNo);
@@ -195,9 +195,9 @@ namespace   {
       iron    = description.material("Iron");
       tube_vol = Volume("tube", Tube(0,r,dz,0,M_PI*2.0), silicon);  
       if ( levels != 0 && x_det.hasChild(_U(assembly)) )
-	v_det = Assembly("envelope");
+        v_det = Assembly("envelope");
       else
-	v_det = Volume("envelope",Tube(4.5*r,4.5*r,4.5*r),description.air());
+        v_det = Volume("envelope",Tube(4.5*r,4.5*r,4.5*r),description.air());
 
       int cnt = 0;
       Transform3D tr = xml::createTransformation(x_tube);
@@ -207,19 +207,19 @@ namespace   {
       pv.addPhysVolID(_toString(levels,"lvl%d"), ++cnt);
 
       for(xml_coll_t c(x_det,_U(reflect_x)); c; ++c)
-	place(v_det, tube_vol, c, levels, ++cnt, 'X');
+        place(v_det, tube_vol, c, levels, ++cnt, 'X');
       for(xml_coll_t c(x_det,_U(reflect_y)); c; ++c)
-	place(v_det, tube_vol, c, levels, ++cnt, 'Y');
+        place(v_det, tube_vol, c, levels, ++cnt, 'Y');
       for(xml_coll_t c(x_det,_U(reflect_z)); c; ++c)
-	place(v_det, tube_vol, c, levels, ++cnt, 'Z');
+        place(v_det, tube_vol, c, levels, ++cnt, 'Z');
 
       if ( x_det.hasChild(_U(reflect)) )   {
-	Volume reflect_vol = tube_vol;
-	for(xml_coll_t c(x_det,_U(reflect)); c; ++c)   {
-	  TGeoCombiTrans* reflect_tr = transform_reflect(c);
-	  pv = v_det.placeVolume(reflect_vol.ptr(), reflect_tr);
-	  pv.addPhysVolID(_toString(levels,"lvl%d"), ++cnt);
-	}
+        Volume reflect_vol = tube_vol;
+        for(xml_coll_t c(x_det,_U(reflect)); c; ++c)   {
+          TGeoCombiTrans* reflect_tr = transform_reflect(c);
+          pv = v_det.placeVolume(reflect_vol.ptr(), reflect_tr);
+          pv.addPhysVolID(_toString(levels,"lvl%d"), ++cnt);
+        }
       }
       // Place the calo inside the world
       placeDetector(v_det, x_det).addPhysVolID("system",x_det.id());
@@ -289,12 +289,12 @@ namespace   {
     if ( ident > 0 )   {
       string vidn  = _toString(level,"lvl%d");
       if ( sens )   {
-	vol.setSensitiveDetector(sensitive);
+        vol.setSensitiveDetector(sensitive);
       }
       pv.addPhysVolID(vidn, ident);
       string n = par.name()+string("/")+vol.name();
       printout(INFO,"NestedBoxReflection","++ Level: %3d Volume:%-24s Sensitive:%s Color:%s vid:%s=%d",
-	       level, n.c_str(), yes_no(sens), vis, vidn.c_str(), ident);
+               level, n.c_str(), yes_no(sens), vis, vidn.c_str(), ident);
       place_boxes(level-1, vol);
     }
   }
@@ -363,19 +363,19 @@ namespace   {
       pv.addPhysVolID(_toString(levels,"lvl%d"), ++cnt);
 
       for(xml_coll_t c(x_det,_U(reflect_x)); c; ++c)
-	place(v_det, box_vol, c, levels, ++cnt, 'X');
+        place(v_det, box_vol, c, levels, ++cnt, 'X');
       for(xml_coll_t c(x_det,_U(reflect_y)); c; ++c)
-	place(v_det, box_vol, c, levels, ++cnt, 'Y');
+        place(v_det, box_vol, c, levels, ++cnt, 'Y');
       for(xml_coll_t c(x_det,_U(reflect_z)); c; ++c)
-	place(v_det, box_vol, c, levels, ++cnt, 'Z');
+        place(v_det, box_vol, c, levels, ++cnt, 'Z');
 
       if ( x_det.hasChild(_U(reflect)) )   {
-	Volume reflect_vol = box_vol;
-	for(xml_coll_t c(x_det,_U(reflect)); c; ++c)   {
-	  TGeoCombiTrans* reflect_tr = transform_reflect(c);
-	  pv = v_det.placeVolume(reflect_vol.ptr(), reflect_tr);
-	  pv.addPhysVolID(_toString(levels,"lvl%d"), ++cnt);
-	}
+        Volume reflect_vol = box_vol;
+        for(xml_coll_t c(x_det,_U(reflect)); c; ++c)   {
+          TGeoCombiTrans* reflect_tr = transform_reflect(c);
+          pv = v_det.placeVolume(reflect_vol.ptr(), reflect_tr);
+          pv.addPhysVolID(_toString(levels,"lvl%d"), ++cnt);
+        }
       }
     }
     // Place the calo inside the world

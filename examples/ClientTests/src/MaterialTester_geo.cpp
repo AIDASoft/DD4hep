@@ -40,7 +40,7 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
     place.addPhysVolID("box",0);
   }
   
-  for(xml_coll_t k(x_det,_Unicode(test)); k; ++k)  {	
+  for(xml_coll_t k(x_det,_Unicode(test)); k; ++k)  {        
     xml_comp_t c = k;
     Material mat = description.material(c.nameStr());
     TGeoMaterial* material = mat->GetMaterial();
@@ -92,7 +92,7 @@ static Ref_t create_element(Detector& description, xml_h xml_det, SensitiveDetec
         const TNamed* prop  = (const TNamed*)all.At(i);
         double        value = material->GetConstProperty(i);
         printout(INFO,det_name,"+++                   \"%s\" [%s] value: %f",
-		 prop->GetName(), prop->GetTitle(), value);
+                 prop->GetName(), prop->GetTitle(), value);
       }
       printout(INFO,det_name,"+++          CONST Properties by NAME:");
       for(Int_t i=0, n=material->GetNconstProperties(); i<n; ++i)  {

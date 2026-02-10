@@ -89,8 +89,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
     s_vol.setVisAttributes(description,x_layer.visStr());
         
       if ( x_slice.isSensitive() ) {
-	    sens.setType("tracker");
-	    s_vol.setSensitiveDetector(sens);
+            sens.setType("tracker");
+            s_vol.setSensitiveDetector(sens);
        }
     l_vol.setAttributes(description,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
     pv = s_vol.placeVolume(s_vol,Position(0,0,z-zmin-layerWidth/2+thicks/2));

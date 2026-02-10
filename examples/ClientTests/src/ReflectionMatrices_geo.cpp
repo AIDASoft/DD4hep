@@ -46,9 +46,9 @@ namespace   {
     double thetaZ = xrot.attr<double>(Unicode("thetaZ"));
     double phiZ   = xrot.attr<double>(Unicode("phiZ"));
     printout(INFO, "ReflectionMatrices",
-	     "+++ Adding reflection rotation \"%s\": "
-	     "(theta/phi)[rad] X: %6.3f %6.3f Y: %6.3f %6.3f Z: %6.3f %6.3f",
-	     element.attr<string>(_U(name)).c_str(), thetaX, phiX, thetaY, phiY, thetaZ, phiZ);
+             "+++ Adding reflection rotation \"%s\": "
+             "(theta/phi)[rad] X: %6.3f %6.3f Y: %6.3f %6.3f Z: %6.3f %6.3f",
+             element.attr<string>(_U(name)).c_str(), thetaX, phiX, thetaY, phiY, thetaZ, phiZ);
     Rotation3D rot = makeRotReflect(thetaX, phiX, thetaY, phiY, thetaZ, phiZ);
     Position   pos = Position(xpos.x(),xpos.y(),xpos.z());
     return Transform3D(rot, pos);
@@ -69,15 +69,15 @@ namespace   {
       double det2 = detail::matrix::determinant(r);
       double det3 = detail::matrix::determinant(tr);
       str << "+++ Using rotation: " << nam << "   "
-	  << (const char*)((det1 >= 0) ? "RIGHT" : "LEFT") << "-handed  "
-	  << " Determinant: " << det1 << " " << det2 << " " << det3 << endl
-	  << "Pos: " << p << " Rotation:" << x << " " << y << " " << z
-	  << r;
+          << (const char*)((det1 >= 0) ? "RIGHT" : "LEFT") << "-handed  "
+          << " Determinant: " << det1 << " " << det2 << " " << det3 << endl
+          << "Pos: " << p << " Rotation:" << x << " " << y << " " << z
+          << r;
       PrintLevel lvl = det1 != det2 || det1 != det3 ? ERROR : INFO;
       if ( det1 < 0e0 ) ++num_left;
       if ( det1 > 0e0 ) ++num_right;
       if ( det1 < 0e0 && nam.find("LEFT-handed") == string::npos )   {
-	lvl = ERROR;
+        lvl = ERROR;
       }
       printout(lvl, "ReflectionMatrices",str.str().c_str());
     }
@@ -96,15 +96,15 @@ namespace   {
       detail::matrix::_transform(mat, pos, rot);
       switch(reflection)  {
       case 'X':
-	mat.ReflectX(kTRUE, kTRUE);
-	break;
+        mat.ReflectX(kTRUE, kTRUE);
+        break;
       case 'Y':
-	mat.ReflectY(kTRUE, kTRUE);
-	break;
+        mat.ReflectY(kTRUE, kTRUE);
+        break;
       case 'Z':
       default:
-	mat.ReflectZ(kTRUE, kTRUE);
-	break;
+        mat.ReflectZ(kTRUE, kTRUE);
+        break;
       }
       dump(e.nameStr(), detail::matrix::_transform(mat));
     }
@@ -115,13 +115,13 @@ namespace   {
       double    bz = x_box.z();
 
       for(xml_coll_t c(x_det,_U(reflect_x)); c; ++c)
-	dump(c, 'X');
+        dump(c, 'X');
       for(xml_coll_t c(x_det,_U(reflect_y)); c; ++c)
-	dump(c, 'Y');
+        dump(c, 'Y');
       for(xml_coll_t c(x_det,_U(reflect_z)); c; ++c)
-	dump(c, 'Z');
+        dump(c, 'Z');
       for(xml_coll_t c(x_det,_U(reflect)); c; ++c)
-	dump(xml_dim_t(c).nameStr(), transform_3d(c));
+        dump(xml_dim_t(c).nameStr(), transform_3d(c));
 
       auto pv = placeDetector(Volume("envelope",Box(bx, by, bz),description.air()), x_det);
       pv.addPhysVolID("system",x_det.id());
@@ -133,8 +133,8 @@ namespace   {
     ReflectionMatrices builder(description, x_det, sens);
     DetElement det = builder.create();
     printout(ALWAYS,"ReflectionMatrices",
-	     "+++ Analysed %d right handed and %d left handed matrices.",
-	     builder.num_right, builder.num_left);
+             "+++ Analysed %d right handed and %d left handed matrices.",
+             builder.num_right, builder.num_left);
     return det;
   }
 }

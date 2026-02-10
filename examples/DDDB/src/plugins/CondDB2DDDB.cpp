@@ -239,15 +239,15 @@ namespace dd4hep {
           convert(element);
         }
         catch(const exception& e)  {
-	  bool eval_err = ::strstr(e.what(),"error during expression evaluation");
-	  if ( !eval_err ) eval_err = ::strstr(e.what(),"Evaluator : unknown variable");
-	  if ( !eval_err || (eval_err && s_config.printConfig.eval_error) )
-	    printout(INFO,typeName(typeid(T)),"Failed to convert XML object: %s", e.what());
-	  if ( s_config.printConfig.tree_on_error ) xml::dump_tree(element.parent());
+          bool eval_err = ::strstr(e.what(),"error during expression evaluation");
+          if ( !eval_err ) eval_err = ::strstr(e.what(),"Evaluator : unknown variable");
+          if ( !eval_err || (eval_err && s_config.printConfig.eval_error) )
+            printout(INFO,typeName(typeid(T)),"Failed to convert XML object: %s", e.what());
+          if ( s_config.printConfig.tree_on_error ) xml::dump_tree(element.parent());
         }
         catch(...)   {
           printout(INFO,typeName(typeid(T)),"Failed to convert XML object.");
-	  if ( s_config.printConfig.tree_on_error ) xml::dump_tree(element.parent());
+          if ( s_config.printConfig.tree_on_error ) xml::dump_tree(element.parent());
         }
       }
     };
@@ -1459,13 +1459,13 @@ namespace dd4hep {
         printout(INFO,"Parameter","++  %s = %s",name.c_str(),value.c_str());
       }
       try  {
-	_toDictionary(name,value);
+        _toDictionary(name,value);
       }
       catch(const exception& e)  {
-	if ( context->printConfig.eval_error )  {
-	  printout(ERROR,"DDDBParameter","++  FAILED  %s = %s [%s]",name.c_str(),value.c_str(),e.what());
-	}
-	throw;
+        if ( context->printConfig.eval_error )  {
+          printout(ERROR,"DDDBParameter","++  FAILED  %s = %s [%s]",name.c_str(),value.c_str(),e.what());
+        }
+        throw;
       }
     }
 
@@ -1887,7 +1887,7 @@ namespace dd4hep {
               context->printConfig.condition = prt;
               if ( prt || context->printConfig.xml )  xml::dump_tree(e);
               converter(e);
-	      return;
+              return;
             }
             return;
           }

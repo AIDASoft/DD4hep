@@ -77,14 +77,14 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
       float    z   = x_det_layer.dr();
       
       if(debug){
-	cout << " r:" << r 
-	     << " dr:" << dr 
-	     << " x1:" << x1 
-	     << " x2:" << x2
-	     << " y1:" << y1 
-	     << " y2:" << y2 
-	     << " z:" << z 
-	     << endl;
+        cout << " r:" << r 
+             << " dr:" << dr 
+             << " x1:" << x1 
+             << " x2:" << x2
+             << " y1:" << y1 
+             << " y2:" << y2 
+             << " z:" << z 
+             << endl;
       }
       
       //Shape a Trapezoid (tile): DDCore/DD4hep/Shapes.h
@@ -104,70 +104,70 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
       
       //Repeat slices until we reach the end of the calorimeter
       for(xml_coll_t k(x_det_layer,_U(slice)); k; ++k)  {
-	
-	dd4hep::xml::Component tile_xml       = k;
-	string                 tile_name      = layer_name + _toString(tile_number,"_slice%d");
-	Material               tile_material  = description.material(tile_xml.materialStr());
-	float                  tile_thickness = tile_xml.dz();
-	float                  tile_y1        = tile_thickness;
-	float                  tile_y2        = tile_thickness;
-	float                  tile_z         = x_det_layer.dr();
-	
-	//Shape a Trapezoid (tile): DDCore/DD4hep/Shapes.h
-	Trapezoid tile_shape(x1,x2,tile_y1,tile_y2,tile_z);
-	
-	//Create a volume with trapezoid shape
-	Volume tile_vol(tile_name,tile_shape,tile_material);
-	
-	if ( tile_xml.isSensitive() ) {
-	  tile_vol.setSensitiveDetector(sens);
-	}
-	
-	//Set region, limitset, and visibility settings
-	tile_vol.setAttributes(description,tile_xml.regionStr(),tile_xml.limitsStr(),tile_xml.visStr());
-	
-	tiles.push_back(tile_vol);
-	tile_number++;
+        
+        dd4hep::xml::Component tile_xml       = k;
+        string                 tile_name      = layer_name + _toString(tile_number,"_slice%d");
+        Material               tile_material  = description.material(tile_xml.materialStr());
+        float                  tile_thickness = tile_xml.dz();
+        float                  tile_y1        = tile_thickness;
+        float                  tile_y2        = tile_thickness;
+        float                  tile_z         = x_det_layer.dr();
+        
+        //Shape a Trapezoid (tile): DDCore/DD4hep/Shapes.h
+        Trapezoid tile_shape(x1,x2,tile_y1,tile_y2,tile_z);
+        
+        //Create a volume with trapezoid shape
+        Volume tile_vol(tile_name,tile_shape,tile_material);
+        
+        if ( tile_xml.isSensitive() ) {
+          tile_vol.setSensitiveDetector(sens);
+        }
+        
+        //Set region, limitset, and visibility settings
+        tile_vol.setAttributes(description,tile_xml.regionStr(),tile_xml.limitsStr(),tile_xml.visStr());
+        
+        tiles.push_back(tile_vol);
+        tile_number++;
       }
 
       //Place the same volumes inside the envelope
       float tile_pos_z = -x_det_dim.z()/2.;
       int slice_num = 0;
       while(tile_pos_z<x_det_dim.z()/2.){
-	tile_number=0;
-	for(xml_coll_t k(x_det_layer,_U(slice)); k; ++k)  {
-	  
-	  dd4hep::xml::Component tile_xml       = k;
-	  float                  tile_thickness = tile_xml.dz();
-	  
-	  //Place the tile inside the layer
-	  PlacedVolume tile_plv = layer_vol.placeVolume(tiles.at(tile_number),Position(0,tile_pos_z,0));
-	  tile_plv.addPhysVolID("layer",layer_num);
-	  tile_plv.addPhysVolID("slice",slice_num);
+        tile_number=0;
+        for(xml_coll_t k(x_det_layer,_U(slice)); k; ++k)  {
+          
+          dd4hep::xml::Component tile_xml       = k;
+          float                  tile_thickness = tile_xml.dz();
+          
+          //Place the tile inside the layer
+          PlacedVolume tile_plv = layer_vol.placeVolume(tiles.at(tile_number),Position(0,tile_pos_z,0));
+          tile_plv.addPhysVolID("layer",layer_num);
+          tile_plv.addPhysVolID("slice",slice_num);
 
-	  vol_max["layer"] = std::max(vol_max["layer"],layer_num);
-	  vol_max["slice"] = std::max(vol_max["slice"],slice_num);
+          vol_max["layer"] = std::max(vol_max["layer"],layer_num);
+          vol_max["slice"] = std::max(vol_max["slice"],slice_num);
 
-	  //Increment the z pos of the tile
-	  tile_pos_z += tile_thickness;
-	  tile_number++;
-	  slice_num++;
-	}
+          //Increment the z pos of the tile
+          tile_pos_z += tile_thickness;
+          tile_number++;
+          slice_num++;
+        }
       }
       
       //Place the same layer around the beam axis phiBins times
       double mod_x_off = r;  
       double mod_y_off = 0;  
       for(int i=0;i<x_det_dim.phiBins();i++){
-	if(debug) cout << "Layer:" << i << " phi:" << tile_phi << " rotz:" << (tile_phi*i) << endl;
-	double layer_pos_x = mod_x_off * cos(tile_phi*i) - mod_y_off * sin(tile_phi*i);
-	double layer_pos_y = mod_x_off * sin(tile_phi*i) + mod_y_off * cos(tile_phi*i);
-	Transform3D tr(RotationZYX(M_PI*0.5,M_PI*0.5,0)*RotationZYX(0,tile_phi*i,0),
-		       Translation3D(layer_pos_x,layer_pos_y,layer_pos_z));
-	PlacedVolume pv = calo_vol.placeVolume(layer_vol,tr);
-	pv.addPhysVolID("module",i+1);
-	vol_max["module"] = std::max(vol_max["module"],i+1);
-	//DetElement sd = i==0 ? stave_det : stave_det.clone(_toString(i,"stave%d"));
+        if(debug) cout << "Layer:" << i << " phi:" << tile_phi << " rotz:" << (tile_phi*i) << endl;
+        double layer_pos_x = mod_x_off * cos(tile_phi*i) - mod_y_off * sin(tile_phi*i);
+        double layer_pos_y = mod_x_off * sin(tile_phi*i) + mod_y_off * cos(tile_phi*i);
+        Transform3D tr(RotationZYX(M_PI*0.5,M_PI*0.5,0)*RotationZYX(0,tile_phi*i,0),
+                       Translation3D(layer_pos_x,layer_pos_y,layer_pos_z));
+        PlacedVolume pv = calo_vol.placeVolume(layer_vol,tr);
+        pv.addPhysVolID("module",i+1);
+        vol_max["module"] = std::max(vol_max["module"],i+1);
+        //DetElement sd = i==0 ? stave_det : stave_det.clone(_toString(i,"stave%d"));
       }
       
       r += dr;

@@ -175,7 +175,7 @@ static long algorithm(Detector& /* description */,
       << waferMat << " Side Width Top" << sideWidthTop
       << " Side Width Bottom" << sideWidthBottom
       << " and positioned at "<<waferPosition
-      << " positioned with rotation"	<< " matrix:"
+      << " positioned with rotation"        << " matrix:"
       << waferRot;
   LogDebug("TECGeom") << "debug: Active Material " 
       << activeMat << " Height " << activeHeight 
@@ -375,7 +375,7 @@ static long algorithm(Detector& /* description */,
 
                ypos = hybridZ;
   zpos = 0.5 * (-waferPosition + fullHeight + hybridHeight)+pitchHeight;
-  if (isRing6)	zpos *=-1;
+  if (isRing6)        zpos *=-1;
   //position it
   doPos(ctxt, hybrid, mother, isStereo, rPos, posCorrectionPhi, 0, ypos, zpos, "NULL");
 
@@ -388,10 +388,10 @@ static long algorithm(Detector& /* description */,
   solid = Trap(dz, 0, 0, h1, bl1, bl1, 0, h1, bl2, bl2, 0);
   ns.addSolidNS(name,solid);
   LogDebug("TECGeom") << "Solid:\t" << solid.name()
-			<< " Trap made of " << waferMat << " of dimensions "
-			<< dz << ", 0, 0, " << h1 << ", " << bl1 << ", "
-			<< bl1 << ", 0, " << h1 << ", " << bl2 << ", "
-			<< bl2 << ", 0";
+                        << " Trap made of " << waferMat << " of dimensions "
+                        << dz << ", 0, 0, " << h1 << ", " << bl1 << ", "
+                        << bl1 << ", 0, " << h1 << ", " << bl2 << ", "
+                        << bl2 << ", 0";
   Volume wafer(name, solid, ns.material(waferMat));
   
   ypos = activeZ;
@@ -407,7 +407,7 @@ static long algorithm(Detector& /* description */,
   dz      = 0.5 * (waferThick-backplaneThick); // inactive backplane
   h1      = 0.5 * activeHeight;
   if (isRing6) { //switch bl1 <->bl2
-    tmp = bl2;	bl2 =bl1;	bl1 = tmp;
+    tmp = bl2;        bl2 =bl1;        bl1 = tmp;
   }
   solid = Trap(dz, 0, 0, h1, bl2, bl1, 0, h1, bl2, bl1, 0);
   ns.addSolidNS(name,solid);
@@ -433,7 +433,7 @@ static long algorithm(Detector& /* description */,
     dz      = 0.5 * (waferThick-backplaneThick); // inactive backplane
     h1      = inactiveDy;
     if (isRing6) { //switch bl1 <->bl2
-      tmp = bl2;	bl2 =bl1;	bl1 = tmp;
+      tmp = bl2;        bl2 =bl1;        bl1 = tmp;
     }
     solid = Trap(dz, 0, 0, h1, bl2, bl1, 0, h1, bl2, bl1, 0);
     ns.addSolidNS(name,solid);
@@ -512,7 +512,7 @@ static long algorithm(Detector& /* description */,
     bl1     = 0.5 * topFrame2LHeight;
     bl2     = 0.5 * topFrame2RHeight;
     thet    = atan((bl1-bl2)/(2.*dz));
-	
+        
     solid   = Trap(dz, thet, 0, h1, bl1, bl1, 0, h1, bl2, bl2, 0);
     ns.addSolid(name,solid);
     LogDebug("TECGeom") << "Solid:\t" << solid.name()
@@ -556,7 +556,7 @@ static long algorithm(Detector& /* description */,
     xpos =0 ;
     ypos =  sideFrameZ;
     zpos = topFrameEndZ -dz -siReenforceYPos[i];
-	
+        
     if (isRing6)  zpos *= -1;
     if(isStereo){ 
       xpos = (-siReenforceYPos[i]+0.5*fullHeight)*sin(detTilt);

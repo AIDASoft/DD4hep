@@ -31,24 +31,24 @@ namespace SomeExperiment   {
       TrHits*  hits = new TrHits();
       b->SetAddress(&hits);
       for(int ievt=0; ievt<num_evts; ++ievt )   {
-	int nbyte = b->GetEntry(ievt);
-	if ( nbyte > 0 )    {
-	  cout << "Tracker hits: " << nbyte << " bytes " << hits->size()  << endl;
-	  for(size_t i=0; i<min(hits->size(),10UL); ++i)    {
-	    MyTrackerHit* hit = (MyTrackerHit*)hits->at(i);
-	    cout << b->GetName() << " Event " << ievt
-		 << " Hit " << (int)i
-		 << " type: "    << typeid(*hit).name()
-		 << " deposit:"  << hit->energyDeposit
-		 << " step-len:" << hit->step_length
-		 << " prePos:"   << hit->prePos
-		 << " postPos:"  << hit->postPos
-		 << endl;
-	  }
-	}
-	else   {
-	  cout << b->GetName() << " Event " << ievt << " NO DATA." << endl;
-	}
+        int nbyte = b->GetEntry(ievt);
+        if ( nbyte > 0 )    {
+          cout << "Tracker hits: " << nbyte << " bytes " << hits->size()  << endl;
+          for(size_t i=0; i<min(hits->size(),10UL); ++i)    {
+            MyTrackerHit* hit = (MyTrackerHit*)hits->at(i);
+            cout << b->GetName() << " Event " << ievt
+                 << " Hit " << (int)i
+                 << " type: "    << typeid(*hit).name()
+                 << " deposit:"  << hit->energyDeposit
+                 << " step-len:" << hit->step_length
+                 << " prePos:"   << hit->prePos
+                 << " postPos:"  << hit->postPos
+                 << endl;
+          }
+        }
+        else   {
+          cout << b->GetName() << " Event " << ievt << " NO DATA." << endl;
+        }
       }
     }
   }
@@ -80,4 +80,4 @@ namespace SomeExperiment   {
   }
 }
 
-	
+        

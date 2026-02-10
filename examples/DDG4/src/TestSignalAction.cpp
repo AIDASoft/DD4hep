@@ -37,18 +37,18 @@ namespace dd4hep {
     public:
       /// Standard constructor
       TestSignalAction(Geant4Context* context, const std::string& nam)
-	: Geant4EventAction(context, nam) 
+        : Geant4EventAction(context, nam) 
       {
-	declareProperty("signal_event", signal_event);
+        declareProperty("signal_event", signal_event);
       }
       /// Default destructor
       virtual ~TestSignalAction() = default;
       /// Begin-of-event callback
       virtual void begin(const G4Event* /* event */)  {
-	if ( ++num_calls == signal_event )  {
-	  always("Sending interrupt signal to self at call %d", ++num_calls);
-	  ::kill(::getpid(), SIGINT);
-	}
+        if ( ++num_calls == signal_event )  {
+          always("Sending interrupt signal to self at call %d", ++num_calls);
+          ::kill(::getpid(), SIGINT);
+        }
       }
     };
   }    // End namespace sim

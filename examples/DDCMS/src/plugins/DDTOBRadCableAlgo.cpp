@@ -84,7 +84,7 @@ static long algorithm(Detector& /* description */,
   for (int i=0; i<(int)(coolR2.size()); i++)
     LogDebug("TOBGeom") << "\t[" << i <<"]\tR = " << coolR2[i];
   for (int i=0; i<(int)(names.size()); i++)
-    LogDebug("TOBGeom") << "DDTOBRadCableAlgo debug: names[" << i	<< "] = " << names[i];
+    LogDebug("TOBGeom") << "DDTOBRadCableAlgo debug: names[" << i        << "] = " << names[i];
 
   Volume disk = ns.volume(parentName);  
   // Loop over sub disks

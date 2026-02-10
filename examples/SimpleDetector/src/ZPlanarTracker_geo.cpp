@@ -116,9 +116,9 @@ static Ref_t create_element(Detector& description, xml_h e, SensitiveDetector se
     thisLayer.widthSupport     = supp_width ;      
     
     thisLayer.distanceSensitive  = sens_distance ;  
-    thisLayer.offsetSensitive    = sens_offset ;	  
+    thisLayer.offsetSensitive    = sens_offset ;          
     thisLayer.thicknessSensitive = sens_thickness ; 
-    thisLayer.zHalfSensitive     = sens_zhalf ;	  
+    thisLayer.zHalfSensitive     = sens_zhalf ;          
     thisLayer.widthSensitive     = sens_width ;     
     
     thisLayer.ladderNumber =  nLadders ;

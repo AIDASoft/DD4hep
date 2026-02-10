@@ -60,7 +60,7 @@ namespace{
         //Surface is placed at the center of the volume, no need to shift origin
         //Make sure u,v,n form a right-handed coordinate system, v along the final z
         Vector3D u(-1.,0.,0.), v(0.,-1.,0.), n(0.,0.,1.), o(0.,0.,0.);
-	
+        
         Type type( Type::Sensitive ) ;
 
         if( data.dimension == 1 ) {

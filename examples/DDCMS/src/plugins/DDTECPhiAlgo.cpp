@@ -44,7 +44,7 @@ static long algorithm(Detector& /* description */,
       << "positioning--" << "\tStartAngle " 
       << startAngle/CLHEP::deg << "\tIncrAngle " 
       << incrAngle/CLHEP::deg << "\tZ in/out " << zIn << ", " 
-      << zOut 	      << "\tCopy Numbers " << number 
+      << zOut               << "\tCopy Numbers " << number 
       << " Start/Increment " << startCopyNo << ", " 
       << incrCopyNo;
   LogDebug("TECGeom") << "debug: Parent " << mother.name() 

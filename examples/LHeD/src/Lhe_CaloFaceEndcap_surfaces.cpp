@@ -94,7 +94,7 @@ namespace{
         std::string name( argv[i] , ptr ) ;
         double value = dd4hep::_toDouble(++ptr);
         
-	printout(dd4hep::DEBUG,"DD4hep_CaloFaceEndcapSurfacePlugin", "argument[%d] = %s = %f" , i, name.c_str() , value  ) ;
+        printout(dd4hep::DEBUG,"DD4hep_CaloFaceEndcapSurfacePlugin", "argument[%d] = %s = %f" , i, name.c_str() , value  ) ;
 
         if(      name=="zpos"    ) data.zpos     = value ; 
         else if( name=="radius"  ) data.radius   = value ; 
@@ -103,7 +103,7 @@ namespace{
         else if( name=="systemID") data.systemID   = value ; 
         else if( name=="encoding") data.encoding = ptr ; 
         else {
-	  printout(dd4hep::WARNING,"DD4hep_CaloFaceEndcapSurfacePlugin", "unknown parameter:  %s ", name.c_str() ) ;
+          printout(dd4hep::WARNING,"DD4hep_CaloFaceEndcapSurfacePlugin", "unknown parameter:  %s ", name.c_str() ) ;
         }
       }
     }

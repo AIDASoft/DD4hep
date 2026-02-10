@@ -34,9 +34,9 @@ using namespace dd4hep::DDDB;
 DDDBReader::DDDBReader(const std::string& dir)
   : m_directory(dir), m_match("conddb:")
 {
-	m_context.valid_since = detail::makeTime(1970,1,1);
-	m_context.valid_until = detail::makeTime(2030,1,1);
-	m_context.event_time  = detail::makeTime(2015,7,1,12,0,0);
+        m_context.valid_since = detail::makeTime(1970,1,1);
+        m_context.valid_until = detail::makeTime(2030,1,1);
+        m_context.event_time  = detail::makeTime(2015,7,1,12,0,0);
   m_context.match       = m_match;
 }
 

@@ -34,21 +34,21 @@ namespace dd4hep {
     public:
       /// Standard constructor
       TestPrintAction(Geant4Context* context, const std::string& nam)
-	: Geant4Action(context, nam) 
+        : Geant4Action(context, nam) 
       {
-	declareProperty("param", param);
+        declareProperty("param", param);
       }
       /// Default destructor
       virtual ~TestPrintAction()   {
       }
       /// Messenger callback
       void print_par()   {
-	always("Parameter value at call %d is '%s'", ++num_calls, param.c_str());
+        always("Parameter value at call %d is '%s'", ++num_calls, param.c_str());
       }
       /// Install command control messenger to write GDML file from command prompt.
       virtual void installCommandMessenger()  override {
-	m_control->addCall("print_param", "Printing some increasing parameter",
-			   Callback(this).make(&TestPrintAction::print_par),0);
+        m_control->addCall("print_param", "Printing some increasing parameter",
+                           Callback(this).make(&TestPrintAction::print_par),0);
       }
     };
   }    // End namespace sim

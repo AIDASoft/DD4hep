@@ -41,7 +41,7 @@ namespace  {
         posDX(e.posDX), posDY(e.posDY), posDZ(e.posDZ),
         dimDX(e.dimDX), dimDY(e.dimDY), dimDZ(e.dimDZ),
         pixelX(e.pixelX), pixelY(e.pixelY), pixelZ(e.pixelZ),
-        detector(d)						       
+        detector(d)                                                       
     {
     }
   };
@@ -49,8 +49,8 @@ namespace  {
 typedef MyDetExtension DetectorExtension;
 
 static Ref_t create_detector(Detector &description, json_h e, SensitiveDetector sens)  {
-  json_det_t x_det = e;             	//json-detelemnt of the detector taken as an argument
-  string det_name = x_det.nameStr();	//det_name is the name of the json-detelement
+  json_det_t x_det = e;                     //json-detelemnt of the detector taken as an argument
+  string det_name = x_det.nameStr();        //det_name is the name of the json-detelement
   Assembly assembly (det_name);
   int detectors_id = x_det.id();
 
@@ -77,8 +77,8 @@ static Ref_t create_detector(Detector &description, json_h e, SensitiveDetector 
 
   Volume motherVol = description.pickMotherVolume(sdet); //the mothers volume of our detector
 
-  PlacedVolume pv;	//struct of Handle giving the volume id(ayto pou 8a kanw volume kai 8a to steilw me setplacement),dld o detector mou
-  json_comp_t dtc_mod = x_det.child(_U(module));	    // considering the module-pixel of the detector
+  PlacedVolume pv;        //struct of Handle giving the volume id(ayto pou 8a kanw volume kai 8a to steilw me setplacement),dld o detector mou
+  json_comp_t dtc_mod = x_det.child(_U(module));            // considering the module-pixel of the detector
   double pixelX = dtc_mod.x();  // The x dimension of the module
   double pixelY = dtc_mod.y();  // The y dimension of the module
   double pixelZ = dtc_mod.z();  // The z dimension of the module
@@ -96,8 +96,8 @@ static Ref_t create_detector(Detector &description, json_h e, SensitiveDetector 
   ext->Nj= Nj;
 
 
-  Volume m_volume(det_name, Box(dim_x, dim_y, dim_z), mat);	//as parameters it needs name,solid,material
-  m_volume.setVisAttributes(description.visAttributes(x_det.visStr()));	//I DONT MIND ABOUT THIS!
+  Volume m_volume(det_name, Box(dim_x, dim_y, dim_z), mat);        //as parameters it needs name,solid,material
+  m_volume.setVisAttributes(description.visAttributes(x_det.visStr()));        //I DONT MIND ABOUT THIS!
   pv = motherVol.placeVolume(m_volume,Transform3D(Position(det_x,det_y,det_z)));  //det_x,det_y,det_z are the dimensions of the detector in space
 
   json_comp_t dtctr = x_det;

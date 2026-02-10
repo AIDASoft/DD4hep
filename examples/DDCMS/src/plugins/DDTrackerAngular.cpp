@@ -83,7 +83,7 @@ static long  algorithm(Detector& /* description */,
         rotation = make_rotation3D(theta, phix, theta, phiy, 0., 0.);
       }
     }
-	
+        
     double xpos = radius*cos(phi) + center[0];
     double ypos = radius*sin(phi) + center[1];
     double zpos = center[2];

@@ -130,8 +130,8 @@ static int test_example (Detector& /* description */, int /* argc */, char** /* 
     // No upcasts. They do not work
     pl = (payload*)(Cast::instance<base_0>().apply_dynCast(Cast::instance<payload>(), b0));
     cout << "Payload(base_0 -> payload): " << (void*)b0 << " -> " << (void*)pl
-	 << " data_0: " << pl->data_0 << " data_1: " << pl->data_1 << " data_2: " << pl->data_2
-	 << endl;
+         << " data_0: " << pl->data_0 << " data_1: " << pl->data_1 << " data_2: " << pl->data_2
+         << endl;
 
     /// Cross cast fails:
     b1 = (base_1<int>*)(Cast::instance<base_2<double> >().apply_dynCast(Cast::instance<base_1<int> >(), b2));

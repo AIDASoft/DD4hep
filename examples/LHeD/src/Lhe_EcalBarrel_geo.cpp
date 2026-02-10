@@ -57,7 +57,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   double trd_y1 = x_dim.z()/2 - tolerance;
   double trd_y2 = trd_y1;
   double trd_z  = mod_z/2 - tolerance;
-		
+                
   // Create the trapezoid for the stave.
   Trapezoid trd(trd_x1, // Outer side, i.e. the "short" X side.
                 trd_x2, // Inner side, i.e. the "long"  X side.

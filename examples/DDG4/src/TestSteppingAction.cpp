@@ -36,14 +36,14 @@ namespace dd4hep {
     public:
       /// Standard constructor
       TestSteppingAction(Geant4Context* context, const std::string& nam)
-	: Geant4SteppingAction(context, nam) 
+        : Geant4SteppingAction(context, nam) 
       {
       }
       /// Default destructor
       virtual ~TestSteppingAction()   {
-	info("+++ Track Calls Steps: %ld", m_calls_steps);
-	info("+++ Track Calls Suspended: %ld", m_calls_suspended);
-	info("+++ Track Calls Killed: %ld", m_calls_kill);
+        info("+++ Track Calls Steps: %ld", m_calls_steps);
+        info("+++ Track Calls Suspended: %ld", m_calls_suspended);
+        info("+++ Track Calls Killed: %ld", m_calls_kill);
       }
       /// stepping callback
       virtual void operator()(const G4Step* step, G4SteppingManager*) {
@@ -54,7 +54,7 @@ namespace dd4hep {
           ++m_calls_kill;
           step->GetTrack()->SetTrackStatus(fStopAndKill);
         }
-	++m_calls_steps;
+        ++m_calls_steps;
       }
     };
   }    // End namespace sim

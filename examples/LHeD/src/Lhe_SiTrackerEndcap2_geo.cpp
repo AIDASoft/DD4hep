@@ -101,7 +101,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
         string m_base = _toString(l_id,"layer%d") + _toString(mod_num,"_module%d");
         double x = -r*std::cos(phi);
         double y = -r*std::sin(phi);
-	if ( zstart >= 0 ) {
+        if ( zstart >= 0 ) {
         DetElement module(sdet,m_base+"_pos",det_id);
         pv = assembly.placeVolume(m_vol,Transform3D(RotationZYX(0,-M_PI/2-phi,-M_PI/2),Position(x,y,zstart+dz)));
         pv.addPhysVolID("barrel",1).addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
@@ -126,14 +126,14 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
     } else
     {
        pv = assembly.placeVolume(m_vol,Transform3D(RotationZYX(0,-M_PI/2-phi,-M_PI/2),Position(x,y,zstart-dz)));
-	   pv.addPhysVolID("barrel",3).addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
-	   DetElement r_module(sdet,m_base+"_neg-z",det_id);
-	   r_module.setPlacement(pv);
-	   for(size_t ic=0; ic<sensVols.size(); ++ic)  {
-	    PlacedVolume sens_pv = sensVols[ic];
-	    DetElement comp_elt(r_module,sens_pv.volume().name(),mod_num);
-	    comp_elt.setPlacement(sens_pv);
-	  }
+           pv.addPhysVolID("barrel",3).addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
+           DetElement r_module(sdet,m_base+"_neg-z",det_id);
+           r_module.setPlacement(pv);
+           for(size_t ic=0; ic<sensVols.size(); ++ic)  {
+            PlacedVolume sens_pv = sensVols[ic];
+            DetElement comp_elt(r_module,sens_pv.volume().name(),mod_num);
+            comp_elt.setPlacement(sens_pv);
+          }
         }
         dz   = -dz;
         phi += iphi;

@@ -36,31 +36,31 @@ namespace dd4hep {
     public:
       /// Standard constructor
       TestStackingAction(Geant4Context* context, const std::string& nam)
-	: Geant4StackingAction(context, nam) 
+        : Geant4StackingAction(context, nam) 
       {
       }
       /// Default destructor
       virtual ~TestStackingAction()   {
-	info("+++ Calls newStage: %ld prepare: %ld classifyNewTrack: %ld",
-	     m_calls_newStage, m_calls_prepare, m_calls_classify);
+        info("+++ Calls newStage: %ld prepare: %ld classifyNewTrack: %ld",
+             m_calls_newStage, m_calls_prepare, m_calls_classify);
       }
       /// New-stage callback
       virtual void newStage(G4StackManager* stackManager)   override final  {
-	info("+++ [%ld] Calling newStage. StackManager: %p", m_calls_newStage, (void*)stackManager);
-	++m_calls_newStage;
+        info("+++ [%ld] Calling newStage. StackManager: %p", m_calls_newStage, (void*)stackManager);
+        ++m_calls_newStage;
       }
       /// Preparation callback
       virtual void prepare(G4StackManager* stackManager)   override final   {
-	info("+++ [%ld] Calling prepare. StackManager: %p", m_calls_prepare, (void*)stackManager);
-	++m_calls_prepare;
+        info("+++ [%ld] Calling prepare. StackManager: %p", m_calls_prepare, (void*)stackManager);
+        ++m_calls_prepare;
       }
       /// Return TrackClassification with enum G4ClassificationOfNewTrack or NoTrackClassification
       virtual TrackClassification 
       classifyNewTrack(G4StackManager* stackManager, const G4Track* track)   override final   {
-	info("+++ [%ld] Calling classifyNewTrack. StackManager: %p Track: %p", 
-	     m_calls_classify, (void*)stackManager, (void*)track);
-	++m_calls_classify;
-	return { fKill };
+        info("+++ [%ld] Calling classifyNewTrack. StackManager: %p Track: %p", 
+             m_calls_classify, (void*)stackManager, (void*)track);
+        ++m_calls_classify;
+        return { fKill };
       }
     };
   }    // End namespace sim

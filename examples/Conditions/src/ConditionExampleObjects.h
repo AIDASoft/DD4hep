@@ -309,12 +309,12 @@ namespace dd4hep {
       virtual int operator()(DetElement de, int level)  const final;
       template<typename T>
       Condition make_condition(DetElement de,
-			       const std::string& name,
-			       const T& val)  const;
+                               const std::string& name,
+                               const T& val)  const;
       template<typename T, typename... Args>
       Condition make_condition_args(DetElement de,
-				    const std::string& name,
-				    Args... args)  const;
+                                    const std::string& name,
+                                    Args... args)  const;
     };
 
     /// Example how to access the conditions constants from a detector element

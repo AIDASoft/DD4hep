@@ -23,7 +23,7 @@ using namespace gaudi;
 namespace {
   void _cond_error(const char* func, int line, const std::exception& e)   {
     dd4hep::printout(dd4hep::ERROR,"Cond-Callback",
-		     "%s:%d Load Condition failed: %s",func,line,e.what());
+                     "%s:%d Load Condition failed: %s",func,line,e.what());
   }
 }
 #define LOAD_COND(expr) try{ expr; }catch(const std::exception& e) {_cond_error(__func__,__LINE__,e); throw; }
