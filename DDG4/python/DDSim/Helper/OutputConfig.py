@@ -159,7 +159,7 @@ class OutputConfig(ConfigHelper):
     return
 
   def _configureEDM4HEP(self, dds, geant4):
-    logger.info("++++ Setting up EDM4hep %s Output ++++", "RNTuple" if self.useRNTuple else "ROOT")
+    logger.info("++++ Setting up EDM4hep %s Output ++++", "RNTuple" if self.useRNTuple else "ROOT::TTree")
     e4Out = geant4.setupEDM4hepOutput('EDM4hepOutput', dds.outputFile)
     e4Out.RNTuple = self.useRNTuple
     eventPars = dds.meta.parseMetaParameters()
