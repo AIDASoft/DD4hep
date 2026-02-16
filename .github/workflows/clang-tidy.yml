@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["dev4/x86_64-el9-clang16-opt"]
+        LCG: ["dev4/x86_64-el9-clang19-opt"]
     steps:
     - uses: actions/checkout@v4
     - uses: cvmfs-contrib/github-action-cvmfs@v4
@@ -21,7 +21,7 @@ jobs:
         release-platform: ${{ matrix.LCG }}
         run: |
           # clang-tidy does not work with the clang-wrapper, we setup the direct clang here
-          source /cvmfs/sft.cern.ch/lcg/contrib/clang/16/x86_64-el9/setup.sh
+          source /cvmfs/sft.cern.ch/lcg/contrib/clang/19/x86_64-el9/setup.sh
           mkdir build
           cd build
           unset CPATH

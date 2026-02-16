@@ -28,8 +28,8 @@ jobs:
         release-platform: ${{ matrix.LCG }}
         ccache-key: ccache-${{ matrix.LCG }}
         run: |
-          if [[ ${{ matrix.LCG }} =~ clang16 ]]; then
-            source /cvmfs/sft.cern.ch/lcg/contrib/clang/16/x86_64-el9/setup-wrapper.sh
+          if [[ ${{ matrix.LCG }} =~ clang19 ]]; then
+            source /cvmfs/sft.cern.ch/lcg/contrib/clang/19/x86_64-el9/setup-wrapper.sh
           fi
           mkdir build
           cd build
@@ -79,7 +79,7 @@ jobs:
           mkdir build
           cd build
           source ../../.github/scripts/common_cmake_opts.sh
-          if [[ ${{ matrix.LCG }} =~ gcc13|clang16 ]]; then
+          if [[ ${{ matrix.LCG }} =~ gcc13|gcc15|clang19 ]]; then
             cmake \
               $COMMON_EXAMPLES_CMAKE_OPTS \
               -DCMAKE_CXX_STANDARD=20 \
