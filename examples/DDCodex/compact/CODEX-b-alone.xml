@@ -1,6 +1,6 @@
-<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+<lccdd xmlns:compact="https://dd4hep.web.cern.ch/org/lcsim/schemas/compact/1.0" 
        xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+       xs:noNamespaceSchemaLocation="https://dd4hep.web.cern.ch/org/lcsim/schemas/compact/1.0/compact.xsd">
 
   <!-- Have the materials    -->
   <includes>
