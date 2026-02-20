@@ -25,8 +25,8 @@
   <constant name="DetType_BEAMPIPE"        value =  " 0x8000 "/>
   <constant name="DetType_COIL"            value =  " 0x10000 "/>
   <constant name="DetType_AUXILIARY"       value =  " 0x20000 "/>
-  <!-- <constant name="DetType_bit_ 18 " value =  " 0x40000 "/> -->
-  <!-- <constant name="DetType_bit_ 19 " value =  " 0x80000 "/> -->
+  <constant name="DetType_BACKWARD"        value =  " 0x40000 "/>
+  <constant name="DetType_FAR"             value =  " 0x80000 "/>
   <!-- <constant name="DetType_bit_ 20 " value =  " 0x100000 "/> -->
   <!-- <constant name="DetType_bit_ 21 " value =  " 0x200000 "/> -->
   <!-- <constant name="DetType_bit_ 22 " value =  " 0x400000 "/> -->

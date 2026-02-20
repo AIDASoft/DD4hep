@@ -56,7 +56,9 @@ namespace dd4hep {
       SUPPORT         = 1 << 14,
       BEAMPIPE        = 1 << 15, 
       COIL            = 1 << 16,
-      AUXILIARY       = 1 << 17 
+      AUXILIARY       = 1 << 17,
+      BACKWARD        = 1 << 18,
+      FAR             = 1 << 19
    };
 
     /// default c'tor
