@@ -627,11 +627,12 @@ int Geant4ParticleHandler::recombineParents()  {
     // or is set to NULL, the particle is ALWAYS removed
     //
     // Note: This may override all other decisions!
-    bool remove_me = defaultKeepParticle(*p);
+    bool remove_me = false;
     if ( !this->m_userHandlers.empty() )  {
-      remove_me = true;
       for( auto* h : this->m_userHandlers )
         remove_me |= h->keepParticle(*p);
+    } else {
+      remove_me = defaultKeepParticle(*p);
     }
 
     // Now look at the property mask of the particle
