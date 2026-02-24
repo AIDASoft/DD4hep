@@ -170,7 +170,7 @@ namespace dd4hep {
       virtual void mark(const G4Step* step, int reason)  override;
 
       /// Default callback to be answered if the particle should be kept if NO user handler is installed
-      static bool defaultKeepParticle(Particle& particle);
+      static bool defaultKeepParticle(const Particle& particle);
 
     };
   }    // End namespace sim
