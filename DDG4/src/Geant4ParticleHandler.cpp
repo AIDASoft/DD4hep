@@ -41,6 +41,7 @@
 
 using namespace dd4hep::sim;
 using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
+using PropertyMaskView = dd4hep::detail::ReferenceBitMask<const int>;
 
 /// Standard constructor
 Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* ctxt, const std::string& nam)
@@ -584,8 +585,8 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
 }
 
 /// Default callback to be answered if the particle should be kept if NO user handler is installed
-bool Geant4ParticleHandler::defaultKeepParticle(Particle& particle)   {
-  PropertyMask mask(particle.reason);
+bool Geant4ParticleHandler::defaultKeepParticle(const Particle& particle)   {
+  PropertyMaskView mask(particle.reason);
   bool secondaries    =  mask.isSet(G4PARTICLE_HAS_SECONDARIES);
   bool tracker_track  =  mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT);
   bool calo_track     =  mask.isSet(G4PARTICLE_CREATED_CALORIMETER_HIT);
