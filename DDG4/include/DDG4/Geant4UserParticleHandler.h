@@ -123,7 +123,7 @@ namespace dd4hep {
        *        Default implementation is empty.
        *
        */
-      virtual bool keepParticle(Particle& particle);
+      virtual bool keepParticle(const Particle& particle) const;
 
       /// Callback when parent should be combined
       /** Called before a particle is removed from the final record.
