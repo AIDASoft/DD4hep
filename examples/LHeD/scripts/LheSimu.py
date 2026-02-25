@@ -40,8 +40,8 @@ def run():
   field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
   field.stepper = "HelixGeant4Runge"
   field.equation = "Mag_UsualEqRhs"
-  field.eps_min = 5e-0520 * g4units.mm
-  field.eps_max = 0.001 * g4units.mm
+  field.eps_min = 5e-05
+  field.eps_max = 0.001
   field.min_chord_step = 0.01 * g4units.mm
   field.delta_chord = 0.25 * g4units.mm
   field.delta_intersection = 1e-05 * g4units.mm

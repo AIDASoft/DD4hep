@@ -10,8 +10,8 @@ class MagneticField(ConfigHelper):
     super(MagneticField, self).__init__()
     self.stepper = "ClassicalRK4"
     self.equation = "Mag_UsualEqRhs"
-    self.eps_min = 5e-05 * mm
-    self.eps_max = 0.001 * mm
+    self.eps_min = 5e-05
+    self.eps_max = 0.001
     self.min_chord_step = 0.01 * mm
     self.delta_chord = 0.25 * mm
     self.delta_intersection = 0.001 * mm

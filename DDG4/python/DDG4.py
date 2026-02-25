@@ -770,8 +770,8 @@ class Geant4:
     import g4units
     field.stepper = stepper
     field.equation = equation
-    field.eps_min = 5e-05 * g4units.mm
-    field.eps_max = 0.001 * g4units.mm
+    field.eps_min = 5e-05
+    field.eps_max = 0.001
     field.min_chord_step = 0.01 * g4units.mm
     field.delta_chord = 0.25 * g4units.mm
     field.delta_intersection = 0.001 * g4units.mm
@@ -780,8 +780,8 @@ class Geant4:
     if prt:
       logger.info('+++++> %s %s %s %s ', field.name, '-> stepper  = ', str(field.stepper), '')
       logger.info('+++++> %s %s %s %s ', field.name, '-> equation = ', str(field.equation), '')
-      logger.info('+++++> %s %s %s %s ', field.name, '-> eps_min  = ', str(field.eps_min), '[mm]')
-      logger.info('+++++> %s %s %s %s ', field.name, '-> eps_max  = ', str(field.eps_max), '[mm]')
+      logger.info('+++++> %s %s %s %s ', field.name, '-> eps_min  = ', str(field.eps_min), '')
+      logger.info('+++++> %s %s %s %s ', field.name, '-> eps_max  = ', str(field.eps_max), '')
       logger.info('+++++> %s %s %s %s ', field.name, '-> delta_chord        = ', str(field.delta_chord), '[mm]')
       logger.info('+++++> %s %s %s %s ', field.name, '-> min_chord_step     = ', str(field.min_chord_step), '[mm]')
       logger.info('+++++> %s %s %s %s ', field.name, '-> delta_one_step     = ', str(field.delta_one_step), '[mm]')

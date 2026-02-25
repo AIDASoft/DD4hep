@@ -342,7 +342,7 @@ def run():
   seq,field = geant4.addDetectorConstruction("Geant4FieldTrackingConstruction/MagFieldTrackingSetup")
   field.stepper            = "HelixGeant4Runge"
   field.equation           = "Mag_UsualEqRhs"
-  field.eps_min            = 5e-05 * mm
+  field.eps_min            = 5e-05
   ...
   print "#  Setup random generator"
   rndm = DDG4.Action(kernel,'Geant4Random/Random')

@@ -10,8 +10,8 @@
 		delta_chord="0.25*mm"
 		delta_intersection="1e-05*mm"
 		delta_one_step="0.001*mm"
-		eps_min="5e-05*mm"
-		eps_max="0.001*mm"
+		eps_min="5e-05"
+		eps_max="0.001"
 		stepper="HelixSimpleRunge"
 		equation="Mag_UsualEqRhs">
     </attributes>
