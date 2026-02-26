@@ -95,6 +95,7 @@ namespace   {
   constexpr static unsigned char FIELD_IDENTITY      = 1<<1;
   constexpr static unsigned char FIELD_ROTATION_ONLY = 1<<2;
   constexpr static unsigned char FIELD_POSITION_ONLY = 1<<3;
+  constexpr static unsigned char FIELD_HAS_AABB      = 1<<4;
 }
 
 /// Initializing constructor
@@ -120,7 +121,38 @@ void MultipoleField::fieldComponents(const double* pos, double* field) {
     this->inverse  = this->transform.Inverse();
     this->transform.GetRotation(this->rotation);
     this->transform.GetTranslation(this->translation);
+    if ( volume.isValid() )   {
+      // Compute a world-frame AABB from the shape's local bounding box.
+      auto* bbox = static_cast<TGeoBBox*>(volume.ptr());
+      const double* orig = bbox->GetOrigin();
+      double bdx = bbox->GetDX();
+      double bdy = bbox->GetDY();
+      double bdz = bbox->GetDZ();
+      // Transform the local bbox center to world frame
+      Transform3D::Point world_center =
+        this->transform * Transform3D::Point(orig[0], orig[1], orig[2]);
+      // World half-extents via rotation-matrix abs-sum formula (OBB -> AABB)
+      double rxx, rxy, rxz, ryx, ryy, ryz, rzx, rzy, rzz;
+      this->rotation.GetComponents(rxx, rxy, rxz, ryx, ryy, ryz, rzx, rzy, rzz);
+      double hx = std::abs(rxx)*bdx + std::abs(rxy)*bdy + std::abs(rxz)*bdz;
+      double hy = std::abs(ryx)*bdx + std::abs(ryy)*bdy + std::abs(ryz)*bdz;
+      double hz = std::abs(rzx)*bdx + std::abs(rzy)*bdy + std::abs(rzz)*bdz;
+      this->aabb_min[0] = world_center.X() - hx;
+      this->aabb_max[0] = world_center.X() + hx;
+      this->aabb_min[1] = world_center.Y() - hy;
+      this->aabb_max[1] = world_center.Y() + hy;
+      this->aabb_min[2] = world_center.Z() - hz;
+      this->aabb_max[2] = world_center.Z() + hz;
+      flag |= FIELD_HAS_AABB;
+    }
   }
+  // AABB pre-filter: reject positions outside the world-frame bounding box
+  if ( (flag&FIELD_HAS_AABB) &&
+       (pos[0] < aabb_min[0] || pos[0] > aabb_max[0] ||
+        pos[1] < aabb_min[1] || pos[1] > aabb_max[1] ||
+        pos[2] < aabb_min[2] || pos[2] > aabb_max[2]) )
+    return;
+  // Transform the input position to the local frame of the field
   Transform3D::Point p, p0(pos[0],pos[1],pos[2]);
   if      ( flag&FIELD_IDENTITY      ) p = std::move(p0);
   else if ( flag&FIELD_POSITION_ONLY ) p = p0 - this->translation;
