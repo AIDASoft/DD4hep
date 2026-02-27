@@ -631,7 +631,7 @@ int Geant4ParticleHandler::recombineParents()  {
     bool remove_me = false;
     if ( !this->m_userHandlers.empty() )  {
       for( auto* h : this->m_userHandlers )
-        remove_me |= h->keepParticle(*p);
+        remove_me |= h->dropParticle(*p);
     } else {
       remove_me = defaultDropParticle(*p);
     }
