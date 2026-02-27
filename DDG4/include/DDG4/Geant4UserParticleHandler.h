@@ -106,7 +106,7 @@ namespace dd4hep {
        */
       virtual void end(const G4Track* track, Particle& particle);
 
-      /// Callback to be answered if the particle MUST be kept during recombination step
+      /// Callback to be answered if the particle MUST NOT be kept during recombination step
       /** Allow the user to force the particle handling either by
        *  or the reason mask with G4PARTICLE_KEEP_USER or
        *  to set the reason mask to NULL in order to drop it.
@@ -116,14 +116,19 @@ namespace dd4hep {
        *  or is set to NULL, the particle is ALWAYS removed
        *
        *  The default implementation calls
-       *  Geant4ParticleHandler::defaultKeepParticle(particle)
+       *  Geant4ParticleHandler::defaultDropParticle(particle)
        *  Please have a look therein if it suffices your needs!
        *
        *  Note: This may override all other decisions!
        *        Default implementation is empty.
        *
        */
-      virtual bool keepParticle(const Particle& particle) const;
+      virtual bool dropParticle(const Particle& particle) const;
+
+      [[deprecated("Use the more appropriately named dropParticle instead")]]
+      virtual bool keepParticle(Particle& particle) {
+        return dropParticle(particle);
+      }
 
       /// Callback when parent should be combined
       /** Called before a particle is removed from the final record.
