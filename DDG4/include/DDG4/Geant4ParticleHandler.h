@@ -169,9 +169,13 @@ namespace dd4hep {
       /// Store a track produced in a step to be kept for later MC truth analysis
       virtual void mark(const G4Step* step, int reason)  override;
 
-      /// Default callback to be answered if the particle should be kept if NO user handler is installed
-      static bool defaultKeepParticle(const Particle& particle);
+      /// Default callback to be answered if the particle should be dropped if NO user handler is installed
+      static bool defaultDropParticle(const Particle& particle);
 
+      [[deprecated("Use more appropriately named defaultDropParticle instead")]]
+      static bool defaultKeepParticle(Particle& particle) {
+        return defaultDropParticle(particle);
+      }
     };
   }    // End namespace sim
 }      // End namespace dd4hep

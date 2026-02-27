@@ -585,7 +585,7 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
 }
 
 /// Default callback to be answered if the particle should be kept if NO user handler is installed
-bool Geant4ParticleHandler::defaultKeepParticle(const Particle& particle)   {
+bool Geant4ParticleHandler::defaultDropParticle(const Particle& particle)   {
   PropertyMaskView mask(particle.reason);
   bool secondaries    =  mask.isSet(G4PARTICLE_HAS_SECONDARIES);
   bool tracker_track  =  mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT);
@@ -633,7 +633,7 @@ int Geant4ParticleHandler::recombineParents()  {
       for( auto* h : this->m_userHandlers )
         remove_me |= h->keepParticle(*p);
     } else {
-      remove_me = defaultKeepParticle(*p);
+      remove_me = defaultDropParticle(*p);
     }
 
     // Now look at the property mask of the particle
