@@ -12,6 +12,7 @@ _eventseed_counter = threading.local()
 # Thread-local counter for Geant4Random naming in workers
 _random_counter = threading.local()
 
+
 def _get_eventseed_id():
   """Get a unique ID for EventSeeder in this thread"""
   if not hasattr(_eventseed_counter, 'value'):
@@ -19,6 +20,7 @@ def _get_eventseed_id():
   else:
     _eventseed_counter.value += 1
   return _eventseed_counter.value
+
 
 def _get_random_id():
   """Get a unique ID for Geant4Random in this thread"""
@@ -87,11 +89,11 @@ class Random (ConfigHelper):
 
   def setupEventSeeder(self, DDG4, kernel):
     """Setup EventSeeder action for per-event random seeding.
-    
+
     This method should be called during worker initialization in MT mode,
     or after initialize() in ST mode. In MT mode, this is called once per
     worker thread, creating an independent EventSeeder for each worker.
-    
+
     :param DDG4: DDG4 module
     :param kernel: Geant4 kernel (master kernel in ST mode, worker kernel in MT mode)
     """
@@ -114,11 +116,11 @@ class Random (ConfigHelper):
 
   def initializeWorker(self, DDG4, kernel, output):
     """Initialize Geant4Random for a worker thread in MT mode.
-    
+
     In MT mode, each worker thread needs its own Geant4Random instance.
     We use the same initial seed as the master so that EventSeeder computes
     the same per-event seeds across all workers.
-    
+
     :param DDG4: DDG4 module
     :param kernel: Worker kernel
     :param int output: output level
@@ -128,21 +130,21 @@ class Random (ConfigHelper):
     random_id = _get_random_id()
     random_name = 'Geant4Random/R_worker_%d' % random_id
     worker_random = DDG4.Action(kernel, random_name)
-    
+
     # Use the same seed as master so EventSeeder computes identical event seeds
     worker_random.Seed = self.seed
     worker_random.Luxury = self.luxury
     worker_random.Replace_gRandom = self.replace_gRandom
-    
+
     if self.type is not None:
       worker_random.Type = self.type
-    
+
     # Initialize the worker's random engine
     worker_random.initialize()
-    
+
     if output <= 3:
       worker_random.showStatus()
-    
-    logger.info("Initialized Geant4Random for worker (thread-local ID %d) with seed %d", 
+
+    logger.info("Initialized Geant4Random for worker (thread-local ID %d) with seed %d",
                 random_id, self.seed)
     return worker_random

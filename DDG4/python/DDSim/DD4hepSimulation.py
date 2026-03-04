@@ -511,7 +511,7 @@ class DD4hepSimulation(object):
     """setup the geometry and dd4hep and geant4 and do what was asked to be done"""
     import ROOT
     ROOT.PyConfig.IgnoreCommandLineOptions = True
-    
+
     # Enable ROOT's thread safety for MT mode
     if self.numberOfThreads > 1:
       ROOT.EnableThreadSafety()
@@ -878,7 +878,7 @@ class DD4hepSimulation(object):
     # Register Generation initialization action
     shared = (self.numberOfThreads > 1)
     logger.debug(f"Determined shared={shared} based on self.numberOfThreads={self.numberOfThreads}")
-    gen = GeneratorAction(geant4.kernel(), "Geant4GeneratorActionInit/GenerationInit", shared = shared)
+    gen = GeneratorAction(geant4.kernel(), "Geant4GeneratorActionInit/GenerationInit", shared=shared)
     generationInit = gen
     if output_level is not None:
       gen.OutputLevel = output_level
