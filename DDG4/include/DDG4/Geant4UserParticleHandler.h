@@ -123,7 +123,7 @@ namespace dd4hep {
        *        Default implementation is empty.
        *
        */
-      virtual bool dropParticle(const Particle& particle) const;
+      virtual bool dropParticle(Particle& particle);
 
       [[deprecated("Use the more appropriately named dropParticle instead")]]
       virtual bool keepParticle(Particle& particle) {
