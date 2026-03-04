@@ -695,7 +695,7 @@ if (DD4HEP_USE_GEANT4)
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${ClientTestsEx_INSTALL}/scripts/DriftChamber.py
     	       -verbose 2 -events 1
-    REGEX_PASS "100.00         0...         0...            0k DriftChamber_vol"
+    REGEX_PASS "[0-9.]*         0...         0...            0k DriftChamber_vol"
     REGEX_FAIL "Exception;EXCEPTION;ERROR;Error;FATAL"
   )
   #

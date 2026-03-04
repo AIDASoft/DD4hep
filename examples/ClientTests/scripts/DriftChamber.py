@@ -111,6 +111,7 @@ def run():
   #
   logger.info("#  Now build the physics list:")
   phys = geant4.setupPhysics('QGSP_BERT')
+  phys.verbosity = 0
   ph = geant4.addPhysics(str('Geant4PhysicsList/Myphysics'))
   ph.addPhysicsConstructor(str('G4StepLimiterPhysics'))
   #
