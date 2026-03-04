@@ -3,8 +3,8 @@
 
 /gps/particle e-
 /gps/energy 5 GeV
-/gps/position 0 0 0 mm
-/gps/direction 0 0 1
+/gps/position 0 0 1 cm
+/gps/direction 1 0 1
 
 # Run events
 /run/beamOn 3
