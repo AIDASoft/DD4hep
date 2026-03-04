@@ -433,6 +433,8 @@ class DD4hepSimulation(object):
     if actionList:
       generationInit = self._buildInputStage(geant4, actionList, output_level=self.output.inputStage,
                                              have_mctruth=self._enablePrimaryHandler())
+    # Store on self so run() can read numberOfEvents before terminate() destroys it
+    self._generationInit = generationInit
 
     # ================================================================================================
 
@@ -632,12 +634,10 @@ class DD4hepSimulation(object):
     if not PyDDG4.run(master):
       logger.error("Simulation failed!")
       exitCode += 1
-    if not PyDDG4.terminate(master):
-      exitCode += 1
-      logger.error("Termination failed!")
 
     totalTimeUser, totalTimeSys, _cuTime, _csTime, _elapsedTime = os.times()
     processedEvents = self.numberOfEvents
+    generationInit = getattr(self, '_generationInit', None)
     if generationInit:
       processedEvents = int(generationInit.numberOfEvents)
       if self.numberOfEvents < 0:
@@ -652,6 +652,11 @@ class DD4hepSimulation(object):
         perEventTime = eventTime / processedEvents
         logger.info("StartUp Time: %3.2f s, Processing and Init: %3.2f s (~%3.2f s/Event @ %d threads) "
                     % (startUpTime, eventTime, perEventTime, self.numberOfThreads))
+
+    if not PyDDG4.terminate(master):
+      exitCode += 1
+      logger.error("Termination failed!")
+
     return exitCode
 
   def __setMagneticFieldOptions(self, geant4):
