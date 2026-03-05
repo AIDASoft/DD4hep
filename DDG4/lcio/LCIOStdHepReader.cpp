@@ -57,6 +57,8 @@ namespace dd4hep  {
                                                        EVENT::LCCollection** particles)  override;
       virtual EventReaderStatus moveToEvent(int event_number)  override;
       virtual EventReaderStatus skipEvent()  override { return EVENT_READER_OK; }
+      /// LCStdHepRdr::readEvent() returns a caller-owned collection; delete it.
+      virtual void releaseParticleCollection(EVENT::LCCollection* collection) override { delete collection; }
 
     };
   }     /* End namespace lcio   */
