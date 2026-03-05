@@ -1,7 +1,7 @@
 #include "DD4hep/DDTest.h"
 
 #include <iostream>
-#include <iomanip>
+#include <memory>
 #include <vector>
 #include <algorithm>
 #include <exception>
@@ -57,7 +57,8 @@ int main(int argc, char** argv ){
       bool skipEOF =  (*it).skipEOF;
       //InputFiles are in DDTest/inputFiles, argument is cmake_source directory
       std::string inputFile = argv[1]+ std::string("/inputFiles/") + fileName;
-      dd4hep::sim::Geant4EventReader* thisReader = dd4hep::PluginService::Create<dd4hep::sim::Geant4EventReader*>(readerType, inputFile);
+      std::unique_ptr<dd4hep::sim::Geant4EventReader> thisReader(
+          dd4hep::PluginService::Create<dd4hep::sim::Geant4EventReader*>(readerType, inputFile));
       if ( not thisReader ) {
         test.log( "Plugin not found" );
         test.log( readerType );
@@ -72,12 +73,13 @@ int main(int argc, char** argv ){
       std::vector<Vertex*> vertices ;
       dd4hep::sim::Geant4EventReader::EventReaderStatus sc = thisReader->readParticles(2,vertices,particles);
       std::for_each(particles.begin(),particles.end(),dd4hep::detail::deleteObject<Particle>);
+      std::for_each(vertices.begin(),vertices.end(),dd4hep::detail::deleteObject<Vertex>);
       test( thisReader->currentEventNumber() == 2 && sc == dd4hep::sim::Geant4EventReader::EVENT_READER_OK,
             readerType + std::string("Event Number Read") );
 
       //Reset Reader to check what happens if moving too far in the file
       if (not skipEOF) {
-        thisReader = dd4hep::PluginService::Create<dd4hep::sim::Geant4EventReader*>(readerType, std::move(inputFile));
+        thisReader.reset(dd4hep::PluginService::Create<dd4hep::sim::Geant4EventReader*>(readerType, std::move(inputFile)));
         sc = thisReader->moveToEvent(1000000);
         test( sc != dd4hep::sim::Geant4EventReader::EVENT_READER_OK , readerType + std::string("EventReader False") );
       }

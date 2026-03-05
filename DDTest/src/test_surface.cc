@@ -238,6 +238,7 @@ int main(int argc, char** argv ){
     test.error( "exception occurred" );
   }
 
+  Detector::destroyInstance();
   return 0;
 }
 

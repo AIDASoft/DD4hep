@@ -4,10 +4,8 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/DDTest.h"
 
-#include <iostream>
-#include <iomanip>
+#include <memory>
 #include <vector>
-#include <algorithm>
 #include <exception>
 #include <cmath>
 
@@ -117,11 +115,11 @@ CellID getCellID(dd4hep::DDSegmentation::Segmentation* seg, long long rB, long l
 void testRPhi2(){
   std::vector<TestTuple> tests;
 
-  dd4hep::DDSegmentation::Segmentation* seg = createPolarGridRPhi2();
+  std::unique_ptr<Segmentation> seg(createPolarGridRPhi2());
   const double DegToRad = M_PI/180.0;
-  tests.push_back( TestTuple( seg, 20.0, 20*10*DegToRad,  0,   1 ) );
-  tests.push_back( TestTuple( seg, 5.0, 32.5*20*DegToRad,  1,   1 ) );
-  tests.push_back( TestTuple( seg, 3.0, 151.5*150*DegToRad,  14, 1 ) );
+  tests.push_back( TestTuple( seg.get(), 20.0, 20*10*DegToRad,  0,   1 ) );
+  tests.push_back( TestTuple( seg.get(), 5.0, 32.5*20*DegToRad,  1,   1 ) );
+  tests.push_back( TestTuple( seg.get(), 3.0, 151.5*150*DegToRad,  14, 1 ) );
 
   try {
 
@@ -148,11 +146,11 @@ void testRPhi(){
 
   const double rSizeGrid = 10.0;
   const double phiSizeGrid = M_PI/36;
-  dd4hep::DDSegmentation::Segmentation* seg = createPolarGridRPhi(rSizeGrid, phiSizeGrid);
+  std::unique_ptr<Segmentation> seg(createPolarGridRPhi(rSizeGrid, phiSizeGrid));
 
-  tests.push_back( TestTuple( seg, rSizeGrid, rSizeGrid*(0) *phiSizeGrid,   0, 1 ) );
-  tests.push_back( TestTuple( seg, rSizeGrid, rSizeGrid*(1) *phiSizeGrid,   1, 1 ) );
-  tests.push_back( TestTuple( seg, rSizeGrid, rSizeGrid*(14)*phiSizeGrid,  14, 1 ) );
+  tests.push_back( TestTuple( seg.get(), rSizeGrid, rSizeGrid*(0) *phiSizeGrid,   0, 1 ) );
+  tests.push_back( TestTuple( seg.get(), rSizeGrid, rSizeGrid*(1) *phiSizeGrid,   1, 1 ) );
+  tests.push_back( TestTuple( seg.get(), rSizeGrid, rSizeGrid*(14)*phiSizeGrid,  14, 1 ) );
 
   try {
 
