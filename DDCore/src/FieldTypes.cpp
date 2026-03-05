@@ -122,28 +122,33 @@ void MultipoleField::fieldComponents(const double* pos, double* field) {
     this->transform.GetRotation(this->rotation);
     this->transform.GetTranslation(this->translation);
     if ( volume.isValid() )   {
-      // Compute a world-frame AABB from the shape's local bounding box.
-      auto* bbox = static_cast<TGeoBBox*>(volume.ptr());
-      const double* orig = bbox->GetOrigin();
-      double bdx = bbox->GetDX();
-      double bdy = bbox->GetDY();
-      double bdz = bbox->GetDZ();
-      // Transform the local bbox center to world frame
-      Transform3D::Point world_center =
-        this->transform * Transform3D::Point(orig[0], orig[1], orig[2]);
-      // World half-extents via rotation-matrix abs-sum formula (OBB -> AABB)
-      double rxx, rxy, rxz, ryx, ryy, ryz, rzx, rzy, rzz;
-      this->rotation.GetComponents(rxx, rxy, rxz, ryx, ryy, ryz, rzx, rzy, rzz);
-      double hx = std::abs(rxx)*bdx + std::abs(rxy)*bdy + std::abs(rxz)*bdz;
-      double hy = std::abs(ryx)*bdx + std::abs(ryy)*bdy + std::abs(ryz)*bdz;
-      double hz = std::abs(rzx)*bdx + std::abs(rzy)*bdy + std::abs(rzz)*bdz;
-      this->aabb_min[0] = world_center.X() - hx;
-      this->aabb_max[0] = world_center.X() + hx;
-      this->aabb_min[1] = world_center.Y() - hy;
-      this->aabb_max[1] = world_center.Y() + hy;
-      this->aabb_min[2] = world_center.Z() - hz;
-      this->aabb_max[2] = world_center.Z() + hz;
-      flag |= FIELD_HAS_AABB;
+      // Obtain the bounding box from the shape. TGeoBBox is the base class
+      // for most shapes, but not all.
+      TGeoShape* shape = volume.ptr();
+      auto* bbox = dynamic_cast<TGeoBBox*>(shape);
+      if ( bbox )  {
+        bbox->ComputeBBox();
+        const double* orig = bbox->GetOrigin();
+        double bdx = bbox->GetDX();
+        double bdy = bbox->GetDY();
+        double bdz = bbox->GetDZ();
+        // Transform the local bbox center to world frame
+        Transform3D::Point world_center =
+          this->transform * Transform3D::Point(orig[0], orig[1], orig[2]);
+        // World half-extents via rotation-matrix abs-sum formula (OBB -> AABB)
+        double rxx, rxy, rxz, ryx, ryy, ryz, rzx, rzy, rzz;
+        this->rotation.GetComponents(rxx, rxy, rxz, ryx, ryy, ryz, rzx, rzy, rzz);
+        double hx = std::abs(rxx)*bdx + std::abs(rxy)*bdy + std::abs(rxz)*bdz;
+        double hy = std::abs(ryx)*bdx + std::abs(ryy)*bdy + std::abs(ryz)*bdz;
+        double hz = std::abs(rzx)*bdx + std::abs(rzy)*bdy + std::abs(rzz)*bdz;
+        this->aabb_min[0] = world_center.X() - hx;
+        this->aabb_max[0] = world_center.X() + hx;
+        this->aabb_min[1] = world_center.Y() - hy;
+        this->aabb_max[1] = world_center.Y() + hy;
+        this->aabb_min[2] = world_center.Z() - hz;
+        this->aabb_max[2] = world_center.Z() + hz;
+        flag |= FIELD_HAS_AABB;
+      }
     }
   }
   // AABB pre-filter: reject positions outside the world-frame bounding box
