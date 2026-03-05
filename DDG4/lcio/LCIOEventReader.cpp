@@ -156,6 +156,7 @@ LCIOEventReader::readParticles(int event_number,
     if ( mcp->isOverlay() )                   status.set(G4PARTICLE_SIM_OVERLAY);
     particles.emplace_back(p);
   }
+  releaseParticleCollection(primaries);
   return EVENT_READER_OK;
 }
 

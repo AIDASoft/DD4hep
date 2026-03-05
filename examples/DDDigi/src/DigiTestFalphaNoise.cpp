@@ -72,14 +72,14 @@ static long test_FalphaNoise(Detector& , int argc, char** argv) {
   FalphaNoise noise2(poles, 1.98, variance);
   std::stringstream cpara;
   cpara << " distribution alpha=" << alpha << " sigma=" << variance;
-  TH1D* hist11 = new TH1D("D11", ("1/f**alpha"+cpara.str()).c_str(), 50, -5e0*variance, 5e0*variance);
-  TH1D* hist12 = new TH1D("D12", ("1/f**alpha"+cpara.str()).c_str(), 50, -5e0*variance, 5e0*variance);
-  TH1D* hist13 = new TH1D("D13", ("1/f**alpha"+cpara.str()).c_str(), 50, -5e0*variance, 5e0*variance);
-  TH1D* hist14 = new TH1D("D14", ("1/f**alpha"+cpara.str()).c_str(), 50, -5e0*variance, 5e0*variance);
-  TH1D* hist21 = new TH1D("D21", ("log10(1/f**alpha)"+cpara.str()).c_str(), 300, 1e0, 1e2*variance);
-  TH1D* hist22 = new TH1D("D22", "log10(1/f**alpha) alpha=0", 300, 1e0, 1e2*variance);
-  TH1D* hist23 = new TH1D("D23", "log10(1/f**alpha) alpha=1", 300, 1e0, 1e2*variance);
-  TH1D* hist24 = new TH1D("D24", "log10(1/f**alpha) alpha=2", 300, 1e0, 1e2*variance);
+  auto hist11 = std::make_unique<TH1D>("D11", ("1/f**alpha"+cpara.str()).c_str(), 50, -5e0*variance, 5e0*variance);
+  auto hist12 = std::make_unique<TH1D>("D12", ("1/f**alpha"+cpara.str()).c_str(), 50, -5e0*variance, 5e0*variance);
+  auto hist13 = std::make_unique<TH1D>("D13", ("1/f**alpha"+cpara.str()).c_str(), 50, -5e0*variance, 5e0*variance);
+  auto hist14 = std::make_unique<TH1D>("D14", ("1/f**alpha"+cpara.str()).c_str(), 50, -5e0*variance, 5e0*variance);
+  auto hist21 = std::make_unique<TH1D>("D21", ("log10(1/f**alpha)"+cpara.str()).c_str(), 300, 1e0, 1e2*variance);
+  auto hist22 = std::make_unique<TH1D>("D22", "log10(1/f**alpha) alpha=0", 300, 1e0, 1e2*variance);
+  auto hist23 = std::make_unique<TH1D>("D23", "log10(1/f**alpha) alpha=1", 300, 1e0, 1e2*variance);
+  auto hist24 = std::make_unique<TH1D>("D24", "log10(1/f**alpha) alpha=2", 300, 1e0, 1e2*variance);
 
   printout(INFO, "FalphaNoise", "Executing %ld shots .... variance=%.3f alpha=%.3f",
            shots, noise.variance(), noise.alpha());
