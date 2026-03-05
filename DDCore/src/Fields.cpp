@@ -169,6 +169,12 @@ void OverlayedField::combinedMagnetic(const Position& pos, double* field) const 
   calculate_combined_field(data<Object>()->magnetic_components, pos, field);
 }
 
+/// Returns the 3  magnetic field components (x, y, z).
+void OverlayedField::combinedMagnetic(const double *pos, double* field) const {
+  field[0] = field[1] = field[2] = 0.;
+  calculate_combined_field(data<Object>()->magnetic_components, pos, field);
+}
+
 /// Returns the 3 electric (val[0]-val[2]) and magnetic field components (val[3]-val[5]).
 void OverlayedField::electromagneticField(const Position& pos, double* field) const {
   Object* o = data<Object>();
