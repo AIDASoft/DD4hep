@@ -126,11 +126,9 @@ void MultipoleField::fieldComponents(const double* pos, double* field) {
         Transform3D::Point world_center =
           this->transform * Transform3D::Point(orig[0], orig[1], orig[2]);
         // World half-extents via rotation-matrix abs-sum formula (OBB -> AABB)
-        double rxx, rxy, rxz, ryx, ryy, ryz, rzx, rzy, rzz;
-        this->rotation.GetComponents(rxx, rxy, rxz, ryx, ryy, ryz, rzx, rzy, rzz);
-        double hx = std::abs(rxx)*bdx + std::abs(rxy)*bdy + std::abs(rxz)*bdz;
-        double hy = std::abs(ryx)*bdx + std::abs(ryy)*bdy + std::abs(ryz)*bdz;
-        double hz = std::abs(rzx)*bdx + std::abs(rzy)*bdy + std::abs(rzz)*bdz;
+        double hx = std::abs(xx)*bdx + std::abs(xy)*bdy + std::abs(xz)*bdz;
+        double hy = std::abs(yx)*bdx + std::abs(yy)*bdy + std::abs(yz)*bdz;
+        double hz = std::abs(zx)*bdx + std::abs(zy)*bdy + std::abs(zz)*bdz;
         this->aabb_min[0] = world_center.X() - hx;
         this->aabb_max[0] = world_center.X() + hx;
         this->aabb_min[1] = world_center.Y() - hy;
