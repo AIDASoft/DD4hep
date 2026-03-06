@@ -44,16 +44,6 @@
 #       endif
 #endif
 
-// fallthrough only exists from c++17
-#if defined __has_cpp_attribute
-    #if __has_cpp_attribute(fallthrough)
-        #define ATTR_FALLTHROUGH [[fallthrough]]
-    #else
-        #define ATTR_FALLTHROUGH
-    #endif
-#else
-    #define ATTR_FALLTHROUGH
-#endif
 
 
 // Note tha "PutString" hardcodes the same list. This
@@ -134,21 +124,21 @@ void TiXmlBase::ConvertUTF32ToUTF8( unsigned long input, char* output, int* leng
     --output;
     *output = (char)((input | BYTE_MARK) & BYTE_MASK);
     input >>= 6;
-    ATTR_FALLTHROUGH;
+    [[fallthrough]];
   case 3:
     --output;
     *output = (char)((input | BYTE_MARK) & BYTE_MASK);
     input >>= 6;
-    ATTR_FALLTHROUGH;
+    [[fallthrough]];
   case 2:
     --output;
     *output = (char)((input | BYTE_MARK) & BYTE_MASK);
     input >>= 6;
-    ATTR_FALLTHROUGH;
+    [[fallthrough]];
   case 1:
     --output;
     *output = (char)(input | FIRST_BYTE_MARK[*length]);
-    ATTR_FALLTHROUGH;
+    [[fallthrough]];
   default:
     break;
   }

@@ -78,10 +78,8 @@ if(TARGET Python::Python AND TARGET ROOT::ROOTTPython)
   add_library(DDPython G__DDPython.cxx tpython/DDPython.cpp)
   add_library(DD4hep::DDPython ALIAS DDPython)
   target_link_libraries(DDPython DD4hep::DDG4 ROOT::Core Python::Python ROOT::ROOTTPython)
-  IF(${CMAKE_CXX_STANDARD} GREATER 16)
-    # python header not cxx17 compatible, gives error in clang
-    target_compile_options(DDPython PUBLIC -Wno-register)
-  ENDIF()
+  # python header not cxx17 compatible, gives error in clang
+  target_compile_options(DDPython PUBLIC -Wno-register)
   dd4hep_add_plugin(DDG4Python
     SOURCES   src/python/*.cpp
     GENERATED G__DDG4Python.cxx

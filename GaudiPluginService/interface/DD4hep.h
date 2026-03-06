@@ -19,16 +19,7 @@
 #include <set>
 #include <typeinfo>
 #include <utility>
-#if __cplusplus >= 201703
-#  include <any>
-#else
-#  include <boost/any.hpp>
-namespace std {
-  using boost::any;
-  using boost::any_cast;
-  using boost::bad_any_cast;
-} // namespace std
-#endif
+#include <any>
 
 #ifdef __clang__
 #pragma clang diagnostic push

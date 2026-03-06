@@ -23,10 +23,6 @@
 
 using namespace dd4hep;
 
-#if __cplusplus == 201402
-const IOV::Key_value_type IOV::MIN_KEY;
-const IOV::Key_value_type IOV::MAX_KEY;
-#endif
 
 #if 0
 /// Assignment operator

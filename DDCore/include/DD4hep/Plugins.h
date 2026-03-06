@@ -21,18 +21,8 @@
 #include <string>
 #include <typeinfo>
 
-#if __cplusplus >= 201703
 #include <any>
 inline bool any_has_value(std::any a){ return a.has_value(); }
-#else
-#  include <boost/any.hpp>
-namespace std {
-  using boost::any;
-  using boost::any_cast;
-  using boost::bad_any_cast;
-  inline bool any_has_value(std::any a){ return !a.empty(); }
-} // namespace std
-#endif
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
 #include <RVersion.h>

@@ -14,7 +14,6 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 #
 #---Options-------------------------------------------------------------------------
-option(DD4HEP_USE_CXX14   "Build DD4hep using c++14" OFF)
 option(CMAKE_MACOSX_RPATH "Build with rpath on macos" ON)
 #
 #-----------------------------------------------------------------------------------------------------
