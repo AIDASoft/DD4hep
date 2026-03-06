@@ -171,6 +171,9 @@ namespace dd4hep {
     unsigned char flag       { 0 };
     /// Translation of the transformation
     Transform3D::Point translation { };
+    /// Axis-aligned bounding box in world coordinates
+    double aabb_min[3]       { 0, 0, 0 };
+    double aabb_max[3]       { 0, 0, 0 };
   public:
     /// Initializing constructor
     MultipoleField();
