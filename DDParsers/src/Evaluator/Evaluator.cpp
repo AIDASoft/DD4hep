@@ -29,16 +29,6 @@
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 
-// fallthrough only exists from c++17
-#if defined __has_cpp_attribute
-    #if __has_cpp_attribute(fallthrough)
-        #define ATTR_FALLTHROUGH [[fallthrough]]
-    #else
-        #define ATTR_FALLTHROUGH
-    #endif
-#else
-    #define ATTR_FALLTHROUGH
-#endif
 
 //---------------------------------------------------------------------------
 #define EVAL dd4hep::tools::Evaluator
@@ -410,7 +400,7 @@ static int maker(int op, std::stack<double> & val)
     errno = 0;
     val.top() = pow(val1,val2);
     if (errno == 0) return EVAL::OK;
-    ATTR_FALLTHROUGH;
+    [[fallthrough]];
   default:
     return EVAL::ERROR_CALCULATION_ERROR;
   }

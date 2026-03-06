@@ -15,11 +15,6 @@ dd4hep_print("|++> Will be Building DDCore")
 
 file(GLOB DDCore_SOURCES src/*.cpp src/segmentations/*.cpp src/XML/*.cpp)
 
-if(${CMAKE_CXX_STANDARD} LESS 17)
-  list(APPEND EXCLUDE_HEADER include/DD4hep/SpecParRegistry.h)
-  list(APPEND EXCLUDE_HEADER include/DD4hep/Filter.h)
-  list(FILTER DDCore_SOURCES EXCLUDE REGEX Filter\.cpp|SpecParRegistry\.cpp )
-endif()
 
 # Build the generic DD4hep dictionary
 dd4hep_add_dictionary( G__DD4hep
@@ -79,7 +74,7 @@ add_library(DDCore ${DDCore_SOURCES} ${DDCore_BOOST_SOURCES}
   )
 add_library(DD4hep::DDCore ALIAS DDCore)
 
-if(DD4HEP_USE_TBB AND ${CMAKE_CXX_STANDARD} GREATER_EQUAL 17)
+if(DD4HEP_USE_TBB)
   target_compile_definitions(DDCore PUBLIC DD4HEP_USE_TBB)
   target_link_libraries(DDCore PUBLIC TBB::tbb)
 endif()
@@ -97,12 +92,10 @@ target_link_libraries(DDCore
   ${XML_LIBRARIES} ${CMAKE_DL_LIBS}
   )
 
-if(${CMAKE_VERSION} VERSION_GREATER 3.7.99)
-  target_compile_features(DDCore
-    PUBLIC
-    cxx_std_${CMAKE_CXX_STANDARD} # Needs cmake 3.8
-    )
-endif()
+target_compile_features(DDCore
+  PUBLIC
+  cxx_std_${CMAKE_CXX_STANDARD}
+  )
 
 # Generate DDCore plugins---------------------------------------------------------
 dd4hep_add_plugin(DDCorePlugins SOURCES src/plugins/*.cpp USES DDCore)

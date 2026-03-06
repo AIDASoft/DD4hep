@@ -15,16 +15,7 @@
 
 #include "Gaudi/Details/PluginServiceCommon.h"
 
-#if __cplusplus >= 201703
-#  include <any>
-#else
-#  include <boost/any.hpp>
-namespace std {
-  using boost::any;
-  using boost::any_cast;
-  using boost::bad_any_cast;
-} // namespace std
-#endif
+#include <any>
 
 #include <functional>
 #include <map>
@@ -119,13 +110,7 @@ namespace Gaudi {
             std::any    factory{};
             Properties  properties{};
 
-            inline bool is_set() const {
-#if __cplusplus >= 201703
-              return factory.has_value();
-#else
-              return !factory.empty();
-#endif
-            }
+            inline bool is_set() const { return factory.has_value(); }
             Properties::mapped_type getprop( const Properties::key_type& name ) const;
           };
 
