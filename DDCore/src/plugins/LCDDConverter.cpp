@@ -1295,17 +1295,20 @@ static long dump_output(xml_doc_t doc, int argc, char** argv) {
 
 long create_gdml_from_dd4hep(Detector& description, int argc, char** argv) {
   LCDDConverter wr(description);
-  return dump_output(wr.createGDML(description.world()), argc, argv);
+  xml::DocumentHolder doc(wr.createGDML(description.world()).ptr());
+  return dump_output(doc, argc, argv);
 }
 
 static long create_description(Detector& description, int argc, char** argv) {
   LCDDConverter wr(description);
-  return dump_output(wr.createDetector(description.world()), argc, argv);
+  xml::DocumentHolder doc(wr.createDetector(description.world()).ptr());
+  return dump_output(doc, argc, argv);
 }
 
 static long create_vis(Detector& description, int argc, char** argv) {
   LCDDConverter wr(description);
-  return dump_output(wr.createVis(description.world()), argc, argv);
+  xml::DocumentHolder doc(wr.createVis(description.world()).ptr());
+  return dump_output(doc, argc, argv);
 }
 
 static long create_visASCII(Detector& description, int /* argc */, char** argv) {

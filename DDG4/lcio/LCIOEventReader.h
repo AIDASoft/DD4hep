@@ -46,6 +46,10 @@ namespace dd4hep  {
       /// Read an event and return a LCCollectionVec of MCParticles.
       virtual EventReaderStatus readParticleCollection(int event_number,
                                                        EVENT::LCCollection** particles) = 0;
+      /// Release the collection returned by readParticleCollection.
+      /// Subclasses that return a standalone (caller-owned) collection must override
+      /// this to delete it. The default does nothing (the collection is owned by the reader).
+      virtual void releaseParticleCollection(EVENT::LCCollection* /* collection */) {}
     };
 
   }     /* End namespace sim   */

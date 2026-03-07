@@ -5,10 +5,7 @@
 #include "DD4hep/CartesianGridXYZ.h"
 #include "DD4hep/DDTest.h"
 
-#include <iostream>
-#include <iomanip>
 #include <vector>
-#include <algorithm>
 #include <exception>
 #include <cmath>
 
@@ -38,6 +35,7 @@ int main() {
     test( fabs(seg.cellDimensions(volID)[0] - xSize )  < 1e-11, " CG_XY: Dimension for X" );
     test( fabs(seg.cellDimensions(volID)[1] - ySize )  < 1e-11, " CG_XY: Dimension for Y" );
 
+    base.destroy();
   } catch( std::exception &e ){
     test.log( e.what() );
     test.error( "exception occurred" );
@@ -61,6 +59,7 @@ int main() {
     test( fabs(seg.cellDimensions(volID)[0] - xSize )  < 1e-11, " CG_XZ: Dimension for X" );
     test( fabs(seg.cellDimensions(volID)[1] - zSize )  < 1e-11, " CG_XZ: Dimension for Z" );
 
+    base.destroy();
   } catch( std::exception &e ){
     test.log( e.what() );
     test.error( "exception occurred" );
@@ -84,6 +83,7 @@ int main() {
     test( fabs(seg.cellDimensions(volID)[0] - ySize )  < 1e-11, " CG_YZ: Dimension for Y" );
     test( fabs(seg.cellDimensions(volID)[1] - zSize )  < 1e-11, " CG_YZ: Dimension for Z" );
 
+    base.destroy();
   } catch( std::exception &e ){
     test.log( e.what() );
     test.error( "exception occurred" );
@@ -110,6 +110,7 @@ int main() {
     test( fabs(seg.cellDimensions(volID)[1] - ySize )  < 1e-11, " CG_XYZ: Dimension for Y" );
     test( fabs(seg.cellDimensions(volID)[2] - zSize )  < 1e-11, " CG_XYZ: Dimension for Z" );
 
+    base.destroy();
   } catch( std::exception &e ){
     test.log( e.what() );
     test.error( "exception occurred" );
