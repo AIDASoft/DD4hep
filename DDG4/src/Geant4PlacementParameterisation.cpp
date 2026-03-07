@@ -47,6 +47,13 @@ dd4hep::sim::Geant4PlacementParameterisation::Geant4PlacementParameterisation(Pl
     m_have_rotation |= !dim.back().delta.getRotation().isIdentity();
     m_num_cells     *= m_params.trafo3D.second;
   }
+  // Set axis for pure 1D translation along a single Cartesian axis
+  if ( !m_have_rotation && dim.size() == 1 ) {
+    const G4ThreeVector& t = dim[0].translation;
+    if      ( t.x() != 0.0 && t.y() == 0.0 && t.z() == 0.0 )  m_axis = kXAxis;
+    else if ( t.x() == 0.0 && t.y() != 0.0 && t.z() == 0.0 )  m_axis = kYAxis;
+    else if ( t.x() == 0.0 && t.y() == 0.0 && t.z() != 0.0 )  m_axis = kZAxis;
+  }
   if ( m_have_rotation )    {
     auto callback = std::bind(&Geant4PlacementParameterisation::operator(),
                               this, std::placeholders::_1);
