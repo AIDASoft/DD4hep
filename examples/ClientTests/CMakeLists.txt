@@ -87,6 +87,16 @@ dd4hep_add_test_reg( ClientTests_namespace_constants
   REGEX_FAIL "FAILED"
   )
 #
+#  Test constant overlayed electric and magnetc field
+dd4hep_add_test_reg( ClientTests_constant_overlayed_field
+  COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+  EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/ConstantField.xml 
+  -destroy -plugin DD4hep_PrintField -points ${ClientTestsEx_INSTALL}/compact/ConstantField_points.xml
+  REGEX_PASS "Position:    0.00    0.00  -50.00 .cm. electric field: 1.00e.03 1.00e.03 5.00e.03 .V/m. magnetic field: 0.00e.00 0.00e.00 2.00e.00 .tesla."
+  REGEX_FAIL "Exception"
+  REGEX_FAIL "FAILED"
+  )
+#
 #  Test JSON based parser
 dd4hep_add_test_reg( ClientTests_MiniTel_JSON_Dump
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"

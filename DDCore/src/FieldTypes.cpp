@@ -28,10 +28,23 @@ DD4HEP_INSTANTIATE_HANDLE(DipoleField);
 DD4HEP_INSTANTIATE_HANDLE(MultipoleField);
 
 /// Compute  the field components at a given location and add to given field
-void ConstantField::fieldComponents(const double* /* pos */, double* field) {
-  field[0] += direction.X();
-  field[1] += direction.Y();
-  field[2] += direction.Z();
+void ConstantField::fieldComponents(const double* pos, double* field) {
+  if ( 0 == flag || nullptr == volume.ptr() )  {
+    field[0] += direction.X();
+    field[1] += direction.Y();
+    field[2] += direction.Z();
+  }
+  else if ( flag&FIELD_LOCAL )  {
+    Transform3D::Point p0(pos[0],pos[1],pos[2]);
+    Transform3D::Point p = this->inverse_pos * p0;
+    const Double_t coords[3] = {p.x(), p.y(), p.z()};
+    if( volume->Contains(coords) )  {
+      field[0] += direction.X();
+      field[1] += direction.Y();
+      field[2] += direction.Z();
+    }
+  }
+  /// Coordinates not in volume: nothing to sum up.
 }
 
 /// Initializing constructor

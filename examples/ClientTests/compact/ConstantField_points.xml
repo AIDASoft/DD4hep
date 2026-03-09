@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<points>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+
+  <point x="0*cm" y="0*cm" z="-100*cm"/>
+  <point x="0*cm" y="0*cm" z="-90*cm"/>
+  <point x="0*cm" y="0*cm" z="-80*cm"/>
+  <point x="0*cm" y="0*cm" z="-70*cm"/>
+  <point x="0*cm" y="0*cm" z="-60*cm"/>
+  <point x="0*cm" y="0*cm" z="-50*cm"/>
+  <point x="0*cm" y="0*cm" z="-40*cm"/>
+  <point x="0*cm" y="0*cm" z="-30*cm"/>
+  <point x="0*cm" y="0*cm" z="-20*cm"/>
+  <point x="0*cm" y="0*cm" z="-10*cm"/>
+  <point x="0*cm" y="0*cm" z="0*cm"/>
+  <point x="0*cm" y="0*cm" z="10*cm"/>
+  <point x="0*cm" y="0*cm" z="20*cm"/>
+  <point x="0*cm" y="0*cm" z="30*cm"/>
+  <point x="0*cm" y="0*cm" z="40*cm"/>
+  <point x="0*cm" y="0*cm" z="50*cm"/>
+  <point x="0*cm" y="0*cm" z="60*cm"/>
+  <point x="0*cm" y="0*cm" z="70*cm"/>
+  <point x="0*cm" y="0*cm" z="80*cm"/>
+  <point x="0*cm" y="0*cm" z="90*cm"/>
+  <point x="0*cm" y="0*cm" z="100*cm"/>
+
+</points>

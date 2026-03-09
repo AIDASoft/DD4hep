@@ -126,15 +126,37 @@ namespace {
   } s_debug;
 }
 
-static Ref_t create_ConstantField(Detector& /* description */, xml_h e) {
+static Ref_t create_ConstantField(Detector& description, xml_h e) {
   CartesianField obj;
-  xml_comp_t field(e), strength(e.child(_U(strength)));
-  std::string t = e.attr<std::string>(_U(field));
-  ConstantField* ptr = new ConstantField();
-  ptr->field_type = ::toupper(t[0]) == 'E' ? CartesianField::ELECTRIC : CartesianField::MAGNETIC;
+  xml_comp_t    field(e), strength(e.child(_U(strength)));
+  xml_dim_t     solid = field.child(_U(shape), false);
+  std::string   type  = e.attr<std::string>(_U(field));
+  ConstantField* ptr  = new ConstantField();
+
+  ptr->field_type = ::toupper(type[0]) == 'E' ? CartesianField::ELECTRIC : CartesianField::MAGNETIC;
   ptr->direction.SetX(strength.x());
   ptr->direction.SetY(strength.y());
   ptr->direction.SetZ(strength.z());
+  ptr->flag = 0;
+  if ( solid )  { // Shape is not mandatory
+    std::string    solid_type = solid.typeStr();
+    xml_dim_t      _pos = solid.child(_U(position), false);
+    xml_dim_t      _rot = solid.child(_U(rotation), false);
+    RotationZYX     rot;
+    Position        pos;
+    ptr->volume = xml::createShape(description, solid_type, solid);
+    ptr->flag |= ConstantField::FIELD_LOCAL;
+    if( _pos )  {
+      ptr->flag |= ConstantField::FIELD_TRANSLATED;
+      pos.SetXYZ(_pos.x(), _pos.y(), _pos.z());
+    }
+    if( _rot )  {
+      ptr->flag |= ConstantField::FIELD_ROTATED;
+      rot.SetComponents(_rot.z(), _rot.y(), _rot.x());
+    }
+    auto tr = Transform3D(rot, pos);
+    ptr->inverse_pos = tr.Inverse();
+  }
   obj.assign(ptr, field.nameStr(), field.typeStr());
   return obj;
 }
