@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+-->
+
+  <info name="FieldTest"
+	title="Test for constant magnetic field"
+        author="Markus Frank"
+        status="development"
+        version= "v0r1">
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_side"             value="2*m"/>
+    <constant name="world_x"                value="world_side/2"/>
+    <constant name="world_y"                value="world_side/2"/>
+    <constant name="world_z"                value="world_side/2"/>
+    <constant name="CrossingAngle"          value="0.020"/>
+  </define>
+
+  <materials>
+  </materials>
+
+  <fields>
+    <field name="ConstantMagneticField" type="ConstantField" field="magnetic">
+      <strength x="0*tesla" y="0*tesla" z="0.5*tesla"/>
+    </field>
+    <field name="ConstantElectricField" type="ConstantField" field="electric">
+      <strength x="1000*V/m" y="1000*V/m" z="0*V/m"/>
+    </field>
+    <field name="LocalMagneticField" type="ConstantField" field="magnetic">
+      <strength x="0*tesla" y="0*tesla" z="1.5*tesla"/>
+      <shape type="Box" dx="10*cm" dy="10*cm" dz="25*cm">
+        <position x="0*cm" y="0*cm" z="-50*cm"/>
+      </shape>
+    </field>
+    <field name="LocalElectricField" type="ConstantField" field="electric">
+      <strength x="0*V/m" y="0*V/m" z="5000*V/m"/>
+      <shape type="Box" dx="10*cm" dy="10*cm" dz="25*cm">
+        <position x="0*cm" y="0*cm" z="-50*cm"/>
+      </shape>
+    </field>
+  </fields>
+</lccdd>

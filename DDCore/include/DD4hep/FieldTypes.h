@@ -33,8 +33,15 @@ namespace dd4hep {
    */
   class ConstantField : public CartesianField::Object {
   public:
+    enum { FIELD_LOCAL = 1, FIELD_TRANSLATED = 2, FIELD_ROTATED = 4 };
     /// Field direction
-    Direction direction;
+    Direction     direction;
+    /// Boundary volume (optional)
+    Solid         volume      { };
+    /// If solid is set: allow for movement of the solid
+    Transform3D   inverse_pos { };
+    /// The access to the field will be optimized. Remember properties.
+    unsigned char flag       { 0 };
   public:
     /// Initializing constructor
     ConstantField() = default;

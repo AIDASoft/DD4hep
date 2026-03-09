@@ -830,5 +830,20 @@ template class dd4hep::Handle<TNamed>;
 #pragma link C++ class dd4hep::cond::AbstractMap+;
 #pragma link C++ class dd4hep::cond::AbstractMap::Params+;
 
+
+#pragma link C++ typedef dd4hep::Position;
+#pragma link C++ typedef dd4hep::PositionRhoZPhi;
+#pragma link C++ typedef dd4hep::PositionPolar;
+#pragma link C++ typedef dd4hep::Direction;
+#pragma link C++ typedef dd4hep::XYZAngles;
+#pragma link C++ typedef dd4hep::RotationZYX;
+#pragma link C++ typedef dd4hep::RotationX;
+#pragma link C++ typedef dd4hep::RotationY;
+#pragma link C++ typedef dd4hep::RotationZ;
+#pragma link C++ typedef dd4hep::Rotation3D;
+#pragma link C++ typedef dd4hep::EulerAngles;
+#pragma link C++ typedef dd4hep::Transform3D;
+#pragma link C++ typedef dd4hep::Translation3D;
+
 #endif  // __CINT__
 #endif // DDCORE_SRC_ROOTDICTIONARY_H

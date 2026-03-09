@@ -310,6 +310,20 @@ def import_geometry():
   import_namespace_item('core', 'Region')
   import_namespace_item('core', 'RegionObject')
   import_namespace_item('core', 'HitCollection')
+  # // Typedefs from Objects.h
+  import_namespace_item('core', 'Position')
+  import_namespace_item('core', 'PositionRhoZPhi')
+  import_namespace_item('core', 'PositionPolar')
+  import_namespace_item('core', 'Direction')
+  import_namespace_item('core', 'XYZAngles')
+  import_namespace_item('core', 'RotationZYX')
+  import_namespace_item('core', 'RotationX')
+  import_namespace_item('core', 'RotationY')
+  import_namespace_item('core', 'RotationZ')
+  import_namespace_item('core', 'Rotation3D')
+  import_namespace_item('core', 'EulerAngles')
+  import_namespace_item('core', 'Transform3D')
+  import_namespace_item('core', 'Translation3D')
 
   # // Readout.h
   import_namespace_item('core', 'Segmentation')
