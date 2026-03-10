@@ -167,7 +167,7 @@ void Geant4ParticleHandler::mark(const G4Track* track)   {
 
     if ( typ == "calorimeter" )  {
       mask.set( G4PARTICLE_CREATED_CALORIMETER_HIT );
-      mask.set( G4PARTICLE_TRAVERSED_CALORIMETER );
+      mask.set( G4PARTICLE_STARTED_IN_CALORIMETER );
     }
     else if ( typ == "tracker" )  {
       mask.set( G4PARTICLE_CREATED_TRACKER_HIT );
@@ -323,11 +323,10 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   G4LogicalVolume* vol = track->GetVolume()->GetLogicalVolume();
   // Volume is never null since track is always within the world volume
   G4VSensitiveDetector* g4 = vol->GetSensitiveDetector();
-  if( g4 )  {
-    Geant4ActionSD* sd = dynamic_cast<Geant4ActionSD*>(g4);
+  if( Geant4ActionSD* sd = dynamic_cast<Geant4ActionSD*>(g4) )  {
     std::string typ = sd->sensitiveType();
     if( typ == "calorimeter" )  {
-      mask.set( G4PARTICLE_TRAVERSED_CALORIMETER );
+      mask.set( G4PARTICLE_STARTED_IN_CALORIMETER );
     }
   }
 
@@ -360,7 +359,7 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   // check if the last step ended on the worldVolume boundary
   const G4Step* theLastStep = track->GetStep();
   G4StepPoint* theLastPostStepPoint = NULL;
-  if(theLastStep) theLastPostStepPoint = theLastStep->GetPostStepPoint();
+  if( theLastStep ) theLastPostStepPoint = theLastStep->GetPostStepPoint();
   if( theLastPostStepPoint &&
       ( theLastPostStepPoint->GetStepStatus() == fWorldBoundary //particle left world volume
         //|| theLastPostStepPoint->GetStepStatus() == fGeomBoundary
@@ -369,20 +368,19 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     simStatus.set(G4PARTICLE_SIM_LEFT_DETECTOR);
   }
 
-  if(track->GetKineticEnergy() <= 0.) {
+  if( track->GetKineticEnergy() <= 0. ) {
     simStatus.set(G4PARTICLE_SIM_STOPPED);
   }
 
   PropertyMask reason_mask(track_reason);
-  if( reason_mask.isSet( G4PARTICLE_TRAVERSED_CALORIMETER ) )  {
+  if( reason_mask.isSet( G4PARTICLE_STARTED_IN_CALORIMETER ) )  {
     std::string end_volume_type;
     bool calo_hits       = reason_mask.isSet(G4PARTICLE_CREATED_CALORIMETER_HIT);
     bool tracker_hits    = reason_mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT);
     G4LogicalVolume* vol = track->GetVolume()->GetLogicalVolume();
     // Volume is never null since track is always within the world volume
     G4VSensitiveDetector* g4 = vol->GetSensitiveDetector();
-    if( g4 )  {
-      Geant4ActionSD* sd = dynamic_cast<Geant4ActionSD*>(g4);
+    if( Geant4ActionSD* sd = dynamic_cast<Geant4ActionSD*>(g4) )  {
       end_volume_type = sd->sensitiveType();
     }
     if( tracker_hits || end_volume_type == "tracker" )  {
@@ -407,10 +405,10 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   //
   Geant4ParticleInformation* track_info =
     dynamic_cast<Geant4ParticleInformation*>(track->GetUserInformation());
-  if ( !mask.isNull() || track_info || reason_mask.isSet(G4PARTICLE_SIM_BACKSCATTER) )  {
+  if( !mask.isNull() || track_info || reason_mask.isSet(G4PARTICLE_SIM_BACKSCATTER) )  {
     m_equivalentTracks[g4_id] = g4_id;
     ParticleMap::iterator ip = m_particleMap.find(g4_id);
-    if ( mask.isSet(G4PARTICLE_PRIMARY) )  {
+    if( mask.isSet(G4PARTICLE_PRIMARY) )  {
       ph.dump2(outputLevel()-1,name(),"Add Primary", h.id(), ip != m_particleMap.end());
     }
     if( reason_mask.isSet(G4PARTICLE_SIM_BACKSCATTER) )  {
@@ -419,9 +417,9 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     }
     // Create a new MC particle from the current track information saved in the pre-tracking action
     Particle* part = 0;
-    if ( ip==m_particleMap.end() ) part = m_particleMap[g4_id] = new Particle();
+    if( ip==m_particleMap.end() ) part = m_particleMap[g4_id] = new Particle();
     else part = (*ip).second;
-    if ( track_info )  {
+    if( track_info )  {
       mask.set(G4PARTICLE_KEEP_USER);
       part->extension.reset(track_info->release());
     }
@@ -647,10 +645,11 @@ bool Geant4ParticleHandler::defaultDropParticle(const Particle& particle)   {
   bool hits_produced  =  mask.isSet(G4PARTICLE_CREATED_HIT);
   bool low_energy     = !mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD);
 
-  /// Remove this track if it has not created a hit and the energy is below threshold
+  /// If backscattered the track shas to be kept in the output record.
   if ( backscatter )  {
     return false;
   }
+  /// Remove this track if it has not created a hit and the energy is below threshold
   else if ( mask.isNull() || (secondaries && low_energy && !hits_produced) )  {
     return true;
   }
@@ -663,7 +662,7 @@ bool Geant4ParticleHandler::defaultDropParticle(const Particle& particle)   {
     return true;
   }
   else  {
-    //printout(INFO,name(),"+++ Track: %d should be kept for no obvious reason....",id);
+    // printout(INFO,name(),"+++ Track: %d should be kept for no obvious reason....",id);
   }
   return false;
 }

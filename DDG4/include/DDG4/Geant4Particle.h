@@ -54,45 +54,45 @@ namespace dd4hep {
 
     /// Track properties
     enum Geant4ParticleProperties {
-      G4PARTICLE_CREATED_HIT         = 1<<1,
-      G4PARTICLE_PRIMARY             = 1<<2,
-      G4PARTICLE_HAS_SECONDARIES     = 1<<3,
-      G4PARTICLE_ABOVE_ENERGY_THRESHOLD = 1<<4,
-      G4PARTICLE_KEEP_PROCESS        = 1<<5,
-      G4PARTICLE_KEEP_PARENT         = 1<<6,
+      G4PARTICLE_CREATED_HIT             = 1<<1,
+      G4PARTICLE_PRIMARY                 = 1<<2,
+      G4PARTICLE_HAS_SECONDARIES         = 1<<3,
+      G4PARTICLE_ABOVE_ENERGY_THRESHOLD  = 1<<4,
+      G4PARTICLE_KEEP_PROCESS            = 1<<5,
+      G4PARTICLE_KEEP_PARENT             = 1<<6,
       G4PARTICLE_CREATED_CALORIMETER_HIT = 1<<7,
-      G4PARTICLE_CREATED_TRACKER_HIT = 1<<8,
-      G4PARTICLE_KEEP_USER           = 1<<9,
-      G4PARTICLE_KEEP_ALWAYS         = 1<<10,
-      G4PARTICLE_FORCE_KILL          = 1<<11,
-      G4PARTICLE_TRAVERSED_CALORIMETER = 1<<12, // True if the particle has interacted in a calorimeter region.
+      G4PARTICLE_CREATED_TRACKER_HIT     = 1<<8,
+      G4PARTICLE_KEEP_USER               = 1<<9,
+      G4PARTICLE_KEEP_ALWAYS             = 1<<10,
+      G4PARTICLE_FORCE_KILL              = 1<<11,
+      G4PARTICLE_STARTED_IN_CALORIMETER  = 1<<12, // True if the particle has interacted in a calorimeter region.
 
       // Generator status for a given particles: bit 0...4, agreed by many formats (HepMC, LCIO, ....):
-      G4PARTICLE_GEN_EMPTY           = 1<<0,  // Empty line
-      G4PARTICLE_GEN_STABLE          = 1<<1,  // undecayed particle, stable in the generator
-      G4PARTICLE_GEN_DECAYED         = 1<<2,  // particle decayed in the generator
-      G4PARTICLE_GEN_DOCUMENTATION   = 1<<3,  // documentation line
-      G4PARTICLE_GEN_BEAM            = 1<<4,  // beam particle
+      G4PARTICLE_GEN_EMPTY               = 1<<0,  // Empty line
+      G4PARTICLE_GEN_STABLE              = 1<<1,  // undecayed particle, stable in the generator
+      G4PARTICLE_GEN_DECAYED             = 1<<2,  // particle decayed in the generator
+      G4PARTICLE_GEN_DOCUMENTATION       = 1<<3,  // documentation line
+      G4PARTICLE_GEN_BEAM                = 1<<4,  // beam particle
 
-      G4PARTICLE_GEN_OTHER           = 1<<9,  // any other generator status
+      G4PARTICLE_GEN_OTHER               = 1<<9,  // any other generator status
 
-      G4PARTICLE_GEN_GENERATOR       =        // Particle comes from generator
+      G4PARTICLE_GEN_GENERATOR           =        // Particle comes from generator
       (  G4PARTICLE_GEN_EMPTY+G4PARTICLE_GEN_STABLE+
          G4PARTICLE_GEN_DECAYED+G4PARTICLE_GEN_DOCUMENTATION+
          G4PARTICLE_GEN_BEAM+G4PARTICLE_GEN_OTHER),
-      G4PARTICLE_GEN_STATUS          = 0x3FF, // Mask for generator status (bit 0...9)
-      G4PARTICLE_GEN_STATUS_MASK     = 0xFFFF,// Mask for the raw generator status (max 65k values)
+      G4PARTICLE_GEN_STATUS              = 0x3FF, // Mask for generator status (bit 0...9)
+      G4PARTICLE_GEN_STATUS_MASK         = 0xFFFF,// Mask for the raw generator status (max 65k values)
       // Simulation status of a given particle
-      G4PARTICLE_SIM_CREATED         = 1<<10, // True if the particle has been created by the simulation program (rather than the generator)
-      G4PARTICLE_SIM_BACKSCATTER     = 1<<11, // True if the particle is the result of a backscatter from a calorimeter shower.
-      G4PARTICLE_SIM_DECAY_CALO      = 1<<12, // True if the particle has interacted in a calorimeter region.
-      G4PARTICLE_SIM_DECAY_TRACKER   = 1<<13, // True if the particle has interacted in a tracking region.
-      G4PARTICLE_SIM_STOPPED         = 1<<14, // True if the particle has been stopped by the simulation program.
-      G4PARTICLE_SIM_LEFT_DETECTOR   = 1<<15, // True if the particle has left the world volume undecayed.
-      G4PARTICLE_SIM_PARENT_RADIATED = 1<<16, // True if the particle's vertex is not the endpoint of the  parent particle.
-      G4PARTICLE_SIM_OVERLAY         = 1<<17, // True if the particle has been overlayed by the simulation (or digitization)  program.
+      G4PARTICLE_SIM_CREATED             = 1<<10, // True if the particle has been created by the simulation program (rather than the generator)
+      G4PARTICLE_SIM_BACKSCATTER         = 1<<11, // True if the particle is the result of a backscatter from a calorimeter shower.
+      G4PARTICLE_SIM_DECAY_CALO          = 1<<12, // True if the particle has interacted in a calorimeter region.
+      G4PARTICLE_SIM_DECAY_TRACKER       = 1<<13, // True if the particle has interacted in a tracking region.
+      G4PARTICLE_SIM_STOPPED             = 1<<14, // True if the particle has been stopped by the simulation program.
+      G4PARTICLE_SIM_LEFT_DETECTOR       = 1<<15, // True if the particle has left the world volume undecayed.
+      G4PARTICLE_SIM_PARENT_RADIATED     = 1<<16, // True if the particle's vertex is not the endpoint of the  parent particle.
+      G4PARTICLE_SIM_OVERLAY             = 1<<17, // True if the particle has been overlayed by the simulation (or digitization)  program.
 
-      G4PARTICLE_LAST_NOTHING = 1<<31
+      G4PARTICLE_LAST_NOTHING            = 1<<31
     };
 
     /// Data structure to store the MC particle information
