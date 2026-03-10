@@ -65,6 +65,7 @@ namespace dd4hep {
       G4PARTICLE_KEEP_USER           = 1<<9,
       G4PARTICLE_KEEP_ALWAYS         = 1<<10,
       G4PARTICLE_FORCE_KILL          = 1<<11,
+      G4PARTICLE_TRAVERSED_CALORIMETER = 1<<12, // True if the particle has interacted in a calorimeter region.
 
       // Generator status for a given particles: bit 0...4, agreed by many formats (HepMC, LCIO, ....):
       G4PARTICLE_GEN_EMPTY           = 1<<0,  // Empty line
