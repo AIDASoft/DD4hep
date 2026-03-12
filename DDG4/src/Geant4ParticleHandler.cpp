@@ -156,18 +156,9 @@ void Geant4ParticleHandler::mark(const G4Track* track)   {
   Geant4ActionSD*        sd = dynamic_cast<Geant4ActionSD*>(g4);
   if( sd )  {
     std::string typ = sd->sensitiveType();
-    bool has_calo_hits = mask.isSet(G4PARTICLE_CREATED_CALORIMETER_HIT);
-    if( has_calo_hits )  {
-      bool has_tracker_hits = mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT);
-      if( typ == "tracker" )  {
-	debug("+++ Track: %d back-scattered to tracking volume. HasCALO:%s HasTRACKER:%s",
-	      track->GetTrackID(), yes_no(has_calo_hits), yes_no(has_tracker_hits));
-      }
-    }
 
     if ( typ == "calorimeter" )  {
       mask.set( G4PARTICLE_CREATED_CALORIMETER_HIT );
-      mask.set( G4PARTICLE_STARTED_IN_CALORIMETER );
     }
     else if ( typ == "tracker" )  {
       mask.set( G4PARTICLE_CREATED_TRACKER_HIT );
@@ -385,8 +376,9 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     }
     if( tracker_hits || end_volume_type == "tracker" )  {
       reason_mask.set(G4PARTICLE_SIM_BACKSCATTER);
-      debug("+++ Track: %6d back-scattered to tracking volume. Origin: calorimeter End: %s CALO-hits:%s TRACKER-hits:%s  --> create new Particle",
-	    g4_id, end_volume_type.c_str(), yes_no(calo_hits), yes_no(tracker_hits));
+      debug("+++ Track: %6d back-scattered to tracking volume. Origin: calorimeter End: %s "
+            "CALO-hits:%s TRACKER-hits:%s  --> keep particle in MC history",
+            g4_id, end_volume_type.c_str(), yes_no(calo_hits), yes_no(tracker_hits));
     }
   }
   
@@ -413,7 +405,7 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     }
     if( reason_mask.isSet(G4PARTICLE_SIM_BACKSCATTER) )  {
       mask.set(G4PARTICLE_KEEP_ALWAYS);
-      info("+++ Track: %6d Particle back-scattering to tracker --> create new Particle", g4_id);
+      info("+++ Track: %6d Particle back-scattering to tracker --> keep particle in MC history.", g4_id);
     }
     // Create a new MC particle from the current track information saved in the pre-tracking action
     Particle* part = 0;
