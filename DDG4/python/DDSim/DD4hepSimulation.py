@@ -16,6 +16,7 @@ import traceback
 from urllib.parse import urlparse
 from DDSim.Helper.Meta import Meta
 from DDSim.Helper.LCIO import LCIO
+from DDSim.Helper.EDM4hep import EDM4hep
 from DDSim.Helper.HepMC3 import HepMC3
 from DDSim.Helper.GuineaPig import GuineaPig
 from DDSim.Helper.Physics import Physics
@@ -99,6 +100,7 @@ class DD4hepSimulation(object):
     self.inputConfig = InputConfig()
     self.guineapig = GuineaPig()
     self.lcio = LCIO()
+    self.edm4hep = EDM4hep()
     self.hepmc3 = HepMC3()
     self.meta = Meta()
 
@@ -463,6 +465,7 @@ class DD4hepSimulation(object):
       elif inputFile.endswith(tuple(EDM4HEP_INPUT_EXTENSIONS)):
         # EDM4HEP must come after HEPMC3 because of .root also part of hepmc3 extensions
         gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/EDM4hep%d" % index)
+        gen.Parameters = self.edm4hep.getParameters()
         gen.Input = "EDM4hepFileReader|" + inputFile
       else:
         # this should never happen because we already check at the top, but in case of some LogicError...

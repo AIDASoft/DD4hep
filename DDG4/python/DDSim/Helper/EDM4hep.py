@@ -4,10 +4,10 @@ from DDSim.Helper.Input import Input
 from DDSim.Helper.MCParticle import MCParticleMixin
 
 
-class LCIO(Input, MCParticleMixin):
-  """Configuration for the LCIO input files"""
+class EDM4hep(Input, MCParticleMixin):
+  """Configuration for the EDM4hep input files"""
 
   def __init__(self):
-    super(LCIO, self).__init__()
-    self._parameters["MCParticleCollectionName"] = "MCParticle"
+    super(EDM4hep, self).__init__()
+    self._parameters["MCParticleCollectionName"] = "MCParticles"
     self._closeProperties()
