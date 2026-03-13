@@ -637,7 +637,7 @@ bool Geant4ParticleHandler::defaultDropParticle(const Particle& particle)   {
   bool hits_produced  =  mask.isSet(G4PARTICLE_CREATED_HIT);
   bool low_energy     = !mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD);
 
-  /// If backscattered the track shas to be kept in the output record.
+  /// If backscattered the track has to be kept in the output record.
   if ( backscatter )  {
     return false;
   }
