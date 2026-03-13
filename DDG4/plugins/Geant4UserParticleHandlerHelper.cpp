@@ -32,6 +32,10 @@ void setReason(Geant4Particle& p, bool starts_in_trk_vol, bool ends_in_trk_vol) 
     p.reason = 0;
     return;
   }
+  //keep particles that left tracker hits if they are above threshold.
+  if(reason.isSet(G4PARTICLE_CREATED_TRACKER_HIT) && reason.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD))  {
+    return;
+  }
 
   // created and ended in calo but not primary particle
   //
