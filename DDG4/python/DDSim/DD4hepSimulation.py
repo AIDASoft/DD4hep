@@ -71,14 +71,15 @@ class DD4hepSimulation(object):
 
     self.numberOfEvents = 0
     self.skipNEvents = 0
+    self.numberOfThreads = 1
     self.physicsList = None  # deprecated use physics.list
     self.crossingAngleBoost = 0.0
     self.macroFile = ''
     self.enableGun = False
     self.enableG4GPS = False
     self.enableG4Gun = False
-    self._g4gun = None
-    self._g4gps = None
+    self._g4gun = []
+    self._g4gps = []
     self.vertexSigma = [0.0, 0.0, 0.0, 0.0]
     self.vertexOffset = [0.0, 0.0, 0.0, 0.0]
     self.enableDetailedShowerMode = False
@@ -181,6 +182,9 @@ class DD4hepSimulation(object):
     parser.add_argument("--skipNEvents", action="store", dest="skipNEvents", default=self.skipNEvents, type=int,
                         help="Skip first N events when reading a file")
 
+    parser.add_argument("--numberOfThreads", "-j", action="store", dest="numberOfThreads", default=self.numberOfThreads,
+                        type=int, help="Number of threads for simulation")
+
     parser.add_argument("--physicsList", action="store", dest="physicsList", default=self.physicsList,
                         help="Physics list to use in simulation. Deprecated, use physics.list")
 
@@ -252,6 +256,7 @@ class DD4hepSimulation(object):
 
     self.numberOfEvents = parsed.numberOfEvents
     self.skipNEvents = parsed.skipNEvents
+    self.numberOfThreads = parsed.numberOfThreads
     self.physicsList = parsed.physicsList
     self.crossingAngleBoost = parsed.crossingAngleBoost
     self.macroFile = parsed.macroFile
@@ -313,10 +318,204 @@ class DD4hepSimulation(object):
 
 # ==================================================================================
 
+  def __setupActions(self, kernel):
+    import DDG4
+
+    # Configure default run action
+    run = DDG4.RunAction(kernel, 'Geant4TestRunAction/RunInit')
+    kernel.registerGlobalAction(run)
+    kernel.runAction().add(run)
+
+    # ----------------------------------------------------------------------------------
+    # Configure run, event, track, step, and stack actions, if present
+    for action_list, DDG4_Action, kernel_Action in \
+        [(self.action.run, DDG4.RunAction, kernel.runAction),
+         (self.action.event, DDG4.EventAction, kernel.eventAction),
+         (self.action.track, DDG4.TrackingAction, kernel.trackingAction),
+         (self.action.step, DDG4.SteppingAction, kernel.steppingAction),
+         (self.action.stack, DDG4.StackingAction, kernel.stackingAction)]:
+      for action_dict in action_list:
+        action = DDG4_Action(kernel, action_dict["name"])
+        for parameter, value in action_dict.get('parameter', {}).items():
+          setattr(action, parameter, value)
+        kernel_Action().add(action)
+
+    return 1
+
+  def __setupGeneratorActions(self, kernel, geant4):
+    import DDG4
+
+    # Determine 'shared' based on the overall setting, not the worker kernel property
+    shared = (self.numberOfThreads > 1)
+    logger.debug(f"Determined shared={shared} based on self.numberOfThreads={self.numberOfThreads}")
+
+    actionList = []
+
+    if self.enableGun:
+      gun = DDG4.GeneratorAction(kernel, "Geant4ParticleGun/" + "Gun")
+      self.gun.setOptions(gun)
+      gun.Standalone = False
+      gun.Mask = 1
+      actionList.append(gun)
+      self.__applyBoostOrSmear(kernel, actionList, 1)
+      logger.info("++++ Adding DD4hep Particle Gun ++++")
+
+    if self.enableG4Gun:
+      # G4Gun: Always use shared=False to allow macro configuration
+      # In MT mode, Geant4 will handle making the gun available to workers
+      g4gun = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/Gun", shared=False)
+      g4gun.Uses = 'G4ParticleGun'
+      g4gun.Mask = 2
+      logger.info("++++ Adding Geant4 Particle Gun (non-shared for macro support) ++++")
+      actionList.append(g4gun)
+      self._g4gun.append(g4gun)
+
+    if self.enableG4GPS:
+      # GPS: Always use shared=False to allow macro configuration
+      # In MT mode, Geant4 will handle making GPS available to workers
+      g4gps = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/GPS", shared=False)
+      g4gps.Uses = 'G4GeneralParticleSource'
+      g4gps.Mask = 3
+      logger.info("++++ Adding Geant4 General Particle Source (non-shared for macro support) ++++")
+      actionList.append(g4gps)
+      self._g4gps.append(g4gps)
+
+    start = 4
+    for index, plugin in enumerate(self.inputConfig.userInputPlugin, start=start):
+      gen = plugin(self)
+      gen.Mask = index
+      start = index + 1
+      actionList.append(gen)
+      self.__applyBoostOrSmear(kernel, actionList, index)
+      logger.info("++++ Adding User Plugin %s ++++", gen.Name)
+
+    for index, inputFile in enumerate(self.inputFiles, start=start):
+      if inputFile.endswith(".slcio"):
+        gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/LCIO%d" % index, shared=shared)
+        gen.Parameters = self.lcio.getParameters()
+        gen.Input = "LCIOFileReader|" + inputFile
+      elif inputFile.endswith(".stdhep"):
+        gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/STDHEP%d" % index, shared=shared)
+        gen.Input = "LCIOStdHepReader|" + inputFile
+      elif inputFile.endswith(".HEPEvt"):
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/HEPEvt%d" % index, shared=shared)
+        gen.Input = "Geant4EventReaderHepEvtShort|" + inputFile
+      elif inputFile.endswith(".hepevt"):
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepevt%d" % index, shared=shared)
+        gen.Input = "Geant4EventReaderHepEvtLong|" + inputFile
+      elif inputFile.endswith(tuple([".hepmc"] + HEPMC3_SUPPORTED_EXTENSIONS)):
+        if self.hepmc3.useHepMC3:
+          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index, shared=shared)
+          gen.Parameters = self.hepmc3.getParameters()
+          gen.Input = "HEPMC3FileReader|" + inputFile
+        else:
+          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index, shared=shared)
+          gen.Input = "Geant4EventReaderHepMC|" + inputFile
+      elif inputFile.endswith(".pairs"):
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index, shared=shared)
+        gen.Input = "Geant4EventReaderGuineaPig|" + inputFile
+        gen.Parameters = self.guineapig.getParameters()
+      elif inputFile.endswith(tuple(EDM4HEP_INPUT_EXTENSIONS)):
+        # EDM4HEP must come after HEPMC3 because of .root also part of hepmc3 extensions
+        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/EDM4hep%d" % index, shared=shared)
+        gen.Input = "EDM4hepFileReader|" + inputFile
+      else:
+        # this should never happen because we already check at the top, but in case of some LogicError...
+        raise RuntimeError("Unknown input file type: %s" % inputFile)
+      gen.AlternativeDecayStatuses = self.physics.alternativeDecayStatuses
+      gen.AlternativeStableStatuses = self.physics.alternativeStableStatuses
+      gen.Sync = self.skipNEvents
+      gen.Mask = index
+      actionList.append(gen)
+      self.__applyBoostOrSmear(kernel, actionList, index)
+
+    generationInit = None
+    if actionList:
+      generationInit = self._buildInputStage(geant4, actionList, output_level=self.output.inputStage,
+                                             have_mctruth=self._enablePrimaryHandler())
+    # Store on self so run() can read numberOfEvents before terminate() destroys it
+    self._generationInit = generationInit
+
+    # ================================================================================================
+
+    # And handle the simulation particles.
+    part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
+    kernel.generatorAction().adopt(part)
+    # part.SaveProcesses = ['conv','Decay']
+    part.SaveProcesses = self.part.saveProcesses
+    part.MinimalKineticEnergy = self.part.minimalKineticEnergy
+    part.KeepAllParticles = self.part.keepAllParticles
+    part.PrintEndTracking = self.part.printEndTracking
+    part.PrintStartTracking = self.part.printStartTracking
+    part.MinDistToParentVertex = self.part.minDistToParentVertex
+    part.OutputLevel = self.output.part
+    part.enableUI()
+
+    if self.part.enableDetailedHitsAndParticleInfo:
+      self.part.setDumpDetailedParticleInfo(kernel, DDG4)
+
+    self.part.setupUserParticleHandler(part, kernel, DDG4)
+
+    return 1
+
+    # =================================================================================
+
+  def __setupSensitives(self, geant4, detectorDescription):
+    kernel = geant4.kernel()
+
+    # Setup global filters for use in sensitive detectors
+    try:
+      self.filter.setupFilters(kernel)
+    except RuntimeError as e:
+      logger.error("%s", e)
+      return 1
+
+    # =================================================================================
+    # get lists of trackers and calorimeters in detectorDescription
+
+    trk, cal, unk = self.getDetectorLists(detectorDescription)
+    for detectors, function, defFilter, defAction, abort in \
+        [(trk, geant4.setupTracker, self.filter.tracker, self.action.tracker, False),
+         (cal, geant4.setupCalorimeter, self.filter.calo, self.action.calo, False),
+         (unk, geant4.setupDetector, None, "No Default", True),
+         ]:
+      try:
+        self.__setupSensitiveDetectors(detectors, function, defFilter, defAction, abort)
+      except Exception as e:
+        logger.error("Failed setting up sensitive detector %s", e)
+        raise
+
+    return 1
+
+  def __setupWorker(self, geant4):
+    logger.debug("Setting up worker")
+    kernel = geant4.kernel()
+    logger.debug("Setting up actions")
+    self.__setupActions(kernel)
+    logger.debug("Setting up EventSeeder for worker")
+    # Setup EventSeeder for this worker
+    # Uses the shared Geant4Random instance from master
+    import DDG4
+    self.random.setupEventSeeder(DDG4, kernel)
+    logger.debug("Setting up generator actions")
+    self.__setupGeneratorActions(kernel, geant4)
+    logger.debug("Setting up output")
+    self.outputConfig.initialize(dd4hepsimulation=self, geant4=geant4)
+    return 1
+
+  def __setupMaster(self, geant4):
+    logger.debug("Setting up master")
+    return 1
+
   def run(self):
     """setup the geometry and dd4hep and geant4 and do what was asked to be done"""
     import ROOT
     ROOT.PyConfig.IgnoreCommandLineOptions = True
+
+    # Enable ROOT's thread safety for MT mode
+    if self.numberOfThreads > 1:
+      ROOT.EnableThreadSafety()
+      logger.info("Enabled ROOT thread safety for MT mode")
 
     import DDG4
     import dd4hep
@@ -332,10 +531,8 @@ class DD4hepSimulation(object):
 
     DDG4.importConstants(detectorDescription)
 
-  # ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
-    # simple = DDG4.Geant4( kernel, tracker='Geant4TrackerAction',calo='Geant4CalorimeterAction')
-    # geant4 = DDG4.Geant4( kernel, tracker='Geant4TrackerCombineAction',calo='Geant4ScintillatorCalorimeterAction')
     geant4 = DDG4.Geant4(kernel, tracker=self.action.tracker, calo=self.action.calo)
     if not self.disableSignalHandler:
       geant4.registerInterruptHandler()
@@ -365,165 +562,41 @@ class DD4hepSimulation(object):
 
     kernel.NumEvents = self.numberOfEvents
 
+    if self.numberOfThreads > 1:
+      logger.info("Multi-threaded with %d threads", self.numberOfThreads)
+      kernel.RunManagerType = "G4MTRunManager"
+      kernel.NumberOfThreads = self.numberOfThreads
+      geant4.addUserInitialization(
+          worker=self.__setupWorker, worker_args=(geant4,),
+          master=self.__setupMaster, master_args=(geant4,))
+    else:
+      kernel.RunManagerType = "G4RunManager"
+      kernel.NumberOfThreads = 1
+      geant4.addUserInitialization(
+          worker=self.__setupWorker, worker_args=(geant4,))
+
     # -----------------------------------------------------------------------------------
+
+    logger.info("#  Configure G4 geometry setup")
+    seq, act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
+
+    logger.info("# Configure G4 sensitive detectors: python setup callback")
+    seq, act = geant4.addDetectorConstruction(
+        "Geant4PythonDetectorConstruction/SetupSD",
+        sensitives=self.__setupSensitives,
+        sensitives_args=(geant4, detectorDescription,))
+    logger.info("# Configure G4 sensitive detectors: atach'em to the sensitive volumes")
+    seq, act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
+
     # setup the magnetic field:
+    logger.info("Setting magnetic field")
     self.__setMagneticFieldOptions(geant4)
 
-    # configure geometry creation
-    self.geometry.constructGeometry(kernel, geant4, self.output.geometry)
-
-    # ----------------------------------------------------------------------------------
-    # Configure run, event, track, step, and stack actions, if present
-    for action_list, DDG4_Action, kernel_Action in \
-        [(self.action.run, DDG4.RunAction, kernel.runAction),
-         (self.action.event, DDG4.EventAction, kernel.eventAction),
-         (self.action.track, DDG4.TrackingAction, kernel.trackingAction),
-         (self.action.step, DDG4.SteppingAction, kernel.steppingAction),
-         (self.action.stack, DDG4.StackingAction, kernel.stackingAction)]:
-      for action_dict in action_list:
-        action = DDG4_Action(kernel, action_dict["name"])
-        for parameter, value in action_dict.get('parameter', {}).items():
-          setattr(action, parameter, value)
-        kernel_Action().add(action)
-
-    # ----------------------------------------------------------------------------------
-    # Configure Run actions
-    run1 = DDG4.RunAction(kernel, 'Geant4TestRunAction/RunInit')
-    kernel.registerGlobalAction(run1)
-    kernel.runAction().add(run1)
-
     # Configure the random seed, do it before the I/O because we might change the seed!
+    logger.info("Initializing random")
     self.random.initialize(DDG4, kernel, self.output.random)
 
-    # Configure the output file format and plugin
-    self.outputConfig.initialize(dd4hepsimulation=self, geant4=geant4)
-
-    actionList = []
-
-    if self.enableGun:
-      gun = DDG4.GeneratorAction(kernel, "Geant4ParticleGun/" + "Gun")
-      self.gun.setOptions(gun)
-      gun.Standalone = False
-      gun.Mask = 1
-      actionList.append(gun)
-      self.__applyBoostOrSmear(kernel, actionList, 1)
-      logger.info("++++ Adding DD4hep Particle Gun ++++")
-
-    if self.enableG4Gun:
-      # GPS Create something
-      self._g4gun = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/Gun")
-      self._g4gun.Uses = 'G4ParticleGun'
-      self._g4gun.Mask = 2
-      logger.info("++++ Adding Geant4 Particle Gun ++++")
-      actionList.append(self._g4gun)
-
-    if self.enableG4GPS:
-      # GPS Create something
-      self._g4gps = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/GPS")
-      self._g4gps.Uses = 'G4GeneralParticleSource'
-      self._g4gps.Mask = 3
-      logger.info("++++ Adding Geant4 General Particle Source ++++")
-      actionList.append(self._g4gps)
-
-    start = 4
-    for index, plugin in enumerate(self.inputConfig.userInputPlugin, start=start):
-      gen = plugin(self)
-      gen.Mask = index
-      start = index + 1
-      actionList.append(gen)
-      self.__applyBoostOrSmear(kernel, actionList, index)
-      logger.info("++++ Adding User Plugin %s ++++", gen.Name)
-
-    for index, inputFile in enumerate(self.inputFiles, start=start):
-      if inputFile.endswith(".slcio"):
-        gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/LCIO%d" % index)
-        gen.Parameters = self.lcio.getParameters()
-        gen.Input = "LCIOFileReader|" + inputFile
-      elif inputFile.endswith(".stdhep"):
-        gen = DDG4.GeneratorAction(kernel, "LCIOInputAction/STDHEP%d" % index)
-        gen.Input = "LCIOStdHepReader|" + inputFile
-      elif inputFile.endswith(".HEPEvt"):
-        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/HEPEvt%d" % index)
-        gen.Input = "Geant4EventReaderHepEvtShort|" + inputFile
-      elif inputFile.endswith(".hepevt"):
-        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepevt%d" % index)
-        gen.Input = "Geant4EventReaderHepEvtLong|" + inputFile
-      elif inputFile.endswith(tuple([".hepmc"] + HEPMC3_SUPPORTED_EXTENSIONS)):
-        if self.hepmc3.useHepMC3:
-          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
-          gen.Parameters = self.hepmc3.getParameters()
-          gen.Input = "HEPMC3FileReader|" + inputFile
-        else:
-          gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/hepmc%d" % index)
-          gen.Input = "Geant4EventReaderHepMC|" + inputFile
-      elif inputFile.endswith(".pairs"):
-        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/GuineaPig%d" % index)
-        gen.Input = "Geant4EventReaderGuineaPig|" + inputFile
-        gen.Parameters = self.guineapig.getParameters()
-      elif inputFile.endswith(tuple(EDM4HEP_INPUT_EXTENSIONS)):
-        # EDM4HEP must come after HEPMC3 because of .root also part of hepmc3 extensions
-        gen = DDG4.GeneratorAction(kernel, "Geant4InputAction/EDM4hep%d" % index)
-        gen.Input = "EDM4hepFileReader|" + inputFile
-      else:
-        # this should never happen because we already check at the top, but in case of some LogicError...
-        raise RuntimeError("Unknown input file type: %s" % inputFile)
-      gen.AlternativeDecayStatuses = self.physics.alternativeDecayStatuses
-      gen.AlternativeStableStatuses = self.physics.alternativeStableStatuses
-      gen.Sync = self.skipNEvents
-      gen.Mask = index
-      actionList.append(gen)
-      self.__applyBoostOrSmear(kernel, actionList, index)
-
-    generationInit = None
-    if actionList:
-      generationInit = self._buildInputStage(geant4, actionList, output_level=self.output.inputStage,
-                                             have_mctruth=self._enablePrimaryHandler())
-
-    # ================================================================================================
-
-    # And handle the simulation particles.
-    part = DDG4.GeneratorAction(kernel, "Geant4ParticleHandler/ParticleHandler")
-    kernel.generatorAction().adopt(part)
-    # part.SaveProcesses = ['conv','Decay']
-    part.SaveProcesses = self.part.saveProcesses
-    part.MinimalKineticEnergy = self.part.minimalKineticEnergy
-    part.KeepAllParticles = self.part.keepAllParticles
-    part.PrintEndTracking = self.part.printEndTracking
-    part.PrintStartTracking = self.part.printStartTracking
-    part.MinDistToParentVertex = self.part.minDistToParentVertex
-    part.OutputLevel = self.output.part
-    part.enableUI()
-
-    if self.part.enableDetailedHitsAndParticleInfo:
-      self.part.setDumpDetailedParticleInfo(kernel, DDG4)
-
-    self.part.setupUserParticleHandler(part, kernel, DDG4)
-
     # =================================================================================
-
-    # Setup global filters for use in sensitive detectors
-    try:
-      self.filter.setupFilters(kernel)
-    except RuntimeError as e:
-      logger.error("%s", e)
-      return 1
-
-    # =================================================================================
-    # get lists of trackers and calorimeters in detectorDescription
-
-    trk, cal, unk = self.getDetectorLists(detectorDescription)
-    for detectors, function, defFilter, defAction, abort in \
-        [(trk, geant4.setupTracker, self.filter.tracker, self.action.tracker, False),
-         (cal, geant4.setupCalorimeter, self.filter.calo, self.action.calo, False),
-         (unk, geant4.setupDetector, None, "No Default", True),
-         ]:
-      try:
-        self.__setupSensitiveDetectors(detectors, function, defFilter, defAction, abort)
-      except Exception as e:
-        logger.error("Failed setting up sensitive detector %s", e)
-        raise
-
-  # =================================================================================
     # Now build the physics list:
     _phys = self.physics.setupPhysics(kernel, name=self.physicsList)
     _phys.verbosity = self.output.physics
@@ -535,27 +608,36 @@ class DD4hepSimulation(object):
 
     dd4hep.setPrintLevel(self.printLevel)
 
-    kernel.configure()
-    kernel.initialize()
+    from ROOT import PyDDG4
+    master = geant4.master().get()
 
-    # GPS
-    if self._g4gun is not None:
-      self._g4gun.generator()
-    if self._g4gps is not None:
-      self._g4gps.generator()
+    PyDDG4.configure(master)
+    PyDDG4.initialize(master)
+
+    # Initialize G4Gun and GPS generators for macro execution
+    # In single-threaded mode, we can access .generator() on the action objects
+    # In multi-threaded mode with shared=False, the actual generators are created
+    # per-worker and initialized automatically by Geant4, so we skip this step
+    if self.numberOfThreads == 1:
+      if self._g4gun is not []:
+        for g4gun in self._g4gun:
+          g4gun.generator()  # Initialize G4ParticleGun and register UI commands
+          logger.debug("Initialized G4Gun generator")
+      if self._g4gps is not []:
+        for g4gps in self._g4gps:
+          g4gps.generator()  # Initialize GPS and register UI commands
+          logger.debug("Initialized GPS generator")
 
     startUpTime, _sysTime, _cuTime, _csTime, _elapsedTime = os.times()
 
     exitCode = 0
-    if not kernel.run():
+    if not PyDDG4.run(master):
       logger.error("Simulation failed!")
       exitCode += 1
-    if not kernel.terminate():
-      exitCode += 1
-      logger.error("Termination failed!")
 
     totalTimeUser, totalTimeSys, _cuTime, _csTime, _elapsedTime = os.times()
     processedEvents = self.numberOfEvents
+    generationInit = getattr(self, '_generationInit', None)
     if generationInit:
       processedEvents = int(generationInit.numberOfEvents)
       if self.numberOfEvents < 0:
@@ -568,8 +650,13 @@ class DD4hepSimulation(object):
       if processedEvents != 0:
         eventTime = totalTimeUser - startUpTime
         perEventTime = eventTime / processedEvents
-        logger.info("StartUp Time: %3.2f s, Processing and Init: %3.2f s (~%3.2f s/Event) "
-                    % (startUpTime, eventTime, perEventTime))
+        logger.info("StartUp Time: %3.2f s, Processing and Init: %3.2f s (~%3.2f s/Event @ %d threads) "
+                    % (startUpTime, eventTime, perEventTime, self.numberOfThreads))
+
+    if not PyDDG4.terminate(master):
+      exitCode += 1
+      logger.error("Termination failed!")
+
     return exitCode
 
   def __setMagneticFieldOptions(self, geant4):
@@ -789,7 +876,9 @@ class DD4hepSimulation(object):
     ga = geant4.kernel().generatorAction()
 
     # Register Generation initialization action
-    gen = GeneratorAction(geant4.kernel(), "Geant4GeneratorActionInit/GenerationInit")
+    shared = (self.numberOfThreads > 1)
+    logger.debug(f"Determined shared={shared} based on self.numberOfThreads={self.numberOfThreads}")
+    gen = GeneratorAction(geant4.kernel(), "Geant4GeneratorActionInit/GenerationInit", shared=shared)
     generationInit = gen
     if output_level is not None:
       gen.OutputLevel = output_level

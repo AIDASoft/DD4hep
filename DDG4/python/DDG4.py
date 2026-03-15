@@ -167,8 +167,6 @@ def _getKernelProperty(self, name):
     return _evalProperty(ret.data)
   elif hasattr(self.get(), name):
     return _evalProperty(getattr(self.get(), name))
-  elif hasattr(self, name):
-    return _evalProperty(getattr(self, name))
   msg = 'Geant4Kernel::GetProperty [Unhandled]: Cannot access Kernel.' + name
   raise KeyError(msg)
 
@@ -839,7 +837,10 @@ class Geant4:
 
     \author  M.Frank
     """
-    evt_root = EventAction(self.kernel(), 'Geant4Output2ROOT/' + name, True)
+    # Only use shared=True in MT mode to avoid double-save in ST mode
+    shared = self.master().NumberOfThreads > 1
+    
+    evt_root = EventAction(self.kernel(), 'Geant4Output2ROOT/' + name, shared)
     evt_root.HandleMCTruth = mc_truth
     evt_root.Control = True
     if not output.endswith('.root'):
@@ -855,7 +856,9 @@ class Geant4:
 
     \author  M.Frank
     """
-    evt_lcio = EventAction(self.kernel(), 'Geant4Output2LCIO/' + name, True)
+    # Only use shared=True in MT mode to avoid double-save in ST mode
+    shared = self.master().NumberOfThreads > 1
+    evt_lcio = EventAction(self.kernel(), 'Geant4Output2LCIO/' + name, shared)
     evt_lcio.Control = True
     evt_lcio.Output = output
     evt_lcio.enableUI()
@@ -864,7 +867,9 @@ class Geant4:
 
   def setupEDM4hepOutput(self, name, output):
     """Configure EDM4hep root output for the simulated events."""
-    evt_edm4hep = EventAction(self.kernel(), 'Geant4Output2EDM4hep/' + name, True)
+    # Only use shared=True in MT mode to avoid double-save in ST mode
+    shared = self.master().NumberOfThreads > 1
+    evt_edm4hep = EventAction(self.kernel(), 'Geant4Output2EDM4hep/' + name, shared)
     evt_edm4hep.Control = True
     evt_edm4hep.Output = output
     evt_edm4hep.enableUI()
@@ -923,7 +928,7 @@ class Geant4:
     \author  M.Frank
     """
     from ROOT import PyDDG4
-    PyDDG4.run(self.master().get())
+    PyDDG4.runAll(self.master().get())
     return self
 
 
