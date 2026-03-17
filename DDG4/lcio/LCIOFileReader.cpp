@@ -87,7 +87,7 @@ namespace dd4hep  {
       virtual ~LCIOFileReader();
 
       /// Read an event and fill a vector of MCParticles.
-      virtual EventReaderStatus readParticleCollection(int event_number, EVENT::LCCollection** particles);
+      virtual EventReaderStatus readParticleCollection(int event_number, CollectionOwner& particles);
       virtual EventReaderStatus moveToEvent(int event_number);
       virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
       virtual EventReaderStatus setParameters(std::map< std::string, std::string >& parameters); 
@@ -139,14 +139,14 @@ dd4hep::sim::LCIOFileReader::moveToEvent(int event_number) {
 
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
-dd4hep::sim::LCIOFileReader::readParticleCollection(int /*event_number*/, EVENT::LCCollection** particles)  {
+dd4hep::sim::LCIOFileReader::readParticleCollection(int /*event_number*/, LCIOEventReader::CollectionOwner& particles)  {
 
-  ::lcio::LCEvent* evt = m_reader->readNextEvent(); // simply read the events sequentially 
+  ::lcio::LCEvent* evt = m_reader->readNextEvent(); // simply read the events sequentially
   ++m_currEvent ;
 
   if ( evt ) {
-    *particles = evt->getCollection(m_collectionName);
-    if ( *particles ) {
+    particles = LCIOEventReader::CollectionOwner(evt->getCollection(m_collectionName), [](EVENT::LCCollection*){});
+    if ( particles ) {
       printout(INFO,"LCIOFileReader","read collection %s from event %d in run %d ", 
                m_collectionName.c_str(), evt->getEventNumber(), evt->getRunNumber());
       

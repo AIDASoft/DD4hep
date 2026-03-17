@@ -63,13 +63,14 @@ LCIOEventReader::readParticles(int event_number,
                                Vertices& vertices,
                                vector<Particle*>& particles)
 {
-  EVENT::LCCollection*        primaries = 0;
+  CollectionOwner primaries(nullptr, [](EVENT::LCCollection*){});
   map<EVENT::MCParticle*,int> mcparts;
   vector<EVENT::MCParticle*>  mcpcoll;
-  EventReaderStatus ret = readParticleCollection(event_number,&primaries);
+  EventReaderStatus ret = readParticleCollection(event_number, primaries);
 
-  if ( ret != EVENT_READER_OK ) return ret;
-
+  if (ret != EVENT_READER_OK) {
+    return ret;
+  }
   int NHEP = primaries->getNumberOfElements();
   // check if there is at least one particle
   if ( NHEP == 0 ) return EVENT_READER_NO_PRIMARIES;
@@ -156,7 +157,6 @@ LCIOEventReader::readParticles(int event_number,
     if ( mcp->isOverlay() )                   status.set(G4PARTICLE_SIM_OVERLAY);
     particles.emplace_back(p);
   }
-  releaseParticleCollection(primaries);
   return EVENT_READER_OK;
 }
 
