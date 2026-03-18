@@ -18,6 +18,7 @@
 #include <DDG4/Geant4Primary.h>
 #include <DDG4/Geant4ParticleGenerator.h>
 #include <DDG4/Geant4Random.h>
+#include <CLHEP/Units/PhysicalConstants.h>
 #include <CLHEP/Units/SystemOfUnits.h>
 
 // Geant4 include files
@@ -172,8 +173,7 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
         e1 = ROOT::Math::XYZVector(0, 1, 0);
       e2  = unit_direction.Cross(e1).unit();
       e1  = e2.Cross(unit_direction).unit();    // normalize defensively
-      Geant4Event&  pol_evt = context()->event();
-      Geant4Random& rnd     = pol_evt.random();
+      Geant4Random& rnd = evt.random();
       double angle = CLHEP::twopi * rnd.rndm();
       ROOT::Math::XYZVector pol = (std::cos(angle)*e1 + std::sin(angle)*e2).unit();
       p->spin[0] = pol.X();
