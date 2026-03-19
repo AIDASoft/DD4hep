@@ -1063,7 +1063,7 @@ void LCDDConverter::handleProperties(Detector::Properties& prp) const {
         PluginDebug dbg;
         result = PluginService::Create<long>(tag, &m_detDesc, ptr, &vals);
         if (0 == result) {
-          except("LCDDConverter", "Failed to locate plugin to interprete files of type"
+          except("LCDDConverter", "Failed to locate plugin to interpret files of type"
                  " \"" + tag + "\" - no factory:" + type + ". " +
                  dbg.missingFactory(tag));
         }
