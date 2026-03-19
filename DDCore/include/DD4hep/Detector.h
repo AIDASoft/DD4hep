@@ -34,7 +34,6 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <cstdio>
 #include <memory>
 
 // Forward declarations
@@ -216,14 +215,14 @@ namespace dd4hep {
                                               unsigned int excludeFlag=0 ) const = 0 ;
 #endif
 
-    /** Miscaneleous accessors to the detexctor description  */
+    /** Miscaneleous accessors to the detector description  */
 
     /// Register new parent detector using the detector name.
     /** Volumes must be registered/declared PRIOR to be picked up!
      *  Once registered, Detector::pickMotherVolume(detector) will automatically return the
      *  proper parent volume!
      * 
-     *  The method throws an exception if another volume was already declared for this subdetector
+     *  The method throws an exception if another volume was already declared for this subdetector.
      *  The method throws an exception if the volume to be registered is invalid.
      */
     virtual void   declareParent(const std::string& detector_name, const DetElement& det) = 0;

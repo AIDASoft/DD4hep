@@ -16,6 +16,8 @@
 #include <DDG4/Geant4Kernel.h>
 #include <DDG4/Geant4Interrupts.h>
 
+#include <csignal>
+
 /// Default SIGINT handler: trigger end-of-event-loop in Geant4Kernel object
 bool dd4hep::sim::Geant4Interrupts::default_sigint_handler(void* user_context, int)   {
   Geant4Kernel* krnl = (Geant4Kernel*)user_context;

@@ -105,7 +105,7 @@ class Test(dddigi.Digitize):
       self.used_inputs = []
     next_source = self.inputs[len(self.used_inputs)]
     self.used_inputs.append(next_source)
-    self.info('Prepariing next input file: ' + str(next_source))
+    self.info('Preparing next input file: ' + str(next_source))
     return next_source
 
   def run_checked(self, num_events=5, num_threads=5, parallel=3):

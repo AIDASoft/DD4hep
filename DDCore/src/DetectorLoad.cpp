@@ -136,7 +136,7 @@ void DetectorLoad::processXMLElement(const std::string& xmlfile, const xml::Hand
       PluginDebug dbg;
       result = PluginService::Create<long>(type, m_detDesc, &handle);
       if ( 0 == result )  {
-        throw std::runtime_error("dd4hep: Failed to locate plugin to interprete files of type"
+        throw std::runtime_error("dd4hep: Failed to locate plugin to interpret files of type"
                                  " \"" + tag + "\" - no factory:" + type + ". " + dbg.missingFactory(type));
       }
     }
