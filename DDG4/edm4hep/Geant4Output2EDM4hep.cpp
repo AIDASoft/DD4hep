@@ -684,6 +684,15 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
         sCaloHitCont.setTime( c.time/CLHEP::ns );
         sCaloHitCont.setParticle( mcp );
 
+#if EDM4HEP_BUILD_VERSION > EDM4HEP_VERSION(1, 0, 0)
+        // In case this contribution has been created via a fast simulation
+        // method, the step length has been set to -1 at its creation. All
+        // contributions that have gone through "normal" simulation will have a
+        // step length >= 0 by definition.
+        if (c.length < 0) {
+          mcp.setHandledByFastSim(true);
+        }
+#endif
         if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )     {
           edm4hep::Vector3f p(c.x/CLHEP::mm, c.y/CLHEP::mm, c.z/CLHEP::mm);
           sCaloHitCont.setPDG( c.pdgID );
