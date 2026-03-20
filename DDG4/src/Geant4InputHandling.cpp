@@ -375,6 +375,9 @@ static G4PrimaryParticle* createG4Primary(const Geant4ParticleHandle p)  {
   // The particle is fully defined with the 4-vector set above, setting the mass isn't necessary, not
   // using the 4-vector, means the PDG mass is used, and the momentum is scaled if the mass is set here
   // g4->SetMass(p->mass);
+  if ( p->spin[0] != 0.0 || p->spin[1] != 0.0 || p->spin[2] != 0.0 )  {
+    g4->SetPolarization(p->spin[0], p->spin[1], p->spin[2]);
+  }
   return g4;
 }
 
