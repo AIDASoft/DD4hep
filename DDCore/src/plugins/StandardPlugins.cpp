@@ -251,10 +251,11 @@ DECLARE_APPLY(DD4hep_Rint,run_interpreter)
  */
 static long root_ui(Detector& description, int /* argc */, char** /* argv */) {
   char cmd[256];
+  static dd4hep::detail::DD4hepUI s_ui(description);
   std::snprintf(cmd, sizeof(cmd),
-                "dd4hep::detail::DD4hepUI* gDD4hepUI = new "
-                "dd4hep::detail::DD4hepUI(*(dd4hep::Detector*)%p);",
-                (void*)&description);
+                "dd4hep::detail::DD4hepUI* gDD4hepUI = "
+                "(dd4hep::detail::DD4hepUI*)%p;",
+                (void*)&s_ui);
   gInterpreter->ProcessLine(cmd);
   printout(ALWAYS,"DD4hepUI",
            "Use the ROOT interpreter variable gDD4hepUI "
