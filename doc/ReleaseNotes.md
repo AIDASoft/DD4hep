@@ -1,3 +1,186 @@
+# v01-36
+
+* 2026-03-20 Juan Miguel Carceller ([PR#1599](https://github.com/aidasoft/dd4hep/pull/1599))
+  - Fix a few typos and remove unused includes that are not being used in the current file
+
+* 2026-03-20 Wouter Deconinck ([PR#1598](https://github.com/aidasoft/dd4hep/pull/1598))
+  - fix: Geant4ParticleGenerator: randomize non-zero polarization in optical photon gun
+
+* 2026-03-18 Juan Miguel Carceller ([PR#1586](https://github.com/aidasoft/dd4hep/pull/1586))
+  - `LCIOEventReader` and friends: make sure to release the collection returned by `readParticleCollection` when needed (`LCIOStdhepReader`) since we are the owners of it. Change the interface of the readers to use a `std::unique_ptr` with a deleter that it's either a no-op when we are not the owners or a deletion when we are the owners of the collection.
+  - `LCDDConverter.cpp`: Use a `DocumentHolder` to make sure the document created will be released
+  - Several tests: Use `std::unique_ptr` for objects that need to be deleted, call `Detector::destroyInstance()`, also remove a few unused includes flagged by clangd.
+
+* 2026-03-17 Andre Sailer ([PR#1596](https://github.com/aidasoft/dd4hep/pull/1596))
+  - EDM4hepInput: fix reading of input file parameters for MCParticleCollectionName, add edm4hep.mcParticleCollectionName Parameter to ddsim
+  - EDM4hepInput: add edm4hep.eventHeaderCollectionName Parameter to ddsim
+
+* 2026-03-13 Andre Sailer ([PR#1595](https://github.com/aidasoft/dd4hep/pull/1595))
+  - Geant4UserParticleHandler: keep particles in the MCRecord if they start in the calo, leave a hit in the tracker and then end up in the calo again.  Belongs to #471
+
+* 2026-03-13 Andre Sailer ([PR#1593](https://github.com/aidasoft/dd4hep/pull/1593))
+  - Tests: ignore pseudotrap on aarch64, relax condition for voxelisationtest
+
+* 2026-03-13 Markus Frank ([PR#1592](https://github.com/aidasoft/dd4hep/pull/1592))
+  - Geant4ParticleHandler: Keep particles back-scattered from calorimeters to tracker devices
+    If a particle gets back-scattered from a calorimeter (aka starts in a calorimeter or has calorimeter hits) and ends in a tracking device, a new MCParticle is created for the handling of deposits in the entered tracker.
+  For details also see issue: https://github.com/AIDASoft/DD4hep/issues/471
+
+* 2026-03-13 Wouter Deconinck ([PR#1580](https://github.com/aidasoft/dd4hep/pull/1580))
+  - fix: allow improved G4ParameterisedNavigation for pure 1D translation case
+
+* 2026-03-09 Markus Frank ([PR#1591](https://github.com/aidasoft/dd4hep/pull/1591))
+  - Implement overlayed constant field type limited to a given shape
+  See issue https://github.com/AIDASoft/DD4hep/issues/1585 for details.
+  - Backwards compatibility is preserved. If no shape is supplied for the validity of the constant field,
+    the field by definition is valid for the entire world volume. 
+  - Implement overlayed constant field types for the compact xml notation.
+  Usage:
+  ```
+    <fields>
+      <!-- Constant magnetic field without boundaries valid for the entire world volume -->
+      <field name="ConstantMagneticField" type="ConstantField" field="magnetic">
+        <strength x="0*tesla" y="0*tesla" z="0.5*tesla"/>
+      </field>
+      <!-- Constant electric field without boundaries valid for the entire world volume -->
+      <field name="ConstantElectricField" type="ConstantField" field="electric">
+        <strength x="1000*V/m" y="1000*V/m" z="0*V/m"/>
+      </field>
+      <!-- Constant magnetic field valid for the solid defined by "shape" at position "position" -->
+      <field name="LocalMagneticField" type="ConstantField" field="magnetic">
+        <strength x="0*tesla" y="0*tesla" z="1.5*tesla"/>
+        <shape type="Box" dx="10*cm" dy="10*cm" dz="25*cm">
+          <position x="0*cm" y="0*cm" z="-50*cm"/>
+        </shape>
+      </field>
+      <!-- Constant electric field valid for the solid defined by "shape" at position "position" -->
+      <field name="LocalElectricField" type="ConstantField" field="electric">
+        <strength x="0*V/m" y="0*V/m" z="5000*V/m"/>
+        <shape type="Box" dx="10*cm" dy="10*cm" dz="25*cm">
+          <position x="0*cm" y="0*cm" z="-50*cm"/>
+        </shape>
+      </field>
+    </fields>
+  ```
+  Combined field strength at various points in `z` according to the above definition:
+  ```
+  PrintField             +++ =========================================================
+  PrintField             +++ Electro-magnetic field strength at selected points from ../../DD4hep/examples/ClientTests/compact/ConstantField_points.xml
+  PrintField             +++ =========================================================
+  PrintField             +++ Position:    0.00    0.00 -100.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00  -90.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00  -80.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00  -70.00 [cm] electric field: 1.00e+03 1.00e+03 5.00e+03 [V/m] magnetic field: 0.00e+00 0.00e+00 2.00e+00 [tesla]
+  PrintField             +++ Position:    0.00    0.00  -60.00 [cm] electric field: 1.00e+03 1.00e+03 5.00e+03 [V/m] magnetic field: 0.00e+00 0.00e+00 2.00e+00 [tesla]
+  PrintField             +++ Position:    0.00    0.00  -50.00 [cm] electric field: 1.00e+03 1.00e+03 5.00e+03 [V/m] magnetic field: 0.00e+00 0.00e+00 2.00e+00 [tesla]
+  PrintField             +++ Position:    0.00    0.00  -40.00 [cm] electric field: 1.00e+03 1.00e+03 5.00e+03 [V/m] magnetic field: 0.00e+00 0.00e+00 2.00e+00 [tesla]
+  PrintField             +++ Position:    0.00    0.00  -30.00 [cm] electric field: 1.00e+03 1.00e+03 5.00e+03 [V/m] magnetic field: 0.00e+00 0.00e+00 2.00e+00 [tesla]
+  PrintField             +++ Position:    0.00    0.00  -20.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00  -10.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00    0.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00   10.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00   20.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00   30.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00   40.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00   50.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00   60.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00   70.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00   80.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00   90.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  PrintField             +++ Position:    0.00    0.00  100.00 [cm] electric field: 1.00e+03 1.00e+03 0.00e+00 [V/m] magnetic field: 0.00e+00 0.00e+00 5.00e-01 [tesla]
+  ```
+  - The above printout is generated by the accompanying test `t_ClientTests_constant_overlayed_field`.
+  - Creation of utility to print any electric and magnetic field at various space points.
+    See factory `DD4hep_PrintField` in `examples/ClientTests/src/PrintField.cpp` for details.
+
+* 2026-03-09 Wouter Deconinck ([PR#1584](https://github.com/aidasoft/dd4hep/pull/1584))
+  - feat: use axis-aligned bounding box to pre-filter MultipoleField calls
+
+* 2026-03-06 Juan Miguel Carceller ([PR#1589](https://github.com/aidasoft/dd4hep/pull/1589))
+  - Clean up checks since the minimum C++ standard is 17 (https://github.com/AIDASoft/DD4hep/pull/1557), use `std::any` when possible, use `[[fallthrough]]` where `ATTR_FALLTHROUGH` was defined
+
+* 2026-03-05 Thomas Madlener ([PR#1583](https://github.com/aidasoft/dd4hep/pull/1583))
+  - Rename `defaultKeepParticle` to `defaultDropParticle` and `keepParticle` to `dropParticle` to match their names to what they are actually doing in their implementation.
+
+* 2026-02-26 sss ([PR#1579](https://github.com/aidasoft/dd4hep/pull/1579))
+  - Fix unused variable warnings seen with gcc16.
+
+* 2026-02-26 sss ([PR#1578](https://github.com/aidasoft/dd4hep/pull/1578))
+  - dd4hep::xml::setDetectorTypeFlag: Do not use exceptions to test for the presence of an attribute
+
+* 2026-02-26 Wouter Deconinck ([PR#1577](https://github.com/aidasoft/dd4hep/pull/1577))
+  - fix: consistently use dimensionless G4FieldManager epsilon min/max (`eps_min`, `eps_max`) in configuration files and examples
+
+* 2026-02-25 Markus Frank ([PR#1576](https://github.com/aidasoft/dd4hep/pull/1576))
+  - Remove some typos, improve printout in DDAlign.
+
+* 2026-02-23 Andre Sailer ([PR#1574](https://github.com/aidasoft/dd4hep/pull/1574))
+  - Geant4ParticleHandler: fix logic to keep secondary particles. All non-primary particles were removed from the event record unless keepAllParticles was set.
+
+* 2026-02-23 Andre Sailer ([PR#1572](https://github.com/aidasoft/dd4hep/pull/1572))
+  - Replace location of compact.xsd since the old location is no longer accessible: https://dd4hep.web.cern.ch/org/lcsim/schemas/compact/1.0/compact.xsd
+
+* 2026-02-21 ruse-traveler ([PR#1573](https://github.com/aidasoft/dd4hep/pull/1573))
+  -  Add `BACKWARD`, `FAR` enums to `dd4hep::DetType`  (see #1544)
+
+* 2026-02-16 Juan Miguel Carceller ([PR#1571](https://github.com/aidasoft/dd4hep/pull/1571))
+  - Use Clang 19 instead of 16 in CI, since these builds are going to be removed
+
+* 2026-02-16 Juan Miguel Carceller ([PR#1566](https://github.com/aidasoft/dd4hep/pull/1566))
+  -  Use the generic `podio::Reader` and `podio::Writer` when podio is new enough to read and write EDM4hep files
+  -  Add a new parameter for ddsim: `--OutputConfig.useRNTuple` to overwrite the default behaviour of the Writer
+
+* 2026-02-10 Markus Frank ([PR#1567](https://github.com/aidasoft/dd4hep/pull/1567))
+  - Global reformatting: Replace TAB by spaces
+  - Script to remove tabs in source files(.cpp) and headers (.h)  [remove_tabs.sh](https://github.com/MarkusFrankATcernch/DD4hep/blob/master/etc/remove_tabs.sh)
+  - Add utility script: [run_test_in_loop.sh](https://github.com/MarkusFrankATcernch/DD4hep/blob/master/etc/run_test_in_loop.sh). Run tests in a loop for stability debugging tests (Expert only)
+
+* 2026-02-03 Markus Frank ([PR#1564](https://github.com/aidasoft/dd4hep/pull/1564))
+  - Implement optional printout of hit VolumeIDs from Geant4Sensitive.
+  - Add example to use the feature: t_CLICSiD_sim_DDG4_print_volids_LONGTEST
+  
+  Helper for debugging Cell IDs of hits (See issue https://github.com/AIDASoft/DD4hep/issues/1535 for details where such a feature could help). 
+  To enable printouts use:
+  ```
+  DDG4.Geant4.setupDetector(self, name, action, debug_volid=True)
+  ```
+  or
+  ```
+  DDG4.Geant4.setupTracker(..., debug_volid=True)
+  DDG4.Geant4.setupCalorimeter(..., debug_volid=True)
+  ```
+  Produced output fragment:
+  ```
+  ParticlePrint              INFO  +++     0 +----------------------> ID:      0     geantino     -1/0          YES NO      0 YES +1.000e+03  YES  YES     NO       0  [Primary] .SD.
+  ParticlePrint              INFO  +++ MC Particles #Tracks:      1 ParticleType Parent/Geant4 Primary Secondary Energy in [MeV] Calo Tracker Process/Par Details
+  ParticlePrint              INFO  +++ MC Particle Track ID:      0     geantino     -1/0          YES NO      0 YES +1.000e+03  YES  YES     NO       0  [Primary] .SD.
+  ParticlePrint              INFO  +++ MC Particles #Tracks:      1 ParticleType Parent/Geant4 Primary Secondary Energy          Calo Tracker Process/Par
+  ParticlePrint              INFO  +++ MC Particle Summary:                             1          0       1        1              1     0      0
+  ParticleHandler            INFO  +++ Event 2 Begin event action. Access event related information.
+  SiVertexBarrelHandler            Volume ID: 0000000020090801 -> system:0001 barrel:0000 layer:0001 module:0012 sensor:0001 side:0000 strip:0000
+  SiVertexBarrelHandler            Volume ID: 0000000020091001 -> system:0001 barrel:0000 layer:0002 module:0012 sensor:0001 side:0000 strip:0000
+  SiVertexBarrelHandler            Volume ID: 0000000020009801 -> system:0001 barrel:0000 layer:0003 module:0001 sensor:0001 side:0000 strip:0000
+  SiVertexBarrelHandler            Volume ID: 00000000200F2001 -> system:0001 barrel:0000 layer:0004 module:001e sensor:0001 side:0000 strip:0000
+  SiVertexBarrelHandler            Volume ID: 000000002000A801 -> system:0001 barrel:0000 layer:0005 module:0001 sensor:0001 side:0000 strip:0000
+  SiTrackerBarrelHandler           Volume ID: 0000000020038803 -> system:0003 barrel:0000 layer:0001 module:0007 sensor:0001 side:0000 strip:0000
+  SiTrackerBarrelHandler           Volume ID: 00000000213F1003 -> system:0003 barrel:0000 layer:0002 module:027e sensor:0001 side:0000 strip:0000
+  SiTrackerBarrelHandler           Volume ID: 0000000020049003 -> system:0003 barrel:0000 layer:0002 module:0009 sensor:0001 side:0000 strip:0000
+  SiTrackerBarrelHandler           Volume ID: 0000000022959803 -> system:0003 barrel:0000 layer:0003 module:052b sensor:0001 side:0000 strip:0000
+  SiTrackerBarrelHandler           Volume ID: 0000000020061803 -> system:0003 barrel:0000 layer:0003 module:000c sensor:0001 side:0000 strip:0000
+  SiTrackerBarrelHandler           Volume ID: 0000000024812003 -> system:0003 barrel:0000 layer:0004 module:0902 sensor:0001 side:0000 strip:0000
+  SiTrackerBarrelHandler           Volume ID: 000000002007A003 -> system:0003 barrel:0000 layer:0004 module:000f sensor:0001 side:0000 strip:0000
+  SiTrackerBarrelHandler           Volume ID: 0000000020092803 -> system:0003 barrel:0000 layer:0005 module:0012 sensor:0001 side:0000 strip:0000
+  EcalBarrelHandler                Volume ID: 000000000020D806 -> system:0006 barrel:0000 module:000b layer:0001 slice:0001 x:0000 y:0000
+  EcalBarrelHandler                Volume ID: 0000000000615806 -> system:0006 barrel:0000 module:000b layer:0002 slice:0003 x:0000 y:0000
+  EcalBarrelHandler                Volume ID: 000000000061D806 -> system:0006 barrel:0000 module:000b layer:0003 slice:0003 x:0000 y:0000
+  EcalBarrelHandler                Volume ID: 0000000000625806 -> system:0006 barrel:0000 module:000b layer:0004 slice:0003 x:0000 y:0000
+  EcalBarrelHandler                Volume ID: 000000000062D806 -> system:0006 barrel:0000 module:000b layer:0005 slice:0003 x:0000 y:0000
+  EcalBarrelHandler                Volume ID: 0000000000635806 -> system:0006 barrel:0000 module:000b layer:0006 slice:0003 x:0000 y:0000
+  EcalBarrelHandler                Volume ID: 000000000063D806 -> system:0006 barrel:0000 module:000b layer:0007 slice:0003 x:0000 y:0000
+  EcalBarrelHandler                Volume ID: 0000000000645806 -> system:0006 barrel:0000 module:000b layer:0008 slice:0003 x:0000 y:0000
+  EcalBarrelHandler                Volume ID: 000000000064D806 -> system:0006 barrel:0000 module:000b layer:0009 slice:0003 x:0000 y:0000
+  ```
+
 # v01-35
 
 * 2026-01-27 Andre Sailer ([PR#1562](https://github.com/aidasoft/dd4hep/pull/1562))
