@@ -31,9 +31,6 @@ namespace dd4hep {
   /// Namespace for implementation details of the AIDA detector description toolkit
   namespace detail {
 
-    // Forward declarations
-    class SensitiveDetectorObject;
-
     /// Geometry converter from dd4hep to Geant 4 in Detector format.
     /**
      *  \author  M.Frank

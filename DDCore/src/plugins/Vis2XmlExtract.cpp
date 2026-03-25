@@ -13,23 +13,14 @@
 
 // Framework includes
 #include "Vis2XmlExtract.h"
-//#include <DD4hep/Plugins.h>
 #include <DD4hep/Printout.h>
 #include <DD4hep/Volumes.h>
-//#include <DD4hep/DD4hepUnits.h>
 #include <XML/DocumentHandler.h>
-
-// ROOT includes
-//#include <TROOT.h>
-//#include <TColor.h>
 
 /// C/C++ include files
 #include <fstream>
 #include <iostream>
 #include <sstream>
-
-using namespace dd4hep;
-using namespace dd4hep::detail;
 
 namespace {
   std::string genName(const std::string& n, const void* ptr)  {
@@ -47,7 +38,7 @@ dd4hep::detail::Vis2XmlExtract::Vis2XmlExtract( Detector& description )
   : m_detDesc(description), m_dataPtr(0) {
 }
 
-Vis2XmlExtract::~Vis2XmlExtract() {
+dd4hep::detail::Vis2XmlExtract::~Vis2XmlExtract() {
   if (m_dataPtr)
     delete m_dataPtr;
   m_dataPtr = 0;
@@ -135,7 +126,7 @@ xml_h dd4hep::detail::Vis2XmlExtract::handleVis( const std::string& /* name */, 
 }
 
 /// Create geometry conversion
-xml_doc_t Vis2XmlExtract::createVis( DetElement top ) {
+xml_doc_t dd4hep::detail::Vis2XmlExtract::createVis( DetElement top ) {
   if (!top.isValid()) {
     throw std::runtime_error("Attempt to call createDetector with an invalid geometry!");
   }
@@ -159,26 +150,26 @@ xml_doc_t Vis2XmlExtract::createVis( DetElement top ) {
 }
 
 /// Helper constructor
-Vis2XmlExtract::GeometryInfo::GeometryInfo()
+dd4hep::detail::Vis2XmlExtract::GeometryInfo::GeometryInfo()
   : doc(0), doc_root(0), doc_display(0), doc_structure(0)
 {
 }
 
 static long dump_output( xml_doc_t doc, int argc, char** argv ) {
-  xml::DocumentHandler docH;
+  dd4hep::xml::DocumentHandler docH;
   return docH.output(doc, argc > 0 ? argv[0] : "");
 }
 
-static long create_vis( Detector& description, int argc, char** argv ) {
-  Vis2XmlExtract wr(description);
-  xml::DocumentHolder doc(wr.createVis(description.world()).ptr());
+static long create_vis( dd4hep::Detector& description, int argc, char** argv ) {
+  dd4hep::detail::Vis2XmlExtract wr(description);
+  dd4hep::xml::DocumentHolder doc(wr.createVis(description.world()).ptr());
   return dump_output(doc, argc, argv);
 }
 
-static long create_visASCII( Detector& description, int /* argc */, char** argv ) {
-  Vis2XmlExtract wr(description);
+static long create_visASCII( dd4hep::Detector& description, int /* argc */, char** argv ) {
+  dd4hep::detail::Vis2XmlExtract wr(description);
   /* xml_doc_t doc = */ wr.createVis(description.world());
-  Vis2XmlExtract::GeometryInfo& geo = *wr.m_dataPtr;
+  auto& geo = *wr.m_dataPtr;
   std::map<std::string, xml_comp_t> vis_map;
   for (xml_coll_t c(geo.doc_display, _U(vis)); c; ++c)
     vis_map.insert(make_pair(xml_comp_t(c).nameStr(), xml_comp_t(c)));
