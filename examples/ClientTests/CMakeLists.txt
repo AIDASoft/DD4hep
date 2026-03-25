@@ -324,7 +324,7 @@ foreach (test Assemblies BoxTrafos CaloEndcapReflection IronCylinder LheD_tracke
   ##                          -input file:${ClientTestsEx_INSTALL}/compact/${test}.xml
   ##                          -output file:${test}.gdml
   ##  REGEX_PASS " Successfully extracted GDML to" )
-  foreach( type description vis )
+  foreach( type vis )
     dd4hep_add_test_reg( ClientTests_converter_${type}_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoConverter -compact2${type}

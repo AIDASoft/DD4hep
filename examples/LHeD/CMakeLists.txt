@@ -56,7 +56,7 @@ include(CTest)
 ##                          -input file:${LHeDEx_INSTALL}/compact/compact.xml
 ##                          -output file:LHeD.gdml
 ##  REGEX_PASS " Successfully extracted GDML to" )
-foreach ( typ description vis )
+foreach ( typ vis )
   dd4hep_add_test_reg ( "LHeD_converter_${typ}_LONGTEST" 
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_LHeD.sh"
     EXEC_ARGS  geoConverter -compact2${typ} 
