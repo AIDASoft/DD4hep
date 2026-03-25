@@ -40,7 +40,7 @@ namespace dd4hep {
     class Vis2XmlExtract: public GeoHandler {
     public:
 
-      /// Data structure of the geometry converter from dd4hep to Geant 4 in Detector format.
+      /// Data structure of the geometry converter from dd4hep to extract visualization information
       /**
        *  \author  M.Frank
        *  \version 1.0
@@ -68,7 +68,9 @@ namespace dd4hep {
       /// Create geometry conversion in Vis format
       xml_doc_t createVis(DetElement top);
 
+      /// Analyze Volume in the geometry hierarchy
       virtual xml_h handleVolume(const std::string& name, Volume volume) const;
+      /// Analyze Visualization attributes of Volume in the geometry hierarchy
       virtual xml_h handleVolumeVis(const std::string& name, const TGeoVolume* volume) const;
       /// Convert the geometry visualisation attributes to the corresponding Xml object(s).
       virtual xml_h handleVis(const std::string& name, VisAttr vis) const;
