@@ -50,7 +50,7 @@ class Gun(ConfigHelper):
                           "cannot be driven by a fixed per-particle Halton point."}
     self.halton = False
     self._haltonOffset_EXTRA = {'help': "Starting index in the Halton sequence.\n\n"
-                                "Set to k*N for parallel-job partitioning (job k, N events each)."}
+                                "Set to k*N*m for parallel jobs (job k, N events, multiplicity m)."}
     self.haltonOffset = 0
 
     self._distribution_EXTRA = {'choices': ['uniform', 'cos(theta)',
