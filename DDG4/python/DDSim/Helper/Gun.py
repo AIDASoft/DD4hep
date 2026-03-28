@@ -39,6 +39,20 @@ class Gun(ConfigHelper):
                           "If not None, it will overwrite the setting of momentumMin and momentumMax"}
     self.energy = None
 
+    self._halton_EXTRA = {'help': "Use scrambled Halton sequence (RQMC) for particle gun sampling.\n\n"
+                          "Replaces the standard PRNG with a low-discrepancy sequence that gives\n"
+                          "superior phase-space coverage. The scrambling shifts are seeded from\n"
+                          "the simulation's Geant4Random engine (controlled by --random.seed).\n\n"
+                          "Note: the standard 1/sqrt(N) error estimate assumes i.i.d. samples and\n"
+                          "does NOT apply here. To estimate statistical errors, run M independent\n"
+                          "replications with different random seeds and use the spread across runs.\n\n"
+                          "Incompatible with distribution='ffbar': acceptance-rejection sampling\n"
+                          "cannot be driven by a fixed per-particle Halton point."}
+    self.halton = False
+    self._haltonOffset_EXTRA = {'help': "Starting index in the Halton sequence.\n\n"
+                                "Set to k*N for parallel-job partitioning (job k, N events each)."}
+    self.haltonOffset = 0
+
     self._distribution_EXTRA = {'choices': ['uniform', 'cos(theta)',
                                             'eta', 'pseudorapidity',
                                             'ffbar']}  # (1+cos^2 theta)
@@ -153,6 +167,9 @@ class Gun(ConfigHelper):
       # this avoids issues if momentumMin is None because of previous default
       ddg4Gun.MomentumMin = self.momentumMin if self.momentumMin else 0.0
       ddg4Gun.MomentumMax = self.momentumMax
+      if self.halton:
+        ddg4Gun.Halton = True
+        ddg4Gun.HaltonOffset = int(self.haltonOffset)
     except Exception as e:  # pylint: disable=W0703
       logger.error("parsing gun options:\n%s\nException: %s " % (self, e))
       exit(1)
