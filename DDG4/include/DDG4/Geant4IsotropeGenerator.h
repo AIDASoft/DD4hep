@@ -40,7 +40,7 @@ namespace dd4hep {
      *  When Halton mode is enabled (property "Halton" = true), the three sampling
      *  dimensions use low-discrepancy Halton sequences in bases 2 (phi), 3 (theta),
      *  and 5 (momentum), each additively scrambled by a per-dimension shift derived
-     *  from the property "HaltonSeed".  This provides superior phase-space coverage
+     *  from the Geant4Random seed.  This provides superior phase-space coverage
      *  relative to a PRNG while remaining reproducible and independent across jobs
      *  (using different seeds or "HaltonOffset" values).
      *
