@@ -4,6 +4,7 @@ from DDSim.Helper.ConfigHelper import ConfigHelper
 from g4units import GeV
 from math import atan, exp
 import logging
+import textwrap
 
 logger = logging.getLogger(__name__)
 
@@ -39,18 +40,27 @@ class Gun(ConfigHelper):
                           "If not None, it will overwrite the setting of momentumMin and momentumMax"}
     self.energy = None
 
-    self._halton_EXTRA = {'help': "Use scrambled Halton sequence (RQMC) for particle gun sampling.\n\n"
-                          "Replaces the standard PRNG with a low-discrepancy sequence that gives\n"
-                          "superior phase-space coverage. The scrambling shifts are seeded from\n"
-                          "the simulation's Geant4Random engine (controlled by --random.seed).\n\n"
-                          "Note: the standard 1/sqrt(N) error estimate assumes i.i.d. samples and\n"
-                          "does NOT apply here. To estimate statistical errors, run M independent\n"
-                          "replications with different random seeds and use the spread across runs.\n\n"
-                          "Incompatible with distribution='ffbar': acceptance-rejection sampling\n"
-                          "cannot be driven by a fixed per-particle Halton point."}
+    self._halton_EXTRA = {'help': textwrap.dedent("""\
+            Use scrambled Halton sequence (RQMC) for particle gun sampling.
+
+            Replaces the standard PRNG with a low-discrepancy sequence that gives
+            superior phase-space coverage. The scrambling shifts are seeded from
+            the simulation's Geant4Random engine (controlled by --random.seed).
+            
+            Note: the standard 1/sqrt(N) error estimate assumes independent and
+            identically distributed (i.i.d.) samples and does NOT apply here.
+            To estimate statistical errors, run M independent replications with
+            different random seeds and use the spread across runs.
+            
+            Incompatible with distribution='ffbar': acceptance-rejection sampling
+            cannot be driven by a fixed per-particle Halton point.
+            """)}
     self.halton = False
-    self._haltonOffset_EXTRA = {'help': "Starting index in the Halton sequence.\n\n"
-                                "Set to k*N*m for parallel jobs (job k, N events, multiplicity m)."}
+    self._haltonOffset_EXTRA = {'help': textwrap.dedent("""\
+            Starting index in the Halton sequence.
+
+            Set to k*N*m for parallel jobs (job k, N events, multiplicity m).
+            """)}
     self.haltonOffset = 0
 
     self._distribution_EXTRA = {'choices': ['uniform', 'cos(theta)',
