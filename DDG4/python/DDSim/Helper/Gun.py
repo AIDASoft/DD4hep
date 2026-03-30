@@ -46,12 +46,12 @@ class Gun(ConfigHelper):
             Replaces the standard PRNG with a low-discrepancy sequence that gives
             superior phase-space coverage. The scrambling shifts are seeded from
             the simulation's Geant4Random engine (controlled by --random.seed).
-            
+
             Note: the standard 1/sqrt(N) error estimate assumes independent and
             identically distributed (i.i.d.) samples and does NOT apply here.
             To estimate statistical errors, run M independent replications with
             different random seeds and use the spread across runs.
-            
+
             Incompatible with distribution='ffbar': acceptance-rejection sampling
             cannot be driven by a fixed per-particle Halton point.
             """)}
