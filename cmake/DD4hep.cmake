@@ -104,6 +104,7 @@ function(dd4hep_generate_rootmap library)
                      "${CMAKE_COMMAND}" -E env
                      "${ENV_VAR}=${_ld_path}"
                      "ROOT_LIBRARY_PATH=${DD4HEP_ROOT_LIBRARY_PATH}"
+                     "LSAN_OPTIONS=detect_leaks=0"
                      $<TARGET_FILE:DD4hep::listcomponents> -o ${rootmapfile} $<TARGET_FILE_NAME:${library}>
                      WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH}
                      )

@@ -75,6 +75,7 @@ namespace dd4hep {
               printout(WARNING,"Detector",
                        "+++ Object '%s' is already defined. New value will be ignored",
                        n.c_str());
+              delete e.ptr();
             }
             return;
           }
