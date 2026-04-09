@@ -100,6 +100,10 @@ target_compile_features(DDCore
 # Generate DDCore plugins---------------------------------------------------------
 dd4hep_add_plugin(DDCorePlugins SOURCES src/plugins/*.cpp USES DDCore)
 
+# Install DDCore plugin headers
+file(GLOB DDCorePlugins_headers src/plugins/*.h)
+install(FILES ${DDCorePlugins_headers} DESTINATION include/DD4hep/plugins)
+
 # Graphics DDCore plugins---------------------------------------------------------
 dd4hep_add_plugin(DDCoreGraphics
   SOURCES src/graphics/*.cpp

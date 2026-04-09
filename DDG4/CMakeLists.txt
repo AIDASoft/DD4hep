@@ -163,6 +163,40 @@ IF(DD4HEP_USE_HEPMC3)
   SET(DD4HEP_USE_HEPMC3 ON)
 ENDIF()
 
+IF(DD4HEP_USE_ADEPT)
+  # VecGeom and AdePT use CUDA Separable Compilation (RDC). Their "middle"
+  # shared libraries (libvecgeom.so, libadept_g4integration.so) have undefined
+  # __cudaRegisterLinkedBinary_* symbols that are only resolved by the matching
+  # "final" library (libvecgeom_final.so, etc.). The spack build injects
+  # --as-needed by default, which silently drops the final libraries from
+  # DT_NEEDED because no DDG4 object file directly references their symbols.
+  # Wrap each final library with --no-as-needed so it is kept in DT_NEEDED of
+  # libDDG4.so and is therefore loaded at runtime when libvecgeom.so needs it.
+  foreach(_rdc_middle VecGeom::vecgeom AdePT::G4Integration AdePT::Transport)
+    if(TARGET ${_rdc_middle})
+      get_target_property(_rdc_final ${_rdc_middle} CUDA_RDC_FINAL_LIBRARY)
+      if(_rdc_final AND TARGET ${_rdc_final})
+        target_link_libraries(DDG4 PUBLIC
+          "-Wl,--push-state,--no-as-needed"
+          ${_rdc_final}
+          "-Wl,--pop-state"
+        )
+      endif()
+    endif()
+  endforeach()
+  unset(_rdc_middle)
+  unset(_rdc_final)
+
+  dd4hep_add_plugin(DDG4AdePT
+    SOURCES adept/*.cpp
+    USES DD4hep::DDG4 DD4hep::DDCore Geant4::Interface
+      AdePT::G4Integration AdePT::Transport
+    )
+  install(TARGETS DDG4AdePT EXPORT DD4hep LIBRARY DESTINATION lib)
+  set_target_properties(DDG4AdePT PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+  SET(DD4HEP_USE_ADEPT ON)
+ENDIF()
+
 #
 #---------------------------  DDRec dependent Plugins  -----------------------------
 #This does not compile at the moment
