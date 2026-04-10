@@ -48,10 +48,15 @@ def setup_physics(kernel):
     # Add AdePT physics plugin
     adept_phys = PhysicsList(kernel, str("Geant4AdePTPhysics"))
 
-    # GPU buffer sizing (in millions of slots)
-    adept_phys.MillionsOfTrackSlots = 1.0
-    adept_phys.MillionsOfLeakSlots = 1.0
-    adept_phys.MillionsOfHitSlots = 1.0
+    # CUDA device stack limit (bytes). VecGeom navigation requires more than the
+    # default 1024 bytes per thread; 8192 is a safe value for complex geometries.
+    adept_phys.CUDAStackLimit = 8192
+
+    # GPU buffer sizing (in millions of slots).
+    # Reduce these for GPUs with limited VRAM (e.g. 2GB).
+    adept_phys.MillionsOfTrackSlots = 0.1
+    adept_phys.MillionsOfLeakSlots = 0.1
+    adept_phys.MillionsOfHitSlots = 0.1
     adept_phys.HitBufferFlushThreshold = 0.8
 
     # Track in all regions or specify GPU regions

@@ -164,15 +164,26 @@ IF(DD4HEP_USE_HEPMC3)
 ENDIF()
 
 IF(DD4HEP_USE_ADEPT)
-  # VecGeom and AdePT use CUDA Separable Compilation (RDC). Their "middle"
-  # shared libraries (libvecgeom.so, libadept_g4integration.so) have undefined
-  # __cudaRegisterLinkedBinary_* symbols that are only resolved by the matching
-  # "final" library (libvecgeom_final.so, etc.). The spack build injects
-  # --as-needed by default, which silently drops the final libraries from
-  # DT_NEEDED because no DDG4 object file directly references their symbols.
-  # Wrap each final library with --no-as-needed so it is kept in DT_NEEDED of
-  # libDDG4.so and is therefore loaded at runtime when libvecgeom.so needs it.
-  foreach(_rdc_middle VecGeom::vecgeom AdePT::G4Integration AdePT::Transport)
+  # AdePT uses CUDA Separable Compilation (RDC). libadept_g4integration.so and
+  # libvecgeom.so have undefined __cudaRegisterLinkedBinary_* symbols resolved
+  # only by a "final" device-linked library. The spack build's --as-needed flag
+  # would silently drop these final libraries from DT_NEEDED (since no DDG4
+  # object directly references their symbols), so we force them in explicitly.
+  #
+  # IMPORTANT: libadept_g4integration_final.so is the device-link superset of
+  # ALL 76 translation units (74 VecGeom + 1 AdePT Transport + 1 G4Integration).
+  # Its internal __cudaRegisterLinkedBinary implementation batches these 76 calls
+  # and only fires __cudaRegisterFatBinary once all 76 are seen. If
+  # libvecgeom_final.so is ALSO loaded, it intercepts 74 of those calls,
+  # libadept_g4integration_final.so never reaches 76, and __cudaRegisterFatBinary
+  # is never called — leaving g4HepEmPars and other device constants unregistered
+  # (cudaMemcpyToSymbol returns "invalid device symbol").
+  #
+  # Solution: link ONLY libadept_g4integration_final.so. It provides all 76
+  # __cudaRegisterLinkedBinary_* symbols (VecGeom + AdePT), so both libvecgeom.so
+  # and libadept_transport.so find their registration functions here, the counter
+  # reaches 76, and the combined device binary is properly registered.
+  foreach(_rdc_middle AdePT::G4Integration)
     if(TARGET ${_rdc_middle})
       get_target_property(_rdc_final ${_rdc_middle} CUDA_RDC_FINAL_LIBRARY)
       if(_rdc_final AND TARGET ${_rdc_final})

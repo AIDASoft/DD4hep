@@ -29,7 +29,9 @@
 
 #include <G4Electron.hh>
 #include <G4Gamma.hh>
+#include <G4MTRunManager.hh>
 #include <G4Positron.hh>
+#include <G4RunManager.hh>
 #include <G4VModularPhysicsList.hh>
 #include <G4VUserPhysicsList.hh>
 
@@ -155,6 +157,18 @@ namespace dd4hep { namespace sim {
       config.RemoveGPURegionName(region);
     for (auto const& region : m_wdtRegionNames)
       config.AddWDTRegionName(region);
+
+    // AdePTTrackingManager::InitializeAdePT() needs the number of worker threads
+    // to be pre-set in AdePTConfiguration when G4MTRunManager is not available
+    // (sequential mode).  Without this, it throws a std::runtime_error, leaving
+    // fAdeptTransport null and causing a segfault in HandOverOneTrack.
+    if (config.GetNumThreads() <= 0) {
+      int nThreads = 1; // default: sequential mode
+      if (auto* mtRM = G4MTRunManager::GetMasterRunManager())
+        nThreads = mtRM->GetNumberOfThreads();
+      config.SetNumThreads(nThreads);
+      info("AdePT: configured for %d thread(s)", nThreads);
+    }
   }
 
   //---------------------------------------------------------------------------
