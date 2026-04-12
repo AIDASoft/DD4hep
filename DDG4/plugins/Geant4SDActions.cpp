@@ -62,7 +62,8 @@ namespace dd4hep {
             // actual volID used from the segmentation and then look
             // it up the volume manager to get the proper transformation.
             VolumeID volID = segmentation.volumeID(cell);
-            VolumeManager vman = VolumeManager::getVolumeManager(sd.detectorDescription());
+            VolumeManager vman_glob = VolumeManager::getVolumeManager(sd.detectorDescription());
+            VolumeManager vman = vman_glob.subdetector(sd.id());
             VolumeManagerContext* vc = vman.lookupContext(volID);
             // explicit unit conversion; h.localToGlobal does it internally already
             pos = segmentation.position(cell);
