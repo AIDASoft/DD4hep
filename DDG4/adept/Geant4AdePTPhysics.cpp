@@ -32,6 +32,7 @@
 #include <G4MTRunManager.hh>
 #include <G4Positron.hh>
 #include <G4RunManager.hh>
+#include <G4Track.hh>
 #include <G4VModularPhysicsList.hh>
 #include <G4VUserPhysicsList.hh>
 
