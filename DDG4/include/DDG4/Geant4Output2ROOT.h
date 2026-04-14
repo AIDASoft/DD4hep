@@ -15,6 +15,7 @@
 
 // Framework include files
 #include <DDG4/Geant4OutputAction.h>
+#include <atomic>
 #include <mutex>
 
 class TFile;
@@ -59,6 +60,10 @@ namespace dd4hep {
       bool m_handleMCTruth;
       /// Property: Flag if Monte-Carlo truth should be followed and checked
       bool m_filesByRun;
+      /// Counter of worker endRun calls so that closeOutput fires only after all workers are done
+      std::atomic<int> m_endRunCount { 0 };
+      /// G4 event ID of the current event, stored for each event for MT ordering
+      int m_currentEventID { -1 };
       /// Static mutex to protect ROOT I/O operations in multi-threaded mode
       static std::mutex s_rootMutex;
       
@@ -76,6 +81,8 @@ namespace dd4hep {
       virtual void closeOutput();
       /// Callback to store the Geant4 run information
       virtual void beginRun(const G4Run* run)  override;
+      /// Callback at end of run: write and close the output file while DDG4 is still alive
+      virtual void endRun(const G4Run* run)  override;
       /// Callback to store each Geant4 hit collection
       virtual void saveCollection(OutputContext<G4Event>& ctxt, G4VHitsCollection* collection)  override;
       /// Callback to store the Geant4 event
