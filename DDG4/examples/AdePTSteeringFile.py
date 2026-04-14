@@ -41,7 +41,6 @@ runner.field.min_chord_step = 1e-6      # mm
 
 def setup_physics(kernel):
     """Configure physics list with AdePT GPU transport."""
-    import DDG4
     from DDG4 import Geant4, PhysicsList
 
     phys = Geant4(kernel).setupPhysics("FTFP_BERT")
@@ -118,26 +117,12 @@ def setup_physics(kernel):
     phys.adopt(adept_phys)
     phys.dump()
 
-    # Adopt the AdePT user particle handler into the default particle handler.
-    # This ensures GPU-returned secondary tracks (identified by GetCurrentStepNumber() > 0)
-    # are preserved in the MC truth output, even when they don't create CPU-side hits.
-    # The parent chain is maintained correctly because AdePTTrackingManager calls
-    # PostUserTrackingAction when offloading tracks to the GPU.
-    # The particle handler is created before setupUserPhysics is called,
-    # so it can be found by name via the generator action sequence.
-    ph = kernel.generatorAction().get("ParticleHandler")
-    if ph is None:
-        print("WARNING: Geant4ParticleHandler 'ParticleHandler' not found; "
-              "Geant4AdePTUserParticleHandler not registered")
-    else:
-        adept_part = DDG4.Action(kernel, "Geant4AdePTUserParticleHandler/AdePTParticleHandler")
-        ph.adopt(adept_part)
-
     return None
 
 
 runner.physics.setupUserPhysics(setup_physics)
 
-# Disable the default user particle handler (Geant4TCUserParticleHandler).
-# The Geant4AdePTUserParticleHandler is adopted programmatically above instead.
-runner.part.userParticleHandler = ""
+# Register Geant4AdePTUserParticleHandler as the user particle handler.
+# It is adopted at the right time by DDSim's setupUserParticleHandler mechanism,
+# which runs inside __setupGeneratorActions during G4RunManager::Initialize().
+runner.part.userParticleHandler = "Geant4AdePTUserParticleHandler"
