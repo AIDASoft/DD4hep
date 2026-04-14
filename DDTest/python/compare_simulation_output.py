@@ -34,6 +34,9 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
         print("ERROR: ROOT/PyROOT not available")
         return False
 
+    if ROOT.gSystem.Load("libDDG4IO") < 0:
+        raise RuntimeError("Failed to load libDDG4IO. Ensure DD4hep is installed and LD_LIBRARY_PATH is set.")
+
     # Open files
     f1 = ROOT.TFile.Open(file1)
     f2 = ROOT.TFile.Open(file2)
