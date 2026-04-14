@@ -79,6 +79,12 @@ namespace dd4hep { namespace sim {
     bool m_callUserSteppingAction{false};
     bool m_callUserTrackingAction{false};
 
+    /// Finish last N particles on CPU (0 = always finish on GPU)
+    int m_lastNParticlesOnCPU{0};
+
+    /// Speed-of-light mode: kill all e-/e+/gamma immediately (benchmark/debug only)
+    bool m_speedOfLight{false};
+
     /// Random seed and verbosity
     int m_adeptSeed{1234567};
     int m_verbosity{0};
@@ -116,6 +122,8 @@ namespace dd4hep { namespace sim {
     declareProperty("WDTRegionNames",          m_wdtRegionNames);
     declareProperty("CallUserSteppingAction",  m_callUserSteppingAction);
     declareProperty("CallUserTrackingAction",  m_callUserTrackingAction);
+    declareProperty("LastNParticlesOnCPU",     m_lastNParticlesOnCPU);
+    declareProperty("SpeedOfLight",            m_speedOfLight);
     declareProperty("AdePTSeed",               m_adeptSeed);
     declareProperty("Verbosity",               m_verbosity);
     declareProperty("CUDAStackLimit",          m_cudaStackLimit);
@@ -141,6 +149,8 @@ namespace dd4hep { namespace sim {
     config.SetCallUserTrackingAction(m_callUserTrackingAction);
     config.SetAdePTSeed(m_adeptSeed);
     config.SetVerbosity(m_verbosity);
+    config.SetLastNParticlesOnCPU(m_lastNParticlesOnCPU);
+    config.SetSpeedOfLight(m_speedOfLight);
 
     if (m_cudaStackLimit > 0)
       config.SetCUDAStackLimit(m_cudaStackLimit);
