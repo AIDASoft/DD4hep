@@ -159,6 +159,7 @@ namespace dd4hep {
 
       //bool isMultiThreaded() const { return m_multiThreaded; }
       bool isMultiThreaded() const { return m_numThreads > 0; }
+      int numThreads()       const { return m_numThreads; }
 
       /// Access thread identifier
       static unsigned long int thread_self();
