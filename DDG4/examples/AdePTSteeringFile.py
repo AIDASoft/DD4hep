@@ -49,28 +49,65 @@ def setup_physics(kernel):
     # Add AdePT physics plugin
     adept_phys = PhysicsList(kernel, str("Geant4AdePTPhysics"))
 
-    # CUDA device stack limit (bytes). VecGeom navigation requires more than the
-    # default 1024 bytes per thread; 8192 is a safe value for complex geometries.
-    adept_phys.CUDAStackLimit = 8192
-
-    # GPU buffer sizing (in millions of slots).
-    # Reduce these for GPUs with limited VRAM (e.g. 2GB).
+    # GPU track buffer capacity in millions of slots.
     adept_phys.MillionsOfTrackSlots = 0.1
+
+    # GPU buffer capacity for tracks that leak back to the CPU.
     adept_phys.MillionsOfLeakSlots = 0.1
+
+    # GPU hit buffer capacity in millions of slots.
     adept_phys.MillionsOfHitSlots = 0.1
-    adept_phys.HitBufferFlushThreshold = 0.8
 
-    # Track in all regions or specify GPU regions
-    adept_phys.TrackInAllRegions = True
-    # Alternatively, specify specific GPU regions:
-    # adept_phys.GPURegionNames = ["EMCalorimeter", "HCalorimeter"]
-    # adept_phys.WDTRegionNames = ["DenseDetector"]
+    # Fraction of the hit buffer occupancy that triggers a flush back to the CPU.
+    adept_phys.HitBufferFlushThreshold = 0.1
 
-    # Random seed
+    # Extra CPU-side capacity factor for returned-track staging and bookkeeping.
+    adept_phys.CPUCapacityFactor = 2.5
+
+    # Extra safety margin used when sizing the hit buffer.
+    adept_phys.HitBufferSafetyFactor = 1.5
+
+    # Track in all regions on the GPU instead of selecting explicit regions.
+    adept_phys.TrackInAllRegions = False
+
+    # Explicit list of Geant4 region names to run on the GPU when TrackInAllRegions is False.
+    adept_phys.GPURegionNames = ["EcalRegion"]
+
+    # Region names that should be forced back onto the CPU even if GPU regions are enabled.
+    # adept_phys.CPURegionNames = ["SiTrackerBarrelRegion"]
+
+    # Region names that should use Woodcock tracking on the GPU.
+    # adept_phys.WDTRegionNames = ["EcalRegion"]
+
+    # Call the user Geant4 stepping action for tracks that return from the GPU.
+    adept_phys.CallUserSteppingAction = False
+
+    # Call the user Geant4 tracking action for tracks handled by AdePT.
+    adept_phys.CallUserTrackingAction = False
+
+    # Random seed for AdePT transport.
     adept_phys.AdePTSeed = 42
 
-    # Verbosity
+    # AdePT/plugin verbosity level.
     adept_phys.Verbosity = 1
+
+    # CUDA device stack limit in bytes; larger geometries need more than the default.
+    adept_phys.CUDAStackLimit = 8192
+
+    # CUDA device heap limit in bytes; leave unset unless device-side heap allocations are needed.
+    # adept_phys.CUDAHeapLimit = 0
+
+    # Maximum number of Woodcock-tracking iterations before falling back.
+    adept_phys.MaxWDTIter = 5
+
+    # Kinetic-energy limit for Woodcock tracking in Geant4 energy units.
+    adept_phys.WDTKineticEnergyLimit = 0.2
+
+    # Enable multi-step MSC-with-transportation in G4HepEm.
+    adept_phys.MultipleStepsInMSC = True
+
+    # Enable energy-loss fluctuations in G4HepEm.
+    adept_phys.EnergyLossFluctuation = False
 
     phys.adopt(adept_phys)
     phys.dump()
