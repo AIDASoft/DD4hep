@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - uses: cvmfs-contrib/github-action-cvmfs@v4
-    - uses: aidasoft/run-lcg-view@v3
+    - uses: aidasoft/run-lcg-view@v6
       with:
         release-platform: ${{ matrix.LCG }}
         run: |
