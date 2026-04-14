@@ -950,11 +950,6 @@ namespace dd4hep {
                 double zneg, double zpos, int nsegments, double totphi)
     {  this->make(nam, twist_angle, rmin, rmax, zneg, zpos, nsegments, totphi);  }
 
-    /// Constructor to create a new identified tube object with attribute initialization
-    template <typename A, typename B, typename DZ>
-    TwistedTube(const std::string& nam, const A& a, const B& b, const DZ& dz)
-    {  this->make(nam, _toDouble(a), _toDouble(b), _toDouble(dz));   }
-
     /// Move Assignment operator
     TwistedTube& operator=(TwistedTube&& copy) = default;
     /// Copy Assignment operator

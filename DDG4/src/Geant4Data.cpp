@@ -97,7 +97,7 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const Geant4FastS
   G4ThreeVector        pos = h.avgPositionG4();
   double               position[] = { pos.x(), pos.y(), pos.z() };
   double               momentum[] = { mom.x(), mom.y(), mom.z() };
-  return Contribution( h.trkID(), h.trkPdgID(), h.energy(), h. trkTime(), 0e0, position, momentum);
+  return Contribution( h.trkID(), h.trkPdgID(), h.energy(), h.trkTime(), -1e0, position, momentum);
 }
 
 /// Default constructor

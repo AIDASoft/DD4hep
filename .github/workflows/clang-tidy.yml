@@ -14,7 +14,7 @@ jobs:
       matrix:
         LCG: ["dev4/x86_64-el9-clang19-opt"]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v3
       with:

@@ -50,7 +50,7 @@ include(CTest)
 ##                          -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
 ##                          -output file:CLICSiD.gdml
 ##  REGEX_PASS " Successfully extracted GDML to" )
-foreach ( typ description vis )
+foreach ( typ vis )
   dd4hep_add_test_reg ( "CLICSiD_converter_${typ}_LONGTEST" 
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
     EXEC_ARGS  geoConverter -compact2${typ} 

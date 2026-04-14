@@ -18,6 +18,7 @@
 #include <DDG4/Geant4Primary.h>
 #include <DDG4/Geant4ParticleGenerator.h>
 #include <DDG4/Geant4Random.h>
+#include <CLHEP/Units/PhysicalConstants.h>
 #include <CLHEP/Units/SystemOfUnits.h>
 
 // Geant4 include files
@@ -158,9 +159,32 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
     p->psz          = unit_direction.Z()*momentum;
     p->mass         = m_particle->GetPDGMass();
     p->charge       = 3 * m_particle->GetPDGCharge();
-    p->spin[0]      = 0;
-    p->spin[1]      = 0;
-    p->spin[2]      = 0;
+    // Optical photons must have a defined polarization; assign a random one
+    // perpendicular to the momentum direction (physical requirement for Geant4 optics).
+    if ( m_particle->GetParticleName() == "opticalphoton" )  {
+      if ( momentum == 0.0 )  {
+        except("Geant4ParticleGenerator: Cannot assign polarization to optical photon with zero momentum!");
+      }
+      // Build two unit vectors orthogonal to the photon direction using Gram-Schmidt.
+      ROOT::Math::XYZVector e1, e2;
+      if ( std::fabs(unit_direction.X()) < 0.9 )
+        e1 = ROOT::Math::XYZVector(1, 0, 0);
+      else
+        e1 = ROOT::Math::XYZVector(0, 1, 0);
+      e2  = unit_direction.Cross(e1).unit();
+      e1  = e2.Cross(unit_direction).unit();    // normalize defensively
+      Geant4Random& rnd = evt.random();
+      double angle = CLHEP::twopi * rnd.rndm();
+      ROOT::Math::XYZVector pol = (std::cos(angle)*e1 + std::sin(angle)*e2).unit();
+      p->spin[0] = pol.X();
+      p->spin[1] = pol.Y();
+      p->spin[2] = pol.Z();
+    }
+    else  {
+      p->spin[0] = 0;
+      p->spin[1] = 0;
+      p->spin[2] = 0;
+    }
     p->colorFlow[0] = 0;
     p->colorFlow[1] = 0;
     p->vsx        = vtx->x;

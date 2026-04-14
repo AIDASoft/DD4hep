@@ -49,7 +49,7 @@ namespace dd4hep{
         _maxVal =  ( 1LL << ( _width - 1 ) ) - 1 ;
       
       } else {
-        _maxVal = 0x0001<<_width  ;
+        _maxVal = 1LL << _width ;
       }
     }
   

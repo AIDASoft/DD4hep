@@ -21,7 +21,7 @@ jobs:
               "dev3/x86_64-el9-clang19-opt",
               "dev3/x86_64-el9-gcc15-dbg"]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v5
       with:
@@ -118,7 +118,7 @@ jobs:
       matrix:
         view-path: ["/cvmfs/sw-nightlies.hsf.org/key4hep/"]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v5
       with:
@@ -182,7 +182,7 @@ jobs:
       matrix:
         LCG: ["LCG_107a/x86_64-el9-gcc13-opt"]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v5
       with:
@@ -211,7 +211,7 @@ jobs:
       matrix:
         LCG: ["dev3/x86_64-el9-gcc13-opt"]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v5
       with:

@@ -15,6 +15,7 @@
 #include <DD4hep/Printout.h>
 #include <DD4hep/SignalHandler.h>
 
+#include <csignal>
 #include <map>
 #include <memory>
 #include <string>

@@ -13,9 +13,6 @@
 #ifndef DD4HEP_DDCORE_SIGNALHANDLER_H
 #define DD4HEP_DDCORE_SIGNALHANDLER_H
 
-/// System include files
-#include <csignal>
-
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
 
