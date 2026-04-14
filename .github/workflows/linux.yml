@@ -103,7 +103,7 @@ jobs:
           echo "ARTIFACT_NAME=${artifact_name}" >> $GITHUB_ENV
     - name: Upload test results
       if: success() || failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: Test Results ${{ env.ARTIFACT_NAME }}
         path: |
@@ -168,7 +168,7 @@ jobs:
           echo "ARTIFACT_NAME=${artifact_name}" >> $GITHUB_ENV
     - name: Upload test results
       if: success() || failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: Test Results ${{ env.ARTIFACT_NAME }}
         path: |
@@ -257,7 +257,7 @@ jobs:
           echo "ARTIFACT_NAME=${artifact_name}" >> $GITHUB_ENV
     - name: Upload test results
       if: success() || failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: Test Results ${{ env.ARTIFACT_NAME }} (g4units)
         path: |
@@ -270,7 +270,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Upload
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: Event File
         path: ${{ github.event_path }}
