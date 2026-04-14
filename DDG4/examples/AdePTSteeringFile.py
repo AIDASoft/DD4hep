@@ -85,6 +85,12 @@ def setup_physics(kernel):
     # Call the user Geant4 tracking action for tracks handled by AdePT.
     adept_phys.CallUserTrackingAction = False
 
+    # When the number of in-flight GPU tracks drops below this value, the remaining
+    # tracks are leaked back to Geant4/HepEm on the CPU, terminating the GPU transport
+    # loop early.  This avoids many short-lived near-empty kernel launches during the
+    # shower tail.  Set to 0 (default) to always finish on the GPU.
+    adept_phys.LastNParticlesOnCPU = 0
+
     # Random seed for AdePT transport.
     adept_phys.AdePTSeed = 42
 
