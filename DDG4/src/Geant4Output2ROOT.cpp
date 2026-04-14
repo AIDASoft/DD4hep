@@ -17,10 +17,12 @@
 #include <DD4hep/InstanceCount.h>
 #include <DDG4/Geant4HitCollection.h>
 #include <DDG4/Geant4Output2ROOT.h>
+#include <DDG4/Geant4Kernel.h>
 #include <DDG4/Geant4Particle.h>
 #include <DDG4/Geant4Data.h>
 
 // Geant4 include files
+#include <G4Event.hh>
 #include <G4HCofThisEvent.hh>
 #include <G4ParticleTable.hh>
 #include <G4Run.hh>
@@ -52,6 +54,20 @@ Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* ctxt, const std::string& nam
 Geant4Output2ROOT::~Geant4Output2ROOT() {
   closeOutput();
   InstanceCount::decrement(this);
+}
+
+/// Callback at end of run: write and close the output file while DDG4 is still alive.
+/// In MT mode this fires once per worker; only the last worker closes the file
+void Geant4Output2ROOT::endRun(const G4Run* run) {
+  const int nThreads = context()->kernel().master().numThreads();
+  // ST: nThreads==0, close immediately
+  // MT: wait until every worker has called endRun before closing
+  int done = ++m_endRunCount;
+  if (nThreads == 0 || done >= nThreads) {
+    closeOutput();
+    m_endRunCount = 0;
+  }
+  Geant4OutputAction::endRun(run);
 }
 
 /// Close current output file
