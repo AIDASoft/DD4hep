@@ -649,7 +649,7 @@ static int setItem(const char * prefix, const char * name,
     os << prefix << "invalid name : " << opt;
     return;
   case EVAL::ERROR_SYNTAX_ERROR:
-    os << prefix << "systax error"        ;
+    os << prefix << "syntax error"        ;
     return;
   case EVAL::ERROR_UNPAIRED_PARENTHESIS:
     os << prefix << "unpaired parenthesis";
