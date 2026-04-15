@@ -332,7 +332,6 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   Geant4ParticleHandle ph(&m_currTrack);
   const int g4_id = h.id();
 
-  PropertyMask mask(m_currTrack.reason);
   // Update vertex end point and final momentum
   G4ThreeVector mom = track->GetMomentum();
   const G4ThreeVector& pos = track->GetPosition();
@@ -350,6 +349,7 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   for( auto* handler : this->m_userHandlers )
     handler->end(track, m_currTrack);
   int32_t track_reason = m_currTrack.reason;
+  PropertyMask mask(m_currTrack.reason);
 
   // Set the simulator status bits
   PropertyMask simStatus(m_currTrack.status);
