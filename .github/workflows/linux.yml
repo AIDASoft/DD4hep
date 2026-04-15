@@ -26,9 +26,9 @@ jobs:
               "dev3/x86_64-el9-clang19-opt",
               "dev3/x86_64-el9-gcc15-dbg"]
     steps:
-    - uses: actions/checkout@v6
-    - uses: cvmfs-contrib/github-action-cvmfs@v5
-    - uses: aidasoft/run-lcg-view@v6
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    - uses: cvmfs-contrib/github-action-cvmfs@10197e000cc0add8e54ac4fb73d3ed44e2de72b4
+    - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
       with:
         release-platform: ${{ matrix.LCG }}
         ccache-key: ccache-${{ matrix.LCG }}
@@ -123,9 +123,9 @@ jobs:
       matrix:
         view-path: ["/cvmfs/sw-nightlies.hsf.org/key4hep/"]
     steps:
-    - uses: actions/checkout@v6
-    - uses: cvmfs-contrib/github-action-cvmfs@v5
-    - uses: aidasoft/run-lcg-view@v6
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    - uses: cvmfs-contrib/github-action-cvmfs@10197e000cc0add8e54ac4fb73d3ed44e2de72b4
+    - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
       with:
         container: el9
         ccache-key: ccache-key4hep-el9
@@ -187,9 +187,9 @@ jobs:
       matrix:
         LCG: ["LCG_107a/x86_64-el9-gcc13-opt"]
     steps:
-    - uses: actions/checkout@v6
-    - uses: cvmfs-contrib/github-action-cvmfs@v5
-    - uses: aidasoft/run-lcg-view@v6
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    - uses: cvmfs-contrib/github-action-cvmfs@10197e000cc0add8e54ac4fb73d3ed44e2de72b4
+    - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
       with:
         release-platform: ${{ matrix.LCG }}
         ccache-key: ccache-non-shared-${{ matrix.LCG }}
@@ -216,9 +216,9 @@ jobs:
       matrix:
         LCG: ["dev3/x86_64-el9-gcc13-opt"]
     steps:
-    - uses: actions/checkout@v6
-    - uses: cvmfs-contrib/github-action-cvmfs@v5
-    - uses: aidasoft/run-lcg-view@v6
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    - uses: cvmfs-contrib/github-action-cvmfs@10197e000cc0add8e54ac4fb73d3ed44e2de72b4
+    - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
       with:
         release-platform: ${{ matrix.LCG }}
         ccache-key: ccache-g4units-${{ matrix.LCG }}
