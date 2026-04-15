@@ -44,13 +44,13 @@ namespace dd4hep {
     typedef std::vector<DetElement> Result;
 #ifndef __CINT__
     /// Reference to main detector description object
-    Detector& description;
+    const Detector& description;
 #endif
 
   public:
 #ifndef __CINT__
     /// Default constructor
-    DetectorSelector(Detector& _description) : description(_description)  {}
+    DetectorSelector(const Detector& _description) : description(_description)  {}
 #endif
     /// Default destructor
     ~DetectorSelector()  {}
