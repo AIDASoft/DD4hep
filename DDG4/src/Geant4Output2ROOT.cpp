@@ -172,6 +172,16 @@ int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, v
 void Geant4Output2ROOT::commit(OutputContext<G4Event>& ctxt) {
   std::lock_guard<std::mutex> lock(s_rootMutex);
   if (m_file) {
+    static const char* evtIDBranchName = "G4EventID";
+    TBranch* evtIDBr = m_tree->GetBranch(evtIDBranchName);
+    if (!evtIDBr) {
+      evtIDBr = m_tree->Branch(evtIDBranchName, &m_currentEventID, "G4EventID/I");
+    }
+    else {
+      evtIDBr->SetAddress(&m_currentEventID);
+    }
+    evtIDBr->Fill();
+
     auto* a = m_tree->GetListOfBranches();
     const Long64_t evt = m_tree->GetEntries() + 1;
     const Int_t nb = a->GetEntriesFast();
@@ -191,7 +201,8 @@ void Geant4Output2ROOT::commit(OutputContext<G4Event>& ctxt) {
 }
 
 /// Callback to store the Geant4 event
-void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
+void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& ctxt) {
+  m_currentEventID = ctxt.context->GetEventID();
   if (m_disableParticles) return;
   auto* parts = context()->event().extension<Geant4ParticleMap>();
   if (!parts) return;

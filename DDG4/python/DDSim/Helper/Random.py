@@ -42,7 +42,8 @@ class Random (ConfigHelper):
     self.replace_gRandom = True
     self.file = None
     self._random = None
-    self._eventseed = None
+    self._eventseeds = []
+    self._worker_randoms = []
 
     self._enableEventSeed_EXTRA = {'help': "If True, calculate random seed for each event based"
                                            "on eventID and runID\nAllows reproducibility even when"
@@ -95,22 +96,16 @@ class Random (ConfigHelper):
     worker thread, creating an independent EventSeeder for each worker.
 
     :param DDG4: DDG4 module
-    :param kernel: Geant4 kernel (master kernel in ST mode, worker kernel in MT mode)
+    :param kernel: worker kernel (or the only kernel in ST mode)
     """
     if self.seed is not None and self.enableEventSeed:
-      # Only create EventSeeder once (check if already created)
-      if self._eventseed is not None:
-        logger.debug("EventSeeder already created, skipping")
-        return self._eventseed
-      
       # Create EventSeeder - use shared=True for MT mode to avoid multiple instances
       seeder_name = 'Geant4EventSeed/EventSeeder'
       eventseed = DDG4.RunAction(kernel, seeder_name, shared=True)
       # Explicitly add to run action sequence
       kernel.runAction().add(eventseed)
-      logger.info("EventSeeder created and added to run action")
-      # Store reference
-      self._eventseed = eventseed
+      self._eventseeds.append(eventseed)  # keep reference alive
+      logger.info("EventSeeder added to run action of kernel %s", kernel)
       return eventseed
     return None
 
@@ -147,4 +142,5 @@ class Random (ConfigHelper):
 
     logger.info("Initialized Geant4Random for worker (thread-local ID %d) with seed %d",
                 random_id, self.seed)
+    self._worker_randoms.append(worker_random)  # keep reference alive
     return worker_random
