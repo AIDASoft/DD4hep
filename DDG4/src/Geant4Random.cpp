@@ -75,7 +75,8 @@ namespace    {
       m_engine->flatArray(size,array);
     }
   };
-  static Geant4Random* s_instance = 0;
+  // Thread-local so each worker thread has its own Geant4Random instance.
+  static thread_local Geant4Random* s_instance = nullptr;
 }
 
 /// Default constructor
@@ -267,73 +268,73 @@ double Geant4Random::rndm_clhep()  {
 /// Create flat distributed random numbers in the interval ]0,1]
 double Geant4Random::rndm(int i)  {
   if ( !m_inited ) initialize();
-  return gRandom->Rndm(i);
+  return m_rootRandom->Rndm(i);
 }
 
 /// Create a float array of flat distributed random numbers in the interval ]0,1]
 void   Geant4Random::rndmArray(int n, float *array)  {
   if ( !m_inited ) initialize();
-  gRandom->RndmArray(n,array);
+  m_rootRandom->RndmArray(n,array);
 }
 
 /// Create a double array of flat distributed random numbers in the interval ]0,1]
 void   Geant4Random::rndmArray(int n, double *array)  {
   if ( !m_inited ) initialize();
-  gRandom->RndmArray(n,array);
+  m_rootRandom->RndmArray(n,array);
 }
 
 /// Create uniformly disributed random numbers in the interval ]0,x1]
 double Geant4Random::uniform(double x1)  {
   if ( !m_inited ) initialize();
-  return gRandom->Uniform(x1);
+  return m_rootRandom->Uniform(x1);
 }
 
 /// Create uniformly disributed random numbers in the interval ]x1,x2]
 double Geant4Random::uniform(double x1, double x2)  {
   if ( !m_inited ) initialize();
-  return gRandom->Uniform(x1,x2);
+  return m_rootRandom->Uniform(x1,x2);
 }
 
 /// Create exponentially distributed random numbers
 double Geant4Random::exp(double tau)  {
   if ( !m_inited ) initialize();
-  return gRandom->Exp(tau);
+  return m_rootRandom->Exp(tau);
 }
 
 /// Generates random vectors, uniformly distributed over a circle of given radius.
 double Geant4Random::gauss(double mean, double sigma)  {
   if ( !m_inited ) initialize();
-  return gRandom->Gaus(mean,sigma);
+  return m_rootRandom->Gaus(mean,sigma);
 }
 
 /// Create landau distributed random numbers
 double Geant4Random::landau(double mean, double sigma)  {
   if ( !m_inited ) initialize();
-  return gRandom->Landau(mean,sigma);
+  return m_rootRandom->Landau(mean,sigma);
 }
 
 /// Create tuple of randum number around a circle with radius r
 void   Geant4Random::circle(double &x, double &y, double r)  {
-  if ( !m_inited ) initialize();  
-  gRandom->Circle(x,y,r);
+  if ( !m_inited ) initialize();
+  m_rootRandom->Circle(x,y,r);
 }
 
 /// Create tuple of randum number on a sphere with radius r
 void   Geant4Random::sphere(double &x, double &y, double &z, double r)  {
   if ( !m_inited ) initialize();
-  gRandom->Sphere(x,y,z,r);
+  m_rootRandom->Sphere(x,y,z,r);
 }
 
 /// Create poisson distributed random numbers
 double Geant4Random::poisson(double mean)   {
   if ( !m_inited ) initialize();
-  return gRandom->PoissonD(mean);
+  return m_rootRandom->PoissonD(mean);
 }
 
 /// Create breit wigner distributed random numbers
 double Geant4Random::breit_wigner(double mean, double gamma)   {
   if ( !m_inited ) initialize();
-  return gRandom->BreitWigner(mean, gamma);
+  return m_rootRandom->BreitWigner(mean, gamma);
 }
 
 /// Create gamma distributed random numbers
