@@ -41,6 +41,7 @@
 #include <G4Event.hh>
 #include <G4Track.hh>
 
+#include <limits>
 #include <unordered_map>
 
 namespace dd4hep { namespace sim {
@@ -70,6 +71,17 @@ using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
       } else if (track->GetParentID() == 0) {
         // Hadronic secondary returned from GPU with dummy parentID=0
         particle.g4Parent = m_primaryG4Id;
+      }
+
+      // Safety net: if a track carries a GPU-assigned TrackID (near INT_MAX, counting down),
+      // force it into m_particleMap via G4PARTICLE_ABOVE_ENERGY_THRESHOLD so that
+      // Geant4ParticleHandler::end() takes the if-branch rather than the else-branch.
+      // This prevents "No real particle parent present" FATAL errors for deep GPU secondaries
+      // whose GPU-assigned parent IDs are not registered in the particle handler maps.
+      // The primary fix is propagating cpuAncestorG4id in AdePT's HostTrackDataMapper;
+      // this guard catches any case that might slip through.
+      if (isGPUAssignedTrackID(track->GetTrackID())) {
+        PropertyMask(particle.reason).set(G4PARTICLE_ABOVE_ENERGY_THRESHOLD);
       }
 
       // Cache bookkeeping for e-/e+/γ (the particles AdePT handles).
@@ -148,6 +160,12 @@ using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
 
     int m_primaryG4Id{0};
     std::unordered_map<int, CachedState> m_trackCache;
+
+    /// Returns true if the G4 track ID was assigned by AdePT's HostTrackDataMapper
+    /// (counting down from INT_MAX) rather than by Geant4's normal sequential assignment.
+    static bool isGPUAssignedTrackID(int g4id) noexcept {
+      return g4id >= (std::numeric_limits<int>::max() / 2);
+    }
   };
 
 }} // namespace dd4hep::sim
