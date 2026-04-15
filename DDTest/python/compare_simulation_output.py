@@ -12,17 +12,27 @@ produce identical physics results by comparing:
 
 import argparse
 import sys
+def _coord(v, attr):
+    """Get a coordinate from a vector, handling both attributes and callables."""
+    val = getattr(v, attr)
+    return val() if callable(val) else val
 
 
 def compare_vectors(v1, v2, tolerance, description=""):
     """Compare two 3-vectors component by component."""
-    if hasattr(v1, 'x') and hasattr(v2, 'x'):
-        dx = abs(v1.x - v2.x)
-        dy = abs(v1.y - v2.y)
-        dz = abs(v1.z - v2.z)
-        if dx > tolerance or dy > tolerance or dz > tolerance:
-            print(f"  {description} mismatch: ({v1.x}, {v1.y}, {v1.z}) vs ({v2.x}, {v2.y}, {v2.z})")
-            return False
+    # Try lowercase attributes first (plain structs), then uppercase methods (ROOT math types)
+    for x_attr, y_attr, z_attr in (('x', 'y', 'z'), ('X', 'Y', 'Z')):
+        if hasattr(v1, x_attr) and hasattr(v2, x_attr):
+            try:
+                x1, x2 = _coord(v1, x_attr), _coord(v2, x_attr)
+                y1, y2 = _coord(v1, y_attr), _coord(v2, y_attr)
+                z1, z2 = _coord(v1, z_attr), _coord(v2, z_attr)
+                if abs(x1 - x2) > tolerance or abs(y1 - y2) > tolerance or abs(z1 - z2) > tolerance:
+                    print(f"  {description} mismatch: ({x1}, {y1}, {z1}) vs ({x2}, {y2}, {z2})")
+                    return False
+                return True
+            except Exception:
+                continue
     return True
 
 
