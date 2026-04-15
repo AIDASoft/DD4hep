@@ -22,7 +22,7 @@ jobs:
               "dev3/x86_64-el9-gcc15-dbg"]
     steps:
     - uses: actions/checkout@v6
-    - uses: cvmfs-contrib/github-action-cvmfs@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v5
     - uses: aidasoft/run-lcg-view@v6
       with:
         release-platform: ${{ matrix.LCG }}
@@ -119,7 +119,7 @@ jobs:
         view-path: ["/cvmfs/sw-nightlies.hsf.org/key4hep/"]
     steps:
     - uses: actions/checkout@v6
-    - uses: cvmfs-contrib/github-action-cvmfs@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v5
     - uses: aidasoft/run-lcg-view@v6
       with:
         container: el9
@@ -183,7 +183,7 @@ jobs:
         LCG: ["LCG_107a/x86_64-el9-gcc13-opt"]
     steps:
     - uses: actions/checkout@v6
-    - uses: cvmfs-contrib/github-action-cvmfs@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v5
     - uses: aidasoft/run-lcg-view@v6
       with:
         release-platform: ${{ matrix.LCG }}
@@ -212,7 +212,7 @@ jobs:
         LCG: ["dev3/x86_64-el9-gcc13-opt"]
     steps:
     - uses: actions/checkout@v6
-    - uses: cvmfs-contrib/github-action-cvmfs@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v5
     - uses: aidasoft/run-lcg-view@v6
       with:
         release-platform: ${{ matrix.LCG }}
