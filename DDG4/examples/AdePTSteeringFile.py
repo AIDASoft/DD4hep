@@ -81,9 +81,6 @@ def setup_physics(kernel):
     # Call the user Geant4 stepping action for tracks that return from the GPU.
     adept_phys.CallUserSteppingAction = False
 
-    # Call the user Geant4 tracking action for tracks handled by AdePT.
-    adept_phys.CallUserTrackingAction = False
-
     # When the number of in-flight GPU tracks drops below this value, the remaining
     # tracks are leaked back to Geant4/HepEm on the CPU, terminating the GPU transport
     # loop early.  This avoids many short-lived near-empty kernel launches during the

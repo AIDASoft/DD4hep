@@ -77,7 +77,6 @@ namespace dd4hep { namespace sim {
 
     /// User action callbacks
     bool m_callUserSteppingAction{false};
-    bool m_callUserTrackingAction{false};
 
     /// Finish last N particles on CPU (0 = always finish on GPU)
     int m_lastNParticlesOnCPU{0};
@@ -121,7 +120,6 @@ namespace dd4hep { namespace sim {
     declareProperty("CPURegionNames",          m_cpuRegionNames);
     declareProperty("WDTRegionNames",          m_wdtRegionNames);
     declareProperty("CallUserSteppingAction",  m_callUserSteppingAction);
-    declareProperty("CallUserTrackingAction",  m_callUserTrackingAction);
     declareProperty("LastNParticlesOnCPU",     m_lastNParticlesOnCPU);
     declareProperty("SpeedOfLight",            m_speedOfLight);
     declareProperty("AdePTSeed",               m_adeptSeed);
@@ -146,7 +144,7 @@ namespace dd4hep { namespace sim {
     config.SetHitBufferSafetyFactor(m_hitBufferSafetyFactor);
     config.SetTrackInAllRegions(m_trackInAllRegions);
     config.SetCallUserSteppingAction(m_callUserSteppingAction);
-    config.SetCallUserTrackingAction(m_callUserTrackingAction);
+    config.SetCallUserTrackingAction(true);
     config.SetAdePTSeed(m_adeptSeed);
     config.SetVerbosity(m_verbosity);
     config.SetLastNParticlesOnCPU(m_lastNParticlesOnCPU);
