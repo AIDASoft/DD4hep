@@ -332,7 +332,6 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   Geant4ParticleHandle ph(&m_currTrack);
   const int g4_id = h.id();
 
-  int32_t track_reason = m_currTrack.reason;
   PropertyMask mask(m_currTrack.reason);
   // Update vertex end point and final momentum
   G4ThreeVector mom = track->GetMomentum();
@@ -343,6 +342,14 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   ph->vex = pos.x();
   ph->vey = pos.y();
   ph->vez = pos.z();
+
+  // Allow user handlers to repair m_currTrack (e.g. restore stale fields for
+  // GPU-offloaded tracks) before any bookkeeping fields are read.  Must come
+  // after pex/vex are set so the final state is visible to handlers, and
+  // before track_reason is copied so the backscatter logic uses correct bits.
+  for( auto* handler : this->m_userHandlers )
+    handler->end(track, m_currTrack);
+  int32_t track_reason = m_currTrack.reason;
 
   // Set the simulator status bits
   PropertyMask simStatus(m_currTrack.status);
@@ -382,10 +389,6 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     }
   }
   
-  /// Final update of the particle using the user handler
-  for( auto* handler : this->m_userHandlers )
-    handler->end(track, m_currTrack);
-
   //
   // These are candidate tracks with a probability to be stored due to their properties:
   // - primary particle
