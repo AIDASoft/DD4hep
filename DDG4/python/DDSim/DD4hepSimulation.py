@@ -495,10 +495,12 @@ class DD4hepSimulation(object):
     kernel = geant4.kernel()
     logger.debug("Setting up actions")
     self.__setupActions(kernel)
+    import DDG4
+    logger.debug("Setting up Geant4Random for worker thread")
+    # Initialize a per-worker Geant4Random wrapping this thread's CLHEP engine
+    self.random.initializeWorker(DDG4, kernel, self.printLevel)
     logger.debug("Setting up EventSeeder for worker")
     # Setup EventSeeder for this worker
-    # Uses the shared Geant4Random instance from master
-    import DDG4
     self.random.setupEventSeeder(DDG4, kernel)
     logger.debug("Setting up generator actions")
     self.__setupGeneratorActions(kernel, geant4)

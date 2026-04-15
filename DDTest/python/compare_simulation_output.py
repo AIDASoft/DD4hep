@@ -36,6 +36,27 @@ def compare_vectors(v1, v2, tolerance, description=""):
     return True
 
 
+def _get_event_id(tree, entry_idx):
+    """Get event ID from a tree entry. Returns None if not available."""
+    tree.GetEntry(entry_idx)
+    # DD4hep ROOT output
+    g4_br = tree.GetBranch('G4EventID')
+    if g4_br:
+        return int(tree.G4EventID)
+    # EDM4hep output
+    try:
+        if hasattr(tree, 'EventHeader') and hasattr(tree.EventHeader, 'size'):
+            if tree.EventHeader.size() > 0:
+                hdr = tree.EventHeader[0]
+                if hasattr(hdr, 'getEventNumber'):
+                    return hdr.getEventNumber()
+                if hasattr(hdr, 'eventNumber'):
+                    return hdr.eventNumber
+    except Exception:
+        pass
+    return None
+
+
 def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
     """Compare hit collections between two ROOT files."""
     try:
@@ -111,25 +132,10 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
     print("Building event ID index for file2...")
     event_id_map = {}
     for i in range(n_entries):
-        t2.GetEntry(i)
-        # Try to get EventHeader collection
-        try:
-            if hasattr(t2, 'EventHeader') and hasattr(t2.EventHeader, 'size'):
-                if t2.EventHeader.size() > 0:
-                    evt_hdr = t2.EventHeader[0]
-                    # Try different methods to get event number
-                    event_id = None
-                    if hasattr(evt_hdr, 'getEventNumber'):
-                        event_id = evt_hdr.getEventNumber()
-                    elif hasattr(evt_hdr, 'eventNumber'):
-                        event_id = evt_hdr.eventNumber
-                    if event_id is not None:
-                        event_id_map[event_id] = i
-        except Exception as e:
-            print(f"WARNING: Failed to get event ID from entry {i}: {e}")
-            pass
+        eid = _get_event_id(t2, i)
+        if eid is not None:
+            event_id_map[eid] = i
 
-    # If we couldn't build event ID map, fall back to sequential comparison
     use_event_id_matching = len(event_id_map) == n_entries
     if use_event_id_matching:
         print(f"Using event ID matching ({len(event_id_map)} events indexed)")
@@ -144,54 +150,32 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
     # Track which collections we've seen to report
     collection_types = set()
 
-    # Event-by-event comparison
+    # Branches to skip
+    skip_branches = {'G4EventID', 'EventHeader'}
+
     for i in range(n_entries):
         t1.GetEntry(i)
+        event_id = i  # default for reporting
 
-        # Find corresponding event in file2
         if use_event_id_matching:
-            # Get event ID from file1
-            try:
-                if hasattr(t1, 'EventHeader') and hasattr(t1.EventHeader, 'size'):
-                    if t1.EventHeader.size() > 0:
-                        evt_hdr = t1.EventHeader[0]
-                        # Try different methods to get event number
-                        event_id = None
-                        if hasattr(evt_hdr, 'getEventNumber'):
-                            event_id = evt_hdr.getEventNumber()
-                        elif hasattr(evt_hdr, 'eventNumber'):
-                            event_id = evt_hdr.eventNumber
-
-                        if event_id is None:
-                            print(f"ERROR: Could not get event ID from entry {i} in file1")
-                            mismatches += 1
-                            continue
-                        if event_id not in event_id_map:
-                            print(f"ERROR: Event ID {event_id} from file1 not found in file2")
-                            mismatches += 1
-                            continue
-                        j = event_id_map[event_id]
-                        t2.GetEntry(j)
-                    else:
-                        print(f"ERROR: EventHeader is empty at entry {i} in file1")
-                        mismatches += 1
-                        continue
-                else:
-                    print(f"ERROR: No EventHeader found at entry {i} in file1")
-                    mismatches += 1
-                    continue
-            except Exception as e:
-                print(f"ERROR: Could not get event ID from entry {i} in file1: {e}")
+            eid1 = _get_event_id(t1, i)
+            if eid1 is None:
+                print(f"ERROR: Could not get event ID from entry {i} in file1")
                 mismatches += 1
                 continue
+            if eid1 not in event_id_map:
+                print(f"ERROR: Event ID {eid1} from file1 not found in file2")
+                mismatches += 1
+                continue
+            event_id = eid1
+            t1.GetEntry(i)  # re-load (GetEntry in _get_event_id may have changed state)
+            t2.GetEntry(event_id_map[eid1])
         else:
             # Sequential comparison
             t2.GetEntry(i)
-            event_id = i  # Use entry number as pseudo-event ID for reporting
 
         for branch_name in sorted(branches):
-            # Skip metadata branches and EventHeader (already used for matching)
-            if branch_name.startswith('_') or 'objIdx' in branch_name or branch_name == 'EventHeader':
+            if branch_name.startswith('_') or 'objIdx' in branch_name or branch_name in skip_branches:
                 continue
 
             try:
