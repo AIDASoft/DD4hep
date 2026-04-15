@@ -331,14 +331,12 @@ namespace dd4hep {
     }
     /// Helper to delete objects from heap and reset the pointer. Saves many many lines of code
     template <typename T> inline void deletePtr(T*& ptr) {
-      if (0 != ptr)
-        delete ptr;
+      delete ptr;
       ptr = 0;
     }
     /// Helper to delete objects from heap and reset the pointer. Saves many many lines of code
     template <typename T> inline void deleteObject(T* ptr) {
-      if (0 != ptr)
-        delete ptr;
+      delete ptr;
     }
     /// Helper to delete objects from heap and reset the pointer
     template <typename T> inline void destroyObject(T*& ptr) {
