@@ -495,16 +495,6 @@ void Geant4ParticleHandler::endEvent(const G4Event* event)  {
     h->end(event);
   setVertexEndpointBit();
 
-  // GPU-accelerated transport (e.g. AdePT with callUserTrackingAction=false) may produce hits
-  // with trackID=0 (from a dummy HostTrackData). Map such hits to the primary particle so that
-  // particleID(0) returns a valid result rather than printing an error during ROOT output.
-  if (m_equivalentTracks.find(0) == m_equivalentTracks.end()) {
-    auto iprim = m_equivalentTracks.find(1);
-    if (iprim != m_equivalentTracks.end()) {
-      m_equivalentTracks[0] = iprim->second;
-    }
-  }
-
   // Now export the data to the final record.
   Geant4ParticleMap* part_map = context()->event().extension<Geant4ParticleMap>();
   part_map->adopt(m_particleMap, m_equivalentTracks);
