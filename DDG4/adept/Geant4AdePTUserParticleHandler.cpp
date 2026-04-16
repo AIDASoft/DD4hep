@@ -73,6 +73,18 @@ using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
         particle.g4Parent = m_primaryG4Id;
       }
 
+      // If the parent of this track carries a GPU-assigned TrackID, resolve it via
+      // the cache before the parent track's end() has had a chance to register it in
+      // m_particleMap / m_equivalentTracks.  This happens when G4HepEm tracks secondary
+      // particles (e.g. photo-nuclear products) inline before calling
+      // PostUserTrackingAction for the parent GPU track.
+      if (isGPUAssignedTrackID(track->GetParentID())) {
+        auto parentIt = m_trackCache.find(track->GetParentID());
+        if (parentIt != m_trackCache.end()) {
+          particle.g4Parent = parentIt->second.g4Parent;
+        }
+      }
+
       // Safety net: if a track carries a GPU-assigned TrackID (near INT_MAX, counting down),
       // force it into m_particleMap via G4PARTICLE_ABOVE_ENERGY_THRESHOLD so that
       // Geant4ParticleHandler::end() takes the if-branch rather than the else-branch.
@@ -94,18 +106,62 @@ using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
 
     /// Called at PostUserTrackingAction (inside Geant4ParticleHandler::end()).
     ///
-    /// If m_currTrack is stale (particle.id != cached id for this G4 track ID),
-    /// restores the bookkeeping fields saved at begin() time.
-    /// pex/pey/pez and vex/vey/vez are intentionally NOT restored since they
-    /// are already set correctly from the G4Track before this callback.
+    /// Handles two distinct scenarios:
+    ///
+    /// 1. Cache entry present: begin() was called via the new-particle path which
+    ///    calls user handlers.  If m_currTrack is stale (particle.id differs from
+    ///    the cached id), restore the bookkeeping fields saved at begin() time.
+    ///    The cache is then updated with the current (post-restore) state rather than
+    ///    erased, so that a second end() call (which occurs when a track re-enters
+    ///    the GPU region) can still find and use the cache.  This second end() arrives
+    ///    via the early-return path in Geant4ParticleHandler::begin() — which skips
+    ///    user handlers and therefore cannot create a fresh cache entry.
+    ///    pex/pey/pez and vex/vey/vez are intentionally NOT restored since they are
+    ///    already set correctly from the G4Track before this callback.
+    ///
+    /// 2. No cache entry (fallback): begin() was called via the early-return path,
+    ///    or this is a hadronic secondary (e.g. photo-nuclear product) of a GPU track.
+    ///    If the G4Track's parentID is GPU-range, resolve g4Parent via the cache
+    ///    (same logic as begin()).  Otherwise restore g4Parent from GetParentID()
+    ///    which holds the correct CPU value set by AdePT's ReturnTrack/FillG4Track.
+    ///
+    /// Additionally, GPU-assigned track IDs must always go through the IF-branch of
+    /// Geant4ParticleHandler::end() so they land in m_particleMap as real particles.
+    /// The energy-threshold flag is (re-)set here as a safety net: a prior RESTORE
+    /// already handles this in the normal cache path, but setting it unconditionally
+    /// is cheap and correct.
     void end(const G4Track* track, Particle& particle) override {
+      // GPU-assigned tracks must always enter the IF-branch (m_particleMap path).
+      if (isGPUAssignedTrackID(track->GetTrackID())) {
+        PropertyMask(particle.reason).set(G4PARTICLE_ABOVE_ENERGY_THRESHOLD);
+      }
+
       auto it = m_trackCache.find(track->GetTrackID());
-      if (it == m_trackCache.end()) return;
+      if (it == m_trackCache.end()) {
+        // Fallback: no cache entry (hadronic secondary or early-return begin()).
+        // If the parent ID is GPU-range, resolve it via the cache rather than
+        // blindly using track->GetParentID(), which would undo the g4Parent
+        // resolution that begin() already performed for photo-nuclear products.
+        int parentID = track->GetParentID();
+        if (isGPUAssignedTrackID(parentID)) {
+          auto parentIt = m_trackCache.find(parentID);
+          if (parentIt != m_trackCache.end()) {
+            particle.g4Parent = parentIt->second.g4Parent;
+          }
+          // else: leave particle.g4Parent as set by begin()
+        } else {
+          particle.g4Parent = parentID;
+        }
+        return;
+      }
 
       if (it->second.id != particle.id) {
         it->second.restoreTo(particle);
       }
-      m_trackCache.erase(it);
+      // Update (not erase) the cache so a subsequent end() call for the same G4
+      // track ID — which arrives after begin() took the early-return path that
+      // skips user handlers — can still restore from the correct state.
+      it->second = CachedState(particle);
     }
 
   private:

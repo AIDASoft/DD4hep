@@ -28,6 +28,7 @@ runner.numberOfEvents = 10
 runner.enableGun = True
 runner.gun.particle = "e-"
 runner.gun.energy = "10*GeV"
+runner.gun.multiplicity = 1
 runner.gun.distribution = "uniform"
 
 # --- Field tracking configuration ---
@@ -49,13 +50,13 @@ def setup_physics(kernel):
     adept_phys = PhysicsList(kernel, str("Geant4AdePTPhysics"))
 
     # GPU track buffer capacity in millions of slots.
-    adept_phys.MillionsOfTrackSlots = 0.1
+    adept_phys.MillionsOfTrackSlots = 10
 
     # GPU buffer capacity for tracks that leak back to the CPU.
-    adept_phys.MillionsOfLeakSlots = 0.1
+    adept_phys.MillionsOfLeakSlots = 10
 
     # GPU hit buffer capacity in millions of slots.
-    adept_phys.MillionsOfHitSlots = 0.1
+    adept_phys.MillionsOfHitSlots = 10
 
     # Fraction of the hit buffer occupancy that triggers a flush back to the CPU.
     adept_phys.HitBufferFlushThreshold = 0.1
