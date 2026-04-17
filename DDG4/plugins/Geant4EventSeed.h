@@ -15,6 +15,7 @@
 
 // Framework include files
 #include <DDG4/Geant4RunAction.h>
+#include <DDG4/Geant4GeneratorAction.h>
 
 
 
@@ -56,6 +57,8 @@ namespace dd4hep {
       void begin(const G4Run*);
       /// begin-of-event callback
       void beginEvent(const G4Event*);
+      /// generatePrimaries callback
+      void setSeedForPrimaries(G4Event*);
     };
 
     /*
