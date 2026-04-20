@@ -441,7 +441,8 @@ void* Geant4Converter::handleMaterial(const std::string& name, Material medium) 
       }
       int idx = -1;
       try  {
-        if( nullptr != tab->GetProperty(named->GetName()) )  {
+        const auto& pn = tab->GetMaterialPropertyNames();
+        if( std::find(std::begin(pn), std::end(pn), named->GetName()) != pn.end() )  {
           idx = tab->GetPropertyIndex(named->GetName());
         }
       }
@@ -535,7 +536,8 @@ void* Geant4Converter::handleMaterial(const std::string& name, Material medium) 
       }
       int idx = -1;
       try   {
-        if( !tab->ConstPropertyExists(named->GetName()) )  {
+        const auto& pn = tab->GetMaterialConstPropertyNames();
+        if( std::find(std::begin(pn), std::end(pn), named->GetName()) != pn.end() )  {
           idx = tab->GetConstPropertyIndex(named->GetName());
         }
       }
