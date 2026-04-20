@@ -418,20 +418,20 @@ void* Geant4Converter::handleMaterial(const std::string& name, Material medium) 
       TNamed*      named  = (TNamed*)obj;
       TGDMLMatrix* matrix = info.manager->GetGDMLMatrix(named->GetTitle());
       const char*  cptr   = ::strstr(matrix->GetName(), GEANT4_TAG_IGNORE);
-      if ( nullptr != cptr )   {
+      if ( nullptr != cptr )  {
         printout(INFO,name,"++ Ignore property %s [%s]. Not Suitable for Geant4.",
                  matrix->GetName(), matrix->GetTitle());
         continue;
       }
       cptr = ::strstr(matrix->GetTitle(), GEANT4_TAG_IGNORE);
-      if ( nullptr != cptr )   {
+      if ( nullptr != cptr )  {
         printout(INFO,name,"++ Ignore property %s [%s]. Not Suitable for Geant4.",
                  matrix->GetName(), matrix->GetTitle());
         continue;
       }
       Geant4GeometryInfo::PropertyVector* v =
         (Geant4GeometryInfo::PropertyVector*)handleMaterialProperties(matrix);
-      if ( nullptr == v )   {
+      if ( nullptr == v )  {
         except("Geant4Converter", "++ FAILED to create G4 material %s [Cannot convert property:%s]",
                material->GetName(), named->GetName());
       }
@@ -440,8 +440,10 @@ void* Geant4Converter::handleMaterial(const std::string& name, Material medium) 
         mat->SetMaterialPropertiesTable(tab);
       }
       int idx = -1;
-      try   {
-        idx = tab->GetPropertyIndex(named->GetName());
+      try  {
+        if( nullptr != tab->GetProperty(named->GetName()) )  {
+          idx = tab->GetPropertyIndex(named->GetName());
+        }
       }
       catch(const std::exception& e)   {
         exc_str = e.what();
@@ -533,7 +535,9 @@ void* Geant4Converter::handleMaterial(const std::string& name, Material medium) 
       }
       int idx = -1;
       try   {
-        idx = tab->GetConstPropertyIndex(named->GetName());
+        if( !tab->ConstPropertyExists(named->GetName()) )  {
+          idx = tab->GetConstPropertyIndex(named->GetName());
+        }
       }
       catch(const std::exception& e)   {
         exc_str = e.what();
