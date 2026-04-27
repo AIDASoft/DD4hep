@@ -750,7 +750,11 @@ class DD4hepSimulation(object):
     if self.runType == "batch":
       if not self.numberOfEvents:
         self._errorMessages.append("ERROR: Batch mode requested, but did not set number of events")
-      if not (self.inputFiles or self.enableGun or self.enableG4Gun or self.enableG4GPS or self.inputConfig.userInputPlugin):
+      if not any([self.inputFiles,
+                  self.enableGun,
+                  self.enableG4Gun,
+                  self.enableG4GPS,
+                  self.inputConfig.userInputPlugin]):
         self._errorMessages.append("ERROR: Batch mode requested, but did not set inputFile(s), gun, or userInputPlugin")
 
     if self.inputFiles and (self.enableG4Gun or self.enableG4GPS):
