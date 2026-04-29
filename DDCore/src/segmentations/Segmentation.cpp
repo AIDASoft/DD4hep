@@ -168,19 +168,19 @@ namespace dd4hep {
       if(fabs(position/cellBoundaries.back()-1.0)  < 3e-12) return int(cellBoundaries.size()-2);
 
       // hits outside cannot be treated
-      if(position < cellBoundaries.front()) {
+      if(position < cellBoundaries.front()+offset) {
         std::stringstream err;
         err << std::setprecision(20) << std::scientific;
         err << "Hit Position (" << position << ") is below the acceptance"
-            << " (" << cellBoundaries.front() << ") "
+            << " (" << cellBoundaries.front()+offset << ") "
             << "of the segmentation";
         throw std::runtime_error(err.str());
       }
-      if(position > cellBoundaries.back() ) {
+      if(position > cellBoundaries.back()+offset ) {
         std::stringstream err;
         err << std::setprecision(20) << std::scientific;
         err << "Hit Position (" << position << ") is above the acceptance"
-            << " (" << cellBoundaries.back() << ") "
+            << " (" << cellBoundaries.back()+offset << ") "
             << "of the segmentation";
         throw std::runtime_error(err.str());
       }
