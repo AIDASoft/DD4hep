@@ -130,40 +130,40 @@ def _getAttrBool(el, name: str) -> bool:
 _dd4hep = cppyy.gbl.dd4hep
 
 # -- Core detector / volume types
-Assembly     = _dd4hep.Assembly
-DetElement   = _dd4hep.DetElement
+Assembly = _dd4hep.Assembly
+DetElement = _dd4hep.DetElement
 PlacedVolume = _dd4hep.PlacedVolume
-Volume       = _dd4hep.Volume
+Volume = _dd4hep.Volume
 
 # -- Transforms and positions
-Position     = _dd4hep.Position
-Transform3D  = _dd4hep.Transform3D
+Position = _dd4hep.Position
+Transform3D = _dd4hep.Transform3D
 Translation3D = _dd4hep.Translation3D
-Rotation3D   = _dd4hep.Rotation3D
-RotationX    = _dd4hep.RotationX
-RotationY    = _dd4hep.RotationY
-RotationZ    = _dd4hep.RotationZ
-RotationZYX  = _dd4hep.RotationZYX
+Rotation3D = _dd4hep.Rotation3D
+RotationX = _dd4hep.RotationX
+RotationY = _dd4hep.RotationY
+RotationZ = _dd4hep.RotationZ
+RotationZYX = _dd4hep.RotationZYX
 
 # -- Shapes (common subset sufficient for most detector geometry)
-Box              = _dd4hep.Box
-Tube             = _dd4hep.Tube
-CutTube          = _dd4hep.CutTube
-Cone             = _dd4hep.Cone
-ConeSegment      = _dd4hep.ConeSegment
-Sphere           = _dd4hep.Sphere
-Torus            = _dd4hep.Torus
-Polycone         = _dd4hep.Polycone
-Trapezoid        = _dd4hep.Trapezoid
+Box = _dd4hep.Box
+Tube = _dd4hep.Tube
+CutTube = _dd4hep.CutTube
+Cone = _dd4hep.Cone
+ConeSegment = _dd4hep.ConeSegment
+Sphere = _dd4hep.Sphere
+Torus = _dd4hep.Torus
+Polycone = _dd4hep.Polycone
+Trapezoid = _dd4hep.Trapezoid
 SubtractionSolid = _dd4hep.SubtractionSolid
-UnionSolid       = _dd4hep.UnionSolid
+UnionSolid = _dd4hep.UnionSolid
 IntersectionSolid = _dd4hep.IntersectionSolid
 
 # -- XML handle types used in detector factory functions
-_U        = _dd4hep.xml.Strng_t       # equivalent of the C++ _U("tag") macro
+_U = _dd4hep.xml.Strng_t       # equivalent of the C++ _U("tag") macro
 _toString = _dd4hep.xml._toString     # equivalent of the C++ _toString(n, "fmt") macro
 
-xml_det_t  = cppyy.gbl.xml_det_t
+xml_det_t = cppyy.gbl.xml_det_t
 xml_coll_t = cppyy.gbl.xml_coll_t
 xml_comp_t = cppyy.gbl.xml_comp_t
 
@@ -187,4 +187,4 @@ __all__ = [
     "SubtractionSolid", "UnionSolid", "IntersectionSolid",
     # XML helpers
     "_U", "_toString", "xml_det_t", "xml_coll_t", "xml_comp_t",
-]
+    ]
