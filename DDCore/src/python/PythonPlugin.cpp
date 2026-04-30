@@ -17,6 +17,7 @@
 #include <DD4hep/Printout.h>
 
 // ROOT includes
+#include <RVersion.h>
 #include <TPython.h>
 
 // C++ includes
@@ -237,8 +238,13 @@ namespace  {
            << "except Exception:\n"
            << "    import traceback; traceback.print_exc()\n"
            << "    raise\n"
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,34,0)
            << "cppyy.gbl.ROOT.Internal.SwapWithObjAtAddr['dd4hep::DetElement']"
            << "(_dd4hep_py_det, " << res_addr << ")\n";
+#else
+           << "_dd4hep_py_res = cppyy.bind_object(" << res_addr << ", 'dd4hep::DetElement')\n"
+           << "cppyy.gbl.std.swap(_dd4hep_py_det, _dd4hep_py_res)\n";
+#endif
 
     if (!TPython::Exec(script.str().c_str())) {
       except(factory_name, "+++ Python function %s.%s failed", mod.c_str(), func.c_str());
