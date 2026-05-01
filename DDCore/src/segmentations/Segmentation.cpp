@@ -160,33 +160,35 @@ namespace dd4hep {
     }
     /// Helper method to convert a 1D position to a cell ID given a vector of binBoundaries
     int Segmentation::positionToBin(double position, std::vector<double> const& cellBoundaries, double offset) {
-
+      const double relPosition = position - offset;
       // include the lower edge to the segmentation, deal with numerical issues
-      if(fabs(position/cellBoundaries.front()-1.0) < 3e-12) return 0;
+      if(fabs(relPosition/cellBoundaries.front()-1.0) < 3e-12) return 0;
 
       // include the upper edge of the last bin to the segmentation, deal with numerical issues
-      if(fabs(position/cellBoundaries.back()-1.0)  < 3e-12) return int(cellBoundaries.size()-2);
+      if(fabs(relPosition/cellBoundaries.back()-1.0)  < 3e-12) return int(cellBoundaries.size()-2);
 
       // hits outside cannot be treated
-      if(position < cellBoundaries.front()+offset) {
+      if(relPosition < cellBoundaries.front()) {
         std::stringstream err;
         err << std::setprecision(20) << std::scientific;
-        err << "Hit Position (" << position << ") is below the acceptance"
-            << " (" << cellBoundaries.front()+offset << ") "
+        err << "Hit relative position (" << relPosition << " = " << position << " - " << offset 
+            << ") is below the acceptance"
+            << " (" << cellBoundaries.front() << ") "
             << "of the segmentation";
         throw std::runtime_error(err.str());
       }
-      if(position > cellBoundaries.back()+offset ) {
+      if(relPosition > cellBoundaries.back() ) {
         std::stringstream err;
         err << std::setprecision(20) << std::scientific;
-        err << "Hit Position (" << position << ") is above the acceptance"
-            << " (" << cellBoundaries.back()+offset << ") "
+        err << "Hit relative position (" << relPosition << " = " << position << " - " << offset 
+            << ") is above the acceptance"
+            << " (" << cellBoundaries.back() << ") "
             << "of the segmentation";
         throw std::runtime_error(err.str());
       }
       std::vector<double>::const_iterator bin = std::upper_bound(cellBoundaries.begin(),
                                                                  cellBoundaries.end(),
-                                                                 position-offset);
+                                                                 relPosition);
       // need to reduce found bin by one, because upper_bound works that way, lower_bound would not help
       return bin - cellBoundaries.begin() - 1 ;
 
