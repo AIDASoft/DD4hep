@@ -36,8 +36,8 @@
 #include <G4VModularPhysicsList.hh>
 #include <G4VUserPhysicsList.hh>
 
-#include <AdePT/core/AdePTConfiguration.hh>
-#include <AdePT/integration/AdePTTrackingManager.hh>
+#include <AdePT/g4integration/AdePTConfiguration.hh>
+#include <AdePT/g4integration/AdePTTrackingManager.hh>
 
 #include <G4HepEmConfig.hh>
 
