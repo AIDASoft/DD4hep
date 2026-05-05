@@ -405,7 +405,7 @@ dd4hep_add_test_reg( MiniTel_check_checksum_Minitel3
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTelGenerate.xml
   	      -plugin DD4hepDetectorChecksum -readout -detector Minitel3
-  REGEX_PASS "Combined hash code                      22de2a78a15abd64  \\(54 sub-codes\\)"
+  REGEX_PASS "Combined hash code                      5373250faed5e515  \\(54 sub-codes\\)"
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
@@ -414,7 +414,7 @@ dd4hep_add_test_reg( MiniTel_check_checksum_full
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/MiniTelGenerate.xml
   	      -plugin DD4hepDetectorChecksum -readout
-  REGEX_PASS "Combined hash code                      cbcafd06b9ee34c1  \\(207 sub-codes\\)"
+  REGEX_PASS "Combined hash code                      e0b451e964100859  \\(207 sub-codes\\)"
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
@@ -423,7 +423,7 @@ dd4hep_add_test_reg( Check_Shape_Tessellated_check_checksum
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/Check_Shape_Tessellated.xml
   	      -plugin DD4hepDetectorChecksum
-  REGEX_PASS "Combined hash code                      13a268b6718de7a8  \\(13 sub-codes\\)"
+  REGEX_PASS "Combined hash code                      716a174589b62a5c  \\(13 sub-codes\\)"
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
@@ -432,7 +432,7 @@ dd4hep_add_test_reg( Check_Shape_Tessellated_check_checksum_with_meshes
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/Check_Shape_Tessellated.xml
   	      -plugin DD4hepDetectorChecksum -meshes -precision 3
-  REGEX_PASS "Combined hash code                      1fc84f1c2d93fd80  \\(13 sub-codes\\)"
+  REGEX_PASS "Combined hash code                      8372633493ec703a  \\(13 sub-codes\\)"
   REGEX_FAIL "Exception;EXCEPTION;ERROR"
 )
 #
