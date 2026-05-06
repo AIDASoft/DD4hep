@@ -208,7 +208,7 @@ unsigned long long int dd4hep::detail::update_hash64(unsigned long long int hash
 /// 64 bit hash update function
 unsigned long long int dd4hep::detail::update_hash64(unsigned long long int hash, const void* key, std::size_t len)  {
   const unsigned char* str = (const unsigned char*)key;
-  for ( ; len--; ++str) hash = FNV1a_64::doByte(hash, *str);
+  for (std::size_t i = 0; i < len; ++i) hash = FNV1a_64::doByte(hash, str[i]);
   return hash;
 }
 
