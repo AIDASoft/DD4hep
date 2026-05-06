@@ -192,6 +192,18 @@ IF(DD4HEP_USE_ADEPT)
           ${_rdc_final}
           "-Wl,--pop-state"
         )
+        # listcomponents_dd4hep only links libDD4hepGaudiPluginMgr, so when it
+        # dlopen's any plugin that transitively loads libvecgeom.so it cannot
+        # resolve libvecgeom.so's __cudaRegisterLinkedBinary_* symbols. Force
+        # the AdePT combined final library into its DT_NEEDED so that all CUDA
+        # RDC symbols are resolved before any plugin is loaded.
+        if(TARGET listcomponents)
+          target_link_libraries(listcomponents PUBLIC
+            "-Wl,--push-state,--no-as-needed"
+            ${_rdc_final}
+            "-Wl,--pop-state"
+          )
+        endif()
       endif()
     endif()
   endforeach()
