@@ -17,6 +17,7 @@
 #include <DD4hep/Printout.h>
 
 // C/C++ include files
+#include <cstddef>
 #include <cstring>
 
 #if defined(__linux) || defined(__APPLE__) || defined(__powerpc64__)
