@@ -16,6 +16,8 @@
 // Framework include files
 #include <DDG4/Geant4OutputAction.h>
 
+#include <memory>
+
 class TFile;
 class TTree;
 class TBranch;
@@ -36,16 +38,16 @@ namespace dd4hep {
      */
     class Geant4Output2ROOT: public Geant4OutputAction {
     protected:
-      typedef std::map<std::string, TBranch*> Branches;
-      typedef std::map<std::string, TTree*> Sections;
+      using Branches = std::map<std::string, TBranch*>;
+      using Sections = std::map<std::string, TTree*>;
       /// Known file sections
       Sections m_sections;
       /// Branches in the event tree
       Branches m_branches;
       /// Reference to the ROOT file to open
-      TFile* m_file;
-      /// Reference to the event data tree
-      TTree* m_tree;
+      std::unique_ptr<TFile> m_file;
+      /// Reference to the event data tree (owned by m_file)
+      TTree* m_tree = nullptr;
       /// File sequence number
       int    m_fseqNunmber  { 0 };
       /// Property: name of the event tree
@@ -55,31 +57,31 @@ namespace dd4hep {
       /// Property: vector with disabled collections
       bool  m_disableParticles = false;
       /// Property: Flag if Monte-Carlo truth should be followed and checked
-      bool m_handleMCTruth;
+      bool m_handleMCTruth = true;
       /// Property: Flag if Monte-Carlo truth should be followed and checked
-      bool m_filesByRun;
-      
+      bool m_filesByRun = false;
+
     public:
       /// Standard constructor
       Geant4Output2ROOT(Geant4Context* context, const std::string& nam);
       /// Default destructor
-      virtual ~Geant4Output2ROOT();
+      ~Geant4Output2ROOT() override;
       /// Create/access tree by name for non collection user data
-      TTree* section(const std::string& nam);
+      [[nodiscard]] TTree* section(const std::string& nam);
       /// Fill single EVENT branch entry (Geant4 collection data)
       int fill(const std::string& nam, const ComponentCast& type, void* ptr);
 
       /// Close current output file
       virtual void closeOutput();
       /// Callback to store the Geant4 run information
-      virtual void beginRun(const G4Run* run)  override;
+      void beginRun(const G4Run* run)  override;
       /// Callback to store each Geant4 hit collection
-      virtual void saveCollection(OutputContext<G4Event>& ctxt, G4VHitsCollection* collection)  override;
+      void saveCollection(OutputContext<G4Event>& ctxt, G4VHitsCollection* collection)  override;
       /// Callback to store the Geant4 event
-      virtual void saveEvent(OutputContext<G4Event>& ctxt)  override;
+      void saveEvent(OutputContext<G4Event>& ctxt)  override;
 
       /// Commit data at end of filling procedure
-      virtual void commit(OutputContext<G4Event>& ctxt)  override;
+      void commit(OutputContext<G4Event>& ctxt)  override;
     };
 
   }    // End namespace sim
