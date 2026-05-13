@@ -30,7 +30,6 @@
 #include <TBranch.h>
 #include <TSystem.h>
 
-
 using namespace dd4hep::sim;
 
 /// Standard constructor
@@ -168,11 +167,9 @@ void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
   if (m_disableParticles) return;
   auto* parts = context()->event().extension<Geant4ParticleMap>();
   if (!parts) return;
-  using Manip = Geant4HitWrapper::HitManipulator;
-  using ParticleMap = Geant4ParticleMap::ParticleMap;
-  Manip* manipulator = Geant4HitWrapper::manipulator<Geant4Particle>();
+  Geant4HitWrapper::HitManipulator* manipulator = Geant4HitWrapper::manipulator<Geant4Particle>();
   G4ParticleTable* table = G4ParticleTable::GetParticleTable();
-  const ParticleMap& pm = parts->particles();
+  const Geant4ParticleMap::ParticleMap pm = parts->particles();
   std::vector<void*> particles;
   particles.reserve(pm.size());
   for ( const auto& i : pm )   {
