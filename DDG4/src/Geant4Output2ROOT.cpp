@@ -54,7 +54,7 @@ void Geant4Output2ROOT::closeOutput()   {
   if (!m_file) return;
   TDirectory::TContext ctxt(m_file.get());
   info("+++ Closing ROOT output file %s", m_file->GetName());
-  m_sections.erase(m_section);
+  m_sections.clear();
   m_branches.clear();
   m_tree->Write();
   m_file->Close();
@@ -184,18 +184,18 @@ void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
 /// Callback to store each Geant4 hit collection
 void Geant4Output2ROOT::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHitsCollection* collection) {
   auto* coll = dynamic_cast<Geant4HitCollection*>(collection);
+  if (!coll) return;
   const std::string hc_nam = collection->GetName();
   for(const auto& n : m_disabledCollections)  {
     if ( n == hc_nam )   {
       return;
     }
   }
-  if (!coll) return;
-  std::vector<void*> hits;
-  coll->getHitsUnchecked(hits);
   const size_t nhits = coll->GetSize();
+  std::vector<void*> hits;
+  hits.reserve(nhits);
+  coll->getHitsUnchecked(hits);
   if ( m_handleMCTruth && m_truth && nhits > 0 )   {
-    hits.reserve(nhits);
     try  {
       for(size_t i=0; i<nhits; ++i)   {
         Geant4HitData* h = coll->hit(i);

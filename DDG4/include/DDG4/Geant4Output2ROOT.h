@@ -48,8 +48,6 @@ namespace dd4hep {
       std::unique_ptr<TFile> m_file;
       /// Reference to the event data tree (owned by m_file)
       TTree* m_tree = nullptr;
-      /// File sequence number
-      int    m_fseqNunmber  { 0 };
       /// Property: name of the event tree
       std::string m_section;
       /// Property: vector with disabled collections
@@ -58,7 +56,7 @@ namespace dd4hep {
       bool  m_disableParticles = false;
       /// Property: Flag if Monte-Carlo truth should be followed and checked
       bool m_handleMCTruth = true;
-      /// Property: Flag if Monte-Carlo truth should be followed and checked
+      /// Property: Flag to create a new output file for each run
       bool m_filesByRun = false;
 
     public:
@@ -67,7 +65,7 @@ namespace dd4hep {
       /// Default destructor
       ~Geant4Output2ROOT() override;
       /// Create/access tree by name for non collection user data
-      [[nodiscard]] TTree* section(const std::string& nam);
+      TTree* section(const std::string& nam);
       /// Fill single EVENT branch entry (Geant4 collection data)
       int fill(const std::string& nam, const ComponentCast& type, void* ptr);
 
