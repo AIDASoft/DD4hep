@@ -104,8 +104,10 @@ function(dd4hep_generate_rootmap library)
                      "${CMAKE_COMMAND}" -E env
                      "${ENV_VAR}=${_ld_path}"
                      "ROOT_LIBRARY_PATH=${DD4HEP_ROOT_LIBRARY_PATH}"
+                     ${DD4HEP_GENERATE_ROOTMAP_EXTRA_ENV}
                      $<TARGET_FILE:DD4hep::listcomponents> -o ${rootmapfile} $<TARGET_FILE_NAME:${library}>
                      WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH}
+                     COMMAND_EXPAND_LISTS
                      )
 
   add_custom_target(Components_${library} ALL DEPENDS ${rootmapfile})
