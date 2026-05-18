@@ -482,7 +482,11 @@ void* Geant4Converter::handleMaterial(const std::string& name, Material medium) 
       }
       G4MaterialPropertyVector* vec =
         new G4MaterialPropertyVector(&bins[0], &vals[0], bins.size());
+#if G4VERSION_NUMBER >= 1100
       tab->AddProperty(named->GetName(), vec, custom_property);
+#else
+      tab->AddProperty(named->GetName(), vec);
+#endif
       printout(lvl, name, "++      %sProperty: %-20s [%ld x %ld] -> %s ",
                custom_property ? "CUSTOM " : "", named->GetName(),
                matrix->GetRows(), matrix->GetCols(), named->GetTitle());
