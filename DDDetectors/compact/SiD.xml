@@ -46,6 +46,9 @@
     <region name="SiTrackerBarrelRegion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
       <limitsetref name="SiTrackerBarrelRegionLimitSet"/>
     </region>
+    <region name="EcalRegion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="cal_limits"/>
+    </region>
   </regions>
 
 

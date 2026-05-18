@@ -163,6 +163,63 @@ IF(DD4HEP_USE_HEPMC3)
   SET(DD4HEP_USE_HEPMC3 ON)
 ENDIF()
 
+IF(DD4HEP_USE_ADEPT)
+  # AdePT uses CUDA Separable Compilation (RDC). libadept_g4integration.so and
+  # libvecgeom.so have undefined __cudaRegisterLinkedBinary_* symbols resolved
+  # only by a "final" device-linked library. The spack build's --as-needed flag
+  # would silently drop these final libraries from DT_NEEDED (since no DDG4
+  # object directly references their symbols), so we force them in explicitly.
+  #
+  # IMPORTANT: libadept_g4integration_final.so is the device-link superset of
+  # ALL 76 translation units (74 VecGeom + 1 AdePT Transport + 1 G4Integration).
+  # Its internal __cudaRegisterLinkedBinary implementation batches these 76 calls
+  # and only fires __cudaRegisterFatBinary once all 76 are seen. If
+  # libvecgeom_final.so is ALSO loaded, it intercepts 74 of those calls,
+  # libadept_g4integration_final.so never reaches 76, and __cudaRegisterFatBinary
+  # is never called — leaving g4HepEmPars and other device constants unregistered
+  # (cudaMemcpyToSymbol returns "invalid device symbol").
+  #
+  # Solution: link ONLY libadept_g4integration_final.so. It provides all 76
+  # __cudaRegisterLinkedBinary_* symbols (VecGeom + AdePT), so both libvecgeom.so
+  # and libadept_transport.so find their registration functions here, the counter
+  # reaches 76, and the combined device binary is properly registered.
+  foreach(_rdc_middle AdePT::G4Integration)
+    if(TARGET ${_rdc_middle})
+      get_target_property(_rdc_final ${_rdc_middle} CUDA_RDC_FINAL_LIBRARY)
+      if(_rdc_final AND TARGET ${_rdc_final})
+        target_link_libraries(DDG4 PUBLIC
+          "-Wl,--push-state,--no-as-needed"
+          ${_rdc_final}
+          "-Wl,--pop-state"
+        )
+        # listcomponents_dd4hep only links libDD4hepGaudiPluginMgr, so when it
+        # dlopen's any plugin that transitively loads libvecgeom.so it cannot
+        # resolve libvecgeom.so's __cudaRegisterLinkedBinary_* symbols. Force
+        # the AdePT combined final library into its DT_NEEDED so that all CUDA
+        # RDC symbols are resolved before any plugin is loaded.
+        if(TARGET listcomponents)
+          target_link_libraries(listcomponents PUBLIC
+            "-Wl,--push-state,--no-as-needed"
+            ${_rdc_final}
+            "-Wl,--pop-state"
+          )
+        endif()
+      endif()
+    endif()
+  endforeach()
+  unset(_rdc_middle)
+  unset(_rdc_final)
+
+  dd4hep_add_plugin(DDG4AdePT
+    SOURCES adept/*.cpp
+    USES DD4hep::DDG4 DD4hep::DDCore Geant4::Interface
+      AdePT::G4Integration AdePT::Transport
+    )
+  install(TARGETS DDG4AdePT EXPORT DD4hep LIBRARY DESTINATION lib)
+  set_target_properties(DDG4AdePT PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+  SET(DD4HEP_USE_ADEPT ON)
+ENDIF()
+
 #
 #---------------------------  DDRec dependent Plugins  -----------------------------
 #This does not compile at the moment
