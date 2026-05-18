@@ -213,9 +213,7 @@ namespace dd4hep {
     }
 
     /// Returns the 3 magnetic field components (x, y, z) if many components are present
-    void combinedMagnetic(const double* pos, double* field) const   {
-      combinedMagnetic(Position(pos[0], pos[1], pos[2]), field);
-    }
+    void combinedMagnetic(const double* pos, double* field) const;
 
     /// Returns the 3 electric field components (x, y, z).
     void electricField(const Position& pos, double* field) const;
@@ -245,14 +243,12 @@ namespace dd4hep {
     void magneticField(const Position& pos, double* field) const;
 
     /// Returns the 3  magnetic field components (x, y, z).
-    void magneticField(const double* pos, double* field) const   {
-      magneticField(Position(pos[0], pos[1], pos[2]), field);
-    }
+    void magneticField(const double* pos, double* field) const;
 
     /// Returns the 3 magnetic field components (x, y, z).
     void magneticField(const double* pos, Direction& field) const {
       double fld[3] = { 0e0, 0e0, 0e0 };
-      magneticField(Position(pos[0], pos[1], pos[2]), fld);
+      magneticField(pos, fld);
       field = { fld[0], fld[1], fld[2] };
     }
 
