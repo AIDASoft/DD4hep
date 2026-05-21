@@ -298,7 +298,7 @@ if not noPilot:
     print('\n')
     try:
         pilotresult = subprocess.run(cmd, capture_output=True, text=True, timeout=int(opts.timeOutValue))
-    except subprocess.TimeoutExpired as e:
+    except subprocess.TimeoutExpired:
         sys.exit('pilot job timeout!')
     print('done, checking pilot result')
     has_Material_scan_between = 0
@@ -329,7 +329,7 @@ if steerfileName != 'None':
 print('now running main ddsim job..this may take some time')
 try:
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=int(opts.timeOutValue))
-except subprocess.TimeoutExpired as e:
+except subprocess.TimeoutExpired:
     sys.exit('main job timeout!')
 
 #
