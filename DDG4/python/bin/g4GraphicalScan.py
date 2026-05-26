@@ -44,6 +44,10 @@ parser.description = '2-dimensional material scan using Geant4.'
 parser.add_option('-c', '--compact', dest='compact', default=None,
                   help='compact xml input file',
                   metavar='<FILE>')
+parser.add_option('-S', '--steeringFile',
+                  dest='steerFile', default=None,
+                  help='ddsim steering file (optional)',
+                  metavar='<FILE>')
 parser.add_option('-s', '--sliceType',
                   dest='sliceType', default='ZX',
                   help='slice plane [XY, ZX, or ZY]',
@@ -84,13 +88,19 @@ infileName = str(opts.compact)
 if not os.path.isfile(infileName):
     print('ERROR: cannot find requested input geometry file', infileName, file=sys.stderr)
     exit(1)
-print(infileName)
+print('geometry file:', infileName)
+
+steerfileName = str(opts.steerFile)
+if steerfileName != 'None' and not os.path.isfile(steerfileName):
+    print('ERROR: cannot find requested ddsim steering file', steerfileName, file=sys.stderr)
+    exit(1)
+print('ddsim steering file:', steerfileName)
 
 sliceType = str(opts.sliceType)
 if sliceType != 'XY' and sliceType != 'ZX' and sliceType != 'ZY':
     print('ERROR: unknown slice Type', sliceType, '. Choose XY, ZX or ZY.', file=sys.stderr)
     exit(1)
-print(sliceType)
+print('slice type:', sliceType)
 
 planePos = -99999.
 planeAxis = ''
@@ -108,7 +118,7 @@ elif len(aa) == 1 and sliceType == 'ZY':
 else:
     print('ERROR: could not determine xRange, or inconsistent with sliceType', file=sys.stderr)
     exit(1)
-print('xRange', xRange)
+print('xRange', xRange, '[mm]')
 
 aa = str(opts.yRange).split(',')
 if len(aa) == 2 and sliceType != 'ZX':
@@ -123,7 +133,7 @@ elif len(aa) == 1 and sliceType == 'ZX':
 else:
     print('ERROR: could not determine yRange, or inconsistent with sliceType', file=sys.stderr)
     exit(1)
-print('yRange', yRange)
+print('yRange', yRange, '[mm]')
 
 aa = str(opts.zRange).split(',')
 if len(aa) == 2 and sliceType != 'XY':
@@ -138,7 +148,7 @@ elif len(aa) == 1 and sliceType == 'XY':
 else:
     print('ERROR: could not determine zRange, or inconsistent with sliceType', file=sys.stderr)
     exit(1)
-print('zRange', zRange)
+print('zRange', zRange, '[mm]')
 
 nBins = int(opts.nBins)
 print('nBins', nBins)
@@ -149,6 +159,8 @@ if nBins < 1:
 
 noPilot = bool(opts.noPilot)
 print('noPilot', noPilot)
+
+print('timeout', opts.timeOutValue, '[s]')
 
 outFileName = str(opts.outFile)
 #
@@ -276,11 +288,18 @@ pilotMac.close()
 if not noPilot:
     cmd = ['ddsim', '--compactFile', infileName, '--runType', 'run', '--enableG4Gun',
            '--action.step', 'Geant4MaterialScanner/MaterialScan', '-M', pilotName]
+    if steerfileName != 'None':
+        cmd.append('--steeringFile')
+        cmd.append(steerfileName)
+
     print('running test pilot job...\n')
     for cc in cmd:
         print(cc, end=' ')
     print('\n')
-    pilotresult = subprocess.run(cmd, capture_output=True, text=True, timeout=int(opts.timeOutValue))
+    try:
+        pilotresult = subprocess.run(cmd, capture_output=True, text=True, timeout=int(opts.timeOutValue))
+    except subprocess.TimeoutExpired:
+        sys.exit('pilot job timeout!')
     print('done, checking pilot result')
     has_Material_scan_between = 0
     has_Finished_run = 0
@@ -291,17 +310,28 @@ if not noPilot:
             has_Finished_run += 1
     if has_Material_scan_between != 2 or has_Finished_run != 2:
         print('ERROR, pilot job seems not to have finished successfully')
-        for ll in pilotresult.stdout.splitlines():
-            print(ll)
-        print('ERROR, pilot job seems not to have finished successfully')
-    print('pilot job seems OK')
+        print('run the following command to investigate why:')
+        for cc in cmd:
+            print(cc, end=' ')
+        print('\n')
+        sys.exit(1)
+    else:
+        print('pilot job seems OK')
 #
 # run ddsim with the full macro
 #
 cmd = ['ddsim', '--compactFile', infileName, '--runType', 'run', '--enableG4Gun',
        '--action.step', 'Geant4MaterialScanner/MaterialScan', '-M', steerName]
+if steerfileName != 'None':
+    cmd.append('--steeringFile')
+    cmd.append(steerfileName)
+
 print('now running main ddsim job..this may take some time')
-result = subprocess.run(cmd, capture_output=True, text=True, timeout=int(opts.timeOutValue))
+try:
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=int(opts.timeOutValue))
+except subprocess.TimeoutExpired:
+    sys.exit('main job timeout!')
+
 #
 # parse the results
 #
