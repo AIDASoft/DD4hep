@@ -352,7 +352,7 @@ def run_ddsim_progress(mac_file, timeout, n_events):
     import threading
     from tqdm import tqdm
 
-    cmd = ['stdbuf', '-oL',
+    cmd = ['stdbuf', '-oL', # force stdout flush after every line
            'ddsim',
            '--compactFile', args.compact,
            '--runType',     'run',
@@ -369,6 +369,7 @@ def run_ddsim_progress(mac_file, timeout, n_events):
                             stderr=subprocess.STDOUT,
                             text=True)
 
+    # Watchdog thread to enforce timeout
     def _watchdog():
         try:
             proc.wait(timeout=timeout)
@@ -469,6 +470,7 @@ raw_data    = []   # list of events; each event is a list of step tuples
 current_evt = []
 in_scan     = False
 
+# Note: ddsim output is parsed for a second time now (first in run_ddsim_progress for the progress bar). In principle, we could unify these two steps, but this way the code is less cluttered/intertwined, and the parsing is very fast, so it should not be a problem.
 print('\nParsing ddsim output...')
 
 for line in result.stdout.splitlines():
