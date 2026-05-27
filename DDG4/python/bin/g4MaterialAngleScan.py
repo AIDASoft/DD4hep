@@ -76,6 +76,7 @@ parser.add_argument("--nPhi",
                     help="number of phi values to scan for each eta/theta/cosTheta/thetaRad bin")
 
 parser.add_argument("--timeOut",
+                    "-t",
                     dest="timeOut",
                     default=600,
                     type=int,
@@ -346,6 +347,65 @@ def run_ddsim(mac_file, timeout):
         return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
     except subprocess.TimeoutExpired:
         sys.exit(f'ERROR: ddsim timed out after {timeout} s')
+        
+def run_ddsim_progress(mac_file, timeout, n_events):
+    import threading
+    from tqdm import tqdm
+
+    cmd = ['stdbuf', '-oL',
+           'ddsim',
+           '--compactFile', args.compact,
+           '--runType',     'run',
+           '--enableG4Gun',
+           '--action.step', 'Geant4MaterialScanner/MaterialScan',
+           '-M',            mac_file]
+    if args.steering is not None:
+        cmd += ['--steeringFile', args.steering]
+    print('Running:', ' '.join(cmd))
+
+    lines = []
+
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT,
+                            text=True)
+
+    def _watchdog():
+        try:
+            proc.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            print(f'\nERROR: ddsim timed out after {timeout} s, killing process.')
+            proc.kill()
+
+    watchdog = threading.Thread(target=_watchdog, daemon=True)
+    watchdog.start()
+
+    pbar = None
+    print('  Waiting for Geant4 initialisation...', flush=True)
+
+    for line in proc.stdout:
+        lines.append(line)
+        if 'Finished run' in line:
+            if pbar is None:
+                # first event done — initialisation is over, start the bar
+                print('  Initialisation complete, scanning...', flush=True)
+                pbar = tqdm(total=n_events, unit='evt', desc='  ddsim')
+                pbar.update(1)   # count the event we just saw
+            else:
+                pbar.update(1)
+
+    if pbar is not None:
+        pbar.close()
+
+    proc.wait()
+
+    if proc.returncode == -9:
+        sys.exit('ERROR: ddsim was killed due to timeout.')
+    if proc.returncode != 0:
+        print(f'WARNING: ddsim exited with return code {proc.returncode}')
+
+    class Result:
+        stdout = ''.join(lines)
+    return Result()
 
 # ---------------------------------------------------------------------------
 # pilot run
@@ -372,7 +432,7 @@ if not args.noPilot:
 # ---------------------------------------------------------------------------
  
 print(f'Running main job ({nBins * args.nPhi} events)...')
-result = run_ddsim(macName, args.timeOut)
+result = run_ddsim_progress(macName, args.timeOut, nBins * args.nPhi)
  
 
 # ---------------------------------------------------------------------------
@@ -408,7 +468,9 @@ result = run_ddsim(macName, args.timeOut)
 raw_data    = []   # list of events; each event is a list of step tuples
 current_evt = []
 in_scan     = False
- 
+
+print('\nParsing ddsim output...')
+
 for line in result.stdout.splitlines():
     if 'Material scan between' in line:
         current_evt = []
