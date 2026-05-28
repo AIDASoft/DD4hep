@@ -34,6 +34,8 @@
 #include <G4OpRayleigh.hh>
 #include <G4OpMieHG.hh>
 #include <G4OpBoundaryProcess.hh>
+#include <G4OpWLS.hh>
+#include <G4OpWLS2.hh>
 #include <G4ParticleDefinition.hh>
 #include <G4ParticleTypes.hh>
 #include <G4ParticleTable.hh>
@@ -75,26 +77,51 @@ namespace dd4hep {
       virtual void constructProcesses(G4VUserPhysicsList* physics_list)   { 
         this->Geant4PhysicsList::constructProcesses(physics_list);
         info("+++ Constructing optical_photon processes:");
-        info("+++              G4OpAbsorption G4OpRayleigh G4OpMieHG G4OpBoundaryProcess");
         G4ParticleTable*      table = G4ParticleTable::GetParticleTable();
         G4ParticleDefinition* particle = table->FindParticle("opticalphoton");
         if (0 == particle) {
           except("++ Cannot resolve 'opticalphoton' particle definition!");
         }
 
+        G4ProcessManager* pmanager = particle->GetProcessManager();
+
+#if G4VERSION_NUMBER >= 1070
+        G4OpticalParameters* params = G4OpticalParameters::Instance();
+        params->SetBoundaryVerboseLevel(m_verbosity);
+        params->SetBoundaryInvokeSD(m_boundaryInvokeSD);
+
+        // Always add boundary process (controls surface interactions)
+        pmanager->AddDiscreteProcess(new G4OpBoundaryProcess());
+
+        // Add remaining processes only if activated in G4OpticalParameters.
+        // This allows callers to disable unused processes (e.g. OpMieHG when no
+        // material defines MIE scattering tables) to reduce GPIL overhead.
+        auto addIf = [&](const G4String& key, G4VDiscreteProcess* proc, G4int verbosity) {
+          if (params->GetProcessActivation(key)) {
+            proc->SetVerboseLevel(verbosity);
+            pmanager->AddDiscreteProcess(proc);
+          } else {
+            delete proc;
+          }
+        };
+        addIf("OpAbsorption", new G4OpAbsorption(), m_verbosity);
+        addIf("OpRayleigh",   new G4OpRayleigh(),   m_verbosity);
+        addIf("OpMieHG",      new G4OpMieHG(),      m_verbosity);
+        addIf("OpWLS",        new G4OpWLS(),        m_verbosity);
+        addIf("OpWLS2",       new G4OpWLS2(),       m_verbosity);
+
+        // Log which processes are actually registered
+        std::string active = "+++              G4OpBoundaryProcess";
+        for (const char* key : {"OpAbsorption", "OpRayleigh", "OpMieHG", "OpWLS", "OpWLS2"}) {
+          if (params->GetProcessActivation(key)) active += std::string(" G4") + key;
+        }
+        info("%s", active.c_str());
+#else
+        info("+++              G4OpAbsorption G4OpRayleigh G4OpMieHG G4OpBoundaryProcess");
         G4OpBoundaryProcess*  fBoundaryProcess           = new G4OpBoundaryProcess();
         G4OpAbsorption*       fAbsorptionProcess         = new G4OpAbsorption();
         G4OpRayleigh*         fRayleighScatteringProcess = new G4OpRayleigh();
         G4OpMieHG*            fMieHGScatteringProcess    = new G4OpMieHG();
-
-#if G4VERSION_NUMBER >= 1070
-        G4OpticalParameters* params = G4OpticalParameters::Instance();
-        params->SetAbsorptionVerboseLevel(m_verbosity);
-        params->SetRayleighVerboseLevel(m_verbosity);
-        params->SetMieVerboseLevel(m_verbosity);
-        params->SetBoundaryVerboseLevel(m_verbosity);
-        params->SetBoundaryInvokeSD(m_boundaryInvokeSD);
-#else
         fAbsorptionProcess->SetVerboseLevel(m_verbosity);
         fRayleighScatteringProcess->SetVerboseLevel(m_verbosity);
         fMieHGScatteringProcess->SetVerboseLevel(m_verbosity);
@@ -102,12 +129,11 @@ namespace dd4hep {
 #if G4VERSION_NUMBER >= 1000
         fBoundaryProcess->SetInvokeSD(m_boundaryInvokeSD);
 #endif
-#endif
-        G4ProcessManager* pmanager = particle->GetProcessManager();
         pmanager->AddDiscreteProcess(fAbsorptionProcess);
         pmanager->AddDiscreteProcess(fRayleighScatteringProcess);
         pmanager->AddDiscreteProcess(fMieHGScatteringProcess);
         pmanager->AddDiscreteProcess(fBoundaryProcess);
+#endif
       }
     private:
       int         m_verbosity;
