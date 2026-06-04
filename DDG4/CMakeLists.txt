@@ -163,6 +163,19 @@ IF(DD4HEP_USE_HEPMC3)
   SET(DD4HEP_USE_HEPMC3 ON)
 ENDIF()
 
+#---------------------------  G4HepEm plugin  ----------------------------------------
+IF(TARGET G4HepEm::g4HepEm)
+  dd4hep_print("|++> G4HepEm found, building DDG4HepEm plugin")
+  dd4hep_add_plugin(DDG4HepEm
+    SOURCES g4hepem/Geant4HepEmTrackingPhysics.cpp
+    USES    DD4hep::DDG4 G4HepEm::g4HepEm
+    )
+  set_target_properties(DDG4HepEm PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+  install(TARGETS DDG4HepEm EXPORT DD4hep
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION bin)
+ENDIF()
+
 #
 #---------------------------  DDRec dependent Plugins  -----------------------------
 #This does not compile at the moment
