@@ -77,8 +77,14 @@ namespace dd4hep {
     /**
      * Replaces the Geant4 stepping loop for e-, e+ and gamma with
      * G4HepEmTrackingManager, providing SIMD-vectorised EM physics.
-     * A single tracking manager instance is shared among the three particle
-     * types, which is the standard G4HepEm usage pattern.
+     *
+     * A single G4HepEmTrackingManager instance is created per call to
+     * constructProcesses() and registered with all three particle types
+     * (e-, e+, gamma).  This is the canonical G4HepEm usage pattern:
+     * G4HepEmTrackingManager::HandOverOneTrack() dispatches internally on
+     * particle type, so one shared instance handles all three species.
+     *
+     * Geant4 owns and deletes the tracking manager.
      *
      * \author  W. Deconinck
      * \version 1.0
@@ -106,8 +112,17 @@ namespace dd4hep {
       /**
        * Called from within G4VPhysicsConstructor::ConstructProcess() by the DDG4
        * action sequence, after ConstructParticle() has been executed.
+       *
+       * Creates one G4HepEmTrackingManager and registers it with all three EM
+       * particle types.  Ownership is transferred to Geant4: the pointer is
+       * stored (non-owning) inside each particle's TLS data slot, and
+       * G4VUserPhysicsList::RemoveTrackingManager() will delete it at thread /
+       * run teardown.
        */
       virtual void constructProcesses(G4VUserPhysicsList* /* physics_list */) override {
+        // Allocate one tracking manager for this thread.  G4HepEmTrackingManager
+        // handles e-/e+/gamma internally by dispatching on particle type, so one
+        // shared instance per thread suffices.  Ownership lies with Geant4.
         auto* tm = new G4HepEmTrackingManager();
 
         for (const auto& region : m_woodcockRegions) {
