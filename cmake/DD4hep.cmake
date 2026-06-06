@@ -73,6 +73,9 @@ endfunction()
 # dd4hep_generate_rootmap(library)
 #
 # Create the .components file needed by the plug-in system.
+#
+# Setting DD4HEP_GENERATE_ROOTMAP_EXTRA_ENV before calling allows callers to inject environment
+# variables (such as LD_PRELOAD) into the listcomponents subprocess.
 #---------------------------------------------------------------------------------------------------
 function(dd4hep_generate_rootmap library)
 
