@@ -16,6 +16,9 @@
 // Framework include files
 #include <DDG4/Geant4RunAction.h>
 
+// Forward declarations
+class G4StackManager;
+
 
 
 /// Namespace for the AIDA detector description toolkit
@@ -54,8 +57,10 @@ namespace dd4hep {
       virtual ~Geant4EventSeed();
       /// begin-of-run callback
       void begin(const G4Run*);
-      /// begin-of-event callback
+      /// begin-of-event callback: seeds based on pre-assigned Geant4 event ID
       void beginEvent(const G4Event*);
+      /// prepare-stacking callback: re-seeds after GeneratePrimaries using the final event ID
+      void prepareEvent(G4StackManager*);
     };
 
     /*
