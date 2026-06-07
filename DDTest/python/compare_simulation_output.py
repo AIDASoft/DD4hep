@@ -67,6 +67,11 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
         print("ERROR: ROOT/PyROOT not available")
         return False
 
+    # Load the DDG4 dictionary so ROOT can read DD4hep-native output files.
+    # This is a no-op when only EDM4hep output is used.
+    ROOT.gSystem.Load("libDDG4")
+    ROOT.gSystem.Load("libDDG4Plugins")
+
     # Open files
     f1 = ROOT.TFile.Open(file1)
     f2 = ROOT.TFile.Open(file2)
@@ -237,6 +242,10 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
                     elif hasattr(elem1, 'EDep'):
                         if abs(elem1.EDep - elem2.EDep) > tolerance:
                             print(f"Event {event_id}, {branch_name}[{j}] EDep: {elem1.EDep} != {elem2.EDep}")
+                            elem_mismatch = True
+                    elif hasattr(elem1, 'energyDeposit'):
+                        if abs(elem1.energyDeposit - elem2.energyDeposit) > tolerance:
+                            print(f"Event {event_id}, {branch_name}[{j}] energyDeposit: {elem1.energyDeposit} != {elem2.energyDeposit}")
                             elem_mismatch = True
                     elif hasattr(elem1, 'getEnergy'):
                         e1 = elem1.getEnergy()
