@@ -99,9 +99,9 @@ class Random (ConfigHelper):
     :param kernel: worker kernel (or the only kernel in ST mode)
     """
     if self.seed is not None and self.enableEventSeed:
-      # Create EventSeeder - use shared=True for MT mode to avoid multiple instances
+      # Use shared=False so the seeder registers on the worker's event/stacking action sequences.
       seeder_name = 'Geant4EventSeed/EventSeeder'
-      eventseed = DDG4.RunAction(kernel, seeder_name, shared=True)
+      eventseed = DDG4.RunAction(kernel, seeder_name, shared=False)
       # Explicitly add to run action sequence
       kernel.runAction().add(eventseed)
       self._eventseeds.append(eventseed)  # keep reference alive
