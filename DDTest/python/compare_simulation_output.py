@@ -12,6 +12,8 @@ produce identical physics results by comparing:
 
 import argparse
 import sys
+
+
 def _coord(v, attr):
     """Get a coordinate from a vector, handling both attributes and callables."""
     val = getattr(v, attr)
