@@ -245,7 +245,8 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
                             elem_mismatch = True
                     elif hasattr(elem1, 'energyDeposit'):
                         if abs(elem1.energyDeposit - elem2.energyDeposit) > tolerance:
-                            print(f"Event {event_id}, {branch_name}[{j}] energyDeposit: {elem1.energyDeposit} != {elem2.energyDeposit}")
+                            print(f"Event {event_id}, {branch_name}[{j}] energyDeposit: "
+                                  f"{elem1.energyDeposit} != {elem2.energyDeposit}")
                             elem_mismatch = True
                     elif hasattr(elem1, 'getEnergy'):
                         e1 = elem1.getEnergy()
