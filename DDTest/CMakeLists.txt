@@ -248,6 +248,18 @@ if (DD4HEP_USE_GEANT4)
     LABELS "comparison;gun;mt")
 
   if(DD4HEP_USE_HEPMC3)
+    add_test(NAME t_ddsim_hepmc_mt1
+      COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+        ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --runType=batch -N=5 -j 1
+              --outputFile=hepmc_mt1.root
+              --random.seed=111111
+              --random.enableEventSeed
+              --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+              --part.userParticleHandler=)
+    set_tests_properties(t_ddsim_hepmc_mt1 PROPERTIES
+      FAIL_REGULAR_EXPRESSION "ERROR;Error")
+
     add_test(NAME t_ddsim_hepmc_mt2
       COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
@@ -272,6 +284,13 @@ if (DD4HEP_USE_GEANT4)
     set_tests_properties(t_ddsim_hepmc_mt4 PROPERTIES
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
+    add_test(NAME t_ddsim_hepmc_mt1_mt2_compare
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
+              hepmc_mt1.root hepmc_mt2.root --tolerance=1e-9)
+    set_tests_properties(t_ddsim_hepmc_mt1_mt2_compare PROPERTIES
+      DEPENDS "t_ddsim_hepmc_mt1;t_ddsim_hepmc_mt2"
+      LABELS "comparison;mt")
+
     add_test(NAME t_ddsim_hepmc_mt2_mt4_compare
       COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
               hepmc_mt2.root hepmc_mt4.root --tolerance=1e-9)
@@ -281,6 +300,18 @@ if (DD4HEP_USE_GEANT4)
   endif()
 
   if(DD4HEP_USE_EDM4HEP)
+    add_test(NAME t_ddsim_edm4hep_mt1
+      COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+        ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --runType=batch -N=3 -j 1
+              --outputFile=edm4hep_mt1.root
+              --random.seed=222222
+              --random.enableEventSeed
+              --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root
+              --part.userParticleHandler=)
+    set_tests_properties(t_ddsim_edm4hep_mt1 PROPERTIES
+      FAIL_REGULAR_EXPRESSION "ERROR;Error")
+
     add_test(NAME t_ddsim_edm4hep_mt2
       COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
@@ -304,6 +335,13 @@ if (DD4HEP_USE_GEANT4)
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_edm4hep_mt4 PROPERTIES
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
+
+    add_test(NAME t_ddsim_edm4hep_mt1_mt2_compare
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
+              edm4hep_mt1.root edm4hep_mt2.root --tolerance=1e-9)
+    set_tests_properties(t_ddsim_edm4hep_mt1_mt2_compare PROPERTIES
+      DEPENDS "t_ddsim_edm4hep_mt1;t_ddsim_edm4hep_mt2"
+      LABELS "comparison;mt")
 
     add_test(NAME t_ddsim_edm4hep_mt2_mt4_compare
       COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
