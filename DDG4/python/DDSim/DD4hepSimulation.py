@@ -616,6 +616,12 @@ class DD4hepSimulation(object):
     from ROOT import PyDDG4
     master = geant4.master().get()
 
+    # Preload reader libraries on the master thread before workers start.
+    if self.inputFiles and self.numberOfThreads > 1:
+      from ROOT import gSystem
+      if any(f.endswith(tuple(EDM4HEP_INPUT_EXTENSIONS)) for f in self.inputFiles):
+        gSystem.Load("libDDG4EDM4HEPReader")
+
     PyDDG4.configure(master)
     PyDDG4.initialize(master)
 
