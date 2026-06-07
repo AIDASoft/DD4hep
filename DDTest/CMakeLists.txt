@@ -374,6 +374,39 @@ if (DD4HEP_USE_GEANT4)
     FAIL_REGULAR_EXPRESSION "ERROR;Error;Exception"
     LABELS "gun;gps;singlethread")
 
+  add_test(NAME t_ddsim_gps_mt2
+    COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --runType=batch -N=10 -j 2
+            --outputFile=gps_mt2.root
+            --random.seed=444444
+            --random.enableEventSeed
+            --enableG4GPS
+            --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gps_test.mac
+            --part.userParticleHandler=)
+  set_tests_properties(t_ddsim_gps_mt2 PROPERTIES
+    FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
+
+  add_test(NAME t_ddsim_gps_mt4
+    COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --runType=batch -N=10 -j 4
+            --outputFile=gps_mt4.root
+            --random.seed=444444
+            --random.enableEventSeed
+            --enableG4GPS
+            --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gps_test.mac
+            --part.userParticleHandler=)
+  set_tests_properties(t_ddsim_gps_mt4 PROPERTIES
+    FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
+
+  add_test(NAME t_ddsim_gps_mt2_mt4_compare
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
+            gps_mt2.root gps_mt4.root --tolerance=1e-9)
+  set_tests_properties(t_ddsim_gps_mt2_mt4_compare PROPERTIES
+    DEPENDS "t_ddsim_gps_mt2;t_ddsim_gps_mt4"
+    LABELS "comparison;mt;gps")
+
 endif()
 install(DIRECTORY include/DD4hep DESTINATION include)
 
