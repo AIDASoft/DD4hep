@@ -35,6 +35,7 @@ def compare_vectors(v1, v2, tolerance, description=""):
                 return True
             except Exception:
                 continue
+    print(f"WARNING: {description} skipped: vector type has no recognised coordinate attributes")
     return True
 
 
@@ -75,8 +76,9 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
 
     # Load the DDG4 dictionary so ROOT can read DD4hep-native output files.
     # This is a no-op when only EDM4hep output is used.
-    ROOT.gSystem.Load("libDDG4")
-    ROOT.gSystem.Load("libDDG4Plugins")
+    for lib in ("libDDG4", "libDDG4Plugins"):
+        if ROOT.gSystem.Load(lib) < 0:
+            print(f"WARNING: Failed to load {lib} - DD4hep-native branches may not be readable")
 
     # Open files
     f1 = ROOT.TFile.Open(file1)
