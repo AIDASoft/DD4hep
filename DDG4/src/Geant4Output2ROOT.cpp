@@ -63,7 +63,6 @@ void Geant4Output2ROOT::endRun(const G4Run* run) {
   int done = ++m_endRunCount;
   if (nThreads == 0 || done >= nThreads) {
     closeOutput();
-    m_endRunCount = 0;
   }
   Geant4OutputAction::endRun(run);
 }
@@ -105,6 +104,9 @@ TTree* Geant4Output2ROOT::section(const std::string& nam) {
 /// Callback to store the Geant4 run information
 void Geant4Output2ROOT::beginRun(const G4Run* run) {
   std::unique_lock<std::mutex> lock(s_rootMutex);
+  // Reset per-run counter here, before any events, so a new run never sees
+  // stale counts from the previous run.
+  m_endRunCount = 0;
   std::string fname = m_output;
   if ( m_filesByRun )    {
     size_t idx = m_output.rfind(".");
