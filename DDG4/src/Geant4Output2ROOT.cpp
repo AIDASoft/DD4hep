@@ -82,6 +82,7 @@ void Geant4Output2ROOT::closeOutput()   {
     if ( i != m_sections.end() )
       m_sections.erase(i);
     m_branches.clear();
+    for ( auto& [name, tree] : m_sections )  tree->Write();
     m_sections.clear();
     m_tree->Write();
     m_file->Close();
@@ -123,6 +124,7 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
         if ( i != m_sections.end() )
           m_sections.erase(i);
         m_branches.clear();
+        for ( auto& [name, tree] : m_sections )  tree->Write();
         m_sections.clear();
         m_tree->Write();
         m_file->Close();
