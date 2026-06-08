@@ -583,7 +583,7 @@ class DD4hepSimulation(object):
     # -----------------------------------------------------------------------------------
 
     logger.info("#  Configure G4 geometry setup")
-    seq, act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
+    self.geometry.constructGeometry(kernel, geant4, self.output.geometry)
 
     logger.info("# Configure G4 sensitive detectors: python setup callback")
     seq, act = geant4.addDetectorConstruction(
