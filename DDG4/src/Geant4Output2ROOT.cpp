@@ -74,8 +74,11 @@ void Geant4Output2ROOT::closeOutput()   {
   if (!m_file) return;
   TDirectory::TContext ctxt(m_file.get());
   info("+++ Closing ROOT output file %s", m_file->GetName());
-  m_sections.clear();
   m_branches.clear();
+  for (const auto& [name, tree] : m_sections) {
+    if (tree != m_tree) tree->Write();
+  }
+  m_sections.clear();
   m_tree->Write();
   m_file->Close();
   m_tree = nullptr;
