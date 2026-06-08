@@ -624,14 +624,12 @@ class DD4hepSimulation(object):
     # In multi-threaded mode with shared=False, the actual generators are created
     # per-worker and initialized automatically by Geant4, so we skip this step
     if self.numberOfThreads == 1:
-      if self._g4gun is not []:
-        for g4gun in self._g4gun:
-          g4gun.generator()  # Initialize G4ParticleGun and register UI commands
-          logger.debug("Initialized G4Gun generator")
-      if self._g4gps is not []:
-        for g4gps in self._g4gps:
-          g4gps.generator()  # Initialize GPS and register UI commands
-          logger.debug("Initialized GPS generator")
+      for g4gun in self._g4gun:
+        g4gun.generator()  # Initialize G4ParticleGun and register UI commands
+        logger.debug("Initialized G4Gun generator")
+      for g4gps in self._g4gps:
+        g4gps.generator()  # Initialize GPS and register UI commands
+        logger.debug("Initialized GPS generator")
 
     startUpTime, _sysTime, _cuTime, _csTime, _elapsedTime = os.times()
 
