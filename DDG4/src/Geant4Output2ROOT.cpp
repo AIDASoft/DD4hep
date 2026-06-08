@@ -68,9 +68,8 @@ void Geant4Output2ROOT::endRun(const G4Run* run) {
   Geant4OutputAction::endRun(run);
 }
 
-/// Close current output file
-void Geant4Output2ROOT::closeOutput()   {
-  std::lock_guard<std::mutex> lock(s_rootMutex);
+/// Close current output file. Must be called with s_rootMutex held.
+void Geant4Output2ROOT::closeOutputLocked()   {
   if (!m_file) return;
   TDirectory::TContext ctxt(m_file.get());
   info("+++ Closing ROOT output file %s", m_file->GetName());
@@ -83,6 +82,12 @@ void Geant4Output2ROOT::closeOutput()   {
   m_file->Close();
   m_tree = nullptr;
   m_file.reset();
+}
+
+/// Close current output file
+void Geant4Output2ROOT::closeOutput()   {
+  std::lock_guard<std::mutex> lock(s_rootMutex);
+  closeOutputLocked();
 }
 
 /// Create/access tree by name
@@ -104,11 +109,7 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
   if ( m_filesByRun )    {
     size_t idx = m_output.rfind(".");
     if ( m_file ) {
-      // closeOutput() takes the same mutex; temporarily release it to avoid
-      // recursive locking while retaining serialized ROOT I/O.
-      lock.unlock();
-      closeOutput();
-      lock.lock();
+      closeOutputLocked();
     }
     fname  = m_output.substr(0, idx);
     fname += _toString(run->GetRunID(), ".run%08d");
