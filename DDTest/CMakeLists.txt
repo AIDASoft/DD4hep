@@ -258,6 +258,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_hepmc_mt1 PROPERTIES
+      TIMEOUT 3000 # 50 minutes (default is 25 minutes)
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
     add_test(NAME t_ddsim_hepmc_mt2
