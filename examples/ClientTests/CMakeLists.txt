@@ -49,7 +49,7 @@ install(TARGETS testLoad RUNTIME DESTINATION bin)
 #
 #
 set(ClientTestsEx_INSTALL ${CMAKE_INSTALL_PREFIX}/examples/ClientTests)
-dd4hep_install_dir( compact scripts ref eve DESTINATION ${ClientTestsEx_INSTALL} )
+dd4hep_install_dir( compact scripts python ref eve DESTINATION ${ClientTestsEx_INSTALL} )
 #--------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------
@@ -333,6 +333,21 @@ foreach (test Assemblies BoxTrafos CaloEndcapReflection IronCylinder LheD_tracke
       REGEX_PASS " Handled [1-9][0-9]* volumes" )
   endforeach(type)
 endforeach()
+#
+#
+# Test DD4hep_PythonDetector: a Python port of the IronCylinder geometry.
+# DD4hep_PythonDetector is only available when DDPythonPlugins is built,
+# which requires ROOT to include Python/TPython support.
+if(TARGET ROOT::ROOTTPython)
+  dd4hep_add_test_reg( ClientTests_volume_materials_IronCylinder_python
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+    EXEC_ARGS  geoPluginRun -print WARNING -volmgr -destroy
+               -input file:${ClientTestsEx_INSTALL}/compact/IronCylinder_python.xml
+               -plugin DD4hep_VolumeDump -materials
+    REGEX_PASS "\\+\\+\\+ Checked [1-9][0-9]* materials in volume placements.   0 are BAD."
+    REGEX_FAIL "Exception"
+    REGEX_FAIL "FAILED" )
+endif(TARGET ROOT::ROOTTPython)
 #
 #
 # Note:
