@@ -37,6 +37,7 @@ def compare_vectors(v1, v2, tolerance, description=""):
                 continue
     return True
 
+
 def _read_g4event_ids(tree):
     """Return list of G4EventIDs indexed by entry number, or None if not available."""
     id_tree = tree.GetDirectory().Get("G4EventIDs")
