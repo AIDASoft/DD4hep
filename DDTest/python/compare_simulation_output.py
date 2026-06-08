@@ -37,23 +37,28 @@ def compare_vectors(v1, v2, tolerance, description=""):
                 continue
     return True
 
+def _read_g4event_ids(tree):
+    """Return list of G4EventIDs indexed by entry number, or None if not available."""
+    id_tree = tree.GetDirectory().Get("G4EventIDs")
+    if not id_tree:
+        return None
+    ids = []
+    for i in range(id_tree.GetEntries()):
+        id_tree.GetEntry(i)
+        ids.append(int(id_tree.G4EventID))
+    return ids
+
 
 def _get_event_id(tree, entry_idx):
-    """Get event ID from a tree entry. Returns None if not available."""
+    """Get event ID from a tree entry (EDM4hep EventHeader). Returns None if not available."""
     tree.GetEntry(entry_idx)
-    # DD4hep ROOT output
-    g4_br = tree.GetBranch('G4EventID')
-    if g4_br:
-        return int(tree.G4EventID)
-    # EDM4hep output
     try:
-        if hasattr(tree, 'EventHeader') and hasattr(tree.EventHeader, 'size'):
-            if tree.EventHeader.size() > 0:
-                hdr = tree.EventHeader[0]
-                if hasattr(hdr, 'getEventNumber'):
-                    return hdr.getEventNumber()
-                if hasattr(hdr, 'eventNumber'):
-                    return hdr.eventNumber
+        if hasattr(tree, 'EventHeader') and tree.EventHeader.size() > 0:
+            hdr = tree.EventHeader[0]
+            if hasattr(hdr, 'getEventNumber'):
+                return hdr.getEventNumber()
+            if hasattr(hdr, 'eventNumber'):
+                return hdr.eventNumber
     except Exception:
         pass
     return None
@@ -131,14 +136,18 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
     else:
         branches = branches1
 
-    # Build event ID index for file2 to handle out-of-order events
-    # This is critical for MT comparison where events may be written in different orders
+    # Build event ID index for file2 to handle out-of-order events in MT mode.
+    # Try G4EventIDs companion tree (DD4hep native), then EDM4hep EventHeader.
     print("Building event ID index for file2...")
-    event_id_map = {}
-    for i in range(n_entries):
-        eid = _get_event_id(t2, i)
-        if eid is not None:
-            event_id_map[eid] = i
+    ids2 = _read_g4event_ids(t2)
+    if ids2:
+        event_id_map = {eid: i for i, eid in enumerate(ids2)}
+    else:
+        event_id_map = {}
+        for i in range(n_entries):
+            eid = _get_event_id(t2, i)
+            if eid is not None:
+                event_id_map[eid] = i
 
     use_event_id_matching = len(event_id_map) == n_entries
     if use_event_id_matching:
@@ -155,14 +164,16 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
     collection_types = set()
 
     # Branches to skip
-    skip_branches = {'G4EventID', 'EventHeader'}
+    skip_branches = {'EventHeader'}
+
+    ids1 = _read_g4event_ids(t1)
 
     for i in range(n_entries):
         t1.GetEntry(i)
         event_id = i  # default for reporting
 
         if use_event_id_matching:
-            eid1 = _get_event_id(t1, i)
+            eid1 = ids1[i] if ids1 else _get_event_id(t1, i)
             if eid1 is None:
                 print(f"ERROR: Could not get event ID from entry {i} in file1")
                 mismatches += 1
@@ -172,10 +183,9 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
                 mismatches += 1
                 continue
             event_id = eid1
-            t1.GetEntry(i)  # re-load (GetEntry in _get_event_id may have changed state)
+            t1.GetEntry(i)
             t2.GetEntry(event_id_map[eid1])
         else:
-            # Sequential comparison
             t2.GetEntry(i)
 
         for branch_name in sorted(branches):

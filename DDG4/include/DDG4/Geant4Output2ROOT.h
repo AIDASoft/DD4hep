@@ -62,8 +62,6 @@ namespace dd4hep {
       bool m_filesByRun;
       /// Counter of worker endRun calls so that closeOutput fires only after all workers are done
       std::atomic<int> m_endRunCount { 0 };
-      /// G4 event ID of the current event, stored for each event for MT ordering
-      int m_currentEventID { -1 };
       /// Static mutex to protect ROOT I/O operations in multi-threaded mode
       static std::mutex s_rootMutex;
       

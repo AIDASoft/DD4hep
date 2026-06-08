@@ -82,6 +82,7 @@ void Geant4Output2ROOT::closeOutput()   {
     if ( i != m_sections.end() )
       m_sections.erase(i);
     m_branches.clear();
+    m_sections.clear();
     m_tree->Write();
     m_file->Close();
     m_tree = nullptr;
@@ -122,6 +123,7 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
         if ( i != m_sections.end() )
           m_sections.erase(i);
         m_branches.clear();
+        m_sections.clear();
         m_tree->Write();
         m_file->Close();
         m_tree = nullptr;
@@ -202,15 +204,13 @@ void Geant4Output2ROOT::commit(OutputContext<G4Event>& ctxt) {
   std::lock_guard<std::mutex> lock(s_rootMutex);
   
   if (m_file) {
-    // Ensure G4EventID branch exists and fill it
-    static const char* evtIDBranchName = "G4EventID";
-    TBranch* evtIDBr = m_tree->GetBranch(evtIDBranchName);
-    if (!evtIDBr) {
-      evtIDBr = m_tree->Branch(evtIDBranchName, &m_currentEventID, "G4EventID/I");
-    } else {
-      evtIDBr->SetAddress(&m_currentEventID);
-    }
-    evtIDBr->Fill();
+    // Write G4 event ID to companion tree (one entry per event, in commit order).
+    Int_t evtid = ctxt.context->GetEventID();
+    TTree* id_tree = section("G4EventIDs");
+    TBranch* br = id_tree->GetBranch("G4EventID");
+    if ( !br )  br = id_tree->Branch("G4EventID", &evtid, "G4EventID/I");
+    else        br->SetAddress(&evtid);
+    id_tree->Fill();
 
     TObjArray* a = m_tree->GetListOfBranches();
     Long64_t evt = m_tree->GetEntries() + 1;
@@ -234,8 +234,7 @@ void Geant4Output2ROOT::commit(OutputContext<G4Event>& ctxt) {
 }
 
 /// Callback to store the Geant4 event
-void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& ctxt) {
-  m_currentEventID = ctxt.context->GetEventID();
+void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
   if ( !m_disableParticles )  {
     Geant4ParticleMap* parts = context()->event().extension<Geant4ParticleMap>();
     if ( parts )   {
