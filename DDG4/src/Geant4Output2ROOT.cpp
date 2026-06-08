@@ -70,11 +70,8 @@ void Geant4Output2ROOT::endRun(const G4Run* run) {
   Geant4OutputAction::endRun(run);
 }
 
-/// Close current output file
-void Geant4Output2ROOT::closeOutput()   {
-  // Lock mutex to protect ROOT I/O operations
-  std::lock_guard<std::mutex> lock(s_rootMutex);
-  
+/// Close current output file. Must be called with s_rootMutex held.
+void Geant4Output2ROOT::closeOutputLocked()   {
   if (m_file) {
     TDirectory::TContext ctxt(m_file);
     Sections::iterator i = m_sections.find(m_section);
@@ -89,6 +86,12 @@ void Geant4Output2ROOT::closeOutput()   {
     m_tree = nullptr;
     detail::deletePtr (m_file);
   }
+}
+
+/// Close current output file
+void Geant4Output2ROOT::closeOutput()   {
+  std::lock_guard<std::mutex> lock(s_rootMutex);
+  closeOutputLocked();
 }
 
 /// Create/access tree by name
@@ -112,25 +115,7 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
   if ( m_filesByRun )    {
     size_t idx = m_output.rfind(".");
     if ( m_file )  {
-      // Note: closeOutput() also locks, but we already have the lock here
-      // So we need to call the internal close logic without the lock
-      // Actually, closeOutput will deadlock if called here with the mutex held
-      // We should refactor closeOutput to have a locked and unlocked version
-      // For now, inline the close logic here:
-      if (m_file) {
-        TDirectory::TContext ctxt(m_file);
-        Sections::iterator i = m_sections.find(m_section);
-        info("+++ Closing ROOT output file %s", m_file->GetName());
-        if ( i != m_sections.end() )
-          m_sections.erase(i);
-        m_branches.clear();
-        for ( auto& [name, tree] : m_sections )  tree->Write();
-        m_sections.clear();
-        m_tree->Write();
-        m_file->Close();
-        m_tree = nullptr;
-        detail::deletePtr (m_file);
-      }
+      closeOutputLocked();
     }
     fname  = m_output.substr(0, idx);
     fname += _toString(run->GetRunID(), ".run%08d");

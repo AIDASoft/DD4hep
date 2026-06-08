@@ -77,6 +77,9 @@ namespace dd4hep {
 
       /// Close current output file
       virtual void closeOutput();
+    private:
+      /// Close the current output file. Must be called with s_rootMutex held.
+      void closeOutputLocked();
       /// Callback to store the Geant4 run information
       virtual void beginRun(const G4Run* run)  override;
       /// Callback at end of run: write and close the output file while DDG4 is still alive
