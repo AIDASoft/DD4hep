@@ -212,6 +212,7 @@ if (DD4HEP_USE_GEANT4)
             --gun.energy=10*GeV
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_gun_mt2 PROPERTIES
+    PROCESSORS 2
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 2 threads"
     LABELS "gun;multithread")
@@ -229,6 +230,7 @@ if (DD4HEP_USE_GEANT4)
             --gun.energy=10*GeV
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_gun_mt4 PROPERTIES
+    PROCESSORS 4
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 4 threads"
     LABELS "gun;multithread")
@@ -271,6 +273,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_hepmc_mt2 PROPERTIES
+      PROCESSORS 2
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
     add_test(NAME t_ddsim_hepmc_mt4
@@ -283,6 +286,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_hepmc_mt4 PROPERTIES
+      PROCESSORS 4
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
     add_test(NAME t_ddsim_hepmc_mt1_mt2_compare
@@ -323,6 +327,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_edm4hep_mt2 PROPERTIES
+      PROCESSORS 2
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
     add_test(NAME t_ddsim_edm4hep_mt4
@@ -335,6 +340,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_edm4hep_mt4 PROPERTIES
+      PROCESSORS 4
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
     add_test(NAME t_ddsim_edm4hep_mt1_mt2_compare
@@ -377,6 +383,7 @@ if (DD4HEP_USE_GEANT4)
             --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gun_test.mac
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_g4gun_mt2 PROPERTIES
+    PROCESSORS 2
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
 
   add_test(NAME t_ddsim_g4gun_mt4
@@ -390,6 +397,7 @@ if (DD4HEP_USE_GEANT4)
             --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gun_test.mac
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_g4gun_mt4 PROPERTIES
+    PROCESSORS 4
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
 
   add_test(NAME t_ddsim_g4gun_mt2_mt4_compare
@@ -424,6 +432,7 @@ if (DD4HEP_USE_GEANT4)
             --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gps_test.mac
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_gps_mt2 PROPERTIES
+    PROCESSORS 2
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
 
   add_test(NAME t_ddsim_gps_mt4
@@ -437,6 +446,7 @@ if (DD4HEP_USE_GEANT4)
             --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gps_test.mac
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_gps_mt4 PROPERTIES
+    PROCESSORS 4
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
 
   add_test(NAME t_ddsim_gps_mt2_mt4_compare
