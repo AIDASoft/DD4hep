@@ -180,6 +180,282 @@ if (DD4HEP_USE_GEANT4)
     )
   endif()
 
+  #---Multi-threading tests---------------------------------------------------------
+
+  add_test(NAME t_ddsim_gun_mt1
+    COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --runType=batch -N=10 -j 1 -G
+            --outputFile=gun_mt1.root
+            --random.seed=333333
+            --random.enableEventSeed
+            --gun.position \"0.0 0.0 1.0*cm\"
+            --gun.direction \"1.0 0.0 1.0\"
+            --gun.particle=mu-
+            --gun.energy=10*GeV
+            --part.userParticleHandler=)
+  set_tests_properties(t_ddsim_gun_mt1 PROPERTIES
+    FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
+    PASS_REGULAR_EXPRESSION "@ 1 threads"
+    LABELS "gun;singlethread")
+
+  add_test(NAME t_ddsim_gun_mt2
+    COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --runType=batch -N=10 -j 2 -G
+            --outputFile=gun_mt2.root
+            --random.seed=333333
+            --random.enableEventSeed
+            --gun.position \"0.0 0.0 1.0*cm\"
+            --gun.direction \"1.0 0.0 1.0\"
+            --gun.particle=mu-
+            --gun.energy=10*GeV
+            --part.userParticleHandler=)
+  set_tests_properties(t_ddsim_gun_mt2 PROPERTIES
+    PROCESSORS 2
+    FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
+    PASS_REGULAR_EXPRESSION "@ 2 threads"
+    LABELS "gun;multithread")
+
+  add_test(NAME t_ddsim_gun_mt4
+    COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --runType=batch -N=10 -j 4 -G
+            --outputFile=gun_mt4.root
+            --random.seed=333333
+            --random.enableEventSeed
+            --gun.position \"0.0 0.0 1.0*cm\"
+            --gun.direction \"1.0 0.0 1.0\"
+            --gun.particle=mu-
+            --gun.energy=10*GeV
+            --part.userParticleHandler=)
+  set_tests_properties(t_ddsim_gun_mt4 PROPERTIES
+    PROCESSORS 4
+    FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
+    PASS_REGULAR_EXPRESSION "@ 4 threads"
+    LABELS "gun;multithread")
+
+  add_test(NAME t_ddsim_gun_mt1_mt2_compare
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
+            gun_mt1.root gun_mt2.root --tolerance=1e-9)
+  set_tests_properties(t_ddsim_gun_mt1_mt2_compare PROPERTIES
+    DEPENDS "t_ddsim_gun_mt1;t_ddsim_gun_mt2"
+    LABELS "comparison;gun")
+
+  add_test(NAME t_ddsim_gun_mt2_mt4_compare
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
+            gun_mt2.root gun_mt4.root --tolerance=1e-9)
+  set_tests_properties(t_ddsim_gun_mt2_mt4_compare PROPERTIES
+    DEPENDS "t_ddsim_gun_mt2;t_ddsim_gun_mt4"
+    LABELS "comparison;gun;mt")
+
+  if(DD4HEP_USE_HEPMC3)
+    add_test(NAME t_ddsim_hepmc_mt1
+      COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+        ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --runType=batch -N=5 -j 1
+              --outputFile=hepmc_mt1.root
+              --random.seed=111111
+              --random.enableEventSeed
+              --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+              --part.userParticleHandler=)
+    set_tests_properties(t_ddsim_hepmc_mt1 PROPERTIES
+      TIMEOUT 3000 # 50 minutes (default is 25 minutes)
+      FAIL_REGULAR_EXPRESSION "ERROR;Error")
+
+    add_test(NAME t_ddsim_hepmc_mt2
+      COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+        ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --runType=batch -N=5 -j 2
+              --outputFile=hepmc_mt2.root
+              --random.seed=111111
+              --random.enableEventSeed
+              --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+              --part.userParticleHandler=)
+    set_tests_properties(t_ddsim_hepmc_mt2 PROPERTIES
+      PROCESSORS 2
+      FAIL_REGULAR_EXPRESSION "ERROR;Error")
+
+    add_test(NAME t_ddsim_hepmc_mt4
+      COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+        ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --runType=batch -N=5 -j 4
+              --outputFile=hepmc_mt4.root
+              --random.seed=111111
+              --random.enableEventSeed
+              --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
+              --part.userParticleHandler=)
+    set_tests_properties(t_ddsim_hepmc_mt4 PROPERTIES
+      PROCESSORS 4
+      FAIL_REGULAR_EXPRESSION "ERROR;Error")
+
+    add_test(NAME t_ddsim_hepmc_mt1_mt2_compare
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
+              hepmc_mt1.root hepmc_mt2.root --tolerance=1e-9)
+    set_tests_properties(t_ddsim_hepmc_mt1_mt2_compare PROPERTIES
+      DEPENDS "t_ddsim_hepmc_mt1;t_ddsim_hepmc_mt2"
+      LABELS "comparison;mt")
+
+    add_test(NAME t_ddsim_hepmc_mt2_mt4_compare
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
+              hepmc_mt2.root hepmc_mt4.root --tolerance=1e-9)
+    set_tests_properties(t_ddsim_hepmc_mt2_mt4_compare PROPERTIES
+      DEPENDS "t_ddsim_hepmc_mt2;t_ddsim_hepmc_mt4"
+      LABELS "comparison;mt")
+  endif()
+
+  if(DD4HEP_USE_EDM4HEP AND TARGET podio::podioIO)
+    add_test(NAME t_ddsim_edm4hep_mt1
+      COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+        ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --runType=batch -N=3 -j 1
+              --outputFile=edm4hep_mt1.root
+              --random.seed=222222
+              --random.enableEventSeed
+              --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root
+              --part.userParticleHandler=)
+    set_tests_properties(t_ddsim_edm4hep_mt1 PROPERTIES
+      FAIL_REGULAR_EXPRESSION "ERROR;Error")
+
+    add_test(NAME t_ddsim_edm4hep_mt2
+      COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+        ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --runType=batch -N=3 -j 2
+              --outputFile=edm4hep_mt2.root
+              --random.seed=222222
+              --random.enableEventSeed
+              --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root
+              --part.userParticleHandler=)
+    set_tests_properties(t_ddsim_edm4hep_mt2 PROPERTIES
+      PROCESSORS 2
+      FAIL_REGULAR_EXPRESSION "ERROR;Error")
+
+    add_test(NAME t_ddsim_edm4hep_mt4
+      COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+        ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --runType=batch -N=3 -j 4
+              --outputFile=edm4hep_mt4.root
+              --random.seed=222222
+              --random.enableEventSeed
+              --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root
+              --part.userParticleHandler=)
+    set_tests_properties(t_ddsim_edm4hep_mt4 PROPERTIES
+      PROCESSORS 4
+      FAIL_REGULAR_EXPRESSION "ERROR;Error")
+
+    add_test(NAME t_ddsim_edm4hep_mt1_mt2_compare
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
+              edm4hep_mt1.root edm4hep_mt2.root --tolerance=1e-9)
+    set_tests_properties(t_ddsim_edm4hep_mt1_mt2_compare PROPERTIES
+      DEPENDS "t_ddsim_edm4hep_mt1;t_ddsim_edm4hep_mt2"
+      LABELS "comparison;mt")
+
+    add_test(NAME t_ddsim_edm4hep_mt2_mt4_compare
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
+              edm4hep_mt2.root edm4hep_mt4.root --tolerance=1e-9)
+    set_tests_properties(t_ddsim_edm4hep_mt2_mt4_compare PROPERTIES
+      DEPENDS "t_ddsim_edm4hep_mt2;t_ddsim_edm4hep_mt4"
+      LABELS "comparison;mt")
+  endif()
+
+  add_test(NAME t_ddsim_g4gun_mt1
+    COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --runType=run -j 1
+            --outputFile=g4gun_mt1.root
+            --random.seed=333333
+            --random.enableEventSeed
+            --enableG4Gun
+            --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gun_test.mac
+            --part.userParticleHandler=)
+  set_tests_properties(t_ddsim_g4gun_mt1 PROPERTIES
+    FAIL_REGULAR_EXPRESSION "ERROR;Error;Exception"
+    LABELS "gun;g4gun;singlethread")
+
+  add_test(NAME t_ddsim_g4gun_mt2
+    COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --runType=batch -N=10 -j 2
+            --outputFile=g4gun_mt2.root
+            --random.seed=333333
+            --random.enableEventSeed
+            --enableG4Gun
+            --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gun_test.mac
+            --part.userParticleHandler=)
+  set_tests_properties(t_ddsim_g4gun_mt2 PROPERTIES
+    PROCESSORS 2
+    FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
+
+  add_test(NAME t_ddsim_g4gun_mt4
+    COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --runType=batch -N=10 -j 4
+            --outputFile=g4gun_mt4.root
+            --random.seed=333333
+            --random.enableEventSeed
+            --enableG4Gun
+            --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gun_test.mac
+            --part.userParticleHandler=)
+  set_tests_properties(t_ddsim_g4gun_mt4 PROPERTIES
+    PROCESSORS 4
+    FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
+
+  add_test(NAME t_ddsim_g4gun_mt2_mt4_compare
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
+            g4gun_mt2.root g4gun_mt4.root --tolerance=1e-9)
+  set_tests_properties(t_ddsim_g4gun_mt2_mt4_compare PROPERTIES
+    DEPENDS "t_ddsim_g4gun_mt2;t_ddsim_g4gun_mt4"
+    LABELS "comparison;mt;g4gun")
+
+  add_test(NAME t_ddsim_gps_mt1
+    COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --runType=run -j 1
+            --outputFile=gps_mt1.root
+            --random.seed=444444
+            --random.enableEventSeed
+            --enableG4GPS
+            --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gps_test.mac
+            --part.userParticleHandler=)
+  set_tests_properties(t_ddsim_gps_mt1 PROPERTIES
+    FAIL_REGULAR_EXPRESSION "ERROR;Error;Exception"
+    LABELS "gun;gps;singlethread")
+
+  add_test(NAME t_ddsim_gps_mt2
+    COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --runType=batch -N=10 -j 2
+            --outputFile=gps_mt2.root
+            --random.seed=444444
+            --random.enableEventSeed
+            --enableG4GPS
+            --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gps_test.mac
+            --part.userParticleHandler=)
+  set_tests_properties(t_ddsim_gps_mt2 PROPERTIES
+    PROCESSORS 2
+    FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
+
+  add_test(NAME t_ddsim_gps_mt4
+    COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+      ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --runType=batch -N=10 -j 4
+            --outputFile=gps_mt4.root
+            --random.seed=444444
+            --random.enableEventSeed
+            --enableG4GPS
+            --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gps_test.mac
+            --part.userParticleHandler=)
+  set_tests_properties(t_ddsim_gps_mt4 PROPERTIES
+    PROCESSORS 4
+    FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
+
+  add_test(NAME t_ddsim_gps_mt2_mt4_compare
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
+            gps_mt2.root gps_mt4.root --tolerance=1e-9)
+  set_tests_properties(t_ddsim_gps_mt2_mt4_compare PROPERTIES
+    DEPENDS "t_ddsim_gps_mt2;t_ddsim_gps_mt4"
+    LABELS "comparison;mt;gps")
+
 endif()
 install(DIRECTORY include/DD4hep DESTINATION include)
 
