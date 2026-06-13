@@ -81,6 +81,7 @@ option(DD4HEP_USE_GEANT4_UNITS  "Build using Geant4 units throughout"           
 option(DD4HEP_USE_EDM4HEP       "Build edm4hep extensions"                      OFF)
 option(DD4HEP_USE_HEPMC3        "Build hepmc3 extensions"                       OFF)
 option(DD4HEP_USE_TBB           "Build features that require TBB"               OFF)
+option(DD4HEP_USE_G4HEPEM       "Build G4HepEm EM tracking physics plugin"      OFF)
 option(DD4HEP_LOAD_ASSIMP       "Download and build ASSIMP from github"         OFF)
 option(DD4HEP_DISABLE_PACKAGES  "Selectively disable DD4HEP sub-packages [Separate multiples by space]"  OFF)
 option(BUILD_TESTING            "Enable and build tests"                        ON)
@@ -217,6 +218,9 @@ if(DD4HEP_USE_TBB)
   find_package(TBB REQUIRED CONFIG)
 endif()
 
+if(DD4HEP_USE_G4HEPEM)
+  find_package(G4HepEm REQUIRED)
+endif()
 
 ######################
 # Set compiler flags #
