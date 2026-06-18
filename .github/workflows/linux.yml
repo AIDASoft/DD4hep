@@ -47,14 +47,14 @@ jobs:
             echo "::group::CMakeConfig C++23"
             cmake \
               $COMMON_CMAKE_OPTS \
-              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_BUILD_TYPE=Debug \
               -DCMAKE_CXX_STANDARD=23 \
               ..
           elif [[ ${{ matrix.LCG }} =~ gcc13 ]]; then
             echo "::group::CMakeConfig C++20"
             cmake \
               $COMMON_CMAKE_OPTS \
-              -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_CXX_STANDARD=20 \
               ..
           else
