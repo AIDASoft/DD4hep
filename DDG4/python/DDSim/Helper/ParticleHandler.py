@@ -115,16 +115,9 @@ class ParticleHandler(ConfigHelper):
     evt.enableUI()
 
   def setupUserParticleHandler(self, part, kernel, DDG4):
-    """Create the UserParticleHandler and configure it.
-
-    FIXME: this is not extensible at the moment
-    """
+    """Create the UserParticleHandler and configure it."""
     if not self.userParticleHandler:
       return
-
-    if self.userParticleHandler not in ["Geant4TCUserParticleHandler", "Geant4TVUserParticleHandler"]:
-      logger.error("unknown UserParticleHandler: %r" % self.userParticleHandler)
-      exit(1)
 
     if self.userParticleHandler == "Geant4TCUserParticleHandler":
       user = DDG4.Action(kernel, "%s/UserParticleHandler" % self.userParticleHandler)
@@ -158,6 +151,14 @@ class ParticleHandler(ConfigHelper):
         logger.error("Geant4TVUserParticleHandler requested but no tracking_volume defined in the XML")
         exit(1)
 
+      user = DDG4.Action(kernel, "%s/UserParticleHandler" % self.userParticleHandler)
+      part.adopt(user)
+
+    else:
+      # Generic handler: create the action and adopt it without special configuration.
+      # Allows third-party plugins (e.g. Geant4AdePTUserParticleHandler) to be used
+      # without modifying this file.
+      logger.info("Using generic UserParticleHandler: %s", self.userParticleHandler)
       user = DDG4.Action(kernel, "%s/UserParticleHandler" % self.userParticleHandler)
       part.adopt(user)
 

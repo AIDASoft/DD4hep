@@ -36,8 +36,9 @@
 #include <CLHEP/Units/SystemOfUnits.h>
 
 // C/C++ include files
-#include <set>
 #include <algorithm>
+#include <set>
+
 
 using namespace dd4hep::sim;
 using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
@@ -332,8 +333,6 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   Geant4ParticleHandle ph(&m_currTrack);
   const int g4_id = h.id();
 
-  int32_t track_reason = m_currTrack.reason;
-  PropertyMask mask(m_currTrack.reason);
   // Update vertex end point and final momentum
   G4ThreeVector mom = track->GetMomentum();
   const G4ThreeVector& pos = track->GetPosition();
@@ -343,6 +342,15 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   ph->vex = pos.x();
   ph->vey = pos.y();
   ph->vez = pos.z();
+
+  // Allow user handlers to repair m_currTrack (e.g. restore stale fields for
+  // GPU-offloaded tracks) before any bookkeeping fields are read.  Must come
+  // after pex/vex are set so the final state is visible to handlers, and
+  // before track_reason is copied so the backscatter logic uses correct bits.
+  for( auto* handler : this->m_userHandlers )
+    handler->end(track, m_currTrack);
+  int32_t track_reason = m_currTrack.reason;
+  PropertyMask mask(m_currTrack.reason);
 
   // Set the simulator status bits
   PropertyMask simStatus(m_currTrack.status);
@@ -382,10 +390,6 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     }
   }
   
-  /// Final update of the particle using the user handler
-  for( auto* handler : this->m_userHandlers )
-    handler->end(track, m_currTrack);
-
   //
   // These are candidate tracks with a probability to be stored due to their properties:
   // - primary particle
@@ -428,8 +432,13 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     // with the mask of the last stored particle
     auto iend = m_equivalentTracks.end(), iequiv=m_equivalentTracks.end();
     ParticleMap::iterator ip;
+    std::set<int> visited;
     for(ip=m_particleMap.find(pid); ip == m_particleMap.end(); ip=m_particleMap.find(pid))  {
       if (iequiv=m_equivalentTracks.find(pid); iequiv == iend) break;  // ERROR
+      if (visited.count(pid)) {
+        break;  // Cycle in m_equivalentTracks: stop walking to avoid infinite loop
+      }
+      visited.insert(pid);
       pid = (*iequiv).second;
     }
     if ( ip != m_particleMap.end() )
@@ -535,11 +544,16 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
   // (2) Re-evaluate the corresponding geant4 track equivalents using the new mapping
   for(TrackEquivalents::iterator ie=m_equivalentTracks.begin(),ie_end=m_equivalentTracks.end(); ie!=ie_end; ++ie)  {
     int g4_equiv = (*ie).first;
+    std::set<int> rebase_visited;
     while( (ipar=m_particleMap.find(g4_equiv)) == m_particleMap.end() )  {
       TrackEquivalents::const_iterator iequiv = m_equivalentTracks.find(g4_equiv);
       if ( iequiv == ie_end )  {
         break;  // ERROR !! Will be handled by printout below because ipar==end()
       }
+      if (rebase_visited.count(g4_equiv)) {
+        break;  // Cycle in m_equivalentTracks during rebase: stop walking
+      }
+      rebase_visited.insert(g4_equiv);
       g4_equiv = (*iequiv).second;
     }
     TrackEquivalents::mapped_type equiv = (*ie).second;

@@ -81,6 +81,7 @@ option(DD4HEP_USE_GEANT4_UNITS  "Build using Geant4 units throughout"           
 option(DD4HEP_USE_EDM4HEP       "Build edm4hep extensions"                      OFF)
 option(DD4HEP_USE_HEPMC3        "Build hepmc3 extensions"                       OFF)
 option(DD4HEP_USE_TBB           "Build features that require TBB"               OFF)
+option(DD4HEP_USE_ADEPT         "Enable AdePT GPU transport integration"        OFF)
 option(DD4HEP_LOAD_ASSIMP       "Download and build ASSIMP from github"         OFF)
 option(DD4HEP_DISABLE_PACKAGES  "Selectively disable DD4HEP sub-packages [Separate multiples by space]"  OFF)
 option(BUILD_TESTING            "Enable and build tests"                        ON)
@@ -156,6 +157,15 @@ DD4HEP_SETUP_BOOST_TARGETS()
 
 # Configure Geant4
 if(DD4HEP_USE_GEANT4)
+  # When DD4HEP_USE_ADEPT is ON, Geant4 is built with VecGeom which requires
+  # CUDA; its transitive find_dependency(VecCore COMPONENTS CUDA) calls
+  # check_language(CUDA), which returns NOTFOUND when nvcc is not on PATH.
+  # Pre-populate CMAKE_CUDA_COMPILER so that check_language sees it as cached
+  # and skips auto-detection.  This must happen before find_package(Geant4).
+  if(DD4HEP_USE_ADEPT)
+    find_program(CMAKE_CUDA_COMPILER nvcc
+      PATHS /usr/local/cuda/bin /usr/local/cuda-13/bin /usr/local/cuda-12/bin)
+  endif()
   find_package( Geant4 10.2.2 REQUIRED  gdml ui_all vis_all CONFIG)
   IF(NOT Geant4_builtin_clhep_FOUND)
     SET(DD4HEP_USE_CLHEP TRUE)
@@ -215,6 +225,19 @@ endif()
 
 if(DD4HEP_USE_TBB)
   find_package(TBB REQUIRED CONFIG)
+endif()
+
+if(DD4HEP_USE_ADEPT)
+  if(NOT DD4HEP_USE_GEANT4)
+    message(FATAL_ERROR "DD4HEP_USE_ADEPT requires DD4HEP_USE_GEANT4 to be enabled")
+  endif()
+  # CMAKE_CUDA_COMPILER was pre-populated before find_package(Geant4) above so
+  # that VecGeom's transitive find_dependency(VecCore COMPONENTS CUDA) could
+  # succeed.  VecCoreConfig.cmake will have already called enable_language(CUDA)
+  # if it found the compiler; call it here as well so that AdePTConfig.cmake's
+  # CUDA-dependent logic sees a fully initialized toolchain.
+  enable_language(CUDA)
+  find_package(AdePT REQUIRED)
 endif()
 
 
