@@ -17,10 +17,12 @@
 #include <DD4hep/InstanceCount.h>
 #include <DDG4/Geant4HitCollection.h>
 #include <DDG4/Geant4Output2ROOT.h>
+#include <DDG4/Geant4Kernel.h>
 #include <DDG4/Geant4Particle.h>
 #include <DDG4/Geant4Data.h>
 
 // Geant4 include files
+#include <G4Event.hh>
 #include <G4HCofThisEvent.hh>
 #include <G4ParticleTable.hh>
 #include <G4Run.hh>
@@ -33,6 +35,9 @@
 
 
 using namespace dd4hep::sim;
+
+/// Define the static mutex for ROOT I/O protection
+std::mutex Geant4Output2ROOT::s_rootMutex;
 
 /// Standard constructor
 Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* ctxt, const std::string& nam)
@@ -51,8 +56,21 @@ Geant4Output2ROOT::~Geant4Output2ROOT() {
   InstanceCount::decrement(this);
 }
 
-/// Close current output file
-void Geant4Output2ROOT::closeOutput()   {
+/// Callback at end of run: write and close the output file while DDG4 is still alive.
+/// In MT mode this fires once per worker; only the last worker closes the file
+void Geant4Output2ROOT::endRun(const G4Run* run) {
+  const int nThreads = context()->kernel().master().numThreads();
+  // ST: nThreads==0, close immediately
+  // MT: wait until every worker has called endRun before closing
+  int done = ++m_endRunCount;
+  if (nThreads == 0 || done >= nThreads) {
+    closeOutput();
+  }
+  Geant4OutputAction::endRun(run);
+}
+
+/// Close current output file. Must be called with s_rootMutex held.
+void Geant4Output2ROOT::closeOutputLocked()   {
   if (m_file) {
     TDirectory::TContext ctxt(m_file);
     Sections::iterator i = m_sections.find(m_section);
@@ -60,11 +78,19 @@ void Geant4Output2ROOT::closeOutput()   {
     if ( i != m_sections.end() )
       m_sections.erase(i);
     m_branches.clear();
+    for ( auto& [name, tree] : m_sections )  tree->Write();
+    m_sections.clear();
     m_tree->Write();
     m_file->Close();
     m_tree = nullptr;
     detail::deletePtr (m_file);
   }
+}
+
+/// Close current output file
+void Geant4Output2ROOT::closeOutput()   {
+  std::lock_guard<std::mutex> lock(s_rootMutex);
+  closeOutputLocked();
 }
 
 /// Create/access tree by name
@@ -81,11 +107,16 @@ TTree* Geant4Output2ROOT::section(const std::string& nam) {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2ROOT::beginRun(const G4Run* run) {
+  // Lock mutex to protect ROOT I/O operations
+  std::lock_guard<std::mutex> lock(s_rootMutex);
+  // Reset per-run counter here, before any events, so a new run never sees
+  // stale counts from the previous run.
+  m_endRunCount = 0;
   std::string fname = m_output;
   if ( m_filesByRun )    {
     size_t idx = m_output.rfind(".");
     if ( m_file )  {
-      closeOutput();
+      closeOutputLocked();
     }
     fname  = m_output.substr(0, idx);
     fname += _toString(run->GetRunID(), ".run%08d");
@@ -116,6 +147,9 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
 
 /// Fill single EVENT branch entry (Geant4 collection data)
 int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, void* ptr) {
+  // Lock mutex to protect ROOT I/O operations
+  std::lock_guard<std::mutex> lock(s_rootMutex);
+  
   if (m_file) {
     TBranch* b = 0;
     Branches::const_iterator i = m_branches.find(nam);
@@ -154,7 +188,18 @@ int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, v
 
 /// Commit data at end of filling procedure
 void Geant4Output2ROOT::commit(OutputContext<G4Event>& ctxt) {
+  // Lock mutex to protect ROOT I/O operations in multi-threaded mode
+  std::lock_guard<std::mutex> lock(s_rootMutex);
+  
   if (m_file) {
+    // Write G4 event ID to companion tree (one entry per event, in commit order).
+    Int_t evtid = ctxt.context->GetEventID();
+    TTree* id_tree = section("G4EventIDs");
+    TBranch* br = id_tree->GetBranch("G4EventID");
+    if ( !br )  br = id_tree->Branch("G4EventID", &evtid, "G4EventID/I");
+    else        br->SetAddress(&evtid);
+    id_tree->Fill();
+
     TObjArray* a = m_tree->GetListOfBranches();
     Long64_t evt = m_tree->GetEntries() + 1;
     Int_t nb = a->GetEntriesFast();
