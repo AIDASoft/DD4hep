@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["dev4/x86_64-el9-clang19-opt"]
+        LCG: ["dev4/x86_64-el9-clang22-opt"]
     steps:
     - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
     - uses: cvmfs-contrib/github-action-cvmfs@10197e000cc0add8e54ac4fb73d3ed44e2de72b4
