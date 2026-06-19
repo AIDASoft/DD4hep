@@ -22,13 +22,34 @@ import random
 import array
 import ROOT
 
-parser = argparse.ArgumentParser(description="Material budget scan in theta/eta/cosTheta")
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.RawTextHelpFormatter,
+    description=(
+        "Material budget scan in theta/eta/cosTheta/thetaRad for a given geometry,\n"
+        "using Geant4 particle gun and the MaterialScanner stepping action.\n"
+        "\n"
+        "The scan shoots geantinos at fixed angle values and random phi, parses\n"
+        "the ddsim output, and saves THStacks of material depth, radiation length,\n"
+        "and interaction length vs angle to a ROOT file, PDF, and PNG.\n"
+        "\n"
+        "Example: \n"
+        "  g4MaterialAngleScan.py \\ \n"
+        "      -c myDetector.xml \\ \n"
+        "      -o materialScan.root \\ \n"
+        "      --angleDef theta --angleMin 10 --angleMax 170 -b 5 \\ \n"
+        "      --nPhi 50 \\ \n"
+        "      -i Air Vacuum \\ \n"
+        "      --colors 'kRed+2' 'cornflowerblue' '#00ff00' \\ \n"
+        "      -t 600 \n"
+        "      -P \n"
+    )
+)
 
 parser.add_argument("--compactFile", 
                     "-c", 
                     dest="compact", 
                     type=str, 
-                    help="name of file to read")
+                    help="name of the detector compact file to load geometry from")
 
 parser.add_argument("--steeringFile",
                     "-s",
@@ -42,25 +63,25 @@ parser.add_argument("--outputFile",
                     dest="output",
                     default='materialScan.root',
                     type=str,
-                    help="name of output root file to write")
+                    help="name of output root file with extension (and prefix for exported canvases)")
 
 parser.add_argument("--angleDef",
                     dest="angleDef",
-                    default="eta",
+                    default="theta",
                     type=str,
-                    help="angle definition to use: eta, theta, cosTheta or thetaRad, default: eta")
+                    help="angle definition to use: eta, theta, cosTheta or thetaRad. Default: theta")
 
 parser.add_argument("--angleMin", 
                     dest="angleMin", 
                     default=-6, 
                     type=float, 
-                    help="minimum eta/theta/cosTheta")
+                    help="minimum value for eta/theta/cosTheta")
 
 parser.add_argument("--angleMax", 
                     dest="angleMax", 
                     default=6, 
                     type=float, 
-                    help="maximum eta/theta/cosTheta")
+                    help="maximum value for eta/theta/cosTheta")
 
 parser.add_argument("--angleBinning",
                     "-b",
@@ -73,7 +94,7 @@ parser.add_argument("--nPhi",
                     dest="nPhi",
                     default=100,
                     type=int,
-                    help="number of phi values to scan for each eta/theta/cosTheta/thetaRad bin")
+                    help="number of random phi values to scan for each eta/theta/cosTheta/thetaRad bin")
 
 parser.add_argument("--timeOut",
                     "-t",
@@ -94,7 +115,7 @@ parser.add_argument("--removeMatsSubstrings",
                     dest="removeMatsSubstrings",
                     nargs="+",
                     default=[],
-                    help="Substrings to be removed from materials strings (e.g. '66D' for reduced density materials). Applied before --ignoreMats.")
+                    help="Substrings to be removed from materials strings (e.g. DCH_ for drift chamber specific materials). Applied before --ignoreMats.")
 
 parser.add_argument("--ignoreMats",
                     "-i",
@@ -114,7 +135,7 @@ parser.add_argument("--colors",
                     dest="colors",
                     nargs="+",
                     default=None,
-                    help="List of ROOT colours to use for materials, accepts ROOT colour names (e.g. kRed kBlue+2), ROOT-style integers (e.g. 4 8 15 16 23 42), hex codes in quotes (e.g. '#ff0000' '#3b82f6') or matplotlib names (e.g. red steelblue tab:blue). If fewer colours are provided than materials are found, the list will be padded with default ROOT colours that don't duplicate any user-specified ones.")
+                    help="List of ROOT colours to use for materials. Accepts ROOT colour names (e.g. kRed kBlue+2, case-sensitive), ROOT-style integers (e.g. 4 8 15 16 23 42), hex codes in quotes (e.g. '#ff0000' '#3b82f6'), or matplotlib names (e.g. red steelblue tab:blue). If fewer colours are provided than materials are found, the list will be padded with default ROOT colours.")
 
 args = parser.parse_args()
 
@@ -160,10 +181,10 @@ def direction_from_theta_phi(theta_deg, phi_deg):
 def resolve_color(c):
     """
     Accept:
-      - ROOT names:      kRed, kBlue+2, kAzure-1
-      - plain integers:  2, 4, 628
-      - hex codes:       #ff0000, #3b82f6
-      - matplotlib names: red, steelblue, tab:blue, ...
+      - ROOT names:             kRed, kBlue+2, kAzure-1
+      - ROOT-style integers:    2, 4, 6
+      - hex codes:              #ff0000, #3b82f6
+      - matplotlib names:       red, steelblue, tab:blue, ...
     Returns a ROOT color index (int).
     """
     c = str(c).strip()
@@ -404,6 +425,7 @@ def run_ddsim_progress(mac_file, timeout, n_events):
     if proc.returncode != 0:
         print(f'WARNING: ddsim exited with return code {proc.returncode}')
 
+    # Create a simple object to hold the combined stdout for parsing later
     class Result:
         stdout = ''.join(lines)
     return Result()
@@ -603,7 +625,7 @@ def make_stack_and_total(qty_idx, qty_name, y_title):
     # total.Write()
     return stack, total, mat_hists
  
-stack_x0,  total_x0,  _ = make_stack_and_total(0, 'x0',  't/X_{0}')
+stack_x0,  total_x0,  _ = make_stack_and_total(0, 'x0',  'Number of X_{0}')
 stack_li,  total_li,  _ = make_stack_and_total(1, 'lambda', 'Number of #lambda_{I}')
 stack_len, total_len, _ = make_stack_and_total(2, 'depth', 'Material depth [mm]')
  
