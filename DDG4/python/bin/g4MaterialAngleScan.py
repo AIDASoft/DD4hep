@@ -10,7 +10,12 @@
 #
 # ==========================================================================
 """
+Material scan along the polar angle, creating a series 1D histograms.
+The results are presented in material depth [cm], number of radiation lengths, and number of interaction lengths.
+For each of these three, the scan seperates contribution per found material, creating a histogram for each material individually,
+a stacked histogram with all contributions, and one histogram with only the total value if only the sum of all contributions is of interest. 
 
+The behaviour of the script follows the script in k4geo/utils/material_plots.py in terms of configurable options.
 """
 
 import os
@@ -41,7 +46,6 @@ parser = argparse.ArgumentParser(
         "      -i Air Vacuum \\ \n"
         "      --colors 'kRed+2' 'cornflowerblue' '#00ff00' \\ \n"
         "      -t 600 \n"
-        "      -P \n"
     )
 )
 
@@ -103,13 +107,6 @@ parser.add_argument("--timeOut",
                     type=int,
                     help="timeout for ddsim runs in seconds")
 
-# parser.add_argument("--x0max", 
-#                     "-x", 
-#                     dest="x0max", 
-#                     default=0.0, 
-#                     type=float, 
-#                     help="Max of x0")
-
 parser.add_argument("--removeMatsSubstrings",
                     "-r",                    
                     dest="removeMatsSubstrings",
@@ -135,7 +132,7 @@ parser.add_argument("--colors",
                     dest="colors",
                     nargs="+",
                     default=None,
-                    help="List of ROOT colours to use for materials. Accepts ROOT colour names (e.g. kRed kBlue+2, case-sensitive), ROOT-style integers (e.g. 4 8 15 16 23 42), hex codes in quotes (e.g. '#ff0000' '#3b82f6'), or matplotlib names (e.g. red steelblue tab:blue). If fewer colours are provided than materials are found, the list will be padded with default ROOT colours.")
+                    help="List of ROOT colours to use for materials. Accepts ROOT colour names (e.g. 'kRed' 'kBlue+2', case-sensitive), ROOT-style integers (e.g. '4' '8' '15' '16' '23' '42'), hex codes in quotes (e.g. '#ff0000' '#3b82f6'), or matplotlib names (e.g. 'red' 'steelblue' 'tab:blue'). If fewer colours are provided than materials are found, the list will be padded with default ROOT colours.")
 
 args = parser.parse_args()
 
@@ -177,6 +174,12 @@ def direction_from_theta_phi(theta_deg, phi_deg):
 # ---------------------------------------------------------------------------
 # default colours and colour list builder for ROOT histograms
 # ---------------------------------------------------------------------------
+
+DEFAULT_COLORS = [
+    ROOT.kRed,      ROOT.kBlue,     ROOT.kGreen+2,  ROOT.kOrange+1,
+    ROOT.kMagenta,  ROOT.kCyan+1,   ROOT.kYellow+2, ROOT.kViolet+1,
+    ROOT.kTeal+2,   ROOT.kPink+3,   ROOT.kAzure+2,  ROOT.kSpring+5,
+]
 
 def resolve_color(c):
     """
@@ -224,19 +227,13 @@ def resolve_color(c):
     return ROOT.kBlack
 
 
-DEFAULT_COLORS = [
-    ROOT.kRed,      ROOT.kBlue,     ROOT.kGreen+2,  ROOT.kOrange+1,
-    ROOT.kMagenta,  ROOT.kCyan+1,   ROOT.kYellow+2, ROOT.kViolet+1,
-    ROOT.kTeal+2,   ROOT.kPink+3,   ROOT.kAzure+2,  ROOT.kSpring+5,
-]
-
 def build_color_list(args_colors):
     """
     Start from user-supplied colors (if any), then pad with defaults
     that don't duplicate anything already in the list.
     """
     if args_colors is None:
-        return list(DEFAULT_COLORS)
+        return DEFAULT_COLORS
     resolved = [resolve_color(c) for c in args_colors]
     resolved_set = set(resolved)
     for col in DEFAULT_COLORS:
@@ -445,7 +442,7 @@ if not args.noPilot:
         print('  ddsim --compactFile', args.compact,
               '--runType run --enableG4Gun',
               '--action.step Geant4MaterialScanner/MaterialScan',
-              ['--steeringFile ' + args.steering if args.steering is not None else ''],
+              '--steeringFile ' + args.steering if args.steering is not None else '',
               '-M', pilotName)
         sys.exit(1)
     print('Pilot job OK.\n')
