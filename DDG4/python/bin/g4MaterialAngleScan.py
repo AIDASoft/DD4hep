@@ -11,11 +11,15 @@
 # ==========================================================================
 """
 Material scan along the polar angle, creating a series 1D histograms.
-The results are presented in material depth [cm], number of radiation lengths, and number of interaction lengths.
-For each of these three, the scan seperates contribution per found material, creating a histogram for each material individually,
-a stacked histogram with all contributions, and one histogram with only the total value if only the sum of all contributions is of interest. 
+The results are presented in material depth [cm], number of radiation lengths,
+and number of interaction lengths.
+For each of these three, the scan seperates contribution per found material,
+creating a histogram for each material individually,
+a stacked histogram with all contributions, and one histogram with only the
+total value if only the sum of all contributions is of interest.
 
-The behaviour of the script follows the script in k4geo/utils/material_plots.py in terms of configurable options.
+The behaviour of the script follows the script in k4geo/utils/material_plots.py
+in terms of configurable options.
 """
 
 import os
@@ -47,93 +51,95 @@ parser = argparse.ArgumentParser(
         "      -i Air Vacuum \\ \n"
         "      --colors 'kRed+2' 'cornflowerblue' '#00ff00' \\ \n"
         "      -t 600 \n"
+        ),
     )
-)
 
-parser.add_argument("--compactFile", 
-                    "-c", 
-                    dest="compact", 
-                    type=str, 
-                    help="name of the detector compact file to load geometry from")
+parser.add_argument(
+    "--compactFile", "-c", dest="compact", type=str, help="name of the detector compact file to load geometry from"
+    )
 
-parser.add_argument("--steeringFile",
-                    "-s",
-                    dest="steering",
-                    default=None,
-                    type=str,
-                    help="ddsim steering file (optional)")
+parser.add_argument(
+    "--steeringFile", "-s", dest="steering", default=None, type=str, help="ddsim steering file (optional)"
+    )
 
-parser.add_argument("--outputFile",
-                    "-o",
-                    dest="output",
-                    default='materialScan.root',
-                    type=str,
-                    help="name of output root file with extension (and prefix for exported canvases)")
+parser.add_argument(
+    "--outputFile",
+    "-o",
+    dest="output",
+    default="materialScan.root",
+    type=str,
+    help="name of output root file with extension (and prefix for exported canvases)",
+    )
 
-parser.add_argument("--angleDef",
-                    dest="angleDef",
-                    default="theta",
-                    type=str,
-                    help="angle definition to use: eta, theta, cosTheta or thetaRad. Default: theta")
+parser.add_argument(
+    "--angleDef",
+    dest="angleDef",
+    default="theta",
+    type=str,
+    help="angle definition to use: eta, theta, cosTheta or thetaRad. Default: theta",
+    )
 
-parser.add_argument("--angleMin", 
-                    dest="angleMin", 
-                    default=-6, 
-                    type=float, 
-                    help="minimum value for eta/theta/cosTheta")
+parser.add_argument("--angleMin", dest="angleMin", default=-6, type=float, help="minimum value for eta/theta/cosTheta")
 
-parser.add_argument("--angleMax", 
-                    dest="angleMax", 
-                    default=6, 
-                    type=float, 
-                    help="maximum value for eta/theta/cosTheta")
+parser.add_argument("--angleMax", dest="angleMax", default=6, type=float, help="maximum value for eta/theta/cosTheta")
 
-parser.add_argument("--angleBinning",
-                    "-b",
-                    dest="angleBinning",
-                    default=0.05,
-                    type=float,
-                    help="eta/theta/cosTheta/thetaRad bin width")
+parser.add_argument(
+    "--angleBinning", "-b", dest="angleBinning", default=0.05, type=float, help="eta/theta/cosTheta/thetaRad bin width"
+    )
 
-parser.add_argument("--nPhi",
-                    dest="nPhi",
-                    default=100,
-                    type=int,
-                    help="number of random phi values to scan for each eta/theta/cosTheta/thetaRad bin")
+parser.add_argument(
+    "--nPhi",
+    dest="nPhi",
+    default=100,
+    type=int,
+    help="number of random phi values to scan for each eta/theta/cosTheta/thetaRad bin",
+    )
 
-parser.add_argument("--timeOut",
-                    "-t",
-                    dest="timeOut",
-                    default=600,
-                    type=int,
-                    help="timeout for ddsim runs in seconds")
+parser.add_argument("--timeOut", "-t", dest="timeOut", default=600, type=int, help="timeout for ddsim runs in seconds")
 
-parser.add_argument("--removeMatsSubstrings",
-                    "-r",                    
-                    dest="removeMatsSubstrings",
-                    nargs="+",
-                    default=[],
-                    help="Substrings to be removed from materials strings (e.g. DCH_ for drift chamber specific materials). Applied before --ignoreMats.")
+parser.add_argument(
+    "--removeMatsSubstrings",
+    "-r",
+    dest="removeMatsSubstrings",
+    nargs="+",
+    default=[],
+    help=(
+        "Substrings to be removed from materials strings "
+        "(e.g. DCH_ for drift chamber specific materials). "
+        "Applied before --ignoreMats."
+        ),
+    )
 
-parser.add_argument("--ignoreMats",
-                    "-i",
-                    dest="ignoreMats",
-                    nargs="+",
-                    default=[],
-                    help="List of materials that should be ignored. Applied after --removeMatsSubstrings.")
+parser.add_argument(
+    "--ignoreMats",
+    "-i",
+    dest="ignoreMats",
+    nargs="+",
+    default=[],
+    help="List of materials that should be ignored. Applied after --removeMatsSubstrings.",
+    )
 
-parser.add_argument("-P", 
-                    "--noPilot",
-                    action="store_true", 
-                    dest="noPilot", 
-                    default=False,
-                    help="don't run the pilot job (e.g. if you're sure the geometry is good)")
+parser.add_argument(
+    "-P",
+    "--noPilot",
+    action="store_true",
+    dest="noPilot",
+    default=False,
+    help="don't run the pilot job (e.g. if you're sure the geometry is good)",
+    )
 
-parser.add_argument("--colors",
-                    dest="colors",
-                    nargs="+",
-                    default=None,
-                    help="List of ROOT colours to use for materials. Accepts ROOT colour names (e.g. 'kRed' 'kBlue+2', case-sensitive), ROOT-style integers (e.g. '4' '8' '15' '16' '23' '42'), hex codes in quotes (e.g. '#ff0000' '#3b82f6'), or matplotlib names (e.g. 'red' 'steelblue' 'tab:blue'). If fewer colours are provided than materials are found, the list will be padded with default ROOT colours.")
+parser.add_argument(
+    "--colors",
+    dest="colors",
+    nargs="+",
+    default=None,
+    help=(
+        "List of ROOT colours to use for materials. Accepts ROOT colour names (e.g. 'kRed' 'kBlue+2', case-sensitive), "
+        "ROOT-style integers (e.g. '4' '8' '15' '16' '23' '42'), hex codes in quotes (e.g. '#ff0000' '#3b82f6'), "
+        "or matplotlib names (e.g. 'red' 'steelblue' 'tab:blue'). If fewer colours are provided than "
+        "materials are found, the list will be padded with default ROOT colours."
+        ),
+    )
 
 args = parser.parse_args()
 
@@ -141,31 +147,36 @@ args = parser.parse_args()
 # valid angle definitions and helper functions
 # ---------------------------------------------------------------------------
 
-ANGLE_DEFS = ['eta', 'theta', 'cosTheta', 'thetaRad']
+ANGLE_DEFS = ["eta", "theta", "cosTheta", "thetaRad"]
+
 
 def eta_to_theta_deg(eta):
     return math.degrees(2.0 * math.atan(math.exp(-eta)))
- 
+
+
 def costheta_to_theta_deg(costh):
     return math.degrees(math.acos(costh))
+
 
 def theta_rad_to_theta_deg(theta_rad):
     return math.degrees(theta_rad)
 
+
 def native_to_theta_deg(val):
-    if angleDef == 'theta':
+    if angleDef == "theta":
         return val
-    elif angleDef == 'eta':
+    elif angleDef == "eta":
         return eta_to_theta_deg(val)
-    elif angleDef == 'cosTheta':
+    elif angleDef == "cosTheta":
         return costheta_to_theta_deg(val)
-    elif angleDef == 'thetaRad':
+    elif angleDef == "thetaRad":
         return theta_rad_to_theta_deg(val)
-    
+
+
 def direction_from_theta_phi(theta_deg, phi_deg):
     """unit direction vector from polar and azimuthal angles"""
     theta = math.radians(theta_deg)
-    phi   = math.radians(phi_deg)
+    phi = math.radians(phi_deg)
     x = math.sin(theta) * math.cos(phi)
     y = math.sin(theta) * math.sin(phi)
     z = math.cos(theta)
@@ -177,10 +188,20 @@ def direction_from_theta_phi(theta_deg, phi_deg):
 # ---------------------------------------------------------------------------
 
 DEFAULT_COLORS = [
-    ROOT.kRed,      ROOT.kBlue,     ROOT.kGreen+2,  ROOT.kOrange+1,
-    ROOT.kMagenta,  ROOT.kCyan+1,   ROOT.kYellow+2, ROOT.kViolet+1,
-    ROOT.kTeal+2,   ROOT.kPink+3,   ROOT.kAzure+2,  ROOT.kSpring+5,
-]
+    ROOT.kRed,
+    ROOT.kBlue,
+    ROOT.kGreen + 2,
+    ROOT.kOrange + 1,
+    ROOT.kMagenta,
+    ROOT.kCyan + 1,
+    ROOT.kYellow + 2,
+    ROOT.kViolet + 1,
+    ROOT.kTeal + 2,
+    ROOT.kPink + 3,
+    ROOT.kAzure + 2,
+    ROOT.kSpring + 5,
+    ]
+
 
 def resolve_color(c):
     """
@@ -194,7 +215,7 @@ def resolve_color(c):
     c = str(c).strip()
 
     # hex code
-    if c.startswith('#'):
+    if c.startswith("#"):
         return ROOT.TColor.GetColor(c)
 
     # plain integer
@@ -204,7 +225,7 @@ def resolve_color(c):
         pass
 
     # ROOT name with optional offset: kGreen+2, kAzure-1
-    for op in ('+', '-'):
+    for op in ("+", "-"):
         if op in c:
             name, offset = c.split(op, 1)
             try:
@@ -219,7 +240,8 @@ def resolve_color(c):
     # matplotlib color name -> hex -> ROOT
     try:
         import matplotlib.colors as mcolors
-        hex_col = mcolors.to_hex(c)   # handles 'red', 'steelblue', 'tab:blue', etc.
+
+        hex_col = mcolors.to_hex(c)  # handles 'red', 'steelblue', 'tab:blue', etc.
         return ROOT.TColor.GetColor(hex_col)
     except (ImportError, ValueError):
         pass
@@ -246,7 +268,7 @@ def build_color_list(args_colors):
             continue
         resolved.append(resolved_color)
         resolved_set.add(resolved_color)
-    
+
     # pad with default colors
     for col in DEFAULT_COLORS:
         if col not in resolved_set:
@@ -254,6 +276,7 @@ def build_color_list(args_colors):
             resolved_set.add(col)
 
     return resolved
+
 
 COLORS = build_color_list(args.colors)
 
@@ -263,54 +286,54 @@ COLORS = build_color_list(args.colors)
 # ---------------------------------------------------------------------------
 
 if not os.path.isfile(args.compact):
-    print('ERROR: cannot find requested input geometry file', args.compact, file=sys.stderr)
+    print("ERROR: cannot find requested input geometry file", args.compact, file=sys.stderr)
     exit(1)
-print('geometry file:', args.compact)
+print("geometry file:", args.compact)
 
 if args.steering is not None and not os.path.isfile(args.steering):
-    print('ERROR: cannot find requested ddsim steering file', args.steering, file=sys.stderr)
+    print("ERROR: cannot find requested ddsim steering file", args.steering, file=sys.stderr)
     exit(1)
-print('ddsim steering file:', args.steering)
+print("ddsim steering file:", args.steering)
 
 angleDef = str(args.angleDef)
 if angleDef not in ANGLE_DEFS:
-    print('ERROR: unknown angle definition', angleDef, '. Choose from ', ANGLE_DEFS, '.', file=sys.stderr)
+    print("ERROR: unknown angle definition", angleDef, ". Choose from ", ANGLE_DEFS, ".", file=sys.stderr)
     exit(1)
 print(angleDef)
 
 angleMin = float(args.angleMin)
 angleMax = float(args.angleMax)
-binning  = float(args.angleBinning)
+binning = float(args.angleBinning)
 
-if angleDef == 'theta':
+if angleDef == "theta":
     if angleMin < 0:
-        print('WARNING: lower theta bound is negative, setting to 0')
+        print("WARNING: lower theta bound is negative, setting to 0")
         angleMin = 0
     if angleMax > 180:
-        print('WARNING: upper theta bound is above 180, setting to 180')
+        print("WARNING: upper theta bound is above 180, setting to 180")
         angleMax = 180
 
-elif angleDef == 'thetaRad':
+elif angleDef == "thetaRad":
     if angleMin < 0:
-        print('WARNING: lower theta bound is negative, setting to 0')
+        print("WARNING: lower theta bound is negative, setting to 0")
         angleMin = 0
     if angleMax > 3.14159:
-        print('WARNING: upper theta bound is above pi, setting to pi')
+        print("WARNING: upper theta bound is above pi, setting to pi")
         angleMax = 3.14159
 
-elif angleDef == 'cosTheta':
+elif angleDef == "cosTheta":
     if angleMin < -1:
-        print('WARNING: lower cosTheta bound is below -1, setting to -1')
+        print("WARNING: lower cosTheta bound is below -1, setting to -1")
         angleMin = -1
     if angleMax > 1:
-        print('WARNING: upper cosTheta bound is above 1, setting to 1')
+        print("WARNING: upper cosTheta bound is above 1, setting to 1")
         angleMax = 1
 
 
 # ---------------------------------------------------------------------------
 # create bins
 # ---------------------------------------------------------------------------
- 
+
 # build uniform edges in native angle variable
 # converted to theta later for Geant4
 edges = []
@@ -321,37 +344,39 @@ while v <= angleMax + 1e-9:
 if edges[-1] < angleMax - 1e-12:
     edges.append(angleMax)
 nBins = len(edges) - 1
- 
+
 if nBins < 1:
-    print('ERROR: bin width larger than the requested range', file=sys.stderr)
+    print("ERROR: bin width larger than the requested range", file=sys.stderr)
     sys.exit(1)
 
 
-bin_centres_native = [(edges[i] + edges[i+1]) / 2.0 for i in range(nBins)]
+bin_centres_native = [(edges[i] + edges[i + 1]) / 2.0 for i in range(nBins)]
 
 # for Geant4 particle gun, we need the angleDef as theta value, so convert
-bin_theta_centres  = [native_to_theta_deg(c) for c in bin_centres_native]
+bin_theta_centres = [native_to_theta_deg(c) for c in bin_centres_native]
 
 # ---------------------------------------------------------------------------
-# Geant4 macro files 
+# Geant4 macro files
 # ---------------------------------------------------------------------------
 
-macName   = '_thetaScan_'       + args.output + '.mac'
-pilotName = '_thetaScan_pilot_' + args.output + '.mac'
- 
+macName = "_thetaScan_" + args.output + ".mac"
+pilotName = "_thetaScan_pilot_" + args.output + ".mac"
+
+
 def write_mac(filename, theta_centres):
-    with open(filename, 'w') as f:
-        f.write('/gun/particle geantino\n')
-        f.write('/gun/energy 20 GeV\n')
-        f.write('/gun/number 1\n')
-        f.write('/gun/position 0 0 0 mm\n')
+    with open(filename, "w") as f:
+        f.write("/gun/particle geantino\n")
+        f.write("/gun/energy 20 GeV\n")
+        f.write("/gun/number 1\n")
+        f.write("/gun/position 0 0 0 mm\n")
         for theta_c in theta_centres:
             phi_list = [random.uniform(0.0, 360.0) for _ in range(args.nPhi)]
             for phi in phi_list:
                 x, y, z = direction_from_theta_phi(theta_c, phi)
-                f.write(f'/gun/direction {x:.8f} {y:.8f} {z:.8f}\n')
-                f.write('/run/beamOn\n')
-        f.write('exit\n')
+                f.write(f"/gun/direction {x:.8f} {y:.8f} {z:.8f}\n")
+                f.write("/run/beamOn\n")
+        f.write("exit\n")
+
 
 # full macro: all bins
 write_mac(macName, bin_theta_centres)
@@ -364,62 +389,67 @@ write_mac(pilotName, [bin_theta_centres[0]])
 # functions to run ddsim
 # ---------------------------------------------------------------------------
 
+
 def build_ddsim_cmd(mac_file, with_stdbuf=False):
-    cmd = (['stdbuf', '-oL'] if with_stdbuf else []) + [
-        'ddsim',
-        '--compactFile', args.compact,
-        '--runType',     'run',
-        '--enableG4Gun',
-        '--action.step', 'Geant4MaterialScanner/MaterialScan',
-        '-M',            mac_file,
-    ]
+    cmd = (["stdbuf", "-oL"] if with_stdbuf else []) + [
+        "ddsim",
+        "--compactFile",
+        args.compact,
+        "--runType",
+        "run",
+        "--enableG4Gun",
+        "--action.step",
+        "Geant4MaterialScanner/MaterialScan",
+        "-M",
+        mac_file,
+        ]
     if args.steering is not None:
-        cmd += ['--steeringFile', args.steering]
+        cmd += ["--steeringFile", args.steering]
     return cmd
- 
+
+
 def run_ddsim(mac_file, timeout):
     cmd = build_ddsim_cmd(mac_file, with_stdbuf=True)
-    print('Running:', ' '.join(cmd))
+    print("Running:", " ".join(cmd))
     try:
         return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
     except subprocess.TimeoutExpired:
-        sys.exit(f'ERROR: ddsim timed out after {timeout} s')
-        
+        sys.exit(f"ERROR: ddsim timed out after {timeout} s")
+
+
 def run_ddsim_progress(mac_file, timeout, n_events):
     import threading
     from tqdm import tqdm
 
     cmd = build_ddsim_cmd(mac_file, with_stdbuf=True)
-    print('Running:', ' '.join(cmd))
+    print("Running:", " ".join(cmd))
 
     lines = []
 
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT,
-                            text=True)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
     # Watchdog thread to enforce timeout
     def _watchdog():
         try:
             proc.wait(timeout=timeout)
         except subprocess.TimeoutExpired:
-            print(f'\nERROR: ddsim timed out after {timeout} s, killing process.')
+            print(f"\nERROR: ddsim timed out after {timeout} s, killing process.")
             proc.kill()
 
     watchdog = threading.Thread(target=_watchdog, daemon=True)
     watchdog.start()
 
     pbar = None
-    print('  Waiting for Geant4 initialisation...', flush=True)
+    print("  Waiting for Geant4 initialisation...", flush=True)
 
     for line in proc.stdout:
         lines.append(line)
-        if 'Finished run' in line:
+        if "Finished run" in line:
             if pbar is None:
                 # start progress bar after the first event is completed, since Geant4 initialisation can take a while
-                print('  Initialisation complete, scanning...', flush=True)
-                pbar = tqdm(total=n_events, unit='evt', desc='  ddsim')
-                pbar.update(1)   # count the event we just saw
+                print("  Initialisation complete, scanning...", flush=True)
+                pbar = tqdm(total=n_events, unit="evt", desc="  ddsim")
+                pbar.update(1)  # count the event we just saw
             else:
                 pbar.update(1)
 
@@ -429,116 +459,123 @@ def run_ddsim_progress(mac_file, timeout, n_events):
     proc.wait()
 
     if proc.returncode == -9:
-        sys.exit('ERROR: ddsim was killed due to timeout.')
+        sys.exit("ERROR: ddsim was killed due to timeout.")
     if proc.returncode != 0:
-        print(f'WARNING: ddsim exited with return code {proc.returncode}')
+        print(f"WARNING: ddsim exited with return code {proc.returncode}")
 
     # Create a simple object to hold the combined stdout for parsing later
     class Result:
-        stdout = ''.join(lines)
+        stdout = "".join(lines)
+
     return Result()
+
 
 # ---------------------------------------------------------------------------
 # pilot run
 # ---------------------------------------------------------------------------
- 
+
 if not args.noPilot:
-    print('\nRunning pilot job...')
+    print("\nRunning pilot job...")
     pr = run_ddsim(pilotName, args.timeOut)
-    n_scans    = sum(1 for l in pr.stdout.splitlines() if 'Material scan between' in l)
-    n_finished = sum(1 for l in pr.stdout.splitlines() if 'Finished run'          in l)
+    n_scans = sum(1 for line in pr.stdout.splitlines() if "Material scan between" in line)
+    n_finished = sum(1 for line in pr.stdout.splitlines() if "Finished run" in line)
     if n_scans < 1 or n_finished < 1:
-        print('ERROR: pilot job did not finish successfully.')
-        print('Re-run the following command to investigate:')
-        print(' '.join(build_ddsim_cmd(pilotName, with_stdbuf=False)))
+        print("ERROR: pilot job did not finish successfully.")
+        print("Re-run the following command to investigate:")
+        print(" ".join(build_ddsim_cmd(pilotName, with_stdbuf=False)))
         sys.exit(1)
-    print('Pilot job OK.\n')
+    print("Pilot job OK.\n")
 
 # ---------------------------------------------------------------------------
 # main ddsim run
 # ---------------------------------------------------------------------------
- 
-print(f'Running main job ({nBins * args.nPhi} events)...')
+
+print(f"Running main job ({nBins * args.nPhi} events)...")
 result = run_ddsim_progress(macName, args.timeOut, nBins * args.nPhi)
- 
+
 
 # ---------------------------------------------------------------------------
 # parse ddsim output
 #
 # The MaterialScanner prints one block per event. Example block:
 #
-#  +--------------------------------------------------------------------------------------------------------------------------------------------------
-#  + Material scan between: (x0, y0, z0)[cm] and (x1, y1, z1)[cm]  TrackID:1: 
-#  +--------------------------------------------------------------------------------------------------------------------------------------------------
-#  |     \   Material           Atomic                 Radiation   Interaction               Path   Integrated  Integrated    Material
-#  | Num. \  Name          Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint  
-#  | Layer \                        [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm)
-#  +--------------------------------------------------------------------------------------------------------------------------------------------------
-#  |     1 Air                    7   14.784   0.0012  30528.8402   71282.7920    183.325   183.32    0.006005    0.002572  ( -34.68,  -4.58, 179.96)
+#  +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
+#  + Material scan between: (x0, y0, z0)[cm] and (x1, y1, z1)[cm]  TrackID:1: # noqa: E501
+#  +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
+#  |     \   Material           Atomic                 Radiation   Interaction               Path   Integrated  Integrated    Material # noqa: E501
+#  | Num. \  Name          Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint # noqa: E501
+#  | Layer \                        [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm) # noqa: E501
+#  +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
+#  |     1 Air                    7   14.784   0.0012  30528.8402   71282.7920    183.325   183.32    0.006005    0.002572  ( -34.68,  -4.58, 179.96) # noqa: E501
 #  ...
 # GenerationInit   WARN  +++ Finished run 1 after ...
 #
 # ---------------------------------------------------------------------------
 
-raw_data    = []   # list of events; each event is a list of step tuples
+raw_data = []  # list of events; each event is a list of step tuples
 current_evt = []
-in_scan     = False
+in_scan = False
 
-# Note: ddsim output is parsed for a second time now (first in run_ddsim_progress for the progress bar). In principle, we could unify these two steps, but this way the code is less cluttered/intertwined, and the parsing is very fast, so it should not be a problem.
-print('\nParsing ddsim output...')
+# Note: ddsim output is parsed for a second time now (first in run_ddsim_progress for the progress bar).
+# In principle, we could unify these two steps, but this way the code is less cluttered/intertwined,
+# and the parsing is very fast, so it should not be a problem.
+print("\nParsing ddsim output...")
 
 # keep track of materials that collapse to the same name when applying the 'removeMatSubtrings' option
 # e.g. G4_Cu and Custom_Cu, if both G4_ and Custom_ are removed
 conflicting_name_dict = defaultdict(set)
 
 for line in result.stdout.splitlines():
-    if 'Material scan between' in line:
+    if "Material scan between" in line:
         current_evt = []
-        in_scan     = True
- 
-    elif 'Finished run' in line:
+        in_scan = True
+
+    elif "Finished run" in line:
         raw_data.append(current_evt)
         in_scan = False
- 
-    elif in_scan and '(' in line and len(line.split('(')[0].split()) == 12 and line.split()[0] == '|':  # this line contains material information
+
+    elif (
+        in_scan and "(" in line and len(line.split("(")[0].split()) == 12 and line.split()[0] == "|"
+        ):  # this line contains material information
         parts = line.split()
         try:
-            int(parts[1])          # first token after '|' should be a step index
+            int(parts[1])  # first token after '|' should be a step index
         except ValueError:
-            continue               # skip header/separator lines
+            continue  # skip header/separator lines
         try:
-            x0_cm    = float(parts[6])
-            li_cm    = float(parts[7])
+            x0_cm = float(parts[6])
+            li_cm = float(parts[7])
             thick_cm = float(parts[8])
         except (ValueError, IndexError):
             continue
         if x0_cm <= 0.0 or li_cm <= 0.0:
             continue
-        
+
         original_name = parts[2]
         mat_name = original_name
         for substring in args.removeMatsSubstrings:
-            mat_name = mat_name.replace(substring, '')
+            mat_name = mat_name.replace(substring, "")
         conflicting_name_dict[mat_name].add(original_name)
-        
-        t_over_x0  = thick_cm / x0_cm
-        t_over_li  = thick_cm / li_cm
-        thick_mm   = thick_cm * 10.0
+
+        t_over_x0 = thick_cm / x0_cm
+        t_over_li = thick_cm / li_cm
+        thick_mm = thick_cm * 10.0
         current_evt.append((mat_name, t_over_x0, t_over_li, thick_mm))
 
 # print out any material name conflicts
 for mat_name, original_names in conflicting_name_dict.items():
     if len(original_names) > 1:
-        print(f'WARNING: multiple material names collapse to "{mat_name}" after applying --removeMatsSubstrings: {original_names}')
- 
+        print(
+            f'WARNING: multiple material names collapse to "{mat_name}" '
+            f'after applying --removeMatsSubstrings: {original_names}'
+            )
+
 n_received = len(raw_data)
 n_expected = nBins * args.nPhi
-print(f'Parsed {n_received} scan events (expected {n_expected})')
+print(f"Parsed {n_received} scan events (expected {n_expected})")
 if n_received != n_expected:
-    print(f'WARNING: event count mismatch ({n_received} vs {n_expected}). '
-          'Results may be incomplete.')
-    
-    
+    print(f"WARNING: event count mismatch ({n_received} vs {n_expected}). " "Results may be incomplete.")
+
 
 # ---------------------------------------------------------------------------
 # accumulate per-bin, per-material sums, then average over phi
@@ -546,14 +583,14 @@ if n_received != n_expected:
 # bin_data[ib][mat_name] = [sum_x0, sum_li, sum_len_mm]
 # Sums are over all nPhi shots for that bin; divided by nPhi at the end.
 # ---------------------------------------------------------------------------
- 
+
 bin_data = [{} for _ in range(nBins)]
- 
+
 for ev_idx, steps in enumerate(raw_data):
-    ib = ev_idx // args.nPhi # get the angle bin index from the total event index and nPhi
+    ib = ev_idx // args.nPhi  # get the angle bin index from the total event index and nPhi
     if ib >= nBins:
         break
-    for (mat, t_x0, t_li, t_mm) in steps:
+    for mat, t_x0, t_li, t_mm in steps:
         # Ignore certain materials if specified
         if mat in args.ignoreMats:
             continue
@@ -562,115 +599,114 @@ for ev_idx, steps in enumerate(raw_data):
         bin_data[ib][mat][0] += t_x0
         bin_data[ib][mat][1] += t_li
         bin_data[ib][mat][2] += t_mm
- 
+
 # divide by nPhi to get the phi-averaged value
 for ib in range(nBins):
     for mat in bin_data[ib]:
         bin_data[ib][mat][0] /= args.nPhi
         bin_data[ib][mat][1] /= args.nPhi
         bin_data[ib][mat][2] /= args.nPhi
- 
+
 all_mats = sorted({mat for ib in range(nBins) for mat in bin_data[ib]})
-print(f'Materials found: {all_mats}')
+print(f"Materials found: {all_mats}")
 
 # ---------------------------------------------------------------------------
 # ROOT histograms
 # ---------------------------------------------------------------------------
- 
-fout = ROOT.TFile(args.output, 'recreate')
- 
-edges_arr  = array.array('d', edges)
+
+fout = ROOT.TFile(args.output, "recreate")
+
+edges_arr = array.array("d", edges)
 nbins_root = len(edges) - 1
 
 AXIS_LABELS = {
-    'theta':    '#theta [deg]',
-    'eta':      '#eta',
-    'cosTheta': 'cos(#theta)',
-}
+    "theta": "#theta [deg]",
+    "eta": "#eta",
+    "cosTheta": "cos(#theta)",
+    }
 AXIS_LABEL = AXIS_LABELS[angleDef]
 
- 
+
 def make_stack_and_total(qty_idx, qty_name, y_title):
     """
     Build a THStack of per-material TH1D + a black 'Total' TH1D.
     qty_idx: 0 = x0, 1 = lambda, 2 = path length
     """
-    stack = ROOT.THStack(f'hs_{qty_name}', f';{AXIS_LABEL};{y_title}')
-    total = ROOT.TH1D(f'h_{qty_name}_TOTAL',
-                      f'Total;{AXIS_LABEL};{y_title}',
-                      nbins_root, edges_arr)
+    stack = ROOT.THStack(f"hs_{qty_name}", f";{AXIS_LABEL};{y_title}")
+    total = ROOT.TH1D(f"h_{qty_name}_TOTAL", f"Total;{AXIS_LABEL};{y_title}", nbins_root, edges_arr)
     total.SetLineWidth(2)
     total.SetLineColor(ROOT.kBlack)
- 
+
     mat_hists = {}
     for ci, mat in enumerate(all_mats):
-        h = ROOT.TH1D(f'h_{qty_name}_{mat}',
-                      f'{mat};{AXIS_LABEL};{y_title}',
-                      nbins_root, edges_arr)
+        h = ROOT.TH1D(f"h_{qty_name}_{mat}", f"{mat};{AXIS_LABEL};{y_title}", nbins_root, edges_arr)
         col = COLORS[ci % len(COLORS)]
         h.SetFillColor(col)
         h.SetLineColor(ROOT.kBlack)
         h.SetLineWidth(1)
         mat_hists[mat] = h
- 
+
     for ib in range(nBins):
-        root_bin = ib + 1   # ROOT 1-indexed
+        root_bin = ib + 1  # ROOT 1-indexed
         for mat, vals in bin_data[ib].items():
             val = vals[qty_idx]
             mat_hists[mat].AddBinContent(root_bin, val)
             total.AddBinContent(root_bin, val)
- 
+
     for mat in all_mats:
         stack.Add(mat_hists[mat])
         # mat_hists[mat].Write()
- 
+
     stack.Write()
     # total.Write()
     return stack, total, mat_hists
- 
-stack_x0,  total_x0,  _ = make_stack_and_total(0, 'x0',  'Number of X_{0}')
-stack_li,  total_li,  _ = make_stack_and_total(1, 'lambda', 'Number of #lambda_{I}')
-stack_len, total_len, _ = make_stack_and_total(2, 'depth', 'Material depth [mm]')
- 
+
+
+stack_x0, total_x0, _ = make_stack_and_total(0, "x0", "Number of X_{0}")
+stack_li, total_li, _ = make_stack_and_total(1, "lambda", "Number of #lambda_{I}")
+stack_len, total_len, _ = make_stack_and_total(2, "depth", "Material depth [mm]")
+
 # ---------------------------------------------------------------------------
 # ROOT canvases
 # ---------------------------------------------------------------------------
- 
+
 ROOT.gROOT.SetBatch(True)
 ROOT.gStyle.SetOptStat(0)
- 
+
+
 def draw_canvas(stack, total, canvas_name, title):
-    c = ROOT.TCanvas(canvas_name+"_canvas", title, 900, 600)
+    c = ROOT.TCanvas(canvas_name + "_canvas", title, 900, 600)
     c.SetLeftMargin(0.12)
-    stack.Draw('hist')
+    stack.Draw("hist")
     # stack.GetXaxis().SetTitle(AXIS_LABEL)
     # total.Draw('hist same')
     leg = ROOT.TLegend(0.65, 0.58, 0.92, 0.90)
     leg.SetBorderSize(0)
     leg.SetFillStyle(0)
     if stack.GetHists():
-        for mat in reversed(all_mats): # reverse to match stack order
-            h = stack.GetHists().FindObject(f'h_{canvas_name}_{mat}')
+        for mat in reversed(all_mats):  # reverse to match stack order
+            h = stack.GetHists().FindObject(f"h_{canvas_name}_{mat}")
             if h:
-                leg.AddEntry(h, mat, 'f')
+                leg.AddEntry(h, mat, "f")
     # leg.AddEntry(total, 'Total', 'l')
     leg.Draw()
 
     export_name = str(args.output)
-    if export_name.endswith('.root'):
-        export_name = export_name[:-len('.root')]
+    if export_name.endswith(".root"):
+        export_name = export_name[: -len(".root")]
     c.Print(export_name + ".pdf")
     c.Print(export_name + ".png")
     c.Write()
- 
-draw_canvas(stack_x0,  total_x0,  'x0',  'Radiation lengths')
-draw_canvas(stack_li,  total_li,  'lambda',  'Interaction lengths')
-draw_canvas(stack_len, total_len, 'depth', 'Material depth [mm]')
- 
+
+
+draw_canvas(stack_x0, total_x0, "x0", "Radiation lengths")
+draw_canvas(stack_li, total_li, "lambda", "Interaction lengths")
+draw_canvas(stack_len, total_len, "depth", "Material depth [mm]")
+
 fout.Write()
 fout.Close()
-print(f'\nDone. Results written to {args.output}')
- 
+print(f"\nDone. Results written to {args.output}")
+
 # clean up temp macro files
 for f in [macName, pilotName]:
     try:
