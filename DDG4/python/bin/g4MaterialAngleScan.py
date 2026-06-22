@@ -26,6 +26,7 @@ import math
 import random
 import array
 import ROOT
+from collections import defaultdict
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.RawTextHelpFormatter,
@@ -188,7 +189,7 @@ def resolve_color(c):
       - ROOT-style integers:    2, 4, 6
       - hex codes:              #ff0000, #3b82f6
       - matplotlib names:       red, steelblue, tab:blue, ...
-    Returns a ROOT color index (int).
+    Returns a ROOT color index (int) or None if the color cannot be resolved.
     """
     c = str(c).strip()
 
@@ -223,23 +224,35 @@ def resolve_color(c):
     except (ImportError, ValueError):
         pass
 
-    print(f'WARNING: could not resolve color "{c}", falling back to kBlack')
-    return ROOT.kBlack
+    print(f'WARNING: could not resolve color "{c}"')
+    return None
 
 
 def build_color_list(args_colors):
     """
-    Start from user-supplied colors (if any), then pad with defaults
-    that don't duplicate anything already in the list.
+    Create list from user input and fill with default colors if needed.
+    Ensure no dupicated colors in the final list.
     """
     if args_colors is None:
         return DEFAULT_COLORS
-    resolved = [resolve_color(c) for c in args_colors]
-    resolved_set = set(resolved)
+    resolved = []
+    resolved_set = set()
+    for color in args_colors:
+        resolved_color = resolve_color(color)
+        if resolved_color is None:
+            continue
+        if resolved_color in resolved_set:
+            print(f'WARNING: color "{resolved_color}" already in list, skipping it')
+            continue
+        resolved.append(resolved_color)
+        resolved_set.add(resolved_color)
+    
+    # pad with default colors
     for col in DEFAULT_COLORS:
         if col not in resolved_set:
             resolved.append(col)
             resolved_set.add(col)
+
     return resolved
 
 COLORS = build_color_list(args.colors)
@@ -295,11 +308,11 @@ elif angleDef == 'cosTheta':
 
 
 # ---------------------------------------------------------------------------
-# create the bins
+# create bins
 # ---------------------------------------------------------------------------
-
  
 # build uniform edges in native angle variable
+# converted to theta later for Geant4
 edges = []
 v = angleMin
 while v <= angleMax + 1e-9:
@@ -320,7 +333,7 @@ bin_centres_native = [(edges[i] + edges[i+1]) / 2.0 for i in range(nBins)]
 bin_theta_centres  = [native_to_theta_deg(c) for c in bin_centres_native]
 
 # ---------------------------------------------------------------------------
-# write Geant4 macro file 
+# Geant4 macro files 
 # ---------------------------------------------------------------------------
 
 macName   = '_thetaScan_'       + args.output + '.mac'
@@ -340,26 +353,32 @@ def write_mac(filename, theta_centres):
                 f.write('/run/beamOn\n')
         f.write('exit\n')
 
-# full macro: all bins x all phi
+# full macro: all bins
 write_mac(macName, bin_theta_centres)
 
-# pilot macro: first bin, first phi only
+# pilot macro: first bin only
 write_mac(pilotName, [bin_theta_centres[0]])
 
 
 # ---------------------------------------------------------------------------
-# ddsim runner
+# functions to run ddsim
 # ---------------------------------------------------------------------------
- 
-def run_ddsim(mac_file, timeout):
-    cmd = ['ddsim',
-           '--compactFile', args.compact,
-           '--runType',     'run',
-           '--enableG4Gun',
-           '--action.step', 'Geant4MaterialScanner/MaterialScan',
-           '-M',            mac_file]
+
+def build_ddsim_cmd(mac_file, with_stdbuf=False):
+    cmd = (['stdbuf', '-oL'] if with_stdbuf else []) + [
+        'ddsim',
+        '--compactFile', args.compact,
+        '--runType',     'run',
+        '--enableG4Gun',
+        '--action.step', 'Geant4MaterialScanner/MaterialScan',
+        '-M',            mac_file,
+    ]
     if args.steering is not None:
         cmd += ['--steeringFile', args.steering]
+    return cmd
+ 
+def run_ddsim(mac_file, timeout):
+    cmd = build_ddsim_cmd(mac_file, with_stdbuf=True)
     print('Running:', ' '.join(cmd))
     try:
         return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
@@ -370,15 +389,7 @@ def run_ddsim_progress(mac_file, timeout, n_events):
     import threading
     from tqdm import tqdm
 
-    cmd = ['stdbuf', '-oL', # force stdout flush after every line
-           'ddsim',
-           '--compactFile', args.compact,
-           '--runType',     'run',
-           '--enableG4Gun',
-           '--action.step', 'Geant4MaterialScanner/MaterialScan',
-           '-M',            mac_file]
-    if args.steering is not None:
-        cmd += ['--steeringFile', args.steering]
+    cmd = build_ddsim_cmd(mac_file, with_stdbuf=True)
     print('Running:', ' '.join(cmd))
 
     lines = []
@@ -405,7 +416,7 @@ def run_ddsim_progress(mac_file, timeout, n_events):
         lines.append(line)
         if 'Finished run' in line:
             if pbar is None:
-                # first event done — initialisation is over, start the bar
+                # start progress bar after the first event is completed, since Geant4 initialisation can take a while
                 print('  Initialisation complete, scanning...', flush=True)
                 pbar = tqdm(total=n_events, unit='evt', desc='  ddsim')
                 pbar.update(1)   # count the event we just saw
@@ -439,11 +450,7 @@ if not args.noPilot:
     if n_scans < 1 or n_finished < 1:
         print('ERROR: pilot job did not finish successfully.')
         print('Re-run the following command to investigate:')
-        print('  ddsim --compactFile', args.compact,
-              '--runType run --enableG4Gun',
-              '--action.step Geant4MaterialScanner/MaterialScan',
-              '--steeringFile ' + args.steering if args.steering is not None else '',
-              '-M', pilotName)
+        print(' '.join(build_ddsim_cmd(pilotName, with_stdbuf=False)))
         sys.exit(1)
     print('Pilot job OK.\n')
 
@@ -471,18 +478,6 @@ result = run_ddsim_progress(macName, args.timeOut, nBins * args.nPhi)
 #  ...
 # GenerationInit   WARN  +++ Finished run 1 after ...
 #
-#
-# Columns after splitting on whitespace (| is parts[0]):
-#   parts[1]  = step index       (int)
-#   parts[2]  = material name    (str)
-#   parts[3]  = Z
-#   parts[4]  = A
-#   parts[5]  = density [g/cm3]
-#   parts[6]  = X0      [cm]
-#   parts[7]  = LambdaI [cm]
-#   parts[8]  = thickness [cm]
-#   parts[9]  = t/X0
-#   parts[10] = (ex,ey,ez) — end position, embedded in the line
 # ---------------------------------------------------------------------------
 
 raw_data    = []   # list of events; each event is a list of step tuples
@@ -491,6 +486,10 @@ in_scan     = False
 
 # Note: ddsim output is parsed for a second time now (first in run_ddsim_progress for the progress bar). In principle, we could unify these two steps, but this way the code is less cluttered/intertwined, and the parsing is very fast, so it should not be a problem.
 print('\nParsing ddsim output...')
+
+# keep track of materials that collapse to the same name when applying the 'removeMatSubtrings' option
+# e.g. G4_Cu and Custom_Cu, if both G4_ and Custom_ are removed
+conflicting_name_dict = defaultdict(set)
 
 for line in result.stdout.splitlines():
     if 'Material scan between' in line:
@@ -503,10 +502,8 @@ for line in result.stdout.splitlines():
  
     elif in_scan and '(' in line and len(line.split('(')[0].split()) == 12 and line.split()[0] == '|':  # this line contains material information
         parts = line.split()
-        if len(parts) < 10:
-            continue
         try:
-            int(parts[1])          # first token after '|' must be a step index
+            int(parts[1])          # first token after '|' should be a step index
         except ValueError:
             continue               # skip header/separator lines
         try:
@@ -517,13 +514,22 @@ for line in result.stdout.splitlines():
             continue
         if x0_cm <= 0.0 or li_cm <= 0.0:
             continue
-        mat_name   = parts[2]
+        
+        original_name = parts[2]
+        mat_name = original_name
         for substring in args.removeMatsSubstrings:
             mat_name = mat_name.replace(substring, '')
+        conflicting_name_dict[mat_name].add(original_name)
+        
         t_over_x0  = thick_cm / x0_cm
         t_over_li  = thick_cm / li_cm
         thick_mm   = thick_cm * 10.0
         current_evt.append((mat_name, t_over_x0, t_over_li, thick_mm))
+
+# print out any material name conflicts
+for mat_name, original_names in conflicting_name_dict.items():
+    if len(original_names) > 1:
+        print(f'WARNING: multiple material names collapse to "{mat_name}" after applying --removeMatsSubstrings: {original_names}')
  
 n_received = len(raw_data)
 n_expected = nBins * args.nPhi
@@ -568,7 +574,7 @@ all_mats = sorted({mat for ib in range(nBins) for mat in bin_data[ib]})
 print(f'Materials found: {all_mats}')
 
 # ---------------------------------------------------------------------------
-# ROOT output
+# ROOT histograms
 # ---------------------------------------------------------------------------
  
 fout = ROOT.TFile(args.output, 'recreate')
@@ -627,7 +633,7 @@ stack_li,  total_li,  _ = make_stack_and_total(1, 'lambda', 'Number of #lambda_{
 stack_len, total_len, _ = make_stack_and_total(2, 'depth', 'Material depth [mm]')
  
 # ---------------------------------------------------------------------------
-# quick-look canvases
+# ROOT canvases
 # ---------------------------------------------------------------------------
  
 ROOT.gROOT.SetBatch(True)
@@ -650,7 +656,9 @@ def draw_canvas(stack, total, canvas_name, title):
     # leg.AddEntry(total, 'Total', 'l')
     leg.Draw()
 
-    export_name = str(args.output)[:-5] + "_" + canvas_name # remote .root extension
+    export_name = str(args.output)
+    if export_name.endswith('.root'):
+        export_name = export_name[:-len('.root')]
     c.Print(export_name + ".pdf")
     c.Print(export_name + ".png")
     c.Write()
@@ -669,7 +677,3 @@ for f in [macName, pilotName]:
         os.remove(f)
     except OSError:
         pass
-
-
-
-
