@@ -659,12 +659,12 @@ def make_stack_and_total(qty_idx, qty_name, y_title):
 
     stack.Write()
     # total.Write()
-    return stack, total, mat_hists
+    return stack
 
 
-stack_x0, total_x0, _ = make_stack_and_total(0, "x0", "Number of X_{0}")
-stack_li, total_li, _ = make_stack_and_total(1, "lambda", "Number of #lambda_{I}")
-stack_len, total_len, _ = make_stack_and_total(2, "depth", "Material depth [mm]")
+stack_x0 = make_stack_and_total(0, "x0", "Number of X_{0}")
+stack_li = make_stack_and_total(1, "lambda", "Number of #lambda_{I}")
+stack_len = make_stack_and_total(2, "depth", "Material depth [mm]")
 
 # ---------------------------------------------------------------------------
 # ROOT canvases
@@ -674,7 +674,7 @@ ROOT.gROOT.SetBatch(True)
 ROOT.gStyle.SetOptStat(0)
 
 
-def draw_canvas(stack, total, canvas_name, title):
+def draw_canvas(stack, canvas_name, title):
     c = ROOT.TCanvas(canvas_name + "_canvas", title, 900, 600)
     c.SetLeftMargin(0.12)
     stack.Draw("hist")
@@ -694,14 +694,14 @@ def draw_canvas(stack, total, canvas_name, title):
     export_name = str(args.output)
     if export_name.endswith(".root"):
         export_name = export_name[: -len(".root")]
-    c.Print(export_name + ".pdf")
-    c.Print(export_name + ".png")
+    c.Print(export_name + "_" + canvas_name + ".pdf")
+    c.Print(export_name + "_" + canvas_name + ".png")
     c.Write()
 
 
-draw_canvas(stack_x0, total_x0, "x0", "Radiation lengths")
-draw_canvas(stack_li, total_li, "lambda", "Interaction lengths")
-draw_canvas(stack_len, total_len, "depth", "Material depth [mm]")
+draw_canvas(stack_x0, "x0", "Radiation lengths")
+draw_canvas(stack_li, "lambda", "Interaction lengths")
+draw_canvas(stack_len, "depth", "Material depth [mm]")
 
 fout.Write()
 fout.Close()
