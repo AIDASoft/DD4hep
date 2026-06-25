@@ -24,11 +24,12 @@ in terms of configurable options.
 
 import os
 import sys
+import re
 import argparse
 import subprocess
 import math
-import random
 import array
+import bisect
 import ROOT
 from collections import defaultdict
 
@@ -46,8 +47,8 @@ parser = argparse.ArgumentParser(
         "  g4MaterialAngleScan.py \\ \n"
         "      -c myDetector.xml \\ \n"
         "      -o materialScan.root \\ \n"
-        "      --angleDef theta --angleMin 10 --angleMax 170 -b 5 \\ \n"
-        "      --nPhi 50 \\ \n"
+        "      --angleDef theta --minValue 10 --maxValue 170 -b 5 \\ \n"
+        "      --eventsPerBin 50 \\ \n"
         "      -i Air Vacuum \\ \n"
         "      --colors 'kRed+2' 'cornflowerblue' '#00ff00' \\ \n"
         "      -t 600 \n"
@@ -79,20 +80,20 @@ parser.add_argument(
     help="angle definition to use: eta, theta, cosTheta or thetaRad. Default: theta",
     )
 
-parser.add_argument("--angleMin", dest="angleMin", default=-6, type=float, help="minimum value for eta/theta/cosTheta")
+parser.add_argument("--minValue", dest="minValue", default=-6, type=float, help="minimum value for eta/theta/cosTheta")
 
-parser.add_argument("--angleMax", dest="angleMax", default=6, type=float, help="maximum value for eta/theta/cosTheta")
+parser.add_argument("--maxValue", dest="maxValue", default=6, type=float, help="maximum value for eta/theta/cosTheta")
 
 parser.add_argument(
     "--angleBinning", "-b", dest="angleBinning", default=0.05, type=float, help="eta/theta/cosTheta/thetaRad bin width"
     )
 
 parser.add_argument(
-    "--nPhi",
-    dest="nPhi",
+    "--eventsPerBin",
+    dest="eventsPerBin",
     default=100,
     type=int,
-    help="number of random phi values to scan for each eta/theta/cosTheta/thetaRad bin",
+    help="target number of geantinos to average over per angle bin (approximate, because we are relying on ddsim gun random distribution in theta)",
     )
 
 parser.add_argument("--timeOut", "-t", dest="timeOut", default=600, type=int, help="timeout for ddsim runs in seconds")
@@ -147,40 +148,30 @@ args = parser.parse_args()
 # valid angle definitions and helper functions
 # ---------------------------------------------------------------------------
 
-ANGLE_DEFS = ["eta", "theta", "cosTheta", "thetaRad"]
+ANGLE_AND_DISTRIBUTION_DEFS = {
+    "theta": "uniform",
+    "eta": "eta",
+    "cosTheta": "cosTheta",
+    "thetaRad": "uniform",
+    }
+    
+def direction_to_angle(dx, dy, dz, angle_def):
+    theta = math.acos(dz / math.sqrt(dx**2 + dy**2 + dz**2)) 
+    if angle_def == "theta":
+        return math.degrees(theta)
+    elif angle_def == "thetaRad":
+        return theta
+    elif angle_def == "cosTheta":
+        return math.cos(theta)
+    elif angle_def == "eta":
+        if not (0.0 <= theta <= math.pi):
+            raise ValueError("Reconstructed theta not in [0, pi]")
+        if math.isclose(theta, 0.0, abs_tol=1e-12):
+            return float("inf")
+        if math.isclose(theta, math.pi, abs_tol=1e-12):
+            return float("-inf")
+        return -math.log(math.tan(theta / 2.0))
 
-
-def eta_to_theta_deg(eta):
-    return math.degrees(2.0 * math.atan(math.exp(-eta)))
-
-
-def costheta_to_theta_deg(costh):
-    return math.degrees(math.acos(costh))
-
-
-def theta_rad_to_theta_deg(theta_rad):
-    return math.degrees(theta_rad)
-
-
-def native_to_theta_deg(val):
-    if angleDef == "theta":
-        return val
-    elif angleDef == "eta":
-        return eta_to_theta_deg(val)
-    elif angleDef == "cosTheta":
-        return costheta_to_theta_deg(val)
-    elif angleDef == "thetaRad":
-        return theta_rad_to_theta_deg(val)
-
-
-def direction_from_theta_phi(theta_deg, phi_deg):
-    """unit direction vector from polar and azimuthal angles"""
-    theta = math.radians(theta_deg)
-    phi = math.radians(phi_deg)
-    x = math.sin(theta) * math.cos(phi)
-    y = math.sin(theta) * math.sin(phi)
-    z = math.cos(theta)
-    return x, y, z
 
 
 # ---------------------------------------------------------------------------
@@ -296,38 +287,38 @@ if args.steering is not None and not os.path.isfile(args.steering):
 print("ddsim steering file:", args.steering)
 
 angleDef = str(args.angleDef)
-if angleDef not in ANGLE_DEFS:
-    print("ERROR: unknown angle definition", angleDef, ". Choose from ", ANGLE_DEFS, ".", file=sys.stderr)
+if angleDef not in ANGLE_AND_DISTRIBUTION_DEFS.keys():
+    print("ERROR: unknown angle definition", angleDef, ". Choose from ", ANGLE_AND_DISTRIBUTION_DEFS.keys(), ".", file=sys.stderr)
     exit(1)
 print(angleDef)
 
-angleMin = float(args.angleMin)
-angleMax = float(args.angleMax)
+minValue = float(args.minValue)
+maxValue = float(args.maxValue)
 binning = float(args.angleBinning)
 
 if angleDef == "theta":
-    if angleMin < 0:
+    if minValue < 0:
         print("WARNING: lower theta bound is negative, setting to 0")
-        angleMin = 0
-    if angleMax > 180:
+        minValue = 0
+    if maxValue > 180:
         print("WARNING: upper theta bound is above 180, setting to 180")
-        angleMax = 180
+        maxValue = 180
 
 elif angleDef == "thetaRad":
-    if angleMin < 0:
+    if minValue < 0:
         print("WARNING: lower theta bound is negative, setting to 0")
-        angleMin = 0
-    if angleMax > 3.14159:
+        minValue = 0
+    if maxValue > 3.14159:
         print("WARNING: upper theta bound is above pi, setting to pi")
-        angleMax = 3.14159
+        maxValue = 3.14159
 
 elif angleDef == "cosTheta":
-    if angleMin < -1:
+    if minValue < -1:
         print("WARNING: lower cosTheta bound is below -1, setting to -1")
-        angleMin = -1
-    if angleMax > 1:
+        minValue = -1
+    if maxValue > 1:
         print("WARNING: upper cosTheta bound is above 1, setting to 1")
-        angleMax = 1
+        maxValue = 1
 
 
 # ---------------------------------------------------------------------------
@@ -337,12 +328,12 @@ elif angleDef == "cosTheta":
 # build uniform edges in native angle variable
 # converted to theta later for Geant4
 edges = []
-v = angleMin
-while v <= angleMax + 1e-9:
+v = minValue
+while v <= maxValue + 1e-9:
     edges.append(round(v, 12))
     v += binning
-if edges[-1] < angleMax - 1e-12:
-    edges.append(angleMax)
+if edges[-1] < maxValue - 1e-12:
+    edges.append(maxValue)
 nBins = len(edges) - 1
 
 if nBins < 1:
@@ -350,66 +341,81 @@ if nBins < 1:
     sys.exit(1)
 
 
-bin_centres_native = [(edges[i] + edges[i + 1]) / 2.0 for i in range(nBins)]
-
-# for Geant4 particle gun, we need the angleDef as theta value, so convert
-bin_theta_centres = [native_to_theta_deg(c) for c in bin_centres_native]
-
-# ---------------------------------------------------------------------------
-# Geant4 macro files
-# ---------------------------------------------------------------------------
-
-macName = "_thetaScan_" + args.output + ".mac"
-pilotName = "_thetaScan_pilot_" + args.output + ".mac"
-
-
-def write_mac(filename, theta_centres):
-    with open(filename, "w") as f:
-        f.write("/gun/particle geantino\n")
-        f.write("/gun/energy 20 GeV\n")
-        f.write("/gun/number 1\n")
-        f.write("/gun/position 0 0 0 mm\n")
-        for theta_c in theta_centres:
-            phi_list = [random.uniform(0.0, 360.0) for _ in range(args.nPhi)]
-            for phi in phi_list:
-                x, y, z = direction_from_theta_phi(theta_c, phi)
-                f.write(f"/gun/direction {x:.8f} {y:.8f} {z:.8f}\n")
-                f.write("/run/beamOn\n")
-        f.write("exit\n")
-
-
-# full macro: all bins
-write_mac(macName, bin_theta_centres)
-
-# pilot macro: first bin only
-write_mac(pilotName, [bin_theta_centres[0]])
-
-
 # ---------------------------------------------------------------------------
 # functions to run ddsim
 # ---------------------------------------------------------------------------
 
+def build_angle_args(angle_def, angle_min, angle_max):
+    """
+    Convert user input for min and max values of the scan range
+    into the appropriate ddsim gun arguments for the requested angle definition
+    """
+    if angle_def == "eta":
+        return [
+            "--gun.etaMin", str(angle_min),
+            "--gun.etaMax", str(angle_max),
+        ]
 
-def build_ddsim_cmd(mac_file, with_stdbuf=False):
+    elif angle_def == "theta":
+        return [
+            "--gun.thetaMin", f"{angle_min}*deg",
+            "--gun.thetaMax", f"{angle_max}*deg",
+        ]
+
+    elif angle_def == "thetaRad":
+        return [
+            "--gun.thetaMin", str(angle_min),
+            "--gun.thetaMax", str(angle_max),
+        ]
+
+    elif angle_def == "cosTheta":
+        theta_from_cos_min = math.acos(angle_min)
+        theta_from_cos_max = math.acos(angle_max)
+
+        # ensure that theta_min < theta_max, since acos is decreasing
+        theta_min_rad = min(theta_from_cos_min, theta_from_cos_max)
+        theta_max_rad = max(theta_from_cos_min, theta_from_cos_max)
+        return [
+            "--gun.thetaMin", str(theta_min_rad),
+            "--gun.thetaMax", str(theta_max_rad),
+        ]
+    
+    return []
+
+def build_ddsim_cmd(with_stdbuf=False):
+
     cmd = (["stdbuf", "-oL"] if with_stdbuf else []) + [
         "ddsim",
         "--compactFile",
         args.compact,
         "--runType",
-        "run",
-        "--enableG4Gun",
+        "batch",
+        "--enableGun",
+        "-N",
+        str(args.eventsPerBin*nBins),
         "--action.step",
         "Geant4MaterialScanner/MaterialScan",
-        "-M",
-        mac_file,
+        "--gun.particle",
+        "geantino",
+        "--gun.energy",
+        "10*GeV",
+        "--gun.position",
+        "0,0,0",
+        "--gun.distribution",
+        f"{ANGLE_AND_DISTRIBUTION_DEFS[angleDef]}",
+        "--gun.phiMin",
+        "0*deg",
+        "--gun.phiMax",
+        "360*deg"
         ]
+    cmd += build_angle_args(angleDef, minValue, maxValue)
     if args.steering is not None:
         cmd += ["--steeringFile", args.steering]
     return cmd
 
 
-def run_ddsim(mac_file, timeout):
-    cmd = build_ddsim_cmd(mac_file, with_stdbuf=True)
+def run_ddsim(timeout):
+    cmd = build_ddsim_cmd(with_stdbuf=True)
     print("Running:", " ".join(cmd))
     try:
         return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
@@ -417,11 +423,11 @@ def run_ddsim(mac_file, timeout):
         sys.exit(f"ERROR: ddsim timed out after {timeout} s")
 
 
-def run_ddsim_progress(mac_file, timeout, n_events):
+def run_ddsim_progress(timeout, n_events):
     import threading
     from tqdm import tqdm
 
-    cmd = build_ddsim_cmd(mac_file, with_stdbuf=True)
+    cmd = build_ddsim_cmd(with_stdbuf=True)
     print("Running:", " ".join(cmd))
 
     lines = []
@@ -444,9 +450,9 @@ def run_ddsim_progress(mac_file, timeout, n_events):
 
     for line in proc.stdout:
         lines.append(line)
-        if "Finished run" in line:
+        if "+++ Initializing event" in line:
             if pbar is None:
-                # start progress bar after the first event is completed, since Geant4 initialisation can take a while
+                # start progress bar only once the first event starts, to avoid counting Geant4 initialisation time in the progress bar
                 print("  Initialisation complete, scanning...", flush=True)
                 pbar = tqdm(total=n_events, unit="evt", desc="  ddsim")
                 pbar.update(1)  # count the event we just saw
@@ -476,13 +482,13 @@ def run_ddsim_progress(mac_file, timeout, n_events):
 
 if not args.noPilot:
     print("\nRunning pilot job...")
-    pr = run_ddsim(pilotName, args.timeOut)
+    pr = run_ddsim(args.timeOut)
     n_scans = sum(1 for line in pr.stdout.splitlines() if "Material scan between" in line)
     n_finished = sum(1 for line in pr.stdout.splitlines() if "Finished run" in line)
     if n_scans < 1 or n_finished < 1:
         print("ERROR: pilot job did not finish successfully.")
         print("Re-run the following command to investigate:")
-        print(" ".join(build_ddsim_cmd(pilotName, with_stdbuf=False)))
+        print(" ".join(build_ddsim_cmd(with_stdbuf=False)))
         sys.exit(1)
     print("Pilot job OK.\n")
 
@@ -490,8 +496,8 @@ if not args.noPilot:
 # main ddsim run
 # ---------------------------------------------------------------------------
 
-print(f"Running main job ({nBins * args.nPhi} events)...")
-result = run_ddsim_progress(macName, args.timeOut, nBins * args.nPhi)
+print(f"Running main job ({nBins * args.eventsPerBin} events)...")
+result = run_ddsim_progress(args.timeOut, nBins * args.eventsPerBin)
 
 
 # ---------------------------------------------------------------------------
@@ -512,8 +518,12 @@ result = run_ddsim_progress(macName, args.timeOut, nBins * args.nPhi)
 #
 # ---------------------------------------------------------------------------
 
+direction_re = re.compile(
+    r"direction:\(\s*([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\)"
+)
 raw_data = []  # list of events; each event is a list of step tuples
 current_evt = []
+current_direction = None
 in_scan = False
 
 # Note: ddsim output is parsed for a second time now (first in run_ddsim_progress for the progress bar).
@@ -525,14 +535,22 @@ print("\nParsing ddsim output...")
 # e.g. G4_Cu and Custom_Cu, if both G4_ and Custom_ are removed
 conflicting_name_dict = defaultdict(set)
 
+debug_counter = 0
 for line in result.stdout.splitlines():
-    if "Material scan between" in line:
-        current_evt = []
-        in_scan = True
+    # Get the geantino direction
+    m = direction_re.search(line)
+    if m and "Particle" in line:
+        dx, dy, dz = (float(v) for v in m.groups())
+        current_direction = (dx, dy, dz)
 
-    elif "Finished run" in line:
-        raw_data.append(current_evt)
-        in_scan = False
+    if "Material scan between" in line:
+        # starting a new event's scan; save the previous event first
+        if current_evt:
+            raw_data.append((current_direction, current_evt))
+            debug_counter += 1
+        current_evt = []
+        current_direction = None
+        in_scan = True
 
     elif (
         in_scan and "(" in line and len(line.split("(")[0].split()) == 12 and line.split()[0] == "|"
@@ -562,6 +580,10 @@ for line in result.stdout.splitlines():
         thick_mm = thick_cm * 10.0
         current_evt.append((mat_name, t_over_x0, t_over_li, thick_mm))
 
+# append the last event
+if current_evt:
+    raw_data.append((current_direction, current_evt))
+
 # print out any material name conflicts
 for mat_name, original_names in conflicting_name_dict.items():
     if len(original_names) > 1:
@@ -571,7 +593,7 @@ for mat_name, original_names in conflicting_name_dict.items():
             )
 
 n_received = len(raw_data)
-n_expected = nBins * args.nPhi
+n_expected = nBins * args.eventsPerBin
 print(f"Parsed {n_received} scan events (expected {n_expected})")
 if n_received != n_expected:
     print(f"WARNING: event count mismatch ({n_received} vs {n_expected}). " "Results may be incomplete.")
@@ -585,11 +607,29 @@ if n_received != n_expected:
 # ---------------------------------------------------------------------------
 
 bin_data = [{} for _ in range(nBins)]
+bin_counts = [0] * nBins  # count actual events per bin
+bin_edges = [args.minValue + i * args.angleBinning for i in range(nBins + 1)]
 
-for ev_idx, steps in enumerate(raw_data):
-    ib = ev_idx // args.nPhi  # get the angle bin index from the total event index and nPhi
-    if ib >= nBins:
-        break
+def find_bin(angle_value, bin_edges):
+    ib = bisect.bisect_right(bin_edges, angle_value) - 1
+
+    if ib < 0 or ib >= len(bin_edges) - 1:
+        return None
+
+    return ib
+
+for direction, steps in raw_data:
+    if direction is None:
+        continue
+    dx, dy, dz = direction
+    angle_value = direction_to_angle(dx, dy, dz, angleDef)
+    ib = find_bin(angle_value, bin_edges)
+    if ib is None:
+        print(f"WARNING: angle value {angle_value} out of range for binning, skipping event")
+        continue
+    
+    bin_counts[ib] += 1
+
     for mat, t_x0, t_li, t_mm in steps:
         # Ignore certain materials if specified
         if mat in args.ignoreMats:
@@ -602,10 +642,14 @@ for ev_idx, steps in enumerate(raw_data):
 
 # divide by nPhi to get the phi-averaged value
 for ib in range(nBins):
+    n_events_in_bin = bin_counts[ib]
+    if n_events_in_bin == 0:
+        print(f"WARNING: no events found for bin {ib} (angle range {bin_edges[ib]} to {bin_edges[ib+1]}), skipping")
+        continue
     for mat in bin_data[ib]:
-        bin_data[ib][mat][0] /= args.nPhi
-        bin_data[ib][mat][1] /= args.nPhi
-        bin_data[ib][mat][2] /= args.nPhi
+        bin_data[ib][mat][0] /= n_events_in_bin
+        bin_data[ib][mat][1] /= n_events_in_bin
+        bin_data[ib][mat][2] /= n_events_in_bin
 
 all_mats = sorted({mat for ib in range(nBins) for mat in bin_data[ib]})
 print(f"Materials found: {all_mats}")
@@ -707,9 +751,3 @@ fout.Write()
 fout.Close()
 print(f"\nDone. Results written to {args.output}")
 
-# clean up temp macro files
-for f in [macName, pilotName]:
-    try:
-        os.remove(f)
-    except OSError:
-        pass
