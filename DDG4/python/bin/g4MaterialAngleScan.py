@@ -96,6 +96,8 @@ parser.add_argument(
     help="target number of geantinos to average over per angle bin (approximate, because we are relying on ddsim gun random distribution in theta)",
     )
 
+parser.add_argument("--seed", "-S", dest="seed", default=None, type=int, help="random seed for ddsim gun (optional)")
+
 parser.add_argument("--timeOut", "-t", dest="timeOut", default=600, type=int, help="timeout for ddsim runs in seconds")
 
 parser.add_argument(
@@ -155,7 +157,7 @@ ANGLE_AND_DISTRIBUTION_DEFS = {
     "thetaRad": "uniform",
     }
     
-def direction_to_angle(dx, dy, dz, angle_def):
+def direction_to_angleDef(dx, dy, dz, angle_def):
     theta = math.acos(dz / math.sqrt(dx**2 + dy**2 + dz**2)) 
     if angle_def == "theta":
         return math.degrees(theta)
@@ -411,6 +413,8 @@ def build_ddsim_cmd(with_stdbuf=False):
     cmd += build_angle_args(angleDef, minValue, maxValue)
     if args.steering is not None:
         cmd += ["--steeringFile", args.steering]
+    if args.seed is not None:
+        cmd += ["--random.seed", str(args.seed)]
     return cmd
 
 
@@ -549,7 +553,7 @@ for line in result.stdout.splitlines():
             raw_data.append((current_direction, current_evt))
             debug_counter += 1
         current_evt = []
-        current_direction = None
+        # current_direction = None
         in_scan = True
 
     elif (
@@ -564,6 +568,7 @@ for line in result.stdout.splitlines():
             x0_cm = float(parts[6])
             li_cm = float(parts[7])
             thick_cm = float(parts[8])
+            # print(f"DEBUG: -> x0_cm={x0_cm}, li_cm={li_cm}, thick_cm={thick_cm}, direction={current_direction}, mat_name={parts[2]}")
         except (ValueError, IndexError):
             continue
         if x0_cm <= 0.0 or li_cm <= 0.0:
@@ -582,6 +587,8 @@ for line in result.stdout.splitlines():
 
 # append the last event
 if current_evt:
+    # print(f"DEBUG: appending last event with {len(current_evt)} steps, direction={current_direction}")
+    # print(f"DEBUG: last event steps: {current_evt}")
     raw_data.append((current_direction, current_evt))
 
 # print out any material name conflicts
@@ -622,11 +629,13 @@ for direction, steps in raw_data:
     if direction is None:
         continue
     dx, dy, dz = direction
-    angle_value = direction_to_angle(dx, dy, dz, angleDef)
+    angle_value = direction_to_angleDef(dx, dy, dz, angleDef)
+    print(f"DEBUG: direction={direction}, angle_value={angle_value}, angleDef={angleDef}")
     ib = find_bin(angle_value, bin_edges)
     if ib is None:
         print(f"WARNING: angle value {angle_value} out of range for binning, skipping event")
         continue
+    # print(f"DEBUG: angle_value={angle_value} falls into bin {ib} (range {bin_edges[ib]} to {bin_edges[ib+1]})")
     
     bin_counts[ib] += 1
 
@@ -639,6 +648,7 @@ for direction, steps in raw_data:
         bin_data[ib][mat][0] += t_x0
         bin_data[ib][mat][1] += t_li
         bin_data[ib][mat][2] += t_mm
+        print(f"DEBUG: bin {ib}, mat {mat}, t_x0={t_x0}, t_li={t_li}, t_mm={t_mm}, cumulative sums: {bin_data[ib][mat]}")
 
 # divide by nPhi to get the phi-averaged value
 for ib in range(nBins):
@@ -647,9 +657,11 @@ for ib in range(nBins):
         print(f"WARNING: no events found for bin {ib} (angle range {bin_edges[ib]} to {bin_edges[ib+1]}), skipping")
         continue
     for mat in bin_data[ib]:
+        print(f"DEBUG: bin {ib}, mat {mat}, before averaging: x0={bin_data[ib][mat][0]}, li={bin_data[ib][mat][1]}, len_mm={bin_data[ib][mat][2]}, n_events_in_bin={n_events_in_bin}")
         bin_data[ib][mat][0] /= n_events_in_bin
         bin_data[ib][mat][1] /= n_events_in_bin
         bin_data[ib][mat][2] /= n_events_in_bin
+        print(f"DEBUG: bin {ib}, mat {mat}, averaged values: x0={bin_data[ib][mat][0]}, li={bin_data[ib][mat][1]}, len_mm={bin_data[ib][mat][2]}")
 
 all_mats = sorted({mat for ib in range(nBins) for mat in bin_data[ib]})
 print(f"Materials found: {all_mats}")
@@ -667,6 +679,7 @@ AXIS_LABELS = {
     "theta": "#theta [deg]",
     "eta": "#eta",
     "cosTheta": "cos(#theta)",
+    "thetaRad": "#theta [rad]",
     }
 AXIS_LABEL = AXIS_LABELS[angleDef]
 
@@ -693,6 +706,7 @@ def make_stack_and_total(qty_idx, qty_name, y_title):
     for ib in range(nBins):
         root_bin = ib + 1  # ROOT 1-indexed
         for mat, vals in bin_data[ib].items():
+            print(f"DEBUG: filling ROOT hist for bin {ib}, mat {mat}, vals={vals}")
             val = vals[qty_idx]
             mat_hists[mat].AddBinContent(root_bin, val)
             total.AddBinContent(root_bin, val)
