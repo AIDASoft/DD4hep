@@ -530,9 +530,13 @@ current_evt = []
 current_direction = None
 in_scan = False
 
+unbinned_data_list = []
+
+
 # Note: ddsim output is parsed for a second time now (first in run_ddsim_progress for the progress bar).
 # In principle, we could unify these two steps, but this way the code is less cluttered/intertwined,
-# and the parsing is very fast, so it should not be a problem.
+# and the parsing is relatively fast, so it should not be a problem. Also allows for cleaner debugging,
+# without messing with the progress bar.
 print("\nParsing ddsim output...")
 
 # keep track of materials that collapse to the same name when applying the 'removeMatSubtrings' option
@@ -555,6 +559,8 @@ for line in result.stdout.splitlines():
         current_evt = []
         # current_direction = None
         in_scan = True
+
+        mat_dict = defaultdict(list)  # accumulate thicknesses per material for this event
 
     elif (
         in_scan and "(" in line and len(line.split("(")[0].split()) == 12 and line.split()[0] == "|"
@@ -584,6 +590,27 @@ for line in result.stdout.splitlines():
         t_over_li = thick_cm / li_cm
         thick_mm = thick_cm * 10.0
         current_evt.append((mat_name, t_over_x0, t_over_li, thick_mm))
+        if mat_name not in args.ignoreMats:
+            if mat_name not in mat_dict:
+                mat_dict[mat_name] = [0, 0, 0]
+            mat_dict[mat_name][0] += t_over_x0
+            mat_dict[mat_name][1] += t_over_li
+            mat_dict[mat_name][2] += thick_mm
+
+    elif "Initializing event" in line:
+        in_scan = False
+        # print(f"DEBUG: finished event {debug_counter} with {len(current_evt)} steps, direction={current_direction}")
+        if current_direction is not None and current_evt:
+            unbinned_data_list.append((direction_to_angleDef(current_direction[0], current_direction[1], current_direction[2], angleDef), mat_dict))
+
+
+
+# write out the unbinned data to a text file for debugging/inspection
+unbinned_output_file = args.output.replace(".root", "_unbinned.txt")
+with open(unbinned_output_file, "w") as f:
+    for angle_value, mat_dict in unbinned_data_list:
+        for mat_name, (sum_x0, sum_li, sum_len_mm) in mat_dict.items():
+            f.write(f"{angle_value:.6f} {mat_name} {sum_x0:.6f} {sum_li:.6f} {sum_len_mm:.6f}\n")
 
 # append the last event
 if current_evt:
@@ -625,30 +652,48 @@ def find_bin(angle_value, bin_edges):
 
     return ib
 
-for direction, steps in raw_data:
-    if direction is None:
-        continue
-    dx, dy, dz = direction
-    angle_value = direction_to_angleDef(dx, dy, dz, angleDef)
-    print(f"DEBUG: direction={direction}, angle_value={angle_value}, angleDef={angleDef}")
+# for direction, steps in raw_data:
+#     if direction is None:
+#         continue
+#     dx, dy, dz = direction
+#     angle_value = direction_to_angleDef(dx, dy, dz, angleDef)
+#     # print(f"DEBUG: direction={direction}, angle_value={angle_value}, angleDef={angleDef}")
+#     ib = find_bin(angle_value, bin_edges)
+#     if ib is None:
+#         print(f"WARNING: angle value {angle_value} out of range for binning, skipping event")
+#         continue
+#     # print(f"DEBUG: angle_value={angle_value} falls into bin {ib} (range {bin_edges[ib]} to {bin_edges[ib+1]})")
+    
+#     bin_counts[ib] += 1
+
+#     for mat, t_x0, t_li, t_mm in steps:
+#         # Ignore certain materials if specified
+#         if mat in args.ignoreMats:
+#             continue
+#         if mat not in bin_data[ib]:
+#             bin_data[ib][mat] = [0.0, 0.0, 0.0]
+#         bin_data[ib][mat][0] += t_x0
+#         bin_data[ib][mat][1] += t_li
+#         bin_data[ib][mat][2] += t_mm
+#         # print(f"DEBUG: bin {ib}, mat {mat}, t_x0={t_x0}, t_li={t_li}, t_mm={t_mm}, cumulative sums: {bin_data[ib][mat]}")
+
+for direction, mat_dict in unbinned_data_list:
+    angle_value = direction
     ib = find_bin(angle_value, bin_edges)
     if ib is None:
         print(f"WARNING: angle value {angle_value} out of range for binning, skipping event")
         continue
-    # print(f"DEBUG: angle_value={angle_value} falls into bin {ib} (range {bin_edges[ib]} to {bin_edges[ib+1]})")
-    
+
     bin_counts[ib] += 1
 
-    for mat, t_x0, t_li, t_mm in steps:
-        # Ignore certain materials if specified
+    for mat, sums in mat_dict.items():
         if mat in args.ignoreMats:
             continue
         if mat not in bin_data[ib]:
             bin_data[ib][mat] = [0.0, 0.0, 0.0]
-        bin_data[ib][mat][0] += t_x0
-        bin_data[ib][mat][1] += t_li
-        bin_data[ib][mat][2] += t_mm
-        print(f"DEBUG: bin {ib}, mat {mat}, t_x0={t_x0}, t_li={t_li}, t_mm={t_mm}, cumulative sums: {bin_data[ib][mat]}")
+        bin_data[ib][mat][0] += sums[0]
+        bin_data[ib][mat][1] += sums[1]
+        bin_data[ib][mat][2] += sums[2]
 
 # divide by nPhi to get the phi-averaged value
 for ib in range(nBins):
@@ -657,11 +702,9 @@ for ib in range(nBins):
         print(f"WARNING: no events found for bin {ib} (angle range {bin_edges[ib]} to {bin_edges[ib+1]}), skipping")
         continue
     for mat in bin_data[ib]:
-        print(f"DEBUG: bin {ib}, mat {mat}, before averaging: x0={bin_data[ib][mat][0]}, li={bin_data[ib][mat][1]}, len_mm={bin_data[ib][mat][2]}, n_events_in_bin={n_events_in_bin}")
         bin_data[ib][mat][0] /= n_events_in_bin
         bin_data[ib][mat][1] /= n_events_in_bin
         bin_data[ib][mat][2] /= n_events_in_bin
-        print(f"DEBUG: bin {ib}, mat {mat}, averaged values: x0={bin_data[ib][mat][0]}, li={bin_data[ib][mat][1]}, len_mm={bin_data[ib][mat][2]}")
 
 all_mats = sorted({mat for ib in range(nBins) for mat in bin_data[ib]})
 print(f"Materials found: {all_mats}")
@@ -706,7 +749,6 @@ def make_stack_and_total(qty_idx, qty_name, y_title):
     for ib in range(nBins):
         root_bin = ib + 1  # ROOT 1-indexed
         for mat, vals in bin_data[ib].items():
-            print(f"DEBUG: filling ROOT hist for bin {ib}, mat {mat}, vals={vals}")
             val = vals[qty_idx]
             mat_hists[mat].AddBinContent(root_bin, val)
             total.AddBinContent(root_bin, val)
