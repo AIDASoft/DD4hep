@@ -91,14 +91,14 @@ parser.add_argument(
 parser.add_argument(
     "--eventsPerBin",
     dest="eventsPerBin",
-    default=100,
+    default=1000,
     type=int,
     help="target number of geantinos to average over per angle bin (approximate, because we are relying on ddsim gun random distribution in theta)",
     )
 
 parser.add_argument("--seed", "-S", dest="seed", default=None, type=int, help="random seed for ddsim gun (optional)")
 
-parser.add_argument("--timeOut", "-t", dest="timeOut", default=600, type=int, help="timeout for ddsim runs in seconds")
+parser.add_argument("--timeOut", "-t", dest="timeOut", default=3600, type=int, help="timeout for ddsim runs in seconds")
 
 parser.add_argument(
     "--removeMatsSubstrings",
@@ -477,11 +477,14 @@ def run_ddsim_progress(timeout, n_events):
     proc.wait()
 
     if proc.returncode == -9:
-        sys.exit("ERROR: ddsim was killed due to timeout.")
+        sys.exit("ERROR: ddsim was killed, either due to timeout or other means.")
     if proc.returncode != 0:
-        print(f"WARNING: ddsim exited with return code {proc.returncode}")
+        print(f"ERROR: ddsim exited with return code {proc.returncode}")
+        print("Re-run the following command to investigate:")
+        print(" ".join(build_ddsim_cmd(with_stdbuf=False)))
+        sys.exit(1)
 
-    # Create a simple object to hold the combined stdout for parsing later
+    # simple object to hold the combined stdout for parsing later
     class Result:
         stdout = "".join(lines)
 
@@ -551,7 +554,6 @@ print("\nParsing ddsim output...")
 # e.g. G4_Cu and Custom_Cu, if both G4_ and Custom_ are removed
 conflicting_name_dict = defaultdict(set)
 
-debug_counter = 0
 for line in result.stdout.splitlines():
     # Get the geantino direction
     m = direction_re.search(line)
@@ -560,15 +562,10 @@ for line in result.stdout.splitlines():
         current_direction = (dx, dy, dz)
 
     if "Material scan between" in line:
-        # starting a new event's scan; save the previous event first
-        if current_evt:
-            raw_data.append((current_direction, current_evt))
-            debug_counter += 1
-        current_evt = []
-        # current_direction = None
         in_scan = True
 
-        mat_dict = defaultdict(list)  # accumulate thicknesses per material for this event
+        # accumulate thicknesses per material for this event
+        mat_dict = defaultdict(list)  
 
     elif (
         in_scan and "(" in line and len(line.split("(")[0].split()) == 12 and line.split()[0] == "|"
@@ -582,7 +579,6 @@ for line in result.stdout.splitlines():
             x0_cm = float(parts[6])
             li_cm = float(parts[7])
             thick_cm = float(parts[8])
-            # print(f"DEBUG: -> x0_cm={x0_cm}, li_cm={li_cm}, thick_cm={thick_cm}, direction={current_direction}, mat_name={parts[2]}")
         except (ValueError, IndexError):
             continue
         if x0_cm <= 0.0 or li_cm <= 0.0:
