@@ -144,6 +144,14 @@ parser.add_argument(
         ),
     )
 
+parser.add_argument(
+    "--saveRawData",
+    action="store_true",
+    dest="saveRawData",
+    default=False,
+    help="save the unbinned raw data to a text file for debugging/inspection",
+    )
+
 args = parser.parse_args()
 
 # ---------------------------------------------------------------------------
@@ -606,17 +614,14 @@ for line in result.stdout.splitlines():
 
 
 # write out the unbinned data to a text file for debugging/inspection
-unbinned_output_file = args.output.replace(".root", "_unbinned.txt")
-with open(unbinned_output_file, "w") as f:
-    for angle_value, mat_dict in unbinned_data_list:
-        for mat_name, (sum_x0, sum_li, sum_len_mm) in mat_dict.items():
-            f.write(f"{angle_value:.6f} {mat_name} {sum_x0:.6f} {sum_li:.6f} {sum_len_mm:.6f}\n")
+if args.saveRawData:
+    unbinned_output_file = args.output.replace(".root", "_rawdata.txt")
+    with open(unbinned_output_file, "w") as f:
+        f.write("# angle_value mat_name x0 lambda depth_mm\n")
+        for angle_value, mat_dict in raw_data:
+            for mat_name, (sum_x0, sum_li, sum_len_mm) in mat_dict.items():
+                f.write(f"{angle_value:.6f} {mat_name} {sum_x0:.6f} {sum_li:.6f} {sum_len_mm:.6f}\n")
 
-# append the last event
-if current_evt:
-    # print(f"DEBUG: appending last event with {len(current_evt)} steps, direction={current_direction}")
-    # print(f"DEBUG: last event steps: {current_evt}")
-    raw_data.append((current_direction, current_evt))
 
 # print out any material name conflicts
 for mat_name, original_names in conflicting_name_dict.items():
