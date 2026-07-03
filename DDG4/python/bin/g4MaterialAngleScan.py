@@ -336,20 +336,15 @@ elif angleDef == "cosTheta":
 # ---------------------------------------------------------------------------
 
 # build uniform edges in native angle variable
-# converted to theta later for Geant4
-edges = []
-v = minValue
-while v <= maxValue + 1e-9:
-    edges.append(round(v, 12))
-    v += binning
-if edges[-1] < maxValue - 1e-12:
-    edges.append(maxValue)
-nBins = len(edges) - 1
+nBins = max(1, round((maxValue - minValue) / binning))
+actual_binning = (maxValue - minValue) / nBins
 
-if nBins < 1:
-    print("ERROR: bin width larger than the requested range", file=sys.stderr)
-    sys.exit(1)
+if not math.isclose(actual_binning, binning, abs_tol=1e-6):
+    print(f"WARNING: bin width adjusted from {binning} to {actual_binning:.6g} "
+          f"to fit exactly {nBins} bins in [{minValue}, {maxValue}]")
 
+bin_edges = [minValue + i * actual_binning for i in range(nBins + 1)]
+bin_edges[-1] = maxValue # avoid floating point rounding issues for the last bin edge
 
 # ---------------------------------------------------------------------------
 # functions to run ddsim
@@ -536,13 +531,9 @@ result = run_ddsim_progress(args.timeOut, nBins * args.eventsPerBin)
 direction_re = re.compile(
     r"direction:\(\s*([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\)"
 )
-raw_data = []  # list of events; each event is a list of step tuples
-current_evt = []
 current_direction = None
 in_scan = False
-
-unbinned_data_list = []
-
+raw_data = []
 
 # Note: ddsim output is parsed for a second time now (first in run_ddsim_progress for the progress bar).
 # In principle, we could unify these two steps, but this way the code is less cluttered/intertwined,
@@ -565,7 +556,7 @@ for line in result.stdout.splitlines():
         in_scan = True
 
         # accumulate thicknesses per material for this event
-        mat_dict = defaultdict(list)  
+        mat_dict = defaultdict(list)
 
     elif (
         in_scan and "(" in line and len(line.split("(")[0].split()) == 12 and line.split()[0] == "|"
@@ -588,12 +579,13 @@ for line in result.stdout.splitlines():
         mat_name = original_name
         for substring in args.removeMatsSubstrings:
             mat_name = mat_name.replace(substring, "")
+        # Save the original name for bookkeeping of conflicting names
         conflicting_name_dict[mat_name].add(original_name)
 
+        # compute the thicknesses in units of radiation lengths and interaction lengths
         t_over_x0 = thick_cm / x0_cm
         t_over_li = thick_cm / li_cm
         thick_mm = thick_cm * 10.0
-        current_evt.append((mat_name, t_over_x0, t_over_li, thick_mm))
         if mat_name not in args.ignoreMats:
             if mat_name not in mat_dict:
                 mat_dict[mat_name] = [0, 0, 0]
@@ -601,11 +593,11 @@ for line in result.stdout.splitlines():
             mat_dict[mat_name][1] += t_over_li
             mat_dict[mat_name][2] += thick_mm
 
-    elif "Initializing event" in line:
+    elif "Initializing event" in line or "Finished run" in line:
+        if in_scan and current_direction is not None:
+            raw_data.append((direction_to_angleDef(current_direction[0], current_direction[1], current_direction[2], angleDef), mat_dict))
+        current_direction = None
         in_scan = False
-        # print(f"DEBUG: finished event {debug_counter} with {len(current_evt)} steps, direction={current_direction}")
-        if current_direction is not None and current_evt:
-            unbinned_data_list.append((direction_to_angleDef(current_direction[0], current_direction[1], current_direction[2], angleDef), mat_dict))
 
 
 
@@ -629,13 +621,13 @@ for mat_name, original_names in conflicting_name_dict.items():
 
 n_received = len(raw_data)
 n_expected = nBins * args.eventsPerBin
-print(f"Parsed {n_received} scan events (expected {n_expected})")
+# print(f"Parsed {n_received} scan events (expected {n_expected})")
 if n_received != n_expected:
-    print(f"WARNING: event count mismatch ({n_received} vs {n_expected}). " "Results may be incomplete.")
+    print(f"WARNING: event count mismatch (Received {n_received} vs expected {n_expected}). " "Results may be incomplete.")
 
 
 # ---------------------------------------------------------------------------
-# accumulate per-bin, per-material sums, then average over phi
+# accumulate per-bin, then average over phi
 #
 # bin_data[ib][mat_name] = [sum_x0, sum_li, sum_len_mm]
 # Sums are over all nPhi shots for that bin; divided by nPhi at the end.
@@ -643,7 +635,6 @@ if n_received != n_expected:
 
 bin_data = [{} for _ in range(nBins)]
 bin_counts = [0] * nBins  # count actual events per bin
-bin_edges = [args.minValue + i * args.angleBinning for i in range(nBins + 1)]
 
 def find_bin(angle_value, bin_edges):
     ib = bisect.bisect_right(bin_edges, angle_value) - 1
@@ -653,32 +644,7 @@ def find_bin(angle_value, bin_edges):
 
     return ib
 
-# for direction, steps in raw_data:
-#     if direction is None:
-#         continue
-#     dx, dy, dz = direction
-#     angle_value = direction_to_angleDef(dx, dy, dz, angleDef)
-#     # print(f"DEBUG: direction={direction}, angle_value={angle_value}, angleDef={angleDef}")
-#     ib = find_bin(angle_value, bin_edges)
-#     if ib is None:
-#         print(f"WARNING: angle value {angle_value} out of range for binning, skipping event")
-#         continue
-#     # print(f"DEBUG: angle_value={angle_value} falls into bin {ib} (range {bin_edges[ib]} to {bin_edges[ib+1]})")
-    
-#     bin_counts[ib] += 1
-
-#     for mat, t_x0, t_li, t_mm in steps:
-#         # Ignore certain materials if specified
-#         if mat in args.ignoreMats:
-#             continue
-#         if mat not in bin_data[ib]:
-#             bin_data[ib][mat] = [0.0, 0.0, 0.0]
-#         bin_data[ib][mat][0] += t_x0
-#         bin_data[ib][mat][1] += t_li
-#         bin_data[ib][mat][2] += t_mm
-#         # print(f"DEBUG: bin {ib}, mat {mat}, t_x0={t_x0}, t_li={t_li}, t_mm={t_mm}, cumulative sums: {bin_data[ib][mat]}")
-
-for direction, mat_dict in unbinned_data_list:
+for direction, mat_dict in raw_data:
     angle_value = direction
     ib = find_bin(angle_value, bin_edges)
     if ib is None:
@@ -716,8 +682,8 @@ print(f"Materials found: {all_mats}")
 
 fout = ROOT.TFile(args.output, "recreate")
 
-edges_arr = array.array("d", edges)
-nbins_root = len(edges) - 1
+bin_edges_arr = array.array("d", bin_edges)
+nbins_root = len(bin_edges) - 1
 
 AXIS_LABELS = {
     "theta": "#theta [deg]",
@@ -734,13 +700,13 @@ def make_stack_and_total(qty_idx, qty_name, y_title):
     qty_idx: 0 = x0, 1 = lambda, 2 = path length
     """
     stack = ROOT.THStack(f"hs_{qty_name}", f";{AXIS_LABEL};{y_title}")
-    total = ROOT.TH1D(f"h_{qty_name}_TOTAL", f"Total;{AXIS_LABEL};{y_title}", nbins_root, edges_arr)
+    total = ROOT.TH1D(f"h_{qty_name}_TOTAL", f"Total;{AXIS_LABEL};{y_title}", nbins_root, bin_edges_arr)
     total.SetLineWidth(2)
     total.SetLineColor(ROOT.kBlack)
 
     mat_hists = {}
     for ci, mat in enumerate(all_mats):
-        h = ROOT.TH1D(f"h_{qty_name}_{mat}", f"{mat};{AXIS_LABEL};{y_title}", nbins_root, edges_arr)
+        h = ROOT.TH1D(f"h_{qty_name}_{mat}", f"{mat};{AXIS_LABEL};{y_title}", nbins_root, bin_edges_arr)
         col = COLORS[ci % len(COLORS)]
         h.SetFillColor(col)
         h.SetLineColor(ROOT.kBlack)
