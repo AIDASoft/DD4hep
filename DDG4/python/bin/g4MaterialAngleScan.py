@@ -398,6 +398,8 @@ def build_ddsim_cmd(with_stdbuf=False):
         "--enableGun",
         "-N",
         str(args.eventsPerBin*nBins),
+        "--outputFile",
+        "sim_scan_output.root", # suppress unnecessary ROOT output 
         "--action.step",
         "Geant4MaterialScanner/MaterialScan",
         "--gun.particle",
@@ -429,6 +431,13 @@ def run_ddsim(timeout):
     except subprocess.TimeoutExpired:
         sys.exit(f"ERROR: ddsim timed out after {timeout} s")
 
+def find_bin(angle_value, bin_edges):
+    ib = bisect.bisect_right(bin_edges, angle_value) - 1
+
+    if ib < 0 or ib >= len(bin_edges) - 1:
+        return None
+
+    return ib
 
 def run_ddsim_progress(timeout, n_events):
     import threading
@@ -436,8 +445,6 @@ def run_ddsim_progress(timeout, n_events):
 
     cmd = build_ddsim_cmd(with_stdbuf=True)
     print("Running:", " ".join(cmd))
-
-    lines = []
 
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
@@ -455,16 +462,108 @@ def run_ddsim_progress(timeout, n_events):
     pbar = None
     print("  Waiting for Geant4 initialisation...", flush=True)
 
+    direction_re = re.compile(
+        r"direction:\(\s*([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\)"
+    )
+    current_direction = None
+    in_scan = False
+    raw_data = []
+
+    bin_data = [{} for _ in range(nBins)]
+    bin_counts = [0] * nBins  # count actual events per bin
+
+    # keep track of materials that collapse to the same name when applying the 'removeMatSubtrings' option
+    # e.g. G4_Cu and Custom_Cu, if both G4_ and Custom_ are removed
+    conflicting_name_dict = defaultdict(set)
+
+    raw_file = None
+    if args.saveRawData:
+        raw_data_path = args.output.replace(".root", "_rawdata.txt")
+        raw_file = open(raw_data_path, "w")
+        raw_file.write("# angle_value mat_name x0 lambda depth_mm\n")
+        
+
     for line in proc.stdout:
-        lines.append(line)
         if "+++ Initializing event" in line:
             if pbar is None:
                 # start progress bar only once the first event starts, to avoid counting Geant4 initialisation time in the progress bar
                 print("  Initialisation complete, scanning...", flush=True)
                 pbar = tqdm(total=n_events, unit="evt", desc="  ddsim")
-                pbar.update(1)  # count the event we just saw
-            else:
-                pbar.update(1)
+            pbar.update(1)
+        
+        # Get the geantino direction
+        m = direction_re.search(line)
+        if m and "Particle" in line:
+            dx, dy, dz = (float(v) for v in m.groups())
+            current_direction = (dx, dy, dz)
+
+        if "Material scan between" in line:
+            in_scan = True
+
+            # accumulate thicknesses per material for this event
+            mat_dict = defaultdict(list)
+
+        elif (
+            in_scan and "(" in line and len(line.split("(")[0].split()) == 12 and line.split()[0] == "|"
+            ):  # this line contains material information
+            parts = line.split()
+            try:
+                int(parts[1])  # first token after '|' should be a step index
+            except ValueError:
+                continue  # skip header/separator lines
+            try:
+                x0_cm = float(parts[6])
+                li_cm = float(parts[7])
+                thick_cm = float(parts[8])
+            except (ValueError, IndexError):
+                continue
+            if x0_cm <= 0.0 or li_cm <= 0.0:
+                continue
+
+            original_name = parts[2]
+            mat_name = original_name
+            for substring in args.removeMatsSubstrings:
+                mat_name = mat_name.replace(substring, "")
+            # Save the original name for bookkeeping of conflicting names
+            conflicting_name_dict[mat_name].add(original_name)
+
+            if mat_name not in args.ignoreMats:
+                if mat_name not in mat_dict:
+                    mat_dict[mat_name] = [0, 0, 0]
+
+                # compute the thicknesses in units of radiation lengths and interaction lengths
+                mat_dict[mat_name][0] += thick_cm / x0_cm
+                mat_dict[mat_name][1] += thick_cm / li_cm
+                mat_dict[mat_name][2] += thick_cm * 10.0
+
+        elif ("Initializing event" in line or "Finished run" in line) and in_scan and current_direction is not None:
+            dx, dy, dz = current_direction
+            angle_value = direction_to_angleDef(dx, dy, dz, angleDef)
+            ib = find_bin(angle_value, bin_edges)
+            if ib is None:
+                print(f"WARNING: angle value {angle_value} out of range for binning, skipping event")
+                continue
+
+            bin_counts[ib] += 1
+
+            for mat, sums in mat_dict.items():
+                if mat in args.ignoreMats:
+                    continue
+                if mat not in bin_data[ib]:
+                    bin_data[ib][mat] = [0.0, 0.0, 0.0]
+                bin_data[ib][mat][0] += sums[0]
+                bin_data[ib][mat][1] += sums[1]
+                bin_data[ib][mat][2] += sums[2]
+
+                if raw_file is not None:
+                    raw_file.write(f"{angle_value:.6f} {mat} {sums[0]:.6f} {sums[1]:.6f} {sums[2]:.6f}\n")
+
+            # raw_data.append((angle_value, mat_dict))
+            current_direction = None
+            in_scan = False
+
+    if raw_file is not None:
+        raw_file.close()
 
     if pbar is not None:
         pbar.close()
@@ -479,11 +578,7 @@ def run_ddsim_progress(timeout, n_events):
         print(" ".join(build_ddsim_cmd(with_stdbuf=False)))
         sys.exit(1)
 
-    # simple object to hold the combined stdout for parsing later
-    class Result:
-        stdout = "".join(lines)
-
-    return Result()
+    return bin_data, bin_counts, conflicting_name_dict
 
 
 # ---------------------------------------------------------------------------
@@ -507,7 +602,7 @@ if not args.noPilot:
 # ---------------------------------------------------------------------------
 
 print(f"Running main job ({nBins * args.eventsPerBin} events)...")
-result = run_ddsim_progress(args.timeOut, nBins * args.eventsPerBin)
+bin_data, bin_counts, conflicting_name_dict = run_ddsim_progress(args.timeOut, nBins * args.eventsPerBin)
 
 
 # ---------------------------------------------------------------------------
@@ -528,12 +623,7 @@ result = run_ddsim_progress(args.timeOut, nBins * args.eventsPerBin)
 #
 # ---------------------------------------------------------------------------
 
-direction_re = re.compile(
-    r"direction:\(\s*([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\)"
-)
-current_direction = None
-in_scan = False
-raw_data = []
+
 
 # Note: ddsim output is parsed for a second time now (first in run_ddsim_progress for the progress bar).
 # In principle, we could unify these two steps, but this way the code is less cluttered/intertwined,
@@ -541,74 +631,11 @@ raw_data = []
 # without messing with the progress bar.
 print("\nParsing ddsim output...")
 
-# keep track of materials that collapse to the same name when applying the 'removeMatSubtrings' option
-# e.g. G4_Cu and Custom_Cu, if both G4_ and Custom_ are removed
-conflicting_name_dict = defaultdict(set)
-
-for line in result.stdout.splitlines():
-    # Get the geantino direction
-    m = direction_re.search(line)
-    if m and "Particle" in line:
-        dx, dy, dz = (float(v) for v in m.groups())
-        current_direction = (dx, dy, dz)
-
-    if "Material scan between" in line:
-        in_scan = True
-
-        # accumulate thicknesses per material for this event
-        mat_dict = defaultdict(list)
-
-    elif (
-        in_scan and "(" in line and len(line.split("(")[0].split()) == 12 and line.split()[0] == "|"
-        ):  # this line contains material information
-        parts = line.split()
-        try:
-            int(parts[1])  # first token after '|' should be a step index
-        except ValueError:
-            continue  # skip header/separator lines
-        try:
-            x0_cm = float(parts[6])
-            li_cm = float(parts[7])
-            thick_cm = float(parts[8])
-        except (ValueError, IndexError):
-            continue
-        if x0_cm <= 0.0 or li_cm <= 0.0:
-            continue
-
-        original_name = parts[2]
-        mat_name = original_name
-        for substring in args.removeMatsSubstrings:
-            mat_name = mat_name.replace(substring, "")
-        # Save the original name for bookkeeping of conflicting names
-        conflicting_name_dict[mat_name].add(original_name)
-
-        # compute the thicknesses in units of radiation lengths and interaction lengths
-        t_over_x0 = thick_cm / x0_cm
-        t_over_li = thick_cm / li_cm
-        thick_mm = thick_cm * 10.0
-        if mat_name not in args.ignoreMats:
-            if mat_name not in mat_dict:
-                mat_dict[mat_name] = [0, 0, 0]
-            mat_dict[mat_name][0] += t_over_x0
-            mat_dict[mat_name][1] += t_over_li
-            mat_dict[mat_name][2] += thick_mm
-
-    elif "Initializing event" in line or "Finished run" in line:
-        if in_scan and current_direction is not None:
-            raw_data.append((direction_to_angleDef(current_direction[0], current_direction[1], current_direction[2], angleDef), mat_dict))
-        current_direction = None
-        in_scan = False
 
 
 
 # write out the unbinned data to a text file for debugging/inspection
-if args.saveRawData:
-    unbinned_output_file = args.output.replace(".root", "_rawdata.txt")
-    with open(unbinned_output_file, "w") as f:
-        f.write("# angle_value mat_name x0 lambda depth_mm\n")
-        for angle_value, mat_dict in raw_data:
-            for mat_name, (sum_x0, sum_li, sum_len_mm) in mat_dict.items():
-                f.write(f"{angle_value:.6f} {mat_name} {sum_x0:.6f} {sum_li:.6f} {sum_len_mm:.6f}\n")
+
 
 
 # print out any material name conflicts
@@ -619,7 +646,7 @@ for mat_name, original_names in conflicting_name_dict.items():
             f'after applying --removeMatsSubstrings: {original_names}'
             )
 
-n_received = len(raw_data)
+n_received = sum(bin_counts)
 n_expected = nBins * args.eventsPerBin
 # print(f"Parsed {n_received} scan events (expected {n_expected})")
 if n_received != n_expected:
@@ -633,34 +660,6 @@ if n_received != n_expected:
 # Sums are over all nPhi shots for that bin; divided by nPhi at the end.
 # ---------------------------------------------------------------------------
 
-bin_data = [{} for _ in range(nBins)]
-bin_counts = [0] * nBins  # count actual events per bin
-
-def find_bin(angle_value, bin_edges):
-    ib = bisect.bisect_right(bin_edges, angle_value) - 1
-
-    if ib < 0 or ib >= len(bin_edges) - 1:
-        return None
-
-    return ib
-
-for direction, mat_dict in raw_data:
-    angle_value = direction
-    ib = find_bin(angle_value, bin_edges)
-    if ib is None:
-        print(f"WARNING: angle value {angle_value} out of range for binning, skipping event")
-        continue
-
-    bin_counts[ib] += 1
-
-    for mat, sums in mat_dict.items():
-        if mat in args.ignoreMats:
-            continue
-        if mat not in bin_data[ib]:
-            bin_data[ib][mat] = [0.0, 0.0, 0.0]
-        bin_data[ib][mat][0] += sums[0]
-        bin_data[ib][mat][1] += sums[1]
-        bin_data[ib][mat][2] += sums[2]
 
 # divide by nPhi to get the phi-averaged value
 for ib in range(nBins):
