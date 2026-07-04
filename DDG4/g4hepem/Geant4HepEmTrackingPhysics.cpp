@@ -23,8 +23,8 @@
  * while all other particles continue to use the default stepping loop.
  *
  * HepEm can be restricted to selected G4Region names via the HepEmRegions
- * property. If HepEmRegions is empty (default), HepEm applies in all regions.
- *
+ * property. If HepEmRegions is empty (default), HepEm applies in all regions; if
+ * non-empty but no regions are resolved, HepEm tracking is disabled (with a warning).
  * Woodcock tracking for photons can be enabled per G4Region via the
  * WoodcockRegions property.  Woodcock tracking allows photons to bypass
  * fine-grained geometry navigation (e.g. individual fibres in a ScFi
