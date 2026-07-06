@@ -11,14 +11,14 @@
 # ==========================================================================
 """
 Material scan along the polar angle, creating a series 1D histograms.
-The results are presented in material depth [cm], number of radiation lengths,
+The results are presented in material depth [mm], number of radiation lengths,
 and number of interaction lengths.
 For each of these three, the scan seperates contribution per found material,
 creating a histogram for each material individually,
 a stacked histogram with all contributions, and one histogram with only the
 total value if only the sum of all contributions is of interest.
 
-The behaviour of the script follows the script in k4geo/utils/material_plots.py
+The behaviour of the script tries to follow the script in k4geo/utils/material_plots.py
 in terms of configurable options.
 """
 
@@ -32,6 +32,8 @@ import array
 import bisect
 import ROOT
 from collections import defaultdict
+import threading
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.RawTextHelpFormatter,
@@ -39,16 +41,20 @@ parser = argparse.ArgumentParser(
         "Material budget scan in theta/eta/cosTheta/thetaRad for a given geometry,\n"
         "using Geant4 particle gun and the MaterialScanner stepping action.\n"
         "\n"
-        "The scan shoots geantinos at fixed angle values and random phi, parses\n"
-        "the ddsim output, and saves THStacks of material depth, radiation length,\n"
+        "The scan shoots geantinos in random directions, parses the ddsim output,\n"
+        "and saves THStacks of material depth, radiation length,\n"
         "and interaction length vs angle to a ROOT file, PDF, and PNG.\n"
+        "Due to the random nature of the ddsim particle gun, a fixed number\n"
+        "of events per bin cannot be guaranteed. It is recommended to set the target\n"
+        "value for the number of events per bin large enough to be not affected by\n"
+        "Poissonian fluctuations. Mitigated by the script slightly by using Halton sequence for gun."
         "\n"
         "Example: \n"
-        "  g4MaterialAngleScan.py \\ \n"
+        "  g4PolarAngleScan.py \\ \n"
         "      -c myDetector.xml \\ \n"
         "      -o materialScan.root \\ \n"
-        "      --angleDef theta --minValue 10 --maxValue 170 -b 5 \\ \n"
-        "      --eventsPerBin 50 \\ \n"
+        "      --angleDef theta --minValue 10 --maxValue 170 -b 2 \\ \n"
+        "      --eventsPerBin 1000 \\ \n"
         "      -i Air Vacuum \\ \n"
         "      --colors 'kRed+2' 'cornflowerblue' '#00ff00' \\ \n"
         "      -t 600 \n"
@@ -69,7 +75,7 @@ parser.add_argument(
     dest="output",
     default="materialScan.root",
     type=str,
-    help="name of output root file with extension (and prefix for exported canvases)",
+    help="name of output root file with extension (used also as prefix for exported canvases)",
     )
 
 parser.add_argument(
@@ -80,12 +86,17 @@ parser.add_argument(
     help="angle definition to use: eta, theta, cosTheta or thetaRad. Default: theta",
     )
 
-parser.add_argument("--minValue", dest="minValue", default=-6, type=float, help="minimum value for eta/theta/cosTheta")
+parser.add_argument("--minValue", dest="minValue", default=10, type=float, help="minimum value for eta/theta/cosTheta")
 
-parser.add_argument("--maxValue", dest="maxValue", default=6, type=float, help="maximum value for eta/theta/cosTheta")
+parser.add_argument("--maxValue", dest="maxValue", default=170, type=float, help="maximum value for eta/theta/cosTheta")
 
 parser.add_argument(
-    "--angleBinning", "-b", dest="angleBinning", default=0.05, type=float, help="eta/theta/cosTheta/thetaRad bin width"
+    "--angleBinning",
+    "-b",
+    dest="angleBinning",
+    default=2,
+    type=float,
+    help="eta/theta/cosTheta/thetaRad bin width. Adjusted automatically if the range is not divisible by bin width."
     )
 
 parser.add_argument(
@@ -149,13 +160,13 @@ parser.add_argument(
     action="store_true",
     dest="saveRawData",
     default=False,
-    help="save the unbinned raw data to a text file for debugging/inspection",
+    help="save the unbinned raw data to a txt file for debugging/inspection",
     )
 
 args = parser.parse_args()
 
 # ---------------------------------------------------------------------------
-# valid angle definitions and helper functions
+# valid angle definitions and helper function
 # ---------------------------------------------------------------------------
 
 ANGLE_AND_DISTRIBUTION_DEFS = {
@@ -181,7 +192,6 @@ def direction_to_angleDef(dx, dy, dz, angle_def):
         if math.isclose(theta, math.pi, abs_tol=1e-12):
             return float("-inf")
         return -math.log(math.tan(theta / 2.0))
-
 
 
 # ---------------------------------------------------------------------------
@@ -300,7 +310,7 @@ angleDef = str(args.angleDef)
 if angleDef not in ANGLE_AND_DISTRIBUTION_DEFS.keys():
     print("ERROR: unknown angle definition", angleDef, ". Choose from ", ANGLE_AND_DISTRIBUTION_DEFS.keys(), ".", file=sys.stderr)
     exit(1)
-print(angleDef)
+print("angle definition:", angleDef)
 
 minValue = float(args.minValue)
 maxValue = float(args.maxValue)
@@ -335,7 +345,7 @@ elif angleDef == "cosTheta":
 # create bins
 # ---------------------------------------------------------------------------
 
-# build uniform edges in native angle variable
+# adjust bin width to fit an integer number of bins
 nBins = max(1, round((maxValue - minValue) / binning))
 actual_binning = (maxValue - minValue) / nBins
 
@@ -346,6 +356,14 @@ if not math.isclose(actual_binning, binning, abs_tol=1e-6):
 bin_edges = [minValue + i * actual_binning for i in range(nBins + 1)]
 bin_edges[-1] = maxValue # avoid floating point rounding issues for the last bin edge
 
+def find_bin(angle_value, bin_edges):
+    ib = bisect.bisect_right(bin_edges, angle_value) - 1
+
+    if ib < 0 or ib >= len(bin_edges) - 1:
+        return None
+
+    return ib
+
 # ---------------------------------------------------------------------------
 # functions to run ddsim
 # ---------------------------------------------------------------------------
@@ -353,7 +371,7 @@ bin_edges[-1] = maxValue # avoid floating point rounding issues for the last bin
 def build_angle_args(angle_def, angle_min, angle_max):
     """
     Convert user input for min and max values of the scan range
-    into the appropriate ddsim gun arguments for the requested angle definition
+    into the correct ddsim gun arguments
     """
     if angle_def == "eta":
         return [
@@ -399,7 +417,7 @@ def build_ddsim_cmd(with_stdbuf=False):
         "-N",
         str(args.eventsPerBin*nBins),
         "--outputFile",
-        "sim_scan_output.root", # suppress unnecessary ROOT output 
+        "sim_scan_output.root", # not needed, deleted at the end
         "--action.step",
         "Geant4MaterialScanner/MaterialScan",
         "--gun.particle",
@@ -410,6 +428,8 @@ def build_ddsim_cmd(with_stdbuf=False):
         "0,0,0",
         "--gun.distribution",
         f"{ANGLE_AND_DISTRIBUTION_DEFS[angleDef]}",
+        "--gun.halton", # use Halton sequence for better coverage of the angular space
+        "True",
         "--gun.phiMin",
         "0*deg",
         "--gun.phiMax",
@@ -423,6 +443,7 @@ def build_ddsim_cmd(with_stdbuf=False):
     return cmd
 
 
+# ddsim call for the pilot run (no progress bar, no parsing of output)
 def run_ddsim(timeout):
     cmd = build_ddsim_cmd(with_stdbuf=True)
     print("Running:", " ".join(cmd))
@@ -431,17 +452,22 @@ def run_ddsim(timeout):
     except subprocess.TimeoutExpired:
         sys.exit(f"ERROR: ddsim timed out after {timeout} s")
 
-def find_bin(angle_value, bin_edges):
-    ib = bisect.bisect_right(bin_edges, angle_value) - 1
-
-    if ib < 0 or ib >= len(bin_edges) - 1:
-        return None
-
-    return ib
-
+# ddsims call for the main run, with progress bar and parsing of output
+# The MaterialScanner prints one block per event. Example block:
+#
+#  +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
+#  + Material scan between: x_0 = (   0.00,   0.00,   0.00) [cm] and x_1 = (-1525.80, 265.01,2500.00) [cm]  TrackID:1: # # noqa: E501
+#  +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
+#  |     \   Material           Atomic                 Radiation   Interaction               Path   Integrated  Integrated    Material # noqa: E501
+#  | Num. \  Name          Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint # noqa: E501
+#  | Layer \                        [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm) # noqa: E501
+#  +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
+#  |     1 Air                    7   14.784   0.0012  30528.8402   71282.7920     66.425    66.43    0.002176    0.000932  ( -34.46,   5.99,  56.47) # noqa: E501
+#  |     2 CarbonFibStr           4    8.127   1.4500     33.2316      37.9830      0.038    66.46    0.003319    0.001932  ( -34.48,   5.99,  56.50) # noqa: E501
+#  ...
+# GenerationInit   WARN  +++ Finished run 1 after ...
+#
 def run_ddsim_progress(timeout, n_events):
-    import threading
-    from tqdm import tqdm
 
     cmd = build_ddsim_cmd(with_stdbuf=True)
     print("Running:", " ".join(cmd))
@@ -459,15 +485,15 @@ def run_ddsim_progress(timeout, n_events):
     watchdog = threading.Thread(target=_watchdog, daemon=True)
     watchdog.start()
 
-    pbar = None
+    progress_bar = None
     print("  Waiting for Geant4 initialisation...", flush=True)
 
+    # get direction of the geantino from the MaterialScanner output line
     direction_re = re.compile(
-        r"direction:\(\s*([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\)"
+        r"Material\sscan\sbetween\:.*x_1\s*=\s*\(\s*([-\d.]+),\s*([-\d.]+),\s*([-\d.]+)\)"
     )
     current_direction = None
     in_scan = False
-    raw_data = []
 
     bin_data = [{} for _ in range(nBins)]
     bin_counts = [0] * nBins  # count actual events per bin
@@ -475,6 +501,9 @@ def run_ddsim_progress(timeout, n_events):
     # keep track of materials that collapse to the same name when applying the 'removeMatSubtrings' option
     # e.g. G4_Cu and Custom_Cu, if both G4_ and Custom_ are removed
     conflicting_name_dict = defaultdict(set)
+
+    # Save any warnings to a list to be printed out at the end, to avoid messing up the progress bar 
+    warning_list = []
 
     raw_file = None
     if args.saveRawData:
@@ -485,19 +514,20 @@ def run_ddsim_progress(timeout, n_events):
 
     for line in proc.stdout:
         if "+++ Initializing event" in line:
-            if pbar is None:
+            if progress_bar is None:
                 # start progress bar only once the first event starts, to avoid counting Geant4 initialisation time in the progress bar
                 print("  Initialisation complete, scanning...", flush=True)
-                pbar = tqdm(total=n_events, unit="evt", desc="  ddsim")
-            pbar.update(1)
+                progress_bar = tqdm(total=n_events, unit="evt", desc="  ddsim")
+            progress_bar.update(1)
         
-        # Get the geantino direction
-        m = direction_re.search(line)
-        if m and "Particle" in line:
-            dx, dy, dz = (float(v) for v in m.groups())
-            current_direction = (dx, dy, dz)
 
         if "Material scan between" in line:
+            # Get the geantino direction
+            m = direction_re.search(line)
+            if m:
+                dx, dy, dz = (float(v) for v in m.groups())
+                norm = math.sqrt(dx**2 + dy**2 + dz**2)
+                current_direction = (dx/norm, dy/norm, dz/norm)
             in_scan = True
 
             # accumulate thicknesses per material for this event
@@ -517,9 +547,10 @@ def run_ddsim_progress(timeout, n_events):
                 thick_cm = float(parts[8])
             except (ValueError, IndexError):
                 continue
-            if x0_cm <= 0.0 or li_cm <= 0.0:
+            if x0_cm <= 0.0 or li_cm <= 0.0 or thick_cm <= 0.0:
                 continue
 
+            # Remove any substrings from the material name as requested by the user
             original_name = parts[2]
             mat_name = original_name
             for substring in args.removeMatsSubstrings:
@@ -532,6 +563,7 @@ def run_ddsim_progress(timeout, n_events):
                     mat_dict[mat_name] = [0, 0, 0]
 
                 # compute the thicknesses in units of radiation lengths and interaction lengths
+                # mat_dict accumulates for one event the information of each step
                 mat_dict[mat_name][0] += thick_cm / x0_cm
                 mat_dict[mat_name][1] += thick_cm / li_cm
                 mat_dict[mat_name][2] += thick_cm * 10.0
@@ -541,7 +573,7 @@ def run_ddsim_progress(timeout, n_events):
             angle_value = direction_to_angleDef(dx, dy, dz, angleDef)
             ib = find_bin(angle_value, bin_edges)
             if ib is None:
-                print(f"WARNING: angle value {angle_value} out of range for binning, skipping event")
+                warning_list.append(f"WARNING: angle value {angle_value} out of range for binning, skipping event")
                 continue
 
             bin_counts[ib] += 1
@@ -551,22 +583,26 @@ def run_ddsim_progress(timeout, n_events):
                     continue
                 if mat not in bin_data[ib]:
                     bin_data[ib][mat] = [0.0, 0.0, 0.0]
+                # bin_data[ib][mat] accumulates for one bin the sums of x0, li, and depth_mm across events 
                 bin_data[ib][mat][0] += sums[0]
                 bin_data[ib][mat][1] += sums[1]
                 bin_data[ib][mat][2] += sums[2]
 
+                # if requested, write out the unbinned raw data to a text file for debugging/inspection
                 if raw_file is not None:
                     raw_file.write(f"{angle_value:.6f} {mat} {sums[0]:.6f} {sums[1]:.6f} {sums[2]:.6f}\n")
 
-            # raw_data.append((angle_value, mat_dict))
             current_direction = None
             in_scan = False
 
     if raw_file is not None:
         raw_file.close()
 
-    if pbar is not None:
-        pbar.close()
+    if progress_bar is not None:
+        progress_bar.close()
+
+    # print accumulated warnings
+    print(*warning_list, sep="\n", flush=True)
 
     proc.wait()
 
@@ -604,40 +640,6 @@ if not args.noPilot:
 print(f"Running main job ({nBins * args.eventsPerBin} events)...")
 bin_data, bin_counts, conflicting_name_dict = run_ddsim_progress(args.timeOut, nBins * args.eventsPerBin)
 
-
-# ---------------------------------------------------------------------------
-# parse ddsim output
-#
-# The MaterialScanner prints one block per event. Example block:
-#
-#  +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
-#  + Material scan between: (x0, y0, z0)[cm] and (x1, y1, z1)[cm]  TrackID:1: # noqa: E501
-#  +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
-#  |     \   Material           Atomic                 Radiation   Interaction               Path   Integrated  Integrated    Material # noqa: E501
-#  | Num. \  Name          Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint # noqa: E501
-#  | Layer \                        [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm) # noqa: E501
-#  +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
-#  |     1 Air                    7   14.784   0.0012  30528.8402   71282.7920    183.325   183.32    0.006005    0.002572  ( -34.68,  -4.58, 179.96) # noqa: E501
-#  ...
-# GenerationInit   WARN  +++ Finished run 1 after ...
-#
-# ---------------------------------------------------------------------------
-
-
-
-# Note: ddsim output is parsed for a second time now (first in run_ddsim_progress for the progress bar).
-# In principle, we could unify these two steps, but this way the code is less cluttered/intertwined,
-# and the parsing is relatively fast, so it should not be a problem. Also allows for cleaner debugging,
-# without messing with the progress bar.
-print("\nParsing ddsim output...")
-
-
-
-
-# write out the unbinned data to a text file for debugging/inspection
-
-
-
 # print out any material name conflicts
 for mat_name, original_names in conflicting_name_dict.items():
     if len(original_names) > 1:
@@ -648,20 +650,11 @@ for mat_name, original_names in conflicting_name_dict.items():
 
 n_received = sum(bin_counts)
 n_expected = nBins * args.eventsPerBin
-# print(f"Parsed {n_received} scan events (expected {n_expected})")
 if n_received != n_expected:
     print(f"WARNING: event count mismatch (Received {n_received} vs expected {n_expected}). " "Results may be incomplete.")
 
 
-# ---------------------------------------------------------------------------
-# accumulate per-bin, then average over phi
-#
-# bin_data[ib][mat_name] = [sum_x0, sum_li, sum_len_mm]
-# Sums are over all nPhi shots for that bin; divided by nPhi at the end.
-# ---------------------------------------------------------------------------
-
-
-# divide by nPhi to get the phi-averaged value
+# get the phi-averaged value
 for ib in range(nBins):
     n_events_in_bin = bin_counts[ib]
     if n_events_in_bin == 0:
@@ -773,3 +766,10 @@ fout.Write()
 fout.Close()
 print(f"\nDone. Results written to {args.output}")
 
+# ---------------------------------------------------------------------------
+# Clean up
+# ---------------------------------------------------------------------------
+
+# remove ddsim output file
+if os.path.exists("sim_scan_output.root"):
+    os.remove("sim_scan_output.root")
