@@ -104,7 +104,10 @@ parser.add_argument(
     dest="eventsPerBin",
     default=1000,
     type=int,
-    help="target number of geantinos to average over per angle bin (approximate, because we are relying on ddsim gun random distribution in theta)",
+    help=(
+        "target number of geantinos to average over per angle bin"
+        "(approximate, because we are relying on ddsim gun random distribution in theta)"
+        ),
     )
 
 parser.add_argument("--seed", "-S", dest="seed", default=None, type=int, help="random seed for ddsim gun (optional)")
@@ -175,9 +178,10 @@ ANGLE_AND_DISTRIBUTION_DEFS = {
     "cosTheta": "cosTheta",
     "thetaRad": "uniform",
     }
-    
+
+
 def direction_to_angleDef(dx, dy, dz, angle_def):
-    theta = math.acos(dz / math.sqrt(dx**2 + dy**2 + dz**2)) 
+    theta = math.acos(dz / math.sqrt(dx**2 + dy**2 + dz**2))
     if angle_def == "theta":
         return math.degrees(theta)
     elif angle_def == "thetaRad":
@@ -308,7 +312,8 @@ print("ddsim steering file:", args.steering)
 
 angleDef = str(args.angleDef)
 if angleDef not in ANGLE_AND_DISTRIBUTION_DEFS.keys():
-    print("ERROR: unknown angle definition", angleDef, ". Choose from ", ANGLE_AND_DISTRIBUTION_DEFS.keys(), ".", file=sys.stderr)
+    print("ERROR: unknown angle definition", angleDef, ". Choose from ",
+          ANGLE_AND_DISTRIBUTION_DEFS.keys(), ".", file=sys.stderr)
     exit(1)
 print("angle definition:", angleDef)
 
@@ -354,7 +359,8 @@ if not math.isclose(actual_binning, binning, abs_tol=1e-6):
           f"to fit exactly {nBins} bins in [{minValue}, {maxValue}]")
 
 bin_edges = [minValue + i * actual_binning for i in range(nBins + 1)]
-bin_edges[-1] = maxValue # avoid floating point rounding issues for the last bin edge
+bin_edges[-1] = maxValue  # avoid floating point rounding issues for the last bin edge
+
 
 def find_bin(angle_value, bin_edges):
     ib = bisect.bisect_right(bin_edges, angle_value) - 1
@@ -368,6 +374,7 @@ def find_bin(angle_value, bin_edges):
 # functions to run ddsim
 # ---------------------------------------------------------------------------
 
+
 def build_angle_args(angle_def, angle_min, angle_max):
     """
     Convert user input for min and max values of the scan range
@@ -377,19 +384,19 @@ def build_angle_args(angle_def, angle_min, angle_max):
         return [
             "--gun.etaMin", str(angle_min),
             "--gun.etaMax", str(angle_max),
-        ]
+            ]
 
     elif angle_def == "theta":
         return [
             "--gun.thetaMin", f"{angle_min}*deg",
             "--gun.thetaMax", f"{angle_max}*deg",
-        ]
+            ]
 
     elif angle_def == "thetaRad":
         return [
             "--gun.thetaMin", str(angle_min),
             "--gun.thetaMax", str(angle_max),
-        ]
+            ]
 
     elif angle_def == "cosTheta":
         theta_from_cos_min = math.acos(angle_min)
@@ -401,9 +408,10 @@ def build_angle_args(angle_def, angle_min, angle_max):
         return [
             "--gun.thetaMin", str(theta_min_rad),
             "--gun.thetaMax", str(theta_max_rad),
-        ]
-    
+            ]
+
     return []
+
 
 def build_ddsim_cmd(with_stdbuf=False):
 
@@ -415,9 +423,9 @@ def build_ddsim_cmd(with_stdbuf=False):
         "batch",
         "--enableGun",
         "-N",
-        str(args.eventsPerBin*nBins),
+        str(args.eventsPerBin * nBins),
         "--outputFile",
-        "sim_scan_output.root", # not needed, deleted at the end
+        "sim_scan_output.root",  # not needed, deleted at the end
         "--action.step",
         "Geant4MaterialScanner/MaterialScan",
         "--gun.particle",
@@ -428,7 +436,7 @@ def build_ddsim_cmd(with_stdbuf=False):
         "0,0,0",
         "--gun.distribution",
         f"{ANGLE_AND_DISTRIBUTION_DEFS[angleDef]}",
-        "--gun.halton", # use Halton sequence for better coverage of the angular space
+        "--gun.halton",  # use Halton sequence for better coverage of the angular space
         "True",
         "--gun.phiMin",
         "0*deg",
@@ -467,6 +475,8 @@ def run_ddsim(timeout):
 #  ...
 # GenerationInit   WARN  +++ Finished run 1 after ...
 #
+
+
 def run_ddsim_progress(timeout, n_events):
 
     cmd = build_ddsim_cmd(with_stdbuf=True)
@@ -491,7 +501,7 @@ def run_ddsim_progress(timeout, n_events):
     # get direction of the geantino from the MaterialScanner output line
     direction_re = re.compile(
         r"Material\sscan\sbetween\:.*x_1\s*=\s*\(\s*([-\d.]+),\s*([-\d.]+),\s*([-\d.]+)\)"
-    )
+        )
     current_direction = None
     in_scan = False
 
@@ -502,7 +512,7 @@ def run_ddsim_progress(timeout, n_events):
     # e.g. G4_Cu and Custom_Cu, if both G4_ and Custom_ are removed
     conflicting_name_dict = defaultdict(set)
 
-    # Save any warnings to a list to be printed out at the end, to avoid messing up the progress bar 
+    # Save any warnings to a list to be printed out at the end, to avoid messing up the progress bar
     warning_list = []
 
     raw_file = None
@@ -510,16 +520,15 @@ def run_ddsim_progress(timeout, n_events):
         raw_data_path = args.output.replace(".root", "_rawdata.txt")
         raw_file = open(raw_data_path, "w")
         raw_file.write("# angle_value mat_name x0 lambda depth_mm\n")
-        
 
     for line in proc.stdout:
         if "+++ Initializing event" in line:
             if progress_bar is None:
-                # start progress bar only once the first event starts, to avoid counting Geant4 initialisation time in the progress bar
+                # start progress bar only once the first event starts,
+                # to avoid counting Geant4 initialisation time in progress bar
                 print("  Initialisation complete, scanning...", flush=True)
                 progress_bar = tqdm(total=n_events, unit="evt", desc="  ddsim")
             progress_bar.update(1)
-        
 
         if "Material scan between" in line:
             # Get the geantino direction
@@ -527,7 +536,7 @@ def run_ddsim_progress(timeout, n_events):
             if m:
                 dx, dy, dz = (float(v) for v in m.groups())
                 norm = math.sqrt(dx**2 + dy**2 + dz**2)
-                current_direction = (dx/norm, dy/norm, dz/norm)
+                current_direction = (dx / norm, dy / norm, dz / norm)
             in_scan = True
 
             # accumulate thicknesses per material for this event
@@ -583,7 +592,7 @@ def run_ddsim_progress(timeout, n_events):
                     continue
                 if mat not in bin_data[ib]:
                     bin_data[ib][mat] = [0.0, 0.0, 0.0]
-                # bin_data[ib][mat] accumulates for one bin the sums of x0, li, and depth_mm across events 
+                # bin_data[ib][mat] accumulates for one bin the sums of x0, li, and depth_mm across events
                 bin_data[ib][mat][0] += sums[0]
                 bin_data[ib][mat][1] += sums[1]
                 bin_data[ib][mat][2] += sums[2]
@@ -651,14 +660,14 @@ for mat_name, original_names in conflicting_name_dict.items():
 n_received = sum(bin_counts)
 n_expected = nBins * args.eventsPerBin
 if n_received != n_expected:
-    print(f"WARNING: event count mismatch (Received {n_received} vs expected {n_expected}). " "Results may be incomplete.")
+    print(f"WARNING: event count mismatch (Received {n_received} vs expected {n_expected}). Results may be incomplete.")
 
 
 # get the phi-averaged value
 for ib in range(nBins):
     n_events_in_bin = bin_counts[ib]
     if n_events_in_bin == 0:
-        print(f"WARNING: no events found for bin {ib} (angle range {bin_edges[ib]} to {bin_edges[ib+1]}), skipping")
+        print(f"WARNING: no events found for bin {ib} (angle range {bin_edges[ib]} to {bin_edges[ib + 1]}), skipping")
         continue
     for mat in bin_data[ib]:
         bin_data[ib][mat][0] /= n_events_in_bin
