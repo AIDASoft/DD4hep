@@ -34,31 +34,32 @@ import ROOT
 from collections import defaultdict
 import threading
 from tqdm import tqdm
+import textwrap
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.RawTextHelpFormatter,
-    description=(
-        "Material budget scan in theta/eta/cosTheta/thetaRad for a given geometry,\n"
-        "using Geant4 particle gun and the MaterialScanner stepping action.\n"
-        "\n"
-        "The scan shoots geantinos in random directions, parses the ddsim output,\n"
-        "and saves THStacks of material depth, radiation length,\n"
-        "and interaction length vs angle to a ROOT file, PDF, and PNG.\n"
-        "Due to the random nature of the ddsim particle gun, a fixed number\n"
-        "of events per bin cannot be guaranteed. It is recommended to set the target\n"
-        "value for the number of events per bin large enough to be not affected by\n"
-        "Poissonian fluctuations. Mitigated by the script slightly by using Halton sequence for gun."
-        "\n"
-        "Example: \n"
-        "  g4PolarAngleScan.py \\ \n"
-        "      -c myDetector.xml \\ \n"
-        "      -o materialScan.root \\ \n"
-        "      --angleDef theta --minValue 10 --maxValue 170 -b 2 \\ \n"
-        "      --eventsPerBin 1000 \\ \n"
-        "      -i Air Vacuum \\ \n"
-        "      --colors 'kRed+2' 'cornflowerblue' '#00ff00' \\ \n"
-        "      -t 600 \n"
-        ),
+    description=textwrap.dedent("""\
+        Material budget scan in theta/eta/cosTheta/thetaRad for a given geometry,
+        using Geant4 particle gun and the MaterialScanner stepping action.
+
+        The scan shoots geantinos in random directions, parses the ddsim output,
+        and saves THStacks of material depth, radiation length,
+        and interaction length vs angle to a ROOT file, PDF, and PNG.
+        Due to the random nature of the ddsim particle gun, a fixed number
+        of events per bin cannot be guaranteed. It is recommended to set the target
+        value for the number of events per bin large enough to not be affected
+        by Poissonian fluctuations. Mitigated by the script slightly by using Halton sequence for gun.
+
+        Example:
+          g4PolarAngleScan.py \\
+              -c myDetector.xml \\
+              -o materialScan.root \\
+              --angleDef theta --minValue 10 --maxValue 170 -b 2 \\
+              --eventsPerBin 1000 \\
+              -i Air Vacuum \\
+              --colors 'kRed+2' 'cornflowerblue' '#00ff00' \\
+              -t 600
+        """),
     )
 
 parser.add_argument(
@@ -104,10 +105,10 @@ parser.add_argument(
     dest="eventsPerBin",
     default=1000,
     type=int,
-    help=(
-        "target number of geantinos to average over per angle bin"
-        "(approximate, because we are relying on ddsim gun random distribution in theta)"
-        ),
+    help=textwrap.dedent("""\
+        target number of geantinos to average over per angle bin
+        (approximate, because we are relying on ddsim gun random distribution in theta)
+        """),
     )
 
 parser.add_argument("--seed", "-S", dest="seed", default=None, type=int, help="random seed for ddsim gun (optional)")
@@ -120,11 +121,11 @@ parser.add_argument(
     dest="removeMatsSubstrings",
     nargs="+",
     default=[],
-    help=(
-        "Substrings to be removed from materials strings "
-        "(e.g. DCH_ for drift chamber specific materials). "
-        "Applied before --ignoreMats."
-        ),
+    help=textwrap.dedent("""\
+        Substrings to be removed from materials strings
+        (e.g. DCH_ for drift chamber specific materials).
+        Applied before --ignoreMats.
+        """),
     )
 
 parser.add_argument(
@@ -150,12 +151,12 @@ parser.add_argument(
     dest="colors",
     nargs="+",
     default=None,
-    help=(
-        "List of ROOT colours to use for materials. Accepts ROOT colour names (e.g. 'kRed' 'kBlue+2', case-sensitive), "
-        "ROOT-style integers (e.g. '4' '8' '15' '16' '23' '42'), hex codes in quotes (e.g. '#ff0000' '#3b82f6'), "
-        "or matplotlib names (e.g. 'red' 'steelblue' 'tab:blue'). If fewer colours are provided than "
-        "materials are found, the list will be padded with default ROOT colours."
-        ),
+    help=textwrap.dedent("""\
+        List of ROOT colours to use for materials. Accepts ROOT colour names (e.g. 'kRed' 'kBlue+2', case-sensitive),
+        ROOT-style integers (e.g. '4' '8' '15' '16' '23' '42'), hex codes in quotes (e.g. '#ff0000' '#3b82f6'),
+        or matplotlib names (e.g. 'red' 'steelblue' 'tab:blue'). If fewer colours are provided than
+        materials are found, the list will be padded with default ROOT colours.
+        """),
     )
 
 parser.add_argument(
@@ -268,7 +269,7 @@ def resolve_color(c):
 def build_color_list(args_colors):
     """
     Create list from user input and fill with default colors if needed.
-    Ensure no dupicated colors in the final list.
+    Ensure no duplicated colors in the final list.
     """
     if args_colors is None:
         return DEFAULT_COLORS
