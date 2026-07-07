@@ -674,7 +674,13 @@ for ib in range(nBins):
         bin_data[ib][mat][1] /= n_events_in_bin
         bin_data[ib][mat][2] /= n_events_in_bin
 
-all_mats = sorted({mat for ib in range(nBins) for mat in bin_data[ib]})
+seen = set()
+all_mats = []
+for ib in range(nBins):
+    for mat in bin_data[ib]:
+        if mat not in seen:
+            seen.add(mat)
+            all_mats.append(mat)
 print(f"Materials found: {all_mats}")
 
 # ---------------------------------------------------------------------------
