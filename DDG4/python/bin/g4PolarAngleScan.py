@@ -137,8 +137,8 @@ parser.add_argument(
     )
 
 parser.add_argument(
-    "-P",
     "--noPilot",
+    "-P",
     action="store_true",
     dest="noPilot",
     default=False,
@@ -167,8 +167,8 @@ parser.add_argument(
     )
 
 parser.add_argument(
-    "-p",
     "--progressBar",
+    "-p",
     action="store_true",
     dest="progressBar",
     default=False,
