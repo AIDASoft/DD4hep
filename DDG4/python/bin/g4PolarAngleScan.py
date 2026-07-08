@@ -83,6 +83,7 @@ parser.add_argument(
     dest="angleDef",
     default="theta",
     type=str,
+    choices=["eta", "theta", "cosTheta", "thetaRad"],
     help="angle definition to use: eta, theta, cosTheta or thetaRad. Default: theta",
     )
 
@@ -320,10 +321,6 @@ if args.steering is not None and not os.path.isfile(args.steering):
 print("ddsim steering file:", args.steering)
 
 angleDef = str(args.angleDef)
-if angleDef not in ANGLE_AND_DISTRIBUTION_DEFS.keys():
-    print("ERROR: unknown angle definition", angleDef, ". Choose from ",
-          ANGLE_AND_DISTRIBUTION_DEFS.keys(), ".", file=sys.stderr)
-    exit(1)
 print("angle definition:", angleDef)
 
 minValue = float(args.minValue)
