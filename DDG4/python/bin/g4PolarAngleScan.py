@@ -29,7 +29,6 @@ import argparse
 import subprocess
 import math
 import array
-import bisect
 import ROOT
 from collections import defaultdict
 import threading
@@ -398,10 +397,9 @@ bin_edges = [minValue + i * actual_binning for i in range(nBins + 1)]
 bin_edges[-1] = maxValue  # avoid floating point rounding issues for the last bin edge
 
 
-def find_bin(angle_value, bin_edges):
-    ib = bisect.bisect_right(bin_edges, angle_value) - 1
-
-    if ib < 0 or ib >= len(bin_edges) - 1:
+def find_bin(angle_value, min_value, actual_binning, n_bins):
+    ib = int((angle_value - min_value) / actual_binning)
+    if ib < 0 or ib >= n_bins:
         return None
 
     return ib
@@ -616,7 +614,7 @@ def run_ddsim_progress(timeout, n_events):
         elif ("Initializing event" in line or "Finished run" in line) and in_scan and current_direction is not None:
             dx, dy, dz = current_direction
             angle_value = direction_to_angleDef(dx, dy, dz, angleDef)
-            ib = find_bin(angle_value, bin_edges)
+            ib = find_bin(angle_value, minValue, actual_binning, nBins)
             if ib is None:
                 warning_list.append(f"WARNING: angle value {angle_value} out of range for binning, skipping event")
                 continue
