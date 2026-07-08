@@ -84,12 +84,36 @@ parser.add_argument(
     default="theta",
     type=str,
     choices=["eta", "theta", "cosTheta", "thetaRad"],
-    help="angle definition to use: eta, theta, cosTheta or thetaRad. Default: theta",
+    help=textwrap.dedent("""\
+        angle definition to use: eta, theta, cosTheta or thetaRad. Default: theta.
+        This choice determines the underlying distribution of the ddsim gun:
+        uniform in theta for theta/thetaRad, uniform in eta for eta, and uniform in cos(theta) for cosTheta.
+        """),
     )
 
-parser.add_argument("--minValue", dest="minValue", default=10, type=float, help="minimum value for eta/theta/cosTheta")
+parser.add_argument(
+    "--minValue",
+    dest="minValue",
+    default=10,
+    type=float,
+    help=textwrap.dedent("""\
+        minimum value for eta/theta/cosTheta, float in corresponding units:
+        deg for theta, rad for thetaRad, unitless for eta and cosTheta
+        (e.g. --angleDef theta --minValue 10 --maxValue 170  for a scan from 10 to 170 degrees)
+        """),
+    )
 
-parser.add_argument("--maxValue", dest="maxValue", default=170, type=float, help="maximum value for eta/theta/cosTheta")
+parser.add_argument(
+    "--maxValue",
+    dest="maxValue",
+    default=170,
+    type=float,
+    help=textwrap.dedent("""\
+        maximum value for eta/theta/cosTheta, float in corresponding units:
+        deg for theta, rad for thetaRad, unitless for eta and cosTheta
+        (e.g. --angleDef thetaRad --minValue 0.175 --maxValue 2.967  for a scan from 0.175 to 2.967 radians)
+        """),
+    )
 
 parser.add_argument(
     "--angleBinning",
@@ -97,7 +121,13 @@ parser.add_argument(
     dest="angleBinning",
     default=2,
     type=float,
-    help="eta/theta/cosTheta/thetaRad bin width. Adjusted automatically if the range is not divisible by bin width."
+    help=textwrap.dedent("""\
+        eta/theta/cosTheta/thetaRad bin width in corresponding units:
+        deg for theta, rad for thetaRad, unitless for eta and cosTheta
+        (e.g. --angleDef cosTheta --minValue -0.9 --maxValue 0.9 --b 0.1
+        for a scan from -0.9 to 0.9 in cosTheta with bin width of 0.1)
+        Adjusted automatically if the range is not divisible by bin width!
+        """),
     )
 
 parser.add_argument(
@@ -185,7 +215,7 @@ args = parser.parse_args()
 ANGLE_AND_DISTRIBUTION_DEFS = {
     "theta": "uniform",
     "eta": "eta",
-    "cosTheta": "cosTheta",
+    "cosTheta": "cos(theta)",
     "thetaRad": "uniform",
     }
 
