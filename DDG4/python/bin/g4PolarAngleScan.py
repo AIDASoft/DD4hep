@@ -33,7 +33,6 @@ import bisect
 import ROOT
 from collections import defaultdict
 import threading
-from tqdm import tqdm
 import textwrap
 
 parser = argparse.ArgumentParser(
@@ -58,7 +57,7 @@ parser = argparse.ArgumentParser(
               --eventsPerBin 1000 \\
               -i Air Vacuum \\
               --colors 'kRed+2' 'cornflowerblue' '#00ff00' \\
-              -t 600
+              -t 600 -p
         """),
     )
 
@@ -165,6 +164,15 @@ parser.add_argument(
     dest="saveRawData",
     default=False,
     help="save the unbinned raw data to a txt file for debugging/inspection",
+    )
+
+parser.add_argument(
+    "-p",
+    "--progressBar",
+    action="store_true",
+    dest="progressBar",
+    default=False,
+    help="show a progress bar for the main ddsim run (requires tqdm)",
     )
 
 args = parser.parse_args()
@@ -461,6 +469,7 @@ def run_ddsim(timeout):
     except subprocess.TimeoutExpired:
         sys.exit(f"ERROR: ddsim timed out after {timeout} s")
 
+
 # ddsims call for the main run, with progress bar and parsing of output
 # The MaterialScanner prints one block per event. Example block:
 #
@@ -475,9 +484,6 @@ def run_ddsim(timeout):
 #  |     2 CarbonFibStr           4    8.127   1.4500     33.2316      37.9830      0.038    66.46    0.003319    0.001932  ( -34.48,   5.99,  56.50) # noqa: E501
 #  ...
 # GenerationInit   WARN  +++ Finished run 1 after ...
-#
-
-
 def run_ddsim_progress(timeout, n_events):
 
     cmd = build_ddsim_cmd(with_stdbuf=True)
@@ -524,12 +530,14 @@ def run_ddsim_progress(timeout, n_events):
 
     for line in proc.stdout:
         if "+++ Initializing event" in line:
-            if progress_bar is None:
-                # start progress bar only once the first event starts,
-                # to avoid counting Geant4 initialisation time in progress bar
-                print("  Initialisation complete, scanning...", flush=True)
-                progress_bar = tqdm(total=n_events, unit="evt", desc="  ddsim")
-            progress_bar.update(1)
+            if args.progressBar:
+                from tqdm import tqdm
+                if progress_bar is None:
+                    # start progress bar only once the first event starts,
+                    # to avoid counting Geant4 initialisation time in progress bar
+                    print("  Initialisation complete, scanning...", flush=True)
+                    progress_bar = tqdm(total=n_events, unit="evt", desc="  ddsim")
+                progress_bar.update(1)
 
         if "Material scan between" in line:
             # Get the geantino direction
