@@ -71,6 +71,7 @@ void Geant4EventSeed::begin(const G4Run* run) {
 void Geant4EventSeed::beginEvent(const G4Event* evt) {
 
   Geant4Random *rndm = Geant4Random::instance();
+  Geant4Event& ddevt = context()->event();
 
   unsigned int eventID = evt->GetEventID();
   unsigned int newSeed = hash( m_initialSeed, eventID, m_runID );
