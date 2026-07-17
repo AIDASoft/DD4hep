@@ -205,6 +205,7 @@ get_filename_component(PYTHON_INTERPRETER_BINARY ${Python_EXECUTABLE} NAME)
 configure_file(python/DDSim/bin/ddsim.in.py ${CMAKE_BINARY_DIR}/bin/ddsim @ONLY)
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/ddsim DESTINATION bin)
 
+install(FILES python/bin/MaterialScanner_Parser.py DESTINATION bin)
 install(PROGRAMS python/bin/g4MaterialScan.py   DESTINATION bin RENAME g4MaterialScan)
 install(PROGRAMS python/bin/g4GeometryScan.py   DESTINATION bin RENAME g4GeometryScan)
 install(PROGRAMS python/bin/g4GraphicalScan.py  DESTINATION bin RENAME g4GraphicalScan)
