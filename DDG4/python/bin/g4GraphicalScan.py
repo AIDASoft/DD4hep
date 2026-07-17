@@ -35,6 +35,7 @@ import sys
 import optparse
 import subprocess
 import ROOT
+from MaterialScanner_Parser import parse_materialscanner_output
 
 # define the input parameters
 
@@ -338,54 +339,37 @@ except subprocess.TimeoutExpired:
 iscan = 1
 inScan = False
 iDir = 0
-for line in result.stdout.splitlines():
-    if 'Material scan between' in line:
-        gg = line.split(')')[0].split('(')[1].split(',')
-        startx = 10 * float(gg[0])  # convert cm -> mm
-        starty = 10 * float(gg[1])
-        startz = 10 * float(gg[2])
-        inScan = True
-        # check consistency with requested position.
-        # if a gun position outside the world volume is requested,
-        #  this can cause an inconsistency (it is started at 0,0,0)
-        pp = requestedStartPositions[iDir][iscan - 1].split()
-        rx = float(pp[0])
-        ry = float(pp[1])
-        rz = float(pp[2])
-        if abs(rx - startx) > 1. or abs(ry - starty) > 1. or abs(rz - startz) > 1.:
-            print('ERROR inconsistent starting gun position')
-            print('  REQUESTED:', pp)
-            print('  USED:', gg)
-            print('The requested range probably lies partially outside the world volume')
-            print('  use a more reasonable range and try again!')
-            exit(1)
-    elif 'Finished run' in line:
-        iscan += 1
-        if iscan == nBins + 1:   # now move to the second set of scans
-            iDir = 1
-            iscan = 1
-        inScan = False
-    elif r"+-----------------" in line:  # comment line
-        continue
-    elif r"|     \   Material" in line:  # comment line
-        continue
-    elif r"| Num. \  Name" in line:      # comment line
-        continue
-    elif r"| Layer \ " in line:          # comment line
-        continue
-    elif inScan and \
-         '(' in line and \
-         len(line.split('(')[0].split()) == 12 and \
-         line.split()[0] == '|':  # this line contains material information
-        index = int(line.split()[1])
-        material = line.split()[2]
-        radlen = 10 * float(line.split()[6])     # cm->mm
-        thickness = 10 * float(line.split()[8])  # cm->mm
-        endpos = line.split('(')[1].split(')')[0].split(',')
-        endx = 10 * float(endpos[0])             # cm -> mm
-        endy = 10 * float(endpos[1])
-        endz = 10 * float(endpos[2])
-        mats[iDir][iscan][index] = [material, radlen, thickness, endx, endy, endz]
+for event in parse_materialscanner_output(result.stdout.splitlines()):
+    gg = event.start_cm
+    startx, starty, startz = (10 * v for v in gg)  # convert cm -> mm
+
+    # check consistency with requested position.
+    # if a gun position outside the world volume is requested,
+    #  this can cause an inconsistency (it is started at 0,0,0)
+    pp = requestedStartPositions[iDir][iscan - 1].split()
+    rx, ry, rz = float(pp[0]), float(pp[1]), float(pp[2])
+    if abs(rx - startx) > 1. or abs(ry - starty) > 1. or abs(rz - startz) > 1.:
+        print('ERROR inconsistent starting gun position')
+        print('  REQUESTED:', pp)
+        print('  USED:', gg)
+        print('The requested range probably lies partially outside the world volume')
+        print('  use a more reasonable range and try again!')
+        exit(1)
+
+    for step in event.steps:
+        endx, endy, endz = (10 * v for v in step.endpoint_cm)  # cm -> mm
+        mats[iDir][iscan][step.index] = [
+            step.name,
+            10 * step.x0_cm,         # cm->mm
+            10 * step.thickness_cm,  # cm->mm
+            endx, endy, endz,
+        ]
+
+    iscan += 1
+    if iscan == nBins + 1:  # now move to the second set of scans
+        iDir = 1
+        iscan = 1
+
 #
 # now all data is collected: fill the histograms
 #

@@ -34,6 +34,9 @@ from collections import defaultdict
 import threading
 import textwrap
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from MaterialScanner_Parser import parse_materialscanner_output
+
 parser = argparse.ArgumentParser(
     formatter_class=argparse.RawTextHelpFormatter,
     description=textwrap.dedent("""\
@@ -553,48 +556,31 @@ def run_ddsim_progress(timeout, n_events):
         raw_file = open(raw_data_path, "w")
         raw_file.write("# angle_value mat_name x0 lambda depth_mm\n")
 
-    for line in proc.stdout:
-        if "+++ Initializing event" in line:
-            if args.progressBar:
+    for event in parse_materialscanner_output(proc.stdout):
+        if args.progressBar:
+            if progress_bar is None:
                 from tqdm import tqdm
-                if progress_bar is None:
-                    # start progress bar only once the first event starts,
-                    # to avoid counting Geant4 initialisation time in progress bar
-                    print("  Initialisation complete, scanning...", flush=True)
-                    progress_bar = tqdm(total=n_events, unit="evt", desc="  ddsim")
-                progress_bar.update(1)
+                # start progress bar only once the first event starts,
+                # to avoid counting Geant4 initialisation time in progress bar
+                print("  Initialisation complete, scanning...", flush=True)
+                progress_bar = tqdm(total=n_events, unit="evt", desc="  ddsim")
+            progress_bar.update(1)
 
-        if "Material scan between" in line:
-            # Get the geantino direction
-            m = direction_re.search(line)
-            if m:
-                dx, dy, dz = (float(v) for v in m.groups())
-                norm = math.sqrt(dx**2 + dy**2 + dz**2)
-                current_direction = (dx / norm, dy / norm, dz / norm)
-            in_scan = True
+        if event.direction is None:
+            continue
 
-            # accumulate thicknesses per material for this event
-            mat_dict = defaultdict(list)
+        dx, dy, dz = event.direction
+        angle_value = direction_to_angleDef(dx, dy, dz, angleDef)
+        ib = find_bin(angle_value, minValue, actual_binning, nBins)
+        if ib is None:
+            warning_list.append(f"WARNING: angle value {angle_value} out of range, skipping")
+            continue
 
-        elif (
-            in_scan and "(" in line and len(line.split("(")[0].split()) == 12 and line.split()[0] == "|"
-            ):  # this line contains material information
-            parts = line.split()
-            try:
-                int(parts[1])  # first token after '|' should be a step index
-            except ValueError:
-                continue  # skip header/separator lines
-            try:
-                x0_cm = float(parts[6])
-                li_cm = float(parts[7])
-                thick_cm = float(parts[8])
-            except (ValueError, IndexError):
-                continue
-            if x0_cm <= 0.0 or li_cm <= 0.0 or thick_cm <= 0.0:
-                continue
-
+        # accumulate thicknesses per material for this event
+        mat_dict = {}
+        for step in event.steps:
             # Remove any substrings from the material name as requested by the user
-            original_name = parts[2]
+            original_name = step.name
             mat_name = original_name
             for substring in args.removeMatsSubstrings:
                 mat_name = mat_name.replace(substring, "")
@@ -604,39 +590,27 @@ def run_ddsim_progress(timeout, n_events):
             if mat_name not in args.ignoreMats:
                 if mat_name not in mat_dict:
                     mat_dict[mat_name] = [0, 0, 0]
-
                 # compute the thicknesses in units of radiation lengths and interaction lengths
                 # mat_dict accumulates for one event the information of each step
-                mat_dict[mat_name][0] += thick_cm / x0_cm
-                mat_dict[mat_name][1] += thick_cm / li_cm
-                mat_dict[mat_name][2] += thick_cm * 10.0
+                mat_dict[mat_name][0] += step.thickness_cm / step.x0_cm
+                mat_dict[mat_name][1] += step.thickness_cm / step.li_cm
+                mat_dict[mat_name][2] += step.thickness_cm * 10.0
 
-        elif ("Initializing event" in line or "Finished run" in line) and in_scan and current_direction is not None:
-            dx, dy, dz = current_direction
-            angle_value = direction_to_angleDef(dx, dy, dz, angleDef)
-            ib = find_bin(angle_value, minValue, actual_binning, nBins)
-            if ib is None:
-                warning_list.append(f"WARNING: angle value {angle_value} out of range for binning, skipping event")
+        bin_counts[ib] += 1
+        for mat, sums in mat_dict.items():
+            if mat in args.ignoreMats:
                 continue
 
-            bin_counts[ib] += 1
+            # bin_data[ib][mat] accumulates for one bin the sums of x0, li, and depth_mm across events
+            if mat not in bin_data[ib]:
+                bin_data[ib][mat] = [0.0, 0.0, 0.0]
+            bin_data[ib][mat][0] += sums[0]
+            bin_data[ib][mat][1] += sums[1]
+            bin_data[ib][mat][2] += sums[2]
 
-            for mat, sums in mat_dict.items():
-                if mat in args.ignoreMats:
-                    continue
-                if mat not in bin_data[ib]:
-                    bin_data[ib][mat] = [0.0, 0.0, 0.0]
-                # bin_data[ib][mat] accumulates for one bin the sums of x0, li, and depth_mm across events
-                bin_data[ib][mat][0] += sums[0]
-                bin_data[ib][mat][1] += sums[1]
-                bin_data[ib][mat][2] += sums[2]
-
-                # if requested, write out the unbinned raw data to a text file for debugging/inspection
-                if raw_file is not None:
-                    raw_file.write(f"{angle_value:.6f} {mat} {sums[0]:.6f} {sums[1]:.6f} {sums[2]:.6f}\n")
-
-            current_direction = None
-            in_scan = False
+            # if requested, write out the unbinned raw data to a text file for debugging/inspection
+            if raw_file is not None:
+                raw_file.write(f"{angle_value:.6f} {mat} {sums[0]:.6f} {sums[1]:.6f} {sums[2]:.6f}\n")
 
     if raw_file is not None:
         raw_file.close()
