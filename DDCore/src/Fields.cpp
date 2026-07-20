@@ -28,6 +28,9 @@ namespace {
   void calculate_combined_field(std::vector<CartesianField>& v, const Position& pos, double* field) {
     for (const auto& i : v ) i.value(pos, field);
   }
+  void calculate_combined_field(std::vector<CartesianField>& v, const double* pos, double* field) {
+    for (const auto& i : v ) i.value(pos, field);
+  }
 }
 
 /// Default constructor
@@ -138,6 +141,12 @@ void OverlayedField::add(CartesianField field) {
 
 /// Returns the 3  magnetic field components (x, y, z).
 void OverlayedField::magneticField(const Position& pos, double* field) const   {
+  const double position[3] = {pos.X(), pos.Y(), pos.Z()};
+  magneticField(position, field);
+}
+
+/// Returns the 3 magnetic field components (x, y, z).
+void OverlayedField::magneticField(const double* pos, double* field) const   {
   if ( isValid() )   {
     field[0] = field[1] = field[2] = 0.0;
     auto* obj = data<Object>();

@@ -59,10 +59,10 @@ void SolenoidField::fieldComponents(const double* pos, double* field) {
   double z = pos[2] ;
   //  std::cout << " field z=" << z << " maxZ=" << maxZ << " minZ = " << minZ << std::endl ;
   if( z > minZ && z < maxZ ){
-    double radius = std::sqrt(pos[0] * pos[0] + pos[1] * pos[1]);
-    if (radius < innerRadius)
+    const double radius2 = pos[0] * pos[0] + pos[1] * pos[1];
+    if (radius2 < innerRadius * innerRadius)
       field[2] += innerField;
-    else if (radius < outerRadius)
+    else if (radius2 < outerRadius * outerRadius)
       field[2] += outerField;
   }
 }

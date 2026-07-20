@@ -24,8 +24,8 @@ G4bool Geant4Field::DoesFieldChangeEnergy() const {
 }
 
 void Geant4Field::GetFieldValue(const double pos[4], double *field) const {
-  static const double fac1 = units::mm/CLHEP::mm;
-  static const double fac2 = CLHEP::tesla/units::tesla;
+  static constexpr double fac1 = units::mm/CLHEP::mm;
+  static constexpr double fac2 = CLHEP::tesla/units::tesla;
   double p[3] = {pos[0]*fac1, pos[1]*fac1, pos[2]*fac1}; // Convert from CLHEP units to tgeo units
   field[0] = field[1] = field[2] = 0.0;                  // Reset field vector
   m_field.magneticField(p, field);
