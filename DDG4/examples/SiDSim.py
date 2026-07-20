@@ -54,7 +54,7 @@ def run():
   kernel.loadGeometry(str("file:" + install_dir + "/DDDetectors/compact/SiD.xml"))
 
   if args.smartless:
-    description.worldVolume().setSmartlessValue(int(args.smartless))
+    description.worldVolume().setSmartlessValue(float(args.smartless))
   DDG4.importConstants(description)
 
   geant4 = DDG4.Geant4(kernel, tracker='Geant4TrackerCombineAction')

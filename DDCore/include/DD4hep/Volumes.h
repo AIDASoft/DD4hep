@@ -321,7 +321,7 @@ namespace dd4hep {
     /// Reference to properties
     TList* properties  { nullptr };
     /// Geant4 optimization flag: Smartless
-    unsigned char       smartLess  = 0xFF;  // MUST match Volume::NO_SMARTLESS_OPTIMIZATION
+    double              smartLess  = 0xFF;  // MUST match Volume::NO_SMARTLESS_OPTIMIZATION
 
     /// Default destructor
     virtual ~VolumeExtension();
@@ -646,9 +646,8 @@ namespace dd4hep {
     bool isAssembly()   const;
 
     /// Set the smartless option for G4 voxelization. Returns previous value
-    unsigned char setSmartlessValue(unsigned char value);
     /// access the smartless option for G4 voxelization
-    unsigned char smartlessValue()  const;
+    double smartlessValue()  const;
     
     /// Set the volume's option value
     const Volume& setOption(const std::string& opt) const;

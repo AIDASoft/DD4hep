@@ -725,15 +725,15 @@ bool Volume::isAssembly()   const   {
 }    
 
 /// Set the smartless option for G4 voxelization. Returns previous value
-unsigned char Volume::setSmartlessValue(unsigned char new_value)  {
+double Volume::setSmartlessValue(double new_value)  {
   Object* obj = _data(*this);
-  unsigned char tmp = obj->smartLess;
+  double tmp = obj->smartLess;
   obj->smartLess = new_value;
   return tmp;
 }
 
 /// access the smartless option for G4 voxelization
-unsigned char Volume::smartlessValue()  const  {
+double Volume::smartlessValue()  const  {
   return _data(*this)->smartLess;
 }
 

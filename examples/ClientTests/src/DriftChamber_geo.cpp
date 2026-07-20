@@ -56,8 +56,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
   /// The Geant4 voxelization change must be applied to the parent volume
   if ( x_dim.hasAttr(_U(option)) )  {
-    int value = x_dim.attr<int>(_U(option));
-    printout(ALWAYS, "DriftChamber", "+++ Setting smartlessValue to %d for %s",
+    double value = x_dim.attr<double>(_U(option));
+    printout(ALWAYS, "DriftChamber", "+++ Setting smartlessValue to %g for %s",
              value, sdet_vol.name());
     sdet_vol.setSmartlessValue(value);
   }
