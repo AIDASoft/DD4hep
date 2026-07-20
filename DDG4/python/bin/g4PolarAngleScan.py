@@ -24,7 +24,6 @@ in terms of configurable options.
 
 import os
 import sys
-import re
 import argparse
 import subprocess
 import math
@@ -499,19 +498,6 @@ def run_ddsim(timeout):
 
 
 # ddsims call for the main run, with progress bar and parsing of output
-# The MaterialScanner prints one block per event. Example block:
-#
-#  +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
-#  + Material scan between: x_0 = (   0.00,   0.00,   0.00) [cm] and x_1 = (-1525.80, 265.01,2500.00) [cm]  TrackID:1: # # noqa: E501
-#  +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
-#  |     \   Material           Atomic                 Radiation   Interaction               Path   Integrated  Integrated    Material # noqa: E501
-#  | Num. \  Name          Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint # noqa: E501
-#  | Layer \                        [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm) # noqa: E501
-#  +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
-#  |     1 Air                    7   14.784   0.0012  30528.8402   71282.7920     66.425    66.43    0.002176    0.000932  ( -34.46,   5.99,  56.47) # noqa: E501
-#  |     2 CarbonFibStr           4    8.127   1.4500     33.2316      37.9830      0.038    66.46    0.003319    0.001932  ( -34.48,   5.99,  56.50) # noqa: E501
-#  ...
-# GenerationInit   WARN  +++ Finished run 1 after ...
 def run_ddsim_progress(timeout, n_events):
 
     cmd = build_ddsim_cmd(with_stdbuf=True)
@@ -531,14 +517,7 @@ def run_ddsim_progress(timeout, n_events):
     watchdog.start()
 
     progress_bar = None
-    print("  Waiting for Geant4 initialisation...", flush=True)
-
-    # get direction of the geantino from the MaterialScanner output line
-    direction_re = re.compile(
-        r"Material\sscan\sbetween\:.*x_1\s*=\s*\(\s*([-\d.]+),\s*([-\d.]+),\s*([-\d.]+)\)"
-        )
-    current_direction = None
-    in_scan = False
+    print("  Starting the initialisation and scan...", flush=True)
 
     bin_data = [{} for _ in range(nBins)]
     bin_counts = [0] * nBins  # count actual events per bin
