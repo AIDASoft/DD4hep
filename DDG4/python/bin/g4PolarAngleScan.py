@@ -44,7 +44,8 @@ parser = argparse.ArgumentParser(
 
         The scan shoots geantinos in random directions, parses the ddsim output,
         and saves THStacks of material depth, radiation length,
-        and interaction length vs angle to a ROOT file, PDF, and PNG.
+        and interaction length vs angle to a ROOT file and by default
+        exports to PDF and PNG (configurable).
         Due to the random nature of the ddsim particle gun, a fixed number
         of events per bin cannot be guaranteed. It is recommended to set the target
         value for the number of events per bin large enough to not be affected
@@ -205,6 +206,15 @@ parser.add_argument(
     dest="progressBar",
     default=False,
     help="show a progress bar for the main ddsim run (requires tqdm)",
+    )
+
+parser.add_argument(
+    "--suppressPlotExport",
+    "-e",
+    action="store_true",
+    dest="suppressPlotExport",
+    default=False,
+    help="suppress the export of plots to PDF and PNG (only save the ROOT file)",
     )
 
 args = parser.parse_args()
@@ -752,11 +762,13 @@ def draw_canvas(stack, canvas_name, title):
     # leg.AddEntry(total, 'Total', 'l')
     leg.Draw()
 
-    export_name = str(args.output)
-    if export_name.endswith(".root"):
-        export_name = export_name[: -len(".root")]
-    c.Print(export_name + "_" + canvas_name + ".pdf")
-    c.Print(export_name + "_" + canvas_name + ".png")
+    if not args.suppressPlotExport:
+        export_name = str(args.output)
+        # remove .root extension if present
+        if export_name.endswith(".root"):
+            export_name = export_name[: -len(".root")]
+        c.Print(export_name + "_" + canvas_name + ".pdf")
+        c.Print(export_name + "_" + canvas_name + ".png")
     c.Write()
 
 
