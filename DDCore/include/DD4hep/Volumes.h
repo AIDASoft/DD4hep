@@ -646,6 +646,7 @@ namespace dd4hep {
     bool isAssembly()   const;
 
     /// Set the smartless option for G4 voxelization. Returns previous value
+    double setSmartlessValue(double value);
     /// access the smartless option for G4 voxelization
     double smartlessValue()  const;
     
