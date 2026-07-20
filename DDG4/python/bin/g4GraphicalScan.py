@@ -363,7 +363,7 @@ for event in parse_materialscanner_output(result.stdout.splitlines()):
             10 * step.x0_cm,         # cm->mm
             10 * step.thickness_cm,  # cm->mm
             endx, endy, endz,
-        ]
+            ]
 
     iscan += 1
     if iscan == nBins + 1:  # now move to the second set of scans

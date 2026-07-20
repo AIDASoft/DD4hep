@@ -34,7 +34,7 @@ import threading
 import textwrap
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from MaterialScanner_Parser import parse_materialscanner_output
+from MaterialScanner_Parser import parse_materialscanner_output  # noqa: E402
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.RawTextHelpFormatter,
