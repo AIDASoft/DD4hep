@@ -32,9 +32,7 @@ import ROOT
 from collections import defaultdict
 import threading
 import textwrap
-
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from MaterialScanner_Parser import parse_materialscanner_output  # noqa: E402
+from MaterialScanner_Parser import parse_materialscanner_output
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.RawTextHelpFormatter,
