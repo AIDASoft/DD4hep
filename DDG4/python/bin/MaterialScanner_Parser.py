@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 from typing import Iterator, Optional
 
 
-# The MaterialScanner prints one block per event. Example block (the noqa: E501 comments are to avoid line length warnings in flake8):
+# The MaterialScanner prints one block per event. Example: (noqa: E501 comments to avoid flake8 line length warnings)
 #   +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
 #   + Material scan between: x_0 = (   0.00,   0.00,   0.00) [cm] and x_1 = (-1525.80, 265.01,2500.00) [cm]  TrackID:1: # # noqa: E501
 #   +-------------------------------------------------------------------------------------------------------------------------------------------------- # noqa: E501
@@ -38,24 +38,24 @@ from typing import Iterator, Optional
 # Matches the "Material scan between" line, extracting x_1 endpoint
 END_RE = re.compile(
     r"Material scan between:.*x_1\s*=\s*\(\s*([-\d.]+),\s*([-\d.]+),\s*([-\d.]+)\)"
-)
+    )
 
 # Matches the "Material scan between" line, extracting x_0 start point
 START_RE = re.compile(
     r"Material scan between:\s*x_0\s*=\s*\(\s*([-\d.]+),\s*([-\d.]+),\s*([-\d.]+)\)"
-)
+    )
 
 
 @dataclass
 class MaterialStep:
     """One material layer (one line) as reported by the MaterialScanner."""
     index: int
-    name: str             # name of the material
-    x0_cm: float          # radiation length of material [cm]
-    li_cm: float          # interaction length of material [cm]
-    thickness_cm: float   # traversed thickness in this layer [cm]
-    path_length_cm: float # integrated path length [cm]
-    endpoint_cm: tuple    # (x, y, z) endpoint [cm]
+    name: str              # name of the material
+    x0_cm: float           # radiation length of material [cm]
+    li_cm: float           # interaction length of material [cm]
+    thickness_cm: float    # traversed thickness in this layer [cm]
+    path_length_cm: float  # integrated path length [cm]
+    endpoint_cm: tuple     # (x, y, z) endpoint [cm]
 
 
 @dataclass
@@ -105,15 +105,12 @@ def parse_materialscanner_output(lines: Iterator[str]) -> Iterator[ScanEvent]:
                 start_cm=start_cm,
                 end_cm=end_cm,
                 direction=direction,
-            )
+                )
             in_scan = True
 
         elif (
-            in_scan
-            and "(" in line
-            and len(line.split("(")[0].split()) == 12
-            and line.split()[0] == "|"
-        ):  # this line contains material information
+            in_scan and "(" in line and len(line.split("(")[0].split()) == 12 and line.split()[0] == "|"
+            ):  # this line contains material information
             parts = line.split()
 
             try:
@@ -122,11 +119,11 @@ def parse_materialscanner_output(lines: Iterator[str]) -> Iterator[ScanEvent]:
                 continue  # skip header/separator lines
 
             try:
-                x0_cm    = float(parts[6])
-                li_cm    = float(parts[7])
+                x0_cm = float(parts[6])
+                li_cm = float(parts[7])
                 thick_cm = float(parts[8])
-                path_cm  = float(parts[9])
-                endpos   = line.split("(")[1].split(")")[0].split(",")
+                path_cm = float(parts[9])
+                endpos = line.split("(")[1].split(")")[0].split(",")
                 endpoint = tuple(float(v) for v in endpos)
             except (ValueError, IndexError):
                 continue
@@ -135,14 +132,14 @@ def parse_materialscanner_output(lines: Iterator[str]) -> Iterator[ScanEvent]:
                 continue
 
             current_event.steps.append(MaterialStep(
-                index        = index,
-                name         = parts[2],
-                x0_cm        = x0_cm,
-                li_cm        = li_cm,
-                thickness_cm = thick_cm,
-                path_length_cm = path_cm,
-                endpoint_cm  = endpoint,
-            ))
+                index=index,
+                name=parts[2],
+                x0_cm=x0_cm,
+                li_cm=li_cm,
+                thickness_cm=thick_cm,
+                path_length_cm=path_cm,
+                endpoint_cm=endpoint,
+                ))
 
         elif "Finished run" in line or "Initializing event" in line:
             if in_scan and current_event is not None:
