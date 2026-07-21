@@ -181,6 +181,11 @@ if (DD4HEP_USE_GEANT4)
   endif()
 
   #---Multi-threading tests---------------------------------------------------------
+  # disable tests for geant4 version 10.7
+  set(disable_mt_tests FALSE)
+  if(Geant4_VERSION VERSION_LESS 11.0)
+    set(disable_mt_tests TRUE)
+  endif()
 
   add_test(NAME t_ddsim_gun_mt1
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
@@ -197,6 +202,7 @@ if (DD4HEP_USE_GEANT4)
   set_tests_properties(t_ddsim_gun_mt1 PROPERTIES
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 1 threads"
+    DISBALE ${disable_mt_tests}
     LABELS "gun;singlethread")
 
   add_test(NAME t_ddsim_gun_mt2
@@ -215,6 +221,7 @@ if (DD4HEP_USE_GEANT4)
     PROCESSORS 2
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 2 threads"
+    DISBALE ${disable_mt_tests}
     LABELS "gun;multithread")
 
   add_test(NAME t_ddsim_gun_mt4
@@ -233,6 +240,7 @@ if (DD4HEP_USE_GEANT4)
     PROCESSORS 4
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 4 threads"
+    DISBALE ${disable_mt_tests}
     LABELS "gun;multithread")
 
   add_test(NAME t_ddsim_gun_mt1_mt2_compare
