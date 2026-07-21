@@ -12,6 +12,9 @@
 //
 //==========================================================================
 
+#include "G4ReflectionFactory.hh"
+#include "G4LogicalVolume.hh"
+
 // Framework include files
 #include <DDG4/Geant4DetectorConstruction.h>
 
@@ -80,6 +83,7 @@ Geant4DetectorSensitivesConstruction::~Geant4DetectorSensitivesConstruction() {
 
 /// Sensitive detector construction callback. Called at "ConstructSDandField()"
 void Geant4DetectorSensitivesConstruction::constructSensitives(Geant4DetectorConstructionContext* ctxt)   {
+  G4ReflectionFactory* reflFactory = G4ReflectionFactory::Instance();
   Geant4GeometryInfo* p = Geant4Mapping::instance().ptr();
   const Geant4Kernel& kernel = context()->kernel();
   const auto&         types  = kernel.sensitiveDetectorTypes();
@@ -97,6 +101,11 @@ void Geant4DetectorSensitivesConstruction::constructSensitives(Geant4DetectorCon
                nam.c_str(), typ.c_str());
       }
       ctxt->setSensitiveDetector(g4v, g4sd);
+      //logical volume has a reflected counterpart
+      if(reflFactory->IsConstituent(g4v)) {
+        auto* g4refl = reflFactory->GetReflectedLV(g4v);
+        ctxt->setSensitiveDetector(g4refl, g4sd);
+      }
     }
   }
   print("+++ Handled %ld sensitive detectors.",p->sensitives.size());
