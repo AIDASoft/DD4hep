@@ -202,7 +202,7 @@ if (DD4HEP_USE_GEANT4)
   set_tests_properties(t_ddsim_gun_mt1 PROPERTIES
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 1 threads"
-    DISBALE ${disable_mt_tests}
+    DISABLE ${disable_mt_tests}
     LABELS "gun;singlethread")
 
   add_test(NAME t_ddsim_gun_mt2
@@ -221,7 +221,7 @@ if (DD4HEP_USE_GEANT4)
     PROCESSORS 2
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 2 threads"
-    DISBALE ${disable_mt_tests}
+    DISABLE ${disable_mt_tests}
     LABELS "gun;multithread")
 
   add_test(NAME t_ddsim_gun_mt4
@@ -240,7 +240,7 @@ if (DD4HEP_USE_GEANT4)
     PROCESSORS 4
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 4 threads"
-    DISBALE ${disable_mt_tests}
+    DISABLE ${disable_mt_tests}
     LABELS "gun;multithread")
 
   add_test(NAME t_ddsim_gun_mt1_mt2_compare
