@@ -27,7 +27,7 @@ jobs:
               "dev3/x86_64-el9-clang22-opt",
               "dev3/x86_64-el9-gcc15-dbg"]
     steps:
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
     - uses: cvmfs-contrib/github-action-cvmfs@10197e000cc0add8e54ac4fb73d3ed44e2de72b4
     - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
       with:
@@ -139,7 +139,7 @@ jobs:
       matrix:
         view-path: ["/cvmfs/sw-nightlies.hsf.org/key4hep/"]
     steps:
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
     - uses: cvmfs-contrib/github-action-cvmfs@10197e000cc0add8e54ac4fb73d3ed44e2de72b4
     - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
       with:
@@ -203,7 +203,7 @@ jobs:
       matrix:
         LCG: ["LCG_107a/x86_64-el9-gcc13-opt"]
     steps:
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
     - uses: cvmfs-contrib/github-action-cvmfs@10197e000cc0add8e54ac4fb73d3ed44e2de72b4
     - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
       with:
@@ -232,7 +232,7 @@ jobs:
       matrix:
         LCG: ["dev3/x86_64-el9-gcc13-opt"]
     steps:
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
     - uses: cvmfs-contrib/github-action-cvmfs@10197e000cc0add8e54ac4fb73d3ed44e2de72b4
     - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
       with:
