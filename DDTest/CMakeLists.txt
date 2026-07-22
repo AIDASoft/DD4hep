@@ -202,7 +202,7 @@ if (DD4HEP_USE_GEANT4)
   set_tests_properties(t_ddsim_gun_mt1 PROPERTIES
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 1 threads"
-    DISABLE ${disable_mt_tests}
+    DISABLED ${disable_mt_tests}
     LABELS "gun;singlethread")
 
   add_test(NAME t_ddsim_gun_mt2
@@ -221,7 +221,7 @@ if (DD4HEP_USE_GEANT4)
     PROCESSORS 2
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 2 threads"
-    DISABLE ${disable_mt_tests}
+    DISABLED ${disable_mt_tests}
     LABELS "gun;multithread")
 
   add_test(NAME t_ddsim_gun_mt4
@@ -240,7 +240,7 @@ if (DD4HEP_USE_GEANT4)
     PROCESSORS 4
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 4 threads"
-    DISABLE ${disable_mt_tests}
+    DISABLED ${disable_mt_tests}
     LABELS "gun;multithread")
 
   add_test(NAME t_ddsim_gun_mt1_mt2_compare
@@ -248,6 +248,7 @@ if (DD4HEP_USE_GEANT4)
             gun_mt1.root gun_mt2.root --tolerance=1e-9)
   set_tests_properties(t_ddsim_gun_mt1_mt2_compare PROPERTIES
     DEPENDS "t_ddsim_gun_mt1;t_ddsim_gun_mt2"
+    DISABLED ${disable_mt_tests}
     LABELS "comparison;gun")
 
   add_test(NAME t_ddsim_gun_mt2_mt4_compare
@@ -255,6 +256,7 @@ if (DD4HEP_USE_GEANT4)
             gun_mt2.root gun_mt4.root --tolerance=1e-9)
   set_tests_properties(t_ddsim_gun_mt2_mt4_compare PROPERTIES
     DEPENDS "t_ddsim_gun_mt2;t_ddsim_gun_mt4"
+    DISABLED ${disable_mt_tests}
     LABELS "comparison;gun;mt")
 
   if(DD4HEP_USE_HEPMC3)
@@ -269,6 +271,7 @@ if (DD4HEP_USE_GEANT4)
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_hepmc_mt1 PROPERTIES
       TIMEOUT 3000 # 50 minutes (default is 25 minutes)
+      DISABLED ${disable_mt_tests}
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
     add_test(NAME t_ddsim_hepmc_mt2
@@ -281,6 +284,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_hepmc_mt2 PROPERTIES
+      DISABLED ${disable_mt_tests}
       PROCESSORS 2
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
@@ -294,6 +298,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_hepmc_mt4 PROPERTIES
+      DISABLED ${disable_mt_tests}
       PROCESSORS 4
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
@@ -301,6 +306,7 @@ if (DD4HEP_USE_GEANT4)
       COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
               hepmc_mt1.root hepmc_mt2.root --tolerance=1e-9)
     set_tests_properties(t_ddsim_hepmc_mt1_mt2_compare PROPERTIES
+      DISABLED ${disable_mt_tests}
       DEPENDS "t_ddsim_hepmc_mt1;t_ddsim_hepmc_mt2"
       LABELS "comparison;mt")
 
@@ -308,6 +314,7 @@ if (DD4HEP_USE_GEANT4)
       COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
               hepmc_mt2.root hepmc_mt4.root --tolerance=1e-9)
     set_tests_properties(t_ddsim_hepmc_mt2_mt4_compare PROPERTIES
+      DISABLED ${disable_mt_tests}
       DEPENDS "t_ddsim_hepmc_mt2;t_ddsim_hepmc_mt4"
       LABELS "comparison;mt")
   endif()
