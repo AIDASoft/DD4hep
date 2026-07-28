@@ -95,29 +95,29 @@ namespace dd4hep {
         Geant4RegionSelectiveHepEmTrackingManager(bool trackInAllRegions,
                                                   std::unordered_set<G4int> hepEmRegionIDs,
                                                   G4int verbose)
-          : fTrackInAllRegions(trackInAllRegions)
-          , fHepEmRegionIDs(std::move(hepEmRegionIDs))
-          , fHepEmTrackingManager(new G4HepEmTrackingManager(verbose)) {}
+          : m_trackInAllRegions(trackInAllRegions)
+          , m_hepEmRegionIDs(std::move(hepEmRegionIDs))
+          , m_hepEmTrackingManager(new G4HepEmTrackingManager(verbose)) {}
 
         virtual ~Geant4RegionSelectiveHepEmTrackingManager() = default;
 
-        G4HepEmConfig* GetConfig() { return fHepEmTrackingManager->GetConfig(); }
+        G4HepEmConfig* GetConfig() { return m_hepEmTrackingManager->GetConfig(); }
 
         void BuildPhysicsTable(const G4ParticleDefinition& part) override {
-          fHepEmTrackingManager->BuildPhysicsTable(part);
+          m_hepEmTrackingManager->BuildPhysicsTable(part);
         }
 
         void PreparePhysicsTable(const G4ParticleDefinition& part) override {
-          fHepEmTrackingManager->PreparePhysicsTable(part);
+          m_hepEmTrackingManager->PreparePhysicsTable(part);
         }
 
         void FlushEvent() override {
-          fHepEmTrackingManager->FlushEvent();
+          m_hepEmTrackingManager->FlushEvent();
         }
 
         void HandOverOneTrack(G4Track* aTrack) override {
           if (useHepEm(aTrack)) {
-            fHepEmTrackingManager->HandOverOneTrack(aTrack);
+            m_hepEmTrackingManager->HandOverOneTrack(aTrack);
             return;
           }
           trackWithGeant4(aTrack);
@@ -125,7 +125,7 @@ namespace dd4hep {
 
       private:
         bool useHepEm(const G4Track* aTrack) const {
-          if (fTrackInAllRegions) {
+          if (m_trackInAllRegions) {
             return true;
           }
           const G4VPhysicalVolume* volume = aTrack->GetVolume();
@@ -143,7 +143,7 @@ namespace dd4hep {
           if (region == nullptr) {
             return false;
           }
-          return fHepEmRegionIDs.find(region->GetInstanceID()) != fHepEmRegionIDs.end();
+          return m_hepEmRegionIDs.find(region->GetInstanceID()) != m_hepEmRegionIDs.end();
         }
 
         void trackWithGeant4(G4Track* track) {
@@ -197,9 +197,9 @@ namespace dd4hep {
           }
         }
 
-        bool fTrackInAllRegions;
-        std::unordered_set<G4int> fHepEmRegionIDs;
-        std::unique_ptr<G4HepEmTrackingManager> fHepEmTrackingManager;
+        bool m_trackInAllRegions;
+        std::unordered_set<G4int> m_hepEmRegionIDs;
+        std::unique_ptr<G4HepEmTrackingManager> m_hepEmTrackingManager;
       };
 
     }  // namespace
