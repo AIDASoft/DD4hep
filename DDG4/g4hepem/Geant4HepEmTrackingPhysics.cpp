@@ -147,6 +147,11 @@ namespace dd4hep {
         }
 
         void trackWithGeant4(G4Track* track) {
+          // We are inside a custom G4VTrackingManager::HandOverOneTrack() path here,
+          // but with track hand-off to Geant4 after all (since not in a HepEm region).
+          // In this path, G4EventManager does not execute its normal post-ProcessOneTrack()
+          // switch (see G4EventManager::DoProcessing, switch(istop) in the non-custom branch),
+          // so we must mirror that track-status/secondary/trajectory handling here.
           auto* eventManager = G4EventManager::GetEventManager();
           auto* trackManager = eventManager->GetTrackingManager();
           auto* stackManager = eventManager->GetStackManager();
