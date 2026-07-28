@@ -13,7 +13,7 @@
 Parser for the output of the Geant4MaterialScanner/MaterialScan.
 Used by g4GraphicalScan.py and g4PolarAngleScan.py to extract the material budget along a geantino track.
 In case of any updates to the output format of the scanner, only this file needs to be adapted.
-This is a pure parser, how the infromation is used differs between g4GraphicalScan and g4PolarAngleScan.
+This is a pure parser, how the information is used differs between g4GraphicalScan and g4PolarAngleScan.
 """
 
 import re
