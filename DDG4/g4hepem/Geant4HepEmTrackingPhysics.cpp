@@ -153,12 +153,12 @@ namespace dd4hep {
 
           trackManager->ProcessOneTrack(track);
 
-          G4TrackStatus istop = track->GetTrackStatus();
+          G4TrackStatus track_status = track->GetTrackStatus();
           G4VTrajectory* trajectory =
               trackManager->GetStoreTrajectory() == 0 ? nullptr : trackManager->GimmeTrajectory();
           G4TrackVector* secondaries = trackManager->GimmeSecondaries();
 
-          switch (istop) {
+          switch (track_status) {
           case fStopButAlive:
           case fSuspend:
           case fSuspendAndWait:
