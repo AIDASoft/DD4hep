@@ -841,8 +841,8 @@ void* Geant4Converter::handleVolume(const std::string& name, const TGeoVolume* v
     }
     PrintLevel plevel = (debugVolumes||debugRegions||debugLimits) ? ALWAYS : outputLevel;
     /// Set smartless optimization
-    double smart_less_value = _v.smartlessValue();
-    if( smart_less_value != Volume::NO_SMARTLESS_OPTIMIZATION )  {
+    auto smart_less_value = _v.smartlessValue();
+    if (smart_less_value != static_cast<decltype(smart_less_value)>(Volume::NO_SMARTLESS_OPTIMIZATION)) {
       printout(ALWAYS, "Geant4Converter",
                "++ Volume %s Set Smartless value to %g",
                vnam, smart_less_value);
