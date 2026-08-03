@@ -50,7 +50,7 @@ parser = argparse.ArgumentParser(
         by Poissonian fluctuations. Mitigated by the script slightly by using Halton sequence for gun.
 
         Example:
-          g4PolarAngleScan.py \\
+          g4PolarAngleScan \\
               -c myDetector.xml \\
               -o materialScan.root \\
               --angleDef theta --minValue 10 --maxValue 170 -b 2 \\
