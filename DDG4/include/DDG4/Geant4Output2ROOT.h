@@ -16,7 +16,9 @@
 // Framework include files
 #include <DDG4/Geant4OutputAction.h>
 
+#include <atomic>
 #include <memory>
+#include <mutex>
 
 class TFile;
 class TTree;
@@ -58,6 +60,10 @@ namespace dd4hep {
       bool m_handleMCTruth = true;
       /// Property: Flag to create a new output file for each run
       bool m_filesByRun = false;
+      /// Counter of worker endRun calls so that closeOutput fires only after all workers are done
+      std::atomic<int> m_endRunCount { 0 };
+      /// Static mutex to protect ROOT I/O operations in multi-threaded mode
+      static std::mutex s_rootMutex;
 
     public:
       /// Standard constructor
@@ -71,8 +77,13 @@ namespace dd4hep {
 
       /// Close current output file
       virtual void closeOutput();
+    private:
+      /// Close the current output file. Must be called with s_rootMutex held.
+      void closeOutputLocked();
       /// Callback to store the Geant4 run information
       void beginRun(const G4Run* run)  override;
+      /// Callback at end of run: write and close the output file while DDG4 is still alive
+      void endRun(const G4Run* run)  override;
       /// Callback to store each Geant4 hit collection
       void saveCollection(OutputContext<G4Event>& ctxt, G4VHitsCollection* collection)  override;
       /// Callback to store the Geant4 event

@@ -19,6 +19,7 @@
 #include <DD4hep/Printout.h>
 
 #include <DDG4/Geant4EventAction.h>
+#include <DDG4/Geant4StackingAction.h>
 #include <DDG4/Geant4Random.h>
 #include <DDG4/Factories.h>
 
@@ -27,6 +28,8 @@
 //Geant includes
 #include <G4Run.hh>
 #include <G4Event.hh>
+#include <G4EventManager.hh>
+#include <G4StackManager.hh>
 
 using namespace dd4hep::sim;
 
@@ -39,6 +42,8 @@ Geant4EventSeed::Geant4EventSeed(Geant4Context* c, const std::string& typ) : Gea
 {
   Geant4Action::runAction().callAtBegin(this,&Geant4EventSeed::begin);
   Geant4Action::eventAction().callAtBegin(this,&Geant4EventSeed::beginEvent);
+  // Re-seed after GeneratePrimaries so file-based generators' SetEventID is visible.
+  Geant4Action::stackingAction().callAtPrepare(this,&Geant4EventSeed::prepareEvent);
   InstanceCount::increment(this);
 }
 
@@ -78,6 +83,25 @@ void Geant4EventSeed::beginEvent(const G4Event* evt) {
   if ( dd4hep::printLevel() <= dd4hep::DEBUG ) {
     rndm->showStatus();
   }
+
+}
+
+/// prepare-stacking callback: re-seed after GeneratePrimaries using the final event ID
+void Geant4EventSeed::prepareEvent(G4StackManager* /* stackMgr */) {
+
+  const G4Event* evt = G4EventManager::GetEventManager()->GetConstCurrentEvent();
+  if ( !evt ) return;
+
+  Geant4Random *rndm = Geant4Random::instance();
+
+  unsigned int eventID = evt->GetEventID();
+  unsigned int newSeed = hash( m_initialSeed, eventID, m_runID );
+
+  dd4hep::printout( dd4hep::INFO, m_type,
+		    "At prepareEvent: eventID=%u, runID=%u initialSeed=%u, newSeed=%u",
+		    eventID, m_runID, m_initialSeed, newSeed );
+
+  rndm->setSeed( newSeed );
 
 }
 
