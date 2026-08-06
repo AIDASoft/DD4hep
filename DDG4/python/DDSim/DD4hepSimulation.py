@@ -368,7 +368,7 @@ class DD4hepSimulation(object):
       g4gun = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/Gun", shared=False)
       g4gun.Uses = 'G4ParticleGun'
       g4gun.Mask = 2
-      logger.info("++++ Adding Geant4 Particle Gun (non-shared for macro support) ++++")
+      logger.info("++++ Adding Geant4 Particle Gun ++++")
       actionList.append(g4gun)
       self._g4gun.append(g4gun)
 
@@ -378,7 +378,7 @@ class DD4hepSimulation(object):
       g4gps = DDG4.GeneratorAction(kernel, "Geant4GeneratorWrapper/GPS", shared=False)
       g4gps.Uses = 'G4GeneralParticleSource'
       g4gps.Mask = 3
-      logger.info("++++ Adding Geant4 General Particle Source (non-shared for macro support) ++++")
+      logger.info("++++ Adding Geant4 General Particle Source ++++")
       actionList.append(g4gps)
       self._g4gps.append(g4gps)
 
