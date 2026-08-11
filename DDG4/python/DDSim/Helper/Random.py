@@ -7,17 +7,18 @@ import threading
 
 logger = logging.getLogger(__name__)
 
-# Thread-local counter for Geant4Random naming in workers
-_random_counter = threading.local()
+# Global counter with lock for thread-safe unique ID generation for Geant4Random
+_random_counter = 0
+_random_counter_lock = threading.Lock()
 
 
 def _get_random_id():
-  """Get a unique ID for Geant4Random in this thread"""
-  if not hasattr(_random_counter, 'value'):
-    _random_counter.value = 0
-  else:
-    _random_counter.value += 1
-  return _random_counter.value
+  """Get a globally unique ID for Geant4Random across all threads"""
+  global _random_counter
+  with _random_counter_lock:
+    current_id = _random_counter
+    _random_counter += 1
+    return current_id
 
 
 class Random (ConfigHelper):
