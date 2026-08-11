@@ -63,10 +63,9 @@ class Geometry(ConfigHelper):
   def constructGeometry(self, kernel, geant4, geoPrintLevel=2):
     """Construct Geant4 geometry.
 
-    Adds Geant4DetectorGeometryConstruction with all debug/print flags and any
-    regex-based sensitive detector constructions.  The caller is responsible for
-    inserting Geant4DetectorSensitivesConstruction (and any intermediate steps
-    such as a Python sensitive-detector setup callback) into the sequence.
+    Adds Geant4DetectorGeometryConstruction with all debug/print flags.
+    The caller is responsible for inserting regex-based sensitive detector
+    constructions and Geant4DetectorSensitivesConstruction.
     """
     seq, act = geant4.addDetectorConstruction('Geant4DetectorGeometryConstruction/ConstructGeo')
     act.DebugMaterials = self.enableDebugMaterials
@@ -82,9 +81,3 @@ class Geometry(ConfigHelper):
     act.GeoInfoPrintLevel = geoPrintLevel
     act.DumpHierarchy = self.dumpHierarchy
     act.DumpGDML = self.dumpGDML
-
-    for index, (detName, regexDetectors) in enumerate(sorted(self._regexSDDict.items())):
-      seq, act = geant4.addDetectorConstruction(f'Geant4RegexSensitivesConstruction/ConstrSDRegEx_{index}_{detName}')
-      act.Detector = detName
-      for key, value in regexDetectors.items():
-        setattr(act, key, value)
