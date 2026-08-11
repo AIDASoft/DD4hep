@@ -509,6 +509,12 @@ class DD4hepSimulation(object):
     return 1
 
   def __setupMaster(self, geant4):
+    """Setup master thread in multi-threaded mode.
+
+    This is a placeholder callback for master-thread initialization.
+    Currently minimal as master setup is handled by the framework.
+    Future extensions may add master-specific configuration here.
+    """
     logger.debug("Setting up master")
     return 1
 
