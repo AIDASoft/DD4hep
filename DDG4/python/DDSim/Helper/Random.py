@@ -7,19 +7,8 @@ import threading
 
 logger = logging.getLogger(__name__)
 
-# Thread-local counter for EventSeeder naming
-_eventseed_counter = threading.local()
 # Thread-local counter for Geant4Random naming in workers
 _random_counter = threading.local()
-
-
-def _get_eventseed_id():
-  """Get a unique ID for EventSeeder in this thread"""
-  if not hasattr(_eventseed_counter, 'value'):
-    _eventseed_counter.value = 0
-  else:
-    _eventseed_counter.value += 1
-  return _eventseed_counter.value
 
 
 def _get_random_id():
