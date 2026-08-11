@@ -599,6 +599,13 @@ class DD4hepSimulation(object):
     logger.info("# Configure G4 sensitive detectors: atach'em to the sensitive volumes")
     seq, act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD")
 
+    # Configure regex-based sensitive detectors
+    for index, (detName, regexDetectors) in enumerate(sorted(self.geometry._regexSDDict.items())):
+      seq, act = geant4.addDetectorConstruction(f'Geant4RegexSensitivesConstruction/ConstrSDRegEx_{index}_{detName}')
+      act.Detector = detName
+      for key, value in regexDetectors.items():
+        setattr(act, key, value)
+
     # setup the magnetic field:
     logger.info("Setting magnetic field")
     self.__setMagneticFieldOptions(geant4)
