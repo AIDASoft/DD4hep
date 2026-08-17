@@ -54,6 +54,13 @@ namespace podio {
 #endif
 #endif
 
+#if defined(DD4HEP_USE_ARROW)
+#include <podio/utilities/ArrowFrameConverter.h>
+#include <arrow/api.h>
+#include <arrow/io/api.h>
+#include <arrow/ipc/api.h>
+#endif
+
 #include <atomic>
 
 /// Namespace for the AIDA detector description toolkit
@@ -100,6 +107,7 @@ namespace dd4hep {
       stringmap_t                   m_runParametersString;
       stringmap_t                   m_cellIDEncodingStrings{};
       std::string                   m_section_name      { "events" };
+      std::string                   m_outputBackend     { "root" };
       int                           m_runNo             { 0 };
       int                           m_runNumberOffset   { 0 };
       int                           m_eventNo           { 0 };
@@ -107,10 +115,28 @@ namespace dd4hep {
       bool                          m_filesByRun        { false };
       bool                          m_rntuple           { false };
 
+#if defined(DD4HEP_USE_ARROW)
+      std::shared_ptr<arrow::io::OutputStream> m_arrowStream { };
+      std::shared_ptr<arrow::ipc::RecordBatchWriter> m_arrowWriter { };
+      std::vector<std::string>      m_collectionsToWrite;
+#endif
+
       /// Data conversion interface for MC particles to EDM4hep format
       void saveParticles(Geant4ParticleMap* particles);
       /// Store the metadata frame with e.g. the cellID encoding strings
       void saveFileMetaData();
+      
+      /// Initialize ROOT backend writer
+      void initializeROOTBackend(const std::string& fname);
+      /// Commit event data to ROOT backend
+      void commitROOT(OutputContext<G4Event>& ctxt);
+      
+#if defined(DD4HEP_USE_ARROW)
+      /// Initialize Arrow backend writer
+      void initializeArrowBackend(const std::string& fname);
+      /// Commit event data to Arrow backend
+      void commitArrow(OutputContext<G4Event>& ctxt);
+#endif
     public:
       /// Standard constructor
       Geant4Output2EDM4hep(Geant4Context* ctxt, const std::string& nam);
@@ -275,6 +301,17 @@ Geant4Output2EDM4hep::Geant4Output2EDM4hep(Geant4Context* ctxt, const std::strin
   declareProperty("SectionName",           m_section_name);
   declareProperty("FilesByRun",            m_filesByRun);
   declareProperty("RNTuple",               m_rntuple);
+  declareProperty("OutputBackend",         m_outputBackend);
+#if defined(DD4HEP_USE_ARROW)
+  declareProperty("CollectionsToWrite",    m_collectionsToWrite);
+#endif
+
+  // Validate backend selection
+#ifndef DD4HEP_USE_ARROW
+  if (m_outputBackend == "arrow") {
+    fatal("+++ Arrow backend requested but DD4hep not built with Arrow support");
+  }
+#endif
 
   info("Writer is now instantiated ..." );
   InstanceCount::increment(this);
@@ -297,8 +334,31 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
       fname = m_output.substr(0, idx) + _toString(m_runNo, ".run%08d") + m_output.substr(idx);
     }
   }
-  // Create the file only when it has not yet beeen created in another thread
-  if ( !fname.empty() && !m_file )   {
+  
+  // Skip initialization if no output file specified
+  if ( fname.empty() ) {
+    m_fileUseCount++;
+    return;
+  }
+  
+  // Backend-specific initialization
+  if (m_outputBackend == "root") {
+    initializeROOTBackend(fname);
+  }
+#if defined(DD4HEP_USE_ARROW)
+  else if (m_outputBackend == "arrow") {
+    initializeArrowBackend(fname);
+  }
+#endif
+  else {
+    fatal("+++ Unknown output backend: %s", m_outputBackend.c_str());
+  }
+  
+  m_fileUseCount++;
+}
+
+void Geant4Output2EDM4hep::initializeROOTBackend(const std::string& fname) {
+  if ( !m_file )   {
 #if PODIO_BUILD_VERSION >= PODIO_VERSION(1, 0, 0)
     m_file = std::make_unique<podio::Writer>(podio::makeWriter(fname, m_rntuple ? "rntuple" : "default"));
 #else
@@ -307,10 +367,22 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
     if ( !m_file )   {
       fatal("+++ Failed to open output file: %s", fname.c_str());
     }
-    printout( INFO, "Geant4Output2EDM4hep" ,"Opened %s for output", fname.c_str() ) ;
+    printout( INFO, "Geant4Output2EDM4hep" ,"Opened %s for ROOT output", fname.c_str() ) ;
   }
-  m_fileUseCount++;
 }
+
+#if defined(DD4HEP_USE_ARROW)
+void Geant4Output2EDM4hep::initializeArrowBackend(const std::string& fname) {
+  if ( !m_arrowStream )   {
+    auto stream_result = arrow::io::FileOutputStream::Open(fname);
+    if (!stream_result.ok()) {
+      fatal("+++ Failed to open Arrow stream: %s - %s", fname.c_str(), stream_result.status().ToString().c_str());
+    }
+    m_arrowStream = stream_result.ValueOrDie();
+    printout( INFO, "Geant4Output2EDM4hep" ,"Opened %s for Arrow stream output", fname.c_str() ) ;
+  }
+}
+#endif
 
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::endRun(const G4Run* run)  {
@@ -321,14 +393,40 @@ void Geant4Output2EDM4hep::endRun(const G4Run* run)  {
   // Note: Although the use count is atomic, the file pointer is not,
   // and testing it requires locking.
   G4AutoLock protection_lock(&action_mutex);
-  if ( m_file && m_fileUseCount == 1 )   {
-    m_file->finish();
-    m_file.reset();
+  if ( m_fileUseCount == 1 )   {
+    // Close ROOT backend
+    if ( m_file )   {
+      m_file->finish();
+      m_file.reset();
+    }
+    
+#if defined(DD4HEP_USE_ARROW)
+    // Close Arrow backend
+    if ( m_arrowStream )   {
+      if ( m_arrowWriter )   {
+        auto close_status = m_arrowWriter->Close();
+        if (!close_status.ok()) {
+          warning("+++ Failed to close Arrow writer: %s", close_status.ToString().c_str());
+        }
+        m_arrowWriter.reset();
+      }
+      auto close_status = m_arrowStream->Close();
+      if (!close_status.ok()) {
+        warning("+++ Failed to close Arrow stream: %s", close_status.ToString().c_str());
+      }
+      m_arrowStream.reset();
+    }
+#endif
   }
   m_fileUseCount--;
 }
 
 void Geant4Output2EDM4hep::saveFileMetaData() {
+  // Only write metadata frame for ROOT backend
+  if (m_outputBackend != "root" || !m_file) {
+    return;
+  }
+  
   podio::Frame metaFrame{};
   for (const auto& [name, encodingStr] : m_cellIDEncodingStrings) {
     metaFrame.putParameter(podio::collMetadataParamName(name, CellIDEncoding), encodingStr);
@@ -338,7 +436,21 @@ void Geant4Output2EDM4hep::saveFileMetaData() {
 }
 
 /// Commit data at end of filling procedure
-void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
+void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& ctxt)   {
+  if (m_outputBackend == "root") {
+    commitROOT(ctxt);
+  }
+#if defined(DD4HEP_USE_ARROW)
+  else if (m_outputBackend == "arrow") {
+    commitArrow(ctxt);
+  }
+#endif
+  else {
+    except("+++ Unknown output backend: %s", m_outputBackend.c_str());
+  }
+}
+
+void Geant4Output2EDM4hep::commitROOT( OutputContext<G4Event>& /* ctxt */)   {
   if ( m_file )   {
     G4AutoLock protection_lock(&action_mutex);
     m_frame.put( std::move(m_particles), "MCParticles");
@@ -358,6 +470,69 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
   }
   except("+++ Failed to write output file. [Stream is not open]");
 }
+
+#if defined(DD4HEP_USE_ARROW)
+void Geant4Output2EDM4hep::commitArrow( OutputContext<G4Event>& /* ctxt */)   {
+  if ( m_arrowStream )   {
+    G4AutoLock protection_lock(&action_mutex);
+    
+    // Put collections into frame (same as ROOT backend)
+    m_frame.put( std::move(m_particles), "MCParticles");
+    for (auto it = m_trackerHits.begin(); it != m_trackerHits.end(); ++it)   {
+      m_frame.put( std::move(it->second), it->first);
+    }
+    for (auto& [colName, calorimeterHits] : m_calorimeterHits) {
+      m_frame.put( std::move(calorimeterHits.first), colName);
+      m_frame.put( std::move(calorimeterHits.second), colName + "Contributions");
+    }
+    
+    // Determine collections to write
+    std::vector<std::string> collectionsToWrite;
+    if (m_collectionsToWrite.empty()) {
+      collectionsToWrite = m_frame.getAvailableCollections();
+    } else {
+      collectionsToWrite = m_collectionsToWrite;
+    }
+    
+    // Convert Frame to Arrow Table
+    auto table = podio::convertFrameToTable(m_frame, collectionsToWrite);
+    
+    // Convert Table to RecordBatch
+    auto batch_reader = std::make_shared<arrow::TableBatchReader>(*table);
+    std::shared_ptr<arrow::RecordBatch> batch;
+    auto read_status = batch_reader->ReadNext(&batch);
+    if (!read_status.ok() || !batch) {
+      except("+++ Failed to create RecordBatch: %s", read_status.ToString().c_str());
+    }
+    
+    // Create writer on first use
+    if (!m_arrowWriter) {
+      auto writer_result = arrow::ipc::MakeStreamWriter(m_arrowStream, batch->schema());
+      if (!writer_result.ok()) {
+        except("+++ Failed to create Arrow writer: %s", writer_result.status().ToString().c_str());
+      }
+      m_arrowWriter = writer_result.ValueOrDie();
+      printout(INFO, "Geant4Output2EDM4hep", "Created Arrow IPC writer with %d fields", batch->schema()->num_fields());
+    }
+    
+    // Write RecordBatch
+    auto write_status = m_arrowWriter->WriteRecordBatch(*batch);
+    if (!write_status.ok()) {
+      except("+++ Failed to write RecordBatch: %s", write_status.ToString().c_str());
+    }
+    
+    printout(DEBUG, "Geant4Output2EDM4hep", "Wrote event %d to Arrow stream", m_eventNo);
+    
+    // Clear for next event
+    m_particles = { };
+    m_trackerHits.clear();
+    m_calorimeterHits.clear();
+    m_frame = {};
+    return;
+  }
+  except("+++ Failed to write Arrow stream. [Stream is not open]");
+}
+#endif
 
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {

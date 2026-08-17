@@ -115,11 +115,32 @@ IF(TARGET EDM4HEP::edm4hep)
   else()
     set(DDG4_PODIO_IO_TARGET podio::podioRootIO)
   endif()
+  
+  # Determine Arrow support
+  set(DDG4_EDM4HEP_USES DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict podio::podio podio::podioDict ${DDG4_PODIO_IO_TARGET})
+  set(DDG4_EDM4HEP_DEFINITIONS "")
+  
+  if(TARGET arrow_shared)
+    list(APPEND DDG4_EDM4HEP_USES arrow_shared)
+    if(TARGET podio::podioArrow)
+      list(APPEND DDG4_EDM4HEP_USES podio::podioArrow)
+    endif()
+    if(TARGET podio::podioDataSource)
+      list(APPEND DDG4_EDM4HEP_USES podio::podioDataSource)
+    endif()
+    list(APPEND DDG4_EDM4HEP_DEFINITIONS DD4HEP_USE_ARROW)
+    MESSAGE(STATUS "EDM4hep plugin: Arrow backend support enabled")
+  else()
+    MESSAGE(STATUS "EDM4hep plugin: Arrow backend support disabled (arrow_shared not found)")
+  endif()
+  
   dd4hep_add_plugin(DDG4EDM4HEP
     SOURCES edm4hep/Geant4Output2EDM4hep.cpp
-    USES    DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict podio::podio podio::podioDict ${DDG4_PODIO_IO_TARGET}
-    )
+    USES    ${DDG4_EDM4HEP_USES}
+    DEFINITIONS ${DDG4_EDM4HEP_DEFINITIONS}
+  )
   set_target_properties(DDG4EDM4HEP PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+  
   if(TARGET podio::podioIO)
       dd4hep_add_plugin(DDG4EDM4HEPReader
         SOURCES edm4hep/EDM4hepFileReader.cpp
@@ -129,6 +150,18 @@ IF(TARGET EDM4HEP::edm4hep)
       MESSAGE(STATUS "EDM4hepFileReader enabled")
   else()
       MESSAGE(STATUS "EDM4hepFileReader requires at least PODIO 1.0, disabled")
+  endif()
+  
+  # Arrow stream writer - requires Arrow and podio Arrow support
+  if(TARGET arrow_shared)
+      dd4hep_add_plugin(DDG4EDM4HEPArrowStream
+        SOURCES edm4hep/Geant4Output2EDM4hepArrowStream.cpp
+        USES    DD4hep::DDG4 EDM4HEP::edm4hep EDM4HEP::edm4hepDict podio::podio podio::podioDict ${DDG4_PODIO_IO_TARGET} arrow_shared
+      )
+      set_target_properties(DDG4EDM4HEPArrowStream PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+      MESSAGE(STATUS "EDM4hep Arrow stream writer enabled")
+  else()
+      MESSAGE(STATUS "EDM4hep Arrow stream writer requires Apache Arrow, disabled")
   endif()
 ENDIF()
 
