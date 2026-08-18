@@ -62,6 +62,9 @@ namespace podio {
 #endif
 
 #include <atomic>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -280,6 +283,79 @@ using namespace dd4hep;
 
 namespace {
   G4Mutex action_mutex = G4MUTEX_INITIALIZER;
+
+#if defined(DD4HEP_USE_ARROW)
+  class FdWriteOnlyOutputStream : public arrow::io::OutputStream {
+  public:
+    explicit FdWriteOnlyOutputStream(int fd) : m_fd(fd) {
+      set_mode(arrow::io::FileMode::WRITE);
+    }
+
+    ~FdWriteOnlyOutputStream() override {
+      if (!closed()) {
+        (void)Close();
+      }
+    }
+
+    arrow::Status Close() override {
+      if (m_fd < 0) {
+        m_closed = true;
+        return arrow::Status::OK();
+      }
+      const int rc = ::close(m_fd);
+      m_fd = -1;
+      m_closed = true;
+      if (rc != 0) {
+        return arrow::Status::IOError("close failed");
+      }
+      return arrow::Status::OK();
+    }
+
+    arrow::Status Write(const void* data, int64_t nbytes) override {
+      if (nbytes < 0) {
+        return arrow::Status::Invalid("negative byte count");
+      }
+      if (closed()) {
+        return arrow::Status::IOError("stream is closed");
+      }
+      const auto* ptr = static_cast<const uint8_t*>(data);
+      int64_t remaining = nbytes;
+      while (remaining > 0) {
+        const ssize_t written = ::write(m_fd, ptr, static_cast<size_t>(remaining));
+        if (written < 0) {
+          if (errno == EINTR) {
+            continue;
+          }
+          return arrow::Status::IOError("write failed");
+        }
+        if (written == 0) {
+          return arrow::Status::IOError("short write");
+        }
+        ptr += written;
+        remaining -= written;
+      }
+      m_position += nbytes;
+      return arrow::Status::OK();
+    }
+
+    arrow::Result<int64_t> Tell() const override {
+      return m_position;
+    }
+
+    bool closed() const override {
+      return m_closed;
+    }
+
+    arrow::Status Flush() override {
+      return arrow::Status::OK();
+    }
+
+  private:
+    int m_fd { -1 };
+    int64_t m_position { 0 };
+    bool m_closed { false };
+  };
+#endif
 }
 
 #include <DDG4/Factories.h>
@@ -374,6 +450,19 @@ void Geant4Output2EDM4hep::initializeROOTBackend(const std::string& fname) {
 #if defined(DD4HEP_USE_ARROW)
 void Geant4Output2EDM4hep::initializeArrowBackend(const std::string& fname) {
   if ( !m_arrowStream )   {
+    struct stat path_stat {};
+    const bool stat_ok = (::stat(fname.c_str(), &path_stat) == 0);
+    const bool is_fifo = stat_ok && S_ISFIFO(path_stat.st_mode);
+    if (is_fifo) {
+      const int fd = ::open(fname.c_str(), O_WRONLY);
+      if (fd < 0) {
+        fatal("+++ Failed to open Arrow FIFO stream: %s", fname.c_str());
+      }
+      m_arrowStream = std::make_shared<FdWriteOnlyOutputStream>(fd);
+      printout(INFO, "Geant4Output2EDM4hep", "Opened FIFO %s for Arrow stream output (no-seek fd path)", fname.c_str());
+      return;
+    }
+
     auto stream_result = arrow::io::FileOutputStream::Open(fname);
     if (!stream_result.ok()) {
       fatal("+++ Failed to open Arrow stream: %s - %s", fname.c_str(), stream_result.status().ToString().c_str());
@@ -386,14 +475,13 @@ void Geant4Output2EDM4hep::initializeArrowBackend(const std::string& fname) {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::endRun(const G4Run* run)  {
-  saveRun(run);
-  saveFileMetaData();
-
-  // Close the file only when this is the last thread using it.
-  // Note: Although the use count is atomic, the file pointer is not,
-  // and testing it requires locking.
+  // Only the last thread touching the shared output should flush run-level
+  // data and close resources.
   G4AutoLock protection_lock(&action_mutex);
   if ( m_fileUseCount == 1 )   {
+    saveRun(run);
+    saveFileMetaData();
+
     // Close ROOT backend
     if ( m_file )   {
       m_file->finish();
