@@ -283,79 +283,6 @@ using namespace dd4hep;
 
 namespace {
   G4Mutex action_mutex = G4MUTEX_INITIALIZER;
-
-#if defined(DD4HEP_USE_ARROW)
-  class FdWriteOnlyOutputStream : public arrow::io::OutputStream {
-  public:
-    explicit FdWriteOnlyOutputStream(int fd) : m_fd(fd) {
-      set_mode(arrow::io::FileMode::WRITE);
-    }
-
-    ~FdWriteOnlyOutputStream() override {
-      if (!closed()) {
-        (void)Close();
-      }
-    }
-
-    arrow::Status Close() override {
-      if (m_fd < 0) {
-        m_closed = true;
-        return arrow::Status::OK();
-      }
-      const int rc = ::close(m_fd);
-      m_fd = -1;
-      m_closed = true;
-      if (rc != 0) {
-        return arrow::Status::IOError("close failed");
-      }
-      return arrow::Status::OK();
-    }
-
-    arrow::Status Write(const void* data, int64_t nbytes) override {
-      if (nbytes < 0) {
-        return arrow::Status::Invalid("negative byte count");
-      }
-      if (closed()) {
-        return arrow::Status::IOError("stream is closed");
-      }
-      const auto* ptr = static_cast<const uint8_t*>(data);
-      int64_t remaining = nbytes;
-      while (remaining > 0) {
-        const ssize_t written = ::write(m_fd, ptr, static_cast<size_t>(remaining));
-        if (written < 0) {
-          if (errno == EINTR) {
-            continue;
-          }
-          return arrow::Status::IOError("write failed");
-        }
-        if (written == 0) {
-          return arrow::Status::IOError("short write");
-        }
-        ptr += written;
-        remaining -= written;
-      }
-      m_position += nbytes;
-      return arrow::Status::OK();
-    }
-
-    arrow::Result<int64_t> Tell() const override {
-      return m_position;
-    }
-
-    bool closed() const override {
-      return m_closed;
-    }
-
-    arrow::Status Flush() override {
-      return arrow::Status::OK();
-    }
-
-  private:
-    int m_fd { -1 };
-    int64_t m_position { 0 };
-    bool m_closed { false };
-  };
-#endif
 }
 
 #include <DDG4/Factories.h>
@@ -448,18 +375,77 @@ void Geant4Output2EDM4hep::initializeROOTBackend(const std::string& fname) {
 }
 
 #if defined(DD4HEP_USE_ARROW)
+class FdWriteOnlyOutputStream : public arrow::io::OutputStream {
+public:
+  explicit FdWriteOnlyOutputStream(int fd) : m_fd(fd), m_pos(0), m_closed(false) {}
+  ~FdWriteOnlyOutputStream() override {
+    if (!m_closed) {
+      ::close(m_fd);
+      m_closed = true;
+    }
+  }
+
+  arrow::Status Close() override {
+    if (!m_closed) {
+      m_closed = true;
+      if (::close(m_fd) != 0) {
+        return arrow::Status::IOError("close failed: ", strerror(errno));
+      }
+    }
+    return arrow::Status::OK();
+  }
+
+  arrow::Result<int64_t> Tell() const override {
+    if (m_closed) {
+      return arrow::Status::Invalid("Stream is closed");
+    }
+    return m_pos;
+  }
+
+  bool closed() const override { return m_closed; }
+
+  arrow::Status Write(const void* data, int64_t nbytes) override {
+    if (m_closed) {
+      return arrow::Status::Invalid("Stream is closed");
+    }
+    const char* ptr = static_cast<const char*>(data);
+    int64_t remaining = nbytes;
+    while (remaining > 0) {
+      const ssize_t n = ::write(m_fd, ptr, static_cast<size_t>(remaining));
+      if (n < 0) {
+        if (errno == EINTR) {
+          continue;
+        }
+        return arrow::Status::IOError("write failed: ", strerror(errno));
+      }
+      ptr += n;
+      remaining -= n;
+      m_pos += n;
+    }
+    return arrow::Status::OK();
+  }
+
+  arrow::Status Flush() override { return arrow::Status::OK(); }
+
+private:
+  int m_fd;
+  int64_t m_pos;
+  bool m_closed;
+};
+
 void Geant4Output2EDM4hep::initializeArrowBackend(const std::string& fname) {
   if ( !m_arrowStream )   {
     struct stat path_stat {};
     const bool stat_ok = (::stat(fname.c_str(), &path_stat) == 0);
     const bool is_fifo = stat_ok && S_ISFIFO(path_stat.st_mode);
     if (is_fifo) {
+      // FIFOs do not support lseek; use a write-only fd-backed stream that never seeks.
       const int fd = ::open(fname.c_str(), O_WRONLY);
       if (fd < 0) {
-        fatal("+++ Failed to open Arrow FIFO stream: %s", fname.c_str());
+        fatal("+++ Failed to open Arrow FIFO stream: %s - %s", fname.c_str(), strerror(errno));
       }
       m_arrowStream = std::make_shared<FdWriteOnlyOutputStream>(fd);
-      printout(INFO, "Geant4Output2EDM4hep", "Opened FIFO %s for Arrow stream output (no-seek fd path)", fname.c_str());
+      printout( INFO, "Geant4Output2EDM4hep" ,"Opened FIFO %s for Arrow stream output (no-seek fd path)", fname.c_str() ) ;
       return;
     }
 
@@ -510,7 +496,8 @@ void Geant4Output2EDM4hep::endRun(const G4Run* run)  {
 }
 
 void Geant4Output2EDM4hep::saveFileMetaData() {
-  // Only write metadata frame for ROOT backend
+  // Only write metadata frame for ROOT backend.
+  // NOTE: called from endRun which already holds action_mutex.
   if (m_outputBackend != "root" || !m_file) {
     return;
   }
@@ -519,7 +506,6 @@ void Geant4Output2EDM4hep::saveFileMetaData() {
   for (const auto& [name, encodingStr] : m_cellIDEncodingStrings) {
     metaFrame.putParameter(podio::collMetadataParamName(name, CellIDEncoding), encodingStr);
   }
-  G4AutoLock protection_lock(&action_mutex);
   m_file->writeFrame(metaFrame, "metadata");
 }
 
@@ -624,7 +610,7 @@ void Geant4Output2EDM4hep::commitArrow( OutputContext<G4Event>& /* ctxt */)   {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
-  G4AutoLock protection_lock(&action_mutex);
+  // NOTE: called from endRun which already holds action_mutex.
   // --- write an edm4hep::RunHeader ---------
   // Runs are just Frames with different contents in EDM4hep / podio. We simply
   // store everything as parameters for now
@@ -646,26 +632,19 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   runHeader.putParameter("GEANT4Version", G4Version);
   runHeader.putParameter("DD4hepVersion", versionString());
   runHeader.putParameter("detectorName", context()->detectorDescription().header().name());
-  {
-    // In multithreaded running, the run is present in only one of the contexts
-    if (context()->runPtr() != nullptr) {
-      RunParameters* parameters = context()->run().extension<RunParameters>(false);
-      if ( parameters ) {
-        parameters->extractParameters(runHeader);
-      }
-      m_file->writeFrame(runHeader, "runs");
+  if ( m_file && context()->runPtr() != nullptr ) {
+    RunParameters* parameters = context()->run().extension<RunParameters>(false);
+    if ( parameters ) {
+      parameters->extractParameters(runHeader);
     }
-  }
-  {
-    // In multithreaded running, the run is present in only one of the contexts
-    if (context()->runPtr() != nullptr) {
-      podio::Frame metaFrame {};
-      FileParameters* parameters = context()->run().extension<FileParameters>(false);
-      if ( parameters ) {
-        parameters->extractParameters(metaFrame);
-      }
-      m_file->writeFrame(metaFrame, "meta");
+    m_file->writeFrame(runHeader, "runs");
+
+    podio::Frame metaFrame {};
+    FileParameters* fileParameters = context()->run().extension<FileParameters>(false);
+    if ( fileParameters ) {
+      fileParameters->extractParameters(metaFrame);
     }
+    m_file->writeFrame(metaFrame, "meta");
   }
 }
 
