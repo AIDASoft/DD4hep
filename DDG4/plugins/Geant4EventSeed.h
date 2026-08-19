@@ -63,7 +63,9 @@ namespace dd4hep {
       /// prepare-stacking callback: re-seeds after GeneratePrimaries using the final event ID
       void prepareEvent(G4StackManager*);
       /// generatePrimaries callback
-      void setSeedForPrimaries(G4Event*);
+      void setSeedForPrimaries(const G4Event*);
+      /// set the seed function, called from other callbacks)
+      void setSeed(const G4Event*, bool checkForParameters);
     };
 
     /*
