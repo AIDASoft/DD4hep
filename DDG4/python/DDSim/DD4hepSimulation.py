@@ -168,8 +168,8 @@ class DD4hepSimulation(object):
                         "\nEDM4hep files are also supported under the .root extension" % ", ".join(POSSIBLEINPUTFILES))
 
     parser.add_argument("--outputFile", "-O", action="store", default=self.outputFile,
-                        help="Outputfile from the simulation: .slcio, edm4hep.root and .root"
-                        " output files are supported")
+                        help="Outputfile from the simulation: .slcio, edm4hep.root, .root, and .arrow"
+                        " (Arrow IPC stream, requires Arrow support) output files are supported")
 
     parser.add_argument("-v", "--printLevel", action="store", default=self.printLevel, dest="printLevel",
                         choices=(1, 2, 3, 4, 5, 6, 7, 'VERBOSE', 'DEBUG',
@@ -251,7 +251,7 @@ class DD4hepSimulation(object):
     self.inputFiles = self.__checkFileFormat(self.inputFiles, POSSIBLEINPUTFILES)
     self.__checkFilesExist(self.inputFiles, fileType='input')
     self.outputFile = parsed.outputFile
-    self.__checkFileFormat(self.outputFile, ('.root', '.slcio'))
+    self.__checkFileFormat(self.outputFile, ('.root', '.slcio', '.arrow'))
     self.runType = parsed.runType
     self.printLevel = self.__checkOutputLevel(parsed.printLevel)
     self._gdb = parsed._gdb

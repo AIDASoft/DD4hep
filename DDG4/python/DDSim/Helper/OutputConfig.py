@@ -1,5 +1,7 @@
 """Class for output file configuration"""
 import logging
+import os
+import stat
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
@@ -9,6 +11,8 @@ logger = logging.getLogger(__name__)
 DD4HEP_USE_LCIO = "@DD4HEP_USE_LCIO@" != "OFF"
 #: True if DD4hep was built with EDM4hep
 DD4HEP_USE_EDM4HEP = "@DD4HEP_USE_EDM4HEP@" != "OFF"
+#: True if DD4hep was built with Arrow support for EDM4hep streaming
+DD4HEP_USE_ARROW = "@DD4HEP_USE_ARROW@" != "OFF"
 
 
 def defaultOutputFile():
@@ -26,6 +30,7 @@ class OutputConfig(ConfigHelper):
     self._forceLCIO = False
     self._forceEDM4HEP = False
     self._forceDD4HEP = False
+    self._useArrow = False
     self._useRNTuple = False
     # no closeProperties, allow custom ones for userPlugin configuration
 
@@ -71,6 +76,17 @@ class OutputConfig(ConfigHelper):
     self._forceDD4HEP = self.makeBool(val)
     if self._forceDD4HEP:
       self._checkConsistency()
+
+  @property
+  def useArrow(self):
+    """Use the EDM4hep Arrow backend regardless of the output filename."""
+    return self._useArrow
+
+  @useArrow.setter
+  def useArrow(self, val):
+    self._useArrow = self.makeBool(val)
+    if self._useArrow and not DD4HEP_USE_ARROW:
+      raise RuntimeError("OutputConfig error: useArrow requested, but Arrow support is not available!")
 
   @property
   def useRNTuple(self):
@@ -122,6 +138,16 @@ class OutputConfig(ConfigHelper):
       raise RuntimeError("The provided userPlugin is not a callable function.")
     self._userPlugin = userOutputPluginConfig
 
+  def _isArrowOutput(self, output_path):
+    if not output_path:
+      return False
+    if output_path.endswith(".arrow"):
+      return True
+    try:
+      return stat.S_ISFIFO(os.stat(output_path).st_mode)
+    except OSError:
+      return False
+
   def initialize(self, dd4hepsimulation, geant4):
     """Configure the output file and plugin."""
     if callable(self._userPlugin):
@@ -136,6 +162,12 @@ class OutputConfig(ConfigHelper):
 
     if self.forceDD4HEP:
       return self._configureDD4HEP(dd4hepsimulation, geant4)
+
+    if self.useArrow:
+      return self._configureEDM4HEP(dd4hepsimulation, geant4, outputBackend="arrow")
+
+    if self._isArrowOutput(dd4hepsimulation.outputFile):
+      return self._configureEDM4HEP(dd4hepsimulation, geant4, outputBackend="arrow")
 
     if dd4hepsimulation.outputFile.endswith(".slcio"):
       return self._configureLCIO(dd4hepsimulation, geant4)
@@ -158,9 +190,13 @@ class OutputConfig(ConfigHelper):
     lcOut.EventNumberOffset = dds.meta.eventNumberOffset if dds.meta.eventNumberOffset > 0 else 0
     return
 
-  def _configureEDM4HEP(self, dds, geant4):
+  def _configureEDM4HEP(self, dds, geant4, outputBackend="root"):
     logger.info("++++ Setting up EDM4hep %s Output ++++", "RNTuple" if self.useRNTuple else "ROOT::TTree")
     e4Out = geant4.setupEDM4hepOutput('EDM4hepOutput', dds.outputFile)
+    if outputBackend == "arrow":
+      e4Out.OutputBackend = "arrow"
+    else:
+      e4Out.OutputBackend = "root"
     e4Out.RNTuple = self.useRNTuple
     eventPars = dds.meta.parseMetaParameters()
     e4Out.RunHeader = dds.meta.addParametersToRunHeader(dds)
