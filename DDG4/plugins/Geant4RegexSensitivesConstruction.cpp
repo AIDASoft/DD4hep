@@ -40,10 +40,16 @@ namespace dd4hep {
     public:
       std::string detector_name;
       std::vector<std::string> regex_values;
-      std::size_t collect_volumes(std::set<Volume>&  volumes,
-                                  PlacedVolume       pv,
-                                  const std::string& path,
-                                  const std::vector<std::regex>& matches);
+      // Cached result from the first call: TGeo geometry is shared across worker
+      // threads so the matching volume set is identical every call. Subsequent
+      // calls skip the tree traversal and reuse this directly.
+      std::set<Volume> m_cached_volumes;
+      bool             m_volumes_cached {false};
+      std::size_t collect_volumes(std::set<Volume>&               volumes,
+                                  std::set<Volume>&               visited,
+                                  PlacedVolume                    pv,
+                                  std::string&                    path,
+                                  const std::vector<std::regex>&  matches);
     public:
       /// Initializing constructor for DDG4
       Geant4RegexSensitivesConstruction(Geant4Context* ctxt, const std::string& nam);
@@ -93,30 +99,32 @@ Geant4RegexSensitivesConstruction::~Geant4RegexSensitivesConstruction() {
 }
 
 std::size_t
-Geant4RegexSensitivesConstruction::collect_volumes(std::set<Volume>&  volumes,
-                                                   PlacedVolume       pv,
-                                                   const std::string& path,
-                                                   const std::vector<std::regex>& matches)
+Geant4RegexSensitivesConstruction::collect_volumes(std::set<Volume>&               volumes,
+                                                   std::set<Volume>&               visited,
+                                                   PlacedVolume                    pv,
+                                                   std::string&                    path,
+                                                   const std::vector<std::regex>&  matches)
 {
   std::size_t count = 0;
-  // Try to minimize a bit the number of regex matches.
-  if ( volumes.find(pv.volume()) == volumes.end() )  {
-    if( !path.empty() )  {
-      for( const auto& match : matches )  {
-        std::smatch sm;
-        bool stat = std::regex_search(path, sm, match);
-        if( stat )  {
-          volumes.insert(pv.volume());
-          ++count;
-          break;
-        }
+  // visited guards on logical volume: each unique Volume is walked exactly once
+  // regardless of how many times it is placed in the geometry tree.
+  if ( visited.insert(pv.volume()).second )  {
+    for( const auto& match : matches )  {
+      std::smatch sm;
+      if( std::regex_search(path, sm, match) )  {
+        volumes.insert(pv.volume());
+        ++count;
+        break;
       }
     }
-    // Now recurse down the daughters
+    // Recurse into daughters, reusing the path string in-place.
+    const std::size_t base_len = path.size();
     for( int i=0, num = pv->GetNdaughters(); i < num; ++i )  {
       PlacedVolume daughter = pv->GetDaughter(i);
-      std::string  daughter_path = path + "/" + daughter.name();
-      count += this->collect_volumes(volumes, daughter, daughter_path, matches);
+      path += '/';
+      path += daughter.name();
+      count += this->collect_volumes(volumes, visited, daughter, path, matches);
+      path.resize(base_len);
     }
   }
   return count;
@@ -143,16 +151,25 @@ void Geant4RegexSensitivesConstruction::constructSensitives(Geant4DetectorConstr
   std::string typ  = (iter != types.end()) ? (*iter).second : dflt;
   G4VSensitiveDetector* g4sd = this->createSensitiveDetector(typ, nam);
 
-  std::set<Volume> volumes;
-  int flags = std::regex_constants::icase | std::regex_constants::ECMAScript;
-  std::vector<std::regex> expressions;
-  for( const auto& val : regex_values )  {
-    std::regex e(val, (std::regex_constants::syntax_option_type)flags);
-    expressions.emplace_back(e);
-  }
   TTimeStamp start;
-  info("%s Starting to scan volume....", det);
-  std::size_t num_nodes = this->collect_volumes(volumes, de.placement(), de.placementPath(), expressions);
+  std::size_t num_nodes = 0;
+  if( !m_volumes_cached )  {
+    int flags = std::regex_constants::icase | std::regex_constants::ECMAScript;
+    std::vector<std::regex> expressions;
+    for( const auto& val : regex_values )  {
+      std::regex e(val, (std::regex_constants::syntax_option_type)flags);
+      expressions.emplace_back(e);
+    }
+    info("%s Starting to scan volume....", det);
+    std::set<Volume> visited;
+    std::string placement_path = de.placementPath();
+    num_nodes = this->collect_volumes(m_cached_volumes, visited, de.placement(), placement_path, expressions);
+    m_volumes_cached = true;
+  }
+  else  {
+    info("%s Reusing cached volume set (%zu volumes).", det, m_cached_volumes.size());
+  }
+  const std::set<Volume>& volumes = m_cached_volumes;
   for( const auto& vol : volumes )  {
     G4LogicalVolume* g4vol = g4info->g4Volumes[vol];
     if( !g4vol )  {
