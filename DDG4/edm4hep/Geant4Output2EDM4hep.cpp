@@ -19,6 +19,7 @@
 #include <DDG4/FileParameters.h>
 #include <DDG4/Geant4OutputAction.h>
 #include <DDG4/RunParameters.h>
+#include <DDG4/Geant4Kernel.h>
 
 /// edm4hep include files
 #include <edm4hep/MCParticleCollection.h>
@@ -368,6 +369,9 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   G4AutoLock protection_lock(&action_mutex);
+  // This action is shared, so by default it has the "master" context, we need to get the threaded context
+  auto* workerCtx = context()->kernel().worker(Geant4Kernel::thread_self(), false).workerContext();
+
   // --- write an edm4hep::RunHeader ---------
   // Runs are just Frames with different contents in EDM4hep / podio. We simply
   // store everything as parameters for now
@@ -389,15 +393,12 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   runHeader.putParameter("GEANT4Version", G4Version);
   runHeader.putParameter("DD4hepVersion", versionString());
   runHeader.putParameter("detectorName", context()->detectorDescription().header().name());
-  {
-    // In multithreaded running, the run is present in only one of the contexts
-    if (context()->runPtr() != nullptr) {
-      RunParameters* parameters = context()->run().extension<RunParameters>(false);
-      if ( parameters ) {
-        parameters->extractParameters(runHeader);
-      }
-      m_file->writeFrame(runHeader, podio::Category::Run);
-    }
+  RunParameters* parameters = workerCtx->run().extension<RunParameters>(false);
+  if ( parameters ) {
+    // only one of the worker contexts (or the master context) has run parameters, since only one reader is created
+    // which registers the run parameters
+    parameters->extractParameters(runHeader);
+    m_file->writeFrame(runHeader, podio::Category::Run);
   }
 }
 
