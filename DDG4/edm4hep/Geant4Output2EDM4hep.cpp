@@ -333,6 +333,12 @@ void Geant4Output2EDM4hep::saveFileMetaData() {
   for (const auto& [name, encodingStr] : m_cellIDEncodingStrings) {
     metaFrame.putParameter(podio::collMetadataParamName(name, CellIDEncoding), encodingStr);
   }
+  if (context()->runPtr() != nullptr) {
+    FileParameters* parameters = context()->run().extension<FileParameters>(false);
+    if ( parameters ) {
+      parameters->extractParameters(metaFrame);
+    }
+  }
   G4AutoLock protection_lock(&action_mutex);
   m_file->writeFrame(metaFrame, "metadata");
 }
@@ -391,17 +397,6 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
         parameters->extractParameters(runHeader);
       }
       m_file->writeFrame(runHeader, "runs");
-    }
-  }
-  {
-    // In multithreaded running, the run is present in only one of the contexts
-    if (context()->runPtr() != nullptr) {
-      podio::Frame metaFrame {};
-      FileParameters* parameters = context()->run().extension<FileParameters>(false);
-      if ( parameters ) {
-        parameters->extractParameters(metaFrame);
-      }
-      m_file->writeFrame(metaFrame, "meta");
     }
   }
 }
