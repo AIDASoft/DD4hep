@@ -31,11 +31,6 @@ def loadDDG4():
 
   import platform
   import os
-  if platform.system() == "Darwin":
-    gSystem.SetDynamicPath(os.environ['DD4HEP_LIBRARY_PATH'])
-    os.environ['DYLD_LIBRARY_PATH'] = os.pathsep.join([os.environ['DD4HEP_LIBRARY_PATH'],
-                                                       os.environ.get('DYLD_LIBRARY_PATH', '')]).strip(os.pathsep)
-
   result = gSystem.Load("libDDG4Plugins")
   if result < 0:
     raise Exception('DDG4.py: Failed to load the DDG4 library libDDG4Plugins: ' + gSystem.GetErrorStr())
