@@ -99,7 +99,7 @@ namespace dd4hep {
       floatmap_t                    m_runParametersFloat;
       stringmap_t                   m_runParametersString;
       stringmap_t                   m_cellIDEncodingStrings{};
-      std::string                   m_section_name      { "events" };
+      std::string                   m_section_name      { podio::Category::Event };
       int                           m_runNo             { 0 };
       int                           m_runNumberOffset   { 0 };
       int                           m_eventNo           { 0 };
@@ -333,8 +333,14 @@ void Geant4Output2EDM4hep::saveFileMetaData() {
   for (const auto& [name, encodingStr] : m_cellIDEncodingStrings) {
     metaFrame.putParameter(podio::collMetadataParamName(name, CellIDEncoding), encodingStr);
   }
+  if (context()->runPtr() != nullptr) {
+    FileParameters* parameters = context()->run().extension<FileParameters>(false);
+    if ( parameters ) {
+      parameters->extractParameters(metaFrame);
+    }
+  }
   G4AutoLock protection_lock(&action_mutex);
-  m_file->writeFrame(metaFrame, "metadata");
+  m_file->writeFrame(metaFrame, podio::Category::Metadata);
 }
 
 /// Commit data at end of filling procedure
@@ -390,18 +396,7 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
       if ( parameters ) {
         parameters->extractParameters(runHeader);
       }
-      m_file->writeFrame(runHeader, "runs");
-    }
-  }
-  {
-    // In multithreaded running, the run is present in only one of the contexts
-    if (context()->runPtr() != nullptr) {
-      podio::Frame metaFrame {};
-      FileParameters* parameters = context()->run().extension<FileParameters>(false);
-      if ( parameters ) {
-        parameters->extractParameters(metaFrame);
-      }
-      m_file->writeFrame(metaFrame, "meta");
+      m_file->writeFrame(runHeader, podio::Category::Run);
     }
   }
 }
