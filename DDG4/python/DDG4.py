@@ -29,8 +29,6 @@ def loadDDG4():
     gSystem.Load("libglapi")
     ROOT.gErrorIgnoreLevel = orgLevel
 
-  import platform
-  import os
   result = gSystem.Load("libDDG4Plugins")
   if result < 0:
     raise Exception('DDG4.py: Failed to load the DDG4 library libDDG4Plugins: ' + gSystem.GetErrorStr())
