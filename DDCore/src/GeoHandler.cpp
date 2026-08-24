@@ -147,6 +147,13 @@ detail::GeoHandler& detail::GeoHandler::i_collect(const TGeoNode* /* parent */,
                                                   const TGeoNode*    current,
                                                   int level, Region rg, LimitSet ls)
 {
+  /// Early-exit if this node has already been collected at this level.
+  /// Daughters of a TGeoVolume are the same TGeoNode pointers for every placement of
+  /// that volume; without this guard the subtree would be traversed once per placement
+  /// (N times for a volume placed N times) with all but the first producing no output.
+  if ( !(*m_set_data)[level].emplace(current).second )
+    return *this;
+
   TGeoVolume* vol    = current->GetVolume();
   TObjArray*  nodes  = vol->GetNodes();
   Volume      volume = vol;
@@ -163,11 +170,7 @@ detail::GeoHandler& detail::GeoHandler::i_collect(const TGeoNode* /* parent */,
       volume.setLimitSet(limits);
     }
   }
-  /// Collect the hierarchy of placements
-  /// perform lookup using std::set::emplace (faster than std::find for very large number of volumes)
-  if ( (*m_set_data)[level].emplace(current).second ) {
-    (*m_data)[level].push_back(current);
-  }
+  (*m_data)[level].push_back(current);
   int num = nodes ? nodes->GetEntriesFast() : 0;
   for (int i = 0; i < num; ++i)
     i_collect(current, (TGeoNode*)nodes->At(i), level + 1, region, limits);
