@@ -37,7 +37,9 @@ namespace ODH {//OtherDetectorHelpers
     kUpstreamSlicedRear         = 14, // upstream, with the rear face parallel to a tilted piece
     kDnstreamSlicedRear         = 15, // downstream, with the rear face parallel to a tilted piece
     kUpstreamSlicedBoth         = 16, // upstream, with both faces parallel to a tilted piece
-    kDnstreamSlicedBoth         = 17 // downstream, with both faces parallel to a tilted piece
+    kDnstreamSlicedBoth         = 17, // downstream, with both faces parallel to a tilted piece
+    kUpstreamTrapezoid          = 18 // upstream, rotated by half the crossing angle but not axial-symmetric
+
   } ECrossType;
 
 
@@ -63,6 +65,8 @@ namespace ODH {//OtherDetectorHelpers
     CrossTypes["DnstreamSlicedRear"]    = ODH::kDnstreamSlicedRear   ;
     CrossTypes["UpstreamSlicedBoth"]    = ODH::kUpstreamSlicedBoth   ;
     CrossTypes["DnstreamSlicedBoth"]    = ODH::kDnstreamSlicedBoth   ;
+    CrossTypes["UpstreamTrapezoid"]     = ODH::kUpstreamTrapezoid    ;
+
 
     std::map < std::string, ODH::ECrossType>::const_iterator ct = CrossTypes.find(type);
     if ( ct == CrossTypes.end() ) {
@@ -85,6 +89,7 @@ namespace ODH {//OtherDetectorHelpers
     double tmpAngle;
     switch (crossType) {
     case kUpstream:
+    case kUpstreamTrapezoid:
     case kPunchedUpstream:
     case kUpstreamClippedFront:
     case kUpstreamClippedRear:
