@@ -31,6 +31,7 @@
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -91,6 +92,8 @@ namespace  {
     Geant4GeometryInfo& m_geo;
     /// Debug flag for population
     long                m_debug { 0 };
+    /// Per-volume cache: does this volume's subtree contain any dd4hep-sensitive volumes?
+    std::unordered_map<TGeoVolume*, bool> m_has_sensitive;
     
     /// Default constructor
     Populator(const Detector& description, Geant4GeometryInfo& g, long dbg)
@@ -126,7 +129,7 @@ namespace  {
           PlacedVolume::VolIDs ids;
           m_entries.clear();
           chain.emplace_back(m_detDesc.world().placement().ptr());
-          scanPhysicalVolume(pv.ptr(), std::move(ids), sd, chain);
+          scanPhysicalVolume(pv.ptr(), ids, sd, chain);
           continue;
         }
         printout(WARNING, "Geant4VolumeManager",
@@ -143,13 +146,28 @@ namespace  {
       m_entries.clear();
     }
 
+    /// Returns true if vol or any dd4hep-instrumented descendant is sensitive.
+    /// Result is cached per-volume so each volume is checked at most once.
+    bool hasSensitiveContent(TGeoVolume* vol) {
+      auto [it, inserted] = m_has_sensitive.emplace(vol, false);
+      if ( !inserted ) return it->second;
+      if ( Volume(vol).isSensitive() ) return it->second = true;
+      for ( Int_t i = 0, n = vol->GetNdaughters(); i < n; ++i ) {
+        TGeoNode* dau = vol->GetNode(i);
+        if ( PlacedVolume(dau).data() && hasSensitiveContent(dau->GetVolume()) )
+          return it->second = true;
+      }
+      return false;
+    }
+
     /// Scan a single physical volume and look for sensitive elements below
-    void scanPhysicalVolume(const TGeoNode* node, PlacedVolume::VolIDs ids, SensitiveDetector& sd, Chain& chain) {
+    void scanPhysicalVolume(const TGeoNode* node, PlacedVolume::VolIDs& ids, SensitiveDetector& sd, Chain& chain) {
       PlacedVolume pv = node;
       Volume       vol = pv.volume();
-      PlacedVolume::VolIDs pv_ids = pv.volIDs();
+      const PlacedVolume::VolIDs& pv_ids = pv.volIDs();
 
       chain.emplace_back(node);
+      const std::size_t ids_save = ids.size();
       ids.PlacedVolume::VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
       if( vol.isSensitive() )  {
         sd = vol.sensitiveDetector();
@@ -165,10 +183,11 @@ namespace  {
       for( Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau )  {
         TGeoNode* daughter = node->GetDaughter(idau);
         PlacedVolume placement(daughter);
-        if( placement.data() ) {
+        if( placement.data() && hasSensitiveContent(daughter->GetVolume()) ) {
           scanPhysicalVolume(daughter, ids, sd, chain);
         }
       }
+      ids.resize(ids_save);
       chain.pop_back();
     }
 

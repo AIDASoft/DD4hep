@@ -425,15 +425,27 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     int pid = m_currTrack.g4Parent;
     m_equivalentTracks[g4_id] = pid;
     // Need to find the last stored particle and OR this particle's mask
-    // with the mask of the last stored particle
+    // with the mask of the last stored particle.
+    // Walk up the equivalent-track chain to find the nearest kept ancestor.
     auto iend = m_equivalentTracks.end(), iequiv=m_equivalentTracks.end();
+    const int start_pid = pid;
     ParticleMap::iterator ip;
     for(ip=m_particleMap.find(pid); ip == m_particleMap.end(); ip=m_particleMap.find(pid))  {
       if (iequiv=m_equivalentTracks.find(pid); iequiv == iend) break;  // ERROR
       pid = (*iequiv).second;
     }
-    if ( ip != m_particleMap.end() )
+    // Path compression: point all intermediate entries directly to the root pid,
+    // so future walks from nearby tracks are O(1) instead of O(chain length).
+    if ( ip != m_particleMap.end() )  {
+      for(int compress=start_pid; compress != pid; )  {
+        auto it = m_equivalentTracks.find(compress);
+        if(it == iend) break;
+        int next = it->second;
+        it->second = pid;
+        compress = next;
+      }
       (*ip).second->reason |= track_reason;
+    }
     else
       ph.dumpWithVertex(outputLevel()+3,name(),"FATAL: No real particle parent present");
   }
