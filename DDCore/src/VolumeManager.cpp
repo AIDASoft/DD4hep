@@ -25,6 +25,7 @@
 #include <cmath>
 #include <sstream>
 #include <iomanip>
+#include <unordered_map>
 
 using namespace dd4hep;
 using namespace dd4hep::detail;
@@ -52,6 +53,8 @@ namespace dd4hep {
       VolumeManager      m_volManager;
       /// Set of already added entries
       std::set<VolumeID> m_entries;
+      /// Cache: does a TGeoVolume subtree contain any sensitive volume?
+      std::unordered_map<TGeoVolume*, bool> m_has_sensitive;
       /// Debug flag
       bool               m_debug    = false;
       /// Node counter
@@ -67,6 +70,19 @@ namespace dd4hep {
 
       /// Access node count
       size_t numNodes()  const  {   return m_numNodes;  }
+
+      /// Returns true if vol or any descendant is a sensitive volume (result is cached).
+      bool hasSensitiveContent(TGeoVolume* vol) {
+        auto [it, inserted] = m_has_sensitive.emplace(vol, false);
+        if ( !inserted ) return it->second;
+        if ( Volume(vol).isSensitive() ) return it->second = true;
+        for ( Int_t i = 0, n = vol->GetNdaughters(); i < n; ++i ) {
+          TGeoNode* dau = vol->GetNode(i);
+          if ( PlacedVolume(dau).data() && hasSensitiveContent(dau->GetVolume()) )
+            return it->second = true;
+        }
+        return false;
+      }
 
       /// Populate the Volume manager
       void populate(DetElement e) {
@@ -135,23 +151,25 @@ namespace dd4hep {
             TGeoNode* daughter = node->GetDaughter(idau);
             PlacedVolume placement(daughter);
             if ( placement.data() ) {
-              PlacedVolume pv_dau(daughter);
-              DetElement   de_dau;
-              /// Check if this particular volume is the placement of one of the
-              /// children of this detector element. If the daughter placement is also
-              /// a detector child, then we must reset the node chain.
-              for( const auto& de : e.children() )  {
-                if ( de.second.placement().ptr() == daughter )  {
-                  de_dau = de.second;
-                  break;
+              if ( hasSensitiveContent(daughter->GetVolume()) ) {
+                PlacedVolume pv_dau(daughter);
+                DetElement   de_dau;
+                /// Check if this particular volume is the placement of one of the
+                /// children of this detector element. If the daughter placement is also
+                /// a detector child, then we must reset the node chain.
+                for( const auto& de : e.children() )  {
+                  if ( de.second.placement().ptr() == daughter )  {
+                    de_dau = de.second;
+                    break;
+                  }
                 }
-              }
-              if ( de_dau.isValid() ) {
-                Chain dau_chain;
-                count += scanPhysicalVolume(parent, de_dau, pv_dau, vol_encoding, sd, dau_chain);
-              }
-              else {
-                count += scanPhysicalVolume(parent, e, pv_dau, vol_encoding, sd, chain);
+                if ( de_dau.isValid() ) {
+                  Chain dau_chain;
+                  count += scanPhysicalVolume(parent, de_dau, pv_dau, vol_encoding, sd, dau_chain);
+                }
+                else {
+                  count += scanPhysicalVolume(parent, e, pv_dau, vol_encoding, sd, chain);
+                }
               }
             }
             else  {

@@ -26,6 +26,7 @@ class G4VProcess;
 // C/C++ include files
 #include <set>
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <memory>
 
@@ -338,8 +339,8 @@ namespace dd4hep {
     class Geant4ParticleMap  {
     public:
       typedef Geant4Particle          Particle;
-      typedef std::map<int,Particle*> ParticleMap;
-      typedef std::map<int,int>       TrackEquivalents;
+      typedef std::map<int,Particle*>         ParticleMap;
+      typedef std::unordered_map<int,int>    TrackEquivalents;
       /// Mapping of particles of this event
       ParticleMap particleMap; //! not persistent
       /// Map associating the G4Track identifiers with identifiers of existing MCParticles
