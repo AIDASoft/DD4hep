@@ -1,5 +1,5 @@
 //==========================================================================
-//  AIDA Detector description implementation 
+//  AIDA Detector description implementation
 //--------------------------------------------------------------------------
 // Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
@@ -8,6 +8,30 @@
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 // Author     : M.Frank
+//
+//==========================================================================
+//
+// Build recipe (requires DD4hepINSTALL, CLHEP_INCLUDE_DIR, root-config in PATH):
+//
+//   g++ $(root-config --cflags) \
+//       -I$DD4hepINSTALL/include \
+//       -I$CLHEP_INCLUDE_DIR \
+//       -o dumpDDG4 \
+//       dumpDDG4.C \
+//       $(root-config --libs) \
+//       -L$DD4hepINSTALL/lib -lDDCore -lDDG4
+//
+// Usage:
+//   ./dumpDDG4 -input <file.root>                        # dump all events
+//   ./dumpDDG4 -input <file.root> -event <N>             # dump one event
+//   ./dumpDDG4 -compact <geometry.xml> -input <file.root> # with cell/volume info
+//
+// Notes:
+//   - ROOT dictionaries for the DDG4 sim classes live in libDDG4Plugins (not
+//     libDDG4); the binary loads it at runtime via gSystem->Load so that ROOT
+//     can locate the matching G__DDG4_rdict.pcm and register the streamers.
+//   - Without -compact, calorimeter hits are printed without cell-centre
+//     position or volume name (geometry-free fallback).
 //
 //==========================================================================
 
@@ -43,11 +67,11 @@ namespace {
   static bool have_geometry = false;
 
   int usage()  {
-    printf("\ndumpDDG4 -opt [-opt]                                                                   \n"
-           "    -compact <compact-geometry>   Supply geometry file to check hits with volume manager.\n"
-           "    -input   <root-file>          File generated with DDG4                               \n"
-           "    -event   <event-number>       Specify event to be dumped. Default: ALL.              \n"
-           "\n\n");
+    ::printf("\ndumpDDG4 -opt [-opt]                                                                   \n"
+             "    -compact <compact-geometry>   Supply geometry file to check hits with volume manager.\n"
+             "    -input   <root-file>          File generated with DDG4                               \n"
+             "    -event   <event-number>       Specify event to be dumped. Default: ALL.              \n"
+             "\n\n");
     return EINVAL;
   }
 
@@ -71,7 +95,7 @@ namespace {
         const Geant4Tracker::Hit* h = *i;
         const Position& pos = h->position;
         Position pos_cell = seg.position(h->cellID);
-        PlacedVolume pv = vm.lookupPlacement(h->cellID);
+        PlacedVolume pv = vm.lookupVolumePlacement(h->cellID);
         printout(ALWAYS,container,
                  "+++ Track:%3d PDG:%6d Pos:(%+.2e,%+.2e,%+.2e)[mm] Pixel:(%+.2e,%+.2e,%+.2e)[mm] %s Deposit:%7.3f MeV CellID:%16lX",
                  h->truth.trackID,h->truth.pdgID,
@@ -105,7 +129,7 @@ namespace {
     else if ( hits->empty() )   {
       ::printf("+  Invalid Hit container '%s'. No entries. No printout\n",container.c_str());
     }
-    else   {
+    else if ( have_geometry )  {
       string det_name = container;
       Detector& description = Detector::getInstance();
       det_name = det_name.substr(0,det_name.length()-4);
@@ -117,12 +141,24 @@ namespace {
         const Geant4Calorimeter::Hit* h = *i;
         const Position& pos = h->position;
         Position pos_cell = seg.position(h->cellID);
-        PlacedVolume pv = vm.lookupPlacement(h->cellID);
+        PlacedVolume pv = vm.lookupVolumePlacement(h->cellID);
         printout(ALWAYS,container,
                  "+++ Pos:(%+.2e,%+.2e,%+.2e)[mm] Pixel:(%+.2e,%+.2e,%+.2e)[mm] %s Deposit:%7.3f MeV CellID:%16lX",
                  pos.x()/CLHEP::mm,pos.y()/CLHEP::mm,pos.z()/CLHEP::mm,
                  pos_cell.x()/dd4hep::mm,pos_cell.y()/dd4hep::mm,pos_cell.z()/dd4hep::mm,
                  pv.name(),h->energyDeposit/CLHEP::MeV,h->cellID
+                 );
+        delete h;
+      }
+    }
+    else  {
+      for(_H::const_iterator i=hits->begin(); i!=hits->end(); ++i)  {
+        const Geant4Calorimeter::Hit* h = *i;
+        const Position& pos = h->position;
+        printout(ALWAYS,container,
+                 "+++ Pos:(%+.2e,%+.2e,%+.2e)[mm] Deposit:%7.3f MeV CellID:%16lX",
+                 pos.x()/CLHEP::mm,pos.y()/CLHEP::mm,pos.z()/CLHEP::mm,
+                 h->energyDeposit/CLHEP::MeV,h->cellID
                  );
         delete h;
       }
@@ -167,9 +203,17 @@ namespace {
 }
 
 int dumpDDG4(const char* fname, int event_num)  {
+  // Dictionaries for Geant4Particle/Tracker/Calorimeter hits live in DDG4Plugins, not DDG4.
+  // Use full path so ROOT can locate G__DDG4_rdict.pcm alongside the library.
+  const char* dd4hep_install = gSystem->Getenv("DD4hepINSTALL");
+  if (dd4hep_install) {
+    gSystem->Load((string(dd4hep_install) + "/lib/libDDG4Plugins.so").c_str());
+  } else {
+    gSystem->Load("libDDG4Plugins");
+  }
   TFile* data = TFile::Open(fname);
   if ( !data || data->IsZombie() )   {
-    printf("+  File seems to not exist. Exiting\n");
+    ::printf("+  File seems to not exist. Exiting\n");
     usage();
     return -1;
   }
@@ -217,7 +261,7 @@ int dumpddg4_load_geometry(const char* fname)   {
     gSystem->Load("libDDG4Plugins");
     Detector& description = Detector::getInstance();
     description.fromXML(fname);
-    VolumeManager::getVolumeManager();
+    VolumeManager::getVolumeManager(description);
   }
   return 1;
 }
