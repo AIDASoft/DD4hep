@@ -69,13 +69,13 @@ void Geant4EventSeed::begin(const G4Run* run) {
 
 /// begin-of-event callback
 void Geant4EventSeed::beginEvent(const G4Event* evt) {
-  dd4hep::printout(dd4hep::INFO, m_type, "EventSeed:: At beginEvent");
+  dd4hep::printout(dd4hep::DEBUG, m_type, "EventSeed:: At beginEvent");
   setSeed(evt, true);
 }
 
 /// begin-of-event callback
 void Geant4EventSeed::setSeedForPrimaries(const G4Event* evt) {
-  dd4hep::printout(dd4hep::INFO, m_type, "EventSeed:: At generatePrimaries");
+  dd4hep::printout(dd4hep::DEBUG, m_type, "EventSeed:: At generatePrimaries");
   // since this is before we read input files we cannot expect parameters to be present
   setSeed(evt, false);
 }
@@ -94,7 +94,7 @@ void Geant4EventSeed::setSeed(const G4Event* evt, bool checkForEventParameters=t
     if(parameters) {
       eventID = parameters->eventNumber();
       m_runID = parameters->runNumber();
-      dd4hep::printout(dd4hep::INFO, m_type,
+      dd4hep::printout(dd4hep::DEBUG, m_type,
                        "EventSeed::setSeed: Found eventParameters: eventID=%u, runID=%u",
                        eventID, m_runID);
     } else {
