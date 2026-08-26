@@ -43,9 +43,8 @@ Geant4EventSeed::Geant4EventSeed(Geant4Context* c, const std::string& typ) : Gea
 {
   Geant4Action::runAction().callAtBegin(this,&Geant4EventSeed::begin);
   Geant4Action::generatorAction().callAtBegin(this,&Geant4EventSeed::setSeedForPrimaries);
-  Geant4Action::eventAction().callAtBegin(this,&Geant4EventSeed::beginEvent);
   // Re-seed after GeneratePrimaries so file-based generators' SetEventID is visible.
-  Geant4Action::stackingAction().callAtPrepare(this,&Geant4EventSeed::prepareEvent);
+  Geant4Action::eventAction().callAtBegin(this,&Geant4EventSeed::beginEvent);
   InstanceCount::increment(this);
 }
 
@@ -71,13 +70,6 @@ void Geant4EventSeed::begin(const G4Run* run) {
 /// begin-of-event callback
 void Geant4EventSeed::beginEvent(const G4Event* evt) {
   dd4hep::printout(dd4hep::INFO, m_type, "EventSeed:: At beginEvent");
-  setSeed(evt, true);
-}
-
-/// prepare-stacking callback: re-seed after GeneratePrimaries using the final event ID
-void Geant4EventSeed::prepareEvent(G4StackManager* /* stackMgr */) {
-  dd4hep::printout(dd4hep::INFO, m_type, "EventSeed:: At prepareEvent");
-  const G4Event* evt = G4EventManager::GetEventManager()->GetConstCurrentEvent();
   setSeed(evt, true);
 }
 
