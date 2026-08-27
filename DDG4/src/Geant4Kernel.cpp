@@ -243,7 +243,7 @@ Geant4Kernel& Geant4Kernel::worker(unsigned long identifier, bool create_if)    
   else if( create_if )  {
     return createWorker();
   }
-  except("Geant4Kernel", "DDG4: The Kernel object 0x%p does not exists!",(void*)identifier);
+  except("Geant4Kernel", "DDG4: The worker instance %ul does not exist!", identifier);
   throw std::runtime_error("Geant4Kernel::worker");
 }
 
