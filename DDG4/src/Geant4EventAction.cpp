@@ -21,9 +21,6 @@
 
 using namespace dd4hep::sim;
 
-namespace {
-  G4Mutex event_action_mutex=G4MUTEX_INITIALIZER;
-}
 
 /// Standard constructor
 Geant4EventAction::Geant4EventAction(Geant4Context* ctxt, const std::string& nam)
@@ -77,7 +74,7 @@ void Geant4SharedEventAction::use(Geant4EventAction* action)   {
 /// Begin-of-event callback
 void Geant4SharedEventAction::begin(const G4Event* event)   {
   if ( m_action )  {
-    G4AutoLock protection_lock(&event_action_mutex);    {
+    G4AutoLock protection_lock(m_action->mutex());    {
       ContextSwap swap(m_action,context());
       m_action->begin(event);
     }
@@ -87,7 +84,7 @@ void Geant4SharedEventAction::begin(const G4Event* event)   {
 /// End-of-event callback
 void Geant4SharedEventAction::end(const G4Event* event)   {
   if ( m_action )  {
-    G4AutoLock protection_lock(&event_action_mutex);  {
+    G4AutoLock protection_lock(m_action->mutex());  {
       ContextSwap swap(m_action,context());
       m_action->end(event);
     }
@@ -130,7 +127,7 @@ Geant4EventAction* Geant4EventActionSequence::get(const std::string& nam) const 
 /// Add an actor responding to all callbacks. Sequence takes ownership.
 void Geant4EventActionSequence::adopt(Geant4EventAction* action) {
   if (action) {
-    G4AutoLock protection_lock(&event_action_mutex);
+    G4AutoLock protection_lock(action->mutex());
     action->addRef();
     m_actors.add(action);
     return;
