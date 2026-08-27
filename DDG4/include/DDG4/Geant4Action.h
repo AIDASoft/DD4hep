@@ -20,6 +20,9 @@
 #include <DDG4/Geant4Context.h>
 #include <DDG4/Geant4Callback.h>
 
+// Geant4 headers
+#include <G4AutoLock.hh>
+
 // Geant4 forward declarations
 class G4Run;
 class G4Event;
@@ -127,6 +130,8 @@ namespace dd4hep {
       PropertyManager    m_properties   {   };
       /// Reference count. Initial value: 1
       long               m_refCount     { 1 };
+      ///Synchronisation lock
+      mutable G4Mutex m_mutex = G4MUTEX_INITIALIZER;
 
     public:
       /// Functor to update the context of a Geant4Action object
@@ -279,6 +284,10 @@ namespace dd4hep {
       /// Access name of the action
       const std::string& name() const {
         return m_name;
+      }
+      /// access to mutex for this action
+      G4Mutex& mutex() const {
+        return m_mutex;
       }
       /// Access name of the action
       const char* c_name() const {

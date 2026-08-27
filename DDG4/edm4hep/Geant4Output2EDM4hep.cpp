@@ -253,10 +253,6 @@ namespace dd4hep {
 using namespace dd4hep::sim;
 using namespace dd4hep;
 
-namespace {
-  G4Mutex action_mutex = G4MUTEX_INITIALIZER;
-}
-
 #include <DDG4/Factories.h>
 DECLARE_GEANT4ACTION(Geant4Output2EDM4hep)
 
@@ -283,13 +279,13 @@ Geant4Output2EDM4hep::Geant4Output2EDM4hep(Geant4Context* ctxt, const std::strin
 
 /// Default destructor
 Geant4Output2EDM4hep::~Geant4Output2EDM4hep()  {
-  G4AutoLock protection_lock(&action_mutex);
+  G4AutoLock protection_lock(mutex());
   InstanceCount::decrement(this);
 }
 
 // Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
-  G4AutoLock protection_lock(&action_mutex);
+  G4AutoLock protection_lock(mutex());
   std::string fname = m_output;
   m_runNo = run->GetRunID();
   if ( m_filesByRun )    {
@@ -315,13 +311,13 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::endRun(const G4Run* run)  {
+  G4AutoLock protection_lock(mutex());
   saveRun(run);
   saveFileMetaData();
 
   // Close the file only when this is the last thread using it.
   // Note: Although the use count is atomic, the file pointer is not,
   // and testing it requires locking.
-  G4AutoLock protection_lock(&action_mutex);
   if ( m_file && m_fileUseCount == 1 )   {
     m_file->finish();
     m_file.reset();
@@ -340,14 +336,12 @@ void Geant4Output2EDM4hep::saveFileMetaData() {
       parameters->extractParameters(metaFrame);
     }
   }
-  G4AutoLock protection_lock(&action_mutex);
   m_file->writeFrame(metaFrame, podio::Category::Metadata);
 }
 
 /// Commit data at end of filling procedure
 void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
   if ( m_file )   {
-    G4AutoLock protection_lock(&action_mutex);
     m_frame.put( std::move(m_particles), "MCParticles");
     for (auto it = m_trackerHits.begin(); it != m_trackerHits.end(); ++it)   {
       m_frame.put( std::move(it->second), it->first);
@@ -368,7 +362,6 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
-  G4AutoLock protection_lock(&action_mutex);
   // This action is shared, so by default it has the "master" context, we need to get the threaded context
   auto* workerCtx = context()->kernel().worker(Geant4Kernel::thread_self(), false).workerContext();
 
