@@ -330,11 +330,10 @@ void Geant4Output2EDM4hep::saveFileMetaData() {
   for (const auto& [name, encodingStr] : m_cellIDEncodingStrings) {
     metaFrame.putParameter(podio::collMetadataParamName(name, CellIDEncoding), encodingStr);
   }
-  if (context()->runPtr() != nullptr) {
-    FileParameters* parameters = context()->run().extension<FileParameters>(false);
-    if ( parameters ) {
-      parameters->extractParameters(metaFrame);
-    }
+  Geant4Context* workerCtx = context()->kernel().worker(Geant4Kernel::thread_self(), false).workerContext();
+  FileParameters* parameters = workerCtx->run().extension<FileParameters>(false);
+  if ( parameters ) {
+    parameters->extractParameters(metaFrame);
   }
   m_file->writeFrame(metaFrame, podio::Category::Metadata);
 }
