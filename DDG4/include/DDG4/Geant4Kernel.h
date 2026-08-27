@@ -137,8 +137,6 @@ namespace dd4hep {
 
       /// Parent reference
       Geant4Kernel*      m_master         { nullptr };
-      /// Thread context reference
-      Geant4Context*     m_threadContext  { nullptr };
       /// Interrupt/signal handler: only on master instance
       Geant4Interrupts*  m_interrupts     { nullptr };
 
