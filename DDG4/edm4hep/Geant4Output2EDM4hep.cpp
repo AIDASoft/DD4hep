@@ -108,6 +108,11 @@ namespace dd4hep {
       bool                          m_filesByRun        { false };
       bool                          m_rntuple           { false };
 
+      /// RunParameters to be written when file is closed
+      std::unique_ptr<RunParameters> m_runParameters = nullptr;
+      /// FileParameters  to be written when fle is closed
+      std::unique_ptr<FileParameters> m_fileParameters = nullptr;
+
       /// Data conversion interface for MC particles to EDM4hep format
       void saveParticles(Geant4ParticleMap* particles);
       /// Store the metadata frame with e.g. the cellID encoding strings
@@ -311,13 +316,36 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::endRun(const G4Run* run)  {
   G4AutoLock protection_lock(mutex());
-  saveRun(run);
-  saveFileMetaData();
+
+  Geant4Context* workerCtx = context()->kernel().worker(Geant4Kernel::thread_self(), false).workerContext();
+  {
+    RunParameters* parameters = workerCtx->run().extension<RunParameters>(false);
+    if(parameters) {
+      if(m_runParameters) {
+        printout(ERROR, "Geant4Output2EDM4hep" ,"Some other thread already stored RunRarameters");
+      } else {
+        m_runParameters = std::make_unique<RunParameters>(*parameters);
+      }
+    }
+  }
+
+  {
+    FileParameters* parameters = workerCtx->run().extension<FileParameters>(false);
+    if(parameters) {
+      if(m_fileParameters) {
+        printout(ERROR, "Geant4Output2EDM4hep" ,"Some other thread already stored FileRarameters");
+      } else {
+        m_fileParameters = std::make_unique<FileParameters>(*parameters);
+      }
+    }
+  }
 
   // Close the file only when this is the last thread using it.
   // Note: Although the use count is atomic, the file pointer is not,
   // and testing it requires locking.
   if ( m_file && m_fileUseCount == 1 )   {
+    saveRun(run);
+    saveFileMetaData();
     m_file->finish();
     m_file.reset();
   }
@@ -329,10 +357,9 @@ void Geant4Output2EDM4hep::saveFileMetaData() {
   for (const auto& [name, encodingStr] : m_cellIDEncodingStrings) {
     metaFrame.putParameter(podio::collMetadataParamName(name, CellIDEncoding), encodingStr);
   }
-  Geant4Context* workerCtx = context()->kernel().worker(Geant4Kernel::thread_self(), false).workerContext();
-  FileParameters* parameters = workerCtx->run().extension<FileParameters>(false);
-  if ( parameters ) {
-    parameters->extractParameters(metaFrame);
+  if (m_fileParameters) {
+    m_fileParameters->extractParameters(metaFrame);
+    m_fileParameters.release();
   }
   m_file->writeFrame(metaFrame, podio::Category::Metadata);
 }
@@ -360,9 +387,6 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
-  // This action is shared, so by default it has the "master" context, we need to get the threaded context
-  auto* workerCtx = context()->kernel().worker(Geant4Kernel::thread_self(), false).workerContext();
-
   // --- write an edm4hep::RunHeader ---------
   // Runs are just Frames with different contents in EDM4hep / podio. We simply
   // store everything as parameters for now
@@ -384,13 +408,11 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   runHeader.putParameter("GEANT4Version", G4Version);
   runHeader.putParameter("DD4hepVersion", versionString());
   runHeader.putParameter("detectorName", context()->detectorDescription().header().name());
-  RunParameters* parameters = workerCtx->run().extension<RunParameters>(false);
-  if ( parameters ) {
-    // only one of the worker contexts (or the master context) has run parameters, since only one reader is created
-    // which registers the run parameters
-    parameters->extractParameters(runHeader);
-    m_file->writeFrame(runHeader, podio::Category::Run);
+  if (m_runParameters) {
+    m_runParameters->extractParameters(runHeader);
+    m_runParameters.release();
   }
+  m_file->writeFrame(runHeader, podio::Category::Run);
 }
 
 void Geant4Output2EDM4hep::begin(const G4Event* event)  {
