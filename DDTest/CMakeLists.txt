@@ -330,7 +330,7 @@ if (DD4HEP_USE_GEANT4)
       LABELS "comparison;mt")
   endif()
 
-  if(DD4HEP_USE_EDM4HEP AND TARGET podio::podioIO)
+  if(DD4HEP_USE_EDM4HEP AND TARGET podio::podioIO AND podio_VERSION VERSION_GREATER_EQUAL 1.6.0)
     add_test(NAME t_ddsim_edm4hep_mt1
       COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
