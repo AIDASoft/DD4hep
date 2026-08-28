@@ -18,7 +18,6 @@
 
 #include <atomic>
 #include <memory>
-#include <mutex>
 
 class TFile;
 class TTree;
@@ -62,8 +61,6 @@ namespace dd4hep {
       bool m_filesByRun = false;
       /// Counter of worker endRun calls so that closeOutput fires only after all workers are done
       std::atomic<int> m_endRunCount { 0 };
-      /// Static mutex to protect ROOT I/O operations in multi-threaded mode
-      static std::mutex s_rootMutex;
 
     public:
       /// Standard constructor

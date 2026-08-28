@@ -21,6 +21,7 @@
 #include <DDG4/Geant4Data.h>
 
 // Geant4 include files
+#include <G4AutoLock.hh>
 #include <G4Event.hh>
 #include <G4HCofThisEvent.hh>
 #include <G4ParticleTable.hh>
@@ -34,8 +35,6 @@
 
 using namespace dd4hep::sim;
 
-/// Define the static mutex for ROOT I/O protection
-std::mutex Geant4Output2ROOT::s_rootMutex;
 
 /// Standard constructor
 Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* ctxt, const std::string& nam)
@@ -85,7 +84,7 @@ void Geant4Output2ROOT::closeOutputLocked()   {
 
 /// Close current output file
 void Geant4Output2ROOT::closeOutput()   {
-  std::lock_guard<std::mutex> lock(s_rootMutex);
+  G4AutoLock lock(mutex());
   closeOutputLocked();
 }
 
@@ -103,7 +102,7 @@ TTree* Geant4Output2ROOT::section(const std::string& nam) {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2ROOT::beginRun(const G4Run* run) {
-  std::unique_lock<std::mutex> lock(s_rootMutex);
+  G4AutoLock lock(mutex());
   // Reset per-run counter here, before any events, so a new run never sees
   // stale counts from the previous run.
   m_endRunCount = 0;
@@ -141,7 +140,7 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
 
 /// Fill single EVENT branch entry (Geant4 collection data)
 int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, void* ptr) {
-  std::lock_guard<std::mutex> lock(s_rootMutex);
+  G4AutoLock lock(mutex());
   if (!m_file) return 0;
   TBranch* b = nullptr;
   auto i = m_branches.find(nam);
@@ -176,7 +175,7 @@ int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, v
 
 /// Commit data at end of filling procedure
 void Geant4Output2ROOT::commit(OutputContext<G4Event>& ctxt) {
-  std::lock_guard<std::mutex> lock(s_rootMutex);
+  G4AutoLock lock(mutex());
   if (m_file) {
     Int_t evtid = ctxt.context->GetEventID();
     TTree* id_tree = section("G4EventIDs");
