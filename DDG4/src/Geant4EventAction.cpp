@@ -127,8 +127,8 @@ Geant4EventAction* Geant4EventActionSequence::get(const std::string& nam) const 
 /// Add an actor responding to all callbacks. Sequence takes ownership.
 void Geant4EventActionSequence::adopt(Geant4EventAction* action) {
   if (action) {
-    G4AutoLock protection_lock(mutex());
     action->addRef();
+    G4AutoLock protection_lock(mutex());
     m_actors.add(action);
     return;
   }
