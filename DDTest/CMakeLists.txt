@@ -175,7 +175,7 @@ if (DD4HEP_USE_GEANT4)
     PASS_REGULAR_EXPRESSION "Deleting object StepActionCLI1"
   )
 
-  if(DD4HEP_USE_EDM4HEP AND TARGET podio::podioIO)
+  if(DD4HEP_USE_EDM4HEP AND podio_VERSION VERSION_GREATER_EQUAL 1.6.0)
     add_test( t_ddsimEDM4hepPlugins "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=3
       --output.physics 0
