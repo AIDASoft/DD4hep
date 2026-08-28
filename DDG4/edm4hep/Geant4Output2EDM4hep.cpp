@@ -237,7 +237,6 @@ namespace dd4hep {
 
 ///#include <DDG4/Geant4Output2EDM4hep.h>
 /// Geant4 headers
-#include <G4Threading.hh>
 #include <G4AutoLock.hh>
 #include <G4Version.hh>
 #include <G4ParticleDefinition.hh>
