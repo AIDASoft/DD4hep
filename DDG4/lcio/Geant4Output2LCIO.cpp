@@ -17,11 +17,11 @@
 // Framework include files
 #include <DD4hep/VolumeManager.h>
 #include <DDG4/Geant4OutputAction.h>
+#include <DDG4/Geant4Kernel.h>
 
 #include <DDG4/EventParameters.h>
 #include <DDG4/RunParameters.h>
 // Geant4 headers
-#include <G4Threading.hh>
 #include <G4AutoLock.hh>
 
 #include <DD4hep/Detector.h>
@@ -198,9 +198,6 @@ namespace dd4hep {
 using namespace dd4hep::sim;
 using namespace dd4hep;
 using namespace std;
-namespace {
-  G4Mutex action_mutex=G4MUTEX_INITIALIZER;
-}
 
 #include <DDG4/Factories.h>
 DECLARE_GEANT4ACTION(Geant4Output2LCIO)
@@ -220,7 +217,7 @@ Geant4Output2LCIO::Geant4Output2LCIO(Geant4Context* ctxt, const string& nam)
 
 /// Default destructor
 Geant4Output2LCIO::~Geant4Output2LCIO()  {
-  G4AutoLock protection_lock(&action_mutex);
+  G4AutoLock protection_lock(mutex());
   if ( m_file )  {
     m_file->close();
     detail::deletePtr(m_file);
@@ -231,7 +228,7 @@ Geant4Output2LCIO::~Geant4Output2LCIO()  {
 // Callback to store the Geant4 run information
 void Geant4Output2LCIO::beginRun(const G4Run* run)  {
   if ( 0 == m_file && !m_output.empty() )   {
-    G4AutoLock protection_lock(&action_mutex);
+    G4AutoLock protection_lock(mutex());
     m_file = lcio::LCFactory::getInstance()->createLCWriter();
     m_file->open(m_output,lcio::LCIO::WRITE_NEW);
   }
@@ -248,7 +245,6 @@ void Geant4Output2LCIO::endRun(const G4Run* /*run*/)  {
 void Geant4Output2LCIO::commit( OutputContext<G4Event>& /* ctxt */)   {
   lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
   if ( m_file )   {
-    G4AutoLock protection_lock(&action_mutex);
     m_file->writeEvent(e);
     return;
   }
@@ -257,7 +253,7 @@ void Geant4Output2LCIO::commit( OutputContext<G4Event>& /* ctxt */)   {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2LCIO::saveRun(const G4Run* run)  {
-  G4AutoLock protection_lock(&action_mutex);
+  G4AutoLock protection_lock(mutex());
   // --- write an lcio::RunHeader ---------
   lcio::LCRunHeaderImpl* rh =  new lcio::LCRunHeaderImpl;
   for (std::map< std::string, std::string >::iterator it = m_runHeader.begin(); it != m_runHeader.end(); ++it) {
@@ -268,7 +264,8 @@ void Geant4Output2LCIO::saveRun(const G4Run* run)  {
   rh->parameters().setValue("DD4HEPVersion", versionString());
   rh->setRunNumber(m_runNo);
   rh->setDetectorName(context()->detectorDescription().header().name());
-  auto* parameters = context()->run().extension<RunParameters>(false);
+  Geant4Context* workerCtx = context()->kernel().worker(Geant4Kernel::thread_self(), false).workerContext();
+  auto* parameters = workerCtx->run().extension<RunParameters>(false);
   if (parameters) {
     parameters->extractParameters(*rh);
   }
