@@ -389,4 +389,4 @@ static Ref_t create_detector(Detector& description,
 
   return tube;
 }
-DECLARE_DETELEMENT(DD4hep_Mask_o1_v01,create_detector)
+DECLARE_DETELEMENT(DD4hep_Mask_o1_v02,create_detector)
