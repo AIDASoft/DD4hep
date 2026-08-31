@@ -927,6 +927,7 @@ class DD4hepSimulation(object):
       gen.RejectPDGs = ConfigHelper.makeString(self.physics.rejectPDGs)
       gen.ZeroTimePDGs = ConfigHelper.makeString(self.physics.zeroTimePDGs)
       gen.DecayByGeant = ConfigHelper.makeString(self.physics.decayByGeant)
+      gen.SkipParticlesOutsideWorldVolume = self.physics.skipParticlesOutsideWorldVolume
       gen.enableUI()
       if output_level is not None:
         gen.OutputLevel = output_level
