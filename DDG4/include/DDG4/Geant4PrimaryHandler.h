@@ -45,6 +45,8 @@ namespace dd4hep {
       /// for these particles the decay time is chosen by Geant4 according to the lifetime configured instead of what is
       /// assigned in the MC generator
       std::set<int> m_decayByGeant = {};
+      /// drop primaries outside the world instead of aborting
+      bool m_skipParticlesOutsideWorldVolume = false;
 
       std::string toString() const {
         std::stringstream str;
@@ -54,6 +56,7 @@ namespace dd4hep {
         for (int i: m_zeroTimePDGs) { str << i << ", "; }
         str << "\nDecayByGeant: ";
         for (int i: m_decayByGeant) { str << i << ", "; }
+        str << "\nSkipParticlesOutsideWorldVolume: " << (m_skipParticlesOutsideWorldVolume ? "true" : "false");
         return str.str();
       }
     };

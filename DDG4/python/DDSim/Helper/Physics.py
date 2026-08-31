@@ -48,6 +48,10 @@ class Physics(ConfigHelper):
     self._alternativeDecayStatuses = set()
     self._alternativeStableStatuses = set()
     self._userFunctions = []
+    self._skipParticlesOutsideWorldVolume_EXTRA = {
+        "help": "Drop primary particles that start outside the world volume."
+                " By default such particles abort the run, because Geant4 cannot track them"}
+    self.skipParticlesOutsideWorldVolume = False
     self._closeProperties()
     Physics.__doc__ += "\n\n" + self.setupUserPhysics.__doc__
 

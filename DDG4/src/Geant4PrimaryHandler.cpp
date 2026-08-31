@@ -27,6 +27,7 @@ Geant4PrimaryHandler::Geant4PrimaryHandler(Geant4Context* ctxt, const std::strin
   declareProperty("RejectPDGs", m_primaryConfig.m_rejectPDGs);
   declareProperty("ZeroTimePDGs", m_primaryConfig.m_zeroTimePDGs);
   declareProperty("DecayByGeant", m_primaryConfig.m_decayByGeant);
+  declareProperty("SkipParticlesOutsideWorldVolume", m_primaryConfig.m_skipParticlesOutsideWorldVolume);
 }
 
 /// Default destructor

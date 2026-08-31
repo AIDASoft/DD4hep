@@ -26,6 +26,11 @@
 #include <G4PrimaryVertex.hh>
 #include <G4PrimaryParticle.hh>
 #include <G4ParticleDefinition.hh>
+#include <G4TransportationManager.hh>
+#include <G4Navigator.hh>
+#include <G4VPhysicalVolume.hh>
+#include <G4LogicalVolume.hh>
+#include <G4VSolid.hh>
 
 // C/C++ include files
 #include <stdexcept>
@@ -482,6 +487,19 @@ getRelevant(std::set<int>& visited,
   return res;
 }
 
+namespace {
+
+  /// Point inside the world volume; unknown world accepts
+  bool insideWorldVolume(const G4ThreeVector& point)   {
+    auto* transportation = G4TransportationManager::GetTransportationManager();
+    auto* navigator      = transportation ? transportation->GetNavigatorForTracking() : nullptr;
+    auto* world          = navigator ? navigator->GetWorldVolume() : nullptr;
+    auto* logical        = world ? world->GetLogicalVolume() : nullptr;
+    G4VSolid* solid      = logical ? logical->GetSolid() : nullptr;
+    return solid ? (solid->Inside(point) != kOutside) : true;
+  }
+}
+
 /// Generate all primary vertices corresponding to the merged interaction
 int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
                                    const Geant4Context* context,
@@ -512,6 +530,17 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
       for( Geant4Vertex* v : (*i).second ){
 
         int num_part = 0;
+        if ( !insideWorldVolume(G4ThreeVector(v->x, v->y, v->z)) )   {
+          if ( primaryConfig.m_skipParticlesOutsideWorldVolume )   {
+            caller->warning("+++ Dropping primary vertex at (%+.2e,%+.2e,%+.2e) [mm]: outside the world volume",
+                            v->x/CLHEP::mm, v->y/CLHEP::mm, v->z/CLHEP::mm);
+            continue;
+          }
+          caller->except("Primary vertex at (%+.2e,%+.2e,%+.2e) [mm] is outside the world volume. "
+                         "Geant4 cannot track particles starting there. Enlarge the world volume, or set "
+                         "SkipParticlesOutsideWorldVolume=True to drop such vertices instead.",
+                         v->x/CLHEP::mm, v->y/CLHEP::mm, v->z/CLHEP::mm);
+        }
         G4PrimaryVertex* v4 = new G4PrimaryVertex(v->x,v->y,v->z,v->time);
         event->AddPrimaryVertex(v4);
         caller->print("+++++ G4PrimaryVertex at (%+.2e,%+.2e,%+.2e) [mm] %+.2e [ns]",
