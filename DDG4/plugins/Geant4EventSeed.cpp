@@ -18,6 +18,7 @@
 #include <DD4hep/InstanceCount.h>
 #include <DD4hep/Printout.h>
 
+#include <DDG4/EventParameters.h>
 #include <DDG4/Geant4EventAction.h>
 #include <DDG4/Geant4StackingAction.h>
 #include <DDG4/Geant4Random.h>
@@ -41,9 +42,9 @@ Geant4EventSeed::Geant4EventSeed(Geant4Context* c, const std::string& typ) : Gea
 									     m_initialised(false)
 {
   Geant4Action::runAction().callAtBegin(this,&Geant4EventSeed::begin);
-  Geant4Action::eventAction().callAtBegin(this,&Geant4EventSeed::beginEvent);
+  Geant4Action::generatorAction().callAtBegin(this,&Geant4EventSeed::setSeedForPrimaries);
   // Re-seed after GeneratePrimaries so file-based generators' SetEventID is visible.
-  Geant4Action::stackingAction().callAtPrepare(this,&Geant4EventSeed::prepareEvent);
+  Geant4Action::eventAction().callAtBegin(this,&Geant4EventSeed::beginEvent);
   InstanceCount::increment(this);
 }
 
@@ -68,40 +69,50 @@ void Geant4EventSeed::begin(const G4Run* run) {
 
 /// begin-of-event callback
 void Geant4EventSeed::beginEvent(const G4Event* evt) {
-
-  Geant4Random *rndm = Geant4Random::instance();
-
-  unsigned int eventID = evt->GetEventID();
-  unsigned int newSeed = hash( m_initialSeed, eventID, m_runID );
-
-  dd4hep::printout( dd4hep::INFO, m_type,
-		    "At beginEvent: eventID=%u, runID=%u initialSeed=%u, newSeed=%u" ,
-		    evt->GetEventID(),  m_runID, m_initialSeed, newSeed );
-
-  rndm->setSeed( newSeed );
-
-  if ( dd4hep::printLevel() <= dd4hep::DEBUG ) {
-    rndm->showStatus();
-  }
-
+  dd4hep::printout(dd4hep::DEBUG, m_type, "EventSeed:: At beginEvent");
+  setSeed(evt, true);
 }
 
-/// prepare-stacking callback: re-seed after GeneratePrimaries using the final event ID
-void Geant4EventSeed::prepareEvent(G4StackManager* /* stackMgr */) {
+/// begin-of-event callback
+void Geant4EventSeed::setSeedForPrimaries(const G4Event* evt) {
+  dd4hep::printout(dd4hep::DEBUG, m_type, "EventSeed:: At generatePrimaries");
+  // since this is before we read input files we cannot expect parameters to be present
+  setSeed(evt, false);
+}
 
-  const G4Event* evt = G4EventManager::GetEventManager()->GetConstCurrentEvent();
-  if ( !evt ) return;
+/// general function for setting the seed, called by other callbacks
+void Geant4EventSeed::setSeed(const G4Event* evt, bool checkForEventParameters=true) {
 
   Geant4Random *rndm = Geant4Random::instance();
 
+  //Trying to use event id from the Geant4 event, unless we have it also in the EventParameters
   unsigned int eventID = evt->GetEventID();
+
+  if(checkForEventParameters) {
+    //Get EventParameters from the context
+    EventParameters* parameters = context()->event().extension<EventParameters>(false);
+    if(parameters) {
+      eventID = parameters->eventNumber();
+      m_runID = parameters->runNumber();
+      dd4hep::printout(dd4hep::DEBUG, m_type,
+                       "EventSeed::setSeed: Found eventParameters: eventID=%u, runID=%u",
+                       eventID, m_runID);
+    } else {
+      dd4hep::printout(dd4hep::DEBUG, m_type,
+                       "EventSeed::setSeed: Did not find eventParameters");
+    }
+  }
+
   unsigned int newSeed = hash( m_initialSeed, eventID, m_runID );
+  dd4hep::printout(dd4hep::INFO, m_type,
+                   "EventSeed::setSeed: eventID=%u, runID=%u initialSeed=%u, newSeed=%u",
+                   eventID, m_runID, m_initialSeed, newSeed );
 
-  dd4hep::printout( dd4hep::INFO, m_type,
-		    "At prepareEvent: eventID=%u, runID=%u initialSeed=%u, newSeed=%u",
-		    eventID, m_runID, m_initialSeed, newSeed );
+  rndm->setSeed(newSeed);
 
-  rndm->setSeed( newSeed );
+  if (dd4hep::printLevel() <= dd4hep::DEBUG) {
+    rndm->showStatus();
+  }
 
 }
 

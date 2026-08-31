@@ -15,6 +15,7 @@
 
 // Framework include files
 #include <DDG4/Geant4RunAction.h>
+#include <DDG4/Geant4GeneratorAction.h>
 
 // Forward declarations
 class G4StackManager;
@@ -61,6 +62,10 @@ namespace dd4hep {
       void beginEvent(const G4Event*);
       /// prepare-stacking callback: re-seeds after GeneratePrimaries using the final event ID
       void prepareEvent(G4StackManager*);
+      /// generatePrimaries callback
+      void setSeedForPrimaries(const G4Event*);
+      /// set the seed function, called from other callbacks)
+      void setSeed(const G4Event*, bool checkForParameters);
     };
 
     /*

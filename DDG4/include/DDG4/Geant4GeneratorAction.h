@@ -116,6 +116,8 @@ namespace dd4hep {
     protected:
       /// Callback sequence to generate primary particles
       CallbackSequence m_calls;
+      /// Callback sequence before generate primary particles
+      CallbackSequence m_calls_at_begin;
       /// The list of action objects to be called
       Actors<Geant4GeneratorAction> m_actors;
       
@@ -137,6 +139,12 @@ namespace dd4hep {
       void call(Q* p, void (T::*f)(G4Event*)) {
         m_calls.add(p, f);
       }
+      /// Register callback to happen before primary particle. Types Q and T must be polymorph!
+      template <typename Q, typename T>
+      void callAtBegin(Q* p, void (T::*f)(const G4Event*)) {
+        m_calls_at_begin.add(p, f);
+      }
+
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4GeneratorAction* action);
       /// Callback to generate primary particles

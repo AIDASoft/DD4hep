@@ -87,6 +87,7 @@ Geant4GeneratorActionSequence::Geant4GeneratorActionSequence(Geant4Context* ctxt
 Geant4GeneratorActionSequence::~Geant4GeneratorActionSequence() {
   m_actors(&Geant4GeneratorAction::release);
   m_actors.clear();
+  m_calls_at_begin.clear();
   m_calls.clear();
   InstanceCount::decrement(this);
 }
@@ -121,6 +122,7 @@ void Geant4GeneratorActionSequence::adopt(Geant4GeneratorAction* action) {
 /// Generator callback
 void Geant4GeneratorActionSequence::operator()(G4Event* event) {
   if ( context()->kernel().processEvents() )  {
+    m_calls_at_begin(event);
     m_actors(&Geant4GeneratorAction::operator(), event);
     m_calls(event);
     return;
