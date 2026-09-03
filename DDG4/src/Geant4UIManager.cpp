@@ -49,7 +49,7 @@ Geant4UIManager::Geant4UIManager(Geant4Context* ctxt, const std::string& nam)
   declareProperty("ConfigureCommands",  m_configureCommands);
   declareProperty("InitializeCommands", m_initializeCommands);
   declareProperty("TerminateCommands",  m_terminateCommands);
-  declareProperty("Commands",           m_preRunCommands);
+  declareProperty("Commands",           m_commands);
   declareProperty("PreRunCommands",     m_preRunCommands);
   declareProperty("PostRunCommands",    m_postRunCommands);
   declareProperty("HaveVIS",            m_haveVis=false);
@@ -228,6 +228,17 @@ void Geant4UIManager::start() {
   G4UImanager* mgr = G4UImanager::GetUIpointer();
   bool executed_statements = false;
 
+  /// Execute the chained post-run command statements
+  auto post_run_commands = [this, mgr]()   {
+    for(const auto& c : this->m_postRunCommands)  {
+      info("++ Executing post-run statement: %s",c.c_str());
+      G4int ret = mgr->ApplyCommand(c.c_str());
+      if ( ret != 0 )  {
+        except("Failed to execute command: %s",c.c_str());
+      }
+    }
+  };
+
   /// Start visualization
   if ( m_haveVis || !m_visSetup.empty() ) {
     m_vis = startVis();
@@ -251,9 +262,21 @@ void Geant4UIManager::start() {
     mgr->ApplyCommand(make_cmd(m.c_str()));
     executed_statements = true;
   }
-  /// Execute the chained pre-run command statements
+  /// Execute the chained pre-run command statements.
+  /// These configure the run. They do not replace it and hence do NOT
+  /// set executed_statements: the automatic batch run below still happens.
   for(const auto& c : m_preRunCommands)  {
     info("++ Executing pre-run statement: %s",c.c_str());
+    G4int ret = mgr->ApplyCommand(c.c_str());
+    if ( ret != 0 )  {
+      except("Failed to execute command: %s",c.c_str());
+    }
+  }
+  /// Execute the chained command statements.
+  /// These are assumed to steer the execution themselves (e.g. by calling
+  /// /run/beamOn) and hence suppress the automatic batch run below.
+  for(const auto& c : m_commands)  {
+    info("++ Executing command statement: %s",c.c_str());
     G4int ret = mgr->ApplyCommand(c.c_str());
     if ( ret != 0 )  {
       except("Failed to execute command: %s",c.c_str());
@@ -263,15 +286,7 @@ void Geant4UIManager::start() {
   /// Start UI session if present
   if ( m_haveUI && m_ui )   {
     m_ui->SessionStart();
-    /// Execute the chained post-run command statements
-    for(const auto& c : m_postRunCommands)  {
-      info("++ Executing post-run statement: %s",c.c_str());
-      G4int ret = mgr->ApplyCommand(c.c_str());
-      if ( ret != 0 )  {
-        except("Failed to execute command: %s",c.c_str());
-      }
-      executed_statements = true;
-    }
+    post_run_commands();
     return;
   }
   else if ( m_haveUI )   {
@@ -279,14 +294,7 @@ void Geant4UIManager::start() {
     return;
   }
   else if ( executed_statements )  {
-    /// Execute the chained post-run command statements
-    for(const auto& c : m_postRunCommands)  {
-      info("++ Executing post-run statement: %s",c.c_str());
-      G4int ret = mgr->ApplyCommand(c.c_str());
-      if ( ret != 0 )  {
-        except("Failed to execute command: %s",c.c_str());
-      }
-    }
+    post_run_commands();
     return;
   }
 
@@ -301,6 +309,7 @@ void Geant4UIManager::start() {
     info("++ End of file reached, ending run...");
     context()->kernel().runManager().RunTermination();
   }
+  post_run_commands();
 }
 
 /// Stop and release resources
