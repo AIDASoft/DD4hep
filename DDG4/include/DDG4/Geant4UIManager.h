@@ -64,7 +64,7 @@ namespace dd4hep {
       std::vector<std::string> m_initializeCommands;
       /// Property: List of commands to be executed when the Geant4Kernel gets terminated
       std::vector<std::string> m_terminateCommands;
-      /// Property: Legacy list of commands controlling the run execution themselves
+      /// Property: List of commands steering the run execution themselves (e.g. /run/beamOn)
       std::vector<std::string> m_commands;
       /// Property: List of commands to be executed BEFORE running
       std::vector<std::string> m_preRunCommands;
