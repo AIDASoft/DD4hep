@@ -272,7 +272,7 @@ void Geant4UIManager::start() {
       except("Failed to execute command: %s",c.c_str());
     }
   }
-  /// Execute the legacy chained command statements.
+  /// Execute the chained command statements.
   /// These are assumed to steer the execution themselves (e.g. by calling
   /// /run/beamOn) and hence suppress the automatic batch run below.
   for(const auto& c : m_commands)  {
