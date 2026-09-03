@@ -65,7 +65,7 @@ namespace dd4hep {
       /// generatePrimaries callback
       void setSeedForPrimaries(const G4Event*);
       /// set the seed function, called from other callbacks)
-      void setSeed(const G4Event*, bool checkForParameters);
+      void setSeed(const G4Event*, bool checkForParameters = true);
     };
 
     /*
