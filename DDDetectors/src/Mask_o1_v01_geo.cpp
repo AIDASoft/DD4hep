@@ -281,6 +281,90 @@ static Ref_t create_detector(Detector& description,
 
       break;
     }
+
+    case ODH::kUpstreamTrapezoid: {
+      int maskSide = 1;
+      if (xmlSection.hasAttr(_Unicode(side))) {
+          maskSide = xmlSection.attr<int>(_Unicode(side));
+      }
+
+      double extraThick = 0.0;
+      if (xmlSection.hasAttr(_Unicode(extra_thickness))) {
+          extraThick = xmlSection.attr<double>(_Unicode(extra_thickness));
+      }
+
+      // Trapezoid variables from xml
+      const double origBaseHalf   = zHalf;         
+      const double maskWidthHalf  = rInnerStart;   // SeparatedBeamPipe_rmax
+      const double offset         = rInnerEnd;     // Distance from beam axis
+      const double maskTopHalf    = rOuterStart;   // Flat inner section half-length
+      const double origHeightHalf = rOuterEnd;     // Original thickness half-length
+
+      // Slope-preserving math for the oversized trapezoid
+      // As height increases by extraThick, the base expands proportionally so the slope angle remains invariant.
+      const double maskHeightHalf = origHeightHalf + (extraThick / 2.0);
+      const double maskBaseHalf   = maskTopHalf + (origBaseHalf - maskTopHalf) * (maskHeightHalf / origHeightHalf);
+
+      Trd2 oversizedMask(maskBaseHalf, maskTopHalf, maskWidthHalf, maskWidthHalf, maskHeightHalf);
+
+      // Determine Orientation and Position in the branch local frame
+      Rotation3D maskOrientation;
+      Position maskLocalPos;
+
+      if (maskSide == 1) {
+          // RIGHT MASK: Flat top facing inwards (-X)
+          maskOrientation = Rotation3D(RotationY(-90.0 * units::degree));
+          maskLocalPos = Position(offset + maskHeightHalf, 0.0, 0.0);
+      } else {
+          // LEFT MASK: Flat top facing inwards (+X)
+          maskOrientation = Rotation3D(RotationZ(180.0 * units::degree) * RotationY(-90.0 * units::degree));
+          maskLocalPos = Position(-(offset + maskHeightHalf), 0.0, 0.0);
+      }
+      
+      // Create the Transformation mapping from the mask's frame to the branch's frame
+      Transform3D maskTransform(maskOrientation, maskLocalPos);
+
+      // Boolean Subtraction to carve out the cylindrical wall
+      // Multiply zHalf by 2.0 to guarantee the cutter is safely longer than the mask)
+      Tube outerTube(rInnerStart, rInnerStart + extraThick + 10.0 * units::mm, zHalf * 2.0);
+      
+      // To apply the subtraction, outerTube (which is at 0,0,0 in the branch frame) 
+      // must be projected backward into the mask's local coordinate frame.
+      Transform3D tubeInMaskFrame = maskTransform.Inverse();
+      
+      SubtractionSolid finalMaskSolid(oversizedMask, outerTube, tubeInMaskFrame);
+
+      // Create the Logical Volume 
+      Volume maskVol(volName, finalMaskSolid, material);
+      if (isSensitive) {
+          maskVol.setSensitiveDetector(sens);
+      }
+      maskVol.setVisAttributes(description, xmlMask.visStr());
+
+      // Global Placements 
+      Transform3D transformer, transmirror;
+      if (rotationX) {
+          transformer = Transform3D(RotationX(rotateAngle), RotateX(Position(0, 0, zPosition), rotateAngle));
+          transmirror = Transform3D(RotationX(mirrorAngle), RotateX(Position(0, 0, zPosition), mirrorAngle));
+      } else {
+          transformer = Transform3D(RotationY(rotateAngle), RotateY(Position(0, 0, zPosition), rotateAngle));
+          transmirror = Transform3D(RotationY(mirrorAngle), RotateY(Position(0, 0, zPosition), mirrorAngle));
+      }
+
+      // Multiply the global branch matrix by the local mask placement matrix
+      Transform3D transformFwd = transformer * maskTransform;
+      PlacedVolume placedFwd = envelope.placeVolume(maskVol, transformFwd);
+      
+      Transform3D transformBwd = transmirror * maskTransform;
+      PlacedVolume placedBwd = envelope.placeVolume(maskVol, transformBwd);
+      
+      // Physical IDs
+      placedFwd.addPhysVolID("side", 1).addPhysVolID("layer", counter).addPhysVolID("module", maskSide);
+      placedBwd.addPhysVolID("side", -1).addPhysVolID("layer", counter).addPhysVolID("module", maskSide);
+
+      break;
+    }
+    
     default: {
       throw std::runtime_error( " Mask_o1_v01_geo.cpp : fatal failure !! ??  " ) ;
     }
