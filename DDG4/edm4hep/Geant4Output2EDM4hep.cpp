@@ -19,6 +19,7 @@
 #include <DDG4/FileParameters.h>
 #include <DDG4/Geant4OutputAction.h>
 #include <DDG4/RunParameters.h>
+#include <DDG4/Geant4Kernel.h>
 
 /// edm4hep include files
 #include <edm4hep/MCParticleCollection.h>
@@ -106,6 +107,11 @@ namespace dd4hep {
       int                           m_eventNumberOffset { 0 };
       bool                          m_filesByRun        { false };
       bool                          m_rntuple           { false };
+
+      /// RunParameters to be written when file is closed
+      std::unique_ptr<RunParameters> m_runParameters = nullptr;
+      /// FileParameters  to be written when fle is closed
+      std::unique_ptr<FileParameters> m_fileParameters = nullptr;
 
       /// Data conversion interface for MC particles to EDM4hep format
       void saveParticles(Geant4ParticleMap* particles);
@@ -236,7 +242,6 @@ namespace dd4hep {
 
 ///#include <DDG4/Geant4Output2EDM4hep.h>
 /// Geant4 headers
-#include <G4Threading.hh>
 #include <G4AutoLock.hh>
 #include <G4Version.hh>
 #include <G4ParticleDefinition.hh>
@@ -251,10 +256,6 @@ namespace dd4hep {
 
 using namespace dd4hep::sim;
 using namespace dd4hep;
-
-namespace {
-  G4Mutex action_mutex = G4MUTEX_INITIALIZER;
-}
 
 #include <DDG4/Factories.h>
 DECLARE_GEANT4ACTION(Geant4Output2EDM4hep)
@@ -282,13 +283,13 @@ Geant4Output2EDM4hep::Geant4Output2EDM4hep(Geant4Context* ctxt, const std::strin
 
 /// Default destructor
 Geant4Output2EDM4hep::~Geant4Output2EDM4hep()  {
-  G4AutoLock protection_lock(&action_mutex);
+  G4AutoLock protection_lock(mutex());
   InstanceCount::decrement(this);
 }
 
 // Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
-  G4AutoLock protection_lock(&action_mutex);
+  G4AutoLock protection_lock(mutex());
   std::string fname = m_output;
   m_runNo = run->GetRunID();
   if ( m_filesByRun )    {
@@ -314,14 +315,37 @@ void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::endRun(const G4Run* run)  {
-  saveRun(run);
-  saveFileMetaData();
+  G4AutoLock protection_lock(mutex());
+
+  Geant4Context* workerCtx = context()->kernel().worker(Geant4Kernel::thread_self(), false).workerContext();
+  {
+    RunParameters* parameters = workerCtx->run().extension<RunParameters>(false);
+    if(parameters) {
+      if(m_runParameters) {
+        printout(ERROR, "Geant4Output2EDM4hep" ,"Some other thread already stored RunRarameters");
+      } else {
+        m_runParameters = std::make_unique<RunParameters>(*parameters);
+      }
+    }
+  }
+
+  {
+    FileParameters* parameters = workerCtx->run().extension<FileParameters>(false);
+    if(parameters) {
+      if(m_fileParameters) {
+        printout(ERROR, "Geant4Output2EDM4hep" ,"Some other thread already stored FileRarameters");
+      } else {
+        m_fileParameters = std::make_unique<FileParameters>(*parameters);
+      }
+    }
+  }
 
   // Close the file only when this is the last thread using it.
   // Note: Although the use count is atomic, the file pointer is not,
   // and testing it requires locking.
-  G4AutoLock protection_lock(&action_mutex);
   if ( m_file && m_fileUseCount == 1 )   {
+    saveRun(run);
+    saveFileMetaData();
     m_file->finish();
     m_file.reset();
   }
@@ -333,20 +357,16 @@ void Geant4Output2EDM4hep::saveFileMetaData() {
   for (const auto& [name, encodingStr] : m_cellIDEncodingStrings) {
     metaFrame.putParameter(podio::collMetadataParamName(name, CellIDEncoding), encodingStr);
   }
-  if (context()->runPtr() != nullptr) {
-    FileParameters* parameters = context()->run().extension<FileParameters>(false);
-    if ( parameters ) {
-      parameters->extractParameters(metaFrame);
-    }
+  if (m_fileParameters) {
+    m_fileParameters->extractParameters(metaFrame);
+    m_fileParameters.release();
   }
-  G4AutoLock protection_lock(&action_mutex);
   m_file->writeFrame(metaFrame, podio::Category::Metadata);
 }
 
 /// Commit data at end of filling procedure
 void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
   if ( m_file )   {
-    G4AutoLock protection_lock(&action_mutex);
     m_frame.put( std::move(m_particles), "MCParticles");
     for (auto it = m_trackerHits.begin(); it != m_trackerHits.end(); ++it)   {
       m_frame.put( std::move(it->second), it->first);
@@ -367,7 +387,6 @@ void Geant4Output2EDM4hep::commit( OutputContext<G4Event>& /* ctxt */)   {
 
 /// Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
-  G4AutoLock protection_lock(&action_mutex);
   // --- write an edm4hep::RunHeader ---------
   // Runs are just Frames with different contents in EDM4hep / podio. We simply
   // store everything as parameters for now
@@ -389,16 +408,11 @@ void Geant4Output2EDM4hep::saveRun(const G4Run* run)   {
   runHeader.putParameter("GEANT4Version", G4Version);
   runHeader.putParameter("DD4hepVersion", versionString());
   runHeader.putParameter("detectorName", context()->detectorDescription().header().name());
-  {
-    // In multithreaded running, the run is present in only one of the contexts
-    if (context()->runPtr() != nullptr) {
-      RunParameters* parameters = context()->run().extension<RunParameters>(false);
-      if ( parameters ) {
-        parameters->extractParameters(runHeader);
-      }
-      m_file->writeFrame(runHeader, podio::Category::Run);
-    }
+  if (m_runParameters) {
+    m_runParameters->extractParameters(runHeader);
+    m_runParameters.release();
   }
+  m_file->writeFrame(runHeader, podio::Category::Run);
 }
 
 void Geant4Output2EDM4hep::begin(const G4Event* event)  {

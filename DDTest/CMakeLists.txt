@@ -100,6 +100,7 @@ if (DD4HEP_USE_GEANT4)
 
       add_test( t_${TEST_NAME} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=1
+        --output.physics 0
         --outputFile=${TEST_NAME}.root --inputFiles ${TEST_HEPMC3_INPUT_FILE}
         --part.userParticleHandler=)
 
@@ -116,7 +117,7 @@ if (DD4HEP_USE_GEANT4)
     if(DD4HEP_USE_HEPMC3)
       target_compile_definitions(${TEST_NAME} PRIVATE DD4HEP_USE_HEPMC3)
     endif()
-    if(DD4HEP_USE_EDM4HEP)
+    if(DD4HEP_USE_EDM4HEP AND podio_VERSION VERSION_GREATER_EQUAL 1.6.0)
       target_compile_definitions(${TEST_NAME} PRIVATE DD4HEP_USE_EDM4HEP)
     endif()
     if(DD4HEP_USE_LCIO)
@@ -144,6 +145,7 @@ if (DD4HEP_USE_GEANT4)
   foreach(OUTPUT_FILE IN LISTS DDSIM_OUTPUT_FILES)
     ADD_TEST( t_test_ddsim_${OUTPUT_FILE} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -G -N=2
+      --output.physics 0
       --outputFile=testSid${OUTPUT_FILE}
       --gun.position \"0.0 0.0 1.0*cm\" --gun.direction \"1.0 0.0 1.0\" --gun.momentumMax 100*GeV --part.userParticleHandler=)
     SET_TESTS_PROPERTIES( t_test_ddsim_${OUTPUT_FILE} PROPERTIES FAIL_REGULAR_EXPRESSION  " Exception; EXCEPTION;ERROR;Error" )
@@ -151,6 +153,7 @@ if (DD4HEP_USE_GEANT4)
 
   add_test( t_ddsimUserPlugins "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
     ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=10
+    --output.physics 0
     --outputFile=t_ddsimUserPlugins.root -G
     --steeringFile ${CMAKE_CURRENT_SOURCE_DIR}/python/userPluginsSteeringFile.PY
     --part.userParticleHandler=
@@ -158,6 +161,7 @@ if (DD4HEP_USE_GEANT4)
 
   add_test( t_ddsimUserActions "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
     ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=10
+    --output.physics 0
     --outputFile=t_ddsimUserActions.root -G
     --steeringFile ${CMAKE_CURRENT_SOURCE_DIR}/python/userActionsSteeringFile.PY
     --action.event "Geant4TestEventAction/EventActionCLI1"
@@ -171,9 +175,10 @@ if (DD4HEP_USE_GEANT4)
     PASS_REGULAR_EXPRESSION "Deleting object StepActionCLI1"
   )
 
-  if(DD4HEP_USE_EDM4HEP AND TARGET podio::podioIO)
+  if(DD4HEP_USE_EDM4HEP AND podio_VERSION VERSION_GREATER_EQUAL 1.6.0)
     add_test( t_ddsimEDM4hepPlugins "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=3
+      --output.physics 0
       --outputFile=ddsim_edm4hep_ZH.root
       --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root
       --part.userParticleHandler=
@@ -190,6 +195,7 @@ if (DD4HEP_USE_GEANT4)
   add_test(NAME t_ddsim_gun_mt1
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --output.physics 0
             --runType=batch -N=10 -j 1 -G
             --outputFile=gun_mt1.root
             --random.seed=333333
@@ -208,6 +214,7 @@ if (DD4HEP_USE_GEANT4)
   add_test(NAME t_ddsim_gun_mt2
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --output.physics 0
             --runType=batch -N=10 -j 2 -G
             --outputFile=gun_mt2.root
             --random.seed=333333
@@ -227,6 +234,7 @@ if (DD4HEP_USE_GEANT4)
   add_test(NAME t_ddsim_gun_mt4
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --output.physics 0
             --runType=batch -N=10 -j 4 -G
             --outputFile=gun_mt4.root
             --random.seed=333333
@@ -263,6 +271,7 @@ if (DD4HEP_USE_GEANT4)
     add_test(NAME t_ddsim_hepmc_mt1
       COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --output.physics 0
               --runType=batch -N=5 -j 1
               --outputFile=hepmc_mt1.root
               --random.seed=111111
@@ -277,6 +286,7 @@ if (DD4HEP_USE_GEANT4)
     add_test(NAME t_ddsim_hepmc_mt2
       COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --output.physics 0
               --runType=batch -N=5 -j 2
               --outputFile=hepmc_mt2.root
               --random.seed=111111
@@ -291,6 +301,7 @@ if (DD4HEP_USE_GEANT4)
     add_test(NAME t_ddsim_hepmc_mt4
       COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --output.physics 0
               --runType=batch -N=5 -j 4
               --outputFile=hepmc_mt4.root
               --random.seed=111111
@@ -319,10 +330,11 @@ if (DD4HEP_USE_GEANT4)
       LABELS "comparison;mt")
   endif()
 
-  if(DD4HEP_USE_EDM4HEP AND TARGET podio::podioIO)
+  if(DD4HEP_USE_EDM4HEP AND TARGET podio::podioIO AND podio_VERSION VERSION_GREATER_EQUAL 1.6.0)
     add_test(NAME t_ddsim_edm4hep_mt1
       COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --output.physics 0
               --runType=batch -N=3 -j 1
               --outputFile=edm4hep_mt1.root
               --random.seed=222222
@@ -335,6 +347,7 @@ if (DD4HEP_USE_GEANT4)
     add_test(NAME t_ddsim_edm4hep_mt2
       COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --output.physics 0
               --runType=batch -N=3 -j 2
               --outputFile=edm4hep_mt2.root
               --random.seed=222222
@@ -348,6 +361,7 @@ if (DD4HEP_USE_GEANT4)
     add_test(NAME t_ddsim_edm4hep_mt4
       COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+              --output.physics 0
               --runType=batch -N=3 -j 4
               --outputFile=edm4hep_mt4.root
               --random.seed=222222
@@ -376,6 +390,7 @@ if (DD4HEP_USE_GEANT4)
   add_test(NAME t_ddsim_g4gun_mt1
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --output.physics 0
             --runType=run -j 1
             --outputFile=g4gun_mt1.root
             --random.seed=333333
@@ -390,6 +405,7 @@ if (DD4HEP_USE_GEANT4)
   add_test(NAME t_ddsim_g4gun_mt2
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --output.physics 0
             --runType=batch -N=10 -j 2
             --outputFile=g4gun_mt2.root
             --random.seed=333333
@@ -404,6 +420,7 @@ if (DD4HEP_USE_GEANT4)
   add_test(NAME t_ddsim_g4gun_mt4
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --output.physics 0
             --runType=batch -N=10 -j 4
             --outputFile=g4gun_mt4.root
             --random.seed=333333
@@ -425,6 +442,7 @@ if (DD4HEP_USE_GEANT4)
   add_test(NAME t_ddsim_gps_mt1
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --output.physics 0
             --runType=run -j 1
             --outputFile=gps_mt1.root
             --random.seed=444444
@@ -439,6 +457,7 @@ if (DD4HEP_USE_GEANT4)
   add_test(NAME t_ddsim_gps_mt2
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --output.physics 0
             --runType=batch -N=10 -j 2
             --outputFile=gps_mt2.root
             --random.seed=444444
@@ -453,6 +472,7 @@ if (DD4HEP_USE_GEANT4)
   add_test(NAME t_ddsim_gps_mt4
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+            --output.physics 0
             --runType=batch -N=10 -j 4
             --outputFile=gps_mt4.root
             --random.seed=444444

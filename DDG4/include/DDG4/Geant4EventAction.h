@@ -17,6 +17,10 @@
 // Framework include files
 #include <DDG4/Geant4Action.h>
 
+// Geant4 headers
+#include <G4Types.hh>
+#include <G4AutoLock.hh>
+
 // Forward declarations
 class G4Event;
 
@@ -57,6 +61,8 @@ namespace dd4hep {
     protected:
       /// Define standard assignments and constructors
       DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4EventAction);
+      /// Synchronisation lock
+      mutable G4Mutex m_mutex = G4MUTEX_INITIALIZER;
 
     public:
       /// Standard constructor
@@ -67,6 +73,10 @@ namespace dd4hep {
       virtual void begin(const G4Event* event);
       /// End-of-event callback
       virtual void end(const G4Event* event);
+      /// access to mutex for this action
+      G4Mutex& mutex() const {
+        return m_mutex;
+      }
     };
 
     /// Implementation of the Geant4 shared event action
@@ -131,7 +141,9 @@ namespace dd4hep {
       CallbackSequence m_final;
       /// The list of action objects to be called
       Actors<Geant4EventAction> m_actors;
-      
+      /// Synchronisation lock
+      mutable G4Mutex m_mutex = G4MUTEX_INITIALIZER;
+
     protected:
       /// Define standard assignments and constructors
       DDG4_DEFINE_ACTION_CONSTRUCTORS(Geant4EventActionSequence);
@@ -168,6 +180,10 @@ namespace dd4hep {
       virtual void begin(const G4Event* event);
       /// End-of-event callback
       virtual void end(const G4Event* event);
+      /// access to mutex for this action sequence
+      G4Mutex& mutex() const {
+        return m_mutex;
+      }
     };
 
   }    // End namespace sim
