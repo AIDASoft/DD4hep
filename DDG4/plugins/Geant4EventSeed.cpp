@@ -81,32 +81,48 @@ void Geant4EventSeed::setSeedForPrimaries(const G4Event* evt) {
 }
 
 /// general function for setting the seed, called by other callbacks
-void Geant4EventSeed::setSeed(const G4Event* evt, bool checkForEventParameters=true) {
+void Geant4EventSeed::setSeed(const G4Event* evt, bool checkForEventParameters) {
 
   Geant4Random *rndm = Geant4Random::instance();
 
-  //Trying to use event id from the Geant4 event, unless we have it also in the EventParameters
+  //Trying to use event and run id from the Geant4 event, unless we have them also in the EventParameters
+  //Both are kept local: m_runID is owned by the begin-of-run callback and must not be overwritten here,
+  //otherwise the value would leak into the calls that asked not to look at the EventParameters
   unsigned int eventID = evt->GetEventID();
+  unsigned int runID   = m_runID;
 
   if(checkForEventParameters) {
     //Get EventParameters from the context
     EventParameters* parameters = context()->event().extension<EventParameters>(false);
     if(parameters) {
-      eventID = parameters->eventNumber();
-      m_runID = parameters->runNumber();
+      //Unset numbers are negative in the EventParameters, keep the Geant4 values in that case
+      if(parameters->eventNumber() < 0) {
+        dd4hep::printout(dd4hep::DEBUG, m_type,
+                         "EventSeed::setSeed: eventParameters have unset eventNumber=%d, keeping eventID=%u",
+                         parameters->eventNumber(), eventID);
+      } else {
+        eventID = parameters->eventNumber();
+      }
+      if(parameters->runNumber() < 0) {
+        dd4hep::printout(dd4hep::DEBUG, m_type,
+                         "EventSeed::setSeed: eventParameters have unset runNumber=%d, keeping runID=%u",
+                         parameters->runNumber(), runID);
+      } else {
+        runID = parameters->runNumber();
+      }
       dd4hep::printout(dd4hep::DEBUG, m_type,
                        "EventSeed::setSeed: Found eventParameters: eventID=%u, runID=%u",
-                       eventID, m_runID);
+                       eventID, runID);
     } else {
       dd4hep::printout(dd4hep::DEBUG, m_type,
                        "EventSeed::setSeed: Did not find eventParameters");
     }
   }
 
-  unsigned int newSeed = hash( m_initialSeed, eventID, m_runID );
+  unsigned int newSeed = hash( m_initialSeed, eventID, runID );
   dd4hep::printout(dd4hep::INFO, m_type,
                    "EventSeed::setSeed: eventID=%u, runID=%u initialSeed=%u, newSeed=%u",
-                   eventID, m_runID, m_initialSeed, newSeed );
+                   eventID, runID, m_initialSeed, newSeed );
 
   rndm->setSeed(newSeed);
 
