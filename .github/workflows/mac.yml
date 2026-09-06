@@ -54,7 +54,6 @@ jobs:
           mkdir build
           cd build
           unset CPATH
-          echo "::group::CMakeConfig"
           # Common CMake options
           source ../.github/scripts/common_cmake_opts.sh
           echo "::group::CMakeConfig C++20"
@@ -63,19 +62,23 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_CXX_STANDARD=20 \
             ..
+          echo "::endgroup::"
           if [[ ${{ matrix.LCG }} =~ dev[34] ]]; then
             echo "::group::CMakeConfig 2"
             cmake \
               -DDD4HEP_HEPMC3_COMPRESSION_SUPPORT=ON \
               -DDD4HEP_USE_G4HEPEM=ON \
               ..
+            echo "::endgroup::"
           fi
           echo "::group::Compile"
           ninja install
           ccache -s
-          . ../bin/thisdd4hep.sh
+          echo "::endgroup::"
           echo "::group::Test"
+          . ../bin/thisdd4hep.sh
           ctest --output-on-failure -j"$(getconf _NPROCESSORS_ONLN)" --output-junit TestResults_1.xml
+          echo "::endgroup::"
           echo "::group::CMakeExamples"
           cd ../examples/
           mkdir build
@@ -85,11 +88,14 @@ jobs:
             $=COMMON_EXAMPLES_CMAKE_OPTS \
             -DCMAKE_CXX_STANDARD=20 \
             ..
+          echo "::endgroup::"
           echo "::group::CompileExamples"
           ninja install
           ccache -s
+          echo "::endgroup::"
           echo "::group::TestExamples"
           ctest --output-on-failure -j"$(getconf _NPROCESSORS_ONLN)" --output-junit TestResults_2.xml
+          echo "::endgroup::"
     - name: Prepare Artifact Name
       if: success() || failure()
       run: |
