@@ -28,13 +28,19 @@ jobs:
         ninja
 
   default:
-    runs-on: macos-15
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        LCG: ["LCG_110/arm64-mac15-clang170-opt",
-              "dev3/arm64-mac15-clang170-opt",
-              "dev4/arm64-mac15-clang170-opt"]
+        include:
+        - os: macos-26
+          LCG: "LCG_110/arm64-mac26-clang170-opt"
+        - os: macos-15
+          LCG: "LCG_110/arm64-mac15-clang170-opt"
+        - os: macos-15
+          LCG: "dev3/arm64-mac15-clang170-opt"
+        - os: macos-15
+          LCG: "dev4/arm64-mac15-clang170-opt"
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
     - uses: cvmfs-contrib/github-action-cvmfs@ea996d5ba388b05d4b97f07569d677eac442f20a
