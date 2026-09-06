@@ -38,11 +38,7 @@ jobs:
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
     - uses: cvmfs-contrib/github-action-cvmfs@ea996d5ba388b05d4b97f07569d677eac442f20a
-    - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
-      with:
-        release-platform: ${{ matrix.LCG }}
-        ccache-key: ccache-${{ matrix.LCG }}
-        run: |
+    - run: |
           mkdir build
           cd build
           unset CPATH
