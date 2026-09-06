@@ -53,7 +53,7 @@ jobs:
           source ../.github/scripts/common_cmake_opts.sh
           echo "::group::CMakeConfig C++20"
           cmake \
-            $COMMON_CMAKE_OPTS \
+            ($COMMON_CMAKE_OPTS) \
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_CXX_STANDARD=20 \
             ..
@@ -76,7 +76,7 @@ jobs:
           cd build
           source ../../.github/scripts/common_cmake_opts.sh
           cmake \
-            $COMMON_EXAMPLES_CMAKE_OPTS \
+            ($COMMON_EXAMPLES_CMAKE_OPTS) \
             -DCMAKE_CXX_STANDARD=20 \
             ..
           echo "::group::CompileExamples"
