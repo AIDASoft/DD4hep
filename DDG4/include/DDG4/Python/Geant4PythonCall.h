@@ -45,13 +45,13 @@ namespace dd4hep {
       bool isValid()  const {  return m_callable != 0;  }
 
       /// Execute command in the python interpreter.
-      template <typename RETURN> RETURN execute() const;
+      template <typename ReturnType> ReturnType execute() const;
 
       /// Execute command in the python interpreter.
-      template <typename RETURN> RETURN execute(PyObject* callable) const;
+      template <typename ReturnType> ReturnType execute(PyObject* callable) const;
 
       /// Execute command in the python interpreter.
-      template <typename RETURN> RETURN execute(PyObject* callable, PyObject* args) const;
+      template <typename ReturnType> ReturnType execute(PyObject* callable, PyObject* args) const;
 
       /// Set the callback structures for callbacks with arguments
       void set(PyObject* callable, PyObject* args);
