@@ -38,7 +38,7 @@ using dd4hep::Detector;
 using dd4hep::SensitiveDetector;
 using dd4hep::Ref_t;
 using dd4hep::Rotation3D;
-using dd4hep:: RotationZ;
+using dd4hep::RotationZ;
 using dd4hep::Trd1;
 using dd4hep::Trd2;
 
