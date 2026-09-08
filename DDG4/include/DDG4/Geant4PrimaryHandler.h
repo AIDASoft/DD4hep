@@ -56,7 +56,7 @@ namespace dd4hep {
         for (int i: m_zeroTimePDGs) { str << i << ", "; }
         str << "\nDecayByGeant: ";
         for (int i: m_decayByGeant) { str << i << ", "; }
-        str << "\nSkipParticlesOutsideWorldVolume: " << (m_skipParticlesOutsideWorldVolume ? "true" : "false");
+        str << "\nSkipParticlesOutsideWorldVolume: " << std::boolalpha << m_skipParticlesOutsideWorldVolume;
         return str.str();
       }
     };
