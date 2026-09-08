@@ -26,8 +26,6 @@
 #include <G4PrimaryVertex.hh>
 #include <G4PrimaryParticle.hh>
 #include <G4ParticleDefinition.hh>
-#include <G4TransportationManager.hh>
-#include <G4Navigator.hh>
 #include <G4VPhysicalVolume.hh>
 #include <G4LogicalVolume.hh>
 #include <G4VSolid.hh>
@@ -490,12 +488,9 @@ getRelevant(std::set<int>& visited,
 namespace {
 
   /// Point inside the world volume; unknown world accepts
-  bool insideWorldVolume(const G4ThreeVector& point)   {
-    auto* transportation = G4TransportationManager::GetTransportationManager();
-    auto* navigator      = transportation ? transportation->GetNavigatorForTracking() : nullptr;
-    auto* world          = navigator ? navigator->GetWorldVolume() : nullptr;
-    auto* logical        = world ? world->GetLogicalVolume() : nullptr;
-    G4VSolid* solid      = logical ? logical->GetSolid() : nullptr;
+  bool insideWorldVolume(const G4VPhysicalVolume* world, const G4ThreeVector& point)   {
+    auto* logical   = world ? world->GetLogicalVolume() : nullptr;
+    G4VSolid* solid = logical ? logical->GetSolid() : nullptr;
     return solid ? (solid->Inside(point) != kOutside) : true;
   }
 }
@@ -530,7 +525,7 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
       for( Geant4Vertex* v : (*i).second ){
 
         int num_part = 0;
-        if ( !insideWorldVolume(G4ThreeVector(v->x, v->y, v->z)) )   {
+        if ( !insideWorldVolume(context->world(), G4ThreeVector(v->x, v->y, v->z)) )   {
           if ( primaryConfig.m_skipParticlesOutsideWorldVolume )   {
             caller->warning("+++ Dropping primary vertex at (%+.2e,%+.2e,%+.2e) [mm]: outside the world volume",
                             v->x/CLHEP::mm, v->y/CLHEP::mm, v->z/CLHEP::mm);
