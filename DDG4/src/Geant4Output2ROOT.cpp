@@ -140,7 +140,6 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
 
 /// Fill single EVENT branch entry (Geant4 collection data)
 int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, void* ptr) {
-  G4AutoLock lock(mutex());
   if (!m_file) return 0;
   TBranch* b = nullptr;
   auto i = m_branches.find(nam);
@@ -175,7 +174,6 @@ int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, v
 
 /// Commit data at end of filling procedure
 void Geant4Output2ROOT::commit(OutputContext<G4Event>& ctxt) {
-  G4AutoLock lock(mutex());
   if (m_file) {
     Int_t evtid = ctxt.context->GetEventID();
     TTree* id_tree = section("G4EventIDs");
