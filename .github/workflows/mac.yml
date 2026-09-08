@@ -51,6 +51,7 @@ jobs:
         release-platform: ${{ matrix.LCG }}
         ccache-key: ccache-${{ matrix.LCG }}
         run: |
+          ulimit -n 8192
           mkdir build
           cd build
           unset CPATH
