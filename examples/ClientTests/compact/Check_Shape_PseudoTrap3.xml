@@ -79,7 +79,7 @@
         <position x="20*cm"  y="0*cm"   z="-30*cm"/>
         <rotation x="0*rad"  y="0*rad"  z="0*rad"/>
       </check>
-      <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap3.txt" create="CheckShape_create"/>
+      <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap3${DD4HEP_PSEUDO_REFERENCE}.txt" create="CheckShape_create"/>
     </detector>
   </detectors>
 </lccdd>
