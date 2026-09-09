@@ -41,8 +41,8 @@
          <rotation x="0*rad"  y="0*rad" z="0*rad"/>
       </check>
       -->
-      <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap.txt" create="CheckShape_create"/>
-      <testn type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap.txt" create="1"/>
+      <test type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap${DD4HEP_PSEUDO_REFERENCE}.txt" create="CheckShape_create"/>
+      <testn type="DD4hep_Mesh_Verifier" ref="${DD4hepExamplesINSTALL}/examples/ClientTests/ref/Ref_PseudoTrap${DD4HEP_PSEUDO_REFERENCE}.txt" create="1"/>
     </detector>
   </detectors>
 </lccdd>
