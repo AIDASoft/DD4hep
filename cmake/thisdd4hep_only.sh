@@ -79,8 +79,6 @@ dd4hep_add_path ROOT_INCLUDE_PATH ${THIS}/include;
 if [ @APPLE@ ];
 then
     export DD4HEP_LIBRARY_PATH=${DYLD_LIBRARY_PATH};
-else
-    export DD4HEP_LIBRARY_PATH=${LD_LIBRARY_PATH};
 fi;
 #-----------------------------------------------------------------------------
 #
