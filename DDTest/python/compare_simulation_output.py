@@ -13,6 +13,33 @@ produce identical physics results by comparing:
 import argparse
 import sys
 
+try:
+    import ROOT
+except ImportError:
+    print("ERROR: ROOT/PyROOT not available")
+    sys.exit(1)
+
+# Load the DDG4 dictionary so ROOT can read DD4hep-native output files.
+# This is a no-op when only EDM4hep output is used.
+for lib in ("libDDG4", "libDDG4Plugins"):
+    if ROOT.gSystem.Load(lib) < 0:
+        print(f"WARNING: Failed to load {lib} - DD4hep-native branches may not be readable")
+
+
+def open_files(file1_path, file2_path):
+
+    f1 = ROOT.TFile.Open(file1_path, "READ")
+    f2 = ROOT.TFile.Open(file2_path, "READ")
+
+    if not f1 or f1.IsZombie():
+        print(f"Could not open file: {file1_path}")
+        return False, None, None
+    if not f2 or f2.IsZombie():
+        print(f"Could not open file: {file2_path}")
+        return False, None, None
+
+    return True, f1, f2
+
 
 def _coord(v, attr):
     """Get a coordinate from a vector, handling both attributes and callables."""
@@ -66,30 +93,8 @@ def _get_event_id(tree, entry_idx):
     return None
 
 
-def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
+def compare_hit_collections(f1, f2, tolerance=1e-9, tree_name='EVENT'):
     """Compare hit collections between two ROOT files."""
-    try:
-        import ROOT
-    except ImportError:
-        print("ERROR: ROOT/PyROOT not available")
-        return False
-
-    # Load the DDG4 dictionary so ROOT can read DD4hep-native output files.
-    # This is a no-op when only EDM4hep output is used.
-    for lib in ("libDDG4", "libDDG4Plugins"):
-        if ROOT.gSystem.Load(lib) < 0:
-            print(f"WARNING: Failed to load {lib} - DD4hep-native branches may not be readable")
-
-    # Open files
-    f1 = ROOT.TFile.Open(file1)
-    f2 = ROOT.TFile.Open(file2)
-
-    if not f1 or f1.IsZombie():
-        print(f"ERROR: Cannot open {file1}")
-        return False
-    if not f2 or f2.IsZombie():
-        print(f"ERROR: Cannot open {file2}")
-        return False
 
     # Get trees - try common tree names
     t1 = f1.Get(tree_name)
@@ -112,10 +117,10 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
     t2 = f2.Get(tree_name)
 
     if not t1:
-        print(f"ERROR: Cannot find tree in {file1}")
+        print(f"ERROR: Cannot find tree in {f1}")
         return False
     if not t2:
-        print(f"ERROR: Cannot find tree {tree_name} in {file2}")
+        print(f"ERROR: Cannot find tree {tree_name} in {f2}")
         return False
 
     n_entries = t1.GetEntries()
@@ -123,7 +128,7 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
         print(f"ERROR: Different number of entries: {n_entries} vs {t2.GetEntries()}")
         return False
 
-    print(f"Comparing {file1} vs {file2}")
+    print(f"Comparing {f1} vs {f2}")
     print(f"Tree: {tree_name}, Entries: {n_entries}")
 
     # Get list of branches (collections)
@@ -350,6 +355,100 @@ def compare_hit_collections(file1, file2, tolerance=1e-9, tree_name='EVENT'):
     return True
 
 
+def compare_tree_contents(tree1, tree2, tree_name="tree"):
+    """Compares entries and branches of two TTrees using pure PyROOT."""
+    n_entries1 = tree1.GetEntries()
+    n_entries2 = tree2.GetEntries()
+
+    if n_entries1 != n_entries2:
+        print(f"[{tree_name}] Entry count mismatch: {n_entries1} vs {n_entries2}")
+        return False
+
+    branches1 = {b.GetName() for b in tree1.GetListOfBranches()}
+    branches2 = {b.GetName() for b in tree2.GetListOfBranches()}
+
+    if branches1 != branches2:
+        print(f"[{tree_name}] Branch set mismatch:")
+        print(f"  Only in file 1: {branches1 - branches2}")
+        print(f"  Only in file 2: {branches2 - branches1}")
+        return False
+
+    is_identical = True
+
+    for entry_idx in range(n_entries1):
+        tree1.GetEntry(entry_idx)
+        tree2.GetEntry(entry_idx)
+
+        for b_name in branches1:
+            leaf1 = tree1.GetLeaf(b_name)
+            leaf2 = tree2.GetLeaf(b_name)
+
+            # Compare scalar/primitive leaf values
+            if leaf1 and leaf2 and leaf1.GetTypeName() != "string":
+                n1, n2 = leaf1.GetLen(), leaf2.GetLen()
+                if n1 != n2:
+                    print(f"[{tree_name}] Entry {entry_idx}, branch '{b_name}' array length mismatch: {n1} vs {n2}")
+                    is_identical = False
+                    continue
+
+                for i in range(n1):
+                    if leaf1.GetValue(i) != leaf2.GetValue(i):
+                        print(f"[{tree_name}] Entry {entry_idx}, branch '{b_name}' mismatch at index {i}: "
+                              f"{leaf1.GetValue(i)} vs {leaf2.GetValue(i)}"
+                              )
+                        is_identical = False
+                        break
+            else:
+                # Compare STL objects, vectors, or strings via PyROOT attribute access
+                val1 = getattr(tree1, b_name, None)
+                val2 = getattr(tree2, b_name, None)
+                equal = False
+                if val1 == val2:
+                    equal = True
+                else:
+                    try:
+                        equal = list(val1) == list(val2)
+                    except Exception:
+                        try:
+                            equal = str(val1) == str(val2)
+                        except Exception:
+                            equal = False
+
+                if not equal:
+                    print(f"[{tree_name}] Entry {entry_idx}, branch '{b_name}' value mismatch")
+                    is_identical = False
+
+    return is_identical
+
+
+def compare_root_metadata_and_runs(f1, f2):
+    """Compares 'metadata' and 'runs' trees using pure PyROOT.
+
+    Returns True if identical, False otherwise.
+    """
+
+    is_identical = True
+    target_trees = ["metadata", "runs"]
+
+    for tname in target_trees:
+        t1 = f1.Get(tname)
+        t2 = f2.Get(tname)
+
+        if not t1 and not t2:
+            continue
+
+        if (t1 and not t2) or (not t1 and t2):
+            print(f"[{tname}] Tree present in one file but missing in the other.")
+            is_identical = False
+            continue
+
+        if isinstance(t1, ROOT.TTree) and isinstance(t2, ROOT.TTree):
+            if not compare_tree_contents(t1, t2, tree_name=tname):
+                is_identical = False
+
+    return is_identical
+
+
 def main():
     parser = argparse.ArgumentParser(description='Compare DD4hep simulation outputs')
     parser.add_argument('file1', help='First ROOT file (reference, typically ST)')
@@ -361,7 +460,19 @@ def main():
 
     args = parser.parse_args()
 
-    success = compare_hit_collections(args.file1, args.file2, args.tolerance, args.tree)
+    success, f1, f2, = open_files(args.file1, args.file2)
+    if not success:
+        print("Failed to open both files")
+        return 0
+
+    success1 = compare_hit_collections(f1, f2, args.tolerance, args.tree)
+    success2 = compare_root_metadata_and_runs(f1, f2)
+
+    f1.Close()
+    f2.Close()
+
+    success = success1 and success2
+
     return 0 if success else 1
 
 

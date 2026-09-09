@@ -41,7 +41,6 @@ Geant4EventSeed::Geant4EventSeed(Geant4Context* c, const std::string& typ) : Gea
 									     m_type(typ),
 									     m_initialised(false)
 {
-  Geant4Action::runAction().callAtBegin(this,&Geant4EventSeed::begin);
   Geant4Action::generatorAction().callAtBegin(this,&Geant4EventSeed::setSeedForPrimaries);
   // Re-seed after GeneratePrimaries so file-based generators' SetEventID is visible.
   Geant4Action::eventAction().callAtBegin(this,&Geant4EventSeed::beginEvent);

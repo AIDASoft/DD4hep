@@ -79,9 +79,12 @@ jobs:
               -DDD4HEP_USE_G4HEPEM=ON \
               ..
           fi
-          # Make sure DD4hep can be built with an older version of EDM4hep, 0.10.5 for LCG_106
-          if [[ ${{ matrix.LCG }} =~ 106 ]]; then
-            echo "::group::CMakeConfig Enable EDM4hep"
+          # Enable EDM4hep for all newer stacks from 106 forward
+          if [[ ${{ matrix.LCG }} =~ 101 ]]; then
+            echo "::group::CMakeConfig DISABLE EDM4hep"
+            cmake -DDD4HEP_USE_EDM4HEP=OFF ..
+          else
+            echo "::group::CMakeConfig ENABLE EDM4hep"
             cmake -DDD4HEP_USE_EDM4HEP=ON ..
           fi
           echo "::group::Compile"
