@@ -246,6 +246,10 @@ foreach (test ${ClientTests_ShapeTests})
       EXEC_ARGS  geoDisplay file:${ClientTestsEx_INSTALL}/compact/Check_Shape_${test}.xml -load -destroy
       REGEX_PASS "Shape verification SUCCESSFUL"
       REGEX_FAIL "ERROR;FAILED" )
+    set_tests_properties( t_ClientTests_Check_Shape_${test} PROPERTIES ENVIRONMENT DD4HEP_PSEUDO_REFERENCE= )
+    if(CMAKE_CXX_COMPILER_ID MATCHES GNU AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16)
+      set_tests_properties( t_ClientTests_Check_Shape_${test} PROPERTIES ENVIRONMENT DD4HEP_PSEUDO_REFERENCE=_gcc16 )
+    endif()
 endforeach()
 #
 #  Test Volume division procedure.
