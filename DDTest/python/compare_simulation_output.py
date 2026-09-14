@@ -402,19 +402,7 @@ def compare_tree_contents(tree1, tree2, tree_name="tree"):
                 # Compare STL objects, vectors, or strings via PyROOT attribute access
                 val1 = getattr(tree1, b_name, None)
                 val2 = getattr(tree2, b_name, None)
-                equal = False
-                if val1 == val2:
-                    equal = True
-                else:
-                    try:
-                        equal = list(val1) == list(val2)
-                    except Exception:
-                        try:
-                            equal = str(val1) == str(val2)
-                        except Exception:
-                            equal = False
-
-                if not equal:
+                if val1 != val2:
                     print(f"[{tree_name}] Entry {entry_idx}, branch '{b_name}' value mismatch")
                     is_identical = False
 
