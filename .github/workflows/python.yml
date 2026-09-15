@@ -18,7 +18,7 @@ jobs:
         LCG: ["dev4/x86_64-el9-gcc13-opt"]
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-    - uses: cvmfs-contrib/github-action-cvmfs@10197e000cc0add8e54ac4fb73d3ed44e2de72b4
+    - uses: cvmfs-contrib/github-action-cvmfs@72f2a8d366043978d6aebee154bc9ed321c2f2a8
     - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
       with:
         release-platform: ${{ matrix.LCG }}
