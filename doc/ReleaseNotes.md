@@ -1,3 +1,126 @@
+# v01-38
+
+* 2026-09-15 neskongarr ([PR#1666](https://github.com/aidasoft/dd4hep/pull/1666))
+  - DDDetectors/src/Mask_o1_v01_geo.cpp: Added a new type 'kUpstreamTrapezoid' in the DDDetectors/include/DDDetectors/OtherDetectorHelpers.h to process non-cylindrically symmetric cases when processing Mask objects. (cf. k4geo [PR](https://github.com/key4hep/k4geo/pull/648)).
+
+* 2026-09-15 Andre Sailer ([PR#1663](https://github.com/aidasoft/dd4hep/pull/1663))
+  - Geant4OutputAction: In multi-threaded mode, make sure the ingested runparameters and fileparameters end up in the output, fixes #1660
+    -  Fixed locking endRun action of the outputaction
+  - Geant4Output2LCIO: fix locking of output writing in multi-threaded mode
+  - Geant4Output2ROOT: fix locking of output writing in multi-threaded mode
+  - Tests: added comparison of run and metadata trees if they exist in the output
+
+* 2026-09-14 Andre Sailer ([PR#1675](https://github.com/aidasoft/dd4hep/pull/1675))
+  - EventSeeder: remove superfluous second call to seedEvent. The call after the input file is read is already happening because we are adding the event seeder to the EventSequence in the DDSim configuration.
+
+* 2026-09-09 Andre Sailer ([PR#1674](https://github.com/aidasoft/dd4hep/pull/1674))
+  - ClientTests: add references for pseudotrap on gcc16
+
+* 2026-09-08 Joshua Beirer ([PR#1670](https://github.com/aidasoft/dd4hep/pull/1670))
+  - Geant4UIManager: fix `PreRunCommands` preventing the normal batch `BeamOn` call.
+  - Geant4UIManager: separate `PreRunCommands` from the `Commands` property.
+  - Geant4UIManager: execute `PostRunCommands` after the automatic batch run.
+
+* 2026-09-08 Fanxin Sun ([PR#1668](https://github.com/aidasoft/dd4hep/pull/1668))
+  - ddsim: add flag `--physics.skipParticlesOutsideWorldVolume` to drop particles on a primary vertex outside the world volume with a warning, otherwise abort the run since Geant4 will end with an exception otherwise.
+
+* 2026-09-07 Wouter Deconinck ([PR#1673](https://github.com/aidasoft/dd4hep/pull/1673))
+  - fix: rename RETURN template type to avoid macro clash on macOS-15
+
+* 2026-09-03 Joshua Beirer ([PR#1669](https://github.com/aidasoft/dd4hep/pull/1669))
+  - `Geant4EventSeed`: do not leak the run number read from `EventParameters` into subsequent events.
+  - `Geant4EventSeed`: ignore unset (negative) event and run numbers from `EventParameters` and keep the Geant4 values instead.
+
+* 2026-08-27 Andre Sailer ([PR#1617](https://github.com/aidasoft/dd4hep/pull/1617))
+  - GeneratorAction: add `callAtBegin`  callback to add callbacks that happen before generating primaries
+  - EventSeeder: get a call before the primary particles are generated, fixes #1604 
+  - EventSeeder: add reading the event and runnumber from the EventParameters that might be filled by Generator input files.
+
+* 2026-08-25 David ([PR#1665](https://github.com/aidasoft/dd4hep/pull/1665))
+  - remove redundant calculations from i_collect and scanPhysicalVolume
+
+* 2026-08-25 David ([PR#1662](https://github.com/aidasoft/dd4hep/pull/1662))
+  - Improve Geant4RegexSensitivesConstruction::collect_volumes to avoid duplicate regex searches
+
+* 2026-08-21 Andre Sailer ([PR#1661](https://github.com/aidasoft/dd4hep/pull/1661))
+  - Geant4Output2EDM4hep: always use the metadata category for metadata, fixes #1659
+
+* 2026-08-13 Wouter Deconinck ([PR#1240](https://github.com/aidasoft/dd4hep/pull/1240))
+  - Multithreading support in ddsim
+
+* 2026-08-04 Andreas Loeschcke Centeno ([PR#1656](https://github.com/aidasoft/dd4hep/pull/1656))
+  - `g4PolarAngleScan` documentation update
+
+* 2026-07-29 Juan Miguel Carceller ([PR#1655](https://github.com/aidasoft/dd4hep/pull/1655))
+  - Fix a compiler warning comparing a `double` to an enum
+
+* 2026-07-29 Andreas Loeschcke Centeno ([PR#1649](https://github.com/aidasoft/dd4hep/pull/1649))
+  - Added `g4PolarAngleScan` to scan geometry material budget along the polar angle
+
+* 2026-07-29 Wouter Deconinck ([PR#1648](https://github.com/aidasoft/dd4hep/pull/1648))
+  - feat: add region selection for G4HepEm plugin
+
+* 2026-07-23 Andre Sailer ([PR#1653](https://github.com/aidasoft/dd4hep/pull/1653))
+  - DDG4: DetectorSensitives: assign sensitive detector to reflected object if the original logical volume was sensitive, fixes #1650
+
+* 2026-07-22 Juan Miguel Carceller ([PR#1652](https://github.com/aidasoft/dd4hep/pull/1652))
+  - Use double for smartless since Geant4 also uses double, see https://github.com/Geant4/geant4/blob/f3d5293d384757b8a228a099898b2b87cfa4023c/source/geometry/management/include/G4LogicalVolume.icc#L207.
+
+* 2026-07-22 Juan Miguel Carceller ([PR#1651](https://github.com/aidasoft/dd4hep/pull/1651))
+  - In `FieldTypes.cpp`, for the `SolenoidField`, use the square of the radius to compare to avoid calling `std::sqrt` many times. Saving the squares of the `innerRadius` and `outerRadius` seems not to change much. 
+  - In `Fields.h` and `Fields.cpp`, the calls to `magneticField` go through the `double *` overload, then the `Position` (`ROOT::Math::XYZVector`) overload, and then represented back to an array of doubles. The change is to make the `double *` overload be the main function, and the `Position` overload call this one instead of the opposite. The `double *` overload is the one called from `Geant4Field::GetFieldValue`: https://github.com/AIDASoft/DD4hep/blob/master/DDG4/src/Geant4Field.cpp#L31
+  - Use `static constexpr` with unit factors in `Geant4Field.cpp` (like it is done both in DD4hep and CLHEP units).
+
+* 2026-07-16 Juan Miguel Carceller ([PR#1629](https://github.com/aidasoft/dd4hep/pull/1629))
+  - Use `std::unique_ptr` when possible, return earlier to unindent big blocks and simplify when possible.
+
+* 2026-07-16 Juan Miguel Carceller ([PR#1590](https://github.com/aidasoft/dd4hep/pull/1590))
+  - `DetectorData.h`: fix a leak when defining multiple times the same constant. This is the case, for example, in the test `t_ClientTests_converter_vis_MagnetFields` where we have constants (like `world_side`) defined at the top level `MagnetFields.xml` and also in the included `SiDConstants.xml`. Because they are being put in a map, the second time the same constant appears emplacing will fail and there is a warning for that. However, that handle will never be deleted since it will never belong to the map.
+  - `DD4hep.cmake`: Allow listcomponents to run with the leak sanitizer during the build process since there are leaks coming from ROOT
+  - `StandardPlugins.cpp`: Make the `DD4hepUI` object static instead of allocating one with `new` that will never get deleted. Fixes the test `t_DDDigi_colored_noise`
+
+* 2026-06-18 Juan Miguel Carceller ([PR#1646](https://github.com/aidasoft/dd4hep/pull/1646))
+  - Use Clang 22 instead of 19 in CI, soon unsupported
+
+* 2026-06-18 Wouter Deconinck ([PR#1641](https://github.com/aidasoft/dd4hep/pull/1641))
+  - feat: add plugin for G4HepEm vectorized EM physics
+
+* 2026-06-18 Wouter Deconinck ([PR#1636](https://github.com/aidasoft/dd4hep/pull/1636))
+  - honor G4OpticalParameters process activation flags in DDG4
+
+* 2026-06-17 Jason Patton ([PR#1645](https://github.com/aidasoft/dd4hep/pull/1645))
+  - Updated DDG4 user discovery to be compatible with Python 3.13
+
+* 2026-06-10 Maxwell Cui ([PR#1638](https://github.com/aidasoft/dd4hep/pull/1638))
+  - Include type `unsigned long long` for macOS in GrammarTypes.cpp, Fixes #1637
+
+* 2026-06-08 Markus Frank ([PR#1642](https://github.com/aidasoft/dd4hep/pull/1642))
+  - The vertices of the more complex DDCAD shapes like the collada duck example depend on the assimp version.
+    This PR updates the reference file for this example. 
+    The added file is valid for assimp versions >= v6.0.5.
+
+* 2026-06-08 Wouter Deconinck ([PR#1632](https://github.com/aidasoft/dd4hep/pull/1632))
+  - feat: add DD4HEP_GENERATE_ROOTMAP_EXTRA_ENV hook to dd4hep_generate_rootmap
+
+* 2026-05-26 Daniel Jeans ([PR#1634](https://github.com/aidasoft/dd4hep/pull/1634))
+  - improvements to g4GraphicalScan:
+    - sometimes additional parameters need to be passed to ddsim (I noticed for IDEA_o1_v04), so added possibility to pass a ddsim steering file
+    - deal more smoothly with timeout
+    - improve messages in case of problems
+
+* 2026-05-21 Juan Miguel Carceller ([PR#1622](https://github.com/aidasoft/dd4hep/pull/1622))
+  - Avoid triggering infinite recursion with DDG4 in Python
+
+* 2026-05-18 Andre Sailer ([PR#1631](https://github.com/aidasoft/dd4hep/pull/1631))
+  - Add a check to restore compatibility with Geant4 v10
+  - CI: add back LCG_101 with geant4 10.7 for #1628
+
+* 2026-05-07 Dmitry Kalinkin ([PR#1627](https://github.com/aidasoft/dd4hep/pull/1627))
+  - Fixed a bug which caused update_hash64 to ignore last character of a std::string. This results in a change to geometry hash values.
+
+* 2026-05-05 Fangyi Guo ([PR#1625](https://github.com/aidasoft/dd4hep/pull/1625))
+  - Fix bug in the [Segmentation::positionToBin](https://github.com/AIDASoft/DD4hep/blob/master/DDCore/src/segmentations/Segmentation.cpp#L162) function for irregular spaced binnings. The protection for hit outside of boundaries was calculated with position, the offset is missed. This affects PolarGridRPhi2 for the R coordinate with offset != 0. Fixes issue #1624
+
 # v01-37
 
 * 2026-04-27 Juan Miguel Carceller ([PR#1621](https://github.com/aidasoft/dd4hep/pull/1621))
