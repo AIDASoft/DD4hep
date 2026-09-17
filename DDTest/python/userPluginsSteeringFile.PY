@@ -355,39 +355,11 @@ SIM.output.random = 6
 ## Configuration for Output Files. 
 ################################################################################
 
-## Set a function to configure the outputFile.
-## 
-##     The function must take a ``DD4hepSimulation`` object as its only argument and return ``None``.
-## 
-##     For example one can add this to the ddsim steering file:
-## 
-##       def exampleUserPlugin(dd4hepSimulation):
-##         '''Example code for user created plugin.
-## 
-##         :param DD4hepSimulation dd4hepSimulation: The DD4hepSimulation instance, so all parameters can be accessed
-##         :return: None
-##         '''
-##         from DDG4 import EventAction, Kernel
-##         dd = dd4hepSimulation  # just shorter variable name
-##         evt_root = EventAction(Kernel(), 'Geant4Output2ROOT/' + dd.outputFile, True)
-##         evt_root.HandleMCTruth = True or False
-##         evt_root.Control = True
-##         if not dd.outputFile.endswith(dd.outputConfig.myExtension):
-##           output = dd.outputFile + dd.outputConfig.myExtension
-##         evt_root.Output = output
-##         evt_root.enableUI()
-##         Kernel().eventAction().add(evt_root)
-##         return None
-## 
-##       SIM.outputConfig.userOutputPlugin = exampleUserPlugin
-##       # arbitrary options can be created and set via the steering file or command line
-##       SIM.outputConfig.myExtension = '.csv'
-##     
-
-def outputPlugin(dd4hepSimulation):
-  from DDG4 import EventAction, Kernel
+def outputPlugin(dd4hepSimulation, geant4):
+  from DDG4 import EventAction
   dd = dd4hepSimulation  # just shorter variable name
-  evt_root = EventAction(Kernel(), 'Geant4Output2ROOT/' + dd.outputFile, True)
+  shared = dd.numberOfThreads > 1
+  evt_root = EventAction(geant4.kernel(), 'Geant4Output2ROOT/' + dd.outputFile, shared)
   evt_root.HandleMCTruth = True or False
   evt_root.Control = True
   output = dd.outputFile
@@ -395,7 +367,7 @@ def outputPlugin(dd4hepSimulation):
     output = dd.outputFile + dd.outputConfig.myExtension
   evt_root.Output = output
   evt_root.enableUI()
-  Kernel().eventAction().add(evt_root)
+  geant4.kernel().eventAction().add(evt_root)
   return None
 
 SIM.outputConfig.myExtension = '.root'
