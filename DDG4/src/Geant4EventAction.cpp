@@ -127,6 +127,16 @@ Geant4EventAction* Geant4EventActionSequence::get(const std::string& nam) const 
 /// Add an actor responding to all callbacks. Sequence takes ownership.
 void Geant4EventActionSequence::adopt(Geant4EventAction* action) {
   if (action) {
+    //Shared actions should only be used in multi-threading. They can lead to duplicated invocations like output actions
+    //for example
+    if (dynamic_cast<Geant4SharedEventAction*>(action)) {
+      if (!G4Threading::IsMultithreadedApplication()) {
+        throw std::runtime_error(
+                                 "Geant4EventActionSequence: Cannot register shared action '" + action->name() +
+                                 "' in single-threaded execution mode. Register standard actions instead."
+                                 );
+      }
+    }
     {
       G4AutoLock actionLock(action->mutex());
       action->addRef();
