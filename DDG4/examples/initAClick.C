@@ -14,7 +14,15 @@
 // ROOT include files
 #include "TInterpreter.h"
 #include "TSystem.h"
+#ifdef __has_include
+#if __has_include(<ROOT/RVersion.hxx>)
+#include <ROOT/RVersion.hxx>
+#else
 #include "RVersion.h"
+#endif
+#else
+#include "RVersion.h"
+#endif
 
 // C/C++ include files
 #include <iostream>
