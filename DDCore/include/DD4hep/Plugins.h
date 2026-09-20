@@ -25,7 +25,15 @@
 inline bool any_has_value(std::any a){ return a.has_value(); }
 
 #ifndef DD4HEP_PARSERS_NO_ROOT
+#ifdef __has_include
+#if __has_include(<ROOT/RVersion.hxx>)
+#include <ROOT/RVersion.hxx>
+#else
 #include <RVersion.h>
+#endif
+#else
+#include <RVersion.h>
+#endif
 #endif
 
 /// Namespace for the AIDA detector description toolkit
