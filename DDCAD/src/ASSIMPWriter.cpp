@@ -28,7 +28,6 @@
 #include <TClass.h>
 #include <TGeoBoolNode.h>
 #include <TGeoMatrix.h>
-#include <CsgOps.h>
 
 /// C/C++ include files
 #include <set>
@@ -61,20 +60,14 @@ namespace  {
       }
     }
   }
-  bool equals(Vertex const &lhs, Vertex const &rhs)  {
-    constexpr double kTolerance = 1.e-32;
-    return TMath::Abs(lhs[0] - rhs[0]) < kTolerance &&
-      TMath::Abs(lhs[1] - rhs[1]) < kTolerance &&
-      TMath::Abs(lhs[2] - rhs[2]) < kTolerance;
-  }
 
   struct TessellateShape   {
   public:
     TessellateShape() = default;
     virtual ~TessellateShape() = default;
-    RootCsg::TBaseMesh* make_mesh(TGeoShape* sh)  const;
-    RootCsg::TBaseMesh* collect_composite(TGeoCompositeShape* sh)    const;
-    std::unique_ptr<TGeoTessellated> build_mesh(int id, const std::string& name, TGeoShape* shape);
+    std::unique_ptr<TGeoTessellated> make_mesh(TGeoShape* sh)  const;
+    std::unique_ptr<TGeoTessellated> collect_composite(TGeoCompositeShape* sh)    const;
+    std::unique_ptr<TGeoTessellated> build_mesh(int id, TGeoShape* shape);
     std::unique_ptr<TGeoTessellated> tessellate_primitive(const std::string& name, dd4hep::Solid solid);
     std::unique_ptr<TGeoTessellated> close_tessellated(int id, TGeoShape* shape, int nskip, std::unique_ptr<TGeoTessellated>&& tes);
   };
@@ -102,136 +95,112 @@ namespace  {
     return std::move(tes);
   }
 
-  std::unique_ptr<TGeoTessellated> TessellateShape::build_mesh(int id, const std::string& name, TGeoShape* shape)      {
-    auto mesh = std::unique_ptr<RootCsg::TBaseMesh>(this->make_mesh(shape));
-    std::vector<Vertex> vertices;
-    std::size_t nskip = 0;
+std::unique_ptr<TGeoTessellated> TessellateShape::make_mesh(TGeoShape* sh) const {
+    if (!sh) return nullptr;
 
-    vertices.reserve(mesh->NumberOfVertices());
-    std::map<std::size_t,std::size_t> vtx_index_replacements;
-    for( size_t ipoint = 0, npoints = mesh->NumberOfVertices(); ipoint < npoints; ++ipoint )   {
-      long found = -1;
-      const double* v = mesh->GetVertex(ipoint);
-      Vertex vtx(v[0], v[1], v[2]);
-      for(std::size_t i=0; i < vertices.size(); ++i)   {
-        if ( equals(vertices[i],vtx) )  {
-          vtx_index_replacements[ipoint] = found = i;
-          break;
-        }
-      }
-      if ( found < 0 )   {
-        vtx_index_replacements[ipoint] = vertices.size();
-        vertices.emplace_back(v[0], v[1], v[2]);
-      }
-    }
-    std::size_t vtx_len = vertices.size();
-    std::unique_ptr<TGeoTessellated> tes = std::make_unique<TGeoTessellated>(name.c_str(), vertices);
-    for( std::size_t ipoly = 0, npols = mesh->NumberOfPolys(); ipoly < npols; ++ipoly)    {
-      std::size_t npoints = mesh->SizeOfPoly(ipoly);
-      if ( npoints >= 3 )   {
-        printout(dd4hep::DEBUG,"ASSIMPWriter","+++ Got polygon with %ld points",npoints);
-        ///
-        /// 3-vertex polygons automatically translate to GL_TRIANGLES
-        /// See Kronos documentation to glBegin / glEnd from the glu library:
-        /// https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glBegin.xml
-        ///
-        /// Otherwise:
-#if 1
-        /// Apparently this is the correct choice:
-        ///
-        /// Interprete as FAN:  GL_TRIANGLE_FAN
-        /// One triangle is defined for each vertex presented after the first two vertices.
-        /// Vertices 1 , n + 1 , and n + 2 define triangle n.
-        /// N - 2 triangles are drawn.
-        std::size_t v0  = mesh->GetVertexIndex(ipoly, 0);
-        std::size_t vv0 = vtx_index_replacements[v0];
-        for( std::size_t ipoint = 0; ipoint < npoints-2; ++ipoint )   {
-          std::size_t v1 = mesh->GetVertexIndex(ipoly, ipoint+1);
-          std::size_t v2 = mesh->GetVertexIndex(ipoly, ipoint+2);
-          std::size_t vv1 = vtx_index_replacements[v1];
-          std::size_t vv2 = vtx_index_replacements[v2];
-          if ( vv0 > vtx_len || vv1 > vtx_len || vv2 > vtx_len )  {
-            ++nskip;
-            continue;
-          }
-          if ( vv0 == vv1 || vv0 == vv2 || vv1 == vv2 )   {
-            ++nskip;
-            continue;
-          }
-          Vertex w[3] = {vertices[vv0],vertices[vv1],vertices[vv2]};
-          if ( TGeoFacet::CompactFacet(w, 3) < 3 )   {
-            ++nskip;
-            continue;
-          }
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,31,1)
-          bool degenerated = dd4hep::cad::facetIsDegenerated({vertices[vv0],vertices[vv1],vertices[vv2]});
-#else
-          bool degenerated = true;
-          TGeoFacet f(&vertices, 3, vv0, vv1, vv2);
-          f.ComputeNormal(degenerated);
-#endif
-          if ( degenerated )    {
-            ++nskip;
-            continue;
-          }
-          tes->AddFacet(vv0, vv1, vv2);
-        }
-#else
-        /// Interprete as STRIP: GL_TRIANGLE_STRIP
-        /// One triangle is defined for each vertex presented after the first two vertices.
-        /// For odd n, vertices n, n + 1 , and n + 2 define triangle n.
-        /// For even n, vertices n + 1 , n, and n + 2 define triangle n.
-        /// N - 2 triangles are drawn.
-        for( std::size_t ipoint = 0; ipoint < npoints-2; ++ipoint )   {
-          vtx_t v0(mesh->GetVertex(mesh->GetVertexIndex(ipoly, ipoint)));
-          vtx_t v1(mesh->GetVertex(mesh->GetVertexIndex(ipoly, ipoint+1)));
-          vtx_t v2(mesh->GetVertex(mesh->GetVertexIndex(ipoly, ipoint+2)));
-          ((ipoint%2) == 0) ? tes->AddFacet(v1, v0, v2) : tes->AddFacet(v0, v1, v2);
-        }
-#endif
-      }
-    }
-    return close_tessellated(id, shape, nskip, std::move(tes));
-  }
-  
-  RootCsg::TBaseMesh* TessellateShape::make_mesh(TGeoShape* sh)   const   {
-    if (TGeoCompositeShape *shape = dynamic_cast<TGeoCompositeShape *>(sh))   {
+    if (TGeoCompositeShape *shape = dynamic_cast<TGeoCompositeShape *>(sh)) {
       return collect_composite(shape);
     }
-    UInt_t  flags = TBuffer3D::kCore|TBuffer3D::kBoundingBox|TBuffer3D::kRawSizes|TBuffer3D::kRaw|TBuffer3D::kShapeSpecific;
+
+    UInt_t flags = TBuffer3D::kCore | TBuffer3D::kBoundingBox | TBuffer3D::kRawSizes | TBuffer3D::kRaw | TBuffer3D::kShapeSpecific;
     const TBuffer3D& buffer = sh->GetBuffer3D(flags, kFALSE);
-    return RootCsg::ConvertToMesh(buffer);
+
+    if (buffer.NbPnts() == 0 || buffer.NbPols() == 0 || !buffer.fPnts || !buffer.fPols || !buffer.fSegs) {
+      return nullptr;
+    }
+
+    std::vector<Vertex> vertices;
+    vertices.reserve(buffer.NbPnts());
+    for (UInt_t i = 0; i < buffer.NbPnts(); ++i) {
+      vertices.emplace_back(buffer.fPnts[3 * i], buffer.fPnts[3 * i + 1], buffer.fPnts[3 * i + 2]);
+    }
+
+    const char* shape_name = sh->GetName() ? sh->GetName() : "";
+    auto tes = std::make_unique<TGeoTessellated>(shape_name, vertices);
+    const size_t num_vertices = vertices.size();
+
+    const Int_t* pols = buffer.fPols;
+    const Int_t* segs = buffer.fSegs;
+    Int_t idx = 0;
+
+    for (UInt_t i = 0; i < buffer.NbPols(); ++i) {
+      [[maybe_unused]] Int_t color = pols[idx++];
+      Int_t nsegs = pols[idx++];
+
+      if (nsegs >= 3) {
+        std::vector<Int_t> poly_verts;
+        poly_verts.reserve(nsegs);
+
+        // Traverse segments in sequence while following ROOT TBuffer3D segment direction
+        for (Int_t j = 0; j < nsegs; ++j) {
+          Int_t seg_idx = pols[idx + j];
+          Int_t v0 = segs[3 * seg_idx + 1];
+          Int_t v1 = segs[3 * seg_idx + 2];
+
+          if (j == 0) {
+            // Determine loop orientation from second segment
+            Int_t next_seg = pols[idx + 1];
+            Int_t next_v0 = segs[3 * next_seg + 1];
+            Int_t next_v1 = segs[3 * next_seg + 2];
+
+            if (v1 == next_v0 || v1 == next_v1) {
+              poly_verts.push_back(v0);
+              poly_verts.push_back(v1);
+            } else {
+              poly_verts.push_back(v1);
+              poly_verts.push_back(v0);
+            }
+          } else if (j < nsegs - 1) {
+            Int_t last_v = poly_verts.back();
+            Int_t next_v = (v0 == last_v) ? v1 : v0;
+            poly_verts.push_back(next_v);
+          }
+        }
+
+        // Triangulate n-gon face while preserving consistent CCW winding order
+        Int_t v_start = poly_verts[0];
+        for (size_t j = 1; j + 1 < poly_verts.size(); ++j) {
+          Int_t v_mid = poly_verts[j];
+          Int_t v_end = poly_verts[j + 1];
+
+          if (v_start >= 0 && static_cast<size_t>(v_start) < num_vertices &&
+              v_mid >= 0   && static_cast<size_t>(v_mid)   < num_vertices &&
+              v_end >= 0   && static_cast<size_t>(v_end)   < num_vertices) {
+
+            if (v_start != v_mid && v_start != v_end && v_mid != v_end) {
+              tes->AddFacet(static_cast<UInt_t>(v_start),
+                            static_cast<UInt_t>(v_mid),
+                            static_cast<UInt_t>(v_end));
+            }
+          }
+        }
+      }
+      idx += nsegs;
+    }
+
+    if (tes->GetNfacets() == 0) {
+      return nullptr;
+    }
+
+    return tes;
   }
   
-  RootCsg::TBaseMesh* TessellateShape::collect_composite(TGeoCompositeShape* sh)  const  {
-    TGeoBoolNode* node  = sh->GetBoolNode();
-    TGeoShape*    left  = node->GetLeftShape();
-    TGeoShape*    right = node->GetRightShape();
-    TGeoHMatrix*  glmat = (TGeoHMatrix*)TGeoShape::GetTransform();
-    UInt_t        oper  = node->GetBooleanOperator();
-    TGeoHMatrix   copy(*glmat); // keep a copy
+  std::unique_ptr<TGeoTessellated> TessellateShape::collect_composite(TGeoCompositeShape* sh) const {
+    return make_mesh(static_cast<TGeoShape*>(sh));
+  }
 
-    // Do not wonder about this logic.
-    // GetBuffer3D (->make_mesh) uses static variable fgTransform of TGeoShape!
-    glmat->Multiply(node->GetLeftMatrix());
-    auto left_mesh  = std::unique_ptr<RootCsg::TBaseMesh>(make_mesh(left));
-    *glmat = &copy;
-
-    glmat->Multiply(node->GetRightMatrix());
-    auto right_mesh = std::unique_ptr<RootCsg::TBaseMesh>(make_mesh(right));
-    *glmat = &copy;
-
-    switch (oper) {
-    case TGeoBoolNode::kGeoUnion:
-      return RootCsg::BuildUnion(left_mesh.get(), right_mesh.get());
-    case TGeoBoolNode::kGeoIntersection:
-      return RootCsg::BuildIntersection(left_mesh.get(), right_mesh.get());
-    case TGeoBoolNode::kGeoSubtraction:
-      return RootCsg::BuildDifference(left_mesh.get(), right_mesh.get());
-    default:
-      Error("BuildComposite", "Wrong boolean operation code %d\n", oper);
-      return 0;
+  std::unique_ptr<TGeoTessellated> TessellateShape::build_mesh(int id, TGeoShape* shape) {
+    auto tes = make_mesh(shape);
+    if (!tes) {
+      // Create a non-empty fallback shape with 1 dummy facet (3 zero vertices)
+      // to avoid triggering ROOT BVH assertion prim_count != 0
+      const char* shape_name = (shape && shape->GetName()) ? shape->GetName() : "";
+      std::vector<Vertex> dummy_vtx = { Vertex(0,0,0), Vertex(0,0,0), Vertex(0,0,0) };
+      tes = std::make_unique<TGeoTessellated>(shape_name, dummy_vtx);
+      tes->AddFacet(0, 1, 2);
     }
+
+    return close_tessellated(id, shape, 0, std::move(tes));
   }
 
   std::unique_ptr<TGeoTessellated> TessellateShape::tessellate_primitive(const std::string& name, dd4hep::Solid solid)   {
@@ -341,7 +310,7 @@ int ASSIMPWriter::write(const std::string& file_name,
       if ( build_mode || shape )   {  // Always use this method!
         auto* paintVol = detector.manager().GetPaintVolume();
         detector.manager().SetPaintVolume(vol.ptr());
-        shape_holder = helper.build_mesh(imesh, vol.name(), sol.ptr());
+        shape_holder = helper.build_mesh(imesh, sol.ptr());
         detector.manager().SetPaintVolume(paintVol);
       }
       else   {
