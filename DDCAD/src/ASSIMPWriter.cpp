@@ -348,7 +348,11 @@ int ASSIMPWriter::write(const std::string& file_name,
     if ( vol.visAttributes().isValid() )   {
       float cr = 0e0, cg = 0e0, cb = 0e0, ca = 0e0;
       vol.visAttributes().argb(ca, cr, cg, cb);
-      mesh->mColors[0] = new aiColor4D(cr, cg, cb, ca);
+
+      mesh->mColors[0] = new aiColor4D[num_vert];
+      for(std::size_t k = 0; k < num_vert; ++k) {
+        mesh->mColors[0][k] = aiColor4D(cr, cg, cb, ca);
+      }
     }
     mesh->mFaces       = new aiFace[tes->GetNfacets()];
     mesh->mVertices    = new aiVector3D[num_vert];
