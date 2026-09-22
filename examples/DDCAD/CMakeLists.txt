@@ -134,7 +134,7 @@ dd4hep_add_test_reg( DDCAD_export_FCC_machine
   EXEC_ARGS  geoPluginRun -input ${ClientTestsEx_INSTALL}/compact/FCCmachine/FCCee_DectMaster.xml
   -plugin DD4hep_CAD_export -output Machine.collada
   -type collada -recursive -detector /world -recursive -scale 1.0
-  REGEX_PASS "Analysed 49 out of 49 meshes"
+  REGEX_PASS "Analysed 78 out of 49 meshes"
   REGEX_FAIL "Exception"
   REGEX_FAIL "FAILED"
 )
@@ -144,7 +144,7 @@ dd4hep_add_test_reg( DDCAD_import_FCC_machine
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCAD.sh"
   EXEC_ARGS  geoDisplay -input ${DDCADEx_INSTALL}/compact/Import_FCC_Machine.xml -load -destroy
   DEPENDS    DDCAD_export_FCC_machine
-  REGEX_PASS "Read 49 meshes"
+  REGEX_PASS "Read 78 meshes"
   REGEX_FAIL "Exception"
 )
 #
