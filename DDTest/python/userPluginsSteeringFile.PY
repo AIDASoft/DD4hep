@@ -355,11 +355,11 @@ SIM.output.random = 6
 ## Configuration for Output Files. 
 ################################################################################
 
-def outputPlugin(dd4hepSimulation, geant4):
-  from DDG4 import EventAction
+def outputPlugin(dd4hepSimulation):
+  from DDG4 import EventAction, Kernel
   dd = dd4hepSimulation  # just shorter variable name
   shared = dd.numberOfThreads > 1
-  evt_root = EventAction(geant4.kernel(), 'Geant4Output2ROOT/' + dd.outputFile, shared)
+  evt_root = EventAction(Kernel().worker(), 'Geant4Output2ROOT/' + dd.outputFile, shared)
   evt_root.HandleMCTruth = True or False
   evt_root.Control = True
   output = dd.outputFile
@@ -367,7 +367,7 @@ def outputPlugin(dd4hepSimulation, geant4):
     output = dd.outputFile + dd.outputConfig.myExtension
   evt_root.Output = output
   evt_root.enableUI()
-  geant4.kernel().eventAction().add(evt_root)
+  Kernel().worker().eventAction().add(evt_root)
   return None
 
 SIM.outputConfig.myExtension = '.root'
