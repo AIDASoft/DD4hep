@@ -1,6 +1,5 @@
 """Class for output file configuration"""
 import logging
-from textwrap import dedent
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
@@ -90,17 +89,17 @@ class OutputConfig(ConfigHelper):
 
     For example one can add this to the ddsim steering file:
 
-      def exampleUserPlugin(dd4hepSimulation, geant4):
+      def exampleUserPlugin(dd4hepSimulation):
         '''Example code for user created plugin.
 
         :param DD4hepSimulation dd4hepSimulation: The DD4hepSimulation instance, so all parameters can be accessed
         :return: None
         '''
-        from DDG4 import EventAction
+        from DDG4 import EventAction, Kernel
         dd = dd4hepSimulation  # just shorter variable name
         # Only use shared=True in MT mode to avoid double-save in ST mode
         shared = dd.numberOfThreads > 1
-        evt_root = EventAction(geant4.kernel(), 'Geant4Output2ROOT/' + dd.outputFile, shared)
+        evt_root = EventAction(Kernel().worker(), 'Geant4Output2ROOT/' + dd.outputFile, shared)
         evt_root.HandleMCTruth = True or False
         evt_root.Control = True
         output = dd.outputFile
@@ -108,7 +107,7 @@ class OutputConfig(ConfigHelper):
           output = dd.outputFile + dd.outputConfig.myExtension
         evt_root.Output = output
         evt_root.enableUI()
-        geant4.kernel().eventAction().add(evt_root)
+        Kernel().worker().eventAction().add(evt_root)
         return None
 
       SIM.outputConfig.userOutputPlugin = exampleUserPlugin
@@ -129,15 +128,8 @@ class OutputConfig(ConfigHelper):
     """Configure the output file and plugin."""
     if callable(self._userPlugin):
       logger.info("++++ Setting up UserPlugin for Output ++++")
-      try:
-        return self._userPlugin(dd4hepsimulation, geant4)
-      except TypeError:
-        logger.exception(dedent("""
-                                The signature of the user plugin configuration function has changed.
-                                Please dump a new steering file and adapt the kernel part of your function
-                                and its arguments.
-                                """))
-        raise
+      return self._userPlugin(dd4hepsimulation)
+
     if self.forceLCIO:
       return self._configureLCIO(dd4hepsimulation, geant4)
 
