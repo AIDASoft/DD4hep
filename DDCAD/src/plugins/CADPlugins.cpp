@@ -17,6 +17,7 @@
 #include <DD4hep/Printout.h>
 #include <XML/Utilities.h>
 #include <DDCAD/ASSIMPReader.h>
+#include <DDCAD/ASSIMPWriter.h>
 
 // C/C++ include files
 #include <filesystem>
@@ -63,7 +64,7 @@ static void* read_CAD_Volume(dd4hep::Detector& dsc, int argc, char** argv)   {
 
   if ( fname.empty() || help )    {
     std::cout <<
-      "Usage: -plugin DD4hep_read_CAD_volumes -arg [-arg]                      \n\n"
+      "Usage: -plugin DD4hep_CAD_export -arg [-arg]                           \n\n"
       "     -input    <string> Input file name.                                 \n"
       "     -scale    <float>  Scale factor when importing shapes.              \n"
       "     -help              Print this help output.                          \n"
@@ -285,3 +286,83 @@ static dd4hep::Handle<TObject> create_CAD_Volume(dd4hep::Detector& dsc, xml_h e)
   return envelope;
 }
 DECLARE_XML_VOLUME(CAD_MultiVolume__volume_constructor,create_CAD_Volume)
+
+/// CAD volume importer plugin
+/**
+ *
+ */
+static long CAD_export(dd4hep::Detector& description, int argc, char** argv)   {
+  bool        recursive = false, help = false;
+  std::string volume, detector, fname, ftype;
+  double      scale = 1.0;
+  int         flags = 0;
+  
+  for(int i = 0; i < argc && argv[i]; ++i)  {
+    if (      0 == ::strncmp( "-output",argv[i],4) )    fname     = argv[++i];
+    else if ( 0 == ::strncmp("--output",argv[i],5) )    fname     = argv[++i];
+    else if ( 0 == ::strncmp( "-type",argv[i],4) )      ftype     = argv[++i];
+    else if ( 0 == ::strncmp("--type",argv[i],5) )      ftype     = argv[++i];
+    else if ( 0 == ::strncmp( "-detector",argv[i],4) )  detector  = argv[++i];
+    else if ( 0 == ::strncmp("--detector",argv[i],5) )  detector  = argv[++i];
+    else if ( 0 == ::strncmp( "-volume",argv[i],4) )    volume    = argv[++i];
+    else if ( 0 == ::strncmp("--volume",argv[i],5) )    volume    = argv[++i];
+    else if ( 0 == ::strncmp( "-recursive",argv[i],4) ) recursive = true;
+    else if ( 0 == ::strncmp("--recursive",argv[i],5) ) recursive = true;
+    else if ( 0 == ::strncmp( "-scale",argv[i],4) )     scale     = ::atof(argv[++i]);
+    else if ( 0 == ::strncmp("--scale",argv[i],5) )     scale     = ::atof(argv[++i]);
+    else if ( 0 == ::strncmp( "-flags",argv[i],4) )     flags     = ::atol(argv[++i]);
+    else if ( 0 == ::strncmp("--flags",argv[i],5) )     flags     = ::atol(argv[++i]);
+    else if ( 0 == ::strncmp( "-help",argv[i],2) )      help      = true;
+    else if ( 0 == ::strncmp("--help",argv[i],3) )      help      = true;
+  }
+
+  if ( fname.empty() || ftype.empty() ) help = true;
+  if ( volume.empty() && detector.empty() ) help = true;
+  if ( help )   {
+    std::cout <<
+      "Usage: -plugin DD4hep_CAD_export -arg [-arg]                           \n\n"
+      "     -output   <string> Output file name.                                \n"
+      "     -type     <string> Output file type.                                \n"
+      "     -recursive         Export volume/detector element and all daughters.\n"
+      "     -volume   <string> Path to the volume to be exported.               \n"
+      "     -detector <string> Path to the detector element to be exported.     \n"
+      "     -help              Print this help output.                          \n"
+      "     -scale    <number> Unit scale before writing output data.           \n"
+      "     -flags    <number> Flagsging helper to pass args -- Experts only.   \n"
+      "     Arguments given: " << dd4hep::arguments(argc,argv) << std::endl << std::flush;
+    ::exit(EINVAL);
+  }
+
+  dd4hep::PlacedVolume pv;
+  if ( !detector.empty() )   {
+    dd4hep::DetElement elt;
+    if ( detector == "/world" )
+      elt = description.world();
+    else
+      elt = dd4hep::detail::tools::findElement(description,detector);
+    if ( !elt.isValid() )  {
+      except("DD4hep_CAD_export","+++ Invalid DetElement path: %s",detector.c_str());
+    }
+    if ( !elt.placement().isValid() )   {
+      except("DD4hep_CAD_export","+++ Invalid DetElement placement: %s",detector.c_str());
+    }
+    pv = elt.placement();
+  }
+  else if ( !volume.empty() )   {
+    pv = dd4hep::detail::tools::findNode(description.world().placement(), volume);
+    if ( !pv.isValid() )   {
+      except("DD4hep_CAD_export","+++ Invalid placement path: %s",volume.c_str());
+    }
+  }
+  dd4hep::cad::ASSIMPWriter wr(description);
+  if ( flags ) wr.flags = flags;
+  std::vector<dd4hep::PlacedVolume> places {pv};
+  auto num_mesh = wr.write(fname, ftype, places, recursive, scale);
+  if ( num_mesh < 0 )   {
+    printout(dd4hep::ERROR, "DD4hep_CAD_export",
+             "+++ Failed to export shapes to CAD file: %s [%s]",
+             fname.c_str(), ftype.c_str());
+  }
+  return 1;
+}
+DECLARE_APPLY(DD4hep_CAD_export,CAD_export)
