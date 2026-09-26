@@ -43,6 +43,9 @@ jobs:
           LCG: "dev4/arm64-mac15-clang170-opt"
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+    - name: Increase ulimit before cvmfs processes start
+      run: |
+        ulimit -n 8192
     - uses: cvmfs-contrib/github-action-cvmfs@72f2a8d366043978d6aebee154bc9ed321c2f2a8
       with:
         cvmfs_repositories: sft.cern.ch,sft-nightlies.cern.ch,geant4.cern.ch
@@ -51,7 +54,6 @@ jobs:
         release-platform: ${{ matrix.LCG }}
         ccache-key: ccache-${{ matrix.LCG }}
         run: |
-          ulimit -n 8192
           mkdir build
           cd build
           unset CPATH
