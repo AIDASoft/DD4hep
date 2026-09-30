@@ -30,13 +30,9 @@ namespace {
 
   /// Return the search path for the ".components" files.
   ///
-  /// On macOS, System Integrity Protection removes DYLD_LIBRARY_PATH from the
-  /// environment of every process started through a protected binary such as
-  /// /bin/sh or /usr/bin/env, i.e. of every script with a "#!/usr/bin/env python"
-  /// shebang. So next to DYLD_LIBRARY_PATH also search DD4HEP_LIBRARY_PATH (which
-  /// thisdd4hep.sh sets for exactly this reason) and LD_LIBRARY_PATH, which SIP
-  /// leaves alone. A directory listed in several of them is searched only once, at
-  /// its first appearance.
+  /// On macOS next to DYLD_LIBRARY_PATH also search DD4HEP_LIBRARY_PATH 
+  /// and LD_LIBRARY_PATH. A directory listed in several of them is searched 
+  /// only once, at its first appearance.
   inline SearchPath pluginSearchPath() {
     const std::string defaultPath = "/usr/lib64:/usr/lib:/usr/local/lib";
 #if defined( _WIN32 )
@@ -77,10 +73,8 @@ namespace {
   /// Return how to dlopen the library `lib`, listed in a ".components" file found in
   /// the directory `dir`.
   ///
-  /// On macOS a bare library name is resolved through DYLD_LIBRARY_PATH, which SIP
-  /// may have removed (see pluginSearchPath), so there a library that sits next to
-  /// its ".components" file is loaded by its full path. Everywhere else, and for
-  /// libraries living elsewhere, the name is returned unchanged.
+  /// On macOS, a library that sits next to its ".components" file is loaded by its
+  /// full path. 
   inline std::string componentLibrary( const std::string& dir, const std::string& lib ) {
 #if defined( __APPLE__ )
     if ( !dir.empty() && lib.find( '/' ) == std::string::npos ) {
