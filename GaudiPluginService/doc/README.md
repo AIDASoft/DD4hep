@@ -61,6 +61,14 @@ listcomponents lib/libBar.so >> lib/MyApp.components
 Note that the `.components` file does not need to be in the same directory as
 `libBar.so`.
 
+On macOS the `.components` files are searched for in the directories of
+`DD4HEP_LIBRARY_PATH`, `DYLD_LIBRARY_PATH` and `LD_LIBRARY_PATH`, in that order.
+System Integrity Protection removes `DYLD_LIBRARY_PATH` from the environment of
+any process started through a protected binary (e.g. `/usr/bin/env`, as in a
+`#!/usr/bin/env python` script), so on its own it is not a reliable search path
+there. For the same reason, a library that sits in the same directory as the
+`.components` file listing it is loaded by its full path on macOS.
+
 The application code, linked against the library providing `Foo` can now
 instantiate objects of class `Bar` like this:
 ```cpp

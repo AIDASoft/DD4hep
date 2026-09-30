@@ -14,6 +14,8 @@
 #define GAUDI_PLUGIN_SERVICE_V1
 #include <Gaudi/PluginService.h>
 
+#include "PluginSearchPath.h"
+
 #include <dirent.h>
 #include <dlfcn.h>
 
@@ -145,19 +147,10 @@ namespace Gaudi {
           REG_SCOPE_LOCK
           if ( m_initialized ) return;
           m_initialized = true;
-#if defined( _WIN32 )
-          const char* envVar = "PATH";
-          const char  sep    = ';';
-#elif defined( __APPLE__ )
-          const char* envVar = "DYLD_LIBRARY_PATH";
-          const char  sep    = ':';
-#else
-          const char* envVar = "LD_LIBRARY_PATH";
-          const char  sep    = ':';
-#endif
-          char* search_path = ::getenv( envVar );
-          logger().debug( std::string( "searching factories in " ) + envVar );
-          std::string path = search_path ? std::string(search_path) : "/usr/lib64:/usr/lib:/usr/local/lib";
+          const auto        searchPath = pluginSearchPath();
+          const char        sep        = searchPath.separator;
+          logger().debug( std::string( "searching factories in " ) + searchPath.variables );
+          const std::string path = searchPath.path;
           std::string::size_type pos    = 0;
           std::string::size_type newpos = 0;
           while ( pos != std::string::npos ) {
@@ -212,7 +205,7 @@ namespace Gaudi {
                       logger().warning( "failed to parse line " + fullPath + ':' + std::to_string( lineCount ) );
                       continue;
                     }
-                    const std::string lib( line, 0, pos );
+                    const std::string lib = componentLibrary( dirName, std::string( line, 0, pos ) );
                     const std::string fact( line, pos + 1 );
                     m_factories.emplace( fact, FactoryInfo( lib ) );
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES

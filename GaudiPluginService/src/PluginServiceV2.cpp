@@ -14,6 +14,8 @@
 #define GAUDI_PLUGIN_SERVICE_V2
 #include <Gaudi/PluginService.h>
 
+#include "PluginSearchPath.h"
+
 #include <boost/algorithm/string.hpp>
 
 #include <dirent.h>
@@ -135,28 +137,18 @@ namespace Gaudi {
 
         void Registry::initialize() {
           REG_SCOPE_LOCK
-#if defined( _WIN32 )
-          const std::string envVar = "PATH";
-          const std::string sep    = ";";
-#elif defined( __APPLE__ )
-          const std::string envVar = "DYLD_LIBRARY_PATH";
-          const std::string sep    = ":";
-#else
-          const std::string envVar = "LD_LIBRARY_PATH";
-          const std::string sep    = ":";
-#endif
+          const auto        searchPath = pluginSearchPath();
+          const std::string sep( 1, searchPath.separator );
 
           std::regex  line_format{"^(?:[[:space:]]*(?:(v[0-9]+)::)?([^:]+):(.*[^[:space:]]))?[[:space:]]*(?:#.*)?$"};
           std::smatch matches;
 
-          std::string search_path;
-          const char* envPtr = std::getenv( envVar.c_str() );
-          search_path = envPtr ? envPtr : "/usr/lib64:/usr/lib:/usr/local/lib";
+          const std::string& search_path = searchPath.path;
           if ( search_path.empty() ) {
             return;
           }
 
-          logger().debug("searching factories in " + envVar);
+          logger().debug("searching factories in " + searchPath.variables);
           logger().debug("searching factories in " + search_path);
 
           std::vector<std::string> directories;
@@ -182,7 +174,7 @@ namespace Gaudi {
                   std::getline( factories, line );
                   if ( regex_match( line, matches, line_format ) ) {
                     if ( matches[1] == "v2" ) { // ignore non "v2" and "empty" lines
-                      const std::string lib{matches[2]};
+                      const std::string lib = componentLibrary( dirName.string(), matches[2] );
                       const std::string fact{matches[3]};
                       m_factories.emplace( fact, FactoryInfo{lib, {}, {{"ClassName", fact}}} );
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
