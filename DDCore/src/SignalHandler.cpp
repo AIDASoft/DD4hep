@@ -29,7 +29,6 @@ using signal_handler_t = SignalHandler::signal_handler_t;
 
 namespace {
   static bool s_exit_handler_print  = true;
-  static bool s_exit_handler_active = false;
   static bool s_exit_handler_backtrace = false;
   static bool s_exit_handler_sleep_on_fatal = false;
 
@@ -211,7 +210,6 @@ void SignalHandler::implementation::install(int num, const std::string& name, st
 void SignalHandler::implementation::handler(int signum, siginfo_t *info, void *ptr) {
   SigMap& m = instance().m_map;
   SigMap::iterator iter_handler = m.find(signum);
-  s_exit_handler_active = true;
   if ( iter_handler != m.end() ) {
     auto hdlr = iter_handler->second.old_action.sa_handler;
     func_cast<void (*)(int)> dsc0(hdlr);
@@ -278,7 +276,6 @@ void SignalHandler::implementation::handler(int signum, siginfo_t *info, void *p
       ::_exit(128+signum);
     }
   }
-  s_exit_handler_active = false;
 }
 
 /// Default constructor
