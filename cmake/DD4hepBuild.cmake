@@ -804,38 +804,10 @@ MACRO(DD4HEP_SETUP_BOOST_TARGETS)
   INTERFACE_COMPILE_DEFINITIONS BOOST_SPIRIT_USE_PHOENIX_V3
   )
 
-  # Try to compile with filesystem header linking against different FS libraries
-  SET(HAVE_FILESYSTEM False)
-  dd4hep_debug("|++> Checking if compiler supports filesystem library")
-  # stdc++fs needed in gcc8, no lib for gcc9.1, c++fs for llvm
-  FOREACH(FS_LIB_NAME stdc++fs "" c++fs )
-    dd4hep_debug("|++++> linking against ${FS_LIB_NAME}")
-    try_compile(HAVE_FILESYSTEM ${CMAKE_BINARY_DIR}/try ${DD4hep_DIR}/cmake/TryFileSystem.cpp
-      CXX_STANDARD ${CMAKE_CXX_STANDARD}
-      CXX_EXTENSIONS False
-      OUTPUT_VARIABLE HAVE_FS_OUTPUT
-      LINK_LIBRARIES ${FS_LIB_NAME}
-      )
-    dd4hep_debug("|++++> ${HAVE_FS_OUTPUT}")
-    IF(HAVE_FILESYSTEM)
-      dd4hep_print("|++> Compiler supports filesystem when linking against ${FS_LIB_NAME}")
-      SET(FS_LIBRARIES ${FS_LIB_NAME})
-      BREAK()
-    ENDIF()
-    dd4hep_debug("|++++> Compiler not compatible when linking against ${FS_LIB_NAME}")
-  ENDFOREACH()
-
-  IF(NOT HAVE_FILESYSTEM)
-    dd4hep_print("|++> Compiler does not have filesystem support, falling  back to Boost::filesystem")
-    FIND_PACKAGE(Boost 1.56 REQUIRED COMPONENTS filesystem system)
-    SET(FS_LIBRARIES Boost::filesystem Boost::system)
-    SET_TARGET_PROPERTIES(Boost::filesystem
-      PROPERTIES
-      INTERFACE_COMPILE_DEFINITIONS USE_BOOST_FILESYSTEM
-    )
-  GET_TARGET_PROPERTY(BOOST_FILESYSTEM_LOC Boost::filesystem IMPORTED_LOCATION)
-  GET_FILENAME_COMPONENT(BOOST_DIR ${BOOST_FILESYSTEM_LOC} DIRECTORY)
-ENDIF()
+  # Modern C++17 compilers (GCC 9+, Clang 11+) have std::filesystem without extra libraries
+  # DD4hep requires GCC 9+ or Clang 11+ (enforced in CMakeLists.txt)
+  SET(FS_LIBRARIES "")
+  dd4hep_print("|++> Using std::filesystem (no extra library needed)")
 
 
 ENDMACRO()

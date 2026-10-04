@@ -64,6 +64,21 @@ IF(${CMAKE_CXX_STANDARD} LESS 17)
   MESSAGE(FATAL_ERROR "DD4hep requires at least CXX Standard 17 to compile")
 ENDIF()
 
+# Require minimum compiler versions for C++17 with full std::filesystem support
+IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  IF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
+    MESSAGE(FATAL_ERROR "DD4hep requires GCC 9.0 or later (found ${CMAKE_CXX_COMPILER_VERSION})")
+  ENDIF()
+ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  IF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11.0)
+    MESSAGE(FATAL_ERROR "DD4hep requires Clang 11.0 or later (found ${CMAKE_CXX_COMPILER_VERSION})")
+  ENDIF()
+ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+  IF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 12.0)
+    MESSAGE(FATAL_ERROR "DD4hep requires AppleClang 12.0 or later (found ${CMAKE_CXX_COMPILER_VERSION})")
+  ENDIF()
+ENDIF()
+
 ###############################
 # Define DD4hep build options #
 ###############################
@@ -306,7 +321,7 @@ install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/run_test.sh         DESTINATION bin )
 
 install(DIRECTORY cmake
   DESTINATION ${CMAKE_INSTALL_PREFIX}
-  FILES_MATCHING PATTERN "*.cmake" PATTERN "thisdd4hep_package.sh.in" PATTERN "run*.sh" PATTERN "*.cpp"
+  FILES_MATCHING PATTERN "*.cmake" PATTERN "thisdd4hep_package.sh.in" PATTERN "run*.sh"
   PATTERN ".svn" EXCLUDE
   )
 
