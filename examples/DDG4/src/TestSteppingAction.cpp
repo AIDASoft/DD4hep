@@ -49,7 +49,9 @@ namespace dd4hep {
       virtual void operator()(const G4Step* step, G4SteppingManager*) {
         if(m_calls_steps % 5 == 0 ) {
           ++m_calls_suspended;
-          step->GetTrack()->SetTrackStatus(fSuspend);
+          if(step->GetTrack()->GetTrackStatus() != fStopAndKill) {
+            step->GetTrack()->SetTrackStatus(fSuspend);
+          }
         } else if((m_calls_steps + 1) % 30 == 0 ) {
           ++m_calls_kill;
           step->GetTrack()->SetTrackStatus(fStopAndKill);
