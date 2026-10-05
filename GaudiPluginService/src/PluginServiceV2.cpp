@@ -34,13 +34,8 @@
 #  include <dlfcn.h>
 #endif
 
-#ifdef USE_BOOST_FILESYSTEM
-#  include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#else
-#  include <filesystem>
+#include <filesystem>
 namespace fs = std::filesystem;
-#endif // USE_BOOST_FILESYSTEM
 
 #include <string_view>
 
