@@ -792,9 +792,6 @@ ENDMACRO()
 
 #
 # Do some processing of the imported Boost Targets
-# Some libraries are only needed for cxx std 14
-# we also have to make sure the boost library location is known in that case
-#
 #
 
 MACRO(DD4HEP_SETUP_BOOST_TARGETS)
@@ -803,12 +800,6 @@ MACRO(DD4HEP_SETUP_BOOST_TARGETS)
   PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS BOOST_SPIRIT_USE_PHOENIX_V3
   )
-
-  # Modern C++17 compilers (GCC 9+, Clang 11+) have std::filesystem without extra libraries
-  # DD4hep requires GCC 9+ or Clang 11+ (enforced in CMakeLists.txt)
-  SET(FS_LIBRARIES "")
-  dd4hep_print("|++> Using std::filesystem (no extra library needed)")
-
 
 ENDMACRO()
 
