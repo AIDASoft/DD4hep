@@ -64,19 +64,9 @@ IF(${CMAKE_CXX_STANDARD} LESS 17)
   MESSAGE(FATAL_ERROR "DD4hep requires at least CXX Standard 17 to compile")
 ENDIF()
 
-# Require minimum compiler versions for C++17 with full std::filesystem support
-IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  IF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
-    MESSAGE(FATAL_ERROR "DD4hep requires GCC 9.0 or later (found ${CMAKE_CXX_COMPILER_VERSION})")
-  ENDIF()
-ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  IF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11.0)
-    MESSAGE(FATAL_ERROR "DD4hep requires Clang 11.0 or later (found ${CMAKE_CXX_COMPILER_VERSION})")
-  ENDIF()
-ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-  IF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 12.0)
-    MESSAGE(FATAL_ERROR "DD4hep requires AppleClang 12.0 or later (found ${CMAKE_CXX_COMPILER_VERSION})")
-  ENDIF()
+# std::filesystem is part of libstdc++ without linking stdc++fs since GCC 9.1
+IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1)
+  MESSAGE(FATAL_ERROR "DD4hep requires GCC 9.1 or later (found ${CMAKE_CXX_COMPILER_VERSION})")
 ENDIF()
 
 ###############################
