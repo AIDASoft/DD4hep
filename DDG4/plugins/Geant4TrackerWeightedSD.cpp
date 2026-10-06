@@ -427,6 +427,36 @@ namespace dd4hep {
         std::cout << str.str() << std::endl;
       }
 
+      /// Callback for steps the filters rejected. Only the geometry matters here: a rejected step never
+      /// opens a hit and its deposit is never accumulated, but if a hit of this track is pending and the
+      /// step leaves the sensitive volume (or the track dies), the pending hit is closed now. Without this,
+      /// a sub-threshold exit step (e.g. the last 2 um of a crossing under ddsim's 1 keV per-step filter)
+      /// leaves the hit open and the track's next accepted step, possibly in another placement of the same
+      /// volume, is merged into it: one hit with the deposit-weighted position of two crossings.
+      G4bool processRejected(const G4Step* step, G4TouchableHistory* )   {
+        if ( current < 0 )  return false;
+        Geant4StepHandler h(step);
+        if ( current != h.trkID() )  return false;
+        if( DEBUG == printLevel() ) {
+          std::cout<<" DEBUG: Geant4TrackerWeightedSD::processRejected(const G4Step* step, G4TouchableHistory* ) ...."<<std::endl;
+          dumpStep( h, step);
+        }
+        G4VSolid*     preSolid    = h.solid(h.pre);
+        G4VSolid*     postSolid   = h.solid(h.post);
+        G4ThreeVector local_post  = h.globalToLocalG4(h.postPosG4());
+        EInside       post_inside = postSolid->Inside(local_post);
+        const void*   postSD      = h.postSD();
+        const void*   preSD       = h.preSD();
+        const void*   prePV       = h.preVolume();
+        G4VSolid*     solid       = (preSD == thisSD) ? preSolid : postSolid;
+        bool leaving = (postSD != thisSD) || (prePV != thisPV) || (post_inside != kInside) || !h.trkAlive();
+        if ( !leaving )  return false;
+        if ( !h.trkAlive() ) hit_flag |= Geant4Tracker::Hit::HIT_KILLED_TRACK;
+        calc_dist_out(solid);
+        extractHit(post_inside == kInside ? kOutside : post_inside);
+        return true;
+      }
+
       /// GFLash processing callback
       G4bool process(const Geant4FastSimSpot* , G4TouchableHistory* ) {
         sensitive->except("GFlash/FastSim action is not implemented for SD: %s", sensitive->c_name());
@@ -466,6 +496,12 @@ namespace dd4hep {
     template <> G4bool
     Geant4SensitiveAction<TrackerWeighted>::process(const G4Step* step, G4TouchableHistory* history) {
       return m_userData.process(step, history);
+    }
+
+    /// Callback for steps rejected by the filters: close a pending hit if the track leaves the volume
+    template <> bool
+    Geant4SensitiveAction<TrackerWeighted>::processRejected(const G4Step* step, G4TouchableHistory* history) {
+      return m_userData.processRejected(step, history);
     }
 
     /// Method for generating hit(s) using the information of the Geant4FastSimSpot object.

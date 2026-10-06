@@ -143,9 +143,14 @@ namespace dd4hep {
       /// Access the DDG4 action sequence
       virtual Geant4SensDetActionSequence* sequence() const  override final
       {  return m_sequence;                                             }
-      /// Callback if the sequence should be accepted or filtered off
-      virtual G4bool Accept(const G4Step* step) const  override  final
-      {  return m_sequence->accept(step);                               }
+      /// Callback if the sequence should be accepted or filtered off.
+      /** The filters of the sequence are no longer applied here but in ProcessHits(), so that
+       *  a rejected step can still be forwarded to the actions through processRejected()
+       *  (stateful actions have to close a pending hit when the track leaves the volume on
+       *  a step which the filters reject, e.g. a sub-threshold exit step).
+       */
+      virtual G4bool Accept(const G4Step* /* step */) const  override  final
+      {  return true;                                                   }
       /// Method invoked at the beginning of each event.
       virtual void Initialize(G4HCofThisEvent* hce)  override  final
       {  m_sequence->begin(hce);                                        }
@@ -155,7 +160,12 @@ namespace dd4hep {
       /// Method for generating hit(s) using the information of G4Step object.
       virtual G4bool ProcessHits(G4Step* step,
                                  G4TouchableHistory* hist)   override  final
-      {  return m_sequence->process(step,hist);                         }
+      {
+        if ( m_sequence->accept(step) )
+          return m_sequence->process(step,hist);
+        m_sequence->processRejected(step,hist);
+        return false;
+      }
       /// GFLASH interface
       virtual G4bool ProcessHits(G4GFlashSpot* sp,
                                  G4TouchableHistory* hist)   override final
