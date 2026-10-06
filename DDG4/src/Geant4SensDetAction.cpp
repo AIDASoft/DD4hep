@@ -270,6 +270,11 @@ bool Geant4Sensitive::process(const G4Step* /* step */, G4TouchableHistory* /* h
   return false;
 }
 
+/// Callback for steps rejected by the filters. The default implementation does nothing.
+bool Geant4Sensitive::processRejected(const G4Step* /* step */, G4TouchableHistory* /* history */) {
+  return false;
+}
+
 /// GFLASH/FastSim interface: Method for generating hit(s) using the information of the Geant4FastSimSpot object.
 bool Geant4Sensitive::processFastSim(const Geant4FastSimSpot* /* spot */, G4TouchableHistory* /* history */) {
   except("The sensitive action %s does not support the GFLASH/FastSim interface for Geant4.", c_name());
@@ -530,8 +535,18 @@ bool Geant4SensDetActionSequence::process(const G4Step* step, G4TouchableHistory
   for (Geant4Sensitive* sensitive : m_actors)  {
     if ( sensitive->accept(step) )
       result |= sensitive->process(step, history);
+    else
+      sensitive->processRejected(step, history);
   }
   m_process(step, history);
+  return result;
+}
+
+/// Callback for steps rejected by the sequence's filters: forwarded to processRejected() of every actor.
+bool Geant4SensDetActionSequence::processRejected(const G4Step* step, G4TouchableHistory* history) {
+  bool result = false;
+  for (Geant4Sensitive* sensitive : m_actors)
+    result |= sensitive->processRejected(step, history);
   return result;
 }
 
