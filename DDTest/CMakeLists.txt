@@ -161,11 +161,11 @@ if (DD4HEP_USE_GEANT4)
 
   # check that the output file has the correct number of events
   add_test(t_check_ddsimUserPlugins
-    root t_ddsimUserPlugins.root -e "EVENT->GetEntries()" -q -n
+    root t_ddsimUserPlugins.root -n -q ${CMAKE_CURRENT_SOURCE_DIR}/src/get_EVENT_entries.cpp
   )
   SET_TESTS_PROPERTIES(t_check_ddsimUserPlugins
       PROPERTIES
-      PASS_REGULAR_EXPRESSION "[(]long long[)] 10"
+      PASS_REGULAR_EXPRESSION "We have 10 events."
       DEPENDS "t_ddsimUserPlugins"
   )
 
