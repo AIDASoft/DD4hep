@@ -439,12 +439,12 @@ namespace dd4hep {
           dumpStep( h, step);
         }
         bool leaving = (h.postSD() != thisSD) || (h.preVolume() != thisPV) || !h.trkAlive();
-        EInside post_inside = kOutside;      // kInside, kSurface or kOutside, as in process(); set by the solid test below when it runs
+        EInside post_inside = kOutside;  // placeholder; indicates where the post-step point sits relative to the volume
         if ( !leaving )  {
           G4VSolid*     postSolid   = h.solid(h.post);
           G4ThreeVector local_post  = h.globalToLocalG4(h.postPosG4());
-          post_inside = postSolid->Inside(local_post);
-          leaving = (post_inside != kInside);
+          post_inside = postSolid->Inside(local_post); // assigns kInside / kOutside / kSurface
+          leaving = (post_inside != kInside); // if not still in same volume, sets leaving to true
         }
         if ( !leaving )  return false;
         if ( !h.trkAlive() )  hit_flag |= Geant4Tracker::Hit::HIT_KILLED_TRACK;
