@@ -137,9 +137,9 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
       Geant4Vertex* vtx = new Geant4Vertex ;
       vertices.emplace_back( vtx );
 
-      vtx->x    = vex.get_component(0);
-      vtx->y    = vex.get_component(1);
-      vtx->z    = vex.get_component(2);
+      vtx->x    = vex.get_component(0) * len_unit;
+      vtx->y    = vex.get_component(1) * len_unit;
+      vtx->z    = vex.get_component(2) * len_unit;
       vtx->time = vex.get_component(3) * len_unit / CLHEP::c_light;
 
       vtx->out.insert(p->id) ;
