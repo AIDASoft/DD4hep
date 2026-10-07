@@ -427,33 +427,29 @@ namespace dd4hep {
         std::cout << str.str() << std::endl;
       }
 
-      /// Callback for steps the filters rejected. Only the geometry matters here: a rejected step never
-      /// opens a hit and its deposit is never accumulated, but if a hit of this track is pending and the
-      /// step leaves the sensitive volume (or the track dies), the pending hit is closed now. Without this,
-      /// a sub-threshold exit step (e.g. the last 2 um of a crossing under ddsim's 1 keV per-step filter)
-      /// leaves the hit open and the track's next accepted step, possibly in another placement of the same
-      /// volume, is merged into it: one hit with the deposit-weighted position of two crossings.
+      // Callback for steps the filters rejected: close a pending hit if the track leaves the volume.
+      // Solves a problem in which steps leaving the volume were filtered, leaving the hit open and
+      // ultimately creating unphysical hits located inbetween two volumes.
       G4bool processRejected(const G4Step* step, G4TouchableHistory* )   {
-        if ( current < 0 )  return false;
+        if ( current < 0 )  return false;                     // no pending hit
         Geant4StepHandler h(step);
-        if ( current != h.trkID() )  return false;
+        if ( current != h.trkID() )  return false;            // the pending hit belongs to another track
         if( DEBUG == printLevel() ) {
           std::cout<<" DEBUG: Geant4TrackerWeightedSD::processRejected(const G4Step* step, G4TouchableHistory* ) ...."<<std::endl;
           dumpStep( h, step);
         }
-        G4VSolid*     preSolid    = h.solid(h.pre);
-        G4VSolid*     postSolid   = h.solid(h.post);
-        G4ThreeVector local_post  = h.globalToLocalG4(h.postPosG4());
-        EInside       post_inside = postSolid->Inside(local_post);
-        const void*   postSD      = h.postSD();
-        const void*   preSD       = h.preSD();
-        const void*   prePV       = h.preVolume();
-        G4VSolid*     solid       = (preSD == thisSD) ? preSolid : postSolid;
-        bool leaving = (postSD != thisSD) || (prePV != thisPV) || (post_inside != kInside) || !h.trkAlive();
+        bool leaving = (h.postSD() != thisSD) || (h.preVolume() != thisPV) || !h.trkAlive();
+        EInside post_inside = kOutside;      // kInside, kSurface or kOutside, as in process(); set by the solid test below when it runs
+        if ( !leaving )  {
+          G4VSolid*     postSolid   = h.solid(h.post);
+          G4ThreeVector local_post  = h.globalToLocalG4(h.postPosG4());
+          post_inside = postSolid->Inside(local_post);
+          leaving = (post_inside != kInside);
+        }
         if ( !leaving )  return false;
-        if ( !h.trkAlive() ) hit_flag |= Geant4Tracker::Hit::HIT_KILLED_TRACK;
-        calc_dist_out(solid);
-        extractHit(post_inside == kInside ? kOutside : post_inside);
+        if ( !h.trkAlive() )  hit_flag |= Geant4Tracker::Hit::HIT_KILLED_TRACK;
+        calc_dist_out(h.solid(h.pre));      // the step starts in this detector's volume
+        extractHit(post_inside);
         return true;
       }
 

@@ -314,13 +314,8 @@ namespace dd4hep {
       /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
       virtual bool process(const G4Step* step, G4TouchableHistory* history);
 
-      /// Callback for steps inside the sensitive volume that were rejected by the filters.
-      /** Invoked by the sequence for every step which did not pass the filters (those of the
-       *  sequence or of this action), instead of process(). Actions which accumulate several
-       *  steps into one hit must not assume that they see every step of a track: the step on
-       *  which the track leaves the volume may be below a per-step energy threshold, and the
-       *  pending hit has to be closed anyway, or the next accepted step of the same track --
-       *  possibly in another placement of the same volume -- is merged into it.
+      /// Callback for steps inside the sensitive volume that the filters rejected, called instead of process().
+      /** Lets stateful actions close a pending hit when the track leaves the volume on a filtered step.
        *  The default implementation does nothing.
        */
       virtual bool processRejected(const G4Step* step, G4TouchableHistory* history);

@@ -143,11 +143,9 @@ namespace dd4hep {
       /// Access the DDG4 action sequence
       virtual Geant4SensDetActionSequence* sequence() const  override final
       {  return m_sequence;                                             }
-      /// Callback if the sequence should be accepted or filtered off.
-      /** The filters of the sequence are no longer applied here but in ProcessHits(), so that
-       *  a rejected step can still be forwarded to the actions through processRejected()
-       *  (stateful actions have to close a pending hit when the track leaves the volume on
-       *  a step which the filters reject, e.g. a sub-threshold exit step).
+      /// G4VSDFilter interface: accepts every step.
+      /** The filters of the sequence are applied in ProcessHits(), where a rejected step can
+       *  still be forwarded to the actions through processRejected().
        */
       virtual G4bool Accept(const G4Step* /* step */) const  override  final
       {  return true;                                                   }
