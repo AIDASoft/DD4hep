@@ -159,6 +159,16 @@ if (DD4HEP_USE_GEANT4)
     --part.userParticleHandler=
   )
 
+  # check that the output file has the correct number of events
+  add_test(t_check_ddsimUserPlugins
+    root t_ddsimUserPlugins.root -e "EVENT->GetEntries()" -q -n
+  )
+  SET_TESTS_PROPERTIES(t_check_ddsimUserPlugins
+      PROPERTIES
+      PASS_REGULAR_EXPRESSION "[(]long long[)] 10"
+      DEPENDS "t_ddsimUserPlugins"
+  )
+
   add_test( t_ddsimUserActions "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
     ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=10
     --output.physics 0
