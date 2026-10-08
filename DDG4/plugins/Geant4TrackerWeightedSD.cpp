@@ -435,7 +435,7 @@ namespace dd4hep {
         Geant4StepHandler h(step);
         if ( current != h.trkID() )  return false;            // the pending hit belongs to another track
         if( DEBUG == printLevel() ) {
-          std::cout<<" DEBUG: Geant4TrackerWeightedSD::processRejected(const G4Step* step, G4TouchableHistory* ) ...."<<std::endl;
+          std::cout << " DEBUG:" << __PRETTY_FUNCTION__ << "...." << std::endl;
           dumpStep( h, step);
         }
         bool leaving = (h.postSD() != thisSD) || (h.preVolume() != thisPV) || !h.trkAlive();
