@@ -153,11 +153,7 @@ if(TARGET ROOT::ROOTEve)
   find_package (ROOT REQUIRED COMPONENTS ROOTEve CONFIG)
 endif()
 
-# Set when the minimum required CMake version is at least 3.30
-if(POLICY CMP0167)
-  cmake_policy(SET CMP0167 NEW)
-endif()
-find_package(Boost 1.49 REQUIRED)
+find_package(Boost 1.70 REQUIRED CONFIG)
 DD4HEP_SETUP_BOOST_TARGETS()
 
 # Configure Geant4
