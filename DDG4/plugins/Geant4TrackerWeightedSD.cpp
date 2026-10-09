@@ -427,6 +427,32 @@ namespace dd4hep {
         std::cout << str.str() << std::endl;
       }
 
+      // Callback for steps the filters rejected: close a pending hit if the track leaves the volume.
+      // Solves a problem in which steps leaving the volume were filtered, leaving the hit open and
+      // ultimately creating unphysical hits located inbetween two volumes.
+      G4bool processRejected(const G4Step* step, G4TouchableHistory* )   {
+        if ( current < 0 )  return false;                     // no pending hit
+        Geant4StepHandler h(step);
+        if ( current != h.trkID() )  return false;            // the pending hit belongs to another track
+        if( DEBUG == printLevel() ) {
+          std::cout << " DEBUG:" << __PRETTY_FUNCTION__ << "...." << std::endl;
+          dumpStep( h, step);
+        }
+        bool leaving = (h.postSD() != thisSD) || (h.preVolume() != thisPV) || !h.trkAlive();
+        EInside post_inside = kOutside;  // placeholder; indicates where the post-step point sits relative to the volume
+        if ( !leaving )  {
+          G4VSolid*     postSolid   = h.solid(h.post);
+          G4ThreeVector local_post  = h.globalToLocalG4(h.postPosG4());
+          post_inside = postSolid->Inside(local_post); // assigns kInside / kOutside / kSurface
+          leaving = (post_inside != kInside); // if not still in same volume, sets leaving to true
+        }
+        if ( !leaving )  return false;
+        if ( !h.trkAlive() )  hit_flag |= Geant4Tracker::Hit::HIT_KILLED_TRACK;
+        calc_dist_out(h.solid(h.pre));      // the step starts in this detector's volume
+        extractHit(post_inside);
+        return true;
+      }
+
       /// GFLash processing callback
       G4bool process(const Geant4FastSimSpot* , G4TouchableHistory* ) {
         sensitive->except("GFlash/FastSim action is not implemented for SD: %s", sensitive->c_name());
@@ -466,6 +492,12 @@ namespace dd4hep {
     template <> G4bool
     Geant4SensitiveAction<TrackerWeighted>::process(const G4Step* step, G4TouchableHistory* history) {
       return m_userData.process(step, history);
+    }
+
+    /// Callback for steps rejected by the filters: close a pending hit if the track leaves the volume
+    template <> bool
+    Geant4SensitiveAction<TrackerWeighted>::processRejected(const G4Step* step, G4TouchableHistory* history) {
+      return m_userData.processRejected(step, history);
     }
 
     /// Method for generating hit(s) using the information of the Geant4FastSimSpot object.

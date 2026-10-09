@@ -118,6 +118,11 @@ namespace dd4hep {
     template <typename T> bool Geant4SensitiveAction<T>::process(const G4Step* step,G4TouchableHistory* history)  {
       return Geant4Sensitive::process(step, history);
     }
+
+    /// Callback for steps rejected by the filters. Overload for specialization: default does nothing.
+    template <typename T> bool Geant4SensitiveAction<T>::processRejected(const G4Step* step,G4TouchableHistory* history)  {
+      return Geant4Sensitive::processRejected(step, history);
+    }
     
     /// GFlash/Fast Simulation interface: Method for generating hit(s) using the information from fast simulation
     template <typename T> bool Geant4SensitiveAction<T>::processFastSim(const Geant4FastSimSpot* spot, G4TouchableHistory* history)  {
