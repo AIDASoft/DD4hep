@@ -89,6 +89,7 @@ dd4hep_add_test_reg( CLICSiD_multiple_inputs
 if( "${ROOT_VERSION}" VERSION_GREATER "6.13.0" )
   # ROOT Geometry export to GDML
   dd4hep_add_test_reg( CLICSiD_GDML_export_LONGTEST
+    FIXTURES_SETUP CLICSiD_GDML_export_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
     EXEC_ARGS  geoPluginRun -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -print WARNING -destroy -volmgr
                -plugin DD4hep_ROOTGDMLExtract -output EcalBarrel.gdml            -path /world/EcalBarrel
@@ -123,7 +124,7 @@ if( "${ROOT_VERSION}" VERSION_GREATER "6.13.0" )
                -plugin DD4hep_ROOTGDMLParse    -input LumiReadout_Forward.gdml   -path /world/LumiReadout_Forward
                -plugin DD4hep_ROOTGDMLParse    -input LumiReadout_Backward.gdml  -path /world/LumiReadout_Backward
                -plugin DD4hep_VolumeDump --topstat
-    DEPENDS    CLICSiD_GDML_export_LONGTEST
+    FIXTURES_REQUIRED CLICSiD_GDML_export_LONGTEST
     REGEX_PASS "\\+\\+\\+ Checked 11282 physical volume placements."
     REGEX_FAIL "Exception;EXCEPTION;ERROR" )
   #

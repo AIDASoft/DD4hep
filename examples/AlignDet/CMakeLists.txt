@@ -73,6 +73,7 @@ dd4hep_add_test_reg( AlignDet_Telescope_dump_xml
 #
 #---Testing: Write out alignment file from the alignment data using a detelement scan
 dd4hep_add_test_reg( AlignDet_Telescope_write_xml
+  FIXTURES_SETUP AlignDet_Telescope_write_xml
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy
   -plugin DD4hep_AlignmentExample_read_xml 
@@ -120,6 +121,7 @@ ELSE()
   SET(EXPECTED_TS 21)
 ENDIF()
 dd4hep_add_test_reg( AlignDet_Telescope_readback_xml
+  FIXTURES_REQUIRED AlignDet_Telescope_write_xml
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_AlignDet.sh"
   EXEC_ARGS  geoPluginRun -volmgr -destroy -plugin DD4hep_AlignmentExample_read_xml
   -input  file:${AlignDet_INSTALL}/compact/Telescope.xml
@@ -127,7 +129,6 @@ dd4hep_add_test_reg( AlignDet_Telescope_readback_xml
   REGEX_PASS "${EXPECTED_CONDITIONS} conditions in slice. \\(T:${EXPECTED_TS},S:${EXPECTED_TS},L:0,C:0,M:0\\) Alignments accessed: 20 \\(A:19,M:0\\) for IOV:run\\(1\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
-set_property(TEST t_AlignDet_Telescope_readback_xml APPEND PROPERTY DEPENDS t_AlignDet_Telescope_write_xml)
 #
 #---Testing: Extended stress: Load CLICSiD geometry and have multiple runs on IOVs
 dd4hep_add_test_reg( AlignDet_CLICSiD_stress_LONGTEST

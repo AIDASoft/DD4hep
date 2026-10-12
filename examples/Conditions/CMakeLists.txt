@@ -103,6 +103,7 @@ dd4hep_add_test_reg( Conditions_Telescope_MT_LONGTEST
 #
 #---Testing: Save conditions to ROOT file
 dd4hep_add_test_reg( Conditions_Telescope_root_save
+  FIXTURES_SETUP Conditions_Telescope_root_save
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_save
     -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml -iovs 30
@@ -117,7 +118,7 @@ dd4hep_add_test_reg( Conditions_Telescope_root_load_iov
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_load
     -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml
     -conditions TelescopeConditions.root -iovs 30 -restore iovpool
-  DEPENDS Conditions_Telescope_root_save
+  FIXTURES_REQUIRED Conditions_Telescope_root_save
   REGEX_PASS "\\+  Accessed a total of 6000 conditions \\(S:  5400,L:     0,C:   600,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -128,7 +129,7 @@ dd4hep_add_test_reg( Conditions_Telescope_root_load_usr
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_load
     -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml
     -conditions TelescopeConditions.root -iovs 30 -restore userpool
-  DEPENDS Conditions_Telescope_root_save
+  FIXTURES_REQUIRED Conditions_Telescope_root_save
   REGEX_PASS "\\+  Accessed a total of 6000 conditions \\(S:  5400,L:     0,C:   600,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -139,7 +140,7 @@ dd4hep_add_test_reg( Conditions_Telescope_root_load_pool
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_load
     -input file:${CMAKE_INSTALL_PREFIX}/examples/AlignDet/compact/Telescope.xml
     -conditions TelescopeConditions.root -iovs 30 -restore condpool
-  DEPENDS Conditions_Telescope_root_save
+  FIXTURES_REQUIRED Conditions_Telescope_root_save
   REGEX_PASS "\\+  Accessed a total of 6000 conditions \\(S:  5400,L:     0,C:   600,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -181,6 +182,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_MT_LONGTEST
 #
 #---Testing: Save conditions to ROOT file
 dd4hep_add_test_reg( Conditions_CLICSiD_root_save_LONGTEST
+  FIXTURES_SETUP Conditions_CLICSiD_root_save_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Conditions.sh"
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_save
     -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 3
@@ -195,7 +197,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_root_load_iov_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_load
     -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 3 -restore iovpool
     -conditions CLICSiDConditions.root
-  DEPENDS Conditions_CLICSiD_root_save_LONGTEST
+  FIXTURES_REQUIRED Conditions_CLICSiD_root_save_LONGTEST
   REGEX_PASS "\\+  Accessed a total of 1053210 conditions \\(S:947889,L:     0,C:105321,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -206,7 +208,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_root_load_usr_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_load
     -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 3 -restore userpool
     -conditions CLICSiDConditions.root
-  DEPENDS Conditions_CLICSiD_root_save_LONGTEST
+  FIXTURES_REQUIRED Conditions_CLICSiD_root_save_LONGTEST
   REGEX_PASS "\\+  Accessed a total of 1053210 conditions \\(S:947889,L:     0,C:105321,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
@@ -217,7 +219,7 @@ dd4hep_add_test_reg( Conditions_CLICSiD_root_load_cond_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING -destroy -plugin DD4hep_ConditionExample_load
     -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml -iovs 3 -restore condpool
     -conditions CLICSiDConditions.root
-  DEPENDS Conditions_CLICSiD_root_save_LONGTEST
+  FIXTURES_REQUIRED Conditions_CLICSiD_root_save_LONGTEST
   REGEX_PASS "\\+  Accessed a total of 1053210 conditions \\(S:947889,L:     0,C:105321,M:0\\)"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception"
   )
