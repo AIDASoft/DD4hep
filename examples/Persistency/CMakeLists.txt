@@ -33,6 +33,7 @@ dd4hep_configure_scripts (Persistency DEFAULT_SETUP WITH_TESTS )
 #
 #  Test saving conditions to ROOT file
 dd4hep_add_test_reg( Persist_Conditions_Save
+  FIXTURES_SETUP Persist_Conditions_Save
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun
   -plugin    DD4hep_PersistencyExample_write_cond -output Conditions.root
@@ -45,13 +46,14 @@ dd4hep_add_test_reg( Persist_Conditions_Restore
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun
   -plugin    DD4hep_PersistencyExample_read_cond -input Conditions.root
-  DEPENDS    Persist_Conditions_Save
+  FIXTURES_REQUIRED Persist_Conditions_Save
   REGEX_PASS "\\+\\+\\+ Read successfully 14 conditions. Result=172"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #
 #  Test saving geometry to ROOT file
 dd4hep_add_test_reg( Persist_MiniTel_Save_LONGTEST
+  FIXTURES_SETUP Persist_MiniTel_Save_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun
   -volmgr -destroy -input file:${CMAKE_CURRENT_SOURCE_DIR}/../ClientTests/compact/MiniTel.xml
@@ -65,7 +67,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
-  DEPENDS    Persist_MiniTel_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_MiniTel_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ Successfully loaded detector description from file"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -76,7 +78,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_VolMgr1_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   -plugin    DD4hep_CheckVolumeManager
-  DEPENDS    Persist_MiniTel_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_MiniTel_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 40 VolumeManager contexts. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -87,7 +89,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Nominal_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   -plugin    DD4hep_CheckNominals
-  DEPENDS    Persist_MiniTel_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_MiniTel_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 20 DetElements. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -98,7 +100,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Sensitives_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   -plugin    DD4hep_CheckSensitives
-  DEPENDS    Persist_MiniTel_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_MiniTel_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 10 SensitiveDetector objects. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -109,7 +111,7 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Segmentations_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   -plugin    DD4hep_CheckSegmentations
-  DEPENDS    Persist_MiniTel_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_MiniTel_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 10 readout segmentations. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -120,13 +122,14 @@ dd4hep_add_test_reg( Persist_MiniTel_Restore_Readouts_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader MiniTel_geometry.root
   -plugin    DD4hep_CheckReadouts
-  DEPENDS    Persist_MiniTel_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_MiniTel_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 10 readout objects. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
 #
 #  Test saving geometry to ROOT file
 dd4hep_add_test_reg( Persist_CLICSiD_Save_LONGTEST
+  FIXTURES_SETUP Persist_CLICSiD_Save_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun
   -volmgr    -destroy -input file:${DD4hep_ROOT}/DDDetectors/compact/SiD.xml
@@ -140,7 +143,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
-  DEPENDS    Persist_CLICSiD_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ Successfully loaded detector description from file"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -152,7 +155,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_VolMgr1_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_CheckVolumeManager
-  DEPENDS    Persist_CLICSiD_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 29366 VolumeManager contexts. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -163,7 +166,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_DetCheck_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_DetectorCheck -name SiTrackerBarrel -geometry -structure -volmgr -sensitive
-  DEPENDS    Persist_CLICSiD_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of      195137 elements. Num.Errors:     0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -175,7 +178,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Nominal_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_CheckNominals
-  DEPENDS    Persist_CLICSiD_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 16044 DetElements. Num.Errors: 0"
   REGEX_FAIL "EXCEPTION;Exception;TStreamerInfo"
   )
@@ -186,7 +189,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Sensitives_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_CheckSensitives
-  DEPENDS    Persist_CLICSiD_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 14 SensitiveDetector objects. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -197,7 +200,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Segmentations_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_CheckSegmentations
-  DEPENDS    Persist_CLICSiD_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 9 readout segmentations. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -208,7 +211,7 @@ dd4hep_add_test_reg( Persist_CLICSiD_Restore_Readouts_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader CLICSiD_geometry.root
   -plugin    DD4hep_CheckReadouts
-  DEPENDS    Persist_CLICSiD_Save_LONGTEST
+  FIXTURES_REQUIRED Persist_CLICSiD_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 14 readout objects. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -220,7 +223,7 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( Persist_sim_CLICSiD_Geant4_LONGTEST
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_Persistency.sh"
     EXEC_ARGS  ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../CLICSiD/scripts/CLICSiD_LoadROOTGeo.py  batch
-    DEPENDS    Persist_CLICSiD_Save_LONGTEST
+    FIXTURES_REQUIRED Persist_CLICSiD_Save_LONGTEST
     REGEX_PASS "\\+\\+\\+ Finished run 0 after 10 events \\(10 events in total\\)"
     REGEX_FAIL "Exception;EXCEPTION;ERROR"
     )

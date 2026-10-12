@@ -438,6 +438,9 @@ endmacro( dd4hep_configure_scripts )
 #  OUTPUT       Output file of the test (Default: empty)
 #  COMMAND      Command to execute
 #  EXEC_ARGS    Arguments to the command
+#  FIXTURES_SETUP    Fixtures provided by the test
+#  FIXTURES_REQUIRED Fixtures needed by the test
+#  FIXTURES_CLEANUP  Fixtures cleaned up by the test
 #  REGEX_PASS   Regular expression to indicate that the test succeeded
 #  REGEX_FAIL   Regular expression to indicate that the test failed
 #
@@ -446,7 +449,7 @@ endmacro( dd4hep_configure_scripts )
 #
 #---------------------------------------------------------------------------------------------------
 function ( dd4hep_add_test_reg test_name )
-  cmake_parse_arguments(ARG "" "OUTPUT" "COMMAND;DEPENDS;EXEC_ARGS;REGEX_PASS;REGEX_PASSED;REGEX_FAIL;REGEX_FAILED" ${ARGN} )
+  cmake_parse_arguments(ARG "" "OUTPUT" "COMMAND;DEPENDS;FIXTURES_SETUP;FIXTURES_REQUIRED;FIXTURES_CLEANUP;EXEC_ARGS;REGEX_PASS;REGEX_PASSED;REGEX_FAIL;REGEX_FAILED" ${ARGN} )
   set ( missing )
   set ( use_test 1 )
 
@@ -486,6 +489,11 @@ function ( dd4hep_add_test_reg test_name )
     # Set test dependencies if present
     foreach ( _dep ${ARG_DEPENDS} )
       set_property( TEST t_${test_name} APPEND PROPERTY DEPENDS t_${_dep} )
+    endforeach()
+    foreach ( _fixture_property FIXTURES_SETUP FIXTURES_REQUIRED FIXTURES_CLEANUP )
+      if ( ARG_${_fixture_property} )
+        set_property( TEST t_${test_name} PROPERTY ${_fixture_property} "${ARG_${_fixture_property}}" )
+      endif()
     endforeach()
   endif()
 endfunction()

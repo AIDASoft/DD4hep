@@ -74,6 +74,7 @@ dd4hep_add_test_reg( Surfaces_read_MaterialProperties
 IF(TARGET ROOT::Gdml)
   #---Testing: Load OpNovice and dump it to GDML
   dd4hep_add_test_reg( Surfaces_OpNovice_write_gdml
+    FIXTURES_SETUP Surfaces_OpNovice_write_gdml
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_OpticalSurfaces.sh"
     EXEC_ARGS  geoPluginRun -volmgr -destroy 
     -compact file:${OpticalSurfaces_INSTALL}/compact/OpNovice.xml
@@ -93,7 +94,7 @@ IF(TARGET ROOT::Gdml)
       -print INFO -destroy -volmgr
       -plugin DD4hep_ROOTGDMLParse -input OpNovice.gdml -path /world/BubbleDevice
       -plugin DD4hep_VolumeDump
-      DEPENDS    Surfaces_OpNovice_write_gdml
+      FIXTURES_REQUIRED Surfaces_OpNovice_write_gdml
       REGEX_PASS "\\+\\+\\+ Checked 5 physical volume placements."
       REGEX_FAIL " ERROR ;EXCEPTION;Exception"
     )
