@@ -829,7 +829,7 @@ namespace dd4hep {
 
       //--------------------------------------------
       // check if there are lines defined in the VolSurface :
-      const std::vector< std::pair<Vector3D, Vector3D> >& local_lines = _volSurf.getLines() ;
+      const std::vector< std::pair<Vector3D, Vector3D> >& local_lines = _volSurf.getLines( nMax ) ;
       
       if( local_lines.size() > 0 ) {
         unsigned n=local_lines.size() ;
