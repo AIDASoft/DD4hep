@@ -81,6 +81,69 @@ namespace{
   
   typedef dd4hep::rec::VolSurfaceHandle<CaloBarrelPlaneImpl> CaloBarrelPlane ;
 
+
+  /// helper class for a cylindrical surface placed into a cylindrical calorimeter barrel (symmetry=0)
+  class CaloBarrelCylinderImpl : public  dd4hep::rec::VolCylinderImpl   {
+    double _length ;
+
+  public:
+    /// standard c'tor with all necessary arguments - the rho of the origin defines the radius of the cylinder
+    CaloBarrelCylinderImpl( dd4hep::Volume vol, dd4hep::rec::SurfaceType typ,
+                            double thickness_inner ,double thickness_outer,
+                            dd4hep::rec::Vector3D o_val ) :
+      dd4hep::rec::VolCylinderImpl( vol, typ, thickness_inner, thickness_outer, o_val ),
+      _length(0) {}
+
+    void setData( double length){
+      _length = length ;
+    }
+
+    void setID( dd4hep::CellID id_val ) { _id = id_val ; }
+
+    // overwrite to bound the cylinder in z by the given length instead of the volume shape
+    bool insideBounds(const dd4hep::rec::Vector3D& point, double epsilon) const {
+      return ( std::abs ( distance( point ) ) < epsilon )  &&
+        std::abs( point.z() - origin().z() ) < _length/2. ;
+    }
+
+    virtual double length_along_u() const { return 2. * M_PI * origin().rho() ; }
+    virtual double length_along_v() const { return _length ; }
+
+    /// create circles at both ends of the cylinder and a few lines along z
+    virtual std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> > getLines(unsigned nMax){
+
+      std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> >  lines ;
+
+      const unsigned n  = ( nMax > 8 ? nMax/2 : 4 ) ;
+      const double   r  = origin().rho() ;
+      const double   z0 = origin().z() ;
+
+      for(unsigned i=0 ; i < n ; ++i){
+        double gam0 = 2.* M_PI *   i   / n ;
+        double gam1 = 2.* M_PI * (i+1) / n ;
+        for( double z : { z0 - _length/2. , z0 + _length/2. } ){
+          lines.push_back( std::make_pair( dd4hep::rec::Vector3D( r*cos(gam0), r*sin(gam0), z ),
+                                           dd4hep::rec::Vector3D( r*cos(gam1), r*sin(gam1), z ) ) ) ;
+        }
+        if( i % (n/4) == 0 ){
+          lines.push_back( std::make_pair( dd4hep::rec::Vector3D( r*cos(gam0), r*sin(gam0), z0 - _length/2. ),
+                                           dd4hep::rec::Vector3D( r*cos(gam0), r*sin(gam0), z0 + _length/2. ) ) ) ;
+        }
+      }
+      return lines;
+    }
+  };
+
+  /// handle for CaloBarrelCylinderImpl, analogous to dd4hep::rec::VolCylinder
+  class CaloBarrelCylinder : public dd4hep::rec::VolSurface {
+  public:
+    CaloBarrelCylinder( dd4hep::Volume vol, dd4hep::rec::SurfaceType typ,
+                        double thickness_inner ,double thickness_outer, dd4hep::rec::Vector3D o_val ) :
+      dd4hep::rec::VolSurface( new CaloBarrelCylinderImpl( vol, typ, thickness_inner, thickness_outer, o_val ) ) {}
+
+    CaloBarrelCylinderImpl* operator->() { return static_cast<CaloBarrelCylinderImpl*>( _surf ) ; }
+  };
+
   
   template <> void Installer<UserData>::handle_arguments(int argc, char** argv)   {
     for(int i=0; i<argc; ++i)  {
@@ -118,8 +181,6 @@ namespace{
     //    if( symmetry ) radius /= cos( M_PI / symmetry ) ; 
     
 
-    double width = 2. * radius * tan( M_PI / symmetry ) ;
-
     double inner_thickness = 1e-6 ;
     double outer_thickness = 1e-6 ;
     
@@ -131,6 +192,26 @@ namespace{
 
     bf["system"] = data.systemID ;
     
+
+    // symmetry=0: cylindrical calorimeter, install a single cylindrical surface
+    if( symmetry == 0 ){
+
+      bf["module"] = 0 ;
+
+      dd4hep::rec::Vector3D o( radius , 0. , 0. );
+
+      CaloBarrelCylinder surf(comp_vol,Type(Type::Cylinder,Type::Helper,Type::Sensitive), inner_thickness, outer_thickness, o);
+
+      surf->setData( length ) ;
+      surf->setID( bf.getValue() ) ;
+
+      addSurface(component,surf);
+
+      stopScanning() ;
+      return ;
+    }
+
+    double width = 2. * radius * tan( M_PI / symmetry ) ;
 
     double alpha = ( symmetry ? 2.* M_PI / symmetry : 0. ) ;
       

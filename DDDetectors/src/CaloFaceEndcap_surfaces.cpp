@@ -60,6 +60,10 @@ namespace{
     // overwrite to include points inside the inner radius of the endcap 
     bool insideBounds(const dd4hep::rec::Vector3D& point, double epsilon) const {
       
+      // symmetry=0: cylindrical calorimeter, the surface is a disk of radius _r
+      if( _sym == 0 )
+        return ( std::abs ( distance( point ) ) < epsilon )  &&  point.rho() < _r ;
+
       double ri = _r * cos(  2.* M_PI / _sym ) ;
       
       return ( std::abs ( distance( point ) ) < epsilon )  && 
@@ -68,13 +72,16 @@ namespace{
     }
 
     /// create outer bounding lines for the given symmetry of the polyhedron
-    virtual std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> > getLines(unsigned){
+    virtual std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> > getLines(unsigned nMax){
       
       std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> >  lines ;
       
-      double alpha = ( _sym ? 2.* M_PI / _sym : 0. ) ;
+      // symmetry=0: cylindrical calorimeter, approximate the outer circle with a polygon
+      const unsigned n = ( _sym ? _sym : ( nMax > 4 ? nMax : 4 ) ) ;
+
+      double alpha = 2.* M_PI / n ;
       
-      for(unsigned i=0 ; i < _sym ; ++i){
+      for(unsigned i=0 ; i < n ; ++i){
         double gam0 =    i  * alpha + _phi0 ;
         double gam1 = (i+1) * alpha + _phi0 ;
         lines.push_back( std::make_pair( dd4hep::rec::Vector3D( _r*cos(gam0), _r*sin(gam0), origin().z()  ), 
