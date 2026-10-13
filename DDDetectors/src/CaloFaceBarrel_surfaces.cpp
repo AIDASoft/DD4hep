@@ -114,7 +114,7 @@ namespace{
 
       std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> >  lines ;
 
-      const unsigned n  = ( nMax > 8 ? nMax/2 : 4 ) ;
+      const unsigned n  = ( nMax > 32 ? nMax/2 : 16 ) ;
       const double   r  = origin().rho() ;
       const double   z0 = origin().z() ;
 
