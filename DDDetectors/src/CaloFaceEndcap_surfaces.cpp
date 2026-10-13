@@ -35,7 +35,7 @@ namespace {
 
 namespace{
   
-  /// helper class for a planar surface placed into a polyhedral calorimeter endcap 
+  /// helper class for a planar surface placed into a polyhedral (_sim>0) or cylindrical (_sym=0) calorimeter endcap
   class CaloEndcapPlaneImpl : public  dd4hep::rec::VolPlaneImpl{
     double  _r ;
     double  _phi0 ;
@@ -64,6 +64,7 @@ namespace{
       if( _sym == 0 )
         return ( std::abs ( distance( point ) ) < epsilon )  &&  point.rho() < _r ;
 
+      // otherwise: polyhedron with n=_sym sides
       double ri = _r * cos(  2.* M_PI / _sym ) ;
       
       return ( std::abs ( distance( point ) ) < epsilon )  && 
@@ -76,8 +77,8 @@ namespace{
       
       std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> >  lines ;
       
-      // symmetry=0: cylindrical calorimeter, approximate the outer circle with a polygon
-      const unsigned n = ( _sym ? _sym : ( nMax > 4 ? nMax : 4 ) ) ;
+      // symmetry=0: cylindrical calorimeter, approximate the outer circle with a polygon with at least 16 sides
+      const unsigned n = ( _sym ? _sym : ( nMax > 16 ? nMax : 16 ) ) ;
 
       double alpha = 2.* M_PI / n ;
       
