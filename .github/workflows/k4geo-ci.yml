@@ -47,18 +47,23 @@ jobs:
       - name: Build DD4hep and k4geo, and test k4geo
         run: |
           set -e
+          echo "::group::Set up Key4hep stack"
           source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh --lcg
           unset CPATH
+          echo "::endgroup::"
 
+          echo "::group::Set up ccache"
           export CCACHE_DIR=/root/.cache/ccache
           export CCACHE_SLOPPINESS=include_file_ctime,include_file_mtime
           ccache --set-config=max_size=500M
           ccache -z
+          echo "::endgroup::"
 
           # DDParsers and DDCore are always built. k4geo also needs DDRec,
           # DDG4 (including EDM4hep output), and the DDDetectors builders.
+          echo "::group::Configure DD4hep"
           cmake -B build -S . -GNinja \
-            -DCMAKE_CXX_STANDARD=20 \
+            -DCMAKE_CXX_STANDARD=23 \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install" \
             -DCMAKE_INSTALL_LIBDIR=lib \
@@ -70,25 +75,45 @@ jobs:
             -DDD4HEP_BUILD_EXAMPLES=OFF \
             -DBUILD_TESTING=OFF \
             -DBUILD_DOCS=OFF
+          echo "::endgroup::"
+
+          echo "::group::Build DD4hep"
           cmake --build build --parallel "$(nproc)"
+          echo "::endgroup::"
+
+          echo "::group::Install DD4hep"
           cmake --install build
           source "$GITHUB_WORKSPACE/install/bin/thisdd4hep.sh"
+          echo "::endgroup::"
 
+          echo "::group::Configure k4geo"
           cmake -B k4geo/build -S k4geo -GNinja \
-            -DCMAKE_CXX_STANDARD=20 \
+            -DCMAKE_CXX_STANDARD=23 \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/k4geo/install" \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DDD4hep_DIR="$GITHUB_WORKSPACE/install" \
             -DBUILD_TESTING=ON \
             -DINSTALL_BEAMPIPE_STL_FILES=ON
+          echo "::endgroup::"
+
+          echo "::group::Build k4geo"
           cmake --build k4geo/build --parallel "$(nproc)"
+          echo "::endgroup::"
+
+          echo "::group::Install k4geo"
           cmake --install k4geo/build
           source "$GITHUB_WORKSPACE/k4geo/install/bin/thisk4geo.sh"
+          echo "::endgroup::"
 
+          echo "::group::Test k4geo"
           ctest --test-dir k4geo/build --parallel "$(nproc)" \
             --output-on-failure --no-tests=error
+          echo "::endgroup::"
+
+          echo "::group::ccache statistics"
           ccache -s
+          echo "::endgroup::"
 
       - name: Upload k4geo CTest logs
         if: ${{ !cancelled() }}
