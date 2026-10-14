@@ -1,0 +1,108 @@
+name: DD4hep + k4geo
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-k4geo:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/key4hep/key4hep-images/alma9-cvmfs
+      options: --privileged
+      volumes:
+        - /home/runner/.cache/ccache:/root/.cache/ccache
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Clone k4geo main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: key4hep/k4geo
+          path: k4geo
+          ref: main
+
+      - name: Mount CVMFS
+        run: /mount.sh
+
+      - run: echo "NOW=$(date +'%Y-%m-%d')" >> "$GITHUB_ENV"
+
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: /home/runner/.cache/ccache
+          key: ccache-dd4hep-k4geo-${{ env.NOW }}
+          restore-keys: |
+            ccache-dd4hep-k4geo-
+
+      - name: Build DD4hep and k4geo, and test k4geo
+        run: |
+          set -e
+          source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh --lcg
+          unset CPATH
+
+          export CCACHE_DIR=/root/.cache/ccache
+          export CCACHE_SLOPPINESS=include_file_ctime,include_file_mtime
+          ccache --set-config=max_size=500M
+          ccache -z
+
+          # DDParsers and DDCore are always built. k4geo also needs DDRec,
+          # DDG4 (including EDM4hep output), and the DDDetectors builders.
+          cmake -B build -S . -GNinja \
+            -DCMAKE_CXX_STANDARD=20 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install" \
+            -DCMAKE_INSTALL_LIBDIR=lib \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DDD4HEP_BUILD_PACKAGES="DDRec DDG4 DDDetectors" \
+            -DDD4HEP_USE_GEANT4=ON \
+            -DDD4HEP_USE_EDM4HEP=ON \
+            -DDD4HEP_USE_XERCESC=ON \
+            -DDD4HEP_BUILD_EXAMPLES=OFF \
+            -DBUILD_TESTING=OFF \
+            -DBUILD_DOCS=OFF
+          cmake --build build --parallel "$(nproc)"
+          cmake --install build
+          source "$GITHUB_WORKSPACE/install/bin/thisdd4hep.sh"
+
+          cmake -B k4geo/build -S k4geo -GNinja \
+            -DCMAKE_CXX_STANDARD=20 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/k4geo/install" \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DDD4hep_DIR="$GITHUB_WORKSPACE/install" \
+            -DBUILD_TESTING=ON \
+            -DINSTALL_BEAMPIPE_STL_FILES=ON
+          cmake --build k4geo/build --parallel "$(nproc)"
+          cmake --install k4geo/build
+          source "$GITHUB_WORKSPACE/k4geo/install/bin/thisk4geo.sh"
+
+          ctest --test-dir k4geo/build --parallel "$(nproc)" \
+            --output-on-failure --no-tests=error
+          ccache -s
+
+      - name: Upload k4geo CTest logs
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: CTest logs_k4geo_run${{ github.run_id }}_attempt${{ github.run_attempt }}
+          path: |
+            ${{ github.workspace }}/k4geo/build/Testing/Temporary
+            !${{ github.workspace }}/k4geo/build/Testing/Temporary/CTestCostData.txt
+          if-no-files-found: warn
+          retention-days: 3
+
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: always()
+        with:
+          path: /home/runner/.cache/ccache
+          key: ccache-dd4hep-k4geo-${{ env.NOW }}
