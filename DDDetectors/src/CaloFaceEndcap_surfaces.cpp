@@ -35,7 +35,7 @@ namespace {
 
 namespace{
   
-  /// helper class for a planar surface placed into a polyhedral (_sim>0) or cylindrical (_sym=0) calorimeter endcap
+  /// helper class for a planar surface placed into a polyhedral (_sym>0) or cylindrical (_sym=0) calorimeter endcap
   class CaloEndcapPlaneImpl : public  dd4hep::rec::VolPlaneImpl{
     double  _r ;
     double  _phi0 ;
