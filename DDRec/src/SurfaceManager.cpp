@@ -15,6 +15,7 @@
 #include "DDRec/SurfaceHelper.h"
 #include "DD4hep/VolumeManager.h"
 #include "DD4hep/Detector.h"
+#include "DD4hep/DetectorTools.h"
 #include "DD4hep/Printout.h"
 
 #include <sstream>
@@ -47,7 +48,8 @@ namespace dd4hep {
     }
 
     void SurfaceManager::initialize(const Detector& description) const {
-      
+
+      detail::tools::PlacementPathCache cache;  // every surface calls DetElement::nominal()
       for(const auto& type : description.detectorTypes()) {
 
         const std::vector<DetElement>& dets = description.detectors( type ) ;

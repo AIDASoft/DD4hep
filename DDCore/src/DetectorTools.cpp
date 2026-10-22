@@ -19,6 +19,9 @@
 #include <DD4hep/detail/DetectorInterna.h>
 
 // C/C++ include files
+#include <map>
+#include <memory>
+#include <set>
 #include <stdexcept>
 #include <sstream>
 #include <string>
@@ -48,11 +51,76 @@ namespace dd4hep {
 
 
       // Internal helper
-      static void makePlacementPath(PlacementPath det_nodes, PlacementPath& all_nodes);
+      static void makePlacementPath(DetElement element, PlacementPath det_nodes, PlacementPath& all_nodes);
     }}
 }
 
 using namespace dd4hep;
+
+namespace {
+  /// Per parent placement: path to the first node with the name of each child detector element
+  using ChildPaths = std::map<std::string, detail::tools::PlacementPath, std::less<>>;
+  /// Only set while a PlacementPathCache exists in this thread
+  thread_local std::unique_ptr<std::map<const TGeoNode*, ChildPaths>> s_pathCache;
+
+  /// Walk the tree below node in the order of findChildByName and record the path to the first node with each name
+  void collectPaths(TGeoNode* node, detail::tools::PlacementPath& branch,
+                    std::set<std::string, std::less<>>& names, ChildPaths& paths)   {
+    const Int_t num_daughters = node->GetNdaughters();
+    for( Int_t i = 0; i < num_daughters && !names.empty(); ++i )   {   // First the daughters...
+      TGeoNode* daughter = node->GetDaughter(i);
+      auto name = daughter ? names.find(daughter->GetName()) : names.end();
+      if ( name != names.end() )   {
+        detail::tools::PlacementPath& path = paths[*name];
+        path.emplace_back(daughter);
+        path.insert(path.end(), branch.rbegin(), branch.rend());
+        names.erase(name);
+      }
+    }
+    for( Int_t i = 0; i < num_daughters && !names.empty(); ++i )   {   // ...then their subtrees
+      if ( TGeoNode* daughter = node->GetDaughter(i) )   {
+        branch.emplace_back(daughter);
+        collectPaths(daughter, branch, names, paths);
+        branch.pop_back();
+      }
+    }
+  }
+
+  /// Path from parent_place to child_place from the cache. The first lookup below a parent finds all its children
+  bool cachedPath(DetElement parent, PlacedVolume parent_place, PlacedVolume child_place,
+                  detail::tools::PlacementPath& path)   {
+    const char* name = child_place->GetName();
+    if ( 0 == ::strcmp(parent_place->GetName(), name) )   // Self match: left to findChildByName
+      return false;
+    auto [entry, is_new] = s_pathCache->try_emplace(parent_place.ptr());
+    if ( is_new )   {
+      std::set<std::string, std::less<>> names;
+      for( const auto& child : parent.children() )   {
+        if ( child.second.placement().isValid() )
+          names.emplace(child.second.placement()->GetName());
+      }
+      detail::tools::PlacementPath branch;
+      collectPaths(parent_place.ptr(), branch, names, entry->second);
+    }
+    auto found = entry->second.find(name);
+    if ( found == entry->second.end() )
+      return false;
+    path.insert(path.end(), found->second.begin(), found->second.end());
+    return true;
+  }
+}
+
+detail::tools::PlacementPathCache::PlacementPathCache()   {
+  if ( !s_pathCache )   {
+    s_pathCache = std::make_unique<std::map<const TGeoNode*, ChildPaths>>();
+    m_owner = true;
+  }
+}
+
+detail::tools::PlacementPathCache::~PlacementPathCache()   {
+  if ( m_owner )
+    s_pathCache.reset();
+}
 
 /// Find path between the child element and the parent element
 bool detail::tools::isParentElement(DetElement parent, DetElement child)   {
@@ -253,9 +321,14 @@ DetElement detail::tools::topElement(DetElement child)   {
   throw std::runtime_error("dd4hep: DetElement cannot determine top parent (world) [invalid handle]");
 }
 
-static void detail::tools::makePlacementPath(PlacementPath det_nodes, PlacementPath& all_nodes)   {
-  for (size_t i = 0, n = det_nodes.size(); n > 0 && i < n-1; ++i)   {
-    if (!findChildByName(det_nodes[i + 1], det_nodes[i], all_nodes))   {
+static void detail::tools::makePlacementPath(DetElement element, PlacementPath det_nodes, PlacementPath& all_nodes)   {
+  // The detector elements are only used for the names of the siblings to cache:
+  // a cache miss (e.g. with placement holes) falls back to findChildByName
+  DetElement elt = element;
+  for (size_t i = 0, n = det_nodes.size(); n > 0 && i < n-1; ++i, elt = elt.parent())   {
+    DetElement par = elt.parent();
+    bool found = s_pathCache && par.isValid() && cachedPath(par, det_nodes[i + 1], det_nodes[i], all_nodes);
+    if (!found && !findChildByName(det_nodes[i + 1], det_nodes[i], all_nodes))   {
       throw std::runtime_error("dd4hep: DetElement cannot determine placement path of "
                                + std::string(det_nodes[i].name()) + " [internal error]");
     }
@@ -269,14 +342,14 @@ static void detail::tools::makePlacementPath(PlacementPath det_nodes, PlacementP
 void detail::tools::placementPath(DetElement element, PlacementPath& all_nodes)   {
   PlacementPath det_nodes;
   elementPath(element,det_nodes);
-  makePlacementPath(std::move(det_nodes), all_nodes);
+  makePlacementPath(element, std::move(det_nodes), all_nodes);
 }
 
 /// Collect detector elements placements to the parent detector element [no holes!]
 void detail::tools::placementPath(DetElement parent, DetElement element, PlacementPath& all_nodes)   {
   PlacementPath det_nodes;
   elementPath(parent,element,det_nodes);
-  makePlacementPath(std::move(det_nodes), all_nodes);
+  makePlacementPath(element, std::move(det_nodes), all_nodes);
 }
 
 /// Assemble the path of the PlacedVolume selection
