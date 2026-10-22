@@ -96,8 +96,9 @@ namespace {
     if ( is_new )   {
       std::set<std::string, std::less<>> names;
       for( const auto& child : parent.children() )   {
-        if ( child.second.placement().isValid() )
-          names.emplace(child.second.placement()->GetName());
+        PlacedVolume place = child.second.placement();
+        if ( place.isValid() && 0 != ::strcmp(place->GetName(), parent_place->GetName()) )   // self matches never come here
+          names.emplace(place->GetName());
       }
       detail::tools::PlacementPath branch;
       collectPaths(parent_place.ptr(), branch, names, entry->second);
@@ -322,12 +323,12 @@ DetElement detail::tools::topElement(DetElement child)   {
 }
 
 static void detail::tools::makePlacementPath(DetElement element, PlacementPath det_nodes, PlacementPath& all_nodes)   {
-  // The detector elements are only used for the names of the siblings to cache:
-  // a cache miss (e.g. with placement holes) falls back to findChildByName
+  // The cache is only used for direct parent/child pairs; anything else (e.g. placement holes) uses findChildByName
   DetElement elt = element;
   for (size_t i = 0, n = det_nodes.size(); n > 0 && i < n-1; ++i, elt = elt.parent())   {
     DetElement par = elt.parent();
-    bool found = s_pathCache && par.isValid() && cachedPath(par, det_nodes[i + 1], det_nodes[i], all_nodes);
+    bool found = s_pathCache && par.isValid() && par.placement().ptr() == det_nodes[i + 1].ptr()
+                 && cachedPath(par, det_nodes[i + 1], det_nodes[i], all_nodes);
     if (!found && !findChildByName(det_nodes[i + 1], det_nodes[i], all_nodes))   {
       throw std::runtime_error("dd4hep: DetElement cannot determine placement path of "
                                + std::string(det_nodes[i].name()) + " [internal error]");
