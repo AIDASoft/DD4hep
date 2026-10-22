@@ -50,9 +50,14 @@ namespace dd4hep {
 
     void SurfaceManager::initialize(const Detector& description) const {
 
-      // nested detectors are listed on their own and inside the detector containing them:
-      // enter each surface only once into the type and world maps
+      // A surface can reach the same map more than once: a nested detector is also part of the
+      // detector that contains it, and a detector can have the same name as a detector type.
+      // Enter each surface only once into each map (the first entry is kept).
       std::map<std::string, std::unordered_set<const ISurface*>> entered;
+      auto enter = [&]( const std::string& key, ISurface* surf ) {
+        if( entered[ key ].insert( surf ).second )
+          _map[ key ].emplace( surf->id(), surf );
+      };
 
       detail::tools::PlacementPathCache cache;  // every surface calls DetElement::nominal()
       for(const auto& type : description.detectorTypes()) {
@@ -72,15 +77,13 @@ namespace dd4hep {
 
           for( auto* surf : detSL ) {
             // enter surface into map for this detector
-            _map[ name ].emplace(surf->id(), surf );
+            enter( name, surf );
 
             // enter surface into map for detector type
-            if( entered[ type ].insert( surf ).second )
-              _map[ type ].emplace(surf->id(), surf );
+            enter( type, surf );
 
             // enter surface into world map 
-            if( entered[ "world" ].insert( surf ).second )
-              _map[ "world" ].emplace(surf->id(), surf );
+            enter( "world", surf );
 
           }
         }
