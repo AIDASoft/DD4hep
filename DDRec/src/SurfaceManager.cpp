@@ -18,6 +18,7 @@
 #include "DD4hep/Printout.h"
 
 #include <sstream>
+#include <unordered_set>
 
 namespace dd4hep {
   namespace rec {
@@ -47,7 +48,11 @@ namespace dd4hep {
     }
 
     void SurfaceManager::initialize(const Detector& description) const {
-      
+
+      // nested detectors are listed on their own and inside the detector containing them:
+      // enter each surface only once into the type and world maps
+      std::map<std::string, std::unordered_set<const ISurface*>> entered;
+
       for(const auto& type : description.detectorTypes()) {
 
         const std::vector<DetElement>& dets = description.detectors( type ) ;
@@ -68,10 +73,12 @@ namespace dd4hep {
             _map[ name ].emplace(surf->id(), surf );
 
             // enter surface into map for detector type
-            _map[ type ].emplace(surf->id(), surf );
+            if( entered[ type ].insert( surf ).second )
+              _map[ type ].emplace(surf->id(), surf );
 
             // enter surface into world map 
-            _map[ "world" ].emplace(surf->id(), surf );
+            if( entered[ "world" ].insert( surf ).second )
+              _map[ "world" ].emplace(surf->id(), surf );
 
           }
         }
