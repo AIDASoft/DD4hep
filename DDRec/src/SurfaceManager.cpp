@@ -80,7 +80,8 @@ namespace dd4hep {
             enter( name, surf );
 
             // enter surface into map for detector type
-            enter( type, surf );
+            if(name != type)
+              enter( type, surf );
 
             // enter surface into world map 
             enter( "world", surf );
