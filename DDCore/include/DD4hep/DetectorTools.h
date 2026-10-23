@@ -67,6 +67,17 @@ namespace dd4hep {
       /// Collect detector elements placements to the parent detector element [no holes!]
       void placementPath(DetElement parent, DetElement child, PlacementPath& nodes);
 
+      /// While an object of this class exists, the placement paths of all children of a detector element
+      /// are found in one walk of its volume tree (this thread only; the geometry must not change meanwhile)
+      class PlacementPathCache  {
+        bool m_owner { false };
+      public:
+        PlacementPathCache();
+        ~PlacementPathCache();
+        PlacementPathCache(const PlacementPathCache&) = delete;
+        PlacementPathCache& operator=(const PlacementPathCache&) = delete;
+      };
+
       /// Find a given node in the hierarchy starting from the top node (absolute placement!)
       PlacedVolume findNode(PlacedVolume top_place, const std::string& place);
       /// Update cached matrix to transform to positions to an upper level Placement
