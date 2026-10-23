@@ -105,7 +105,7 @@ void Geant4GeneratorActionSequence::configureFiber(Geant4Context* thread_context
 
 /// Get an action by name
 Geant4GeneratorAction* Geant4GeneratorActionSequence::get(const std::string& nam) const   {
-  return m_actors.get(FindByName(TypeName::split(nam).second));
+  return m_actors.get(FindByName(nam));
 }
 
 /// Add an actor responding to all callbacks. Sequence takes ownership.
