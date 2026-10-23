@@ -418,8 +418,8 @@ bool DataSegment::emplace_any(Key key, std::any&& item)    {
   std::lock_guard<std::mutex> l(lock);
   bool ret = data.emplace(key, std::move(item)).second;
   if ( !ret )   {
-    except("DataSegment","Error in DataSegment map. Duplicate ID: segment:%04X mask:%04X Number:%d Value:%s",
-	   key.mask(), key.item(), yes_no(has_value));
+    except("DataSegment","Error in DataSegment map. Duplicate ID: segment:%04X mask:%04X Number:%08X Value:%s",
+	   key.segment(), key.mask(), key.item(), yes_no(has_value));
   }
   return ret;
 }
