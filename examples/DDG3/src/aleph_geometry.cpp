@@ -114,7 +114,6 @@ void dd4hep::geant3_geometry_imp::handle_materials()  {
   this->add_mixture(146,  "HCAP_AVERAGE_MATTER",  25.993, 55.827,  6.831, 2.03,  22.0, {{7.3, 14.61, 0.0}, {25.994, 55.828, 1.0}});
 } /// End geant3_geometry_imp::handle_materials    
 
-
 /// Handle the conversion of the Geant3 media: 
 void dd4hep::geant3_geometry_imp::handle_media()  { 
 
