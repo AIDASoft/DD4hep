@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd>
+<!-- #==========================================================================
+     #  AIDA Detector description implementation 
+     #==========================================================================
+     # Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+     # All rights reserved.
+     #
+     # For the licensing terms see $DD4hepINSTALL/LICENSE.
+     # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+     #
+     #==========================================================================
+     #
+     # IronCylinder_python.xml
+     #
+     # Mirrors IronCylinder.xml but uses the DD4hep_PythonDetector factory to
+     # delegate geometry construction to IronCylinder_python_geo.py. This
+     # exercises the python-geo-plugin in DDCore/src/python/PythonPlugin.cpp.
+     #
+     #==========================================================================
+-->
+
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="30*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+    <constant name="HcalBarrel_rmin" value="300*cm"/>
+    <constant name="HcalBarrel_rmax" value="500*cm"/>
+    <constant name="HcalBarrel_zmax" value="600*cm"/>
+  </define>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" drawingStyle="solid" lineStyle="solid" showDaughters="true" visible="true"/>
+  </display>
+
+  <limits>
+    <limitset name="cal_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+
+  <detectors>
+    <detector id="1" name="HcalBarrel"
+              type="DD4hep_PythonDetector"
+              module="IronCylinder_python_geo"
+              function="create_detector"
+              pythonpath="${DD4hepExamplesINSTALL}/examples/ClientTests/python"
+              readout="HcalBarrelHits" vis="VisibleGreen" limits="cal_limits">
+      <comment>Iron cylinder calorimeter built by the Python geometry plugin.</comment>
+      <dimensions rmin="HcalBarrel_rmin" rmax="HcalBarrel_rmax" z="HcalBarrel_zmax" phiBins="64"/>
+    </detector>
+  </detectors>
+
+  <readouts>
+    <readout name="HcalBarrelHits">
+      <id>system:8,barrel:3,module:7,layer:5,slice:10,eta:10,phi:5</id>
+    </readout>
+  </readouts>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid"
+           inner_field="5.0*tesla"
+           outer_field="-1.5*tesla"
+           zmax="2*m"
+           outer_radius="3*m">
+    </field>
+  </fields>
+
+</lccdd>
