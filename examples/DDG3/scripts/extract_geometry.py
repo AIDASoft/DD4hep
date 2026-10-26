@@ -307,29 +307,31 @@ class dd4hep_geometry:
                 # Geant3 parameters:  z, theta, phi,  h1, bl1, tl1,
                 # .                   alpha1, h2, bl2, tl2, alpha2
                 shape = f'dd4hep::Trap( std::string("{name}"), ' + \
-                                f'{p[0]}*{cm}, ' + \
-                                f'{p[1]}*units::degree, ' + \
-                                f'{p[2]}*units::degree, ' + \
-                                f'{p[3]}*units::degree, ' + \
-                                f'{p[4]}*{cm}, ' + \
-                                f'{p[5]}*{cm}, ' + \
-                                f'{p[6]}*units::degree, ' + \
-                                f'{p[7]}*units::degree, ' + \
-                                f'{p[8]}*{cm}, ' + \
-                                f'{p[9]}*{cm}, ' + \
-                                f'{p[10]}*units::degree )'
+                        f'{p[0]}*{cm}, ' + \
+                        f'{p[1]}*units::degree, ' + \
+                        f'{p[2]}*units::degree, ' + \
+                        f'{p[3]}*units::degree, ' + \
+                        f'{p[4]}*{cm}, ' + \
+                        f'{p[5]}*{cm}, ' + \
+                        f'{p[6]}*units::degree, ' + \
+                        f'{p[7]}*units::degree, ' + \
+                        f'{p[8]}*{cm}, ' + \
+                        f'{p[9]}*{cm}, ' + \
+                        f'{p[10]}*units::degree )'
             elif typ == 'PARA':
                 # Geant3 parameters:    dx, dy, dz, alpha, theta, phi
                 # shape = f'dd4hep::Parallelepiped( std::string("{name}"),' +\
-                # .              f'{p[0]}*{cm}, {p[1]}*{cm}, {p[2]}*{cm}, ' +\
-                # .              f'{p[3]}*units::degree, ' + \
-                # .              f'{p[4]}*units::degree, ' + \
-                # .              f'{p[5]}*units::degree )'
+                # .              f'{p[0]} * {cm}, ' + \
+                # .              f'{p[1]} * {cm}, ' + \
+                # .              f'{p[2]} * {cm}, ' + \
+                # .              f'{p[3]} * units::degree, ' + \
+                # .              f'{p[4]} * units::degree, ' + \
+                # .              f'{p[5]} * units::degree )'
                 shape = f'dd4hep::Solid(new TGeoPara( "{name}", ' + \
-                                f'{p[0]}*{cm}, ' + \
-                                f'{p[1]}*{cm}, ' + \
-                                f'{p[2]}*{cm}, ' + \
-                                f'{p[3]}, {p[4]}, {p[5]} ))'
+                        f'{p[0]} * {cm}, ' + \
+                        f'{p[1]} * {cm}, ' + \
+                        f'{p[2]} * {cm}, ' + \
+                        f'{p[3]}, {p[4]}, {p[5]} ))'
             elif typ == 'PCON':
                 # Geant3 parameters:    phi, dphi, nz, (z, rmin, rmax)
                 nz = int(p[2])
@@ -337,15 +339,15 @@ class dd4hep_geometry:
                 rmin = []
                 rmax = []
                 for i in range(nz):
-                    z.append(f'{p[3+i*3]}*{cm}')
-                    rmin.append(f'{p[4+i*3]}*{cm}')
-                    rmax.append(f'{p[5+i*3]}*{cm}')
+                    z.append(f'{p[3 + i * 3]}*{cm}')
+                    rmin.append(f'{p[4 + i * 3]}*{cm}')
+                    rmax.append(f'{p[5 + i * 3]}*{cm}')
                 shape = f'dd4hep::Polycone( std::string("{name}"), ' + \
-                    f'{p[0]}*units::degree, ' + \
-                    f'{p[1]}*units::degree, ' + \
-                    f'{to_vector(rmin)}, ' + \
-                    f'{to_vector(rmax)}, ' + \
-                    f'{to_vector(z)} )'
+                        f'{p[0]} * units::degree, ' + \
+                        f'{p[1]} * units::degree, ' + \
+                        f'{to_vector(rmin)}, ' + \
+                        f'{to_vector(rmax)}, ' + \
+                        f'{to_vector(z)} )'
 
             elif typ == 'PGON':
                 # Geant3 parameters:    phi, dphi, nz, (z, rmin, rmax)
@@ -354,16 +356,16 @@ class dd4hep_geometry:
                 rmin = []
                 rmax = []
                 for i in range(nz):
-                    z.append(f'{p[3+i*3]}*{cm}')
-                    rmin.append(f'{p[4+i*3]}*{cm}')
-                    rmax.append(f'{p[5+i*3]}*{cm}')
+                    z.append(f'{p[3 + i * 3]}*{cm}')
+                    rmin.append(f'{p[4 + i * 3]}*{cm}')
+                    rmax.append(f'{p[5 + i * 3]}*{cm}')
                 shape = f'dd4hep::Polyhedra( std::string("{name}"), ' + \
-                    f'{nz}, ' + \
-                    f'{p[0]}*units::degree, ' + \
-                    f'{p[1]}*units::degree, ' + \
-                    f'{to_vector(z)}, ' + \
-                    f'{to_vector(rmin)}, ' + \
-                    f'{to_vector(rmax)} )'
+                        f'{nz}, ' + \
+                        f'{p[0]}*units::degree, ' + \
+                        f'{p[1]}*units::degree, ' + \
+                        f'{to_vector(z)}, ' + \
+                        f'{to_vector(rmin)}, ' + \
+                        f'{to_vector(rmax)} )'
             else:                # Unknown shape
                 error = f'ERROR: Unknown shape {vol.name} {typ}'
 
@@ -541,12 +543,12 @@ class dd4hep_geometry:
                'void dd4hep::geant3_geometry_imp::handle_divisions()  {\n'
         for d in self.geant3_geo.divisions:
             code = code + \
-               f'  this->add_division("{_trim(d.name)}", ' + \
-               f' "{_trim(d.volume)}", ' + \
-               f' {d.axis}, {d.ndiv}, ' + \
-               f' {d.start}*units::degree, ' + \
-               f' {d.step}*units::degree, ' + \
-               f' {d.idx_medium}, "{d.option}");\n'
+                   f'  this->add_division("{_trim(d.name)}", ' + \
+                   f' "{_trim(d.volume)}", ' + \
+                   f' {d.axis}, {d.ndiv}, ' + \
+                   f' {d.start}*units::degree, ' + \
+                   f' {d.step}*units::degree, ' + \
+                   f' {d.idx_medium}, "{d.option}");\n'
         self.write_code(code)
         code = '} /// End geant3_geometry_imp::handle_divisions  \n\n'
         self.write_code(code)
@@ -569,7 +571,7 @@ parser.add_argument(
     dest='debug',
     default=False,
     help='Enable python debugging (invoke pdb)',
-)
+    )
 #
 # geometry input file
 parser.add_argument(
@@ -579,7 +581,7 @@ parser.add_argument(
     dest='geometry_input',
     default='aleph.geometry.txt',
     help='Location of the geometry input file',
-)
+    )
 #
 # geometry output file
 parser.add_argument(
@@ -589,7 +591,7 @@ parser.add_argument(
     dest='geometry_output',
     default=None,
     help='Location of the geometry output file',
-)
+    )
 #
 #
 #
@@ -634,7 +636,6 @@ if num_err == 0:
         dd4hep.handle_volumes()
         dd4hep.handle_divisions()
         dd4hep.handle_placements()
-
 else:
     print('+++ FAILED to process Geant3 input file: ' +
           f'{geometry_file}.  {num_err} errors encountered.')
