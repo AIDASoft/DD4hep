@@ -37,9 +37,9 @@ namespace  {
 
 void geant3_print_mat(TGeoManager& mgr)  {
   TIter next(mgr.GetListOfMaterials());
-  TGeoMaterial *m;
-  while ((m = (TGeoMaterial*)next()))  {
-    m->Print();
+  TGeoMaterial *material;
+  while ((material = (TGeoMaterial*)next()))  {
+    material->Print();
   }
 }
 
@@ -370,9 +370,9 @@ int geant3_geometry::approximate_mixture(  int32_t            index,
   }
   bool resolved = true;
   for( std::size_t i=0; i < mixture.size(); ++i )  {
-    const auto& m = mixture[i];
-    if( m.fraction < 1e-5 ) continue;
-    auto [approx,mix_name] = this->get_material_z( m.Z );
+    const auto& mix = mixture[i];
+    if( mix.fraction < 1e-5 ) continue;
+    auto [approx, mix_name] = this->get_material_z( mix.Z );
     mat = mix_name.empty() ? nullptr : this->get_material( mix_name );
     if( mat )  {
       this->add_material_z( -1, mat );
@@ -461,8 +461,8 @@ int geant3_geometry::add_medium(  int32_t            index,
   if( nullptr == medium )  {
     TGeoMaterial* mat = mgr.GetMaterial( material.c_str() );
     if( !mat )  {
-      auto m = this->get_medium( material );
-      if( m.isValid() ) mat = m->GetMaterial();
+      auto med = this->get_medium( material );
+      if( med.isValid() ) mat = med->GetMaterial();
     }
     --unique_mat_id;
     medium = new TGeoMedium( name.c_str(), unique_mat_id, mat );
@@ -543,9 +543,10 @@ void geant3_geometry::add_division( const std::string& name,
       idx_medium = ip->second->GetId();
     }
   }
-  auto deg = units::degree;
   VisAttr vis = this->description.visAttributes( "Vis_"+name );
-  Volume  div = vol.divide( name, axis, ndiv, start/deg, step/deg, idx_medium, opt );
+  Volume  div = vol.divide( name, axis, ndiv,
+                            start/units::degree, step/units::degree,
+                            idx_medium, opt );
   if( vis.isValid() )  {
     div.setVisAttributes( vis );
   }
@@ -647,26 +648,26 @@ void geant3_geometry::add_placement( int                index,
 /// Create copy of an existing solid with new parameters
 Solid geant3_geometry::create_solid( const TClass* typ, const params_t& p)  {
   Solid  solid;
-  double cm  = units::cm;
-  double deg = units::degree;
+  double cm = units::cm;
+  double dg = units::degree;
 
   if( typ == TGeoTubeSeg::Class() && p.size() == 3 )  {
     solid = Tube( p[0]*cm, p[1]*cm, p[2]*cm );
   }
   else if( typ == TGeoTubeSeg::Class() && p.size() == 5 )  {
-    solid = Tube( p[0]*cm, p[1]*cm, p[2]*cm, p[3]*deg, p[4]*deg );
+    solid = Tube( p[0]*cm, p[1]*cm, p[2]*cm, p[3]*dg, p[4]*dg );
   }
   else if( typ == TGeoCone::Class() )  {
     solid = Cone( p[0]*cm, p[1]*cm, p[2]*cm, p[3]*cm, p[4]*cm );
   }
   else if( typ == TGeoConeSeg::Class() )  {
-    solid = ConeSegment( p[0]*cm, p[1]*cm, p[2]*cm, p[3]*cm, p[4]*cm, p[5]*deg, p[6]*deg );
+    solid = ConeSegment( p[0]*cm, p[1]*cm, p[2]*cm, p[3]*cm, p[4]*cm, p[5]*dg, p[6]*dg );
   }
   else if( typ == TGeoHype::Class() )  {
-    solid = Hyperboloid( p[0]*cm, p[3]*degree, p[1]*cm, p[3]*deg, p[2]*cm );
+    solid = Hyperboloid( p[0]*cm, p[3]*dg, p[1]*cm, p[3]*dg, p[2]*cm );
   }
   else if( typ == TGeoSphere::Class() )  {
-    solid = Sphere( p[0]*cm, p[1]*cm, p[2]*deg, p[3]*deg, p[4]*deg, p[5]*deg );
+    solid = Sphere( p[0]*cm, p[1]*cm, p[2]*dg, p[3]*dg, p[4]*dg, p[5]*dg );
   }                
   else if( typ == TGeoTrd1::Class() )  {
     solid = Trd1( p[0]*cm, p[1]*cm, p[2]*cm, p[3]*cm );
@@ -675,8 +676,8 @@ Solid geant3_geometry::create_solid( const TClass* typ, const params_t& p)  {
     solid = Trd2( p[0]*cm, p[1]*cm, p[2]*cm, p[3]*cm, p[4]*cm );
   }
   else if( typ == TGeoTrap::Class() )  {
-    solid = Trap( p[0]*cm, p[1]*deg, p[2]*deg, p[3]*deg, p[4]*cm, p[5]*cm,
-                  p[6]*deg, p[7]*deg, p[8]*cm, p[9]*cm, p[10]*deg );
+    solid = Trap( p[0]*cm, p[1]*dg, p[2]*dg, p[3]*dg, p[4]*cm, p[5]*cm,
+                  p[6]*dg, p[7]*dg, p[8]*cm, p[9]*cm, p[10]*dg );
   }
   else if( typ == TGeoPara::Class() )  {
     solid = Solid(new TGeoPara( "para", p[0]*cm, p[1]*cm, p[2]*cm, p[3], p[4], p[5] ));
@@ -689,7 +690,7 @@ Solid geant3_geometry::create_solid( const TClass* typ, const params_t& p)  {
       rmin.push_back( p[4+i*3]*cm );
       rmax.push_back( p[5+i*3]*cm );
     }
-    solid = Polycone(p[0]*deg, p[1]*deg, rmin, rmax, dz);
+    solid = Polycone(p[0]*dg, p[1]*dg, rmin, rmax, dz);
   }
   else if( typ == TGeoPgon::Class() )  {
     std::vector<double> dz, rmin, rmax;
@@ -699,7 +700,7 @@ Solid geant3_geometry::create_solid( const TClass* typ, const params_t& p)  {
       rmin.push_back( p[4+i*3]*cm );
       rmax.push_back( p[5+i*3]*cm );
     }
-    solid = Polyhedra(nz, p[0]*deg, p[1]*deg, dz, rmin, rmax );
+    solid = Polyhedra(nz, p[0]*dg, p[1]*dg, dz, rmin, rmax );
   }
   else if( typ == TGeoBBox::Class() )  {
     solid = Box( p[0]*cm, p[1]*cm, p[2]*cm );
