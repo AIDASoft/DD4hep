@@ -543,12 +543,12 @@ class dd4hep_geometry:
                'void dd4hep::geant3_geometry_imp::handle_divisions()  {\n'
         for d in self.geant3_geo.divisions:
             code = code + \
-                   f'  this->add_division("{_trim(d.name)}", ' + \
-                   f' "{_trim(d.volume)}", ' + \
-                   f' {d.axis}, {d.ndiv}, ' + \
-                   f' {d.start}*units::degree, ' + \
-                   f' {d.step}*units::degree, ' + \
-                   f' {d.idx_medium}, "{d.option}");\n'
+                f'  this->add_division("{_trim(d.name)}", ' + \
+                f' "{_trim(d.volume)}", ' + \
+                f' {d.axis}, {d.ndiv}, ' + \
+                f' {d.start}*units::degree, ' + \
+                f' {d.step}*units::degree, ' + \
+                f' {d.idx_medium}, "{d.option}");\n'
         self.write_code(code)
         code = '} /// End geant3_geometry_imp::handle_divisions  \n\n'
         self.write_code(code)
@@ -637,5 +637,5 @@ if num_err == 0:
         dd4hep.handle_divisions()
         dd4hep.handle_placements()
 else:
-    print('+++ FAILED to process Geant3 input file: ' +
+    print('+++ FAILED to process Geant3 input file: ' + \
           f'{geometry_file}.  {num_err} errors encountered.')
