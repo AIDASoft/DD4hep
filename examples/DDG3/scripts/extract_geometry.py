@@ -636,6 +636,7 @@ if num_err == 0:
         dd4hep.handle_volumes()
         dd4hep.handle_divisions()
         dd4hep.handle_placements()
-else:
-    print('+++ FAILED to process Geant3 input file: ' + \
-          f'{geometry_file}.  {num_err} errors encountered.')
+    sys.exit(0)
+
+txt = f'{geometry_file}.  {num_err} errors encountered.'
+print(f'+++ FAILED to process Geant3 input file: {txt}')
