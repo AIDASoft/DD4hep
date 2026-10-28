@@ -31,9 +31,6 @@
 // C/C++ include files
 #include <iostream>
 #include <stdexcept>
-#include <algorithm>
-#include <cctype>
-#include <vector>
 #include <cerrno>
 #include <mutex>
 
@@ -606,54 +603,6 @@ std::vector<DetElement> DetectorImp::detectors(const std::string& type1,
   throw std::runtime_error("detectors("+type1+","+type2+",...): Detectors can only selected by type once the geometry is closed!");
 }
 
-namespace {
-  /// Edit distance between two strings, used to suggest corrections for typos.
-  /** Optimal string alignment (restricted Damerau-Levenshtein) distance:
-   *  the number of single-character insertions, deletions, substitutions and
-   *  transpositions of adjacent characters needed to turn a into b.
-   *  Characters differing only in case are considered equal.
-   */
-  std::size_t typo_distance(const std::string& a, const std::string& b)  {
-    auto eq = [](char x, char y) {
-      return std::tolower(static_cast<unsigned char>(x)) == std::tolower(static_cast<unsigned char>(y));
-    };
-    const std::size_t n = a.size(), m = b.size();
-    // Three rolling rows: d(i-2,*), d(i-1,*), d(i,*)
-    std::vector<std::size_t> prev2(m+1), prev(m+1), curr(m+1);
-    for (std::size_t j = 0; j <= m; ++j) prev[j] = j;
-    for (std::size_t i = 1; i <= n; ++i)  {
-      curr[0] = i;
-      for (std::size_t j = 1; j <= m; ++j)  {
-        std::size_t cost = eq(a[i-1], b[j-1]) ? 0 : 1;
-        curr[j] = std::min({ prev[j] + 1,          // deletion
-                             curr[j-1] + 1,        // insertion
-                             prev[j-1] + cost });  // substitution
-        if ( i > 1 && j > 1 && eq(a[i-1], b[j-2]) && eq(a[i-2], b[j-1]) )
-          curr[j] = std::min(curr[j], prev2[j-2] + 1); // transposition
-      }
-      std::swap(prev2, prev);
-      std::swap(prev, curr);
-    }
-    return prev[m];
-  }
-
-  /// Find the entry name in the map closest to the requested name, if plausibly a typo
-  std::string closest_name(const Detector::HandleMap& e, const std::string& name)  {
-    // Accept roughly one edit per three characters, but at least one edit
-    const std::size_t max_dist = std::max<std::size_t>(1, name.size() / 3);
-    std::size_t best_dist = max_dist + 1;
-    std::string best;
-    for (const auto& entry : e)  {
-      std::size_t d = typo_distance(name, entry.first);
-      if ( d < best_dist )  {
-        best_dist = d;
-        best = entry.first;
-      }
-    }
-    return best;
-  }
-}
-
 Handle<NamedObject> DetectorImp::getRefChild(const HandleMap& e, const std::string& name, bool do_throw) const {
   HandleMap::const_iterator it = e.find(name);
   if (it != e.end()) {
@@ -673,11 +622,7 @@ Handle<NamedObject> DetectorImp::getRefChild(const HandleMap& e, const std::stri
     }
     std::stringstream err;
     err << "getRefChild: Failed to find child with name: " << name
-        << " Map " << nam << ".";
-    std::string suggestion = closest_name(e, name);
-    if ( !suggestion.empty() )  {
-      err << " Perhaps you meant: " << suggestion;
-    }
+        << " Map " << nam << " contains " << e.size() << " elements.";
     throw std::runtime_error(err.str());
   }
   return nullptr;
