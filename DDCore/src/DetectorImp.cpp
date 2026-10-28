@@ -622,7 +622,14 @@ Handle<NamedObject> DetectorImp::getRefChild(const HandleMap& e, const std::stri
     }
     std::stringstream err;
     err << "getRefChild: Failed to find child with name: " << name
-        << " Map " << nam << " contains " << e.size() << " elements.";
+        << " Map " << nam << " contains " << e.size() << " elements: {";
+    for (it = e.begin(); it != e.end(); ++it) {
+      if (it != e.begin()) {
+        err << ", ";
+      }
+      err << it->first;
+    }
+    err << "}";
     throw std::runtime_error(err.str());
   }
   return nullptr;
