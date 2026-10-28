@@ -72,11 +72,6 @@ namespace dd4hep {
       /// Container keys of all containers to be manipulated
       std::set<Key::key_type>        m_cont_keys  { };
 
-      /// Lock to properly accumulate keys which were already used
-      mutable std::mutex             m_used_keys_lock;
-      /// Worker objects to be submitted to TBB each performing part of the job
-      Workers m_workers;
-
     protected:
       /// Define standard assignments and constructors
       DDDIGI_DEFINE_ACTION_CONSTRUCTORS(DigiContainerCombine);
@@ -86,9 +81,6 @@ namespace dd4hep {
 
       /// Initializing function: compute values which depend on properties
       void initialize();
-
-      /// Check if we have sufficient workers
-      void have_workers(size_t len)  const;
 
       /// Combine selected containers to one single deposit container
       std::size_t combine_containers(context_t& context,
