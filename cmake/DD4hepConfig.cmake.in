@@ -45,8 +45,7 @@ set (CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH} ${@CMAKE_PROJECT_NAME@_DIR}/cmake  
 # ---------- include dirs -----------------------------------------------------
 set(@CMAKE_PROJECT_NAME@_INCLUDE_DIRS "")
 
-
-FIND_DEPENDENCY(Boost REQUIRED)
+FIND_DEPENDENCY(Boost 1.70 REQUIRED CONFIG)
 
 if(DD4HEP_USE_GEANT4)
   MESSAGE(STATUS "@CMAKE_PROJECT_NAME@ uses Geant4")

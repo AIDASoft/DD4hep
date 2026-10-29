@@ -35,7 +35,7 @@ namespace {
 
 namespace{
   
-  /// helper class for a planar surface placed into a polyhedral calorimeter endcap 
+  /// helper class for a planar surface placed into a polyhedral (_sym>0) or cylindrical (_sym=0) calorimeter endcap
   class CaloEndcapPlaneImpl : public  dd4hep::rec::VolPlaneImpl{
     double  _r ;
     double  _phi0 ;
@@ -60,6 +60,11 @@ namespace{
     // overwrite to include points inside the inner radius of the endcap 
     bool insideBounds(const dd4hep::rec::Vector3D& point, double epsilon) const {
       
+      // symmetry=0: cylindrical calorimeter, the surface is a disk of radius _r
+      if( _sym == 0 )
+        return ( std::abs ( distance( point ) ) < epsilon )  &&  point.rho() < _r ;
+
+      // otherwise: polyhedron with n=_sym sides
       double ri = _r * cos(  2.* M_PI / _sym ) ;
       
       return ( std::abs ( distance( point ) ) < epsilon )  && 
@@ -68,13 +73,16 @@ namespace{
     }
 
     /// create outer bounding lines for the given symmetry of the polyhedron
-    virtual std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> > getLines(unsigned){
+    virtual std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> > getLines(unsigned nMax){
       
       std::vector< std::pair<dd4hep::rec::Vector3D, dd4hep::rec::Vector3D> >  lines ;
       
-      double alpha = ( _sym ? 2.* M_PI / _sym : 0. ) ;
+      // symmetry=0: cylindrical calorimeter, approximate the outer circle with a polygon with at least 16 sides
+      const unsigned n = ( _sym ? _sym : ( nMax > 16 ? nMax : 16 ) ) ;
+
+      double alpha = 2.* M_PI / n ;
       
-      for(unsigned i=0 ; i < _sym ; ++i){
+      for(unsigned i=0 ; i < n ; ++i){
         double gam0 =    i  * alpha + _phi0 ;
         double gam1 = (i+1) * alpha + _phi0 ;
         lines.push_back( std::make_pair( dd4hep::rec::Vector3D( _r*cos(gam0), _r*sin(gam0), origin().z()  ), 

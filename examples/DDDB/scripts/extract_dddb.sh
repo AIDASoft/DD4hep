@@ -70,12 +70,12 @@ fi;
 #
 # Now do the installation
 #
+if test "${clean}" = "YES"; then
+    rm -rf "${target}/DDDB";
+    echo "DDDB Database successfully removed ${target}";
+    exit 0;
+fi;
 if test -d ${target}/DDDB; then
-    if test "${clean}" = "YES";then
-        rm -rf ${target}/DDDB;
-        echo "DDDB Database successfully removed ${target}";
-        exit 0;
-    fi;
     echo "DDDB database is already extracted to ${target}. Nothing to do.";
 elif test ! -f ${source}; then
     echo "DDDB database tar file ${source} is not present. [Installation FAILED]";

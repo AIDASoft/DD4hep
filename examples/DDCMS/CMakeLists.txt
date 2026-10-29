@@ -181,6 +181,7 @@ dd4hep_add_test_reg( DDCMS_VolumeMgrTest_TOB
 #
 #  Test saving geometry to ROOT file
 dd4hep_add_test_reg( DDCMS_Persist_Save_LONGTEST
+  FIXTURES_SETUP DDCMS_Persist_Save_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
   EXEC_ARGS  geoPluginRun
   -input file:${CMAKE_CURRENT_SOURCE_DIR}/data/dd4hep-config.xml
@@ -195,7 +196,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_LONGTEST
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDCMS.sh"
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader DDCMS_geometry.root
-  DEPENDS    DDCMS_Persist_Save_LONGTEST
+  FIXTURES_REQUIRED DDCMS_Persist_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ Successfully loaded detector description from file"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -206,7 +207,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_DetTest1_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader DDCMS_geometry.root
   -plugin    DD4hep_CheckVolumeManager
-  DEPENDS    DDCMS_Persist_Save_LONGTEST
+  FIXTURES_REQUIRED DDCMS_Persist_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 36096 VolumeManager contexts. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -217,7 +218,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_DetTest2_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader DDCMS_geometry.root
   -plugin    DD4hep_DetectorCheck -name PixelBarrel_1 -geometry -structure -volmgr -sensitive
-  DEPENDS    DDCMS_Persist_Save_LONGTEST
+  FIXTURES_REQUIRED DDCMS_Persist_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED: Checked a total of       32141 elements. Num.Errors:     0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -229,7 +230,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_Nominal_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader DDCMS_geometry.root
   -plugin    DD4hep_CheckNominals
-  DEPENDS    DDCMS_Persist_Save_LONGTEST
+  FIXTURES_REQUIRED DDCMS_Persist_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 25776 DetElements. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -240,7 +241,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_Sensitives_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader DDCMS_geometry.root
   -plugin    DD4hep_CheckSensitives
-  DEPENDS    DDCMS_Persist_Save_LONGTEST
+  FIXTURES_REQUIRED DDCMS_Persist_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 5 SensitiveDetector objects. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )
@@ -251,7 +252,7 @@ dd4hep_add_test_reg( DDCMS_Persist_Restore_Readouts_LONGTEST
   EXEC_ARGS  geoPluginRun -print WARNING
   -plugin    DD4hep_RootLoader DDCMS_geometry.root
   -plugin    DD4hep_CheckReadouts
-  DEPENDS    DDCMS_Persist_Save_LONGTEST
+  FIXTURES_REQUIRED DDCMS_Persist_Save_LONGTEST
   REGEX_PASS "\\+\\+\\+ PASSED Checked 5 readout objects. Num.Errors: 0"
   REGEX_FAIL " ERROR ;EXCEPTION;Exception;FAILED;TStreamerInfo"
   )

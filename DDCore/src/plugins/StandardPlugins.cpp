@@ -1161,10 +1161,10 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       if ( m_printPositions || m_printVolIDs )  {
         if ( m_printPointers )    {
           if ( ideal != aligned )
-            std::snprintf(fmt,sizeof(fmt),"Ideal:%p Aligned:%p ",
+            std::snprintf( fmt,sizeof(fmt),"Ideal:%p Aligned:%p ",
                           (void*)ideal,(void*)aligned);
           else
-            std::snprintf(fmt,sizeof(fmt),"Ideal:%p MotherVol:%p",
+            std::snprintf( fmt,sizeof(fmt),"Ideal:%p MotherVol:%p",
                           (void*)ideal, (void*)mother);
           log << fmt;
         }
@@ -1176,7 +1176,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
             log << " VolID: ";
             volids.insert(volids.end(),vid.begin(),vid.end());
             for( const auto& i : volids )  {
-              std::snprintf(fmt, sizeof(fmt), "%s:%2d ",i.first.c_str(),i.second);
+              std::snprintf( fmt, sizeof(fmt), "%s:%2d ",i.first.c_str(),i.second);
               log << fmt;
             }
             if ( !vid.empty() || pv.volume().isSensitive() )  {
@@ -1207,21 +1207,21 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         char  sens = vol.isSensitive() ? 'S' : ' ';
         if ( m_printPointers )    {
           if ( ideal == aligned )  {
-            std::snprintf(fmt,sizeof(fmt),"%03d %%s [Ideal:%p Vol:%p MotherVol:%p] %%-%ds %%-16s Vol:%%s shape:%%s \t %c %%s",
+            std::snprintf( fmt,sizeof(fmt),"%03d %%s [Ideal:%p Vol:%p MotherVol:%p] %%-%ds %%-16s Vol:%%s shape:%%s \t %c %%s",
                           level+1,(void*)ideal,(void*)vol, (void*)mother, 2*level+1, sens);
           }
           else  {
-            std::snprintf(fmt,sizeof(fmt),"%03d %%s Ideal:%p Aligned:%p %%-%ds %%-16s Vol:%%s shape:%%s %c %%s",
+            std::snprintf( fmt,sizeof(fmt),"%03d %%s Ideal:%p Aligned:%p %%-%ds %%-16s Vol:%%s shape:%%s %c %%s",
                           level+1,(void*)ideal,(void*)aligned,2*level+1,sens);
           }
         }
         else  {
           if ( ideal == aligned )  {
-            std::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds %%-16s Vol:%%s shape:%%s \t %c %%s",
+            std::snprintf( fmt,sizeof(fmt),"%03d %%s %%-%ds %%-16s Vol:%%s shape:%%s \t %c %%s",
                           level+1,2*level+1,sens);
           }
           else  {
-            std::snprintf(fmt,sizeof(fmt),"%03d %%s Ideal:%p Aligned:%p %%-%ds %%-16s Vol:%%s shape:%%s %c %%s",
+            std::snprintf( fmt,sizeof(fmt),"%03d %%s Ideal:%p Aligned:%p %%-%ds %%-16s Vol:%%s shape:%%s %c %%s",
                           level+1,(void*)ideal,(void*)aligned,2*level+1,sens);
           }
         }
@@ -1238,7 +1238,7 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
         Material mat = vol.material();
         TGeoMaterial* mptr = mat->GetMaterial();
         bool ok = mat.A() == mptr->GetA() && mat.Z() == mptr->GetZ();
-        std::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds Material: %%-16s A:%%6.2f %%6.2f  Z:%%6.2f %%6.2f",
+        std::snprintf( fmt,sizeof(fmt),"%03d %%s %%-%ds Material: %%-16s A:%%6.2f %%6.2f  Z:%%6.2f %%6.2f",
                       level+1,2*level+1);
         ++m_numMaterial;
         if ( !ok ) ++m_numMaterialERR;
@@ -1252,15 +1252,15 @@ static long dump_volume_tree(Detector& description, int argc, char** argv) {
       if ( m_printPositions )  {
         if ( ideal )  {
           const double* trans = ideal->GetMatrix()->GetTranslation();
-          std::snprintf(fmt, sizeof(fmt), "Pos: (%f,%f,%f) ",trans[0],trans[1],trans[2]);
+          std::snprintf( fmt, sizeof(fmt), "Pos: (%f,%f,%f) ",trans[0],trans[1],trans[2]);
         }
         else  {
-          std::snprintf(fmt, sizeof(fmt), " <ERROR: INVALID Translation matrix> ");
+          std::snprintf( fmt, sizeof(fmt), " <ERROR: INVALID Translation matrix> ");
         }
         log << fmt << " \t";
       }
       if ( !log.str().empty() )  {
-        std::snprintf(fmt,sizeof(fmt),"%03d %%s %%-%ds %%s",level+1,2*level+1);
+        std::snprintf( fmt,sizeof(fmt),"%03d %%s %%-%ds %%s",level+1,2*level+1);
         printout(INFO, "VolumeDump", fmt, "  ->", "", log.str().c_str());
       }
       for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
@@ -1420,45 +1420,50 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
   struct Actor {
     Detector& descr;
     std::string path     { };
+    std::string tag      { };
     DetElement det_world { };
-    long count          = 0;
-    int  have_match     = -1;
-    int  analysis_level = 999999;
-    bool dump_materials = false;
-    bool dump_shapes    = false;
-    bool dump_positions = false;
-    bool dump_volids    = false;
-    bool sensitive_only = false;
+    long count           = 0;
+    int  have_match      = -1;
+    int  analysis_level  = 999999;
+    bool dump_materials  = false;
+    bool dump_shapes     = false;
+    bool dump_placements = false;
+    bool dump_positions  = false;
+    bool dump_volids     = false;
+    bool sensitive_only  = false;
 
     /// Initializing constructor
     Actor(Detector& det) : descr(det) {
+      tag = (flag==0 ? "DD4hep_DetectorDump" : "DD4hep_DetectorVolumeDump");
       det_world = descr.world();
     }
     /// Default destructor
     ~Actor() {
       printout(ALWAYS,"DetectorDump", "+++ Scanned a total of %ld elements.",count);
     }
-    void parse_args(int ac, char** av)   {
+    void parse_args(int ac, char** av)  {
       for(int i=0; i<ac; ++i)  {
-        if      ( ::strncmp(av[i],"--sensitive",     5)==0 ) { sensitive_only = true;  }
-        else if ( ::strncmp(av[i], "-sensitive",     5)==0 ) { sensitive_only = true;  }
-        else if ( ::strncmp(av[i], "--no-sensitive", 8)==0 ) { sensitive_only = false; }
-        else if ( ::strncmp(av[i], "-materials",     4)==0 ) { dump_materials = true;  }
-        else if ( ::strncmp(av[i], "--materials",    5)==0 ) { dump_materials = true;  }
-        else if ( ::strncmp(av[i], "-shapes",        4)==0 ) { dump_shapes    = true;  }
-        else if ( ::strncmp(av[i], "--shapes",       5)==0 ) { dump_shapes    = true;  }
-        else if ( ::strncmp(av[i], "-positions",     4)==0 ) { dump_positions = true;  }
-        else if ( ::strncmp(av[i], "--positions",    5)==0 ) { dump_positions = true;  }
-        else if ( ::strncmp(av[i], "-no-sensitive",  7)==0 ) { sensitive_only = false; }
-        else if ( ::strncmp(av[i], "--volids",       5)==0 ) { dump_volids    = true;  }
-        else if ( ::strncmp(av[i], "-volids",        5)==0 ) { dump_volids    = true;  }
-        else if ( ::strncmp(av[i], "--detector",     5)==0 ) { path = av[++i];       }
-        else if ( ::strncmp(av[i], "-detector",      5)==0 ) { path = av[++i];       }
-        else if ( ::strncmp(av[i], "--level",        5)==0 ) { analysis_level = ::atol(av[++i]); }
-        else if ( ::strncmp(av[i], "-level",         5)==0 ) { analysis_level = ::atol(av[++i]); }
-        else   {
+        if     ( ::strncmp(av[i],"--sensitive",     5)==0 ) { sensitive_only  = true;  }
+        else if( ::strncmp(av[i], "-sensitive",     5)==0 ) { sensitive_only  = true;  }
+        else if( ::strncmp(av[i], "--no-sensitive", 8)==0 ) { sensitive_only  = false; }
+        else if( ::strncmp(av[i], "-materials",     4)==0 ) { dump_materials  = true;  }
+        else if( ::strncmp(av[i], "--materials",    5)==0 ) { dump_materials  = true;  }
+        else if( ::strncmp(av[i], "-shapes",        4)==0 ) { dump_shapes     = true;  }
+        else if( ::strncmp(av[i], "--shapes",       5)==0 ) { dump_shapes     = true;  }
+        else if( ::strncmp(av[i], "-positions",     4)==0 ) { dump_positions  = true;  }
+        else if( ::strncmp(av[i], "--positions",    5)==0 ) { dump_positions  = true;  }
+        else if( ::strncmp(av[i], "-placements",    4)==0 ) { dump_placements = true;  }
+        else if( ::strncmp(av[i], "--placements",   5)==0 ) { dump_placements = true;  }
+        else if( ::strncmp(av[i], "-no-sensitive",  7)==0 ) { sensitive_only  = false; }
+        else if( ::strncmp(av[i], "--volids",       5)==0 ) { dump_volids     = true;  }
+        else if( ::strncmp(av[i], "-volids",        5)==0 ) { dump_volids     = true;  }
+        else if( ::strncmp(av[i], "--detector",     5)==0 ) { path = av[++i];       }
+        else if( ::strncmp(av[i], "-detector",      5)==0 ) { path = av[++i];       }
+        else if( ::strncmp(av[i], "--level",        5)==0 ) { analysis_level = ::atol(av[++i]); }
+        else if( ::strncmp(av[i], "-level",         5)==0 ) { analysis_level = ::atol(av[++i]); }
+        else  {
           std::cout << "  "
-                    << (flag==0 ? "DD4hep_DetectorDump" : "DD4hep_DetectorVolumeDump") << " -arg [-arg]   \n\n"
+                    << tag << " -arg [-arg]   \n\n"
                     << "         Dump " << (flag==0 ? "DetElement" : "Detector volume") << " tree.          \n"
                     << "         Configure produced output information using the following options:       \n\n"
             "   --sensitive             Process only sensitive volumes.                                \n"
@@ -1482,116 +1487,122 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
         }
       }
     }
-    IDDescriptor get_id_descriptor(PlacedVolume pv)   {
-      if ( pv.isValid() )  {
+    IDDescriptor get_id_descriptor(PlacedVolume pv)  {
+      if( pv.isValid() )  {
         Volume v = pv.volume();
         SensitiveDetector sd = v.sensitiveDetector();
-        if ( sd.isValid() )   {
+        if( sd.isValid() )  {
           IDDescriptor dsc = sd.readout().idSpec();
-          if ( dsc.isValid() ) return dsc;
+          if( dsc.isValid() ) return dsc;
         }
-        for (Int_t idau = 0, ndau = v->GetNdaughters(); idau < ndau; ++idau)  {
+        for( Int_t idau = 0, ndau = v->GetNdaughters(); idau < ndau; ++idau )  {
           IDDescriptor dsc = get_id_descriptor(v->GetNode(idau));
-          if ( dsc.isValid() ) return dsc;
+          if( dsc.isValid() ) return dsc;
         }
       }
       return IDDescriptor();
     }
-    void validate_id_descriptor(DetElement de, IDDescriptor& desc)   {
+    void validate_id_descriptor(DetElement de, IDDescriptor& desc)  {
       desc = (!de.parent() || de.parent() == det_world)
         ? IDDescriptor() : get_id_descriptor(de.placement());
     }
 
-    long dump(DetElement de, int level, IDDescriptor& id_desc, VolIDs chain)   {
+    long dump(DetElement de, int level, IDDescriptor& id_desc, VolIDs chain)  {
       char fmt[256];
       PlacedVolume place = de.placement();
       const DetElement::Children& children = de.children();
       bool use_elt = path.empty() || de.path().find(path) != std::string::npos;
 
-      if ( have_match < 0 && use_elt )  {
+      if( have_match < 0 && use_elt )  {
         have_match = level;
       }
 
       use_elt &= ((level-have_match) <= analysis_level);
-      if ( !place.isValid() )    {
-        std::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s DetElement with INVALID PLACEMENT!", level+1, 2*level+1);
-        printout(ERROR,"DetectorDump", fmt, "", de.path().c_str());
+      if( !place.isValid() )  {
+        std::snprintf( fmt, sizeof(fmt), "%03d %%-%ds %%s DetElement with INVALID PLACEMENT!", level+1, 2*level+1);
+        printout(ERROR, tag, fmt, "", de.path().c_str());
         use_elt = false;
       }
 
-      if ( place.isValid() && de != det_world )    {
+      if( place.isValid() && de != det_world )  {
         chain.insert(chain.end(), place.volIDs().begin(), place.volIDs().end());
       }
-      if ( use_elt )   {
-        if ( !sensitive_only || 0 != de.volumeID() )  {
+      if( use_elt )  {
+        if( !sensitive_only || 0 != de.volumeID() )  {
           char sens = place.isValid() && place.volume().isSensitive() ? 'S' : ' ';
           switch( flag )  {
           case 0:
             ++count;
-            if ( de.placement() == de.idealPlacement() )  {
-              std::snprintf(fmt, sizeof(fmt), "%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p  %%c", level+1, 2*level+1);
-              printout(INFO, "DetectorDump", fmt, "", de.path().c_str(), int(children.size()),
+            if( de.placement() == de.idealPlacement() )  {
+              std::snprintf( fmt, sizeof(fmt), "%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p  %%c", level+1, 2*level+1);
+              printout(INFO, tag, fmt, "", de.path().c_str(), int(children.size()),
                        (unsigned long)de.volumeID(), (void*)place.ptr(), sens);
               break;
             }
-            std::snprintf(fmt, sizeof(fmt), "%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p [ideal:%%p aligned:%%p]  %%c",
+            std::snprintf( fmt, sizeof(fmt), "%03d %%-%ds %%s NumDau:%%d VolID:%%08X Place:%%p [ideal:%%p aligned:%%p]  %%c",
                           level+1, 2*level+1);
-            printout(INFO, "DetectorDump", fmt, "", de.path().c_str(), int(children.size()),
+            printout(INFO, tag, fmt, "", de.path().c_str(), int(children.size()),
                      (unsigned long)de.volumeID(), (void*)de.idealPlacement().ptr(),
                      (void*)place.ptr(), sens);
             break;
           case 1:
             ++count;
-            std::snprintf(fmt, sizeof(fmt), "%03d %%-%ds Detector: %%s NumDau:%%d VolID:%%p", level+1, 2*level+1);
-            printout(INFO, "DetectorDump", fmt, "", de.path().c_str(), int(children.size()), (void*)de.volumeID());
-            if ( de.placement() == de.idealPlacement() )  {
-              std::snprintf(fmt, sizeof(fmt), "%03d %%-%ds Placement: %%s  %%c", level+1, 2*level+3);
-              printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(), sens);
+            std::snprintf( fmt, sizeof(fmt), "%03d %%-%ds Detector: %%s NumDau:%%d VolID:%%p", level+1, 2*level+1);
+            printout(INFO, tag, fmt, "", de.path().c_str(), int(children.size()), (void*)de.volumeID());
+            if( de.placement() == de.idealPlacement() )  {
+              std::snprintf( fmt, sizeof(fmt), "%03d %%-%ds Placement: %%s  %%c", level+1, 2*level+3);
+              printout(INFO, tag,fmt,"", de.placementPath().c_str(), sens);
               break;
             }
-            std::snprintf(fmt,sizeof(fmt), "%03d %%-%ds Placement: %%s  [ideal:%%p aligned:%%p] %%c",
+            std::snprintf( fmt, sizeof(fmt), "%03d %%-%ds Placement: %%s  [ideal:%%p aligned:%%p] %%c",
                           level+1,2*level+3);
-            printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(),
+            printout(INFO, tag, fmt, "", de.placementPath().c_str(),
                      (void*)de.idealPlacement().ptr(), (void*)place.ptr(), sens);          
             break;
           default:
             break;
           }
-          if ( (dump_materials || dump_shapes) && place.isValid() )  {
+          if( (dump_materials || dump_shapes) && place.isValid() )  {
             Volume vol = place.volume();
             Material mat = vol.material();
-            std::snprintf(fmt,sizeof(fmt), "%03d %%-%ds Material: %%-12s Shape: %%s", level+1,2*level+3);
-            printout(INFO,"DetectorDump",fmt,"", mat.name(), toStringSolid(vol->GetShape()).c_str());
+            std::snprintf( fmt, sizeof(fmt), "%03d %%-%ds Material: %%-12s Shape: %%s", level+1,2*level+3);
+            printout(INFO, tag, fmt, "", mat.name(), toStringSolid(vol->GetShape()).c_str());
           }
-          if ( dump_positions && place.isValid() )  {
+          if( dump_positions && place.isValid() )  {
             Position pos = place.position();
             Box      box = place.volume().solid();
             double   loc[3] = {0,0,0}, world[3] = {0,0,0};
             TGeoHMatrix   tr = de.nominal().worldTransformation();
             tr.LocalToMaster(loc, world);
-            std::snprintf(fmt,sizeof(fmt), "%03d %%-%ds BBox:     (%%9.4f,%%9.4f,%%9.4f) [cm]", level+1,2*level+3);
-            printout(INFO,"DetectorDump",fmt,"", box.x(), box.y(), box.z());
-            std::snprintf(fmt,sizeof(fmt), "%03d %%-%ds Position: (%%9.4f,%%9.4f,%%9.4f) [cm] w/r to mother", level+1,2*level+3);
-            printout(INFO,"DetectorDump",fmt,"", pos.X(), pos.Y(), pos.Z());
-            std::snprintf(fmt,sizeof(fmt), "%03d %%-%ds Position: (%%9.4f,%%9.4f,%%9.4f) [cm] w/r to world",  level+1,2*level+3);
-            printout(INFO,"DetectorDump",fmt,"", world[0], world[1], world[2]);
+            std::snprintf( fmt, sizeof(fmt), "%03d %%-%ds BBox:     (%%9.4f,%%9.4f,%%9.4f) [cm]", level+1,2*level+3);
+            printout(INFO, tag, fmt, "", box.x(), box.y(), box.z());
+            std::snprintf( fmt, sizeof(fmt), "%03d %%-%ds Position: (%%9.4f,%%9.4f,%%9.4f) [cm] w/r to mother", level+1,2*level+3);
+            printout(INFO, tag, fmt, "", pos.X(), pos.Y(), pos.Z());
+            std::snprintf( fmt, sizeof(fmt), "%03d %%-%ds Position: (%%9.4f,%%9.4f,%%9.4f) [cm] w/r to world",  level+1,2*level+3);
+            printout(INFO, tag, fmt, "", world[0], world[1], world[2]);
           }
-          if ( dump_volids && !place.volIDs().empty() )    {
+          if( dump_placements )  {
             std::stringstream log;
-            log << " VID:";
+            log << "Placement: " << de.placementPath();
+            std::snprintf( fmt, sizeof(fmt), "%03d %%-%ds   %%s", level+1, 2*level+1);
+            printout(INFO, tag, fmt, "", log.str().c_str());
+          }
+          if( dump_volids && !place.volIDs().empty() )  {
+            std::stringstream log;
+            log << "VID:";
             for( const auto& i : chain )
               log << " " << i.first << ':' << std::dec << std::setw(2) << i.second;
-            if ( id_desc.isValid() )  {
+            if( id_desc.isValid() )  {
               log << " (encoded:0x" << std::setfill('0') << std::setw(8) << std::hex
                   << id_desc.encode(chain)
                   << std::setfill(' ') << std::dec << ") ";
             }
-            std::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s", level+1, 2*level+1);
-            printout(INFO,"DetectorDump", fmt, "", log.str().c_str());
+            std::snprintf( fmt, sizeof(fmt), "%03d %%-%ds   %%s", level+1, 2*level+1);
+            printout(INFO, tag, fmt, "", log.str().c_str());
           }
         }
       }
-      for ( const auto& c : children )   {
+      for( const auto& c : children )  {
         validate_id_descriptor(c.second, id_desc);
         dump(c.second, level+1, id_desc, chain);
       }
@@ -1602,7 +1613,7 @@ template <int flag> long dump_detelement_tree(Detector& description, int argc, c
   IDDescriptor id_descriptor;
   Actor        actor(description);
   actor.parse_args(argc, argv);
-  return actor.dump(description.world(), 0, id_descriptor, std::move(chain));
+  return actor.dump( description.world(), 0, id_descriptor, std::move(chain) );
 }
 DECLARE_APPLY(DD4hep_DetectorDump,dump_detelement_tree<0>)
 DECLARE_APPLY(DD4hep_DetectorVolumeDump,dump_detelement_tree<1>)
@@ -1628,10 +1639,10 @@ static long detelement_cache(Detector& description, int argc, char** argv) {
     }
   } actor;
   std::string detector = "/world";
-  for(int i = 0; i < argc && argv[i]; ++i)  {
-    if ( 0 == ::strncmp("-detector",argv[i],4) )
+  for( int i = 0; i < argc && argv[i]; ++i )  {
+    if( 0 == ::strncmp("-detector",argv[i],4) )
       detector = argv[++i];
-    else if ( 0 == ::strncmp("--detector",argv[i],5) )
+    else if( 0 == ::strncmp("--detector",argv[i],5) )
       detector = argv[++i];
     else  {
       std::cout <<
@@ -1645,9 +1656,9 @@ static long detelement_cache(Detector& description, int argc, char** argv) {
     }
   }
   DetElement element = description.world();
-  if ( detector != "/world" )   {
+  if( detector != "/world" )  {
     element = detail::tools::findElement(description, detector);
-    if ( !element.isValid() )  {
+    if( !element.isValid() )  {
       except("VolumeDump","+++ Invalid DetElement path: %s", detector.c_str());
     }
   }
@@ -1686,7 +1697,7 @@ static long detectortype_cache(Detector& description, int argc, char** argv)  {
       types.push_back(argv[++i]);
     else if ( 0 == ::strncmp("--type",argv[i],4) )
       types.push_back(argv[++i]);
-    else   {
+    else  {
       std::cout <<
         "Usage: DD4hep_DetectorTypes -type <type> -arg [-arg]                          \n"
         "     Dump detector types from detector description.                         \n\n"
@@ -1695,20 +1706,21 @@ static long detectortype_cache(Detector& description, int argc, char** argv)  {
       ::exit(EINVAL);
     }
   }
-  if ( types.empty() )   {
+  if ( types.empty() )  {
     types = description.detectorTypes();
   }
   printout(INFO,"DetectorTypes","Detector type dump:  %ld types:", long(types.size()));
-  for( const auto& type : types )   {
+  for( const auto& type : types )  {
     const std::vector<DetElement>& detectors = description.detectors(type);
     printout(INFO,"DetectorTypes","\t --> %ld %s detectors:",long(detectors.size()), type.c_str());
-    for( const auto& d : detectors )   {
+    for( const auto& d : detectors )  {
       printout(INFO,"DetectorTypes","\t\t %-16s --> %s  [%s]",type.c_str(),d.name(),d.type().c_str());
     }
   }
   return 1;
 }
 DECLARE_APPLY(DD4hep_DetectorTypes,detectortype_cache)
+//==========================================================================
 
 /// Basic entry point to print out detector type map
 /**
@@ -1721,6 +1733,7 @@ DECLARE_APPLY(DD4hep_DetectorTypes,detectortype_cache)
 #include <DD4hep/SurfaceInstaller.h>
 typedef SurfaceInstaller TestSurfacesPlugin;
 DECLARE_SURFACE_INSTALLER(TestSurfaces,TestSurfacesPlugin)
+//==========================================================================
 
 /// Basic entry point to print out detector type map
 /**
@@ -1741,4 +1754,14 @@ static long install_plugin_tester(Detector& description, int , char** ) {
   return 1;
 }
 DECLARE_APPLY(DD4hep_PluginTester,install_plugin_tester)
+//==========================================================================
+
+#include <XML/DetectorStructure.h>
+static dd4hep::Ref_t
+dd4hep_subdetector_structure( Detector& description, xml_h e, dd4hep::Ref_t sensitive )  {
+  DetectorStructure sub_detector( description, e, sensitive );
+  return sub_detector.construct( );
+}
+DECLARE_DETELEMENT(DD4hep_DetectorStructure,dd4hep_subdetector_structure)
+//==========================================================================
 

@@ -159,6 +159,19 @@ if (DD4HEP_USE_GEANT4)
     --part.userParticleHandler=
   )
 
+  set_tests_properties(t_ddsimUserPlugins PROPERTIES
+    FIXTURES_SETUP ddsimUserPlugins)
+
+  # check that the output file has the correct number of events
+  add_test(t_check_ddsimUserPlugins
+    root t_ddsimUserPlugins.root -n -q ${CMAKE_CURRENT_SOURCE_DIR}/src/get_EVENT_entries.cpp
+  )
+  SET_TESTS_PROPERTIES(t_check_ddsimUserPlugins
+      PROPERTIES
+      PASS_REGULAR_EXPRESSION "We have 10 events."
+      FIXTURES_REQUIRED ddsimUserPlugins
+  )
+
   add_test( t_ddsimUserActions "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
     ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml --runType=batch -N=10
     --output.physics 0
@@ -206,6 +219,7 @@ if (DD4HEP_USE_GEANT4)
             --gun.energy=10*GeV
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_gun_mt1 PROPERTIES
+    FIXTURES_SETUP ddsim_gun_mt1
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 1 threads"
     DISABLED ${disable_mt_tests}
@@ -225,6 +239,7 @@ if (DD4HEP_USE_GEANT4)
             --gun.energy=10*GeV
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_gun_mt2 PROPERTIES
+    FIXTURES_SETUP ddsim_gun_mt2
     PROCESSORS 2
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 2 threads"
@@ -245,6 +260,7 @@ if (DD4HEP_USE_GEANT4)
             --gun.energy=10*GeV
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_gun_mt4 PROPERTIES
+    FIXTURES_SETUP ddsim_gun_mt4
     PROCESSORS 4
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 4 threads"
@@ -255,7 +271,7 @@ if (DD4HEP_USE_GEANT4)
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
             gun_mt1.root gun_mt2.root --tolerance=1e-9)
   set_tests_properties(t_ddsim_gun_mt1_mt2_compare PROPERTIES
-    DEPENDS "t_ddsim_gun_mt1;t_ddsim_gun_mt2"
+    FIXTURES_REQUIRED "ddsim_gun_mt1;ddsim_gun_mt2"
     DISABLED ${disable_mt_tests}
     LABELS "comparison;gun")
 
@@ -263,7 +279,7 @@ if (DD4HEP_USE_GEANT4)
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
             gun_mt2.root gun_mt4.root --tolerance=1e-9)
   set_tests_properties(t_ddsim_gun_mt2_mt4_compare PROPERTIES
-    DEPENDS "t_ddsim_gun_mt2;t_ddsim_gun_mt4"
+    FIXTURES_REQUIRED "ddsim_gun_mt2;ddsim_gun_mt4"
     DISABLED ${disable_mt_tests}
     LABELS "comparison;gun;mt")
 
@@ -279,6 +295,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_hepmc_mt1 PROPERTIES
+      FIXTURES_SETUP ddsim_hepmc_mt1
       TIMEOUT 3000 # 50 minutes (default is 25 minutes)
       DISABLED ${disable_mt_tests}
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
@@ -294,6 +311,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_hepmc_mt2 PROPERTIES
+      FIXTURES_SETUP ddsim_hepmc_mt2
       DISABLED ${disable_mt_tests}
       PROCESSORS 2
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
@@ -309,6 +327,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/Pythia_output.hepmc
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_hepmc_mt4 PROPERTIES
+      FIXTURES_SETUP ddsim_hepmc_mt4
       DISABLED ${disable_mt_tests}
       PROCESSORS 4
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
@@ -318,7 +337,7 @@ if (DD4HEP_USE_GEANT4)
               hepmc_mt1.root hepmc_mt2.root --tolerance=1e-9)
     set_tests_properties(t_ddsim_hepmc_mt1_mt2_compare PROPERTIES
       DISABLED ${disable_mt_tests}
-      DEPENDS "t_ddsim_hepmc_mt1;t_ddsim_hepmc_mt2"
+      FIXTURES_REQUIRED "ddsim_hepmc_mt1;ddsim_hepmc_mt2"
       LABELS "comparison;mt")
 
     add_test(NAME t_ddsim_hepmc_mt2_mt4_compare
@@ -326,7 +345,7 @@ if (DD4HEP_USE_GEANT4)
               hepmc_mt2.root hepmc_mt4.root --tolerance=1e-9)
     set_tests_properties(t_ddsim_hepmc_mt2_mt4_compare PROPERTIES
       DISABLED ${disable_mt_tests}
-      DEPENDS "t_ddsim_hepmc_mt2;t_ddsim_hepmc_mt4"
+      FIXTURES_REQUIRED "ddsim_hepmc_mt2;ddsim_hepmc_mt4"
       LABELS "comparison;mt")
   endif()
 
@@ -342,6 +361,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_edm4hep_mt1 PROPERTIES
+      FIXTURES_SETUP ddsim_edm4hep_mt1
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
     add_test(NAME t_ddsim_edm4hep_mt2
@@ -355,6 +375,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_edm4hep_mt2 PROPERTIES
+      FIXTURES_SETUP ddsim_edm4hep_mt2
       PROCESSORS 2
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
@@ -369,6 +390,7 @@ if (DD4HEP_USE_GEANT4)
               --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root
               --part.userParticleHandler=)
     set_tests_properties(t_ddsim_edm4hep_mt4 PROPERTIES
+      FIXTURES_SETUP ddsim_edm4hep_mt4
       PROCESSORS 4
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
@@ -376,14 +398,14 @@ if (DD4HEP_USE_GEANT4)
       COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
               edm4hep_mt1.root edm4hep_mt2.root --tolerance=1e-9)
     set_tests_properties(t_ddsim_edm4hep_mt1_mt2_compare PROPERTIES
-      DEPENDS "t_ddsim_edm4hep_mt1;t_ddsim_edm4hep_mt2"
+      FIXTURES_REQUIRED "ddsim_edm4hep_mt1;ddsim_edm4hep_mt2"
       LABELS "comparison;mt")
 
     add_test(NAME t_ddsim_edm4hep_mt2_mt4_compare
       COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
               edm4hep_mt2.root edm4hep_mt4.root --tolerance=1e-9)
     set_tests_properties(t_ddsim_edm4hep_mt2_mt4_compare PROPERTIES
-      DEPENDS "t_ddsim_edm4hep_mt2;t_ddsim_edm4hep_mt4"
+      FIXTURES_REQUIRED "ddsim_edm4hep_mt2;ddsim_edm4hep_mt4"
       LABELS "comparison;mt")
   endif()
 
@@ -414,6 +436,7 @@ if (DD4HEP_USE_GEANT4)
             --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gun_test.mac
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_g4gun_mt2 PROPERTIES
+    FIXTURES_SETUP ddsim_g4gun_mt2
     PROCESSORS 2
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
 
@@ -429,6 +452,7 @@ if (DD4HEP_USE_GEANT4)
             --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gun_test.mac
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_g4gun_mt4 PROPERTIES
+    FIXTURES_SETUP ddsim_g4gun_mt4
     PROCESSORS 4
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
 
@@ -436,7 +460,7 @@ if (DD4HEP_USE_GEANT4)
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
             g4gun_mt2.root g4gun_mt4.root --tolerance=1e-9)
   set_tests_properties(t_ddsim_g4gun_mt2_mt4_compare PROPERTIES
-    DEPENDS "t_ddsim_g4gun_mt2;t_ddsim_g4gun_mt4"
+    FIXTURES_REQUIRED "ddsim_g4gun_mt2;ddsim_g4gun_mt4"
     LABELS "comparison;mt;g4gun")
 
   add_test(NAME t_ddsim_gps_mt1
@@ -466,6 +490,7 @@ if (DD4HEP_USE_GEANT4)
             --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gps_test.mac
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_gps_mt2 PROPERTIES
+    FIXTURES_SETUP ddsim_gps_mt2
     PROCESSORS 2
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
 
@@ -481,6 +506,7 @@ if (DD4HEP_USE_GEANT4)
             --macroFile=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/g4gps_test.mac
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_gps_mt4 PROPERTIES
+    FIXTURES_SETUP ddsim_gps_mt4
     PROCESSORS 4
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error")
 
@@ -488,7 +514,7 @@ if (DD4HEP_USE_GEANT4)
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_simulation_output.py
             gps_mt2.root gps_mt4.root --tolerance=1e-9)
   set_tests_properties(t_ddsim_gps_mt2_mt4_compare PROPERTIES
-    DEPENDS "t_ddsim_gps_mt2;t_ddsim_gps_mt4"
+    FIXTURES_REQUIRED "ddsim_gps_mt2;ddsim_gps_mt4"
     LABELS "comparison;mt;gps")
 
 endif()

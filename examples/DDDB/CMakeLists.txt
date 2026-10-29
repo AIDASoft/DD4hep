@@ -65,6 +65,7 @@ dd4hep_configure_scripts ( DDDB DEFAULT_SETUP WITH_TESTS )
 #
 #---Testing: Extract DDDB data from zip archive -------------------------------
 dd4hep_add_test_reg( DDDB_extract_LONGTEST
+  FIXTURES_SETUP DDDB_data
   COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
   EXEC_ARGS  ${DDDB_BIN}/extract_dddb.sh
   REGEX_PASS "DDDB Database successfully installed."
@@ -76,7 +77,7 @@ dd4hep_add_test_reg( DDDB_load_LONGTEST
   EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config DD4hep_ConditionsManagerInstaller
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "\\+ Converted    12852 placements"
   REGEX_FAIL "EXCEPTION;Exception"
   )
@@ -87,7 +88,7 @@ dd4hep_add_test_reg( DDDB_conditions_LONGTEST
   EXEC_ARGS  ${DDDB_BIN}/run_dddb.sh
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "\\+ Converted     9353 conditions" 
   REGEX_FAIL "EXCEPTION;Exception"
   )
@@ -99,7 +100,7 @@ dd4hep_add_test_reg( DDDB_conditions_dump_simple_LONGTEST
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -exec      DDDB_ConditionsSummary
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "\\+ DDDB Total Number of parameters:    13642  " 
   REGEX_FAIL "EXCEPTION;Exception"
   )
@@ -111,7 +112,7 @@ dd4hep_add_test_reg( DDDB_det_elements_LONGTEST
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller  -end-plugin
   -plugin    DDDB_DetectorDump -print DEBUG   -end-plugin
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "\\+ DDDB: Number of DetElements in the geometry:     6261" 
   REGEX_FAIL "EXCEPTION;Exception"
   )
@@ -123,7 +124,7 @@ dd4hep_add_test_reg( DDDB_det_volumes_LONGTEST
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DetectorVolumeDump -print DEBUG
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "\\+ DDDB: Number of DetElement placements:           6253" 
   REGEX_FAIL "EXCEPTION;Exception"
   )
@@ -135,7 +136,7 @@ dd4hep_add_test_reg( DDDB_det_conditions_keys_LONGTEST
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DetectorConditionKeysDump -print DEBUG
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "\\+ DDDB: Number of DetElement condition keys:       9043"
   REGEX_FAIL "EXCEPTION;Exception"
   )
@@ -147,7 +148,7 @@ dd4hep_add_test_reg( DDDB_det_catalog_data_LONGTEST
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DetectorConditionDump -print DEBUG
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "\\+ DDDBConditions Total Number of parameters:   346312 "
   REGEX_FAIL "EXCEPTION;Exception"
   )
@@ -159,7 +160,7 @@ dd4hep_add_test_reg( DDDB_det_catalog_align_LONGTEST
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DetectorAlignmentDump -print DEBUG
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "\\+ DDDB: Number of attached alignments:             5408"
   REGEX_FAIL "EXCEPTION;Exception"
   )
@@ -171,7 +172,7 @@ dd4hep_add_test_reg( DDDB_detelement_conditions_dump_LONGTEST
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DetElementConditionDump -print DEBUG
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "\\+ DDDB: Total number of DetElement parameters:    13136"
   )
 #
@@ -182,7 +183,7 @@ dd4hep_add_test_reg( DDDB_derived_conditions_LONGTEST
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DerivedCondTest -print DEBUG
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "\\+ DDDB: Total Number of callbacks:    16221"
   REGEX_FAIL "EXCEPTION;Exception"
   )
@@ -194,7 +195,7 @@ dd4hep_add_test_reg( DDDB_alignment_derived_LONGTEST
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_DerivedAlignmentsTest -print DEBUG -turns 1 -access 3
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "\\+ DDDB: AlignmentManager:    9352 conditions \\(S:9352,L:0,C:0,M:0\\) alignments: \\(A:6200,M:0\\) for IOV:epoch\\(0\\)"
   REGEX_FAIL "EXCEPTION;Exception"
   )
@@ -206,7 +207,7 @@ dd4hep_add_test_reg( DDDB_alignment_access_LONGTEST
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config    DD4hep_ConditionsManagerInstaller
   -plugin    DDDB_AlignmentsAccessTest -print DEBUG
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "\\+ DDDB: Accessed 5407 alignments from 5407 DetElement objects" 
   REGEX_FAIL "EXCEPTION;Exception"
   )
@@ -219,7 +220,7 @@ dd4hep_add_test_reg( DDDB_DeVelo_LONGTEST
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config DD4hep_ConditionsManagerInstaller
   -plugin DDDB_DeVeloTest -print DEBUG
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "TestSummary              Total 9110 conditions load summary \\(S:2286,L:4020,C:2804,M:0\\)" 
   REGEX_FAIL "EXCEPTION"
   )
@@ -232,7 +233,7 @@ dd4hep_add_test_reg( DDDB_DeVelo_Gaudi_LONGTEST
   -config DD4hep_XMLLoader -arg ${DDDB_DATA}/materials.xml 
   -config DD4hep_ConditionsManagerInstaller
   -plugin DDDB_DeVeloServiceTest -print DEBUG
-  DEPENDS    DDDB_extract_LONGTEST
+  FIXTURES_REQUIRED DDDB_data
   REGEX_PASS "TestSummary              Total 10 slices created and accessed during the test." 
   REGEX_FAIL "EXCEPTION"
   )
@@ -241,21 +242,7 @@ dd4hep_add_test_reg( DDDB_DeVelo_Gaudi_LONGTEST
 dd4hep_add_test_reg( DDDB_clean_LONGTEST
   COMMAND    "${DDDB_BIN}/run_test_DDDB.sh"
   EXEC_ARGS  ${DDDB_BIN}/extract_dddb.sh -clean
-  DEPENDS    DDDB_extract_LONGTEST
-  DDDB_alignment_access_LONGTEST
-  DDDB_alignment_derived_LONGTEST
-  DDDB_derived_conditions_LONGTEST
-  DDDB_detelement_conditions_dump_LONGTEST
-  DDDB_det_catalog_align_LONGTEST
-  DDDB_det_catalog_data_LONGTEST
-  DDDB_det_conditions_keys_LONGTEST
-  DDDB_det_volumes_LONGTEST
-  DDDB_det_elements_LONGTEST
-  DDDB_conditions_dump_simple_LONGTEST
-  DDDB_conditions_LONGTEST
-  DDDB_load_LONGTEST
-  DDDB_DeVelo_Gaudi_LONGTEST
-  DDDB_DeVelo_LONGTEST
+  FIXTURES_CLEANUP DDDB_data
   REGEX_PASS "DDDB Database successfully removed"
   )
 
