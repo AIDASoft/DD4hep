@@ -8,6 +8,8 @@ void test_energy_deposition(TString sim_file_name="sim.root") {
   auto sim_file = new TFile(sim_file_name);
   auto t = (TTree*) sim_file->Get("EVENT");
   auto h = new TH1D("h","energy deposition",100,-1,20);
+  // TTree::Project finds the histogram by name in the current directory.
+  h->SetDirectory(sim_file);
   t->Project("h","PFRICHHits.energyDeposit");
   auto ave_edep = h->GetMean() * 1e6; // convert from MeV to eV
 
