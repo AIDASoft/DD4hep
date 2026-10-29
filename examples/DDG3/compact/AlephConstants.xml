@@ -1,0 +1,48 @@
+<!--
+//==========================================================================
+//  ALEPH software suite
+//==========================================================================
+//  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+//  All rights reserved.
+//
+//  For the licensing terms see OnlineSys/LICENSE.
+//
+//==========================================================================
+//
+//  Author     : Markus Frank
+//==========================================================================
+-->
+<lccdd>
+  <define>
+    <constant name="vis_all"                 value="1"/>
+    <constant name="vis_beampipe"            value="1"/>
+    <constant name="vis_quadrupole"          value="1"/>
+    <!-- Set vis_magnet_coil to only see coil cylinder -->
+    <constant name="vis_magnet"              value="0+vis_all"/>
+    <constant name="vis_magnet_coil"         value="0"/>
+
+    <constant name="vis_vdet"                value="1"/>
+    <constant name="vis_vdet_layer"          value="0"/>
+    <constant name="vis_vdet_infra"          value="0+vis_all"/>
+    <constant name="vis_vdet_wafer"          value="0+vis_all"/>
+    <constant name="vis_itc_gas"             value="0+vis_all"/>
+    <constant name="vis_itc_infra"           value="0+vis_all"/>
+    <constant name="vis_tpc_infra"           value="0+vis_all"/>
+    <constant name="vis_tpc_gas"             value="0+vis_all"/>
+
+    <constant name="vis_scal_infra"          value="0+vis_all"/>
+    <constant name="vis_scal_wafer"          value="0+vis_all"/>
+
+    <!-- LCAL only together with ECAL !  -->
+    <constant name="vis_lcal"                value="0+vis_all"/>
+    <constant name="vis_ecal"                value="0+vis_all"/>
+
+    <constant name="vis_hcal_barrel"         value="0+vis_all"/>
+    <constant name="vis_hcal_endcap"         value="0+vis_all"/>
+
+    <constant name="vis_samba"               value="0+vis_all"/>
+
+    <constant name="vis_muon_barrel"         value="0+vis_all"/>
+    <constant name="vis_muon_endcap"         value="0+vis_all"/>
+  </define>
+</lccdd>
