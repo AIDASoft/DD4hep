@@ -142,7 +142,7 @@ void Geant4StackingActionSequence::configureFiber(Geant4Context* thread_context)
 
 /// Get an action by name
 Geant4StackingAction* Geant4StackingActionSequence::get(const std::string& nam) const   {
-  return m_actors.get(FindByName(TypeName::split(nam).second));
+  return m_actors.get(FindByName(nam));
 }
 
 /// Pre-track action callback

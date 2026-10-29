@@ -99,7 +99,7 @@ class OutputConfig(ConfigHelper):
         dd = dd4hepSimulation  # just shorter variable name
         # Only use shared=True in MT mode to avoid double-save in ST mode
         shared = dd.numberOfThreads > 1
-        evt_root = EventAction(Kernel().worker(), 'Geant4Output2ROOT/' + dd.outputFile, shared)
+        evt_root = EventAction(Kernel().worker(), 'Geant4Output2ROOT/MyOutputAction', shared)
         evt_root.HandleMCTruth = True or False
         evt_root.Control = True
         output = dd.outputFile
