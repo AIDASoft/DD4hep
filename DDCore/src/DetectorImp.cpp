@@ -737,6 +737,8 @@ void DetectorImp::endDocument(const char* option)  {
       pv->SetUserExtension(extension);
     }
     m_world.setPlacement(pv);
+    // Paths cached while the geometry was built may be outdated
+    detail::tools::clearPathCaches(m_world);
   }
   // Patching shape names of anonymous shapes
   ShapePatcher patcher(m_volManager, m_world);
