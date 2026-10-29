@@ -116,17 +116,17 @@ namespace {
     /// Callback for simple imports. Simple add a user extension
     void operator()(TGeoVolume* v)   {
       TClass* c = v->IsA();
-      if ( !v->GetUserExtension() )   {
-        if ( c == geo_volume_t::Class() )
+      if( !v->GetUserExtension() )   {
+        if( c == geo_volume_t::Class() )
           v->SetUserExtension(new Volume::Object());
-        else if  ( c == geo_assembly_t::Class() )
+        else if( c == geo_assembly_t::Class() )
           v->SetUserExtension(new Assembly::Object());
-        else if  ( c == TGeoVolumeMulti::Class() )
+        else if( c == TGeoVolumeMulti::Class() )
           v->SetUserExtension(new VolumeMulti::Object());
         else
           except("dd4hep","VolumeImport: Unknown TGeoVolume sub-class: %s",v->IsA()->GetName());
       }
-      if  ( c == TGeoVolumeMulti::Class() )  {
+      if( c == TGeoVolumeMulti::Class() )  {
         TGeoVolumeMulti* mv = (TGeoVolumeMulti*)v;
         for( int i=0, n=mv->GetNvolumes(); i<n; ++i )   {
           TGeoVolume* vol = mv->GetVolume(i);
@@ -136,8 +136,12 @@ namespace {
       }
       for( Int_t i=0; i<v->GetNdaughters(); ++i )  {
         geo_node_t* pv = v->GetNode(i);
-        if ( !pv->GetUserExtension() )
+        if( !pv->GetUserExtension() )  {
+          printout(DEBUG, "VolumeImport",
+                   "+++ Add placement user extension. parent: %s placement: %s.",
+                   v->GetName(), pv->GetName() );
           pv->geo_node_t::SetUserExtension(new PlacedVolume::Object());
+        }
         (*this)(pv->GetVolume());
       }
     }
@@ -744,9 +748,15 @@ Volume Volume::divide(const std::string& divname, int iaxis, int ndiv,
   if ( p )  {
     TGeoVolume* mvp = p->Divide(divname.c_str(), iaxis, ndiv, start, step, numed, option);
     if ( mvp )   {
+      Volume(p).import();
+      Volume(mvp).import();
+#if 0
       VolumeImport imp;
-      imp(mvp);
+      imp(mvp); /// <<< Is this necessary ?
+      imp(p);   /// <<< This is necessary, otherwise mother -> daughters are not enhanced
       return VolumeMulti(mvp);
+#endif
+      return { mvp };
     }
     except("dd4hep","Volume: Failed to divide volume %s -> %s [Invalid result]",
            p->GetName(), divname.c_str());
@@ -812,6 +822,12 @@ PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, int id, TGeoMatrix*
   n = static_cast<geo_node_t*>(parent->GetNodes()->Last());
   if ( nam_id != n->GetName() )   {
     printout(ERROR,"PlacedVolume","++ FAILED to place node %s",(const char*)nam_id);
+  }
+  if( par->IsA() == TGeoVolumeMulti::Class() )  { // Make sure that all daughters of a division are instrumented
+    printout(DEBUG, "PlacedVolume",
+             "++ Insert to multi-volume %s. Ensure all daughters %s are instrumented.",
+             par->GetName(), daughter->GetName() );
+    Volume(par).import();
   }
   PlacedVolume::Object* extension = new PlacedVolume::Object();
   n->geo_node_t::SetUserExtension(extension);

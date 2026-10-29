@@ -1,0 +1,31 @@
+<!--
+//==========================================================================
+//  ALEPH software suite
+//==========================================================================
+//  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+//  All rights reserved.
+//
+//  For the licensing terms see OnlineSys/LICENSE.
+//
+//==========================================================================
+//
+//  Author     : Markus Frank
+//==========================================================================
+-->
+<lccdd>
+  <geometry open="false" close="false"/>
+
+  <plugins>
+    <!--
+    <plugin name="DD4hep_GeometryDisplay">
+      <argument value="-level"/>
+      <argument value="20"/>
+    </plugin>
+    <plugin name="DD4hep_InteractiveUI">
+      <argument value="++web=off"/>
+    </plugin>
+    -->
+    <plugin  name="DD4hep_InteractiveUI"/>
+    <plugin  name="geant3_process_enhancements"/>
+  </plugins>
+</lccdd>

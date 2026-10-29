@@ -1,0 +1,69 @@
+<!--
+//==========================================================================
+//  ALEPH software suite
+//==========================================================================
+//  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+//  All rights reserved.
+//
+//  For the licensing terms see OnlineSys/LICENSE.
+//
+//==========================================================================
+//
+//  Author     : Markus Frank
+//==========================================================================
+-->
+<lccdd>
+  <plugins>
+
+    <plugin  name="DD4hep_InteractiveUI"/>
+    <plugin  name="geant3_process_enhancements"/>
+    
+    <!--
+    <plugin name="DD4hep_VolumeDump">
+      <nargument value="-detector"/>
+      <nargument value="LCAL"/>
+      <argument value="-materials"/>
+      <argument value="-shapes"/>
+      <noargument value="-sensitive"/>
+      <argument value="-volids"/>
+      <argument value="-placements"/>
+      <argument value="-pathes"/>
+    </plugin>
+
+    <plugin name="DD4hep_VolumeDump">
+      <argument value="-materials"/>
+      <argument value="-shapes"/>
+      <argument value="-positions"/>
+      <argument value="-volids"/>
+      <argument value="-pathes"/>
+    </plugin>
+    
+    <plugin name="DD4hep_DetectorVolumeDump">
+      <argument value="-materials"/>
+      <argument value="-shapes"/>
+      <noargument value="-sensitive"/>
+      <argument value="-volids"/>
+      <argument value="-placements"/>
+    </plugin>
+
+    <plugin name="DD4hep_DetectorDump">
+      <argument value="-materials"/>
+      <argument value="-shapes"/>
+      <noargument value="-sensitive"/>
+      <argument value="-volids"/>
+      <argument value="-placements"/>
+    </plugin>
+    -->
+    <plugin name="DD4hep_DetectorDump">
+      <argument value="-detector"/>
+      <argument value="LCAL"/>
+      <argument value="-materials"/>
+      <argument value="-shapes"/>
+      <noargument value="-sensitive"/>
+      <argument value="-volids"/>
+      <argument value="-placements"/>
+    </plugin>
+
+  </plugins>
+
+</lccdd>
