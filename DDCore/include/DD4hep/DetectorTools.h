@@ -77,6 +77,8 @@ namespace dd4hep {
         PlacementPathCache(const PlacementPathCache&) = delete;
         PlacementPathCache& operator=(const PlacementPathCache&) = delete;
       };
+      /// Clear the placement path cache of this thread and the paths cached by the detector element and its children
+      void clearPathCaches(DetElement element);
 
       /// Find a given node in the hierarchy starting from the top node (absolute placement!)
       PlacedVolume findNode(PlacedVolume top_place, const std::string& place);

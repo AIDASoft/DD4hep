@@ -123,6 +123,20 @@ detail::tools::PlacementPathCache::~PlacementPathCache()   {
     s_pathCache.reset();
 }
 
+/// Clear the placement path cache of this thread and the paths cached by the detector element and its children
+void detail::tools::clearPathCaches(DetElement element)   {
+  if ( s_pathCache )
+    s_pathCache->clear();
+  if ( element.isValid() )   {
+    element->path.clear();
+    element->placementPath.clear();
+    element->key   = 0;
+    element->level = -1;
+    for( const auto& child : element->children )
+      clearPathCaches(child.second);
+  }
+}
+
 /// Find path between the child element and the parent element
 bool detail::tools::isParentElement(DetElement parent, DetElement child)   {
   if ( parent.isValid() && child.isValid() )  {
