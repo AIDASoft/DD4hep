@@ -21,10 +21,15 @@
 #include <DD4hep/Detector.h>
 #include <DD4hep/World.h>
 
+#include <atomic>
+#include <mutex>
+
 using namespace dd4hep;
     
 namespace {
   static std::string s_empty_string;
+  /// Protect the creation on first access of the nominal and survey alignments
+  static std::recursive_mutex s_alignment_lock;
 }
 
 /// Default constructor
@@ -184,12 +189,24 @@ DetElement& DetElement::setCombineHits(bool value, SensitiveDetector& sens) {
 /// Access to the alignment information
 Alignment DetElement::nominal() const   {
   Object* o = access();
+  Alignment nom = o->nominal;
+  if ( nom.isValid() )   {
+    std::atomic_thread_fence(std::memory_order_acquire);
+    return nom;
+  }
+  // The nominal alignment is created on first access, which may happen concurrently
+  // in multi-threaded applications (e.g. from the Geant4 worker threads): create it
+  // only once and make it visible to the other threads only when it is complete.
+  // The lock is recursive since computeIdeal accesses the nominal alignment of the parent
+  std::lock_guard<std::recursive_mutex> lock(s_alignment_lock);
   if ( !o->nominal.isValid() )   {
-    o->nominal = AlignmentCondition("nominal");
-    o->nominal->values().detector = *this;
+    Alignment cond = AlignmentCondition("nominal");
+    cond->values().detector = *this;
     //o->flag |= Object::HAVE_WORLD_TRAFO;
     //o->flag |= Object::HAVE_PARENT_TRAFO;
-    dd4hep::detail::tools::computeIdeal(o->nominal);
+    dd4hep::detail::tools::computeIdeal(cond);
+    std::atomic_thread_fence(std::memory_order_release);
+    o->nominal = cond;
   }
   return o->nominal;
 }
@@ -197,9 +214,18 @@ Alignment DetElement::nominal() const   {
 /// Access to the survey alignment information
 Alignment DetElement::survey() const  {
   Object* o = access();
+  Alignment surv = o->survey;
+  if ( surv.isValid() )   {
+    std::atomic_thread_fence(std::memory_order_acquire);
+    return surv;
+  }
+  // Created on first access: same protection as for the nominal alignment
+  std::lock_guard<std::recursive_mutex> lock(s_alignment_lock);
   if ( !o->survey.isValid() )   {
-    o->survey = AlignmentCondition("survey");
-    dd4hep::detail::tools::copy(nominal(), o->survey);
+    Alignment cond = AlignmentCondition("survey");
+    dd4hep::detail::tools::copy(nominal(), cond);
+    std::atomic_thread_fence(std::memory_order_release);
+    o->survey = cond;
   }
   return o->survey;
 }
