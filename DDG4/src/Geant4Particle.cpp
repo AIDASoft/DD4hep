@@ -521,10 +521,8 @@ void Geant4ParticleMap::dump()  const  {
 /// Adopt particle maps
 void Geant4ParticleMap::adopt(ParticleMap& pm, TrackEquivalents& equiv)    {
   clear();
-  particleMap = pm;
-  equivalentTracks = equiv;
-  pm.clear();
-  equiv.clear();
+  particleMap.swap(pm);
+  equivalentTracks.swap(equiv);
   //dump();
 }
 

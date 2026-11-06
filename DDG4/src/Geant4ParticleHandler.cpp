@@ -38,6 +38,8 @@
 // C/C++ include files
 #include <set>
 #include <algorithm>
+#include <limits>
+#include <vector>
 
 using namespace dd4hep::sim;
 using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
@@ -514,7 +516,7 @@ void Geant4ParticleHandler::endEvent(const G4Event* event)  {
 /// Rebase the simulated tracks, so that they fit to the generator particles
 void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
   /// No we have to update the map of equivalent tracks and assign the 'equivalentTrack' entry
-  TrackEquivalents equivalents, orgParticles;
+  TrackEquivalents orgParticles;
   ParticleMap      finalParticles;
   ParticleMap::const_iterator ipar, iend, i;
   int count;
@@ -545,6 +547,10 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     }
   }
   // (2) Re-evaluate the corresponding geant4 track equivalents using the new mapping
+  //     (collected first, as the lookups below use the old mapping)
+  constexpr int no_equivalent = std::numeric_limits<int>::min();
+  std::vector<int> new_ids;
+  new_ids.reserve(m_equivalentTracks.size());
   for(TrackEquivalents::iterator ie=m_equivalentTracks.begin(),ie_end=m_equivalentTracks.end(); ie!=ie_end; ++ie)  {
     int g4_equiv = (*ie).first;
     while( (ipar=m_particleMap.find(g4_equiv)) == m_particleMap.end() )  {
@@ -557,7 +563,7 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     TrackEquivalents::mapped_type equiv = (*ie).second;
     if ( ipar != m_particleMap.end() )   {
       Geant4ParticleHandle p = (*ipar).second;
-      equivalents[(*ie).first] = p->id;  // requires (1) to be filled properly!
+      new_ids.push_back(p->id);  // requires (1) to be filled properly!
       const G4ParticleDefinition* def = p.definition();
       int pdg = int(std::abs(def->GetPDGEncoding())+0.1);
       if ( pdg != 0 && pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
@@ -570,6 +576,16 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     }
     else   {
       error("+++ No Equivalent particle for track:%d last known is:%d",equiv,g4_equiv);
+      new_ids.push_back(no_equivalent);
+    }
+  }
+  std::size_t idx = 0;
+  for(auto ie = m_equivalentTracks.begin(); ie != m_equivalentTracks.end(); ++idx)  {
+    if ( new_ids[idx] == no_equivalent )
+      ie = m_equivalentTracks.erase(ie);
+    else  {
+      (*ie).second = new_ids[idx];
+      ++ie;
     }
   }
 
@@ -584,8 +600,8 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
   for( auto& part : finalParticles )  {
     auto& p = part.second;
     if ( p->g4Parent > 0 )  {
-      TrackEquivalents::iterator iequ = equivalents.find(p->g4Parent);
-      if ( iequ != equivalents.end() )  {
+      TrackEquivalents::iterator iequ = m_equivalentTracks.find(p->g4Parent);
+      if ( iequ != m_equivalentTracks.end() )  {
         equiv_id = (*iequ).second;//equivalents[p->g4Parent];
         if ( (ipar=finalParticles.find(equiv_id)) != finalParticles.end() )  {
           Particle* q = (*ipar).second;
@@ -635,7 +651,6 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     }
   }
 #endif
-  m_equivalentTracks = std::move(equivalents);
   m_particleMap = std::move(finalParticles);
 }
 
