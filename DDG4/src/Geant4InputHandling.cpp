@@ -551,11 +551,20 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
             for(Primaries::const_iterator j=relevant.begin(); j!= relevant.end(); ++j)  {
               Geant4ParticleHandle r = (*j).first;
               G4PrimaryParticle* p4 = (*j).second;
+              // A parent-less particle that Geant4 tracks itself (e.g. one decayed by the generator)
+              // starts at its own production point, not at the vertex where its products start.
+              G4PrimaryVertex* start_v4 = v4;
+              const G4ThreeVector start(r->vsx, r->vsy, r->vsz);
+              if ( r->id == p->id && (start != G4ThreeVector(v->x, v->y, v->z) || r->time != v->time)
+                   && insideWorldVolume(context->world(), start) )  {
+                start_v4 = new G4PrimaryVertex(start, r->time);
+                event->AddPrimaryVertex(start_v4);
+              }
               PropertyMask reason(r->reason);
               char text[64];
               
               reason.set(G4PARTICLE_PRIMARY);
-              v4->SetPrimary(p4);
+              start_v4->SetPrimary(p4);
               ::snprintf(text,sizeof(text),"-> G4Primary[%3d]",num_part);
               r.dumpWithMomentum(caller->outputLevel()-1,caller->name(),text);
               ++num_part;
