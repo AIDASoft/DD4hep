@@ -21,15 +21,41 @@
 #include <DD4hep/Detector.h>
 #include <DD4hep/World.h>
 
+/// C/C++ include files
 #include <atomic>
 #include <mutex>
 
 using namespace dd4hep;
     
 namespace {
+  /// Empty string to return empty string references
   static std::string s_empty_string;
+
   /// Protect the creation on first access of the nominal and survey alignments
-  static std::recursive_mutex s_alignment_lock;
+  static std::recursive_mutex s_detelement_lock;
+
+  static void make_path(DetElement::Object* o)  {
+    DetElement par = o->parent;
+    if ( par.isValid() )  {
+      // Ensure the lock is not taken when computing the parent's path
+      std::string path = par.path() + "/" + o->name;
+      std::lock_guard<std::recursive_mutex> lock(s_detelement_lock);
+      // Ensure that not someone else in the meantime resolver the path
+      if( o->path.empty() )  {
+        o->path = std::move(path);
+        if ( o->level < 0 ) o->level = par.level() + 1;
+        o->key = dd4hep::detail::hash32(o->path);
+      }
+      return;
+    }
+    std::lock_guard<std::recursive_mutex> lock(s_detelement_lock);
+    if( o->path.empty() )  { // Not that someone else in the meantime resolver the path
+      std::string path = "/" + o->name;
+      o->level = 0;
+      o->path = std::move(path);
+      o->key = dd4hep::detail::hash32(o->path);
+    }
+  }
 }
 
 /// Default constructor
@@ -89,9 +115,13 @@ void DetElement::removeAtUpdate(unsigned int typ, void* pointer)  const {
 /// Access to the full path to the placed object
 const std::string& DetElement::placementPath() const {
   Object* o = ptr();
-  if ( o ) {
-    if (o->placementPath.empty()) {
-      o->placementPath = detail::tools::placementPath(*this);
+  if( o ) {
+    if( o->placementPath.empty() ) {
+      std::lock_guard<std::recursive_mutex> lock(s_detelement_lock);
+      // Ensure that not someone else in the meantime resolver the path
+      if( o->placementPath.empty() ) {
+        o->placementPath = detail::tools::placementPath(*this);
+      }
     }
     return o->placementPath;
   }
@@ -118,21 +148,6 @@ unsigned int DetElement::typeFlag() const {
 DetElement& DetElement::setTypeFlag(unsigned int types) {
   access()->typeFlag = types ;
   return *this;
-}
-
-namespace {
-  static void make_path(DetElement::Object* o)   {
-    DetElement par = o->parent;
-    if ( par.isValid() )  {
-      o->path = par.path() + "/" + o->name;
-      if ( o->level < 0 ) o->level = par.level() + 1;
-    }
-    else {
-      o->path = "/" + o->name;
-      o->level = 0;
-    }
-    o->key = dd4hep::detail::hash32(o->path);
-  }
 }
 
 /// Access hash key of this detector element (Only valid once geometry is closed!)
@@ -198,7 +213,7 @@ Alignment DetElement::nominal() const   {
   // in multi-threaded applications (e.g. from the Geant4 worker threads): create it
   // only once and make it visible to the other threads only when it is complete.
   // The lock is recursive since computeIdeal accesses the nominal alignment of the parent
-  std::lock_guard<std::recursive_mutex> lock(s_alignment_lock);
+  std::lock_guard<std::recursive_mutex> lock(s_detelement_lock);
   if ( !o->nominal.isValid() )   {
     Alignment cond = AlignmentCondition("nominal");
     cond->values().detector = *this;
@@ -220,7 +235,7 @@ Alignment DetElement::survey() const  {
     return surv;
   }
   // Created on first access: same protection as for the nominal alignment
-  std::lock_guard<std::recursive_mutex> lock(s_alignment_lock);
+  std::lock_guard<std::recursive_mutex> lock(s_detelement_lock);
   if ( !o->survey.isValid() )   {
     Alignment cond = AlignmentCondition("survey");
     dd4hep::detail::tools::copy(nominal(), cond);
