@@ -23,6 +23,8 @@
 // C/C++ includes
 #include <set>
 #include <cmath>
+#include <mutex>
+#include <atomic>
 #include <sstream>
 #include <iomanip>
 #include <unordered_map>
@@ -436,8 +438,20 @@ VolumeManager::VolumeManager(DetElement sub_detector, Readout ro)  {
 }
 
 VolumeManager VolumeManager::getVolumeManager(const Detector& description) {
+  VolumeManager mgr = description.volumeManager();
+  if( mgr.isValid() ) {
+    std::atomic_thread_fence(std::memory_order_acquire);
+    return mgr;
+  }
+  // The volume manager may be requested for the first time concurrently in multi-threaded
+  // applications (e.g. by the segmentations in the Geant4 worker threads): make sure that it
+  // is created only once. The plugin always (re-)creates it, so it must be called only if needed.
+  // The lock is recursive in case the plugin itself asks for the volume manager.
+  static std::recursive_mutex s_lock;
+  std::lock_guard<std::recursive_mutex> lock(s_lock);
   if( not description.volumeManager().isValid() ) {
     description.apply("DD4hepVolumeManager", 0, 0);
+    std::atomic_thread_fence(std::memory_order_release);
   }
   return description.volumeManager();
 }

@@ -10,8 +10,8 @@
 //
 //  Author     : Markus Frank
 //==========================================================================
-#ifndef ALPHA_GEANT3_GEOMETRY_H
-#define ALPHA_GEANT3_GEOMETRY_H 1
+#ifndef DDG3_GEANT3_GEOMETRY_H
+#define DDG3_GEANT3_GEOMETRY_H 1
 
 /// DD4hep include files
 #include <DD4hep/Shapes.h>
@@ -277,4 +277,4 @@ namespace dd4hep   {
     virtual void handle_placements()  override;
   };   // End class geant3_geometry_imp
 }      // End namespace dd4hep
-#endif // ALPHA_GEANT3_GEOMETRY_H
+#endif // DDG3_GEANT3_GEOMETRY_H
