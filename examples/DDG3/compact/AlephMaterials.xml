@@ -1,0 +1,149 @@
+<!--
+//==========================================================================
+//  ALEPH software suite
+//==========================================================================
+//  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+//  All rights reserved.
+//
+//  For the licensing terms see OnlineSys/LICENSE.
+//
+//==========================================================================
+//
+//  Author     : Markus Frank
+//==========================================================================
+-->
+
+<lccdd>
+
+  <materials>
+    <material name="AIR">
+      <D type="density" unit="g/cm3" value="0.0012"/>
+      <fraction n="0.754" ref="N"/>
+      <fraction n="0.234" ref="O"/>
+      <fraction n="0.012" ref="Ar"/>
+    </material>
+  
+    <material name="Water">
+      <D type="density" unit="g/cm3" value="0.99984"/>
+      <composite n="1" ref="O"/>
+      <composite n="2" ref="H"/>
+    </material>
+
+    <material name="CO2">
+      <D type="density" unit="g/cm3" value="0.1562"/>
+      <composite n="1" ref="C"/>
+      <composite n="2" ref="O"/>
+    </material>
+
+    <material name="Methane">
+      <D type="density" unit="g/cm3" value="0.251"/>
+      <composite n="1" ref="C"/>
+      <composite n="4" ref="H"/>
+    </material>
+
+    <material name="Isobutane">
+      <D type="density" unit="g/cm3" value="0.251"/>
+      <composite n="4"  ref="C"/>
+      <composite n="10" ref="H"/>
+    </material>
+
+    <material name="Polyethylene">
+      <D type="density" unit="g/cm3" value="0.92"/>
+      <composite n="2" ref="C"/>
+      <composite n="4" ref="H"/>
+    </material>
+
+    <material name="Mylar">
+      <D type="density" unit="g/cm3" value="0.0012"/>
+      <fraction n="0.625" ref="C"/>
+      <fraction n="0.042" ref="H"/>
+      <fraction n="0.333" ref="O"/>
+    </material>
+
+    <!-- https://chemfyi.com/compound/kevlar/ -->
+    <material name="Kevlar">
+      <D type="density" value="1.440" unit="g/cm3"/>
+      <composite n="10" ref="H"/>
+      <composite n="14" ref="C"/>
+      <composite n="2"  ref="N"/>
+      <composite n="2"  ref="O"/>
+    </material>
+  
+    <material name="PVC">
+      <D type="density" unit="g/cm3" value="1.395"/>
+      <fraction n="0.048" ref="H"/>
+      <fraction n="0.384" ref="C"/>
+      <fraction n="0.568" ref="Cl"/>
+    </material>
+    
+
+    <material name="ITC_wires_&amp;_gas">
+      <D type="density" unit="g/cm3" value="0.003"/>
+      <fraction n="0.002" ref="Tungsten"/>
+      <fraction n="0.008" ref="Aluminum"/>
+      <fraction n="0.795" ref="Argon"/>
+      <fraction n="0.195" ref="CO2"/>
+    </material>
+
+    <material name="AverageSemiconductor">
+      <D type="density" unit="g/cm3" value="2.97"/>
+      <fraction n="0.8688" ref="Silicon"/>
+      <fraction n="0.1312" ref="Germanium"/>
+    </material>
+    
+    <material name="ITC_outer_wall">
+      <D type="density" unit="g/cm3" value="1.359"/>
+      <fraction n="0.0289" ref="Aluminum"/>
+      <fraction n="0.9711" ref="C"/>
+    </material>
+
+    <material name="ITC_inner_wall">
+      <D type="density" unit="g/cm3" value="1.989"/>
+      <fraction n="0.0467" ref="Aluminum"/>
+      <fraction n="0.9533" ref="C"/>
+    </material>
+
+    <material name="TPC_GAS_mixture_Ar/C">
+      <D type="density" unit="g/cm3" value="0.002"/>
+      <fraction n="0.91" ref="Argon"/>
+      <fraction n="0.09" ref="Methane"/>
+    </material>
+
+    <material name="TPC_Inner_cage_matte">
+      <D type="density" unit="g/cm3" value="0.002"/>
+      <fraction n="0.4099" ref="Aluminum"/>
+      <fraction n="0.5901" ref="C"/>
+    </material>
+
+    <material name="TPC_Outer_cage_matte">
+      <D type="density" unit="g/cm3" value="0.62000"/>
+      <fraction n="0.7271" ref="Aluminum"/>
+      <fraction n="0.2729" ref="C"/>
+    </material>
+
+    <material name="QUADR_TUBE_MATTER">
+      <D value="7.85" unit="g/cm3"/>
+      <fraction n="0.9" ref="Iron"/>
+      <fraction n="0.1" ref="Nickel"/>
+    </material>
+   
+    <material name="Beam_supp_disk">
+      <D value="0.5960" unit="g/cm3"/>
+      <fraction n="0.9060" ref="Aluminum"/>
+      <fraction n="0.0940" ref="Beryllium"/>
+    </material>
+   
+    <material name="INOX">
+      <D value="8" unit="g/cm3"/>
+      <fraction n="0.925" ref="Iron"/>
+      <fraction n="0.075" ref="Chromium"/>
+    </material>
+   
+    <material name="UNDEFINED_MATERIAL">
+      <D value="7.85" unit="g/cm3"/>
+      <fraction n="0.9" ref="Iron"/>
+      <fraction n="0.1" ref="Nickel"/>
+    </material>
+   
+  </materials>
+</lccdd>

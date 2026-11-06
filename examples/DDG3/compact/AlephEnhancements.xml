@@ -1,0 +1,94 @@
+<!--
+//==========================================================================
+//  ALEPH software suite
+//==========================================================================
+//  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+//  All rights reserved.
+//
+//  For the licensing terms see OnlineSys/LICENSE.
+//
+//==========================================================================
+//
+//  Author     : Markus Frank
+//==========================================================================
+-->
+<geant3_geometry_enhancements>
+
+  <debug>
+    <!--
+    <detector name="VDET"/>
+    <adetector name="TPC"/>
+    <adetector name="ECal"/>
+    <adetector name="HCal"/>
+    -->
+    <materials value="false"/>
+    <structure value="true"/>
+    <sensitive value="true"/>
+  </debug>
+
+  <materials>
+    <material name="VACUUM"                    value="Vacuum"/>
+    <material name="ALUMINIUM"                 value="Aluminum"/>
+    <material name="BERILLIUM"                 value="Beryllium"/>
+    <material name="COPPER"                    value="Copper"/>
+    <nmaterial name="INOX"                      value="Iron"/>
+    <material name="IRON"                      value="Iron"/>
+    <material name="LEAD"                      value="Lead"/>
+    <material name="QUARTZ"                    value="Quartz"/>
+    <material name="SILICON"                   value="Silicon"/>
+    <material name="TUNGSTEN"                  value="Tungsten"/>
+    <material name="WATER"                     value="Water"/>
+    <material name="G10_PC_BOARD"              value="G10"/>
+
+    <material name="VACUUM"                    value="Vacuum"/>
+    <material name="VACUUM_IN_PIPE_MED"        value="Vacuum"/>
+    <material name="BEAM_VACUUM__MED"          value="Vacuum"/>
+
+    <material name="ALU_PARTS____MED"          value="Aluminum"/>
+    <material name="TUNGSTEN_____MED"          value="Tungsten"/>
+
+    <material name="VDET_AIR"                  value="Air"/>
+    <material name="VDET_SILICON"              value="Silicon"/>
+    <material name="VDET_QUARTZ"               value="Quartz"/>
+    <material name="VDET_WATER"                value="Water"/>
+
+    <material name="TPC_Mylar_inner_sup"       value="Mylar"/>
+    <material name="TPC_Mylar_outer_sup"       value="Mylar"/>
+    <material name="TPC_MYLAR_MEMBRANE"        value="Mylar"/>
+    <material name="TPC_Rohacell_support"      value="Rohacell31"/>
+
+    <material name="SICAL_AIR"                 value="Air"/>
+    <material name="SCAL_G10"                  value="G10"/>
+    <material name="SCAL_SILICIUM"             value="Silicon"/>
+    <material name="SCAL_LEAD_TUBE"            value="Lead"/>
+    <material name="SCAL_AL_PLATE"             value="Aluminum"/>
+    <material name="SCAL_KAPTON"               value="Kapton"/>
+
+    <material name="LCAL_TUNGSTEN"             value="Tungsten"/>
+    <material name="LC_LEAD_SHIELD"            value="Lead"/>
+    <material name="LC_W_absorber"             value="Tungsten"/>
+
+    <material name="EC_BARREL_REGION"          value="Air"/>
+    <material name="EC_ENDCAP_REGION"          value="Air"/>
+    <material name="EC_BARREL_VOLUME"          value="Air"/>
+    <material name="EC_ALU_FRAMES"             value="Aluminum"/>
+
+    <material name="HCAL_CALO_VOLUME"          value="Air"/>
+    <material name="HADRON_BL__REGION"         value="Air"/>
+    <material name="HADRON_EC__REGION"         value="Air"/>
+    <material name="HCAL_IRON"                 value="Iron"/>
+    <material name="LAST_IRON_PLATE_MEDI"      value="Iron"/>
+
+    <material name="MUON_______REGION"         value="Air"/>
+
+    <material name="AIR_OUTSIDE_FIELD"         value="Air"/>
+    <material name="AIR_IN_NON_UNIFORM_B"      value="Air"/>
+    <material name="COIL_REGION"               value="Air"/>
+
+    <material name="KEVLAR"                    value="Kevlar"/>
+    <material name="Beam_supp_disk"            value="Beryllium"/>
+
+    <material name="GLASS_FIBER"                value="UNDEFINED_MATERIAL"/>
+  </materials>
+
+</geant3_geometry_enhancements>

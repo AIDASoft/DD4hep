@@ -8,6 +8,8 @@ void test_number_of_hits(TString sim_file_name="sim.root") {
   auto sim_file = new TFile(sim_file_name);
   auto t = (TTree*) sim_file->Get("EVENT");
   auto h = new TH1D("h","<hits>",500,0,1000);
+  // TTree::Project finds the histogram by name in the current directory.
+  h->SetDirectory(sim_file);
   t->Project("h","@PFRICHHits.size()");
   auto ave_hits = h->GetMean();
 

@@ -1,0 +1,213 @@
+<!--
+//==========================================================================
+//  ALEPH software suite
+//==========================================================================
+//  Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+//  All rights reserved.
+//
+//  For the licensing terms see OnlineSys/LICENSE.
+//
+//==========================================================================
+//
+//  Author     : Markus Frank
+//==========================================================================
+-->
+<lccdd>
+  <info name="aleph_from_geant3"
+        title="ALEPH Geometry import from Geant3"
+        author="Markus Frank"
+        url="https://alephwww.cern.ch"
+        status="development"
+        version="1.0">
+  </info>
+
+  <debug>
+    <type name="includes"      value="1"/>
+    <type name="constants"     value="0"/>
+    <type name="isotopes"      value="0"/>
+    <type name="elements"      value="0"/>
+    <type name="materials"     value="0"/>
+    <type name="readouts"      value="1"/>
+    <type name="limits"        value="1"/>
+    <type name="segmentations" value="1"/>
+    <type name="surfaces"      value="0"/>
+    <type name="detelements"   value="1"/>
+  </debug>
+
+  <define>
+    <constant name="world_size"              value="20*m"/>
+    <constant name="world_x"                 value="world_size"/>
+    <constant name="world_y"                 value="world_size"/>
+    <constant name="world_z"                 value="world_size"/>
+  </define>
+
+  <includes>
+    <file ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <file ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+    <file ref="AlephConstants.xml"/>
+    <file ref="AlephMaterials.xml"/>
+    <file ref="AlephVis.xml"/>
+    <!-- This include requires a special plugin  -->
+    <file ref="AlephEnhancements.xml"/>
+  </includes>
+
+  <detectors>
+    <detector id="1000" name="ALEPH" type="DD4hep_Geant3Detector" volume="ALEF" vis="Vis_ALEPH"/>
+    <detector name="CDET" id="1001" type="DD4hep_DetectorStructure" debug="0"
+              parent="/world" placement="/world_volume_1/ALEF_1/CDET_1"/>
+
+    <detector name="VDET" id="1" type="DD4hep_DetectorStructure"
+              debug="0"
+              parent="/world"
+              placement="/world_volume_1/ALEF_1/CDET_1/VDET_1"
+              sensitive="tracker"
+              readout="VDET"
+              region="VDET"
+              limits="VDET">
+      <daughter name="ladder" volume="VFSI" physvolid="ladder" region="VDET" limits="VDET">
+        <daughter name="side" volume="VMSI" physvolid="side" region="VDET" limits="VDET">
+          <daughter name="module" volume="VSWA" physvolid="module" region="VDET" limits="VDET">
+            <daughter name="sensor" volume="VWSS" physvolid="sensor" region="VDET" limits="VDET" sensitive="true"/>
+          </daughter>
+        </daughter>
+      </daughter>
+    </detector>
+
+    <detector name="ITC"        id="3"   type="DD4hep_DetectorStructure" debug="0"
+              parent="world" volume="ITCR" sensitive="tracker"  readout="ITC">
+      <daughter name="Gas" volume="ITC" physvolid="sensitive" region="ITC" limits="ITC"/>
+    </detector>
+
+    <detector name="TPC"        id="2"   type="DD4hep_DetectorStructure" debug="0"
+              parent="world"  volume="TPCR" sensitive="tracker" readout="TPC">
+      <daughter name="Side" volume="TPHF" physvolid="side" region="TPC" limits="TPC" sensitive="true"/>
+    </detector>
+
+    <detector name="ECAL"       id="4"   type="DD4hep_DetectorStructure" debug="0"
+              parent="world" volume="ALEF" sensitive="calorimeter" readout="ECAL">
+      <daughter name="component" physvolid="component" volume="EC(EA|EB|BL)" region="calorimeters" limits="calorimeters">
+        <daughter name="module" volume="E(BAR|CMA|CMB)" physvolid="module">
+          <daughter name="stack1" volume="E(B|C)S." physvolid="stack" sensitive="true"/>
+        </daughter>
+      </daughter>
+    </detector>
+
+    <detector name="HCAL" id="7"   type="DD4hep_DetectorStructure" debug="0"
+              parent="world" volume="ALEF" sensitive="calorimeter" readout="HCAL">
+      <daughter name="component" physvolid="component" volume="HC(EA|EB|BL)" region="calorimeters" limits="calorimeters">
+        <daughter name="module" volume="H(BAR|CMA|CMB)" physvolid="module">
+          <daughter name="stack" volume="H(B|C)MO" physvolid="stack">
+            <daughter name="layer" volume="H(B|C)L." physvolid="layer" sensitive="true"/>
+          </daughter>
+        </daughter>
+      </daughter>
+    </detector>
+
+    <detector name="MUON"       id="10"  type="DD4hep_DetectorStructure" debug="0"
+              parent="world" volume="MUON" sensitive="tracker"     readout="MUON">
+      <daughter name="component" volume="(HBAR|MUBO|MUE.)" physvolid="component">
+        <daughter name="layer" volume="(HBAR|MMI.|MMO.)" physvolid="layer" region="calorimeters" limits="calorimeters">
+          <daughter name="chamber" volume="MU(B.|M.|C.)" physvolid="chamber" sensitive="true"/>
+        </daughter>
+      </daughter>
+    </detector>
+    
+    <detector name="SiCAL"      id="20"  type="DD4hep_DetectorStructure" debug="0"
+              parent="world" volume="ALEF" sensitive="calorimeter" readout="SCAL">
+      <daughter name="component" volume="ECE.">
+        <daughter name="module" volume="SMOD" physvolid="module">
+          <daughter name="sector" volume="SKAP" physvolid="sector">
+            <daughter name="sensor" volume="SSIL" physvolid="sensor" sensitive="true"/>
+          </daughter>
+        </daughter> 
+      </daughter>
+   </detector>
+
+    <detector name="LCAL"       id="21"  type="DD4hep_DetectorStructure" debug="0"
+              parent="world" volume="ALEF" sensitive="calorimeter" readout="LCAL">
+      <daughter name="component" volume="ECE.">
+        <daughter name="module" volume="LCMO" physvolid="module">
+          <daughter name="stack" volume="LC(12|S3)" physvolid="stack">
+            <daughter name="sensor" volume="LCSG" physvolid="layer" sensitive="true"/>
+          </daughter>
+        </daughter>
+      </daughter>
+    </detector>
+              
+    <detector name="BeamTube"   id="100" type="DD4hep_DetectorStructure" debug="0" parent="world" volume="BTUB"/>
+
+  </detectors>
+
+  <regions>
+    <region name="VDET" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="VDET"/>
+    </region>
+    <region name="ITC" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="ITC"/>
+    </region>
+    <region name="TPC" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="TPC"/>
+    </region>
+    <region name="calorimeters" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="calorimeters"/>
+    </region>
+  </regions>
+
+  <readouts>
+    <readout name="VDET">
+      <id>system:8,side:2,ladder:6,module:8,sensor:8,strip:32</id>
+    </readout>
+    <readout name="ITC">
+      <id>system:8,z:12,phi:12,wire:30</id>
+    </readout>
+    <readout name="TPC">
+      <id>system:8,side:2,sector:5,padrow:5,pad:12,wire:32</id>
+    </readout>
+    <readout name="ECAL">
+      <id>system:8,component:2,module:5,stack:3,layer:4</id>
+    </readout>
+    <readout name="HCAL">
+      <id>system:8,component:2,module:5,stack:3,layer:4,tube:8,z:8</id>
+    </readout>
+    <readout name="MUON">
+      <id>system:8,component:2,layer:6,chamber:6,x:16,y:16</id>
+    </readout>
+    <readout name="SCAL">
+      <id>system:8,component:2,module:4,sector:5,sensor:2</id>
+    </readout>
+    <readout name="LCAL">
+      <id>system:8,component:2,module:4,stack:4,layer:5</id>
+    </readout>
+  </readouts>
+
+  <limits>
+    <limitset name="VDET">
+      <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
+    </limitset>
+    <limitset name="ITC">
+      <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
+    </limitset>
+    <limitset name="TPC">
+      <limit name="step_length_max" particles="*" value="5" unit="mm" />
+      <limit name="ekin_min"  particles="*" value="0.01" unit="MeV" />
+      <limit name="range_min" particles="*" value="5.0" unit="mm" />
+    </limitset>
+    <limitset name="calorimeters">
+      <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
+    </limitset>
+  </limits>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="1.5*tesla"
+	   outer_field="-0.5*tesla"
+	   zmax="365.4*cm"
+	   outer_radius="(248+297.3)/2.0*cm">
+    </field>
+  </fields>
+
+  <plugins>
+    <include ref="AlephReadout.xml"/>
+  </plugins>
+
+</lccdd>

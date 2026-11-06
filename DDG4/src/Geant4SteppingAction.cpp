@@ -106,7 +106,7 @@ void Geant4SteppingActionSequence::updateContext(Geant4Context* ctxt)    {
 
 /// Get an action by name
 Geant4SteppingAction* Geant4SteppingActionSequence::get(const std::string& nam) const   {
-  return m_actors.get(FindByName(TypeName::split(nam).second));
+  return m_actors.get(FindByName(nam));
 }
 
 /// Pre-track action callback

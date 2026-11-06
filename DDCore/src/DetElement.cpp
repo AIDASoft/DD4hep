@@ -21,10 +21,41 @@
 #include <DD4hep/Detector.h>
 #include <DD4hep/World.h>
 
+/// C/C++ include files
+#include <atomic>
+#include <mutex>
+
 using namespace dd4hep;
     
 namespace {
+  /// Empty string to return empty string references
   static std::string s_empty_string;
+
+  /// Protect the creation on first access of the nominal and survey alignments
+  static std::recursive_mutex s_detelement_lock;
+
+  static void make_path(DetElement::Object* o)  {
+    DetElement par = o->parent;
+    if ( par.isValid() )  {
+      // Ensure the lock is not taken when computing the parent's path
+      std::string path = par.path() + "/" + o->name;
+      std::lock_guard<std::recursive_mutex> lock(s_detelement_lock);
+      // Ensure that not someone else in the meantime resolver the path
+      if( o->path.empty() )  {
+        o->path = std::move(path);
+        if ( o->level < 0 ) o->level = par.level() + 1;
+        o->key = dd4hep::detail::hash32(o->path);
+      }
+      return;
+    }
+    std::lock_guard<std::recursive_mutex> lock(s_detelement_lock);
+    if( o->path.empty() )  { // Not that someone else in the meantime resolver the path
+      std::string path = "/" + o->name;
+      o->level = 0;
+      o->path = std::move(path);
+      o->key = dd4hep::detail::hash32(o->path);
+    }
+  }
 }
 
 /// Default constructor
@@ -84,9 +115,13 @@ void DetElement::removeAtUpdate(unsigned int typ, void* pointer)  const {
 /// Access to the full path to the placed object
 const std::string& DetElement::placementPath() const {
   Object* o = ptr();
-  if ( o ) {
-    if (o->placementPath.empty()) {
-      o->placementPath = detail::tools::placementPath(*this);
+  if( o ) {
+    if( o->placementPath.empty() ) {
+      std::lock_guard<std::recursive_mutex> lock(s_detelement_lock);
+      // Ensure that not someone else in the meantime resolver the path
+      if( o->placementPath.empty() ) {
+        o->placementPath = detail::tools::placementPath(*this);
+      }
     }
     return o->placementPath;
   }
@@ -113,21 +148,6 @@ unsigned int DetElement::typeFlag() const {
 DetElement& DetElement::setTypeFlag(unsigned int types) {
   access()->typeFlag = types ;
   return *this;
-}
-
-namespace {
-  static void make_path(DetElement::Object* o)   {
-    DetElement par = o->parent;
-    if ( par.isValid() )  {
-      o->path = par.path() + "/" + o->name;
-      if ( o->level < 0 ) o->level = par.level() + 1;
-    }
-    else {
-      o->path = "/" + o->name;
-      o->level = 0;
-    }
-    o->key = dd4hep::detail::hash32(o->path);
-  }
 }
 
 /// Access hash key of this detector element (Only valid once geometry is closed!)
@@ -184,12 +204,24 @@ DetElement& DetElement::setCombineHits(bool value, SensitiveDetector& sens) {
 /// Access to the alignment information
 Alignment DetElement::nominal() const   {
   Object* o = access();
+  Alignment nom = o->nominal;
+  if ( nom.isValid() )   {
+    std::atomic_thread_fence(std::memory_order_acquire);
+    return nom;
+  }
+  // The nominal alignment is created on first access, which may happen concurrently
+  // in multi-threaded applications (e.g. from the Geant4 worker threads): create it
+  // only once and make it visible to the other threads only when it is complete.
+  // The lock is recursive since computeIdeal accesses the nominal alignment of the parent
+  std::lock_guard<std::recursive_mutex> lock(s_detelement_lock);
   if ( !o->nominal.isValid() )   {
-    o->nominal = AlignmentCondition("nominal");
-    o->nominal->values().detector = *this;
+    Alignment cond = AlignmentCondition("nominal");
+    cond->values().detector = *this;
     //o->flag |= Object::HAVE_WORLD_TRAFO;
     //o->flag |= Object::HAVE_PARENT_TRAFO;
-    dd4hep::detail::tools::computeIdeal(o->nominal);
+    dd4hep::detail::tools::computeIdeal(cond);
+    std::atomic_thread_fence(std::memory_order_release);
+    o->nominal = cond;
   }
   return o->nominal;
 }
@@ -197,9 +229,18 @@ Alignment DetElement::nominal() const   {
 /// Access to the survey alignment information
 Alignment DetElement::survey() const  {
   Object* o = access();
+  Alignment surv = o->survey;
+  if ( surv.isValid() )   {
+    std::atomic_thread_fence(std::memory_order_acquire);
+    return surv;
+  }
+  // Created on first access: same protection as for the nominal alignment
+  std::lock_guard<std::recursive_mutex> lock(s_detelement_lock);
   if ( !o->survey.isValid() )   {
-    o->survey = AlignmentCondition("survey");
-    dd4hep::detail::tools::copy(nominal(), o->survey);
+    Alignment cond = AlignmentCondition("survey");
+    dd4hep::detail::tools::copy(nominal(), cond);
+    std::atomic_thread_fence(std::memory_order_release);
+    o->survey = cond;
   }
   return o->survey;
 }

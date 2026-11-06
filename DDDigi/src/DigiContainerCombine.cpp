@@ -19,6 +19,7 @@
 #include <DDDigi/DigiContainerCombine.h>
 
 /// C/C++ include files
+#include <atomic>
 #include <set>
 
 using namespace dd4hep::digi;
@@ -37,12 +38,12 @@ public:
   const DigiContainerCombine* combine;
   /// Printout format string
   char        format[128];
-  /// Local counters
-  std::size_t cnt_conts    = 0;
-  std::size_t cnt_depos    = 0;
-  std::size_t cnt_parts    = 0;
-  std::size_t cnt_hist     = 0;
-  std::size_t cnt_response = 0;
+  /// Local counters shared by parallel workers
+  std::atomic<std::size_t> cnt_conts    { 0 };
+  std::atomic<std::size_t> cnt_depos    { 0 };
+  std::atomic<std::size_t> cnt_parts    { 0 };
+  std::atomic<std::size_t> cnt_hist     { 0 };
+  std::atomic<std::size_t> cnt_response { 0 };
   /// Work definition
   std::vector<Key>            keys;
   std::vector<std::any*>      work;
@@ -54,11 +55,11 @@ public:
   DigiEvent&                  event;
   DataSegment&                inputs;
   DataSegment&                outputs;
-  std::mutex&                 used_keys_lock;
+  std::mutex                  used_keys_lock;
 
   /// Initializing constructor
-  work_definition_t(const DigiContainerCombine* c, DigiEvent& ev, DataSegment& in, DataSegment& out, std::mutex& used_lock)
-    : combine(c), event(ev), inputs(in), outputs(out), used_keys_lock(used_lock)
+  work_definition_t(const DigiContainerCombine* c, DigiEvent& ev, DataSegment& in, DataSegment& out)
+    : combine(c), event(ev), inputs(in), outputs(out)
   {
     keys.reserve(inputs.size());
     work.reserve(inputs.size());
@@ -278,15 +279,6 @@ void DigiContainerCombine::initialize()    {
     m_output_name_flag += '/';
 }
 
-/// Initializing function: compute values which depend on properties
-void DigiContainerCombine::have_workers(size_t count)  const   {
-  if ( m_workers.size() < count )   {
-    auto group = m_workers.get_group(); // Lock worker group
-    for(size_t i=m_workers.size(); i <= count; ++i)
-      m_workers.insert(new Worker(nullptr, i));
-  }
-}
-
 /// Decide if a container is to merged based on the properties
 bool DigiContainerCombine::use_key(Key key)  const   {
   const auto& m = m_input_masks;
@@ -307,10 +299,13 @@ std::size_t DigiContainerCombine::combine_containers(DigiContext& context,
                                                      DataSegment& inputs,
                                                      DataSegment& outputs)  const
 {
-  work_definition_t def(this, event, inputs, outputs, m_used_keys_lock);
-  if ( m_parallel )  {
-    have_workers(def.items.size());
-    m_kernel.submit(context, m_workers.get_group(), def.items.size(), &def);
+  work_definition_t def(this, event, inputs, outputs);
+  if ( m_parallel && !def.items.empty() )  {
+    // Each event owns its workers: concurrent events must not resize a shared array.
+    Workers workers;
+    for( std::size_t i = 0; i < def.items.size(); ++i )
+      workers.insert(new Worker(nullptr, i));
+    m_kernel.submit(context, workers.get_group(), def.items.size(), &def);
   }
   else  {
     def.merge_all();
@@ -318,9 +313,9 @@ std::size_t DigiContainerCombine::combine_containers(DigiContext& context,
   if ( m_erase_combined )   {
     inputs.erase(def.used_keys);
   }
-  info("%s+++ Merged %ld particles and %ld deposits from segment '%s' to segment '%s'",
-       event.id(), def.cnt_parts, def.cnt_depos, m_input.c_str(), m_output.c_str());
-  return def.cnt_depos;
+  info("%s+++ Merged %zu particles and %zu deposits from segment '%s' to segment '%s'",
+       event.id(), def.cnt_parts.load(), def.cnt_depos.load(), m_input.c_str(), m_output.c_str());
+  return def.cnt_depos.load();
 }
 
 /// Main functional callback
