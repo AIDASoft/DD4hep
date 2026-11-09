@@ -88,13 +88,14 @@ void Geant4DetectorSensitivesConstruction::constructSensitives(Geant4DetectorCon
   const Geant4Kernel& kernel = context()->kernel();
   const auto&         types  = kernel.sensitiveDetectorTypes();
   const std::string&  dflt   = kernel.defaultSensitiveDetectorType();
-  for( const auto& iv : p->sensitives )  {
-    SensitiveDetector sd = iv.first;
+  // Create sensitive detectors in a reproducible order: the order of creation
+  // defines the hit collection IDs and hence the order of the output collections.
+  for( SensitiveDetector sd : p->sensitivesByCreationOrder )  {
     std::string nam  = sd.name();
     auto        iter = types.find(nam);
     std::string typ  = (iter != types.end()) ? (*iter).second : dflt;
     G4VSensitiveDetector* g4sd = this->createSensitiveDetector(typ, nam);
-    for( const TGeoVolume* vol : iv.second )  {
+    for( const TGeoVolume* vol : p->sensitives[sd] )  {
       G4LogicalVolume* g4v = p->g4Volumes[vol];
       if( !g4v )  {
         except("ConstructSDandField: Failed to access G4LogicalVolume for SD %s of type %s.",
