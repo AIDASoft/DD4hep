@@ -19,6 +19,7 @@
 
 // C/C++ include files
 #include <vector>
+#include <mutex>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -181,6 +182,12 @@ namespace dd4hep {
     /// Axis-aligned bounding box in world coordinates
     double aabb_min[3]       { 0, 0, 0 };
     double aabb_max[3]       { 0, 0, 0 };
+    /// Call-once flag for lazy initialization
+    mutable std::once_flag   init_once { };
+
+    /// Initialize internal cache and pre-computations (called via call_once)
+    void initialize();
+
   public:
     /// Initializing constructor
     MultipoleField();
