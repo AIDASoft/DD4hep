@@ -106,52 +106,55 @@ MultipoleField::MultipoleField()   {
   field_type = CartesianField::MAGNETIC;
 }
 
-/// Compute  the field components at a given location and add to given field
-void MultipoleField::fieldComponents(const double* pos, double* field) {
-  if ( 0 == flag )   {
-    constexpr static double eps = 1e-10;
-    double xx, xy, xz, dx, yx, yy, yz, dy, zx, zy, zz, dz;
-    transform.GetComponents(xx, xy, xz, dx, yx, yy, yz, dy, zx, zy, zz, dz);
-    flag |= FIELD_INITIALIZED;
-    if ( (xx + yy + zz) < (3e0 - eps) )   {
-      flag |= FIELD_ROTATION_ONLY;
-    }
-    else  {
-      flag |= FIELD_POSITION_ONLY;
-      if ( (std::abs(dx) + std::abs(dy) + std::abs(dz)) < eps )
-        flag |= FIELD_IDENTITY;
-    }
-    this->inverse  = this->transform.Inverse();
-    this->transform.GetRotation(this->rotation);
-    this->transform.GetTranslation(this->translation);
-    if ( volume.isValid() )   {
-      // Obtain the bounding box from the shape. TGeoBBox is the base class
-      // for most shapes, but not all.
-      TGeoShape* shape = volume.ptr();
-      auto* bbox = dynamic_cast<TGeoBBox*>(shape);
-      if ( bbox )  {
-        bbox->ComputeBBox();
-        const double* orig = bbox->GetOrigin();
-        double bdx = bbox->GetDX();
-        double bdy = bbox->GetDY();
-        double bdz = bbox->GetDZ();
-        // Transform the local bbox center to world frame
-        Transform3D::Point world_center =
-          this->transform * Transform3D::Point(orig[0], orig[1], orig[2]);
-        // World half-extents via rotation-matrix abs-sum formula (OBB -> AABB)
-        double hx = std::abs(xx)*bdx + std::abs(xy)*bdy + std::abs(xz)*bdz;
-        double hy = std::abs(yx)*bdx + std::abs(yy)*bdy + std::abs(yz)*bdz;
-        double hz = std::abs(zx)*bdx + std::abs(zy)*bdy + std::abs(zz)*bdz;
-        this->aabb_min[0] = world_center.X() - hx;
-        this->aabb_max[0] = world_center.X() + hx;
-        this->aabb_min[1] = world_center.Y() - hy;
-        this->aabb_max[1] = world_center.Y() + hy;
-        this->aabb_min[2] = world_center.Z() - hz;
-        this->aabb_max[2] = world_center.Z() + hz;
-        flag |= FIELD_HAS_AABB;
-      }
+/// Initialize internal cache and pre-computations
+void MultipoleField::initialize() {
+  constexpr static double eps = 1e-10;
+  double xx, xy, xz, dx, yx, yy, yz, dy, zx, zy, zz, dz;
+  transform.GetComponents(xx, xy, xz, dx, yx, yy, yz, dy, zx, zy, zz, dz);
+  flag |= FIELD_INITIALIZED;
+  if ( (xx + yy + zz) < (3e0 - eps) )   {
+    flag |= FIELD_ROTATION_ONLY;
+  }
+  else  {
+    flag |= FIELD_POSITION_ONLY;
+    if ( (std::abs(dx) + std::abs(dy) + std::abs(dz)) < eps )
+      flag |= FIELD_IDENTITY;
+  }
+  this->inverse  = this->transform.Inverse();
+  this->transform.GetRotation(this->rotation);
+  this->transform.GetTranslation(this->translation);
+  if ( volume.isValid() )   {
+    // Obtain the bounding box from the shape. TGeoBBox is the base class
+    // for most shapes, but not all.
+    TGeoShape* shape = volume.ptr();
+    auto* bbox = dynamic_cast<TGeoBBox*>(shape);
+    if ( bbox )  {
+      bbox->ComputeBBox();
+      const double* orig = bbox->GetOrigin();
+      double bdx = bbox->GetDX();
+      double bdy = bbox->GetDY();
+      double bdz = bbox->GetDZ();
+      // Transform the local bbox center to world frame
+      Transform3D::Point world_center =
+        this->transform * Transform3D::Point(orig[0], orig[1], orig[2]);
+      // World half-extents via rotation-matrix abs-sum formula (OBB -> AABB)
+      double hx = std::abs(xx)*bdx + std::abs(xy)*bdy + std::abs(xz)*bdz;
+      double hy = std::abs(yx)*bdx + std::abs(yy)*bdy + std::abs(yz)*bdz;
+      double hz = std::abs(zx)*bdx + std::abs(zy)*bdy + std::abs(zz)*bdz;
+      this->aabb_min[0] = world_center.X() - hx;
+      this->aabb_max[0] = world_center.X() + hx;
+      this->aabb_min[1] = world_center.Y() - hy;
+      this->aabb_max[1] = world_center.Y() + hy;
+      this->aabb_min[2] = world_center.Z() - hz;
+      this->aabb_max[2] = world_center.Z() + hz;
+      flag |= FIELD_HAS_AABB;
     }
   }
+}
+
+/// Compute  the field components at a given location and add to given field
+void MultipoleField::fieldComponents(const double* pos, double* field) {
+  std::call_once(init_once, &MultipoleField::initialize, this);
   // AABB pre-filter: reject positions outside the world-frame bounding box
   if ( (flag&FIELD_HAS_AABB) &&
        (pos[0] < aabb_min[0] || pos[0] > aabb_max[0] ||
