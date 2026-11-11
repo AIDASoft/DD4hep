@@ -709,7 +709,9 @@ endfunction(dd4hep_add_plugin)
 # Macro to set up ROOT:: targets so that we can use the same code for root 6.8 and for root 6.10 and beyond
 # This is called in dd4hep, and in DD4hepConfig
 #
-# With PYTHON_INTERPRETER_ONLY, only the Python interpreter is looked for, not the
+#  Arguments
+#  ---------
+#  PYTHON_INTERPRETER_ONLY: only the Python interpreter is looked for, not the
 # development components (which run python-config several times on every call)
 #
 macro(DD4HEP_SETUP_ROOT_TARGETS)
