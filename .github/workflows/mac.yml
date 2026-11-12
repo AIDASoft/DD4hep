@@ -43,7 +43,7 @@ jobs:
           LCG: "dev4/arm64-mac15-clang170-opt"
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-    - uses: cvmfs-contrib/github-action-cvmfs@af7372aa6001a26a7f16157181de31485bb8add0
+    - uses: cvmfs-contrib/github-action-cvmfs@bbbf3dbec6e6cea8f95fd9e1b5ff31e23bf33b8e
       with:
         cvmfs_repositories: sft.cern.ch,sft-nightlies.cern.ch,geant4.cern.ch
     - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
