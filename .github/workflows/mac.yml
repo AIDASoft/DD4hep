@@ -108,19 +108,39 @@ jobs:
             . ../bin/thisCLICSiD.sh
             . ../bin/thisLHeD.sh
             ex=${DD4hepExamplesINSTALL}/examples
-            for macro in "${GITHUB_WORKSPACE}/examples/DDG4/examples/run.C(\"${ex}/CLICSiD/scripts/CLICSiDXML\")" \
-                         "${ex}/LHeD/scripts/run.C(\"${ex}/LHeD/scripts/LHeDXML\")"; do
-              echo "=== ${macro}"
-              DYLD_PRINT_LIBRARIES=1 root.exe -b -x -n -q -l "${macro}" > aclic_diag.log 2>&1 || true
-              echo "--- DD4hep / macro images loaded, in load order:"
-              grep -E "dyld\[[0-9]+\]: .*(libDD|_C\.so)" aclic_diag.log || true
-              echo "--- duplicate dictionary registrations: $(grep -c 'already in TClassTable' aclic_diag.log)"
-              grep -E "unknown variable|non existent registry" aclic_diag.log || true
+            ours=${GITHUB_WORKSPACE}/examples/lib:${GITHUB_WORKSPACE}/lib
+            ld_orig=${LD_LIBRARY_PATH}
+            # ACLiC reuses existing *_C.so, which may already be linked to the wrong DD4hep
+            clean_aclic() {
+              setopt local_options null_glob
+              rm -f ${ex}/CLICSiD/scripts/CLICSiDXML_C[._]* ${ex}/LHeD/scripts/LHeDXML_C[._]* \
+                    ${ex}/LHeD/scripts/initAClick_C[._]* ${GITHUB_WORKSPACE}/examples/DDG4/examples/initAClick_C[._]*
+            }
+            # baseline: as the tests run; ours_in_ld: our lib dirs prepended to LD_LIBRARY_PATH;
+            # no_view_in_ld: LCG view dirs dropped from LD_LIBRARY_PATH
+            for variant in baseline ours_in_ld no_view_in_ld; do
+              case ${variant} in
+                baseline)      export LD_LIBRARY_PATH=${ld_orig} ;;
+                ours_in_ld)    export LD_LIBRARY_PATH=${ours}:${ld_orig} ;;
+                no_view_in_ld) export LD_LIBRARY_PATH=$(echo ${ld_orig} | tr ':' '\n' | grep -v '/lcg/views/' | paste -s -d: -) ;;
+              esac
+              echo "################ variant: ${variant}"
+              echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+              clean_aclic
+              for macro in "${GITHUB_WORKSPACE}/examples/DDG4/examples/run.C(\"${ex}/CLICSiD/scripts/CLICSiDXML\")" \
+                           "${ex}/LHeD/scripts/run.C(\"${ex}/LHeD/scripts/LHeDXML\")"; do
+                echo "=== [${variant}] ${macro}"
+                DYLD_PRINT_LIBRARIES=1 root.exe -b -x -n -q -l "${macro}" > aclic_diag.log 2>&1 || true
+                echo "--- DD4hep / macro images loaded, in load order:"
+                grep -E "dyld\[[0-9]+\]: <.*(libDD|_C\.so)" aclic_diag.log || true
+                echo "--- duplicate dictionary registrations: $(grep -c 'already in TClassTable' aclic_diag.log)"
+                grep -E "unknown variable|non existent registry|end.event_id=2" aclic_diag.log || true
+              done
+              for so in ${ex}/CLICSiD/scripts/CLICSiDXML_C.so ${ex}/LHeD/scripts/LHeDXML_C.so; do
+                echo "--- [${variant}] otool -L ${so}"; otool -L ${so} | grep -E "libDD" || true
+              done
             done
-            for so in ${ex}/CLICSiD/scripts/CLICSiDXML_C.so ${ex}/LHeD/scripts/LHeDXML_C.so; do
-              echo "--- otool -L ${so}"; otool -L ${so} || true
-              echo "--- LC_RPATH ${so}"; otool -l ${so} | grep -A2 LC_RPATH || true
-            done
+            clean_aclic
           ) || true
           echo "::endgroup::"
           echo "::group::TestExamples"
