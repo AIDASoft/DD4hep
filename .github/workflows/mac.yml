@@ -51,6 +51,8 @@ jobs:
         release-platform: ${{ matrix.LCG }}
         ccache-key: ccache-${{ matrix.LCG }}
         run: |
+          source .github/scripts/select_macos_sdk.sh
+          clang --version
           mkdir build
           cd build
           unset CPATH
