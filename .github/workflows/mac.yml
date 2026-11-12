@@ -100,6 +100,29 @@ jobs:
           ninja install
           ccache -s
           echo "::endgroup::"
+          # Diagnose duplicate libDDCore loads in ACLiC tests. Call root.exe directly:
+          # SIP strips DYLD_* when the bash test wrappers start.
+          echo "::group::DiagnoseACLiC"
+          (
+            export DD4hepExamplesINSTALL=${GITHUB_WORKSPACE}/examples
+            . ../bin/thisCLICSiD.sh
+            . ../bin/thisLHeD.sh
+            ex=${DD4hepExamplesINSTALL}/examples
+            for macro in "${GITHUB_WORKSPACE}/examples/DDG4/examples/run.C(\"${ex}/CLICSiD/scripts/CLICSiDXML\")" \
+                         "${ex}/LHeD/scripts/run.C(\"${ex}/LHeD/scripts/LHeDXML\")"; do
+              echo "=== ${macro}"
+              DYLD_PRINT_LIBRARIES=1 root.exe -b -x -n -q -l "${macro}" > aclic_diag.log 2>&1 || true
+              echo "--- DD4hep / macro images loaded, in load order:"
+              grep -E "dyld\[[0-9]+\]: .*(libDD|_C\.so)" aclic_diag.log || true
+              echo "--- duplicate dictionary registrations: $(grep -c 'already in TClassTable' aclic_diag.log)"
+              grep -E "unknown variable|non existent registry" aclic_diag.log || true
+            done
+            for so in ${ex}/CLICSiD/scripts/CLICSiDXML_C.so ${ex}/LHeD/scripts/LHeDXML_C.so; do
+              echo "--- otool -L ${so}"; otool -L ${so} || true
+              echo "--- LC_RPATH ${so}"; otool -l ${so} | grep -A2 LC_RPATH || true
+            done
+          ) || true
+          echo "::endgroup::"
           echo "::group::TestExamples"
           ctest --output-on-failure -j"$(getconf _NPROCESSORS_ONLN)" --output-junit TestResults_2.xml
           echo "::endgroup::"
