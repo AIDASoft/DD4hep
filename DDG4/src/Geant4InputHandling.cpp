@@ -31,9 +31,11 @@
 #include <G4VSolid.hh>
 
 // C/C++ include files
-#include <stdexcept>
-#include <limits>
+#include <array>
 #include <cmath>
+#include <limits>
+#include <map>
+#include <stdexcept>
 
 using namespace dd4hep::sim;
 using PropertyMask = dd4hep::detail::ReferenceBitMask<int>;
@@ -549,6 +551,7 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
                 if ( primaryConfig.m_skipParticlesOutsideWorldVolume )   {
                   caller->warning("+++ Dropping primary vertex at (%+.2e,%+.2e,%+.2e) [mm]: outside the world volume",
                                   r->vsx/CLHEP::mm, r->vsy/CLHEP::mm, r->vsz/CLHEP::mm);
+                  delete p4;
                   continue;
                 }
                 caller->except("Primary vertex at (%+.2e,%+.2e,%+.2e) [mm] is outside the world volume. "
@@ -557,7 +560,6 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
                                r->vsx/CLHEP::mm, r->vsy/CLHEP::mm, r->vsz/CLHEP::mm);
               }
               G4PrimaryVertex*& v4 = starts[start];
-              std::cout << "V4 is here: " << v4  << std::endl;
               if ( !v4 )  {
                 caller->print("+++++ G4PrimaryVertex at (%+.2e,%+.2e,%+.2e) [mm] %+.2e [ns]",
                               r->vsx/CLHEP::mm, r->vsy/CLHEP::mm, r->vsz/CLHEP::mm, r->time/CLHEP::ns);
@@ -572,11 +574,11 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
             }
           }
         }
-        if(caller->outputLevel() <= VERBOSE){
-          for (auto const& v4: starts) {
-            v4.second->Print();
-          }
-        }
+      }
+    }
+    if(caller->outputLevel() <= VERBOSE){
+      for (auto const& v4: starts) {
+        v4.second->Print();
       }
     }
     for( const auto& vtx : prim )   {
