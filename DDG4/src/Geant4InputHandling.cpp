@@ -521,25 +521,12 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
   }
   else   {
     Geant4PrimaryInteraction::VertexMap::iterator ivfnd, iv, ivend;
+    // One G4PrimaryVertex per start point and time, shared by all relevant primaries starting there
+    std::map<std::array<double,4>, G4PrimaryVertex*> starts;
     for(Interaction::VertexMap::const_iterator iend=vm.end(),i=vm.begin(); i!=iend; ++i)  {
       for( Geant4Vertex* v : (*i).second ){
 
         int num_part = 0;
-        if ( !insideWorldVolume(context->world(), G4ThreeVector(v->x, v->y, v->z)) )   {
-          if ( primaryConfig.m_skipParticlesOutsideWorldVolume )   {
-            caller->warning("+++ Dropping primary vertex at (%+.2e,%+.2e,%+.2e) [mm]: outside the world volume",
-                            v->x/CLHEP::mm, v->y/CLHEP::mm, v->z/CLHEP::mm);
-            continue;
-          }
-          caller->except("Primary vertex at (%+.2e,%+.2e,%+.2e) [mm] is outside the world volume. "
-                         "Geant4 cannot track particles starting there. Enlarge the world volume, or set "
-                         "SkipParticlesOutsideWorldVolume=True to drop such vertices instead.",
-                         v->x/CLHEP::mm, v->y/CLHEP::mm, v->z/CLHEP::mm);
-        }
-        G4PrimaryVertex* v4 = new G4PrimaryVertex(v->x,v->y,v->z,v->time);
-        event->AddPrimaryVertex(v4);
-        caller->print("+++++ G4PrimaryVertex at (%+.2e,%+.2e,%+.2e) [mm] %+.2e [ns]",
-                      v->x/CLHEP::mm,v->y/CLHEP::mm,v->z/CLHEP::mm,v->time/CLHEP::ns);
         for(Geant4Vertex::Particles::const_iterator ip=v->out.begin(); ip!=v->out.end(); ++ip)  {
           Geant4ParticleHandle p = pm[*ip];
           if ( p->daughters.size() > 0 )  {
@@ -555,6 +542,29 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
               char text[64];
               
               reason.set(G4PARTICLE_PRIMARY);
+              // Every primary starts at its own production point and time
+              // we benefit from the selection of actual particles in getRelevant
+              std::array<double,4> start{r->vsx, r->vsy, r->vsz, r->time};
+              if ( !insideWorldVolume(context->world(), G4ThreeVector(r->vsx, r->vsy, r->vsz)) )   {
+                if ( primaryConfig.m_skipParticlesOutsideWorldVolume )   {
+                  caller->warning("+++ Dropping primary vertex at (%+.2e,%+.2e,%+.2e) [mm]: outside the world volume",
+                                  r->vsx/CLHEP::mm, r->vsy/CLHEP::mm, r->vsz/CLHEP::mm);
+                  continue;
+                }
+                caller->except("Primary vertex at (%+.2e,%+.2e,%+.2e) [mm] is outside the world volume. "
+                               "Geant4 cannot track particles starting there. Enlarge the world volume, or set "
+                               "SkipParticlesOutsideWorldVolume=True to drop such vertices instead.",
+                               r->vsx/CLHEP::mm, r->vsy/CLHEP::mm, r->vsz/CLHEP::mm);
+              }
+              G4PrimaryVertex*& v4 = starts[start];
+              std::cout << "V4 is here: " << v4  << std::endl;
+              if ( !v4 )  {
+                caller->print("+++++ G4PrimaryVertex at (%+.2e,%+.2e,%+.2e) [mm] %+.2e [ns]",
+                              r->vsx/CLHEP::mm, r->vsy/CLHEP::mm, r->vsz/CLHEP::mm, r->time/CLHEP::ns);
+
+                v4 = new G4PrimaryVertex(start[0], start[1], start[2], start[3]);
+                event->AddPrimaryVertex(v4);
+              }
               v4->SetPrimary(p4);
               ::snprintf(text,sizeof(text),"-> G4Primary[%3d]",num_part);
               r.dumpWithMomentum(caller->outputLevel()-1,caller->name(),text);
@@ -563,7 +573,9 @@ int dd4hep::sim::generatePrimaries(const Geant4Action* caller,
           }
         }
         if(caller->outputLevel() <= VERBOSE){
-          v4->Print();
+          for (auto const& v4: starts) {
+            v4.second->Print();
+          }
         }
       }
     }
