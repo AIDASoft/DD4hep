@@ -49,7 +49,7 @@ jobs:
       DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-    - uses: cvmfs-contrib/github-action-cvmfs@bbbf3dbec6e6cea8f95fd9e1b5ff31e23bf33b8e
+    - uses: cvmfs-contrib/github-action-cvmfs@8961275e6afff1d4728dc99db034d6dc01800ccc
       with:
         cvmfs_repositories: sft.cern.ch,sft-nightlies.cern.ch,geant4.cern.ch
     - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
