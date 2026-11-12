@@ -104,13 +104,43 @@ namespace dd4hep {
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#if defined(__APPLE__)
+#include <cstdlib>
+#include <cstring>
+#include <mach/mach.h>
+#endif
 
 using namespace dd4hep::sim;
 
 DECLARE_GEANT4ACTION(Geant4DetectorConstructionResources)
 
 namespace  {
-  
+
+#if defined(__APPLE__)
+
+  /// macOS has no /proc: fill what the Mach task info provides, leave the rest zero
+  int read_info(Geant4DetectorConstructionResources::StatusProcess& proc, int proc_id) {
+    mach_task_basic_info_data_t info;
+    mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
+    if ( KERN_SUCCESS != ::task_info(::mach_task_self(), MACH_TASK_BASIC_INFO,
+                                     reinterpret_cast<task_info_t>(&info), &count) )  {
+      return 0;
+    }
+    ::strncpy(proc.comm, ::getprogname(), sizeof(proc.comm) - 1);
+    proc.state  = 'R';
+    proc.pid    = proc_id;
+    proc.tgid   = proc_id;
+    proc.ppid   = ::getppid();
+    proc.uid    = ::getuid();
+    proc.gid    = ::getgid();
+    proc.vmSize = info.virtual_size      / 1024;
+    proc.vmRSS  = info.resident_size     / 1024;
+    proc.vmHWM  = info.resident_size_max / 1024;
+    return 1;
+  }
+
+#else // Linux
+
   class SysFile  {
   public:
     class FileDescriptor    {
@@ -228,7 +258,10 @@ namespace  {
     }
     return 0;
   }
-}
+
+#endif
+
+} // namespace
 
 /// Initializing constructor for other clients
 Geant4DetectorConstructionResources::Geant4DetectorConstructionResources(Geant4Context* ctxt, const std::string& nam)
