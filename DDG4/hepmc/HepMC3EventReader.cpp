@@ -137,20 +137,11 @@ HEPMC3EventReader::readParticles(int event_number, Vertices& vertices, Particles
       Geant4Vertex* vtx = new Geant4Vertex ;
       vertices.emplace_back( vtx );
 
-      if(mcp->end_vertex()) {
-        vtx->x    = vex.get_component(0) * len_unit;
-        vtx->y    = vex.get_component(1) * len_unit;
-        vtx->z    = vex.get_component(2) * len_unit;
-        vtx->time = vex.get_component(3) * len_unit / CLHEP::c_light;
-      } else {
-        //If we don't have an endVertex, can we assume we are in the particle gun Situation? What if we have
-        //pre-assigned decays for the particle gun for particles that don't start at 0? What do these files even look
-        //like then? Do these files even exist?
-        vtx->x    = vsx.get_component(0) * len_unit;
-        vtx->y    = vsx.get_component(1) * len_unit;
-        vtx->z    = vsx.get_component(2) * len_unit;
-        vtx->time = vsx.get_component(3) * len_unit / CLHEP::c_light;
-      }
+      vtx->x    = vex.get_component(0) * len_unit;
+      vtx->y    = vex.get_component(1) * len_unit;
+      vtx->z    = vex.get_component(2) * len_unit;
+      vtx->time = vex.get_component(3) * len_unit / CLHEP::c_light;
+
       vtx->out.insert(p->id) ;
     }
 
