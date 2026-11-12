@@ -34,13 +34,19 @@ jobs:
       matrix:
         include:
         - os: macos-26
+          xcode: "26.0.1"
           LCG: "LCG_110/arm64-mac26-clang170-opt"
         - os: macos-15
+          xcode: "16.4"
           LCG: "LCG_110/arm64-mac15-clang170-opt"
         - os: macos-15
+          xcode: "16.4"
           LCG: "dev3/arm64-mac15-clang170-opt"
         - os: macos-15
+          xcode: "16.4"
           LCG: "dev4/arm64-mac15-clang170-opt"
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
     - uses: cvmfs-contrib/github-action-cvmfs@bbbf3dbec6e6cea8f95fd9e1b5ff31e23bf33b8e
@@ -51,6 +57,7 @@ jobs:
         release-platform: ${{ matrix.LCG }}
         ccache-key: ccache-${{ matrix.LCG }}
         run: |
+          clang --version
           mkdir build
           cd build
           unset CPATH
