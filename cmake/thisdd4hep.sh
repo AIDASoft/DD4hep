@@ -47,9 +47,8 @@ dd4hep_add_library_path()    {
         [[ "$p" = "/usr/lib" || "$p" = "/usr/local/lib" ]] && return
         dd4hep_add_path DYLD_LIBRARY_PATH     "$p"
         dd4hep_add_path DD4HEP_LIBRARY_PATH   "$p"
-    else
-        dd4hep_add_path LD_LIBRARY_PATH       "$p"
     fi
+    dd4hep_add_path LD_LIBRARY_PATH       "$p"
     dd4hep_add_path ROOT_LIBRARY_PATH "$p"
 }
 #-----------------------------------------------------------------------------
