@@ -90,4 +90,9 @@ else:
 #
 #
 logger.info('+++ Execution finished...')
+# Delete the geometry while ROOT's statics are alive: at exit, ROOT deletes it
+# after TGeoManager's static mutex is gone, which aborts on macOS once the
+# checker has used threads.
+dd4hep.Detector.destroyInstance()
+gROOT.GetListOfGeometries().Delete()
 sys.exit(0)
