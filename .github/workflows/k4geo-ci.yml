@@ -16,7 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/key4hep/key4hep-images/alma9-cvmfs
-      options: --privileged
+      # Below the runner's 16 GB: an out-of-memory kill then hits a test
+      # inside the container instead of the runner agent, which loses the job.
+      options: --privileged --memory=14g --memory-swap=14g
       volumes:
         - /home/runner/.cache/ccache:/root/.cache/ccache
     defaults:
@@ -107,6 +109,15 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Test k4geo"
+          # The IDEA simulations need several GB each, and four of them at
+          # once exhaust the runner. Count each as two slots, so at most
+          # nproc/2 run concurrently while light tests fill the other slots.
+          heavy=$(ctest --test-dir k4geo/build -N -R '^test_IDEA_' \
+                  | sed -n 's/^ *Test *#[0-9]*: //p' | tr '\n' ' ')
+          if [ -n "$heavy" ]; then
+            echo "set_tests_properties($heavy PROPERTIES PROCESSORS 2)" \
+              >> k4geo/build/test/CTestTestfile.cmake
+          fi
           ctest --test-dir k4geo/build --parallel "$(nproc)" \
             --output-on-failure --no-tests=error
           echo "::endgroup::"
@@ -114,6 +125,12 @@ jobs:
           echo "::group::ccache statistics"
           ccache -s
           echo "::endgroup::"
+
+      - name: Peak memory
+        if: ${{ !cancelled() }}
+        run: |
+          echo "container peak: $(( $(cat /sys/fs/cgroup/memory.peak) >> 20 )) MiB"
+          grep -E '^oom_kill ' /sys/fs/cgroup/memory.events || true
 
       - name: Upload k4geo CTest logs
         if: ${{ !cancelled() }}
