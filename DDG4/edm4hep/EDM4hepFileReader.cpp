@@ -332,14 +332,9 @@ namespace dd4hep::sim {
 
         Geant4Vertex* vtx = new Geant4Vertex ;
         vertices.emplace_back( vtx );
-        // A parent-less particle with daughters is a beam particle whose end vertex is
-        // the interaction point; use that as the primary vertex position.
-        // A parent-less particle without daughters (e.g. beam background) has no end
-        // vertex, so fall back to its production vertex.
-        const bool hasDaughters = !p->daughters.empty();
-        vtx->x = hasDaughters ? p->vex : p->vsx;
-        vtx->y = hasDaughters ? p->vey : p->vsy;
-        vtx->z = hasDaughters ? p->vez : p->vsz;
+        vtx->x = p->vsx;
+        vtx->y = p->vsy;
+        vtx->z = p->vsz;
         vtx->time = p->time;
 
         vtx->out.insert(p->id) ;
