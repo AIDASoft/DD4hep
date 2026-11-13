@@ -907,8 +907,11 @@ void* Geant4Converter::collectVolume(const std::string& /* name */, const TGeoVo
       info.limits[lim].insert(volume);
     if ( reg.isValid() )
       info.regions[reg].insert(volume);
-    if ( det.isValid() )
-      info.sensitives[det].insert(volume);
+    if ( det.isValid() )   {
+      auto [isd, inserted] = info.sensitives.try_emplace(det);
+      if ( inserted ) info.sensitivesByCreationOrder.push_back(det);
+      isd->second.insert(volume);
+    }
   }
   return (void*)volume;
 }
@@ -1797,7 +1800,8 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   //==================== Fields
   handleProperties(m_detDesc.properties());
   if ( printSensitives )  {
-    handleMap(this, geo.sensitives, &Geant4Converter::printSensitive);
+    for ( const auto& sd : geo.sensitivesByCreationOrder )
+      printSensitive(sd, geo.sensitives[sd]);
   }
   if ( printPlacements )  {
     handleRMap(this, *m_data, &Geant4Converter::printPlacement);

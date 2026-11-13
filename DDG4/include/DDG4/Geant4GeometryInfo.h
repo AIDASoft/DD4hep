@@ -133,6 +133,9 @@ namespace dd4hep {
       std::map<LimitSet,         G4UserLimits*>                g4Limits;
       std::map<uint64_t,         Placement>                    g4Paths;
       std::map<SensitiveDetector,std::set<const TGeoVolume*> > sensitives;
+      /// Sensitive detectors in order of first appearance during geometry conversion.
+      /// The map above is ordered by pointer value, which is not reproducible between processes.
+      std::vector<SensitiveDetector>                           sensitivesByCreationOrder;
       std::map<Region,           std::set<const TGeoVolume*> > regions;
       std::map<LimitSet,         std::set<const TGeoVolume*> > limits;
       G4VPhysicalVolume*                                       m_world;
