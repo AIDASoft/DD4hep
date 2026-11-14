@@ -26,3 +26,133 @@ jobs:
         cd build
         cmake -GNinja -DDD4HEP_USE_GEANT4=OFF -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=OFF -DBUILD_TESTING=ON -DDD4HEP_USE_XERCESC=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17 -DDD4HEP_RELAX_PYVER=ON ..
         ninja
+
+  default:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - os: macos-26
+          LCG: "LCG_110/arm64-mac26-clang170-opt"
+        - os: macos-15
+          LCG: "LCG_110/arm64-mac15-clang170-opt"
+        - os: macos-15
+          LCG: "dev3/arm64-mac15-clang170-opt"
+        - os: macos-15
+          LCG: "dev4/arm64-mac15-clang170-opt"
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+    - uses: cvmfs-contrib/github-action-cvmfs@6d6f483b3625214f88977d62575b69a55d21828e
+      with:
+        cvmfs_repositories: sft.cern.ch,sft-nightlies.cern.ch,geant4.cern.ch
+    - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
+      with:
+        release-platform: ${{ matrix.LCG }}
+        ccache-key: ccache-${{ matrix.LCG }}
+        run: |
+          # TEMPORARY: select an Xcode SDK matching LCG's ROOT module map (see script)
+          source .github/scripts/select_macos_sdk.sh
+          clang --version
+          mkdir build
+          cd build
+          unset CPATH
+          # Common CMake options
+          source ../.github/scripts/common_cmake_opts.sh
+          echo "::group::CMakeConfig C++20"
+          cmake \
+            $=COMMON_CMAKE_OPTS \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_STANDARD=20 \
+            ..
+          echo "::endgroup::"
+          if [[ ${{ matrix.LCG }} =~ dev[34] ]]; then
+            echo "::group::CMakeConfig 2"
+            cmake \
+              -DDD4HEP_HEPMC3_COMPRESSION_SUPPORT=ON \
+              -DDD4HEP_USE_G4HEPEM=ON \
+              ..
+            echo "::endgroup::"
+          fi
+          echo "::group::Compile"
+          ninja install
+          ccache -s
+          echo "::endgroup::"
+          echo "::group::Test"
+          . ../bin/thisdd4hep.sh
+          ctest --output-on-failure -j"$(getconf _NPROCESSORS_ONLN)" --output-junit TestResults_1.xml
+          echo "::endgroup::"
+          echo "::group::CMakeExamples"
+          cd ../examples/
+          mkdir build
+          cd build
+          source ../../.github/scripts/common_cmake_opts.sh
+          cmake \
+            $=COMMON_EXAMPLES_CMAKE_OPTS \
+            -DCMAKE_CXX_STANDARD=20 \
+            ..
+          echo "::endgroup::"
+          echo "::group::CompileExamples"
+          ninja install
+          ccache -s
+          echo "::endgroup::"
+          # Diagnose duplicate libDDCore loads in ACLiC tests. Call root.exe directly:
+          # SIP strips DYLD_* when the bash test wrappers start.
+          echo "::group::DiagnoseACLiC"
+          (
+            export DD4hepExamplesINSTALL=${GITHUB_WORKSPACE}/examples
+            . ../bin/thisCLICSiD.sh
+            . ../bin/thisLHeD.sh
+            ex=${DD4hepExamplesINSTALL}/examples
+            ours=${GITHUB_WORKSPACE}/examples/lib:${GITHUB_WORKSPACE}/lib
+            ld_orig=${LD_LIBRARY_PATH}
+            # ACLiC reuses existing *_C.so, which may already be linked to the wrong DD4hep
+            clean_aclic() {
+              setopt local_options null_glob
+              rm -f ${ex}/CLICSiD/scripts/CLICSiDXML_C[._]* ${ex}/LHeD/scripts/LHeDXML_C[._]* \
+                    ${ex}/LHeD/scripts/initAClick_C[._]* ${GITHUB_WORKSPACE}/examples/DDG4/examples/initAClick_C[._]*
+            }
+            # baseline: as the tests run; ours_in_ld: our lib dirs prepended to LD_LIBRARY_PATH;
+            # no_view_in_ld: LCG view dirs dropped from LD_LIBRARY_PATH
+            for variant in baseline ours_in_ld no_view_in_ld; do
+              case ${variant} in
+                baseline)      export LD_LIBRARY_PATH=${ld_orig} ;;
+                ours_in_ld)    export LD_LIBRARY_PATH=${ours}:${ld_orig} ;;
+                no_view_in_ld) export LD_LIBRARY_PATH=$(echo ${ld_orig} | tr ':' '\n' | grep -v '/lcg/views/' | paste -s -d: -) ;;
+              esac
+              echo "################ variant: ${variant}"
+              echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+              clean_aclic
+              for macro in "${GITHUB_WORKSPACE}/examples/DDG4/examples/run.C(\"${ex}/CLICSiD/scripts/CLICSiDXML\")" \
+                           "${ex}/LHeD/scripts/run.C(\"${ex}/LHeD/scripts/LHeDXML\")"; do
+                echo "=== [${variant}] ${macro}"
+                DYLD_PRINT_LIBRARIES=1 root.exe -b -x -n -q -l "${macro}" > aclic_diag.log 2>&1 || true
+                echo "--- DD4hep / macro images loaded, in load order:"
+                grep -E "dyld\[[0-9]+\]: <.*(libDD|_C\.so)" aclic_diag.log || true
+                echo "--- duplicate dictionary registrations: $(grep -c 'already in TClassTable' aclic_diag.log)"
+                grep -E "unknown variable|non existent registry|end.event_id=2" aclic_diag.log || true
+              done
+              for so in ${ex}/CLICSiD/scripts/CLICSiDXML_C.so ${ex}/LHeD/scripts/LHeDXML_C.so; do
+                echo "--- [${variant}] otool -L ${so}"; otool -L ${so} | grep -E "libDD" || true
+              done
+            done
+            clean_aclic
+          ) || true
+          echo "::endgroup::"
+          echo "::group::TestExamples"
+          ctest --output-on-failure -j"$(getconf _NPROCESSORS_ONLN)" --output-junit TestResults_2.xml
+          echo "::endgroup::"
+    - name: Prepare Artifact Name
+      if: success() || failure()
+      run: |
+          artifact_name="${{ matrix.LCG }}"
+          artifact_name=$(echo -n "${artifact_name}" | sed -e 's@/@@g')
+          echo "ARTIFACT_NAME=${artifact_name}" >> $GITHUB_ENV
+    - name: Upload test results
+      if: success() || failure()
+      uses: actions/upload-artifact@v7
+      with:
+        name: Test Results ${{ env.ARTIFACT_NAME }}
+        path: |
+           ${{ github.workspace }}/build/TestResults_1.xml
+           ${{ github.workspace }}/examples/build/TestResults_2.xml
