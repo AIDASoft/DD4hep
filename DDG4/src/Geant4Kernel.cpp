@@ -565,17 +565,18 @@ Geant4ActionPhase* Geant4Kernel::addPhase(const std::string& nam,
   return nullptr;
 }
 
-/// Remove an existing phase from the phase. If not existing returns false
+/// Remove an existing phase and release the kernel's reference to it. If not existing returns false
 bool Geant4Kernel::removePhase(const std::string& nam) {
   if( auto i=m_phases.find(nam); i != m_phases.end() )   {
-    delete (*i).second;
+    (*i).second->release();
     m_phases.erase(i);
     return true;
   }
   return false;
 }
 
-/// Destroy all phases. To be called only at shutdown
+/// Release the kernel's reference to all phases. To be called only at shutdown
 void Geant4Kernel::destroyPhases() {
-  detail::destroyObjects(m_phases);
+  // A phase still held by a handle is deleted when the handle releases it
+  detail::releaseObjects(m_phases);
 }
