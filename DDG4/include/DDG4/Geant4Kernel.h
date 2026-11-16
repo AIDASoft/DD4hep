@@ -318,9 +318,11 @@ namespace dd4hep {
       Geant4ActionPhase* addPhase(const std::string& name, bool throw_on_exist = true) {
         return addPhase(name, typeid(A0), typeid(A1), typeid(A2), throw_on_exist);
       }
-      /// Remove an existing phase from the phase. If not existing returns false
+      /// Remove an existing phase and release the kernel's reference to it. If not existing returns false.
+      /// The phase is deleted once no handle holds it.
       virtual bool removePhase(const std::string& name);
-      /// Destroy all phases. To be called only at shutdown.
+      /// Release the kernel's reference to all phases; a phase is deleted once no handle holds it.
+      /// To be called only at shutdown.
       virtual void destroyPhases();
 
       /// Execute phase action if it exists
