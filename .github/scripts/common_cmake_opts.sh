@@ -12,7 +12,7 @@ export COMMON_CMAKE_OPTS="-GNinja \
   -DBUILD_TESTING=ON \
   -DDD4HEP_DEBUG_CMAKE=ON \
   -DDD4HEP_USE_XERCESC=ON \
-  -DCMAKE_CXX_FLAGS=\"-fdiagnostics-color=always\" \
+  -DCMAKE_CXX_FLAGS='-fdiagnostics-color=always' \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
 
 # Common CMake options for building examples
