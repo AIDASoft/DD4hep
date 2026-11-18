@@ -204,8 +204,9 @@ namespace  {
       Geant4TouchableHandler::Geant4PlacementPath path;
       Registries::const_iterator i = m_entries.find(code);
 
-      printout(print_action,"Geant4VolumeManager","+++ Add path:%s vid:%016X",
-               detail::tools::placementPath(nodes, false).c_str(), code);
+      if ( isActivePrintLevel(print_action) )
+        printout(print_action,"Geant4VolumeManager","+++ Add path:%s vid:%016X",
+                 detail::tools::placementPath(nodes, false).c_str(), code);
 
       if( i == m_entries.end() ) {
         path.reserve(nodes.size());
@@ -234,9 +235,10 @@ namespace  {
               const auto& c = imp.first;
               if ( c.size() <= control.size() && control == c )  {
                 path.emplace_back(imp.second);
-                printout(print_chain, "Geant4VolumeManager", "+++     Chain: Node OK: %s %s -> %s",
-                         node->GetName(), detail::tools::placementPath(c,false).c_str(),
-                         imp.second->GetName().c_str());
+                if ( isActivePrintLevel(print_chain) )
+                  printout(print_chain, "Geant4VolumeManager", "+++     Chain: Node OK: %s %s -> %s",
+                           node->GetName(), detail::tools::placementPath(c,false).c_str(),
+                           imp.second->GetName().c_str());
                 control.clear();
                 break;
               }
@@ -244,11 +246,13 @@ namespace  {
           }
         }
         if ( control.empty() )  {
-          printout(print_res, "Geant4VolumeManager", "+++     Encoded Volume  IDs:%s",
-                   detail::tools::toString(iddesc,ids,code).c_str());
           path.erase(path.begin()+path.size()-1);
-          printout(print_res, "Geant4VolumeManager", "+++     Map %016X to Geant4 Path:%s",
-                   (void*)code, Geant4TouchableHandler::placementPath(path).c_str());
+          if ( isActivePrintLevel(print_res) )  {
+            printout(print_res, "Geant4VolumeManager", "+++     Encoded Volume  IDs:%s",
+                     detail::tools::toString(iddesc,ids,code).c_str());
+            printout(print_res, "Geant4VolumeManager", "+++     Map %016X to Geant4 Path:%s",
+                     (void*)code, Geant4TouchableHandler::placementPath(path).c_str());
+          }
           auto hash = detail::hash64(&path[0], path.size()*sizeof(path[0]));
           bool missing_hash_path = m_geo.g4Paths.find(hash) == m_geo.g4Paths.end();
 #ifdef VOLMGR_HAVE_DEBUG_INFO
