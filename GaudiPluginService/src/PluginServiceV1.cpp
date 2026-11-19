@@ -155,8 +155,14 @@ namespace Gaudi {
           const char* envVar = "LD_LIBRARY_PATH";
           const char  sep    = ':';
 #endif
-          char* search_path = ::getenv( envVar );
-          logger().debug( std::string( "searching factories in " ) + envVar );
+          char* search_path = ::getenv( "DD4HEP_LIBRARY_PATH" );
+          if ( !search_path ) {
+            // Fall back to system-specific library path
+            search_path = ::getenv( envVar );
+            if ( search_path ) logger().debug( std::string( "searching factories in " ) + envVar );
+          } else {
+            logger().debug( "searching factories in DD4HEP_LIBRARY_PATH" );
+          }
           std::string path = search_path ? std::string(search_path) : "/usr/lib64:/usr/lib:/usr/local/lib";
           std::string::size_type pos    = 0;
           std::string::size_type newpos = 0;
