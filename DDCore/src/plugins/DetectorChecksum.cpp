@@ -37,6 +37,7 @@
 #include <iomanip>
 #include <cfloat>
 #include <cfenv>
+#include <cstdio>
 
 using namespace dd4hep;
 using DetectorChecksum = dd4hep::detail::DetectorChecksum;
@@ -52,6 +53,14 @@ namespace {
       return 0e0;
     else
       return d;
+  }
+  /// Format a hash value as hex integer, independent of the C++ standard library. Do not stream
+  /// it as (void*): pointer output is implementation-defined (zero prints as "0" with libstdc++,
+  /// "0x0" with some libc++). "%#llx" prefixes "0x" to non-zero values only.
+  std::string hash_str(DetectorChecksum::hash_t hash)   {
+    char text[32];
+    std::snprintf(text, sizeof(text), "%#llx", static_cast<unsigned long long>(hash));
+    return text;
   }
   template <typename O, typename C, typename F> void handle(const O* o, const C& c, F pmf) {
     for (typename C::const_iterator i = c.begin(); i != c.end(); ++i) {
@@ -570,11 +579,11 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSolid(Solid solid) cons
       log << "<" << str_oper << nam
           << " lunit=\"" << m_len_unit_nam << "\""
           << " aunit=\"" << m_ang_unit_nam << "\">" << newline
-          << " <first ref=\"" << (void*)ent_left.hash << "\""  << ">" << newline
+          << " <first ref=\"" << hash_str(ent_left.hash) << "\""  << ">" << newline
           << "  " << ent_pos_left.hash << newline
           << "  " << ent_rot_left.hash << newline
           << " </first>" << newline
-          << " <second ref=\"" << (void*)ent_right.hash << "\"" << ">" << newline
+          << " <second ref=\"" << hash_str(ent_right.hash) << "\"" << ">" << newline
           << "  " << ent_pos_right.hash << newline
           << "  " << ent_rot_right.hash << newline
           << " </second>" << newline
@@ -828,7 +837,7 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleVolume(Volume volume) c
       tag = "assembly";
       log << "<" << tag << nam
           << " solid=\""         << refName(sh)           << "\""
-          << " solid_hash=\""    << (void*)solid_ent.hash << "\"";
+          << " solid_hash=\""    << hash_str(solid_ent.hash) << "\"";
     }
     else {
       TGeoMedium*   med = v->GetMedium();
@@ -839,7 +848,7 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleVolume(Volume volume) c
       log << "<" << tag << nam
           << " material=\""      << refName(med)          << "\""
           << " solid=\""         << refName(sh)           << "\""
-          << " solid_hash=\""    << (void*)solid_ent.hash << "\"";
+          << " solid_hash=\""    << hash_str(solid_ent.hash) << "\"";
     }
     collectVolume(volume);
     auto reg = volume.region();
@@ -860,7 +869,7 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleVolume(Volume volume) c
       for (Int_t i = 0, n_dau = dau->GetEntries(); i < n_dau; ++i) {
         TGeoNode* node = reinterpret_cast<TGeoNode*>(dau->At(i));
         const auto& ent = handlePlacement(node);
-        log << " <physvol name=\"" << refName(node) << " hash=\"" << (void*)ent.hash << "\"/>" << newline;
+        log << " <physvol name=\"" << refName(node) << " hash=\"" << hash_str(ent.hash) << "\"/>" << newline;
       }
       log << "</" << tag << ">";
     }
@@ -887,7 +896,7 @@ const DetectorChecksum::entry_t& DetectorChecksum::handlePlacement(PlacedVolume 
     std::stringstream  log = logger();
     log << "<physvol" << attr_name(node)
         << " volume=\"" << refName(volume) << "\"";
-    log << " volume_hash=\"" << (void*)vol_ent.hash << "\"";
+    log << " volume_hash=\"" << hash_str(vol_ent.hash) << "\"";
     log << ">" << newline;
     if ( matrix )   {
       log << " " << handlePosition(matrix).hash << newline;
@@ -923,10 +932,10 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleDetElement(DetElement d
         << " id=\""            << det.id()          << "\""
         << " type=\""          << det.type()        << "\""
         << " key=\""           << det.key()         << "\""
-        << " parent=\""        << (void*)par.hash   << "\""
+        << " parent=\""        << hash_str(par.hash)   << "\""
         << " flag=\""          << det.typeFlag()    << "\""
         << " combineHits=\""   << det.combineHits() << "\""
-        << " placement=\""     << (void*)place.hash << "\""
+        << " placement=\""     << hash_str(place.hash) << "\""
         << "/>";
     dit = geo.emplace(det, make_entry(log)).first;
   }
@@ -950,9 +959,9 @@ const DetectorChecksum::entry_t& DetectorChecksum::handleSensitive(SensitiveDete
       Readout ro = sd.readout();
       if ( ro.isValid() ) {
         const auto& ro_ent = handleIdSpec(ro.idSpec());
-        log << " iddescriptor=\"" << (void*)ro_ent.hash            << "\"";
+        log << " iddescriptor=\"" << hash_str(ro_ent.hash)            << "\"";
         const auto& seg_ent = handleSegmentation(ro.segmentation());
-        log << " segmentation=\"" << (void*)seg_ent.hash           << "\"";
+        log << " segmentation=\"" << hash_str(seg_ent.hash)           << "\"";
       }
       log << "/>";
       isi = geo.emplace(sd, make_entry(log)).first;
@@ -1123,7 +1132,7 @@ void DetectorChecksum::hash_debug(const std::string& prefix, const entry_t& ent,
       debug_hash << std::setw(16) << std::left << prefix << "." << ent.data << std::endl;
       return;
     }
-    debug_hash << std::setw(16) << std::left << (prefix+".hash64:  ") << (void*)ent.hash << std::endl;
+    debug_hash << std::setw(16) << std::left << (prefix+".hash64:  ") << hash_str(ent.hash) << std::endl;
     if ( debug > 3 )    {
       debug_hash << std::setw(16) << std::left << prefix << ": |" << ent.data << "|" << std::endl;
     }
