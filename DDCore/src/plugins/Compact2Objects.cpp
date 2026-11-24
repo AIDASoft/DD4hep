@@ -1715,6 +1715,20 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   bool build_reflections = false;
   xml_dim_t world = element.child(_U(world), false);
 
+  /// Top-level tags not in this list would be silently ignored, so fail instead
+  static const std::set<std::string> known_tags = {
+    "debug", "geometry", "world", "define", "std_conditions", "includes", "info",
+    "properties", "surfaces", "materials", "display", "limits", "regions",
+    "readouts", "detectors", "include", "fields", "sensitive_detectors",
+    "parallelworld_volume", "plugins", "comment" };
+  for (xml_coll_t c(compact, _U(star)); c; ++c) {
+    std::string tag = c.tag();
+    if (known_tags.find(tag) == known_tags.end()) {
+      except("Compact", "++ FAILED    Unknown top-level tag <%s> in %s. It is not a valid compact tag "
+             "and would be ignored. Did you forget to wrap it in its parent tag (e.g. <fields>, <detectors>)?",
+             tag.c_str(), compact.document().uri().c_str());
+    }
+  }
 
   if (element.hasChild(_U(debug)))
     (Converter<Debug>(description))(xml_h(compact.child(_U(debug))));
