@@ -38,6 +38,13 @@ namespace dd4hep {
      *  We are using jenkins_hash from an intial seed, runID and eventID
      *  see http://burtleburtle.net/bob/hash/evahash.html
      *
+     *  The seed is set twice per event: before the generation of the primary particles, and at the
+     *  beginning of the event (after the generation, to use the event and run numbers read by file-based
+     *  generators). The two seeds are different, so that the random numbers used by the generators (e.g.
+     *  the kinematics of the particle gun, vertex smearing) are not used again in the simulation of the
+     *  event, which would correlate the simulated showers with the generated kinematics.
+     *  The seed at the beginning of the event is the same as before the seed for the primaries was added.
+     *
      *  \author  A.Sailer
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
@@ -64,8 +71,9 @@ namespace dd4hep {
       void prepareEvent(G4StackManager*);
       /// generatePrimaries callback
       void setSeedForPrimaries(const G4Event*);
-      /// set the seed function, called from other callbacks)
-      void setSeed(const G4Event*, bool checkForParameters = true);
+      /// set the seed function, called from other callbacks; the stream distinguishes the seeds set for
+      /// the generation of the primaries (stream 1) and for the simulation of the event (stream 0)
+      void setSeed(const G4Event*, bool checkForParameters = true, unsigned int stream = 0);
     };
 
     /*
@@ -210,6 +218,16 @@ namespace dd4hep {
       seed = jenkins_hash( c, sizeof initialSeed, seed) ;
 
       return seed;
+    }
+
+    /// calculate hash from initialSeed, eventID, runID and a stream number; stream 0 gives the same seed as
+    /// the hash without stream, other streams give different seeds for the same event
+    unsigned int hash( unsigned int initialSeed, unsigned int eventNumber, unsigned int runNumber,
+                       unsigned int stream ){
+      unsigned int seed = hash( initialSeed, eventNumber, runNumber );
+      if ( stream == 0 ) return seed;
+      unsigned char * c = (unsigned char *) &stream ;
+      return jenkins_hash( c, sizeof stream, seed ) ;
     }
 
   }    // End namespace sim
