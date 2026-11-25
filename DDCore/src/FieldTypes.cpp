@@ -108,6 +108,11 @@ MultipoleField::MultipoleField()   {
 
 /// Initialize internal cache and pre-computations
 void MultipoleField::initialize() {
+  if(init_once) {
+    throw std::runtime_error("This field is already initialized");
+  }
+  init_once = true;
+
   constexpr static double eps = 1e-10;
   double xx, xy, xz, dx, yx, yy, yz, dy, zx, zy, zz, dz;
   transform.GetComponents(xx, xy, xz, dx, yx, yy, yz, dy, zx, zy, zz, dz);
@@ -154,7 +159,6 @@ void MultipoleField::initialize() {
 
 /// Compute  the field components at a given location and add to given field
 void MultipoleField::fieldComponents(const double* pos, double* field) {
-  std::call_once(init_once, &MultipoleField::initialize, this);
   // AABB pre-filter: reject positions outside the world-frame bounding box
   if ( (flag&FIELD_HAS_AABB) &&
        (pos[0] < aabb_min[0] || pos[0] > aabb_max[0] ||

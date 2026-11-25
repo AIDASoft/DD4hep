@@ -276,6 +276,7 @@ static Ref_t create_MultipoleField(Detector& description, xml_h e) {
     ptr->skews.emplace_back(val);
   }
   ptr->field_type = CartesianField::MAGNETIC;
+  ptr->initialize();
   obj.assign(ptr, c.nameStr(), c.typeStr());
   return obj;
 }
