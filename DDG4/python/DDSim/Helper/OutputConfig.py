@@ -27,6 +27,8 @@ class OutputConfig(ConfigHelper):
     self._forceEDM4HEP = False
     self._forceDD4HEP = False
     self._useRNTuple = False
+    self._mergeCaloContributions = False
+    self._caloContributionTimeWindow = 0.0
     # no closeProperties, allow custom ones for userPlugin configuration
 
   def _checkConsistency(self):
@@ -80,6 +82,39 @@ class OutputConfig(ConfigHelper):
   @useRNTuple.setter
   def useRNTuple(self, val):
     self._useRNTuple = self.makeBool(val)
+
+  @property
+  def mergeCaloContributions(self):
+    """EDM4HEP output: merge the contributions of each calorimeter hit that come from the same MCParticle.
+
+    The energy deposited by each MCParticle in each hit is kept, the merged contribution has the time of the
+    earliest step, which reduces the size of the output by a large factor for showers.
+    In detailed shower mode the merged contribution has the PDG of the earliest step, the energy-weighted step
+    position and the summed step length.
+    """
+    return self._mergeCaloContributions
+
+  @mergeCaloContributions.setter
+  def mergeCaloContributions(self, val):
+    self._mergeCaloContributions = self.makeBool(val)
+
+  @property
+  def caloContributionTimeWindow(self):
+    """EDM4HEP output: with mergeCaloContributions, merge only the contributions in the same time bin (ns).
+
+    The contributions of the same MCParticle are merged within time bins [k*window, (k+1)*window), aligned to
+    t = 0 and therefore the same for all the MCParticles and hits.
+    0 (default): merge all the contributions of the same MCParticle.
+    Ignored, with a warning, if mergeCaloContributions is not set.
+    """
+    return self._caloContributionTimeWindow
+
+  @caloContributionTimeWindow.setter
+  def caloContributionTimeWindow(self, val):
+    val = float(val)
+    if val < 0:
+      raise RuntimeError(f"OutputConfig error: caloContributionTimeWindow cannot be negative ({val}), 0: no time bins")
+    self._caloContributionTimeWindow = val
 
   @property
   def userOutputPlugin(self):
@@ -164,6 +199,8 @@ class OutputConfig(ConfigHelper):
     logger.info("++++ Setting up EDM4hep %s Output ++++", "RNTuple" if self.useRNTuple else "ROOT::TTree")
     e4Out = geant4.setupEDM4hepOutput('EDM4hepOutput', dds.outputFile)
     e4Out.RNTuple = self.useRNTuple
+    e4Out.MergeCaloContributions = self.mergeCaloContributions
+    e4Out.CaloContributionTimeWindow = self.caloContributionTimeWindow
     eventPars = dds.meta.parseMetaParameters()
     e4Out.RunHeader = dds.meta.addParametersToRunHeader(dds)
     e4Out.EventParametersString, e4Out.EventParametersInt, e4Out.EventParametersFloat = eventPars
