@@ -20,6 +20,12 @@ code to achieve the desired result.
 DDG4 also supports the fast Geant4 simulation interfaces GFlash and FastSim
 to speed up certain simulation procedures.
 
+The EDM4hep output can merge the calorimeter hit contributions of the same MCParticle (properties
+`MergeContributions` and `ContributionTimeWindow` of the sensitive detectors, optionally within time bins
+aligned to t = 0; ddsim `--action.mergeCaloContributions` and `--action.caloContributionTimeWindow` for all
+the calorimeters), which reduces the output size by a large factor for showers while keeping the energy
+deposited by each MCParticle in each hit.
+
 For further details please see the user manual in the formats
 [HTML](https://dd4hep.web.cern.ch/dd4hep/usermanuals/DDG4Manual/DDG4Manual.html)
 and

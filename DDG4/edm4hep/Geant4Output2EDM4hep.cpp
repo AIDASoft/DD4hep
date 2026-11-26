@@ -55,7 +55,12 @@ namespace podio {
 #endif
 #endif
 
+#include <algorithm>
 #include <atomic>
+#include <cmath>
+#include <cstdint>
+#include <map>
+#include <vector>
 
 /// Namespace for the AIDA detector description toolkit
 namespace dd4hep {
@@ -69,6 +74,9 @@ namespace dd4hep {
 
     /// Base class to output Geant4 event data to EDM4hep
     /**
+     *  The calorimeter hit contributions of the same MCParticle can be merged, if requested by the sensitive
+     *  detector (see mergeCaloContributions).
+     *
      *  \author  F.Gaede
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
@@ -617,6 +625,92 @@ private:
 };
 
 
+namespace {
+
+  /// Add to a calorimeter hit the contributions of its Geant4 steps, merged by MCParticle
+  /**
+   *  Used for the sensitive detectors with the property MergeContributions. The contributions of the steps
+   *  coming from the same MCParticle (after the mapping of the tracks to the saved MCParticles) are merged into
+   *  one, which keeps the energy deposited by each MCParticle in the hit (e.g. to link hits to MCParticles with
+   *  energy weights) and reduces the output size by a large factor for showers. With timeWindow > 0 (property
+   *  ContributionTimeWindow of the sensitive detector, in ns) the contributions of the same MCParticle are
+   *  merged only within the same time bin [k*timeWindow, (k+1)*timeWindow), aligned to t = 0 and therefore the
+   *  same for all the MCParticles and hits, to keep the time structure of the deposits.
+   *  A merged contribution has the summed energy and the time of its earliest step; in detailed mode, also the
+   *  PDG of the earliest step, the energy-weighted step position and the summed step length.
+   */
+  void mergeCaloContributions(const Geant4HitData::Contributions& truth, Geant4ParticleMap* pm,
+                              edm4hep::MCParticleCollection& particles, int hitCreationMode, double timeWindow,
+                              edm4hep::MutableSimCalorimeterHit& sch,
+                              edm4hep::CaloHitContributionCollection& contributions)  {
+    // group the contributions by MCParticle, in the order in which the MCParticles first contribute to the hit,
+    // and sort the contributions of each MCParticle by time
+    std::vector<int> particleOrder;
+    std::map<int, std::vector<const Geant4HitData::Contribution*> > byParticle;
+    for( const auto& c : truth )  {
+      int trackID = pm->particleID(c.trackID);
+      auto [it, inserted] = byParticle.try_emplace(trackID);
+      if ( inserted ) particleOrder.push_back(trackID);
+      it->second.push_back(&c);
+    }
+    // index of the time bin of a contribution
+    auto timeBin = [timeWindow](const Geant4HitData::Contribution* c)  {
+      return static_cast<std::int64_t>(std::floor(c->time / timeWindow));
+    };
+    for( int trackID : particleOrder )  {
+      auto& contribs = byParticle[trackID];
+      std::stable_sort(contribs.begin(), contribs.end(),
+                       [](const auto* a, const auto* b) { return a->time < b->time; });
+      auto mcp = particles.at(trackID);
+      for( std::size_t first = 0; first < contribs.size(); )  {
+        // contributions [first, last) are merged: all of them, or those in the same time bin
+        std::size_t last = first + 1;
+        if ( timeWindow > 0. )  {
+          const std::int64_t bin = timeBin(contribs[first]);
+          while ( last < contribs.size() && timeBin(contribs[last]) == bin ) ++last;
+        }
+        else  {
+          last = contribs.size();
+        }
+        double energy = 0., length = 0., x = 0., y = 0., z = 0.;
+        bool fastSim = false;
+        for( std::size_t k = first; k < last; ++k )  {
+          const auto* c = contribs[k];
+          energy += c->deposit;
+          length += c->length;
+          x += c->x * c->deposit;
+          y += c->y * c->deposit;
+          z += c->z * c->deposit;
+          fastSim |= (c->length < 0);
+        }
+        auto sCaloHitCont = contributions.create();
+        sch.addToContributions( sCaloHitCont );
+        sCaloHitCont.setEnergy( energy/CLHEP::GeV );
+        sCaloHitCont.setTime( contribs[first]->time/CLHEP::ns );
+        sCaloHitCont.setParticle( mcp );
+#if EDM4HEP_BUILD_VERSION > EDM4HEP_VERSION(1, 0, 0)
+        // contributions created via a fast simulation method have a step length of -1
+        if ( fastSim ) {
+          mcp.setHandledByFastSim(true);
+        }
+#endif
+        if ( hitCreationMode == Geant4Sensitive::DETAILED_MODE )     {
+          // energy-weighted position of the steps (position of the earliest step if no energy)
+          edm4hep::Vector3f p = energy > 0.
+            ? edm4hep::Vector3f(x/energy/CLHEP::mm, y/energy/CLHEP::mm, z/energy/CLHEP::mm)
+            : edm4hep::Vector3f(contribs[first]->x/CLHEP::mm, contribs[first]->y/CLHEP::mm, contribs[first]->z/CLHEP::mm);
+          sCaloHitCont.setPDG( contribs[first]->pdgID );
+          sCaloHitCont.setStepPosition( p );
+#if EDM4HEP_BUILD_VERSION >= EDM4HEP_VERSION(0, 99, 3)
+          sCaloHitCont.setStepLength( fastSim ? -1. : length/CLHEP::mm );
+#endif
+        }
+        first = last;
+      }
+    }
+  }
+}
+
 /// Callback to store each Geant4 hit collection
 void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VHitsCollection* collection)  {
   Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(collection);
@@ -669,6 +763,12 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type() ){
     Geant4Sensitive* sd = coll->sensitive();
     int hit_creation_mode = sd->hitCreationMode();
+    bool merge_contributions = sd->mergeContributions();
+    double contribution_time_window = sd->contributionTimeWindow();
+    if ( contribution_time_window < 0. )  {
+      except("+++ %s: ContributionTimeWindow = %g ns: the width of the time bins cannot be negative "
+             "(0: no time bins)", colName.c_str(), contribution_time_window);
+    }
     // Create the hit container even if there are no entries!
     auto& hits = m_calorimeterHits[colName];
     for(unsigned i=0 ; i < nhits ; ++i){
@@ -679,6 +779,13 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
       sch.setPosition({float(pos.x()/CLHEP::mm), float(pos.y()/CLHEP::mm), float(pos.z()/CLHEP::mm)});
       sch.setEnergy( hit->energyDeposit/CLHEP::GeV );
 
+
+      if ( merge_contributions )  {
+        mergeCaloContributions(hit->truth, pm, m_particles, hit_creation_mode, contribution_time_window,
+                               sch, hits.second);
+        // the merged contributions replace the individual step contributions added below
+        continue;
+      }
 
       // now add the individual step contributions
       for(auto ci=hit->truth.begin(); ci != hit->truth.end(); ++ci){

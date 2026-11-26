@@ -198,6 +198,42 @@ if (DD4HEP_USE_GEANT4)
     )
   endif()
 
+  # merging of the calorimeter hit contributions of the same MCParticle in the EDM4hep output:
+  # same events without merging, with merging, with merging in time bins of 1 ns, and with merging only in the
+  # ECAL barrel (sensitive detector property set with mapActions in a steering file), compared hit by hit
+  if(DD4HEP_USE_EDM4HEP AND podio_VERSION VERSION_GREATER_EQUAL 1.6.0)
+    set(CALO_CONTRIBUTIONS_ARGS_default --action.mergeCaloContributions false)
+    set(CALO_CONTRIBUTIONS_ARGS_merged --action.mergeCaloContributions true)
+    set(CALO_CONTRIBUTIONS_ARGS_binned --action.mergeCaloContributions true
+                                       --action.caloContributionTimeWindow 1.0)
+    set(CALO_CONTRIBUTIONS_ARGS_ecalbarrel
+        --steeringFile ${CMAKE_CURRENT_SOURCE_DIR}/python/mergeCaloContributionsSteeringFile.PY)
+    foreach(MERGE default merged binned ecalbarrel)
+      add_test(NAME t_ddsim_edm4hep_calo_contributions_${MERGE}
+        COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
+          ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
+                --output.physics 0
+                --runType=batch -N=3 -G
+                --gun.particle e- --gun.energy 10*GeV --gun.direction 1.0,0.2,0.1
+                --random.seed=424242
+                --outputFile=calo_contributions_${MERGE}.root
+                ${CALO_CONTRIBUTIONS_ARGS_${MERGE}}
+                --part.userParticleHandler=)
+      set_tests_properties(t_ddsim_edm4hep_calo_contributions_${MERGE} PROPERTIES
+        FIXTURES_SETUP ddsim_edm4hep_calo_contributions_${MERGE}
+        FAIL_REGULAR_EXPRESSION "ERROR;Error")
+    endforeach()
+    add_test(NAME t_ddsim_edm4hep_calo_contributions_compare
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/compare_calo_contributions.py
+              calo_contributions_default.root calo_contributions_merged.root
+              --binned calo_contributions_binned.root --time-window 1.0
+              --partial calo_contributions_ecalbarrel.root --partial-collections EcalBarrelHits)
+    set_tests_properties(t_ddsim_edm4hep_calo_contributions_compare PROPERTIES
+      FIXTURES_REQUIRED "ddsim_edm4hep_calo_contributions_default;ddsim_edm4hep_calo_contributions_merged;ddsim_edm4hep_calo_contributions_binned;ddsim_edm4hep_calo_contributions_ecalbarrel"
+      PASS_REGULAR_EXPRESSION "TEST_PASSED"
+      FAIL_REGULAR_EXPRESSION "TEST_FAILED")
+  endif()
+
   #---Multi-threading tests---------------------------------------------------------
   # disable tests for geant4 version 10.7
   set(disable_mt_tests FALSE)

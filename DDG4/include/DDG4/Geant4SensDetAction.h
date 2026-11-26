@@ -137,6 +137,10 @@ namespace dd4hep {
     protected:
       /// Property: Hit creation mode. Maybe one of the enum HitCreationFlags
       int  m_hitCreationMode                  {       0 };
+      /// Property: Merge the calorimeter hit contributions of the same MCParticle in the output
+      bool m_mergeContributions               {   false };
+      /// Property: Width (ns) of the time bins within which the contributions are merged (0: no time bins)
+      double m_contributionTimeWindow         {      0. };
       /// Property: Use the volume manager to access CellID and VolumeID
       bool m_useVolumeManager                 {    true };
       /// Property: Debug/Print Cell IDs in functions cellID(), volumeID()
@@ -187,6 +191,16 @@ namespace dd4hep {
       /// Property access to the hit creation mode
       int hitCreationMode() const  {
         return m_hitCreationMode;
+      }
+
+      /// Property access to the merging of the calorimeter hit contributions of the same MCParticle
+      bool mergeContributions() const  {
+        return m_mergeContributions;
+      }
+
+      /// Property access to the width (ns) of the time bins for the merging of the contributions
+      double contributionTimeWindow() const  {
+        return m_contributionTimeWindow;
       }
 
       /// G4VSensitiveDetector internals: Access to the detector name
