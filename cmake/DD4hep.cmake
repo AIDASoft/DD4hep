@@ -100,8 +100,13 @@ function(dd4hep_generate_rootmap library)
     "${DD4HEP_${ENV_VAR}}"
   )
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.components)
+  if(LIBRARY_OUTPUT_PATH)
+    set(_rootmap_dir ${LIBRARY_OUTPUT_PATH})
+  else()
+    set(_rootmap_dir ${CMAKE_CURRENT_BINARY_DIR})
+  endif()
 
-  add_custom_command(OUTPUT ${rootmapfile}
+  add_custom_command(OUTPUT ${_rootmap_dir}/${rootmapfile}
                      DEPENDS ${library}
                      VERBATIM COMMAND
                      "${CMAKE_COMMAND}" -E env
@@ -110,11 +115,11 @@ function(dd4hep_generate_rootmap library)
                      "ROOT_LIBRARY_PATH=${DD4HEP_ROOT_LIBRARY_PATH}"
                      "LSAN_OPTIONS=detect_leaks=0"
                      $<TARGET_FILE:DD4hep::listcomponents> -o ${rootmapfile} $<TARGET_FILE_NAME:${library}>
-                     WORKING_DIRECTORY ${LIBRARY_OUTPUT_PATH}
+                     WORKING_DIRECTORY ${_rootmap_dir}
                      COMMAND_EXPAND_LISTS
                      )
 
-  add_custom_target(Components_${library} ALL DEPENDS ${rootmapfile})
+  add_custom_target(Components_${library} ALL DEPENDS ${_rootmap_dir}/${rootmapfile})
   SET( install_destination "lib" )
   if( CMAKE_INSTALL_LIBDIR )
     SET( install_destination ${CMAKE_INSTALL_LIBDIR} )
