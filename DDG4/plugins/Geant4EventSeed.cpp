@@ -76,11 +76,12 @@ void Geant4EventSeed::beginEvent(const G4Event* evt) {
 void Geant4EventSeed::setSeedForPrimaries(const G4Event* evt) {
   dd4hep::printout(dd4hep::DEBUG, m_type, "EventSeed:: At generatePrimaries");
   // since this is before we read input files we cannot expect parameters to be present
-  setSeed(evt, false);
+  // different stream than in beginEvent, so that the simulation does not reuse the random numbers of the generators
+  setSeed(evt, false, 1);
 }
 
 /// general function for setting the seed, called by other callbacks
-void Geant4EventSeed::setSeed(const G4Event* evt, bool checkForEventParameters) {
+void Geant4EventSeed::setSeed(const G4Event* evt, bool checkForEventParameters, unsigned int stream) {
 
   Geant4Random *rndm = Geant4Random::instance();
 
@@ -118,10 +119,10 @@ void Geant4EventSeed::setSeed(const G4Event* evt, bool checkForEventParameters) 
     }
   }
 
-  unsigned int newSeed = hash( m_initialSeed, eventID, runID );
+  unsigned int newSeed = hash( m_initialSeed, eventID, runID, stream );
   dd4hep::printout(dd4hep::INFO, m_type,
-                   "EventSeed::setSeed: eventID=%u, runID=%u initialSeed=%u, newSeed=%u",
-                   eventID, runID, m_initialSeed, newSeed );
+                   "EventSeed::setSeed: eventID=%u, runID=%u initialSeed=%u, stream=%u, newSeed=%u",
+                   eventID, runID, m_initialSeed, stream, newSeed );
 
   rndm->setSeed(newSeed);
 

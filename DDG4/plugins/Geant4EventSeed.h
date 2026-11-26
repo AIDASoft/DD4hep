@@ -38,6 +38,7 @@ namespace dd4hep {
      *  We are using jenkins_hash from an intial seed, runID and eventID
      *  see http://burtleburtle.net/bob/hash/evahash.html
      *
+     *  Avoid re-using the same seed when reinitializing during the same event.
      *  \author  A.Sailer
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
@@ -64,8 +65,8 @@ namespace dd4hep {
       void prepareEvent(G4StackManager*);
       /// generatePrimaries callback
       void setSeedForPrimaries(const G4Event*);
-      /// set the seed function, called from other callbacks)
-      void setSeed(const G4Event*, bool checkForParameters = true);
+      /// set the seed function, called from other callbacks; the stream distinguishes the seeds set for repeated calls to setSeed during an event
+      void setSeed(const G4Event*, bool checkForParameters = true, unsigned int stream = 0);
     };
 
     /*
@@ -197,8 +198,9 @@ namespace dd4hep {
       return c;
     }
 
-    /// calculate hash from initialSeed, eventID and runID
-    unsigned int hash( unsigned int initialSeed, unsigned int eventNumber, unsigned int runNumber ){
+    /// calculate hash from initialSeed, eventID, runID and stream (stream 0: same seed as without stream)
+    unsigned int hash( unsigned int initialSeed, unsigned int eventNumber, unsigned int runNumber,
+                       unsigned int stream = 0 ){
       unsigned int seed = 0;
       unsigned char * c = (unsigned char *) &eventNumber ;
       seed = jenkins_hash( c, sizeof eventNumber, seed) ;
@@ -208,6 +210,11 @@ namespace dd4hep {
 
       c = (unsigned char *) &initialSeed ;
       seed = jenkins_hash( c, sizeof initialSeed, seed) ;
+
+      if ( stream != 0 ) {
+        c = (unsigned char *) &stream ;
+        seed = jenkins_hash( c, sizeof stream, seed) ;
+      }
 
       return seed;
     }
