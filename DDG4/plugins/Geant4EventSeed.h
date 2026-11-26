@@ -38,7 +38,7 @@ namespace dd4hep {
      *  We are using jenkins_hash from an intial seed, runID and eventID
      *  see http://burtleburtle.net/bob/hash/evahash.html
      *
-     *  Avoid re-using the same seed when reinitializating during the same event.
+     *  Avoid re-using the same seed when reinitializing during the same event.
      *  \author  A.Sailer
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
@@ -198,8 +198,9 @@ namespace dd4hep {
       return c;
     }
 
-    /// calculate hash from initialSeed, eventID and runID
-    unsigned int hash( unsigned int initialSeed, unsigned int eventNumber, unsigned int runNumber ){
+    /// calculate hash from initialSeed, eventID, runID and stream (stream 0: same seed as without stream)
+    unsigned int hash( unsigned int initialSeed, unsigned int eventNumber, unsigned int runNumber,
+                       unsigned int stream = 0 ){
       unsigned int seed = 0;
       unsigned char * c = (unsigned char *) &eventNumber ;
       seed = jenkins_hash( c, sizeof eventNumber, seed) ;
@@ -210,17 +211,12 @@ namespace dd4hep {
       c = (unsigned char *) &initialSeed ;
       seed = jenkins_hash( c, sizeof initialSeed, seed) ;
 
-      return seed;
-    }
+      if ( stream != 0 ) {
+        c = (unsigned char *) &stream ;
+        seed = jenkins_hash( c, sizeof stream, seed) ;
+      }
 
-    /// calculate hash from initialSeed, eventID, runID and a stream number; stream 0 gives the same seed as
-    /// the hash without stream, other streams give different seeds for the same event
-    unsigned int hash( unsigned int initialSeed, unsigned int eventNumber, unsigned int runNumber,
-                       unsigned int stream ){
-      unsigned int seed = hash( initialSeed, eventNumber, runNumber );
-      if ( stream == 0 ) return seed;
-      unsigned char * c = (unsigned char *) &stream ;
-      return jenkins_hash( c, sizeof stream, seed ) ;
+      return seed;
     }
 
   }    // End namespace sim
