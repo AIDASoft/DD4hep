@@ -497,6 +497,9 @@ double DetectorImp::constantAsDouble(const std::string& name) const {
 
 /// Add a field component by named reference to the detector description
 Detector& DetectorImp::addField(const Handle<NamedObject>& x) {
+  if ( auto* fld = dynamic_cast<CartesianField::Object*>(x.ptr()) ) {
+    fld->initialize();
+  }
   m_field.add(x);
   m_fields.append(x);
   return *this;

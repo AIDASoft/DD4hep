@@ -65,6 +65,8 @@ namespace dd4hep {
      *  \ingroup DD4HEP_CORE
      */
     class Object: public TypedObject {
+    protected:
+      bool init_once = false;
     public:
       /// Utility definition for concrete implementations
       typedef std::vector<double> Coefficents;
@@ -80,6 +82,9 @@ namespace dd4hep {
        *  field vector in order to allow for superposition of the fields.
        */
       virtual void fieldComponents(const double* pos, double* field) = 0;
+      /// Initialize internal cache and pre-computations when needed (called in DetectorImp::addField)
+      virtual void initialize() {};
+
     };
 
     /// Default constructor

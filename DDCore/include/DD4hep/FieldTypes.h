@@ -172,8 +172,6 @@ namespace dd4hep {
     Rotation3D   rotation    { };
     /// Constant Z field overlay
     double       B_z         { 0e0 };
-    /// Initialize internal cache and pre-computations (called in Compact2Object)
-    void initialize();
 
   private:
     /// The access to the field will be optimized. Remember properties.
@@ -184,15 +182,13 @@ namespace dd4hep {
     double aabb_min[3]       { 0, 0, 0 };
     double aabb_max[3]       { 0, 0, 0 };
 
-    /// Initialize just once
-    bool init_once { };
-
-
   public:
     /// Initializing constructor
     MultipoleField();
     /// Call to access the field components at a given location
-    virtual void fieldComponents(const double* pos, double* field);
+    virtual void fieldComponents(const double* pos, double* field) override;
+    /// Initialize internal cache and pre-computations (called in DetectorImp::addField)
+    virtual void initialize() override;
   };
 
 }         /* End namespace dd4hep             */
