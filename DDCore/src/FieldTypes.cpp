@@ -154,7 +154,6 @@ void MultipoleField::initialize() {
 
 /// Compute  the field components at a given location and add to given field
 void MultipoleField::fieldComponents(const double* pos, double* field) {
-  std::call_once(init_once, &MultipoleField::initialize, this);
   // AABB pre-filter: reject positions outside the world-frame bounding box
   if ( (flag&FIELD_HAS_AABB) &&
        (pos[0] < aabb_min[0] || pos[0] > aabb_max[0] ||

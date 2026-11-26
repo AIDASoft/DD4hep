@@ -80,6 +80,9 @@ namespace dd4hep {
        *  field vector in order to allow for superposition of the fields.
        */
       virtual void fieldComponents(const double* pos, double* field) = 0;
+      /// Initialize internal cache and pre-computations when needed (called in DetectorImp::addField)
+      virtual void initialize() {};
+
     };
 
     /// Default constructor
