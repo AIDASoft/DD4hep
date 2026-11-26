@@ -148,6 +148,8 @@ Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const std::string& nam, De
   }
   declareProperty("UseVolumeManager", m_useVolumeManager = true);
   declareProperty("HitCreationMode",  m_hitCreationMode = SIMPLE_MODE);
+  declareProperty("MergeContributions",     m_mergeContributions = false);
+  declareProperty("ContributionTimeWindow", m_contributionTimeWindow = 0.);
   declareProperty("DebugVolumeID",    m_debugVolumeID = false);
   m_sequence     = context()->kernel().sensitiveAction(m_detector.name());
   m_sensitive    = m_detDesc.sensitiveDetector(det.name());

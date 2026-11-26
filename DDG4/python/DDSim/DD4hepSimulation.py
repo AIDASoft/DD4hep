@@ -483,7 +483,8 @@ class DD4hepSimulation(object):
          (unk, geant4.setupDetector, None, "No Default", True),
          ]:
       try:
-        self.__setupSensitiveDetectors(detectors, function, defFilter, defAction, abort)
+        self.__setupSensitiveDetectors(detectors, function, defFilter, defAction, abort,
+                                       isCalorimeter=function == geant4.setupCalorimeter)
       except Exception as e:
         logger.error("Failed setting up sensitive detector %s", e)
         raise
@@ -761,6 +762,7 @@ class DD4hepSimulation(object):
 
   def __setupSensitiveDetectors(self, detectors, setupFunction, defaultFilter=None,
                                 defaultAction=None, abortForMissingAction=False,
+                                isCalorimeter=False,
                                 ):
     """Attach sensitive detector actions for all subdetectors.
 
@@ -770,6 +772,7 @@ class DD4hepSimulation(object):
     :param setupFunction: function used to register the sensitive detector
     :param defaultFilter: default filter to apply for given types
     :param abortForMissingAction: if true end program if there is no action found
+    :param isCalorimeter: if true the detectors are calorimeters (for action.mergeCaloContributions)
     """
     for det in detectors:
       logger.info('Setting up SD for %s with %s', det, defaultAction)
@@ -792,6 +795,12 @@ class DD4hepSimulation(object):
             a.HitCreationMode = 2
         else:
           act.HitCreationMode = 2
+
+      # merge the hit contributions of the same MCParticle for the calorimeters
+      if isCalorimeter and self.action.mergeCaloContributions:
+        for a in (act if isinstance(act, list) else [act]):
+          a.MergeContributions = True
+          a.ContributionTimeWindow = self.action.caloContributionTimeWindow
 
   def __printSteeringFile(self, parser):
     """print the parameters formated as a steering file"""

@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
-Check the merging of the calorimeter hit contributions in the EDM4hep output (MergeCaloContributions).
+Check the merging of the calorimeter hit contributions in the EDM4hep output (sensitive detector properties
+MergeContributions and ContributionTimeWindow).
 
 The files must contain the same events, simulated with the same seed, without and with the merging (and
-optionally with the merging in time bins, CaloContributionTimeWindow). For every SimCalorimeterHit the hits
-(cellID and energy) must be identical and the energy deposited by each MCParticle must be the same. With the
-merging each MCParticle must have only one contribution per hit, with the merging in time bins only one
-contribution per hit and time bin [k*window, (k+1)*window).
+optionally with the merging in time bins, and with the merging only for some sensitive detectors). For every
+SimCalorimeterHit the hits (cellID and energy) must be identical and the energy deposited by each MCParticle must
+be the same. With the merging each MCParticle must have only one contribution per hit, with the merging in time
+bins only one contribution per hit and time bin [k*window, (k+1)*window); the collections that are not merged
+must have the same contributions as without merging.
 """
 
 import argparse
@@ -28,8 +30,9 @@ def particle_energies(hit, window=None):
   return energies, counts
 
 
-def compare(file_default, file_merged, tolerance, window=None):
-  """Compare the file with merged contributions to the default one, return the number of errors"""
+def compare(file_default, file_merged, tolerance, window=None, merged_collections=None):
+  """Compare the file with merged contributions to the default one, return the number of errors. If
+  merged_collections is given, only these collections are expected to be merged"""
   events_default = get_reader(file_default).get("events")
   events_merged = get_reader(file_merged).get("events")
   if len(events_default) != len(events_merged):
@@ -68,7 +71,11 @@ def compare(file_default, file_merged, tolerance, window=None):
             print(f"{name}: hit {hit_default.getCellID()}, MCParticle {index}: "
                   f"energy {energy} vs {energies_merged[index]}")
             errors += 1
-        if any(count != 1 for count in counts_merged.values()):
+        if merged_collections is not None and name not in merged_collections:
+          if counts_merged != counts_default:
+            print(f"{name}: hit {hit_default.getCellID()} has merged contributions, but the collection should not")
+            errors += 1
+        elif any(count != 1 for count in counts_merged.values()):
           what = "MCParticle and time bin" if window else "MCParticle"
           print(f"{name}: hit {hit_default.getCellID()} has more than one merged contribution per {what}")
           errors += 1
@@ -87,6 +94,9 @@ def main():
   parser.add_argument("merged", help="output file with merging of the contributions")
   parser.add_argument("--binned", help="output file with merging of the contributions in time bins")
   parser.add_argument("--time-window", type=float, default=1.0, help="width of the time bins of --binned (ns)")
+  parser.add_argument("--partial", help="output file with merging of the contributions only for some collections")
+  parser.add_argument("--partial-collections", nargs="+", default=[],
+                      help="collections with merged contributions in --partial")
   parser.add_argument("--tolerance", type=float, default=1e-5,
                       help="relative tolerance on the energy of each MCParticle in each hit")
   args = parser.parse_args()
@@ -94,6 +104,8 @@ def main():
   errors = compare(args.default, args.merged, args.tolerance)
   if args.binned:
     errors += compare(args.default, args.binned, args.tolerance, args.time_window)
+  if args.partial:
+    errors += compare(args.default, args.partial, args.tolerance, merged_collections=args.partial_collections)
   if errors:
     print(f"TEST_FAILED: {errors} errors")
     return 1

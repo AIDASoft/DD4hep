@@ -74,7 +74,8 @@ namespace dd4hep {
 
     /// Base class to output Geant4 event data to EDM4hep
     /**
-     *  The calorimeter hit contributions of the same MCParticle can be merged (see mergeCaloContributions).
+     *  The calorimeter hit contributions of the same MCParticle can be merged, if requested by the sensitive
+     *  detector (see mergeCaloContributions).
      *
      *  \author  F.Gaede
      *  \version 1.0
@@ -114,10 +115,6 @@ namespace dd4hep {
       int                           m_eventNumberOffset { 0 };
       bool                          m_filesByRun        { false };
       bool                          m_rntuple           { false };
-      /// Merge the calorimeter hit contributions of the same MCParticle
-      bool                          m_mergeCaloContributions     { false };
-      /// Width (ns) of the time bins, aligned to t = 0, for the merging of the contributions: 0 means no time bins
-      double                        m_caloContributionTimeWindow { 0. };
 
       /// RunParameters to be written when file is closed
       std::unique_ptr<RunParameters> m_runParameters = nullptr;
@@ -287,8 +284,6 @@ Geant4Output2EDM4hep::Geant4Output2EDM4hep(Geant4Context* ctxt, const std::strin
   declareProperty("SectionName",           m_section_name);
   declareProperty("FilesByRun",            m_filesByRun);
   declareProperty("RNTuple",               m_rntuple);
-  declareProperty("MergeCaloContributions",     m_mergeCaloContributions);
-  declareProperty("CaloContributionTimeWindow", m_caloContributionTimeWindow);
 
   info("Writer is now instantiated ..." );
   InstanceCount::increment(this);
@@ -303,14 +298,6 @@ Geant4Output2EDM4hep::~Geant4Output2EDM4hep()  {
 // Callback to store the Geant4 run information
 void Geant4Output2EDM4hep::beginRun(const G4Run* run)  {
   G4AutoLock protection_lock(mutex());
-  if ( m_caloContributionTimeWindow < 0. )  {
-    except("+++ CaloContributionTimeWindow = %g ns: the width of the time bins cannot be negative "
-           "(0: no time bins)", m_caloContributionTimeWindow);
-  }
-  if ( m_caloContributionTimeWindow > 0. && !m_mergeCaloContributions )  {
-    warning("+++ CaloContributionTimeWindow = %g ns is ignored, since MergeCaloContributions is not set",
-            m_caloContributionTimeWindow);
-  }
   std::string fname = m_output;
   m_runNo = run->GetRunID();
   if ( m_filesByRun )    {
@@ -642,13 +629,13 @@ namespace {
 
   /// Add to a calorimeter hit the contributions of its Geant4 steps, merged by MCParticle
   /**
-   *  Used with the property MergeCaloContributions. The contributions of the steps coming from the same
-   *  MCParticle (after the mapping of the tracks to the saved MCParticles) are merged into one, which keeps the
-   *  energy deposited by each MCParticle in the hit (e.g. to link hits to MCParticles with energy weights) and
-   *  reduces the output size by a large factor for showers. With timeWindow > 0 (property
-   *  CaloContributionTimeWindow, in ns) the contributions of the same MCParticle are merged only within the same
-   *  time bin [k*timeWindow, (k+1)*timeWindow), aligned to t = 0 and therefore the same for all the MCParticles
-   *  and hits, to keep the time structure of the deposits.
+   *  Used for the sensitive detectors with the property MergeContributions. The contributions of the steps
+   *  coming from the same MCParticle (after the mapping of the tracks to the saved MCParticles) are merged into
+   *  one, which keeps the energy deposited by each MCParticle in the hit (e.g. to link hits to MCParticles with
+   *  energy weights) and reduces the output size by a large factor for showers. With timeWindow > 0 (property
+   *  ContributionTimeWindow of the sensitive detector, in ns) the contributions of the same MCParticle are
+   *  merged only within the same time bin [k*timeWindow, (k+1)*timeWindow), aligned to t = 0 and therefore the
+   *  same for all the MCParticles and hits, to keep the time structure of the deposits.
    *  A merged contribution has the summed energy and the time of its earliest step; in detailed mode, also the
    *  PDG of the earliest step, the energy-weighted step position and the summed step length.
    */
@@ -776,6 +763,12 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
   else if( typeid( Geant4Calorimeter::Hit ) == coll->type().type() ){
     Geant4Sensitive* sd = coll->sensitive();
     int hit_creation_mode = sd->hitCreationMode();
+    bool merge_contributions = sd->mergeContributions();
+    double contribution_time_window = sd->contributionTimeWindow();
+    if ( contribution_time_window < 0. )  {
+      except("+++ %s: ContributionTimeWindow = %g ns: the width of the time bins cannot be negative "
+             "(0: no time bins)", colName.c_str(), contribution_time_window);
+    }
     // Create the hit container even if there are no entries!
     auto& hits = m_calorimeterHits[colName];
     for(unsigned i=0 ; i < nhits ; ++i){
@@ -787,8 +780,8 @@ void Geant4Output2EDM4hep::saveCollection(OutputContext<G4Event>& /*ctxt*/, G4VH
       sch.setEnergy( hit->energyDeposit/CLHEP::GeV );
 
 
-      if ( m_mergeCaloContributions )  {
-        mergeCaloContributions(hit->truth, pm, m_particles, hit_creation_mode, m_caloContributionTimeWindow,
+      if ( merge_contributions )  {
+        mergeCaloContributions(hit->truth, pm, m_particles, hit_creation_mode, contribution_time_window,
                                sch, hits.second);
         // the merged contributions replace the individual step contributions added below
         continue;

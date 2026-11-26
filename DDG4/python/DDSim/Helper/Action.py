@@ -66,6 +66,8 @@ or
     self._mapActions = dict()
     self._trackerSDTypes = ['tracker']
     self._calorimeterSDTypes = ['calorimeter']
+    self._mergeCaloContributions = False
+    self._caloContributionTimeWindow = 0.0
     self._run = []
     self._run_EXTRA = {"action": "append"}
     self._event = []
@@ -145,6 +147,42 @@ or
   @calorimeterSDTypes.setter
   def calorimeterSDTypes(self, val):
     self._calorimeterSDTypes = ConfigHelper.makeList(val)
+
+  @property
+  def mergeCaloContributions(self):
+    """Merge the hit contributions of the same MCParticle for all the calorimeters (EDM4hep output).
+
+    Sets the property MergeContributions of the sensitive detector actions of all the calorimeters. The energy
+    deposited by each MCParticle in each hit is kept, the merged contribution has the time of the earliest
+    step, which reduces the size of the output by a large factor for showers. In detailed shower mode the
+    merged contribution has the PDG of the earliest step, the energy-weighted step position and the summed
+    step length. To merge the contributions only for some calorimeters, set the property in mapActions, e.g.
+
+      SIM.action.mapActions['ecal'] = ("Geant4ScintillatorCalorimeterAction", {"MergeContributions": True})
+    """
+    return self._mergeCaloContributions
+
+  @mergeCaloContributions.setter
+  def mergeCaloContributions(self, val):
+    self._mergeCaloContributions = ConfigHelper.makeBool(val)
+
+  @property
+  def caloContributionTimeWindow(self):
+    """With mergeCaloContributions, merge only the contributions in the same time bin (ns).
+
+    Sets the property ContributionTimeWindow of the sensitive detector actions of all the calorimeters: the
+    contributions of the same MCParticle are merged within time bins [k*window, (k+1)*window), aligned to
+    t = 0 and therefore the same for all the MCParticles and hits.
+    0 (default): merge all the contributions of the same MCParticle.
+    """
+    return self._caloContributionTimeWindow
+
+  @caloContributionTimeWindow.setter
+  def caloContributionTimeWindow(self, val):
+    val = float(val)
+    if val < 0:
+      raise RuntimeError(f"Action error: caloContributionTimeWindow cannot be negative ({val}), 0: no time bins")
+    self._caloContributionTimeWindow = val
 
   @staticmethod
   def makeListOfDictFromJSON(val):
