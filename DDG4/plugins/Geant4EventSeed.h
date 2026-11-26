@@ -38,13 +38,7 @@ namespace dd4hep {
      *  We are using jenkins_hash from an intial seed, runID and eventID
      *  see http://burtleburtle.net/bob/hash/evahash.html
      *
-     *  The seed is set twice per event: before the generation of the primary particles, and at the
-     *  beginning of the event (after the generation, to use the event and run numbers read by file-based
-     *  generators). The two seeds are different, so that the random numbers used by the generators (e.g.
-     *  the kinematics of the particle gun, vertex smearing) are not used again in the simulation of the
-     *  event, which would correlate the simulated showers with the generated kinematics.
-     *  The seed at the beginning of the event is the same as before the seed for the primaries was added.
-     *
+     *  Avoid re-using the same seed when reinitializating during the same event.
      *  \author  A.Sailer
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
