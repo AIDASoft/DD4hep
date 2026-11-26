@@ -30,12 +30,6 @@ using namespace dd4hep;
 #include <TCanvas.h>
 #include <THistPainter.h>
 
-#include "Hoption.h"
-#include "Hparam.h"
-
-extern Hoption_t Hoption;
-extern Hparam_t  Hparam;
-
 namespace  {
   void help_bfield(int argc, char** argv)   {
     std::cout <<
