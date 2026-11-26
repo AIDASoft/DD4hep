@@ -108,11 +108,6 @@ MultipoleField::MultipoleField()   {
 
 /// Initialize internal cache and pre-computations
 void MultipoleField::initialize() {
-  if(init_once) {
-    throw std::runtime_error("This field is already initialized");
-  }
-  init_once = true;
-
   constexpr static double eps = 1e-10;
   double xx, xy, xz, dx, yx, yy, yz, dy, zx, zy, zz, dz;
   transform.GetComponents(xx, xy, xz, dx, yx, yy, yz, dy, zx, zy, zz, dz);

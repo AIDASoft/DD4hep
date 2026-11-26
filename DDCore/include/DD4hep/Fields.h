@@ -65,8 +65,6 @@ namespace dd4hep {
      *  \ingroup DD4HEP_CORE
      */
     class Object: public TypedObject {
-    protected:
-      bool init_once = false;
     public:
       /// Utility definition for concrete implementations
       typedef std::vector<double> Coefficents;
