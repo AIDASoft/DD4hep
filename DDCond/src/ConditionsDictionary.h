@@ -55,9 +55,9 @@ namespace { class ConditionsDictionary {};   }
 //#pragma link C++ class std::map<dd4hep::IOV::Key,std::shared_ptr<dd4hep::cond::ConditionsPool> >-;
 
 // This one we need to save conditions pool to file
-#pragma link C++ class std::pair<std::string,IOV::Key>+;
-#pragma link C++ class std::pair<std::pair<std::string,int>, IOV::Key>+;
-#pragma link C++ class std::pair<std::string,std::pair<std::pair<std::string,int>,IOV::Key> >+;
+#pragma link C++ class std::pair<std::string,dd4hep::IOV::Key>+;
+#pragma link C++ class std::pair<std::pair<std::string,int>, dd4hep::IOV::Key>+;
+#pragma link C++ class std::pair<std::string,std::pair<std::pair<std::string,int>,dd4hep::IOV::Key> >+;
 
 template class std::list< std::pair< std::pair< std::string, std::pair< std::pair<std::string,int>, dd4hep::IOV::Key> >, std::vector<dd4hep::Condition> > >;
 #pragma link C++ class std::list<std::pair<std::pair<std::string,std::pair<std::pair<std::string,int>,dd4hep::IOV::Key> >, std::vector<dd4hep::Condition> > >+;
