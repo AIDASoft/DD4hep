@@ -65,8 +65,7 @@ namespace dd4hep {
       void prepareEvent(G4StackManager*);
       /// generatePrimaries callback
       void setSeedForPrimaries(const G4Event*);
-      /// set the seed function, called from other callbacks; the stream distinguishes the seeds set for
-      /// the generation of the primaries (stream 1) and for the simulation of the event (stream 0)
+      /// set the seed function, called from other callbacks; the stream distinguishes the seeds set for repeated calls to setSeed during an event
       void setSeed(const G4Event*, bool checkForParameters = true, unsigned int stream = 0);
     };
 
