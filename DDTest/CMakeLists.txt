@@ -160,7 +160,9 @@ if (DD4HEP_USE_GEANT4)
   )
 
   set_tests_properties(t_ddsimUserPlugins PROPERTIES
-    FIXTURES_SETUP ddsimUserPlugins)
+    FIXTURES_SETUP ddsimUserPlugins
+    TIMEOUT 600 # it shouldn't take that long
+  )
 
   # check that the output file has the correct number of events
   add_test(t_check_ddsimUserPlugins
@@ -219,6 +221,7 @@ if (DD4HEP_USE_GEANT4)
             --gun.energy=10*GeV
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_gun_mt1 PROPERTIES
+    TIMEOUT 600 # it shouldn't take that long
     FIXTURES_SETUP ddsim_gun_mt1
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
     PASS_REGULAR_EXPRESSION "@ 1 threads"
@@ -239,6 +242,7 @@ if (DD4HEP_USE_GEANT4)
             --gun.energy=10*GeV
             --part.userParticleHandler=)
   set_tests_properties(t_ddsim_gun_mt2 PROPERTIES
+    TIMEOUT 600 # it shouldn't take that long
     FIXTURES_SETUP ddsim_gun_mt2
     PROCESSORS 2
     FAIL_REGULAR_EXPRESSION "Exception;EXCEPTION;ERROR;Error"
