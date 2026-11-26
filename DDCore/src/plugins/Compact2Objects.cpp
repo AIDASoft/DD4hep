@@ -46,10 +46,12 @@
 #include <TMath.h>
 
 // C/C++ include files
+#include <algorithm>
 #include <filesystem>
 #include <iostream>
 #include <climits>
 #include <set>
+#include <sstream>
 
 using namespace dd4hep;
 
@@ -1716,17 +1718,31 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_dim_t world = element.child(_U(world), false);
 
   /// Top-level tags not in this list would be silently ignored, so fail instead
+  /// The check can be disabled with <lccdd check_tags="false"> and additional
+  /// tags can be allowed with <lccdd allowed_tags="tag1 tag2">
   static const std::set<std::string> known_tags = {
     "debug", "geometry", "world", "define", "std_conditions", "includes", "info",
     "properties", "surfaces", "materials", "display", "limits", "regions",
     "readouts", "detectors", "include", "fields", "sensitive_detectors",
     "parallelworld_volume", "plugins", "comment" };
-  for (xml_coll_t c(compact, _U(star)); c; ++c) {
+  bool check_tags = compact.hasAttr(_Unicode(check_tags)) ? compact.attr<bool>(_Unicode(check_tags)) : true;
+  std::set<std::string> allowed_tags;
+  if ( compact.hasAttr(_Unicode(allowed_tags)) )  {
+    std::string tags = compact.attr<std::string>(_Unicode(allowed_tags));
+    std::replace(tags.begin(), tags.end(), ',', ' ');
+    std::istringstream stream(tags);
+    for (std::string tag; stream >> tag; )
+      allowed_tags.insert(tag);
+  }
+  for (xml_coll_t c(compact, _U(star)); check_tags && c; ++c) {
     std::string tag = c.tag();
-    if (known_tags.find(tag) == known_tags.end()) {
+    if (known_tags.find(tag) == known_tags.end() && allowed_tags.find(tag) == allowed_tags.end()) {
       except("Compact", "++ FAILED    Unknown top-level tag <%s> in %s. It is not a valid compact tag "
-             "and would be ignored. Did you forget to wrap it in its parent tag (e.g. <fields>, <detectors>)?",
-             tag.c_str(), compact.document().uri().c_str());
+             "and would be ignored. Did you forget to wrap it in its parent tag (e.g. <fields>, <detectors>)? "
+             "If it is intended, allow it with <%s allowed_tags=\"%s\"> or disable this check with "
+             "<%s check_tags=\"false\">",
+             tag.c_str(), compact.document().uri().c_str(), compact.tag().c_str(), tag.c_str(),
+             compact.tag().c_str());
     }
   }
 
