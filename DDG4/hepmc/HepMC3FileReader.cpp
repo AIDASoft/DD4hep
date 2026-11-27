@@ -29,6 +29,8 @@
 #include <DDG4/EventParameters.h>
 #include <DDG4/RunParameters.h>
 
+#include <G4Run.hh>
+
 #include <HepMC3/ReaderFactory.h>
 #include <HepMC3/Version.h>
 
@@ -200,6 +202,8 @@ HEPMC3FileReader::readGenEvent(int /*event_number*/, HepMC3::GenEvent& genEvent)
       if (!parameters) {
         parameters = new EventParameters();
         ctx->event().addExtension<EventParameters>(parameters);
+        // HepMC3 events have no run number, use the Geant4 run ID
+        parameters->setRunNumber(ctx->run().run().GetRunID());
       }
       parameters->setEventNumber(genEvent.event_number());
       parameters->ingestParameters(genEvent);
