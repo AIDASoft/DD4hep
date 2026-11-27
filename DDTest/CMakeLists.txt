@@ -196,6 +196,14 @@ if (DD4HEP_USE_GEANT4)
       --inputFiles=${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root
       --part.userParticleHandler=
     )
+    set_tests_properties(t_ddsimEDM4hepPlugins PROPERTIES FIXTURES_SETUP ddsim_edm4hep_ZH)
+
+    # The event weights of the input EventHeader have to reach the output
+    add_test(NAME t_ddsimEDM4hepEventWeights
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/check_event_weights.py
+              ${CMAKE_CURRENT_SOURCE_DIR}/inputFiles/ZH250_ISR.edm4hep.root ddsim_edm4hep_ZH.root)
+    set_tests_properties(t_ddsimEDM4hepEventWeights PROPERTIES
+      FIXTURES_REQUIRED ddsim_edm4hep_ZH)
   endif()
 
   #---Multi-threading tests---------------------------------------------------------
