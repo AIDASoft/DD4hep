@@ -535,14 +535,15 @@ void Geant4Output2EDM4hep::saveEvent(OutputContext<G4Event>& ctxt)  {
   int runNumber(0), eventNumber(0);
   const int eventNumberOffset(m_eventNumberOffset > 0 ? m_eventNumberOffset : 0);
   const int runNumberOffset(m_runNumberOffset > 0 ? m_runNumberOffset : 0);
-  double eventWeight{0};
+  // Weight 1 if the input does not provide one (e.g. particle gun)
+  double eventWeight{1};
   // Get event number, run number and parameters from extension ...
   if ( parameters ) {
     runNumber = parameters->runNumber() + runNumberOffset;
     eventNumber = parameters->eventNumber() + eventNumberOffset;
     parameters->extractParameters(m_frame);
 #if PODIO_BUILD_VERSION > PODIO_VERSION(0, 99, 0)
-    eventWeight = m_frame.getParameter<double>("EventWeights").value_or(0.0);
+    eventWeight = m_frame.getParameter<double>("EventWeights").value_or(1.0);
 #else
     eventWeight = m_frame.getParameter<double>("EventWeights");
 #endif

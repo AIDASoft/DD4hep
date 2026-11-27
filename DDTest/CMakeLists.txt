@@ -225,6 +225,16 @@ if (DD4HEP_USE_GEANT4)
     DISABLED ${disable_mt_tests}
     LABELS "gun;singlethread")
 
+  if(DD4HEP_USE_EDM4HEP)
+    # Without event weights from the input, the event weight has to be 1
+    add_test(NAME t_ddsim_gun_default_event_weight
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/check_default_event_weight.py gun_mt1.root)
+    set_tests_properties(t_ddsim_gun_default_event_weight PROPERTIES
+      FIXTURES_REQUIRED ddsim_gun_mt1
+      DISABLED ${disable_mt_tests}
+      LABELS "gun")
+  endif()
+
   add_test(NAME t_ddsim_gun_mt2
     COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
       ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
