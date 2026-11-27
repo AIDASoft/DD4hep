@@ -300,6 +300,15 @@ if (DD4HEP_USE_GEANT4)
       DISABLED ${disable_mt_tests}
       FAIL_REGULAR_EXPRESSION "ERROR;Error")
 
+    if(DD4HEP_USE_EDM4HEP)
+      # HepMC3 events have no run number, the run number has to be the one of the Geant4 run
+      add_test(NAME t_ddsim_hepmc_run_number
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/python/check_run_number.py hepmc_mt1.root 0)
+      set_tests_properties(t_ddsim_hepmc_run_number PROPERTIES
+        FIXTURES_REQUIRED ddsim_hepmc_mt1
+        DISABLED ${disable_mt_tests})
+    endif()
+
     add_test(NAME t_ddsim_hepmc_mt2
       COMMAND "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
         ddsim --compactFile=${CMAKE_INSTALL_PREFIX}/DDDetectors/compact/SiD.xml
